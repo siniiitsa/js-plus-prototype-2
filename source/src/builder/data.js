@@ -10,12 +10,20 @@ export const THEMES = [
     name: 'Retro',
     sub: 'Alfa Slab One · warm 70s',
     display: "'Alfa Slab One', serif",
-    body: "'Karla', sans-serif",
-    casing: 'lower',
+    // §10.2 — the Figma source names Soulway (display), Anton (label) and Inter
+    // (body). Soulway is commercial and cannot ship, so the display face stays
+    // Alfa Slab One; the other two are Google Fonts and are used verbatim.
+    label: "'Anton', sans-serif",
+    body: "'Inter', sans-serif",
+    // Passthrough, not title-casing. The §10.2 reference sets display copy as
+    // typed ("Kai Mercer", "240 Songs") and reserves caps for the Anton labels,
+    // which get them from textTransform instead.
+    casing: 'title',
     dls: '0px',
-    radius: '14px',
-    radiusSm: '10px',
+    radius: '20px',
+    radiusSm: '14px',
     btnR: '999px',
+    bw: '2px',
     // §4.2 — [background, accent, text]
     sets: [
       ['#EAD7B8', '#C8461C', '#111111'], // soft beige · burnt orange · black (signature)
@@ -30,12 +38,14 @@ export const THEMES = [
     name: 'Lime',
     sub: 'Bebas Neue · dark acid',
     display: "'Bebas Neue', sans-serif",
+    label: "'Archivo', sans-serif",
     body: "'Archivo', sans-serif",
     casing: 'upper',
     dls: '0.02em',
     radius: '6px',
     radiusSm: '4px',
     btnR: '4px',
+    bw: '1.5px',
     sets: [
       ['#15180F', '#AFE335', '#F2FFD0'],
       ['#2E3928', '#AFE335', '#AFE335'],
@@ -49,12 +59,14 @@ export const THEMES = [
     name: 'Grunge',
     sub: 'Special Elite · stamp red',
     display: "'Special Elite', monospace",
+    label: "'Courier Prime', monospace",
     body: "'Courier Prime', monospace",
     casing: 'upper',
     dls: '0.04em',
     radius: '0',
     radiusSm: '0',
     btnR: '0',
+    bw: '1.5px',
     sets: [
       ['#000000', '#DF262C', '#FFFFFF'],
       ['#171716', '#DF262C', '#DF262C'],
@@ -68,12 +80,14 @@ export const THEMES = [
     name: 'Editorial',
     sub: 'Playfair Display · refined',
     display: "'Playfair Display', serif",
+    label: "'Lora', serif",
     body: "'Lora', serif",
     casing: 'title',
     dls: '-0.01em',
     radius: '2px',
     radiusSm: '2px',
     btnR: '2px',
+    bw: '1.5px',
     sets: [
       ['#F6F0E8', '#C86E52', '#141414'],
       ['#AA958A', '#F6F0E8', '#F6F0E8'],
@@ -87,12 +101,14 @@ export const THEMES = [
     name: 'Pop',
     sub: 'Titan One · loud & bright',
     display: "'Titan One', sans-serif",
+    label: "'Archivo', sans-serif",
     body: "'Archivo', sans-serif",
     casing: 'upper',
     dls: '0.01em',
     radius: '20px',
     radiusSm: '14px',
     btnR: '999px',
+    bw: '1.5px',
     sets: [
       ['#FFFFFF', '#FF2DA0', '#6B2CFF'],
       ['#C6F200', '#FF2DA0', '#FF2DA0'],
@@ -173,27 +189,41 @@ export const FLAG = {
  * §4.6 Demo content — the fictional DJ "Kai Mercer"
  * ------------------------------------------------------------------ */
 
-export const TRACKS = [['Late Lights', '3:42'], ['Manchester at 3am', '5:08'],
-  ['Slow Burn', '4:15'], ['Echo & The Floor', '6:21'], ['Roomtone', '3:57']]
+// [name, duration, release]. The third element is used only by the §10.2
+// floating-cards media design; the older designs destructure the first two.
+export const TRACKS = [
+  ['Late Lights',        '5:42', 'Single'],
+  ['Manchester at 3am',  '6:18', 'Hidden Sessions Vol. 2'],
+  ['Slow Burn',          '4:55', 'Single'],
+  ['Echo & The Floor',   '7:01', 'Live at the Deaf Institute'],
+  ['Roomtone',           '5:24', 'Hidden Sessions Vol. 2'],
+]
+
+// The "now playing" card that sits beside the track stack.
+export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
 
 export const TIERS = [
-  { name: 'Club Set', price: '£450', blurb: '90-minute peak-time set',
-    feats: ['90-minute set', 'Own decks & lights', 'Local travel included'] },
-  { name: 'Full Night', price: '£850', blurb: 'Open to close, full rig', featured: true,
-    feats: ['4-hour open-to-close', 'Full rig & engineer', 'Playlist consultation', 'Nationwide travel'] },
-  { name: 'Private Event', price: '£1,200', blurb: 'Weddings & bespoke events',
-    feats: ['Bespoke set design', 'MC & host option', 'Late licence cover'] },
+  { name: 'The House Party', price: '£450', blurb: 'Birthdays, anniversaries, intimate gatherings.',
+    feats: ['Solo DJ setup', 'Vinyl-only option', 'Requests welcome', 'Up to 50 mi travel'] },
+  { name: 'The Wedding Set', price: '£650', blurb: 'Ceremony, dinner, dance. One DJ for the whole day.', featured: true,
+    feats: ['Ceremony underscoring', 'Drinks + dinner ambience', 'Peak-time dance floor', 'Custom first dance', 'PA + lighting'] },
+  { name: 'The Festival Set', price: '£1,200', blurb: 'High-energy set built for outdoor stages and big rooms.',
+    feats: ['Tech rider provided', 'CDJ + vinyl combo', 'Visual sync available', 'Extended encore', 'Festival-grade PA'] },
 ]
 
+// The Solo / Trio / Band selector above the pricing cards. Static: the
+// preview is a picture of a website, not a working one (§12).
+export const TIER_MODES = ['Solo', 'Trio', 'Band']
+
 export const QUOTES = [
+  { q: '"Professional from the first email to the last encore."',
+    who: 'Hannah L.', role: 'Private host', when: 'Reviewed 6 days ago' },
   { q: 'The room did not sit down once. Kai read the crowd like a setlist.',
-    who: 'Amara Okafor', role: 'Venue manager, Albert Hall' },
+    who: 'Amara Okafor', role: 'Venue manager, Albert Hall', when: 'Reviewed 3 weeks ago' },
   { q: 'Booked for one night, kept for the whole season.',
-    who: 'Dan Whitfield', role: 'The Warehouse Project' },
-  { q: 'The only DJ our regulars ask for by name.',
-    who: 'Priya Shah', role: 'Roomtone Club' },
+    who: 'Dan Whitfield', role: 'The Warehouse Project', when: 'Reviewed last month' },
 ]
 
 export const CITIES = [
@@ -212,41 +242,107 @@ export const REP = [
 export const PINS = [{ x: '20%', y: '26%' }, { x: '40%', y: '54%' }, { x: '62%', y: '28%' },
                      { x: '74%', y: '64%' }, { x: '46%', y: '76%' }]
 
-export const TITLES = { bio: 'About Kai', media: 'Latest Release', tags: 'Tags',
-  audio: 'Selected Tracks', video: 'Live at Roomtone', pricing: 'Bookings & Rates',
-  repertoire: 'Repertoire', gallery: 'On Camera', calendar: 'Availability',
-  map: 'On the Road', testimonials: 'Word of Mouth', form: 'Book Kai', footer: '' }
+/* --- §10.2 demo content introduced by the Figma page ---------------- *
+ * Static like TRACKS / CITIES / REP above: this is the picture of a
+ * finished site, not editable copy, so none of it gets a FIELDS entry.
+ * ------------------------------------------------------------------- */
+
+// Repertoire — a dense two-column song list with a filter row and pagination.
+export const SONGS = [
+  ['Valerie', 'Amy Winehouse'],       ['Mr. Brightside', 'The Killers'],
+  ['Superstition', 'Stevie Wonder'],  ['I Wanna Dance', 'Whitney Houston'],
+  ['Uptown Funk', 'Bruno Mars'],      ['September', 'Earth, Wind & Fire'],
+  ['Dancing Queen', 'ABBA'],          ["Don't Stop Me Now", 'Queen'],
+  ['Sex on Fire', 'Kings of Leon'],   ['Rather Be', 'Clean Bandit'],
+  ['Crazy in Love', 'Beyoncé'],       ['Valerie', 'Amy Winehouse'],
+]
+export const REP_FILTERS = ['All', 'Weddings', 'Pubs', 'Birthdays']
+export const SONG_TOTAL = 240
+export const PAGES = ['1', '2', '3', '…', '20']
+
+// Events map — the upcoming-gigs list beside the map tile.
+export const GIGS = [
+  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12' },
+  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25' },
+  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02' },
+  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16' },
+  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30' },
+]
+export const MAP_RADIUS = '12 mile radius'
+export const MAP_BASE = 'Based in Manchester'
+export const MAP_TERMS = '120 mi standard · further on request'
+
+// Gallery — the media-source selector down the left of the section.
+export const GALLERY_SOURCES = ['Gallery', 'YouTube', 'Instagram', 'TikTok']
+
+// Enquiry form — the split context panel and the field set beside it.
+export const FORM_PROMISES = ['Replies within 24 hrs', 'Free, no-obligation quote', 'Covers 120 mi from Manchester']
+export const FORM_FIELDS = [
+  { l: 'Name',       p: 'Full name' },
+  { l: 'Email',      p: 'you@email.com' },
+  { l: 'Event date', p: 'dd / mm / yyyy' },
+  { l: 'Guests',     p: 'approx.' },
+]
+export const FORM_TYPES = ['Wedding', 'Event', 'Pub', 'Party', 'Other']
+export const FORM_MESSAGE = 'Tell me about your event…'
+
+// Footer — two link columns and the small print either side of the rule.
+export const FOOTER_LINKS = [
+  ['About', 'Top Tracks', 'Media', 'Repertoire'],
+  ['Shows/Coverage', 'Pricing', 'Enquiries', 'Reviews'],
+]
+export const FOOTER_CREDIT = 'A JustPay Product'
+
+export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Tags',
+  audio: 'Selected Tracks', video: 'Live at Roomtone', pricing: "Choose the set that's right for your night",
+  repertoire: '240 Songs', gallery: 'See us in action', calendar: 'Availability',
+  map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make your night unforgettable.", footer: '' }
 
 export const DEFS = {
   heroSub:    'DJ & selector. Clubs, weddings and festivals across the North — nights built live, never off a playlist.',
-  bioP1:      'Fifteen years behind the decks, from basement clubs in Manchester to festival main stages. Kai builds nights that move — reading rooms, not playlists, and never playing the same set twice.',
+  bioP1:      'DJ and selector based in Manchester. Five years of reading rooms — house, disco, soul, 80s — chosen by the room, not the algorithm.',
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
-  statement:  'Rooms, not playlists.',
+  statement:  'Reads the room.',
   videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
-  pricingSub: 'Every booking includes a pre-event call and a request list.',
+  pricingSub: 'Prices may vary by date, location, and length of set.',
   calPara:    'August is filling fast. Highlighted dates are already booked — everything else is yours.',
   mapSub:     '12 dates · 8 cities · this season',
   formPara:   'Tell me about the night — date, venue, crowd. Replies within 24 hours.',
-  copyright:  '© 2026 Kai Mercer · Built with Encore',
+  copyright:  'C 2026 Kai Mercer',
 }
 
-// Calendar highlighting (August)
+// Calendar highlighting for the legacy list design (August)
 export const BOOKED = [3, 4, 10, 11, 17, 24, 25]
 export const HELD   = [12, 18]
+
+// §10.2 scheduler — June 2025 starts on a Sunday, so there are no leading
+// blanks and the grid runs 1..30. Day 12 is the selected Thursday.
+export const CAL_MONTH   = 'June 2025'
+export const CAL_DAYS    = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+export const CAL_LEAD    = 0
+export const CAL_LENGTH  = 30
+export const CAL_PICKED  = 12
+export const CAL_ENQUIRY = 'Enquiry for Thursday, June 12 at 9:00pm'
 
 /* ------------------------------------------------------------------ *
  * §4.7 Starting pages — [categoryId, layoutIndex, colourSetIndex]
  * ------------------------------------------------------------------ */
 
 // "Theme Example" — a populated page the user can immediately edit.
+// The eleven sections of the §10.2 reference page, in order, each in the
+// colour set that page draws it in.
 export const EXAMPLE_PAGE = [
   ['header',       0, 0],
-  ['bio',          0, 1],
-  ['media',        0, 2],
+  ['bio',          0, 0],
+  ['media',        0, 1],
+  ['gallery',      0, 0],
+  ['repertoire',   0, 1],
+  ['map',          0, 4],
   ['pricing',      0, 0],
-  ['testimonials', 1, 3],
+  ['calendar',     0, 1],
   ['form',         0, 1],
-  ['footer',       0, 4],
+  ['testimonials', 0, 1],
+  ['footer',       0, 1],
 ]
 
 // "Blank" — only the two mandatory sections.
@@ -272,11 +368,11 @@ export const FIELDS = {
     { k: 'title',     l: 'Title' },                       // defaults to artistName — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub' },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK' },
-    { k: 'cta1',      l: 'Primary button',   d: 'Book Kai' },
+    { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     { k: 'cta2',      l: 'Secondary button', d: 'Listen' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE },
-    { k: 'badgeText', l: 'Badge text',       d: 'Available for bookings' },
+    { k: 'badgeText', l: 'Badge text',       d: 'Kai Mercer' },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Shows · Book)' },
@@ -287,15 +383,15 @@ export const FIELDS = {
     ] },
   ],
   bio: [
-    { k: 'heading',   l: 'Heading', d: 'About Kai' },
+    { k: 'heading',   l: 'Heading', d: 'Reads the room.' },
     { k: 'statement', l: 'Statement (centred layout)', def: 'statement' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
   ],
   media: [
-    { k: 'kicker',  l: 'Kicker', d: 'Latest release' },
+    { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },
     { k: 'track',   l: 'Featured track', d: 'Late Lights' },
-    { k: 'heading', l: 'Heading (card row layout)', d: 'Latest Release' },
+    { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
   ],
   tags: [
     { k: 'tags', l: 'Tags (comma-separated)', type: 'area', d: TAGS.join(', ') },
@@ -311,20 +407,20 @@ export const FIELDS = {
     { k: 'duration',    l: 'Duration', d: '04:18' },
   ],
   pricing: [
-    { k: 'heading', l: 'Heading', d: 'Bookings & Rates' },
-    { k: 'sub',     l: 'Subheading', def: 'pricingSub' },
-    { k: 't1n', l: 'Tier 1 name',  d: 'Club Set' },
+    { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
+    { k: 'sub',     l: 'Small print', def: 'pricingSub' },
+    { k: 't1n', l: 'Tier 1 name',  d: 'The House Party' },
     { k: 't1p', l: 'Tier 1 price', d: '£450' },
-    { k: 't2n', l: 'Tier 2 name',  d: 'Full Night' },
-    { k: 't2p', l: 'Tier 2 price', d: '£850' },
-    { k: 't3n', l: 'Tier 3 name',  d: 'Private Event' },
+    { k: 't2n', l: 'Tier 2 name',  d: 'The Wedding Set' },
+    { k: 't2p', l: 'Tier 2 price', d: '£650' },
+    { k: 't3n', l: 'Tier 3 name',  d: 'The Festival Set' },
     { k: 't3p', l: 'Tier 3 price', d: '£1,200' },
   ],
   repertoire: [
-    { k: 'heading', l: 'Heading', d: 'Repertoire' },
+    { k: 'heading', l: 'Heading', d: '240 Songs' },
   ],
   gallery: [
-    { k: 'heading', l: 'Heading', d: 'On Camera' },
+    { k: 'heading', l: 'Heading', d: 'See us in action' },
   ],
   calendar: [
     { k: 'heading', l: 'Heading', d: 'Availability' },
@@ -332,22 +428,23 @@ export const FIELDS = {
     { k: 'cta',     l: 'Button', d: 'Check a date' },
   ],
   map: [
-    { k: 'heading', l: 'Heading', d: 'On the Road' },
+    { k: 'heading', l: 'Heading', d: 'Manchester' },
     { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [
     { k: 'heading', l: 'Heading', d: 'Word of Mouth' },
     { k: 'quote',   l: 'Featured quote', type: 'area', d: QUOTES[0].q },
-    { k: 'who',     l: 'Attribution', d: 'Amara Okafor' },
-    { k: 'role',    l: 'Role', d: 'Venue manager, Albert Hall' },
+    { k: 'who',     l: 'Attribution', d: 'Hannah L.' },
+    { k: 'role',    l: 'Role', d: 'Private host' },
   ],
   form: [
-    { k: 'heading', l: 'Heading', d: 'Book Kai' },
+    { k: 'heading', l: 'Heading', d: "Let's make your night unforgettable." },
     { k: 'para',    l: 'Paragraph', type: 'area', def: 'formPara' },
     { k: 'email',   l: 'Email address', d: 'bookings@kaimercer.co.uk' },
-    { k: 'button',  l: 'Button', d: 'Send enquiry' },
+    { k: 'button',  l: 'Button', d: 'Book Now' },
   ],
   footer: [
+    { k: 'statement', l: 'Statement', type: 'area', d: "Let's make your night unforgettable." },
     { k: 'copyright', l: 'Small print', def: 'copyright' },
   ],
 }
@@ -356,10 +453,26 @@ export const FIELDS = {
  * §4.9 Helpers
  * ------------------------------------------------------------------ */
 
+// Perceived luminance, 0..1.
+export function lum(hex) {
+  const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16)
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255
+}
+
 // Luminance-based black/white picker. Threshold 0.58 — not 0.5.
 export function contrast(hex) {
-  const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16)
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.58 ? '#141414' : '#FFFFFF'
+  return lum(hex) > 0.58 ? '#141414' : '#FFFFFF'
+}
+
+// Opaque blend of two hexes, `t` of the way from a to b. Used for the torn
+// paper edges (§10.2), which must be opaque because they overlap the section
+// boundary and cannot be an rgba() overlay.
+export function mix(a, b, t) {
+  const ch = (i) => {
+    const x = parseInt(a.slice(i, i + 2), 16), y = parseInt(b.slice(i, i + 2), 16)
+    return Math.round(x + (y - x) * t).toString(16).padStart(2, '0')
+  }
+  return `#${ch(1)}${ch(3)}${ch(5)}`
 }
 
 // Hex → rgba() string.

@@ -476,9 +476,11 @@ Pure data plus four helpers. Reproduce every value exactly.
 
 ### 4.1 `THEMES` — 5 templates
 
-Each entry: `{ name, sub, display, body, casing, dls, radius, radiusSm, btnR, sets, tags }`.
+Each entry: `{ name, sub, display, label, body, casing, dls, radius, radiusSm, btnR, bw, sets, tags }`.
 
-- `display` / `body` — CSS font-family strings.
+- `display` / `label` / `body` — CSS font-family strings. `label` is the caps face used for
+  nav, eyebrows, buttons and chips; every theme except Retro sets it to its own `body`.
+- `bw` — border width. Retro is `2px` (the §10.2 reference); the others keep `1.5px`.
 - `casing` — `'lower' | 'upper' | 'title'`, applied to headline-ish strings via `caseText`.
 - `dls` — display letter-spacing.
 - `radius` / `radiusSm` / `btnR` — card, small-element and button radii.
@@ -487,7 +489,7 @@ Each entry: `{ name, sub, display, body, casing, dls, radius, radiusSm, btnR, se
 
 | Theme | `sub` | `display` | `body` | `casing` | `dls` | radius / radiusSm / btnR |
 |---|---|---|---|---|---|---|
-| Retro | `Alfa Slab One · warm 70s` | `'Alfa Slab One', serif` | `'Karla', sans-serif` | lower | `0px` | 14px / 10px / 999px |
+| Retro | `Alfa Slab One · warm 70s` | `'Alfa Slab One', serif` | `'Inter', sans-serif` | title | `0px` | 20px / 14px / 999px |
 | Lime | `Bebas Neue · dark acid` | `'Bebas Neue', sans-serif` | `'Archivo', sans-serif` | upper | `0.02em` | 6px / 4px / 4px |
 | Grunge | `Special Elite · stamp red` | `'Special Elite', monospace` | `'Courier Prime', monospace` | upper | `0.04em` | 0 / 0 / 0 |
 | Editorial | `Playfair Display · refined` | `'Playfair Display', serif` | `'Lora', serif` | title | `-0.01em` | 2px / 2px / 2px |
@@ -1406,15 +1408,22 @@ CTAs are `<span>`s, not buttons — non-functional demo affordances.
 
 ### 10.2 `hd` — Header, photographic family (Retro, 6 layouts)
 
-**Reference images are normative**: `docs/feedback-reference/header-layout-1.png` …
-`header-layout-6.png`. Build to the images; use this text to resolve tokens, spacing and
-behaviour.
+**The Figma file is normative for layout 1**
+(`figma.com/design/uFoUbPaBrDicjyuSBEbtGT`, nodes `964:58576` desktop / `986:34873`
+tablet / `986:34952` mobile). Layouts 2–6 remain as specified below.
+
+**Layout 1 · Hero.** A full-bleed photograph — the one composition that breaks the section
+padding — under a bottom-weighted scrim (`SCRIM.hero`) and paper grain. The nav bar rides
+the top edge; below `desktop` it collapses to wordmark + rule + Book Now + hamburger. The
+identity block sits on the floor of the frame: a `s.radius` portrait card bordered in
+`s.pillBg` (158 / 116 / 76px), then the location + kicker row, then the artist name at
+`s.dispXl` two-toned `s.paper` / `s.ac` — one line except on mobile. A full-width chip row
+runs beneath, and the seal floats at 13% from the top right. Aspect ratios: `16 / 8.33`
+desktop, `3 / 4` tablet, `390 / 844` mobile.
 
 All six are fully theme-driven: colours from `s.bg / s.ac / s.tx`, type from
-`s.display / s.body / s.dls`, radii from `s.radius / s.radiusSm / s.btnR`, casing from the
-theme. The reference images all show **Colour Set 1** (cream `#EAD7B8`, burnt orange
-`#C8461C`, black `#111111`) — that is why they read warm. Switching to Colour Set 4 must
-re-skin them completely.
+`s.display / s.label / s.body / s.dls`, radii from `s.radius / s.radiusSm / s.btnR`, casing
+from the theme. Switching to Colour Set 4 must re-skin them completely.
 
 #### Shared header primitives
 

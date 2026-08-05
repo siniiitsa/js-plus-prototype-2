@@ -78,10 +78,17 @@ rendering, so `EncoreSection` does zero colour maths.
 
 Four, all deliberate:
 
-1. **No reference images.** `docs/feedback-reference/` (the template previews and the six
-   header-layout PNGs) is not present in this repo, so §6 and §10.2 were built from the prose,
-   which resolves every token, spacing and behaviour. **A fidelity pass against those images is
-   still outstanding** — expect the six Retro header layouts to need adjustment once they land.
+1. **No reference images; the Figma file replaced them.** `docs/feedback-reference/` is not
+   present in this repo. The Figma file
+   (`figma.com/design/uFoUbPaBrDicjyuSBEbtGT`) arrived instead and a fidelity pass has now been
+   done against it for **layout 1 of all eleven sections it covers** — header, bio, media player,
+   gallery, repertoire, events map, pricing, booking calendar, enquiry form, testimonials and
+   footer — across its desktop (1440), tablet (768) and mobile (390) frames. Every other layout
+   variant is untouched and still prose-derived. Two knock-on notes: the Figma display face is
+   *Soulway*, which is commercial and cannot ship, so Retro keeps Alfa Slab One (its Anton and
+   Inter faces are used as drawn); and the design's photography, album art and map tiles are
+   reproduced as CSS/SVG texture plus the existing image-upload slot rather than committed
+   assets, so the single-file build stays small.
 2. **React 19 / Vite 8** instead of §2.2's React 18.3 / Vite 6 pins, at the repo owner's
    request. All other dependencies are as specified. The React Compiler and ESLint from the
    original scaffold were dropped — §2.3's `vite.config.js` is normative and declares exactly
@@ -102,7 +109,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
 - **No drag-and-drop reordering**, despite the `GripVertical` handle. Reordering is via arrows.
 - **Only Retro is designed.** It ships six photographic header layouts. Lime, Grunge, Editorial
   and Pop are fully selectable and functional but render flat-colour sections and a three-layout
-  flat header family.
+  flat header family. The §10.2 *layouts* are shared by all five templates; its decorative
+  treatment — paper grain, torn edges, checkerboard, hard offset shadows, rotated cards — is
+  gated on `s.retro`, the same split as `headerFamily()`.
 - **Layout folding.** For the 13 non-header categories, more layout numbers are offered than
   there are distinct designs, so e.g. `Audio layout 1`, `4` and `7` render identically while
   keeping their own labels. The header is exempt.

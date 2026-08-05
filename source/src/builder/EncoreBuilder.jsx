@@ -34,7 +34,12 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, QUOTES,
   CITIES, REP, PINS, BOOKED, HELD, EXAMPLE_PAGE, BLANK_PAGE,
-  catById, catName, contrast, rgba, caseText, fieldDefault,
+  NOW_PLAYING, TIER_MODES, SONGS, REP_FILTERS, SONG_TOTAL, PAGES,
+  GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
+  FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
+  FOOTER_LINKS, FOOTER_CREDIT,
+  CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
+  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault,
   headerFamily, layoutCount, designCount,
 } from './data.js'
 
@@ -47,6 +52,22 @@ const SIZES = {
   tablet:  { h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 40px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
   desktop: { h1: '86px', h1b: '118px', h2: '46px', pad: '80px 64px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
 }
+
+// §10.2 — the Figma type ramp, layered on top of SIZES rather than replacing it:
+// the layout variants this pass does not touch still read h1/h1b/h2.
+//
+// Figma's tablet (768) and mobile (390) frames are exactly canvasW, so those
+// numbers are used verbatim. Its desktop frame is 1440 against a 1180 canvas,
+// so desktop values are the Figma value × 1180/1440 ≈ 0.82, rounded.
+// `narrow` is the second responsive switch the Figma layouts need: the nav
+// collapses to a hamburger on tablet as well as mobile, while `mob` (mobile
+// only) still drives the single-column collapses.
+const RAMP = {
+  mobile:  { dispXl: '46px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '13px', labelXs: '12px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '22px', narrow: true },
+  tablet:  { dispXl: '72px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '16px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
+  desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '64px', narrow: false },
+}
+for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k])
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis A — builder chrome breakpoint
@@ -95,6 +116,12 @@ function canMove(sections, id, dir) {
  * header thumbnails (§9.1) can render a theme that is not the active one.
  * ------------------------------------------------------------------ */
 
+// The lightest colour in a set — the surface §10.2 paints its cards on, and
+// the ink for type sitting over a photographic scrim. Falls back to the Retro
+// off-white when a set is dark on dark.
+const paperOf = (bg, tx) =>
+  (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
+
 export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob, navSections = [] }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.sets[set]
@@ -104,6 +131,11 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
 
   const nDesign = designCount(cat, T.name)
   const d = ((arch % nDesign) + nDesign) % nDesign
+
+  // §10.2 sets several labels in a palette hue rather than the text colour.
+  // That reads only while the hue separates from the background — in a set
+  // whose background IS that hue's neighbour it must fall back to the text.
+  const legible = (h) => (Math.abs(lum(h) - lum(bg)) > 0.22 ? h : tx)
 
   const vm = {
     // colours
@@ -118,10 +150,26 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
     acFg20: rgba(acFg, 0.20),
     acFg25: rgba(acFg, 0.25),
     acFg80: rgba(acFg, 0.80),
+    // Opaque tonal shift of the background — the torn paper edges sit across a
+    // section boundary, so they cannot be a translucent overlay.
+    edge: mix(bg, tx, 0.13),
+    // The lightest colour in the set, for type that always sits over the dark
+    // scrim of a photographic hero. Falls back to the Retro off-white when the
+    // set is dark on dark.
+    paper: paperOf(bg, tx),
+    // Type on a `paper` surface must never be `tx`: in sets where the text
+    // colour IS the lightest colour (Lime set 2, say) that renders invisible.
+    paperFg: contrast(paperOf(bg, tx)),
+    paperLine: rgba(contrast(paperOf(bg, tx)), 0.5),
+    // The palette's darkest hue, for the panels §10.2 paints near-black
+    // (the media player card, the events map band).
+    deep: T.tags.reduce((d, h) => (lum(h) < lum(d) ? h : d), T.tags[0]),
+    deepFg: contrast(T.tags.reduce((d, h) => (lum(h) < lum(d) ? h : d), T.tags[0])),
+    deepFg25: rgba(contrast(T.tags.reduce((d, h) => (lum(h) < lum(d) ? h : d), T.tags[0])), 0.25),
 
     // theme typography
-    display: T.display, body: T.body, dls: T.dls,
-    radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR,
+    display: T.display, label: T.label, body: T.body, dls: T.dls,
+    radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
 
     // device sizing
     ...Z, mob: !!mob,
@@ -129,6 +177,12 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
     // design selector
     v0: d === 0, v1: d === 1, v2: d === 2, v3: d === 3, v4: d === 4, v5: d === 5,
     flatHeader: cat === 'header' && headerFamily(T.name) === 'flat',
+
+    // §10.2 — the layouts are shared by every template, but the Figma page's
+    // decorative treatment (grain, torn edges, checkerboard, hard offset
+    // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
+    // the other four render the identical structure, flat.
+    retro: T.name === 'Retro',
   }
 
   // ---- content -----------------------------------------------------
@@ -142,11 +196,11 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
   vm.kicker = cv('kicker', 'DJ · Live Act')
   vm.subtitle = cv('subtitle', DEFS.heroSub)
   vm.location = cv('location', 'Manchester, UK')
-  vm.cta1 = cv('cta1', 'Book Kai')
+  vm.cta1 = cv('cta1', 'Book Now')
   vm.cta2 = cv('cta2', 'Listen')
   vm.showTags = cv('showTags', 'show')
   vm.showBadge = cv('showBadge', 'show')
-  vm.badgeText = cv('badgeText', 'Available for bookings')
+  vm.badgeText = cv('badgeText', artistName)
   vm.navMode = cv('navMode', 'sections')
   vm.align = cv('align', 'left')
   vm.image = c.image
@@ -164,23 +218,37 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
     return { label: cased(t), bg: cbg, fg: contrast(cbg) }
   })
 
+  // §10.2 — the Book Now pill is accent-coloured type on a second palette hue,
+  // not on the accent itself. The reference uses the palette's lightest hue
+  // (Retro's mustard) so the pill reads as a highlight; the accent is kept as
+  // the type only while it stays legible against it.
+  const pillBg = T.tags
+    .filter((h) => h !== bg && h !== ac)
+    .reduce((best, h) => (lum(h) > lum(best) ? h : best), T.tags.find((h) => h !== bg && h !== ac) || T.tags[0])
+  vm.pillBg = pillBg
+  vm.pillFg = Math.abs(lum(pillBg) - lum(ac)) > 0.22 ? ac : contrast(pillBg)
+
   // bio
   vm.bioP1 = cv('para1', DEFS.bioP1)
   vm.bioP2 = cv('para2', DEFS.bioP2)
   vm.bioQuote = cased(cv('statement', DEFS.statement))
 
   // media
-  vm.mediaKicker = cv('kicker', 'Latest release')
+  vm.mediaKicker = cv('kicker', 'Top tracks')
   vm.mediaTrack = cased(cv('track', 'Late Lights'))
+  vm.nowPlaying = { ...NOW_PLAYING, track: cased(NOW_PLAYING.track), by: cased(artistName) }
 
   // audio — parsed from the textarea, else from TRACKS. `n` is naively '0'+index.
   if (c.tracks !== undefined) {
     vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
       const parts = l.includes('—') ? l.split('—') : l.split('|')
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur: (parts[1] || '').trim() }
+      const dur = (parts[1] || '').trim()
+      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur }
     })
   } else {
-    vm.tracks = TRACKS.map(([name, dur], i) => ({ n: '0' + (i + 1), name: cased(name), dur }))
+    vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`,
+    }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
 
@@ -190,10 +258,16 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
 
   // pricing
   vm.pricingSub = cv('sub', DEFS.pricingSub)
+  vm.tierModes = TIER_MODES
   vm.tiers = TIERS.map((t, i) => {
+    // §10.2 paints the three cards in three different palette hues rather than
+    // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
+    // orange under Retro — the reference order — and stays in-palette elsewhere.
+    const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
     const base = {
       name: cv(`t${i + 1}n`, t.name), price: cv(`t${i + 1}p`, t.price),
       blurb: t.blurb, feats: t.feats,
+      card, cardFg: contrast(card), cardMut: rgba(contrast(card), 0.72),
     }
     return t.featured
       ? {
@@ -209,10 +283,19 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
   // repertoire
   vm.rep = REP.map((g) => ({ genre: cased(g.genre), items: g.items }))
   vm.repFlat = REP.flatMap((g) => g.items.map((t) => ({ t, g: g.genre })))
+  vm.songs = SONGS.map(([title, artist], i) => ({ n: i + 1, title, artist: cased(artist) }))
+  vm.repFilters = REP_FILTERS.map((l) => cased(l))
+  vm.repHue = legible(T.tags[3 % T.tags.length])
+  vm.songTotal = SONG_TOTAL
+  vm.pages = PAGES
 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
   vm.gal4 = vm.gal.slice(0, 4)
+  vm.gallerySources = GALLERY_SOURCES.map((l, i) => {
+    const cbg = T.tags[i % T.tags.length]
+    return { label: cased(l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0 }
+  })
 
   // calendar — 2 leading blanks, days 1..31, padded to 35 cells
   if (cat === 'calendar') {
@@ -224,29 +307,48 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
     }
     while (cells.length < 35) cells.push({ d: '' })
     vm.cal = cells.map((c2) => ({ d: c2.d, bg: c2.bg ?? 'transparent', fg: c2.fg ?? tx }))
+
+    // §10.2 scheduler — a plain month grid with one picked day, no legend.
+    const grid = Array.from({ length: CAL_LEAD }, () => ({ d: '' }))
+    for (let day = 1; day <= CAL_LENGTH; day++) grid.push({ d: day, on: day === CAL_PICKED })
+    vm.sched = grid
   }
   vm.calPara = cv('para', DEFS.calPara)
   vm.calCta = cv('cta', 'Check a date')
   vm.monthLabel = cased('August 2026')
+  vm.calMonth = CAL_MONTH
+  vm.calDays = CAL_DAYS
+  vm.calEnquiry = CAL_ENQUIRY
 
   // map
   vm.cities = CITIES
   vm.pins = PINS
   vm.mapSub = cv('sub', DEFS.mapSub)
+  vm.gigs = GIGS.map((g, i) => ({ ...g, hue: legible(T.tags[i % T.tags.length]) }))
+  vm.mapRadius = MAP_RADIUS
+  vm.mapBase = MAP_BASE
+  vm.mapTerms = MAP_TERMS
 
   // testimonials
   vm.quotes = QUOTES.map((q, i) => (i === 0
-    ? { q: cv('quote', q.q), who: cv('who', q.who), role: cv('role', q.role) }
+    ? { ...q, q: cv('quote', q.q), who: cv('who', q.who), role: cv('role', q.role) }
     : q))
   vm.quote1 = cased(cv('quote', QUOTES[0].q))
 
   // form
   vm.formPara = cv('para', DEFS.formPara)
   vm.formEmail = cv('email', 'bookings@kaimercer.co.uk')
-  vm.formBtn = cv('button', 'Send enquiry')
+  vm.formBtn = cv('button', 'Book Now')
+  vm.formPromises = FORM_PROMISES
+  vm.formFields = FORM_FIELDS
+  vm.formTypes = FORM_TYPES.map((l) => cased(l))
+  vm.formMessage = FORM_MESSAGE
 
   // footer
   vm.copyright = cv('copyright', DEFS.copyright)
+  vm.footerStatement = cased(cv('statement', "Let's make your night unforgettable."))
+  vm.footerLinks = FOOTER_LINKS.map((col) => col.map((l) => cased(l)))
+  vm.footerCredit = FOOTER_CREDIT
 
   vm[FLAG[cat]] = true
   return vm

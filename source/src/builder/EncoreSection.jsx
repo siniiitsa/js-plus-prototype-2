@@ -14,7 +14,8 @@
 import { useId } from 'react'
 import {
   Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
-  ArrowRight, ArrowUpRight, Star,
+  ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
+  Image as ImageIcon,
 } from 'lucide-react'
 
 /* ------------------------------------------------------------------ *
@@ -53,10 +54,114 @@ const row = (gap, extra) => ({ display: 'flex', alignItems: 'center', gap, ...ex
 const col = (gap, extra) => ({ display: 'flex', flexDirection: 'column', gap, ...extra })
 
 /* ------------------------------------------------------------------ *
+ * §10.2 Retro design language
+ *
+ * The Figma page's decoration — grain, torn paper, checkerboard, hard
+ * offset shadows, rotated cards — belongs to Retro alone. Every helper
+ * below no-ops when `s.retro` is false, so the other four templates get
+ * the identical structure rendered flat. Same split as headerFamily().
+ * ------------------------------------------------------------------ */
+
+// Anton (or the theme's label face): uppercase, tight, used for nav, eyebrows,
+// buttons and every small caps-y label in the reference page.
+const labelStyle = (s, size, extra) => ({
+  fontFamily: s.label, fontSize: size || s.labelMd, lineHeight: 1.1,
+  textTransform: 'uppercase', letterSpacing: '0.02em', whiteSpace: 'nowrap', ...extra,
+})
+
+// The offset colour block behind almost every card, pill and panel.
+const hard = (s, colour, x = 4, y = 4) => (s.retro ? `${x}px ${y}px 0 0 ${colour}` : 'none')
+// Figma's "Retro - Card Shadow" effect.
+const soft = (s) => (s.retro ? '4px 4px 9px rgba(0,0,0,.16)' : 'none')
+// Cards in the reference page sit a degree or two off square.
+const tilt = (s, deg) => (s.retro ? `rotate(${deg}deg)` : 'none')
+
+// Paper grain. A fractal-noise SVG rather than a bitmap, so the single-file
+// build stays small (§12) and it recolours with whatever it sits over.
+const GRAIN_URL =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E" +
+  "%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E" +
+  "%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E\")"
+
+function Grain({ s, opacity = 0.16, blend = 'overlay', radius }) {
+  if (!s.retro) return null
+  return (
+    <div aria-hidden style={{
+      position: 'absolute', inset: 0, backgroundImage: GRAIN_URL, backgroundSize: '160px 160px',
+      mixBlendMode: blend, opacity, pointerEvents: 'none', borderRadius: radius,
+    }} />
+  )
+}
+
+// Torn paper strip across a section boundary. Painted in `s.edge` — an opaque
+// tonal shift of the section background — because it overlaps the seam.
+const TORN_D =
+  'M0,0 L1000,0 L1000,13 C947,25 908,7 861,17 C812,28 767,9 719,20 ' +
+  'C673,30 631,11 585,21 C540,31 497,12 452,22 C408,32 366,13 321,23 ' +
+  'C277,33 236,14 190,24 C147,33 108,16 62,25 C40,29 20,23 0,27 Z'
+
+// `bleed` pulls the strip out to the section's own edges, past the root
+// padding, so a decoration sits on the seam rather than inside the column.
+const bleedTo = (s, side) => ({
+  left: `calc(-1 * ${s.padX})`, right: `calc(-1 * ${s.padX})`,
+  [side]: `calc(-1 * ${s.padY})`,
+})
+
+function TornEdge({ s, side = 'top', height = 26, colour, bleed = true }) {
+  if (!s.retro) return null
+  return (
+    <svg viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden style={{
+      // An <svg> has an intrinsic ratio, so left+right alone will not stretch
+      // it the way it does a <div> — the width has to be stated.
+      position: 'absolute', height, display: 'block', pointerEvents: 'none', zIndex: 3,
+      ...(bleed
+        ? { left: `calc(-1 * ${s.padX})`, width: `calc(100% + ${s.padX} + ${s.padX})`, [side]: `calc(-1 * ${s.padY})` }
+        : { left: 0, width: '100%', [side]: 0 }),
+      transform: side === 'bottom' ? 'scaleY(-1)' : undefined,
+    }}>
+      <path d={TORN_D} fill={colour || s.edge} />
+    </svg>
+  )
+}
+
+// The eight-point star that marks every Book Now pill and the seal centre.
+function Asterisk({ size = 16, color = 'currentColor' }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden
+         style={{ display: 'block', flex: 'none' }}>
+      <g stroke={color} strokeWidth="1.7" strokeLinecap="round">
+        <line x1="12" y1="1.5" x2="12" y2="22.5" />
+        <line x1="1.5" y1="12" x2="22.5" y2="12" />
+        <line x1="4.6" y1="4.6" x2="19.4" y2="19.4" />
+        <line x1="19.4" y1="4.6" x2="4.6" y2="19.4" />
+      </g>
+    </svg>
+  )
+}
+
+// Wireframe globe — the reference page's mark, in place of the initials disc.
+function GlobeMark({ size = 22, color = 'currentColor', strokeWidth = 1.4 }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden
+         style={{ display: 'block', flex: 'none' }}>
+      <g fill="none" stroke={color} strokeWidth={strokeWidth}>
+        <circle cx="12" cy="12" r="10.4" />
+        <ellipse cx="12" cy="12" rx="4.6" ry="10.4" />
+        <line x1="1.6" y1="12" x2="22.4" y2="12" />
+        <path d="M3.3 6.2 A13.5 13.5 0 0 0 20.7 6.2" />
+        <path d="M3.3 17.8 A13.5 13.5 0 0 1 20.7 17.8" />
+      </g>
+    </svg>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §10.2 Shared header primitives
  * ------------------------------------------------------------------ */
 
-function LogoMark({ s, size = 18 }) {
+function LogoMark({ s, size = 18, color }) {
+  // §10.2 replaces the initials disc with a wireframe globe under Retro.
+  if (s.retro) return <GlobeMark size={size + 6} color={color || s.tx} />
   return (
     <span style={{
       width: size, height: size, borderRadius: '999px', background: s.ac,
@@ -68,12 +173,14 @@ function LogoMark({ s, size = 18 }) {
 
 function Wordmark({ s, logo = false, color }) {
   return (
-    <span style={row('8px')}>
-      {logo && <LogoMark s={s} />}
-      <span style={{
-        fontFamily: s.display, fontSize: '14px', letterSpacing: s.dls,
-        textTransform: 'uppercase', color: color || s.tx, whiteSpace: 'nowrap',
-      }}>{s.brand}</span>
+    <span style={row('10px')}>
+      {logo && <LogoMark s={s} color={color} />}
+      <span style={s.retro
+        ? labelStyle(s, s.labelMd, { color: color || s.tx })
+        : {
+            fontFamily: s.display, fontSize: '14px', letterSpacing: s.dls,
+            textTransform: 'uppercase', color: color || s.tx, whiteSpace: 'nowrap',
+          }}>{s.brand}</span>
     </span>
   )
 }
@@ -95,14 +202,28 @@ function NavLinks({ s, color, pills = false }) {
   )
 }
 
-function BookPill({ s }) {
+function BookPill({ s, label }) {
+  const text = label ?? s.cta1
+  if (s.retro) {
+    // Accent-coloured type on a second palette hue, with the offset block.
+    return (
+      <span style={{
+        ...row('8px'), background: s.pillBg, color: s.pillFg, padding: '8px 16px',
+        borderRadius: s.btnR, cursor: 'pointer', boxShadow: hard(s, s.ac, 3, 4),
+        ...labelStyle(s),
+      }}>
+        {text}
+        <Asterisk size={14} color={s.pillFg} />
+      </span>
+    )
+  }
   return (
     <span style={{
       ...row('8px'), background: s.ac, color: s.acFg, fontSize: '10px', fontWeight: 700,
       letterSpacing: '1.2px', textTransform: 'uppercase', padding: '9px 18px',
       borderRadius: s.btnR, cursor: 'pointer', whiteSpace: 'nowrap',
     }}>
-      {s.cta1}
+      {text}
       <span style={{
         width: '14px', height: '14px', borderRadius: '999px', background: s.acFg20,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none',
@@ -135,18 +256,24 @@ function Kicker({ s, color }) {
 
 // Splits on the first space into two lines. Two-tone mode (layouts 3, 4)
 // paints the first word s.tx and the second s.ac.
-function Title({ s, size, color, twoTone = false, align = 'left' }) {
+// `inline` keeps the two words on one line until the container forces a wrap —
+// the §10.2 hero sets "Kai Mercer" as a single line on desktop and tablet and
+// lets it break naturally on mobile.
+function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, lh, inline = false }) {
   const t = s.heroTitle || ''
   const i = t.indexOf(' ')
   const a = i === -1 ? t : t.slice(0, i)
   const b = i === -1 ? '' : t.slice(i + 1)
+  const part = { display: inline ? 'inline' : 'block' }
   return (
     <h1 style={{
-      margin: 0, fontFamily: s.display, fontSize: size || s.h1, lineHeight: 0.92,
+      margin: 0, fontFamily: s.display, fontSize: size || s.h1, lineHeight: lh ?? 0.92,
       letterSpacing: s.dls, color: color || s.tx, textAlign: align,
     }}>
-      <span style={{ display: 'block', color: twoTone ? s.tx : undefined }}>{a}</span>
-      {b && <span style={{ display: 'block', color: twoTone ? s.ac : undefined }}>{b}</span>}
+      <span style={{ ...part, color: twoTone ? (toneA || s.tx) : undefined }}>{a}</span>
+      {b && <span style={{ ...part, color: twoTone ? (toneB || s.ac) : undefined }}>
+        {inline ? ' ' : ''}{b}
+      </span>}
     </h1>
   )
 }
@@ -168,69 +295,146 @@ function LocationLine({ s, color }) {
 
 function TagChips({ s, justify = 'flex-start' }) {
   if (s.showTags !== 'show') return null
+  // §10.2 sets the chips in the body face at label-xs, sentence case — not the
+  // tracked-out caps the flat templates use.
+  const chip = s.retro
+    ? { fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.26, padding: '5px 11px' }
+    : {
+        fontSize: '9px', fontWeight: 700, letterSpacing: '1px',
+        textTransform: 'uppercase', padding: '5px 11px',
+      }
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', justifyContent: justify }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: justify }}>
       {s.chips.map((c, i) => (
         <span key={i} style={{
-          background: c.bg, color: c.fg, fontSize: '9px', fontWeight: 700,
-          letterSpacing: '1px', textTransform: 'uppercase', padding: '5px 11px',
-          borderRadius: s.btnR, whiteSpace: 'nowrap',
+          background: c.bg, color: c.fg, borderRadius: s.btnR, whiteSpace: 'nowrap', ...chip,
         }}>{c.label}</span>
       ))}
     </div>
   )
 }
 
-function SealBadge({ s, style }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32 }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
-  const size = s.mob ? 52 : 76
+  const size = sizeProp ?? (s.mob ? 62 : 108)
 
-  // ~24-point radial starburst
-  const spikes = 24
-  const pts = []
-  for (let i = 0; i < spikes * 2; i++) {
-    const r = i % 2 === 0 ? 50 : 43
-    const a = (Math.PI * i) / spikes - Math.PI / 2
-    pts.push(`${(50 + r * Math.cos(a)).toFixed(2)},${(50 + r * Math.sin(a)).toFixed(2)}`)
+  if (!s.retro) {
+    // The pre-§10.2 starburst seal, still used by the flat templates.
+    const spikes = 24
+    const pts = []
+    for (let i = 0; i < spikes * 2; i++) {
+      const r = i % 2 === 0 ? 50 : 43
+      const a = (Math.PI * i) / spikes - Math.PI / 2
+      pts.push(`${(50 + r * Math.cos(a)).toFixed(2)},${(50 + r * Math.sin(a)).toFixed(2)}`)
+    }
+    const flat = s.mob ? 52 : 76
+    return (
+      <div style={{ position: 'absolute', width: flat, height: flat, ...style }}>
+        <svg viewBox="0 0 100 100" width={flat} height={flat} className="seal-spin"
+             style={{ display: 'block', overflow: 'visible' }} aria-hidden="true">
+          <defs>
+            <path id={`seal-${id}`} d="M 50,50 m -33,0 a 33,33 0 1,1 66,0 a 33,33 0 1,1 -66,0" />
+          </defs>
+          <polygon points={pts.join(' ')} fill={s.ac} />
+          <text fill={s.acFg} style={{
+            fontSize: '7px', fontWeight: 700, letterSpacing: '0.5px',
+            textTransform: 'uppercase', fontFamily: s.body,
+          }}>
+            <textPath href={`#seal-${id}`} startOffset="0%">{s.badgeText}</textPath>
+          </text>
+        </svg>
+        <span style={{
+          position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
+          justifyContent: 'center', color: s.acFg, pointerEvents: 'none',
+        }}><ArrowUpRight size={s.mob ? 13 : 18} /></span>
+      </div>
+    )
   }
 
+  // §10.2 — a solid disc, an inset ring, the artist name set twice around the
+  // circle, a large centre asterisk and two small ones on the equator. The
+  // whole seal sits a third of a turn off square; only the type ring spins.
+  const disc = hue || s.ac
+  const ink = contrastInk(disc)
+  const name = String(s.badgeText || '').toUpperCase()
   return (
-    <div style={{ position: 'absolute', width: size, height: size, ...style }}>
-      <svg viewBox="0 0 100 100" width={size} height={size} className="seal-spin"
-           style={{ display: 'block', overflow: 'visible' }} aria-hidden="true">
+    <div style={{
+      position: 'absolute', width: size, height: size,
+      transform: `rotate(${tiltDeg}deg)`, ...style,
+    }}>
+      <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true"
+           style={{ display: 'block', overflow: 'visible' }}>
         <defs>
-          <path id={`seal-${id}`} d="M 50,50 m -33,0 a 33,33 0 1,1 66,0 a 33,33 0 1,1 -66,0" />
+          <path id={`seal-${id}`} d="M 50,50 m -36,0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0" />
         </defs>
-        <polygon points={pts.join(' ')} fill={s.ac} />
-        <text fill={s.acFg} style={{
-          fontSize: '7px', fontWeight: 700, letterSpacing: '0.5px',
-          textTransform: 'uppercase', fontFamily: s.body,
-        }}>
-          <textPath href={`#seal-${id}`} startOffset="0%">{s.badgeText}</textPath>
-        </text>
+        <circle cx="50" cy="50" r="50" fill={disc} />
+        <circle cx="50" cy="50" r="45" fill="none" stroke={ink} strokeWidth="1.6" />
+        <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+          <text fill={ink} style={{
+            fontSize: '9px', letterSpacing: '1.4px', fontFamily: s.label,
+          }}>
+            <textPath href={`#seal-${id}`} startOffset="2%">{name}</textPath>
+            <textPath href={`#seal-${id}`} startOffset="52%">{name}</textPath>
+          </text>
+        </g>
+        <g stroke={ink} strokeLinecap="round">
+          <g strokeWidth="3.6">
+            <line x1="50" y1="25" x2="50" y2="75" />
+            <line x1="25" y1="50" x2="75" y2="50" />
+            <line x1="32.3" y1="32.3" x2="67.7" y2="67.7" />
+            <line x1="67.7" y1="32.3" x2="32.3" y2="67.7" />
+          </g>
+          <g strokeWidth="1.1">
+            <line x1="11" y1="44.5" x2="11" y2="55.5" />
+            <line x1="5.5" y1="50" x2="16.5" y2="50" />
+            <line x1="7.1" y1="46.1" x2="14.9" y2="53.9" />
+            <line x1="14.9" y1="46.1" x2="7.1" y2="53.9" />
+            <line x1="89" y1="44.5" x2="89" y2="55.5" />
+            <line x1="83.5" y1="50" x2="94.5" y2="50" />
+            <line x1="85.1" y1="46.1" x2="92.9" y2="53.9" />
+            <line x1="92.9" y1="46.1" x2="85.1" y2="53.9" />
+          </g>
+        </g>
       </svg>
-      <span style={{
-        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-        justifyContent: 'center', color: s.acFg, pointerEvents: 'none',
-      }}><ArrowUpRight size={s.mob ? 13 : 18} /></span>
     </div>
   )
 }
 
-function Checkerboard({ s, style }) {
+// Local copy of data.js's threshold — EncoreSection does no colour maths on
+// runtime values (§10), but the seal ink is a fixed black/white decision the
+// view-model has no slot for.
+const contrastInk = (hex) => {
+  const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16)
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.58 ? '#141414' : '#FBF6EA'
+}
+
+function Checkerboard({ s, style, cell = 14, colour }) {
+  const c = colour || s.tx
   return (
     <div style={{
-      height: '14px', width: '100%',
-      background: `repeating-conic-gradient(${s.tx} 0% 25%, transparent 0% 50%) 0 0 / 14px 14px`,
+      height: cell, width: '100%',
+      background: `repeating-conic-gradient(${c} 0% 25%, transparent 0% 50%) 0 0 / ${cell}px ${cell}px`,
       ...style,
     }} />
   )
 }
 
-function Photo({ s, style, initialsSize = 44 }) {
+// `backdrop` is the empty state for a full-bleed photographic slot: a dark
+// panel rather than a giant set of initials, so the overlaid type still reads
+// the way it does over a real photograph.
+function Photo({ s, style, initialsSize = 44, backdrop = false }) {
   if (s.image) {
     return <img src={s.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
+  }
+  if (backdrop) {
+    return (
+      <div style={{
+        width: '100%', height: '100%',
+        background: `linear-gradient(150deg, ${s.edge}, #2A2622 55%, #14110E)`,
+        ...style,
+      }} />
+    )
   }
   return (
     <div style={{
@@ -269,45 +473,112 @@ const sealGap = (s) => (s.showBadge !== 'show' ? 0 : s.mob ? '62px' : '84px')
 const SCRIM = {
   v1: 'linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.15) 40%, rgba(0,0,0,.6))',
   v5: 'linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.3) 45%, rgba(0,0,0,.55))',
+  // §10.2 hero — the photo is legible at the top and the type sits on the dark.
+  hero: 'linear-gradient(0deg, #111111 0%, rgba(17,17,17,.72) 26%, rgba(17,17,17,0) 62%)',
+}
+
+// §10.2 — one top bar for the hero and the footer. Below `desktop` the links
+// collapse to a hamburger, as they do on both narrow reference frames.
+function NavBar({ s, colour, rule }) {
+  const c = colour || s.tx
+  const bar = rule || c
+  return (
+    <div style={row(s.narrow ? '16px' : '24px', { justifyContent: 'space-between', width: '100%' })}>
+      <div style={row('20px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
+        <Wordmark s={s} logo color={c} />
+        <span style={{
+          height: '2px', background: bar, flex: '1 1 auto',
+          maxWidth: '150px', minWidth: s.narrow ? '30px' : '0px',
+        }} />
+      </div>
+      {s.narrow ? (
+        <span style={row('14px')}>
+          <BookPill s={s} />
+          <span style={col('4px', { width: '22px', flex: 'none', cursor: 'pointer' })}>
+            {[0, 1, 2].map((i) => (
+              <span key={i} style={{ height: '2px', width: '100%', background: c }} />
+            ))}
+          </span>
+        </span>
+      ) : (
+        <nav style={row('18px', {
+          flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 1 auto', minWidth: 0,
+        })}>
+          {s.navLinks.map((l) => (
+            <a key={l} href="#" style={labelStyle(s, s.labelMd, { color: c })}>{l}</a>
+          ))}
+          <BookPill s={s} />
+        </nav>
+      )}
+    </div>
+  )
 }
 
 /* ------------------------------------------------------------------ *
  * §10.2 The six photographic header compositions (Retro)
  * ------------------------------------------------------------------ */
 
-// v0 — Header layout 1 · Split portrait
+// v0 — Header layout 1 · Hero (§10.2 reference design)
+//
+// Full-bleed photograph under a bottom-weighted scrim: the nav rides the top
+// edge, the identity block sits on the floor of the frame, and the seal floats
+// in the upper right. This is the one section that breaks the root padding —
+// see the `bleed` flag on the root.
 function HeaderV0({ s }) {
-  const items = s.align === 'centre' ? 'center' : 'flex-start'
+  const centred = s.align === 'centre'
+  const pp = s.mob ? 76 : s.narrow ? 116 : 158          // portrait card edge
+  const ink = s.paper
+  const aspect = s.mob ? '390 / 844' : s.narrow ? '3 / 4' : '16 / 8.33'
+  const padX = s.gPad
+  const padTop = s.mob ? '20px' : s.narrow ? '26px' : '23px'
+  const padBottom = s.mob ? '26px' : s.narrow ? '40px' : '66px'
+
   return (
-    <div style={{ position: 'relative' }}>
-      {/* The seal sits at top:-18px right:24px, so the bar keeps clear of it. */}
-      <div style={{ ...row('20px', {
-        justifyContent: 'space-between', flexWrap: 'wrap', marginBottom: s.navGap,
-        // This seal sits at right:24px, so it needs more room than sealGap().
-        paddingRight: s.showBadge !== 'show' ? 0 : s.mob ? '76px' : '108px',
-      }) }}>
-        <Wordmark s={s} logo />
-        {!s.mob && <NavLinks s={s} />}
-        <BookPill s={s} />
+    <div style={{
+      position: 'relative', aspectRatio: aspect, overflow: 'hidden',
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+      padding: `${padTop} ${padX} ${padBottom}`, color: ink,
+    }}>
+      <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></div>
+      <div style={{ position: 'absolute', inset: 0, background: SCRIM.hero }} />
+      <Grain s={s} opacity={0.22} blend="soft-light" />
+
+      <div style={{ position: 'relative' }}>
+        <NavBar s={s} colour={ink} rule={s.ac} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '48px', alignItems: 'center' }}>
-        <div style={{ position: 'relative' }}>
+
+      <div style={{ position: 'relative', ...col(s.mob ? '20px' : '33px') }}>
+        <div style={row(s.mob ? '18px' : '33px', {
+          justifyContent: centred ? 'center' : 'flex-start', flexWrap: 'wrap',
+        })}>
           <div style={{
-            position: 'absolute', inset: '-10px auto auto -10px', width: '100%', paddingBottom: '120%',
-            border: `1.5px solid ${s.ac}`, borderRadius: s.radius, background: 'transparent',
-          }} />
-          <div style={{
-            position: 'relative', aspectRatio: '4 / 4.8', borderRadius: s.radius, overflow: 'hidden',
-          }}><Photo s={s} initialsSize={56} /></div>
+            width: pp, height: pp, flex: 'none', borderRadius: s.radius,
+            border: `${s.mob ? 3 : 5}px solid ${s.pillBg}`, overflow: 'hidden', background: s.soft2,
+          }}><Photo s={s} initialsSize={Math.round(pp / 3)} /></div>
+
+          <div style={col(s.mob ? '14px' : '30px', {
+            alignItems: centred ? 'center' : 'flex-start', minWidth: 0,
+          })}>
+            <div style={row(s.mob ? '14px' : '25px', { flexWrap: 'wrap' })}>
+              <span style={row('8px')}>
+                <span style={{
+                  width: '14px', height: '14px', borderRadius: '7px',
+                  background: s.pillBg, flex: 'none',
+                }} />
+                <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.location}</span>
+              </span>
+              <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.kicker}</span>
+            </div>
+            <Title s={s} size={s.dispXl} twoTone toneA={ink} toneB={s.ac} inline={!s.mob}
+                   lh={0.78} align={centred ? 'center' : 'left'} />
+          </div>
         </div>
-        <div style={col('16px', { alignItems: items, textAlign: s.align === 'centre' ? 'center' : 'left' })}>
-          <Kicker s={s} />
-          <Title s={s} align={s.align === 'centre' ? 'center' : 'left'} />
-          <LocationLine s={s} />
-          <TagChips s={s} justify={s.align === 'centre' ? 'center' : 'flex-start'} />
-        </div>
+
+        <TagChips s={s} justify={centred ? 'center' : 'flex-start'} />
       </div>
-      <SealBadge s={s} style={{ top: '-18px', right: '24px' }} />
+
+      <SealBadge s={s} hue={s.chips[4]?.bg || s.ac}
+                 style={{ top: '13%', right: s.mob ? '5%' : '7%' }} />
     </div>
   )
 }
@@ -630,22 +901,79 @@ function FlatHeader({ s }) {
  * §10.4 All other categories
  * ------------------------------------------------------------------ */
 
+// v0 — Bio layout 1 · Flanked portrait (§10.2 reference design)
+//
+// A tilted photo card held between two columns of small orange labels: the
+// section index and headline on the left, the prose and credit on the right.
+// Both flanks collapse under the card on tablet and mobile.
 function Bio({ s }) {
   if (s.v0) {
-    return (
-      <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '48px', alignItems: 'center' }}>
+    const label = (t, extra) => (
+      <span style={labelStyle(s, s.eyebrow, { color: s.ac, ...extra })}>{t}</span>
+    )
+    const card = (
+      <div style={{ position: 'relative', padding: s.mob ? '0 26px 26px 0' : '0 34px 34px 0' }}>
         <div style={{
-          background: s.soft, aspectRatio: '4 / 4.6', borderRadius: s.radius,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative', transform: tilt(s, 2.6), transformOrigin: 'center',
+          background: s.paper, borderRadius: s.radius, boxShadow: soft(s),
+          padding: s.mob ? '12px' : '16px', ...row('12px', { alignItems: 'stretch' }),
         }}>
-          <span style={{ fontFamily: s.display, fontSize: '56px', color: s.muted, letterSpacing: s.dls }}>{s.initials}</span>
+          <div style={{
+            flex: 1, minWidth: 0, aspectRatio: '4 / 5', borderRadius: s.radiusSm, overflow: 'hidden',
+          }}>
+            <Photo s={s} initialsSize={54} />
+            <Grain s={s} opacity={0.2} />
+          </div>
+          <div style={row('8px', {
+            flex: 'none', flexDirection: 'column', justifyContent: 'flex-start',
+            color: s.paperFg, paddingTop: '2px',
+          })}>
+            <GlobeMark size={16} color={s.ac} />
+            <span style={labelStyle(s, s.eyebrow, {
+              writingMode: 'vertical-rl', letterSpacing: '0.08em',
+            })}>{s.location}</span>
+          </div>
         </div>
-        <div style={col('16px')}>
-          <span style={kickerStyle(s)}>About</span>
-          <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.04 }}>{s.title}</h2>
-          <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.65, color: s.muted }}>{s.bioP1}</p>
-          <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.65, color: s.muted }}>{s.bioP2}</p>
+        <SealBadge s={s} hue={s.pillBg} size={s.mob ? 68 : 96} tilt={-14}
+                   style={{ left: s.mob ? '2%' : '8%', bottom: 0 }} />
+      </div>
+    )
+
+    const heading = (
+      <div style={col(s.mob ? '16px' : '0', {
+        justifyContent: 'space-between', height: '100%', alignItems: 'flex-start',
+      })}>
+        <div style={col('6px')}>{label(s.initials)}{label('Bio')}</div>
+        <h2 style={{
+          margin: s.narrow ? '14px 0' : 0, fontFamily: s.display, fontSize: s.dispLg,
+          lineHeight: 0.95, letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+        {label('[ 001 ] Structure · Bio_01')}
+      </div>
+    )
+
+    const prose = (
+      <div style={col(s.mob ? '16px' : '0', {
+        justifyContent: 'space-between', height: '100%', alignItems: 'stretch',
+      })}>
+        <div style={col('10px')}>
+          <span style={{ fontFamily: s.body, fontWeight: 700, fontSize: s.labelXs, color: s.ac }}>About</span>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.5, color: s.ac }}>{s.bioP1}</p>
         </div>
+        <div style={col('10px')}>
+          <span style={{ height: '1px', background: s.line2, width: '100%' }} />
+          {label(`${s.kicker} · ${s.location}`)}
+        </div>
+      </div>
+    )
+
+    if (s.narrow) return <div style={col(s.gGap)}>{heading}{card}{prose}</div>
+    return (
+      <div style={{
+        display: 'grid', gridTemplateColumns: '0.85fr 1.25fr 0.9fr',
+        gap: s.gGap, alignItems: 'stretch',
+      }}>
+        {heading}{card}{prose}
       </div>
     )
   }
@@ -658,39 +986,118 @@ function Bio({ s }) {
   )
 }
 
+// v0 — Media Player layout 1 · Floating cards stack (§10.2 reference design)
+//
+// Five track cards that overlap and alternate indent, every other one filled
+// with a palette hue, each throwing a hard offset block; the "now playing"
+// card sits on the dark alongside. Checkerboard above, torn paper below.
 function Media({ s }) {
   if (s.v0) {
-    return (
-      <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '44px', alignItems: 'center' }}>
+    const np = s.nowPlaying
+    const ctl = (fill) => ({
+      width: fill ? 46 : 30, height: fill ? 46 : 30, borderRadius: '999px', flex: 'none',
+      background: fill ? s.deepFg : 'transparent', color: fill ? s.deep : s.deepFg,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+    })
+
+    const stack = (
+      <div style={col('0')}>
+        {s.tracks.map((t, i) => {
+          const n = s.chips.length
+          const filled = i % 2 === 1
+          // Filled rows step through the palette from its third hue (Retro:
+          // mustard, then olive); the open rows throw a contrasting block.
+          const hue = s.chips[(2 + Math.floor(i / 2)) % n].bg
+          const fg = filled ? contrastInk(hue) : s.paperFg
+          return (
+            <div key={i} style={{
+              ...row(s.mob ? '10px' : '14px'),
+              marginLeft: filled && !s.mob ? '48px' : 0,
+              marginTop: i === 0 ? 0 : '-6px',
+              position: 'relative', zIndex: i + 1,
+              background: filled ? hue : s.paper, color: fg,
+              border: `${s.bw} solid ${fg}`, borderRadius: s.btnR,
+              padding: s.mob ? '8px 10px' : '10px 14px',
+              boxShadow: hard(s, filled ? s.ac : s.chips[(4 + i) % n].bg, 4, 5),
+            }}>
+              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.85, flex: 'none' }}>{t.n}</span>
+              <span style={col('2px', { flex: 1, minWidth: 0 })}>
+                <span style={labelStyle(s, s.title, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
+                <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.75 }}>{t.sub}</span>
+              </span>
+              <span style={{
+                width: 30, height: 30, borderRadius: '999px', flex: 'none',
+                background: fg, color: filled ? hue : s.paper,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              }}><Play size={12} fill="currentColor" strokeWidth={0} /></span>
+              <span style={{
+                width: 42, height: 42, flex: 'none', borderRadius: s.radiusSm, overflow: 'hidden',
+                border: `${s.bw} solid ${fg}`,
+              }}><Photo s={s} initialsSize={14} /></span>
+            </div>
+          )
+        })}
+      </div>
+    )
+
+    const player = (
+      <div style={col('12px', { alignItems: s.narrow ? 'stretch' : 'flex-end' })}>
+        <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.14em' })}>
+          {s.tracks.length} / {s.tracks.length} Featured
+        </span>
         <div style={{
-          background: s.ac, color: s.acFg, aspectRatio: '1', maxWidth: '420px', width: '100%',
-          borderRadius: s.radius, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative', width: '100%', maxWidth: s.narrow ? 'none' : '460px',
+          background: s.deep, color: s.deepFg, borderRadius: s.radius,
+          padding: s.mob ? '20px' : '28px', boxShadow: hard(s, s.ac, 6, 6),
+          ...col('16px', { alignItems: 'center' }),
         }}>
-          <span style={{ fontFamily: s.display, fontSize: '52px', letterSpacing: s.dls }}>{s.initials}</span>
+          <Grain s={s} opacity={0.2} radius={s.radius} />
+          <ChevronLeft size={14} style={{ alignSelf: 'center', opacity: 0.7 }} />
+          <div style={{
+            width: '68%', aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
+            position: 'relative',
+          }}><Photo s={s} initialsSize={44} /></div>
+          <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
+            <span style={{ fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls }}>{np.track}</span>
+            <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.7 }}>{np.by}</span>
+          </div>
+          <div style={row('18px', { position: 'relative' })}>
+            <span style={ctl(false)}><SkipBack size={14} fill="currentColor" strokeWidth={0} /></span>
+            <span style={ctl(true)}><Play size={16} fill="currentColor" strokeWidth={0} /></span>
+            <span style={ctl(false)}><SkipForward size={14} fill="currentColor" strokeWidth={0} /></span>
+          </div>
+          <div style={row('12px', { width: '100%', position: 'relative' })}>
+            <span style={{ fontFamily: s.body, fontSize: '11px', opacity: 0.7 }}>{np.at}</span>
+            <span style={{ flex: 1, height: '3px', background: s.deepFg25, borderRadius: '99px' }}>
+              <span style={{ display: 'block', width: `${np.pct}%`, height: '100%', background: s.ac, borderRadius: '99px' }} />
+            </span>
+            <span style={{ fontFamily: s.body, fontSize: '11px', opacity: 0.7 }}>{np.of}</span>
+          </div>
         </div>
-        <div style={col('16px')}>
-          <span style={kickerStyle(s)}>{s.mediaKicker}</span>
-          <h2 style={{ margin: 0, fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1.02 }}>{s.mediaTrack}</h2>
-          <div style={{ height: '4px', background: s.line, borderRadius: '99px', marginTop: '8px' }}>
-            <div style={{ width: '42%', height: '100%', background: s.ac, borderRadius: '99px' }} />
+      </div>
+    )
+
+    return (
+      <div style={{ position: 'relative' }}>
+        <Checkerboard s={s} cell={12} colour={s.pillBg}
+                      style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'top') }} />
+        <TornEdge s={s} side="bottom" height={30} />
+        <div style={{
+          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1.1fr 0.9fr',
+          gap: s.gGap, alignItems: 'start',
+        }}>
+          <div style={col(s.mob ? '20px' : '30px')}>
+            <div style={col('12px')}>
+              <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>{s.mediaKicker}</span>
+              <h2 style={{
+                margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
+                letterSpacing: s.dls, color: s.ac,
+              }}>{s.title}</h2>
+            </div>
+            {stack}
+            <span style={{ alignSelf: 'flex-start' }}><BookPill s={s} label="Soundcloud" /></span>
           </div>
-          <div style={row('0', { justifyContent: 'space-between', fontSize: '12px', fontWeight: 600, color: s.muted })}>
-            <span>1:34</span><span>3:42</span>
-          </div>
-          <div style={row('12px', { marginTop: '4px' })}>
-            <span style={{
-              width: '40px', height: '40px', borderRadius: '999px', border: `1.5px solid ${s.line2}`,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            }}><SkipBack size={12} /></span>
-            <span style={{
-              width: '54px', height: '54px', borderRadius: '999px', background: s.ac, color: s.acFg,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            }}><Play size={16} /></span>
-            <span style={{
-              width: '40px', height: '40px', borderRadius: '999px', border: `1.5px solid ${s.line2}`,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            }}><SkipForward size={12} /></span>
-          </div>
+          {player}
         </div>
       </div>
     )
@@ -854,49 +1261,89 @@ function Video({ s }) {
   )
 }
 
+// v0 — Pricing layout 1 · 3-col in soft panel (§10.2 reference design): three
+// cards, each in its own palette hue, each a degree or two off square and
+// throwing a hard offset block in the next hue along.
 function Pricing({ s }) {
   if (s.v0) {
+    const TILT = [-0.6, 1.6, -1.1]
     return (
-      <div>
-        <div style={col('12px', { alignItems: 'center', textAlign: 'center', marginBottom: '36px' })}>
-          <h2 style={{ margin: 0, ...h2Style(s) }}>{s.title}</h2>
-          <p style={{ margin: 0, fontSize: '15px', color: s.muted }}>{s.pricingSub}</p>
+      <div style={col(s.mob ? '20px' : '30px')}>
+        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.1,
+            letterSpacing: s.dls, color: s.ac, maxWidth: '18ch',
+          }}>{s.title}</h2>
+          <div style={row('8px', { flexWrap: 'wrap' })}>
+            {s.tierModes.map((m, i) => (
+              <span key={m} style={{
+                border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR, padding: '5px 14px',
+                background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : s.tx,
+                boxShadow: i === 0 ? hard(s, s.pillBg, 3, 3) : 'none', cursor: 'pointer',
+                ...labelStyle(s, s.eyebrow),
+              }}>{m}</span>
+            ))}
+          </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: s.g3, gap: '18px', alignItems: 'stretch' }}>
-          {s.tiers.map((t, i) => (
-            <div key={i} style={{
-              background: t.bg, color: t.tx, border: `1.5px solid ${t.border}`, borderRadius: s.radius,
-              padding: '26px 24px', display: 'flex', flexDirection: 'column', gap: '14px',
-              transition: 'background-color .45s ease, color .45s ease',
-            }}>
-              <span style={{
-                fontSize: '12px', fontWeight: 700, letterSpacing: '1.6px',
-                textTransform: 'uppercase', color: t.nameC,
-              }}>{t.name}</span>
-              <div style={row('8px', { alignItems: 'baseline' })}>
-                <span style={{ fontFamily: s.display, fontSize: '38px', letterSpacing: s.dls }}>{t.price}</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: t.mut }}>/ night</span>
-              </div>
-              <div style={col('9px')}>
-                {t.feats.map((f, j) => (
-                  <span key={j} style={row('8px', { alignItems: 'flex-start', fontSize: '13px', lineHeight: 1.4 })}>
-                    <Check size={13} style={{ color: t.tick, flex: 'none', marginTop: '2px' }} />
-                    {f}
-                  </span>
-                ))}
-              </div>
-              <span style={{
-                marginTop: 'auto', paddingTop: '10px',
+
+        <div style={{
+          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr 1fr',
+          gap: s.mob ? '22px' : '30px', alignItems: 'stretch',
+        }}>
+          {s.tiers.map((t, i) => {
+            const money = String(t.price)
+            const symbol = /^[^\d]/.test(money) ? money[0] : ''
+            const amount = symbol ? money.slice(1) : money
+            return (
+              <div key={i} style={{
+                position: 'relative', transform: tilt(s, TILT[i]),
+                background: t.card, color: t.cardFg,
+                border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius,
+                padding: s.mob ? '20px' : '26px',
+                boxShadow: hard(s, s.tiers[(i + 1) % s.tiers.length].card, 6, 6),
+                display: 'flex', flexDirection: 'column', gap: s.mob ? '14px' : '18px',
+                transition: 'background-color .45s ease, color .45s ease',
               }}>
-                <span style={{
-                  display: 'block', background: t.btnBg, color: t.btnFg, fontSize: '12px', fontWeight: 700,
-                  letterSpacing: '1.2px', textTransform: 'uppercase', padding: '12px', borderRadius: s.btnR,
-                  textAlign: 'center', width: '100%', cursor: 'pointer',
-                }}>Enquire</span>
-              </span>
-            </div>
-          ))}
+                <Grain s={s} opacity={0.22} radius={s.radius} />
+                <span style={row('10px', { position: 'relative' })}>
+                  <span style={{
+                    border: `1.5px solid ${t.cardFg}`, borderRadius: '6px', padding: '2px 6px',
+                    fontFamily: s.body, fontSize: '10px', opacity: 0.85,
+                  }}>ico</span>
+                  <span style={labelStyle(s, s.labelXs)}>{t.name}</span>
+                </span>
+
+                <span style={row('6px', { alignItems: 'baseline', position: 'relative' })}>
+                  <span style={{ fontFamily: s.body, fontSize: s.labelXs }}>{symbol}</span>
+                  <span style={{ fontFamily: s.display, fontSize: s.dispSm, letterSpacing: s.dls }}>{amount}</span>
+                  <span style={{ fontFamily: s.body, fontSize: s.eyebrow, color: t.cardMut }}>/event</span>
+                </span>
+
+                <p style={{
+                  margin: 0, position: 'relative', fontFamily: s.body, fontSize: s.eyebrow,
+                  lineHeight: 1.5, color: t.cardMut,
+                }}>{t.blurb}</p>
+
+                <div style={col('8px', { position: 'relative' })}>
+                  {t.feats.map((f, j) => (
+                    <span key={j} style={row('8px', {
+                      alignItems: 'flex-start', fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.4,
+                    })}>
+                      <Check size={13} style={{ flex: 'none', marginTop: '2px' }} />
+                      {f}
+                    </span>
+                  ))}
+                </div>
+
+                <span style={{ marginTop: 'auto', paddingTop: '6px', position: 'relative' }}>
+                  <BookPill s={s} />
+                </span>
+              </div>
+            )
+          })}
         </div>
+
+        <span style={{ fontFamily: s.body, fontSize: s.eyebrow, color: s.muted }}>{s.pricingSub}</span>
       </div>
     )
   }
@@ -923,24 +1370,110 @@ function Pricing({ s }) {
   )
 }
 
-function Repertoire({ s }) {
+// A row of numbered page buttons, shared by Repertoire and Events Map.
+function Pager({ s, colour, fill }) {
+  const c = colour || s.tx
+  const btn = (child, on, ends) => (
+    <span style={{
+      minWidth: s.mob ? 30 : 42, height: s.mob ? 30 : 42, padding: '0 8px',
+      borderRadius: s.radiusSm, border: `${s.bw} solid ${on ? s.pillBg : c}`,
+      background: on ? s.pillBg : (ends ? (fill || 'transparent') : 'transparent'),
+      color: on ? contrastInk(s.pillBg) : c, cursor: 'pointer',
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      ...labelStyle(s, s.eyebrow),
+    }}>{child}</span>
+  )
   return (
-    <div>
-      <h2 style={{ margin: '0 0 30px', ...h2Style(s) }}>{s.title}</h2>
-      {s.v0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: s.g3, gap: '32px' }}>
-          {s.rep.map((g, i) => (
-            <div key={i} style={col('12px')}>
-              <span style={{
-                ...kickerStyle(s), borderBottom: `1.5px solid ${s.line}`, paddingBottom: '10px',
-              }}>{g.genre}</span>
-              {g.items.map((it, j) => (
-                <span key={j} style={{ fontSize: '14px', fontWeight: 500, lineHeight: 1.4 }}>{it}</span>
+    <div style={row('8px', { flexWrap: 'wrap' })}>
+      {btn(<ArrowLeft size={14} />, false, true)}
+      {s.pages.map((p, i) => btn(p, i === 0))}
+      {btn(<ArrowRight size={14} />, false, true)}
+    </div>
+  )
+}
+
+// v0 — Repertoire layout 1 · Two-column dense (§10.2 reference design)
+function Repertoire({ s }) {
+  if (s.v0) {
+    const half = Math.ceil(s.songs.length / 2)
+    const columns = s.narrow ? [s.songs] : [s.songs.slice(0, half), s.songs.slice(half)]
+    const hue = s.repHue   // Retro: olive
+
+    return (
+      <div style={{ position: 'relative', ...col(s.mob ? '20px' : '28px') }}>
+        <TornEdge s={s} side="top" height={30} />
+
+        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
+          <div style={col('10px')}>
+            <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>Repertoire</span>
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
+              letterSpacing: s.dls, color: s.ac,
+            }}>{s.title}</h2>
+          </div>
+          <div style={row('12px', {
+            border: `${s.bw} solid ${s.tx}`, borderRadius: s.radiusSm, padding: '8px 14px 8px 8px',
+            minWidth: s.narrow ? '100%' : '300px',
+          })}>
+            <span style={{
+              width: 30, height: 30, flex: 'none', borderRadius: s.radiusSm,
+              background: s.ac, color: s.acFg,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            }}><Search size={15} /></span>
+            <span style={{ fontFamily: s.body, fontSize: s.labelXs, color: s.muted }}>
+              Search songs or artists…
+            </span>
+          </div>
+        </div>
+
+        <div style={row('8px', { flexWrap: 'wrap' })}>
+          {s.repFilters.map((f, i) => (
+            <span key={i} style={{
+              border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR, padding: '5px 14px',
+              background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : s.tx,
+              boxShadow: i === 0 ? hard(s, s.pillBg, 3, 3) : 'none', cursor: 'pointer',
+              ...labelStyle(s, s.eyebrow),
+            }}>{f}</span>
+          ))}
+        </div>
+
+        <div style={{
+          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: s.mob ? '12px' : '18px',
+        }}>
+          {columns.map((colSongs, ci) => (
+            <div key={ci} style={col(s.mob ? '12px' : '18px')}>
+              {colSongs.map((t) => (
+                <div key={t.n} style={{
+                  position: 'relative', border: `${s.bw} solid ${hue}`, borderRadius: s.radiusSm,
+                  padding: s.mob ? '12px 14px 16px' : '16px 20px 20px',
+                  ...row('12px', { justifyContent: 'space-between' }),
+                }}>
+                  <span style={row('10px', { minWidth: 0 })}>
+                    <span style={{ fontFamily: s.body, fontSize: '11px', color: s.ac, flex: 'none' }}>{t.n}</span>
+                    <span style={{
+                      fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls, color: hue,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>{t.title}</span>
+                  </span>
+                  <span style={labelStyle(s, s.eyebrow, { color: s.ac, flex: 'none' })}>· {t.artist}</span>
+                  <Checkerboard s={s} cell={6} colour={hue} style={{
+                    position: 'absolute', left: 0, right: 0, bottom: 0, width: 'auto',
+                    borderBottomLeftRadius: s.radiusSm, borderBottomRightRadius: s.radiusSm,
+                  }} />
+                </div>
               ))}
             </div>
           ))}
         </div>
-      )}
+
+        <Pager s={s} colour={hue} fill={s.soft2} />
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <h2 style={{ margin: '0 0 30px', ...h2Style(s) }}>{s.title}</h2>
       {s.v1 && (
         <div style={{ display: 'grid', gridTemplateColumns: s.g2, gap: '0 44px' }}>
           {s.repFlat.map((it, i) => (
@@ -971,57 +1504,208 @@ function Gallery({ s }) {
       }}>{label}</span>
     </div>
   )
+  // v0 — Gallery layout 1 (§10.2 reference design): a stack of media-source
+  // rows on the left, the active source's viewer and its thumbnail strip on
+  // the right. Only the first row is open; the rest offer a "+".
+  if (s.v0) {
+    const arrow = (icon) => (
+      <span style={{
+        width: 30, height: 30, borderRadius: '999px', background: s.deep, color: s.deepFg,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+      }}>{icon}</span>
+    )
+
+    const sources = (
+      <div style={col(s.mob ? '12px' : '18px')}>
+        {s.gallerySources.map((g, i) => (
+          <div key={i} style={{
+            ...row('16px'),
+            background: g.on ? s.pillBg : 'transparent',
+            color: g.on ? contrastInk(s.pillBg) : s.tx,
+            border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR,
+            padding: s.mob ? '8px 14px 8px 8px' : '10px 20px 10px 10px',
+            boxShadow: g.on ? hard(s, s.ac, 4, 5) : 'none',
+          }}>
+            <span style={{
+              width: s.mob ? 34 : 44, height: s.mob ? 34 : 44, flex: 'none',
+              borderRadius: s.radiusSm, background: g.bg, color: g.fg,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            }}><ImageIcon size={s.mob ? 16 : 20} /></span>
+            <span style={labelStyle(s, s.labelMd, {
+              flex: 1, color: g.on ? s.pillFg : g.ink,
+            })}>{g.label}</span>
+            {g.on ? <X size={20} strokeWidth={2.4} /> : <Plus size={20} strokeWidth={2.4} />}
+          </div>
+        ))}
+      </div>
+    )
+
+    const viewer = (
+      <div style={col('14px')}>
+        <div style={row('12px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
+          <span style={row('8px', labelStyle(s, s.eyebrow, { color: s.ac }))}>
+            <ArrowLeft size={13} /> Back to beginning
+          </span>
+          <span style={col('2px', { alignItems: 'flex-end' })}>
+            <span style={labelStyle(s, s.eyebrow, { color: s.tx })}>{s.brand}</span>
+            <span style={labelStyle(s, s.eyebrow, { color: s.muted })}>Gallery</span>
+          </span>
+        </div>
+
+        <div style={{
+          position: 'relative', background: s.ac, borderRadius: s.radius,
+          padding: s.mob ? '10px' : '14px', ...row('12px', { alignItems: 'stretch' }),
+        }}>
+          <Grain s={s} opacity={0.2} radius={s.radius} />
+          <div style={{
+            flex: 1, minWidth: 0, aspectRatio: '4 / 3.4', borderRadius: s.radiusSm,
+            overflow: 'hidden', position: 'relative',
+          }}><Photo s={s} initialsSize={52} /></div>
+          <div style={col('10px', { flex: 'none', alignItems: 'center', color: s.acFg, position: 'relative' })}>
+            <GlobeMark size={18} color={s.acFg} />
+            <span style={labelStyle(s, s.eyebrow, { writingMode: 'vertical-rl', letterSpacing: '0.1em' })}>
+              Gallery
+            </span>
+          </div>
+          <div style={row('8px', { position: 'absolute', right: '18px', bottom: '18px' })}>
+            {arrow(<ArrowLeft size={14} />)}{arrow(<ArrowRight size={14} />)}
+          </div>
+        </div>
+
+        <div style={row('10px', { overflow: 'hidden' })}>
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <span key={i} style={{
+              flex: 1, minWidth: 0, aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
+              border: `${s.bw} solid ${i === 3 ? s.pillBg : s.ac}`,
+            }}><Photo s={s} initialsSize={12} /></span>
+          ))}
+        </div>
+      </div>
+    )
+
+    return (
+      <div style={{
+        display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '0.85fr 1.15fr',
+        gap: s.gGap, alignItems: 'start',
+      }}>
+        <div style={col(s.mob ? '20px' : '30px')}>
+          <div style={col('12px')}>
+            <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>Media</span>
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
+              letterSpacing: s.dls, color: s.ac,
+            }}>{s.title}</h2>
+          </div>
+          {sources}
+        </div>
+        {viewer}
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>
-      {s.v0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: s.g3, gap: '14px' }}>
-          {s.gal.map((l) => tile(l, '4 / 3'))}
-        </div>
-      )}
-      {s.v1 && (
-        <div style={row('14px', { overflow: 'hidden', alignItems: 'stretch' })}>
-          {s.gal4.map((l) => tile(l, '3 / 4', { flex: 1, minWidth: '120px' }))}
-        </div>
-      )}
+      <div style={row('14px', { overflow: 'hidden', alignItems: 'stretch' })}>
+        {s.gal4.map((l) => tile(l, '3 / 4', { flex: 1, minWidth: '120px' }))}
+      </div>
     </div>
   )
 }
 
+// v0 — Booking Calendar layout 1 · Scheduler (§10.2 reference design): a
+// bordered panel split between the month grid and a stack of polaroids, with
+// the resulting enquiry line along the foot.
 function Calendar({ s }) {
   if (s.v0) {
-    return (
-      <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '48px', alignItems: 'center' }}>
-        <div style={col('16px', { alignItems: 'flex-start' })}>
-          <span style={kickerStyle(s)}>Booking calendar</span>
-          <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.04 }}>{s.title}</h2>
-          <p style={{ margin: 0, fontSize: '15px', color: s.muted, lineHeight: 1.6 }}>{s.calPara}</p>
-          <span style={ctaPrimary(s)}>{s.calCta}</span>
+    const nav = (icon) => (
+      <span style={{
+        width: s.mob ? 30 : 40, height: s.mob ? 30 : 40, flex: 'none', borderRadius: s.radiusSm,
+        background: s.pillBg, color: contrastInk(s.pillBg), border: `${s.bw} solid ${s.tx}`,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+      }}>{icon}</span>
+    )
+
+    const grid = (
+      <div style={col(s.mob ? '14px' : '20px', { padding: s.mob ? '16px' : '24px' })}>
+        <div style={row('12px', { justifyContent: 'space-between' })}>
+          {nav(<ArrowLeft size={15} />)}
+          <span style={{ fontFamily: s.display, fontSize: s.dispSm, letterSpacing: s.dls, color: s.ac }}>
+            {s.calMonth}
+          </span>
+          {nav(<ArrowRight size={15} />)}
         </div>
-        <div style={{ border: `1.5px solid ${s.line}`, borderRadius: s.radius, padding: '20px' }}>
-          <div style={row('12px', { justifyContent: 'space-between', marginBottom: '14px' })}>
-            <span style={{ fontFamily: s.display, fontSize: '18px', letterSpacing: s.dls }}>{s.monthLabel}</span>
-            <span style={row('8px', { color: s.muted })}>
-              <ChevronLeft size={12} style={{ cursor: 'pointer' }} />
-              <ChevronRight size={12} style={{ cursor: 'pointer' }} />
-            </span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: s.mob ? '4px' : '8px' }}>
+          {s.calDays.map((d) => (
+            <span key={d} style={{
+              textAlign: 'center', fontFamily: s.body, fontSize: s.eyebrow, color: s.muted, paddingBottom: '4px',
+            }}>{d}</span>
+          ))}
+          {s.sched.map((c, i) => (
+            <span key={i} style={{
+              aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: s.body, fontSize: s.labelXs, borderRadius: s.radiusSm,
+              border: c.d === '' ? 'none' : `${c.on ? s.bw : '1px'} solid ${c.on ? s.tx : s.line2}`,
+              background: c.on ? s.ac : 'transparent', color: c.on ? s.acFg : s.tx,
+              boxShadow: c.on ? hard(s, s.tx, 2, 2) : 'none', cursor: c.d === '' ? 'default' : 'pointer',
+            }}>{c.d}</span>
+          ))}
+        </div>
+      </div>
+    )
+
+    const stack = (
+      <div style={{
+        position: 'relative', padding: s.mob ? '20px' : '34px',
+        minHeight: s.mob ? '260px' : '340px', display: 'flex',
+        alignItems: 'center', justifyContent: 'center',
+      }}>
+        {[2, 1, 0].map((k) => (
+          <div key={k} style={{
+            position: k === 0 ? 'relative' : 'absolute',
+            width: s.mob ? '70%' : '62%',
+            transform: `${tilt(s, -6 + k * 5)} translate(${k * -10}px, ${k * 6}px)`,
+            background: s.paper, borderRadius: s.radiusSm, boxShadow: soft(s),
+            padding: s.mob ? '8px 8px 22px' : '12px 12px 30px', zIndex: 3 - k,
+          }}>
+            <div style={{ aspectRatio: '4 / 4.4', overflow: 'hidden', borderRadius: '3px' }}>
+              <Photo s={s} initialsSize={34} />
+            </div>
+            {k === 0 && (
+              <span style={row('6px', {
+                position: 'absolute', right: '14px', bottom: '9px', color: s.paperFg,
+              })}>
+                <span style={labelStyle(s, '9px')}>{s.location}</span>
+                <GlobeMark size={11} color={s.paperFg} />
+              </span>
+            )}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
-            {s.cal.map((c, i) => (
-              <span key={i} style={{
-                aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '11px', fontWeight: 600, borderRadius: s.radiusSm,
-                background: c.bg, color: c.fg,
-              }}>{c.d}</span>
-            ))}
+        ))}
+        <SealBadge s={s} hue={s.chips[4 % s.chips.length].bg} size={s.mob ? 66 : 94} tilt={-20}
+                   style={{ right: s.mob ? '6%' : '10%', bottom: s.mob ? '6%' : '8%', zIndex: 4 }} />
+      </div>
+    )
+
+    return (
+      <div style={{ position: 'relative' }}>
+        <TornEdge s={s} side="top" height={30} />
+        <div style={{
+          border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius, overflow: 'hidden',
+        }}>
+          <div style={{
+            display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
+            borderBottom: `${s.bw} solid ${s.tx}`,
+          }}>
+            {grid}
+            <div style={{
+              borderLeft: s.narrow ? 'none' : `${s.bw} solid ${s.tx}`,
+              borderTop: s.narrow ? `${s.bw} solid ${s.tx}` : 'none',
+            }}>{stack}</div>
           </div>
-          <div style={row('16px', { marginTop: '14px', fontSize: '11px', fontWeight: 600, color: s.muted })}>
-            <span style={row('6px')}>
-              <span style={{ width: '9px', height: '9px', borderRadius: '999px', background: s.ac }} />Booked
-            </span>
-            <span style={row('6px')}>
-              <span style={{ width: '9px', height: '9px', borderRadius: '999px', background: s.soft2 }} />Held
-            </span>
+          <div style={{ padding: s.mob ? '12px 16px' : '16px 24px' }}>
+            <span style={labelStyle(s, s.eyebrow, {
+              color: s.ac, letterSpacing: '0.12em', whiteSpace: 'normal',
+            })}>{s.calEnquiry}</span>
           </div>
         </div>
       </div>
@@ -1056,31 +1740,93 @@ function EventsMap({ s }) {
     }} />
   ))
 
+  // v0 — Events Map layout 1 · Compact tile (§10.2 reference design): the
+  // coverage tile beside the upcoming-gigs list, banded top and bottom with
+  // full-bleed checkerboard.
   if (s.v0) {
-    return (
-      <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '44px', alignItems: 'center' }}>
-        <div style={col('14px')}>
-          <span style={kickerStyle(s)}>Events map</span>
-          <h2 style={{ margin: '0 0 8px', ...h2Style(s), lineHeight: 1.04 }}>{s.title}</h2>
-          {s.cities.map((c, i) => (
-            <div key={i} style={row('12px', {
-              alignItems: 'baseline', padding: '10px 0', borderBottom: `1.5px solid ${s.line}`,
-            })}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: s.ac, width: '56px', flex: 'none' }}>{c.date}</span>
-              <span style={{ fontSize: '14px', fontWeight: 700, flex: 1, minWidth: 0 }}>{c.city}</span>
-              <span style={{ fontSize: '12px', color: s.muted }}>{c.venue}</span>
-            </div>
-          ))}
-        </div>
+    const tile = (
+      <div style={{
+        border: `${s.bw} solid ${s.ac}`, borderRadius: s.radiusSm, overflow: 'hidden',
+        boxShadow: hard(s, s.ac, 5, 5), ...col('0'),
+      }}>
         <div style={{
-          background: s.soft, aspectRatio: '4 / 3.2', borderRadius: s.radius,
-          position: 'relative', overflow: 'hidden',
+          position: 'relative', aspectRatio: '4 / 3.1', background: s.paper,
+          backgroundImage:
+            `linear-gradient(${s.ac55} 1px, transparent 1px), linear-gradient(90deg, ${s.ac55} 1px, transparent 1px)`,
+          backgroundSize: '38px 38px',
         }}>
           {pins}
-          <span style={{
-            position: 'absolute', right: '14px', bottom: '12px', fontSize: '10px', fontWeight: 700,
-            letterSpacing: '1.4px', textTransform: 'uppercase', color: s.muted,
-          }}>UK &amp; Ireland</span>
+          <Grain s={s} opacity={0.25} />
+        </div>
+        <div style={col('6px', { background: s.deep, color: s.deepFg, padding: s.mob ? '14px' : '18px' })}>
+          <span style={row('10px')}>
+            <GlobeMark size={16} color={s.ac} />
+            <span style={{ fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls }}>{s.mapBase}</span>
+          </span>
+          <span style={labelStyle(s, s.eyebrow, { color: s.pillBg, whiteSpace: 'normal' })}>{s.mapTerms}</span>
+        </div>
+      </div>
+    )
+
+    const list = (
+      <div style={{
+        border: `${s.bw} solid ${s.ac}`, borderRadius: s.radiusSm, boxShadow: hard(s, s.pillBg, 5, 5),
+        padding: s.mob ? '14px' : '20px', ...col(s.mob ? '10px' : '14px'),
+      }}>
+        <span style={labelStyle(s, s.eyebrow, { color: s.muted, letterSpacing: '0.14em' })}>
+          Upcoming gigs · {s.gigs.length}
+        </span>
+        {s.gigs.map((g, i) => (
+          <div key={i} style={{
+            ...row('12px', { justifyContent: 'space-between' }),
+            border: `${s.bw} solid ${g.hue}`, borderRadius: s.radiusSm,
+            padding: s.mob ? '10px 12px' : '12px 16px',
+          }}>
+            <span style={col('4px', { minWidth: 0 })}>
+              <span style={{
+                fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls, color: g.hue,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{g.venue}</span>
+              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8 }}>
+                {g.city} · {g.time}
+              </span>
+            </span>
+            <span style={col('0', {
+              alignItems: 'center', flex: 'none', border: `${s.bw} solid ${g.hue}`,
+              borderRadius: s.radiusSm, padding: '5px 10px', lineHeight: 1.1,
+            })}>
+              <span style={labelStyle(s, '10px')}>{g.month}</span>
+              <span style={labelStyle(s, s.labelXs)}>{g.day}</span>
+            </span>
+          </div>
+        ))}
+        <Pager s={s} colour={s.ac} fill={s.soft2} />
+      </div>
+    )
+
+    return (
+      <div style={{ position: 'relative', ...col(s.mob ? '20px' : '28px') }}>
+        <Checkerboard s={s} cell={12} colour={s.paper}
+                      style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'top') }} />
+        <Checkerboard s={s} cell={12} colour={s.paper}
+                      style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'bottom') }} />
+
+        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
+          <div style={col('10px')}>
+            <span style={labelStyle(s, s.eyebrow, { color: s.tx, letterSpacing: '0.16em' })}>Shows/coverage</span>
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
+              letterSpacing: s.dls, color: s.ac,
+            }}>{s.title}</h2>
+          </div>
+          <span style={labelStyle(s, s.labelMd, { color: s.pillBg })}>{s.mapRadius}</span>
+        </div>
+
+        <div style={{
+          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1.15fr',
+          gap: s.gGap, alignItems: 'start',
+        }}>
+          {tile}{list}
         </div>
       </div>
     )
@@ -1099,17 +1845,60 @@ function EventsMap({ s }) {
   )
 }
 
+// v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
+// quote card sitting on two rotated coloured cards, flanked by arrows.
 function Testimonials({ s }) {
   if (s.v0) {
     const q = s.quotes[0]
+    const arrow = (icon) => (
+      <span style={{
+        width: s.mob ? 32 : 42, height: s.mob ? 32 : 42, flex: 'none', borderRadius: s.radiusSm,
+        background: s.pillBg, color: contrastInk(s.pillBg), border: `${s.bw} solid ${s.tx}`,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+      }}>{icon}</span>
+    )
+    const backing = (hue, deg, dx, dy) => (
+      <div style={{
+        position: 'absolute', inset: 0, background: hue, borderRadius: s.radius,
+        transform: `${tilt(s, deg)} translate(${dx}px, ${dy}px)`,
+      }} />
+    )
+
     return (
-      <div style={col('22px', { alignItems: 'center', textAlign: 'center', maxWidth: '780px', margin: '0 auto' })}>
-        {/* Typographic quote mark with a deliberate optical trim (§3.6) */}
-        <span style={{ fontFamily: s.display, fontSize: '52px', color: s.ac, lineHeight: 0, height: '22px' }}>“</span>
-        <p style={{ margin: 0, fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1.14 }}>{s.quote1}</p>
-        <div>
-          <div style={{ fontSize: '13px', fontWeight: 700 }}>{q.who}</div>
-          <div style={{ fontSize: '12px', color: s.muted }}>{q.role}</div>
+      <div style={{ position: 'relative' }}>
+        <TornEdge s={s} side="top" height={30} />
+        <Grain s={s} opacity={0.18} />
+
+        <div style={row(s.mob ? '10px' : '24px', { justifyContent: 'center', position: 'relative' })}>
+          {arrow(<ArrowLeft size={15} />)}
+          <div style={{
+            position: 'relative', flex: 1, maxWidth: '660px',
+            padding: s.mob ? '4px' : '10px',
+          }}>
+            {backing(s.chips[3 % s.chips.length].bg, -1.6, 0, -8)}
+            {backing(s.chips[1 % s.chips.length].bg, 1.8, -8, 4)}
+            <div style={{
+              position: 'relative', background: s.paper, color: s.paperFg,
+              border: `${s.bw} solid ${s.paperFg}`, borderRadius: s.radius,
+              padding: s.mob ? '22px' : '34px', minHeight: s.mob ? '220px' : '300px',
+              ...col(s.mob ? '14px' : '18px'),
+            }}>
+              <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>{q.when}</span>
+              <p style={{
+                margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.1, letterSpacing: s.dls,
+              }}>{s.quote1}</p>
+              <span style={labelStyle(s, s.labelXs)}>{q.who} · {q.role}</span>
+              <div style={row('10px', { marginTop: 'auto', paddingTop: '18px', flexWrap: 'wrap' })}>
+                {[[q.who, s.ac], [q.role, s.pillBg]].map(([l, hue], i) => (
+                  <span key={i} style={{
+                    background: hue, color: contrastInk(hue), borderRadius: s.btnR,
+                    padding: '6px 14px', ...labelStyle(s, s.eyebrow),
+                  }}>{l}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+          {arrow(<ArrowRight size={15} />)}
         </div>
       </div>
     )
@@ -1145,23 +1934,104 @@ function EnquiryForm({ s }) {
     }}>{s.formBtn}</span>
   )
 
+  // v0 — Enquiry Form layout 1 · Split context + form (§10.2 reference
+  // design): an olive context panel welded to a mustard form panel inside one
+  // rounded, clipped shell.
   if (s.v0) {
+    const ctxBg = s.chips[3 % s.chips.length].bg      // Retro: olive
+    const ctxFg = contrastInk(ctxBg)
+    const formBg = s.pillBg
+    const formFg = contrastInk(formBg)
+    // The controls sit on the pill hue, so their ink is the accent only while
+    // it stays legible against it — s.pillFg already encodes that fallback.
+    const ctlInk = s.pillFg
+
+    const field = (f) => (
+      <div key={f.l} style={col('6px')}>
+        <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>{f.l}</span>
+        <span style={{
+          border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR,
+          padding: s.mob ? '10px 16px' : '13px 20px',
+          fontFamily: s.body, fontSize: s.labelXs, color: ctlInk,
+        }}>{f.p}</span>
+      </div>
+    )
+
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '48px', alignItems: 'start' }}>
-        <div style={col('16px')}>
-          <span style={kickerStyle(s)}>Enquiries</span>
-          <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.04 }}>{s.title}</h2>
-          <p style={{ margin: 0, fontSize: '15px', color: s.muted, lineHeight: 1.6 }}>{s.formPara}</p>
-          <span style={{ fontSize: '13px', fontWeight: 600 }}>{s.formEmail}</span>
-        </div>
-        <div style={col('12px')}>
-          <div style={{ display: 'grid', gridTemplateColumns: s.g2, gap: '12px' }}>
-            <input style={inputStyle(s)} placeholder="Your name" readOnly />
-            <input style={inputStyle(s)} placeholder="Email" readOnly />
+      <div style={{
+        borderRadius: s.radius, overflow: 'hidden', display: 'grid',
+        gridTemplateColumns: s.narrow ? '1fr' : '0.62fr 1.38fr',
+      }}>
+        <div style={{
+          position: 'relative', background: ctxBg, color: ctxFg,
+          padding: s.mob ? '24px' : '34px', ...col(s.mob ? '18px' : '26px'),
+        }}>
+          <Grain s={s} opacity={0.22} />
+          <span style={row('12px', { position: 'relative' })}>
+            <span style={{
+              width: 42, height: 42, flex: 'none', borderRadius: '999px', overflow: 'hidden',
+            }}><Photo s={s} initialsSize={15} /></span>
+            <span style={col('3px')}>
+              <span style={{ fontFamily: s.display, fontSize: s.labelXs, letterSpacing: s.dls }}>{s.brand}</span>
+              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8 }}>{s.kicker}</span>
+            </span>
+          </span>
+          <h2 style={{
+            margin: 0, position: 'relative', fontFamily: s.display, fontSize: s.dispSm,
+            lineHeight: 1.06, letterSpacing: s.dls,
+          }}>{s.title}</h2>
+          <div style={col('10px', { position: 'relative' })}>
+            {s.formPromises.map((p) => (
+              <span key={p} style={row('8px', {
+                alignItems: 'flex-start', fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.4,
+              })}>
+                <Check size={13} style={{ flex: 'none', marginTop: '2px', color: formBg }} />
+                {p}
+              </span>
+            ))}
           </div>
-          <input style={inputStyle(s)} placeholder="Event date &amp; venue" readOnly />
-          <textarea rows={4} style={{ ...inputStyle(s), resize: 'none' }} placeholder="Tell me about the event…" readOnly />
-          {submit}
+        </div>
+
+        <div style={{
+          position: 'relative', background: formBg, color: formFg,
+          padding: s.mob ? '24px' : '34px', ...col(s.mob ? '14px' : '18px'),
+        }}>
+          <Grain s={s} opacity={0.22} />
+          <div style={{
+            position: 'relative', display: 'grid',
+            gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr', gap: s.mob ? '14px' : '18px',
+          }}>
+            {s.formFields.map(field)}
+          </div>
+          <div style={col('6px', { position: 'relative' })}>
+            <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>Event type</span>
+            <div style={row('8px', { flexWrap: 'wrap' })}>
+              {s.formTypes.map((t, i) => (
+                <span key={t} style={{
+                  border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, padding: '4px 12px',
+                  background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : formFg,
+                  cursor: 'pointer', ...labelStyle(s, s.eyebrow),
+                }}>{t}</span>
+              ))}
+            </div>
+          </div>
+          <div style={col('6px', { position: 'relative' })}>
+            <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>Message</span>
+            <span style={{
+              display: 'block', border: `${s.bw} solid ${formFg}`, borderRadius: s.radiusSm,
+              padding: s.mob ? '14px 16px' : '18px 20px', minHeight: s.mob ? '90px' : '110px',
+              fontFamily: s.body, fontSize: s.labelXs, color: ctlInk,
+            }}>{s.formMessage}</span>
+          </div>
+          <span style={{
+            position: 'relative', ...row('8px', { justifyContent: 'center' }),
+            background: s.ac, color: s.acFg, border: `${s.bw} solid ${formFg}`,
+            borderRadius: s.btnR, padding: s.mob ? '12px' : '14px', cursor: 'pointer',
+            boxShadow: hard(s, ctxBg, 3, 4), ...labelStyle(s, s.labelMd),
+          }}>
+            {s.formBtn}
+            <Asterisk size={15} color={s.acFg} />
+          </span>
         </div>
       </div>
     )
@@ -1178,31 +2048,63 @@ function EnquiryForm({ s }) {
   )
 }
 
+// §10.2 reference design: wordmark and statement to the left of a full-height
+// rule, the two link columns and the Book Now pill to its right, the seal
+// straddling the divide, and the small print under a hairline.
 function Footer({ s }) {
+  const linkCols = (
+    <div style={row(s.mob ? '30px' : '60px', { alignItems: 'flex-start', flexWrap: 'wrap' })}>
+      {s.footerLinks.map((colLinks, i) => (
+        <nav key={i} style={col('12px')}>
+          {colLinks.map((l) => (
+            <a key={l} href="#" style={labelStyle(s, s.labelMd, { color: s.ac })}>{l}</a>
+          ))}
+        </nav>
+      ))}
+    </div>
+  )
+
   return (
-    <div style={col('22px', { alignItems: 'center', textAlign: 'center' })}>
-      <span style={{ fontFamily: s.display, fontSize: '26px', letterSpacing: s.dls }}>{s.brand}</span>
-      <div style={row('26px', { flexWrap: 'wrap', justifyContent: 'center' })}>
-        {['Music', 'Shows', 'Rates', 'Book'].map((l) => (
-          <a key={l} href="#" style={{
-            fontSize: '12px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase',
-          }}>{l}</a>
-        ))}
-      </div>
-      <div style={row('10px')}>
-        {['IG', 'SC', 'YT'].map((l) => (
-          <span key={l} className="hv-acfill" style={{
-            width: '34px', height: '34px', borderRadius: '999px', border: `1.5px solid ${s.line2}`,
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '10px', fontWeight: 800, cursor: 'pointer',
-            transition: 'background-color .15s ease, color .15s ease, border-color .15s ease',
-          }}>{l}</span>
-        ))}
-      </div>
+    <div style={col(s.mob ? '24px' : '34px')}>
       <div style={{
-        fontSize: '12px', color: s.muted, borderTop: `1.5px solid ${s.line}`,
-        paddingTop: '18px', width: '100%',
-      }}>{s.copyright}</div>
+        position: 'relative', display: 'grid',
+        gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
+        gap: s.mob ? '28px' : s.gGap,
+      }}>
+        <div style={col(s.mob ? '20px' : '34px', {
+          paddingRight: s.narrow ? 0 : s.gGap,
+          borderRight: s.narrow ? 'none' : `1px solid ${s.line2}`,
+        })}>
+          <span style={row('14px')}>
+            <GlobeMark size={20} color={s.ac} />
+            <span style={labelStyle(s, s.labelMd, { color: s.ac })}>{s.brand}</span>
+            <span style={{ height: '1.5px', background: s.ac, flex: 1, maxWidth: '140px' }} />
+          </span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.06,
+            letterSpacing: s.dls, color: s.ac, maxWidth: '14ch',
+          }}>{s.footerStatement}</h2>
+        </div>
+
+        <div style={col(s.mob ? '20px' : '30px', {
+          alignItems: 'flex-start', paddingLeft: s.narrow ? 0 : s.gGap,
+        })}>
+          {linkCols}
+          <BookPill s={s} />
+        </div>
+
+        {!s.narrow && (
+          <SealBadge s={s} hue={s.chips[0].bg} size={104} tilt={-16}
+                     style={{ left: '50%', top: '6%', marginLeft: '-52px', zIndex: 2 }} />
+        )}
+      </div>
+
+      <span style={{ height: '1px', background: s.line2, width: '100%' }} />
+
+      <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
+        <span style={labelStyle(s, s.labelMd, { color: s.pillBg })}>{s.copyright}</span>
+        <span style={labelStyle(s, s.labelMd, { color: s.pillBg })}>{s.footerCredit}</span>
+      </div>
     </div>
   )
 }
@@ -1212,9 +2114,13 @@ function Footer({ s }) {
  * ------------------------------------------------------------------ */
 
 export default function EncoreSection({ s }) {
+  // §10.2 — the hero is the one full-bleed composition: the photograph runs to
+  // the section edges and the layout supplies its own insets.
+  const bleed = s.hd && s.v0 && !s.flatHeader && s.retro
   return (
     <div style={{
-      background: s.bg, color: s.tx, fontFamily: s.body, padding: s.pad,
+      background: s.bg, color: s.tx, fontFamily: s.body, padding: bleed ? 0 : s.pad,
+      position: 'relative',
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,
     }}>
