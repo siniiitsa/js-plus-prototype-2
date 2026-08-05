@@ -204,6 +204,9 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
   vm.navMode = cv('navMode', 'sections')
   vm.align = cv('align', 'left')
   vm.image = c.image
+  // Multi-photo sections (gallery strip, media artwork). Slot n fills tile n;
+  // an empty slot falls through to the section's initials placeholder.
+  vm.images = Array.isArray(c.images) ? c.images : []
 
   // Nav collapses to the fixed triple on mobile regardless of navMode (§10.2).
   const MINIMAL = ['Music', 'Shows', 'Book']
@@ -564,29 +567,38 @@ const MENU_ITEM = { fontSize: '13px', fontWeight: 500, padding: '8px 10px', bord
  * Nothing here may originate a network request.
  * ------------------------------------------------------------------ */
 
+// Shared by the single- and multi-photo controls. Rejects anything that is not
+// a PNG/JPG under 4 MB and hands back a data URL — never a network request.
+function readImage(file, onOk, onToast) {
+  if (!file) return
+  if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+    onToast('Please choose a PNG or JPG'); return
+  }
+  if (file.size > 4 * 1024 * 1024) {
+    onToast('That image is too large — 4 MB maximum'); return
+  }
+  const r = new FileReader()
+  r.onload = () => onOk(r.result)
+  r.readAsDataURL(file)
+}
+
+const FILE_INPUT = {
+  position: 'absolute', width: 1, height: 1, padding: 0, margin: -1,
+  overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap', border: 0,
+}
+
 function ImageField({ value, onChange, onToast }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
 
-  const take = (file) => {
-    if (!file) return
-    if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-      onToast('Please choose a PNG or JPG'); return
-    }
-    if (file.size > 4 * 1024 * 1024) {
-      onToast('That image is too large — 4 MB maximum'); return
-    }
-    const r = new FileReader()
-    r.onload = () => onChange(r.result)
-    r.readAsDataURL(file)
-  }
+  const take = (file) => readImage(file, onChange, onToast)
 
   return (
     <div onClick={stopE}>
       <input
         ref={inputRef} type="file" accept="image/png,image/jpeg"
         onChange={(e) => { take(e.target.files?.[0]); e.target.value = '' }}
-        style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap', border: 0 }}
+        style={FILE_INPUT}
       />
       {value ? (
         <div>
@@ -622,6 +634,87 @@ function ImageField({ value, onChange, onToast }) {
           <span style={{ fontSize: '10px', color: '#98958A' }}>PNG or JPG · from your device</span>
         </div>
       )}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6 — the multi-photo variant, for the sections whose design shows
+ * several images at once (the gallery strip, the media artwork column).
+ * Order is meaningful: slot n fills the nth tile of the layout.
+ * ------------------------------------------------------------------ */
+
+function ImagesField({ value, max, onChange, onToast }) {
+  const inputRef = useRef(null)
+  const [over, setOver] = useState(false)
+  const list = Array.isArray(value) ? value : []
+  const room = max - list.length
+
+  const take = (files) => {
+    const chosen = [...(files || [])].slice(0, room)
+    if (!chosen.length) return
+    if ([...(files || [])].length > room) onToast(`Room for ${max} photos here`)
+    // Each read is async, so accumulate against the latest list rather than a
+    // stale copy — otherwise a multi-select drops all but the last file.
+    let next = list
+    chosen.forEach((f) => readImage(f, (url) => { next = [...next, url]; onChange(next) }, onToast))
+  }
+
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+
+  return (
+    <div onClick={stopE}>
+      <input
+        ref={inputRef} type="file" accept="image/png,image/jpeg" multiple
+        onChange={(e) => { take(e.target.files); e.target.value = '' }}
+        style={FILE_INPUT}
+      />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+        {list.map((src, i) => (
+          <div key={i} style={{ position: 'relative' }}>
+            <img src={src} alt="" style={{
+              height: '62px', width: '100%', objectFit: 'cover', borderRadius: '9px',
+              border: '1px solid #E2DFD7', display: 'block',
+            }} />
+            <span style={{
+              position: 'absolute', left: '4px', bottom: '4px', background: 'rgba(27,26,23,.72)',
+              color: '#FFFFFF', fontSize: '9px', fontWeight: 700, borderRadius: '5px', padding: '1px 5px',
+            }}>{i + 1}</span>
+            <button
+              type="button" aria-label={`Remove photo ${i + 1}`}
+              onClick={(e) => { stopE(e); removeAt(i) }}
+              className="hover:bg-destructive/10"
+              style={{
+                position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px',
+                borderRadius: '999px', border: '1px solid #E2DFD7', background: '#FFFFFF',
+                color: '#B3261E', cursor: 'pointer', display: 'inline-flex',
+                alignItems: 'center', justifyContent: 'center', padding: 0,
+              }}
+            ><X size={11} /></button>
+          </div>
+        ))}
+
+        {room > 0 && (
+          <div
+            onClick={() => inputRef.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setOver(true) }}
+            onDragLeave={() => setOver(false)}
+            onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
+            className="hover:border-foreground"
+            style={{
+              border: `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`, borderRadius: '9px', height: '62px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              gap: '2px', cursor: 'pointer',
+            }}
+          >
+            <Upload size={14} style={{ color: '#B9B6AA' }} />
+            <span style={{ fontSize: '10px', fontWeight: 600, color: '#5B5850' }}>Add</span>
+          </div>
+        )}
+      </div>
+      <p style={{ margin: '6px 0 0', fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · PNG or JPG · from your device
+      </p>
     </div>
   )
 }
@@ -706,9 +799,14 @@ function EditPanel({ sec, vm, sets, api, artistName }) {
                   const set = (v) => api.setContent(sec.id, f.k, v)
                   return (
                     <div key={f.k}>
-                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: '5px' }}>{f.l}</Label>
+                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint ? '2px' : '5px' }}>{f.l}</Label>
+                      {f.hint && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{f.hint}</p>
+                      )}
                       {f.type === 'image' ? (
                         <ImageField value={sec.c[f.k]} onChange={(v) => set(v)} onToast={api.toast} />
+                      ) : f.type === 'images' ? (
+                        <ImagesField value={sec.c[f.k]} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>

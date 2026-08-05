@@ -423,9 +423,12 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // `backdrop` is the empty state for a full-bleed photographic slot: a dark
 // panel rather than a giant set of initials, so the overlaid type still reads
 // the way it does over a real photograph.
-function Photo({ s, style, initialsSize = 44, backdrop = false }) {
-  if (s.image) {
-    return <img src={s.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
+// `src` lets a layout address one slot of a multi-photo section; it falls back
+// to the section's single photo, then to the initials placeholder.
+function Photo({ s, style, initialsSize = 44, backdrop = false, src }) {
+  const url = src ?? s.image
+  if (url) {
+    return <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
   }
   if (backdrop) {
     return (
@@ -1033,7 +1036,7 @@ function Media({ s }) {
               <span style={{
                 width: 42, height: 42, flex: 'none', borderRadius: s.radiusSm, overflow: 'hidden',
                 border: `${s.bw} solid ${fg}`,
-              }}><Photo s={s} initialsSize={14} /></span>
+              }}><Photo s={s} initialsSize={14} src={s.images[i]} /></span>
             </div>
           )
         })}
@@ -1056,7 +1059,7 @@ function Media({ s }) {
           <div style={{
             width: '68%', aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
             position: 'relative',
-          }}><Photo s={s} initialsSize={44} /></div>
+          }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
           <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
             <span style={{ fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls }}>{np.track}</span>
             <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.7 }}>{np.by}</span>
@@ -1373,8 +1376,8 @@ function Pricing({ s }) {
 // A row of numbered page buttons, shared by Repertoire and Events Map.
 function Pager({ s, colour, fill }) {
   const c = colour || s.tx
-  const btn = (child, on, ends) => (
-    <span style={{
+  const btn = (key, child, on, ends) => (
+    <span key={key} style={{
       minWidth: s.mob ? 30 : 42, height: s.mob ? 30 : 42, padding: '0 8px',
       borderRadius: s.radiusSm, border: `${s.bw} solid ${on ? s.pillBg : c}`,
       background: on ? s.pillBg : (ends ? (fill || 'transparent') : 'transparent'),
@@ -1385,9 +1388,9 @@ function Pager({ s, colour, fill }) {
   )
   return (
     <div style={row('8px', { flexWrap: 'wrap' })}>
-      {btn(<ArrowLeft size={14} />, false, true)}
-      {s.pages.map((p, i) => btn(p, i === 0))}
-      {btn(<ArrowRight size={14} />, false, true)}
+      {btn('prev', <ArrowLeft size={14} />, false, true)}
+      {s.pages.map((p, i) => btn(`p${i}`, p, i === 0))}
+      {btn('next', <ArrowRight size={14} />, false, true)}
     </div>
   )
 }
@@ -1493,6 +1496,11 @@ function Repertoire({ s }) {
   )
 }
 
+// Which thumbnail the strip highlights, and therefore which photo the large
+// viewer shows. §10.2 marks the fourth tile — but only once there are four
+// photos to mark, so a part-filled strip never highlights an empty slot.
+const galActive = (s) => (s.images.length > 3 ? 3 : 0)
+
 function Gallery({ s }) {
   const tile = (label, aspect, extra) => (
     <div key={label} style={{
@@ -1508,6 +1516,7 @@ function Gallery({ s }) {
   // rows on the left, the active source's viewer and its thumbnail strip on
   // the right. Only the first row is open; the rest offer a "+".
   if (s.v0) {
+    const active = galActive(s)
     const arrow = (icon) => (
       <span style={{
         width: 30, height: 30, borderRadius: '999px', background: s.deep, color: s.deepFg,
@@ -1560,7 +1569,7 @@ function Gallery({ s }) {
           <div style={{
             flex: 1, minWidth: 0, aspectRatio: '4 / 3.4', borderRadius: s.radiusSm,
             overflow: 'hidden', position: 'relative',
-          }}><Photo s={s} initialsSize={52} /></div>
+          }}><Photo s={s} initialsSize={52} src={s.images[active]} /></div>
           <div style={col('10px', { flex: 'none', alignItems: 'center', color: s.acFg, position: 'relative' })}>
             <GlobeMark size={18} color={s.acFg} />
             <span style={labelStyle(s, s.eyebrow, { writingMode: 'vertical-rl', letterSpacing: '0.1em' })}>
@@ -1576,8 +1585,8 @@ function Gallery({ s }) {
           {[0, 1, 2, 3, 4, 5, 6].map((i) => (
             <span key={i} style={{
               flex: 1, minWidth: 0, aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
-              border: `${s.bw} solid ${i === 3 ? s.pillBg : s.ac}`,
-            }}><Photo s={s} initialsSize={12} /></span>
+              border: `${s.bw} solid ${i === active ? s.pillBg : s.ac}`,
+            }}><Photo s={s} initialsSize={12} src={s.images[i]} /></span>
           ))}
         </div>
       </div>

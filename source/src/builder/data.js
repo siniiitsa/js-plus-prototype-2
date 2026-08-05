@@ -383,12 +383,15 @@ export const FIELDS = {
     ] },
   ],
   bio: [
+    { k: 'image',     l: 'Photo', type: 'image', hint: 'Fills the tilted portrait card.' },
     { k: 'heading',   l: 'Heading', d: 'Reads the room.' },
     { k: 'statement', l: 'Statement (centred layout)', def: 'statement' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
   ],
   media: [
+    { k: 'images',  l: 'Artwork', type: 'images', max: 6,
+      hint: 'Photos 1–5 are the track thumbnails, in order. Photo 6 is the large now-playing sleeve.' },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },
     { k: 'track',   l: 'Featured track', d: 'Late Lights' },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
@@ -420,9 +423,12 @@ export const FIELDS = {
     { k: 'heading', l: 'Heading', d: '240 Songs' },
   ],
   gallery: [
+    { k: 'images',  l: 'Photos', type: 'images', max: 7,
+      hint: 'One per tile in the strip. The highlighted tile is the one shown in the large viewer.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
   ],
   calendar: [
+    { k: 'image',   l: 'Photo', type: 'image', hint: 'Fills the polaroid stack beside the month.' },
     { k: 'heading', l: 'Heading', d: 'Availability' },
     { k: 'para',    l: 'Paragraph', type: 'area', def: 'calPara' },
     { k: 'cta',     l: 'Button', d: 'Check a date' },
@@ -438,6 +444,7 @@ export const FIELDS = {
     { k: 'role',    l: 'Role', d: 'Private host' },
   ],
   form: [
+    { k: 'image',   l: 'Photo', type: 'image', hint: 'The avatar above the heading.' },
     { k: 'heading', l: 'Heading', d: "Let's make your night unforgettable." },
     { k: 'para',    l: 'Paragraph', type: 'area', def: 'formPara' },
     { k: 'email',   l: 'Email address', d: 'bookings@kaimercer.co.uk' },
