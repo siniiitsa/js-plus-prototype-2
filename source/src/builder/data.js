@@ -25,13 +25,7 @@ export const THEMES = [
     btnR: '999px',
     bw: '2px',
     // §4.2 — [background, accent, text]
-    sets: [
-      ['#EAD7B8', '#C8461C', '#111111'], // soft beige · burnt orange · black (signature)
-      ['#FBF6EA', '#C8461C', '#C8461C'], // off-white · burnt orange · orange
-      ['#5B5E2E', '#D8A227', '#FBF6EA'], // olive · mustard · off-white
-      ['#7A58A7', '#E973A5', '#FBF6EA'], // purple · pink · off-white
-      ['#111111', '#D8A227', '#FBF6EA'], // black · mustard · off-white
-    ],
+    palette: ['#EAD7B8', '#C8461C', '#111111'], // soft beige · burnt orange · black
     tags: ['#7A58A7', '#C8461C', '#D8A227', '#5B5E2E', '#E973A5', '#111111'],
   },
   {
@@ -46,13 +40,7 @@ export const THEMES = [
     radiusSm: '4px',
     btnR: '4px',
     bw: '1.5px',
-    sets: [
-      ['#15180F', '#AFE335', '#F2FFD0'],
-      ['#2E3928', '#AFE335', '#AFE335'],
-      ['#AFE335', '#15180F', '#15180F'],
-      ['#F2FFD0', '#15180F', '#15180F'],
-      ['#F2FFD0', '#AFE335', '#15180F'],
-    ],
+    palette: ['#15180F', '#AFE335', '#F2FFD0'], // near-black · acid lime · pale lime
     tags: ['#AFE335', '#2E3928', '#15180F', '#F2FFD0'],
   },
   {
@@ -67,13 +55,7 @@ export const THEMES = [
     radiusSm: '0',
     btnR: '0',
     bw: '1.5px',
-    sets: [
-      ['#000000', '#DF262C', '#FFFFFF'],
-      ['#171716', '#DF262C', '#DF262C'],
-      ['#DF262C', '#000000', '#FFFFFF'],
-      ['#FFFFFF', '#DF262C', '#000000'], // white paper · red stamp
-      ['#171716', '#FFFFFF', '#FFFFFF'], // monochrome
-    ],
+    palette: ['#000000', '#DF262C', '#FFFFFF'], // black · stamp red · white
     tags: ['#DF262C', '#171716', '#FFFFFF', '#000000'],
   },
   {
@@ -88,13 +70,7 @@ export const THEMES = [
     radiusSm: '2px',
     btnR: '2px',
     bw: '1.5px',
-    sets: [
-      ['#F6F0E8', '#C86E52', '#141414'],
-      ['#AA958A', '#F6F0E8', '#F6F0E8'],
-      ['#141414', '#C86E52', '#F6F0E8'],
-      ['#C86E52', '#F6F0E8', '#F6F0E8'],
-      ['#E6B6A0', '#141414', '#141414'],
-    ],
+    palette: ['#F6F0E8', '#C86E52', '#141414'], // warm paper · terracotta · near-black
     tags: ['#C86E52', '#141414', '#AA958A', '#E6B6A0'],
   },
   {
@@ -109,13 +85,7 @@ export const THEMES = [
     radiusSm: '14px',
     btnR: '999px',
     bw: '1.5px',
-    sets: [
-      ['#FFFFFF', '#FF2DA0', '#6B2CFF'],
-      ['#C6F200', '#FF2DA0', '#FF2DA0'],
-      ['#FF2DA0', '#C6F200', '#FFFFFF'],
-      ['#2563FF', '#00E0C4', '#FFFFFF'],
-      ['#000000', '#FF2DA0', '#C6F200'],
-    ],
+    palette: ['#FFFFFF', '#FF2DA0', '#6B2CFF'], // white · hot pink · violet
     tags: ['#C6F200', '#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600'],
   },
 ]
@@ -325,30 +295,29 @@ export const CAL_PICKED  = 12
 export const CAL_ENQUIRY = 'Enquiry for Thursday, June 12 at 9:00pm'
 
 /* ------------------------------------------------------------------ *
- * §4.7 Starting pages — [categoryId, layoutIndex, colourSetIndex]
+ * §4.7 Starting pages — [categoryId, layoutIndex]
  * ------------------------------------------------------------------ */
 
 // "Theme Example" — a populated page the user can immediately edit.
-// The eleven sections of the §10.2 reference page, in order, each in the
-// colour set that page draws it in.
+// The eleven sections of the §10.2 reference page, in order.
 export const EXAMPLE_PAGE = [
-  ['header',       0, 0],
-  ['bio',          0, 0],
-  ['media',        0, 1],
-  ['gallery',      0, 0],
-  ['repertoire',   0, 1],
-  ['map',          0, 4],
-  ['pricing',      0, 0],
-  ['calendar',     0, 1],
-  ['form',         0, 1],
-  ['testimonials', 0, 1],
-  ['footer',       0, 1],
+  ['header',       0],
+  ['bio',          0],
+  ['media',        0],
+  ['gallery',      0],
+  ['repertoire',   0],
+  ['map',          0],
+  ['pricing',      0],
+  ['calendar',     0],
+  ['form',         0],
+  ['testimonials', 0],
+  ['footer',       0],
 ]
 
 // "Blank" — only the two mandatory sections.
 export const BLANK_PAGE = [
-  ['header', 0, 0],
-  ['footer', 0, 4],
+  ['header', 0],
+  ['footer', 0],
 ]
 
 /* ------------------------------------------------------------------ *

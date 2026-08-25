@@ -24,7 +24,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -115,15 +114,15 @@ function canMove(sections, id, dir) {
  * thumbnails (§9.1) can render a theme that is not the active one.
  * ------------------------------------------------------------------ */
 
-// The lightest colour in a set — the surface §10.2 paints its cards on, and
-// the ink for type sitting over a photographic scrim. Falls back to the Retro
-// off-white when a set is dark on dark.
+// The lightest colour in the palette — the surface §10.2 paints its cards on,
+// and the ink for type sitting over a photographic scrim. Falls back to the
+// Retro off-white when the palette is dark on dark.
 const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
 
-export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob, navSections = [] }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, navSections = [] }) {
   const T = THEMES[themeIdx]
-  const [bg, ac, tx] = T.sets[set]
+  const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
   const cased = (t) => caseText(t, T.casing)
   const cv = (k, fb) => (c[k] !== undefined ? c[k] : fb)
@@ -132,7 +131,7 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
   const d = ((arch % nDesign) + nDesign) % nDesign
 
   // §10.2 sets several labels in a palette hue rather than the text colour.
-  // That reads only while the hue separates from the background — in a set
+  // That reads only while the hue separates from the background — in a palette
   // whose background IS that hue's neighbour it must fall back to the text.
   const legible = (h) => (Math.abs(lum(h) - lum(bg)) > 0.22 ? h : tx)
 
@@ -152,12 +151,12 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
     // Opaque tonal shift of the background — the torn paper edges sit across a
     // section boundary, so they cannot be a translucent overlay.
     edge: mix(bg, tx, 0.13),
-    // The lightest colour in the set, for type that always sits over the dark
-    // scrim of a photographic hero. Falls back to the Retro off-white when the
-    // set is dark on dark.
+    // The lightest colour in the palette, for type that always sits over the
+    // dark scrim of a photographic hero. Falls back to the Retro off-white when
+    // the palette is dark on dark.
     paper: paperOf(bg, tx),
-    // Type on a `paper` surface must never be `tx`: in sets where the text
-    // colour IS the lightest colour (Lime set 2, say) that renders invisible.
+    // Type on a `paper` surface must never be `tx`: in a palette where the text
+    // colour IS the lightest colour that renders invisible.
     paperFg: contrast(paperOf(bg, tx)),
     paperLine: rgba(contrast(paperOf(bg, tx)), 0.5),
     // The palette's darkest hue, for the panels §10.2 paints near-black
@@ -356,19 +355,6 @@ export function sectionVm({ themeIdx, cat, arch, set, c = {}, artistName, Z, mob
   return vm
 }
 
-// §5.7 colour-set swatches — always exactly five.
-function buildSets(themeIdx, curIdx) {
-  return THEMES[themeIdx].sets.map(([bg, ac], i) => ({
-    i,
-    grad: `linear-gradient(135deg, ${bg} 50%, ${ac} 50%)`,
-    label: `Colour Set ${i + 1}`,
-    short: `Set ${i + 1}`,
-    ring: i === curIdx ? '#2B6BE4' : '#FFFFFF',
-    shadow: i === curIdx ? '0 0 0 2px rgba(43,107,228,.25)' : '0 0 0 2px rgba(0,0,0,.14)',
-    on: i === curIdx,
-  }))
-}
-
 /* ------------------------------------------------------------------ *
  * A scaled, non-interactive render of a section — used for the template
  * gallery previews (§6) and the layout-dropdown thumbnails (§9.1).
@@ -439,133 +425,88 @@ function IconBtn({ tip, onClick, disabled, style, className = '', children }) {
   )
 }
 
-function Swatch({ set, size, onClick, tip, ringW = 2 }) {
-  const dot = (
-    <span
-      className="hv-scale15"
-      onClick={onClick}
-      style={{
-        width: size, height: size, borderRadius: '999px', background: set.grad,
-        border: `${ringW}px solid ${set.ring}`, boxShadow: set.shadow, cursor: 'pointer',
-        display: 'inline-block', flex: 'none', transition: 'transform .15s',
-      }}
-    />
-  )
-  if (!tip) return dot
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild><span style={{ display: 'inline-flex' }}>{dot}</span></TooltipTrigger>
-      <TooltipContent>{tip}</TooltipContent>
-    </Tooltip>
-  )
-}
-
 /* ------------------------------------------------------------------ *
  * §8.4 SectionRow — reused verbatim in the sidebar and the mobile sheet
  * ------------------------------------------------------------------ */
 
-function SectionRow({ sec, vm, sets, st, api }) {
+function SectionRow({ sec, vm, st, api }) {
   const cn2 = catName(sec.cat)
   const locked = vm.locked
-  const openSets = st.setRowFor === sec.id
 
   return (
-    <div>
-      <div
-        className="hv-row hover:bg-accent"
-        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 8px', borderRadius: '9px' }}
+    <div
+      className="hv-row hover:bg-accent"
+      style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 8px', borderRadius: '9px' }}
+    >
+      {locked
+        ? <Lock size={12} style={{ color: '#DDDAD1', cursor: 'default', flex: 'none' }} />
+        : <GripVertical size={14} style={{ color: '#B9B6AA', cursor: 'grab', flex: 'none' }} />}
+
+      <button
+        type="button"
+        onClick={(e) => { stopE(e); api.openEdit(sec.id) }}
+        style={{ flex: 1, minWidth: 0, textAlign: 'left', cursor: 'pointer', background: 'none', border: 0, padding: 0 }}
       >
-        {locked
-          ? <Lock size={12} style={{ color: '#DDDAD1', cursor: 'default', flex: 'none' }} />
-          : <GripVertical size={14} style={{ color: '#B9B6AA', cursor: 'grab', flex: 'none' }} />}
-
-        <button
-          type="button"
-          onClick={(e) => { stopE(e); api.openEdit(sec.id) }}
-          style={{ flex: 1, minWidth: 0, textAlign: 'left', cursor: 'pointer', background: 'none', border: 0, padding: 0 }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cn2}</span>
-            {locked && (
-              <Badge
-                variant="secondary"
-                className="rounded-full border-0"
-                style={{
-                  fontSize: '9px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase',
-                  color: '#8B887D', background: '#F1EFEA', padding: '2px 6px', flex: 'none',
-                }}
-              >Required</Badge>
-            )}
-          </div>
-          <div style={{ fontSize: '11px', color: '#98958A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {vm.subLabel}
-          </div>
-        </button>
-
-        <Swatch
-          set={{ ...sets[sec.set], ring: 'rgba(0,0,0,.18)', shadow: 'none' }}
-          size="16px" ringW={1}
-          tip={`Colour Set ${sec.set + 1}`}
-          onClick={(e) => { stopE(e); api.patch({ setRowFor: openSets ? null : sec.id, menuFor: null }) }}
-        />
-
-        <span style={{ display: 'flex', flexDirection: 'column', flex: 'none' }}>
-          <button
-            type="button" aria-label="Move up" aria-disabled={!vm.canUp || undefined}
-            onClick={(e) => { stopE(e); if (vm.canUp) api.move(sec.id, -1) }}
-            style={{ color: vm.upC, cursor: vm.canUp ? 'pointer' : 'default', lineHeight: 0, background: 'none', border: 0, padding: 0 }}
-            className={vm.canUp ? 'hover:text-foreground' : ''}
-          ><ChevronUp size={10} /></button>
-          <button
-            type="button" aria-label="Move down" aria-disabled={!vm.canDown || undefined}
-            onClick={(e) => { stopE(e); if (vm.canDown) api.move(sec.id, 1) }}
-            style={{ color: vm.downC, cursor: vm.canDown ? 'pointer' : 'default', lineHeight: 0, background: 'none', border: 0, padding: 0 }}
-            className={vm.canDown ? 'hover:text-foreground' : ''}
-          ><ChevronDown size={10} /></button>
-        </span>
-
-        <DropdownMenu
-          open={st.menuFor === sec.id}
-          onOpenChange={(v) => api.patch({ menuFor: v ? sec.id : null, setRowFor: null })}
-        >
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button" aria-label="Section menu" onClick={stopE}
-              className="hover:bg-border"
-              style={{ color: '#8B887D', padding: '2px 5px', borderRadius: '6px', background: 'none', border: 0, cursor: 'pointer', lineHeight: 0, flex: 'none' }}
-            ><MoreHorizontal size={15} /></button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end" sideOffset={4} onClick={stopE}
-            className="p-[5px]"
-            style={{ width: '186px', borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)' }}
-          >
-            <DropdownMenuItem style={MENU_ITEM} onSelect={() => api.openEdit(sec.id)}>
-              <Pencil size={14} /> Edit content
-            </DropdownMenuItem>
-            <DropdownMenuItem style={MENU_ITEM} onSelect={() => api.patch({ setRowFor: sec.id, menuFor: null })}>
-              <Palette size={14} /> Change colour set
-            </DropdownMenuItem>
-            {!locked && <DropdownMenuSeparator style={{ margin: '4px 6px' }} />}
-            {!locked && (
-              <DropdownMenuItem variant="destructive" style={MENU_ITEM} onSelect={() => api.del(sec.id)}>
-                <Trash2 size={14} /> Delete
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {openSets && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '4px 8px 10px 30px' }}>
-          {sets.map((s2) => (
-            <span key={s2.i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-              <Swatch set={s2} size="20px" onClick={(e) => { stopE(e); api.setSection(sec.id, { set: s2.i }) }} />
-              <span style={{ fontSize: '9px', fontWeight: 700, color: s2.on ? '#1B1A17' : '#8B887D', textAlign: 'center' }}>{s2.short}</span>
-            </span>
-          ))}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cn2}</span>
+          {locked && (
+            <Badge
+              variant="secondary"
+              className="rounded-full border-0"
+              style={{
+                fontSize: '9px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase',
+                color: '#8B887D', background: '#F1EFEA', padding: '2px 6px', flex: 'none',
+              }}
+            >Required</Badge>
+          )}
         </div>
-      )}
+        <div style={{ fontSize: '11px', color: '#98958A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {vm.layoutLabel}
+        </div>
+      </button>
+
+      <span style={{ display: 'flex', flexDirection: 'column', flex: 'none' }}>
+        <button
+          type="button" aria-label="Move up" aria-disabled={!vm.canUp || undefined}
+          onClick={(e) => { stopE(e); if (vm.canUp) api.move(sec.id, -1) }}
+          style={{ color: vm.upC, cursor: vm.canUp ? 'pointer' : 'default', lineHeight: 0, background: 'none', border: 0, padding: 0 }}
+          className={vm.canUp ? 'hover:text-foreground' : ''}
+        ><ChevronUp size={10} /></button>
+        <button
+          type="button" aria-label="Move down" aria-disabled={!vm.canDown || undefined}
+          onClick={(e) => { stopE(e); if (vm.canDown) api.move(sec.id, 1) }}
+          style={{ color: vm.downC, cursor: vm.canDown ? 'pointer' : 'default', lineHeight: 0, background: 'none', border: 0, padding: 0 }}
+          className={vm.canDown ? 'hover:text-foreground' : ''}
+        ><ChevronDown size={10} /></button>
+      </span>
+
+      <DropdownMenu
+        open={st.menuFor === sec.id}
+        onOpenChange={(v) => api.patch({ menuFor: v ? sec.id : null })}
+      >
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button" aria-label="Section menu" onClick={stopE}
+            className="hover:bg-border"
+            style={{ color: '#8B887D', padding: '2px 5px', borderRadius: '6px', background: 'none', border: 0, cursor: 'pointer', lineHeight: 0, flex: 'none' }}
+          ><MoreHorizontal size={15} /></button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end" sideOffset={4} onClick={stopE}
+          className="p-[5px]"
+          style={{ width: '186px', borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)' }}
+        >
+          <DropdownMenuItem style={MENU_ITEM} onSelect={() => api.openEdit(sec.id)}>
+            <Pencil size={14} /> Edit content
+          </DropdownMenuItem>
+          {!locked && <DropdownMenuSeparator style={{ margin: '4px 6px' }} />}
+          {!locked && (
+            <DropdownMenuItem variant="destructive" style={MENU_ITEM} onSelect={() => api.del(sec.id)}>
+              <Trash2 size={14} /> Delete
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }
@@ -744,7 +685,7 @@ const FIELD_BOX = {
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, sets, api, artistName, themeIdx, navSections }) {
+function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
 
@@ -758,30 +699,10 @@ function EditPanel({ sec, vm, sets, api, artistName, themeIdx, navSections }) {
           <div>
             <Label style={groupLabel}>Layout</Label>
             <LayoutPicker
-              cat={sec.cat} arch={sec.arch} setIdx={sec.set} content={sec.c}
+              cat={sec.cat} arch={sec.arch} content={sec.c}
               themeIdx={themeIdx} artistName={artistName} navSections={navSections}
               onPick={(i) => api.setSection(sec.id, { arch: i })}
             />
-          </div>
-
-          {/* COLOUR SET */}
-          <div>
-            <Label style={groupLabel}>Colour set</Label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '7px' }}>
-              {sets.map((s2) => (
-                <button
-                  key={s2.i} type="button" title={s2.label}
-                  onClick={(e) => { stopE(e); api.setSection(sec.id, { set: s2.i }) }}
-                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
-                >
-                  <span className="hv-scale12" style={{
-                    width: '28px', height: '28px', borderRadius: '999px', background: s2.grad,
-                    border: `2px solid ${s2.ring}`, boxShadow: s2.shadow, transition: 'transform .15s',
-                  }} />
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: s2.on ? '#1B1A17' : '#8B887D' }}>{s2.short}</span>
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* CONTENT */}
@@ -875,7 +796,7 @@ function EditPanel({ sec, vm, sets, api, artistName, themeIdx, navSections }) {
  * designs (§4.4), so some rows render identically. That is on purpose.
  * ------------------------------------------------------------------ */
 
-function LayoutPicker({ cat, arch, setIdx, themeIdx, artistName, navSections, content = {}, onPick }) {
+function LayoutPicker({ cat, arch, themeIdx, artistName, navSections, content = {}, onPick }) {
   const [open, setOpen] = useState(false)
   const n = layoutCount(cat, THEMES[themeIdx].name)
 
@@ -922,7 +843,7 @@ function LayoutPicker({ cat, arch, setIdx, themeIdx, artistName, navSections, co
                 <ScaledPreview
                   height="46px" radius={6}
                   vm={sectionVm({
-                    themeIdx, cat, arch: i, set: setIdx, c: content,
+                    themeIdx, cat, arch: i, c: content,
                     artistName, Z: SIZES.desktop, mob: false, navSections,
                   })}
                 />
@@ -952,7 +873,7 @@ const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
 const firstFreeCat = (present) =>
   (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
 
-function AddComposer({ add, present, setIdx, themeIdx, artistName, navSections, onChange, onAdd, onCancel }) {
+function AddComposer({ add, present, themeIdx, artistName, navSections, onChange, onAdd, onCancel }) {
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
   const taken = present.includes(add.cat)
 
@@ -980,7 +901,7 @@ function AddComposer({ add, present, setIdx, themeIdx, artistName, navSections, 
       <div>
         <Label style={groupLabel}>Layout</Label>
         <LayoutPicker
-          cat={add.cat} arch={add.arch} setIdx={setIdx}
+          cat={add.cat} arch={add.arch}
           themeIdx={themeIdx} artistName={artistName} navSections={navSections}
           onPick={(i) => onChange({ cat: add.cat, arch: i })}
         />
@@ -1040,7 +961,7 @@ function TemplatePreview({ themeIdx, artistName }) {
     <ScaledPreview
       height="100%" center
       vm={sectionVm({
-        themeIdx, cat: 'header', arch: 0, set: 0, c: {}, artistName,
+        themeIdx, cat: 'header', arch: 0, c: {}, artistName,
         Z: SIZES.desktop, mob: false, navSections: PREVIEW_NAV,
       })}
     />
@@ -1146,13 +1067,13 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const isMobile = useIsMobile()
 
   const buildPage = useCallback((defs) =>
-    defs.map(([cat, arch, set]) => ({ id: ++uidRef.current, cat, arch, set, c: {} })), [])
+    defs.map(([cat, arch]) => ({ id: ++uidRef.current, cat, arch, c: {} })), [])
 
   const [st, setSt] = useState(() => {
     const ti = THEMES.map((t) => t.name).indexOf(startTheme)
     const base = {
       device: 'desktop', add: null, menuFor: null,
-      setRowFor: null, canvasSetFor: null, hoverId: null, selectedId: null,
+      hoverId: null, selectedId: null,
       sheet: null, editSheet: false,
     }
     return ti >= 0
@@ -1191,7 +1112,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   /* ---- mutations (§5.6) ------------------------------------------- */
 
-  const closeAll = useCallback(() => patch({ menuFor: null, setRowFor: null, canvasSetFor: null, selectedId: null }), [patch])
+  const closeAll = useCallback(() => patch({ menuFor: null, selectedId: null }), [patch])
 
   const move = useCallback((id, dir) => patch((s) => {
     if (!canMove(s.sections, id, dir)) return {}
@@ -1213,7 +1134,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   const setSection = useCallback((id, p) => patch((s) => ({
     sections: s.sections.map((x) => (x.id === id ? { ...x, ...p } : x)),
-    setRowFor: null,
   })), [patch])
 
   const del = useCallback((id) => patch((s) => {
@@ -1231,7 +1151,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     patch((s) => {
       if (s.sections.some((x) => x.cat === cat)) return {}
       added = true
-      const sec = { id: ++uidRef.current, cat, arch, set: (s.sections.length - 1) % 5, c: {} }
+      const sec = { id: ++uidRef.current, cat, arch, c: {} }
       const next = s.sections.slice()
       next.splice(next.length - 1, 0, sec)   // immediately before the footer
       return { sections: next, add: null }
@@ -1240,14 +1160,14 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   }, [patch, toast])
 
   const openEdit = useCallback((id) => patch(
-    isMobile ? { selectedId: id, editSheet: true, sheet: null, menuFor: null, setRowFor: null }
-             : { selectedId: id, menuFor: null, setRowFor: null },
+    isMobile ? { selectedId: id, editSheet: true, sheet: null, menuFor: null }
+             : { selectedId: id, menuFor: null },
   ), [patch, isMobile])
 
   // §9.1 — the add composer opens on the first category not already used.
   const openAdd = useCallback(() => patch((s) => ({
     add: { cat: firstFreeCat(s.sections.map((x) => x.cat)), arch: 0 },
-    sheet: null, menuFor: null, setRowFor: null,
+    sheet: null, menuFor: null,
   })), [patch])
 
   const closeAdd = useCallback(() => patch({ add: null, sheet: null }), [patch])
@@ -1262,14 +1182,11 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     const hovered = st.hoverId === sec.id
     const up = canMove(arr, sec.id, -1)
     const down = canMove(arr, sec.id, 1)
-    const [bg, ac] = T.sets[sec.set]
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, set: sec.set, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections }),
       layoutLabel: `${cat.name} layout ${sec.arch + 1}`,
-      subLabel: `${cat.name} layout ${sec.arch + 1} · Colour Set ${sec.set + 1}`,
       overlayLabel: cat.name + (selected ? ' · editing' : ''),
-      dot: `linear-gradient(135deg, ${bg} 50%, ${ac} 50%)`,
-      showOverlay: hovered || st.canvasSetFor === sec.id || selected,
+      showOverlay: hovered || selected,
       locked: sec.cat === 'header' || sec.cat === 'footer',
       canUp: up, canDown: down,
       upC: up ? '#8B887D' : '#DDDAD1',
@@ -1299,12 +1216,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   /* ---- shared fragments -------------------------------------------- */
 
-  const sets = (curIdx) => buildSets(st.theme, curIdx)
-
   const sectionList = (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {sections.map((sec, i) => (
-        <SectionRow key={sec.id} sec={sec} vm={vms[i]} sets={sets(sec.set)} st={st} api={api} />
+        <SectionRow key={sec.id} sec={sec} vm={vms[i]} st={st} api={api} />
       ))}
     </div>
   )
@@ -1324,7 +1239,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   const addComposer = st.add && (
     <AddComposer
-      add={st.add} present={present} setIdx={(sections.length - 1) % 5}
+      add={st.add} present={present}
       themeIdx={st.theme} artistName={artistName} navSections={navSections}
       onChange={(next) => patch({ add: next })}
       onAdd={addSection}
@@ -1408,7 +1323,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
               <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D' }}>Theme</span>
               <span style={{ display: 'flex', gap: '6px' }}>
                 {THEMES.map((t, i) => {
-                  const [bg, ac] = t.sets[0]
+                  const [bg, ac] = t.palette
                   const on = i === st.theme
                   return (
                     <Tooltip key={t.name}>
@@ -1480,7 +1395,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                     </span>
                   </div>
                   <EditPanel
-                    sec={selectedSec} vm={selectedVm} sets={sets(selectedSec.set)} api={api}
+                    sec={selectedSec} vm={selectedVm} api={api}
                     artistName={artistName} themeIdx={st.theme} navSections={navSections}
                   />
                 </>
@@ -1519,7 +1434,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                     style={{ position: 'relative' }}
                     onMouseEnter={isMobile ? undefined : () => patch({ hoverId: sec.id })}
                     onMouseLeave={isMobile ? undefined : () => patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {}))}
-                    onClick={(e) => { stopE(e); patch({ selectedId: sec.id, menuFor: null, setRowFor: null }) }}
+                    onClick={(e) => { stopE(e); patch({ selectedId: sec.id, menuFor: null }) }}
                   >
                     <EncoreSection s={vm} />
 
@@ -1539,19 +1454,8 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                           padding: '4px', display: 'flex', alignItems: 'center', gap: '2px', flexWrap: 'wrap',
                           maxWidth: 'calc(100% - 16px)',
                         }}>
-                          {st.canvasSetFor === sec.id && (
-                            <>
-                              {sets(sec.set).map((s2) => (
-                                <Swatch key={s2.i} set={s2} size="17px" tip={s2.label}
-                                  onClick={(e) => { stopE(e); setSection(sec.id, { set: s2.i }) }} />
-                              ))}
-                              <Separator orientation="vertical" style={{ height: '18px', background: '#E4E2DC', margin: '0 3px' }} />
-                            </>
-                          )}
                           <IconBtn tip="Edit content" style={TOOLBAR_BTN} className="hover:bg-muted"
                             onClick={(e) => { stopE(e); openEdit(sec.id) }}><Pencil size={13} /></IconBtn>
-                          <IconBtn tip="Colour set" style={TOOLBAR_BTN} className="hover:bg-muted"
-                            onClick={(e) => { stopE(e); patch({ canvasSetFor: st.canvasSetFor === sec.id ? null : sec.id, selectedId: sec.id }) }}><Palette size={13} /></IconBtn>
                           <IconBtn tip="Move up" disabled={!vm.canUp} style={{ ...TOOLBAR_BTN, color: vm.upC2 }} className={vm.canUp ? 'hover:bg-muted' : ''}
                             onClick={(e) => { stopE(e); move(sec.id, -1) }}><ArrowUp size={13} /></IconBtn>
                           <IconBtn tip="Move down" disabled={!vm.canDown} style={{ ...TOOLBAR_BTN, color: vm.downC2 }} className={vm.canDown ? 'hover:bg-muted' : ''}
@@ -1629,7 +1533,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             <ScrollArea className="flex-1 min-h-0">
               <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {THEMES.map((t, i) => {
-                  const [bg, ac] = t.sets[0]
+                  const [bg, ac] = t.palette
                   const on = i === st.theme
                   return (
                     <button key={t.name} type="button" onClick={(e) => { stopE(e); patch({ theme: i }) }}
@@ -1666,7 +1570,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             )}
             {selectedSec && (
               <EditPanel
-                sec={selectedSec} vm={selectedVm} sets={sets(selectedSec.set)} api={api}
+                sec={selectedSec} vm={selectedVm} api={api}
                 artistName={artistName} themeIdx={st.theme} navSections={navSections}
               />
             )}

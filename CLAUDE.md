@@ -69,8 +69,8 @@ mutated through a single `patch()` helper.
 - `st.stage` is `'template' | 'start' | 'editor'` — early returns dispatch to `TemplateStage`,
   `StartStage`, or the inline editor JSX.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
-- A page section is `{ id, cat, arch, set, c }` — category, layout index, colour-set index 0-4,
-  sparse content overrides.
+- A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
+  Colours are not per-section: every section renders in the active theme's single `palette`.
 - The `startTheme` prop in `App.jsx` skips both picker stages when it names a real theme
   (`"Picker"` deliberately matches nothing, giving the full flow).
 

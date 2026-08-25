@@ -62,9 +62,9 @@ This is the one architectural rule worth knowing before editing anything (§12.9
 - **The builder chrome** (top bar, sidebar, edit panel, dropdowns, drawers, toast) uses **Tailwind
   utilities and shadcn/ui** on the design tokens in `src/index.css`.
 - **`EncoreSection.jsx`** uses **neither** — every value is an inline `style={{}}`. Sections are
-  painted with arbitrary hex values chosen at runtime from a colour set, plus six derived
-  `rgba()` values, and a static utility class cannot express `background: s.bg` where `s.bg` is
-  `#7A58A7` picked at runtime. Its only import is `lucide-react`, whose icons inherit
+  painted with arbitrary hex values taken at runtime from the active theme's palette, plus six
+  derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
+  `s.bg` is `#7A58A7` picked at runtime. Its only import is `lucide-react`, whose icons inherit
   `currentColor` and so stay theme-driven.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
