@@ -463,21 +463,135 @@ function IconBtn({ tip, onClick, disabled, style, className = '', children }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * §8.4 SectionList — the sidebar / mobile-sheet page list, reorderable
+ * by dragging a row's grip.
+ *
+ * Pointer events rather than HTML5 drag-and-drop, so the same code covers
+ * mouse, touch and pen — the mobile sheet shows this list too. The arrow
+ * buttons on each row stay as the keyboard and pointer-free path, and the
+ * grip mirrors them on ArrowUp / ArrowDown.
+ *
+ * Rows are a uniform height (one title line, one label line, both clipped
+ * with `nowrap`), so the drop index is just the pointer delta in row-heights
+ * rather than a hit test against every row.
+ * ------------------------------------------------------------------ */
+
+function SectionList({ sections, vms, st, api }) {
+  // `dragRef` is the source of truth and `drag` only mirrors it for rendering:
+  // pointerup must commit the move it can see right now, not whatever the last
+  // render happened to observe.
+  const dragRef = useRef(null)
+  const [drag, setDrag] = useState(null)
+  const boxRef = useRef(null)
+  // Lowest and highest index an optional section may occupy: the header holds 0
+  // and the footer holds the last slot (§5.4).
+  const lo = 1
+  const hi = sections.length - 2
+
+  const grab = (e, idx) => {
+    if (e.button > 0 || sections.length < 4) return
+    stopE(e)
+    const rows = [...boxRef.current.children]
+    const h = rows[idx].getBoundingClientRect().height
+    // Capture so the drag survives the pointer leaving the narrow grip; it
+    // throws if the pointer is no longer active, which is not worth failing on.
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* not captured */ }
+    dragRef.current = { idx, to: idx, startY: e.clientY, dy: 0, h }
+    setDrag(dragRef.current)
+  }
+
+  const move = (e) => {
+    const d = dragRef.current
+    if (!d) return
+    const dy = e.clientY - d.startY
+    const to = Math.max(lo, Math.min(hi, d.idx + Math.round(dy / d.h)))
+    if (d.dy === dy && d.to === to) return
+    dragRef.current = { ...d, dy, to }
+    setDrag(dragRef.current)
+  }
+
+  const drop = () => {
+    const d = dragRef.current
+    dragRef.current = null
+    setDrag(null)
+    if (d && d.to !== d.idx) api.reorder(d.idx, d.to)
+  }
+
+  // How far a row slides to open the gap the dragged row will land in.
+  const shift = (i) => {
+    if (!drag || i === drag.idx) return 0
+    if (drag.to > drag.idx && i > drag.idx && i <= drag.to) return -drag.h
+    if (drag.to < drag.idx && i >= drag.to && i < drag.idx) return drag.h
+    return 0
+  }
+
+  return (
+    <div ref={boxRef} style={{ display: 'flex', flexDirection: 'column' }}>
+      {sections.map((sec, i) => (
+        <SectionRow
+          key={sec.id} sec={sec} vm={vms[i]} st={st} api={api}
+          dragging={drag?.idx === i}
+          anyDrag={!!drag}
+          offset={drag?.idx === i ? drag.dy : shift(i)}
+          onGrab={(e) => grab(e, i)}
+          onDragMove={move}
+          onDrop={drop}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.4 SectionRow — reused verbatim in the sidebar and the mobile sheet
  * ------------------------------------------------------------------ */
 
-function SectionRow({ sec, vm, st, api }) {
+function SectionRow({ sec, vm, st, api, dragging, anyDrag, offset = 0, onGrab, onDragMove, onDrop }) {
   const cn2 = catName(sec.cat)
   const locked = vm.locked
 
   return (
     <div
-      className="hv-row hover:bg-accent"
-      style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 8px', borderRadius: '9px' }}
+      className={anyDrag ? 'hv-row' : 'hv-row hover:bg-accent'}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 8px', borderRadius: '9px',
+        transform: offset ? `translateY(${offset}px)` : undefined,
+        // The dragged row tracks the pointer with no easing; the rows opening a
+        // gap for it animate. Raising it also lifts it clear of its neighbours.
+        transition: dragging ? 'none' : 'transform .16s ease',
+        // Only the lifted row is positioned. Positioning every row would paint
+        // the list above the static chrome below it — the sheet's Add section
+        // button sits right under the last row.
+        position: dragging ? 'relative' : undefined,
+        zIndex: dragging ? 2 : undefined,
+        background: dragging ? '#FFFFFF' : undefined,
+        boxShadow: dragging ? '0 10px 24px rgba(20,18,12,.18)' : undefined,
+        cursor: dragging ? 'grabbing' : undefined,
+      }}
     >
       {locked
         ? <Lock size={12} style={{ color: '#DDDAD1', cursor: 'default', flex: 'none' }} />
-        : <GripVertical size={14} style={{ color: '#B9B6AA', cursor: 'grab', flex: 'none' }} />}
+        : (
+          <span
+            role="button" tabIndex={0}
+            aria-label={`Reorder ${cn2}`}
+            onPointerDown={onGrab}
+            onPointerMove={onDragMove}
+            onPointerUp={onDrop}
+            onPointerCancel={onDrop}
+            onKeyDown={(e) => {
+              const dir = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0
+              if (!dir) return
+              e.preventDefault(); stopE(e)
+              if (dir < 0 ? vm.canUp : vm.canDown) api.move(sec.id, dir)
+            }}
+            className="hover:text-foreground"
+            style={{
+              color: '#B9B6AA', cursor: dragging ? 'grabbing' : 'grab', flex: 'none',
+              lineHeight: 0, touchAction: 'none',
+            }}
+          ><GripVertical size={14} /></span>
+        )}
 
       <button
         type="button"
@@ -1180,6 +1294,19 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     return { sections: next }
   }), [patch])
 
+  // §5.4 — the drag equivalent of move(): drop `from` at `to`, with the same
+  // rule that the header keeps index 0 and the footer stays last.
+  const reorder = useCallback((from, to) => patch((s) => {
+    const sec = s.sections[from]
+    if (!sec || from === to) return {}
+    if (sec.cat === 'header' || sec.cat === 'footer') return {}
+    if (to < 1 || to > s.sections.length - 2) return {}
+    const next = s.sections.slice()
+    const [x] = next.splice(from, 1)
+    next.splice(to, 0, x)
+    return { sections: next }
+  }), [patch])
+
   const setContent = useCallback((id, k, v) => patch((s) => ({
     sections: s.sections.map((x) => {
       if (x.id !== id) return x
@@ -1229,7 +1356,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   const closeAdd = useCallback(() => patch({ add: null, sheet: null }), [patch])
 
-  const api = { patch, move, setContent, setSection, del, openEdit, toast }
+  const api = { patch, move, reorder, setContent, setSection, del, openEdit, toast }
 
   /* ---- per-section view-model (§5.7) ------------------------------- */
 
@@ -1273,13 +1400,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   /* ---- shared fragments -------------------------------------------- */
 
-  const sectionList = (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      {sections.map((sec, i) => (
-        <SectionRow key={sec.id} sec={sec} vm={vms[i]} st={st} api={api} />
-      ))}
-    </div>
-  )
+  const sectionList = <SectionList sections={sections} vms={vms} st={st} api={api} />
 
   const addBtn = (
     <button

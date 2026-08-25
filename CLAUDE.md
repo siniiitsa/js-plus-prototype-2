@@ -85,7 +85,10 @@ mutated through a single `patch()` helper.
   `photos.js` gate on `T.name === 'Retro'`, the same name-match as `headerFamily()` and the
   `retro` flag. **Remove** writes `null`, not `undefined` — `undefined` deletes the key, and an
   absent key is exactly what selects the seeded photo, so it would come straight back.
-- **No drag-and-drop reordering**, despite the `GripVertical` handle. Arrows only.
+- **Reordering** is drag-by-handle *or* arrows. `SectionList` owns the drag; `dragRef` is the
+  source of truth and the `drag` state only mirrors it for rendering, so pointerup commits
+  what it can see rather than what the last render observed. Rows are a uniform height, so
+  the drop index is the pointer delta in row-heights, not a hit test.
 - **Only Retro is designed.** Lime, Grunge, Editorial and Pop are fully functional but render
   flat. Retro's decorative language is gated on `s.retro`; it also gets six photographic header
   layouts where the others get three flat ones.

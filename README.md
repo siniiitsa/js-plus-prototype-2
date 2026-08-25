@@ -130,7 +130,11 @@ the only module that imports them.
 These are intentional limits, not oversights — see §12 for the full list. The headlines:
 
 - **No persistence.** Reload loses everything, including uploaded images.
-- **No drag-and-drop reordering**, despite the `GripVertical` handle. Reordering is via arrows.
+- **Reordering** is by dragging a row's `GripVertical` handle in the page list, or by the
+  arrow buttons on each row. The handle uses pointer events, so the mobile Sections sheet
+  reorders by touch too, and it mirrors the arrows on ArrowUp / ArrowDown when focused.
+  The header and footer are locked: they show a padlock instead of a handle, and a drag
+  clamps to the slots between them.
 - **Only Retro is designed.** It ships six photographic header layouts. Lime, Grunge, Editorial
   and Pop are fully selectable and functional but render flat-colour sections and a three-layout
   flat header family. The §10.2 *layouts* are shared by all five templates; its decorative
