@@ -360,7 +360,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
  * gallery previews (§6) and the layout-dropdown thumbnails (§9.1).
  * ------------------------------------------------------------------ */
 
-function ScaledPreview({ vm, height, base = 1180, radius = 0, fill = true, center = false }) {
+function ScaledPreview({ vm, height, autoMax = 0, base = 1180, radius = 0, fill = true, center = false }) {
   const ref = useRef(null)
   const inRef = useRef(null)
   // w/h are the pane, ch the unscaled height of the render inside it. A
@@ -382,9 +382,17 @@ function ScaledPreview({ vm, height, base = 1180, radius = 0, fill = true, cente
   // renders shorter than the frame is centred in it rather than dropped to the
   // top with all the slack below.
   const top = center && box.ch ? Math.round((box.h - box.ch * scale) / 2) : 0
+  // §9.1 — `autoMax` sizes the pane to the render's own height instead of a fixed
+  // one, so a short section shows end to end and a tall one clips at the cap. No
+  // feedback loop: `scale` reads clientWidth only, and a transform does not lay out,
+  // so the pane's height can never change `ch`. Before `ch` is measured the pane
+  // opens at the cap rather than collapsed, so there is no pop-in on first paint.
+  const paneH = autoMax
+    ? (box.ch ? Math.min(Math.round(box.ch * scale), autoMax) : autoMax)
+    : height
   return (
     <div ref={ref} style={{
-      height, overflow: 'hidden', position: 'relative', borderRadius: radius,
+      height: paneH, overflow: 'hidden', position: 'relative', borderRadius: radius,
       // Shorter layouts leave room below the scaled render; painting the pane in
       // the section's own background keeps it reading as a real page.
       background: fill ? vm.bg : undefined,
@@ -790,7 +798,9 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
  *
  * Each row is a live, scaled render of the section as that layout would draw
  * it — the section's own content included, so the previews show the user's
- * copy and uploads rather than the demo defaults.
+ * copy and uploads rather than the demo defaults. The render is the row: it
+ * runs the full width of the panel with the label underneath, because at
+ * thumbnail size the layouts were indistinguishable from one another.
  *
  * For the 13 non-header categories more layouts are offered than there are
  * designs (§4.4), so some rows render identically. That is on purpose.
@@ -822,7 +832,10 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, navSections, content = 
         align="start" sideOffset={6} onClick={stopE}
         className="p-[5px]"
         style={{
-          width: '304px', maxHeight: '420px', overflowY: 'auto',
+          // Wider than the 296px sidebar it drops out of — the content is portaled,
+          // so it is free to overhang the canvas. The clamp is for the mobile edit
+          // drawer, where the same picker sits in a full-width sheet.
+          width: 'min(400px, calc(100vw - 24px))', maxHeight: 'min(560px, 70vh)', overflowY: 'auto',
           borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)',
         }}
       >
@@ -832,26 +845,35 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, navSections, content = 
             <DropdownMenuItem
               key={i} onSelect={() => onPick(i)}
               style={{
-                display: 'flex', alignItems: 'center', gap: '10px', padding: '6px',
-                borderRadius: '8px', cursor: 'pointer',
+                display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: '7px',
+                padding: '6px', borderRadius: '8px', cursor: 'pointer',
                 background: isCur ? '#F2F6FE' : undefined,
               }}
             >
-              {/* ScaledPreview scales by clientWidth / 1180, so the thumbnail
-                  track must be a fixed width and never size to its content. */}
-              <span style={{ width: '68px', flex: 'none' }}>
+              {/* ScaledPreview scales by clientWidth / 1180, so the preview track must
+                  never size to its content. A 100%-width block inside a stretched
+                  column item takes its width from the panel, which satisfies that.
+                  The current row is marked with an inset outline rather than a border,
+                  so the pane's width — and therefore the scale — is unchanged. */}
+              <span style={{
+                display: 'block', width: '100%', borderRadius: '6px', overflow: 'hidden',
+                border: '1px solid #E2DFD7',
+                outline: isCur ? '2px solid #2B6BE4' : undefined, outlineOffset: '-2px',
+              }}>
                 <ScaledPreview
-                  height="46px" radius={6}
+                  autoMax={210} radius={6}
                   vm={sectionVm({
                     themeIdx, cat, arch: i, c: content,
                     artistName, Z: SIZES.desktop, mob: false, navSections,
                   })}
                 />
               </span>
-              <span style={{ flex: 1, minWidth: 0, fontSize: '12px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {`${catName(cat)} layout ${i + 1}`}
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ flex: 1, minWidth: 0, fontSize: '12px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {`${catName(cat)} layout ${i + 1}`}
+                </span>
+                {isCur && <Check size={12} style={{ color: '#2B6BE4', flex: 'none' }} />}
               </span>
-              {isCur && <Check size={12} style={{ color: '#2B6BE4', flex: 'none' }} />}
             </DropdownMenuItem>
           )
         })}
