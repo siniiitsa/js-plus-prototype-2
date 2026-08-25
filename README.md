@@ -3,9 +3,10 @@
 A single-page, client-only prototype of a website builder for musicians and DJs, built to
 [`SPEC.md`](./SPEC.md).
 
-Pick one of five visual **templates** from a spotlight-and-filmstrip picker, then edit the
-filled-in example page it opens — a stack of **sections** you add, remove, reorder, swap layouts
-on, recolour and rewrite — while seeing a live, fully re-skinned preview.
+Pick one of five visual **templates** from a spotlight-and-filmstrip picker, choose which of its
+**header layouts** to open on, then edit the filled-in example page you land in — a stack of
+**sections** you add, remove, reorder, swap layouts on, recolour and rewrite — while seeing a
+live, fully re-skinned preview.
 
 It is a demo: nothing persists, nothing is sent to a server, and **Publish** only shows a toast.
 All content is demo content for a fictional DJ, "Kai Mercer".
@@ -122,8 +123,8 @@ the only module that imports them.
   deleting the key, which would silently restore it. Absent → the mock photo, `null` → the
   initials placeholder, a string → an upload. `images` needs no sentinel: an emptied array is
   already distinguishable from an absent one.
-- The layout picker and the template spotlight resolve through the same `sectionVm()`, so both
-  show the photography without any extra wiring.
+- The layout picker, the template spotlight and the header-layout stage all resolve through the
+  same `sectionVm()`, so each shows the photography without any extra wiring.
 
 ## Scope boundaries
 

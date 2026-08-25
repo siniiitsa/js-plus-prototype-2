@@ -389,9 +389,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
  * gallery previews (§6) and the layout-dropdown thumbnails (§9.1).
  * ------------------------------------------------------------------ */
 
-function ScaledPreview({ vm, height, autoMax = 0, base = 1180, radius = 0, fill = true, center = false }) {
+function ScaledPreview({ vm, height, autoMax = 0, base = 1180, radius = 0, fill = true, center = false, fit = false, onNatural }) {
   const ref = useRef(null)
   const inRef = useRef(null)
+  // §6 — stage 2 frames every layout alike, which means knowing how tall each
+  // one renders before it can size that frame. Held in a ref so the measuring
+  // effect stays mount-only: it reads the latest callback, never re-subscribes.
+  const natRef = useRef(onNatural)
+  natRef.current = onNatural
   // w/h are the pane, ch the unscaled height of the render inside it. A
   // transform does not affect layout, so measuring ch cannot feed back.
   const [box, setBox] = useState({ w: 0, h: 0, ch: 0 })
@@ -399,18 +404,27 @@ function ScaledPreview({ vm, height, autoMax = 0, base = 1180, radius = 0, fill 
     const el = ref.current
     const ie = inRef.current
     if (!el) return
-    const read = () => setBox({ w: el.clientWidth, h: el.clientHeight, ch: ie ? ie.scrollHeight : 0 })
+    const read = () => {
+      const ch = ie ? ie.scrollHeight : 0
+      setBox({ w: el.clientWidth, h: el.clientHeight, ch })
+      if (ch) natRef.current?.(ch)
+    }
     const ro = new ResizeObserver(read)
     ro.observe(el)
     if (ie) ro.observe(ie)
     read()
     return () => ro.disconnect()
   }, [])
-  const scale = box.w ? box.w / base : 0
+  // §6 — `fit` scales to whichever axis binds first, so a render taller than its
+  // frame shrinks to fit rather than being cropped by it. Everything else scales
+  // on width alone, which is what keeps a column of previews at one zoom.
+  const fitting = fit && box.ch && box.h
+  const scale = fitting ? Math.min(box.w / base, box.h / box.ch) : (box.w ? box.w / base : 0)
   // §6 — the template picker frames every theme identically, so a header that
   // renders shorter than the frame is centred in it rather than dropped to the
-  // top with all the slack below.
-  const top = center && box.ch ? Math.round((box.h - box.ch * scale) / 2) : 0
+  // top with all the slack below. A fitted render is centred on both axes.
+  const top = (center || fit) && box.ch ? Math.round((box.h - box.ch * scale) / 2) : 0
+  const left = fitting ? Math.round((box.w - base * scale) / 2) : 0
   // §9.1 — `autoMax` sizes the pane to the render's own height instead of a fixed
   // one, so a short section shows end to end and a tall one clips at the cap. No
   // feedback loop: `scale` reads clientWidth only, and a transform does not lay out,
@@ -432,7 +446,7 @@ function ScaledPreview({ vm, height, autoMax = 0, base = 1180, radius = 0, fill 
       <div ref={inRef} inert aria-hidden="true" style={{
         width: base, transform: `scale(${scale})`, transformOrigin: 'top left',
         pointerEvents: 'none', userSelect: 'none',
-        ...(center ? { position: 'absolute', top, left: 0 } : null),
+        ...(center || fit ? { position: 'absolute', top, left } : null),
       }}>
         <EncoreSection s={vm} />
       </div>
@@ -1112,8 +1126,8 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
  * §6 Stage 1 — Template picker
  *
  * One spotlight preview of the highlighted template, its name above it and
- * a filmstrip of all five below. Clicking the spotlight asks to confirm;
- * confirming drops straight into the editor on the Theme Example page.
+ * a filmstrip of all five below. Clicking the spotlight moves on to stage 2,
+ * where the template's header layouts are chosen.
  * ------------------------------------------------------------------ */
 
 // The nav links a header preview shows: the same derivation the editor uses,
@@ -1126,6 +1140,9 @@ const PREVIEW_NAV = EXAMPLE_PAGE
 // tallest header render (Retro's photographic layout 1). The four flat themes
 // come out shorter and are centred in it.
 const SPOT_ASPECT = '1180 / 614'
+
+// …and what stage 2 frames its grid with until it has measured its own layouts.
+const SPOT_MIN_H = 614
 
 function TemplatePreview({ themeIdx, artistName }) {
   return (
@@ -1142,7 +1159,6 @@ function TemplatePreview({ themeIdx, artistName }) {
 function TemplateStage({ artistName, spotIdx, onPick }) {
   // Coming back from the editor re-spotlights the theme it was using.
   const [spot, setSpot] = useState(spotIdx)
-  const [confirming, setConfirming] = useState(false)
 
   return (
     <div className="dark" style={{
@@ -1162,55 +1178,29 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
         }}>
           <TemplatePreview themeIdx={spot} artistName={artistName} />
 
-          {/* The whole frame is the "use it" target, but as a sibling of the
-              confirm overlay rather than its parent — no control inside a control. */}
-          {!confirming ? (
-            <button
-              type="button"
-              onClick={() => setConfirming(true)}
-              aria-label={`Use the ${THEMES[spot].name} template`}
-              style={{
-                position: 'absolute', inset: 0, background: 'none', border: 0,
-                padding: 0, cursor: 'pointer',
-              }}
-            />
-          ) : (
-            <div style={{
-              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', flexDirection: 'column', gap: '18px',
-              background: 'rgba(19,19,17,.78)',
-            }}>
-              <span style={{ fontWeight: 800, fontSize: 'clamp(18px,3vw,26px)' }}>Use this template?</span>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  type="button"
-                  onClick={() => onPick(spot)}
-                  style={{
-                    background: '#F4F2EC', color: '#131311', border: 0, borderRadius: '99px',
-                    padding: '12px 28px', fontSize: '15px', fontWeight: 800, cursor: 'pointer',
-                    fontFamily: 'inherit',
-                  }}
-                >Yes, use it</button>
-                <button
-                  type="button"
-                  onClick={() => setConfirming(false)}
-                  style={{
-                    background: 'transparent', color: '#F4F2EC', border: '1px solid #F4F2EC',
-                    borderRadius: '99px', padding: '12px 28px', fontSize: '15px', fontWeight: 800,
-                    cursor: 'pointer', fontFamily: 'inherit',
-                  }}
-                >Keep browsing</button>
-              </div>
-            </div>
-          )}
+          {/* The whole frame is the target. It carries no visible affordance of
+              its own, so the caption below the frame says what it does. */}
+          <button
+            type="button"
+            onClick={() => onPick(spot)}
+            aria-label={`Choose a header for the ${THEMES[spot].name} template`}
+            style={{
+              position: 'absolute', inset: 0, background: 'none', border: 0,
+              padding: 0, cursor: 'pointer',
+            }}
+          />
         </div>
 
-        {/* Filmstrip — picking one re-spotlights it and drops any open confirm. */}
+        <p style={{ margin: 0, textAlign: 'center', fontSize: '13px', color: '#8E8B81' }}>
+          Pick a template, then choose its header.
+        </p>
+
+        {/* Filmstrip — picking one re-spotlights it. */}
         <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
           {THEMES.map((t, i) => (
             <button
               key={t.name} type="button"
-              onClick={() => { setSpot(i); setConfirming(false) }}
+              onClick={() => setSpot(i)}
               aria-label={t.name} aria-pressed={i === spot}
               style={{
                 flex: '0 0 auto', width: '140px', borderRadius: '10px', overflow: 'hidden',
@@ -1223,6 +1213,150 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
               <TemplatePreview themeIdx={i} artistName={artistName} />
             </button>
           ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §6 Stage 2 — Header layout picker
+ *
+ * The template's header designs, all of them, side by side: six for Retro,
+ * three for the four flat templates (§4.4). Selecting a card arms it;
+ * Continue builds the Theme Example page with that header and opens the
+ * editor. Every other section starts at layout 1, as before.
+ *
+ * The cards share one frame, sized to the theme's tallest render so that the
+ * grid reads as a grid and the labels sit on one line. It has to be measured:
+ * Retro's Polaroid runs half again as tall as its full-bleed hero, and a frame
+ * guessed from either one would crop the tall layouts or strand the short ones.
+ * ------------------------------------------------------------------ */
+
+function HeaderStage({ artistName, themeIdx, onBack, onPick }) {
+  const T = THEMES[themeIdx]
+  const n = layoutCount('header', T.name)
+  const [sel, setSel] = useState(0)
+  // Hover and keyboard focus share one index, so a focused card is lit the
+  // same way a hovered one is — the filmstrip in stage 1 shows neither.
+  const [hot, setHot] = useState(-1)
+  const [backHot, setBackHot] = useState(false)
+
+  // Every card shares one frame so the grid is a grid and the labels line up.
+  // Its aspect has to be measured: the six Retro layouts run from 614 to 961
+  // unscaled px and the flat three are shorter again. The frame takes the
+  // *median* of them rather than the tallest — sizing to the tallest would
+  // strand the other five in a third of a card's worth of empty background —
+  // and `fit` shrinks whatever overruns it instead of cropping.
+  const [nat, setNat] = useState({})
+  const noteNat = useCallback((i, h) => setNat((m) => (m[i] === h ? m : { ...m, [i]: h })), [])
+  const heights = Object.values(nat).sort((a, b) => a - b)
+  const frame = `1180 / ${heights.length ? heights[heights.length >> 1] : SPOT_MIN_H}`
+
+  return (
+    <div className="dark" style={{
+      minHeight: '100dvh', background: '#131311', color: '#F4F2EC', fontFamily: "'Archivo', sans-serif",
+      padding: 'clamp(24px,5vw,40px) 20px 0', display: 'flex', flexDirection: 'column',
+      alignItems: 'center',
+    }}>
+      {/* flex:1 so the action bar drops to the foot of a short screen — three
+          flat layouts do not fill one — and sticks there once six do not fit. */}
+      <div style={{
+        width: '100%', maxWidth: '1180px', flex: 1,
+        display: 'flex', flexDirection: 'column', gap: '18px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <button
+            type="button" onClick={onBack} aria-label="Back to templates"
+            onMouseEnter={() => setBackHot(true)} onMouseLeave={() => setBackHot(false)}
+            onFocus={() => setBackHot(true)} onBlur={() => setBackHot(false)}
+            style={{
+              flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '34px', height: '34px', borderRadius: '99px', cursor: 'pointer',
+              background: 'none', transition: 'color .2s, border-color .2s',
+              border: `1px solid ${backHot ? '#F4F2EC' : '#2B2B27'}`,
+              color: backHot ? '#F4F2EC' : '#A9A69C',
+            }}
+          ><ChevronLeft size={16} /></button>
+          <div>
+            <h1 style={{ margin: 0, fontWeight: 800, fontSize: 'clamp(19px,4vw,24px)' }}>Choose a header</h1>
+            <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#8E8B81' }}>
+              {`${n} layouts for the ${T.name} template.`}
+            </p>
+          </div>
+        </div>
+
+        {/* auto-fill sizes the grid without a media query: three up on a desktop,
+            two around 780px, one below ~700px. */}
+        <div style={{
+          display: 'grid', gap: '18px',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+        }}>
+          {Array.from({ length: n }, (_, i) => {
+            const on = i === sel
+            return (
+              <button
+                key={i} type="button"
+                onClick={() => setSel(i)}
+                aria-pressed={on}
+                onMouseEnter={() => setHot(i)} onMouseLeave={() => setHot(-1)}
+                onFocus={() => setHot(i)} onBlur={() => setHot(-1)}
+                style={{
+                  display: 'flex', flexDirection: 'column', gap: '10px', padding: 0,
+                  background: 'none', border: 0, cursor: 'pointer', textAlign: 'left',
+                  fontFamily: 'inherit', color: 'inherit',
+                }}
+              >
+                {/* ScaledPreview scales by clientWidth / 1180, so the pane takes its
+                    width from the grid track and the border stays 2px in every state —
+                    only its colour changes, and the ring is an inset outline. */}
+                <span style={{
+                  display: 'block', width: '100%', aspectRatio: frame,
+                  borderRadius: '12px', overflow: 'hidden',
+                  border: `2px solid ${on || i === hot ? '#F4F2EC' : '#2B2B27'}`,
+                  outline: on ? '2px solid #F4F2EC' : undefined, outlineOffset: '-4px',
+                  opacity: on || i === hot ? 1 : 0.75,
+                  transition: 'border-color .2s, opacity .2s',
+                }}>
+                  <ScaledPreview
+                    height="100%" fit radius={10}
+                    onNatural={(h) => noteNat(i, h)}
+                    vm={sectionVm({
+                      themeIdx, cat: 'header', arch: i, c: {}, artistName,
+                      Z: SIZES.desktop, mob: false, navSections: PREVIEW_NAV,
+                    })}
+                  />
+                </span>
+                {/* The label is the button's accessible name: ScaledPreview's render
+                    is inert and aria-hidden, so nothing else in here has one. */}
+                <span style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', fontWeight: 700 }}>
+                  {`${catName('header')} layout ${i + 1}`}
+                  {on && <Check size={13} style={{ flex: 'none' }} />}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Sticky, because six cards run past the fold on a laptop. */}
+        <div style={{
+          position: 'sticky', bottom: 0, marginTop: 'auto',
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap',
+          padding: '16px 0 clamp(24px,5vw,40px)', background: '#131311',
+          borderTop: '1px solid #2B2B27',
+        }}>
+          <span style={{ fontSize: '13px', color: '#8E8B81' }}>
+            {`${catName('header')} layout ${sel + 1} selected`}
+          </span>
+          <button
+            type="button" onClick={() => onPick(sel)}
+            style={{
+              background: '#F4F2EC', color: '#131311', border: 0, borderRadius: '99px',
+              padding: '12px 28px', fontSize: '15px', fontWeight: 800, cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >Continue</button>
         </div>
       </div>
     </div>
@@ -1393,7 +1527,33 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       <TemplateStage
         artistName={artistName}
         spotIdx={st.theme}
-        onPick={(i) => patch({ stage: 'editor', theme: i, sections: buildPage(EXAMPLE_PAGE) })}
+        onPick={(i) => patch({ stage: 'header', theme: i })}
+      />
+    )
+  }
+
+  /* ---- stage 2 ------------------------------------------------------ */
+
+  // The chosen theme commits to st.theme here rather than to a key of its own:
+  // nothing reads it until the editor opens, and going back re-spotlights it.
+  if (st.stage === 'header') {
+    return (
+      <HeaderStage
+        artistName={artistName}
+        themeIdx={st.theme}
+        onBack={() => patch({ stage: 'template' })}
+        onPick={(arch) => patch(() => {
+          // The header layout goes in through the page definition rather than a
+          // second pass over the built sections. Matched by category, not by
+          // index, so it does not depend on EXAMPLE_PAGE's order.
+          const next = buildPage(EXAMPLE_PAGE.map(([cat, a]) => [cat, cat === 'header' ? arch : a]))
+          const header = next.find((x) => x.cat === 'header')
+          // The editor opens on the header the user just chose: the sidebar shows
+          // its edit panel, layout picker included, against the full-size canvas.
+          // The mobile edit drawer is deliberately left shut — it would cover the
+          // page at the one moment the user has not seen it yet.
+          return { stage: 'editor', sections: next, selectedId: header ? header.id : null }
+        })}
       />
     )
   }

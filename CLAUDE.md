@@ -70,8 +70,11 @@ argument rather than reading state, so previews can render a theme that is not t
 No router, no context, no state library. One flat `useState` object `st` in `EncoreBuilder`,
 mutated through a single `patch()` helper.
 
-- `st.stage` is `'template' | 'start' | 'editor'` — early returns dispatch to `TemplateStage`,
-  `StartStage`, or the inline editor JSX.
+- `st.stage` is `'template' | 'header' | 'editor'` — early returns dispatch to `TemplateStage`,
+  `HeaderStage`, or the inline editor JSX. Stage 2 is where the template's header layouts are
+  chosen; the arch it returns goes into `buildPage`'s defs, not into the built sections, and the
+  editor then opens with that header `selectedId` so the sidebar lands on its edit panel. The
+  mobile edit drawer stays shut on arrival — it would cover the page before it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
