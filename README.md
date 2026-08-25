@@ -86,9 +86,11 @@ Four, all deliberate:
    footer — across its desktop (1440), tablet (768) and mobile (390) frames. Every other layout
    variant is untouched and still prose-derived. Two knock-on notes: the Figma display face is
    *Soulway*, which is commercial and cannot ship, so Retro keeps Alfa Slab One (its Anton and
-   Inter faces are used as drawn); and the design's photography, album art and map tiles are
-   reproduced as CSS/SVG texture plus the existing image-upload slot rather than committed
-   assets, so the single-file build stays small.
+   Inter faces are used as drawn); and the design's five album covers are real records, which
+   are not ours to redistribute, so the media player's artwork is neutral crops of the same
+   live-set photography in the framing the design uses. Everything else — the photography, the
+   paper-grain texture and the Manchester map tile — now ships as committed assets; see
+   *Seeded photography* below.
 2. **React 19 / Vite 8** instead of §2.2's React 18.3 / Vite 6 pins, at the repo owner's
    request. All other dependencies are as specified. The React Compiler and ESLint from the
    original scaffold were dropped — §2.3's `vite.config.js` is normative and declares exactly
@@ -100,6 +102,28 @@ Four, all deliberate:
    transition (bottom-centre, 28px desktop / `calc(72px + env(safe-area-inset-bottom))` mobile),
    which produces the same slide-up; the pill itself is styled to §9.2's exact values. The
    `toastUp` keyframe is still defined in `index.css` per §3.2.
+
+## Seeded photography
+
+Retro — the only designed template — opens with the Figma mock photography already in place.
+The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
+the only module that imports them.
+
+- **Retro only.** `defaultImage()` / `defaultImages()` return `undefined` for Lime, Grunge,
+  Editorial and Pop, so those four render the initials placeholder exactly as before. The
+  photography is Retro's art direction, not the user's content, so switching template drops it.
+- **Imports, never fetches.** §8.6 forbids a network request in the render path.
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all nineteen files are
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~2.9 MB.
+  (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
+  instead; only the standalone build feeds the committed demo.)
+- **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
+  that absence is what selects the seeded photo — so **Remove** writes `null` rather than
+  deleting the key, which would silently restore it. Absent → the mock photo, `null` → the
+  initials placeholder, a string → an upload. `images` needs no sentinel: an emptied array is
+  already distinguishable from an absent one.
+- The layout picker and the template spotlight resolve through the same `sectionVm()`, so both
+  show the photography without any extra wiring.
 
 ## Scope boundaries
 

@@ -39,10 +39,14 @@ cp source/dist-standalone/index.html index.html
 | `src/builder/EncoreBuilder.jsx` | 1700 | All state, all chrome, all three stages |
 | `src/builder/EncoreSection.jsx` | 2160 | Presentational renderer for all 14 section types |
 | `src/builder/data.js` | 500 | `THEMES`, all static data, colour helpers |
+| `src/builder/photos.js` | 76 | Retro's seeded Figma photography + the two resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
 
 Everything else under `src/components/ui/` is stock shadcn.
+
+`photos.js` is the only module that imports the files in `src/builder/photos/`. Keep those
+imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~1.7 MB.
 
 ## The one architectural rule
 
@@ -77,6 +81,10 @@ mutated through a single `patch()` helper.
 ## Intentional limits — not bugs
 
 - **No persistence.** Reload loses everything, including uploaded images. No URL sync.
+- **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` in
+  `photos.js` gate on `T.name === 'Retro'`, the same name-match as `headerFamily()` and the
+  `retro` flag. **Remove** writes `null`, not `undefined` — `undefined` deletes the key, and an
+  absent key is exactly what selects the seeded photo, so it would come straight back.
 - **No drag-and-drop reordering**, despite the `GripVertical` handle. Arrows only.
 - **Only Retro is designed.** Lime, Grunge, Editorial and Pop are fully functional but render
   flat. Retro's decorative language is gated on `s.retro`; it also gets six photographic header

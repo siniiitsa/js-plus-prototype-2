@@ -40,6 +40,7 @@ import {
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault,
   headerFamily, layoutCount, designCount,
 } from './data.js'
+import { defaultImage, defaultImages, RETRO_HERO_PORTRAIT, RETRO_TEXTURE } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -164,6 +165,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
     deep: T.tags.reduce((d, h) => (lum(h) < lum(d) ? h : d), T.tags[0]),
     deepFg: contrast(T.tags.reduce((d, h) => (lum(h) < lum(d) ? h : d), T.tags[0])),
     deepFg25: rgba(contrast(T.tags.reduce((d, h) => (lum(h) < lum(d) ? h : d), T.tags[0])), 0.25),
+    // §10.2 stands the events map on a lifted charcoal rather than the page
+    // background, so its full-bleed checkerboard bands and cream type read.
+    // Not `deep` itself — Retro's darkest hue is #111 and the reference ground
+    // sits a little above black.
+    mapBg: mix(T.tags.reduce((d, h) => (lum(h) < lum(d) ? h : d), T.tags[0]), paperOf(bg, tx), 0.11),
+    mapFg: paperOf(bg, tx),
 
     // theme typography
     display: T.display, label: T.label, body: T.body, dls: T.dls,
@@ -201,10 +208,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
   vm.badgeText = cv('badgeText', artistName)
   vm.navMode = cv('navMode', 'sections')
   vm.align = cv('align', 'left')
-  vm.image = c.image
+  // Retro seeds the §10.2 mock photography; the other four themes resolve to
+  // undefined and keep the initials placeholder. `undefined` already means "key
+  // absent", which is what a fresh section carries, so Remove writes `null` as an
+  // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
+  // string → an upload.
+  vm.image = c.image !== undefined ? (c.image ?? undefined) : defaultImage(cat, T.name)
+  // The hero portrait card is its own crop in Figma, but only until the user
+  // uploads: once c.image is set it fills the card too, as it always has.
+  vm.portrait = c.image !== undefined ? (c.image ?? undefined)
+    : (cat === 'header' && T.name === 'Retro' ? RETRO_HERO_PORTRAIT : undefined)
   // Multi-photo sections (gallery strip, media artwork). Slot n fills tile n;
-  // an empty slot falls through to the section's initials placeholder.
-  vm.images = Array.isArray(c.images) ? c.images : []
+  // an empty slot falls through to the section's initials placeholder. An
+  // explicitly emptied array is already distinguishable, so no sentinel is needed.
+  vm.images = Array.isArray(c.images) ? c.images : (defaultImages(cat, T.name) ?? [])
+  // Fixed Retro decoration — paper grain and the events-map raster (§10.2).
+  vm.grainSrc = T.name === 'Retro' ? RETRO_TEXTURE.grain : undefined
+  vm.mapSrc = T.name === 'Retro' ? RETRO_TEXTURE.map : undefined
 
   // Nav collapses to the fixed triple on mobile regardless of navMode (§10.2).
   const MINIMAL = ['Music', 'Shows', 'Book']
@@ -325,7 +345,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
   vm.cities = CITIES
   vm.pins = PINS
   vm.mapSub = cv('sub', DEFS.mapSub)
-  vm.gigs = GIGS.map((g, i) => ({ ...g, hue: legible(T.tags[i % T.tags.length]) }))
+  // The events map renders on `mapBg` for Retro rather than the page background,
+  // so a row hue has to separate from that charcoal — Retro's near-black tag reads
+  // fine on sand and disappears on the dark. Fall back to the cream, as §10.2 does.
+  const gigDark = cat === 'map' && T.name === 'Retro'
+  const gigGround = gigDark ? vm.mapBg : bg
+  const gigFallback = gigDark ? vm.mapFg : tx
+  vm.gigs = GIGS.map((g, i) => {
+    const h = T.tags[i % T.tags.length]
+    return { ...g, hue: Math.abs(lum(h) - lum(gigGround)) > 0.22 ? h : gigFallback }
+  })
   vm.mapRadius = MAP_RADIUS
   vm.mapBase = MAP_BASE
   vm.mapTerms = MAP_TERMS
@@ -569,7 +598,7 @@ function ImageField({ value, onChange, onToast }) {
               style={{ ...IMG_BTN, color: '#5B5850' }}
             >Replace</button>
             <button
-              type="button" onClick={() => onChange(undefined)}
+              type="button" onClick={() => onChange(null)}
               className="hover:bg-destructive/10"
               style={{ ...IMG_BTN, color: '#B3261E' }}
             >Remove</button>
@@ -697,6 +726,12 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
 
+  // The panel has to resolve the seeded photos exactly as sectionVm does, or a
+  // Retro section would show a photo on the canvas and an empty dropzone here.
+  const themeName = THEMES[themeIdx].name
+  const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName))
+  const imgsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
+
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
   return (
@@ -733,9 +768,9 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{f.hint}</p>
                       )}
                       {f.type === 'image' ? (
-                        <ImageField value={sec.c[f.k]} onChange={(v) => set(v)} onToast={api.toast} />
+                        <ImageField value={imgVal(f.k)} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'images' ? (
-                        <ImagesField value={sec.c[f.k]} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
+                        <ImagesField value={imgsVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>

@@ -76,19 +76,28 @@ const soft = (s) => (s.retro ? '4px 4px 9px rgba(0,0,0,.16)' : 'none')
 // Cards in the reference page sit a degree or two off square.
 const tilt = (s, deg) => (s.retro ? `rotate(${deg}deg)` : 'none')
 
-// Paper grain. A fractal-noise SVG rather than a bitmap, so the single-file
-// build stays small (§12) and it recolours with whatever it sits over.
+// Paper grain. Retro now ships the Figma paper/scratch texture (`s.grainSrc`);
+// this fractal-noise SVG stays as the fallback for any section rendered without
+// it, and recolours with whatever it sits over.
 const GRAIN_URL =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E" +
   "%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E" +
   "%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E\")"
 
-function Grain({ s, opacity = 0.16, blend = 'overlay', radius }) {
+function Grain({ s, opacity = 0.16, blend = 'overlay', radius, style }) {
   if (!s.retro) return null
+  // The Figma texture is a single scratched sheet stretched over the element,
+  // not a repeating tile — cover it rather than tiling, or the seams show.
+  const raster = !!s.grainSrc
   return (
     <div aria-hidden style={{
-      position: 'absolute', inset: 0, backgroundImage: GRAIN_URL, backgroundSize: '160px 160px',
-      mixBlendMode: blend, opacity, pointerEvents: 'none', borderRadius: radius,
+      position: 'absolute', inset: 0,
+      backgroundImage: raster ? `url(${s.grainSrc})` : GRAIN_URL,
+      backgroundSize: raster ? 'cover' : '160px 160px',
+      backgroundPosition: 'center',
+      mixBlendMode: raster ? 'soft-light' : blend,
+      opacity: raster ? opacity * 1.6 : opacity,
+      pointerEvents: 'none', borderRadius: radius, ...style,
     }} />
   )
 }
@@ -489,8 +498,11 @@ function NavBar({ s, colour, rule }) {
     <div style={row(s.narrow ? '16px' : '24px', { justifyContent: 'space-between', width: '100%' })}>
       <div style={row('20px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
         <Wordmark s={s} logo color={c} />
+        {/* §10.2 draws a 150px rule after the wordmark. It has to yield rather
+            than push the Book Now pill onto a second line: the nav carries the
+            page's own section names, which run longer than the reference's. */}
         <span style={{
-          height: '2px', background: bar, flex: '1 1 auto',
+          height: '2px', background: bar, flex: '0 1 150px',
           maxWidth: '150px', minWidth: s.narrow ? '30px' : '0px',
         }} />
       </div>
@@ -547,7 +559,7 @@ function HeaderV0({ s }) {
       <Grain s={s} opacity={0.22} blend="soft-light" />
 
       <div style={{ position: 'relative' }}>
-        <NavBar s={s} colour={ink} rule={s.ac} />
+        <NavBar s={s} colour={ink} rule={s.chips[3]?.bg || s.ac} />
       </div>
 
       <div style={{ position: 'relative', ...col(s.mob ? '20px' : '33px') }}>
@@ -557,7 +569,7 @@ function HeaderV0({ s }) {
           <div style={{
             width: pp, height: pp, flex: 'none', borderRadius: s.radius,
             border: `${s.mob ? 3 : 5}px solid ${s.pillBg}`, overflow: 'hidden', background: s.soft2,
-          }}><Photo s={s} initialsSize={Math.round(pp / 3)} /></div>
+          }}><Photo s={s} src={s.portrait} initialsSize={Math.round(pp / 3)} /></div>
 
           <div style={col(s.mob ? '14px' : '30px', {
             alignItems: centred ? 'center' : 'flex-start', minWidth: 0,
@@ -1016,11 +1028,11 @@ function Media({ s }) {
             <div key={i} style={{
               ...row(s.mob ? '10px' : '14px'),
               marginLeft: filled && !s.mob ? '48px' : 0,
-              marginTop: i === 0 ? 0 : '-6px',
+              marginTop: i === 0 ? 0 : (s.mob ? '-6px' : '-19px'),
               position: 'relative', zIndex: i + 1,
               background: filled ? hue : s.paper, color: fg,
               border: `${s.bw} solid ${fg}`, borderRadius: s.btnR,
-              padding: s.mob ? '8px 10px' : '10px 14px',
+              padding: s.mob ? '8px 10px' : '14px 16px',
               boxShadow: hard(s, filled ? s.ac : s.chips[(4 + i) % n].bg, 4, 5),
             }}>
               <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.85, flex: 'none' }}>{t.n}</span>
@@ -1034,8 +1046,8 @@ function Media({ s }) {
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               }}><Play size={12} fill="currentColor" strokeWidth={0} /></span>
               <span style={{
-                width: 42, height: 42, flex: 'none', borderRadius: s.radiusSm, overflow: 'hidden',
-                border: `${s.bw} solid ${fg}`,
+                width: s.mob ? 42 : 52, height: s.mob ? 42 : 52, flex: 'none',
+                borderRadius: s.radiusSm, overflow: 'hidden', border: `${s.bw} solid ${fg}`,
               }}><Photo s={s} initialsSize={14} src={s.images[i]} /></span>
             </div>
           )
@@ -1057,7 +1069,7 @@ function Media({ s }) {
           <Grain s={s} opacity={0.2} radius={s.radius} />
           <ChevronLeft size={14} style={{ alignSelf: 'center', opacity: 0.7 }} />
           <div style={{
-            width: '68%', aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
+            width: '45%', aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
             position: 'relative',
           }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
           <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
@@ -1089,7 +1101,7 @@ function Media({ s }) {
           display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1.1fr 0.9fr',
           gap: s.gGap, alignItems: 'start',
         }}>
-          <div style={col(s.mob ? '20px' : '30px')}>
+          <div style={col(s.mob ? '28px' : s.narrow ? '44px' : '68px')}>
             <div style={col('12px')}>
               <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>{s.mediaKicker}</span>
               <h2 style={{
@@ -1549,8 +1561,10 @@ function Gallery({ s }) {
       </div>
     )
 
+    // §10.2 — the viewer stack does not fill its half: the card is 603 of the
+    // 720 column, and the thumbnail rail lines up with it.
     const viewer = (
-      <div style={col('14px')}>
+      <div style={col('14px', { maxWidth: s.narrow ? 'none' : '84%' })}>
         <div style={row('12px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
           <span style={row('8px', labelStyle(s, s.eyebrow, { color: s.ac }))}>
             <ArrowLeft size={13} /> Back to beginning
@@ -1567,7 +1581,7 @@ function Gallery({ s }) {
         }}>
           <Grain s={s} opacity={0.2} radius={s.radius} />
           <div style={{
-            flex: 1, minWidth: 0, aspectRatio: '4 / 3.4', borderRadius: s.radiusSm,
+            flex: 1, minWidth: 0, aspectRatio: '4 / 4.36', borderRadius: s.radiusSm,
             overflow: 'hidden', position: 'relative',
           }}><Photo s={s} initialsSize={52} src={s.images[active]} /></div>
           <div style={col('10px', { flex: 'none', alignItems: 'center', color: s.acFg, position: 'relative' })}>
@@ -1594,7 +1608,8 @@ function Gallery({ s }) {
 
     return (
       <div style={{
-        display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '0.85fr 1.15fr',
+        // §10.2 splits this section down the middle (720 / 720).
+        display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
         gap: s.gGap, alignItems: 'start',
       }}>
         <div style={col(s.mob ? '20px' : '30px')}>
@@ -1760,10 +1775,29 @@ function EventsMap({ s }) {
       }}>
         <div style={{
           position: 'relative', aspectRatio: '4 / 3.1', background: s.paper,
-          backgroundImage:
-            `linear-gradient(${s.ac55} 1px, transparent 1px), linear-gradient(90deg, ${s.ac55} 1px, transparent 1px)`,
-          backgroundSize: '38px 38px',
+          // §10.2 ships a real street-map raster for Retro; the crossed 1px grid
+          // is the stand-in every other template still gets.
+          ...(s.mapSrc
+            ? { backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+            : {
+              backgroundImage:
+                `linear-gradient(${s.ac55} 1px, transparent 1px), linear-gradient(90deg, ${s.ac55} 1px, transparent 1px)`,
+              backgroundSize: '38px 38px',
+            }),
         }}>
+          {/* §10.2 tints the street map to the accent rather than showing it raw. */}
+          {s.mapSrc && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, background: s.ac,
+              mixBlendMode: 'color', opacity: 1, pointerEvents: 'none',
+            }} />
+          )}
+          {s.mapSrc && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, background: s.ac,
+              mixBlendMode: 'multiply', opacity: 0.22, pointerEvents: 'none',
+            }} />
+          )}
           {pins}
           <Grain s={s} opacity={0.25} />
         </div>
@@ -1777,19 +1811,25 @@ function EventsMap({ s }) {
       </div>
     )
 
+    const onDark = s.retro
     const list = (
       <div style={{
-        border: `${s.bw} solid ${s.ac}`, borderRadius: s.radiusSm, boxShadow: hard(s, s.pillBg, 5, 5),
+        position: 'relative',
+        border: `${s.bw} solid ${onDark ? s.pillBg : s.ac}`, borderRadius: s.radiusSm,
+        boxShadow: hard(s, s.pillBg, 5, 5),
         padding: s.mob ? '14px' : '20px', ...col(s.mob ? '10px' : '14px'),
       }}>
-        <span style={labelStyle(s, s.eyebrow, { color: s.muted, letterSpacing: '0.14em' })}>
+        <Grain s={s} opacity={0.18} radius={s.radiusSm} />
+        <span style={labelStyle(s, s.eyebrow, {
+          color: onDark ? s.pillBg : s.muted, letterSpacing: '0.14em', position: 'relative',
+        })}>
           Upcoming gigs · {s.gigs.length}
         </span>
         {s.gigs.map((g, i) => (
           <div key={i} style={{
             ...row('12px', { justifyContent: 'space-between' }),
             border: `${s.bw} solid ${g.hue}`, borderRadius: s.radiusSm,
-            padding: s.mob ? '10px 12px' : '12px 16px',
+            padding: s.mob ? '10px 12px' : '12px 16px', position: 'relative',
           }}>
             <span style={col('4px', { minWidth: 0 })}>
               <span style={{
@@ -1822,13 +1862,15 @@ function EventsMap({ s }) {
 
         <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
           <div style={col('10px')}>
-            <span style={labelStyle(s, s.eyebrow, { color: s.tx, letterSpacing: '0.16em' })}>Shows/coverage</span>
+            <span style={labelStyle(s, s.eyebrow, {
+              color: s.retro ? s.mapFg : s.tx, letterSpacing: '0.16em',
+            })}>Shows/coverage</span>
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
-              letterSpacing: s.dls, color: s.ac,
+              letterSpacing: s.dls, color: s.retro ? s.pillBg : s.ac,
             }}>{s.title}</h2>
           </div>
-          <span style={labelStyle(s, s.labelMd, { color: s.pillBg })}>{s.mapRadius}</span>
+          <span style={labelStyle(s, s.labelMd, { color: s.ac })}>{s.mapRadius}</span>
         </div>
 
         <div style={{
@@ -1876,12 +1918,18 @@ function Testimonials({ s }) {
     return (
       <div style={{ position: 'relative' }}>
         <TornEdge s={s} side="top" height={30} />
-        <Grain s={s} opacity={0.18} />
+        <Grain s={s} opacity={0.18} style={{
+          left: `calc(-1 * ${s.padX})`, right: `calc(-1 * ${s.padX})`,
+          top: `calc(-1 * ${s.padY})`, bottom: `calc(-1 * ${s.padY})`,
+        }} />
 
-        <div style={row(s.mob ? '10px' : '24px', { justifyContent: 'center', position: 'relative' })}>
+        <div style={row(s.mob ? '10px' : '24px', {
+          justifyContent: 'center', position: 'relative',
+          padding: s.mob ? '10px 0 8px' : '40px 0 34px',
+        })}>
           {arrow(<ArrowLeft size={15} />)}
           <div style={{
-            position: 'relative', flex: 1, maxWidth: '660px',
+            position: 'relative', flex: 1, maxWidth: '622px',
             padding: s.mob ? '4px' : '10px',
           }}>
             {backing(s.chips[3 % s.chips.length].bg, -1.6, 0, -8)}
@@ -1889,7 +1937,7 @@ function Testimonials({ s }) {
             <div style={{
               position: 'relative', background: s.paper, color: s.paperFg,
               border: `${s.bw} solid ${s.paperFg}`, borderRadius: s.radius,
-              padding: s.mob ? '22px' : '34px', minHeight: s.mob ? '220px' : '300px',
+              padding: s.mob ? '22px' : '34px', minHeight: s.mob ? '220px' : '345px',
               ...col(s.mob ? '14px' : '18px'),
             }}>
               <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>{q.when}</span>
@@ -2126,9 +2174,13 @@ export default function EncoreSection({ s }) {
   // §10.2 — the hero is the one full-bleed composition: the photograph runs to
   // the section edges and the layout supplies its own insets.
   const bleed = s.hd && s.v0 && !s.flatHeader && s.retro
+  // §10.2 — the events map is the one section painted on a dark ground rather
+  // than the page background, so its checkerboard bands and cream type read.
+  const darkMap = s.mp && s.v0 && s.retro
   return (
     <div style={{
-      background: s.bg, color: s.tx, fontFamily: s.body, padding: bleed ? 0 : s.pad,
+      background: darkMap ? s.mapBg : s.bg, color: darkMap ? s.mapFg : s.tx,
+      fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,
