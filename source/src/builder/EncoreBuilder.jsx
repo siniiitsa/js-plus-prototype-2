@@ -33,7 +33,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, QUOTES,
-  CITIES, REP, PINS, BOOKED, HELD, EXAMPLE_PAGE, BLANK_PAGE,
+  CITIES, REP, PINS, BOOKED, HELD, EXAMPLE_PAGE,
   NOW_PLAYING, TIER_MODES, SONGS, REP_FILTERS, SONG_TOTAL, PAGES,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
@@ -375,18 +375,28 @@ function buildSets(themeIdx, curIdx) {
  * gallery previews (§6) and the header thumbnails in the drawer (§9.1).
  * ------------------------------------------------------------------ */
 
-function ScaledPreview({ vm, height, base = 1180, radius = 0, fill = true }) {
+function ScaledPreview({ vm, height, base = 1180, radius = 0, fill = true, center = false }) {
   const ref = useRef(null)
-  const [w, setW] = useState(0)
+  const inRef = useRef(null)
+  // w/h are the pane, ch the unscaled height of the render inside it. A
+  // transform does not affect layout, so measuring ch cannot feed back.
+  const [box, setBox] = useState({ w: 0, h: 0, ch: 0 })
   useEffect(() => {
     const el = ref.current
+    const ie = inRef.current
     if (!el) return
-    const ro = new ResizeObserver(() => setW(el.clientWidth))
+    const read = () => setBox({ w: el.clientWidth, h: el.clientHeight, ch: ie ? ie.scrollHeight : 0 })
+    const ro = new ResizeObserver(read)
     ro.observe(el)
-    setW(el.clientWidth)
+    if (ie) ro.observe(ie)
+    read()
     return () => ro.disconnect()
   }, [])
-  const scale = w ? w / base : 0
+  const scale = box.w ? box.w / base : 0
+  // §6 — the template picker frames every theme identically, so a header that
+  // renders shorter than the frame is centred in it rather than dropped to the
+  // top with all the slack below.
+  const top = center && box.ch ? Math.round((box.h - box.ch * scale) / 2) : 0
   return (
     <div ref={ref} style={{
       height, overflow: 'hidden', position: 'relative', borderRadius: radius,
@@ -394,9 +404,13 @@ function ScaledPreview({ vm, height, base = 1180, radius = 0, fill = true }) {
       // the section's own background keeps it reading as a real page.
       background: fill ? vm.bg : undefined,
     }}>
-      <div style={{
+      {/* The render is a picture of a page, not a page: `inert` keeps its links
+          out of the tab order and the a11y tree, so the pane reads as the one
+          control it sits inside. */}
+      <div ref={inRef} inert aria-hidden="true" style={{
         width: base, transform: `scale(${scale})`, transformOrigin: 'top left',
         pointerEvents: 'none', userSelect: 'none',
+        ...(center ? { position: 'absolute', top, left: 0 } : null),
       }}>
         <EncoreSection s={vm} />
       </div>
@@ -975,143 +989,121 @@ function CategoryList({ present, themeName, onPick }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §6 Stage 1 — Template gallery
+ * §6 Stage 1 — Template picker
+ *
+ * One spotlight preview of the highlighted template, its name above it and
+ * a filmstrip of all five below. Clicking the spotlight asks to confirm;
+ * confirming drops straight into the editor on the Theme Example page.
  * ------------------------------------------------------------------ */
 
-function TemplateStage({ artistName, onPick }) {
-  return (
-    <div className="dark" style={{
-      minHeight: '100dvh', background: '#131311', color: '#F4F2EC', fontFamily: "'Archivo', sans-serif",
-      padding: 'clamp(40px,8vw,72px) 20px 96px', display: 'flex', flexDirection: 'column', alignItems: 'center',
-    }}>
-      <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '22px', letterSpacing: '.5px' }}>encore</span>
-      <h1 style={{ margin: '36px 0 0', fontSize: 'clamp(30px,7vw,44px)', fontWeight: 800, letterSpacing: '-1px', textAlign: 'center' }}>
-        Select a template to start
-      </h1>
-      <p style={{ margin: '14px 0 0', fontSize: 'clamp(14px,3.8vw,16px)', color: '#A9A69C', maxWidth: '520px', lineHeight: 1.5, textAlign: 'center' }}>
-        Five complete identities. Pick one — you can change it at any time.
-      </p>
+// The nav links a header preview shows: the same derivation the editor uses,
+// applied to the page the picker is about to build (§4.8).
+const PREVIEW_NAV = EXAMPLE_PAGE
+  .filter(([cat]) => cat !== 'header' && cat !== 'footer')
+  .map(([cat]) => catName(cat))
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', marginTop: '48px', maxWidth: '1240px' }}>
-        {THEMES.map((t, i) => (
-          <button
-            key={t.name} type="button" onClick={() => onPick(i)}
-            className="hv-lift"
-            style={{
-              width: '288px', borderRadius: '16px', background: '#1D1D1A', border: '1px solid #2B2B27',
-              overflow: 'hidden', padding: 0, cursor: 'pointer', textAlign: 'left', color: 'inherit',
-              transition: 'transform .2s, border-color .2s, box-shadow .2s',
-            }}
-          >
-            {/* A realistic miniature of this template's own header design (§6). */}
-            <ScaledPreview
-              height="216px"
-              vm={sectionVm({
-                themeIdx: i, cat: 'header', arch: 0, set: 0, c: {}, artistName,
-                Z: SIZES.desktop, mob: false, navSections: ['About', 'Music', 'Shows', 'Book'],
-              })}
-            />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px 18px' }}>
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: 'block', fontSize: '15px', fontWeight: 700 }}>{t.name}</span>
-                <span style={{ display: 'block', fontSize: '11px', color: '#8E8B81' }}>{t.sub}</span>
-              </span>
-              <span style={{ display: 'flex', gap: '4px', flex: 'none' }}>
-                {t.sets.map(([bg], j) => (
-                  <span key={j} style={{ width: '12px', height: '12px', borderRadius: '999px', background: bg, border: '1px solid rgba(255,255,255,.25)' }} />
-                ))}
-              </span>
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
+// Every frame in the picker uses one aspect: the desktop canvas against the
+// tallest header render (Retro's photographic layout 1). The four flat themes
+// come out shorter and are centred in it.
+const SPOT_ASPECT = '1180 / 614'
+
+function TemplatePreview({ themeIdx, artistName }) {
+  return (
+    <ScaledPreview
+      height="100%" center
+      vm={sectionVm({
+        themeIdx, cat: 'header', arch: 0, set: 0, c: {}, artistName,
+        Z: SIZES.desktop, mob: false, navSections: PREVIEW_NAV,
+      })}
+    />
   )
 }
 
-/* ------------------------------------------------------------------ *
- * §7 Stage 2 — Theme Example or Blank
- * ------------------------------------------------------------------ */
-
-function StartStage({ themeIdx, onBack, onStart }) {
-  const T = THEMES[themeIdx]
-  const bar = (h, label, set) => {
-    const [bg, , tx] = T.sets[set]
-    return (
-      <div key={label + h} style={{
-        height: h, background: bg, color: tx, borderRadius: '3px', padding: '0 9px',
-        display: 'flex', alignItems: 'center', fontSize: '8px', letterSpacing: '.6px',
-        textTransform: 'uppercase', opacity: 0.95, flex: 'none',
-      }}>{label}</div>
-    )
-  }
-
-  const card = (title, desc, thumb, onClick) => (
-    <button
-      type="button" onClick={onClick} className="hv-lift"
-      style={{
-        width: '300px', borderRadius: '14px', background: '#1D1D1A', border: '1px solid #2B2B27',
-        overflow: 'hidden', padding: 0, cursor: 'pointer', textAlign: 'left', color: 'inherit',
-        transition: 'transform .2s, border-color .2s, box-shadow .2s',
-      }}
-    >
-      <div style={{ height: '238px', padding: '12px 12px 0', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-        {thumb}
-      </div>
-      <div style={{ padding: '14px 16px 16px' }}>
-        <div style={{ fontSize: '14px', fontWeight: 700 }}>{title}</div>
-        <div style={{ fontSize: '11px', color: '#8E8B81', lineHeight: 1.45, marginTop: '4px' }}>{desc}</div>
-      </div>
-    </button>
-  )
+function TemplateStage({ artistName, spotIdx, onPick }) {
+  // Coming back from the editor re-spotlights the theme it was using.
+  const [spot, setSpot] = useState(spotIdx)
+  const [confirming, setConfirming] = useState(false)
 
   return (
     <div className="dark" style={{
       minHeight: '100dvh', background: '#131311', color: '#F4F2EC', fontFamily: "'Archivo', sans-serif",
-      padding: 'clamp(28px,6vw,56px) 20px 96px', display: 'flex', flexDirection: 'column', alignItems: 'center',
+      padding: 'clamp(24px,5vw,40px) 20px', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
     }}>
-      <div style={{ width: '100%', maxWidth: '1240px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-        <button
-          type="button" onClick={onBack}
-          className="dark:hover:text-foreground dark:hover:border-muted-foreground"
-          style={{
-            fontSize: '13px', fontWeight: 600, color: '#A9A69C', padding: '7px 14px',
-            border: '1px solid #2B2B27', borderRadius: '99px', background: 'none', cursor: 'pointer',
-          }}
-        >‹ Templates</button>
-        <span style={{ fontSize: '13px', color: '#8E8B81' }}>
-          Template: <b style={{ color: '#F4F2EC', fontWeight: 700 }}>{T.name}</b>
-        </span>
-      </div>
+      <div style={{ width: '100%', maxWidth: '1100px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <h1 style={{ margin: 0, fontWeight: 800, fontSize: 'clamp(19px,4vw,24px)', textAlign: 'center' }}>
+          {THEMES[spot].name}
+        </h1>
 
-      <h1 style={{ margin: '40px 0 0', fontSize: 'clamp(28px,6.5vw,40px)', fontWeight: 800, letterSpacing: '-1px', textAlign: 'center' }}>
-        How do you want to start?
-      </h1>
-      <p style={{ margin: '14px 0 0', fontSize: 'clamp(14px,3.8vw,16px)', color: '#A9A69C', maxWidth: '560px', lineHeight: 1.5, textAlign: 'center' }}>
-        Start from a filled-in example, or from an empty page. Either way you can add, remove and reorder sections afterwards.
-      </p>
+        {/* The spotlight. */}
+        <div style={{
+          position: 'relative', borderRadius: '16px', overflow: 'hidden',
+          border: '1px solid #2B2B27', aspectRatio: SPOT_ASPECT,
+        }}>
+          <TemplatePreview themeIdx={spot} artistName={artistName} />
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', marginTop: '44px' }}>
-        {card(
-          'Theme Example',
-          'A complete seven-section page with demo content, ready to edit.',
-          EXAMPLE_PAGE.map(([cat, , set]) =>
-            bar(cat === 'header' ? '46px' : cat === 'footer' ? '20px' : '28px', catName(cat), set)),
-          () => onStart(EXAMPLE_PAGE),
-        )}
-        {card(
-          'Blank',
-          'Just a header and a footer. Build the page yourself.',
-          [
-            bar('46px', 'Header', 0),
-            <div key="gap" style={{
-              flex: 1, border: '1.5px dashed #3A3A34', borderRadius: '3px', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', fontSize: '9px', color: '#6B685E',
-            }}>Your sections go here</div>,
-            bar('20px', 'Footer', 4),
-          ],
-          () => onStart(BLANK_PAGE),
-        )}
+          {/* The whole frame is the "use it" target, but as a sibling of the
+              confirm overlay rather than its parent — no control inside a control. */}
+          {!confirming ? (
+            <button
+              type="button"
+              onClick={() => setConfirming(true)}
+              aria-label={`Use the ${THEMES[spot].name} template`}
+              style={{
+                position: 'absolute', inset: 0, background: 'none', border: 0,
+                padding: 0, cursor: 'pointer',
+              }}
+            />
+          ) : (
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', flexDirection: 'column', gap: '18px',
+              background: 'rgba(19,19,17,.78)',
+            }}>
+              <span style={{ fontWeight: 800, fontSize: 'clamp(18px,3vw,26px)' }}>Use this template?</span>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  type="button"
+                  onClick={() => onPick(spot)}
+                  style={{
+                    background: '#F4F2EC', color: '#131311', border: 0, borderRadius: '99px',
+                    padding: '12px 28px', fontSize: '15px', fontWeight: 800, cursor: 'pointer',
+                    fontFamily: 'inherit',
+                  }}
+                >Yes, use it</button>
+                <button
+                  type="button"
+                  onClick={() => setConfirming(false)}
+                  style={{
+                    background: 'transparent', color: '#F4F2EC', border: '1px solid #F4F2EC',
+                    borderRadius: '99px', padding: '12px 28px', fontSize: '15px', fontWeight: 800,
+                    cursor: 'pointer', fontFamily: 'inherit',
+                  }}
+                >Keep browsing</button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Filmstrip — picking one re-spotlights it and drops any open confirm. */}
+        <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
+          {THEMES.map((t, i) => (
+            <button
+              key={t.name} type="button"
+              onClick={() => { setSpot(i); setConfirming(false) }}
+              aria-label={t.name} aria-pressed={i === spot}
+              style={{
+                flex: '0 0 auto', width: '140px', borderRadius: '10px', overflow: 'hidden',
+                padding: 0, cursor: 'pointer', background: 'none', aspectRatio: SPOT_ASPECT,
+                border: `2px solid ${i === spot ? '#F4F2EC' : 'transparent'}`,
+                opacity: i === spot ? 1 : 0.5,
+                transition: 'opacity .2s, border-color .2s',
+              }}
+            >
+              <TemplatePreview themeIdx={i} artistName={artistName} />
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -1263,19 +1255,14 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const selectedVm = selectedIdx >= 0 ? vms[selectedIdx] : null
   const swapSec = sections.find((s) => s.id === st.swapFor) ?? null
 
-  /* ---- stages 1 & 2 ------------------------------------------------ */
+  /* ---- stage 1 ------------------------------------------------------ */
 
   if (st.stage === 'template') {
     return (
-      <TemplateStage artistName={artistName} onPick={(i) => patch({ stage: 'start', theme: i })} />
-    )
-  }
-  if (st.stage === 'start') {
-    return (
-      <StartStage
-        themeIdx={st.theme}
-        onBack={() => patch({ stage: 'template' })}
-        onStart={(defs) => patch({ stage: 'editor', sections: buildPage(defs) })}
+      <TemplateStage
+        artistName={artistName}
+        spotIdx={st.theme}
+        onPick={(i) => patch({ stage: 'editor', theme: i, sections: buildPage(EXAMPLE_PAGE) })}
       />
     )
   }
@@ -1374,8 +1361,8 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         {/* §8.1 / §8.2 top bar */}
         {isMobile ? (
           <div style={{ height: '52px', flex: 'none', background: '#FFFFFF', borderBottom: '1px solid #E2DFD7', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 12px', zIndex: 40 }}>
-            <button type="button" aria-label="Back to start options"
-              onClick={(e) => { stopE(e); patch({ stage: 'start', selectedId: null, menuFor: null, drawer: null, drawerCat: null }) }}
+            <button type="button" aria-label="Back to templates"
+              onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, drawer: null, drawerCat: null }) }}
               className="hover:bg-muted"
               style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '3px 9px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
             >‹</button>
@@ -1391,13 +1378,13 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
           <div style={{ height: '56px', flex: 'none', background: '#FFFFFF', borderBottom: '1px solid #E2DFD7', display: 'flex', alignItems: 'center', gap: '16px', padding: '0 16px', zIndex: 40 }}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button type="button" aria-label="Back to start options"
-                  onClick={(e) => { stopE(e); patch({ stage: 'start', selectedId: null, menuFor: null, drawer: null, drawerCat: null }) }}
+                <button type="button" aria-label="Back to templates"
+                  onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, drawer: null, drawerCat: null }) }}
                   className="hover:bg-muted"
                   style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '4px 11px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
                 >‹</button>
               </TooltipTrigger>
-              <TooltipContent>Back to start options</TooltipContent>
+              <TooltipContent>Back to templates</TooltipContent>
             </Tooltip>
 
             <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '17px' }}>encore</span>

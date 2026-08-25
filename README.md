@@ -3,9 +3,9 @@
 A single-page, client-only prototype of a website builder for musicians and DJs, built to
 [`SPEC.md`](./SPEC.md).
 
-Pick one of five visual **templates**, choose whether to start from a filled-in example or an
-empty page, then edit a page made of stacked **sections** — adding, removing, reordering,
-swapping layouts, recolouring and editing copy — while seeing a live, fully re-skinned preview.
+Pick one of five visual **templates** from a spotlight-and-filmstrip picker, then edit the
+filled-in example page it opens — a stack of **sections** you add, remove, reorder, swap layouts
+on, recolour and rewrite — while seeing a live, fully re-skinned preview.
 
 It is a demo: nothing persists, nothing is sent to a server, and **Publish** only shows a toast.
 All content is demo content for a fictional DJ, "Kai Mercer".
