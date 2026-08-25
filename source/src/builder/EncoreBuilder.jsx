@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
-  Pencil, ArrowLeftRight, Palette, X, Trash2, ChevronLeft, ChevronRight,
+  Pencil, Palette, X, Trash2, ChevronLeft,
   Layers, Plus, Check, Upload, Lock,
 } from 'lucide-react'
 import { toast as sonnerToast, Toaster } from 'sonner'
@@ -25,7 +25,6 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -112,8 +111,8 @@ function canMove(sections, id, dir) {
 /* ------------------------------------------------------------------ *
  * §5.7 View-model construction
  * Everything EncoreSection needs, fully resolved. Callable for an
- * arbitrary theme so the template gallery (§6) and the swap drawer's
- * header thumbnails (§9.1) can render a theme that is not the active one.
+ * arbitrary theme so the template gallery (§6) and the layout dropdown's
+ * thumbnails (§9.1) can render a theme that is not the active one.
  * ------------------------------------------------------------------ */
 
 // The lightest colour in a set — the surface §10.2 paints its cards on, and
@@ -372,7 +371,7 @@ function buildSets(themeIdx, curIdx) {
 
 /* ------------------------------------------------------------------ *
  * A scaled, non-interactive render of a section — used for the template
- * gallery previews (§6) and the header thumbnails in the drawer (§9.1).
+ * gallery previews (§6) and the layout-dropdown thumbnails (§9.1).
  * ------------------------------------------------------------------ */
 
 function ScaledPreview({ vm, height, base = 1180, radius = 0, fill = true, center = false }) {
@@ -543,9 +542,6 @@ function SectionRow({ sec, vm, sets, st, api }) {
           >
             <DropdownMenuItem style={MENU_ITEM} onSelect={() => api.openEdit(sec.id)}>
               <Pencil size={14} /> Edit content
-            </DropdownMenuItem>
-            <DropdownMenuItem style={MENU_ITEM} onSelect={() => api.openSwap(sec.id)}>
-              <ArrowLeftRight size={14} /> Swap layout
             </DropdownMenuItem>
             <DropdownMenuItem style={MENU_ITEM} onSelect={() => api.patch({ setRowFor: sec.id, menuFor: null })}>
               <Palette size={14} /> Change colour set
@@ -748,7 +744,7 @@ const FIELD_BOX = {
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, sets, api, artistName }) {
+function EditPanel({ sec, vm, sets, api, artistName, themeIdx, navSections }) {
   const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
 
@@ -761,21 +757,11 @@ function EditPanel({ sec, vm, sets, api, artistName }) {
           {/* LAYOUT */}
           <div>
             <Label style={groupLabel}>Layout</Label>
-            <button
-              type="button"
-              onClick={(e) => { stopE(e); api.openSwap(sec.id) }}
-              className="hover:border-foreground"
-              style={{
-                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                gap: '10px', border: '1px solid #E2DFD7', background: '#FFFFFF', borderRadius: '9px',
-                padding: '10px 12px', cursor: 'pointer',
-              }}
-            >
-              <span style={{ fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{vm.layoutLabel}</span>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#8B887D', display: 'inline-flex', alignItems: 'center', gap: '5px', flex: 'none' }}>
-                Swap <ArrowLeftRight size={12} />
-              </span>
-            </button>
+            <LayoutPicker
+              cat={sec.cat} arch={sec.arch} setIdx={sec.set} content={sec.c}
+              themeIdx={themeIdx} artistName={artistName} navSections={navSections}
+              onPick={(i) => api.setSection(sec.id, { arch: i })}
+            />
           </div>
 
           {/* COLOUR SET */}
@@ -875,115 +861,157 @@ function EditPanel({ sec, vm, sets, api, artistName }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §9.1 Drawer bodies
+ * §9.1 LayoutPicker — the layout chooser, inline in the sidebar
+ *
+ * A dropdown rather than a stock <Select>: shadcn's SelectItem wraps every
+ * child in Radix's ItemText, so a thumbnail inside an item would be mirrored
+ * into the closed trigger. DropdownMenu leaves item content alone.
+ *
+ * Each row is a live, scaled render of the section as that layout would draw
+ * it — the section's own content included, so the previews show the user's
+ * copy and uploads rather than the demo defaults.
+ *
+ * For the 13 non-header categories more layouts are offered than there are
+ * designs (§4.4), so some rows render identically. That is on purpose.
  * ------------------------------------------------------------------ */
 
-function Wireframe({ arch }) {
-  const m = arch % 3
-  const box = { background: '#F3F2EE', borderRadius: '8px', height: '86px', padding: '12px', display: 'flex' }
-  if (m === 0) {
-    return (
-      <div style={{ ...box, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
-        <span style={{ height: '9px', width: '70%', background: '#C9C6BB', borderRadius: '3px' }} />
-        <span style={{ height: '5px', width: '50%', background: '#DDDAD1', borderRadius: '3px' }} />
-        <span style={{ display: 'flex', gap: '5px', marginTop: '2px' }}>
-          <span style={{ width: '26px', height: '9px', background: '#B4B1A5', borderRadius: '3px' }} />
-          <span style={{ width: '26px', height: '9px', background: '#DDDAD1', borderRadius: '3px' }} />
-        </span>
-      </div>
-    )
-  }
-  if (m === 1) {
-    return (
-      <div style={{ ...box, gap: '8px' }}>
-        <span style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '5px' }}>
-          <span style={{ height: '8px', width: '90%', background: '#C9C6BB', borderRadius: '3px' }} />
-          <span style={{ height: '5px', width: '70%', background: '#DDDAD1', borderRadius: '3px' }} />
-          <span style={{ height: '9px', width: '34px', background: '#B4B1A5', borderRadius: '3px' }} />
-        </span>
-        <span style={{ flex: 1, background: '#DDDAD1', borderRadius: '5px' }} />
-      </div>
-    )
-  }
-  return (
-    <div style={{ ...box, gap: '5px', alignItems: 'center' }}>
-      {[['70%', '#DDDAD1'], ['90%', '#C9C6BB'], ['70%', '#DDDAD1']].map(([h, c], i) => (
-        <span key={i} style={{ flex: 1, height: h, background: c, borderRadius: '5px' }} />
-      ))}
-    </div>
-  )
-}
-
-function LayoutGrid({ cat, current, themeIdx, setIdx, artistName, onPick }) {
+function LayoutPicker({ cat, arch, setIdx, themeIdx, artistName, navSections, content = {}, onPick }) {
+  const [open, setOpen] = useState(false)
   const n = layoutCount(cat, THEMES[themeIdx].name)
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-      {Array.from({ length: n }, (_, i) => {
-        const isCur = i === current
-        return (
-          <button
-            key={i} type="button" onClick={(e) => { stopE(e); onPick(i) }}
-            className="hover:border-foreground"
-            style={{
-              border: `1.5px solid ${isCur ? '#2B6BE4' : '#E8E6DF'}`,
-              background: isCur ? '#F2F6FE' : '#FFFFFF', borderRadius: '12px', padding: '10px',
-              transition: 'border-color .15s', cursor: 'pointer', textAlign: 'left',
-              // The header thumbnail renders at 1180px before scaling, so the
-              // track must not size to its intrinsic width.
-              minWidth: 0,
-            }}
-          >
-            {cat === 'header' ? (
-              <ScaledPreview
-                height="86px" radius={8}
-                vm={sectionVm({
-                  themeIdx, cat: 'header', arch: i, set: setIdx, c: {}, artistName,
-                  Z: SIZES.desktop, mob: false, navSections: ['Music', 'Shows', 'Book'],
-                })}
-              />
-            ) : <Wireframe arch={i} />}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '9px' }}>
-              <span style={{ fontSize: '10px', fontWeight: 800, color: '#8B887D', border: '1px solid #DDDAD1', borderRadius: '5px', padding: '1px 5px', flex: 'none' }}>{i + 1}</span>
-              <span style={{ flex: 1, fontSize: '12px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {catName(cat)} layout {i + 1}
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button" onClick={stopE}
+          className="hover:border-foreground"
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: '10px', border: '1px solid #E2DFD7', background: '#FFFFFF', borderRadius: '9px',
+            padding: '10px 12px', cursor: 'pointer',
+          }}
+        >
+          <span style={{ fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {`${catName(cat)} layout ${arch + 1}`}
+          </span>
+          <ChevronDown size={14} style={{ color: '#8B887D', flex: 'none' }} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start" sideOffset={6} onClick={stopE}
+        className="p-[5px]"
+        style={{
+          width: '304px', maxHeight: '420px', overflowY: 'auto',
+          borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)',
+        }}
+      >
+        {Array.from({ length: n }, (_, i) => {
+          const isCur = i === arch
+          return (
+            <DropdownMenuItem
+              key={i} onSelect={() => onPick(i)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '10px', padding: '6px',
+                borderRadius: '8px', cursor: 'pointer',
+                background: isCur ? '#F2F6FE' : undefined,
+              }}
+            >
+              {/* ScaledPreview scales by clientWidth / 1180, so the thumbnail
+                  track must be a fixed width and never size to its content. */}
+              <span style={{ width: '68px', flex: 'none' }}>
+                <ScaledPreview
+                  height="46px" radius={6}
+                  vm={sectionVm({
+                    themeIdx, cat, arch: i, set: setIdx, c: content,
+                    artistName, Z: SIZES.desktop, mob: false, navSections,
+                  })}
+                />
               </span>
-              {isCur && <Check size={11} style={{ color: '#2B6BE4', flex: 'none' }} />}
-            </div>
-          </button>
-        )
-      })}
-    </div>
+              <span style={{ flex: 1, minWidth: 0, fontSize: '12px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {`${catName(cat)} layout ${i + 1}`}
+              </span>
+              {isCur && <Check size={12} style={{ color: '#2B6BE4', flex: 'none' }} />}
+            </DropdownMenuItem>
+          )
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
-function CategoryList({ present, themeName, onPick }) {
-  // header and footer never appear — they are mandatory and always present.
-  const rows = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
+/* ------------------------------------------------------------------ *
+ * §9.1 AddComposer — add a section without leaving the sidebar
+ *
+ * Category is a plain text Select; the layout below it is the same
+ * LayoutPicker the edit panel uses.
+ * ------------------------------------------------------------------ */
+
+// header and footer never appear — they are mandatory and always present.
+const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
+
+const firstFreeCat = (present) =>
+  (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
+
+function AddComposer({ add, present, setIdx, themeIdx, artistName, navSections, onChange, onAdd, onCancel }) {
+  const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
+  const taken = present.includes(add.cat)
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-      {rows.map((c) => {
-        const added = present.includes(c.id)
-        const n = layoutCount(c.id, themeName)
-        return (
-          <button
-            key={c.id} type="button"
-            onClick={(e) => { stopE(e); if (!added) onPick(c.id) }}
-            aria-disabled={added || undefined}
-            className={added ? '' : 'hv-cat hover:bg-accent'}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', borderRadius: '10px',
-              opacity: added ? 0.45 : 1, cursor: added ? 'default' : 'pointer',
-              background: 'none', border: 0, textAlign: 'left', width: '100%',
-            }}
-          >
-            <span style={{ flex: 1, fontSize: '14px', fontWeight: 600 }}>{c.name}</span>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: '#8B887D', background: '#F1EFEA', borderRadius: '99px', padding: '3px 9px', flex: 'none' }}>
-              {added ? 'Added' : `${n} ${n === 1 ? 'layout' : 'layouts'}`}
-            </span>
-            {!added && <ChevronRight size={14} style={{ color: '#B9B6AA', flex: 'none' }} />}
-          </button>
-        )
-      })}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div>
+        <Label style={groupLabel}>Section</Label>
+        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: 0 })}>
+          <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent onClick={stopE}>
+            {ADDABLE.map((c) => {
+              const added = present.includes(c.id)
+              return (
+                <SelectItem key={c.id} value={c.id} disabled={added}>
+                  {added ? `${c.name} — added` : c.name}
+                </SelectItem>
+              )
+            })}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label style={groupLabel}>Layout</Label>
+        <LayoutPicker
+          cat={add.cat} arch={add.arch} setIdx={setIdx}
+          themeIdx={themeIdx} artistName={artistName} navSections={navSections}
+          onPick={(i) => onChange({ cat: add.cat, arch: i })}
+        />
+      </div>
+
+      {taken && (
+        <p style={{ margin: 0, fontSize: '11px', color: '#98958A', lineHeight: 1.45 }}>
+          This section is already on the page. Pick another to add.
+        </p>
+      )}
+
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button
+          type="button" onClick={(e) => { stopE(e); onCancel() }}
+          className="hover:bg-accent"
+          style={{
+            flex: 'none', border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#5B5850',
+            borderRadius: '9px', padding: '9px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+          }}
+        >Cancel</button>
+        <button
+          type="button" aria-disabled={taken || undefined}
+          onClick={(e) => { stopE(e); if (!taken) onAdd(add.cat, add.arch) }}
+          className={taken ? '' : 'hover:bg-primary/90'}
+          style={{
+            flex: 1, border: 0, background: '#1B1A17', color: '#FFFFFF', opacity: taken ? 0.45 : 1,
+            borderRadius: '9px', padding: '9px', fontSize: '12px', fontWeight: 700,
+            cursor: taken ? 'default' : 'pointer',
+          }}
+        >Add section</button>
+      </div>
     </div>
   )
 }
@@ -1123,7 +1151,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const [st, setSt] = useState(() => {
     const ti = THEMES.map((t) => t.name).indexOf(startTheme)
     const base = {
-      device: 'desktop', drawer: null, drawerCat: null, swapFor: null, menuFor: null,
+      device: 'desktop', add: null, menuFor: null,
       setRowFor: null, canvasSetFor: null, hoverId: null, selectedId: null,
       sheet: null, editSheet: false,
     }
@@ -1206,7 +1234,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       const sec = { id: ++uidRef.current, cat, arch, set: (s.sections.length - 1) % 5, c: {} }
       const next = s.sections.slice()
       next.splice(next.length - 1, 0, sec)   // immediately before the footer
-      return { sections: next, drawer: null, drawerCat: null }
+      return { sections: next, add: null }
     })
     if (added) toast(`${catName(cat)} added`)
   }, [patch, toast])
@@ -1216,12 +1244,15 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
              : { selectedId: id, menuFor: null, setRowFor: null },
   ), [patch, isMobile])
 
-  const openSwap = useCallback((id) => patch((s) => {
-    const sec = s.sections.find((x) => x.id === id)
-    return { drawer: 'swap', swapFor: id, drawerCat: sec?.cat ?? null, menuFor: null, setRowFor: null, editSheet: false, sheet: null }
-  }), [patch])
+  // §9.1 — the add composer opens on the first category not already used.
+  const openAdd = useCallback(() => patch((s) => ({
+    add: { cat: firstFreeCat(s.sections.map((x) => x.cat)), arch: 0 },
+    sheet: null, menuFor: null, setRowFor: null,
+  })), [patch])
 
-  const api = { patch, move, setContent, setSection, del, openEdit, openSwap, toast }
+  const closeAdd = useCallback(() => patch({ add: null, sheet: null }), [patch])
+
+  const api = { patch, move, setContent, setSection, del, openEdit, toast }
 
   /* ---- per-section view-model (§5.7) ------------------------------- */
 
@@ -1253,7 +1284,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const selectedIdx = sections.findIndex((s) => s.id === st.selectedId)
   const selectedSec = selectedIdx >= 0 ? sections[selectedIdx] : null
   const selectedVm = selectedIdx >= 0 ? vms[selectedIdx] : null
-  const swapSec = sections.find((s) => s.id === st.swapFor) ?? null
 
   /* ---- stage 1 ------------------------------------------------------ */
 
@@ -1282,7 +1312,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const addBtn = (
     <button
       type="button"
-      onClick={(e) => { stopE(e); patch({ drawer: 'add', drawerCat: null, swapFor: null, sheet: null }) }}
+      onClick={(e) => { stopE(e); openAdd() }}
       className="hover:border-foreground"
       style={{
         width: '100%', border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '11px',
@@ -1292,35 +1322,19 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     >+ Add section</button>
   )
 
-  const drawerTitle = st.drawer === 'swap'
-    ? `Swap layout — ${catName(st.drawerCat)}`
-    : st.drawerCat ? `${catName(st.drawerCat)} layouts` : 'Add a section'
+  const addComposer = st.add && (
+    <AddComposer
+      add={st.add} present={present} setIdx={(sections.length - 1) % 5}
+      themeIdx={st.theme} artistName={artistName} navSections={navSections}
+      onChange={(next) => patch({ add: next })}
+      onAdd={addSection}
+      onCancel={closeAdd}
+    />
+  )
 
-  const drawerBody = st.drawer === 'add' && !st.drawerCat
-    ? <CategoryList present={present} themeName={T.name} onPick={(cat) => patch({ drawerCat: cat })} />
-    : (
-      <LayoutGrid
-        cat={st.drawerCat}
-        current={st.drawer === 'swap' ? swapSec?.arch ?? -1 : -1}
-        themeIdx={st.theme}
-        setIdx={st.drawer === 'swap' ? swapSec?.set ?? 0 : 0}
-        artistName={artistName}
-        onPick={(i) => {
-          if (st.drawer === 'swap') { setSection(st.swapFor, { arch: i }); patch({ drawer: null, drawerCat: null, swapFor: null }) }
-          else addSection(st.drawerCat, i)
-        }}
-      />
-    )
-
-  const drawerHeader = (close) => (
+  const addHeader = (close) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px 18px', borderBottom: '1px solid #EEECE6', flex: 'none' }}>
-      {st.drawer === 'add' && st.drawerCat && (
-        <button type="button" aria-label="Back" onClick={(e) => { stopE(e); patch({ drawerCat: null }) }}
-          style={{ background: 'none', border: 0, cursor: 'pointer', color: '#5B5850', lineHeight: 0 }}>
-          <ChevronLeft size={16} />
-        </button>
-      )}
-      <span style={{ flex: 1, fontSize: '15px', fontWeight: 700 }}>{drawerTitle}</span>
+      <span style={{ flex: 1, fontSize: '15px', fontWeight: 700 }}>Add a section</span>
       <button type="button" aria-label="Close" onClick={(e) => { stopE(e); close() }}
         style={{ background: 'none', border: 0, cursor: 'pointer', color: '#5B5850', lineHeight: 0 }}>
         <X size={16} />
@@ -1328,7 +1342,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     </div>
   )
 
-  const closeDrawer = () => patch({ drawer: null, drawerCat: null, swapFor: null })
 
   const PILL = '[&>div:first-child]:!h-[4px] [&>div:first-child]:!w-[40px] [&>div:first-child]:!mt-2 [&>div:first-child]:!bg-[#DDDAD1] [&>div:first-child]:!mb-0'
 
@@ -1362,7 +1375,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         {isMobile ? (
           <div style={{ height: '52px', flex: 'none', background: '#FFFFFF', borderBottom: '1px solid #E2DFD7', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 12px', zIndex: 40 }}>
             <button type="button" aria-label="Back to templates"
-              onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, drawer: null, drawerCat: null }) }}
+              onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null }) }}
               className="hover:bg-muted"
               style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '3px 9px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
             >‹</button>
@@ -1379,7 +1392,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             <Tooltip>
               <TooltipTrigger asChild>
                 <button type="button" aria-label="Back to templates"
-                  onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, drawer: null, drawerCat: null }) }}
+                  onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null }) }}
                   className="hover:bg-muted"
                   style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '4px 11px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
                 >‹</button>
@@ -1466,7 +1479,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                       <span style={{ display: 'block', fontSize: '11px', color: '#98958A' }}>{selectedVm.layoutLabel}</span>
                     </span>
                   </div>
-                  <EditPanel sec={selectedSec} vm={selectedVm} sets={sets(selectedSec.set)} api={api} artistName={artistName} />
+                  <EditPanel
+                    sec={selectedSec} vm={selectedVm} sets={sets(selectedSec.set)} api={api}
+                    artistName={artistName} themeIdx={st.theme} navSections={navSections}
+                  />
                 </>
               ) : (
                 <>
@@ -1477,7 +1493,9 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                   <ScrollArea className="flex-1 min-h-0">
                     <div style={{ padding: '0 8px 8px' }}>{sectionList}</div>
                   </ScrollArea>
-                  <div style={{ padding: '12px', flex: 'none' }}>{addBtn}</div>
+                  <div style={{ padding: '12px', flex: 'none', borderTop: st.add ? '1px solid #E9E7E0' : 0 }}>
+                    {st.add ? addComposer : addBtn}
+                  </div>
                 </>
               )}
             </div>
@@ -1532,8 +1550,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                           )}
                           <IconBtn tip="Edit content" style={TOOLBAR_BTN} className="hover:bg-muted"
                             onClick={(e) => { stopE(e); openEdit(sec.id) }}><Pencil size={13} /></IconBtn>
-                          <IconBtn tip="Swap layout" style={TOOLBAR_BTN} className="hover:bg-muted"
-                            onClick={(e) => { stopE(e); openSwap(sec.id) }}><ArrowLeftRight size={13} /></IconBtn>
                           <IconBtn tip="Colour set" style={TOOLBAR_BTN} className="hover:bg-muted"
                             onClick={(e) => { stopE(e); patch({ canvasSetFor: st.canvasSetFor === sec.id ? null : sec.id, selectedId: sec.id }) }}><Palette size={13} /></IconBtn>
                           <IconBtn tip="Move up" disabled={!vm.canUp} style={{ ...TOOLBAR_BTN, color: vm.upC2 }} className={vm.canUp ? 'hover:bg-muted' : ''}
@@ -1562,7 +1578,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
           }}>
             {[
               [Layers, 'Sections', () => patch({ sheet: 'sections' }), st.sheet === 'sections'],
-              [Plus, 'Add', () => patch({ drawer: 'add', drawerCat: null, swapFor: null, sheet: null }), !!st.drawer],
+              [Plus, 'Add', openAdd, !!st.add],
               [Palette, 'Theme', () => patch({ sheet: 'theme' }), st.sheet === 'theme'],
             ].map(([Icon, label, onClick, active]) => (
               <button key={label} type="button" onClick={(e) => { stopE(e); onClick() }}
@@ -1578,31 +1594,16 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
           </div>
         )}
 
-        {/* §9.1 Add / Swap — sheet on desktop, drawer on mobile */}
-        {!isMobile && (
-          <Sheet open={!!st.drawer} onOpenChange={(v) => { if (!v) closeDrawer() }}>
-            <SheetContent
-              side="right" showCloseButton={false} onClick={stopE}
-              className="p-0 gap-0 sm:max-w-none"
-              style={{ width: '430px', maxWidth: '92vw', background: '#FFFFFF', boxShadow: '-16px 0 44px rgba(20,18,12,.2)', display: 'flex', flexDirection: 'column' }}
-            >
-              <SheetTitle className="sr-only">{drawerTitle}</SheetTitle>
-              <SheetDescription className="sr-only">Choose a section layout</SheetDescription>
-              {drawerHeader(closeDrawer)}
-              <ScrollArea className="flex-1 min-h-0">
-                <div style={{ padding: '14px 16px 24px' }}>{drawerBody}</div>
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
-        )}
+        {/* §9.1 Add a section — inline in the sidebar on desktop (see §8.3),
+            a bottom drawer on mobile. There is no right-hand panel. */}
         {isMobile && (
-          <Drawer open={!!st.drawer} onOpenChange={(v) => { if (!v) closeDrawer() }}>
-            <DrawerContent onClick={stopE} className={`${PILL} !max-h-[82vh]`} style={{ ...sheetShell, height: '82vh' }}>
-              <DrawerTitle className="sr-only">{drawerTitle}</DrawerTitle>
-              <DrawerDescription className="sr-only">Choose a section layout</DrawerDescription>
-              {drawerHeader(closeDrawer)}
+          <Drawer open={!!st.add} onOpenChange={(v) => { if (!v) closeAdd() }}>
+            <DrawerContent onClick={stopE} className={`${PILL} !max-h-[82vh]`} style={{ ...sheetShell, maxHeight: '82vh' }}>
+              <DrawerTitle className="sr-only">Add a section</DrawerTitle>
+              <DrawerDescription className="sr-only">Choose a section and its layout</DrawerDescription>
+              {addHeader(closeAdd)}
               <ScrollArea className="flex-1 min-h-0">
-                <div style={{ padding: '14px 16px 24px' }}>{drawerBody}</div>
+                <div style={{ padding: '14px 16px 24px' }}>{addComposer}</div>
               </ScrollArea>
             </DrawerContent>
           </Drawer>
@@ -1664,7 +1665,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
               () => patch({ editSheet: false, selectedId: null }),
             )}
             {selectedSec && (
-              <EditPanel sec={selectedSec} vm={selectedVm} sets={sets(selectedSec.set)} api={api} artistName={artistName} />
+              <EditPanel
+                sec={selectedSec} vm={selectedVm} sets={sets(selectedSec.set)} api={api}
+                artistName={artistName} themeIdx={st.theme} navSections={navSections}
+              />
             )}
           </DrawerContent>
         </Drawer>

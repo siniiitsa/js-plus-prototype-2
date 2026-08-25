@@ -59,7 +59,7 @@ source/
 
 This is the one architectural rule worth knowing before editing anything (§12.9):
 
-- **The builder chrome** (top bar, sidebar, edit panel, drawer, sheets, toast) uses **Tailwind
+- **The builder chrome** (top bar, sidebar, edit panel, dropdowns, drawers, toast) uses **Tailwind
   utilities and shadcn/ui** on the design tokens in `src/index.css`.
 - **`EncoreSection.jsx`** uses **neither** — every value is an inline `style={{}}`. Sections are
   painted with arbitrary hex values chosen at runtime from a colour set, plus six derived
