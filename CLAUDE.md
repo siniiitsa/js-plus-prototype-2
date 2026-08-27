@@ -36,9 +36,9 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 1700 | All state, all chrome, all three stages |
+| `src/builder/EncoreBuilder.jsx` | 2370 | All state, all chrome, all three stages |
 | `src/builder/EncoreSection.jsx` | 2160 | Presentational renderer for all 14 section types |
-| `src/builder/data.js` | 500 | `THEMES`, all static data, colour helpers |
+| `src/builder/data.js` | 540 | `THEMES`, all static data, colour helpers |
 | `src/builder/photos.js` | 76 | Retro's seeded Figma photography + the two resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
@@ -70,11 +70,15 @@ argument rather than reading state, so previews can render a theme that is not t
 No router, no context, no state library. One flat `useState` object `st` in `EncoreBuilder`,
 mutated through a single `patch()` helper.
 
-- `st.stage` is `'template' | 'header' | 'editor'` — early returns dispatch to `TemplateStage`,
-  `HeaderStage`, or the inline editor JSX. Stage 2 is where the template's header layouts are
-  chosen; the arch it returns goes into `buildPage`'s defs, not into the built sections, and the
-  editor then opens with that header `selectedId` so the sidebar lands on its edit panel. The
-  mobile edit drawer stays shut on arrival — it would cover the page before it has been seen.
+- `st.stage` is `'option' | 'template' | 'editor'` — early returns dispatch to `OptionStage`,
+  `TemplateStage`, or the inline editor JSX. **There is no header stage any more**: SPEC §6's
+  full-screen picker is gone, and picking a template opens the editor on the built page with
+  `st.onboard` armed. Which of the three in-editor header treatments runs is `st.ux`
+  (`'modal' | 'sidebar' | 'rail'`), set by stage 0 — see README "Choosing a header". All three
+  render the same `HeaderChoices` component; `st.hdrHover` previews a layout on the canvas
+  without committing it. The editor always opens with the header `selectedId` so the sidebar
+  lands on its edit panel; the mobile edit drawer is opened only by the `'sidebar'` treatment,
+  which needs it — otherwise it would cover the page before it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
@@ -96,6 +100,8 @@ mutated through a single `patch()` helper.
   flat. Retro's decorative language is gated on `s.retro`; it also gets six photographic header
   layouts where the others get three flat ones.
 - **Layout folding.** For the 13 non-header categories, more layout numbers are offered than
-  there are distinct designs — Audio layouts 1, 4 and 7 render identically on purpose.
+  there are distinct designs — Audio layouts 1, 4 and 7 render identically on purpose. Those
+  categories are also the ones that stay *numbered*: only the header's layouts have names
+  (`headerLayout()` in `data.js`), because it is the one a first-time user is asked to choose.
 - **Accessibility is scoped to the chrome.** The rendered preview is a picture of a website,
   not a website.

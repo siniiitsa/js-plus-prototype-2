@@ -146,6 +146,77 @@ export const designCount = (catId, themeName) =>
   catId === 'header' ? headerVariants(themeName) : NVAR[catId]
 
 /* ------------------------------------------------------------------ *
+ * §4.4b Header layout names.
+ *
+ * "Header layout 4" tells nobody anything, and the header is the one
+ * category a first-time user is asked to choose before they know the
+ * editor. These are the names the compositions already carry in
+ * EncoreSection's §10.2 comments, promoted to the UI. Every other
+ * category keeps its number — its layouts are variations of one idea,
+ * and the numbering is honest about the folding (§4.4).
+ * ------------------------------------------------------------------ */
+
+// [name, what it is] — index-aligned with HeaderV0…V5 / FlatHeader v0…v2.
+const HEADER_NAMES = {
+  photographic: [
+    ['Hero', 'Full-bleed photo'],
+    ['Framed', 'Photo in a frame'],
+    ['Gradient stage', 'Colour wash'],
+    ['Polaroid', 'Photo card beside text'],
+    ['Overlay card', 'Details on a card'],
+    ['Stage wide', 'Centred, wide'],
+  ],
+  flat: [
+    ['Centred', 'Title, tags and buttons'],
+    ['Split', 'Text beside an image'],
+    ['Rule', 'Big title over a line'],
+  ],
+}
+
+export const headerLayout = (themeName, i) =>
+  HEADER_NAMES[headerFamily(themeName)][i] ?? [`Layout ${i + 1}`, '']
+
+// The label a header section carries in the sidebar, the edit panel and the
+// canvas overlay: the number is kept, because the layout picker still counts.
+export const headerLayoutLabel = (themeName, i) =>
+  `Header layout ${i + 1} · ${headerLayout(themeName, i)[0]}`
+
+/* ------------------------------------------------------------------ *
+ * §4.4c The three header-onboarding treatments on demo (§6).
+ *
+ * This build ships all three side by side so the client can compare
+ * them on the real editor rather than on a mockup. `id` is the value of
+ * `st.ux`; the editor reads nothing else off this table.
+ * ------------------------------------------------------------------ */
+
+export const HEADER_UX = [
+  {
+    id: 'modal',
+    tag: 'Option A',
+    name: 'Setup modal',
+    sub: 'A grid over the finished page',
+    blurb: 'The editor loads with the whole page behind a scrim, and the six headers sit on top of it. One decision, unmissable, with the page it belongs to visible behind.',
+    trade: 'Still a gate — “Decide later” has to be a real exit.',
+  },
+  {
+    id: 'sidebar',
+    tag: 'Option B',
+    name: 'Guided sidebar',
+    sub: 'A coach mark on the real control',
+    blurb: 'Nothing blocks. The editor opens with the header selected and the sidebar already on its edit panel, layouts expanded into a grid. Content fields wait their turn.',
+    trade: 'The quietest of the three — it can be scrolled past.',
+  },
+  {
+    id: 'rail',
+    tag: 'Option C',
+    name: 'On-canvas rail',
+    sub: 'Choose on the header itself',
+    blurb: 'The page renders, everything below the header dims, and a rail of layouts docks over the canvas. Clicking one swaps the real header in place, at full size.',
+    trade: 'A mode, and it covers the foot of the canvas.',
+  },
+]
+
+/* ------------------------------------------------------------------ *
  * §4.5 FLAG — category id → 2-letter view-model boolean key
  * ------------------------------------------------------------------ */
 
