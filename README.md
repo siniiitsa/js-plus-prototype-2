@@ -87,8 +87,10 @@ Five, all deliberate:
    gallery, repertoire, events map, pricing, booking calendar, enquiry form, testimonials and
    footer — across its desktop (1440), tablet (768) and mobile (390) frames. Every other layout
    variant is untouched and still prose-derived. Two knock-on notes: the Figma display face is
-   *Soulway*, which is commercial and cannot ship, so Retro keeps Alfa Slab One (its Anton and
-   Inter faces are used as drawn); and the design's five album covers are real records, which
+   *Soulway*, which is commercial and cannot ship, so Retro sets its display type in **Fraunces**
+   at `wght 900 / SOFT 100 / WONK 1 / opsz 144` — the nearest free match for Soulway's soft 70s
+   slab, and much closer than the Alfa Slab One it replaced (its Anton and Inter faces are used
+   as drawn); and the design's five album covers are real records, which
    are not ours to redistribute, so the media player's artwork is neutral crops of the same
    live-set photography in the framing the design uses. Everything else — the photography, the
    paper-grain texture and the Manchester map tile — now ships as committed assets; see
