@@ -66,8 +66,8 @@ const SIZES = {
 // collapses to a hamburger on tablet as well as mobile, while `mob` (mobile
 // only) still drives the single-column collapses.
 const RAMP = {
-  mobile:  { dispXl: '46px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '13px', labelXs: '12px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '22px', narrow: true },
-  tablet:  { dispXl: '72px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '16px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
+  mobile:  { dispXl: '77px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '14px', labelXs: '14px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '22px', narrow: true },
+  tablet:  { dispXl: '77px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
   desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '64px', narrow: false },
 }
 for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k])

@@ -53,6 +53,12 @@ const inputStyle = (s) => ({
 const row = (gap, extra) => ({ display: 'flex', alignItems: 'center', gap, ...extra })
 const col = (gap, extra) => ({ display: 'flex', flexDirection: 'column', gap, ...extra })
 
+// §5.5 — `narrow` covers both reference frames below desktop, and each has its
+// own numbers: the Figma 768 and 390 frames are exactly the tablet and mobile
+// canvases, so their values are used verbatim, where the 1180 canvas takes the
+// Figma desktop frame × 0.82. `s.mob` is the 390 one; this is the 768 one.
+const isTablet = (s) => !!s.narrow && !s.mob
+
 /* ------------------------------------------------------------------ *
  * §10.2 Retro design language
  *
@@ -171,9 +177,11 @@ function GlobeMark({ size = 22, color = 'currentColor', strokeWidth = 1.4 }) {
  * §10.2 Shared header primitives
  * ------------------------------------------------------------------ */
 
-function LogoMark({ s, size = 18, color }) {
+function LogoMark({ s, size = 18, color, glyph }) {
   // §10.2 replaces the initials disc with a wireframe globe under Retro.
-  if (s.retro) return <GlobeMark size={size + 6} color={color || s.tx} />
+  // `glyph` sizes that globe outright: both narrow hero frames draw it at 27px,
+  // where the initials disc it stands in for stays at 18.
+  if (s.retro) return <GlobeMark size={glyph ?? size + 6} color={color || s.tx} />
   return (
     <span style={{
       width: size, height: size, borderRadius: '999px', background: s.ac,
@@ -183,10 +191,10 @@ function LogoMark({ s, size = 18, color }) {
   )
 }
 
-function Wordmark({ s, logo = false, color }) {
+function Wordmark({ s, logo = false, color, glyph }) {
   return (
     <span style={row('10px')}>
-      {logo && <LogoMark s={s} color={color} />}
+      {logo && <LogoMark s={s} color={color} glyph={glyph} />}
       <span style={s.retro
         ? labelStyle(s, s.labelMd, { color: color || s.tx })
         : {
@@ -218,14 +226,21 @@ function BookPill({ s, label }) {
   const text = label ?? s.cta1
   if (s.retro) {
     // Accent-coloured type on a second palette hue, with the offset block.
+    // One Figma pill at three scales: the 768 frame draws it at full size, the
+    // 1180 canvas at × 0.82 and the 390 frame at × 0.62 — and the 390 one takes
+    // its type down with it, where the other two set it at label-md.
+    const tab = isTablet(s)
     return (
       <span style={{
-        ...row('8px'), background: s.pillBg, color: s.pillFg, padding: '8px 16px',
-        borderRadius: s.btnR, cursor: 'pointer', boxShadow: hard(s, s.ac, 3, 4),
-        ...labelStyle(s),
+        ...row(s.mob ? '6.2px' : tab ? '10px' : '8px'),
+        background: s.pillBg, color: s.pillFg,
+        padding: s.mob ? '6.2px 12.4px' : tab ? '10px 20px' : '8px 16px',
+        borderRadius: s.btnR, cursor: 'pointer',
+        boxShadow: s.mob ? hard(s, s.ac, 1.9, 2.5) : hard(s, s.ac, 3, 4),
+        ...labelStyle(s, s.mob ? '12.4px' : undefined),
       }}>
         {text}
-        <Asterisk size={16} color={s.pillFg} />
+        <Asterisk size={s.mob ? 12.4 : tab ? 20 : 16} color={s.pillFg} />
       </span>
     )
   }
@@ -503,25 +518,30 @@ const SCRIM = {
 function NavBar({ s, colour, rule }) {
   const c = colour || s.tx
   const bar = rule || c
+  const tab = isTablet(s)
+  const ruleW = s.mob ? '70px' : tab ? '150px' : '123px'
   return (
-    <div style={row(s.narrow ? '16px' : '24px', { justifyContent: 'space-between', width: '100%' })}>
-      <div style={row('16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
-        <Wordmark s={s} logo color={c} />
-        {/* §10.2 draws a 150px rule after the wordmark — 123px on the 1180
-            canvas. It has to yield rather than push the Book Now pill onto a
-            second line: the nav carries the page's own section names, which
-            run longer than the reference's. */}
+    <div style={row(s.mob ? '10px' : tab ? '30px' : '24px', { justifyContent: 'space-between', width: '100%' })}>
+      <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
+        <Wordmark s={s} logo glyph={s.narrow ? 27 : undefined} color={c} />
+        {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
+            123px on the 1180 canvas. It has to yield rather than push the Book
+            Now pill onto a second line: the nav carries the page's own section
+            names, which run longer than the reference's. */}
         <span style={{
-          height: '2px', background: bar, flex: '0 1 123px',
-          maxWidth: '123px', minWidth: s.narrow ? '30px' : '0px',
+          height: '2px', background: bar, flex: `0 1 ${ruleW}`,
+          maxWidth: ruleW, minWidth: s.narrow ? '30px' : '0px',
         }} />
       </div>
       {s.narrow ? (
-        <span style={row('14px')}>
+        <span style={row(tab ? '23px' : '10px')}>
           <BookPill s={s} />
-          <span style={col('4px', { width: '22px', flex: 'none', cursor: 'pointer' })}>
+          {/* 26 × 18 on both narrow frames: three 2.5px bars, 5px apart. */}
+          <span style={col('5px', { width: '26px', flex: 'none', cursor: 'pointer' })}>
             {[0, 1, 2].map((i) => (
-              <span key={i} style={{ height: '2px', width: '100%', background: c }} />
+              <span key={i} style={{
+                height: '2.5px', width: '100%', background: c, borderRadius: '2px',
+              }} />
             ))}
           </span>
         </span>
@@ -551,19 +571,23 @@ function NavBar({ s, colour, rule }) {
 // see the `bleed` flag on the root.
 function HeaderV0({ s }) {
   const centred = s.align === 'centre'
-  const pp = s.mob ? 76 : s.narrow ? 116 : 158          // portrait card edge
+  // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
+  // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a
+  // 96px card the text sits under rather than beside, same 40/24/36/30 stack.
+  const tab = isTablet(s)
+  const pp = s.mob ? 96 : tab ? 144 : 158               // portrait card edge
   // The Figma hero inks its labels in the fixed cream (`sem/text/2`), one step
   // brighter than `paper` — which stays the display title's first-word tone.
   const ink = s.retro ? '#FBF6EA' : s.paper
   const aspect = s.mob ? '390 / 844' : s.narrow ? '3 / 4' : '16 / 8.33'
-  const padX = s.gPad
-  const padTop = s.mob ? '20px' : s.narrow ? '26px' : '23px'
+  const padX = s.mob ? '10px' : tab ? '30px' : s.gPad
+  const padTop = s.mob ? '24px' : tab ? '30px' : '23px'
   // The checker ribbon on the floor is a fixed height at every breakpoint — the
   // reference does not scale it — so it is added to the identity block's own
   // clearance rather than eating into it. The reference band is 24px; this runs
   // it a third finer, so the squares read as texture rather than as blocks.
   const CHECKER = 16
-  const padBottom = `${(s.mob ? 26 : s.narrow ? 40 : 66) + CHECKER}px`
+  const padBottom = `${(s.mob ? 40 : tab ? 60 : 66) + CHECKER}px`
 
   return (
     <div style={{
@@ -579,23 +603,28 @@ function HeaderV0({ s }) {
         <NavBar s={s} colour={ink} rule={s.chips[3]?.bg || s.ac} />
       </div>
 
-      <div style={{ position: 'relative', ...col(s.mob ? '20px' : '33px') }}>
-        <div style={row(s.mob ? '18px' : '33px', {
-          justifyContent: centred ? 'center' : 'flex-start', flexWrap: 'wrap',
-        })}>
+      <div style={{ position: 'relative', ...col(s.mob || tab ? '40px' : '33px') }}>
+        {/* The 390 frame stands the portrait card on its own line above the
+            text rather than beside it. */}
+        <div style={s.mob
+          ? col('24px', { alignItems: centred ? 'center' : 'flex-start', width: '100%' })
+          : row(tab ? '24px' : '33px', {
+              justifyContent: centred ? 'center' : 'flex-start', flexWrap: 'wrap',
+            })}>
           <div style={{
             position: 'relative', width: pp, height: pp, flex: 'none',
-            borderRadius: s.mob ? 15 : 25,
-            border: `${s.mob ? 3 : 5}px solid ${s.pillBg}`, overflow: 'hidden', background: s.soft2,
+            borderRadius: s.mob || tab ? 30 : 25,
+            border: `${s.mob || tab ? 6 : 5}px solid ${s.pillBg}`, overflow: 'hidden', background: s.soft2,
           }}>
             <Photo s={s} avatar initialsSize={Math.round(pp / 3)} />
             <Grain s={s} exact blend="lighten" opacity={0.5} />
           </div>
 
-          <div style={col(s.mob ? '14px' : '30px', {
+          <div style={col(s.mob || tab ? '36px' : '30px', {
             alignItems: centred ? 'center' : 'flex-start', minWidth: 0,
+            width: s.mob ? '100%' : undefined,
           })}>
-            <div style={row(s.mob ? '14px' : '25px', { flexWrap: 'wrap' })}>
+            <div style={row(s.mob || tab ? '30px' : '25px', { flexWrap: 'wrap' })}>
               <span style={row('8px')}>
                 <span style={{
                   width: '14px', height: '14px', borderRadius: '7px',
@@ -613,8 +642,14 @@ function HeaderV0({ s }) {
         <TagChips s={s} justify={centred ? 'center' : 'flex-start'} />
       </div>
 
-      <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32} ink="#FBF6EA"
-                 style={{ top: '14%', right: s.mob ? '5%' : '3%' }} />
+      {/* The reference seals: 125px centred on (660, 194) of the 768 frame,
+          85px centred on (335, 169) of the 390 one. */}
+      <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32.38} ink="#FBF6EA"
+                 size={s.mob ? 85 : tab ? 125 : undefined}
+                 style={{
+                   top: s.mob ? '14.9%' : tab ? '12.8%' : '14%',
+                   right: s.mob ? '3.3%' : tab ? '5.9%' : '3%',
+                 }} />
 
       {/* The §10.2 hero frame itself has no floor trim; this is the checker
           ribbon off the stacked header, which shares this composition's
