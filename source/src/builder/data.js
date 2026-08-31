@@ -403,7 +403,10 @@ export const FIELDS = {
   // does not consume a key simply ignores it, so swapping layouts never
   // silently discards copy the user typed.
   header: [
-    { k: 'image',     l: 'Photo',            type: 'image' },
+    { k: 'image',     l: 'Background photo', type: 'image',
+      hint: 'Fills the header behind the type.' },
+    { k: 'avatar',    l: 'Artist photo',     type: 'image',
+      hint: 'The portrait card and the small round avatar. The Polaroid layout uses the background photo instead.' },
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act' },
     { k: 'title',     l: 'Title' },                       // defaults to artistName — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub' },

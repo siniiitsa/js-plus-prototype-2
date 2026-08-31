@@ -13,7 +13,7 @@
 // one that seeds photography. The other four keep the initials placeholder.
 
 import hero from './photos/hero.jpg'
-import heroPortrait from './photos/hero-portrait.jpg'
+import headerAvatar from './photos/header-avatar.jpg'
 import stage from './photos/stage.jpg'
 import gallery1 from './photos/gallery-1.jpg'
 import gallery2 from './photos/gallery-2.jpg'
@@ -52,10 +52,12 @@ export const RETRO_PHOTOS = {
   gallery: [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7],
 }
 
-// The hero portrait card is a tight crop of the hero photograph in Figma rather
-// than a second shot. It is only a *default*: once someone uploads their own photo
-// it fills both slots, which is the behaviour the upload control has always had.
-export const RETRO_HERO_PORTRAIT = heroPortrait
+// The artist avatar, cropped from the §10.2 hero frame's `pp` card (Figma node
+// 964:58576) — a tight portrait from a different shot than the backdrop behind
+// it, which is the whole reason the header's two photos are separate `image` /
+// `avatar` content keys: uploading a backdrop leaves this crop in place, and
+// vice versa. Kept at 384px, roughly 2× the card's 158px render.
+export const RETRO_HEADER_AVATAR = headerAvatar
 
 // Fixed decoration rather than user content, so these are not in FIELDS and are
 // gated on `s.retro` like every other decorative element.
@@ -65,8 +67,14 @@ const isRetro = (themeName) => themeName === 'Retro'
 
 // Resolvers for the two shapes. Both return undefined for the other four themes,
 // which is what leaves them rendering exactly as they did before.
-export const defaultImage = (cat, themeName) => {
-  const v = isRetro(themeName) ? RETRO_PHOTOS[cat] : undefined
+//
+// The header is the one category with two independent single-photo slots, so
+// this one takes the field key as well as the category. Every other caller wants
+// the category's own photo and can leave `key` alone.
+export const defaultImage = (cat, themeName, key = 'image') => {
+  if (!isRetro(themeName)) return undefined
+  if (key === 'avatar') return cat === 'header' ? RETRO_HEADER_AVATAR : undefined
+  const v = RETRO_PHOTOS[cat]
   return Array.isArray(v) ? undefined : v
 }
 

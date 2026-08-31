@@ -84,7 +84,10 @@ const GRAIN_URL =
   "%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E" +
   "%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E\")"
 
-function Grain({ s, opacity = 0.16, blend = 'overlay', radius, style }) {
+// `exact` applies `blend`/`opacity` to the raster verbatim — the hero composites
+// the sheet the way the Figma frame does (lighten at .5) instead of the softened
+// treatment every other section gets.
+function Grain({ s, opacity = 0.16, blend = 'overlay', radius, style, exact = false }) {
   if (!s.retro) return null
   // The Figma texture is a single scratched sheet stretched over the element,
   // not a repeating tile — cover it rather than tiling, or the seams show.
@@ -95,8 +98,8 @@ function Grain({ s, opacity = 0.16, blend = 'overlay', radius, style }) {
       backgroundImage: raster ? `url(${s.grainSrc})` : GRAIN_URL,
       backgroundSize: raster ? 'cover' : '160px 160px',
       backgroundPosition: 'center',
-      mixBlendMode: raster ? 'soft-light' : blend,
-      opacity: raster ? opacity * 1.6 : opacity,
+      mixBlendMode: raster && !exact ? 'soft-light' : blend,
+      opacity: raster && !exact ? opacity * 1.6 : opacity,
       pointerEvents: 'none', borderRadius: radius, ...style,
     }} />
   )
@@ -222,7 +225,7 @@ function BookPill({ s, label }) {
         ...labelStyle(s),
       }}>
         {text}
-        <Asterisk size={14} color={s.pillFg} />
+        <Asterisk size={16} color={s.pillFg} />
       </span>
     )
   }
@@ -323,7 +326,7 @@ function TagChips({ s, justify = 'flex-start' }) {
   )
 }
 
-function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32 }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
@@ -365,7 +368,9 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32 }) {
   // circle, a large centre asterisk and two small ones on the equator. The
   // whole seal sits a third of a turn off square; only the type ring spins.
   const disc = hue || s.ac
-  const ink = contrastInk(disc)
+  // `ink` override: the Figma hero sets cream on the pink disc, which the
+  // luminance threshold alone would call dark-on-light.
+  const ink = inkProp ?? contrastInk(disc)
   const name = String(s.badgeText || '').toUpperCase()
   return (
     <div style={{
@@ -434,8 +439,11 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // the way it does over a real photograph.
 // `src` lets a layout address one slot of a multi-photo section; it falls back
 // to the section's single photo, then to the initials placeholder.
-function Photo({ s, style, initialsSize = 44, backdrop = false, src }) {
-  const url = src ?? s.image
+// `avatar` reads the header's second photo slot, and reads it strictly: an empty
+// avatar is the initials placeholder, never the background photo. That is the
+// whole point of giving it its own upload.
+function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src }) {
+  const url = avatar ? s.avatar : (src ?? s.image)
   if (url) {
     return <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
   }
@@ -460,6 +468,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, src }) {
   )
 }
 
+// Only the header layouts use this, and its thumb is the artist, not the scene.
 function InsetCard({ s, thumb = 34, style }) {
   if (s.mob) return null
   return (
@@ -468,7 +477,7 @@ function InsetCard({ s, thumb = 34, style }) {
       boxShadow: '0 8px 24px rgba(0,0,0,.28)', color: s.tx, ...style,
     }}>
       <div style={{ width: thumb, height: thumb, borderRadius: s.radiusSm, overflow: 'hidden', flex: 'none' }}>
-        <Photo s={s} initialsSize={Math.round(thumb / 2.4)} />
+        <Photo s={s} avatar initialsSize={Math.round(thumb / 2.4)} />
       </div>
       <div style={col('2px')}>
         <span style={{ fontSize: '10px', fontWeight: 700, whiteSpace: 'nowrap' }}>{s.brand}</span>
@@ -485,8 +494,8 @@ const sealGap = (s) => (s.showBadge !== 'show' ? 0 : s.mob ? '62px' : '84px')
 const SCRIM = {
   v1: 'linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.15) 40%, rgba(0,0,0,.6))',
   v5: 'linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.3) 45%, rgba(0,0,0,.55))',
-  // §10.2 hero — the photo is legible at the top and the type sits on the dark.
-  hero: 'linear-gradient(0deg, #111111 0%, rgba(17,17,17,.72) 26%, rgba(17,17,17,0) 62%)',
+  // §10.2 hero — one full-height fade off the floor, exactly the Figma gradient.
+  hero: 'linear-gradient(0deg, #111111 0%, rgba(17,17,17,0) 100%)',
 }
 
 // §10.2 — one top bar for the hero and the footer. Below `desktop` the links
@@ -496,14 +505,15 @@ function NavBar({ s, colour, rule }) {
   const bar = rule || c
   return (
     <div style={row(s.narrow ? '16px' : '24px', { justifyContent: 'space-between', width: '100%' })}>
-      <div style={row('20px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
+      <div style={row('16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
         <Wordmark s={s} logo color={c} />
-        {/* §10.2 draws a 150px rule after the wordmark. It has to yield rather
-            than push the Book Now pill onto a second line: the nav carries the
-            page's own section names, which run longer than the reference's. */}
+        {/* §10.2 draws a 150px rule after the wordmark — 123px on the 1180
+            canvas. It has to yield rather than push the Book Now pill onto a
+            second line: the nav carries the page's own section names, which
+            run longer than the reference's. */}
         <span style={{
-          height: '2px', background: bar, flex: '0 1 150px',
-          maxWidth: '150px', minWidth: s.narrow ? '30px' : '0px',
+          height: '2px', background: bar, flex: '0 1 123px',
+          maxWidth: '123px', minWidth: s.narrow ? '30px' : '0px',
         }} />
       </div>
       {s.narrow ? (
@@ -542,7 +552,9 @@ function NavBar({ s, colour, rule }) {
 function HeaderV0({ s }) {
   const centred = s.align === 'centre'
   const pp = s.mob ? 76 : s.narrow ? 116 : 158          // portrait card edge
-  const ink = s.paper
+  // The Figma hero inks its labels in the fixed cream (`sem/text/2`), one step
+  // brighter than `paper` — which stays the display title's first-word tone.
+  const ink = s.retro ? '#FBF6EA' : s.paper
   const aspect = s.mob ? '390 / 844' : s.narrow ? '3 / 4' : '16 / 8.33'
   const padX = s.gPad
   const padTop = s.mob ? '20px' : s.narrow ? '26px' : '23px'
@@ -556,7 +568,7 @@ function HeaderV0({ s }) {
     }}>
       <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></div>
       <div style={{ position: 'absolute', inset: 0, background: SCRIM.hero }} />
-      <Grain s={s} opacity={0.22} blend="soft-light" />
+      <Grain s={s} exact blend="lighten" opacity={0.5} />
 
       <div style={{ position: 'relative' }}>
         <NavBar s={s} colour={ink} rule={s.chips[3]?.bg || s.ac} />
@@ -567,9 +579,13 @@ function HeaderV0({ s }) {
           justifyContent: centred ? 'center' : 'flex-start', flexWrap: 'wrap',
         })}>
           <div style={{
-            width: pp, height: pp, flex: 'none', borderRadius: s.radius,
+            position: 'relative', width: pp, height: pp, flex: 'none',
+            borderRadius: s.mob ? 15 : 25,
             border: `${s.mob ? 3 : 5}px solid ${s.pillBg}`, overflow: 'hidden', background: s.soft2,
-          }}><Photo s={s} src={s.portrait} initialsSize={Math.round(pp / 3)} /></div>
+          }}>
+            <Photo s={s} avatar initialsSize={Math.round(pp / 3)} />
+            <Grain s={s} exact blend="lighten" opacity={0.5} />
+          </div>
 
           <div style={col(s.mob ? '14px' : '30px', {
             alignItems: centred ? 'center' : 'flex-start', minWidth: 0,
@@ -584,16 +600,16 @@ function HeaderV0({ s }) {
               </span>
               <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.kicker}</span>
             </div>
-            <Title s={s} size={s.dispXl} twoTone toneA={ink} toneB={s.ac} inline={!s.mob}
-                   lh={0.78} align={centred ? 'center' : 'left'} />
+            <Title s={s} size={s.dispXl} twoTone toneA={s.paper} toneB={s.ac} inline={!s.mob}
+                   lh={0.75} align={centred ? 'center' : 'left'} />
           </div>
         </div>
 
         <TagChips s={s} justify={centred ? 'center' : 'flex-start'} />
       </div>
 
-      <SealBadge s={s} hue={s.chips[4]?.bg || s.ac}
-                 style={{ top: '13%', right: s.mob ? '5%' : '7%' }} />
+      <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32} ink="#FBF6EA"
+                 style={{ top: '14%', right: s.mob ? '5%' : '3%' }} />
     </div>
   )
 }
@@ -755,7 +771,7 @@ function HeaderV4({ s }) {
       }}>
         <div style={row('12px')}>
           <div style={{ width: '36px', height: '36px', borderRadius: '999px', overflow: 'hidden', flex: 'none' }}>
-            <Photo s={s} initialsSize={14} />
+            <Photo s={s} avatar initialsSize={14} />
           </div>
           <Title s={s} size={s.h2} color={s.acFg} />
         </div>
