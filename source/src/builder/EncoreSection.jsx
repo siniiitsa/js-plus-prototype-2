@@ -558,7 +558,12 @@ function HeaderV0({ s }) {
   const aspect = s.mob ? '390 / 844' : s.narrow ? '3 / 4' : '16 / 8.33'
   const padX = s.gPad
   const padTop = s.mob ? '20px' : s.narrow ? '26px' : '23px'
-  const padBottom = s.mob ? '26px' : s.narrow ? '40px' : '66px'
+  // The checker ribbon on the floor is a fixed height at every breakpoint — the
+  // reference does not scale it — so it is added to the identity block's own
+  // clearance rather than eating into it. The reference band is 24px; this runs
+  // it a third finer, so the squares read as texture rather than as blocks.
+  const CHECKER = 16
+  const padBottom = `${(s.mob ? 26 : s.narrow ? 40 : 66) + CHECKER}px`
 
   return (
     <div style={{
@@ -610,6 +615,14 @@ function HeaderV0({ s }) {
 
       <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32} ink="#FBF6EA"
                  style={{ top: '14%', right: s.mob ? '5%' : '3%' }} />
+
+      {/* The §10.2 hero frame itself has no floor trim; this is the checker
+          ribbon off the stacked header, which shares this composition's
+          full-bleed photograph. Two rows of 8px squares in `paper` — the
+          Figma fill is sem/media, which is Retro's paper exactly — over the
+          scrim's black floor, where the default `tx` would vanish. */}
+      <Checkerboard s={s} cell={CHECKER} colour={s.paper}
+                    style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }} />
     </div>
   )
 }
