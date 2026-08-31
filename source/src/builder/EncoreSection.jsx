@@ -341,7 +341,7 @@ function TagChips({ s, justify = 'flex-start' }) {
   )
 }
 
-function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk' }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
@@ -400,7 +400,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
         <circle cx="50" cy="50" r="50" fill={disc} />
         <circle cx="50" cy="50" r="45" fill="none" stroke={ink} strokeWidth="1.6" />
         <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
-          <text fill={ink} style={{
+          <text fill={nameInk || ink} style={{
             fontSize: '9px', letterSpacing: '1.4px', fontFamily: s.label,
           }}>
             <textPath href={`#seal-${id}`} startOffset="2%">{name}</textPath>
@@ -408,13 +408,25 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           </text>
         </g>
         <g stroke={ink} strokeLinecap="round">
-          <g strokeWidth="3.6">
-            <line x1="50" y1="25" x2="50" y2="75" />
-            <line x1="25" y1="50" x2="75" y2="50" />
-            <line x1="32.3" y1="32.3" x2="67.7" y2="67.7" />
-            <line x1="67.7" y1="32.3" x2="32.3" y2="67.7" />
-          </g>
-          <g strokeWidth="1.1">
+          {glyph === 'globe' ? (
+            // The bio sticker sets the wireframe globe in the centre where the
+            // hero seal carries the fat asterisk.
+            <g fill="none" strokeWidth="2.2">
+              <circle cx="50" cy="50" r="26" />
+              <ellipse cx="50" cy="50" rx="11.5" ry="26" />
+              <line x1="24" y1="50" x2="76" y2="50" />
+              <path d="M28.3 35.5 A33.75 33.75 0 0 0 71.7 35.5" />
+              <path d="M28.3 64.5 A33.75 33.75 0 0 1 71.7 64.5" />
+            </g>
+          ) : (
+            <g strokeWidth="3.6">
+              <line x1="50" y1="25" x2="50" y2="75" />
+              <line x1="25" y1="50" x2="75" y2="50" />
+              <line x1="32.3" y1="32.3" x2="67.7" y2="67.7" />
+              <line x1="67.7" y1="32.3" x2="32.3" y2="67.7" />
+            </g>
+          )}
+          <g strokeWidth="1.1" stroke={mark || ink}>
             <line x1="11" y1="44.5" x2="11" y2="55.5" />
             <line x1="5.5" y1="50" x2="16.5" y2="50" />
             <line x1="7.1" y1="46.1" x2="14.9" y2="53.9" />
@@ -987,34 +999,49 @@ function FlatHeader({ s }) {
 // Both flanks collapse under the card on tablet and mobile.
 function Bio({ s }) {
   if (s.v0) {
+    // Figma sets the flank eyebrows in the body face, bold — not Anton.
     const label = (t, extra) => (
-      <span style={labelStyle(s, s.eyebrow, { color: s.ac, ...extra })}>{t}</span>
+      <span style={{
+        fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap', ...extra,
+      }}>{t}</span>
     )
     const card = (
-      <div style={{ position: 'relative', padding: s.mob ? '0 26px 26px 0' : '0 34px 34px 0' }}>
+      <div style={{ position: 'relative', padding: s.mob ? '0 26px 26px 0' : '0 12px 12px 0' }}>
         <div style={{
-          position: 'relative', transform: tilt(s, 2.6), transformOrigin: 'center',
-          background: s.paper, borderRadius: s.radius, boxShadow: soft(s),
-          padding: s.mob ? '12px' : '16px', ...row('12px', { alignItems: 'stretch' }),
+          position: 'relative', transform: tilt(s, -6), transformOrigin: 'center',
+          // Figma box/1 — the polaroid sits a step lighter than the page, and
+          // Retro's `paper` IS the page background, so it needs its own cream.
+          background: s.retro ? '#FAECD5' : s.paper, borderRadius: s.radius, boxShadow: soft(s),
+          padding: s.mob ? '12px' : '16px 0 16px 16px', ...row(s.mob ? '12px' : '0', { alignItems: 'stretch' }),
         }}>
           <div style={{
-            flex: 1, minWidth: 0, aspectRatio: '4 / 5', borderRadius: s.radiusSm, overflow: 'hidden',
+            flex: 1, minWidth: 0, aspectRatio: '4 / 5.2', borderRadius: s.radiusSm, overflow: 'hidden',
           }}>
             <Photo s={s} initialsSize={54} />
-            <Grain s={s} opacity={0.2} />
           </div>
-          <div style={row('8px', {
-            flex: 'none', flexDirection: 'column', justifyContent: 'flex-start',
-            color: s.paperFg, paddingTop: '2px',
+          <div style={col('14px', {
+            flex: 'none', width: s.mob ? undefined : '74px', alignItems: 'center',
+            justifyContent: 'space-between', color: s.paperFg,
+            padding: s.mob ? 0 : '0 10px',
           })}>
-            <GlobeMark size={16} color={s.ac} />
-            <span style={labelStyle(s, s.eyebrow, {
-              writingMode: 'vertical-rl', letterSpacing: '0.08em',
-            })}>{s.location}</span>
+            <div style={col('14px', { alignItems: 'center' })}>
+              <span style={{ transform: 'rotate(-90deg)' }}>
+                <GlobeMark size={s.mob ? 18 : 22} color={s.ac} />
+              </span>
+              {/* vertical-rl reads top-down; the Figma label runs the other
+                  way, so flip it to read bottom-to-top. */}
+              <span style={labelStyle(s, s.labelMd, {
+                writingMode: 'vertical-rl', transform: 'rotate(180deg)', letterSpacing: '0.08em',
+              })}>{s.location}</span>
+            </div>
+            <span style={{ width: '2px', height: s.mob ? '110px' : '157px', background: s.ac, flex: 'none' }} />
           </div>
+          <Grain s={s} exact blend="screen" opacity={0.5} radius={s.radius} />
         </div>
-        <SealBadge s={s} hue={s.pillBg} size={s.mob ? 68 : 96} tilt={-14}
-                   style={{ left: s.mob ? '2%' : '8%', bottom: 0 }} />
+        <SealBadge s={s} hue={s.retro ? '#CEB081' : s.pillBg} ink={s.chips[3]?.bg}
+                   mark={s.ac} nameInk={s.ac} glyph="globe" size={s.mob ? 68 : 103} tilt={32}
+                   style={{ left: s.mob ? '-20px' : '-50px', bottom: s.mob ? '30px' : '20px' }} />
       </div>
     )
 
@@ -1025,7 +1052,7 @@ function Bio({ s }) {
         <div style={col('6px')}>{label(s.initials)}{label('Bio')}</div>
         <h2 style={{
           margin: s.narrow ? '14px 0' : 0, fontFamily: s.display, fontSize: s.dispLg,
-          lineHeight: 0.95, letterSpacing: s.dls, color: s.ac,
+          lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>
         {label('[ 001 ] Structure · Bio_01')}
       </div>
@@ -1040,7 +1067,7 @@ function Bio({ s }) {
           <p style={{ margin: 0, fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.5, color: s.ac }}>{s.bioP1}</p>
         </div>
         <div style={col('10px')}>
-          <span style={{ height: '1px', background: s.line2, width: '100%' }} />
+          <span style={{ height: '1px', background: (s.retro && s.chips[0]?.bg) || s.line2, width: '100%' }} />
           {label(`${s.kicker} · ${s.location}`)}
         </div>
       </div>
@@ -1049,7 +1076,7 @@ function Bio({ s }) {
     if (s.narrow) return <div style={col(s.gGap)}>{heading}{card}{prose}</div>
     return (
       <div style={{
-        display: 'grid', gridTemplateColumns: '0.85fr 1.25fr 0.9fr',
+        display: 'grid', gridTemplateColumns: '1fr 1.9fr 1fr',
         gap: s.gGap, alignItems: 'stretch',
       }}>
         {heading}{card}{prose}
