@@ -15,7 +15,7 @@ import { useId } from 'react'
 import {
   Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
-  Image as ImageIcon,
+  Image as ImageIcon, Youtube, Instagram, Music2,
 } from 'lucide-react'
 
 /* ------------------------------------------------------------------ *
@@ -1719,77 +1719,190 @@ function Gallery({ s }) {
   // the right. Only the first row is open; the rest offer a "+".
   if (s.v0) {
     const active = galActive(s)
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const strip = [0, 1, 2, 3, 4, 5, 6]
+    const cardR = s.retro ? (desk ? '25px' : '30px') : s.radius
+    const rowR = s.retro ? (desk ? '16px' : '20px') : s.btnR
+    // The Figma frame gives each media source its brand glyph; lucide has no
+    // TikTok mark, so the closest note glyph stands in.
+    const srcIcons = [ImageIcon, Youtube, Instagram, Music2]
     const arrow = (icon) => (
       <span style={{
-        width: 30, height: 30, borderRadius: '999px', background: s.deep, color: s.deepFg,
+        width: desk ? 29 : 35, height: desk ? 29 : 35, flex: 'none',
+        borderRadius: '999px', background: s.deep, color: s.deepFg,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
       }}>{icon}</span>
     )
 
-    const sources = (
-      <div style={col(s.mob ? '12px' : '18px')}>
+    // The source's colour square. The Figma frames border the open one in ink
+    // and the closed ones in the accent.
+    const iconSq = (g, Glyph, size, glyph) => (
+      <span style={{
+        width: size, height: size, flex: 'none',
+        borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm,
+        background: g.bg, color: g.fg,
+        border: s.retro ? (g.on ? `2px solid ${s.tx}` : `1px solid ${s.ac}`) : 'none',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
+      }}><Glyph size={glyph} /></span>
+    )
+
+    // The Figma tablet and mobile frames fold the source list into a row of
+    // icon-only tiles: no labels, and only the open tile carries a dismiss
+    // glyph. Tablet spreads four equal tiles across the page; mobile keeps
+    // them content-sized and lets the frame clip the row's right edge.
+    const sources = !desk ? (
+      <div style={row('20px', {
+        alignItems: 'stretch', ...(s.mob ? { overflowX: 'clip' } : {}),
+      })}>
         {s.gallerySources.map((g, i) => (
           <div key={i} style={{
-            ...row('16px'),
+            ...(tab ? { flex: 1, minWidth: 0, height: '92px' } : { flex: 'none' }),
+            ...row(tab ? '16px' : '5px', { justifyContent: g.on ? 'space-between' : 'center' }),
+            position: 'relative', overflow: 'hidden',
             background: g.on ? s.pillBg : 'transparent',
-            color: g.on ? contrastInk(s.pillBg) : s.tx,
-            border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR,
-            padding: s.mob ? '8px 14px 8px 8px' : '10px 20px 10px 10px',
-            boxShadow: g.on ? hard(s, s.ac, 4, 5) : 'none',
+            color: g.on ? s.pillFg : (s.retro ? g.bg : g.ink),
+            border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
+            padding: tab ? '16px 24px 16px 16px' : '10px',
+            boxShadow: g.on ? hard(s, s.ac, 7, 9) : 'none',
+            transform: g.on ? tilt(s, -1) : 'none',
           }}>
-            <span style={{
-              width: s.mob ? 34 : 44, height: s.mob ? 34 : 44, flex: 'none',
-              borderRadius: s.radiusSm, background: g.bg, color: g.fg,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            }}><ImageIcon size={s.mob ? 16 : 20} /></span>
-            <span style={labelStyle(s, s.labelMd, {
-              flex: 1, color: g.on ? s.pillFg : g.ink,
-            })}>{g.label}</span>
-            {g.on ? <X size={20} strokeWidth={2.4} /> : <Plus size={20} strokeWidth={2.4} />}
+            {g.on && <Grain s={s} radius={rowR} />}
+            {iconSq(g, srcIcons[i] || ImageIcon, 60, 28)}
+            {g.on && <X size={30} strokeWidth={2.4} style={{ position: 'relative' }} />}
           </div>
         ))}
       </div>
+    ) : (
+      <div style={col('16px')}>
+        {s.gallerySources.map((g, i) => {
+          // The Figma frame letters each closed row in its source colour even
+          // when that is low-contrast (TikTok's yellow); the legible() fallback
+          // stays on for the flat themes.
+          const ink = s.retro ? g.bg : g.ink
+          return (
+            <div key={i} style={{
+              ...row('16px'),
+              position: 'relative', overflow: 'hidden',
+              background: g.on ? s.pillBg : 'transparent',
+              color: g.on ? s.pillFg : ink,
+              border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
+              padding: '13px 20px 13px 13px',
+              boxShadow: g.on ? hard(s, s.ac, 6, 7) : 'none',
+              transform: g.on ? tilt(s, -1) : 'none',
+            }}>
+              {g.on && <Grain s={s} radius={rowR} />}
+              {iconSq(g, srcIcons[i] || ImageIcon, 49, 24)}
+              <span style={labelStyle(s, '18px', {
+                flex: 1, position: 'relative', color: g.on ? s.pillFg : ink,
+              })}>{g.label}</span>
+              {g.on
+                ? <X size={25} strokeWidth={2.4} style={{ position: 'relative' }} />
+                : <Plus size={25} strokeWidth={2.4} style={{ position: 'relative' }} />}
+            </div>
+          )
+        })}
+      </div>
     )
 
-    // §10.2 — the viewer stack does not fill its half: the card is 603 of the
-    // 720 column, and the thumbnail rail lines up with it.
+    // The rail's own furniture: the globe seal, the Anton wordmark and the
+    // pager. Desktop and tablet stack them down the card's right edge with the
+    // wordmark turned -90°; the Figma mobile frame lays the same three out in
+    // a footer row under the photo instead.
+    const railArrows = (
+      <div style={row(desk ? '4px' : '5px')}>
+        {arrow(<ArrowLeft size={desk ? 14 : 16} />)}{arrow(<ArrowRight size={desk ? 14 : 16} />)}
+      </div>
+    )
+    const rail = s.mob ? (
+      <div style={row('10px', { justifyContent: 'space-between', color: s.acFg, position: 'relative' })}>
+        <div style={row('10px')}>
+          <GlobeMark size={27} color={s.acFg} />
+          <span style={labelStyle(s, '21px', { letterSpacing: '0.1em' })}>Gallery</span>
+        </div>
+        {railArrows}
+      </div>
+    ) : (
+      <div style={col('10px', {
+        flex: 'none', alignItems: 'center', color: s.acFg, position: 'relative',
+        justifyContent: 'space-between',
+      })}>
+        <div style={col('10px', { alignItems: 'center' })}>
+          <GlobeMark size={desk ? 22 : 27} color={s.acFg} />
+          <span style={labelStyle(s, desk ? '18px' : '21px', {
+            writingMode: 'vertical-rl', letterSpacing: '0.1em',
+            display: 'inline-block', transform: 'rotate(180deg)',
+          })}>
+            Gallery
+          </span>
+        </div>
+        {railArrows}
+      </div>
+    )
+
     const viewer = (
-      <div style={col('14px', { maxWidth: s.narrow ? 'none' : '84%' })}>
+      // minWidth 0 so the mobile frame's overflowing source row cannot widen
+      // the grid column past the canvas.
+      <div style={col(desk ? '20px' : '24px', { minWidth: 0 })}>
         <div style={row('12px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
           <span style={row('8px', labelStyle(s, s.eyebrow, { color: s.ac }))}>
-            <ArrowLeft size={13} /> Back to beginning
+            <ArrowLeft size={13} color={s.tx} /> Back to beginning
           </span>
           <span style={col('2px', { alignItems: 'flex-end' })}>
-            <span style={labelStyle(s, s.eyebrow, { color: s.tx })}>{s.brand}</span>
-            <span style={labelStyle(s, s.eyebrow, { color: s.muted })}>Gallery</span>
+            <span style={labelStyle(s, s.eyebrow, { color: s.ac })}>{s.brand}</span>
+            <span style={labelStyle(s, '10px', { color: s.ac })}>Gallery</span>
           </span>
         </div>
 
         <div style={{
-          position: 'relative', background: s.ac, borderRadius: s.radius,
-          padding: s.mob ? '10px' : '14px', ...row('12px', { alignItems: 'stretch' }),
+          position: 'relative', background: s.ac, borderRadius: cardR,
+          padding: desk ? '16px' : tab ? '20px' : '10px',
+          boxShadow: soft(s), transform: tilt(s, -2),
+          ...(s.mob
+            ? col('20px')
+            : row(desk ? '16px' : '20px', { alignItems: 'stretch' })),
         }}>
-          <Grain s={s} opacity={0.2} radius={s.radius} />
+          <Grain s={s} exact blend="screen" opacity={0.52} radius={cardR} />
           <div style={{
-            flex: 1, minWidth: 0, aspectRatio: '4 / 4.36', borderRadius: s.radiusSm,
+            ...(s.mob
+              // The Figma mobile frame turns the viewer landscape: full card
+              // width at the frame's fixed height, corner brackets clipped out.
+              ? { width: '100%', height: '299px' }
+              : { flex: 1, minWidth: 0, aspectRatio: '4 / 4.36' }),
+            borderRadius: s.retro ? '4px' : s.radiusSm,
             overflow: 'hidden', position: 'relative',
-          }}><Photo s={s} initialsSize={52} src={s.images[active]} /></div>
-          <div style={col('10px', { flex: 'none', alignItems: 'center', color: s.acFg, position: 'relative' })}>
-            <GlobeMark size={18} color={s.acFg} />
-            <span style={labelStyle(s, s.eyebrow, { writingMode: 'vertical-rl', letterSpacing: '0.1em' })}>
-              Gallery
-            </span>
+          }}>
+            <Photo s={s} initialsSize={52} src={s.images[active]} />
+            {s.retro && !s.mob && (
+              <>
+                <span style={{
+                  position: 'absolute', left: desk ? '11px' : '14px', bottom: desk ? '11px' : '14px',
+                  width: desk ? '15px' : '18px', height: desk ? '15px' : '18px',
+                  borderLeft: `2px solid ${s.tx}`, borderBottom: `2px solid ${s.tx}`,
+                }} />
+                <span style={{
+                  position: 'absolute', right: desk ? '12px' : '15px', bottom: desk ? '11px' : '14px',
+                  width: desk ? '15px' : '18px', height: desk ? '15px' : '18px',
+                  borderRight: `2px solid ${s.tx}`, borderBottom: `2px solid ${s.tx}`,
+                }} />
+              </>
+            )}
+            {s.retro && desk && (
+              <span style={labelStyle(s, '9px', {
+                position: 'absolute', right: '12px', bottom: '12px', letterSpacing: '1px',
+                background: 'rgba(17,17,17,0.55)', color: s.ac, borderRadius: '4px', padding: '3px 8px',
+              })}>{`0${active + 1} — 0${strip.length}`}</span>
+            )}
           </div>
-          <div style={row('8px', { position: 'absolute', right: '18px', bottom: '18px' })}>
-            {arrow(<ArrowLeft size={14} />)}{arrow(<ArrowRight size={14} />)}
-          </div>
+          {rail}
         </div>
 
-        <div style={row('10px', { overflow: 'hidden' })}>
-          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+        <div style={row(desk ? '10px' : '12px', { overflow: 'hidden', marginTop: desk ? '13px' : '16px' })}>
+          {(s.mob ? strip.slice(0, 4) : strip).map((i) => (
             <span key={i} style={{
-              flex: 1, minWidth: 0, aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
-              border: `${s.bw} solid ${i === active ? s.pillBg : s.ac}`,
+              flex: 1, minWidth: 0, aspectRatio: '1', overflow: 'hidden',
+              borderRadius: s.retro ? (desk ? '16px' : '20px') : s.radiusSm,
+              border: `${desk ? '4px' : '5px'} solid ${i === active ? s.pillBg : s.ac}`,
             }}><Photo s={s} initialsSize={12} src={s.images[i]} /></span>
           ))}
         </div>
@@ -1798,15 +1911,16 @@ function Gallery({ s }) {
 
     return (
       <div style={{
-        // §10.2 splits this section down the middle (720 / 720).
+        // §10.2 splits this section down the middle (720 / 720); the Figma
+        // frame indents the viewer half further, so the gutter is wide.
         display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
-        gap: s.gGap, alignItems: 'start',
+        gap: desk ? '110px' : tab ? '60px' : '20px', alignItems: 'start',
       }}>
-        <div style={col(s.mob ? '20px' : '30px')}>
-          <div style={col('12px')}>
+        <div style={col(desk ? '33px' : tab ? '40px' : '20px', { minWidth: 0 })}>
+          <div style={col(desk ? '30px' : tab ? '36px' : '10px')}>
             <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>Media</span>
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
+              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
               letterSpacing: s.dls, color: s.ac,
             }}>{s.title}</h2>
           </div>

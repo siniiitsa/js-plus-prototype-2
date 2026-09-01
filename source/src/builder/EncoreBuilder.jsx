@@ -320,8 +320,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
   vm.gal4 = vm.gal.slice(0, 4)
+  // Tag order per the Figma gallery frame: Gallery/YouTube/Instagram/TikTok
+  // tiles read accent-red, olive, purple, yellow — tags 1, 3, 0, 2 in Retro.
   vm.gallerySources = GALLERY_SOURCES.map((l, i) => {
-    const cbg = T.tags[i % T.tags.length]
+    const cbg = T.tags[[1, 3, 0, 2][i] % T.tags.length]
     return { label: cased(l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0 }
   })
 
