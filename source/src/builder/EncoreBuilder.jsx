@@ -44,7 +44,7 @@ import {
   headerFamily, layoutCount, designCount,
   headerLayout, headerLayoutLabel, HEADER_UX,
 } from './data.js'
-import { defaultImage, defaultImages, RETRO_HERO_PORTRAIT, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, RETRO_TEXTURE } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -66,8 +66,8 @@ const SIZES = {
 // collapses to a hamburger on tablet as well as mobile, while `mob` (mobile
 // only) still drives the single-column collapses.
 const RAMP = {
-  mobile:  { dispXl: '46px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '13px', labelXs: '12px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '22px', narrow: true },
-  tablet:  { dispXl: '72px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '16px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
+  mobile:  { dispXl: '77px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '14px', labelXs: '14px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '22px', narrow: true },
+  tablet:  { dispXl: '77px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
   desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '64px', narrow: false },
 }
 for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k])
@@ -218,10 +218,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
   vm.image = c.image !== undefined ? (c.image ?? undefined) : defaultImage(cat, T.name)
-  // The hero portrait card is its own crop in Figma, but only until the user
-  // uploads: once c.image is set it fills the card too, as it always has.
-  vm.portrait = c.image !== undefined ? (c.image ?? undefined)
-    : (cat === 'header' && T.name === 'Retro' ? RETRO_HERO_PORTRAIT : undefined)
+  // The artist avatar is a slot of its own — the hero portrait card, the
+  // inset-card thumb and the overlay-card circle — on the same three states as
+  // vm.image, keyed on `avatar`. Retro seeds it with the §10.2 portrait, which
+  // is a different photograph from the backdrop; elsewhere an empty avatar is
+  // the initials placeholder. A backdrop upload no longer fills it.
+  vm.avatar = c.avatar !== undefined ? (c.avatar ?? undefined)
+    : defaultImage(cat, T.name, 'avatar')
   // Multi-photo sections (gallery strip, media artwork). Slot n fills tile n;
   // an empty slot falls through to the section's initials placeholder. An
   // explicitly emptied array is already distinguishable, so no sentinel is needed.
@@ -317,8 +320,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
   vm.gal4 = vm.gal.slice(0, 4)
+  // Tag order per the Figma gallery frame: Gallery/YouTube/Instagram/TikTok
+  // tiles read accent-red, olive, purple, yellow — tags 1, 3, 0, 2 in Retro.
   vm.gallerySources = GALLERY_SOURCES.map((l, i) => {
-    const cbg = T.tags[i % T.tags.length]
+    const cbg = T.tags[[1, 3, 0, 2][i] % T.tags.length]
     return { label: cased(l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0 }
   })
 
@@ -867,7 +872,7 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = 
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
   // Retro section would show a photo on the canvas and an empty dropzone here.
   const themeName = THEMES[themeIdx].name
-  const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName))
+  const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k))
   const imgsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
 
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }

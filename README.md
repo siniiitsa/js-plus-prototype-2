@@ -87,8 +87,10 @@ Five, all deliberate:
    gallery, repertoire, events map, pricing, booking calendar, enquiry form, testimonials and
    footer — across its desktop (1440), tablet (768) and mobile (390) frames. Every other layout
    variant is untouched and still prose-derived. Two knock-on notes: the Figma display face is
-   *Soulway*, which is commercial and cannot ship, so Retro keeps Alfa Slab One (its Anton and
-   Inter faces are used as drawn); and the design's five album covers are real records, which
+   *Soulway*, which is commercial and cannot ship, so Retro sets its display type in **Fraunces**
+   at `wght 900 / SOFT 100 / WONK 1 / opsz 144` — the nearest free match for Soulway's soft 70s
+   slab, and much closer than the Alfa Slab One it replaced (its Anton and Inter faces are used
+   as drawn); and the design's five album covers are real records, which
    are not ours to redistribute, so the media player's artwork is neutral crops of the same
    live-set photography in the framing the design uses. Everything else — the photography, the
    paper-grain texture and the Manchester map tile — now ships as committed assets; see
@@ -179,7 +181,11 @@ These are intentional limits, not oversights — see §12 for the full list. The
   and Pop are fully selectable and functional but render flat-colour sections and a three-layout
   flat header family. The §10.2 *layouts* are shared by all five templates; its decorative
   treatment — paper grain, torn edges, checkerboard, hard offset shadows, rotated cards — is
-  gated on `s.retro`, the same split as `headerFamily()`.
+  gated on `s.retro`, the same split as `headerFamily()`. One piece of that treatment is placed
+  rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
+  frame at all. It is lifted from the stacked header, which shares the same full-bleed
+  photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
+  24px so the squares read as texture: 16px tall, 8px squares.
 - **Layout folding.** For the 13 non-header categories, more layout numbers are offered than
   there are distinct designs, so e.g. `Audio layout 1`, `4` and `7` render identically while
   keeping their own labels. The header is exempt.

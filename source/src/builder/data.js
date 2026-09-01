@@ -8,11 +8,17 @@
 export const THEMES = [
   {
     name: 'Retro',
-    sub: 'Alfa Slab One · warm 70s',
-    display: "'Alfa Slab One', serif",
+    sub: 'Fraunces · warm 70s',
+    display: "'Fraunces', serif",
     // §10.2 — the Figma source names Soulway (display), Anton (label) and Inter
-    // (body). Soulway is commercial and cannot ship, so the display face stays
-    // Alfa Slab One; the other two are Google Fonts and are used verbatim.
+    // (body). Anton and Inter are Google Fonts and are used verbatim. Soulway is
+    // commercial and cannot ship, so the display face is the nearest free stand-in:
+    // Fraunces at its heaviest, softest, wonkiest instance — the same 70s Cooper-ish
+    // slab with ball terminals. index.html asks Google for exactly one instance
+    // (`opsz,wght,SOFT,WONK@144,900,100,1`), so the single @font-face it serves is
+    // already soft/wonk at weight 900 and every `fontFamily: s.display` matches it
+    // without naming a weight. Do NOT add more Fraunces weights to that link — a
+    // second face would let the default 400 win and the display would go thin.
     label: "'Anton', sans-serif",
     body: "'Inter', sans-serif",
     // Passthrough, not title-casing. The §10.2 reference sets display copy as
@@ -403,7 +409,10 @@ export const FIELDS = {
   // does not consume a key simply ignores it, so swapping layouts never
   // silently discards copy the user typed.
   header: [
-    { k: 'image',     l: 'Photo',            type: 'image' },
+    { k: 'image',     l: 'Background photo', type: 'image',
+      hint: 'Fills the header behind the type.' },
+    { k: 'avatar',    l: 'Artist photo',     type: 'image',
+      hint: 'The portrait card and the small round avatar. The Polaroid layout uses the background photo instead.' },
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act' },
     { k: 'title',     l: 'Title' },                       // defaults to artistName — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub' },

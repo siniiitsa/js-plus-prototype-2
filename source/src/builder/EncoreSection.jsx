@@ -15,7 +15,7 @@ import { useId } from 'react'
 import {
   Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
-  Image as ImageIcon,
+  Image as ImageIcon, Youtube, Instagram, Music2,
 } from 'lucide-react'
 
 /* ------------------------------------------------------------------ *
@@ -53,6 +53,12 @@ const inputStyle = (s) => ({
 const row = (gap, extra) => ({ display: 'flex', alignItems: 'center', gap, ...extra })
 const col = (gap, extra) => ({ display: 'flex', flexDirection: 'column', gap, ...extra })
 
+// §5.5 — `narrow` covers both reference frames below desktop, and each has its
+// own numbers: the Figma 768 and 390 frames are exactly the tablet and mobile
+// canvases, so their values are used verbatim, where the 1180 canvas takes the
+// Figma desktop frame × 0.82. `s.mob` is the 390 one; this is the 768 one.
+const isTablet = (s) => !!s.narrow && !s.mob
+
 /* ------------------------------------------------------------------ *
  * §10.2 Retro design language
  *
@@ -84,7 +90,10 @@ const GRAIN_URL =
   "%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E" +
   "%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E\")"
 
-function Grain({ s, opacity = 0.16, blend = 'overlay', radius, style }) {
+// `exact` applies `blend`/`opacity` to the raster verbatim — the hero composites
+// the sheet the way the Figma frame does (lighten at .5) instead of the softened
+// treatment every other section gets.
+function Grain({ s, opacity = 0.16, blend = 'overlay', radius, style, exact = false }) {
   if (!s.retro) return null
   // The Figma texture is a single scratched sheet stretched over the element,
   // not a repeating tile — cover it rather than tiling, or the seams show.
@@ -95,19 +104,41 @@ function Grain({ s, opacity = 0.16, blend = 'overlay', radius, style }) {
       backgroundImage: raster ? `url(${s.grainSrc})` : GRAIN_URL,
       backgroundSize: raster ? 'cover' : '160px 160px',
       backgroundPosition: 'center',
-      mixBlendMode: raster ? 'soft-light' : blend,
-      opacity: raster ? opacity * 1.6 : opacity,
+      mixBlendMode: raster && !exact ? 'soft-light' : blend,
+      opacity: raster && !exact ? opacity * 1.6 : opacity,
       pointerEvents: 'none', borderRadius: radius, ...style,
     }} />
   )
 }
 
-// Torn paper strip across a section boundary. Painted in `s.edge` — an opaque
-// tonal shift of the section background — because it overlaps the seam.
+// Torn paper strip across a section boundary. Painted in the page ground
+// (`s.bg`) — the Figma vector's own fill — so it reads as the neighbouring
+// sheet of the page torn over this section, not a third tone: visible where
+// the sections differ (the cream media player against the beige page) and
+// merging silently where they share the ground. The ragged line is the §10.2
+// tear itself: the contour of the Figma torn-paper vector (node 446:2390, the
+// media player's bottom edge), sampled at its anchor points and normalised
+// into this 1000×40 box, so the seam reads as ripped fibre, not a smooth wave.
 const TORN_D =
-  'M0,0 L1000,0 L1000,13 C947,25 908,7 861,17 C812,28 767,9 719,20 ' +
-  'C673,30 631,11 585,21 C540,31 497,12 452,22 C408,32 366,13 321,23 ' +
-  'C277,33 236,14 190,24 C147,33 108,16 62,25 C40,29 20,23 0,27 Z'
+  'M0,0 L1000,0 L998.1,27.5 L1000,17.9 L996.1,15.5 L971.6,11.6 L961.2,6.7 ' +
+  'L952.1,8.6 L939.1,18.8 L923,19.3 L921.3,17.5 L906.2,10.3 L894.5,9.3 ' +
+  'L866.7,7.1 L856.9,2.3 L847.4,2.2 L845.8,4.3 L840.5,4.5 L838.4,6.6 L828,0.7 ' +
+  'L826.5,2.2 L798.6,3.7 L795.5,5.5 L768.4,9.6 L756,9.9 L748.4,12.4 ' +
+  'L730.7,11.7 L716.7,15.2 L703.2,20.5 L698.3,19.9 L693.2,23 L677.3,23.2 ' +
+  'L670.9,21.1 L665.6,22.5 L661.1,19.8 L645.5,17.5 L634.5,15.3 L606.2,12.6 ' +
+  'L602.8,9.6 L597.5,9.5 L594,8 L586.3,12.2 L581.2,11.8 L575.4,14.5 ' +
+  'L556.4,13.9 L552.8,12.5 L546.9,16.3 L524.8,18 L514.9,19.6 L507.6,19.7 ' +
+  'L499.3,15.6 L497.4,16.6 L483.4,10.4 L477.6,10.6 L473.2,8.4 L455.6,8.6 ' +
+  'L447.8,5.3 L443,7.9 L439.6,6.6 L433,9.1 L423.3,9.5 L420,13.5 L416.7,13.5 ' +
+  'L411.3,18.1 L395.9,21 L390.9,19 L384.9,22.1 L371,22.6 L364.8,23.4 ' +
+  'L352.6,22 L344.1,26.1 L333.9,25.8 L330.5,27 L318.8,22.6 L315.9,24.6 ' +
+  'L306.5,24.8 L303.2,26.9 L298.9,24.8 L283.2,23.2 L281.9,21.4 L271.3,16.1 ' +
+  'L268.5,15.2 L267.6,11 L264.9,10.6 L258.5,6.1 L249.5,0.5 L247.6,2 ' +
+  'L233.9,4.2 L229.7,2.3 L223.5,5 L221.2,3.1 L213.7,2.4 L210.8,5.6 L203,3.8 ' +
+  'L185.7,8.8 L176.1,7.3 L170,8 L168.8,5.9 L166.4,6.5 L163.7,5.1 L154.5,4 ' +
+  'L152,1.5 L146.2,3.7 L146.2,5.8 L120.1,5.1 L122.9,5.9 L116.7,5.5 L115,3.8 ' +
+  'L110.7,6.5 L106.9,6 L91.7,13.6 L75.4,15.3 L48.6,27.9 L37.1,28.4 ' +
+  'L37.8,29.9 L29.2,31.4 L17,30 L8.8,35.9 L0,38.2 Z'
 
 // `bleed` pulls the strip out to the section's own edges, past the root
 // padding, so a decoration sits on the seam rather than inside the column.
@@ -128,7 +159,7 @@ function TornEdge({ s, side = 'top', height = 26, colour, bleed = true }) {
         : { left: 0, width: '100%', [side]: 0 }),
       transform: side === 'bottom' ? 'scaleY(-1)' : undefined,
     }}>
-      <path d={TORN_D} fill={colour || s.edge} />
+      <path d={TORN_D} fill={colour || s.bg} />
     </svg>
   )
 }
@@ -168,9 +199,11 @@ function GlobeMark({ size = 22, color = 'currentColor', strokeWidth = 1.4 }) {
  * §10.2 Shared header primitives
  * ------------------------------------------------------------------ */
 
-function LogoMark({ s, size = 18, color }) {
+function LogoMark({ s, size = 18, color, glyph }) {
   // §10.2 replaces the initials disc with a wireframe globe under Retro.
-  if (s.retro) return <GlobeMark size={size + 6} color={color || s.tx} />
+  // `glyph` sizes that globe outright: both narrow hero frames draw it at 27px,
+  // where the initials disc it stands in for stays at 18.
+  if (s.retro) return <GlobeMark size={glyph ?? size + 6} color={color || s.tx} />
   return (
     <span style={{
       width: size, height: size, borderRadius: '999px', background: s.ac,
@@ -180,10 +213,10 @@ function LogoMark({ s, size = 18, color }) {
   )
 }
 
-function Wordmark({ s, logo = false, color }) {
+function Wordmark({ s, logo = false, color, glyph }) {
   return (
     <span style={row('10px')}>
-      {logo && <LogoMark s={s} color={color} />}
+      {logo && <LogoMark s={s} color={color} glyph={glyph} />}
       <span style={s.retro
         ? labelStyle(s, s.labelMd, { color: color || s.tx })
         : {
@@ -215,14 +248,21 @@ function BookPill({ s, label }) {
   const text = label ?? s.cta1
   if (s.retro) {
     // Accent-coloured type on a second palette hue, with the offset block.
+    // One Figma pill at three scales: the 768 frame draws it at full size, the
+    // 1180 canvas at × 0.82 and the 390 frame at × 0.62 — and the 390 one takes
+    // its type down with it, where the other two set it at label-md.
+    const tab = isTablet(s)
     return (
       <span style={{
-        ...row('8px'), background: s.pillBg, color: s.pillFg, padding: '8px 16px',
-        borderRadius: s.btnR, cursor: 'pointer', boxShadow: hard(s, s.ac, 3, 4),
-        ...labelStyle(s),
+        ...row(s.mob ? '6.2px' : tab ? '10px' : '8px'),
+        background: s.pillBg, color: s.pillFg,
+        padding: s.mob ? '6.2px 12.4px' : tab ? '10px 20px' : '8px 16px',
+        borderRadius: s.btnR, cursor: 'pointer',
+        boxShadow: s.mob ? hard(s, s.ac, 1.9, 2.5) : hard(s, s.ac, 3, 4),
+        ...labelStyle(s, s.mob ? '12.4px' : undefined),
       }}>
         {text}
-        <Asterisk size={14} color={s.pillFg} />
+        <Asterisk size={s.mob ? 12.4 : tab ? 20 : 16} color={s.pillFg} />
       </span>
     )
   }
@@ -323,7 +363,7 @@ function TagChips({ s, justify = 'flex-start' }) {
   )
 }
 
-function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32 }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk' }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
@@ -365,7 +405,9 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32 }) {
   // circle, a large centre asterisk and two small ones on the equator. The
   // whole seal sits a third of a turn off square; only the type ring spins.
   const disc = hue || s.ac
-  const ink = contrastInk(disc)
+  // `ink` override: the Figma hero sets cream on the pink disc, which the
+  // luminance threshold alone would call dark-on-light.
+  const ink = inkProp ?? contrastInk(disc)
   const name = String(s.badgeText || '').toUpperCase()
   return (
     <div style={{
@@ -380,7 +422,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32 }) {
         <circle cx="50" cy="50" r="50" fill={disc} />
         <circle cx="50" cy="50" r="45" fill="none" stroke={ink} strokeWidth="1.6" />
         <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
-          <text fill={ink} style={{
+          <text fill={nameInk || ink} style={{
             fontSize: '9px', letterSpacing: '1.4px', fontFamily: s.label,
           }}>
             <textPath href={`#seal-${id}`} startOffset="2%">{name}</textPath>
@@ -388,13 +430,25 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32 }) {
           </text>
         </g>
         <g stroke={ink} strokeLinecap="round">
-          <g strokeWidth="3.6">
-            <line x1="50" y1="25" x2="50" y2="75" />
-            <line x1="25" y1="50" x2="75" y2="50" />
-            <line x1="32.3" y1="32.3" x2="67.7" y2="67.7" />
-            <line x1="67.7" y1="32.3" x2="32.3" y2="67.7" />
-          </g>
-          <g strokeWidth="1.1">
+          {glyph === 'globe' ? (
+            // The bio sticker sets the wireframe globe in the centre where the
+            // hero seal carries the fat asterisk.
+            <g fill="none" strokeWidth="2.2">
+              <circle cx="50" cy="50" r="26" />
+              <ellipse cx="50" cy="50" rx="11.5" ry="26" />
+              <line x1="24" y1="50" x2="76" y2="50" />
+              <path d="M28.3 35.5 A33.75 33.75 0 0 0 71.7 35.5" />
+              <path d="M28.3 64.5 A33.75 33.75 0 0 1 71.7 64.5" />
+            </g>
+          ) : (
+            <g strokeWidth="3.6">
+              <line x1="50" y1="25" x2="50" y2="75" />
+              <line x1="25" y1="50" x2="75" y2="50" />
+              <line x1="32.3" y1="32.3" x2="67.7" y2="67.7" />
+              <line x1="67.7" y1="32.3" x2="32.3" y2="67.7" />
+            </g>
+          )}
+          <g strokeWidth="1.1" stroke={mark || ink}>
             <line x1="11" y1="44.5" x2="11" y2="55.5" />
             <line x1="5.5" y1="50" x2="16.5" y2="50" />
             <line x1="7.1" y1="46.1" x2="14.9" y2="53.9" />
@@ -434,8 +488,11 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // the way it does over a real photograph.
 // `src` lets a layout address one slot of a multi-photo section; it falls back
 // to the section's single photo, then to the initials placeholder.
-function Photo({ s, style, initialsSize = 44, backdrop = false, src }) {
-  const url = src ?? s.image
+// `avatar` reads the header's second photo slot, and reads it strictly: an empty
+// avatar is the initials placeholder, never the background photo. That is the
+// whole point of giving it its own upload.
+function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src }) {
+  const url = avatar ? s.avatar : (src ?? s.image)
   if (url) {
     return <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
   }
@@ -460,6 +517,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, src }) {
   )
 }
 
+// Only the header layouts use this, and its thumb is the artist, not the scene.
 function InsetCard({ s, thumb = 34, style }) {
   if (s.mob) return null
   return (
@@ -468,7 +526,7 @@ function InsetCard({ s, thumb = 34, style }) {
       boxShadow: '0 8px 24px rgba(0,0,0,.28)', color: s.tx, ...style,
     }}>
       <div style={{ width: thumb, height: thumb, borderRadius: s.radiusSm, overflow: 'hidden', flex: 'none' }}>
-        <Photo s={s} initialsSize={Math.round(thumb / 2.4)} />
+        <Photo s={s} avatar initialsSize={Math.round(thumb / 2.4)} />
       </div>
       <div style={col('2px')}>
         <span style={{ fontSize: '10px', fontWeight: 700, whiteSpace: 'nowrap' }}>{s.brand}</span>
@@ -485,8 +543,8 @@ const sealGap = (s) => (s.showBadge !== 'show' ? 0 : s.mob ? '62px' : '84px')
 const SCRIM = {
   v1: 'linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.15) 40%, rgba(0,0,0,.6))',
   v5: 'linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.3) 45%, rgba(0,0,0,.55))',
-  // §10.2 hero — the photo is legible at the top and the type sits on the dark.
-  hero: 'linear-gradient(0deg, #111111 0%, rgba(17,17,17,.72) 26%, rgba(17,17,17,0) 62%)',
+  // §10.2 hero — one full-height fade off the floor, exactly the Figma gradient.
+  hero: 'linear-gradient(0deg, #111111 0%, rgba(17,17,17,0) 100%)',
 }
 
 // §10.2 — one top bar for the hero and the footer. Below `desktop` the links
@@ -494,24 +552,30 @@ const SCRIM = {
 function NavBar({ s, colour, rule }) {
   const c = colour || s.tx
   const bar = rule || c
+  const tab = isTablet(s)
+  const ruleW = s.mob ? '70px' : tab ? '150px' : '123px'
   return (
-    <div style={row(s.narrow ? '16px' : '24px', { justifyContent: 'space-between', width: '100%' })}>
-      <div style={row('20px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
-        <Wordmark s={s} logo color={c} />
-        {/* §10.2 draws a 150px rule after the wordmark. It has to yield rather
-            than push the Book Now pill onto a second line: the nav carries the
-            page's own section names, which run longer than the reference's. */}
+    <div style={row(s.mob ? '10px' : tab ? '30px' : '24px', { justifyContent: 'space-between', width: '100%' })}>
+      <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
+        <Wordmark s={s} logo glyph={s.narrow ? 27 : undefined} color={c} />
+        {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
+            123px on the 1180 canvas. It has to yield rather than push the Book
+            Now pill onto a second line: the nav carries the page's own section
+            names, which run longer than the reference's. */}
         <span style={{
-          height: '2px', background: bar, flex: '0 1 150px',
-          maxWidth: '150px', minWidth: s.narrow ? '30px' : '0px',
+          height: '2px', background: bar, flex: `0 1 ${ruleW}`,
+          maxWidth: ruleW, minWidth: s.narrow ? '30px' : '0px',
         }} />
       </div>
       {s.narrow ? (
-        <span style={row('14px')}>
+        <span style={row(tab ? '23px' : '10px')}>
           <BookPill s={s} />
-          <span style={col('4px', { width: '22px', flex: 'none', cursor: 'pointer' })}>
+          {/* 26 × 18 on both narrow frames: three 2.5px bars, 5px apart. */}
+          <span style={col('5px', { width: '26px', flex: 'none', cursor: 'pointer' })}>
             {[0, 1, 2].map((i) => (
-              <span key={i} style={{ height: '2px', width: '100%', background: c }} />
+              <span key={i} style={{
+                height: '2.5px', width: '100%', background: c, borderRadius: '2px',
+              }} />
             ))}
           </span>
         </span>
@@ -541,12 +605,23 @@ function NavBar({ s, colour, rule }) {
 // see the `bleed` flag on the root.
 function HeaderV0({ s }) {
   const centred = s.align === 'centre'
-  const pp = s.mob ? 76 : s.narrow ? 116 : 158          // portrait card edge
-  const ink = s.paper
+  // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
+  // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a
+  // 96px card the text sits under rather than beside, same 40/24/36/30 stack.
+  const tab = isTablet(s)
+  const pp = s.mob ? 96 : tab ? 144 : 158               // portrait card edge
+  // The Figma hero inks its labels in the fixed cream (`sem/text/2`), one step
+  // brighter than `paper` — which stays the display title's first-word tone.
+  const ink = s.retro ? '#FBF6EA' : s.paper
   const aspect = s.mob ? '390 / 844' : s.narrow ? '3 / 4' : '16 / 8.33'
-  const padX = s.gPad
-  const padTop = s.mob ? '20px' : s.narrow ? '26px' : '23px'
-  const padBottom = s.mob ? '26px' : s.narrow ? '40px' : '66px'
+  const padX = s.mob ? '10px' : tab ? '30px' : s.gPad
+  const padTop = s.mob ? '24px' : tab ? '30px' : '23px'
+  // The checker ribbon on the floor is a fixed height at every breakpoint — the
+  // reference does not scale it — so it is added to the identity block's own
+  // clearance rather than eating into it. The reference band is 24px; this runs
+  // it a third finer, so the squares read as texture rather than as blocks.
+  const CHECKER = 16
+  const padBottom = `${(s.mob ? 40 : tab ? 60 : 66) + CHECKER}px`
 
   return (
     <div style={{
@@ -556,25 +631,34 @@ function HeaderV0({ s }) {
     }}>
       <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></div>
       <div style={{ position: 'absolute', inset: 0, background: SCRIM.hero }} />
-      <Grain s={s} opacity={0.22} blend="soft-light" />
+      <Grain s={s} exact blend="lighten" opacity={0.5} />
 
       <div style={{ position: 'relative' }}>
         <NavBar s={s} colour={ink} rule={s.chips[3]?.bg || s.ac} />
       </div>
 
-      <div style={{ position: 'relative', ...col(s.mob ? '20px' : '33px') }}>
-        <div style={row(s.mob ? '18px' : '33px', {
-          justifyContent: centred ? 'center' : 'flex-start', flexWrap: 'wrap',
-        })}>
+      <div style={{ position: 'relative', ...col(s.mob || tab ? '40px' : '33px') }}>
+        {/* The 390 frame stands the portrait card on its own line above the
+            text rather than beside it. */}
+        <div style={s.mob
+          ? col('24px', { alignItems: centred ? 'center' : 'flex-start', width: '100%' })
+          : row(tab ? '24px' : '33px', {
+              justifyContent: centred ? 'center' : 'flex-start', flexWrap: 'wrap',
+            })}>
           <div style={{
-            width: pp, height: pp, flex: 'none', borderRadius: s.radius,
-            border: `${s.mob ? 3 : 5}px solid ${s.pillBg}`, overflow: 'hidden', background: s.soft2,
-          }}><Photo s={s} src={s.portrait} initialsSize={Math.round(pp / 3)} /></div>
+            position: 'relative', width: pp, height: pp, flex: 'none',
+            borderRadius: s.mob || tab ? 30 : 25,
+            border: `${s.mob || tab ? 6 : 5}px solid ${s.pillBg}`, overflow: 'hidden', background: s.soft2,
+          }}>
+            <Photo s={s} avatar initialsSize={Math.round(pp / 3)} />
+            <Grain s={s} exact blend="lighten" opacity={0.5} />
+          </div>
 
-          <div style={col(s.mob ? '14px' : '30px', {
+          <div style={col(s.mob || tab ? '36px' : '30px', {
             alignItems: centred ? 'center' : 'flex-start', minWidth: 0,
+            width: s.mob ? '100%' : undefined,
           })}>
-            <div style={row(s.mob ? '14px' : '25px', { flexWrap: 'wrap' })}>
+            <div style={row(s.mob || tab ? '30px' : '25px', { flexWrap: 'wrap' })}>
               <span style={row('8px')}>
                 <span style={{
                   width: '14px', height: '14px', borderRadius: '7px',
@@ -584,16 +668,30 @@ function HeaderV0({ s }) {
               </span>
               <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.kicker}</span>
             </div>
-            <Title s={s} size={s.dispXl} twoTone toneA={ink} toneB={s.ac} inline={!s.mob}
-                   lh={0.78} align={centred ? 'center' : 'left'} />
+            <Title s={s} size={s.dispXl} twoTone toneA={s.paper} toneB={s.ac} inline={!s.mob}
+                   lh={0.75} align={centred ? 'center' : 'left'} />
           </div>
         </div>
 
         <TagChips s={s} justify={centred ? 'center' : 'flex-start'} />
       </div>
 
-      <SealBadge s={s} hue={s.chips[4]?.bg || s.ac}
-                 style={{ top: '13%', right: s.mob ? '5%' : '7%' }} />
+      {/* The reference seals: 125px centred on (660, 194) of the 768 frame,
+          85px centred on (335, 169) of the 390 one. */}
+      <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32.38} ink="#FBF6EA"
+                 size={s.mob ? 85 : tab ? 125 : undefined}
+                 style={{
+                   top: s.mob ? '14.9%' : tab ? '12.8%' : '14%',
+                   right: s.mob ? '3.3%' : tab ? '5.9%' : '3%',
+                 }} />
+
+      {/* The §10.2 hero frame itself has no floor trim; this is the checker
+          ribbon off the stacked header, which shares this composition's
+          full-bleed photograph. Two rows of 8px squares in `paper` — the
+          Figma fill is sem/media, which is Retro's paper exactly — over the
+          scrim's black floor, where the default `tx` would vanish. */}
+      <Checkerboard s={s} cell={CHECKER} colour={s.paper}
+                    style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }} />
     </div>
   )
 }
@@ -755,7 +853,7 @@ function HeaderV4({ s }) {
       }}>
         <div style={row('12px')}>
           <div style={{ width: '36px', height: '36px', borderRadius: '999px', overflow: 'hidden', flex: 'none' }}>
-            <Photo s={s} initialsSize={14} />
+            <Photo s={s} avatar initialsSize={14} />
           </div>
           <Title s={s} size={s.h2} color={s.acFg} />
         </div>
@@ -923,34 +1021,49 @@ function FlatHeader({ s }) {
 // Both flanks collapse under the card on tablet and mobile.
 function Bio({ s }) {
   if (s.v0) {
+    // Figma sets the flank eyebrows in the body face, bold — not Anton.
     const label = (t, extra) => (
-      <span style={labelStyle(s, s.eyebrow, { color: s.ac, ...extra })}>{t}</span>
+      <span style={{
+        fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap', ...extra,
+      }}>{t}</span>
     )
     const card = (
-      <div style={{ position: 'relative', padding: s.mob ? '0 26px 26px 0' : '0 34px 34px 0' }}>
+      <div style={{ position: 'relative', padding: s.mob ? '0 26px 26px 0' : '0 12px 12px 0' }}>
         <div style={{
-          position: 'relative', transform: tilt(s, 2.6), transformOrigin: 'center',
-          background: s.paper, borderRadius: s.radius, boxShadow: soft(s),
-          padding: s.mob ? '12px' : '16px', ...row('12px', { alignItems: 'stretch' }),
+          position: 'relative', transform: tilt(s, -6), transformOrigin: 'center',
+          // Figma box/1 — the polaroid sits a step lighter than the page, and
+          // Retro's `paper` IS the page background, so it needs its own cream.
+          background: s.retro ? '#FAECD5' : s.paper, borderRadius: s.radius, boxShadow: soft(s),
+          padding: s.mob ? '12px' : '16px 0 16px 16px', ...row(s.mob ? '12px' : '0', { alignItems: 'stretch' }),
         }}>
           <div style={{
-            flex: 1, minWidth: 0, aspectRatio: '4 / 5', borderRadius: s.radiusSm, overflow: 'hidden',
+            flex: 1, minWidth: 0, aspectRatio: '4 / 5.2', borderRadius: s.radiusSm, overflow: 'hidden',
           }}>
             <Photo s={s} initialsSize={54} />
-            <Grain s={s} opacity={0.2} />
           </div>
-          <div style={row('8px', {
-            flex: 'none', flexDirection: 'column', justifyContent: 'flex-start',
-            color: s.paperFg, paddingTop: '2px',
+          <div style={col('14px', {
+            flex: 'none', width: s.mob ? undefined : '74px', alignItems: 'center',
+            justifyContent: 'space-between', color: s.paperFg,
+            padding: s.mob ? 0 : '0 10px',
           })}>
-            <GlobeMark size={16} color={s.ac} />
-            <span style={labelStyle(s, s.eyebrow, {
-              writingMode: 'vertical-rl', letterSpacing: '0.08em',
-            })}>{s.location}</span>
+            <div style={col('14px', { alignItems: 'center' })}>
+              <span style={{ transform: 'rotate(-90deg)' }}>
+                <GlobeMark size={s.mob ? 18 : 22} color={s.ac} />
+              </span>
+              {/* vertical-rl reads top-down; the Figma label runs the other
+                  way, so flip it to read bottom-to-top. */}
+              <span style={labelStyle(s, s.labelMd, {
+                writingMode: 'vertical-rl', transform: 'rotate(180deg)', letterSpacing: '0.08em',
+              })}>{s.location}</span>
+            </div>
+            <span style={{ width: '2px', height: s.mob ? '110px' : '157px', background: s.ac, flex: 'none' }} />
           </div>
+          <Grain s={s} exact blend="screen" opacity={0.5} radius={s.radius} />
         </div>
-        <SealBadge s={s} hue={s.pillBg} size={s.mob ? 68 : 96} tilt={-14}
-                   style={{ left: s.mob ? '2%' : '8%', bottom: 0 }} />
+        <SealBadge s={s} hue={s.retro ? '#CEB081' : s.pillBg} ink={s.chips[3]?.bg}
+                   mark={s.ac} nameInk={s.ac} glyph="globe" size={s.mob ? 68 : 103} tilt={32}
+                   style={{ left: s.mob ? '-20px' : '-50px', bottom: s.mob ? '30px' : '20px' }} />
       </div>
     )
 
@@ -961,7 +1074,7 @@ function Bio({ s }) {
         <div style={col('6px')}>{label(s.initials)}{label('Bio')}</div>
         <h2 style={{
           margin: s.narrow ? '14px 0' : 0, fontFamily: s.display, fontSize: s.dispLg,
-          lineHeight: 0.95, letterSpacing: s.dls, color: s.ac,
+          lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>
         {label('[ 001 ] Structure · Bio_01')}
       </div>
@@ -976,7 +1089,7 @@ function Bio({ s }) {
           <p style={{ margin: 0, fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.5, color: s.ac }}>{s.bioP1}</p>
         </div>
         <div style={col('10px')}>
-          <span style={{ height: '1px', background: s.line2, width: '100%' }} />
+          <span style={{ height: '1px', background: (s.retro && s.chips[0]?.bg) || s.line2, width: '100%' }} />
           {label(`${s.kicker} · ${s.location}`)}
         </div>
       </div>
@@ -985,7 +1098,7 @@ function Bio({ s }) {
     if (s.narrow) return <div style={col(s.gGap)}>{heading}{card}{prose}</div>
     return (
       <div style={{
-        display: 'grid', gridTemplateColumns: '0.85fr 1.25fr 0.9fr',
+        display: 'grid', gridTemplateColumns: '1fr 1.9fr 1fr',
         gap: s.gGap, alignItems: 'stretch',
       }}>
         {heading}{card}{prose}
@@ -1003,17 +1116,61 @@ function Bio({ s }) {
 
 // v0 — Media Player layout 1 · Floating cards stack (§10.2 reference design)
 //
-// Five track cards that overlap and alternate indent, every other one filled
-// with a palette hue, each throwing a hard offset block; the "now playing"
-// card sits on the dark alongside. Checkerboard above, torn paper below.
+// Five track cards that overlap, alternate indent and lean ±1° (±2.25° on
+// mobile), every other one filled with a palette hue, each throwing a hard
+// offset block down-left; the "now playing" card sits on the dark alongside,
+// centred against the stack. Checkerboard above, torn paper below. Desktop
+// numbers are the 1440 frame (964:58578) × 0.82, per the RAMP rule; the 768
+// and 390 frames (986:37146, 986:35593) are exactly the tablet and mobile
+// canvases, so their numbers — shared, bar the lean — are used verbatim.
 function Media({ s }) {
   if (s.v0) {
     const np = s.nowPlaying
+    const desk = !s.narrow
+    // The frame paints this section on cream with near-black ink, not the
+    // beige page palette — EncoreSection swaps the section ground to match,
+    // so the beige checkerboard band and cards read against it.
+    const ink = s.retro ? '#1B1714' : s.paperFg
+    const cream = s.retro ? '#FBF6EA' : s.paper
+    // The wine red the frame reserves for the player's thrown block and the
+    // progress fill — not a palette hue.
+    const wine = s.retro ? '#9E1F17' : s.ac
+    const cardR = s.retro ? (desk ? '16px' : '20px') : s.btnR
+    const playerR = s.retro ? (desk ? '33px' : '40px') : s.radius
+    const playBtn = desk ? 39 : 48
     const ctl = (fill) => ({
-      width: fill ? 46 : 30, height: fill ? 46 : 30, borderRadius: '999px', flex: 'none',
+      width: fill ? playBtn : 30, height: fill ? playBtn : 30,
+      borderRadius: '999px', flex: 'none',
       background: fill ? s.deepFg : 'transparent', color: fill ? s.deep : s.deepFg,
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
     })
+    // Figma sets the kicker and the counter in a small tracked mono, not Anton.
+    const label = (t) => (
+      <span style={{
+        fontFamily: s.body, fontSize: '11px', letterSpacing: '1.2px',
+        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap',
+      }}>{t}</span>
+    )
+
+    // Full-width header: on desktop the track counter bottom-aligns with the
+    // display heading at the right edge; the narrow frames drop it under the
+    // heading instead, left-aligned.
+    const featured = label(`${s.tracks.length} / ${s.tracks.length} Featured`)
+    const titleBlock = (
+      <div style={col(desk ? '30px' : '36px', desk ? { flex: 1, minWidth: 0 } : undefined)}>
+        {label(s.mediaKicker)}
+        {/* The frame breaks the heading after "worth"; an em measure between
+            width("Five worth") and width("Five worth your") forces the same
+            break at every size. */}
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+          letterSpacing: s.dls, color: s.ac, maxWidth: '5.8em',
+        }}>{s.title}</h2>
+      </div>
+    )
+    const heading = desk
+      ? <div style={row('16px', { alignItems: 'flex-end' })}>{titleBlock}{featured}</div>
+      : <div style={col('32px', { alignItems: 'flex-start' })}>{titleBlock}{featured}</div>
 
     const stack = (
       <div style={col('0')}>
@@ -1021,34 +1178,52 @@ function Media({ s }) {
           const n = s.chips.length
           const filled = i % 2 === 1
           // Filled rows step through the palette from its third hue (Retro:
-          // mustard, then olive); the open rows throw a contrasting block.
+          // mustard, then olive) and throw the accent; the open rows throw the
+          // frame's off-palette pink and violet blocks, alternating.
           const hue = s.chips[(2 + Math.floor(i / 2)) % n].bg
-          const fg = filled ? contrastInk(hue) : s.paperFg
+          const fg = filled ? (s.retro ? cream : contrastInk(hue)) : ink
+          const thrown = filled ? s.ac
+            : s.retro ? (Math.floor(i / 2) % 2 ? '#8464AD' : '#FD638E')
+            : s.chips[(4 + i) % n].bg
           return (
             <div key={i} style={{
-              ...row(s.mob ? '10px' : '14px'),
-              marginLeft: filled && !s.mob ? '48px' : 0,
-              marginTop: i === 0 ? 0 : (s.mob ? '-6px' : '-19px'),
-              position: 'relative', zIndex: i + 1,
-              background: filled ? hue : s.paper, color: fg,
-              border: `${s.bw} solid ${fg}`, borderRadius: s.btnR,
-              padding: s.mob ? '8px 10px' : '14px 16px',
-              boxShadow: hard(s, filled ? s.ac : s.chips[(4 + i) % n].bg, 4, 5),
+              ...row(desk ? '16px' : '20px'),
+              marginLeft: filled ? (desk ? '49px' : '61px') : 0,
+              marginRight: !filled ? (desk ? '49px' : '61px') : 0,
+              marginTop: i === 0 ? 0 : (desk ? '-18px' : '-22px'),
+              position: 'relative', zIndex: i + 1, overflow: 'hidden',
+              // The 390 frame leans its cards harder than the wide ones.
+              transform: tilt(s, (filled ? -1 : 1) * (s.mob ? 2.25 : 1)),
+              background: filled ? hue : cream, color: fg,
+              border: `${s.bw} solid ${s.retro ? ink : fg}`, borderRadius: cardR,
+              padding: desk ? '13px 13px 13px 20px' : '16px 16px 16px 24px',
+              boxShadow: hard(s, thrown, -3, desk ? 8 : 9),
             }}>
-              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.85, flex: 'none' }}>{t.n}</span>
-              <span style={col('2px', { flex: 1, minWidth: 0 })}>
-                <span style={labelStyle(s, s.title, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
-                <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.75 }}>{t.sub}</span>
+              <span style={{ fontFamily: s.body, fontSize: desk ? '15px' : '18px', flex: 'none' }}>{t.n}</span>
+              <span style={col('3px', { flex: 1, minWidth: 0 })}>
+                {/* The 390 frame wraps long titles at label-md; the wider
+                    frames truncate at their own sizes. */}
+                <span style={labelStyle(s, desk ? '18px' : s.mob ? s.labelMd : s.title,
+                  s.mob ? { whiteSpace: 'normal' } : { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
+                <span style={{
+                  fontFamily: s.body, fontSize: desk ? '10px' : '12px', opacity: 0.75,
+                  maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{t.sub}</span>
               </span>
               <span style={{
-                width: 30, height: 30, borderRadius: '999px', flex: 'none',
-                background: fg, color: filled ? hue : s.paper,
+                width: desk ? 29 : 35, height: desk ? 29 : 35,
+                borderRadius: '999px', flex: 'none',
+                background: filled ? (s.retro ? '#EDE0C4' : fg) : ink,
+                color: filled ? hue : cream,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              }}><Play size={12} fill="currentColor" strokeWidth={0} /></span>
+              }}><Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} /></span>
               <span style={{
-                width: s.mob ? 42 : 52, height: s.mob ? 42 : 52, flex: 'none',
-                borderRadius: s.radiusSm, overflow: 'hidden', border: `${s.bw} solid ${fg}`,
+                width: desk ? 49 : 60, height: desk ? 49 : 60, flex: 'none',
+                borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
+                // The frame borders only the open cards' art, hairline.
+                border: s.retro ? (filled ? 'none' : `1px solid ${ink}`) : `${s.bw} solid ${fg}`,
               }}><Photo s={s} initialsSize={14} src={s.images[i]} /></span>
+              {filled && <Grain s={s} exact blend="screen" opacity={0.4} />}
             </div>
           )
         })}
@@ -1056,63 +1231,78 @@ function Media({ s }) {
     )
 
     const player = (
-      <div style={col('12px', { alignItems: s.narrow ? 'stretch' : 'flex-end' })}>
-        <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.14em' })}>
-          {s.tracks.length} / {s.tracks.length} Featured
-        </span>
+      <div style={{
+        position: 'relative', width: '100%',
+        background: s.deep, color: s.deepFg, borderRadius: playerR,
+        padding: desk ? '26px' : '32px',
+        boxShadow: desk ? hard(s, wine, 8, 11) : hard(s, wine, 10, 14),
+        // Both fixed-height frames: the 390 one squashes the disc into the
+        // leftover space rather than keeping it square.
+        height: desk ? '443px' : s.mob ? '393px' : undefined,
+        ...col(desk ? '15px' : '18px', { alignItems: 'center', justifyContent: desk ? 'space-between' : undefined }),
+      }}>
+        <Grain s={s} exact blend="lighten" opacity={0.3} radius={playerR} />
+        <ChevronLeft size={16} style={{ alignSelf: 'center', opacity: 0.8 }} />
         <div style={{
-          position: 'relative', width: '100%', maxWidth: s.narrow ? 'none' : '460px',
-          background: s.deep, color: s.deepFg, borderRadius: s.radius,
-          padding: s.mob ? '20px' : '28px', boxShadow: hard(s, s.ac, 6, 6),
-          ...col('16px', { alignItems: 'center' }),
-        }}>
-          <Grain s={s} opacity={0.2} radius={s.radius} />
-          <ChevronLeft size={14} style={{ alignSelf: 'center', opacity: 0.7 }} />
-          <div style={{
-            width: '45%', aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
-            position: 'relative',
-          }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
-          <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
-            <span style={{ fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls }}>{np.track}</span>
-            <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.7 }}>{np.by}</span>
-          </div>
-          <div style={row('18px', { position: 'relative' })}>
-            <span style={ctl(false)}><SkipBack size={14} fill="currentColor" strokeWidth={0} /></span>
-            <span style={ctl(true)}><Play size={16} fill="currentColor" strokeWidth={0} /></span>
-            <span style={ctl(false)}><SkipForward size={14} fill="currentColor" strokeWidth={0} /></span>
-          </div>
-          <div style={row('12px', { width: '100%', position: 'relative' })}>
-            <span style={{ fontFamily: s.body, fontSize: '11px', opacity: 0.7 }}>{np.at}</span>
-            <span style={{ flex: 1, height: '3px', background: s.deepFg25, borderRadius: '99px' }}>
-              <span style={{ display: 'block', width: `${np.pct}%`, height: '100%', background: s.ac, borderRadius: '99px' }} />
-            </span>
-            <span style={{ fontFamily: s.body, fontSize: '11px', opacity: 0.7 }}>{np.of}</span>
-          </div>
+          width: desk ? '207px' : '252px', maxWidth: '100%',
+          aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
+          borderRadius: s.retro ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
+        }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
+        <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
+          {/* The frame sets the now-playing block in the body face, like a real
+              player UI — not the display serif. */}
+          <span style={{
+            fontFamily: s.retro ? s.body : s.display, fontWeight: s.retro ? 600 : undefined,
+            fontSize: desk ? '16px' : '20px', letterSpacing: s.retro ? 0 : s.dls,
+          }}>{np.track}</span>
+          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : '13px', opacity: 0.7 }}>{np.by}</span>
+        </div>
+        <div style={row(desk ? '12px' : '14px', { position: 'relative' })}>
+          <span style={ctl(false)}><SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
+          <span style={ctl(true)}><Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} /></span>
+          <span style={ctl(false)}><SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
+        </div>
+        <div style={row('10px', { width: '100%', position: 'relative' })}>
+          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{np.at}</span>
+          <span style={{ flex: 1, height: '3px', background: s.retro ? 'rgba(0,0,0,0.28)' : s.deepFg25, borderRadius: '99px' }}>
+            <span style={{ display: 'block', width: `${np.pct}%`, height: '100%', background: wine, borderRadius: '99px' }} />
+          </span>
+          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{np.of}</span>
         </div>
       </div>
     )
 
+    // Frame 446:2265 — accent pill with beige Anton type and a mustard block,
+    // the inverse of the Book Now pill.
+    const pill = s.retro ? (
+      <span style={{
+        ...row('8px'), background: s.ac, color: s.bg, cursor: 'pointer',
+        padding: desk ? '8px 16px' : '10px 20px', borderRadius: s.btnR,
+        boxShadow: hard(s, s.pillBg, 3, 4),
+        ...labelStyle(s, desk ? '16px' : '20px'),
+      }}>Soundcloud</span>
+    ) : (
+      <BookPill s={s} label="Soundcloud" />
+    )
+
     return (
       <div style={{ position: 'relative' }}>
-        <Checkerboard s={s} cell={12} colour={s.pillBg}
+        <Checkerboard s={s} cell={desk ? 19 : 24} colour={s.retro ? s.bg : s.pillBg}
                       style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'top') }} />
         <TornEdge s={s} side="bottom" height={30} />
-        <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1.1fr 0.9fr',
-          gap: s.gGap, alignItems: 'start',
-        }}>
-          <div style={col(s.mob ? '28px' : s.narrow ? '44px' : '68px')}>
-            <div style={col('12px')}>
-              <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>{s.mediaKicker}</span>
-              <h2 style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
-                letterSpacing: s.dls, color: s.ac,
-              }}>{s.title}</h2>
-            </div>
+        <div style={col(desk ? '16px' : '40px')}>
+          {heading}
+          <div style={{
+            // minmax(0,…): a long nowrap subline must truncate, not size the
+            // track to its min-content and push the cards past the canvas.
+            display: 'grid',
+            gridTemplateColumns: desk ? 'minmax(0, 1.27fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+            gap: desk ? '49px' : '32px', alignItems: 'center',
+          }}>
             {stack}
-            <span style={{ alignSelf: 'flex-start' }}><BookPill s={s} label="Soundcloud" /></span>
+            {player}
           </div>
-          {player}
+          <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
         </div>
       </div>
     )
@@ -1386,94 +1576,198 @@ function Pricing({ s }) {
 }
 
 // A row of numbered page buttons, shared by Repertoire and Events Map.
-function Pager({ s, colour, fill }) {
+// `frame` carries the Repertoire frames' chunkier square buttons — a bigger
+// box on a heavier border, an active page that keeps the same border rather
+// than dissolving into its own fill, the centred row its tablet uses and the
+// full-measure one its mobile does, on a shorter page list. The map passes
+// none of it and keeps the flatter default.
+function Pager({ s, colour, fill, frame = {} }) {
   const c = colour || s.tx
+  const w = frame.size || (s.mob ? 30 : 42)
   const btn = (key, child, on, ends) => (
     <span key={key} style={{
-      minWidth: s.mob ? 30 : 42, height: s.mob ? 30 : 42, padding: '0 8px',
-      borderRadius: s.radiusSm, border: `${s.bw} solid ${on ? s.pillBg : c}`,
+      minWidth: w, height: w, padding: '0 8px',
+      borderRadius: frame.radius || s.radiusSm,
+      border: `${frame.bw || s.bw} solid ${on ? (frame.activeEdge || s.pillBg) : c}`,
       background: on ? s.pillBg : (ends ? (fill || 'transparent') : 'transparent'),
-      color: on ? contrastInk(s.pillBg) : c, cursor: 'pointer',
+      color: on ? (frame.activeFg || contrastInk(s.pillBg)) : c, cursor: 'pointer',
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      ...labelStyle(s, s.eyebrow),
+      ...(frame.font || labelStyle(s, s.eyebrow)),
+      // `grow` spreads the row across the whole measure, so it comes after the
+      // box metrics it overrides.
+      ...(frame.grow ? { flex: 1, minWidth: 0 } : null),
     }}>{child}</span>
   )
   return (
-    <div style={row('8px', { flexWrap: 'wrap' })}>
+    <div style={row('8px', {
+      flexWrap: frame.grow ? 'nowrap' : 'wrap', justifyContent: frame.justify,
+    })}>
       {btn('prev', <ArrowLeft size={14} />, false, true)}
-      {s.pages.map((p, i) => btn(`p${i}`, p, i === 0))}
+      {(frame.pages || s.pages).map((p, i) => btn(`p${i}`, p, i === 0))}
       {btn('next', <ArrowRight size={14} />, false, true)}
     </div>
   )
 }
 
 // v0 — Repertoire layout 1 · Two-column dense (§10.2 reference design)
+//
+// The reference frames stand the section on cream under a torn beige edge: a
+// display heading by a boxed search field, a row of Inter chips, then the songs
+// in olive-outlined cards each closed by a two-row checkerboard, over a row of
+// square pager buttons. Desktop (964:58580) is the 1440 frame × 0.82; tablet
+// (986:35799) and mobile (880:15524) are their own 768 and 390 frames verbatim,
+// and are a different design rather than the desktop shrunk — one column of six
+// songs at nearly the desktop's type sizes. Almost every box below is therefore
+// `narrow ? <frame> : <frame × 0.82>`, and the three differ only in the head
+// (bottom-aligned on tablet, stacked on mobile), the two display sizes, and the
+// pager: left on desktop, centred on tablet, full-measure on mobile.
 function Repertoire({ s }) {
   if (s.v0) {
-    const half = Math.ceil(s.songs.length / 2)
-    const columns = s.narrow ? [s.songs] : [s.songs.slice(0, half), s.songs.slice(half)]
+    const tab = isTablet(s)
     const hue = s.repHue   // Retro: olive
+    const ink = s.retro ? '#1B1714' : s.tx
+    // Cream type on the frame's wine chip and mustard page button. Neither fill
+    // is a palette hue, so away from Retro the contrast has to be computed
+    // against whatever the palette does put there — `undefined` leaves the page
+    // button to Pager's own default.
+    const chipFg = s.retro ? '#FBF6EA' : s.acFg
+    const pageFg = s.retro ? '#FBF6EA' : undefined
+    // Two off-palette hues the frame reserves for this section: the wine of the
+    // selected chip (the media player's) and the blush behind the pager arrows.
+    const wine = s.retro ? '#9E1F17' : s.ac
+    const blush = s.retro ? '#EDC6B3' : s.soft2
+    // The desktop frame reads its list DOWN each column — the left column is
+    // every other song numbered 1–6, the right the rest numbered 7–12 — so the
+    // numbering follows the layout rather than the SONGS order. Both narrow
+    // frames page six songs, and they are that same left column.
+    const half = Math.ceil(s.songs.length / 2)
+    const evens = s.songs.filter((_, i) => i % 2 === 0)
+    const columns = (s.narrow
+      ? [evens]
+      : [evens, s.songs.filter((_, i) => i % 2 === 1)]
+    ).map((cs, ci) => cs.map((t, i) => ({ ...t, n: ci * half + i + 1 })))
 
     return (
-      <div style={{ position: 'relative', ...col(s.mob ? '20px' : '28px') }}>
-        <TornEdge s={s} side="top" height={30} />
+      <div style={{ position: 'relative', ...col(s.narrow ? '32px' : '26px') }}>
+        <TornEdge s={s} side="top" height={tab ? 30 : 26} />
 
-        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
-          <div style={col('10px')}>
-            <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>Repertoire</span>
+        {/* Mobile stacks the field under the heading full-width; tablet hangs
+            it off the heading's baseline; desktop centres it against the block. */}
+        <div style={row(tab ? '32px' : '20px', {
+          justifyContent: 'space-between',
+          flexDirection: s.mob ? 'column' : 'row',
+          // Above mobile the field shrinks rather than wrapping, which would
+          // break the frames' one-line head.
+          flexWrap: 'nowrap',
+          alignItems: s.mob ? 'stretch' : tab ? 'flex-end' : 'center',
+        })}>
+          {/* The heading is the fixed half of the head row: it holds its
+              measure and the field yields to it, but it is capped at the row
+              so an over-long one wraps inside rather than running off. */}
+          <div style={col(s.narrow ? '16px' : '13px', {
+            flex: 'none', maxWidth: '100%',
+          })}>
+            {/* The frames set the eyebrow in tracked Inter bold, not Anton. */}
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: '11px',
+              letterSpacing: s.narrow ? '1.5px' : '1.2px',
+              textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap',
+            }}>Repertoire</span>
+            {/* Both narrow frames carry their own display-lg — 81px and 54px —
+                rather than the RAMP's sizes for those widths. */}
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
-              letterSpacing: s.dls, color: s.ac,
+              margin: 0, fontFamily: s.display,
+              fontSize: s.mob ? '54px' : tab ? '81px' : s.dispLg,
+              lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
             }}>{s.title}</h2>
           </div>
-          <div style={row('12px', {
-            border: `${s.bw} solid ${s.tx}`, borderRadius: s.radiusSm, padding: '8px 14px 8px 8px',
-            minWidth: s.narrow ? '100%' : '300px',
+          {/* Fraunces sets the heading a good deal wider than the frame's
+              Soulway, so the field takes its width as a shrinkable basis: it
+              gives way to the heading instead of wrapping below it. */}
+          <div style={row(s.narrow ? '10px' : '8px', {
+            border: `${s.bw} solid ${ink}`, borderRadius: s.narrow ? '8px' : '7px',
+            padding: s.narrow ? '10px' : '8px',
+            width: s.mob ? '100%' : tab ? 338 : 230,
+            flex: s.mob ? undefined : `0 1 ${tab ? 338 : 230}px`,
+            minWidth: 0, overflow: 'hidden', height: 50,
           })}>
+            {/* Orange tile, mustard glyph — the one place the frames pair them. */}
             <span style={{
-              width: 30, height: 30, flex: 'none', borderRadius: s.radiusSm,
-              background: s.ac, color: s.acFg,
+              width: s.narrow ? 31 : 36, height: '100%', flex: 'none',
+              borderRadius: s.narrow ? '3px' : '2.5px',
+              background: s.ac, color: s.retro ? s.pillBg : s.acFg,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            }}><Search size={15} /></span>
-            <span style={{ fontFamily: s.body, fontSize: s.labelXs, color: s.muted }}>
+            }}><Search size={s.narrow ? 20 : 17} /></span>
+            <span style={{
+              fontFamily: s.display, fontSize: s.narrow ? '13px' : '11px', letterSpacing: s.dls,
+              color: s.retro ? '#4A4136' : s.muted, whiteSpace: 'nowrap',
+            }}>
               Search songs or artists…
             </span>
           </div>
         </div>
 
-        <div style={row('8px', { flexWrap: 'wrap' })}>
+        <div style={row(s.narrow ? '8px' : '7px', { flexWrap: 'wrap' })}>
           {s.repFilters.map((f, i) => (
             <span key={i} style={{
-              border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR, padding: '5px 14px',
-              background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : s.tx,
-              boxShadow: i === 0 ? hard(s, s.pillBg, 3, 3) : 'none', cursor: 'pointer',
-              ...labelStyle(s, s.eyebrow),
+              // The selected chip carries no outline of its own, so it takes a
+              // transparent one to stand the same height as the rest.
+              border: `${s.bw} solid ${i === 0 ? 'transparent' : s.tx}`,
+              borderRadius: s.btnR, padding: s.narrow ? '3px 9px' : '2px 9px',
+              background: i === 0 ? wine : 'transparent', color: i === 0 ? chipFg : s.tx,
+              boxShadow: i === 0 ? hard(s, s.pillBg, s.narrow ? 3 : 2, s.narrow ? 4 : 3) : 'none',
+              cursor: 'pointer',
+              fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '12.5px' : '10px',
+              lineHeight: 1.2, whiteSpace: 'nowrap',
             }}>{f}</span>
           ))}
         </div>
 
         <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: s.mob ? '12px' : '18px',
+          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: '26px',
         }}>
+          {/* minWidth 0 on the track itself: a `1fr` column will not go below
+              its content's minimum, so a wide display face would otherwise push
+              the whole grid past the canvas. */}
           {columns.map((colSongs, ci) => (
-            <div key={ci} style={col(s.mob ? '12px' : '18px')}>
+            <div key={ci} style={col(s.narrow ? '10px' : '8px', { minWidth: 0 })}>
               {colSongs.map((t) => (
                 <div key={t.n} style={{
-                  position: 'relative', border: `${s.bw} solid ${hue}`, borderRadius: s.radiusSm,
-                  padding: s.mob ? '12px 14px 16px' : '16px 20px 20px',
-                  ...row('12px', { justifyContent: 'space-between' }),
+                  position: 'relative', overflow: 'hidden',
+                  border: `${s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw} solid ${hue}`,
+                  borderRadius: s.narrow ? '20px' : '16px',
+                  // The frames' own padding less the border they draw inside:
+                  // 27/20/35 on both narrow frames, the same × 0.82 on desktop,
+                  // each edge short by the outline.
+                  padding: s.narrow ? '24px 17px 32px' : '19px 14px 26px',
+                  ...row('0'),
                 }}>
-                  <span style={row('10px', { minWidth: 0 })}>
-                    <span style={{ fontFamily: s.body, fontSize: '11px', color: s.ac, flex: 'none' }}>{t.n}</span>
+                  <span style={{
+                    fontFamily: s.display, fontSize: '11px', letterSpacing: s.dls,
+                    color: s.ac, width: s.narrow ? 24 : 20, flex: 'none',
+                  }}>{t.n}</span>
+                  <span style={row('12px', {
+                    flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
+                  })}>
+                    {/* Literal, not `s.title`: the view-model's content `title`
+                        shadows the RAMP size of the same name, so that key does
+                        not carry a length here. The frames' size/title is 26px
+                        on mobile, 28 on tablet, 24 × 0.82 on desktop. */}
+                    {/* minWidth 0 as well as the ellipsis: without it the
+                        title's own min-content sets the grid track, and a wide
+                        display face pushes the whole column past the canvas. */}
                     <span style={{
-                      fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls, color: hue,
+                      fontFamily: s.display, fontSize: s.mob ? '26px' : tab ? '28px' : '20px',
+                      lineHeight: 1.1, letterSpacing: s.dls, color: hue, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{t.title}</span>
+                    <span style={labelStyle(s, s.narrow ? '15px' : s.eyebrow, {
+                      color: s.ac, flex: 'none',
+                    })}>· {t.artist}</span>
                   </span>
-                  <span style={labelStyle(s, s.eyebrow, { color: s.ac, flex: 'none' })}>· {t.artist}</span>
-                  <Checkerboard s={s} cell={6} colour={hue} style={{
+                  {/* Two rows of squares closing the card, over its bottom edge. */}
+                  <Checkerboard s={s} cell={s.narrow ? 12 : 10} colour={hue} style={{
                     position: 'absolute', left: 0, right: 0, bottom: 0, width: 'auto',
-                    borderBottomLeftRadius: s.radiusSm, borderBottomRightRadius: s.radiusSm,
                   }} />
                 </div>
               ))}
@@ -1481,7 +1775,18 @@ function Repertoire({ s }) {
           ))}
         </div>
 
-        <Pager s={s} colour={hue} fill={s.soft2} />
+        {/* Mobile spreads five buttons across the measure — the frame drops the
+            middle pages to make room — where tablet centres the full set and
+            desktop sits it at the left edge. */}
+        <Pager s={s} colour={hue} fill={blush} frame={{
+          size: s.narrow ? 54 : 45,
+          radius: s.narrow ? '20px' : '16px',
+          bw: s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw,
+          activeEdge: hue, activeFg: pageFg,
+          font: labelStyle(s, s.narrow ? '12px' : '10px'),
+          justify: tab ? 'center' : undefined,
+          grow: s.mob, pages: s.mob ? s.pages.filter((p, i) => i < 2 || p === '…') : undefined,
+        }} />
       </div>
     )
   }
@@ -1529,77 +1834,190 @@ function Gallery({ s }) {
   // the right. Only the first row is open; the rest offer a "+".
   if (s.v0) {
     const active = galActive(s)
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const strip = [0, 1, 2, 3, 4, 5, 6]
+    const cardR = s.retro ? (desk ? '25px' : '30px') : s.radius
+    const rowR = s.retro ? (desk ? '16px' : '20px') : s.btnR
+    // The Figma frame gives each media source its brand glyph; lucide has no
+    // TikTok mark, so the closest note glyph stands in.
+    const srcIcons = [ImageIcon, Youtube, Instagram, Music2]
     const arrow = (icon) => (
       <span style={{
-        width: 30, height: 30, borderRadius: '999px', background: s.deep, color: s.deepFg,
+        width: desk ? 29 : 35, height: desk ? 29 : 35, flex: 'none',
+        borderRadius: '999px', background: s.deep, color: s.deepFg,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
       }}>{icon}</span>
     )
 
-    const sources = (
-      <div style={col(s.mob ? '12px' : '18px')}>
+    // The source's colour square. The Figma frames border the open one in ink
+    // and the closed ones in the accent.
+    const iconSq = (g, Glyph, size, glyph) => (
+      <span style={{
+        width: size, height: size, flex: 'none',
+        borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm,
+        background: g.bg, color: g.fg,
+        border: s.retro ? (g.on ? `2px solid ${s.tx}` : `1px solid ${s.ac}`) : 'none',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', position: 'relative',
+      }}><Glyph size={glyph} /></span>
+    )
+
+    // The Figma tablet and mobile frames fold the source list into a row of
+    // icon-only tiles: no labels, and only the open tile carries a dismiss
+    // glyph. Tablet spreads four equal tiles across the page; mobile keeps
+    // them content-sized and lets the frame clip the row's right edge.
+    const sources = !desk ? (
+      <div style={row('20px', {
+        alignItems: 'stretch', ...(s.mob ? { overflowX: 'clip' } : {}),
+      })}>
         {s.gallerySources.map((g, i) => (
           <div key={i} style={{
-            ...row('16px'),
+            ...(tab ? { flex: 1, minWidth: 0, height: '92px' } : { flex: 'none' }),
+            ...row(tab ? '16px' : '5px', { justifyContent: g.on ? 'space-between' : 'center' }),
+            position: 'relative', overflow: 'hidden',
             background: g.on ? s.pillBg : 'transparent',
-            color: g.on ? contrastInk(s.pillBg) : s.tx,
-            border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR,
-            padding: s.mob ? '8px 14px 8px 8px' : '10px 20px 10px 10px',
-            boxShadow: g.on ? hard(s, s.ac, 4, 5) : 'none',
+            color: g.on ? s.pillFg : (s.retro ? g.bg : g.ink),
+            border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
+            padding: tab ? '16px 24px 16px 16px' : '10px',
+            boxShadow: g.on ? hard(s, s.ac, 7, 9) : 'none',
+            transform: g.on ? tilt(s, -1) : 'none',
           }}>
-            <span style={{
-              width: s.mob ? 34 : 44, height: s.mob ? 34 : 44, flex: 'none',
-              borderRadius: s.radiusSm, background: g.bg, color: g.fg,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            }}><ImageIcon size={s.mob ? 16 : 20} /></span>
-            <span style={labelStyle(s, s.labelMd, {
-              flex: 1, color: g.on ? s.pillFg : g.ink,
-            })}>{g.label}</span>
-            {g.on ? <X size={20} strokeWidth={2.4} /> : <Plus size={20} strokeWidth={2.4} />}
+            {g.on && <Grain s={s} radius={rowR} />}
+            {iconSq(g, srcIcons[i] || ImageIcon, 60, 28)}
+            {g.on && <X size={30} strokeWidth={2.4} style={{ position: 'relative' }} />}
           </div>
         ))}
       </div>
+    ) : (
+      <div style={col('16px')}>
+        {s.gallerySources.map((g, i) => {
+          // The Figma frame letters each closed row in its source colour even
+          // when that is low-contrast (TikTok's yellow); the legible() fallback
+          // stays on for the flat themes.
+          const ink = s.retro ? g.bg : g.ink
+          return (
+            <div key={i} style={{
+              ...row('16px'),
+              position: 'relative', overflow: 'hidden',
+              background: g.on ? s.pillBg : 'transparent',
+              color: g.on ? s.pillFg : ink,
+              border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
+              padding: '13px 20px 13px 13px',
+              boxShadow: g.on ? hard(s, s.ac, 6, 7) : 'none',
+              transform: g.on ? tilt(s, -1) : 'none',
+            }}>
+              {g.on && <Grain s={s} radius={rowR} />}
+              {iconSq(g, srcIcons[i] || ImageIcon, 49, 24)}
+              <span style={labelStyle(s, '18px', {
+                flex: 1, position: 'relative', color: g.on ? s.pillFg : ink,
+              })}>{g.label}</span>
+              {g.on
+                ? <X size={25} strokeWidth={2.4} style={{ position: 'relative' }} />
+                : <Plus size={25} strokeWidth={2.4} style={{ position: 'relative' }} />}
+            </div>
+          )
+        })}
+      </div>
     )
 
-    // §10.2 — the viewer stack does not fill its half: the card is 603 of the
-    // 720 column, and the thumbnail rail lines up with it.
+    // The rail's own furniture: the globe seal, the Anton wordmark and the
+    // pager. Desktop and tablet stack them down the card's right edge with the
+    // wordmark turned -90°; the Figma mobile frame lays the same three out in
+    // a footer row under the photo instead.
+    const railArrows = (
+      <div style={row(desk ? '4px' : '5px')}>
+        {arrow(<ArrowLeft size={desk ? 14 : 16} />)}{arrow(<ArrowRight size={desk ? 14 : 16} />)}
+      </div>
+    )
+    const rail = s.mob ? (
+      <div style={row('10px', { justifyContent: 'space-between', color: s.acFg, position: 'relative' })}>
+        <div style={row('10px')}>
+          <GlobeMark size={27} color={s.acFg} />
+          <span style={labelStyle(s, '21px', { letterSpacing: '0.1em' })}>Gallery</span>
+        </div>
+        {railArrows}
+      </div>
+    ) : (
+      <div style={col('10px', {
+        flex: 'none', alignItems: 'center', color: s.acFg, position: 'relative',
+        justifyContent: 'space-between',
+      })}>
+        <div style={col('10px', { alignItems: 'center' })}>
+          <GlobeMark size={desk ? 22 : 27} color={s.acFg} />
+          <span style={labelStyle(s, desk ? '18px' : '21px', {
+            writingMode: 'vertical-rl', letterSpacing: '0.1em',
+            display: 'inline-block', transform: 'rotate(180deg)',
+          })}>
+            Gallery
+          </span>
+        </div>
+        {railArrows}
+      </div>
+    )
+
     const viewer = (
-      <div style={col('14px', { maxWidth: s.narrow ? 'none' : '84%' })}>
+      // minWidth 0 so the mobile frame's overflowing source row cannot widen
+      // the grid column past the canvas.
+      <div style={col(desk ? '20px' : '24px', { minWidth: 0 })}>
         <div style={row('12px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
           <span style={row('8px', labelStyle(s, s.eyebrow, { color: s.ac }))}>
-            <ArrowLeft size={13} /> Back to beginning
+            <ArrowLeft size={13} color={s.tx} /> Back to beginning
           </span>
           <span style={col('2px', { alignItems: 'flex-end' })}>
-            <span style={labelStyle(s, s.eyebrow, { color: s.tx })}>{s.brand}</span>
-            <span style={labelStyle(s, s.eyebrow, { color: s.muted })}>Gallery</span>
+            <span style={labelStyle(s, s.eyebrow, { color: s.ac })}>{s.brand}</span>
+            <span style={labelStyle(s, '10px', { color: s.ac })}>Gallery</span>
           </span>
         </div>
 
         <div style={{
-          position: 'relative', background: s.ac, borderRadius: s.radius,
-          padding: s.mob ? '10px' : '14px', ...row('12px', { alignItems: 'stretch' }),
+          position: 'relative', background: s.ac, borderRadius: cardR,
+          padding: desk ? '16px' : tab ? '20px' : '10px',
+          boxShadow: soft(s), transform: tilt(s, -2),
+          ...(s.mob
+            ? col('20px')
+            : row(desk ? '16px' : '20px', { alignItems: 'stretch' })),
         }}>
-          <Grain s={s} opacity={0.2} radius={s.radius} />
+          <Grain s={s} exact blend="screen" opacity={0.52} radius={cardR} />
           <div style={{
-            flex: 1, minWidth: 0, aspectRatio: '4 / 4.36', borderRadius: s.radiusSm,
+            ...(s.mob
+              // The Figma mobile frame turns the viewer landscape: full card
+              // width at the frame's fixed height, corner brackets clipped out.
+              ? { width: '100%', height: '299px' }
+              : { flex: 1, minWidth: 0, aspectRatio: '4 / 4.36' }),
+            borderRadius: s.retro ? '4px' : s.radiusSm,
             overflow: 'hidden', position: 'relative',
-          }}><Photo s={s} initialsSize={52} src={s.images[active]} /></div>
-          <div style={col('10px', { flex: 'none', alignItems: 'center', color: s.acFg, position: 'relative' })}>
-            <GlobeMark size={18} color={s.acFg} />
-            <span style={labelStyle(s, s.eyebrow, { writingMode: 'vertical-rl', letterSpacing: '0.1em' })}>
-              Gallery
-            </span>
+          }}>
+            <Photo s={s} initialsSize={52} src={s.images[active]} />
+            {s.retro && !s.mob && (
+              <>
+                <span style={{
+                  position: 'absolute', left: desk ? '11px' : '14px', bottom: desk ? '11px' : '14px',
+                  width: desk ? '15px' : '18px', height: desk ? '15px' : '18px',
+                  borderLeft: `2px solid ${s.tx}`, borderBottom: `2px solid ${s.tx}`,
+                }} />
+                <span style={{
+                  position: 'absolute', right: desk ? '12px' : '15px', bottom: desk ? '11px' : '14px',
+                  width: desk ? '15px' : '18px', height: desk ? '15px' : '18px',
+                  borderRight: `2px solid ${s.tx}`, borderBottom: `2px solid ${s.tx}`,
+                }} />
+              </>
+            )}
+            {s.retro && desk && (
+              <span style={labelStyle(s, '9px', {
+                position: 'absolute', right: '12px', bottom: '12px', letterSpacing: '1px',
+                background: 'rgba(17,17,17,0.55)', color: s.ac, borderRadius: '4px', padding: '3px 8px',
+              })}>{`0${active + 1} — 0${strip.length}`}</span>
+            )}
           </div>
-          <div style={row('8px', { position: 'absolute', right: '18px', bottom: '18px' })}>
-            {arrow(<ArrowLeft size={14} />)}{arrow(<ArrowRight size={14} />)}
-          </div>
+          {rail}
         </div>
 
-        <div style={row('10px', { overflow: 'hidden' })}>
-          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+        <div style={row(desk ? '10px' : '12px', { overflow: 'hidden', marginTop: desk ? '13px' : '16px' })}>
+          {(s.mob ? strip.slice(0, 4) : strip).map((i) => (
             <span key={i} style={{
-              flex: 1, minWidth: 0, aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
-              border: `${s.bw} solid ${i === active ? s.pillBg : s.ac}`,
+              flex: 1, minWidth: 0, aspectRatio: '1', overflow: 'hidden',
+              borderRadius: s.retro ? (desk ? '16px' : '20px') : s.radiusSm,
+              border: `${desk ? '4px' : '5px'} solid ${i === active ? s.pillBg : s.ac}`,
             }}><Photo s={s} initialsSize={12} src={s.images[i]} /></span>
           ))}
         </div>
@@ -1608,15 +2026,16 @@ function Gallery({ s }) {
 
     return (
       <div style={{
-        // §10.2 splits this section down the middle (720 / 720).
+        // §10.2 splits this section down the middle (720 / 720); the Figma
+        // frame indents the viewer half further, so the gutter is wide.
         display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
-        gap: s.gGap, alignItems: 'start',
+        gap: desk ? '110px' : tab ? '60px' : '20px', alignItems: 'start',
       }}>
-        <div style={col(s.mob ? '20px' : '30px')}>
-          <div style={col('12px')}>
+        <div style={col(desk ? '33px' : tab ? '40px' : '20px', { minWidth: 0 })}>
+          <div style={col(desk ? '30px' : tab ? '36px' : '10px')}>
             <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>Media</span>
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
+              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
               letterSpacing: s.dls, color: s.ac,
             }}>{s.title}</h2>
           </div>
@@ -2177,9 +2596,16 @@ export default function EncoreSection({ s }) {
   // §10.2 — the events map is the one section painted on a dark ground rather
   // than the page background, so its checkerboard bands and cream type read.
   const darkMap = s.mp && s.v0 && s.retro
+  // §10.2 — the media player (964:58578) and repertoire (964:58580) frames
+  // stand on cream rather than the beige page ground: the player so its beige
+  // checkerboard band and cream track cards read against it, the repertoire so
+  // its torn beige edge and olive song cards do. Retro's `paper` IS the page
+  // background, hence the literal.
+  const cream = (s.me || s.re) && s.v0 && s.retro
   return (
     <div style={{
-      background: darkMap ? s.mapBg : s.bg, color: darkMap ? s.mapFg : s.tx,
+      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : s.bg,
+      color: darkMap ? s.mapFg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
       transition: 'background-color .45s ease, color .45s ease',
