@@ -1576,94 +1576,198 @@ function Pricing({ s }) {
 }
 
 // A row of numbered page buttons, shared by Repertoire and Events Map.
-function Pager({ s, colour, fill }) {
+// `frame` carries the Repertoire frames' chunkier square buttons — a bigger
+// box on a heavier border, an active page that keeps the same border rather
+// than dissolving into its own fill, the centred row its tablet uses and the
+// full-measure one its mobile does, on a shorter page list. The map passes
+// none of it and keeps the flatter default.
+function Pager({ s, colour, fill, frame = {} }) {
   const c = colour || s.tx
+  const w = frame.size || (s.mob ? 30 : 42)
   const btn = (key, child, on, ends) => (
     <span key={key} style={{
-      minWidth: s.mob ? 30 : 42, height: s.mob ? 30 : 42, padding: '0 8px',
-      borderRadius: s.radiusSm, border: `${s.bw} solid ${on ? s.pillBg : c}`,
+      minWidth: w, height: w, padding: '0 8px',
+      borderRadius: frame.radius || s.radiusSm,
+      border: `${frame.bw || s.bw} solid ${on ? (frame.activeEdge || s.pillBg) : c}`,
       background: on ? s.pillBg : (ends ? (fill || 'transparent') : 'transparent'),
-      color: on ? contrastInk(s.pillBg) : c, cursor: 'pointer',
+      color: on ? (frame.activeFg || contrastInk(s.pillBg)) : c, cursor: 'pointer',
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      ...labelStyle(s, s.eyebrow),
+      ...(frame.font || labelStyle(s, s.eyebrow)),
+      // `grow` spreads the row across the whole measure, so it comes after the
+      // box metrics it overrides.
+      ...(frame.grow ? { flex: 1, minWidth: 0 } : null),
     }}>{child}</span>
   )
   return (
-    <div style={row('8px', { flexWrap: 'wrap' })}>
+    <div style={row('8px', {
+      flexWrap: frame.grow ? 'nowrap' : 'wrap', justifyContent: frame.justify,
+    })}>
       {btn('prev', <ArrowLeft size={14} />, false, true)}
-      {s.pages.map((p, i) => btn(`p${i}`, p, i === 0))}
+      {(frame.pages || s.pages).map((p, i) => btn(`p${i}`, p, i === 0))}
       {btn('next', <ArrowRight size={14} />, false, true)}
     </div>
   )
 }
 
 // v0 — Repertoire layout 1 · Two-column dense (§10.2 reference design)
+//
+// The reference frames stand the section on cream under a torn beige edge: a
+// display heading by a boxed search field, a row of Inter chips, then the songs
+// in olive-outlined cards each closed by a two-row checkerboard, over a row of
+// square pager buttons. Desktop (964:58580) is the 1440 frame × 0.82; tablet
+// (986:35799) and mobile (880:15524) are their own 768 and 390 frames verbatim,
+// and are a different design rather than the desktop shrunk — one column of six
+// songs at nearly the desktop's type sizes. Almost every box below is therefore
+// `narrow ? <frame> : <frame × 0.82>`, and the three differ only in the head
+// (bottom-aligned on tablet, stacked on mobile), the two display sizes, and the
+// pager: left on desktop, centred on tablet, full-measure on mobile.
 function Repertoire({ s }) {
   if (s.v0) {
-    const half = Math.ceil(s.songs.length / 2)
-    const columns = s.narrow ? [s.songs] : [s.songs.slice(0, half), s.songs.slice(half)]
+    const tab = isTablet(s)
     const hue = s.repHue   // Retro: olive
+    const ink = s.retro ? '#1B1714' : s.tx
+    // Cream type on the frame's wine chip and mustard page button. Neither fill
+    // is a palette hue, so away from Retro the contrast has to be computed
+    // against whatever the palette does put there — `undefined` leaves the page
+    // button to Pager's own default.
+    const chipFg = s.retro ? '#FBF6EA' : s.acFg
+    const pageFg = s.retro ? '#FBF6EA' : undefined
+    // Two off-palette hues the frame reserves for this section: the wine of the
+    // selected chip (the media player's) and the blush behind the pager arrows.
+    const wine = s.retro ? '#9E1F17' : s.ac
+    const blush = s.retro ? '#EDC6B3' : s.soft2
+    // The desktop frame reads its list DOWN each column — the left column is
+    // every other song numbered 1–6, the right the rest numbered 7–12 — so the
+    // numbering follows the layout rather than the SONGS order. Both narrow
+    // frames page six songs, and they are that same left column.
+    const half = Math.ceil(s.songs.length / 2)
+    const evens = s.songs.filter((_, i) => i % 2 === 0)
+    const columns = (s.narrow
+      ? [evens]
+      : [evens, s.songs.filter((_, i) => i % 2 === 1)]
+    ).map((cs, ci) => cs.map((t, i) => ({ ...t, n: ci * half + i + 1 })))
 
     return (
-      <div style={{ position: 'relative', ...col(s.mob ? '20px' : '28px') }}>
-        <TornEdge s={s} side="top" height={30} />
+      <div style={{ position: 'relative', ...col(s.narrow ? '32px' : '26px') }}>
+        <TornEdge s={s} side="top" height={tab ? 30 : 26} />
 
-        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
-          <div style={col('10px')}>
-            <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>Repertoire</span>
+        {/* Mobile stacks the field under the heading full-width; tablet hangs
+            it off the heading's baseline; desktop centres it against the block. */}
+        <div style={row(tab ? '32px' : '20px', {
+          justifyContent: 'space-between',
+          flexDirection: s.mob ? 'column' : 'row',
+          // Above mobile the field shrinks rather than wrapping, which would
+          // break the frames' one-line head.
+          flexWrap: 'nowrap',
+          alignItems: s.mob ? 'stretch' : tab ? 'flex-end' : 'center',
+        })}>
+          {/* The heading is the fixed half of the head row: it holds its
+              measure and the field yields to it, but it is capped at the row
+              so an over-long one wraps inside rather than running off. */}
+          <div style={col(s.narrow ? '16px' : '13px', {
+            flex: 'none', maxWidth: '100%',
+          })}>
+            {/* The frames set the eyebrow in tracked Inter bold, not Anton. */}
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: '11px',
+              letterSpacing: s.narrow ? '1.5px' : '1.2px',
+              textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap',
+            }}>Repertoire</span>
+            {/* Both narrow frames carry their own display-lg — 81px and 54px —
+                rather than the RAMP's sizes for those widths. */}
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
-              letterSpacing: s.dls, color: s.ac,
+              margin: 0, fontFamily: s.display,
+              fontSize: s.mob ? '54px' : tab ? '81px' : s.dispLg,
+              lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
             }}>{s.title}</h2>
           </div>
-          <div style={row('12px', {
-            border: `${s.bw} solid ${s.tx}`, borderRadius: s.radiusSm, padding: '8px 14px 8px 8px',
-            minWidth: s.narrow ? '100%' : '300px',
+          {/* Fraunces sets the heading a good deal wider than the frame's
+              Soulway, so the field takes its width as a shrinkable basis: it
+              gives way to the heading instead of wrapping below it. */}
+          <div style={row(s.narrow ? '10px' : '8px', {
+            border: `${s.bw} solid ${ink}`, borderRadius: s.narrow ? '8px' : '7px',
+            padding: s.narrow ? '10px' : '8px',
+            width: s.mob ? '100%' : tab ? 338 : 230,
+            flex: s.mob ? undefined : `0 1 ${tab ? 338 : 230}px`,
+            minWidth: 0, overflow: 'hidden', height: 50,
           })}>
+            {/* Orange tile, mustard glyph — the one place the frames pair them. */}
             <span style={{
-              width: 30, height: 30, flex: 'none', borderRadius: s.radiusSm,
-              background: s.ac, color: s.acFg,
+              width: s.narrow ? 31 : 36, height: '100%', flex: 'none',
+              borderRadius: s.narrow ? '3px' : '2.5px',
+              background: s.ac, color: s.retro ? s.pillBg : s.acFg,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            }}><Search size={15} /></span>
-            <span style={{ fontFamily: s.body, fontSize: s.labelXs, color: s.muted }}>
+            }}><Search size={s.narrow ? 20 : 17} /></span>
+            <span style={{
+              fontFamily: s.display, fontSize: s.narrow ? '13px' : '11px', letterSpacing: s.dls,
+              color: s.retro ? '#4A4136' : s.muted, whiteSpace: 'nowrap',
+            }}>
               Search songs or artists…
             </span>
           </div>
         </div>
 
-        <div style={row('8px', { flexWrap: 'wrap' })}>
+        <div style={row(s.narrow ? '8px' : '7px', { flexWrap: 'wrap' })}>
           {s.repFilters.map((f, i) => (
             <span key={i} style={{
-              border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR, padding: '5px 14px',
-              background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : s.tx,
-              boxShadow: i === 0 ? hard(s, s.pillBg, 3, 3) : 'none', cursor: 'pointer',
-              ...labelStyle(s, s.eyebrow),
+              // The selected chip carries no outline of its own, so it takes a
+              // transparent one to stand the same height as the rest.
+              border: `${s.bw} solid ${i === 0 ? 'transparent' : s.tx}`,
+              borderRadius: s.btnR, padding: s.narrow ? '3px 9px' : '2px 9px',
+              background: i === 0 ? wine : 'transparent', color: i === 0 ? chipFg : s.tx,
+              boxShadow: i === 0 ? hard(s, s.pillBg, s.narrow ? 3 : 2, s.narrow ? 4 : 3) : 'none',
+              cursor: 'pointer',
+              fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '12.5px' : '10px',
+              lineHeight: 1.2, whiteSpace: 'nowrap',
             }}>{f}</span>
           ))}
         </div>
 
         <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: s.mob ? '12px' : '18px',
+          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: '26px',
         }}>
+          {/* minWidth 0 on the track itself: a `1fr` column will not go below
+              its content's minimum, so a wide display face would otherwise push
+              the whole grid past the canvas. */}
           {columns.map((colSongs, ci) => (
-            <div key={ci} style={col(s.mob ? '12px' : '18px')}>
+            <div key={ci} style={col(s.narrow ? '10px' : '8px', { minWidth: 0 })}>
               {colSongs.map((t) => (
                 <div key={t.n} style={{
-                  position: 'relative', border: `${s.bw} solid ${hue}`, borderRadius: s.radiusSm,
-                  padding: s.mob ? '12px 14px 16px' : '16px 20px 20px',
-                  ...row('12px', { justifyContent: 'space-between' }),
+                  position: 'relative', overflow: 'hidden',
+                  border: `${s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw} solid ${hue}`,
+                  borderRadius: s.narrow ? '20px' : '16px',
+                  // The frames' own padding less the border they draw inside:
+                  // 27/20/35 on both narrow frames, the same × 0.82 on desktop,
+                  // each edge short by the outline.
+                  padding: s.narrow ? '24px 17px 32px' : '19px 14px 26px',
+                  ...row('0'),
                 }}>
-                  <span style={row('10px', { minWidth: 0 })}>
-                    <span style={{ fontFamily: s.body, fontSize: '11px', color: s.ac, flex: 'none' }}>{t.n}</span>
+                  <span style={{
+                    fontFamily: s.display, fontSize: '11px', letterSpacing: s.dls,
+                    color: s.ac, width: s.narrow ? 24 : 20, flex: 'none',
+                  }}>{t.n}</span>
+                  <span style={row('12px', {
+                    flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
+                  })}>
+                    {/* Literal, not `s.title`: the view-model's content `title`
+                        shadows the RAMP size of the same name, so that key does
+                        not carry a length here. The frames' size/title is 26px
+                        on mobile, 28 on tablet, 24 × 0.82 on desktop. */}
+                    {/* minWidth 0 as well as the ellipsis: without it the
+                        title's own min-content sets the grid track, and a wide
+                        display face pushes the whole column past the canvas. */}
                     <span style={{
-                      fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls, color: hue,
+                      fontFamily: s.display, fontSize: s.mob ? '26px' : tab ? '28px' : '20px',
+                      lineHeight: 1.1, letterSpacing: s.dls, color: hue, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{t.title}</span>
+                    <span style={labelStyle(s, s.narrow ? '15px' : s.eyebrow, {
+                      color: s.ac, flex: 'none',
+                    })}>· {t.artist}</span>
                   </span>
-                  <span style={labelStyle(s, s.eyebrow, { color: s.ac, flex: 'none' })}>· {t.artist}</span>
-                  <Checkerboard s={s} cell={6} colour={hue} style={{
+                  {/* Two rows of squares closing the card, over its bottom edge. */}
+                  <Checkerboard s={s} cell={s.narrow ? 12 : 10} colour={hue} style={{
                     position: 'absolute', left: 0, right: 0, bottom: 0, width: 'auto',
-                    borderBottomLeftRadius: s.radiusSm, borderBottomRightRadius: s.radiusSm,
                   }} />
                 </div>
               ))}
@@ -1671,7 +1775,18 @@ function Repertoire({ s }) {
           ))}
         </div>
 
-        <Pager s={s} colour={hue} fill={s.soft2} />
+        {/* Mobile spreads five buttons across the measure — the frame drops the
+            middle pages to make room — where tablet centres the full set and
+            desktop sits it at the left edge. */}
+        <Pager s={s} colour={hue} fill={blush} frame={{
+          size: s.narrow ? 54 : 45,
+          radius: s.narrow ? '20px' : '16px',
+          bw: s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw,
+          activeEdge: hue, activeFg: pageFg,
+          font: labelStyle(s, s.narrow ? '12px' : '10px'),
+          justify: tab ? 'center' : undefined,
+          grow: s.mob, pages: s.mob ? s.pages.filter((p, i) => i < 2 || p === '…') : undefined,
+        }} />
       </div>
     )
   }
@@ -2481,13 +2596,15 @@ export default function EncoreSection({ s }) {
   // §10.2 — the events map is the one section painted on a dark ground rather
   // than the page background, so its checkerboard bands and cream type read.
   const darkMap = s.mp && s.v0 && s.retro
-  // §10.2 — the media player frame (964:58578) stands on cream rather than the
-  // beige page ground, so its beige checkerboard band and cream track cards
-  // read against it. Retro's `paper` IS the page background, hence the literal.
-  const creamMedia = s.me && s.v0 && s.retro
+  // §10.2 — the media player (964:58578) and repertoire (964:58580) frames
+  // stand on cream rather than the beige page ground: the player so its beige
+  // checkerboard band and cream track cards read against it, the repertoire so
+  // its torn beige edge and olive song cards do. Retro's `paper` IS the page
+  // background, hence the literal.
+  const cream = (s.me || s.re) && s.v0 && s.retro
   return (
     <div style={{
-      background: darkMap ? s.mapBg : creamMedia ? '#FBF6EA' : s.bg,
+      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : s.bg,
       color: darkMap ? s.mapFg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
