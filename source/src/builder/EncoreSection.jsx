@@ -1094,11 +1094,13 @@ function Bio({ s }) {
 
 // v0 — Media Player layout 1 · Floating cards stack (§10.2 reference design)
 //
-// Five track cards that overlap, alternate indent and lean ±1°, every other
-// one filled with a palette hue, each throwing a hard offset block down-left;
-// the "now playing" card sits on the dark alongside, centred against the
-// stack. Checkerboard above, torn paper below. Desktop numbers are the 1440
-// frame (964:58578) × 0.82, per the RAMP rule.
+// Five track cards that overlap, alternate indent and lean ±1° (±2.25° on
+// mobile), every other one filled with a palette hue, each throwing a hard
+// offset block down-left; the "now playing" card sits on the dark alongside,
+// centred against the stack. Checkerboard above, torn paper below. Desktop
+// numbers are the 1440 frame (964:58578) × 0.82, per the RAMP rule; the 768
+// and 390 frames (986:37146, 986:35593) are exactly the tablet and mobile
+// canvases, so their numbers — shared, bar the lean — are used verbatim.
 function Media({ s }) {
   if (s.v0) {
     const np = s.nowPlaying
@@ -1111,10 +1113,11 @@ function Media({ s }) {
     // The wine red the frame reserves for the player's thrown block and the
     // progress fill — not a palette hue.
     const wine = s.retro ? '#9E1F17' : s.ac
-    const cardR = s.retro ? '16px' : s.btnR
-    const playerR = s.retro ? '33px' : s.radius
+    const cardR = s.retro ? (desk ? '16px' : '20px') : s.btnR
+    const playerR = s.retro ? (desk ? '33px' : '40px') : s.radius
+    const playBtn = desk ? 39 : 48
     const ctl = (fill) => ({
-      width: fill ? (desk ? 39 : 46) : 30, height: fill ? (desk ? 39 : 46) : 30,
+      width: fill ? playBtn : 30, height: fill ? playBtn : 30,
       borderRadius: '999px', flex: 'none',
       background: fill ? s.deepFg : 'transparent', color: fill ? s.deep : s.deepFg,
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
@@ -1122,28 +1125,30 @@ function Media({ s }) {
     // Figma sets the kicker and the counter in a small tracked mono, not Anton.
     const label = (t) => (
       <span style={{
-        fontFamily: s.body, fontSize: s.mob ? '10px' : '11px', letterSpacing: '1.2px',
+        fontFamily: s.body, fontSize: '11px', letterSpacing: '1.2px',
         textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap',
       }}>{t}</span>
     )
 
-    // Full-width header row: the track counter bottom-aligns with the display
-    // heading at the right edge, above both columns.
-    const heading = (
-      <div style={row('16px', { alignItems: 'flex-end' })}>
-        <div style={col(s.mob ? '14px' : '30px', { flex: 1, minWidth: 0 })}>
-          {label(s.mediaKicker)}
-          {/* The frame breaks the heading after "worth"; an em measure between
-              width("Five worth") and width("Five worth your") forces the same
-              break at every size. */}
-          <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-            letterSpacing: s.dls, color: s.ac, maxWidth: '5.8em',
-          }}>{s.title}</h2>
-        </div>
-        {label(`${s.tracks.length} / ${s.tracks.length} Featured`)}
+    // Full-width header: on desktop the track counter bottom-aligns with the
+    // display heading at the right edge; the narrow frames drop it under the
+    // heading instead, left-aligned.
+    const featured = label(`${s.tracks.length} / ${s.tracks.length} Featured`)
+    const titleBlock = (
+      <div style={col(desk ? '30px' : '36px', desk ? { flex: 1, minWidth: 0 } : undefined)}>
+        {label(s.mediaKicker)}
+        {/* The frame breaks the heading after "worth"; an em measure between
+            width("Five worth") and width("Five worth your") forces the same
+            break at every size. */}
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+          letterSpacing: s.dls, color: s.ac, maxWidth: '5.8em',
+        }}>{s.title}</h2>
       </div>
     )
+    const heading = desk
+      ? <div style={row('16px', { alignItems: 'flex-end' })}>{titleBlock}{featured}</div>
+      : <div style={col('32px', { alignItems: 'flex-start' })}>{titleBlock}{featured}</div>
 
     const stack = (
       <div style={col('0')}>
@@ -1160,31 +1165,39 @@ function Media({ s }) {
             : s.chips[(4 + i) % n].bg
           return (
             <div key={i} style={{
-              ...row(s.mob ? '10px' : '16px'),
-              marginLeft: filled && !s.mob ? '49px' : 0,
-              marginRight: !filled && !s.mob ? '49px' : 0,
-              marginTop: i === 0 ? 0 : (s.mob ? '-6px' : '-18px'),
+              ...row(desk ? '16px' : '20px'),
+              marginLeft: filled ? (desk ? '49px' : '61px') : 0,
+              marginRight: !filled ? (desk ? '49px' : '61px') : 0,
+              marginTop: i === 0 ? 0 : (desk ? '-18px' : '-22px'),
               position: 'relative', zIndex: i + 1, overflow: 'hidden',
-              transform: tilt(s, filled ? -1 : 1),
+              // The 390 frame leans its cards harder than the wide ones.
+              transform: tilt(s, (filled ? -1 : 1) * (s.mob ? 2.25 : 1)),
               background: filled ? hue : cream, color: fg,
               border: `${s.bw} solid ${s.retro ? ink : fg}`, borderRadius: cardR,
-              padding: s.mob ? '8px 10px' : '13px 13px 13px 20px',
-              boxShadow: hard(s, thrown, -3, 8),
+              padding: desk ? '13px 13px 13px 20px' : '16px 16px 16px 24px',
+              boxShadow: hard(s, thrown, -3, desk ? 8 : 9),
             }}>
-              <span style={{ fontFamily: s.body, fontSize: s.mob ? s.eyebrow : '15px', flex: 'none' }}>{t.n}</span>
+              <span style={{ fontFamily: s.body, fontSize: desk ? '15px' : '18px', flex: 'none' }}>{t.n}</span>
               <span style={col('3px', { flex: 1, minWidth: 0 })}>
-                <span style={labelStyle(s, s.narrow ? s.title : '18px', { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
-                <span style={{ fontFamily: s.body, fontSize: s.narrow ? s.eyebrow : '10px', opacity: 0.75 }}>{t.sub}</span>
+                {/* The 390 frame wraps long titles at label-md; the wider
+                    frames truncate at their own sizes. */}
+                <span style={labelStyle(s, desk ? '18px' : s.mob ? s.labelMd : s.title,
+                  s.mob ? { whiteSpace: 'normal' } : { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
+                <span style={{
+                  fontFamily: s.body, fontSize: desk ? '10px' : '12px', opacity: 0.75,
+                  maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{t.sub}</span>
               </span>
               <span style={{
-                width: desk ? 29 : 30, height: desk ? 29 : 30, borderRadius: '999px', flex: 'none',
+                width: desk ? 29 : 35, height: desk ? 29 : 35,
+                borderRadius: '999px', flex: 'none',
                 background: filled ? (s.retro ? '#EDE0C4' : fg) : ink,
                 color: filled ? hue : cream,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
               }}><Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} /></span>
               <span style={{
-                width: s.mob ? 42 : 49, height: s.mob ? 42 : 49, flex: 'none',
-                borderRadius: s.retro ? '5px' : s.radiusSm, overflow: 'hidden',
+                width: desk ? 49 : 60, height: desk ? 49 : 60, flex: 'none',
+                borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
                 // The frame borders only the open cards' art, hairline.
                 border: s.retro ? (filled ? 'none' : `1px solid ${ink}`) : `${s.bw} solid ${fg}`,
               }}><Photo s={s} initialsSize={14} src={s.images[i]} /></span>
@@ -1199,26 +1212,30 @@ function Media({ s }) {
       <div style={{
         position: 'relative', width: '100%',
         background: s.deep, color: s.deepFg, borderRadius: playerR,
-        padding: s.mob ? '20px' : '26px', boxShadow: hard(s, wine, 8, 11),
-        height: desk ? '443px' : undefined,
-        ...col('15px', { alignItems: 'center', justifyContent: desk ? 'space-between' : undefined }),
+        padding: desk ? '26px' : '32px',
+        boxShadow: desk ? hard(s, wine, 8, 11) : hard(s, wine, 10, 14),
+        // Both fixed-height frames: the 390 one squashes the disc into the
+        // leftover space rather than keeping it square.
+        height: desk ? '443px' : s.mob ? '393px' : undefined,
+        ...col(desk ? '15px' : '18px', { alignItems: 'center', justifyContent: desk ? 'space-between' : undefined }),
       }}>
         <Grain s={s} exact blend="lighten" opacity={0.3} radius={playerR} />
         <ChevronLeft size={16} style={{ alignSelf: 'center', opacity: 0.8 }} />
         <div style={{
-          width: desk ? '207px' : '45%', aspectRatio: '1',
-          borderRadius: s.retro ? '41px' : s.radiusSm, overflow: 'hidden', position: 'relative',
+          width: desk ? '207px' : '252px', maxWidth: '100%',
+          aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
+          borderRadius: s.retro ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
         }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
         <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
           {/* The frame sets the now-playing block in the body face, like a real
               player UI — not the display serif. */}
           <span style={{
             fontFamily: s.retro ? s.body : s.display, fontWeight: s.retro ? 600 : undefined,
-            fontSize: desk ? '16px' : s.title, letterSpacing: s.retro ? 0 : s.dls,
+            fontSize: desk ? '16px' : '20px', letterSpacing: s.retro ? 0 : s.dls,
           }}>{np.track}</span>
-          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : s.eyebrow, opacity: 0.7 }}>{np.by}</span>
+          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : '13px', opacity: 0.7 }}>{np.by}</span>
         </div>
-        <div style={row(desk ? '12px' : '18px', { position: 'relative' })}>
+        <div style={row(desk ? '12px' : '14px', { position: 'relative' })}>
           <span style={ctl(false)}><SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
           <span style={ctl(true)}><Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} /></span>
           <span style={ctl(false)}><SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
@@ -1238,9 +1255,9 @@ function Media({ s }) {
     const pill = s.retro ? (
       <span style={{
         ...row('8px'), background: s.ac, color: s.bg, cursor: 'pointer',
-        padding: '8px 16px', borderRadius: s.btnR,
+        padding: desk ? '8px 16px' : '10px 20px', borderRadius: s.btnR,
         boxShadow: hard(s, s.pillBg, 3, 4),
-        ...labelStyle(s, '16px'),
+        ...labelStyle(s, desk ? '16px' : '20px'),
       }}>Soundcloud</span>
     ) : (
       <BookPill s={s} label="Soundcloud" />
@@ -1248,14 +1265,17 @@ function Media({ s }) {
 
     return (
       <div style={{ position: 'relative' }}>
-        <Checkerboard s={s} cell={s.mob ? 12 : 19} colour={s.retro ? s.bg : s.pillBg}
+        <Checkerboard s={s} cell={desk ? 19 : 24} colour={s.retro ? s.bg : s.pillBg}
                       style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'top') }} />
         <TornEdge s={s} side="bottom" height={30} />
-        <div style={col(s.narrow ? '24px' : '16px')}>
+        <div style={col(desk ? '16px' : '40px')}>
           {heading}
           <div style={{
-            display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1.27fr 1fr',
-            gap: s.narrow ? s.gGap : '49px', alignItems: 'center',
+            // minmax(0,…): a long nowrap subline must truncate, not size the
+            // track to its min-content and push the cards past the canvas.
+            display: 'grid',
+            gridTemplateColumns: desk ? 'minmax(0, 1.27fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+            gap: desk ? '49px' : '32px', alignItems: 'center',
           }}>
             {stack}
             {player}
