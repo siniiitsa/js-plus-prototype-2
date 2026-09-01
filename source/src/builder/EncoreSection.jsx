@@ -1094,17 +1094,56 @@ function Bio({ s }) {
 
 // v0 — Media Player layout 1 · Floating cards stack (§10.2 reference design)
 //
-// Five track cards that overlap and alternate indent, every other one filled
-// with a palette hue, each throwing a hard offset block; the "now playing"
-// card sits on the dark alongside. Checkerboard above, torn paper below.
+// Five track cards that overlap, alternate indent and lean ±1°, every other
+// one filled with a palette hue, each throwing a hard offset block down-left;
+// the "now playing" card sits on the dark alongside, centred against the
+// stack. Checkerboard above, torn paper below. Desktop numbers are the 1440
+// frame (964:58578) × 0.82, per the RAMP rule.
 function Media({ s }) {
   if (s.v0) {
     const np = s.nowPlaying
+    const desk = !s.narrow
+    // The frame paints this section on cream with near-black ink, not the
+    // beige page palette — EncoreSection swaps the section ground to match,
+    // so the beige checkerboard band and cards read against it.
+    const ink = s.retro ? '#1B1714' : s.paperFg
+    const cream = s.retro ? '#FBF6EA' : s.paper
+    // The wine red the frame reserves for the player's thrown block and the
+    // progress fill — not a palette hue.
+    const wine = s.retro ? '#9E1F17' : s.ac
+    const cardR = s.retro ? '16px' : s.btnR
+    const playerR = s.retro ? '33px' : s.radius
     const ctl = (fill) => ({
-      width: fill ? 46 : 30, height: fill ? 46 : 30, borderRadius: '999px', flex: 'none',
+      width: fill ? (desk ? 39 : 46) : 30, height: fill ? (desk ? 39 : 46) : 30,
+      borderRadius: '999px', flex: 'none',
       background: fill ? s.deepFg : 'transparent', color: fill ? s.deep : s.deepFg,
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
     })
+    // Figma sets the kicker and the counter in a small tracked mono, not Anton.
+    const label = (t) => (
+      <span style={{
+        fontFamily: s.body, fontSize: s.mob ? '10px' : '11px', letterSpacing: '1.2px',
+        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap',
+      }}>{t}</span>
+    )
+
+    // Full-width header row: the track counter bottom-aligns with the display
+    // heading at the right edge, above both columns.
+    const heading = (
+      <div style={row('16px', { alignItems: 'flex-end' })}>
+        <div style={col(s.mob ? '14px' : '30px', { flex: 1, minWidth: 0 })}>
+          {label(s.mediaKicker)}
+          {/* The frame breaks the heading after "worth"; an em measure between
+              width("Five worth") and width("Five worth your") forces the same
+              break at every size. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac, maxWidth: '5.8em',
+          }}>{s.title}</h2>
+        </div>
+        {label(`${s.tracks.length} / ${s.tracks.length} Featured`)}
+      </div>
+    )
 
     const stack = (
       <div style={col('0')}>
@@ -1112,34 +1151,44 @@ function Media({ s }) {
           const n = s.chips.length
           const filled = i % 2 === 1
           // Filled rows step through the palette from its third hue (Retro:
-          // mustard, then olive); the open rows throw a contrasting block.
+          // mustard, then olive) and throw the accent; the open rows throw the
+          // frame's off-palette pink and violet blocks, alternating.
           const hue = s.chips[(2 + Math.floor(i / 2)) % n].bg
-          const fg = filled ? contrastInk(hue) : s.paperFg
+          const fg = filled ? (s.retro ? cream : contrastInk(hue)) : ink
+          const thrown = filled ? s.ac
+            : s.retro ? (Math.floor(i / 2) % 2 ? '#8464AD' : '#FD638E')
+            : s.chips[(4 + i) % n].bg
           return (
             <div key={i} style={{
-              ...row(s.mob ? '10px' : '14px'),
-              marginLeft: filled && !s.mob ? '48px' : 0,
-              marginTop: i === 0 ? 0 : (s.mob ? '-6px' : '-19px'),
-              position: 'relative', zIndex: i + 1,
-              background: filled ? hue : s.paper, color: fg,
-              border: `${s.bw} solid ${fg}`, borderRadius: s.btnR,
-              padding: s.mob ? '8px 10px' : '14px 16px',
-              boxShadow: hard(s, filled ? s.ac : s.chips[(4 + i) % n].bg, 4, 5),
+              ...row(s.mob ? '10px' : '16px'),
+              marginLeft: filled && !s.mob ? '49px' : 0,
+              marginRight: !filled && !s.mob ? '49px' : 0,
+              marginTop: i === 0 ? 0 : (s.mob ? '-6px' : '-18px'),
+              position: 'relative', zIndex: i + 1, overflow: 'hidden',
+              transform: tilt(s, filled ? -1 : 1),
+              background: filled ? hue : cream, color: fg,
+              border: `${s.bw} solid ${s.retro ? ink : fg}`, borderRadius: cardR,
+              padding: s.mob ? '8px 10px' : '13px 13px 13px 20px',
+              boxShadow: hard(s, thrown, -3, 8),
             }}>
-              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.85, flex: 'none' }}>{t.n}</span>
-              <span style={col('2px', { flex: 1, minWidth: 0 })}>
-                <span style={labelStyle(s, s.title, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
-                <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.75 }}>{t.sub}</span>
+              <span style={{ fontFamily: s.body, fontSize: s.mob ? s.eyebrow : '15px', flex: 'none' }}>{t.n}</span>
+              <span style={col('3px', { flex: 1, minWidth: 0 })}>
+                <span style={labelStyle(s, s.narrow ? s.title : '18px', { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
+                <span style={{ fontFamily: s.body, fontSize: s.narrow ? s.eyebrow : '10px', opacity: 0.75 }}>{t.sub}</span>
               </span>
               <span style={{
-                width: 30, height: 30, borderRadius: '999px', flex: 'none',
-                background: fg, color: filled ? hue : s.paper,
+                width: desk ? 29 : 30, height: desk ? 29 : 30, borderRadius: '999px', flex: 'none',
+                background: filled ? (s.retro ? '#EDE0C4' : fg) : ink,
+                color: filled ? hue : cream,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              }}><Play size={12} fill="currentColor" strokeWidth={0} /></span>
+              }}><Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} /></span>
               <span style={{
-                width: s.mob ? 42 : 52, height: s.mob ? 42 : 52, flex: 'none',
-                borderRadius: s.radiusSm, overflow: 'hidden', border: `${s.bw} solid ${fg}`,
+                width: s.mob ? 42 : 49, height: s.mob ? 42 : 49, flex: 'none',
+                borderRadius: s.retro ? '5px' : s.radiusSm, overflow: 'hidden',
+                // The frame borders only the open cards' art, hairline.
+                border: s.retro ? (filled ? 'none' : `1px solid ${ink}`) : `${s.bw} solid ${fg}`,
               }}><Photo s={s} initialsSize={14} src={s.images[i]} /></span>
+              {filled && <Grain s={s} exact blend="screen" opacity={0.4} />}
             </div>
           )
         })}
@@ -1147,63 +1196,71 @@ function Media({ s }) {
     )
 
     const player = (
-      <div style={col('12px', { alignItems: s.narrow ? 'stretch' : 'flex-end' })}>
-        <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.14em' })}>
-          {s.tracks.length} / {s.tracks.length} Featured
-        </span>
+      <div style={{
+        position: 'relative', width: '100%',
+        background: s.deep, color: s.deepFg, borderRadius: playerR,
+        padding: s.mob ? '20px' : '26px', boxShadow: hard(s, wine, 8, 11),
+        height: desk ? '443px' : undefined,
+        ...col('15px', { alignItems: 'center', justifyContent: desk ? 'space-between' : undefined }),
+      }}>
+        <Grain s={s} exact blend="lighten" opacity={0.3} radius={playerR} />
+        <ChevronLeft size={16} style={{ alignSelf: 'center', opacity: 0.8 }} />
         <div style={{
-          position: 'relative', width: '100%', maxWidth: s.narrow ? 'none' : '460px',
-          background: s.deep, color: s.deepFg, borderRadius: s.radius,
-          padding: s.mob ? '20px' : '28px', boxShadow: hard(s, s.ac, 6, 6),
-          ...col('16px', { alignItems: 'center' }),
-        }}>
-          <Grain s={s} opacity={0.2} radius={s.radius} />
-          <ChevronLeft size={14} style={{ alignSelf: 'center', opacity: 0.7 }} />
-          <div style={{
-            width: '45%', aspectRatio: '1', borderRadius: s.radiusSm, overflow: 'hidden',
-            position: 'relative',
-          }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
-          <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
-            <span style={{ fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls }}>{np.track}</span>
-            <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.7 }}>{np.by}</span>
-          </div>
-          <div style={row('18px', { position: 'relative' })}>
-            <span style={ctl(false)}><SkipBack size={14} fill="currentColor" strokeWidth={0} /></span>
-            <span style={ctl(true)}><Play size={16} fill="currentColor" strokeWidth={0} /></span>
-            <span style={ctl(false)}><SkipForward size={14} fill="currentColor" strokeWidth={0} /></span>
-          </div>
-          <div style={row('12px', { width: '100%', position: 'relative' })}>
-            <span style={{ fontFamily: s.body, fontSize: '11px', opacity: 0.7 }}>{np.at}</span>
-            <span style={{ flex: 1, height: '3px', background: s.deepFg25, borderRadius: '99px' }}>
-              <span style={{ display: 'block', width: `${np.pct}%`, height: '100%', background: s.ac, borderRadius: '99px' }} />
-            </span>
-            <span style={{ fontFamily: s.body, fontSize: '11px', opacity: 0.7 }}>{np.of}</span>
-          </div>
+          width: desk ? '207px' : '45%', aspectRatio: '1',
+          borderRadius: s.retro ? '41px' : s.radiusSm, overflow: 'hidden', position: 'relative',
+        }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
+        <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
+          {/* The frame sets the now-playing block in the body face, like a real
+              player UI — not the display serif. */}
+          <span style={{
+            fontFamily: s.retro ? s.body : s.display, fontWeight: s.retro ? 600 : undefined,
+            fontSize: desk ? '16px' : s.title, letterSpacing: s.retro ? 0 : s.dls,
+          }}>{np.track}</span>
+          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : s.eyebrow, opacity: 0.7 }}>{np.by}</span>
+        </div>
+        <div style={row(desk ? '12px' : '18px', { position: 'relative' })}>
+          <span style={ctl(false)}><SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
+          <span style={ctl(true)}><Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} /></span>
+          <span style={ctl(false)}><SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
+        </div>
+        <div style={row('10px', { width: '100%', position: 'relative' })}>
+          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{np.at}</span>
+          <span style={{ flex: 1, height: '3px', background: s.retro ? 'rgba(0,0,0,0.28)' : s.deepFg25, borderRadius: '99px' }}>
+            <span style={{ display: 'block', width: `${np.pct}%`, height: '100%', background: wine, borderRadius: '99px' }} />
+          </span>
+          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{np.of}</span>
         </div>
       </div>
     )
 
+    // Frame 446:2265 — accent pill with beige Anton type and a mustard block,
+    // the inverse of the Book Now pill.
+    const pill = s.retro ? (
+      <span style={{
+        ...row('8px'), background: s.ac, color: s.bg, cursor: 'pointer',
+        padding: '8px 16px', borderRadius: s.btnR,
+        boxShadow: hard(s, s.pillBg, 3, 4),
+        ...labelStyle(s, '16px'),
+      }}>Soundcloud</span>
+    ) : (
+      <BookPill s={s} label="Soundcloud" />
+    )
+
     return (
       <div style={{ position: 'relative' }}>
-        <Checkerboard s={s} cell={12} colour={s.pillBg}
+        <Checkerboard s={s} cell={s.mob ? 12 : 19} colour={s.retro ? s.bg : s.pillBg}
                       style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'top') }} />
         <TornEdge s={s} side="bottom" height={30} />
-        <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1.1fr 0.9fr',
-          gap: s.gGap, alignItems: 'start',
-        }}>
-          <div style={col(s.mob ? '28px' : s.narrow ? '44px' : '68px')}>
-            <div style={col('12px')}>
-              <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>{s.mediaKicker}</span>
-              <h2 style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
-                letterSpacing: s.dls, color: s.ac,
-              }}>{s.title}</h2>
-            </div>
+        <div style={col(s.narrow ? '24px' : '16px')}>
+          {heading}
+          <div style={{
+            display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1.27fr 1fr',
+            gap: s.narrow ? s.gGap : '49px', alignItems: 'center',
+          }}>
             {stack}
-            <span style={{ alignSelf: 'flex-start' }}><BookPill s={s} label="Soundcloud" /></span>
+            {player}
           </div>
-          {player}
+          <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
         </div>
       </div>
     )
@@ -2268,9 +2325,14 @@ export default function EncoreSection({ s }) {
   // §10.2 — the events map is the one section painted on a dark ground rather
   // than the page background, so its checkerboard bands and cream type read.
   const darkMap = s.mp && s.v0 && s.retro
+  // §10.2 — the media player frame (964:58578) stands on cream rather than the
+  // beige page ground, so its beige checkerboard band and cream track cards
+  // read against it. Retro's `paper` IS the page background, hence the literal.
+  const creamMedia = s.me && s.v0 && s.retro
   return (
     <div style={{
-      background: darkMap ? s.mapBg : s.bg, color: darkMap ? s.mapFg : s.tx,
+      background: darkMap ? s.mapBg : creamMedia ? '#FBF6EA' : s.bg,
+      color: darkMap ? s.mapFg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
       transition: 'background-color .45s ease, color .45s ease',
