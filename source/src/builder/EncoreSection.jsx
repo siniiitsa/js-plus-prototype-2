@@ -111,12 +111,34 @@ function Grain({ s, opacity = 0.16, blend = 'overlay', radius, style, exact = fa
   )
 }
 
-// Torn paper strip across a section boundary. Painted in `s.edge` — an opaque
-// tonal shift of the section background — because it overlaps the seam.
+// Torn paper strip across a section boundary. Painted in the page ground
+// (`s.bg`) — the Figma vector's own fill — so it reads as the neighbouring
+// sheet of the page torn over this section, not a third tone: visible where
+// the sections differ (the cream media player against the beige page) and
+// merging silently where they share the ground. The ragged line is the §10.2
+// tear itself: the contour of the Figma torn-paper vector (node 446:2390, the
+// media player's bottom edge), sampled at its anchor points and normalised
+// into this 1000×40 box, so the seam reads as ripped fibre, not a smooth wave.
 const TORN_D =
-  'M0,0 L1000,0 L1000,13 C947,25 908,7 861,17 C812,28 767,9 719,20 ' +
-  'C673,30 631,11 585,21 C540,31 497,12 452,22 C408,32 366,13 321,23 ' +
-  'C277,33 236,14 190,24 C147,33 108,16 62,25 C40,29 20,23 0,27 Z'
+  'M0,0 L1000,0 L998.1,27.5 L1000,17.9 L996.1,15.5 L971.6,11.6 L961.2,6.7 ' +
+  'L952.1,8.6 L939.1,18.8 L923,19.3 L921.3,17.5 L906.2,10.3 L894.5,9.3 ' +
+  'L866.7,7.1 L856.9,2.3 L847.4,2.2 L845.8,4.3 L840.5,4.5 L838.4,6.6 L828,0.7 ' +
+  'L826.5,2.2 L798.6,3.7 L795.5,5.5 L768.4,9.6 L756,9.9 L748.4,12.4 ' +
+  'L730.7,11.7 L716.7,15.2 L703.2,20.5 L698.3,19.9 L693.2,23 L677.3,23.2 ' +
+  'L670.9,21.1 L665.6,22.5 L661.1,19.8 L645.5,17.5 L634.5,15.3 L606.2,12.6 ' +
+  'L602.8,9.6 L597.5,9.5 L594,8 L586.3,12.2 L581.2,11.8 L575.4,14.5 ' +
+  'L556.4,13.9 L552.8,12.5 L546.9,16.3 L524.8,18 L514.9,19.6 L507.6,19.7 ' +
+  'L499.3,15.6 L497.4,16.6 L483.4,10.4 L477.6,10.6 L473.2,8.4 L455.6,8.6 ' +
+  'L447.8,5.3 L443,7.9 L439.6,6.6 L433,9.1 L423.3,9.5 L420,13.5 L416.7,13.5 ' +
+  'L411.3,18.1 L395.9,21 L390.9,19 L384.9,22.1 L371,22.6 L364.8,23.4 ' +
+  'L352.6,22 L344.1,26.1 L333.9,25.8 L330.5,27 L318.8,22.6 L315.9,24.6 ' +
+  'L306.5,24.8 L303.2,26.9 L298.9,24.8 L283.2,23.2 L281.9,21.4 L271.3,16.1 ' +
+  'L268.5,15.2 L267.6,11 L264.9,10.6 L258.5,6.1 L249.5,0.5 L247.6,2 ' +
+  'L233.9,4.2 L229.7,2.3 L223.5,5 L221.2,3.1 L213.7,2.4 L210.8,5.6 L203,3.8 ' +
+  'L185.7,8.8 L176.1,7.3 L170,8 L168.8,5.9 L166.4,6.5 L163.7,5.1 L154.5,4 ' +
+  'L152,1.5 L146.2,3.7 L146.2,5.8 L120.1,5.1 L122.9,5.9 L116.7,5.5 L115,3.8 ' +
+  'L110.7,6.5 L106.9,6 L91.7,13.6 L75.4,15.3 L48.6,27.9 L37.1,28.4 ' +
+  'L37.8,29.9 L29.2,31.4 L17,30 L8.8,35.9 L0,38.2 Z'
 
 // `bleed` pulls the strip out to the section's own edges, past the root
 // padding, so a decoration sits on the seam rather than inside the column.
@@ -137,7 +159,7 @@ function TornEdge({ s, side = 'top', height = 26, colour, bleed = true }) {
         : { left: 0, width: '100%', [side]: 0 }),
       transform: side === 'bottom' ? 'scaleY(-1)' : undefined,
     }}>
-      <path d={TORN_D} fill={colour || s.edge} />
+      <path d={TORN_D} fill={colour || s.bg} />
     </svg>
   )
 }
