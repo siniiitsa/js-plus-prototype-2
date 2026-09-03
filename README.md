@@ -67,8 +67,9 @@ This is the one architectural rule worth knowing before editing anything (§12.9
 - **`EncoreSection.jsx`** uses **neither** — every value is an inline `style={{}}`. Sections are
   painted with arbitrary hex values taken at runtime from the active theme's palette, plus six
   derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
-  `s.bg` is `#7A58A7` picked at runtime. Its only import is `lucide-react`, whose icons inherit
-  `currentColor` and so stay theme-driven.
+  `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
+  inherit `currentColor` and so stay theme-driven; from React it takes `useId` and — for the one
+  section that has live controls, Repertoire — `useState`, and nothing else.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
@@ -185,14 +186,16 @@ That distinction is the whole design, and it buys two things:
   breakpoints are the `narrow` / `mob` booleans and the fixed px of `SIZES`, resolved into the
   view-model. Serialised HTML would be frozen at whatever width the editor happened to show.
   `PublishedPage` picks its own `Z` from its own window's width, at 390 / 768 / 1180+, full-bleed.
-- **It can become interactive.** Today every control the page draws — Repertoire's search box and
-  filter chips, the pagination, the gallery filmstrip — is a static span, because the same
-  component renders the editor canvas and that is deliberately a picture of a website. `sectionVm`
-  now carries a **`live`** flag, true only in the published tab, as the seam a control branches on
-  to become real. Nothing reads it yet. Repertoire's search additionally needs songs in the
-  content model (`FIELDS.repertoire` has only `heading` today); the gallery filmstrip, the
-  players and the testimonials carousel need no new data at all. The enquiry form's *submit* is
-  the one thing that cannot be front-end-only.
+- **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
+  flag, true only in the published tab, as the seam a control branches on: the same component
+  renders the editor canvas, and that is deliberately a picture of a website, so anything
+  interactive has to be off there. **Repertoire reads it.** Its search box filters on title and
+  artist, its filter chips filter on the tags the artist typed, and its pager is derived from the
+  result — all three inert on the canvas, which still draws the picture the Figma frames show.
+  What unblocked it was putting the songs in the content model (`FIELDS.repertoire.songs`).
+  Everything else the page draws — the gallery filmstrip, the players, the testimonials carousel,
+  the events map's pager — is still a static span, and none of them needs new data to change that.
+  The enquiry form's *submit* is the one thing that cannot be front-end-only.
 
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
 domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the

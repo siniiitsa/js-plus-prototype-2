@@ -56,7 +56,7 @@ Two styling systems, deliberately (README §"Two styling systems, deliberately")
   utilities and shadcn/ui on the tokens in `src/index.css`.
 - **`EncoreSection.jsx`** uses **neither**. Every value is an inline `style={{}}`, because
   section colours are arbitrary runtime hexes (`background: s.bg` where `s.bg` is `#7A58A7`).
-  Its only import is `lucide-react`.
+  Its only library import is `lucide-react`; from React it takes `useId` and `useState`.
 
 Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross the boundary,
 because each reads the per-section `--ac` / `--acFg` custom properties.
@@ -97,11 +97,21 @@ mutated through a single `patch()` helper.
   opener's, so the tab would claim to be the builder and reload into it); and set the page
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
-- **`s.live` is reserved, and false everywhere except the published tab.** It is the seam for
-  making a control real — Repertoire's search and chips, the gallery filmstrip, pagination.
-  Nothing reads it yet. Do **not** make `EncoreSection` interactive without gating on it: the
-  editor canvas is a picture of a website, and a live filter chip there would both filter and
-  select the section.
+- **`s.live` is false everywhere except the published tab.** It is the seam for making a control
+  real, and **`Repertoire` is the one section that reads it**: its search field, its filter chips
+  and its pager are live there and inert on the canvas. Everything else — the gallery filmstrip,
+  the events map's pager, the players — is still a picture. Do **not** make `EncoreSection`
+  interactive without gating on it: the editor canvas is a picture of a website, and a live filter
+  chip there would both filter and select the section. `EncoreSection` therefore imports `useState`
+  as well as `useId`; that is the whole of its React surface and it stays that way.
+- **Repertoire's songs are the only list-shaped content with a structured editor.** `c.songs` is an
+  array of `{ title, artist, tags }` (tags a raw comma string), maintained by `SongsField` in
+  `EncoreBuilder` — every other repeated field is a delimited textarea (`FIELDS.audio.tracks`,
+  `FIELDS.tags.tags`) or a flattened key set (`pricing`'s `t1n`/`t1p`/…). It follows `images`, not
+  `image`: an absent key means the seeded `SONGS`, an emptied array means no songs, and there is no
+  `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
+  heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
+  both.
 - **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` in
   `photos.js` gate on `T.name === 'Retro'`, the same name-match as `headerFamily()` and the
   `retro` flag. **Remove** writes `null`, not `undefined` — `undefined` deletes the key, and an

@@ -35,13 +35,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, QUOTES,
-  CITIES, REP, PINS, BOOKED, HELD, EXAMPLE_PAGE,
-  NOW_PLAYING, TIER_MODES, SONGS, REP_FILTERS, SONG_TOTAL, PAGES,
+  CITIES, PINS, BOOKED, HELD, EXAMPLE_PAGE,
+  NOW_PLAYING, TIER_MODES, SONGS, PAGES,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_CREDIT,
   CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
-  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault,
+  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, songTags, repChips,
   headerFamily, layoutCount, designCount,
   headerLayout, headerLayoutLabel, HEADER_UX,
 } from './data.js'
@@ -315,14 +315,31 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
         }
   })
 
-  // repertoire
-  vm.rep = REP.map((g) => ({ genre: cased(g.genre), items: g.items }))
-  vm.repFlat = REP.flatMap((g) => g.items.map((t) => ({ t, g: g.genre })))
-  vm.songs = SONGS.map(([title, artist], i) => ({ n: i + 1, title, artist: cased(artist) }))
-  vm.repFilters = REP_FILTERS.map((l) => cased(l))
+  // repertoire — the artist's own list, else the seeded one. The semantics are
+  // `images`, not `image`: an emptied array is already distinguishable from an
+  // absent key, so only an absent key falls back and no null sentinel is needed.
+  const songList = Array.isArray(c.songs) ? c.songs : SONGS
+  vm.songs = songList.map((t, i) => ({
+    n: i + 1,
+    title: String((t && t.title) ?? '').trim(),
+    artist: cased(String((t && t.artist) ?? '').trim()),
+    // Raw casing, deliberately: a lower-case theme must not stop a chip from
+    // matching the tag it was derived from.
+    tags: songTags(t && t.tags),
+  }))
+  // `label` is cased for the chip, `tag` is what the filter compares.
+  vm.repChips = repChips(songList).map((ch) => ({ ...ch, label: cased(ch.label) }))
+  // Layout 2 has no chip row, so its right-hand column takes the artist rather
+  // than a tag — but it takes the artist's *songs*, so swapping layouts never
+  // silently discards what they typed.
+  vm.repFlat = vm.songs.map((t) => ({ t: t.title, g: t.artist }))
   vm.repHue = legible(T.tags[3 % T.tags.length])
-  vm.songTotal = SONG_TOTAL
+  // Still static, and still only for the events map's picture of a pager.
   vm.pages = PAGES
+  // The heading counts the list unless the artist has written their own, so it
+  // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
+  // the same fallback, or the panel and the canvas would disagree.
+  if (cat === 'repertoire' && c.heading === undefined) vm.title = cased(`${vm.songs.length} Songs`)
 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
@@ -863,6 +880,100 @@ const FIELD_BOX = {
 }
 
 /* ------------------------------------------------------------------ *
+ * §8.6b SongsField — the repertoire's song list. The one list-shaped
+ * field with a structured editor rather than a delimited textarea: the
+ * artist types a title, an artist and any tags, and the tags are what
+ * the section's filter chips are built from.
+ *
+ * Modelled on ImagesField above — numbered rows, a round X per row, an
+ * add affordance, an "n of max" footnote — and, like it, deliberately
+ * not reorderable: order is entry order.
+ * ------------------------------------------------------------------- */
+
+const SONG_ROW_INPUT = { ...FIELD_BOX, padding: '6px 8px', fontSize: '12px' }
+
+function SongsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  // Every keystroke rewrites the whole array — the list is short, and it keeps
+  // the sparse `c.songs` a plain value rather than something patched in place.
+  const setAt = (i, k, v) => onChange(list.map((sg, j) => (j === i ? { ...sg, [k]: v } : sg)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { title: '', artist: '', tags: '' }])
+
+  const row = (i, sg) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        {/* shadcn Input rather than a bare one, for its focus ring: FIELD_BOX
+            sets `outline: none`, so a raw input would tab through twelve rows
+            showing nothing. `h-auto` lets the compact padding win over h-9. */}
+        <Input
+          value={sg.title ?? ''} placeholder="Song title" onClick={stopE}
+          onChange={(e) => setAt(i, 'title', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove song ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      {/* Stacked, not three across: this panel is also the mobile edit sheet
+          and three inputs do not fit side by side at its width. The 25px
+          gutter keeps both lower fields aligned under the title. */}
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <Input
+          value={sg.artist ?? ''} placeholder="Artist" onClick={stopE}
+          onChange={(e) => setAt(i, 'artist', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+        <Input
+          value={sg.tags ?? ''} placeholder="Tags — weddings, pubs" onClick={stopE}
+          onChange={(e) => setAt(i, 'tags', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((sg, i) => row(i, sg || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add song</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max}
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
@@ -881,6 +992,10 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = 
   const themeName = THEMES[themeIdx].name
   const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k))
   const imgsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
+  // Same trap as the photos above: the panel has to resolve the seeded songs
+  // exactly as sectionVm does, or the canvas would list twelve songs while the
+  // repeater showed none.
+  const songsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : SONGS)
 
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
@@ -956,7 +1071,13 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = 
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {fields.map((f) => {
-                  const fallback = f.k === 'title' && sec.cat === 'header' ? artistName : fieldDefault(f)
+                  // The two fields whose default is computed rather than written
+                  // down: the header's title is the artist's name, and the
+                  // repertoire's heading counts the songs — both mirroring what
+                  // sectionVm resolves, so panel and canvas never disagree.
+                  const fallback = f.k === 'title' && sec.cat === 'header' ? artistName
+                    : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
+                    : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
                   return (
@@ -969,6 +1090,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = 
                         <ImageField value={imgVal(f.k)} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'images' ? (
                         <ImagesField value={imgsVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
+                      ) : f.type === 'songs' ? (
+                        <SongsField value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>

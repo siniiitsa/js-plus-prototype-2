@@ -7,11 +7,14 @@
 // names permitted here are the three §3.3 rules that read the `--ac` /
 // `--acFg` custom properties set on the section root.
 //
-// lucide-react is the one import: its icons inherit `currentColor`, so they
-// stay theme-driven, and each takes the px size given in the spec rather
-// than a `size-*` class.
+// lucide-react is the one component/style import: its icons inherit
+// `currentColor`, so they stay theme-driven, and each takes the px size given
+// in the spec rather than a `size-*` class. React itself is imported for
+// `useId` and — since Repertoire's search and chips became real controls on
+// the published page — for `useState`, which is gated on `s.live` throughout
+// (§12.7: the editor canvas stays a picture of a website).
 
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import {
   Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
@@ -1581,11 +1584,40 @@ function Pricing({ s }) {
 // than dissolving into its own fill, the centred row its tablet uses and the
 // full-measure one its mobile does, on a shorter page list. The map passes
 // none of it and keeps the flatter default.
+// The pager's button row for `n` pages, windowed around the active one and
+// elided with '…' where it skips — the shape the static PAGES constant used to
+// hardcode. Lives here rather than in data.js because the page count depends on
+// the search and chip state, which only this file holds. Returns the labels and
+// the index of the active one *within them*, which is what Pager highlights.
+function pageWindow(n, active, narrow) {
+  if (n <= 1) return { labels: [], at: 0 }
+  const keep = narrow ? 3 : 5          // numbered buttons at most
+  const page = active + 1              // the row is 1-based
+  // The first, the last and the current page are never dropped; the rest fills
+  // outwards from the current one until the row is as long as it may be.
+  const nums = new Set([1, n, page])
+  for (let d = 1; nums.size < keep && d < n; d++) {
+    if (page - d >= 1) nums.add(page - d)
+    if (nums.size < keep && page + d <= n) nums.add(page + d)
+  }
+  const sorted = [...nums].sort((a, b) => a - b)
+  const labels = []
+  sorted.forEach((v, i) => {
+    if (i && v !== sorted[i - 1] + 1) labels.push('…')
+    labels.push(String(v))
+  })
+  return { labels, at: labels.indexOf(String(page)) }
+}
+
+// `frame.active` is an index into the *rendered* button row, which stops
+// matching the page number as soon as pageWindow() elides it with '…' — hence
+// pageWindow returning both. `active`, `onPage` and `onStep` are all optional:
+// omitting them is the events map's static picture of a pager, unchanged.
 function Pager({ s, colour, fill, frame = {} }) {
   const c = colour || s.tx
   const w = frame.size || (s.mob ? 30 : 42)
-  const btn = (key, child, on, ends) => (
-    <span key={key} style={{
+  const btn = (key, child, on, ends, onClick) => (
+    <span key={key} onClick={onClick} style={{
       minWidth: w, height: w, padding: '0 8px',
       borderRadius: frame.radius || s.radiusSm,
       border: `${frame.bw || s.bw} solid ${on ? (frame.activeEdge || s.pillBg) : c}`,
@@ -1602,9 +1634,13 @@ function Pager({ s, colour, fill, frame = {} }) {
     <div style={row('8px', {
       flexWrap: frame.grow ? 'nowrap' : 'wrap', justifyContent: frame.justify,
     })}>
-      {btn('prev', <ArrowLeft size={14} />, false, true)}
-      {(frame.pages || s.pages).map((p, i) => btn(`p${i}`, p, i === 0))}
-      {btn('next', <ArrowRight size={14} />, false, true)}
+      {btn('prev', <ArrowLeft size={14} />, false, true, frame.onStep && (() => frame.onStep(-1)))}
+      {(frame.pages || s.pages).map((p, i) => btn(
+        `p${i}`, p, i === (frame.active || 0), false,
+        // '…' is a gap in the row, not a page.
+        frame.onPage && p !== '…' ? () => frame.onPage(p) : undefined,
+      ))}
+      {btn('next', <ArrowRight size={14} />, false, true, frame.onStep && (() => frame.onStep(1)))}
     </div>
   )
 }
@@ -1622,6 +1658,14 @@ function Pager({ s, colour, fill, frame = {} }) {
 // (bottom-aligned on tablet, stacked on mobile), the two display sizes, and the
 // pager: left on desktop, centred on tablet, full-measure on mobile.
 function Repertoire({ s }) {
+  // The search term, the selected chip and the page. All three are gated on
+  // `s.live` below: they drive real controls in the published tab and are inert
+  // on the editor canvas, which is deliberately a picture of a website (§12.7)
+  // — a live chip there would both filter the list and select the section.
+  const [q, setQ] = useState('')
+  const [chip, setChip] = useState(0)
+  const [page, setPage] = useState(0)
+
   if (s.v0) {
     const tab = isTablet(s)
     const hue = s.repHue   // Retro: olive
@@ -1636,16 +1680,33 @@ function Repertoire({ s }) {
     // selected chip (the media player's) and the blush behind the pager arrows.
     const wine = s.retro ? '#9E1F17' : s.ac
     const blush = s.retro ? '#EDC6B3' : s.soft2
-    // The desktop frame reads its list DOWN each column — the left column is
-    // every other song numbered 1–6, the right the rest numbered 7–12 — so the
-    // numbering follows the layout rather than the SONGS order. Both narrow
-    // frames page six songs, and they are that same left column.
-    const half = Math.ceil(s.songs.length / 2)
-    const evens = s.songs.filter((_, i) => i % 2 === 0)
-    const columns = (s.narrow
-      ? [evens]
-      : [evens, s.songs.filter((_, i) => i % 2 === 1)]
-    ).map((cs, ci) => cs.map((t, i) => ({ ...t, n: ci * half + i + 1 })))
+    // Twelve to a page on desktop, six on both narrow frames — the counts the
+    // reference frames show.
+    const perPage = s.narrow ? 6 : 12
+    // The chip index, clamped: the row is derived from the artist's tags, so a
+    // tag they delete can leave `chip` past the end of it.
+    const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
+    const needle = q.trim().toLowerCase()
+    const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
+    const hit = (t) => (
+      (active === 0 || t.tags.some((g) => eq(g, s.repChips[active].tag)))
+      && (!needle || t.title.toLowerCase().includes(needle) || t.artist.toLowerCase().includes(needle))
+    )
+    const filtered = s.live ? s.songs.filter(hit) : s.songs
+    const pages = Math.max(1, Math.ceil(filtered.length / perPage))
+    // Clamped rather than reset through an effect: a filter that shortens the
+    // list must not strand the pager on a page that no longer exists.
+    const pg = Math.min(page, pages - 1)
+    const shown = filtered.slice(pg * perPage, (pg + 1) * perPage)
+    // The desktop frame reads its list DOWN each column, so the page splits in
+    // half and each half runs down its own column: 1–6 on the left, 7–12 on the
+    // right. The number is the song's place in the artist's list — hence the
+    // page offset — not its place on the screen. Both narrow frames run the
+    // whole six-song page down one column.
+    const half = Math.ceil(shown.length / 2)
+    const columns = (s.narrow ? [shown] : [shown.slice(0, half), shown.slice(half)])
+      .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
+    const { labels, at } = pageWindow(pages, pg, s.mob)
 
     return (
       <div style={{ position: 'relative', ...col(s.narrow ? '32px' : '26px') }}>
@@ -1698,31 +1759,64 @@ function Repertoire({ s }) {
               background: s.ac, color: s.retro ? s.pillBg : s.acFg,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}><Search size={s.narrow ? 20 : 17} /></span>
-            <span style={{
-              fontFamily: s.display, fontSize: s.narrow ? '13px' : '11px', letterSpacing: s.dls,
-              color: s.retro ? '#4A4136' : s.muted, whiteSpace: 'nowrap',
-            }}>
-              Search songs or artists…
-            </span>
+            {/* The one place the picture becomes a control: on the published
+                page this is a real field, on the canvas the same span it has
+                always been. Both carry the frame's type, so they measure the
+                same and the field does not jump when the page is published. */}
+            {s.live ? (
+              <input
+                value={q} placeholder="Search songs or artists…"
+                onChange={(e) => { setQ(e.target.value); setPage(0) }}
+                style={{
+                  fontFamily: s.display, fontSize: s.narrow ? '13px' : '11px', letterSpacing: s.dls,
+                  color: s.retro ? '#4A4136' : s.tx,
+                  flex: 1, minWidth: 0, border: 'none', outline: 'none',
+                  background: 'transparent', padding: 0,
+                }}
+              />
+            ) : (
+              <span style={{
+                fontFamily: s.display, fontSize: s.narrow ? '13px' : '11px', letterSpacing: s.dls,
+                color: s.retro ? '#4A4136' : s.muted, whiteSpace: 'nowrap',
+              }}>
+                Search songs or artists…
+              </span>
+            )}
           </div>
         </div>
 
         <div style={row(s.narrow ? '8px' : '7px', { flexWrap: 'wrap' })}>
-          {s.repFilters.map((f, i) => (
-            <span key={i} style={{
-              // The selected chip carries no outline of its own, so it takes a
-              // transparent one to stand the same height as the rest.
-              border: `${s.bw} solid ${i === 0 ? 'transparent' : s.tx}`,
-              borderRadius: s.btnR, padding: s.narrow ? '3px 9px' : '2px 9px',
-              background: i === 0 ? wine : 'transparent', color: i === 0 ? chipFg : s.tx,
-              boxShadow: i === 0 ? hard(s, s.pillBg, s.narrow ? 3 : 2, s.narrow ? 4 : 3) : 'none',
-              cursor: 'pointer',
-              fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '12.5px' : '10px',
-              lineHeight: 1.2, whiteSpace: 'nowrap',
-            }}>{f}</span>
+          {/* Built from the tags the artist typed, so the row is theirs. On the
+              canvas the first chip is selected and nothing else can be, which
+              is exactly the picture the frames show. */}
+          {s.repChips.map((f, i) => (
+            <span
+              key={i}
+              onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
+              style={{
+                // The selected chip carries no outline of its own, so it takes a
+                // transparent one to stand the same height as the rest.
+                border: `${s.bw} solid ${i === active ? 'transparent' : s.tx}`,
+                borderRadius: s.btnR, padding: s.narrow ? '3px 9px' : '2px 9px',
+                background: i === active ? wine : 'transparent', color: i === active ? chipFg : s.tx,
+                boxShadow: i === active ? hard(s, s.pillBg, s.narrow ? 3 : 2, s.narrow ? 4 : 3) : 'none',
+                cursor: 'pointer',
+                fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '12.5px' : '10px',
+                lineHeight: 1.2, whiteSpace: 'nowrap',
+              }}
+            >{f.label}</span>
           ))}
         </div>
 
+        {/* An empty list is a real state now that the songs are the artist's:
+            either they have listed none at all, or a live filter has cleared
+            the page. Only the published page can reach the second. */}
+        {shown.length === 0 ? (
+          <span style={{
+            fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px',
+            color: s.muted, padding: '4px 0',
+          }}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}</span>
+        ) : (
         <div style={{
           display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: '26px',
         }}>
@@ -1774,19 +1868,28 @@ function Repertoire({ s }) {
             </div>
           ))}
         </div>
+        )}
 
-        {/* Mobile spreads five buttons across the measure — the frame drops the
-            middle pages to make room — where tablet centres the full set and
-            desktop sits it at the left edge. */}
-        <Pager s={s} colour={hue} fill={blush} frame={{
-          size: s.narrow ? 54 : 45,
-          radius: s.narrow ? '20px' : '16px',
-          bw: s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw,
-          activeEdge: hue, activeFg: pageFg,
-          font: labelStyle(s, s.narrow ? '12px' : '10px'),
-          justify: tab ? 'center' : undefined,
-          grow: s.mob, pages: s.mob ? s.pages.filter((p, i) => i < 2 || p === '…') : undefined,
-        }} />
+        {/* Derived from the list, so it cannot claim pages that are not there —
+            and gone entirely at one page. Mobile spreads its buttons across the
+            measure and drops the middle pages to make room, where tablet
+            centres the full set and desktop sits it at the left edge. */}
+        {labels.length > 0 && (
+          <Pager s={s} colour={hue} fill={blush} frame={{
+            size: s.narrow ? 54 : 45,
+            radius: s.narrow ? '20px' : '16px',
+            bw: s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw,
+            activeEdge: hue, activeFg: pageFg,
+            font: labelStyle(s, s.narrow ? '12px' : '10px'),
+            justify: tab ? 'center' : undefined,
+            grow: s.mob, pages: labels, active: at,
+            // Static on the canvas, like the search field and the chips.
+            onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+            onStep: s.live
+              ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+              : undefined,
+          }} />
+        )}
       </div>
     )
   }

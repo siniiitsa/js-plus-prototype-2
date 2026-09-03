@@ -280,31 +280,44 @@ export const CITIES = [
   { date: '19 Sep', city: 'Glasgow',    venue: 'Sub Club',            status: 'Tickets'  },
 ]
 
-export const REP = [
-  { genre: 'House',    items: ['Deep & rolling', 'Piano classics', 'UK garage crossover'] },
-  { genre: 'Disco',    items: ['70s floor-fillers', 'Nu-disco edits', 'Rare groove'] },
-  { genre: 'Classics', items: ['Motown & soul', 'Indie anthems', 'Last-dance ballads'] },
-]
-
 export const PINS = [{ x: '20%', y: '26%' }, { x: '40%', y: '54%' }, { x: '62%', y: '28%' },
                      { x: '74%', y: '64%' }, { x: '46%', y: '76%' }]
 
 /* --- §10.2 demo content introduced by the Figma page ---------------- *
- * Static like TRACKS / CITIES / REP above: this is the picture of a
- * finished site, not editable copy, so none of it gets a FIELDS entry.
+ * Static like TRACKS / CITIES above: this is the picture of a finished
+ * site, not editable copy, so none of it gets a FIELDS entry — with the
+ * one exception of SONGS, which the artist owns (FIELDS.repertoire).
  * ------------------------------------------------------------------- */
 
-// Repertoire — a dense two-column song list with a filter row and pagination.
+// Repertoire — the seeded song list, used whenever the section carries no
+// `songs` key of its own. `tags` is the raw string as the artist would type
+// it, comma-separated; songTags() below is what splits it, and repChips()
+// is what turns the whole list into the section's filter row.
+//
+// The order is column-down, not the Figma frame's reading order: the desktop
+// layout splits the page in half and runs each half down its own column, so
+// songs 1–6 are the left column and 7–12 the right.
 export const SONGS = [
-  ['Valerie', 'Amy Winehouse'],       ['Mr. Brightside', 'The Killers'],
-  ['Superstition', 'Stevie Wonder'],  ['I Wanna Dance', 'Whitney Houston'],
-  ['Uptown Funk', 'Bruno Mars'],      ['September', 'Earth, Wind & Fire'],
-  ['Dancing Queen', 'ABBA'],          ["Don't Stop Me Now", 'Queen'],
-  ['Sex on Fire', 'Kings of Leon'],   ['Rather Be', 'Clean Bandit'],
-  ['Crazy in Love', 'Beyoncé'],       ['Valerie', 'Amy Winehouse'],
+  { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Weddings, Pubs' },
+  { title: 'Superstition',      artist: 'Stevie Wonder',     tags: 'Weddings' },
+  { title: 'Uptown Funk',       artist: 'Bruno Mars',        tags: 'Weddings, Birthdays' },
+  { title: 'Dancing Queen',     artist: 'ABBA',              tags: 'Weddings, Birthdays' },
+  { title: 'Sex on Fire',       artist: 'Kings of Leon',     tags: 'Pubs' },
+  { title: 'Crazy in Love',     artist: 'Beyoncé',           tags: 'Birthdays' },
+  { title: 'Mr. Brightside',    artist: 'The Killers',       tags: 'Pubs, Birthdays' },
+  { title: 'I Wanna Dance',     artist: 'Whitney Houston',   tags: 'Birthdays' },
+  { title: 'September',         artist: 'Earth, Wind & Fire', tags: 'Weddings, Birthdays' },
+  { title: "Don't Stop Me Now", artist: 'Queen',             tags: 'Pubs, Birthdays' },
+  { title: 'Rather Be',         artist: 'Clean Bandit',      tags: 'Weddings' },
+  { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Pubs' },
 ]
-export const REP_FILTERS = ['All', 'Weddings', 'Pubs', 'Birthdays']
-export const SONG_TOTAL = 240
+
+// The chip that clears the filter. It is index 0 of the row and carries a null
+// tag; repChips() skips a tag of the same name so an artist who writes "All" on
+// a song gets one chip here, not two.
+export const REP_ALL = 'All'
+
+// The events map's pager is still a picture, so it keeps its static row.
 export const PAGES = ['1', '2', '3', '…', '20']
 
 // Events map — the upcoming-gigs list beside the map tile.
@@ -340,9 +353,11 @@ export const FOOTER_LINKS = [
 ]
 export const FOOTER_CREDIT = 'A JustPay Product'
 
+// No `repertoire` entry: its heading counts the songs (see sectionVm), so a
+// literal here would never be read.
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Tags',
   audio: 'Selected Tracks', video: 'Live at Roomtone', pricing: "Choose the set that's right for your night",
-  repertoire: '240 Songs', gallery: 'See us in action', calendar: 'Availability',
+  gallery: 'See us in action', calendar: 'Availability',
   map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make your night unforgettable.", footer: '' }
 
 export const DEFS = {
@@ -468,8 +483,16 @@ export const FIELDS = {
     { k: 't3n', l: 'Tier 3 name',  d: 'The Festival Set' },
     { k: 't3p', l: 'Tier 3 price', d: '£1,200' },
   ],
+  // The one list-shaped content type with a structured editor rather than a
+  // textarea: `songs` is an array of { title, artist, tags }, and SongsField
+  // in EncoreBuilder is the repeater that maintains it. An absent key means
+  // the seeded SONGS; an emptied array means the artist has no songs listed.
   repertoire: [
-    { k: 'heading', l: 'Heading', d: '240 Songs' },
+    // No `d`: the heading falls back to the song count, in sectionVm and in
+    // the panel alike, so it cannot claim 240 songs over a list of twelve.
+    { k: 'heading', l: 'Heading' },
+    { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
+      hint: 'Tags become the filter chips above the list — separate them with commas.' },
   ],
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
@@ -545,3 +568,22 @@ export function caseText(t, casing) {
 }
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
+
+// A song's raw `tags` string → its trimmed, non-empty labels.
+export function songTags(str) {
+  return String(str ?? '').split(',').map((t) => t.trim()).filter(Boolean)
+}
+
+// The repertoire filter row: REP_ALL, then every tag any song carries, in
+// first-seen order. Deduped case-insensitively but keeping the casing it was
+// first typed in, so 'Weddings' and 'weddings' are one chip rather than two.
+// `label` is what the chip prints; `tag` is the raw value it matches against,
+// and is null on the All chip.
+export function repChips(songs) {
+  const seen = new Map()
+  ;(songs || []).forEach((sg) => songTags(sg && sg.tags).forEach((t) => {
+    const k = t.toLowerCase()
+    if (k !== REP_ALL.toLowerCase() && !seen.has(k)) seen.set(k, t)
+  }))
+  return [{ label: REP_ALL, tag: null }, ...[...seen.values()].map((t) => ({ label: t, tag: t }))]
+}
