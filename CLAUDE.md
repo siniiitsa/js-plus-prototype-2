@@ -36,7 +36,7 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 2370 | All state, all chrome, all three stages |
+| `src/builder/EncoreBuilder.jsx` | 2570 | All state, all chrome, all three stages, publish |
 | `src/builder/EncoreSection.jsx` | 2160 | Presentational renderer for all 14 section types |
 | `src/builder/data.js` | 540 | `THEMES`, all static data, colour helpers |
 | `src/builder/photos.js` | 76 | Retro's seeded Figma photography + the two resolvers |
@@ -88,6 +88,20 @@ mutated through a single `patch()` helper.
 ## Intentional limits — not bugs
 
 - **No persistence.** Reload loses everything, including uploaded images. No URL sync.
+- **Publish opens a second tab, and that tab is a live React root** (the *Publish* block in
+  `EncoreBuilder.jsx`; it is post-SPEC, so it carries no § number),
+  not a serialised snapshot — it has to be, because `EncoreSection` has no media queries and
+  would otherwise be frozen at the editor's width. `PublishedPage` calls `sectionVm` directly,
+  never `makeVm`. Two rules there are load-bearing: build the popup's document by DOM mutation,
+  **never `document.write`** (it implies `document.open()`, which rewrites the popup's URL to the
+  opener's, so the tab would claim to be the builder and reload into it); and set the page
+  background on `documentElement`, not `body`, because the cloned reset already paints `html`.
+  The tab is a child of the editor and freezes if the editor reloads. Accepted.
+- **`s.live` is reserved, and false everywhere except the published tab.** It is the seam for
+  making a control real — Repertoire's search and chips, the gallery filmstrip, pagination.
+  Nothing reads it yet. Do **not** make `EncoreSection` interactive without gating on it: the
+  editor canvas is a picture of a website, and a live filter chip there would both filter and
+  select the section.
 - **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` in
   `photos.js` gate on `T.name === 'Retro'`, the same name-match as `headerFamily()` and the
   `retro` flag. **Remove** writes `null`, not `undefined` — `undefined` deletes the key, and an

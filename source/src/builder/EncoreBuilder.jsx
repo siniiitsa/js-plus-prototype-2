@@ -2,10 +2,11 @@
 // Deliberately monolithic (§12.11): only SectionRow and EditPanel are extracted.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { createRoot } from 'react-dom/client'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
   Pencil, Palette, X, Trash2, ChevronLeft, ArrowRight,
-  Layers, Plus, Check, Upload, Lock, Sparkles,
+  Layers, Plus, Check, Upload, Lock, Sparkles, ExternalLink,
 } from 'lucide-react'
 import { toast as sonnerToast, Toaster } from 'sonner'
 
@@ -125,7 +126,7 @@ function canMove(sections, id, dir) {
 const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, navSections = [] }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [] }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -182,6 +183,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
 
     // device sizing
     ...Z, mob: !!mob,
+
+    // True only in the published tab. The editor canvas is a picture of a
+    // website, not a website (§12.7), so every control EncoreSection draws is
+    // a static span there. This is the one flag a control may branch on to
+    // become real; nothing reads it yet.
+    live: !!live,
 
     // design selector
     v0: d === 0, v1: d === 1, v2: d === 2, v3: d === 3, v4: d === 4, v5: d === 5,
@@ -1599,6 +1606,99 @@ function OptionStage({ current, onPick }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * Publish — not in SPEC.md; see README "Deviations from SPEC.md" item 6.
+ *
+ * The demo has no backend and never will, so "published" is a second
+ * browser tab rather than a URL. Two things about that tab matter:
+ *
+ * 1. It is a *live React root*, not a snapshot of the canvas DOM. It has
+ *    to be. EncoreSection carries no media queries — its breakpoints are
+ *    the `narrow`/`mob` booleans and the fixed px of SIZES, baked into
+ *    the view-model — so serialised HTML would be frozen at whatever
+ *    width the editor happened to be showing. Rendering live means the
+ *    published page picks its own Z from its own window width, and it
+ *    leaves the door open for the sections to become interactive later
+ *    (see `live` in sectionVm).
+ * 2. Its document is built by DOM mutation, never document.write().
+ *    write() implies document.open(), which rewrites the popup's URL to
+ *    the opener's — the tab would then claim to be the builder, and
+ *    reloading it would load the builder. about:blank is the honest URL.
+ *
+ * The cost is that the tab is a child of the editor: reload or close the
+ * editor and it stops updating. That is §12.1's "no persistence" reaching
+ * one tab further, not a new limit.
+ * ------------------------------------------------------------------ */
+
+// Everything the page needs and nothing the editor adds. Deliberately not
+// makeVm(), which layers on selection, hover, dim and the header's hover
+// preview — none of which a published site has.
+function PublishedPage({ themeIdx, sections, artistName, win }) {
+  const [w, setW] = useState(() => win.innerWidth)
+
+  useEffect(() => {
+    const onResize = () => setW(win.innerWidth)
+    win.addEventListener('resize', onResize)
+    return () => win.removeEventListener('resize', onResize)
+  }, [win])
+
+  // The Figma frames are 390 / 768 / 1440. canvasW is dropped for '100%':
+  // the editor caps the canvas to show a device, a published site does not.
+  const key = w < 768 ? 'mobile' : w < 1180 ? 'tablet' : 'desktop'
+  const Z = { ...SIZES[key], canvasW: '100%' }
+
+  // §4.8, as the editor derives it at the same names.
+  const navSections = sections
+    .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
+    .map((s) => catName(s.cat))
+
+  return sections.map((sec) => (
+    <EncoreSection key={sec.id} s={sectionVm({
+      themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
+      artistName, Z, mob: key === 'mobile', live: true, navSections,
+    })} />
+  ))
+}
+
+// Turns a fresh popup into a page that can host a React root. Returns the
+// mount node. Called once per window; re-publishing into an open tab skips it.
+function dressPublishedWindow(win, artistName, pageBg) {
+  const doc = win.document
+  const el = (tag, attrs) => Object.assign(doc.createElement(tag), attrs)
+
+  doc.head.appendChild(el('base', { href: location.href }))
+  doc.head.appendChild(el('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' }))
+
+  // One clone covers every build mode: the Google Fonts <link>s from
+  // index.html (nothing is bundled), Vite's dev-injected <style> tags, and
+  // the single inlined <style> that vite-plugin-singlefile emits. It also
+  // carries the three .hv-* classes and the base resets the sections assume.
+  document
+    .querySelectorAll('head style, head link[rel="stylesheet"], head link[rel="preconnect"]')
+    .forEach((n) => doc.head.appendChild(doc.importNode(n, true)))
+
+  doc.title = artistName
+  // On <html>, not <body>: the cloned reset is `html, body { background }`,
+  // and a background on the root element stops body's from propagating — so
+  // setting body alone would leave the editor's stone under a short page.
+  doc.documentElement.style.background = pageBg
+
+  // Every nav link in EncoreSection is `href="#"` or `href="#music"`. In a
+  // popup those resolve against the *opener's* URL — about:blank inherits it,
+  // and <base> above pins it — so a click is a cross-document navigation and
+  // the published tab would load the builder. Swallow fragment-only links.
+  // This is the placeholder that the `live` seam later replaces with real
+  // scroll-to-section anchors.
+  doc.addEventListener('click', (e) => {
+    const a = e.target.closest?.('a')
+    if (a && (a.getAttribute('href') || '').startsWith('#')) e.preventDefault()
+  })
+
+  const mount = el('div', { id: 'root' })
+  doc.body.appendChild(mount)
+  return mount
+}
+
+/* ------------------------------------------------------------------ *
  * §5–§9 The builder
  * ------------------------------------------------------------------ */
 
@@ -1620,6 +1720,9 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       // renders it in place of the committed one, so the page previews at full
       // size without committing anything (§6.2).
       ux: HEADER_UX[0].id, onboard: false, hdrHover: null,
+      // The publish success dialog. The tab it opens is held in a ref, not
+      // in state: nothing renders from it.
+      published: false,
     }
     return ti >= 0
       ? { ...base, stage: 'editor', theme: ti, sections: buildPage(EXAMPLE_PAGE) }
@@ -1654,6 +1757,48 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const navSections = sections
     .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
     .map((s) => catName(s.cat))
+
+  /* ---- publish ----------------------------------------------------- */
+
+  const pubWin = useRef(null)
+  const pubRoot = useRef(null)
+
+  const closePublished = useCallback(() => {
+    // Unmount before the window goes: a root left mounted in a closed
+    // document throws on the next state update from a resize listener.
+    if (pubRoot.current) pubRoot.current.unmount()
+    pubRoot.current = null
+    pubWin.current = null
+  }, [])
+
+  useEffect(() => closePublished, [closePublished])
+
+  const openPublished = useCallback(() => {
+    const open = pubWin.current && !pubWin.current.closed
+
+    // window.open has to happen inside the click or the popup blocker eats
+    // it, so it cannot wait behind anything asynchronous.
+    const win = open ? pubWin.current : window.open('', '_blank')
+    if (!win) { toast('Allow pop-ups to open your published site'); return }
+
+    if (!open) {
+      pubWin.current = win
+      pubRoot.current = createRoot(dressPublishedWindow(win, artistName, THEMES[st.theme].palette[0]))
+      win.addEventListener('pagehide', closePublished)
+    } else {
+      win.document.documentElement.style.background = THEMES[st.theme].palette[0]
+    }
+
+    // Publishing again re-renders the tab that is already open rather than
+    // piling up tabs — the edit-and-republish loop is the demo.
+    pubRoot.current.render(
+      <PublishedPage
+        themeIdx={st.theme} sections={st.sections} artistName={artistName} win={win}
+      />,
+    )
+    win.focus()
+    patch({ published: false })
+  }, [artistName, closePublished, patch, st.sections, st.theme, toast])
 
   /* ---- mutations (§5.6) ------------------------------------------- */
 
@@ -1956,6 +2101,64 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     </Dialog>
   )
 
+  /* ---- the publish success dialog ---------------------------------- */
+
+  const publishModal = (
+    <Dialog open={st.published} onOpenChange={(v) => { if (!v) patch({ published: false }) }}>
+      <DialogContent
+        onClick={stopE} showCloseButton={false}
+        className="p-0 gap-0 rounded-[16px] border-0"
+        style={{
+          width: 'min(430px, calc(100vw - 28px))', maxWidth: 'none',
+          background: '#FFFFFF', boxShadow: '0 28px 70px rgba(20,18,12,.34)',
+          fontFamily: "'Archivo', sans-serif", color: '#1B1A17', outline: 'none',
+        }}
+      >
+        <div style={{ padding: isMobile ? '20px 18px 16px' : '24px 26px 18px' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: '34px', height: '34px', borderRadius: '99px', marginBottom: '13px',
+            background: '#1B1A17', color: '#FFFFFF',
+          }}><Check size={18} strokeWidth={2.6} /></span>
+
+          <DialogTitle style={{ margin: 0, fontSize: isMobile ? '18px' : '20px', fontWeight: 800, letterSpacing: '-.2px' }}>
+            Your site is live
+          </DialogTitle>
+          <DialogDescription style={{ margin: '7px 0 0', fontSize: '13px', lineHeight: 1.55, color: '#6B685E' }}>
+            {artistName}&rsquo;s page is published. Open it to see exactly what a visitor sees.
+          </DialogDescription>
+
+          {/* Shown, not linked: there is no server behind it. */}
+          <div style={{
+            marginTop: '15px', padding: '10px 13px', borderRadius: '9px',
+            background: '#F4F2ED', border: '1px solid #E7E4DC',
+            fontSize: '13px', fontWeight: 600, color: '#3A382F',
+            fontFamily: "'Courier Prime', monospace", overflowWrap: 'anywhere',
+          }}>kaimercer.encore.site</div>
+        </div>
+
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '14px',
+          padding: isMobile ? '13px 18px' : '14px 26px',
+          borderTop: '1px solid #EEECE6', background: '#FCFBF9',
+        }}>
+          <button type="button" onClick={(e) => { stopE(e); patch({ published: false }) }}
+            className="hover:text-foreground"
+            style={{ fontSize: '13px', fontWeight: 600, color: '#5B5850', background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit' }}
+          >Close</button>
+          <button type="button" onClick={(e) => { stopE(e); openPublished() }}
+            className="hover:bg-primary/90"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 700,
+              padding: '10px 20px', borderRadius: '9px', background: '#1B1A17', color: '#FFFFFF',
+              border: 0, cursor: 'pointer', fontFamily: 'inherit',
+            }}
+          >Open <ExternalLink size={14} /></button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+
   /* ---- §6.2c the canvas rail ---------------------------------------- */
 
   const headerRail = onboarding && st.ux === 'rail' && (
@@ -2059,7 +2262,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '16px' }}>encore</span>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E' }}>{T.name}</span>
             <span style={{ flex: 1 }} />
-            <button type="button" onClick={(e) => { stopE(e); toast('Published to kaimercer.encore.site (demo)') }}
+            <button type="button" onClick={(e) => { stopE(e); patch({ published: true }) }}
               className="hover:bg-primary/90"
               style={{ fontSize: '12px', fontWeight: 700, padding: '7px 14px', borderRadius: '9px', background: '#1B1A17', color: '#FFFFFF', border: 0, cursor: 'pointer' }}
             >Publish</button>
@@ -2130,7 +2333,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
             <span style={{ flex: 1 }} />
 
-            <button type="button" onClick={(e) => { stopE(e); toast('Published to kaimercer.encore.site (demo)') }}
+            <button type="button" onClick={(e) => { stopE(e); patch({ published: true }) }}
               className="hover:bg-primary/90"
               style={{ fontSize: '13px', fontWeight: 700, padding: '8px 18px', borderRadius: '9px', background: '#1B1A17', color: '#FFFFFF', border: 0, cursor: 'pointer' }}
             >Publish</button>
@@ -2360,6 +2563,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         </Drawer>
 
         {headerModal}
+        {publishModal}
 
         <Toaster
           position="bottom-center"

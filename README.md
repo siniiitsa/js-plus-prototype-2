@@ -9,7 +9,8 @@ layouts on, recolour and rewrite — while seeing a live, fully re-skinned previ
 the editor asks for is a **header layout**, in one of three competing treatments the build ships
 side by side; see *Choosing a header* below.
 
-It is a demo: nothing persists, nothing is sent to a server, and **Publish** only shows a toast.
+It is a demo: nothing persists and nothing is sent to a server. **Publish** opens the finished
+page in a second browser tab, with the builder chrome gone — see *Publishing* below.
 All content is demo content for a fictional DJ, "Kai Mercer".
 
 ## Running it
@@ -78,7 +79,7 @@ rendering, so `EncoreSection` does zero colour maths.
 
 ## Deviations from SPEC.md
 
-Five, all deliberate:
+Six, all deliberate:
 
 1. **No reference images; the Figma file replaced them.** `docs/feedback-reference/` is not
    present in this repo. The Figma file
@@ -103,7 +104,11 @@ Five, all deliberate:
    packages; the current CLI installs the unified `radix-ui` package instead. Same primitives.
 4. **No stage 2.** §6's full-screen header-layout picker has been replaced by three in-editor
    treatments, chosen from a new stage 0. See *Choosing a header* below for what and why.
-5. **Toast positioning.** §3.5 maps the toast to shadcn's `sonner`, and §9.2 also specifies a
+5. **Publish opens the page, rather than only toasting.** SPEC.md has no publish flow beyond
+   §8.1's button, and §12.1 rules out persistence. The button now opens the finished page in a
+   second tab — see *Publishing* below. Nothing is persisted or sent anywhere, so §12.1 stands;
+   the tab is simply a second React root in the same session.
+6. **Toast positioning.** §3.5 maps the toast to shadcn's `sonner`, and §9.2 also specifies a
    hand-positioned `toastUp` entry animation. Sonner owns the positioning and the mount
    transition (bottom-centre, 28px desktop / `calc(72px + env(safe-area-inset-bottom))` mobile),
    which produces the same slide-up; the pill itself is styled to §9.2's exact values. The
@@ -167,11 +172,41 @@ the only module that imports them.
 - The layout picker, the template spotlight and all three header treatments resolve through the
   same `sectionVm()`, so each shows the photography without any extra wiring.
 
+## Publishing
+
+**Publish** shows a success dialog naming the site, and **Open** puts the page in a new browser
+tab with none of the builder around it. There is no backend and there never will be, so
+"published" means a second tab rather than a URL — but it is a *live React root*, not a snapshot
+of the canvas DOM.
+
+That distinction is the whole design, and it buys two things:
+
+- **The published page is responsive.** `EncoreSection` carries no media queries — its
+  breakpoints are the `narrow` / `mob` booleans and the fixed px of `SIZES`, resolved into the
+  view-model. Serialised HTML would be frozen at whatever width the editor happened to show.
+  `PublishedPage` picks its own `Z` from its own window's width, at 390 / 768 / 1180+, full-bleed.
+- **It can become interactive.** Today every control the page draws — Repertoire's search box and
+  filter chips, the pagination, the gallery filmstrip — is a static span, because the same
+  component renders the editor canvas and that is deliberately a picture of a website. `sectionVm`
+  now carries a **`live`** flag, true only in the published tab, as the seam a control branches on
+  to become real. Nothing reads it yet. Repertoire's search additionally needs songs in the
+  content model (`FIELDS.repertoire` has only `heading` today); the gallery filmstrip, the
+  players and the testimonials carousel need no new data at all. The enquiry form's *submit* is
+  the one thing that cannot be front-end-only.
+
+Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
+domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the
+builder's own URL and reload into the builder — and the tab is a child of the editor, so
+reloading or closing the editor freezes it. Publishing again re-renders the tab that is already
+open rather than piling up tabs.
+
 ## Scope boundaries
 
 These are intentional limits, not oversights — see §12 for the full list. The headlines:
 
-- **No persistence.** Reload loses everything, including uploaded images.
+- **No persistence.** Reload loses everything, including uploaded images — and, because the
+  published tab is a live root owned by the editor tab, reloading or closing the editor leaves
+  the published tab frozen on its last render.
 - **Reordering** is by dragging a row's `GripVertical` handle in the page list, or by the
   arrow buttons on each row. The handle uses pointer events, so the mobile Sections sheet
   reorders by touch too, and it mirrors the arrows on ArrowUp / ArrowDown when focused.
