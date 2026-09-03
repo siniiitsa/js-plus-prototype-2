@@ -185,7 +185,16 @@ That distinction is the whole design, and it buys two things:
 - **The published page is responsive.** `EncoreSection` carries no media queries — its
   breakpoints are the `narrow` / `mob` booleans and the fixed px of `SIZES`, resolved into the
   view-model. Serialised HTML would be frozen at whatever width the editor happened to show.
-  `PublishedPage` picks its own `Z` from its own window's width, at 390 / 768 / 1180+, full-bleed.
+  `PublishedPage` picks its own `Z` from its own window's width, at 390 / 768 / 1180+.
+- **…and it holds its measure.** Past the canvas its frame was drawn at, the design does not get
+  wider: `PublishedPage` puts the surplus into `padX`, so the content column stays the width the
+  type ramp was tuned for and the window keeps the rest. It does that through the gutter rather
+  than with a centred wrapper because `padX` is also what `bleedTo()` and `TornEdge` offset
+  against — so each section's background, its torn edges and its checker ribbons still run to both
+  window edges, and the page reads as full-bleed bands with the content centred in them. The Retro
+  hero is the one composition outside that padding, so it applies the gutter itself and clamps its
+  height to `heroH`; a `width: 100%` there is load-bearing, because an `aspect-ratio` box with a
+  biting `max-height` otherwise shrinks its own width to keep the ratio.
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything

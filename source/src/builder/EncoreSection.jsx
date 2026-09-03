@@ -247,25 +247,40 @@ function NavLinks({ s, color, pills = false }) {
   )
 }
 
-function BookPill({ s, label }) {
+// `bg` / `fg` / `shadow` are the pricing cards' override: §10.2 gives each tier
+// card its own pill in that card's second hue, on its own colour, over a cream
+// block. Everywhere else the palette-wide pill applies, so they default to it.
+// `full` is the other pricing override — see `scale` below.
+function BookPill({ s, label, bg, fg, shadow, full = false }) {
   const text = label ?? s.cta1
   if (s.retro) {
     // Accent-coloured type on a second palette hue, with the offset block.
-    // One Figma pill at three scales: the 768 frame draws it at full size, the
-    // 1180 canvas at × 0.82 and the 390 frame at × 0.62 — and the 390 one takes
-    // its type down with it, where the other two set it at label-md.
+    //
+    // One Figma pill at three scales: the 768 frame draws it at full size and
+    // the 1180 canvas at × 0.82. The 390 *header* takes it down to × 0.62,
+    // where the 390 pricing frame keeps it at full size — hence `full`, which
+    // opts a caller on the mobile canvas back up to the 768 numbers.
     const tab = isTablet(s)
+    const scale = tab || full ? 'full' : s.mob ? 'small' : 'mid'
+    const pick = (fullV, midV, smallV) => (
+      scale === 'full' ? fullV : scale === 'mid' ? midV : smallV
+    )
+    const face = fg ?? s.pillFg
+    const block = shadow ?? s.ac
     return (
       <span style={{
-        ...row(s.mob ? '6.2px' : tab ? '10px' : '8px'),
-        background: s.pillBg, color: s.pillFg,
-        padding: s.mob ? '6.2px 12.4px' : tab ? '10px 20px' : '8px 16px',
+        ...row(pick('10px', '8px', '6.2px')),
+        background: bg ?? s.pillBg, color: face,
+        padding: pick('10px 20px', '8px 16px', '6.2px 12.4px'),
         borderRadius: s.btnR, cursor: 'pointer',
-        boxShadow: s.mob ? hard(s, s.ac, 1.9, 2.5) : hard(s, s.ac, 3, 4),
-        ...labelStyle(s, s.mob ? '12.4px' : undefined),
+        boxShadow: scale === 'small' ? hard(s, block, 1.9, 2.5) : hard(s, block, 3, 4),
+        // The type is one of the scaled dimensions: it was the only one left on
+        // label-md, which made the tablet pill's type *smaller* than the
+        // desktop one's even though every other dimension was bigger.
+        ...labelStyle(s, pick('20px', undefined, '12.4px')),
       }}>
         {text}
-        <Asterisk size={s.mob ? 12.4 : tab ? 20 : 16} color={s.pillFg} />
+        <Asterisk size={pick(20, 16, 12.4)} color={face} />
       </span>
     )
   }
@@ -617,7 +632,13 @@ function HeaderV0({ s }) {
   // brighter than `paper` — which stays the display title's first-word tone.
   const ink = s.retro ? '#FBF6EA' : s.paper
   const aspect = s.mob ? '390 / 844' : s.narrow ? '3 / 4' : '16 / 8.33'
-  const padX = s.mob ? '10px' : tab ? '30px' : s.gPad
+  // This is the one composition outside the root's padding — the root hands it
+  // `padding: 0` so the photograph can reach the section edges — so it is also
+  // the one that has to apply the wide-window gutter itself. Past the canvas
+  // the frame was drawn at, `s.surplus` centres the nav, the identity block and
+  // the chips on the same measure as every section below, while the photograph,
+  // the scrim, the grain and the floor checkerboard keep bleeding.
+  const padX = `calc(${s.surplus} + ${s.mob ? '10px' : tab ? '30px' : s.gPad})`
   const padTop = s.mob ? '24px' : tab ? '30px' : '23px'
   // The checker ribbon on the floor is a fixed height at every breakpoint — the
   // reference does not scale it — so it is added to the identity block's own
@@ -628,7 +649,20 @@ function HeaderV0({ s }) {
 
   return (
     <div style={{
-      position: 'relative', aspectRatio: aspect, overflow: 'hidden',
+      // The aspect ratio is the frame's, but on a window wider than the canvas
+      // it would go on scaling the height with the width — 1333px at 2560. The
+      // clamp is the height this ratio yields *at* the canvas, so it is inert
+      // in the editor and in every thumbnail, and past them the hero stays a
+      // band rather than a wall. Photo is objectFit:cover, so the wider box
+      // crops the photograph instead of stretching it.
+      //
+      // `width: 100%` is load-bearing, not decoration: with an auto width, a
+      // max-height that actually clamps makes the box shrink its *width* to
+      // keep the ratio — the hero would sit at 1180 on a 2560 window with the
+      // page's background either side of it, and its gutters would be computed
+      // against a width it no longer had. Stating the width leaves the ratio
+      // driving the height only.
+      position: 'relative', width: '100%', aspectRatio: aspect, maxHeight: s.heroH, overflow: 'hidden',
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       padding: `${padTop} ${padX} ${padBottom}`, color: ink,
     }}>
@@ -681,11 +715,15 @@ function HeaderV0({ s }) {
 
       {/* The reference seals: 125px centred on (660, 194) of the 768 frame,
           85px centred on (335, 169) of the 390 one. */}
+      {/* `right` takes the gutter too, or a wide window would strand the seal
+          out by the window edge instead of over the identity block. `top` needs
+          nothing: the height is clamped to the frame's, so its percentage
+          resolves against the same number it always did. */}
       <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32.38} ink="#FBF6EA"
                  size={s.mob ? 85 : tab ? 125 : undefined}
                  style={{
                    top: s.mob ? '14.9%' : tab ? '12.8%' : '14%',
-                   right: s.mob ? '3.3%' : tab ? '5.9%' : '3%',
+                   right: `calc(${s.surplus} + ${s.mob ? '3.3%' : tab ? '5.9%' : '3%'})`,
                  }} />
 
       {/* The §10.2 hero frame itself has no floor trim; this is the checker
@@ -1470,33 +1508,69 @@ function Video({ s }) {
 }
 
 // v0 — Pricing layout 1 · 3-col in soft panel (§10.2 reference design): three
-// cards, each in its own palette hue, each a degree or two off square and
-// throwing a hard offset block in the next hue along.
+// cards, each in its own palette hue, each a degree or two off square. Every
+// accent inside a card — the price numeral, the tick, the [ico] chip, the Book
+// Now pill and the hard offset block it throws — is that card's *second* hue,
+// `t.acc` (see the pricing branch of sectionVm).
 function Pricing({ s }) {
   if (s.v0) {
-    const TILT = [-0.6, 1.6, -1.1]
+    const TILT = [1, -3, 2]
+    // §5.5 — the 768 and 390 frames are exactly the tablet and mobile canvases,
+    // so their numbers are verbatim where the desktop ones are the 1440 frame
+    // × 0.82. Most of what the two narrow frames set they set identically, so
+    // those read `s.narrow`; only the four places they genuinely diverge —
+    // the column count, the card padding, the tier head's axis and the tier
+    // name — split on `tab` / `s.mob`.
+    //
+    // Neither narrow frame is a squeezed desktop: both stack the head into a
+    // column, tablet keeps three columns while mobile overlaps one, and mobile
+    // is the only frame that draws its cards' pills at the header's full size.
+    //
+    // NB both narrow frames render with another template's type tokens resolved
+    // in (Bebas Neue for display, Chakra Petch for ui) where the desktop one
+    // resolves Retro's — the pill and the tier name, hard-coded to Anton in the
+    // mobile frame, are the tell. Only the layout and the sizes are taken from
+    // them; the faces stay the theme's, as everywhere else.
+    const tab = isTablet(s)
     return (
-      <div style={col(s.mob ? '20px' : '30px')}>
-        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
+      <div style={col(s.narrow ? '32px' : '26px')}>
+        <div style={s.narrow
+          ? col('24px', { alignItems: 'flex-start' })
+          : row('20px', { justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' })}>
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.1,
-            letterSpacing: s.dls, color: s.ac, maxWidth: '18ch',
+            letterSpacing: s.dls, color: s.ac,
+            maxWidth: s.mob ? '100%' : tab ? '640px' : '44%',
           }}>{s.title}</h2>
+          {/* The one row in §10.2 whose chips are body-bold sentence case rather
+              than Anton caps, and whose selected chip drops its rule. */}
           <div style={row('8px', { flexWrap: 'wrap' })}>
             {s.tierModes.map((m, i) => (
               <span key={m} style={{
-                border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR, padding: '5px 14px',
+                border: i === 0 ? 'none' : `${s.bw} solid ${s.tx}`,
+                borderRadius: s.btnR, padding: s.narrow ? '5px 11px' : '4px 9px',
                 background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : s.tx,
-                boxShadow: i === 0 ? hard(s, s.pillBg, 3, 3) : 'none', cursor: 'pointer',
-                ...labelStyle(s, s.eyebrow),
+                boxShadow: i === 0 ? hard(s, s.pillBg, 3, 4) : 'none', cursor: 'pointer',
+                fontFamily: s.body, fontSize: s.narrow ? '12.5px' : '10px',
+                fontWeight: 700, whiteSpace: 'nowrap',
               }}>{m}</span>
             ))}
           </div>
         </div>
 
         <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr 1fr',
-          gap: s.mob ? '22px' : '30px', alignItems: 'stretch',
+          // Three columns everywhere but the 390 frame, which stacks them — and
+          // under Retro stacks them *overlapping*: each card but the last is
+          // pulled 18px into the next, so the deck reads as thrown down rather
+          // than laid out. Later cards paint over earlier ones by document
+          // order, which is the way round the reference has it. The overlap is
+          // §10.2 decoration in the same class as tilt() and hard() — it only
+          // reads because the cards are rotated and throw an offset block — so
+          // the four flat templates keep a plain gap instead of butting their
+          // borders together.
+          display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr 1fr',
+          gap: s.mob ? (s.retro ? '0' : '22px') : tab ? '20px' : '36px',
+          alignItems: 'stretch',
         }}>
           {s.tiers.map((t, i) => {
             const money = String(t.price)
@@ -1507,51 +1581,99 @@ function Pricing({ s }) {
                 position: 'relative', transform: tilt(s, TILT[i]),
                 background: t.card, color: t.cardFg,
                 border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius,
-                padding: s.mob ? '20px' : '26px',
-                boxShadow: hard(s, s.tiers[(i + 1) % s.tiers.length].card, 6, 6),
-                display: 'flex', flexDirection: 'column', gap: s.mob ? '14px' : '18px',
+                padding: s.mob ? '24px' : tab ? '30px 20px' : '20px',
+                marginBottom: s.mob && s.retro && i < s.tiers.length - 1 ? '-18px' : undefined,
+                // The block behind the card is the card's own second hue, so the
+                // gold card throws orange and the other two throw gold.
+                boxShadow: s.narrow ? hard(s, t.acc, 8, 8) : hard(s, t.acc, 6.6, 6.6),
+                display: 'flex', flexDirection: 'column', gap: s.narrow ? '14px' : '12px',
                 transition: 'background-color .45s ease, color .45s ease',
               }}>
-                <Grain s={s} opacity={0.22} radius={s.radius} />
-                <span style={row('10px', { position: 'relative' })}>
+                {/* Figma composites the texture sheet at mix-blend-screen, and
+                    `exact` is what keeps that rather than the softened treatment
+                    every other section gets. .18 is where the three card hues
+                    land on the reference's measured surface; .4 (the sheet's own
+                    opacity in Figma, over a sheet cropped differently) washes
+                    them out, and the soft-light default darkens them. */}
+                <Grain s={s} opacity={0.18} blend="screen" exact radius={s.radius} />
+                {/* The chip sits beside the name on desktop and above it on the
+                    narrower tablet card, where the name also steps up to the
+                    theme's label-md. */}
+                {/* The chip sits beside the name on the 1440 and 390 frames and
+                    above it on the narrower tablet card, where the name also
+                    steps up. */}
+                <span style={tab
+                  ? col('10px', { position: 'relative', alignItems: 'flex-start' })
+                  : row(s.mob ? '10px' : '8px', { position: 'relative' })}>
                   <span style={{
-                    border: `1.5px solid ${t.cardFg}`, borderRadius: '6px', padding: '2px 6px',
-                    fontFamily: s.body, fontSize: '10px', opacity: 0.85,
+                    background: t.acc, color: t.card, borderRadius: '4px',
+                    padding: s.narrow ? '4px 6px' : '3px 5px',
+                    fontFamily: s.body, fontSize: s.narrow ? '10px' : '9px',
                   }}>ico</span>
-                  <span style={labelStyle(s, s.labelXs)}>{t.name}</span>
+                  <span style={labelStyle(s, s.mob ? '16px' : tab ? '20px' : '13px',
+                    // Anton is wider than the face the tablet frame rendered, so
+                    // matching its cap height overshoots its measure — and the
+                    // four other templates' label faces are wider again. Letting
+                    // the name wrap is what keeps 20px safe off Retro. The 390
+                    // card is wide enough not to need it.
+                    tab ? { whiteSpace: 'normal' } : undefined)}>{t.name}</span>
                 </span>
 
-                <span style={row('6px', { alignItems: 'baseline', position: 'relative' })}>
-                  <span style={{ fontFamily: s.body, fontSize: s.labelXs }}>{symbol}</span>
-                  <span style={{ fontFamily: s.display, fontSize: s.dispSm, letterSpacing: s.dls }}>{amount}</span>
-                  <span style={{ fontFamily: s.body, fontSize: s.eyebrow, color: t.cardMut }}>/event</span>
+                <span style={row(s.narrow ? '4px' : '3px', {
+                  alignItems: 'baseline', position: 'relative',
+                })}>
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
+                  }}>{symbol}</span>
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.narrow ? '40px' : s.dispSm,
+                    lineHeight: s.narrow ? 0.825 : 0.85,
+                    letterSpacing: s.dls, color: t.acc,
+                  }}>{amount}</span>
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
+                  }}>/event</span>
                 </span>
 
                 <p style={{
-                  margin: 0, position: 'relative', fontFamily: s.body, fontSize: s.eyebrow,
-                  lineHeight: 1.5, color: t.cardMut,
+                  margin: 0, position: 'relative', fontFamily: s.body,
+                  fontSize: s.narrow ? '13px' : s.eyebrow,
+                  lineHeight: s.narrow ? '20px' : 1.5, color: t.cardMut,
                 }}>{t.blurb}</p>
 
-                <div style={col('8px', { position: 'relative' })}>
+                <div style={col(s.narrow ? '8px' : '7px', {
+                  position: 'relative', paddingTop: s.narrow ? '4px' : '3px',
+                })}>
                   {t.feats.map((f, j) => (
-                    <span key={j} style={row('8px', {
-                      alignItems: 'flex-start', fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.4,
+                    <span key={j} style={row(s.narrow ? '8px' : '7px', {
+                      fontFamily: s.body, fontSize: s.narrow ? s.labelXs : '16px', lineHeight: 1.26,
                     })}>
-                      <Check size={13} style={{ flex: 'none', marginTop: '2px' }} />
+                      <Check size={s.narrow ? 12 : 11} color={t.acc} style={{ flex: 'none' }} />
                       {f}
                     </span>
                   ))}
                 </div>
 
-                <span style={{ marginTop: 'auto', paddingTop: '6px', position: 'relative' }}>
-                  <BookPill s={s} />
+                {/* The pill hugs its label — without this the wrapper stretches
+                    to the column and the pill inside fills it. */}
+                <span style={{
+                  // The 390 card hugs its content rather than stretching, so
+                  // marginTop:auto does nothing there and the 30px the frame
+                  // puts between the feats and the pill has to come from the
+                  // padding on top of the card's own 14px gap.
+                  marginTop: 'auto', paddingTop: s.mob ? '16px' : '6px',
+                  position: 'relative', alignSelf: 'flex-start',
+                }}>
+                  <BookPill s={s} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob} />
                 </span>
               </div>
             )
           })}
         </div>
 
-        <span style={{ fontFamily: s.body, fontSize: s.eyebrow, color: s.muted }}>{s.pricingSub}</span>
+        <span style={{
+          fontFamily: s.body, fontSize: s.narrow ? '11px' : '10px', color: s.pricingSubFg,
+        }}>{s.pricingSub}</span>
       </div>
     )
   }
@@ -2164,71 +2286,148 @@ function Gallery({ s }) {
 // the resulting enquiry line along the foot.
 function Calendar({ s }) {
   if (s.v0) {
+    // §5.5 — one scheduler across three frames: the 768 (986:39251) and 390
+    // (986:39417) ones verbatim, the 1440 one (964:58583) on the 1180 canvas at
+    // × 0.82. The two narrow frames only turn the panel's halves from columns
+    // into rows, which it already does on `s.narrow`, so every dimension below
+    // is the frame's own number through `u()` — the type and the month head at
+    // `scale`, the prints at `pscale`, which the 390 frame alone takes further
+    // down. What the 390 frame genuinely re-sets is listed as it comes: the
+    // column padding, the gaps between cells, the row height, the height of the
+    // prints' half — and the seal, which it drops.
+    const scale = s.narrow || s.mob ? 1 : 0.82
+    const pscale = s.mob ? 0.613 : scale
+    const u = (v) => `${Math.round(v * scale)}px`
+    const pu = (v) => `${Math.round(v * pscale)}px`
+
     const nav = (icon) => (
       <span style={{
-        width: s.mob ? 30 : 40, height: s.mob ? 30 : 40, flex: 'none', borderRadius: s.radiusSm,
-        background: s.pillBg, color: contrastInk(s.pillBg), border: `${s.bw} solid ${s.tx}`,
+        width: u(55), height: u(54), flex: 'none', borderRadius: s.radiusSm,
+        background: s.pillBg, color: s.pillFg, border: `${s.bw} solid ${s.tx}`,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
       }}>{icon}</span>
     )
 
+    // The 1440 and 768 frames space the seven columns by half a cell (30 on a
+    // 60.5 one) and the five weeks by a third; the 390 one closes both to 2 and
+    // takes the row height down with them.
+    const cols = {
+      display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)',
+      columnGap: s.mob ? '2px' : u(30),
+      rowGap: s.mob ? '2px' : u(20),
+    }
+
+    // The frames' own day-name row keeps the desktop's fixed 57.4px cells at
+    // every width, so on the 390 canvas it overruns the panel and the last name
+    // is clipped off. Ours stays on the grid's columns instead: the labels are
+    // only legible over the days they head.
+    const dayName = (d) => (
+      <span key={d} style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: s.body, fontSize: u(15.11), color: s.muted,
+      }}>{d}</span>
+    )
+
+    // The frame's cell is wider than it is tall, edged in a 0.15 hairline, and
+    // the picked day is the accent block lettered in the mustard — no offset
+    // shadow under it.
+    const cell = (c, i) => (
+      <span key={i} style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: u(s.mob ? 55.1 : 57.286),
+        fontFamily: s.body, fontSize: u(18.132),
+        borderRadius: u(12.088),
+        border: c.d === '' ? 'none' : `${s.bw} solid ${c.on ? s.tx : s.line}`,
+        background: c.on ? s.ac : 'transparent',
+        color: c.on ? (s.retro ? s.pillBg : s.acFg) : s.tx,
+        cursor: c.d === '' ? 'default' : 'pointer',
+      }}>{c.d}</span>
+    )
+
     const grid = (
-      <div style={col(s.mob ? '14px' : '20px', { padding: s.mob ? '16px' : '24px' })}>
-        <div style={row('12px', { justifyContent: 'space-between' })}>
-          {nav(<ArrowLeft size={15} />)}
-          <span style={{ fontFamily: s.display, fontSize: s.dispSm, letterSpacing: s.dls, color: s.ac }}>
+      <div style={col(u(21.154), { padding: s.mob ? '20px 10px' : u(30.219) })}>
+        <div style={row(s.mob ? '8px' : '12px', { justifyContent: 'space-between' })}>
+          {nav(<ArrowLeft size={Math.round(16 * scale)} />)}
+          <span style={{
+            fontFamily: s.display,
+            // The 390 frame heads the month at the same 48 as the wider two,
+            // and it only just clears its two nav buttons: 227px of type in the
+            // 240 its 10px gutter leaves. The 390 *canvas* keeps the page's own
+            // 22px gutter, which is 24px it does not have — so the line comes
+            // down instead of wrapping under the buttons. Fraunces measures
+            // within 2px of Soulway here, so this is the canvas, not the face.
+            fontSize: u(s.mob ? 40 : 48),
+            // Fraunces at its natural leading stands half again as tall as its
+            // type size and pushes the header row past the frame's nav; the
+            // frame's own line box is the type size and change.
+            lineHeight: 1.1, letterSpacing: s.dls, color: s.ac,
+          }}>
             {s.calMonth}
           </span>
-          {nav(<ArrowRight size={15} />)}
+          {nav(<ArrowRight size={Math.round(16 * scale)} />)}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: s.mob ? '4px' : '8px' }}>
-          {s.calDays.map((d) => (
-            <span key={d} style={{
-              textAlign: 'center', fontFamily: s.body, fontSize: s.eyebrow, color: s.muted, paddingBottom: '4px',
-            }}>{d}</span>
-          ))}
-          {s.sched.map((c, i) => (
-            <span key={i} style={{
-              aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: s.body, fontSize: s.labelXs, borderRadius: s.radiusSm,
-              border: c.d === '' ? 'none' : `${c.on ? s.bw : '1px'} solid ${c.on ? s.tx : s.line2}`,
-              background: c.on ? s.ac : 'transparent', color: c.on ? s.acFg : s.tx,
-              boxShadow: c.on ? hard(s, s.tx, 2, 2) : 'none', cursor: c.d === '' ? 'default' : 'pointer',
-            }}>{c.d}</span>
-          ))}
+        <div style={{ ...cols, height: u(30.219) }}>{s.calDays.map(dayName)}</div>
+        <div style={cols}>{s.sched.map(cell)}</div>
+      </div>
+    )
+
+    // The frame fans three prints of the same photograph out of the centre of
+    // the half — 366 x 407 at the two wider canvases and 0.613 of that on the
+    // 390 one — leaning 28.7, 3.2 and 15 degrees back to front, each stamped
+    // along its foot with a rule and the location.
+    const LEAN = [28.7, 3.2, 15]
+    const SHIFT = [0, -47.3, -12.1]
+    const stampInk = (s.retro && s.chips[3]?.bg) || s.paperFg
+    const print = (i) => (
+      <div key={i} style={{
+        position: 'absolute', left: '50%', top: '50%', zIndex: i + 1, width: pu(366.382),
+        transform: `translate(calc(-50% + ${pu(SHIFT[i])}), -50%)`
+          + (s.retro ? ` rotate(${LEAN[i]}deg)` : ''),
+        background: s.paper, borderRadius: pu(11.308), boxShadow: soft(s),
+        padding: `${pu(11.308)} ${pu(11.308)} 0`,
+      }}>
+        <div style={{ aspectRatio: '1', overflow: 'hidden', borderRadius: pu(6.219) }}>
+          <Photo s={s} initialsSize={34} />
         </div>
+        <span style={row(pu(12), { height: pu(52), justifyContent: 'space-between' })}>
+          <span style={{ height: '1px', width: pu(107.992), background: stampInk, flex: 'none' }} />
+          <span style={row(pu(5.654), { color: stampInk })}>
+            <span style={labelStyle(s, pu(12.1))}>{s.location}</span>
+            <GlobeMark size={Math.round(15.47 * pscale)} color={stampInk} />
+          </span>
+        </span>
+        {/* The frame lays its scratch sheet over the whole print, paper and
+            all, not just the photograph. At the .5 the photographic cards take
+            it would bleach the paper; .2 is where the print's board still reads
+            as the panel's own tone, as it does in the frame. */}
+        <Grain s={s} exact blend="screen" opacity={0.2} radius={pu(11.308)} />
       </div>
     )
 
     const stack = (
       <div style={{
-        position: 'relative', padding: s.mob ? '20px' : '34px',
-        minHeight: s.mob ? '260px' : '340px', display: 'flex',
-        alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
+        // Stacked, the prints' half has no sibling column to take its height
+        // from and every print in it is absolute, so it states the frame's. On
+        // desktop the grid row is that height already.
+        height: s.narrow ? u(s.mob ? 324 : 553.398) : undefined,
       }}>
-        {[2, 1, 0].map((k) => (
-          <div key={k} style={{
-            position: k === 0 ? 'relative' : 'absolute',
-            width: s.mob ? '70%' : '62%',
-            transform: `${tilt(s, -6 + k * 5)} translate(${k * -10}px, ${k * 6}px)`,
-            background: s.paper, borderRadius: s.radiusSm, boxShadow: soft(s),
-            padding: s.mob ? '8px 8px 22px' : '12px 12px 30px', zIndex: 3 - k,
-          }}>
-            <div style={{ aspectRatio: '4 / 4.4', overflow: 'hidden', borderRadius: '3px' }}>
-              <Photo s={s} initialsSize={34} />
-            </div>
-            {k === 0 && (
-              <span style={row('6px', {
-                position: 'absolute', right: '14px', bottom: '9px', color: s.paperFg,
-              })}>
-                <span style={labelStyle(s, '9px')}>{s.location}</span>
-                <GlobeMark size={11} color={s.paperFg} />
-              </span>
-            )}
-          </div>
-        ))}
-        <SealBadge s={s} hue={s.chips[4 % s.chips.length].bg} size={s.mob ? 66 : 94} tilt={-20}
-                   style={{ right: s.mob ? '6%' : '10%', bottom: s.mob ? '6%' : '8%', zIndex: 4 }} />
+        {[0, 1, 2].map(print)}
+        {/* Pinned to the half's corner, and gone on the 390 frame — which
+            scaled its prints to .613 but left the seal at the left and the size
+            the wider frames give it, so it lands off the end of a half half the
+            width and the panel clips it away. Taken as the absence it renders
+            as; the same leak in that frame's day-name row is not, because there
+            it costs a column its label (see `dayName`). The two frames that do
+            keep the seal do not share an inset: same left, wider half. */}
+        {!s.mob && (
+          <SealBadge s={s} hue={s.chips[4 % s.chips.length].bg}
+                     size={Math.round(125.37 * scale)} tilt={32.38}
+                     style={{
+                       right: u(s.narrow ? 79.8 : 35.8),
+                       bottom: u(s.narrow ? 33.2 : 30.2), zIndex: 4,
+                     }} />
+        )}
       </div>
     )
 
@@ -2236,22 +2435,42 @@ function Calendar({ s }) {
       <div style={{ position: 'relative' }}>
         <TornEdge s={s} side="top" height={30} />
         <div style={{
-          border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius, overflow: 'hidden',
+          // The frame stands the panel a tone off the sheet it sits on, which
+          // for Retro is `paper` over the cream. The flat templates keep the
+          // page ground: their `paper` is the lightest palette colour, which is
+          // also `tx` in a dark palette — the month would be pale on pale.
+          background: s.retro ? s.paper : undefined,
+          border: `${s.bw} solid ${s.tx}`,
+          borderRadius: u(20), overflow: 'hidden',
         }}>
           <div style={{
             display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
             borderBottom: `${s.bw} solid ${s.tx}`,
           }}>
             {grid}
+            {/* A grid item stretches to the row, and so does its own single
+                child once it is a grid too — which is what gives the stack of
+                absolutely placed prints the month's height to centre in. */}
             <div style={{
+              display: 'grid',
               borderLeft: s.narrow ? 'none' : `${s.bw} solid ${s.tx}`,
               borderTop: s.narrow ? `${s.bw} solid ${s.tx}` : 'none',
             }}>{stack}</div>
           </div>
-          <div style={{ padding: s.mob ? '12px 16px' : '16px 24px' }}>
-            <span style={labelStyle(s, s.eyebrow, {
-              color: s.ac, letterSpacing: '0.12em', whiteSpace: 'normal',
-            })}>{s.calEnquiry}</span>
+          <div style={{
+            padding: u(30.22),
+            // Flexed so the strut of the block's own inherited leading does not
+            // stand the line off the frame's foot.
+            display: 'flex', alignItems: 'center',
+          }}>
+            {/* The frame sets this line in Space Mono Bold — the body face in
+                this project's mapping of the reference's three, not the Anton
+                every other small label takes. It wraps on the 390 canvas, as
+                the frame has it. */}
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: u(13.371), lineHeight: 1.3,
+              letterSpacing: '0.08em', textTransform: 'uppercase', color: s.ac,
+            }}>{s.calEnquiry}</span>
           </div>
         </div>
       </div>
@@ -2517,6 +2736,18 @@ function EnquiryForm({ s }) {
   // design): an olive context panel welded to a mustard form panel inside one
   // rounded, clipped shell.
   if (s.v0) {
+    // §5.5 — one form across three frames: the 768 (986:39583) and 390
+    // (986:39647) ones verbatim, the 1440 one (964:58584) on the 1180 canvas at
+    // × 0.82. The two narrow frames only stack the halves, which the shell
+    // already does on `s.narrow`, so every dimension below is the frame's own
+    // number through `u()`. Three things the frames genuinely re-set, listed as
+    // they come: the inset round each panel, the fields' columns and the gap
+    // between them, and the height of the message box.
+    const scale = s.narrow ? 1 : 0.82
+    const u = (v) => `${Math.round(v * scale)}px`
+    // 44/40 on the 1440 frame, 30 on the 768 one, 30/20 on the 390 one.
+    const inset = s.mob ? `${u(30)} ${u(20)}` : s.narrow ? u(30) : `${u(44)} ${u(40)}`
+
     const ctxBg = s.chips[3 % s.chips.length].bg      // Retro: olive
     const ctxFg = contrastInk(ctxBg)
     const formBg = s.pillBg
@@ -2524,94 +2755,144 @@ function EnquiryForm({ s }) {
     // The controls sit on the pill hue, so their ink is the accent only while
     // it stays legible against it — s.pillFg already encodes that fallback.
     const ctlInk = s.pillFg
+    // The frame fills every control a step off the panel it sits on (#EFB42C on
+    // the mustard). That lift is not derivable from the palette, so it is taken
+    // as what it reads as: a thin veil of the accent's own ink.
+    const ctlBg = s.acFg12
+    // Every frame throws the picked chip and the submit pill onto the olive of
+    // the panel beside them, the way every §10.2 card throws its block.
+    const block = hard(s, ctxBg, 3 * scale, 4 * scale)
+
+    const label = (t) => (
+      <span style={{
+        fontFamily: s.body, fontSize: u(10), letterSpacing: '0.03em',
+        textTransform: 'uppercase', color: ctlInk,
+      }}>{t}</span>
+    )
 
     const field = (f) => (
-      <div key={f.l} style={col('6px')}>
-        <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>{f.l}</span>
+      <div key={f.l} style={col(u(6))}>
+        {label(f.l)}
         <span style={{
-          border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR,
-          padding: s.mob ? '10px 16px' : '13px 20px',
-          fontFamily: s.body, fontSize: s.labelXs, color: ctlInk,
+          display: 'flex', alignItems: 'center',
+          border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, background: ctlBg,
+          // Stated heights, not padding: the reset boxes these border-box, so
+          // the frame's stroke sits inside its 60 the way Figma draws it.
+          height: u(60), padding: `0 ${u(24)}`,
+          fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
         }}>{f.p}</span>
       </div>
     )
 
+    // Two to a row on the 1440 and 768 frames, one to a row on the 390 one,
+    // which also closes the gap between them from 12 to 10.
+    const fieldRow = (fs) => (
+      <div style={{
+        display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+        gap: u(s.mob ? 10 : 12),
+      }}>{fs.map(field)}</div>
+    )
+
     return (
       <div style={{
-        borderRadius: s.radius, overflow: 'hidden', display: 'grid',
+        position: 'relative',
+        // The frame rings the whole shell in a tan hairline — it stands on the
+        // cream sheet (see `cream` in EncoreSection), not on the page ground,
+        // and without the ring the mustard half would float off it.
+        border: `1px solid ${s.edge}`,
+        borderRadius: u(16), overflow: 'hidden', display: 'grid',
         gridTemplateColumns: s.narrow ? '1fr' : '0.62fr 1.38fr',
       }}>
-        <div style={{
-          position: 'relative', background: ctxBg, color: ctxFg,
-          padding: s.mob ? '24px' : '34px', ...col(s.mob ? '18px' : '26px'),
-        }}>
-          <Grain s={s} opacity={0.22} />
-          <span style={row('12px', { position: 'relative' })}>
+        <div style={{ background: ctxBg, color: ctxFg, padding: inset, ...col(u(20)) }}>
+          <span style={row(u(14))}>
             <span style={{
-              width: 42, height: 42, flex: 'none', borderRadius: '999px', overflow: 'hidden',
+              width: Math.round(48 * scale), height: Math.round(48 * scale),
+              flex: 'none', borderRadius: '999px', overflow: 'hidden', background: s.bg,
             }}><Photo s={s} initialsSize={15} /></span>
-            <span style={col('3px')}>
-              <span style={{ fontFamily: s.display, fontSize: s.labelXs, letterSpacing: s.dls }}>{s.brand}</span>
-              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8 }}>{s.kicker}</span>
+            <span style={col('2px')}>
+              <span style={{
+                fontFamily: s.display, fontSize: u(15), letterSpacing: s.dls,
+              }}>{s.brand}</span>
+              <span style={{ fontFamily: s.body, fontSize: u(12) }}>{s.kicker}</span>
             </span>
           </span>
           <h2 style={{
-            margin: 0, position: 'relative', fontFamily: s.display, fontSize: s.dispSm,
-            lineHeight: 1.06, letterSpacing: s.dls,
+            margin: 0, fontFamily: s.display,
+            // The frames' 40 is Soulway's measure. It clears the 1440 and 768
+            // panels in any of the five display faces, but on the 390 one the
+            // line is 306px wide and "unforgettable." is a single unbreakable
+            // word — Titan One and Special Elite run off the end of it. Those
+            // four keep the theme's own display step there; Retro, whose frame
+            // this is, keeps the 40.
+            fontSize: s.mob && !s.retro ? s.dispSm : u(40),
+            // The heading is a content field, so a long enough word overflows
+            // whatever the face: break it rather than let the shell clip it.
+            overflowWrap: 'break-word',
+            lineHeight: 0.98, letterSpacing: s.dls,
           }}>{s.title}</h2>
-          <div style={col('10px', { position: 'relative' })}>
+          <div style={col(u(10))}>
             {s.formPromises.map((p) => (
-              <span key={p} style={row('8px', {
-                alignItems: 'flex-start', fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.4,
+              <span key={p} style={row(u(10), {
+                fontFamily: s.body, fontSize: u(13),
+                // The frame sets each promise on a 16px line at 13px type.
+                lineHeight: 1.2,
               })}>
-                <Check size={13} style={{ flex: 'none', marginTop: '2px', color: formBg }} />
+                <Check size={Math.round(13 * scale)} style={{ flex: 'none', color: formBg }} />
                 {p}
               </span>
             ))}
           </div>
         </div>
 
-        <div style={{
-          position: 'relative', background: formBg, color: formFg,
-          padding: s.mob ? '24px' : '34px', ...col(s.mob ? '14px' : '18px'),
-        }}>
-          <Grain s={s} opacity={0.22} />
-          <div style={{
-            position: 'relative', display: 'grid',
-            gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr', gap: s.mob ? '14px' : '18px',
-          }}>
-            {s.formFields.map(field)}
-          </div>
-          <div style={col('6px', { position: 'relative' })}>
-            <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>Event type</span>
-            <div style={row('8px', { flexWrap: 'wrap' })}>
+        <div style={{ background: formBg, color: formFg, padding: inset, ...col(u(14)) }}>
+          {fieldRow(s.formFields.slice(0, 2))}
+          {fieldRow(s.formFields.slice(2))}
+          <div style={col(u(8))}>
+            {label('Event type')}
+            <div style={row(u(8), { flexWrap: 'wrap' })}>
               {s.formTypes.map((t, i) => (
                 <span key={t} style={{
-                  border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, padding: '4px 12px',
+                  // Figma strokes inside the box, so its picked chip stands as
+                  // tall as the four outlined ones with no stroke at all. A CSS
+                  // border adds to the box, so the picked one keeps its border
+                  // and paints it its own fill, and the height is stated rather
+                  // than left to the padding and the line box.
+                  border: `${s.bw} solid ${i === 0 ? s.ac : formFg}`, borderRadius: s.btnR,
+                  display: 'inline-flex', alignItems: 'center',
+                  height: u(25), padding: `0 ${u(11)}`,
                   background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : formFg,
-                  cursor: 'pointer', ...labelStyle(s, s.eyebrow),
+                  boxShadow: i === 0 ? block : 'none', cursor: 'pointer',
+                  fontFamily: s.body, fontWeight: 700, fontSize: u(12.5), whiteSpace: 'nowrap',
                 }}>{t}</span>
               ))}
             </div>
           </div>
-          <div style={col('6px', { position: 'relative' })}>
-            <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>Message</span>
+          <div style={col(u(6))}>
+            {label('Message')}
             <span style={{
-              display: 'block', border: `${s.bw} solid ${formFg}`, borderRadius: s.radiusSm,
-              padding: s.mob ? '14px 16px' : '18px 20px', minHeight: s.mob ? '90px' : '110px',
-              fontFamily: s.body, fontSize: s.labelXs, color: ctlInk,
+              display: 'block', border: `${s.bw} solid ${formFg}`, background: ctlBg,
+              borderRadius: u(20), height: u(s.mob ? 100 : 134),
+              padding: `${u(20)} ${u(24)}`,
+              fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
             }}>{s.formMessage}</span>
           </div>
           <span style={{
-            position: 'relative', ...row('8px', { justifyContent: 'center' }),
-            background: s.ac, color: s.acFg, border: `${s.bw} solid ${formFg}`,
-            borderRadius: s.btnR, padding: s.mob ? '12px' : '14px', cursor: 'pointer',
-            boxShadow: hard(s, ctxBg, 3, 4), ...labelStyle(s, s.labelMd),
+            ...row(u(10), { justifyContent: 'center' }),
+            background: s.ac, color: s.acFg, borderRadius: s.btnR,
+            // The frame's 49px pill is its 10px padding plus the line box
+            // Anton's own leading gives 20px type. labelStyle sets the tighter
+            // 1.1 every other label in the page wants, so the padding carries
+            // the difference and the pill still stands the frame's height.
+            padding: `${u(14)} ${u(20)}`,
+            cursor: 'pointer', boxShadow: block, ...labelStyle(s, u(20)),
           }}>
             {s.formBtn}
-            <Asterisk size={15} color={s.acFg} />
+            <Asterisk size={Math.round(20 * scale)} color={s.acFg} />
           </span>
         </div>
+        {/* One sheet of grain over both halves, screened at the frame's .4 —
+            not a sheet per panel, which seams down the weld between them. */}
+        <Grain s={s} exact blend="screen" opacity={0.4} />
       </div>
     )
   }
@@ -2699,12 +2980,14 @@ export default function EncoreSection({ s }) {
   // §10.2 — the events map is the one section painted on a dark ground rather
   // than the page background, so its checkerboard bands and cream type read.
   const darkMap = s.mp && s.v0 && s.retro
-  // §10.2 — the media player (964:58578) and repertoire (964:58580) frames
-  // stand on cream rather than the beige page ground: the player so its beige
-  // checkerboard band and cream track cards read against it, the repertoire so
-  // its torn beige edge and olive song cards do. Retro's `paper` IS the page
-  // background, hence the literal.
-  const cream = (s.me || s.re) && s.v0 && s.retro
+  // §10.2 — the media player (964:58578), repertoire (964:58580), booking
+  // calendar (964:58583) and enquiry form (964:58584) frames stand on cream
+  // rather than the beige page ground: the player so its beige checkerboard
+  // band and cream track cards read against it, the repertoire so its torn
+  // beige edge and olive song cards do, the calendar so its beige panel and
+  // the prints on it do, the form so the tan hairline round its shell does.
+  // Retro's `paper` IS the page background, hence the literal.
+  const cream = (s.me || s.re || s.ca || s.fo) && s.v0 && s.retro
   return (
     <div style={{
       background: darkMap ? s.mapBg : cream ? '#FBF6EA' : s.bg,

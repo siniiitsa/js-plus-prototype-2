@@ -71,7 +71,23 @@ const RAMP = {
   tablet:  { dispXl: '77px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
   desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '64px', narrow: false },
 }
-for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k])
+
+// The two keys that only matter once a window is wider than the canvas its
+// frame was drawn at — see PublishedPage, the one place that sets a surplus.
+//
+// `surplus` is half the width past `canvasW`, and it is zero everywhere else:
+// the editor caps its canvas at canvasW and the preview thumbnails render at a
+// hard 1180, so both are already exactly at their frame.
+// `heroH` is the height HeaderV0's aspectRatio yields *at* canvasW — 390×844/390,
+// 768×4/3, 1180×8.33/16. It is the one section outside the root's padding, so a
+// wider window would otherwise make it proportionally taller: 1333px at 2560.
+// Clamping to this number is inert at the canvas and holds the band past it.
+const WIDE = {
+  mobile:  { surplus: '0px', heroH: 844 },
+  tablet:  { surplus: '0px', heroH: 1024 },
+  desktop: { surplus: '0px', heroH: 614 },
+}
+for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k], WIDE[k])
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis A — builder chrome breakpoint
@@ -293,16 +309,36 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
   // pricing
   vm.pricingSub = cv('sub', DEFS.pricingSub)
+  // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
+  vm.pricingSubFg = rgba(tx, 0.46)
   vm.tierModes = TIER_MODES
   vm.tiers = TIERS.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
     // orange under Retro — the reference order — and stays in-palette elsewhere.
     const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
+    // Each card also carries a *second* hue. The price numeral, the tick, the
+    // [ico] chip and the Book Now pill are all painted in it, and it is the
+    // colour of the offset block behind the card too. The reference uses the
+    // palette's gold for the olive and orange cards and the accent for the gold
+    // one — which is exactly `pillBg`, unless the card already IS `pillBg`.
+    const accHue = card === pillBg ? ac : pillBg
+    // The reference inks the cards in the palette's cream and near-black, not
+    // in pure white/black: contrast() picks the side, the palette the tone.
+    const lightCard = contrast(card) === '#141414'
+    const ink = lightCard ? vm.deep : vm.paper
+    // Same caveat as `legible()` above: the second hue only reads while it
+    // separates from the card it sits on. Retro's three clear it; a mid-tone
+    // card in a pale palette (Editorial's warm grey) does not, and there the
+    // card's own ink stands in.
+    const acc = Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink
     const base = {
       name: cv(`t${i + 1}n`, t.name), price: cv(`t${i + 1}p`, t.price),
       blurb: t.blurb, feats: t.feats,
-      card, cardFg: contrast(card), cardMut: rgba(contrast(card), 0.72),
+      card, acc, cardFg: ink,
+      // Only the light card drops its blurb and /event off full strength in the
+      // reference; on the two dark ones they sit at the feats' cream.
+      cardMut: lightCard ? rgba(ink, 0.72) : ink,
     }
     return t.featured
       ? {
@@ -1339,10 +1375,10 @@ const PREVIEW_NAV = EXAMPLE_PAGE
 // Every frame in the picker uses one aspect: the desktop canvas against the
 // tallest header render (Retro's photographic layout 1). The four flat themes
 // come out shorter and are centred in it.
-const SPOT_ASPECT = '1180 / 614'
+const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.heroH}`
 
 // …and what HeaderChoices frames its cards with until it has measured them.
-const SPOT_MIN_H = 614
+const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
   return (
@@ -1739,9 +1775,12 @@ function OptionStage({ current, onPick }) {
  *    the `narrow`/`mob` booleans and the fixed px of SIZES, baked into
  *    the view-model — so serialised HTML would be frozen at whatever
  *    width the editor happened to be showing. Rendering live means the
- *    published page picks its own Z from its own window width, and it
- *    leaves the door open for the sections to become interactive later
- *    (see `live` in sectionVm).
+ *    published page picks its own Z from its own window width — and,
+ *    past the canvas that frame was drawn at, folds the surplus into the
+ *    gutters so the content column holds its measure while the sections
+ *    still paint the full window. It also leaves the door open for the
+ *    sections to become interactive (see `live` in sectionVm, which
+ *    Repertoire now reads).
  * 2. Its document is built by DOM mutation, never document.write().
  *    write() implies document.open(), which rewrites the popup's URL to
  *    the opener's — the tab would then claim to be the builder, and
@@ -1756,18 +1795,48 @@ function OptionStage({ current, onPick }) {
 // makeVm(), which layers on selection, hover, dim and the header's hover
 // preview — none of which a published site has.
 function PublishedPage({ themeIdx, sections, artistName, win }) {
-  const [w, setW] = useState(() => win.innerWidth)
+  // documentElement.clientWidth, not innerWidth: on a classic-scrollbar OS the
+  // latter counts the scrollbar, which would overshoot the surplus below and
+  // leave the column a scrollbar's width narrower than the editor's.
+  const measure = () => win.document.documentElement.clientWidth
+  const [w, setW] = useState(measure)
 
   useEffect(() => {
-    const onResize = () => setW(win.innerWidth)
+    // Re-measure once: the first read happens before there is any content, so
+    // before the vertical scrollbar exists, and would otherwise leave the
+    // column a scrollbar's width narrow until the window was next resized.
+    setW(measure())
+    const onResize = () => setW(measure())
     win.addEventListener('resize', onResize)
     return () => win.removeEventListener('resize', onResize)
   }, [win])
 
-  // The Figma frames are 390 / 768 / 1440. canvasW is dropped for '100%':
-  // the editor caps the canvas to show a device, a published site does not.
+  // The Figma frames are 390 / 768 / 1440, and the page picks its own.
   const key = w < 768 ? 'mobile' : w < 1180 ? 'tablet' : 'desktop'
-  const Z = { ...SIZES[key], canvasW: '100%' }
+  const base = SIZES[key]
+
+  // Past the canvas its frame was drawn at, the design does not get wider: the
+  // surplus is split into the gutters, so the content column keeps the measure
+  // the type ramp was tuned for and each section's own background carries the
+  // page out to the window edges as a full-bleed band.
+  //
+  // Doing it through `padX` rather than with a centred wrapper element is what
+  // makes this three lines: `padX` is also what bleedTo() and TornEdge offset
+  // against, so the torn edges, the checker ribbons and the form's grain follow
+  // the gutter out to the true section edge for free. A wrapper would have left
+  // them bleeding to the old 64px and stopping short of the window.
+  //
+  // `surplus` is carried separately for HeaderV0, the one composition that sits
+  // outside the root's padding and has to apply the gutter itself.
+  const surplus = Math.max(0, Math.round((w - parseInt(base.canvasW, 10)) / 2))
+  const padX = `${parseInt(base.padX, 10) + surplus}px`
+  const Z = {
+    ...base, surplus: `${surplus}px`,
+    padX, pad: `${base.padY} ${padX}`,
+    // canvasW is still dropped for '100%': the section fills the window and the
+    // gutter, not a cap, is what holds the column.
+    canvasW: '100%',
+  }
 
   // §4.8, as the editor derives it at the same names.
   const navSections = sections
