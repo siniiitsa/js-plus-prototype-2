@@ -124,6 +124,39 @@ export const catById = (id) => CATS.find((c) => c.id === id)
 export const catName = (id) => catById(id)?.name ?? id
 
 /* ------------------------------------------------------------------ *
+ * §4.3a Nav targets.
+ *
+ * A published page's nav links scroll to the section they name, so a
+ * link needs a section id as well as a label. `navSections` carries
+ * `{ cat, label }` and a section id *is* its category: addSection()
+ * refuses a category the page already has, so `cat` is unique per page
+ * and reads honestly in a fragment — `#repertoire`, `#calendar`.
+ *
+ * The header's other two controls point at a section too, and so does
+ * the fixed Music / Shows / Book triple, which names no category at
+ * all. Each is a preference list resolved against the page: the first
+ * candidate actually on it wins, and a label whose every candidate is
+ * missing keeps its place in the design and simply does not link.
+ * ------------------------------------------------------------------ */
+
+export const NAV_MINIMAL = [
+  ['Music', ['media', 'audio', 'video', 'repertoire']],
+  ['Shows', ['map', 'calendar']],
+  ['Book', ['form', 'calendar', 'pricing']],
+]
+
+export const CTA_TARGETS = {
+  book: ['form', 'calendar', 'pricing'],
+  listen: ['media', 'audio', 'video'],
+}
+
+export const firstPresent = (prefs, navSections) =>
+  prefs.find((cat) => navSections.some((n) => n.cat === cat))
+
+export const minimalNav = (navSections) =>
+  NAV_MINIMAL.map(([label, prefs]) => ({ label, to: firstPresent(prefs, navSections) }))
+
+/* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * For everything except the header, more layout choices are offered
  * than there are designs; the rendered design is `arch % NVAR[cat]`.

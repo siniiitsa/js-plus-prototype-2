@@ -41,6 +41,7 @@ import {
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
+  CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, songTags, repChips,
   headerFamily, layoutCount, designCount,
   headerLayout, headerLayoutLabel,
@@ -203,8 +204,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
-    // become real; nothing reads it yet.
+    // become real. Two read it: Repertoire's search, chips and pager, and the
+    // header's navigation — its links, its Book Now and Listen, and the burger
+    // menu the narrow frames collapse to.
     live: !!live,
+
+    // The section's own id on the published page, so a nav link can scroll to
+    // it. Live-gated where it is applied, not here: the editor document renders
+    // a dozen header previews at once through LayoutPicker and HeaderChoices,
+    // and they would all claim id="header".
+    anchor: cat,
 
     // design selector
     v0: d === 0, v1: d === 1, v2: d === 2, v3: d === 3, v4: d === 4, v5: d === 5,
@@ -256,9 +265,21 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.grainSrc = T.name === 'Retro' ? RETRO_TEXTURE.grain : undefined
   vm.mapSrc = T.name === 'Retro' ? RETRO_TEXTURE.map : undefined
 
-  // Nav collapses to the fixed triple on mobile regardless of navMode (§10.2).
-  const MINIMAL = ['Music', 'Shows', 'Book']
-  vm.navLinks = mob || vm.navMode === 'minimal' ? MINIMAL : navSections
+  // §4.8 — `navSections` is `{ cat, label }`, and a nav link keeps the target
+  // as `to` so the published page can scroll to it (§4.3a).
+  //
+  // §10.2 also collapsed mobile to the fixed triple regardless of navMode. That
+  // rule was about a horizontal bar, which cannot carry "Booking Calendar" and
+  // "Enquiry Form" at 390px — the burger panel is a column and has the room, so
+  // mobile now shows the artist's own sections like every other width.
+  vm.navLinks = vm.navMode === 'minimal'
+    ? minimalNav(navSections)
+    : navSections.map((n) => ({ label: n.label, to: n.cat }))
+
+  // The header's two CTAs point at a section as well: Book Now at wherever the
+  // page takes a booking, Listen at wherever it plays something (§4.3a).
+  vm.bookTo = firstPresent(CTA_TARGETS.book, navSections)
+  vm.listenTo = firstPresent(CTA_TARGETS.listen, navSections)
 
   // chips — from TAGS, or from the tags field for a tags section
   const tagSource = cat === 'tags'
@@ -1318,7 +1339,7 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
 // applied to the page the picker is about to build (§4.8).
 const PREVIEW_NAV = EXAMPLE_PAGE
   .filter(([cat]) => cat !== 'header' && cat !== 'footer')
-  .map(([cat]) => catName(cat))
+  .map(([cat]) => ({ cat, label: catName(cat) }))
 
 // Every frame in the picker uses one aspect: the desktop canvas against the
 // tallest header render (Retro's photographic layout 1). The four flat themes
@@ -1512,7 +1533,7 @@ function HeaderChoices({ themeIdx, artistName, sel, onSelect }) {
  *    gutters so the content column holds its measure while the sections
  *    still paint the full window. It also leaves the door open for the
  *    sections to become interactive (see `live` in sectionVm, which
- *    Repertoire now reads).
+ *    Repertoire and the header's navigation now read).
  * 2. Its document is built by DOM mutation, never document.write().
  *    write() implies document.open(), which rewrites the popup's URL to
  *    the opener's — the tab would then claim to be the builder, and
@@ -1573,7 +1594,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   // §4.8, as the editor derives it at the same names.
   const navSections = sections
     .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
-    .map((s) => catName(s.cat))
+    .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
 
   return sections.map((sec) => (
     <EncoreSection key={sec.id} s={sectionVm({
@@ -1606,15 +1627,26 @@ function dressPublishedWindow(win, artistName, pageBg) {
   // setting body alone would leave the editor's stone under a short page.
   doc.documentElement.style.background = pageBg
 
-  // Every nav link in EncoreSection is `href="#"` or `href="#music"`. In a
-  // popup those resolve against the *opener's* URL — about:blank inherits it,
-  // and <base> above pins it — so a click is a cross-document navigation and
-  // the published tab would load the builder. Swallow fragment-only links.
-  // This is the placeholder that the `live` seam later replaces with real
-  // scroll-to-section anchors.
+  // The nav's scroll, in one delegated listener rather than a handler per link.
+  //
+  // A fragment href can never be followed here: in a popup it resolves against
+  // the *opener's* URL — about:blank inherits it, and <base> above pins it — so
+  // the click would be a cross-document navigation and the published tab would
+  // load the builder. Every fragment is therefore swallowed, exactly as before,
+  // and the scroll is done by hand against this document's own ids. Sections
+  // carry theirs from `vm.anchor` (§4.3a), gated on `live`, so a link that names
+  // nothing on the page — the footer's columns, or a Minimal label whose
+  // sections were all deleted — simply does nothing.
   doc.addEventListener('click', (e) => {
     const a = e.target.closest?.('a')
-    if (a && (a.getAttribute('href') || '').startsWith('#')) e.preventDefault()
+    const href = a ? a.getAttribute('href') || '' : ''
+    if (!href.startsWith('#')) return
+    e.preventDefault()
+    const target = href.length > 1 && doc.getElementById(href.slice(1))
+    if (!target) return
+    // Read at click time, not once: the OS setting can change under an open tab.
+    const still = win.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' })
   })
 
   const mount = el('div', { id: 'root' })
@@ -1674,10 +1706,11 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   // §5.5 — a real phone forces mobile canvas sizing at full width.
   const Z = isMobile ? { ...SIZES.mobile, canvasW: '100%' } : SIZES[st.device]
 
-  // §4.8 — nav links follow the optional sections currently on the page.
+  // §4.8 — nav links follow the optional sections currently on the page, and
+  // carry the category as the anchor the published page scrolls to (§4.3a).
   const navSections = sections
     .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
-    .map((s) => catName(s.cat))
+    .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
 
   /* ---- publish ----------------------------------------------------- */
 

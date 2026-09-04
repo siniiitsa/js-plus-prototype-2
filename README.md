@@ -68,8 +68,9 @@ This is the one architectural rule worth knowing before editing anything (§12.9
   painted with arbitrary hex values taken at runtime from the active theme's palette, plus six
   derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
   `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
-  inherit `currentColor` and so stay theme-driven; from React it takes `useId` and — for the one
-  section that has live controls, Repertoire — `useState`, and nothing else.
+  inherit `currentColor` and so stay theme-driven; from React it takes `useId` and — for the two
+  things that have live controls, Repertoire and the header's burger menu — `useState`, and
+  nothing else.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
@@ -195,17 +196,31 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Repertoire reads it.** Its search box filters on title and
-  artist, its filter chips filter on the tags the artist typed, and its pager is derived from the
-  result — all three inert on the canvas, which still draws the picture the Figma frames show.
-  What unblocked it was putting the songs in the content model (`FIELDS.repertoire.songs`).
+  interactive has to be off there. **Two things read it.**
+
+  **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
+  the artist typed, and its pager is derived from the result — all three inert on the canvas,
+  which still draws the picture the Figma frames show. What unblocked it was putting the songs in
+  the content model (`FIELDS.repertoire.songs`).
+
+  **The header's navigation.** Every section is given a DOM id — its category, which is unique per
+  page — so the nav links, *Book Now* and *Listen* all scroll to the section they name, and the
+  *Minimal* triple resolves Music / Shows / Book to the nearest section the page actually carries.
+  Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
+  before, layout 1's glyph opened nothing and layouts 2–6 dropped their links outright, so a
+  published phone had no navigation at all. The panel is deliberately thin — no Escape key, no
+  scroll lock, no focus trap — because each of those wants an effect, and `EncoreSection`'s whole
+  React surface is `useId` and `useState`.
+
   Everything else the page draws — the gallery filmstrip, the players, the testimonials carousel,
   the events map's pager — is still a static span, and none of them needs new data to change that.
   The enquiry form's *submit* is the one thing that cannot be front-end-only.
 
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
 domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the
-builder's own URL and reload into the builder — and the tab is a child of the editor, so
+builder's own URL and reload into the builder. That is also why a nav link is never *followed*:
+`<base href>` pins the popup's fragment hrefs to the opener's URL, so one delegated click listener
+swallows every `#…` and does the scroll itself. And the tab is a child of the editor, so
 reloading or closing the editor freezes it. Publishing again re-renders the tab that is already
 open rather than piling up tabs.
 
@@ -223,7 +238,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
   clamps to the slots between them.
 - **Only Retro is designed.** It ships six photographic header layouts. Lime, Grunge, Editorial
   and Pop are fully selectable and functional but render flat-colour sections and a three-layout
-  flat header family. The §10.2 *layouts* are shared by all five templates; its decorative
+  flat header family — whose nav is still the hardcoded `Music · Shows · Book` triple in
+  `FlatNav`, ignoring the artist's sections and never collapsing to a burger. Deliberate: the
+  live navigation was scoped to Retro. The §10.2 *layouts* are shared by all five templates; its decorative
   treatment — paper grain, torn edges, checkerboard, hard offset shadows, rotated cards — is
   gated on `s.retro`, the same split as `headerFamily()`. One piece of that treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero

@@ -10,9 +10,10 @@
 // lucide-react is the one component/style import: its icons inherit
 // `currentColor`, so they stay theme-driven, and each takes the px size given
 // in the spec rather than a `size-*` class. React itself is imported for
-// `useId` and — since Repertoire's search and chips became real controls on
-// the published page — for `useState`, which is gated on `s.live` throughout
-// (§12.7: the editor canvas stays a picture of a website).
+// `useId` and — since Repertoire's search and chips, and then the header's
+// burger menu, became real controls on the published page — for `useState`,
+// which is gated on `s.live` throughout (§12.7: the editor canvas stays a
+// picture of a website).
 
 import { useId, useState } from 'react'
 import {
@@ -230,18 +231,94 @@ function Wordmark({ s, logo = false, color, glyph }) {
   )
 }
 
+// A nav link's href, and the whole of the `live` seam for the navigation.
+//
+// On the canvas the link carries no href at all — not `#`, which is what it
+// used to carry. The editor has no handler swallowing fragment clicks, so a
+// bare `#` jumps the builder to its own top and leaves a fragment on its URL;
+// the published tab has one (dressPublishedWindow), and turns the fragment
+// into a scroll. An <a> without an href takes the text cursor, so every link
+// style below states `cursor: 'pointer'` for itself.
+const navHref = (s, to) => (s.live && to ? `#${to}` : undefined)
+
+// The hamburger, and the panel behind it on the published page.
+//
+// Both narrow reference frames draw the glyph at 26 × 18 — three 2.5px bars,
+// 5px apart — and neither draws what it opens, so the panel is placed rather
+// than transcribed. It is deliberately thin: no Escape key, no scroll lock, no
+// focus trap and no outside-click listener, because every one of those wants an
+// effect and this file's whole React surface is `useId` and `useState`
+// (§12.9). The scrim is the entire viewport and closes on click, which covers
+// most of the same ground.
+//
+// `open` is declared unconditionally — hooks cannot be conditional — and only
+// read under `s.live`, the same shape Repertoire's search and chips take: on
+// the canvas the glyph is the picture it has always been, because a menu that
+// opened there would cover the page it is meant to navigate and select the
+// header on the way.
+function NavMenu({ s, color }) {
+  const [open, setOpen] = useState(false)
+  const c = color || s.tx
+  return (
+    <>
+      <span
+        onClick={s.live ? () => setOpen(true) : undefined}
+        style={col('5px', { width: '26px', flex: 'none', cursor: 'pointer' })}
+      >
+        {[0, 1, 2].map((i) => (
+          <span key={i} style={{
+            height: '2.5px', width: '100%', background: c, borderRadius: '2px',
+          }} />
+        ))}
+      </span>
+
+      {s.live && open && (
+        // The events map's lifted charcoal and its cream: a near-black ground
+        // is what reads under a photographic header, and both are already
+        // resolved on the view-model, so the panel does no colour maths of its
+        // own. `overflowY` is not optional — a phone in landscape cannot fit
+        // thirteen section names and the pill, and with no scroll lock there is
+        // nothing else to reach them by.
+        <div
+          onClick={() => setOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 100, overflowY: 'auto',
+            background: s.mapBg, color: s.mapFg,
+            ...col('30px', { alignItems: 'flex-start', padding: '24px' }),
+          }}
+        >
+          <div style={row('16px', { justifyContent: 'space-between', width: '100%' })}>
+            <Wordmark s={s} logo glyph={27} color={s.mapFg} />
+            <X size={26} style={{ flex: 'none', cursor: 'pointer' }} />
+          </div>
+          <nav style={col('18px', { alignItems: 'flex-start' })}>
+            {s.navLinks.map((l) => (
+              <a key={l.label} href={navHref(s, l.to)}
+                 style={labelStyle(s, s.dispSm, { color: s.mapFg, cursor: 'pointer' })}>{l.label}</a>
+            ))}
+          </nav>
+          <BookPill s={s} to={s.bookTo} full />
+        </div>
+      )}
+    </>
+  )
+}
+
 function NavLinks({ s, color, pills = false }) {
+  // The 390 frames drop the link row; it becomes the burger instead of nothing,
+  // which is what left a published phone with no navigation at all.
+  if (s.mob) return <NavMenu s={s} color={color} />
   const base = {
     fontSize: '10px', fontWeight: 600, letterSpacing: '1.2px',
     textTransform: 'uppercase', color: color || s.tx, opacity: pills ? 1 : 0.8,
-    whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap', cursor: 'pointer',
   }
   return (
     <nav style={{ display: 'flex', alignItems: 'center', gap: pills ? '8px' : '18px', flexWrap: 'wrap' }}>
       {s.navLinks.map((l) => (
-        <a key={l} href="#" style={pills
+        <a key={l.label} href={navHref(s, l.to)} style={pills
           ? { ...base, border: '1px solid rgba(255,255,255,.35)', borderRadius: s.btnR, padding: '5px 12px' }
-          : base}>{l}</a>
+          : base}>{l.label}</a>
       ))}
     </nav>
   )
@@ -251,8 +328,14 @@ function NavLinks({ s, color, pills = false }) {
 // card its own pill in that card's second hue, on its own colour, over a cream
 // block. Everywhere else the palette-wide pill applies, so they default to it.
 // `full` is the other pricing override — see `scale` below.
-function BookPill({ s, label, bg, fg, shadow, full = false }) {
+// `to` is the section this pill books at, resolved in the view-model. It only
+// becomes a link on the published page: `Tag` is a span everywhere else, and
+// the style object is the same either way, so the picture never moves. The
+// pricing tiers' pills pass no target and stay spans.
+function BookPill({ s, label, bg, fg, shadow, full = false, to }) {
   const text = label ?? s.cta1
+  const Tag = s.live && to ? 'a' : 'span'
+  const link = s.live && to ? { href: `#${to}` } : null
   if (s.retro) {
     // Accent-coloured type on a second palette hue, with the offset block.
     //
@@ -268,7 +351,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false }) {
     const face = fg ?? s.pillFg
     const block = shadow ?? s.ac
     return (
-      <span style={{
+      <Tag {...link} style={{
         ...row(pick('10px', '8px', '6.2px')),
         background: bg ?? s.pillBg, color: face,
         padding: pick('10px 20px', '8px 16px', '6.2px 12.4px'),
@@ -281,11 +364,11 @@ function BookPill({ s, label, bg, fg, shadow, full = false }) {
       }}>
         {text}
         <Asterisk size={pick(20, 16, 12.4)} color={face} />
-      </span>
+      </Tag>
     )
   }
   return (
-    <span style={{
+    <Tag {...link} style={{
       ...row('8px'), background: s.ac, color: s.acFg, fontSize: '10px', fontWeight: 700,
       letterSpacing: '1.2px', textTransform: 'uppercase', padding: '9px 18px',
       borderRadius: s.btnR, cursor: 'pointer', whiteSpace: 'nowrap',
@@ -295,16 +378,20 @@ function BookPill({ s, label, bg, fg, shadow, full = false }) {
         width: '14px', height: '14px', borderRadius: '999px', background: s.acFg20,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none',
       }}><ArrowRight size={9} /></span>
-    </span>
+    </Tag>
   )
 }
 
-function ListenLink({ s, color }) {
+// Same seam as BookPill: a link to wherever the page plays something, but only
+// once the page is live.
+function ListenLink({ s, color, to }) {
+  const Tag = s.live && to ? 'a' : 'span'
+  const link = s.live && to ? { href: `#${to}` } : null
   return (
-    <span style={{
+    <Tag {...link} style={{
       fontSize: '10px', fontWeight: 700, letterSpacing: '1.2px',
       textTransform: 'uppercase', color: color || s.tx, cursor: 'pointer', whiteSpace: 'nowrap',
-    }}>{s.cta2}</span>
+    }}>{s.cta2}</Tag>
   )
 }
 
@@ -565,8 +652,9 @@ const SCRIM = {
   hero: 'linear-gradient(0deg, #111111 0%, rgba(17,17,17,0) 100%)',
 }
 
-// §10.2 — one top bar for the hero and the footer. Below `desktop` the links
-// collapse to a hamburger, as they do on both narrow reference frames.
+// §10.2 — the hero's top bar. (The footer builds its own columns.) Below
+// `desktop` the links collapse to a hamburger, as they do on both narrow
+// reference frames — and the hamburger now opens; see NavMenu.
 function NavBar({ s, colour, rule }) {
   const c = colour || s.tx
   const bar = rule || c
@@ -587,24 +675,18 @@ function NavBar({ s, colour, rule }) {
       </div>
       {s.narrow ? (
         <span style={row(tab ? '23px' : '10px')}>
-          <BookPill s={s} />
-          {/* 26 × 18 on both narrow frames: three 2.5px bars, 5px apart. */}
-          <span style={col('5px', { width: '26px', flex: 'none', cursor: 'pointer' })}>
-            {[0, 1, 2].map((i) => (
-              <span key={i} style={{
-                height: '2.5px', width: '100%', background: c, borderRadius: '2px',
-              }} />
-            ))}
-          </span>
+          <BookPill s={s} to={s.bookTo} />
+          <NavMenu s={s} color={c} />
         </span>
       ) : (
         <nav style={row('18px', {
           flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 1 auto', minWidth: 0,
         })}>
           {s.navLinks.map((l) => (
-            <a key={l} href="#" style={labelStyle(s, s.labelMd, { color: c })}>{l}</a>
+            <a key={l.label} href={navHref(s, l.to)}
+               style={labelStyle(s, s.labelMd, { color: c, cursor: 'pointer' })}>{l.label}</a>
           ))}
-          <BookPill s={s} />
+          <BookPill s={s} to={s.bookTo} />
         </nav>
       )}
     </div>
@@ -751,11 +833,11 @@ function HeaderV1({ s }) {
         justifyContent: 'space-between', padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
       }}>
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          {!s.mob && <NavLinks s={s} color="#FFFFFF" pills />}
+          <NavLinks s={s} color="#FFFFFF" pills />
           <Wordmark s={s} color="#FFFFFF" />
           <span style={row('14px')}>
-            <ListenLink s={s} color="#FFFFFF" />
-            <BookPill s={s} />
+            <ListenLink s={s} color="#FFFFFF" to={s.listenTo} />
+            <BookPill s={s} to={s.bookTo} />
           </span>
         </div>
         <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
@@ -789,8 +871,8 @@ function HeaderV2({ s }) {
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap', paddingRight: sealGap(s) })}>
           <Wordmark s={s} logo color="#FFFFFF" />
           <span style={row('18px')}>
-            {!s.mob && <NavLinks s={s} color="#FFFFFF" />}
-            <BookPill s={s} />
+            <NavLinks s={s} color="#FFFFFF" />
+            <BookPill s={s} to={s.bookTo} />
           </span>
         </div>
         <div style={col('14px', { alignItems: 'flex-end', padding: s.mob ? '0' : '32px' })}>
@@ -816,11 +898,11 @@ function HeaderV3({ s }) {
     <div style={{ position: 'relative' }}>
       <Checkerboard s={s} style={{ marginBottom: '20px' }} />
       <div style={row('20px', { justifyContent: 'space-between', flexWrap: 'wrap', marginBottom: s.navGap })}>
-        {!s.mob && <NavLinks s={s} pills={false} />}
+        <NavLinks s={s} pills={false} />
         <Wordmark s={s} />
         <span style={row('14px')}>
-          <ListenLink s={s} />
-          <BookPill s={s} />
+          <ListenLink s={s} to={s.listenTo} />
+          <BookPill s={s} to={s.bookTo} />
         </span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '44px', alignItems: 'center' }}>
@@ -878,11 +960,11 @@ function HeaderV4({ s }) {
         padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
       }}>
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          {!s.mob && <NavLinks s={s} color="#FFFFFF" pills />}
+          <NavLinks s={s} color="#FFFFFF" pills />
           <Wordmark s={s} color="#FFFFFF" />
           <span style={row('14px')}>
-            <ListenLink s={s} color="#FFFFFF" />
-            <BookPill s={s} />
+            <ListenLink s={s} color="#FFFFFF" to={s.listenTo} />
+            <BookPill s={s} to={s.bookTo} />
           </span>
         </div>
       </div>
@@ -941,8 +1023,8 @@ function HeaderV5({ s }) {
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap', paddingRight: sealGap(s) })}>
           <Wordmark s={s} logo color="#FFFFFF" />
           <span style={row('18px')}>
-            {!s.mob && <NavLinks s={s} color="#FFFFFF" />}
-            <BookPill s={s} />
+            <NavLinks s={s} color="#FFFFFF" />
+            <BookPill s={s} to={s.bookTo} />
           </span>
         </div>
         <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
@@ -3226,7 +3308,10 @@ export default function EncoreSection({ s }) {
   // the page's beige. Change one, change both.
   const cream = (s.me || s.re || s.ca || s.fo || s.te || s.ft) && s.v0 && s.retro
   return (
-    <div style={{
+    // The id is the nav's scroll target, and it is live-gated: the editor
+    // document renders a dozen header previews at once through LayoutPicker
+    // and HeaderChoices, which would all claim id="header".
+    <div id={s.live ? s.anchor : undefined} style={{
       background: darkMap ? s.mapBg : cream ? '#FBF6EA' : s.bg,
       color: darkMap ? s.mapFg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,

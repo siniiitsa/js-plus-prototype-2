@@ -97,12 +97,25 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **`Repertoire` is the one section that reads it**: its search field, its filter chips
-  and its pager are live there and inert on the canvas. Everything else — the gallery filmstrip,
-  the events map's pager, the players — is still a picture. Do **not** make `EncoreSection`
-  interactive without gating on it: the editor canvas is a picture of a website, and a live filter
-  chip there would both filter and select the section. `EncoreSection` therefore imports `useState`
-  as well as `useId`; that is the whole of its React surface and it stays that way.
+  real, and **two things read it**: `Repertoire` — its search field, its filter chips and its
+  pager — and the **header's navigation**. Everything else — the gallery filmstrip, the events
+  map's pager, the players — is still a picture. Do **not** make `EncoreSection` interactive
+  without gating on it: the editor canvas is a picture of a website, and a live filter chip there
+  would both filter and select the section. `EncoreSection` therefore imports `useState` as well
+  as `useId`; that is the whole of its React surface and it stays that way — which is why
+  `NavMenu`'s panel has no Escape key, no scroll lock and no focus trap. Each of those wants an
+  effect.
+- **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
+  every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
+  id), the section root applies it as `id` **only when `s.live`** — the editor document renders a
+  dozen header previews and they would all claim `id="header"` — and one delegated `click`
+  listener in `dressPublishedWindow` turns a fragment href into a `scrollIntoView`. A fragment can
+  never be *followed* in the popup: `<base href>` pins it to the opener's URL, so the tab would
+  reload the builder. On the canvas the links carry **no href at all** (not `#`, which would jump
+  the builder to its own top); `navHref()` in `EncoreSection` is the whole of that gate.
+  `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
+  because Minimal's Shows and Book can resolve to the same section. Below `desktop` the links
+  collapse to `NavMenu`'s burger, in all six Retro layouts.
 - **Repertoire's songs are the only list-shaped content with a structured editor.** `c.songs` is an
   array of `{ title, artist, tags }` (tags a raw comma string), maintained by `SongsField` in
   `EncoreBuilder` — every other repeated field is a delimited textarea (`FIELDS.audio.tracks`,
