@@ -1420,7 +1420,7 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
  * and `fit` shrinks whatever overruns it instead of cropping.
  * ------------------------------------------------------------------ */
 
-function HeaderChoices({ themeIdx, artistName, sel, onHover, onSelect }) {
+function HeaderChoices({ themeIdx, artistName, sel, onSelect }) {
   const T = THEMES[themeIdx]
   const n = layoutCount('header', T.name)
 
@@ -1436,8 +1436,8 @@ function HeaderChoices({ themeIdx, artistName, sel, onHover, onSelect }) {
   const idle = '#E2DFD7'
   const live = '#2B6BE4'
 
-  const enter = (i) => { setHot(i); if (onHover) onHover(i) }
-  const leave = () => { setHot(-1); if (onHover) onHover(null) }
+  const enter = (i) => setHot(i)
+  const leave = () => setHot(-1)
 
   return (
     <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))' }}>
@@ -1639,11 +1639,8 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       device: 'desktop', add: null, menuFor: null,
       hoverId: null, selectedId: null,
       sheet: null, editSheet: false,
-      // §6.2 — whether the header setup modal is still running. `hdrHover` is
-      // the layout its grid is hovering: the canvas renders it in place of the
-      // committed one, so the page previews at full size without committing
-      // anything.
-      onboard: false, hdrHover: null,
+      // §6.2 — whether the header setup modal is still running.
+      onboard: false,
       // The publish success dialog. The tab it opens is held in a ref, not
       // in state: nothing renders from it.
       published: false,
@@ -1809,18 +1806,16 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     const hovered = st.hoverId === sec.id
     const up = canMove(arr, sec.id, -1)
     const down = canMove(arr, sec.id, 1)
-    // §6.2 — hovering a card in the setup modal previews that layout on the
-    // canvas at full size. Nothing is committed until it is clicked, so this
-    // replaces the arch for rendering only; sec.arch is untouched.
     const isHeader = sec.cat === 'header'
-    const arch = isHeader && st.hdrHover !== null ? st.hdrHover : sec.arch
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
+      // §6.2 — while the setup modal is up the header's own badge names the
+      // layout, so the click that swapped it is legible on the page itself.
       overlayLabel: isHeader && st.onboard
-        ? `${cat.name} · ${headerLayout(T.name, arch)[0]}`
+        ? `${cat.name} · ${headerLayout(T.name, sec.arch)[0]}`
         : cat.name + (selected ? ' · editing' : ''),
       showOverlay: hovered || selected,
       locked: sec.cat === 'header' || sec.cat === 'footer',
@@ -1845,16 +1840,15 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const nHeader = layoutCount('header', T.name)
   const headerArch = headerSec ? headerSec.arch : 0
 
-  // Committing sets the layout and drops the preview. The modal stays open
-  // afterwards — the first click is a try, not a verdict.
+  // Clicking a card swaps the real header behind the modal, at full size. The
+  // modal stays open afterwards — a click is a try, not a verdict, and
+  // "Use this header" is what ends it.
   const pickHeader = useCallback((i) => {
     if (!headerSec) return
     setSection(headerSec.id, { arch: i })
-    patch({ hdrHover: null })
-  }, [headerSec, setSection, patch])
+  }, [headerSec, setSection])
 
-  const hoverHeader = useCallback((i) => patch({ hdrHover: i }), [patch])
-  const endOnboard = useCallback(() => patch({ onboard: false, hdrHover: null }), [patch])
+  const endOnboard = useCallback(() => patch({ onboard: false }), [patch])
 
   /* ---- stage 1 ------------------------------------------------------ */
 
@@ -1874,7 +1868,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
           const next = buildPage(EXAMPLE_PAGE)
           const header = next.find((x) => x.cat === 'header')
           return {
-            stage: 'editor', theme: i, sections: next, onboard: true, hdrHover: null,
+            stage: 'editor', theme: i, sections: next, onboard: true,
             // The editor opens on the header's edit panel: the modal does not
             // need it, but it is where the user goes next and it leaves the
             // right state behind once the modal is dismissed. The mobile edit
@@ -1971,7 +1965,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: isMobile ? '0 18px 18px' : '0 26px 22px' }}>
           <HeaderChoices
             themeIdx={st.theme} artistName={artistName} sel={headerArch}
-            onHover={hoverHeader} onSelect={pickHeader}
+            onSelect={pickHeader}
           />
         </div>
 
@@ -2092,7 +2086,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         {isMobile ? (
           <div style={{ height: '52px', flex: 'none', background: '#FFFFFF', borderBottom: '1px solid #E2DFD7', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 12px', zIndex: 40 }}>
             <button type="button" aria-label="Back to templates"
-              onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null, onboard: false, hdrHover: null }) }}
+              onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null, onboard: false }) }}
               className="hover:bg-muted"
               style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '3px 9px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
             >‹</button>
@@ -2109,7 +2103,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             <Tooltip>
               <TooltipTrigger asChild>
                 <button type="button" aria-label="Back to templates"
-                  onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null, onboard: false, hdrHover: null }) }}
+                  onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null, onboard: false }) }}
                   className="hover:bg-muted"
                   style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '4px 11px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
                 >‹</button>

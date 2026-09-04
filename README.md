@@ -135,9 +135,11 @@ Three things about it are load-bearing:
   offers afterwards in its `LayoutPicker` dropdown, under the same names. Its frame is the
   *median* of the theme's measured layout heights, so Retro's tall Polaroid neither crops nor
   strands the other five.
-- **Hover previews at full size.** `st.hdrHover` replaces the header's `arch` for rendering only
-  (`makeVm`), so the page behind the modal previews a layout without committing it. `sec.arch` is
-  untouched, and clicking is a try rather than a verdict — the modal stays open.
+- **Click to try, at full size.** Hovering a card lights the card and nothing else; clicking one
+  sets the real header behind the modal, which stays open. A click is a try rather than a
+  verdict — the layout can be swapped as often as the user likes, and *Use this header* is what
+  ends it. There is deliberately no hover preview: the page behind changed under the cursor
+  faster than it could be read, and a layout that reverted on mouse-out read as a bug.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Framed, Gradient stage, Polaroid,
   Overlay card, Stage wide (and Centred / Split / Rule for the flat family) — into every label,

@@ -74,8 +74,8 @@ mutated through a single `patch()` helper.
   inline editor JSX. **There is no header stage any more**: SPEC §6's full-screen picker is gone,
   and picking a template opens the editor on the built page with `st.onboard` armed. The header
   choice is then asked for by the **setup modal** — a `Dialog` over the finished page rendering
-  `HeaderChoices` — see README "Choosing a header". `st.hdrHover` previews a layout on the canvas
-  behind it without committing it. The editor opens with the header `selectedId` so the sidebar
+  `HeaderChoices` — see README "Choosing a header". Its cards commit on click, not on hover;
+  there is no preview state. The editor opens with the header `selectedId` so the sidebar
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
