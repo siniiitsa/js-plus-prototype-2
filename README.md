@@ -6,8 +6,8 @@ A single-page, client-only prototype of a website builder for musicians and DJs,
 Pick one of five visual **templates** from a spotlight-and-filmstrip picker and land straight in
 the editor on a filled-in example page — a stack of **sections** you add, remove, reorder, swap
 layouts on, recolour and rewrite — while seeing a live, fully re-skinned preview. The first thing
-the editor asks for is a **header layout**, in one of three competing treatments the build ships
-side by side; see *Choosing a header* below.
+the editor asks for is a **header layout**, in a setup modal over the finished page; see
+*Choosing a header* below.
 
 It is a demo: nothing persists and nothing is sent to a server. **Publish** opens the finished
 page in a second browser tab, with the builder chrome gone — see *Publishing* below.
@@ -103,8 +103,8 @@ Six, all deliberate:
    `react()` + `tailwindcss()`.
 3. **Radix packages.** §2.2 expects the shadcn CLI to add individual `@radix-ui/react-*`
    packages; the current CLI installs the unified `radix-ui` package instead. Same primitives.
-4. **No stage 2.** §6's full-screen header-layout picker has been replaced by three in-editor
-   treatments, chosen from a new stage 0. See *Choosing a header* below for what and why.
+4. **No stage 2.** §6's full-screen header-layout picker has been replaced by an in-editor
+   setup modal. See *Choosing a header* below for what and why.
 5. **Publish opens the page, rather than only toasting.** SPEC.md has no publish flow beyond
    §8.1's button, and §12.1 rules out persistence. The button now opens the finished page in a
    second tab — see *Publishing* below. Nothing is persisted or sent anywhere, so §12.1 stands;
@@ -123,33 +123,28 @@ and "Header layout 4" names nothing. It has been removed. Picking a template now
 and opens the editor on it directly, with the header on layout 1, and the header choice is asked
 for **inside** the editor.
 
-Which way it is asked for is the open question, so the build ships **all three candidates** and a
-front door to switch between them. `st.stage` is `'option' | 'template' | 'editor'`; stage 0
-(`OptionStage`) sets `st.ux` and nothing else, and the template picker carries a pill showing
-which treatment is armed with a **Change** link back.
+`st.stage` is `'template' | 'editor'`. The template picker is the app's first screen; picking one
+opens the editor with `st.onboard` armed, and the **setup modal** goes up over the finished page:
+a `Dialog` carrying a 3-up grid of the template's header layouts, one sentence saying what a
+header is, and *Decide later* / *Use this header*. It is a gate, so both exits are real ones —
+either clears `st.onboard` and the editor is then just the editor.
 
-| `st.ux` | Treatment | Shape |
-|---|---|---|
-| `'modal'` | **A · Setup modal** | A `Dialog` over the finished page: a 3-up grid, one sentence saying what a header is, *Decide later* / *Use this header*. |
-| `'sidebar'` | **B · Guided sidebar** | Nothing blocks. The header is selected, its edit panel is open, and its layout picker is expanded into a two-up grid under a coach mark. The content group is knocked back to 42% until a layout is tried. |
-| `'rail'` | **C · On-canvas rail** | Every section below the header is veiled, and a rail docks over the canvas with the layouts as a filmstrip. Clicking one swaps the real header at full size. |
+Three things about it are load-bearing:
 
-Three things are shared by all of them:
-
-- **One component.** `HeaderChoices` renders the cards in all three (`mode` is `'modal'`,
-  `'panel'` or `'strip'`) and is what the edit panel swaps its `LayoutPicker` for, so the control
-  a user meets first is the control they keep. Its frame is the *median* of the theme's measured
-  layout heights, so Retro's tall Polaroid neither crops nor strands the other five.
+- **One component.** `HeaderChoices` renders the grid — the same layouts the header's edit panel
+  offers afterwards in its `LayoutPicker` dropdown, under the same names. Its frame is the
+  *median* of the theme's measured layout heights, so Retro's tall Polaroid neither crops nor
+  strands the other five.
 - **Hover previews at full size.** `st.hdrHover` replaces the header's `arch` for rendering only
-  (`makeVm`), so the page previews a layout without committing it. `sec.arch` is untouched.
+  (`makeVm`), so the page behind the modal previews a layout without committing it. `sec.arch` is
+  untouched, and clicking is a try rather than a verdict — the modal stays open.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Framed, Gradient stage, Polaroid,
   Overlay card, Stage wide (and Centred / Split / Rule for the flat family) — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
 
-`st.onboard` is the flag; any of the three exits sets it false and the editor is then just the
-editor. The `startTheme` prop still skips both picker stages, and skips the onboarding with them.
+The `startTheme` prop skips the template picker, and skips the onboarding with it.
 
 ## Seeded photography
 
@@ -170,7 +165,7 @@ the only module that imports them.
   deleting the key, which would silently restore it. Absent → the mock photo, `null` → the
   initials placeholder, a string → an upload. `images` needs no sentinel: an emptied array is
   already distinguishable from an absent one.
-- The layout picker, the template spotlight and all three header treatments resolve through the
+- The layout picker, the template spotlight and the header setup modal all resolve through the
   same `sectionVm()`, so each shows the photography without any extra wiring.
 
 ## Publishing

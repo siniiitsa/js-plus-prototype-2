@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
   Pencil, Palette, X, Trash2, ChevronLeft, ArrowRight,
-  Layers, Plus, Check, Upload, Lock, Sparkles, ExternalLink,
+  Layers, Plus, Check, Upload, Lock, ExternalLink,
 } from 'lucide-react'
 import { toast as sonnerToast, Toaster } from 'sonner'
 
@@ -43,7 +43,7 @@ import {
   CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, songTags, repChips,
   headerFamily, layoutCount, designCount,
-  headerLayout, headerLayoutLabel, HEADER_UX,
+  headerLayout, headerLayoutLabel,
 } from './data.js'
 import { defaultImage, defaultImages, RETRO_TEXTURE } from './photos.js'
 
@@ -1018,15 +1018,9 @@ function SongsField({ value, max, onChange }) {
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = false, onDone }) {
+function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
-  // §6.2b — the coach mark says something different once the user has actually
-  // tried a layout, so the panel remembers whether it has been used yet. Local
-  // rather than in `st`: it is about this panel's copy, nothing else reads it.
-  const [tried, setTried] = useState(false)
-  // Only for the coach mark's verb: there is no hovering on a touch screen.
-  const touch = useIsMobile()
 
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
   // Retro section would show a photo on the canvas and an empty dropzone here.
@@ -1044,66 +1038,16 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = 
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }}>
       <ScrollArea className="flex-1 min-h-0">
         <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-          {/* LAYOUT — §6.2b turns the dropdown into a grid and puts a coach
-              mark over it. Same control, same place: what the user learns on
-              their first visit is what they come back to. */}
           <div>
             <Label style={groupLabel}>Layout</Label>
-            {onboard && (
-              <div style={{
-                position: 'relative', background: '#1B1A17', color: '#FFFFFF',
-                borderRadius: '10px', padding: '12px 13px', marginBottom: '12px',
-                animation: 'fadeIn .25s ease',
-              }}>
-                <span style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>
-                  {tried ? 'Header set — change it any time' : 'Step 1 — pick a header layout'}
-                </span>
-                <span style={{ display: 'block', fontSize: '12px', lineHeight: 1.5, color: 'rgba(255,255,255,.72)' }}>
-                  {tried
-                    ? 'This panel is where the header lives from now on. Keep trying layouts, or carry on to the content below.'
-                    : touch
-                      ? 'This is the top of your page. Tap a layout to try it — the page behind updates as you go.'
-                      : 'This is the top of your page. Hover a layout to preview it on the page, click to keep it.'}
-                </span>
-                <button
-                  type="button" onClick={(e) => { stopE(e); if (onDone) onDone() }}
-                  style={{
-                    marginTop: '9px', fontSize: '12px', fontWeight: 700, padding: '6px 14px',
-                    borderRadius: '99px', border: '1px solid rgba(255,255,255,.28)', background: 'none',
-                    color: '#FFFFFF', cursor: 'pointer', fontFamily: 'inherit',
-                  }}
-                >{tried ? 'Done' : 'Skip for now'}</button>
-                {/* the caret pointing at the grid below */}
-                <span style={{
-                  position: 'absolute', left: '26px', bottom: '-6px', width: '12px', height: '12px',
-                  background: '#1B1A17', transform: 'rotate(45deg)',
-                }} />
-              </div>
-            )}
-            {onboard ? (
-              <div style={{
-                borderRadius: '12px', padding: '8px',
-                background: 'rgba(43,107,228,.06)', boxShadow: '0 0 0 1.5px rgba(43,107,228,.35)',
-              }}>
-                <HeaderChoices
-                  themeIdx={themeIdx} artistName={artistName} sel={sec.arch} mode="panel"
-                  onHover={(i) => api.patch({ hdrHover: i })}
-                  onSelect={(i) => { setTried(true); api.setSection(sec.id, { arch: i }); api.patch({ hdrHover: null }) }}
-                />
-              </div>
-            ) : (
-              <LayoutPicker
-                cat={sec.cat} arch={sec.arch} content={sec.c}
-                themeIdx={themeIdx} artistName={artistName} navSections={navSections}
-                onPick={(i) => api.setSection(sec.id, { arch: i })}
-              />
-            )}
+            <LayoutPicker
+              cat={sec.cat} arch={sec.arch} content={sec.c}
+              themeIdx={themeIdx} artistName={artistName} navSections={navSections}
+              onPick={(i) => api.setSection(sec.id, { arch: i })}
+            />
           </div>
 
-          {/* CONTENT — knocked back, not disabled, while step 1 is open: the
-              order is a suggestion, and anyone who wants to type a title first
-              still can. */}
-          <div style={{ opacity: onboard && !tried ? 0.42 : 1, transition: 'opacity .25s ease' }}>
+          <div>
             <Label style={groupLabel}>Content</Label>
             {fields.length === 0 ? (
               <p style={{ margin: 0, fontSize: '12px', color: '#98958A', lineHeight: 1.5 }}>
@@ -1364,11 +1308,10 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
 /* ------------------------------------------------------------------ *
  * §6 Stage 1 — Template picker
  *
- * One spotlight preview of the highlighted template, its name above it and
- * a filmstrip of all five below. Clicking the spotlight builds the page and
- * opens the editor on it — there is no longer a stage between the two. It also
- * carries the prototype's own pill (§6.1): which header treatment is armed,
- * and the way back to swap it.
+ * The app's first screen. One spotlight preview of the highlighted template,
+ * its name above it and a filmstrip of all five below. Clicking the spotlight
+ * builds the page and opens the editor on it — there is no longer a stage
+ * between the two.
  * ------------------------------------------------------------------ */
 
 // The nav links a header preview shows: the same derivation the editor uses,
@@ -1397,10 +1340,9 @@ function TemplatePreview({ themeIdx, artistName }) {
   )
 }
 
-function TemplateStage({ artistName, spotIdx, ux, onChangeUx, onPick }) {
+function TemplateStage({ artistName, spotIdx, onPick }) {
   // Coming back from the editor re-spotlights the theme it was using.
   const [spot, setSpot] = useState(spotIdx)
-  const [swapHot, setSwapHot] = useState(false)
 
   return (
     <div className="dark" style={{
@@ -1408,35 +1350,6 @@ function TemplateStage({ artistName, spotIdx, ux, onChangeUx, onPick }) {
       padding: 'clamp(24px,5vw,40px) 20px', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
     }}>
-      {/* §6.1 — the prototype's own chrome, not the product's: which header
-          treatment the editor is about to run, and the way back to swap it.
-          Fixed rather than in flow so it cannot push the spotlight off a short
-          screen, and it sits above the picker it annotates. */}
-      {ux && (
-        <div style={{
-          position: 'fixed', top: '14px', left: '50%', transform: 'translateX(-50%)', zIndex: 10,
-          display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center',
-          background: '#1B1A18', border: '1px solid #2B2B27', borderRadius: '99px',
-          padding: '7px 8px 7px 15px', maxWidth: 'calc(100vw - 28px)',
-        }}>
-          <span style={{ fontSize: '12px', color: '#8E8B81', whiteSpace: 'nowrap' }}>
-            Header onboarding:{' '}
-            <strong style={{ color: '#F4F2EC', fontWeight: 700 }}>{ux.tag} · {ux.name}</strong>
-          </span>
-          <button
-            type="button" onClick={onChangeUx}
-            onMouseEnter={() => setSwapHot(true)} onMouseLeave={() => setSwapHot(false)}
-            onFocus={() => setSwapHot(true)} onBlur={() => setSwapHot(false)}
-            style={{
-              fontSize: '12px', fontWeight: 700, padding: '5px 13px', borderRadius: '99px',
-              cursor: 'pointer', fontFamily: 'inherit', transition: 'background .2s, color .2s',
-              border: '1px solid #4A463C', whiteSpace: 'nowrap',
-              background: swapHot ? '#F4F2EC' : 'none', color: swapHot ? '#131311' : '#F4F2EC',
-            }}
-          >Change</button>
-        </div>
-      )}
-
       <div style={{ width: '100%', maxWidth: '1100px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <h1 style={{ margin: 0, fontWeight: 800, fontSize: 'clamp(19px,4vw,24px)', textAlign: 'center' }}>
           {THEMES[spot].name}
@@ -1493,11 +1406,10 @@ function TemplateStage({ artistName, spotIdx, ux, onChangeUx, onPick }) {
 /* ------------------------------------------------------------------ *
  * §6 The header layout picker
  *
- * One control, three presentations. The template's header designs, all
- * of them: six for Retro, three for the four flat templates (§4.4).
- * Every treatment in §6.1 renders this — a modal grid, a two-up grid in
- * the sidebar, a filmstrip on the canvas — so what the user learns in
- * whichever one they meet first is the control they keep.
+ * The grid the setup modal (§6.2) is built around: the template's header
+ * designs, all of them — six for Retro, three for the four flat
+ * templates (§4.4). Three up on a desktop, two around 720px, one below
+ * ~560.
  *
  * The cards share one frame so the set reads as a set and the labels sit
  * on one line. The frame has to be measured: Retro's Polaroid runs half
@@ -1508,20 +1420,9 @@ function TemplateStage({ artistName, spotIdx, ux, onChangeUx, onPick }) {
  * and `fit` shrinks whatever overruns it instead of cropping.
  * ------------------------------------------------------------------ */
 
-// mode → how the cards are laid out. Everything else about them is shared.
-const CHOICE_MODE = {
-  // The setup modal: three up on a desktop, two around 720px, one below ~560.
-  modal: { grid: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '16px', label: 12, sub: true },
-  // The sidebar edit panel: two up in a 296px column, whatever the viewport.
-  panel: { grid: 'repeat(2, minmax(0, 1fr))', gap: '8px', label: 11, sub: false },
-  // The canvas rail: one row, scrolled sideways.
-  strip: { grid: null, gap: '12px', label: 11, sub: false },
-}
-
-function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false, onHover, onSelect }) {
+function HeaderChoices({ themeIdx, artistName, sel, onHover, onSelect }) {
   const T = THEMES[themeIdx]
   const n = layoutCount('header', T.name)
-  const M = CHOICE_MODE[mode]
 
   // Hover and keyboard focus share one index, so a focused card is lit the
   // same way a hovered one is.
@@ -1532,17 +1433,14 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
   const heights = Object.values(nat).sort((a, b) => a - b)
   const frame = `1180 / ${heights.length ? heights[heights.length >> 1] : SPOT_MIN_H}`
 
-  const idle = dark ? '#2B2B27' : '#E2DFD7'
-  const live = dark ? '#F4F2EC' : '#2B6BE4'
+  const idle = '#E2DFD7'
+  const live = '#2B6BE4'
 
   const enter = (i) => { setHot(i); if (onHover) onHover(i) }
   const leave = () => { setHot(-1); if (onHover) onHover(null) }
 
   return (
-    <div style={M.grid
-      ? { display: 'grid', gap: M.gap, gridTemplateColumns: M.grid }
-      : { display: 'flex', gap: M.gap, overflowX: 'auto', paddingBottom: '2px' }}
-    >
+    <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))' }}>
       {Array.from({ length: n }, (_, i) => {
         const on = i === sel
         const [name, what] = headerLayout(T.name, i)
@@ -1554,10 +1452,9 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
             onMouseEnter={() => enter(i)} onMouseLeave={leave}
             onFocus={() => enter(i)} onBlur={leave}
             style={{
-              display: 'flex', flexDirection: 'column', gap: mode === 'panel' ? '5px' : '9px',
+              display: 'flex', flexDirection: 'column', gap: '9px',
               padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left',
               fontFamily: 'inherit', color: 'inherit',
-              ...(M.grid ? {} : { flex: '0 0 auto', width: '158px' }),
             }}
           >
             {/* ScaledPreview scales by clientWidth / 1180, so the pane takes its
@@ -1565,12 +1462,11 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
                 only its colour changes, and the ring is an inset outline. */}
             <span style={{
               display: 'block', width: '100%', aspectRatio: frame,
-              borderRadius: mode === 'panel' ? '8px' : '10px', overflow: 'hidden',
+              borderRadius: '10px', overflow: 'hidden',
               border: `2px solid ${on || i === hot ? live : idle}`,
               outline: on ? `2px solid ${live}` : undefined, outlineOffset: '-5px',
-              boxShadow: on && !dark ? '0 0 0 3px rgba(43,107,228,.16)' : undefined,
-              opacity: dark && !(on || i === hot) ? 0.75 : 1,
-              transition: 'border-color .2s, opacity .2s, box-shadow .2s',
+              boxShadow: on ? '0 0 0 3px rgba(43,107,228,.16)' : undefined,
+              transition: 'border-color .2s, box-shadow .2s',
             }}>
               <ScaledPreview
                 height="100%" fit radius={8}
@@ -1584,187 +1480,18 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
             {/* The label is the button's accessible name: ScaledPreview's render
                 is inert and aria-hidden, so nothing else in here has one. */}
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-              <span style={{ flex: mode === 'panel' ? '0 1 auto' : 1, minWidth: 0 }}>
+              <span style={{ flex: 1, minWidth: 0 }}>
                 <span style={{
-                  display: 'block', fontSize: `${M.label}px`, fontWeight: on ? 800 : 700,
+                  display: 'block', fontSize: '12px', fontWeight: on ? 800 : 700,
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{name}</span>
-                {M.sub && (
-                  <span style={{ display: 'block', fontSize: '11px', color: dark ? '#8E8B81' : '#98958A' }}>{what}</span>
-                )}
+                <span style={{ display: 'block', fontSize: '11px', color: '#98958A' }}>{what}</span>
               </span>
-              {on && <Check size={M.label + 1} style={{ flex: 'none', color: dark ? '#F4F2EC' : '#2B6BE4' }} />}
+              {on && <Check size={13} style={{ flex: 'none', color: '#2B6BE4' }} />}
             </span>
           </button>
         )
       })}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ *
- * §6.1 Stage 0 — which header onboarding to demo
- *
- * Not part of the product: a front door for the client, so the three
- * treatments in §6.2 can be compared on the real editor instead of on a
- * mockup. Picking one sets `st.ux` and nothing else; the flow from the
- * template picker on is identical whichever is chosen.
- * ------------------------------------------------------------------ */
-
-// A schematic of each treatment: the editor's three regions in flat blocks,
-// with the treatment's own affordance picked out in white. Deliberately not a
-// screenshot — the real thing is one click away, and a small screenshot of a
-// modal grid reads as noise.
-function UxDiagram({ id }) {
-  const bar = { background: '#3A382F', borderRadius: '2px' }
-  const lit = { background: '#F4F2EC', borderRadius: '3px' }
-  return (
-    <div style={{
-      position: 'relative', aspectRatio: '16 / 10', borderRadius: '10px', overflow: 'hidden',
-      background: '#1D1D1A', border: '1px solid #2B2B27', display: 'flex', flexDirection: 'column',
-    }}>
-      {/* top bar */}
-      <div style={{ height: '11%', flex: 'none', background: '#242420', borderBottom: '1px solid #2B2B27' }} />
-      <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-        {/* sidebar */}
-        <div style={{
-          width: '22%', flex: 'none', background: id === 'sidebar' ? '#F4F2EC' : '#242420',
-          borderRight: '1px solid #2B2B27', padding: '7% 5%',
-          display: 'flex', flexDirection: 'column', gap: '7%',
-        }}>
-          {id === 'sidebar' ? (
-            <>
-              <div style={{ height: '9%', ...bar, background: '#1B1A17', width: '70%' }} />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10%' }}>
-                {[0, 1, 2, 3].map((i) => (
-                  <div key={i} style={{
-                    aspectRatio: '16 / 10', borderRadius: '2px',
-                    background: i === 0 ? '#2B6BE4' : '#C9C6BB',
-                  }} />
-                ))}
-              </div>
-            </>
-          ) : [0, 1, 2, 3, 4].map((i) => (
-            <div key={i} style={{ height: '7%', ...bar, width: i === 0 ? '80%' : '60%' }} />
-          ))}
-        </div>
-        {/* canvas */}
-        <div style={{ flex: 1, minWidth: 0, position: 'relative', background: '#151513', padding: '6%' }}>
-          <div style={{
-            height: '46%', borderRadius: '3px', background: '#4A463C',
-            outline: id === 'rail' ? '2px solid #2B6BE4' : undefined, outlineOffset: '1px',
-          }} />
-          <div style={{
-            height: '30%', marginTop: '6%', borderRadius: '3px',
-            background: id === 'rail' ? '#2A2823' : '#33312B',
-          }} />
-          {id === 'rail' && (
-            <div style={{
-              position: 'absolute', left: '6%', right: '6%', bottom: '6%', height: '30%',
-              ...lit, display: 'flex', alignItems: 'center', gap: '4%', padding: '0 5%',
-            }}>
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} style={{
-                  flex: 1, height: '58%', borderRadius: '2px',
-                  background: i === 0 ? '#2B6BE4' : '#C9C6BB',
-                }} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      {id === 'modal' && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,9,7,.62)' }}>
-          <div style={{
-            position: 'absolute', left: '14%', right: '14%', top: '18%', bottom: '18%',
-            ...lit, padding: '5%', display: 'flex', flexDirection: 'column', gap: '7%',
-          }}>
-            <div style={{ height: '9%', background: '#1B1A17', borderRadius: '2px', width: '52%' }} />
-            <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '5%' }}>
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <div key={i} style={{ borderRadius: '2px', background: i === 0 ? '#2B6BE4' : '#C9C6BB' }} />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function OptionStage({ current, onPick }) {
-  const [hot, setHot] = useState(-1)
-
-  return (
-    <div className="dark" style={{
-      minHeight: '100dvh', background: '#131311', color: '#F4F2EC', fontFamily: "'Archivo', sans-serif",
-      padding: 'clamp(24px,5vw,40px) 20px', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{ width: '100%', maxWidth: '1100px', display: 'flex', flexDirection: 'column', gap: '22px' }}>
-        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <span style={{
-            alignSelf: 'center', display: 'flex', alignItems: 'center', gap: '7px',
-            fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase',
-            color: '#8E8B81', border: '1px solid #2B2B27', borderRadius: '99px', padding: '6px 13px',
-          }}><Sparkles size={12} /> Prototype</span>
-          <h1 style={{ margin: 0, fontWeight: 800, fontSize: 'clamp(20px,4vw,26px)' }}>
-            How should the first header choice be asked for?
-          </h1>
-          <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.6, color: '#8E8B81', maxWidth: '620px', alignSelf: 'center' }}>
-            Three ways to replace the old “Choose a header” screen. Pick one, then pick a template —
-            the editor opens with that treatment running, and you can come back and try another.
-          </p>
-        </div>
-
-        <div style={{
-          display: 'grid', gap: '16px',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        }}>
-          {HEADER_UX.map((o, i) => {
-            const on = o.id === current
-            const up = on || i === hot
-            return (
-              <button
-                key={o.id} type="button"
-                onClick={() => onPick(o.id)}
-                onMouseEnter={() => setHot(i)} onMouseLeave={() => setHot(-1)}
-                onFocus={() => setHot(i)} onBlur={() => setHot(-1)}
-                style={{
-                  display: 'flex', flexDirection: 'column', gap: '13px', textAlign: 'left',
-                  padding: '15px', borderRadius: '14px', cursor: 'pointer',
-                  background: up ? '#1B1A18' : 'none',
-                  border: `1px solid ${up ? '#4A463C' : '#2B2B27'}`,
-                  fontFamily: 'inherit', color: 'inherit',
-                  transition: 'background .2s, border-color .2s, transform .2s',
-                  transform: up ? 'translateY(-2px)' : undefined,
-                }}
-              >
-                <UxDiagram id={o.id} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
-                  <span style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                    <span style={{
-                      fontSize: '10px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase',
-                      color: '#8E8B81',
-                    }}>{o.tag}</span>
-                    <span style={{ fontSize: '16px', fontWeight: 800 }}>{o.name}</span>
-                  </span>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#C8C4B8' }}>{o.sub}</span>
-                  <span style={{ fontSize: '12px', lineHeight: 1.55, color: '#8E8B81' }}>{o.blurb}</span>
-                  <span style={{ fontSize: '12px', lineHeight: 1.55, color: '#6E6B62' }}>
-                    <strong style={{ color: '#8E8B81', fontWeight: 700 }}>Tradeoff:</strong> {o.trade}
-                  </span>
-                </div>
-                <span style={{
-                  marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '7px',
-                  fontSize: '13px', fontWeight: 800,
-                  color: up ? '#F4F2EC' : '#8E8B81', transition: 'color .2s',
-                }}>Try this one <ArrowRight size={14} /></span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
     </div>
   )
 }
@@ -1912,18 +1639,18 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       device: 'desktop', add: null, menuFor: null,
       hoverId: null, selectedId: null,
       sheet: null, editSheet: false,
-      // §6.1 — which header onboarding is on demo, and whether it is still
-      // running. `hdrHover` is the layout the picker is hovering: the canvas
-      // renders it in place of the committed one, so the page previews at full
-      // size without committing anything (§6.2).
-      ux: HEADER_UX[0].id, onboard: false, hdrHover: null,
+      // §6.2 — whether the header setup modal is still running. `hdrHover` is
+      // the layout its grid is hovering: the canvas renders it in place of the
+      // committed one, so the page previews at full size without committing
+      // anything.
+      onboard: false, hdrHover: null,
       // The publish success dialog. The tab it opens is held in a ref, not
       // in state: nothing renders from it.
       published: false,
     }
     return ti >= 0
       ? { ...base, stage: 'editor', theme: ti, sections: buildPage(EXAMPLE_PAGE) }
-      : { ...base, stage: 'option', theme: 0, sections: [] }
+      : { ...base, stage: 'template', theme: 0, sections: [] }
   })
 
   const patch = useCallback((p) => setSt((s) => ({ ...s, ...(typeof p === 'function' ? p(s) : p) })), [])
@@ -1999,12 +1726,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   /* ---- mutations (§5.6) ------------------------------------------- */
 
-  // §6.2b — while the guided panel is up the header stays selected: a stray
-  // click on the canvas would otherwise fold the coach mark away mid-sentence.
-  const closeAll = useCallback(() => patch((s) => ({
-    menuFor: null,
-    ...(s.onboard && s.ux === 'sidebar' ? {} : { selectedId: null }),
-  })), [patch])
+  const closeAll = useCallback(() => patch({ menuFor: null, selectedId: null }), [patch])
 
   const move = useCallback((id, dir) => patch((s) => {
     if (!canMove(s.sections, id, dir)) return {}
@@ -2087,9 +1809,9 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     const hovered = st.hoverId === sec.id
     const up = canMove(arr, sec.id, -1)
     const down = canMove(arr, sec.id, 1)
-    // §6.2 — hovering a card in any of the three pickers previews that layout
-    // on the canvas at full size. Nothing is committed until it is clicked, so
-    // this replaces the arch for rendering only; sec.arch is untouched.
+    // §6.2 — hovering a card in the setup modal previews that layout on the
+    // canvas at full size. Nothing is committed until it is clicked, so this
+    // replaces the arch for rendering only; sec.arch is untouched.
     const isHeader = sec.cat === 'header'
     const arch = isHeader && st.hdrHover !== null ? st.hdrHover : sec.arch
     return {
@@ -2100,10 +1822,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       overlayLabel: isHeader && st.onboard
         ? `${cat.name} · ${headerLayout(T.name, arch)[0]}`
         : cat.name + (selected ? ' · editing' : ''),
-      // §6.2 rail — the header stays ringed and everything under it stays
-      // knocked back for as long as the rail is up, whatever is selected.
-      showOverlay: hovered || selected || (st.onboard && st.ux === 'rail' && isHeader),
-      dim: st.onboard && st.ux === 'rail' && !isHeader,
+      showOverlay: hovered || selected,
       locked: sec.cat === 'header' || sec.cat === 'footer',
       canUp: up, canDown: down,
       upC: up ? '#8B887D' : '#DDDAD1',
@@ -2119,15 +1838,15 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const selectedSec = selectedIdx >= 0 ? sections[selectedIdx] : null
   const selectedVm = selectedIdx >= 0 ? vms[selectedIdx] : null
 
-  /* ---- §6.2 the header onboarding, in whichever of the three shapes ---- */
+  /* ---- §6.2 the header setup modal --------------------------------- */
 
   const headerSec = sections.find((x) => x.cat === 'header')
   const onboarding = st.onboard && !!headerSec
   const nHeader = layoutCount('header', T.name)
   const headerArch = headerSec ? headerSec.arch : 0
 
-  // Committing is the same act in all three: set the layout, drop the preview.
-  // The picker stays open afterwards — the first click is a try, not a verdict.
+  // Committing sets the layout and drops the preview. The modal stays open
+  // afterwards — the first click is a try, not a verdict.
   const pickHeader = useCallback((i) => {
     if (!headerSec) return
     setSection(headerSec.id, { arch: i })
@@ -2137,17 +1856,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const hoverHeader = useCallback((i) => patch({ hdrHover: i }), [patch])
   const endOnboard = useCallback(() => patch({ onboard: false, hdrHover: null }), [patch])
 
-  /* ---- stage 0 (§6.1) ----------------------------------------------- */
-
-  if (st.stage === 'option') {
-    return (
-      <OptionStage
-        current={st.ux}
-        onPick={(ux) => patch({ stage: 'template', ux })}
-      />
-    )
-  }
-
   /* ---- stage 1 ------------------------------------------------------ */
 
   // The chosen theme commits to st.theme here rather than to a key of its own:
@@ -2155,28 +1863,24 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   //
   // §6 — the old stage 2 is gone. Picking a template builds the page and opens
   // the editor on it directly; the header choice is asked for *inside* the
-  // editor, by whichever treatment §6.1 armed. The header starts on layout 1,
-  // so the page is complete and legible before anything is asked of the user.
+  // editor, by the setup modal (§6.2). The header starts on layout 1, so the
+  // page is complete and legible before anything is asked of the user.
   if (st.stage === 'template') {
     return (
       <TemplateStage
         artistName={artistName}
         spotIdx={st.theme}
-        ux={HEADER_UX.find((o) => o.id === st.ux)}
-        onChangeUx={() => patch({ stage: 'option' })}
         onPick={(i) => patch(() => {
           const next = buildPage(EXAMPLE_PAGE)
           const header = next.find((x) => x.cat === 'header')
           return {
             stage: 'editor', theme: i, sections: next, onboard: true, hdrHover: null,
-            // Two of the three treatments run out of the header's own edit
-            // panel, so the editor opens on it. The modal does not need it, but
-            // it costs nothing and leaves the same state behind once dismissed.
-            // The mobile edit drawer is opened only by the sidebar treatment —
-            // it would otherwise cover the page at the one moment the user has
-            // not seen it yet.
+            // The editor opens on the header's edit panel: the modal does not
+            // need it, but it is where the user goes next and it leaves the
+            // right state behind once the modal is dismissed. The mobile edit
+            // drawer stays shut — it would cover the page at the one moment
+            // the user has not seen it yet.
             selectedId: header ? header.id : null,
-            editSheet: isMobile && st.ux === 'sidebar' && !!header,
           }
         })}
       />
@@ -2221,10 +1925,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   )
 
 
-  /* ---- §6.2a the setup modal --------------------------------------- */
+  /* ---- §6.2 the setup modal ---------------------------------------- */
 
   const headerModal = (
-    <Dialog open={onboarding && st.ux === 'modal'} onOpenChange={(v) => { if (!v) endOnboard() }}>
+    <Dialog open={onboarding} onOpenChange={(v) => { if (!v) endOnboard() }}>
       <DialogContent
         onClick={stopE} showCloseButton={false}
         className="p-0 gap-0 rounded-[16px] border-0"
@@ -2266,7 +1970,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             paint straight over the footer. */}
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: isMobile ? '0 18px 18px' : '0 26px 22px' }}>
           <HeaderChoices
-            themeIdx={st.theme} artistName={artistName} sel={headerArch} mode="modal"
+            themeIdx={st.theme} artistName={artistName} sel={headerArch}
             onHover={hoverHeader} onSelect={pickHeader}
           />
         </div>
@@ -2354,70 +2058,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         </div>
       </DialogContent>
     </Dialog>
-  )
-
-  /* ---- §6.2c the canvas rail ---------------------------------------- */
-
-  const headerRail = onboarding && st.ux === 'rail' && (
-    <div
-      onClick={stopE}
-      style={{
-        position: 'absolute', zIndex: 30,
-        left: isMobile ? '10px' : '28px', right: isMobile ? '10px' : '28px',
-        bottom: isMobile ? '10px' : '22px',
-        display: 'flex', justifyContent: 'center', pointerEvents: 'none',
-      }}
-    >
-      <div style={{
-        pointerEvents: 'auto', width: '100%', maxWidth: '1180px', background: '#FFFFFF',
-        border: '1px solid #E2DFD7', borderRadius: '14px', boxShadow: '0 14px 38px rgba(20,18,12,.22)',
-        padding: isMobile ? '12px' : '14px 16px',
-        display: 'flex', alignItems: isMobile ? 'stretch' : 'flex-start',
-        flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '10px' : '20px',
-        animation: 'fadeIn .2s ease',
-      }}>
-        <div style={{ width: isMobile ? 'auto' : '212px', flex: 'none', paddingTop: isMobile ? 0 : '2px' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', fontWeight: 800 }}>
-            <span style={{
-              width: '20px', height: '20px', borderRadius: '99px', background: '#1B1A17', color: '#FFFFFF',
-              fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none',
-            }}>1</span>
-            Choose a header layout
-          </span>
-          <span style={{ display: 'block', fontSize: '11px', lineHeight: 1.5, color: '#6B685E', marginTop: '6px' }}>
-            {isMobile
-              ? 'The top of your page. Tap a layout — the page above changes as you try them.'
-              : 'The top of your page. Click a layout — the page above changes as you try them.'}
-          </span>
-        </div>
-
-        <div style={{ flex: 1, minWidth: 0, paddingRight: isMobile ? 0 : '8px' }}>
-          <HeaderChoices
-            themeIdx={st.theme} artistName={artistName} sel={headerArch} mode="strip"
-            onHover={hoverHeader} onSelect={pickHeader}
-          />
-        </div>
-
-        <div style={{
-          flex: 'none', display: 'flex', gap: '9px',
-          flexDirection: isMobile ? 'row' : 'column',
-          alignItems: isMobile ? 'center' : 'flex-end',
-          paddingTop: isMobile ? 0 : '22px',
-        }}>
-          <button type="button" onClick={(e) => { stopE(e); endOnboard() }}
-            className="hover:bg-primary/90"
-            style={{
-              fontSize: '13px', fontWeight: 700, padding: '10px 22px', borderRadius: '9px',
-              background: '#1B1A17', color: '#FFFFFF', border: 0, cursor: 'pointer',
-              fontFamily: 'inherit', flex: isMobile ? 1 : 'none',
-            }}
-          >Looks good</button>
-          <span style={{ fontSize: '11px', color: '#98958A', whiteSpace: 'nowrap' }}>
-            {`${headerArch + 1} of ${nHeader} · ${headerLayout(T.name, headerArch)[0]}`}
-          </span>
-        </div>
-      </div>
-    </div>
   )
 
   const PILL = '[&>div:first-child]:!h-[4px] [&>div:first-child]:!w-[40px] [&>div:first-child]:!mt-2 [&>div:first-child]:!bg-[#DDDAD1] [&>div:first-child]:!mb-0'
@@ -2559,8 +2199,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                   <EditPanel
                     sec={selectedSec} vm={selectedVm} api={api}
                     artistName={artistName} themeIdx={st.theme} navSections={navSections}
-                    onboard={onboarding && st.ux === 'sidebar' && selectedSec.cat === 'header'}
-                    onDone={endOnboard}
                   />
                 </>
               ) : (
@@ -2580,15 +2218,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             </div>
           )}
 
-          {/* §8.7 canvas. The rail (§6.2c) docks over it rather than in it:
-              a sibling of the scroll container, so it stays put while the page
-              scrolls under it. */}
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', position: 'relative' }}>
+          {/* §8.7 canvas */}
           <div style={{
             flex: 1, minWidth: 0, overflowY: 'auto', background: '#E4E1DA',
-            padding: isMobile
-              ? `14px 10px ${headerRail ? '150px' : '40px'}`
-              : `28px 28px ${headerRail ? '190px' : '64px'}`,
+            padding: isMobile ? '14px 10px 40px' : '28px 28px 64px',
             display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
           }}>
             <div style={{
@@ -2606,15 +2239,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                     onClick={(e) => { stopE(e); patch({ selectedId: sec.id, menuFor: null }) }}
                   >
                     <EncoreSection s={vm} />
-
-                    {/* §6.2c — the spotlight. Clicks still reach the section
-                        under it: the veil is an emphasis, not a lock. */}
-                    {vm.dim && (
-                      <div style={{
-                        position: 'absolute', inset: 0, zIndex: 15, pointerEvents: 'none',
-                        background: 'rgba(228,225,218,.66)', animation: 'fadeIn .2s ease',
-                      }} />
-                    )}
 
                     {vm.showOverlay && (
                       <div style={{
@@ -2649,8 +2273,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                 )
               })}
             </div>
-          </div>
-          {headerRail}
           </div>
         </div>
 
@@ -2752,8 +2374,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
               <EditPanel
                 sec={selectedSec} vm={selectedVm} api={api}
                 artistName={artistName} themeIdx={st.theme} navSections={navSections}
-                onboard={onboarding && st.ux === 'sidebar' && selectedSec.cat === 'header'}
-                onDone={endOnboard}
               />
             )}
           </DrawerContent>

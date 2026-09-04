@@ -36,7 +36,7 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 2570 | All state, all chrome, all three stages, publish |
+| `src/builder/EncoreBuilder.jsx` | 2395 | All state, all chrome, both stages, publish |
 | `src/builder/EncoreSection.jsx` | 2160 | Presentational renderer for all 14 section types |
 | `src/builder/data.js` | 540 | `THEMES`, all static data, colour helpers |
 | `src/builder/photos.js` | 76 | Retro's seeded Figma photography + the two resolvers |
@@ -70,20 +70,19 @@ argument rather than reading state, so previews can render a theme that is not t
 No router, no context, no state library. One flat `useState` object `st` in `EncoreBuilder`,
 mutated through a single `patch()` helper.
 
-- `st.stage` is `'option' | 'template' | 'editor'` — early returns dispatch to `OptionStage`,
-  `TemplateStage`, or the inline editor JSX. **There is no header stage any more**: SPEC §6's
-  full-screen picker is gone, and picking a template opens the editor on the built page with
-  `st.onboard` armed. Which of the three in-editor header treatments runs is `st.ux`
-  (`'modal' | 'sidebar' | 'rail'`), set by stage 0 — see README "Choosing a header". All three
-  render the same `HeaderChoices` component; `st.hdrHover` previews a layout on the canvas
-  without committing it. The editor always opens with the header `selectedId` so the sidebar
-  lands on its edit panel; the mobile edit drawer is opened only by the `'sidebar'` treatment,
-  which needs it — otherwise it would cover the page before it has been seen.
+- `st.stage` is `'template' | 'editor'` — an early return dispatches to `TemplateStage`, else the
+  inline editor JSX. **There is no header stage any more**: SPEC §6's full-screen picker is gone,
+  and picking a template opens the editor on the built page with `st.onboard` armed. The header
+  choice is then asked for by the **setup modal** — a `Dialog` over the finished page rendering
+  `HeaderChoices` — see README "Choosing a header". `st.hdrHover` previews a layout on the canvas
+  behind it without committing it. The editor opens with the header `selectedId` so the sidebar
+  lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
+  it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
-- The `startTheme` prop in `App.jsx` skips both picker stages when it names a real theme
-  (`"Picker"` deliberately matches nothing, giving the full flow).
+- The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
+  it names a real theme (`"Picker"` deliberately matches nothing, giving the full flow).
 
 ## Intentional limits — not bugs
 

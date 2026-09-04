@@ -188,41 +188,6 @@ export const headerLayoutLabel = (themeName, i) =>
   `Header layout ${i + 1} · ${headerLayout(themeName, i)[0]}`
 
 /* ------------------------------------------------------------------ *
- * §4.4c The three header-onboarding treatments on demo (§6).
- *
- * This build ships all three side by side so the client can compare
- * them on the real editor rather than on a mockup. `id` is the value of
- * `st.ux`; the editor reads nothing else off this table.
- * ------------------------------------------------------------------ */
-
-export const HEADER_UX = [
-  {
-    id: 'modal',
-    tag: 'Option A',
-    name: 'Setup modal',
-    sub: 'A grid over the finished page',
-    blurb: 'The editor loads with the whole page behind a scrim, and the six headers sit on top of it. One decision, unmissable, with the page it belongs to visible behind.',
-    trade: 'Still a gate — “Decide later” has to be a real exit.',
-  },
-  {
-    id: 'sidebar',
-    tag: 'Option B',
-    name: 'Guided sidebar',
-    sub: 'A coach mark on the real control',
-    blurb: 'Nothing blocks. The editor opens with the header selected and the sidebar already on its edit panel, layouts expanded into a grid. Content fields wait their turn.',
-    trade: 'The quietest of the three — it can be scrolled past.',
-  },
-  {
-    id: 'rail',
-    tag: 'Option C',
-    name: 'On-canvas rail',
-    sub: 'Choose on the header itself',
-    blurb: 'The page renders, everything below the header dims, and a rail of layouts docks over the canvas. Clicking one swaps the real header in place, at full size.',
-    trade: 'A mode, and it covers the foot of the canvas.',
-  },
-]
-
-/* ------------------------------------------------------------------ *
  * §4.5 FLAG — category id → 2-letter view-model boolean key
  * ------------------------------------------------------------------ */
 
