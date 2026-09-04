@@ -2804,7 +2804,18 @@ function Testimonials({ s }) {
 
     return (
       <div style={{ position: 'relative' }}>
-        <TornEdge s={s} side="top" height={Math.round(43 * scale)} />
+        {/* The one torn edge that is not the section above showing through.
+            TornEdge defaults to the beige page ground because that is what the
+            repertoire's and the calendar's tears reveal — both follow a beige
+            section. The testimonials follow the enquiry form, which stands on
+            the same cream this section does, so the frame fills its tear with
+            that cream and the tear reads as the torn top of the *grain* rather
+            than of a coloured band: the sheet below is grained and the strip
+            above it is not, because the edge paints over it at zIndex 3. A
+            beige strip here would be a stripe belonging to no section. The
+            literal is the root render's `cream` — change one, change both. */}
+        <TornEdge s={s} side="top" height={Math.round(43 * scale)}
+                  colour={s.retro ? '#FBF6EA' : undefined} />
         {shell}
         {/* The frames lay their scratched sheet over the composition rather than
             under it: the card's interior and the ground either side of it
@@ -3025,63 +3036,165 @@ function EnquiryForm({ s }) {
   )
 }
 
-// §10.2 reference design: wordmark and statement to the left of a full-height
-// rule, the two link columns and the Book Now pill to its right, the seal
-// straddling the divide, and the small print under a hairline.
+// §10.2 reference design: the wordmark over the statement to the left of a
+// full-height rule, the two link columns and the Book Now pill to its right,
+// the seal hung off the left column's outer edge, and the small print under a
+// hairline.
+//
+// §5.5 — three frames: 1440 (964:58586) on the 1180 canvas at × 0.82, 768
+// (907:12201) and 390 (986:39755) verbatim. The narrow two are not the desktop
+// squeezed: they stack it, the vertical rule turning into a hairline between
+// the statement and the links, so the composition splits on `s.narrow` and
+// every number below is its own frame's through `u()`.
+//
+// The frames carry 56 of their own padding above the wordmark, which the
+// section root's `padY` already stands in for; it is dropped here, and the 56
+// *below* the statement and around the link block — the breathing room that
+// holds each hairline off its content — is kept.
 function Footer({ s }) {
-  const linkCols = (
-    <div style={row(s.mob ? '30px' : '60px', { alignItems: 'flex-start', flexWrap: 'wrap' })}>
-      {s.footerLinks.map((colLinks, i) => (
-        <nav key={i} style={col('12px')}>
-          {colLinks.map((l) => (
-            <a key={l} href="#" style={labelStyle(s, s.labelMd, { color: s.ac })}>{l}</a>
-          ))}
-        </nav>
+  const scale = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * scale)}px`
+  // Line 17 and Line 19 are a 1px #1B1714 stroke — the page ink at full
+  // strength, not the tint every pre-§10.2 divider takes.
+  const rule = `1px solid ${s.tx}`
+  // The frames set 52 between link baselines, which is Anton's own 29px line
+  // box plus 23. labelStyle draws the label at the tighter 1.1 the rest of the
+  // page wants, so the gap carries the difference: 52 less the 22 box a 20px
+  // label makes. Same distance again before the pill.
+  const linkGap = u(30)
+  // The rotated seal's Figma frame is its *bounding* box — 237.56 is a 172.13
+  // disc turned 32.38° (× cos + sin). `size` is the disc.
+  const sealSize = s.mob ? 85 : Math.round(172.13 * scale)
+  // Measured off the renders, not the metadata: `get_metadata` gives a rotated
+  // group's x/y in its rotated parent's space. Desktop hangs the disc 20 past
+  // the left column's edge, into the gutter before the rule; both narrow frames
+  // stand it against the content's right edge instead.
+  const sealPos = s.mob ? { right: '29px', top: '-22px' }
+    : s.narrow ? { right: '4px', top: '-3px' }
+      : { right: u(-20.5), top: u(-8.6) }
+
+  // The stated 31, not the row's own content: the frame's height is the line
+  // box Anton's leading gives 21.4px type, and labelStyle sets the tighter 1.1
+  // the rest of the page wants, which would otherwise leave the globe to set a
+  // 27 row and pull everything under it up by four.
+  const wordmark = (
+    <span style={row(u(20), { height: u(31) })}>
+      <span style={row(u(10))}>
+        <GlobeMark size={Math.round(27.37 * scale)} color={s.ac} />
+        <span style={labelStyle(s, u(21.4), { color: s.ac })}>{s.brand}</span>
+      </span>
+      <span style={{ width: u(150), height: u(2), background: s.ac, flex: 'none' }} />
+    </span>
+  )
+
+  const statement = (
+    <h2 style={{
+      margin: 0, fontFamily: s.display, fontSize: u(40), lineHeight: 39 / 40,
+      // The frame breaks the line by hand after "make" and folds the rest in a
+      // 439.6 measure. Mobile drops the measure and takes the content column.
+      whiteSpace: 'pre-wrap',
+      letterSpacing: s.dls, color: s.ac, maxWidth: s.mob ? 'none' : u(440),
+    }}>{s.footerStatement}</h2>
+  )
+
+  const seal = (
+    <SealBadge s={s} hue={s.chips[0].bg} ink={s.tx} glyph="globe"
+               size={sealSize} tilt={32.38} style={{ ...sealPos, zIndex: 2 }} />
+  )
+
+  const linkCol = (colLinks, i) => (
+    <nav key={i} style={col(linkGap, {
+      alignItems: 'flex-start',
+      // Column 2 stands at a stated offset the pill's own width sets, so
+      // column 1 holds it whether or not the label face fills it.
+      minWidth: i === 0 ? u(148) : undefined,
+    })}>
+      {colLinks.map((l) => (
+        <a key={l} href="#" style={labelStyle(s, u(20), { color: s.ac })}>{l}</a>
       ))}
+      {/* The frames set the footer pill the other way up from every other one:
+          the accent is the ground, the page background is the type, and the
+          mustard the rest of the page puts *under* the type is its block. The
+          390 frame keeps the 768 pill at full size, hence `full`. */}
+      {i === 0 && (
+        <BookPill s={s} bg={s.ac} fg={s.bg} shadow={s.pillBg} full={s.mob} />
+      )}
+    </nav>
+  )
+
+  const links = (
+    <div style={{ display: 'flex', gap: s.mob ? u(26) : u(76) }}>
+      {s.footerLinks.map(linkCol)}
     </div>
   )
 
+  const smallPrint = (
+    <div style={{
+      // The 390 frame halves the row exactly — two 185 boxes filling its 370,
+      // each carrying its side over two lines — so there is no gap to give.
+      display: 'flex', justifyContent: 'space-between', gap: s.mob ? 0 : u(16),
+      // 24 under the hairline on the two wide frames; the mobile one sets both
+      // halves over two lines and takes 14.
+      paddingTop: s.mob ? u(14) : u(24),
+      fontFamily: s.display, fontSize: u(23), lineHeight: 0.86,
+      letterSpacing: '-0.038em', color: s.pillBg,
+    }}>
+      <span style={{ width: s.mob ? '50%' : 'auto' }}>{s.copyright}</span>
+      <span style={{ width: s.mob ? '50%' : 'auto', textAlign: 'right' }}>{s.footerCredit}</span>
+    </div>
+  )
+
+  if (s.narrow) {
+    // The narrow frames sit the first rule flush on the boundary between the
+    // two blocks — it is the 56 either side of it that holds it off the type —
+    // and give only the second one the 2 above and below that the desktop
+    // frame gives both.
+    return (
+      <div style={col(0)}>
+        <div style={col(u(20), { position: 'relative', paddingBottom: u(56) })}>
+          {wordmark}
+          {statement}
+          {seal}
+        </div>
+        <span style={{ height: 0, borderTop: rule }} />
+        <div style={{ padding: `${u(56)} 0` }}>{links}</div>
+        <span style={{ height: 0, borderTop: rule, margin: `${u(2)} 0` }} />
+        {smallPrint}
+      </div>
+    )
+  }
+
   return (
-    <div style={col(s.mob ? '24px' : '34px')}>
-      <div style={{
-        position: 'relative', display: 'grid',
-        gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
-        gap: s.mob ? '28px' : s.gGap,
-      }}>
-        <div style={col(s.mob ? '20px' : '34px', {
-          paddingRight: s.narrow ? 0 : s.gGap,
-          borderRight: s.narrow ? 'none' : `1px solid ${s.line2}`,
-        })}>
-          <span style={row('14px')}>
-            <GlobeMark size={20} color={s.ac} />
-            <span style={labelStyle(s, s.labelMd, { color: s.ac })}>{s.brand}</span>
-            <span style={{ height: '1.5px', background: s.ac, flex: 1, maxWidth: '140px' }} />
-          </span>
-          <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.06,
-            letterSpacing: s.dls, color: s.ac, maxWidth: '14ch',
-          }}>{s.footerStatement}</h2>
+    <div style={col(u(2))}>
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: u(79) }}>
+        {/* The row's height is the left column's: the wordmark and the
+            statement are pushed to its ends over the frame's own 351.7, and
+            the links run short of it. */}
+        <div style={{
+          position: 'relative', width: u(743), flex: '0 1 auto',
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          minHeight: u(351.7), paddingBottom: u(56),
+        }}>
+          {wordmark}
+          {statement}
+          {seal}
         </div>
-
-        <div style={col(s.mob ? '20px' : '30px', {
-          alignItems: 'flex-start', paddingLeft: s.narrow ? 0 : s.gGap,
-        })}>
-          {linkCols}
-          <BookPill s={s} />
-        </div>
-
-        {!s.narrow && (
-          <SealBadge s={s} hue={s.chips[0].bg} size={104} tilt={-16}
-                     style={{ left: '50%', top: '6%', marginLeft: '-52px', zIndex: 2 }} />
-        )}
+        {/* The frame's rule is 411.4 against a 407.7 row: it starts level with
+            the top of the 56 dropped above the wordmark and runs on to meet
+            the hairline, so it reclaims both out of the section's own padding
+            rather than stopping at the type. */}
+        <span style={{
+          width: 0, borderLeft: rule, flex: 'none',
+          marginTop: u(-56), marginBottom: u(-4),
+        }} />
+        {/* Sized off its own content, not off a zero basis: the editor draws
+            the desktop canvas into whatever width the window leaves it, and a
+            zero-basis column would let the links overflow the page rather than
+            take the width out of the statement's. */}
+        <div style={{ flex: '1 1 auto' }}>{links}</div>
       </div>
-
-      <span style={{ height: '1px', background: s.line2, width: '100%' }} />
-
-      <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-        <span style={labelStyle(s, s.labelMd, { color: s.pillBg })}>{s.copyright}</span>
-        <span style={labelStyle(s, s.labelMd, { color: s.pillBg })}>{s.footerCredit}</span>
-      </div>
+      <span style={{ height: 0, borderTop: rule }} />
+      {smallPrint}
     </div>
   )
 }
@@ -3099,15 +3212,19 @@ export default function EncoreSection({ s }) {
   const darkMap = s.mp && s.v0 && s.retro
   // §10.2 — the media player (964:58578), repertoire (964:58580), booking
   // calendar (964:58583), enquiry form (964:58584) and testimonials
-  // (964:58585) frames stand on cream rather than the beige page ground: the
-  // player so its beige checkerboard band and cream track cards read against
-  // it, the repertoire so its torn beige edge and olive song cards do, the
-  // calendar so its beige panel and the prints on it do, the form so the tan
-  // hairline round its shell does, the testimonials so its torn beige edge
-  // and the ink outlines round its stacked cards do — there the quote card's
-  // own body is that same cream, and only its outline parts it from the sheet.
-  // Retro's `paper` IS the page background, hence the literal.
-  const cream = (s.me || s.re || s.ca || s.fo || s.te) && s.v0 && s.retro
+  // (964:58585) and footer (964:58586) frames stand on cream rather than the
+  // beige page ground: the player so its beige checkerboard band and cream
+  // track cards read against it, the repertoire so its torn beige edge and
+  // olive song cards do, the calendar so its beige panel and the prints on it
+  // do, the form so the tan hairline round its shell does, the testimonials so
+  // its torn beige edge and the ink outlines round its stacked cards do —
+  // there the quote card's own body is that same cream, and only its outline
+  // parts it from the sheet — and the footer so its ink hairlines and the
+  // beige type on its Book Now pill do. Retro's `paper` IS the page
+  // background, hence the literal — which `Testimonials` takes a second copy
+  // of for its torn edge, because that tear reveals the form's cream and not
+  // the page's beige. Change one, change both.
+  const cream = (s.me || s.re || s.ca || s.fo || s.te || s.ft) && s.v0 && s.retro
   return (
     <div style={{
       background: darkMap ? s.mapBg : cream ? '#FBF6EA' : s.bg,

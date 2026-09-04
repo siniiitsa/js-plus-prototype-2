@@ -39,7 +39,7 @@ import {
   NOW_PLAYING, TIER_MODES, SONGS, PAGES,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
-  FOOTER_LINKS, FOOTER_CREDIT,
+  FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, songTags, repChips,
   headerFamily, layoutCount, designCount,
@@ -445,7 +445,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
   // footer
   vm.copyright = cv('copyright', DEFS.copyright)
-  vm.footerStatement = cased(cv('statement', "Let's make your night unforgettable."))
+  // The §10.2 footer frames break this line by hand after "make" and let the
+  // measure fold the rest — that is what sets the three-line block the left
+  // column is built round, and it does not fall out of the measure alone in a
+  // display face narrower than the frame's. Kept in step with FIELDS.footer's
+  // own default, and rendered `pre-wrap` so an edited statement can break too.
+  vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
   vm.footerLinks = FOOTER_LINKS.map((col) => col.map((l) => cased(l)))
   vm.footerCredit = FOOTER_CREDIT
 

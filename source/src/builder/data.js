@@ -352,6 +352,8 @@ export const FOOTER_LINKS = [
   ['Shows/Coverage', 'Pricing', 'Enquiries', 'Reviews'],
 ]
 export const FOOTER_CREDIT = 'A JustPay Product'
+// The frames' own hard break — see sectionVm, which is the other half of it.
+export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
 // No `repertoire` entry: its heading counts the songs (see sectionVm), so a
 // literal here would never be read.
@@ -523,7 +525,7 @@ export const FIELDS = {
     { k: 'button',  l: 'Button', d: 'Book Now' },
   ],
   footer: [
-    { k: 'statement', l: 'Statement', type: 'area', d: "Let's make your night unforgettable." },
+    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },
     { k: 'copyright', l: 'Small print', def: 'copyright' },
   ],
 }
