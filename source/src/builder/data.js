@@ -453,12 +453,23 @@ export const FIELDS = {
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
   ],
+  // The second list-shaped content type with a structured editor (see
+  // `repertoire` below): `tracks` here is an array of { title, sub, image },
+  // maintained by TracksField, and each row carries its own artwork rather
+  // than drawing from a section-level photo array. An absent key means the
+  // seeded TRACKS dressed in RETRO_TRACK_ART; an emptied array means no
+  // tracks. The `audio` category keeps the *string* form of the same key —
+  // sectionVm reads both shapes.
   media: [
-    { k: 'images',  l: 'Artwork', type: 'images', max: 6,
-      hint: 'Photos 1–5 are the track thumbnails, in order. Photo 6 is the large now-playing sleeve.' },
+    { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
+      hint: 'Each row is one card in the stack, with its own artwork.' },
+    { k: 'image',   l: 'Now-playing sleeve', type: 'image',
+      hint: 'The large square inside the player.' },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },
-    { k: 'track',   l: 'Featured track', d: 'Late Lights' },
+    { k: 'track',   l: 'Now-playing track', d: NOW_PLAYING.track },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
+    { k: 'soundcloud', l: 'SoundCloud link', d: '',
+      hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
   tags: [
     { k: 'tags', l: 'Tags (comma-separated)', type: 'area', d: TAGS.join(', ') },
@@ -483,10 +494,10 @@ export const FIELDS = {
     { k: 't3n', l: 'Tier 3 name',  d: 'The Festival Set' },
     { k: 't3p', l: 'Tier 3 price', d: '£1,200' },
   ],
-  // The one list-shaped content type with a structured editor rather than a
-  // textarea: `songs` is an array of { title, artist, tags }, and SongsField
-  // in EncoreBuilder is the repeater that maintains it. An absent key means
-  // the seeded SONGS; an emptied array means the artist has no songs listed.
+  // The other list-shaped content type with a structured editor rather than a
+  // textarea (see `media` above): `songs` is an array of { title, artist, tags },
+  // and SongsField in EncoreBuilder is the repeater that maintains it. An absent
+  // key means the seeded SONGS; an emptied array means no songs listed.
   repertoire: [
     // No `d`: the heading falls back to the song count, in sectionVm and in
     // the panel alike, so it cannot claim 240 songs over a list of twelve.
@@ -568,6 +579,19 @@ export function caseText(t, casing) {
 }
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
+
+// A user-typed outbound URL → an absolute one, or '' if the field is empty.
+//
+// Everything the artist types is meant to leave the page, so a schemeless
+// "soundcloud.com/kai" gets https://. It cannot be left relative: the published
+// tab carries a <base href> to the opener (§ Publish), so a relative href would
+// resolve against the builder and load it over the page. mailto:/tel: and an
+// explicit scheme are passed through untouched.
+export function extUrl(v) {
+  const t = String(v ?? '').trim()
+  if (!t) return ''
+  return /^[a-z][a-z0-9+.-]*:/i.test(t) || t.startsWith('//') ? t : `https://${t}`
+}
 
 // A song's raw `tags` string → its trimmed, non-empty labels.
 export function songTags(str) {

@@ -155,9 +155,12 @@ Retro — the only designed template — opens with the Figma mock photography a
 The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
 the only module that imports them.
 
-- **Retro only.** `defaultImage()` / `defaultImages()` return `undefined` for Lime, Grunge,
-  Editorial and Pop, so those four render the initials placeholder exactly as before. The
-  photography is Retro's art direction, not the user's content, so switching template drops it.
+- **Retro only.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` return `undefined`
+  for Lime, Grunge, Editorial and Pop, so those four render the initials placeholder exactly as
+  before. The photography is Retro's art direction, not the user's content, so switching template
+  drops it — with one exception: the media player's track art is materialised into `c.tracks` the
+  moment the artist edits the list (it has to be, or renaming track one would delete five
+  photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
   `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all nineteen files are
   base64-inlined and the committed `index.html` still opens from `file://`. It is ~2.9 MB.
@@ -168,6 +171,13 @@ the only module that imports them.
   deleting the key, which would silently restore it. Absent → the mock photo, `null` → the
   initials placeholder, a string → an upload. `images` needs no sentinel: an emptied array is
   already distinguishable from an absent one.
+- **Three shapes, not two.** A section's single `image`, a section's ordered `images`, and — since
+  the media player — a photograph belonging to one *row of a list*. Its track artwork travels in
+  `c.tracks[i].image` rather than in a section-level array, so the picture moves with the track
+  instead of slot 3 silently meaning track 3; `defaultTrackArt()` seeds the untouched list and a
+  sixth track the artist adds simply has none. `Photo` distinguishes `src` left off (fall back to
+  the section's own photo) from `src={null}` (this slot has no picture), which is what keeps the
+  now-playing sleeve off an art-less track row.
 - The layout picker, the template spotlight and the header setup modal all resolve through the
   same `sectionVm()`, so each shows the photography without any extra wiring.
 
@@ -196,7 +206,7 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Two things read it.**
+  interactive has to be off there. **Three things read it.**
 
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
   the artist typed, and its pager is derived from the result — all three inert on the canvas,
@@ -211,6 +221,12 @@ That distinction is the whole design, and it buys two things:
   published phone had no navigation at all. The panel is deliberately thin — no Escape key, no
   scroll lock, no focus trap — because each of those wants an effect, and `EncoreSection`'s whole
   React surface is `useId` and `useState`.
+
+  **The media player's Soundcloud button.** The one *outbound* link on the page: `FIELDS.media`
+  takes an address, `extUrl()` normalises it to an absolute URL — a schemeless one would resolve
+  against `<base href>`, i.e. the builder — and `extLink()` turns the pill into an `<a>` with
+  `target="_blank"`, since the delegated listener below swallows fragments and nothing else. An
+  empty field, or the canvas, leaves it the picture it always was.
 
   Everything else the page draws — the gallery filmstrip, the players, the testimonials carousel,
   the events map's pager — is still a static span, and none of them needs new data to change that.

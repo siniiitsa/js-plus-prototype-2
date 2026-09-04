@@ -42,11 +42,11 @@ import {
   FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
   CTA_TARGETS, firstPresent, minimalNav,
-  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, songTags, repChips,
+  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   headerFamily, layoutCount, designCount,
   headerLayout, headerLayoutLabel,
 } from './data.js'
-import { defaultImage, defaultImages, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -257,7 +257,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // the initials placeholder. A backdrop upload no longer fills it.
   vm.avatar = c.avatar !== undefined ? (c.avatar ?? undefined)
     : defaultImage(cat, T.name, 'avatar')
-  // Multi-photo sections (gallery strip, media artwork). Slot n fills tile n;
+  // Multi-photo sections — the gallery strip is the only one left, now that the
+  // media player's track artwork travels per track. Slot n fills tile n;
   // an empty slot falls through to the section's initials placeholder. An
   // explicitly emptied array is already distinguishable, so no sentinel is needed.
   vm.images = Array.isArray(c.images) ? c.images : (defaultImages(cat, T.name) ?? [])
@@ -307,19 +308,41 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
-  vm.mediaTrack = cased(cv('track', 'Late Lights'))
-  vm.nowPlaying = { ...NOW_PLAYING, track: cased(NOW_PLAYING.track), by: cased(artistName) }
+  // The now-playing card names a track of the artist's choosing — FIELDS.media's
+  // `track`, defaulted to NOW_PLAYING's own, so the panel and the card agree.
+  vm.nowPlaying = { ...NOW_PLAYING, track: cased(cv('track', NOW_PLAYING.track)), by: cased(artistName) }
+  // The Soundcloud button's destination, and the whole of its `live` seam.
+  // Normalised to an absolute URL: the published tab carries a <base href> to
+  // the opener, so a schemeless "soundcloud.com/kai" would resolve against the
+  // builder and open it instead. An empty field leaves the pill a picture.
+  vm.soundcloud = extUrl(cv('soundcloud', ''))
 
-  // audio — parsed from the textarea, else from TRACKS. `n` is naively '0'+index.
-  if (c.tracks !== undefined) {
+  // tracks — one view-model, three content shapes on the same `c.tracks` key.
+  // The media player owns an *array* of { title, sub, image } (TracksField);
+  // the audio player owns the delimited *string* of a textarea; an absent key
+  // means the seeded TRACKS, dressed under Retro in RETRO_TRACK_ART. `n` is
+  // naively '0'+index in all three.
+  //
+  // Per-row artwork is never re-seeded by index once the array exists: a row
+  // inserted third would otherwise steal track three's photograph. `img` is
+  // therefore `null` — not undefined — wherever a row has no art of its own,
+  // because Photo falls back to the section photo (here the sleeve) on
+  // undefined alone.
+  const seedArt = defaultTrackArt(cat, T.name) ?? []
+  if (Array.isArray(c.tracks)) {
+    vm.tracks = c.tracks.map((t, i) => {
+      const sub = (t?.sub ?? '').trim()
+      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, img: t?.image ?? null }
+    })
+  } else if (c.tracks !== undefined) {
     vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
       const parts = l.includes('—') ? l.split('—') : l.split('|')
       const dur = (parts[1] || '').trim()
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur }
+      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, img: seedArt[i] ?? null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`,
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, img: seedArt[i] ?? null,
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
@@ -1036,6 +1059,154 @@ function SongsField({ value, max, onChange }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * §8.6c TracksField — the media player's track list.
+ *
+ * The second structured repeater, after SongsField above, and the first
+ * whose rows carry a photograph: the media player dresses every card
+ * with its own artwork, so the picture belongs to the track and travels
+ * with it rather than sitting in a section-level photo grid where slot 3
+ * silently meant track 3.
+ *
+ * Row shape is { title, sub, image }. `sub` is the free line under the
+ * title — the reference sets it "Hidden Sessions Vol. 2 · 6:18" — and
+ * `image` follows the same three states as every other photo slot:
+ * absent or null is the initials placeholder, a string is an upload.
+ * There is no per-index re-seeding once the array exists, so a row added
+ * in the middle cannot inherit the photograph of the track it displaced.
+ * ------------------------------------------------------------------- */
+
+// The compact artwork control: a 46px square that is the dropzone, the
+// preview and the file trigger at once. ImageField's 108px panel is the
+// right size for a section photo and far too tall for a repeater row.
+function RowThumb({ value, label, onChange, onToast }) {
+  const inputRef = useRef(null)
+  const [over, setOver] = useState(false)
+
+  return (
+    <div style={{ position: 'relative', flex: 'none' }}>
+      <input
+        ref={inputRef} type="file" accept="image/png,image/jpeg"
+        onChange={(e) => { readImage(e.target.files?.[0], onChange, onToast); e.target.value = '' }}
+        style={FILE_INPUT}
+      />
+      <button
+        type="button" aria-label={value ? `Replace ${label}` : `Add ${label}`}
+        onClick={(e) => { stopE(e); inputRef.current?.click() }}
+        onDragOver={(e) => { e.preventDefault(); setOver(true) }}
+        onDragLeave={() => setOver(false)}
+        onDrop={(e) => {
+          e.preventDefault(); setOver(false)
+          readImage(e.dataTransfer.files?.[0], onChange, onToast)
+        }}
+        className="hover:border-foreground"
+        style={{
+          width: '46px', height: '46px', padding: 0, borderRadius: '9px', overflow: 'hidden',
+          border: value ? '1px solid #E2DFD7' : `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`,
+          background: '#FFFFFF', cursor: 'pointer', display: 'flex',
+          alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        {value
+          ? <img src={value} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          : <Upload size={14} style={{ color: '#B9B6AA' }} />}
+      </button>
+      {/* Remove writes null, not undefined — an absent key is what selects the
+          seeded photo, so undefined would bring it straight back. */}
+      {value && (
+        <button
+          type="button" aria-label={`Remove ${label}`}
+          onClick={(e) => { stopE(e); onChange(null) }}
+          className="hover:bg-destructive/10"
+          style={{
+            position: 'absolute', top: '-5px', right: '-5px', width: '18px', height: '18px',
+            borderRadius: '999px', border: '1px solid #E2DFD7', background: '#FFFFFF',
+            color: '#B3261E', cursor: 'pointer', display: 'inline-flex',
+            alignItems: 'center', justifyContent: 'center', padding: 0,
+          }}
+        ><X size={10} /></button>
+      )}
+    </div>
+  )
+}
+
+function TracksField({ value, max, onChange, onToast }) {
+  const list = Array.isArray(value) ? value : []
+
+  // Same shape as SongsField: every keystroke rewrites the whole array, which
+  // keeps `c.tracks` a plain value rather than something patched in place.
+  const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { title: '', sub: '', image: null }])
+
+  const row = (i, t) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', alignItems: 'flex-start', gap: '8px', background: '#FCFBF8',
+    }}>
+      <span style={{
+        width: '12px', flex: 'none', fontSize: '10px', fontWeight: 700,
+        color: '#98958A', textAlign: 'center', paddingTop: '15px',
+      }}>{i + 1}</span>
+      <RowThumb
+        value={t.image ?? null} label={`artwork for track ${i + 1}`}
+        onChange={(v) => setAt(i, 'image', v)} onToast={onToast}
+      />
+      {/* Stacked rather than side by side: this panel is also the mobile edit
+          sheet, and a thumbnail plus two inputs across does not fit at its width. */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {/* shadcn Input for its focus ring — see SongsField above. */}
+          <Input
+            value={t.title ?? ''} placeholder="Track title" onClick={stopE}
+            onChange={(e) => setAt(i, 'title', e.target.value)}
+            className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+          />
+          <button
+            type="button" aria-label={`Remove track ${i + 1}`}
+            onClick={(e) => { stopE(e); removeAt(i) }}
+            className="hover:bg-destructive/10"
+            style={{
+              width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+              border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+              cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+              justifyContent: 'center', padding: 0,
+            }}
+          ><X size={11} /></button>
+        </div>
+        <Input
+          value={t.sub ?? ''} placeholder="Release · 5:42" onClick={stopE}
+          onChange={(e) => setAt(i, 'sub', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((t, i) => row(i, t || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add track</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · artwork PNG or JPG, from your device
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
@@ -1052,6 +1223,17 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // exactly as sectionVm does, or the canvas would list twelve songs while the
   // repeater showed none.
   const songsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : SONGS)
+  // And the same again for the media player's tracks, whose seed is TRACKS
+  // dressed in the Retro artwork. The first keystroke materialises this whole
+  // array into `c.tracks`, photographs included, so nothing the user could see
+  // disappears the moment they rename track one.
+  const tracksVal = (k) => {
+    if (Array.isArray(sec.c[k])) return sec.c[k]
+    const art = defaultTrackArt(sec.cat, themeName) ?? []
+    return TRACKS.map(([name, dur, rel], i) => ({
+      title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null,
+    }))
+  }
 
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
@@ -1098,6 +1280,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <ImagesField value={imgsVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'songs' ? (
                         <SongsField value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'tracks' ? (
+                        <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>

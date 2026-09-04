@@ -241,6 +241,16 @@ function Wordmark({ s, logo = false, color, glyph }) {
 // style below states `cursor: 'pointer'` for itself.
 const navHref = (s, to) => (s.live && to ? `#${to}` : undefined)
 
+// navHref's outbound counterpart: an address the artist typed, which leaves the
+// page rather than scrolling it. Same `live` gate — on the canvas a click would
+// navigate the *builder* away from itself — and always a new tab, because
+// dressPublishedWindow's delegated listener swallows fragments and nothing
+// else, so a same-tab click would take the published page with it. Returns the
+// props to spread, or null, so the caller picks its tag the way BookPill does.
+const extLink = (s, url) => (s.live && url
+  ? { href: url, target: '_blank', rel: 'noopener noreferrer' }
+  : null)
+
 // The hamburger, and the panel behind it on the published page.
 //
 // Both narrow reference frames draw the glyph at 26 × 18 — three 2.5px bars,
@@ -328,14 +338,15 @@ function NavLinks({ s, color, pills = false }) {
 // card its own pill in that card's second hue, on its own colour, over a cream
 // block. Everywhere else the palette-wide pill applies, so they default to it.
 // `full` is the other pricing override — see `scale` below.
-// `to` is the section this pill books at, resolved in the view-model. It only
-// becomes a link on the published page: `Tag` is a span everywhere else, and
-// the style object is the same either way, so the picture never moves. The
+// `to` is the section this pill books at, resolved in the view-model; `ext` is
+// an outbound address instead, for the pills that leave the page. Either way it
+// only becomes a link on the published page: `Tag` is a span everywhere else,
+// and the style object is the same either way, so the picture never moves. The
 // pricing tiers' pills pass no target and stay spans.
-function BookPill({ s, label, bg, fg, shadow, full = false, to }) {
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext }) {
   const text = label ?? s.cta1
-  const Tag = s.live && to ? 'a' : 'span'
-  const link = s.live && to ? { href: `#${to}` } : null
+  const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
+  const Tag = link ? 'a' : 'span'
   if (s.retro) {
     // Accent-coloured type on a second palette hue, with the offset block.
     //
@@ -596,8 +607,13 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // `avatar` reads the header's second photo slot, and reads it strictly: an empty
 // avatar is the initials placeholder, never the background photo. That is the
 // whole point of giving it its own upload.
+// `src === undefined` — the prop left off entirely — is what falls back to the
+// section's own photo; `src={null}` is a caller saying "this slot has no
+// picture", and must not inherit it. The media player depends on the
+// difference: its section photo is the now-playing sleeve, and an art-less
+// track row would otherwise wear it.
 function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src }) {
-  const url = avatar ? s.avatar : (src ?? s.image)
+  const url = avatar ? s.avatar : (src === undefined ? s.image : src)
   if (url) {
     return <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
   }
@@ -1345,7 +1361,7 @@ function Media({ s }) {
                 borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
                 // The frame borders only the open cards' art, hairline.
                 border: s.retro ? (filled ? 'none' : `1px solid ${ink}`) : `${s.bw} solid ${fg}`,
-              }}><Photo s={s} initialsSize={14} src={s.images[i]} /></span>
+              }}><Photo s={s} initialsSize={14} src={t.img} /></span>
               {filled && <Grain s={s} exact blend="screen" opacity={0.4} />}
             </div>
           )
@@ -1370,7 +1386,7 @@ function Media({ s }) {
           width: desk ? '207px' : '252px', maxWidth: '100%',
           aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
           borderRadius: s.retro ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
-        }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
+        }}><Photo s={s} initialsSize={44} /></div>
         <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
           {/* The frame sets the now-playing block in the body face, like a real
               player UI — not the display serif. */}
@@ -1396,16 +1412,20 @@ function Media({ s }) {
     )
 
     // Frame 446:2265 — accent pill with beige Anton type and a mustard block,
-    // the inverse of the Book Now pill.
+    // the inverse of the Book Now pill. It is the section's one outbound link:
+    // with a Soundcloud address typed in, the published page opens it in a new
+    // tab; with the field empty, or on the canvas, it stays the picture it was.
+    const sc = extLink(s, s.soundcloud)
+    const Pill = sc ? 'a' : 'span'
     const pill = s.retro ? (
-      <span style={{
+      <Pill {...sc} style={{
         ...row('8px'), background: s.ac, color: s.bg, cursor: 'pointer',
         padding: desk ? '8px 16px' : '10px 20px', borderRadius: s.btnR,
         boxShadow: hard(s, s.pillBg, 3, 4),
         ...labelStyle(s, desk ? '16px' : '20px'),
-      }}>Soundcloud</span>
+      }}>Soundcloud</Pill>
     ) : (
-      <BookPill s={s} label="Soundcloud" />
+      <BookPill s={s} label="Soundcloud" ext={s.soundcloud} />
     )
 
     return (
@@ -1436,16 +1456,20 @@ function Media({ s }) {
       <div style={{ display: 'grid', gridTemplateColumns: s.g3, gap: '20px' }}>
         {s.tracks3.map((t, i) => (
           <div key={i} style={{ border: `1.5px solid ${s.line}`, borderRadius: s.radius, padding: '18px', ...col('14px') }}>
+            {/* The track's own artwork where it has some, the big numeral where
+                it does not — this layout has no other picture to fall back on. */}
             <div style={{
-              background: s.soft, borderRadius: s.radiusSm, aspectRatio: '1',
+              background: s.soft, borderRadius: s.radiusSm, aspectRatio: '1', overflow: 'hidden',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <span style={{ fontFamily: s.display, fontSize: '26px', color: s.muted, letterSpacing: s.dls }}>{t.n}</span>
+              {t.img
+                ? <img src={t.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                : <span style={{ fontFamily: s.display, fontSize: '26px', color: s.muted, letterSpacing: s.dls }}>{t.n}</span>}
             </div>
             <div style={row('12px', { justifyContent: 'space-between' })}>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: '14px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</div>
-                <div style={{ fontSize: '12px', color: s.muted }}>{t.dur}</div>
+                <div style={{ fontSize: '12px', color: s.muted }}>{t.sub}</div>
               </div>
               <span style={{
                 width: '36px', height: '36px', borderRadius: '999px', background: s.ac, color: s.acFg,
@@ -1455,6 +1479,15 @@ function Media({ s }) {
           </div>
         ))}
       </div>
+      {/* This layout draws no Soundcloud pill of its own — unlike the reference
+          design above, where it is part of the frame. It appears only once the
+          artist has an address for it, so a layout switch never grows a button
+          that leads nowhere. */}
+      {s.soundcloud && (
+        <span style={{ alignSelf: 'flex-start' }}>
+          <BookPill s={s} label="Soundcloud" ext={s.soundcloud} />
+        </span>
+      )}
     </div>
   )
 }
