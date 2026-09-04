@@ -2638,66 +2638,183 @@ function EventsMap({ s }) {
 }
 
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
-// quote card sitting on two rotated coloured cards, flanked by arrows.
+// cream quote card standing on two rotated, ink-outlined coloured cards, with
+// the pager arrows thrown out to the page's own gutters.
 function Testimonials({ s }) {
   if (s.v0) {
+    // §5.5 — three frames: 1440 (964:58585) on the 1180 canvas at × 0.82, 768
+    // (986:39711) and 390 (986:39733) verbatim. The narrow two are not the
+    // desktop squeezed. All three stand the same 730 band, but the desktop lays
+    // the card out landscape at a stated 420, while both narrow frames set it
+    // portrait on its own content, at the desktop's own type sizes — so their
+    // quote runs long and their stops open from 14 to 37. Mobile goes further
+    // and takes the arrows off the card's flanks, setting them in a 270 row
+    // under it. Almost every box below is therefore `narrow ? <frame> :
+    // <frame × 0.82>`, and the two narrow frames differ from each other in the
+    // card's width, the backs behind it and that arrow row.
+    const tab = isTablet(s)
+    const scale = s.narrow ? 1 : 0.82
+    const u = (v) => `${Math.round(v * scale)}px`
     const q = s.quotes[0]
+    const ink = s.paperFg
+    // The frames' 3px stroke, verbatim on both narrow ones; u(3) rounds to 2 on
+    // desktop and reads visibly lighter, so it takes the literal the
+    // repertoire's song cards take, for the same reason.
+    const bw = s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw
+    // The frames' arrow is a 10.23 × 8.91 vector; lucide draws its own inside
+    // 14/24 of the size it is given, so the frame's width backs out to 17.5.
+    const glyph = Math.round(17.5 * scale)
+
     const arrow = (icon) => (
       <span style={{
-        width: s.mob ? 32 : 42, height: s.mob ? 32 : 42, flex: 'none', borderRadius: s.radiusSm,
-        background: s.pillBg, color: contrastInk(s.pillBg), border: `${s.bw} solid ${s.tx}`,
+        width: u(55), height: u(54), flex: 'none', borderRadius: u(18.5),
+        background: s.pillBg, color: s.pillFg, border: `${bw} solid ${ink}`,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
       }}>{icon}</span>
     )
-    const backing = (hue, deg, dx, dy) => (
-      <div style={{
-        position: 'absolute', inset: 0, background: hue, borderRadius: s.radius,
-        transform: `${tilt(s, deg)} translate(${dx}px, ${dy}px)`,
+
+    // Each back as its frame draws it: the chip it is painted in, its rotation,
+    // the offset of its centre from the card's, and the inset of its box off the
+    // card's own — positive pulls it in, negative pushes it out. Desktop stands
+    // 700 × 440 behind a 720 × 420 card, so both backs read as bands above and
+    // below it; the tablet's are 440 behind a 490 card and read as a band across
+    // the top and a strip down the left; the mobile's are narrower than the card
+    // again and read as a top band and one corner. Stating them as insets rather
+    // than boxes keeps that relationship when a long quote grows the card. The
+    // centres are each group's emitted CSS left/top less the card's own:
+    // `get_metadata` gives a rotated group's x/y in its rotated parent's space,
+    // and that does not agree with what the frames render.
+    const backs = s.mob
+      ? [[1, 3, -4.4, -6.3, 16, -5], [3, -3.71, -2, -16.2, 24.9, -5]]
+      : tab
+        ? [[1, 3, -4.4, -36.6, 0.3, 25], [3, -3.71, -2, -46.5, 7.1, 25]]
+        : [[1, 3, -12, -2, 10, -10], [3, -3.71, -2, -11.5, 10, -10]]
+
+    const backing = ([chip, deg, dx, dy, ix, iy], i) => (
+      <div key={i} style={{
+        position: 'absolute', top: u(iy), bottom: u(iy), left: u(ix), right: u(ix),
+        background: s.chips[chip % s.chips.length].bg,
+        border: `${bw} solid ${ink}`, borderRadius: u(18),
+        // Not `tilt()`: it returns the string 'none' off Retro, and a transform
+        // list carrying that is invalid CSS which the browser drops whole.
+        transform: `translate(${u(dx)}, ${u(dy)}) rotate(${deg}deg)`,
       }} />
+    )
+
+    // The frames pair the two pills against each other — orange lettered in the
+    // mustard, mustard lettered in the orange — which is a Retro reading rather
+    // than a legibility rule, so the flat themes keep contrastInk.
+    const tag = (label, bg, fg) => (
+      <span key={label} style={{
+        background: bg, color: fg, borderRadius: s.btnR,
+        padding: `${u(6)} ${u(12)}`, ...labelStyle(s, u(20)),
+        // labelStyle sets Anton's tight 1.1; the frames' pill is a 41px box
+        // round a 29px text box, which is the face's own leading.
+        lineHeight: 29 / 20,
+      }}>{label}</span>
+    )
+
+    // The mobile frame's card is 364 wide in a 390 canvas — wider than the 346
+    // this page's own padX leaves — so there it takes the column instead.
+    const card = (
+      <div style={{
+        position: 'relative', flex: 'none', minWidth: 0,
+        width: s.mob ? 'auto' : u(tab ? 464 : 720),
+      }}>
+        {/* Orange, then olive, then the card: that order is what puts the
+            orange under the olive where the two overlap. */}
+        {s.retro && backs.map(backing)}
+        <div style={{
+          position: 'relative', background: s.retro ? '#FBF6EA' : s.paper,
+          color: ink, border: `${bw} solid ${ink}`, borderRadius: u(18),
+          padding: u(50),
+          // The desktop card is a stated 420 box with its tag row parked on the
+          // floor; both narrow ones are their content's height, so there it is
+          // the gap that holds them apart. minHeight either way, never height:
+          // the quote is an editable field, so a longer one has to grow the card
+          // rather than be clipped by it.
+          ...(s.narrow ? { gap: u(50) } : { minHeight: u(420) }),
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        }}>
+          {/* One gap reproduces the frames' three absolute stops: a 16px
+              eyebrow, the quote's 45px lines, then a 29px attribution. */}
+          <div style={col(u(s.narrow ? 37 : 14))}>
+            {/* Space Mono in the frames — the body face in this project's
+                mapping of the reference's three, not the Anton label. */}
+            <span style={{
+              fontFamily: s.body, fontSize: u(11), letterSpacing: u(1.5),
+              textTransform: 'uppercase', color: s.ac,
+            }}>{q.when}</span>
+            <p style={{
+              margin: 0, fontFamily: s.display,
+              // The 390 frame is the one place the quote is not Soulway 40/45:
+              // it renders through a Display/MD token that resolves to another
+              // template's Bebas Neue at leading 1 — the §5.5 leak, not a
+              // decision. Its 40 is that condensed face's measure, and none of
+              // the five display faces holds it inside the 246 this page's own
+              // padX leaves: Fraunces breaks "Professional" mid-word. Mobile
+              // therefore takes the ramp's own display step, the same fallback
+              // the enquiry form makes for its 390 heading, which puts the quote
+              // on four lines and the card within a few px of the frame's 430.
+              // The leading stays the 45 the other two frames state.
+              fontSize: s.mob ? s.dispSm : u(40),
+              lineHeight: 45 / 40, letterSpacing: s.dls, overflowWrap: 'break-word',
+            }}>{s.quote1}</p>
+            {/* labelStyle keeps its labels on one line; this one is content,
+                and at the frames' 20 it clears the 240 the mobile card leaves in
+                Anton but not in Grunge's wider label face — so it wraps rather
+                than running off the card. */}
+            <span style={labelStyle(s, u(20), { whiteSpace: 'normal' })}>{q.who} · {q.role}</span>
+          </div>
+          <div style={row(u(8), { flexWrap: 'wrap', paddingTop: s.narrow ? 0 : u(20) })}>
+            {tag(q.who, s.ac, s.retro ? s.pillBg : contrastInk(s.ac))}
+            {tag(q.role, s.pillBg, s.retro ? s.ac : contrastInk(s.pillBg))}
+          </div>
+        </div>
+      </div>
+    )
+
+    // Each frame centres its wrap but not the card inside it: the clearance
+    // above and below the card is 165/145 on desktop, 137.5/102.5 on tablet and
+    // 137/78 on mobile, where the 78 is measured to the foot of the arrow row.
+    // What the root's own padY does not already give is what is left here, so
+    // each lands on the frames' shared 730.
+    const shell = s.mob ? (
+      <div style={col(u(31), { position: 'relative', padding: `${u(93)} 0 ${u(34)}` })}>
+        {card}
+        {/* Mobile takes the arrows off the card's flanks and sets them in a 270
+            row centred under it. */}
+        <div style={row('0px', {
+          width: u(270), maxWidth: '100%', margin: '0 auto', justifyContent: 'space-between',
+        })}>
+          {arrow(<ArrowLeft size={glyph} />)}
+          {arrow(<ArrowRight size={glyph} />)}
+        </div>
+      </div>
+    ) : (
+      <div style={row('0px', {
+        justifyContent: 'space-between', position: 'relative',
+        padding: `${u(tab ? 82 : 67)} 0 ${u(tab ? 47 : 48)}`,
+      })}>
+        {arrow(<ArrowLeft size={glyph} />)}
+        {card}
+        {arrow(<ArrowRight size={glyph} />)}
+      </div>
     )
 
     return (
       <div style={{ position: 'relative' }}>
-        <TornEdge s={s} side="top" height={30} />
-        <Grain s={s} opacity={0.18} style={{
+        <TornEdge s={s} side="top" height={Math.round(43 * scale)} />
+        {shell}
+        {/* The frames lay their scratched sheet over the composition rather than
+            under it: the card's interior and the ground either side of it
+            measure the same mean and the same variance. Still under the torn
+            edge, whose own zIndex is 3. */}
+        <Grain s={s} opacity={0.1} blend="hard-light" exact style={{
           left: `calc(-1 * ${s.padX})`, right: `calc(-1 * ${s.padX})`,
           top: `calc(-1 * ${s.padY})`, bottom: `calc(-1 * ${s.padY})`,
+          zIndex: 2,
         }} />
-
-        <div style={row(s.mob ? '10px' : '24px', {
-          justifyContent: 'center', position: 'relative',
-          padding: s.mob ? '10px 0 8px' : '40px 0 34px',
-        })}>
-          {arrow(<ArrowLeft size={15} />)}
-          <div style={{
-            position: 'relative', flex: 1, maxWidth: '622px',
-            padding: s.mob ? '4px' : '10px',
-          }}>
-            {backing(s.chips[3 % s.chips.length].bg, -1.6, 0, -8)}
-            {backing(s.chips[1 % s.chips.length].bg, 1.8, -8, 4)}
-            <div style={{
-              position: 'relative', background: s.paper, color: s.paperFg,
-              border: `${s.bw} solid ${s.paperFg}`, borderRadius: s.radius,
-              padding: s.mob ? '22px' : '34px', minHeight: s.mob ? '220px' : '345px',
-              ...col(s.mob ? '14px' : '18px'),
-            }}>
-              <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>{q.when}</span>
-              <p style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.1, letterSpacing: s.dls,
-              }}>{s.quote1}</p>
-              <span style={labelStyle(s, s.labelXs)}>{q.who} · {q.role}</span>
-              <div style={row('10px', { marginTop: 'auto', paddingTop: '18px', flexWrap: 'wrap' })}>
-                {[[q.who, s.ac], [q.role, s.pillBg]].map(([l, hue], i) => (
-                  <span key={i} style={{
-                    background: hue, color: contrastInk(hue), borderRadius: s.btnR,
-                    padding: '6px 14px', ...labelStyle(s, s.eyebrow),
-                  }}>{l}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-          {arrow(<ArrowRight size={15} />)}
-        </div>
       </div>
     )
   }
@@ -2981,13 +3098,16 @@ export default function EncoreSection({ s }) {
   // than the page background, so its checkerboard bands and cream type read.
   const darkMap = s.mp && s.v0 && s.retro
   // §10.2 — the media player (964:58578), repertoire (964:58580), booking
-  // calendar (964:58583) and enquiry form (964:58584) frames stand on cream
-  // rather than the beige page ground: the player so its beige checkerboard
-  // band and cream track cards read against it, the repertoire so its torn
-  // beige edge and olive song cards do, the calendar so its beige panel and
-  // the prints on it do, the form so the tan hairline round its shell does.
+  // calendar (964:58583), enquiry form (964:58584) and testimonials
+  // (964:58585) frames stand on cream rather than the beige page ground: the
+  // player so its beige checkerboard band and cream track cards read against
+  // it, the repertoire so its torn beige edge and olive song cards do, the
+  // calendar so its beige panel and the prints on it do, the form so the tan
+  // hairline round its shell does, the testimonials so its torn beige edge
+  // and the ink outlines round its stacked cards do — there the quote card's
+  // own body is that same cream, and only its outline parts it from the sheet.
   // Retro's `paper` IS the page background, hence the literal.
-  const cream = (s.me || s.re || s.ca || s.fo) && s.v0 && s.retro
+  const cream = (s.me || s.re || s.ca || s.fo || s.te) && s.v0 && s.retro
   return (
     <div style={{
       background: darkMap ? s.mapBg : cream ? '#FBF6EA' : s.bg,
