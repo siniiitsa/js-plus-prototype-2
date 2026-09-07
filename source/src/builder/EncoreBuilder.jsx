@@ -2,10 +2,11 @@
 // Deliberately monolithic (§12.11): only SectionRow and EditPanel are extracted.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { createRoot } from 'react-dom/client'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
   Pencil, Palette, X, Trash2, ChevronLeft, ArrowRight,
-  Layers, Plus, Check, Upload, Lock, Sparkles,
+  Layers, Plus, Check, Upload, Lock, ExternalLink,
 } from 'lucide-react'
 import { toast as sonnerToast, Toaster } from 'sonner'
 
@@ -34,17 +35,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, QUOTES,
-  CITIES, REP, PINS, BOOKED, HELD, EXAMPLE_PAGE,
-  NOW_PLAYING, TIER_MODES, SONGS, REP_FILTERS, SONG_TOTAL, PAGES,
+  CITIES, PINS, BOOKED, HELD, EXAMPLE_PAGE,
+  NOW_PLAYING, TIER_MODES, SONGS, PAGES,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
-  FOOTER_LINKS, FOOTER_CREDIT,
+  FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
-  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault,
+  CTA_TARGETS, firstPresent, minimalNav,
+  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   headerFamily, layoutCount, designCount,
-  headerLayout, headerLayoutLabel, HEADER_UX,
+  headerLayout, headerLayoutLabel,
 } from './data.js'
-import { defaultImage, defaultImages, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -70,7 +72,23 @@ const RAMP = {
   tablet:  { dispXl: '77px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
   desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '64px', narrow: false },
 }
-for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k])
+
+// The two keys that only matter once a window is wider than the canvas its
+// frame was drawn at — see PublishedPage, the one place that sets a surplus.
+//
+// `surplus` is half the width past `canvasW`, and it is zero everywhere else:
+// the editor caps its canvas at canvasW and the preview thumbnails render at a
+// hard 1180, so both are already exactly at their frame.
+// `heroH` is the height HeaderV0's aspectRatio yields *at* canvasW — 390×844/390,
+// 768×4/3, 1180×8.33/16. It is the one section outside the root's padding, so a
+// wider window would otherwise make it proportionally taller: 1333px at 2560.
+// Clamping to this number is inert at the canvas and holds the band past it.
+const WIDE = {
+  mobile:  { surplus: '0px', heroH: 844 },
+  tablet:  { surplus: '0px', heroH: 1024 },
+  desktop: { surplus: '0px', heroH: 614 },
+}
+for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k], WIDE[k])
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis A — builder chrome breakpoint
@@ -125,7 +143,7 @@ function canMove(sections, id, dir) {
 const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, navSections = [] }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [] }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -183,6 +201,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
     // device sizing
     ...Z, mob: !!mob,
 
+    // True only in the published tab. The editor canvas is a picture of a
+    // website, not a website (§12.7), so every control EncoreSection draws is
+    // a static span there. This is the one flag a control may branch on to
+    // become real. Two read it: Repertoire's search, chips and pager, and the
+    // header's navigation — its links, its Book Now and Listen, and the burger
+    // menu the narrow frames collapse to.
+    live: !!live,
+
+    // The section's own id on the published page, so a nav link can scroll to
+    // it. Live-gated where it is applied, not here: the editor document renders
+    // a dozen header previews at once through LayoutPicker and HeaderChoices,
+    // and they would all claim id="header".
+    anchor: cat,
+
     // design selector
     v0: d === 0, v1: d === 1, v2: d === 2, v3: d === 3, v4: d === 4, v5: d === 5,
     flatHeader: cat === 'header' && headerFamily(T.name) === 'flat',
@@ -225,7 +257,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
   // the initials placeholder. A backdrop upload no longer fills it.
   vm.avatar = c.avatar !== undefined ? (c.avatar ?? undefined)
     : defaultImage(cat, T.name, 'avatar')
-  // Multi-photo sections (gallery strip, media artwork). Slot n fills tile n;
+  // Multi-photo sections — the gallery strip is the only one left, now that the
+  // media player's track artwork travels per track. Slot n fills tile n;
   // an empty slot falls through to the section's initials placeholder. An
   // explicitly emptied array is already distinguishable, so no sentinel is needed.
   vm.images = Array.isArray(c.images) ? c.images : (defaultImages(cat, T.name) ?? [])
@@ -233,9 +266,21 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
   vm.grainSrc = T.name === 'Retro' ? RETRO_TEXTURE.grain : undefined
   vm.mapSrc = T.name === 'Retro' ? RETRO_TEXTURE.map : undefined
 
-  // Nav collapses to the fixed triple on mobile regardless of navMode (§10.2).
-  const MINIMAL = ['Music', 'Shows', 'Book']
-  vm.navLinks = mob || vm.navMode === 'minimal' ? MINIMAL : navSections
+  // §4.8 — `navSections` is `{ cat, label }`, and a nav link keeps the target
+  // as `to` so the published page can scroll to it (§4.3a).
+  //
+  // §10.2 also collapsed mobile to the fixed triple regardless of navMode. That
+  // rule was about a horizontal bar, which cannot carry "Booking Calendar" and
+  // "Enquiry Form" at 390px — the burger panel is a column and has the room, so
+  // mobile now shows the artist's own sections like every other width.
+  vm.navLinks = vm.navMode === 'minimal'
+    ? minimalNav(navSections)
+    : navSections.map((n) => ({ label: n.label, to: n.cat }))
+
+  // The header's two CTAs point at a section as well: Book Now at wherever the
+  // page takes a booking, Listen at wherever it plays something (§4.3a).
+  vm.bookTo = firstPresent(CTA_TARGETS.book, navSections)
+  vm.listenTo = firstPresent(CTA_TARGETS.listen, navSections)
 
   // chips — from TAGS, or from the tags field for a tags section
   const tagSource = cat === 'tags'
@@ -263,19 +308,41 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
-  vm.mediaTrack = cased(cv('track', 'Late Lights'))
-  vm.nowPlaying = { ...NOW_PLAYING, track: cased(NOW_PLAYING.track), by: cased(artistName) }
+  // The now-playing card names a track of the artist's choosing — FIELDS.media's
+  // `track`, defaulted to NOW_PLAYING's own, so the panel and the card agree.
+  vm.nowPlaying = { ...NOW_PLAYING, track: cased(cv('track', NOW_PLAYING.track)), by: cased(artistName) }
+  // The Soundcloud button's destination, and the whole of its `live` seam.
+  // Normalised to an absolute URL: the published tab carries a <base href> to
+  // the opener, so a schemeless "soundcloud.com/kai" would resolve against the
+  // builder and open it instead. An empty field leaves the pill a picture.
+  vm.soundcloud = extUrl(cv('soundcloud', ''))
 
-  // audio — parsed from the textarea, else from TRACKS. `n` is naively '0'+index.
-  if (c.tracks !== undefined) {
+  // tracks — one view-model, three content shapes on the same `c.tracks` key.
+  // The media player owns an *array* of { title, sub, image } (TracksField);
+  // the audio player owns the delimited *string* of a textarea; an absent key
+  // means the seeded TRACKS, dressed under Retro in RETRO_TRACK_ART. `n` is
+  // naively '0'+index in all three.
+  //
+  // Per-row artwork is never re-seeded by index once the array exists: a row
+  // inserted third would otherwise steal track three's photograph. `img` is
+  // therefore `null` — not undefined — wherever a row has no art of its own,
+  // because Photo falls back to the section photo (here the sleeve) on
+  // undefined alone.
+  const seedArt = defaultTrackArt(cat, T.name) ?? []
+  if (Array.isArray(c.tracks)) {
+    vm.tracks = c.tracks.map((t, i) => {
+      const sub = (t?.sub ?? '').trim()
+      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, img: t?.image ?? null }
+    })
+  } else if (c.tracks !== undefined) {
     vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
       const parts = l.includes('—') ? l.split('—') : l.split('|')
       const dur = (parts[1] || '').trim()
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur }
+      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, img: seedArt[i] ?? null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`,
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, img: seedArt[i] ?? null,
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
@@ -286,16 +353,36 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
 
   // pricing
   vm.pricingSub = cv('sub', DEFS.pricingSub)
+  // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
+  vm.pricingSubFg = rgba(tx, 0.46)
   vm.tierModes = TIER_MODES
   vm.tiers = TIERS.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
     // orange under Retro — the reference order — and stays in-palette elsewhere.
     const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
+    // Each card also carries a *second* hue. The price numeral, the tick, the
+    // [ico] chip and the Book Now pill are all painted in it, and it is the
+    // colour of the offset block behind the card too. The reference uses the
+    // palette's gold for the olive and orange cards and the accent for the gold
+    // one — which is exactly `pillBg`, unless the card already IS `pillBg`.
+    const accHue = card === pillBg ? ac : pillBg
+    // The reference inks the cards in the palette's cream and near-black, not
+    // in pure white/black: contrast() picks the side, the palette the tone.
+    const lightCard = contrast(card) === '#141414'
+    const ink = lightCard ? vm.deep : vm.paper
+    // Same caveat as `legible()` above: the second hue only reads while it
+    // separates from the card it sits on. Retro's three clear it; a mid-tone
+    // card in a pale palette (Editorial's warm grey) does not, and there the
+    // card's own ink stands in.
+    const acc = Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink
     const base = {
       name: cv(`t${i + 1}n`, t.name), price: cv(`t${i + 1}p`, t.price),
       blurb: t.blurb, feats: t.feats,
-      card, cardFg: contrast(card), cardMut: rgba(contrast(card), 0.72),
+      card, acc, cardFg: ink,
+      // Only the light card drops its blurb and /event off full strength in the
+      // reference; on the two dark ones they sit at the feats' cream.
+      cardMut: lightCard ? rgba(ink, 0.72) : ink,
     }
     return t.featured
       ? {
@@ -308,14 +395,31 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
         }
   })
 
-  // repertoire
-  vm.rep = REP.map((g) => ({ genre: cased(g.genre), items: g.items }))
-  vm.repFlat = REP.flatMap((g) => g.items.map((t) => ({ t, g: g.genre })))
-  vm.songs = SONGS.map(([title, artist], i) => ({ n: i + 1, title, artist: cased(artist) }))
-  vm.repFilters = REP_FILTERS.map((l) => cased(l))
+  // repertoire — the artist's own list, else the seeded one. The semantics are
+  // `images`, not `image`: an emptied array is already distinguishable from an
+  // absent key, so only an absent key falls back and no null sentinel is needed.
+  const songList = Array.isArray(c.songs) ? c.songs : SONGS
+  vm.songs = songList.map((t, i) => ({
+    n: i + 1,
+    title: String((t && t.title) ?? '').trim(),
+    artist: cased(String((t && t.artist) ?? '').trim()),
+    // Raw casing, deliberately: a lower-case theme must not stop a chip from
+    // matching the tag it was derived from.
+    tags: songTags(t && t.tags),
+  }))
+  // `label` is cased for the chip, `tag` is what the filter compares.
+  vm.repChips = repChips(songList).map((ch) => ({ ...ch, label: cased(ch.label) }))
+  // Layout 2 has no chip row, so its right-hand column takes the artist rather
+  // than a tag — but it takes the artist's *songs*, so swapping layouts never
+  // silently discards what they typed.
+  vm.repFlat = vm.songs.map((t) => ({ t: t.title, g: t.artist }))
   vm.repHue = legible(T.tags[3 % T.tags.length])
-  vm.songTotal = SONG_TOTAL
+  // Still static, and still only for the events map's picture of a pager.
   vm.pages = PAGES
+  // The heading counts the list unless the artist has written their own, so it
+  // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
+  // the same fallback, or the panel and the canvas would disagree.
+  if (cat === 'repertoire' && c.heading === undefined) vm.title = cased(`${vm.songs.length} Songs`)
 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
@@ -385,7 +489,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, nav
 
   // footer
   vm.copyright = cv('copyright', DEFS.copyright)
-  vm.footerStatement = cased(cv('statement', "Let's make your night unforgettable."))
+  // The §10.2 footer frames break this line by hand after "make" and let the
+  // measure fold the rest — that is what sets the three-line block the left
+  // column is built round, and it does not fall out of the measure alone in a
+  // display face narrower than the frame's. Kept in step with FIELDS.footer's
+  // own default, and rendered `pre-wrap` so an edited statement can break too.
+  vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
   vm.footerLinks = FOOTER_LINKS.map((col) => col.map((l) => cased(l)))
   vm.footerCredit = FOOTER_CREDIT
 
@@ -856,24 +965,275 @@ const FIELD_BOX = {
 }
 
 /* ------------------------------------------------------------------ *
+ * §8.6b SongsField — the repertoire's song list. The one list-shaped
+ * field with a structured editor rather than a delimited textarea: the
+ * artist types a title, an artist and any tags, and the tags are what
+ * the section's filter chips are built from.
+ *
+ * Modelled on ImagesField above — numbered rows, a round X per row, an
+ * add affordance, an "n of max" footnote — and, like it, deliberately
+ * not reorderable: order is entry order.
+ * ------------------------------------------------------------------- */
+
+const SONG_ROW_INPUT = { ...FIELD_BOX, padding: '6px 8px', fontSize: '12px' }
+
+function SongsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  // Every keystroke rewrites the whole array — the list is short, and it keeps
+  // the sparse `c.songs` a plain value rather than something patched in place.
+  const setAt = (i, k, v) => onChange(list.map((sg, j) => (j === i ? { ...sg, [k]: v } : sg)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { title: '', artist: '', tags: '' }])
+
+  const row = (i, sg) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        {/* shadcn Input rather than a bare one, for its focus ring: FIELD_BOX
+            sets `outline: none`, so a raw input would tab through twelve rows
+            showing nothing. `h-auto` lets the compact padding win over h-9. */}
+        <Input
+          value={sg.title ?? ''} placeholder="Song title" onClick={stopE}
+          onChange={(e) => setAt(i, 'title', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove song ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      {/* Stacked, not three across: this panel is also the mobile edit sheet
+          and three inputs do not fit side by side at its width. The 25px
+          gutter keeps both lower fields aligned under the title. */}
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <Input
+          value={sg.artist ?? ''} placeholder="Artist" onClick={stopE}
+          onChange={(e) => setAt(i, 'artist', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+        <Input
+          value={sg.tags ?? ''} placeholder="Tags — weddings, pubs" onClick={stopE}
+          onChange={(e) => setAt(i, 'tags', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((sg, i) => row(i, sg || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add song</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max}
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6c TracksField — the media player's track list.
+ *
+ * The second structured repeater, after SongsField above, and the first
+ * whose rows carry a photograph: the media player dresses every card
+ * with its own artwork, so the picture belongs to the track and travels
+ * with it rather than sitting in a section-level photo grid where slot 3
+ * silently meant track 3.
+ *
+ * Row shape is { title, sub, image }. `sub` is the free line under the
+ * title — the reference sets it "Hidden Sessions Vol. 2 · 6:18" — and
+ * `image` follows the same three states as every other photo slot:
+ * absent or null is the initials placeholder, a string is an upload.
+ * There is no per-index re-seeding once the array exists, so a row added
+ * in the middle cannot inherit the photograph of the track it displaced.
+ * ------------------------------------------------------------------- */
+
+// The compact artwork control: a 46px square that is the dropzone, the
+// preview and the file trigger at once. ImageField's 108px panel is the
+// right size for a section photo and far too tall for a repeater row.
+function RowThumb({ value, label, onChange, onToast }) {
+  const inputRef = useRef(null)
+  const [over, setOver] = useState(false)
+
+  return (
+    <div style={{ position: 'relative', flex: 'none' }}>
+      <input
+        ref={inputRef} type="file" accept="image/png,image/jpeg"
+        onChange={(e) => { readImage(e.target.files?.[0], onChange, onToast); e.target.value = '' }}
+        style={FILE_INPUT}
+      />
+      <button
+        type="button" aria-label={value ? `Replace ${label}` : `Add ${label}`}
+        onClick={(e) => { stopE(e); inputRef.current?.click() }}
+        onDragOver={(e) => { e.preventDefault(); setOver(true) }}
+        onDragLeave={() => setOver(false)}
+        onDrop={(e) => {
+          e.preventDefault(); setOver(false)
+          readImage(e.dataTransfer.files?.[0], onChange, onToast)
+        }}
+        className="hover:border-foreground"
+        style={{
+          width: '46px', height: '46px', padding: 0, borderRadius: '9px', overflow: 'hidden',
+          border: value ? '1px solid #E2DFD7' : `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`,
+          background: '#FFFFFF', cursor: 'pointer', display: 'flex',
+          alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        {value
+          ? <img src={value} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          : <Upload size={14} style={{ color: '#B9B6AA' }} />}
+      </button>
+      {/* Remove writes null, not undefined — an absent key is what selects the
+          seeded photo, so undefined would bring it straight back. */}
+      {value && (
+        <button
+          type="button" aria-label={`Remove ${label}`}
+          onClick={(e) => { stopE(e); onChange(null) }}
+          className="hover:bg-destructive/10"
+          style={{
+            position: 'absolute', top: '-5px', right: '-5px', width: '18px', height: '18px',
+            borderRadius: '999px', border: '1px solid #E2DFD7', background: '#FFFFFF',
+            color: '#B3261E', cursor: 'pointer', display: 'inline-flex',
+            alignItems: 'center', justifyContent: 'center', padding: 0,
+          }}
+        ><X size={10} /></button>
+      )}
+    </div>
+  )
+}
+
+function TracksField({ value, max, onChange, onToast }) {
+  const list = Array.isArray(value) ? value : []
+
+  // Same shape as SongsField: every keystroke rewrites the whole array, which
+  // keeps `c.tracks` a plain value rather than something patched in place.
+  const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { title: '', sub: '', image: null }])
+
+  const row = (i, t) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', alignItems: 'flex-start', gap: '8px', background: '#FCFBF8',
+    }}>
+      <span style={{
+        width: '12px', flex: 'none', fontSize: '10px', fontWeight: 700,
+        color: '#98958A', textAlign: 'center', paddingTop: '15px',
+      }}>{i + 1}</span>
+      <RowThumb
+        value={t.image ?? null} label={`artwork for track ${i + 1}`}
+        onChange={(v) => setAt(i, 'image', v)} onToast={onToast}
+      />
+      {/* Stacked rather than side by side: this panel is also the mobile edit
+          sheet, and a thumbnail plus two inputs across does not fit at its width. */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {/* shadcn Input for its focus ring — see SongsField above. */}
+          <Input
+            value={t.title ?? ''} placeholder="Track title" onClick={stopE}
+            onChange={(e) => setAt(i, 'title', e.target.value)}
+            className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+          />
+          <button
+            type="button" aria-label={`Remove track ${i + 1}`}
+            onClick={(e) => { stopE(e); removeAt(i) }}
+            className="hover:bg-destructive/10"
+            style={{
+              width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+              border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+              cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+              justifyContent: 'center', padding: 0,
+            }}
+          ><X size={11} /></button>
+        </div>
+        <Input
+          value={t.sub ?? ''} placeholder="Release · 5:42" onClick={stopE}
+          onChange={(e) => setAt(i, 'sub', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((t, i) => row(i, t || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add track</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · artwork PNG or JPG, from your device
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = false, onDone }) {
+function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
-  // §6.2b — the coach mark says something different once the user has actually
-  // tried a layout, so the panel remembers whether it has been used yet. Local
-  // rather than in `st`: it is about this panel's copy, nothing else reads it.
-  const [tried, setTried] = useState(false)
-  // Only for the coach mark's verb: there is no hovering on a touch screen.
-  const touch = useIsMobile()
 
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
   // Retro section would show a photo on the canvas and an empty dropzone here.
   const themeName = THEMES[themeIdx].name
   const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k))
   const imgsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
+  // Same trap as the photos above: the panel has to resolve the seeded songs
+  // exactly as sectionVm does, or the canvas would list twelve songs while the
+  // repeater showed none.
+  const songsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : SONGS)
+  // And the same again for the media player's tracks, whose seed is TRACKS
+  // dressed in the Retro artwork. The first keystroke materialises this whole
+  // array into `c.tracks`, photographs included, so nothing the user could see
+  // disappears the moment they rename track one.
+  const tracksVal = (k) => {
+    if (Array.isArray(sec.c[k])) return sec.c[k]
+    const art = defaultTrackArt(sec.cat, themeName) ?? []
+    return TRACKS.map(([name, dur, rel], i) => ({
+      title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null,
+    }))
+  }
 
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
@@ -881,66 +1241,16 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = 
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, flex: 1 }}>
       <ScrollArea className="flex-1 min-h-0">
         <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-          {/* LAYOUT — §6.2b turns the dropdown into a grid and puts a coach
-              mark over it. Same control, same place: what the user learns on
-              their first visit is what they come back to. */}
           <div>
             <Label style={groupLabel}>Layout</Label>
-            {onboard && (
-              <div style={{
-                position: 'relative', background: '#1B1A17', color: '#FFFFFF',
-                borderRadius: '10px', padding: '12px 13px', marginBottom: '12px',
-                animation: 'fadeIn .25s ease',
-              }}>
-                <span style={{ display: 'block', fontSize: '12px', fontWeight: 700, marginBottom: '4px' }}>
-                  {tried ? 'Header set — change it any time' : 'Step 1 — pick a header layout'}
-                </span>
-                <span style={{ display: 'block', fontSize: '12px', lineHeight: 1.5, color: 'rgba(255,255,255,.72)' }}>
-                  {tried
-                    ? 'This panel is where the header lives from now on. Keep trying layouts, or carry on to the content below.'
-                    : touch
-                      ? 'This is the top of your page. Tap a layout to try it — the page behind updates as you go.'
-                      : 'This is the top of your page. Hover a layout to preview it on the page, click to keep it.'}
-                </span>
-                <button
-                  type="button" onClick={(e) => { stopE(e); if (onDone) onDone() }}
-                  style={{
-                    marginTop: '9px', fontSize: '12px', fontWeight: 700, padding: '6px 14px',
-                    borderRadius: '99px', border: '1px solid rgba(255,255,255,.28)', background: 'none',
-                    color: '#FFFFFF', cursor: 'pointer', fontFamily: 'inherit',
-                  }}
-                >{tried ? 'Done' : 'Skip for now'}</button>
-                {/* the caret pointing at the grid below */}
-                <span style={{
-                  position: 'absolute', left: '26px', bottom: '-6px', width: '12px', height: '12px',
-                  background: '#1B1A17', transform: 'rotate(45deg)',
-                }} />
-              </div>
-            )}
-            {onboard ? (
-              <div style={{
-                borderRadius: '12px', padding: '8px',
-                background: 'rgba(43,107,228,.06)', boxShadow: '0 0 0 1.5px rgba(43,107,228,.35)',
-              }}>
-                <HeaderChoices
-                  themeIdx={themeIdx} artistName={artistName} sel={sec.arch} mode="panel"
-                  onHover={(i) => api.patch({ hdrHover: i })}
-                  onSelect={(i) => { setTried(true); api.setSection(sec.id, { arch: i }); api.patch({ hdrHover: null }) }}
-                />
-              </div>
-            ) : (
-              <LayoutPicker
-                cat={sec.cat} arch={sec.arch} content={sec.c}
-                themeIdx={themeIdx} artistName={artistName} navSections={navSections}
-                onPick={(i) => api.setSection(sec.id, { arch: i })}
-              />
-            )}
+            <LayoutPicker
+              cat={sec.cat} arch={sec.arch} content={sec.c}
+              themeIdx={themeIdx} artistName={artistName} navSections={navSections}
+              onPick={(i) => api.setSection(sec.id, { arch: i })}
+            />
           </div>
 
-          {/* CONTENT — knocked back, not disabled, while step 1 is open: the
-              order is a suggestion, and anyone who wants to type a title first
-              still can. */}
-          <div style={{ opacity: onboard && !tried ? 0.42 : 1, transition: 'opacity .25s ease' }}>
+          <div>
             <Label style={groupLabel}>Content</Label>
             {fields.length === 0 ? (
               <p style={{ margin: 0, fontSize: '12px', color: '#98958A', lineHeight: 1.5 }}>
@@ -949,7 +1259,13 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = 
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {fields.map((f) => {
-                  const fallback = f.k === 'title' && sec.cat === 'header' ? artistName : fieldDefault(f)
+                  // The two fields whose default is computed rather than written
+                  // down: the header's title is the artist's name, and the
+                  // repertoire's heading counts the songs — both mirroring what
+                  // sectionVm resolves, so panel and canvas never disagree.
+                  const fallback = f.k === 'title' && sec.cat === 'header' ? artistName
+                    : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
+                    : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
                   return (
@@ -962,6 +1278,10 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections, onboard = 
                         <ImageField value={imgVal(f.k)} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'images' ? (
                         <ImagesField value={imgsVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
+                      ) : f.type === 'songs' ? (
+                        <SongsField value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'tracks' ? (
+                        <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
@@ -1193,26 +1513,25 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
 /* ------------------------------------------------------------------ *
  * §6 Stage 1 — Template picker
  *
- * One spotlight preview of the highlighted template, its name above it and
- * a filmstrip of all five below. Clicking the spotlight builds the page and
- * opens the editor on it — there is no longer a stage between the two. It also
- * carries the prototype's own pill (§6.1): which header treatment is armed,
- * and the way back to swap it.
+ * The app's first screen. One spotlight preview of the highlighted template,
+ * its name above it and a filmstrip of all five below. Clicking the spotlight
+ * builds the page and opens the editor on it — there is no longer a stage
+ * between the two.
  * ------------------------------------------------------------------ */
 
 // The nav links a header preview shows: the same derivation the editor uses,
 // applied to the page the picker is about to build (§4.8).
 const PREVIEW_NAV = EXAMPLE_PAGE
   .filter(([cat]) => cat !== 'header' && cat !== 'footer')
-  .map(([cat]) => catName(cat))
+  .map(([cat]) => ({ cat, label: catName(cat) }))
 
 // Every frame in the picker uses one aspect: the desktop canvas against the
 // tallest header render (Retro's photographic layout 1). The four flat themes
 // come out shorter and are centred in it.
-const SPOT_ASPECT = '1180 / 614'
+const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.heroH}`
 
 // …and what HeaderChoices frames its cards with until it has measured them.
-const SPOT_MIN_H = 614
+const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
   return (
@@ -1226,10 +1545,9 @@ function TemplatePreview({ themeIdx, artistName }) {
   )
 }
 
-function TemplateStage({ artistName, spotIdx, ux, onChangeUx, onPick }) {
+function TemplateStage({ artistName, spotIdx, onPick }) {
   // Coming back from the editor re-spotlights the theme it was using.
   const [spot, setSpot] = useState(spotIdx)
-  const [swapHot, setSwapHot] = useState(false)
 
   return (
     <div className="dark" style={{
@@ -1237,35 +1555,6 @@ function TemplateStage({ artistName, spotIdx, ux, onChangeUx, onPick }) {
       padding: 'clamp(24px,5vw,40px) 20px', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
     }}>
-      {/* §6.1 — the prototype's own chrome, not the product's: which header
-          treatment the editor is about to run, and the way back to swap it.
-          Fixed rather than in flow so it cannot push the spotlight off a short
-          screen, and it sits above the picker it annotates. */}
-      {ux && (
-        <div style={{
-          position: 'fixed', top: '14px', left: '50%', transform: 'translateX(-50%)', zIndex: 10,
-          display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', justifyContent: 'center',
-          background: '#1B1A18', border: '1px solid #2B2B27', borderRadius: '99px',
-          padding: '7px 8px 7px 15px', maxWidth: 'calc(100vw - 28px)',
-        }}>
-          <span style={{ fontSize: '12px', color: '#8E8B81', whiteSpace: 'nowrap' }}>
-            Header onboarding:{' '}
-            <strong style={{ color: '#F4F2EC', fontWeight: 700 }}>{ux.tag} · {ux.name}</strong>
-          </span>
-          <button
-            type="button" onClick={onChangeUx}
-            onMouseEnter={() => setSwapHot(true)} onMouseLeave={() => setSwapHot(false)}
-            onFocus={() => setSwapHot(true)} onBlur={() => setSwapHot(false)}
-            style={{
-              fontSize: '12px', fontWeight: 700, padding: '5px 13px', borderRadius: '99px',
-              cursor: 'pointer', fontFamily: 'inherit', transition: 'background .2s, color .2s',
-              border: '1px solid #4A463C', whiteSpace: 'nowrap',
-              background: swapHot ? '#F4F2EC' : 'none', color: swapHot ? '#131311' : '#F4F2EC',
-            }}
-          >Change</button>
-        </div>
-      )}
-
       <div style={{ width: '100%', maxWidth: '1100px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <h1 style={{ margin: 0, fontWeight: 800, fontSize: 'clamp(19px,4vw,24px)', textAlign: 'center' }}>
           {THEMES[spot].name}
@@ -1322,11 +1611,10 @@ function TemplateStage({ artistName, spotIdx, ux, onChangeUx, onPick }) {
 /* ------------------------------------------------------------------ *
  * §6 The header layout picker
  *
- * One control, three presentations. The template's header designs, all
- * of them: six for Retro, three for the four flat templates (§4.4).
- * Every treatment in §6.1 renders this — a modal grid, a two-up grid in
- * the sidebar, a filmstrip on the canvas — so what the user learns in
- * whichever one they meet first is the control they keep.
+ * The grid the setup modal (§6.2) is built around: the template's header
+ * designs, all of them — six for Retro, three for the four flat
+ * templates (§4.4). Three up on a desktop, two around 720px, one below
+ * ~560.
  *
  * The cards share one frame so the set reads as a set and the labels sit
  * on one line. The frame has to be measured: Retro's Polaroid runs half
@@ -1337,20 +1625,9 @@ function TemplateStage({ artistName, spotIdx, ux, onChangeUx, onPick }) {
  * and `fit` shrinks whatever overruns it instead of cropping.
  * ------------------------------------------------------------------ */
 
-// mode → how the cards are laid out. Everything else about them is shared.
-const CHOICE_MODE = {
-  // The setup modal: three up on a desktop, two around 720px, one below ~560.
-  modal: { grid: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '16px', label: 12, sub: true },
-  // The sidebar edit panel: two up in a 296px column, whatever the viewport.
-  panel: { grid: 'repeat(2, minmax(0, 1fr))', gap: '8px', label: 11, sub: false },
-  // The canvas rail: one row, scrolled sideways.
-  strip: { grid: null, gap: '12px', label: 11, sub: false },
-}
-
-function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false, onHover, onSelect }) {
+function HeaderChoices({ themeIdx, artistName, sel, onSelect }) {
   const T = THEMES[themeIdx]
   const n = layoutCount('header', T.name)
-  const M = CHOICE_MODE[mode]
 
   // Hover and keyboard focus share one index, so a focused card is lit the
   // same way a hovered one is.
@@ -1361,17 +1638,14 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
   const heights = Object.values(nat).sort((a, b) => a - b)
   const frame = `1180 / ${heights.length ? heights[heights.length >> 1] : SPOT_MIN_H}`
 
-  const idle = dark ? '#2B2B27' : '#E2DFD7'
-  const live = dark ? '#F4F2EC' : '#2B6BE4'
+  const idle = '#E2DFD7'
+  const live = '#2B6BE4'
 
-  const enter = (i) => { setHot(i); if (onHover) onHover(i) }
-  const leave = () => { setHot(-1); if (onHover) onHover(null) }
+  const enter = (i) => setHot(i)
+  const leave = () => setHot(-1)
 
   return (
-    <div style={M.grid
-      ? { display: 'grid', gap: M.gap, gridTemplateColumns: M.grid }
-      : { display: 'flex', gap: M.gap, overflowX: 'auto', paddingBottom: '2px' }}
-    >
+    <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))' }}>
       {Array.from({ length: n }, (_, i) => {
         const on = i === sel
         const [name, what] = headerLayout(T.name, i)
@@ -1383,10 +1657,9 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
             onMouseEnter={() => enter(i)} onMouseLeave={leave}
             onFocus={() => enter(i)} onBlur={leave}
             style={{
-              display: 'flex', flexDirection: 'column', gap: mode === 'panel' ? '5px' : '9px',
+              display: 'flex', flexDirection: 'column', gap: '9px',
               padding: 0, background: 'none', border: 0, cursor: 'pointer', textAlign: 'left',
               fontFamily: 'inherit', color: 'inherit',
-              ...(M.grid ? {} : { flex: '0 0 auto', width: '158px' }),
             }}
           >
             {/* ScaledPreview scales by clientWidth / 1180, so the pane takes its
@@ -1394,12 +1667,11 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
                 only its colour changes, and the ring is an inset outline. */}
             <span style={{
               display: 'block', width: '100%', aspectRatio: frame,
-              borderRadius: mode === 'panel' ? '8px' : '10px', overflow: 'hidden',
+              borderRadius: '10px', overflow: 'hidden',
               border: `2px solid ${on || i === hot ? live : idle}`,
               outline: on ? `2px solid ${live}` : undefined, outlineOffset: '-5px',
-              boxShadow: on && !dark ? '0 0 0 3px rgba(43,107,228,.16)' : undefined,
-              opacity: dark && !(on || i === hot) ? 0.75 : 1,
-              transition: 'border-color .2s, opacity .2s, box-shadow .2s',
+              boxShadow: on ? '0 0 0 3px rgba(43,107,228,.16)' : undefined,
+              transition: 'border-color .2s, box-shadow .2s',
             }}>
               <ScaledPreview
                 height="100%" fit radius={8}
@@ -1413,16 +1685,14 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
             {/* The label is the button's accessible name: ScaledPreview's render
                 is inert and aria-hidden, so nothing else in here has one. */}
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-              <span style={{ flex: mode === 'panel' ? '0 1 auto' : 1, minWidth: 0 }}>
+              <span style={{ flex: 1, minWidth: 0 }}>
                 <span style={{
-                  display: 'block', fontSize: `${M.label}px`, fontWeight: on ? 800 : 700,
+                  display: 'block', fontSize: '12px', fontWeight: on ? 800 : 700,
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{name}</span>
-                {M.sub && (
-                  <span style={{ display: 'block', fontSize: '11px', color: dark ? '#8E8B81' : '#98958A' }}>{what}</span>
-                )}
+                <span style={{ display: 'block', fontSize: '11px', color: '#98958A' }}>{what}</span>
               </span>
-              {on && <Check size={M.label + 1} style={{ flex: 'none', color: dark ? '#F4F2EC' : '#2B6BE4' }} />}
+              {on && <Check size={13} style={{ flex: 'none', color: '#2B6BE4' }} />}
             </span>
           </button>
         )
@@ -1432,170 +1702,140 @@ function HeaderChoices({ themeIdx, artistName, sel, mode = 'modal', dark = false
 }
 
 /* ------------------------------------------------------------------ *
- * §6.1 Stage 0 — which header onboarding to demo
+ * Publish — not in SPEC.md; see README "Deviations from SPEC.md" item 6.
  *
- * Not part of the product: a front door for the client, so the three
- * treatments in §6.2 can be compared on the real editor instead of on a
- * mockup. Picking one sets `st.ux` and nothing else; the flow from the
- * template picker on is identical whichever is chosen.
+ * The demo has no backend and never will, so "published" is a second
+ * browser tab rather than a URL. Two things about that tab matter:
+ *
+ * 1. It is a *live React root*, not a snapshot of the canvas DOM. It has
+ *    to be. EncoreSection carries no media queries — its breakpoints are
+ *    the `narrow`/`mob` booleans and the fixed px of SIZES, baked into
+ *    the view-model — so serialised HTML would be frozen at whatever
+ *    width the editor happened to be showing. Rendering live means the
+ *    published page picks its own Z from its own window width — and,
+ *    past the canvas that frame was drawn at, folds the surplus into the
+ *    gutters so the content column holds its measure while the sections
+ *    still paint the full window. It also leaves the door open for the
+ *    sections to become interactive (see `live` in sectionVm, which
+ *    Repertoire and the header's navigation now read).
+ * 2. Its document is built by DOM mutation, never document.write().
+ *    write() implies document.open(), which rewrites the popup's URL to
+ *    the opener's — the tab would then claim to be the builder, and
+ *    reloading it would load the builder. about:blank is the honest URL.
+ *
+ * The cost is that the tab is a child of the editor: reload or close the
+ * editor and it stops updating. That is §12.1's "no persistence" reaching
+ * one tab further, not a new limit.
  * ------------------------------------------------------------------ */
 
-// A schematic of each treatment: the editor's three regions in flat blocks,
-// with the treatment's own affordance picked out in white. Deliberately not a
-// screenshot — the real thing is one click away, and a small screenshot of a
-// modal grid reads as noise.
-function UxDiagram({ id }) {
-  const bar = { background: '#3A382F', borderRadius: '2px' }
-  const lit = { background: '#F4F2EC', borderRadius: '3px' }
-  return (
-    <div style={{
-      position: 'relative', aspectRatio: '16 / 10', borderRadius: '10px', overflow: 'hidden',
-      background: '#1D1D1A', border: '1px solid #2B2B27', display: 'flex', flexDirection: 'column',
-    }}>
-      {/* top bar */}
-      <div style={{ height: '11%', flex: 'none', background: '#242420', borderBottom: '1px solid #2B2B27' }} />
-      <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-        {/* sidebar */}
-        <div style={{
-          width: '22%', flex: 'none', background: id === 'sidebar' ? '#F4F2EC' : '#242420',
-          borderRight: '1px solid #2B2B27', padding: '7% 5%',
-          display: 'flex', flexDirection: 'column', gap: '7%',
-        }}>
-          {id === 'sidebar' ? (
-            <>
-              <div style={{ height: '9%', ...bar, background: '#1B1A17', width: '70%' }} />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10%' }}>
-                {[0, 1, 2, 3].map((i) => (
-                  <div key={i} style={{
-                    aspectRatio: '16 / 10', borderRadius: '2px',
-                    background: i === 0 ? '#2B6BE4' : '#C9C6BB',
-                  }} />
-                ))}
-              </div>
-            </>
-          ) : [0, 1, 2, 3, 4].map((i) => (
-            <div key={i} style={{ height: '7%', ...bar, width: i === 0 ? '80%' : '60%' }} />
-          ))}
-        </div>
-        {/* canvas */}
-        <div style={{ flex: 1, minWidth: 0, position: 'relative', background: '#151513', padding: '6%' }}>
-          <div style={{
-            height: '46%', borderRadius: '3px', background: '#4A463C',
-            outline: id === 'rail' ? '2px solid #2B6BE4' : undefined, outlineOffset: '1px',
-          }} />
-          <div style={{
-            height: '30%', marginTop: '6%', borderRadius: '3px',
-            background: id === 'rail' ? '#2A2823' : '#33312B',
-          }} />
-          {id === 'rail' && (
-            <div style={{
-              position: 'absolute', left: '6%', right: '6%', bottom: '6%', height: '30%',
-              ...lit, display: 'flex', alignItems: 'center', gap: '4%', padding: '0 5%',
-            }}>
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} style={{
-                  flex: 1, height: '58%', borderRadius: '2px',
-                  background: i === 0 ? '#2B6BE4' : '#C9C6BB',
-                }} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-      {id === 'modal' && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(10,9,7,.62)' }}>
-          <div style={{
-            position: 'absolute', left: '14%', right: '14%', top: '18%', bottom: '18%',
-            ...lit, padding: '5%', display: 'flex', flexDirection: 'column', gap: '7%',
-          }}>
-            <div style={{ height: '9%', background: '#1B1A17', borderRadius: '2px', width: '52%' }} />
-            <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '5%' }}>
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <div key={i} style={{ borderRadius: '2px', background: i === 0 ? '#2B6BE4' : '#C9C6BB' }} />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
+// Everything the page needs and nothing the editor adds. Deliberately not
+// makeVm(), which layers on selection, hover, dim and the header's hover
+// preview — none of which a published site has.
+function PublishedPage({ themeIdx, sections, artistName, win }) {
+  // documentElement.clientWidth, not innerWidth: on a classic-scrollbar OS the
+  // latter counts the scrollbar, which would overshoot the surplus below and
+  // leave the column a scrollbar's width narrower than the editor's.
+  const measure = () => win.document.documentElement.clientWidth
+  const [w, setW] = useState(measure)
+
+  useEffect(() => {
+    // Re-measure once: the first read happens before there is any content, so
+    // before the vertical scrollbar exists, and would otherwise leave the
+    // column a scrollbar's width narrow until the window was next resized.
+    setW(measure())
+    const onResize = () => setW(measure())
+    win.addEventListener('resize', onResize)
+    return () => win.removeEventListener('resize', onResize)
+  }, [win])
+
+  // The Figma frames are 390 / 768 / 1440, and the page picks its own.
+  const key = w < 768 ? 'mobile' : w < 1180 ? 'tablet' : 'desktop'
+  const base = SIZES[key]
+
+  // Past the canvas its frame was drawn at, the design does not get wider: the
+  // surplus is split into the gutters, so the content column keeps the measure
+  // the type ramp was tuned for and each section's own background carries the
+  // page out to the window edges as a full-bleed band.
+  //
+  // Doing it through `padX` rather than with a centred wrapper element is what
+  // makes this three lines: `padX` is also what bleedTo() and TornEdge offset
+  // against, so the torn edges, the checker ribbons and the form's grain follow
+  // the gutter out to the true section edge for free. A wrapper would have left
+  // them bleeding to the old 64px and stopping short of the window.
+  //
+  // `surplus` is carried separately for HeaderV0, the one composition that sits
+  // outside the root's padding and has to apply the gutter itself.
+  const surplus = Math.max(0, Math.round((w - parseInt(base.canvasW, 10)) / 2))
+  const padX = `${parseInt(base.padX, 10) + surplus}px`
+  const Z = {
+    ...base, surplus: `${surplus}px`,
+    padX, pad: `${base.padY} ${padX}`,
+    // canvasW is still dropped for '100%': the section fills the window and the
+    // gutter, not a cap, is what holds the column.
+    canvasW: '100%',
+  }
+
+  // §4.8, as the editor derives it at the same names.
+  const navSections = sections
+    .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
+    .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
+
+  return sections.map((sec) => (
+    <EncoreSection key={sec.id} s={sectionVm({
+      themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
+      artistName, Z, mob: key === 'mobile', live: true, navSections,
+    })} />
+  ))
 }
 
-function OptionStage({ current, onPick }) {
-  const [hot, setHot] = useState(-1)
+// Turns a fresh popup into a page that can host a React root. Returns the
+// mount node. Called once per window; re-publishing into an open tab skips it.
+function dressPublishedWindow(win, artistName, pageBg) {
+  const doc = win.document
+  const el = (tag, attrs) => Object.assign(doc.createElement(tag), attrs)
 
-  return (
-    <div className="dark" style={{
-      minHeight: '100dvh', background: '#131311', color: '#F4F2EC', fontFamily: "'Archivo', sans-serif",
-      padding: 'clamp(24px,5vw,40px) 20px', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{ width: '100%', maxWidth: '1100px', display: 'flex', flexDirection: 'column', gap: '22px' }}>
-        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <span style={{
-            alignSelf: 'center', display: 'flex', alignItems: 'center', gap: '7px',
-            fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase',
-            color: '#8E8B81', border: '1px solid #2B2B27', borderRadius: '99px', padding: '6px 13px',
-          }}><Sparkles size={12} /> Prototype</span>
-          <h1 style={{ margin: 0, fontWeight: 800, fontSize: 'clamp(20px,4vw,26px)' }}>
-            How should the first header choice be asked for?
-          </h1>
-          <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.6, color: '#8E8B81', maxWidth: '620px', alignSelf: 'center' }}>
-            Three ways to replace the old “Choose a header” screen. Pick one, then pick a template —
-            the editor opens with that treatment running, and you can come back and try another.
-          </p>
-        </div>
+  doc.head.appendChild(el('base', { href: location.href }))
+  doc.head.appendChild(el('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' }))
 
-        <div style={{
-          display: 'grid', gap: '16px',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        }}>
-          {HEADER_UX.map((o, i) => {
-            const on = o.id === current
-            const up = on || i === hot
-            return (
-              <button
-                key={o.id} type="button"
-                onClick={() => onPick(o.id)}
-                onMouseEnter={() => setHot(i)} onMouseLeave={() => setHot(-1)}
-                onFocus={() => setHot(i)} onBlur={() => setHot(-1)}
-                style={{
-                  display: 'flex', flexDirection: 'column', gap: '13px', textAlign: 'left',
-                  padding: '15px', borderRadius: '14px', cursor: 'pointer',
-                  background: up ? '#1B1A18' : 'none',
-                  border: `1px solid ${up ? '#4A463C' : '#2B2B27'}`,
-                  fontFamily: 'inherit', color: 'inherit',
-                  transition: 'background .2s, border-color .2s, transform .2s',
-                  transform: up ? 'translateY(-2px)' : undefined,
-                }}
-              >
-                <UxDiagram id={o.id} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
-                  <span style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                    <span style={{
-                      fontSize: '10px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase',
-                      color: '#8E8B81',
-                    }}>{o.tag}</span>
-                    <span style={{ fontSize: '16px', fontWeight: 800 }}>{o.name}</span>
-                  </span>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#C8C4B8' }}>{o.sub}</span>
-                  <span style={{ fontSize: '12px', lineHeight: 1.55, color: '#8E8B81' }}>{o.blurb}</span>
-                  <span style={{ fontSize: '12px', lineHeight: 1.55, color: '#6E6B62' }}>
-                    <strong style={{ color: '#8E8B81', fontWeight: 700 }}>Tradeoff:</strong> {o.trade}
-                  </span>
-                </div>
-                <span style={{
-                  marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '7px',
-                  fontSize: '13px', fontWeight: 800,
-                  color: up ? '#F4F2EC' : '#8E8B81', transition: 'color .2s',
-                }}>Try this one <ArrowRight size={14} /></span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
+  // One clone covers every build mode: the Google Fonts <link>s from
+  // index.html (nothing is bundled), Vite's dev-injected <style> tags, and
+  // the single inlined <style> that vite-plugin-singlefile emits. It also
+  // carries the three .hv-* classes and the base resets the sections assume.
+  document
+    .querySelectorAll('head style, head link[rel="stylesheet"], head link[rel="preconnect"]')
+    .forEach((n) => doc.head.appendChild(doc.importNode(n, true)))
+
+  doc.title = artistName
+  // On <html>, not <body>: the cloned reset is `html, body { background }`,
+  // and a background on the root element stops body's from propagating — so
+  // setting body alone would leave the editor's stone under a short page.
+  doc.documentElement.style.background = pageBg
+
+  // The nav's scroll, in one delegated listener rather than a handler per link.
+  //
+  // A fragment href can never be followed here: in a popup it resolves against
+  // the *opener's* URL — about:blank inherits it, and <base> above pins it — so
+  // the click would be a cross-document navigation and the published tab would
+  // load the builder. Every fragment is therefore swallowed, exactly as before,
+  // and the scroll is done by hand against this document's own ids. Sections
+  // carry theirs from `vm.anchor` (§4.3a), gated on `live`, so a link that names
+  // nothing on the page — the footer's columns, or a Minimal label whose
+  // sections were all deleted — simply does nothing.
+  doc.addEventListener('click', (e) => {
+    const a = e.target.closest?.('a')
+    const href = a ? a.getAttribute('href') || '' : ''
+    if (!href.startsWith('#')) return
+    e.preventDefault()
+    const target = href.length > 1 && doc.getElementById(href.slice(1))
+    if (!target) return
+    // Read at click time, not once: the OS setting can change under an open tab.
+    const still = win.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' })
+  })
+
+  const mount = el('div', { id: 'root' })
+  doc.body.appendChild(mount)
+  return mount
 }
 
 /* ------------------------------------------------------------------ *
@@ -1615,15 +1855,15 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       device: 'desktop', add: null, menuFor: null,
       hoverId: null, selectedId: null,
       sheet: null, editSheet: false,
-      // §6.1 — which header onboarding is on demo, and whether it is still
-      // running. `hdrHover` is the layout the picker is hovering: the canvas
-      // renders it in place of the committed one, so the page previews at full
-      // size without committing anything (§6.2).
-      ux: HEADER_UX[0].id, onboard: false, hdrHover: null,
+      // §6.2 — whether the header setup modal is still running.
+      onboard: false,
+      // The publish success dialog. The tab it opens is held in a ref, not
+      // in state: nothing renders from it.
+      published: false,
     }
     return ti >= 0
       ? { ...base, stage: 'editor', theme: ti, sections: buildPage(EXAMPLE_PAGE) }
-      : { ...base, stage: 'option', theme: 0, sections: [] }
+      : { ...base, stage: 'template', theme: 0, sections: [] }
   })
 
   const patch = useCallback((p) => setSt((s) => ({ ...s, ...(typeof p === 'function' ? p(s) : p) })), [])
@@ -1650,19 +1890,57 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   // §5.5 — a real phone forces mobile canvas sizing at full width.
   const Z = isMobile ? { ...SIZES.mobile, canvasW: '100%' } : SIZES[st.device]
 
-  // §4.8 — nav links follow the optional sections currently on the page.
+  // §4.8 — nav links follow the optional sections currently on the page, and
+  // carry the category as the anchor the published page scrolls to (§4.3a).
   const navSections = sections
     .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
-    .map((s) => catName(s.cat))
+    .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
+
+  /* ---- publish ----------------------------------------------------- */
+
+  const pubWin = useRef(null)
+  const pubRoot = useRef(null)
+
+  const closePublished = useCallback(() => {
+    // Unmount before the window goes: a root left mounted in a closed
+    // document throws on the next state update from a resize listener.
+    if (pubRoot.current) pubRoot.current.unmount()
+    pubRoot.current = null
+    pubWin.current = null
+  }, [])
+
+  useEffect(() => closePublished, [closePublished])
+
+  const openPublished = useCallback(() => {
+    const open = pubWin.current && !pubWin.current.closed
+
+    // window.open has to happen inside the click or the popup blocker eats
+    // it, so it cannot wait behind anything asynchronous.
+    const win = open ? pubWin.current : window.open('', '_blank')
+    if (!win) { toast('Allow pop-ups to open your published site'); return }
+
+    if (!open) {
+      pubWin.current = win
+      pubRoot.current = createRoot(dressPublishedWindow(win, artistName, THEMES[st.theme].palette[0]))
+      win.addEventListener('pagehide', closePublished)
+    } else {
+      win.document.documentElement.style.background = THEMES[st.theme].palette[0]
+    }
+
+    // Publishing again re-renders the tab that is already open rather than
+    // piling up tabs — the edit-and-republish loop is the demo.
+    pubRoot.current.render(
+      <PublishedPage
+        themeIdx={st.theme} sections={st.sections} artistName={artistName} win={win}
+      />,
+    )
+    win.focus()
+    patch({ published: false })
+  }, [artistName, closePublished, patch, st.sections, st.theme, toast])
 
   /* ---- mutations (§5.6) ------------------------------------------- */
 
-  // §6.2b — while the guided panel is up the header stays selected: a stray
-  // click on the canvas would otherwise fold the coach mark away mid-sentence.
-  const closeAll = useCallback(() => patch((s) => ({
-    menuFor: null,
-    ...(s.onboard && s.ux === 'sidebar' ? {} : { selectedId: null }),
-  })), [patch])
+  const closeAll = useCallback(() => patch({ menuFor: null, selectedId: null }), [patch])
 
   const move = useCallback((id, dir) => patch((s) => {
     if (!canMove(s.sections, id, dir)) return {}
@@ -1745,23 +2023,18 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     const hovered = st.hoverId === sec.id
     const up = canMove(arr, sec.id, -1)
     const down = canMove(arr, sec.id, 1)
-    // §6.2 — hovering a card in any of the three pickers previews that layout
-    // on the canvas at full size. Nothing is committed until it is clicked, so
-    // this replaces the arch for rendering only; sec.arch is untouched.
     const isHeader = sec.cat === 'header'
-    const arch = isHeader && st.hdrHover !== null ? st.hdrHover : sec.arch
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
+      // §6.2 — while the setup modal is up the header's own badge names the
+      // layout, so the click that swapped it is legible on the page itself.
       overlayLabel: isHeader && st.onboard
-        ? `${cat.name} · ${headerLayout(T.name, arch)[0]}`
+        ? `${cat.name} · ${headerLayout(T.name, sec.arch)[0]}`
         : cat.name + (selected ? ' · editing' : ''),
-      // §6.2 rail — the header stays ringed and everything under it stays
-      // knocked back for as long as the rail is up, whatever is selected.
-      showOverlay: hovered || selected || (st.onboard && st.ux === 'rail' && isHeader),
-      dim: st.onboard && st.ux === 'rail' && !isHeader,
+      showOverlay: hovered || selected,
       locked: sec.cat === 'header' || sec.cat === 'footer',
       canUp: up, canDown: down,
       upC: up ? '#8B887D' : '#DDDAD1',
@@ -1777,34 +2050,22 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const selectedSec = selectedIdx >= 0 ? sections[selectedIdx] : null
   const selectedVm = selectedIdx >= 0 ? vms[selectedIdx] : null
 
-  /* ---- §6.2 the header onboarding, in whichever of the three shapes ---- */
+  /* ---- §6.2 the header setup modal --------------------------------- */
 
   const headerSec = sections.find((x) => x.cat === 'header')
   const onboarding = st.onboard && !!headerSec
   const nHeader = layoutCount('header', T.name)
   const headerArch = headerSec ? headerSec.arch : 0
 
-  // Committing is the same act in all three: set the layout, drop the preview.
-  // The picker stays open afterwards — the first click is a try, not a verdict.
+  // Clicking a card swaps the real header behind the modal, at full size. The
+  // modal stays open afterwards — a click is a try, not a verdict, and
+  // "Use this header" is what ends it.
   const pickHeader = useCallback((i) => {
     if (!headerSec) return
     setSection(headerSec.id, { arch: i })
-    patch({ hdrHover: null })
-  }, [headerSec, setSection, patch])
+  }, [headerSec, setSection])
 
-  const hoverHeader = useCallback((i) => patch({ hdrHover: i }), [patch])
-  const endOnboard = useCallback(() => patch({ onboard: false, hdrHover: null }), [patch])
-
-  /* ---- stage 0 (§6.1) ----------------------------------------------- */
-
-  if (st.stage === 'option') {
-    return (
-      <OptionStage
-        current={st.ux}
-        onPick={(ux) => patch({ stage: 'template', ux })}
-      />
-    )
-  }
+  const endOnboard = useCallback(() => patch({ onboard: false }), [patch])
 
   /* ---- stage 1 ------------------------------------------------------ */
 
@@ -1813,28 +2074,24 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   //
   // §6 — the old stage 2 is gone. Picking a template builds the page and opens
   // the editor on it directly; the header choice is asked for *inside* the
-  // editor, by whichever treatment §6.1 armed. The header starts on layout 1,
-  // so the page is complete and legible before anything is asked of the user.
+  // editor, by the setup modal (§6.2). The header starts on layout 1, so the
+  // page is complete and legible before anything is asked of the user.
   if (st.stage === 'template') {
     return (
       <TemplateStage
         artistName={artistName}
         spotIdx={st.theme}
-        ux={HEADER_UX.find((o) => o.id === st.ux)}
-        onChangeUx={() => patch({ stage: 'option' })}
         onPick={(i) => patch(() => {
           const next = buildPage(EXAMPLE_PAGE)
           const header = next.find((x) => x.cat === 'header')
           return {
-            stage: 'editor', theme: i, sections: next, onboard: true, hdrHover: null,
-            // Two of the three treatments run out of the header's own edit
-            // panel, so the editor opens on it. The modal does not need it, but
-            // it costs nothing and leaves the same state behind once dismissed.
-            // The mobile edit drawer is opened only by the sidebar treatment —
-            // it would otherwise cover the page at the one moment the user has
-            // not seen it yet.
+            stage: 'editor', theme: i, sections: next, onboard: true,
+            // The editor opens on the header's edit panel: the modal does not
+            // need it, but it is where the user goes next and it leaves the
+            // right state behind once the modal is dismissed. The mobile edit
+            // drawer stays shut — it would cover the page at the one moment
+            // the user has not seen it yet.
             selectedId: header ? header.id : null,
-            editSheet: isMobile && st.ux === 'sidebar' && !!header,
           }
         })}
       />
@@ -1879,10 +2136,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   )
 
 
-  /* ---- §6.2a the setup modal --------------------------------------- */
+  /* ---- §6.2 the setup modal ---------------------------------------- */
 
   const headerModal = (
-    <Dialog open={onboarding && st.ux === 'modal'} onOpenChange={(v) => { if (!v) endOnboard() }}>
+    <Dialog open={onboarding} onOpenChange={(v) => { if (!v) endOnboard() }}>
       <DialogContent
         onClick={stopE} showCloseButton={false}
         className="p-0 gap-0 rounded-[16px] border-0"
@@ -1924,8 +2181,8 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             paint straight over the footer. */}
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: isMobile ? '0 18px 18px' : '0 26px 22px' }}>
           <HeaderChoices
-            themeIdx={st.theme} artistName={artistName} sel={headerArch} mode="modal"
-            onHover={hoverHeader} onSelect={pickHeader}
+            themeIdx={st.theme} artistName={artistName} sel={headerArch}
+            onSelect={pickHeader}
           />
         </div>
 
@@ -1956,68 +2213,62 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     </Dialog>
   )
 
-  /* ---- §6.2c the canvas rail ---------------------------------------- */
+  /* ---- the publish success dialog ---------------------------------- */
 
-  const headerRail = onboarding && st.ux === 'rail' && (
-    <div
-      onClick={stopE}
-      style={{
-        position: 'absolute', zIndex: 30,
-        left: isMobile ? '10px' : '28px', right: isMobile ? '10px' : '28px',
-        bottom: isMobile ? '10px' : '22px',
-        display: 'flex', justifyContent: 'center', pointerEvents: 'none',
-      }}
-    >
-      <div style={{
-        pointerEvents: 'auto', width: '100%', maxWidth: '1180px', background: '#FFFFFF',
-        border: '1px solid #E2DFD7', borderRadius: '14px', boxShadow: '0 14px 38px rgba(20,18,12,.22)',
-        padding: isMobile ? '12px' : '14px 16px',
-        display: 'flex', alignItems: isMobile ? 'stretch' : 'flex-start',
-        flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '10px' : '20px',
-        animation: 'fadeIn .2s ease',
-      }}>
-        <div style={{ width: isMobile ? 'auto' : '212px', flex: 'none', paddingTop: isMobile ? 0 : '2px' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', fontWeight: 800 }}>
-            <span style={{
-              width: '20px', height: '20px', borderRadius: '99px', background: '#1B1A17', color: '#FFFFFF',
-              fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none',
-            }}>1</span>
-            Choose a header layout
-          </span>
-          <span style={{ display: 'block', fontSize: '11px', lineHeight: 1.5, color: '#6B685E', marginTop: '6px' }}>
-            {isMobile
-              ? 'The top of your page. Tap a layout — the page above changes as you try them.'
-              : 'The top of your page. Click a layout — the page above changes as you try them.'}
-          </span>
-        </div>
+  const publishModal = (
+    <Dialog open={st.published} onOpenChange={(v) => { if (!v) patch({ published: false }) }}>
+      <DialogContent
+        onClick={stopE} showCloseButton={false}
+        className="p-0 gap-0 rounded-[16px] border-0"
+        style={{
+          width: 'min(430px, calc(100vw - 28px))', maxWidth: 'none',
+          background: '#FFFFFF', boxShadow: '0 28px 70px rgba(20,18,12,.34)',
+          fontFamily: "'Archivo', sans-serif", color: '#1B1A17', outline: 'none',
+        }}
+      >
+        <div style={{ padding: isMobile ? '20px 18px 16px' : '24px 26px 18px' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: '34px', height: '34px', borderRadius: '99px', marginBottom: '13px',
+            background: '#1B1A17', color: '#FFFFFF',
+          }}><Check size={18} strokeWidth={2.6} /></span>
 
-        <div style={{ flex: 1, minWidth: 0, paddingRight: isMobile ? 0 : '8px' }}>
-          <HeaderChoices
-            themeIdx={st.theme} artistName={artistName} sel={headerArch} mode="strip"
-            onHover={hoverHeader} onSelect={pickHeader}
-          />
+          <DialogTitle style={{ margin: 0, fontSize: isMobile ? '18px' : '20px', fontWeight: 800, letterSpacing: '-.2px' }}>
+            Your site is live
+          </DialogTitle>
+          <DialogDescription style={{ margin: '7px 0 0', fontSize: '13px', lineHeight: 1.55, color: '#6B685E' }}>
+            {artistName}&rsquo;s page is published. Open it to see exactly what a visitor sees.
+          </DialogDescription>
+
+          {/* Shown, not linked: there is no server behind it. */}
+          <div style={{
+            marginTop: '15px', padding: '10px 13px', borderRadius: '9px',
+            background: '#F4F2ED', border: '1px solid #E7E4DC',
+            fontSize: '13px', fontWeight: 600, color: '#3A382F',
+            fontFamily: "'Courier Prime', monospace", overflowWrap: 'anywhere',
+          }}>kaimercer.encore.site</div>
         </div>
 
         <div style={{
-          flex: 'none', display: 'flex', gap: '9px',
-          flexDirection: isMobile ? 'row' : 'column',
-          alignItems: isMobile ? 'center' : 'flex-end',
-          paddingTop: isMobile ? 0 : '22px',
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '14px',
+          padding: isMobile ? '13px 18px' : '14px 26px',
+          borderTop: '1px solid #EEECE6', background: '#FCFBF9',
         }}>
-          <button type="button" onClick={(e) => { stopE(e); endOnboard() }}
+          <button type="button" onClick={(e) => { stopE(e); patch({ published: false }) }}
+            className="hover:text-foreground"
+            style={{ fontSize: '13px', fontWeight: 600, color: '#5B5850', background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit' }}
+          >Close</button>
+          <button type="button" onClick={(e) => { stopE(e); openPublished() }}
             className="hover:bg-primary/90"
             style={{
-              fontSize: '13px', fontWeight: 700, padding: '10px 22px', borderRadius: '9px',
-              background: '#1B1A17', color: '#FFFFFF', border: 0, cursor: 'pointer',
-              fontFamily: 'inherit', flex: isMobile ? 1 : 'none',
+              display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 700,
+              padding: '10px 20px', borderRadius: '9px', background: '#1B1A17', color: '#FFFFFF',
+              border: 0, cursor: 'pointer', fontFamily: 'inherit',
             }}
-          >Looks good</button>
-          <span style={{ fontSize: '11px', color: '#98958A', whiteSpace: 'nowrap' }}>
-            {`${headerArch + 1} of ${nHeader} · ${headerLayout(T.name, headerArch)[0]}`}
-          </span>
+          >Open <ExternalLink size={14} /></button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 
   const PILL = '[&>div:first-child]:!h-[4px] [&>div:first-child]:!w-[40px] [&>div:first-child]:!mt-2 [&>div:first-child]:!bg-[#DDDAD1] [&>div:first-child]:!mb-0'
@@ -2052,14 +2303,14 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         {isMobile ? (
           <div style={{ height: '52px', flex: 'none', background: '#FFFFFF', borderBottom: '1px solid #E2DFD7', display: 'flex', alignItems: 'center', gap: '10px', padding: '0 12px', zIndex: 40 }}>
             <button type="button" aria-label="Back to templates"
-              onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null, onboard: false, hdrHover: null }) }}
+              onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null, onboard: false }) }}
               className="hover:bg-muted"
               style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '3px 9px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
             >‹</button>
             <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '16px' }}>encore</span>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E' }}>{T.name}</span>
             <span style={{ flex: 1 }} />
-            <button type="button" onClick={(e) => { stopE(e); toast('Published to kaimercer.encore.site (demo)') }}
+            <button type="button" onClick={(e) => { stopE(e); patch({ published: true }) }}
               className="hover:bg-primary/90"
               style={{ fontSize: '12px', fontWeight: 700, padding: '7px 14px', borderRadius: '9px', background: '#1B1A17', color: '#FFFFFF', border: 0, cursor: 'pointer' }}
             >Publish</button>
@@ -2069,7 +2320,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             <Tooltip>
               <TooltipTrigger asChild>
                 <button type="button" aria-label="Back to templates"
-                  onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null, onboard: false, hdrHover: null }) }}
+                  onClick={(e) => { stopE(e); patch({ stage: 'template', selectedId: null, menuFor: null, add: null, onboard: false }) }}
                   className="hover:bg-muted"
                   style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '4px 11px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
                 >‹</button>
@@ -2130,7 +2381,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
             <span style={{ flex: 1 }} />
 
-            <button type="button" onClick={(e) => { stopE(e); toast('Published to kaimercer.encore.site (demo)') }}
+            <button type="button" onClick={(e) => { stopE(e); patch({ published: true }) }}
               className="hover:bg-primary/90"
               style={{ fontSize: '13px', fontWeight: 700, padding: '8px 18px', borderRadius: '9px', background: '#1B1A17', color: '#FFFFFF', border: 0, cursor: 'pointer' }}
             >Publish</button>
@@ -2159,8 +2410,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                   <EditPanel
                     sec={selectedSec} vm={selectedVm} api={api}
                     artistName={artistName} themeIdx={st.theme} navSections={navSections}
-                    onboard={onboarding && st.ux === 'sidebar' && selectedSec.cat === 'header'}
-                    onDone={endOnboard}
                   />
                 </>
               ) : (
@@ -2180,15 +2429,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             </div>
           )}
 
-          {/* §8.7 canvas. The rail (§6.2c) docks over it rather than in it:
-              a sibling of the scroll container, so it stays put while the page
-              scrolls under it. */}
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', position: 'relative' }}>
+          {/* §8.7 canvas */}
           <div style={{
             flex: 1, minWidth: 0, overflowY: 'auto', background: '#E4E1DA',
-            padding: isMobile
-              ? `14px 10px ${headerRail ? '150px' : '40px'}`
-              : `28px 28px ${headerRail ? '190px' : '64px'}`,
+            padding: isMobile ? '14px 10px 40px' : '28px 28px 64px',
             display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
           }}>
             <div style={{
@@ -2206,15 +2450,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                     onClick={(e) => { stopE(e); patch({ selectedId: sec.id, menuFor: null }) }}
                   >
                     <EncoreSection s={vm} />
-
-                    {/* §6.2c — the spotlight. Clicks still reach the section
-                        under it: the veil is an emphasis, not a lock. */}
-                    {vm.dim && (
-                      <div style={{
-                        position: 'absolute', inset: 0, zIndex: 15, pointerEvents: 'none',
-                        background: 'rgba(228,225,218,.66)', animation: 'fadeIn .2s ease',
-                      }} />
-                    )}
 
                     {vm.showOverlay && (
                       <div style={{
@@ -2249,8 +2484,6 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                 )
               })}
             </div>
-          </div>
-          {headerRail}
           </div>
         </div>
 
@@ -2352,14 +2585,13 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
               <EditPanel
                 sec={selectedSec} vm={selectedVm} api={api}
                 artistName={artistName} themeIdx={st.theme} navSections={navSections}
-                onboard={onboarding && st.ux === 'sidebar' && selectedSec.cat === 'header'}
-                onDone={endOnboard}
               />
             )}
           </DrawerContent>
         </Drawer>
 
         {headerModal}
+        {publishModal}
 
         <Toaster
           position="bottom-center"

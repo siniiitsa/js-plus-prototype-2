@@ -124,6 +124,39 @@ export const catById = (id) => CATS.find((c) => c.id === id)
 export const catName = (id) => catById(id)?.name ?? id
 
 /* ------------------------------------------------------------------ *
+ * §4.3a Nav targets.
+ *
+ * A published page's nav links scroll to the section they name, so a
+ * link needs a section id as well as a label. `navSections` carries
+ * `{ cat, label }` and a section id *is* its category: addSection()
+ * refuses a category the page already has, so `cat` is unique per page
+ * and reads honestly in a fragment — `#repertoire`, `#calendar`.
+ *
+ * The header's other two controls point at a section too, and so does
+ * the fixed Music / Shows / Book triple, which names no category at
+ * all. Each is a preference list resolved against the page: the first
+ * candidate actually on it wins, and a label whose every candidate is
+ * missing keeps its place in the design and simply does not link.
+ * ------------------------------------------------------------------ */
+
+export const NAV_MINIMAL = [
+  ['Music', ['media', 'audio', 'video', 'repertoire']],
+  ['Shows', ['map', 'calendar']],
+  ['Book', ['form', 'calendar', 'pricing']],
+]
+
+export const CTA_TARGETS = {
+  book: ['form', 'calendar', 'pricing'],
+  listen: ['media', 'audio', 'video'],
+}
+
+export const firstPresent = (prefs, navSections) =>
+  prefs.find((cat) => navSections.some((n) => n.cat === cat))
+
+export const minimalNav = (navSections) =>
+  NAV_MINIMAL.map(([label, prefs]) => ({ label, to: firstPresent(prefs, navSections) }))
+
+/* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * For everything except the header, more layout choices are offered
  * than there are designs; the rendered design is `arch % NVAR[cat]`.
@@ -188,41 +221,6 @@ export const headerLayoutLabel = (themeName, i) =>
   `Header layout ${i + 1} · ${headerLayout(themeName, i)[0]}`
 
 /* ------------------------------------------------------------------ *
- * §4.4c The three header-onboarding treatments on demo (§6).
- *
- * This build ships all three side by side so the client can compare
- * them on the real editor rather than on a mockup. `id` is the value of
- * `st.ux`; the editor reads nothing else off this table.
- * ------------------------------------------------------------------ */
-
-export const HEADER_UX = [
-  {
-    id: 'modal',
-    tag: 'Option A',
-    name: 'Setup modal',
-    sub: 'A grid over the finished page',
-    blurb: 'The editor loads with the whole page behind a scrim, and the six headers sit on top of it. One decision, unmissable, with the page it belongs to visible behind.',
-    trade: 'Still a gate — “Decide later” has to be a real exit.',
-  },
-  {
-    id: 'sidebar',
-    tag: 'Option B',
-    name: 'Guided sidebar',
-    sub: 'A coach mark on the real control',
-    blurb: 'Nothing blocks. The editor opens with the header selected and the sidebar already on its edit panel, layouts expanded into a grid. Content fields wait their turn.',
-    trade: 'The quietest of the three — it can be scrolled past.',
-  },
-  {
-    id: 'rail',
-    tag: 'Option C',
-    name: 'On-canvas rail',
-    sub: 'Choose on the header itself',
-    blurb: 'The page renders, everything below the header dims, and a rail of layouts docks over the canvas. Clicking one swaps the real header in place, at full size.',
-    trade: 'A mode, and it covers the foot of the canvas.',
-  },
-]
-
-/* ------------------------------------------------------------------ *
  * §4.5 FLAG — category id → 2-letter view-model boolean key
  * ------------------------------------------------------------------ */
 
@@ -280,31 +278,44 @@ export const CITIES = [
   { date: '19 Sep', city: 'Glasgow',    venue: 'Sub Club',            status: 'Tickets'  },
 ]
 
-export const REP = [
-  { genre: 'House',    items: ['Deep & rolling', 'Piano classics', 'UK garage crossover'] },
-  { genre: 'Disco',    items: ['70s floor-fillers', 'Nu-disco edits', 'Rare groove'] },
-  { genre: 'Classics', items: ['Motown & soul', 'Indie anthems', 'Last-dance ballads'] },
-]
-
 export const PINS = [{ x: '20%', y: '26%' }, { x: '40%', y: '54%' }, { x: '62%', y: '28%' },
                      { x: '74%', y: '64%' }, { x: '46%', y: '76%' }]
 
 /* --- §10.2 demo content introduced by the Figma page ---------------- *
- * Static like TRACKS / CITIES / REP above: this is the picture of a
- * finished site, not editable copy, so none of it gets a FIELDS entry.
+ * Static like TRACKS / CITIES above: this is the picture of a finished
+ * site, not editable copy, so none of it gets a FIELDS entry — with the
+ * one exception of SONGS, which the artist owns (FIELDS.repertoire).
  * ------------------------------------------------------------------- */
 
-// Repertoire — a dense two-column song list with a filter row and pagination.
+// Repertoire — the seeded song list, used whenever the section carries no
+// `songs` key of its own. `tags` is the raw string as the artist would type
+// it, comma-separated; songTags() below is what splits it, and repChips()
+// is what turns the whole list into the section's filter row.
+//
+// The order is column-down, not the Figma frame's reading order: the desktop
+// layout splits the page in half and runs each half down its own column, so
+// songs 1–6 are the left column and 7–12 the right.
 export const SONGS = [
-  ['Valerie', 'Amy Winehouse'],       ['Mr. Brightside', 'The Killers'],
-  ['Superstition', 'Stevie Wonder'],  ['I Wanna Dance', 'Whitney Houston'],
-  ['Uptown Funk', 'Bruno Mars'],      ['September', 'Earth, Wind & Fire'],
-  ['Dancing Queen', 'ABBA'],          ["Don't Stop Me Now", 'Queen'],
-  ['Sex on Fire', 'Kings of Leon'],   ['Rather Be', 'Clean Bandit'],
-  ['Crazy in Love', 'Beyoncé'],       ['Valerie', 'Amy Winehouse'],
+  { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Weddings, Pubs' },
+  { title: 'Superstition',      artist: 'Stevie Wonder',     tags: 'Weddings' },
+  { title: 'Uptown Funk',       artist: 'Bruno Mars',        tags: 'Weddings, Birthdays' },
+  { title: 'Dancing Queen',     artist: 'ABBA',              tags: 'Weddings, Birthdays' },
+  { title: 'Sex on Fire',       artist: 'Kings of Leon',     tags: 'Pubs' },
+  { title: 'Crazy in Love',     artist: 'Beyoncé',           tags: 'Birthdays' },
+  { title: 'Mr. Brightside',    artist: 'The Killers',       tags: 'Pubs, Birthdays' },
+  { title: 'I Wanna Dance',     artist: 'Whitney Houston',   tags: 'Birthdays' },
+  { title: 'September',         artist: 'Earth, Wind & Fire', tags: 'Weddings, Birthdays' },
+  { title: "Don't Stop Me Now", artist: 'Queen',             tags: 'Pubs, Birthdays' },
+  { title: 'Rather Be',         artist: 'Clean Bandit',      tags: 'Weddings' },
+  { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Pubs' },
 ]
-export const REP_FILTERS = ['All', 'Weddings', 'Pubs', 'Birthdays']
-export const SONG_TOTAL = 240
+
+// The chip that clears the filter. It is index 0 of the row and carries a null
+// tag; repChips() skips a tag of the same name so an artist who writes "All" on
+// a song gets one chip here, not two.
+export const REP_ALL = 'All'
+
+// The events map's pager is still a picture, so it keeps its static row.
 export const PAGES = ['1', '2', '3', '…', '20']
 
 // Events map — the upcoming-gigs list beside the map tile.
@@ -339,10 +350,14 @@ export const FOOTER_LINKS = [
   ['Shows/Coverage', 'Pricing', 'Enquiries', 'Reviews'],
 ]
 export const FOOTER_CREDIT = 'A JustPay Product'
+// The frames' own hard break — see sectionVm, which is the other half of it.
+export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
+// No `repertoire` entry: its heading counts the songs (see sectionVm), so a
+// literal here would never be read.
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Tags',
   audio: 'Selected Tracks', video: 'Live at Roomtone', pricing: "Choose the set that's right for your night",
-  repertoire: '240 Songs', gallery: 'See us in action', calendar: 'Availability',
+  gallery: 'See us in action', calendar: 'Availability',
   map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make your night unforgettable.", footer: '' }
 
 export const DEFS = {
@@ -438,12 +453,23 @@ export const FIELDS = {
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
   ],
+  // The second list-shaped content type with a structured editor (see
+  // `repertoire` below): `tracks` here is an array of { title, sub, image },
+  // maintained by TracksField, and each row carries its own artwork rather
+  // than drawing from a section-level photo array. An absent key means the
+  // seeded TRACKS dressed in RETRO_TRACK_ART; an emptied array means no
+  // tracks. The `audio` category keeps the *string* form of the same key —
+  // sectionVm reads both shapes.
   media: [
-    { k: 'images',  l: 'Artwork', type: 'images', max: 6,
-      hint: 'Photos 1–5 are the track thumbnails, in order. Photo 6 is the large now-playing sleeve.' },
+    { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
+      hint: 'Each row is one card in the stack, with its own artwork.' },
+    { k: 'image',   l: 'Now-playing sleeve', type: 'image',
+      hint: 'The large square inside the player.' },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },
-    { k: 'track',   l: 'Featured track', d: 'Late Lights' },
+    { k: 'track',   l: 'Now-playing track', d: NOW_PLAYING.track },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
+    { k: 'soundcloud', l: 'SoundCloud link', d: '',
+      hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
   tags: [
     { k: 'tags', l: 'Tags (comma-separated)', type: 'area', d: TAGS.join(', ') },
@@ -468,8 +494,16 @@ export const FIELDS = {
     { k: 't3n', l: 'Tier 3 name',  d: 'The Festival Set' },
     { k: 't3p', l: 'Tier 3 price', d: '£1,200' },
   ],
+  // The other list-shaped content type with a structured editor rather than a
+  // textarea (see `media` above): `songs` is an array of { title, artist, tags },
+  // and SongsField in EncoreBuilder is the repeater that maintains it. An absent
+  // key means the seeded SONGS; an emptied array means no songs listed.
   repertoire: [
-    { k: 'heading', l: 'Heading', d: '240 Songs' },
+    // No `d`: the heading falls back to the song count, in sectionVm and in
+    // the panel alike, so it cannot claim 240 songs over a list of twelve.
+    { k: 'heading', l: 'Heading' },
+    { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
+      hint: 'Tags become the filter chips above the list — separate them with commas.' },
   ],
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
@@ -500,7 +534,7 @@ export const FIELDS = {
     { k: 'button',  l: 'Button', d: 'Book Now' },
   ],
   footer: [
-    { k: 'statement', l: 'Statement', type: 'area', d: "Let's make your night unforgettable." },
+    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },
     { k: 'copyright', l: 'Small print', def: 'copyright' },
   ],
 }
@@ -545,3 +579,35 @@ export function caseText(t, casing) {
 }
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
+
+// A user-typed outbound URL → an absolute one, or '' if the field is empty.
+//
+// Everything the artist types is meant to leave the page, so a schemeless
+// "soundcloud.com/kai" gets https://. It cannot be left relative: the published
+// tab carries a <base href> to the opener (§ Publish), so a relative href would
+// resolve against the builder and load it over the page. mailto:/tel: and an
+// explicit scheme are passed through untouched.
+export function extUrl(v) {
+  const t = String(v ?? '').trim()
+  if (!t) return ''
+  return /^[a-z][a-z0-9+.-]*:/i.test(t) || t.startsWith('//') ? t : `https://${t}`
+}
+
+// A song's raw `tags` string → its trimmed, non-empty labels.
+export function songTags(str) {
+  return String(str ?? '').split(',').map((t) => t.trim()).filter(Boolean)
+}
+
+// The repertoire filter row: REP_ALL, then every tag any song carries, in
+// first-seen order. Deduped case-insensitively but keeping the casing it was
+// first typed in, so 'Weddings' and 'weddings' are one chip rather than two.
+// `label` is what the chip prints; `tag` is the raw value it matches against,
+// and is null on the All chip.
+export function repChips(songs) {
+  const seen = new Map()
+  ;(songs || []).forEach((sg) => songTags(sg && sg.tags).forEach((t) => {
+    const k = t.toLowerCase()
+    if (k !== REP_ALL.toLowerCase() && !seen.has(k)) seen.set(k, t)
+  }))
+  return [{ label: REP_ALL, tag: null }, ...[...seen.values()].map((t) => ({ label: t, tag: t }))]
+}

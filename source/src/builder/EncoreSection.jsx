@@ -7,11 +7,15 @@
 // names permitted here are the three §3.3 rules that read the `--ac` /
 // `--acFg` custom properties set on the section root.
 //
-// lucide-react is the one import: its icons inherit `currentColor`, so they
-// stay theme-driven, and each takes the px size given in the spec rather
-// than a `size-*` class.
+// lucide-react is the one component/style import: its icons inherit
+// `currentColor`, so they stay theme-driven, and each takes the px size given
+// in the spec rather than a `size-*` class. React itself is imported for
+// `useId` and — since Repertoire's search and chips, and then the header's
+// burger menu, became real controls on the published page — for `useState`,
+// which is gated on `s.live` throughout (§12.7: the editor canvas stays a
+// picture of a website).
 
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import {
   Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
@@ -227,47 +231,155 @@ function Wordmark({ s, logo = false, color, glyph }) {
   )
 }
 
+// A nav link's href, and the whole of the `live` seam for the navigation.
+//
+// On the canvas the link carries no href at all — not `#`, which is what it
+// used to carry. The editor has no handler swallowing fragment clicks, so a
+// bare `#` jumps the builder to its own top and leaves a fragment on its URL;
+// the published tab has one (dressPublishedWindow), and turns the fragment
+// into a scroll. An <a> without an href takes the text cursor, so every link
+// style below states `cursor: 'pointer'` for itself.
+const navHref = (s, to) => (s.live && to ? `#${to}` : undefined)
+
+// navHref's outbound counterpart: an address the artist typed, which leaves the
+// page rather than scrolling it. Same `live` gate — on the canvas a click would
+// navigate the *builder* away from itself — and always a new tab, because
+// dressPublishedWindow's delegated listener swallows fragments and nothing
+// else, so a same-tab click would take the published page with it. Returns the
+// props to spread, or null, so the caller picks its tag the way BookPill does.
+const extLink = (s, url) => (s.live && url
+  ? { href: url, target: '_blank', rel: 'noopener noreferrer' }
+  : null)
+
+// The hamburger, and the panel behind it on the published page.
+//
+// Both narrow reference frames draw the glyph at 26 × 18 — three 2.5px bars,
+// 5px apart — and neither draws what it opens, so the panel is placed rather
+// than transcribed. It is deliberately thin: no Escape key, no scroll lock, no
+// focus trap and no outside-click listener, because every one of those wants an
+// effect and this file's whole React surface is `useId` and `useState`
+// (§12.9). The scrim is the entire viewport and closes on click, which covers
+// most of the same ground.
+//
+// `open` is declared unconditionally — hooks cannot be conditional — and only
+// read under `s.live`, the same shape Repertoire's search and chips take: on
+// the canvas the glyph is the picture it has always been, because a menu that
+// opened there would cover the page it is meant to navigate and select the
+// header on the way.
+function NavMenu({ s, color }) {
+  const [open, setOpen] = useState(false)
+  const c = color || s.tx
+  return (
+    <>
+      <span
+        onClick={s.live ? () => setOpen(true) : undefined}
+        style={col('5px', { width: '26px', flex: 'none', cursor: 'pointer' })}
+      >
+        {[0, 1, 2].map((i) => (
+          <span key={i} style={{
+            height: '2.5px', width: '100%', background: c, borderRadius: '2px',
+          }} />
+        ))}
+      </span>
+
+      {s.live && open && (
+        // The events map's lifted charcoal and its cream: a near-black ground
+        // is what reads under a photographic header, and both are already
+        // resolved on the view-model, so the panel does no colour maths of its
+        // own. `overflowY` is not optional — a phone in landscape cannot fit
+        // thirteen section names and the pill, and with no scroll lock there is
+        // nothing else to reach them by.
+        <div
+          onClick={() => setOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 100, overflowY: 'auto',
+            background: s.mapBg, color: s.mapFg,
+            ...col('30px', { alignItems: 'flex-start', padding: '24px' }),
+          }}
+        >
+          <div style={row('16px', { justifyContent: 'space-between', width: '100%' })}>
+            <Wordmark s={s} logo glyph={27} color={s.mapFg} />
+            <X size={26} style={{ flex: 'none', cursor: 'pointer' }} />
+          </div>
+          <nav style={col('18px', { alignItems: 'flex-start' })}>
+            {s.navLinks.map((l) => (
+              <a key={l.label} href={navHref(s, l.to)}
+                 style={labelStyle(s, s.dispSm, { color: s.mapFg, cursor: 'pointer' })}>{l.label}</a>
+            ))}
+          </nav>
+          <BookPill s={s} to={s.bookTo} full />
+        </div>
+      )}
+    </>
+  )
+}
+
 function NavLinks({ s, color, pills = false }) {
+  // The 390 frames drop the link row; it becomes the burger instead of nothing,
+  // which is what left a published phone with no navigation at all.
+  if (s.mob) return <NavMenu s={s} color={color} />
   const base = {
     fontSize: '10px', fontWeight: 600, letterSpacing: '1.2px',
     textTransform: 'uppercase', color: color || s.tx, opacity: pills ? 1 : 0.8,
-    whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap', cursor: 'pointer',
   }
   return (
     <nav style={{ display: 'flex', alignItems: 'center', gap: pills ? '8px' : '18px', flexWrap: 'wrap' }}>
       {s.navLinks.map((l) => (
-        <a key={l} href="#" style={pills
+        <a key={l.label} href={navHref(s, l.to)} style={pills
           ? { ...base, border: '1px solid rgba(255,255,255,.35)', borderRadius: s.btnR, padding: '5px 12px' }
-          : base}>{l}</a>
+          : base}>{l.label}</a>
       ))}
     </nav>
   )
 }
 
-function BookPill({ s, label }) {
+// `bg` / `fg` / `shadow` are the pricing cards' override: §10.2 gives each tier
+// card its own pill in that card's second hue, on its own colour, over a cream
+// block. Everywhere else the palette-wide pill applies, so they default to it.
+// `full` is the other pricing override — see `scale` below.
+// `to` is the section this pill books at, resolved in the view-model; `ext` is
+// an outbound address instead, for the pills that leave the page. Either way it
+// only becomes a link on the published page: `Tag` is a span everywhere else,
+// and the style object is the same either way, so the picture never moves. The
+// pricing tiers' pills pass no target and stay spans.
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext }) {
   const text = label ?? s.cta1
+  const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
+  const Tag = link ? 'a' : 'span'
   if (s.retro) {
     // Accent-coloured type on a second palette hue, with the offset block.
-    // One Figma pill at three scales: the 768 frame draws it at full size, the
-    // 1180 canvas at × 0.82 and the 390 frame at × 0.62 — and the 390 one takes
-    // its type down with it, where the other two set it at label-md.
+    //
+    // One Figma pill at three scales: the 768 frame draws it at full size and
+    // the 1180 canvas at × 0.82. The 390 *header* takes it down to × 0.62,
+    // where the 390 pricing frame keeps it at full size — hence `full`, which
+    // opts a caller on the mobile canvas back up to the 768 numbers.
     const tab = isTablet(s)
+    const scale = tab || full ? 'full' : s.mob ? 'small' : 'mid'
+    const pick = (fullV, midV, smallV) => (
+      scale === 'full' ? fullV : scale === 'mid' ? midV : smallV
+    )
+    const face = fg ?? s.pillFg
+    const block = shadow ?? s.ac
     return (
-      <span style={{
-        ...row(s.mob ? '6.2px' : tab ? '10px' : '8px'),
-        background: s.pillBg, color: s.pillFg,
-        padding: s.mob ? '6.2px 12.4px' : tab ? '10px 20px' : '8px 16px',
+      <Tag {...link} style={{
+        ...row(pick('10px', '8px', '6.2px')),
+        background: bg ?? s.pillBg, color: face,
+        padding: pick('10px 20px', '8px 16px', '6.2px 12.4px'),
         borderRadius: s.btnR, cursor: 'pointer',
-        boxShadow: s.mob ? hard(s, s.ac, 1.9, 2.5) : hard(s, s.ac, 3, 4),
-        ...labelStyle(s, s.mob ? '12.4px' : undefined),
+        boxShadow: scale === 'small' ? hard(s, block, 1.9, 2.5) : hard(s, block, 3, 4),
+        // The type is one of the scaled dimensions: it was the only one left on
+        // label-md, which made the tablet pill's type *smaller* than the
+        // desktop one's even though every other dimension was bigger.
+        ...labelStyle(s, pick('20px', undefined, '12.4px')),
       }}>
         {text}
-        <Asterisk size={s.mob ? 12.4 : tab ? 20 : 16} color={s.pillFg} />
-      </span>
+        <Asterisk size={pick(20, 16, 12.4)} color={face} />
+      </Tag>
     )
   }
   return (
-    <span style={{
+    <Tag {...link} style={{
       ...row('8px'), background: s.ac, color: s.acFg, fontSize: '10px', fontWeight: 700,
       letterSpacing: '1.2px', textTransform: 'uppercase', padding: '9px 18px',
       borderRadius: s.btnR, cursor: 'pointer', whiteSpace: 'nowrap',
@@ -277,16 +389,20 @@ function BookPill({ s, label }) {
         width: '14px', height: '14px', borderRadius: '999px', background: s.acFg20,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none',
       }}><ArrowRight size={9} /></span>
-    </span>
+    </Tag>
   )
 }
 
-function ListenLink({ s, color }) {
+// Same seam as BookPill: a link to wherever the page plays something, but only
+// once the page is live.
+function ListenLink({ s, color, to }) {
+  const Tag = s.live && to ? 'a' : 'span'
+  const link = s.live && to ? { href: `#${to}` } : null
   return (
-    <span style={{
+    <Tag {...link} style={{
       fontSize: '10px', fontWeight: 700, letterSpacing: '1.2px',
       textTransform: 'uppercase', color: color || s.tx, cursor: 'pointer', whiteSpace: 'nowrap',
-    }}>{s.cta2}</span>
+    }}>{s.cta2}</Tag>
   )
 }
 
@@ -491,8 +607,13 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // `avatar` reads the header's second photo slot, and reads it strictly: an empty
 // avatar is the initials placeholder, never the background photo. That is the
 // whole point of giving it its own upload.
+// `src === undefined` — the prop left off entirely — is what falls back to the
+// section's own photo; `src={null}` is a caller saying "this slot has no
+// picture", and must not inherit it. The media player depends on the
+// difference: its section photo is the now-playing sleeve, and an art-less
+// track row would otherwise wear it.
 function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src }) {
-  const url = avatar ? s.avatar : (src ?? s.image)
+  const url = avatar ? s.avatar : (src === undefined ? s.image : src)
   if (url) {
     return <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
   }
@@ -547,8 +668,9 @@ const SCRIM = {
   hero: 'linear-gradient(0deg, #111111 0%, rgba(17,17,17,0) 100%)',
 }
 
-// §10.2 — one top bar for the hero and the footer. Below `desktop` the links
-// collapse to a hamburger, as they do on both narrow reference frames.
+// §10.2 — the hero's top bar. (The footer builds its own columns.) Below
+// `desktop` the links collapse to a hamburger, as they do on both narrow
+// reference frames — and the hamburger now opens; see NavMenu.
 function NavBar({ s, colour, rule }) {
   const c = colour || s.tx
   const bar = rule || c
@@ -569,24 +691,18 @@ function NavBar({ s, colour, rule }) {
       </div>
       {s.narrow ? (
         <span style={row(tab ? '23px' : '10px')}>
-          <BookPill s={s} />
-          {/* 26 × 18 on both narrow frames: three 2.5px bars, 5px apart. */}
-          <span style={col('5px', { width: '26px', flex: 'none', cursor: 'pointer' })}>
-            {[0, 1, 2].map((i) => (
-              <span key={i} style={{
-                height: '2.5px', width: '100%', background: c, borderRadius: '2px',
-              }} />
-            ))}
-          </span>
+          <BookPill s={s} to={s.bookTo} />
+          <NavMenu s={s} color={c} />
         </span>
       ) : (
         <nav style={row('18px', {
           flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 1 auto', minWidth: 0,
         })}>
           {s.navLinks.map((l) => (
-            <a key={l} href="#" style={labelStyle(s, s.labelMd, { color: c })}>{l}</a>
+            <a key={l.label} href={navHref(s, l.to)}
+               style={labelStyle(s, s.labelMd, { color: c, cursor: 'pointer' })}>{l.label}</a>
           ))}
-          <BookPill s={s} />
+          <BookPill s={s} to={s.bookTo} />
         </nav>
       )}
     </div>
@@ -614,7 +730,13 @@ function HeaderV0({ s }) {
   // brighter than `paper` — which stays the display title's first-word tone.
   const ink = s.retro ? '#FBF6EA' : s.paper
   const aspect = s.mob ? '390 / 844' : s.narrow ? '3 / 4' : '16 / 8.33'
-  const padX = s.mob ? '10px' : tab ? '30px' : s.gPad
+  // This is the one composition outside the root's padding — the root hands it
+  // `padding: 0` so the photograph can reach the section edges — so it is also
+  // the one that has to apply the wide-window gutter itself. Past the canvas
+  // the frame was drawn at, `s.surplus` centres the nav, the identity block and
+  // the chips on the same measure as every section below, while the photograph,
+  // the scrim, the grain and the floor checkerboard keep bleeding.
+  const padX = `calc(${s.surplus} + ${s.mob ? '10px' : tab ? '30px' : s.gPad})`
   const padTop = s.mob ? '24px' : tab ? '30px' : '23px'
   // The checker ribbon on the floor is a fixed height at every breakpoint — the
   // reference does not scale it — so it is added to the identity block's own
@@ -625,7 +747,20 @@ function HeaderV0({ s }) {
 
   return (
     <div style={{
-      position: 'relative', aspectRatio: aspect, overflow: 'hidden',
+      // The aspect ratio is the frame's, but on a window wider than the canvas
+      // it would go on scaling the height with the width — 1333px at 2560. The
+      // clamp is the height this ratio yields *at* the canvas, so it is inert
+      // in the editor and in every thumbnail, and past them the hero stays a
+      // band rather than a wall. Photo is objectFit:cover, so the wider box
+      // crops the photograph instead of stretching it.
+      //
+      // `width: 100%` is load-bearing, not decoration: with an auto width, a
+      // max-height that actually clamps makes the box shrink its *width* to
+      // keep the ratio — the hero would sit at 1180 on a 2560 window with the
+      // page's background either side of it, and its gutters would be computed
+      // against a width it no longer had. Stating the width leaves the ratio
+      // driving the height only.
+      position: 'relative', width: '100%', aspectRatio: aspect, maxHeight: s.heroH, overflow: 'hidden',
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       padding: `${padTop} ${padX} ${padBottom}`, color: ink,
     }}>
@@ -678,11 +813,15 @@ function HeaderV0({ s }) {
 
       {/* The reference seals: 125px centred on (660, 194) of the 768 frame,
           85px centred on (335, 169) of the 390 one. */}
+      {/* `right` takes the gutter too, or a wide window would strand the seal
+          out by the window edge instead of over the identity block. `top` needs
+          nothing: the height is clamped to the frame's, so its percentage
+          resolves against the same number it always did. */}
       <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32.38} ink="#FBF6EA"
                  size={s.mob ? 85 : tab ? 125 : undefined}
                  style={{
                    top: s.mob ? '14.9%' : tab ? '12.8%' : '14%',
-                   right: s.mob ? '3.3%' : tab ? '5.9%' : '3%',
+                   right: `calc(${s.surplus} + ${s.mob ? '3.3%' : tab ? '5.9%' : '3%'})`,
                  }} />
 
       {/* The §10.2 hero frame itself has no floor trim; this is the checker
@@ -710,11 +849,11 @@ function HeaderV1({ s }) {
         justifyContent: 'space-between', padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
       }}>
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          {!s.mob && <NavLinks s={s} color="#FFFFFF" pills />}
+          <NavLinks s={s} color="#FFFFFF" pills />
           <Wordmark s={s} color="#FFFFFF" />
           <span style={row('14px')}>
-            <ListenLink s={s} color="#FFFFFF" />
-            <BookPill s={s} />
+            <ListenLink s={s} color="#FFFFFF" to={s.listenTo} />
+            <BookPill s={s} to={s.bookTo} />
           </span>
         </div>
         <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
@@ -748,8 +887,8 @@ function HeaderV2({ s }) {
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap', paddingRight: sealGap(s) })}>
           <Wordmark s={s} logo color="#FFFFFF" />
           <span style={row('18px')}>
-            {!s.mob && <NavLinks s={s} color="#FFFFFF" />}
-            <BookPill s={s} />
+            <NavLinks s={s} color="#FFFFFF" />
+            <BookPill s={s} to={s.bookTo} />
           </span>
         </div>
         <div style={col('14px', { alignItems: 'flex-end', padding: s.mob ? '0' : '32px' })}>
@@ -775,11 +914,11 @@ function HeaderV3({ s }) {
     <div style={{ position: 'relative' }}>
       <Checkerboard s={s} style={{ marginBottom: '20px' }} />
       <div style={row('20px', { justifyContent: 'space-between', flexWrap: 'wrap', marginBottom: s.navGap })}>
-        {!s.mob && <NavLinks s={s} pills={false} />}
+        <NavLinks s={s} pills={false} />
         <Wordmark s={s} />
         <span style={row('14px')}>
-          <ListenLink s={s} />
-          <BookPill s={s} />
+          <ListenLink s={s} to={s.listenTo} />
+          <BookPill s={s} to={s.bookTo} />
         </span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '44px', alignItems: 'center' }}>
@@ -837,11 +976,11 @@ function HeaderV4({ s }) {
         padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
       }}>
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          {!s.mob && <NavLinks s={s} color="#FFFFFF" pills />}
+          <NavLinks s={s} color="#FFFFFF" pills />
           <Wordmark s={s} color="#FFFFFF" />
           <span style={row('14px')}>
-            <ListenLink s={s} color="#FFFFFF" />
-            <BookPill s={s} />
+            <ListenLink s={s} color="#FFFFFF" to={s.listenTo} />
+            <BookPill s={s} to={s.bookTo} />
           </span>
         </div>
       </div>
@@ -900,8 +1039,8 @@ function HeaderV5({ s }) {
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap', paddingRight: sealGap(s) })}>
           <Wordmark s={s} logo color="#FFFFFF" />
           <span style={row('18px')}>
-            {!s.mob && <NavLinks s={s} color="#FFFFFF" />}
-            <BookPill s={s} />
+            <NavLinks s={s} color="#FFFFFF" />
+            <BookPill s={s} to={s.bookTo} />
           </span>
         </div>
         <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
@@ -1222,7 +1361,7 @@ function Media({ s }) {
                 borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
                 // The frame borders only the open cards' art, hairline.
                 border: s.retro ? (filled ? 'none' : `1px solid ${ink}`) : `${s.bw} solid ${fg}`,
-              }}><Photo s={s} initialsSize={14} src={s.images[i]} /></span>
+              }}><Photo s={s} initialsSize={14} src={t.img} /></span>
               {filled && <Grain s={s} exact blend="screen" opacity={0.4} />}
             </div>
           )
@@ -1247,7 +1386,7 @@ function Media({ s }) {
           width: desk ? '207px' : '252px', maxWidth: '100%',
           aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
           borderRadius: s.retro ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
-        }}><Photo s={s} initialsSize={44} src={s.images[5] ?? s.images[0]} /></div>
+        }}><Photo s={s} initialsSize={44} /></div>
         <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
           {/* The frame sets the now-playing block in the body face, like a real
               player UI — not the display serif. */}
@@ -1273,16 +1412,20 @@ function Media({ s }) {
     )
 
     // Frame 446:2265 — accent pill with beige Anton type and a mustard block,
-    // the inverse of the Book Now pill.
+    // the inverse of the Book Now pill. It is the section's one outbound link:
+    // with a Soundcloud address typed in, the published page opens it in a new
+    // tab; with the field empty, or on the canvas, it stays the picture it was.
+    const sc = extLink(s, s.soundcloud)
+    const Pill = sc ? 'a' : 'span'
     const pill = s.retro ? (
-      <span style={{
+      <Pill {...sc} style={{
         ...row('8px'), background: s.ac, color: s.bg, cursor: 'pointer',
         padding: desk ? '8px 16px' : '10px 20px', borderRadius: s.btnR,
         boxShadow: hard(s, s.pillBg, 3, 4),
         ...labelStyle(s, desk ? '16px' : '20px'),
-      }}>Soundcloud</span>
+      }}>Soundcloud</Pill>
     ) : (
-      <BookPill s={s} label="Soundcloud" />
+      <BookPill s={s} label="Soundcloud" ext={s.soundcloud} />
     )
 
     return (
@@ -1313,16 +1456,20 @@ function Media({ s }) {
       <div style={{ display: 'grid', gridTemplateColumns: s.g3, gap: '20px' }}>
         {s.tracks3.map((t, i) => (
           <div key={i} style={{ border: `1.5px solid ${s.line}`, borderRadius: s.radius, padding: '18px', ...col('14px') }}>
+            {/* The track's own artwork where it has some, the big numeral where
+                it does not — this layout has no other picture to fall back on. */}
             <div style={{
-              background: s.soft, borderRadius: s.radiusSm, aspectRatio: '1',
+              background: s.soft, borderRadius: s.radiusSm, aspectRatio: '1', overflow: 'hidden',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <span style={{ fontFamily: s.display, fontSize: '26px', color: s.muted, letterSpacing: s.dls }}>{t.n}</span>
+              {t.img
+                ? <img src={t.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                : <span style={{ fontFamily: s.display, fontSize: '26px', color: s.muted, letterSpacing: s.dls }}>{t.n}</span>}
             </div>
             <div style={row('12px', { justifyContent: 'space-between' })}>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: '14px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</div>
-                <div style={{ fontSize: '12px', color: s.muted }}>{t.dur}</div>
+                <div style={{ fontSize: '12px', color: s.muted }}>{t.sub}</div>
               </div>
               <span style={{
                 width: '36px', height: '36px', borderRadius: '999px', background: s.ac, color: s.acFg,
@@ -1332,6 +1479,15 @@ function Media({ s }) {
           </div>
         ))}
       </div>
+      {/* This layout draws no Soundcloud pill of its own — unlike the reference
+          design above, where it is part of the frame. It appears only once the
+          artist has an address for it, so a layout switch never grows a button
+          that leads nowhere. */}
+      {s.soundcloud && (
+        <span style={{ alignSelf: 'flex-start' }}>
+          <BookPill s={s} label="Soundcloud" ext={s.soundcloud} />
+        </span>
+      )}
     </div>
   )
 }
@@ -1467,33 +1623,69 @@ function Video({ s }) {
 }
 
 // v0 — Pricing layout 1 · 3-col in soft panel (§10.2 reference design): three
-// cards, each in its own palette hue, each a degree or two off square and
-// throwing a hard offset block in the next hue along.
+// cards, each in its own palette hue, each a degree or two off square. Every
+// accent inside a card — the price numeral, the tick, the [ico] chip, the Book
+// Now pill and the hard offset block it throws — is that card's *second* hue,
+// `t.acc` (see the pricing branch of sectionVm).
 function Pricing({ s }) {
   if (s.v0) {
-    const TILT = [-0.6, 1.6, -1.1]
+    const TILT = [1, -3, 2]
+    // §5.5 — the 768 and 390 frames are exactly the tablet and mobile canvases,
+    // so their numbers are verbatim where the desktop ones are the 1440 frame
+    // × 0.82. Most of what the two narrow frames set they set identically, so
+    // those read `s.narrow`; only the four places they genuinely diverge —
+    // the column count, the card padding, the tier head's axis and the tier
+    // name — split on `tab` / `s.mob`.
+    //
+    // Neither narrow frame is a squeezed desktop: both stack the head into a
+    // column, tablet keeps three columns while mobile overlaps one, and mobile
+    // is the only frame that draws its cards' pills at the header's full size.
+    //
+    // NB both narrow frames render with another template's type tokens resolved
+    // in (Bebas Neue for display, Chakra Petch for ui) where the desktop one
+    // resolves Retro's — the pill and the tier name, hard-coded to Anton in the
+    // mobile frame, are the tell. Only the layout and the sizes are taken from
+    // them; the faces stay the theme's, as everywhere else.
+    const tab = isTablet(s)
     return (
-      <div style={col(s.mob ? '20px' : '30px')}>
-        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
+      <div style={col(s.narrow ? '32px' : '26px')}>
+        <div style={s.narrow
+          ? col('24px', { alignItems: 'flex-start' })
+          : row('20px', { justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' })}>
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.1,
-            letterSpacing: s.dls, color: s.ac, maxWidth: '18ch',
+            letterSpacing: s.dls, color: s.ac,
+            maxWidth: s.mob ? '100%' : tab ? '640px' : '44%',
           }}>{s.title}</h2>
+          {/* The one row in §10.2 whose chips are body-bold sentence case rather
+              than Anton caps, and whose selected chip drops its rule. */}
           <div style={row('8px', { flexWrap: 'wrap' })}>
             {s.tierModes.map((m, i) => (
               <span key={m} style={{
-                border: `${s.bw} solid ${s.tx}`, borderRadius: s.btnR, padding: '5px 14px',
+                border: i === 0 ? 'none' : `${s.bw} solid ${s.tx}`,
+                borderRadius: s.btnR, padding: s.narrow ? '5px 11px' : '4px 9px',
                 background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : s.tx,
-                boxShadow: i === 0 ? hard(s, s.pillBg, 3, 3) : 'none', cursor: 'pointer',
-                ...labelStyle(s, s.eyebrow),
+                boxShadow: i === 0 ? hard(s, s.pillBg, 3, 4) : 'none', cursor: 'pointer',
+                fontFamily: s.body, fontSize: s.narrow ? '12.5px' : '10px',
+                fontWeight: 700, whiteSpace: 'nowrap',
               }}>{m}</span>
             ))}
           </div>
         </div>
 
         <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr 1fr',
-          gap: s.mob ? '22px' : '30px', alignItems: 'stretch',
+          // Three columns everywhere but the 390 frame, which stacks them — and
+          // under Retro stacks them *overlapping*: each card but the last is
+          // pulled 18px into the next, so the deck reads as thrown down rather
+          // than laid out. Later cards paint over earlier ones by document
+          // order, which is the way round the reference has it. The overlap is
+          // §10.2 decoration in the same class as tilt() and hard() — it only
+          // reads because the cards are rotated and throw an offset block — so
+          // the four flat templates keep a plain gap instead of butting their
+          // borders together.
+          display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr 1fr',
+          gap: s.mob ? (s.retro ? '0' : '22px') : tab ? '20px' : '36px',
+          alignItems: 'stretch',
         }}>
           {s.tiers.map((t, i) => {
             const money = String(t.price)
@@ -1504,51 +1696,99 @@ function Pricing({ s }) {
                 position: 'relative', transform: tilt(s, TILT[i]),
                 background: t.card, color: t.cardFg,
                 border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius,
-                padding: s.mob ? '20px' : '26px',
-                boxShadow: hard(s, s.tiers[(i + 1) % s.tiers.length].card, 6, 6),
-                display: 'flex', flexDirection: 'column', gap: s.mob ? '14px' : '18px',
+                padding: s.mob ? '24px' : tab ? '30px 20px' : '20px',
+                marginBottom: s.mob && s.retro && i < s.tiers.length - 1 ? '-18px' : undefined,
+                // The block behind the card is the card's own second hue, so the
+                // gold card throws orange and the other two throw gold.
+                boxShadow: s.narrow ? hard(s, t.acc, 8, 8) : hard(s, t.acc, 6.6, 6.6),
+                display: 'flex', flexDirection: 'column', gap: s.narrow ? '14px' : '12px',
                 transition: 'background-color .45s ease, color .45s ease',
               }}>
-                <Grain s={s} opacity={0.22} radius={s.radius} />
-                <span style={row('10px', { position: 'relative' })}>
+                {/* Figma composites the texture sheet at mix-blend-screen, and
+                    `exact` is what keeps that rather than the softened treatment
+                    every other section gets. .18 is where the three card hues
+                    land on the reference's measured surface; .4 (the sheet's own
+                    opacity in Figma, over a sheet cropped differently) washes
+                    them out, and the soft-light default darkens them. */}
+                <Grain s={s} opacity={0.18} blend="screen" exact radius={s.radius} />
+                {/* The chip sits beside the name on desktop and above it on the
+                    narrower tablet card, where the name also steps up to the
+                    theme's label-md. */}
+                {/* The chip sits beside the name on the 1440 and 390 frames and
+                    above it on the narrower tablet card, where the name also
+                    steps up. */}
+                <span style={tab
+                  ? col('10px', { position: 'relative', alignItems: 'flex-start' })
+                  : row(s.mob ? '10px' : '8px', { position: 'relative' })}>
                   <span style={{
-                    border: `1.5px solid ${t.cardFg}`, borderRadius: '6px', padding: '2px 6px',
-                    fontFamily: s.body, fontSize: '10px', opacity: 0.85,
+                    background: t.acc, color: t.card, borderRadius: '4px',
+                    padding: s.narrow ? '4px 6px' : '3px 5px',
+                    fontFamily: s.body, fontSize: s.narrow ? '10px' : '9px',
                   }}>ico</span>
-                  <span style={labelStyle(s, s.labelXs)}>{t.name}</span>
+                  <span style={labelStyle(s, s.mob ? '16px' : tab ? '20px' : '13px',
+                    // Anton is wider than the face the tablet frame rendered, so
+                    // matching its cap height overshoots its measure — and the
+                    // four other templates' label faces are wider again. Letting
+                    // the name wrap is what keeps 20px safe off Retro. The 390
+                    // card is wide enough not to need it.
+                    tab ? { whiteSpace: 'normal' } : undefined)}>{t.name}</span>
                 </span>
 
-                <span style={row('6px', { alignItems: 'baseline', position: 'relative' })}>
-                  <span style={{ fontFamily: s.body, fontSize: s.labelXs }}>{symbol}</span>
-                  <span style={{ fontFamily: s.display, fontSize: s.dispSm, letterSpacing: s.dls }}>{amount}</span>
-                  <span style={{ fontFamily: s.body, fontSize: s.eyebrow, color: t.cardMut }}>/event</span>
+                <span style={row(s.narrow ? '4px' : '3px', {
+                  alignItems: 'baseline', position: 'relative',
+                })}>
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
+                  }}>{symbol}</span>
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.narrow ? '40px' : s.dispSm,
+                    lineHeight: s.narrow ? 0.825 : 0.85,
+                    letterSpacing: s.dls, color: t.acc,
+                  }}>{amount}</span>
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
+                  }}>/event</span>
                 </span>
 
                 <p style={{
-                  margin: 0, position: 'relative', fontFamily: s.body, fontSize: s.eyebrow,
-                  lineHeight: 1.5, color: t.cardMut,
+                  margin: 0, position: 'relative', fontFamily: s.body,
+                  fontSize: s.narrow ? '13px' : s.eyebrow,
+                  lineHeight: s.narrow ? '20px' : 1.5, color: t.cardMut,
                 }}>{t.blurb}</p>
 
-                <div style={col('8px', { position: 'relative' })}>
+                <div style={col(s.narrow ? '8px' : '7px', {
+                  position: 'relative', paddingTop: s.narrow ? '4px' : '3px',
+                })}>
                   {t.feats.map((f, j) => (
-                    <span key={j} style={row('8px', {
-                      alignItems: 'flex-start', fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.4,
+                    <span key={j} style={row(s.narrow ? '8px' : '7px', {
+                      fontFamily: s.body, fontSize: s.narrow ? s.labelXs : '16px', lineHeight: 1.26,
                     })}>
-                      <Check size={13} style={{ flex: 'none', marginTop: '2px' }} />
+                      <Check size={s.narrow ? 12 : 11} color={t.acc} style={{ flex: 'none' }} />
                       {f}
                     </span>
                   ))}
                 </div>
 
-                <span style={{ marginTop: 'auto', paddingTop: '6px', position: 'relative' }}>
-                  <BookPill s={s} />
+                {/* The pill hugs its label — without this the wrapper stretches
+                    to the column and the pill inside fills it. */}
+                <span style={{
+                  // The 390 card hugs its content rather than stretching, so
+                  // marginTop:auto does nothing there and the 30px the frame
+                  // puts between the feats and the pill has to come from the
+                  // padding on top of the card's own 14px gap.
+                  marginTop: 'auto', paddingTop: s.mob ? '16px' : '6px',
+                  position: 'relative', alignSelf: 'flex-start',
+                }}>
+                  <BookPill s={s} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob} />
                 </span>
               </div>
             )
           })}
         </div>
 
-        <span style={{ fontFamily: s.body, fontSize: s.eyebrow, color: s.muted }}>{s.pricingSub}</span>
+        <span style={{
+          fontFamily: s.body, fontSize: s.narrow ? '11px' : '10px', color: s.pricingSubFg,
+        }}>{s.pricingSub}</span>
       </div>
     )
   }
@@ -1581,11 +1821,40 @@ function Pricing({ s }) {
 // than dissolving into its own fill, the centred row its tablet uses and the
 // full-measure one its mobile does, on a shorter page list. The map passes
 // none of it and keeps the flatter default.
+// The pager's button row for `n` pages, windowed around the active one and
+// elided with '…' where it skips — the shape the static PAGES constant used to
+// hardcode. Lives here rather than in data.js because the page count depends on
+// the search and chip state, which only this file holds. Returns the labels and
+// the index of the active one *within them*, which is what Pager highlights.
+function pageWindow(n, active, narrow) {
+  if (n <= 1) return { labels: [], at: 0 }
+  const keep = narrow ? 3 : 5          // numbered buttons at most
+  const page = active + 1              // the row is 1-based
+  // The first, the last and the current page are never dropped; the rest fills
+  // outwards from the current one until the row is as long as it may be.
+  const nums = new Set([1, n, page])
+  for (let d = 1; nums.size < keep && d < n; d++) {
+    if (page - d >= 1) nums.add(page - d)
+    if (nums.size < keep && page + d <= n) nums.add(page + d)
+  }
+  const sorted = [...nums].sort((a, b) => a - b)
+  const labels = []
+  sorted.forEach((v, i) => {
+    if (i && v !== sorted[i - 1] + 1) labels.push('…')
+    labels.push(String(v))
+  })
+  return { labels, at: labels.indexOf(String(page)) }
+}
+
+// `frame.active` is an index into the *rendered* button row, which stops
+// matching the page number as soon as pageWindow() elides it with '…' — hence
+// pageWindow returning both. `active`, `onPage` and `onStep` are all optional:
+// omitting them is the events map's static picture of a pager, unchanged.
 function Pager({ s, colour, fill, frame = {} }) {
   const c = colour || s.tx
   const w = frame.size || (s.mob ? 30 : 42)
-  const btn = (key, child, on, ends) => (
-    <span key={key} style={{
+  const btn = (key, child, on, ends, onClick) => (
+    <span key={key} onClick={onClick} style={{
       minWidth: w, height: w, padding: '0 8px',
       borderRadius: frame.radius || s.radiusSm,
       border: `${frame.bw || s.bw} solid ${on ? (frame.activeEdge || s.pillBg) : c}`,
@@ -1602,9 +1871,13 @@ function Pager({ s, colour, fill, frame = {} }) {
     <div style={row('8px', {
       flexWrap: frame.grow ? 'nowrap' : 'wrap', justifyContent: frame.justify,
     })}>
-      {btn('prev', <ArrowLeft size={14} />, false, true)}
-      {(frame.pages || s.pages).map((p, i) => btn(`p${i}`, p, i === 0))}
-      {btn('next', <ArrowRight size={14} />, false, true)}
+      {btn('prev', <ArrowLeft size={14} />, false, true, frame.onStep && (() => frame.onStep(-1)))}
+      {(frame.pages || s.pages).map((p, i) => btn(
+        `p${i}`, p, i === (frame.active || 0), false,
+        // '…' is a gap in the row, not a page.
+        frame.onPage && p !== '…' ? () => frame.onPage(p) : undefined,
+      ))}
+      {btn('next', <ArrowRight size={14} />, false, true, frame.onStep && (() => frame.onStep(1)))}
     </div>
   )
 }
@@ -1622,6 +1895,14 @@ function Pager({ s, colour, fill, frame = {} }) {
 // (bottom-aligned on tablet, stacked on mobile), the two display sizes, and the
 // pager: left on desktop, centred on tablet, full-measure on mobile.
 function Repertoire({ s }) {
+  // The search term, the selected chip and the page. All three are gated on
+  // `s.live` below: they drive real controls in the published tab and are inert
+  // on the editor canvas, which is deliberately a picture of a website (§12.7)
+  // — a live chip there would both filter the list and select the section.
+  const [q, setQ] = useState('')
+  const [chip, setChip] = useState(0)
+  const [page, setPage] = useState(0)
+
   if (s.v0) {
     const tab = isTablet(s)
     const hue = s.repHue   // Retro: olive
@@ -1636,16 +1917,33 @@ function Repertoire({ s }) {
     // selected chip (the media player's) and the blush behind the pager arrows.
     const wine = s.retro ? '#9E1F17' : s.ac
     const blush = s.retro ? '#EDC6B3' : s.soft2
-    // The desktop frame reads its list DOWN each column — the left column is
-    // every other song numbered 1–6, the right the rest numbered 7–12 — so the
-    // numbering follows the layout rather than the SONGS order. Both narrow
-    // frames page six songs, and they are that same left column.
-    const half = Math.ceil(s.songs.length / 2)
-    const evens = s.songs.filter((_, i) => i % 2 === 0)
-    const columns = (s.narrow
-      ? [evens]
-      : [evens, s.songs.filter((_, i) => i % 2 === 1)]
-    ).map((cs, ci) => cs.map((t, i) => ({ ...t, n: ci * half + i + 1 })))
+    // Twelve to a page on desktop, six on both narrow frames — the counts the
+    // reference frames show.
+    const perPage = s.narrow ? 6 : 12
+    // The chip index, clamped: the row is derived from the artist's tags, so a
+    // tag they delete can leave `chip` past the end of it.
+    const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
+    const needle = q.trim().toLowerCase()
+    const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
+    const hit = (t) => (
+      (active === 0 || t.tags.some((g) => eq(g, s.repChips[active].tag)))
+      && (!needle || t.title.toLowerCase().includes(needle) || t.artist.toLowerCase().includes(needle))
+    )
+    const filtered = s.live ? s.songs.filter(hit) : s.songs
+    const pages = Math.max(1, Math.ceil(filtered.length / perPage))
+    // Clamped rather than reset through an effect: a filter that shortens the
+    // list must not strand the pager on a page that no longer exists.
+    const pg = Math.min(page, pages - 1)
+    const shown = filtered.slice(pg * perPage, (pg + 1) * perPage)
+    // The desktop frame reads its list DOWN each column, so the page splits in
+    // half and each half runs down its own column: 1–6 on the left, 7–12 on the
+    // right. The number is the song's place in the artist's list — hence the
+    // page offset — not its place on the screen. Both narrow frames run the
+    // whole six-song page down one column.
+    const half = Math.ceil(shown.length / 2)
+    const columns = (s.narrow ? [shown] : [shown.slice(0, half), shown.slice(half)])
+      .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
+    const { labels, at } = pageWindow(pages, pg, s.mob)
 
     return (
       <div style={{ position: 'relative', ...col(s.narrow ? '32px' : '26px') }}>
@@ -1698,31 +1996,64 @@ function Repertoire({ s }) {
               background: s.ac, color: s.retro ? s.pillBg : s.acFg,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             }}><Search size={s.narrow ? 20 : 17} /></span>
-            <span style={{
-              fontFamily: s.display, fontSize: s.narrow ? '13px' : '11px', letterSpacing: s.dls,
-              color: s.retro ? '#4A4136' : s.muted, whiteSpace: 'nowrap',
-            }}>
-              Search songs or artists…
-            </span>
+            {/* The one place the picture becomes a control: on the published
+                page this is a real field, on the canvas the same span it has
+                always been. Both carry the frame's type, so they measure the
+                same and the field does not jump when the page is published. */}
+            {s.live ? (
+              <input
+                value={q} placeholder="Search songs or artists…"
+                onChange={(e) => { setQ(e.target.value); setPage(0) }}
+                style={{
+                  fontFamily: s.display, fontSize: s.narrow ? '13px' : '11px', letterSpacing: s.dls,
+                  color: s.retro ? '#4A4136' : s.tx,
+                  flex: 1, minWidth: 0, border: 'none', outline: 'none',
+                  background: 'transparent', padding: 0,
+                }}
+              />
+            ) : (
+              <span style={{
+                fontFamily: s.display, fontSize: s.narrow ? '13px' : '11px', letterSpacing: s.dls,
+                color: s.retro ? '#4A4136' : s.muted, whiteSpace: 'nowrap',
+              }}>
+                Search songs or artists…
+              </span>
+            )}
           </div>
         </div>
 
         <div style={row(s.narrow ? '8px' : '7px', { flexWrap: 'wrap' })}>
-          {s.repFilters.map((f, i) => (
-            <span key={i} style={{
-              // The selected chip carries no outline of its own, so it takes a
-              // transparent one to stand the same height as the rest.
-              border: `${s.bw} solid ${i === 0 ? 'transparent' : s.tx}`,
-              borderRadius: s.btnR, padding: s.narrow ? '3px 9px' : '2px 9px',
-              background: i === 0 ? wine : 'transparent', color: i === 0 ? chipFg : s.tx,
-              boxShadow: i === 0 ? hard(s, s.pillBg, s.narrow ? 3 : 2, s.narrow ? 4 : 3) : 'none',
-              cursor: 'pointer',
-              fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '12.5px' : '10px',
-              lineHeight: 1.2, whiteSpace: 'nowrap',
-            }}>{f}</span>
+          {/* Built from the tags the artist typed, so the row is theirs. On the
+              canvas the first chip is selected and nothing else can be, which
+              is exactly the picture the frames show. */}
+          {s.repChips.map((f, i) => (
+            <span
+              key={i}
+              onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
+              style={{
+                // The selected chip carries no outline of its own, so it takes a
+                // transparent one to stand the same height as the rest.
+                border: `${s.bw} solid ${i === active ? 'transparent' : s.tx}`,
+                borderRadius: s.btnR, padding: s.narrow ? '3px 9px' : '2px 9px',
+                background: i === active ? wine : 'transparent', color: i === active ? chipFg : s.tx,
+                boxShadow: i === active ? hard(s, s.pillBg, s.narrow ? 3 : 2, s.narrow ? 4 : 3) : 'none',
+                cursor: 'pointer',
+                fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '12.5px' : '10px',
+                lineHeight: 1.2, whiteSpace: 'nowrap',
+              }}
+            >{f.label}</span>
           ))}
         </div>
 
+        {/* An empty list is a real state now that the songs are the artist's:
+            either they have listed none at all, or a live filter has cleared
+            the page. Only the published page can reach the second. */}
+        {shown.length === 0 ? (
+          <span style={{
+            fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px',
+            color: s.muted, padding: '4px 0',
+          }}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}</span>
+        ) : (
         <div style={{
           display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: '26px',
         }}>
@@ -1774,19 +2105,28 @@ function Repertoire({ s }) {
             </div>
           ))}
         </div>
+        )}
 
-        {/* Mobile spreads five buttons across the measure — the frame drops the
-            middle pages to make room — where tablet centres the full set and
-            desktop sits it at the left edge. */}
-        <Pager s={s} colour={hue} fill={blush} frame={{
-          size: s.narrow ? 54 : 45,
-          radius: s.narrow ? '20px' : '16px',
-          bw: s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw,
-          activeEdge: hue, activeFg: pageFg,
-          font: labelStyle(s, s.narrow ? '12px' : '10px'),
-          justify: tab ? 'center' : undefined,
-          grow: s.mob, pages: s.mob ? s.pages.filter((p, i) => i < 2 || p === '…') : undefined,
-        }} />
+        {/* Derived from the list, so it cannot claim pages that are not there —
+            and gone entirely at one page. Mobile spreads its buttons across the
+            measure and drops the middle pages to make room, where tablet
+            centres the full set and desktop sits it at the left edge. */}
+        {labels.length > 0 && (
+          <Pager s={s} colour={hue} fill={blush} frame={{
+            size: s.narrow ? 54 : 45,
+            radius: s.narrow ? '20px' : '16px',
+            bw: s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw,
+            activeEdge: hue, activeFg: pageFg,
+            font: labelStyle(s, s.narrow ? '12px' : '10px'),
+            justify: tab ? 'center' : undefined,
+            grow: s.mob, pages: labels, active: at,
+            // Static on the canvas, like the search field and the chips.
+            onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+            onStep: s.live
+              ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+              : undefined,
+          }} />
+        )}
       </div>
     )
   }
@@ -2061,71 +2401,148 @@ function Gallery({ s }) {
 // the resulting enquiry line along the foot.
 function Calendar({ s }) {
   if (s.v0) {
+    // §5.5 — one scheduler across three frames: the 768 (986:39251) and 390
+    // (986:39417) ones verbatim, the 1440 one (964:58583) on the 1180 canvas at
+    // × 0.82. The two narrow frames only turn the panel's halves from columns
+    // into rows, which it already does on `s.narrow`, so every dimension below
+    // is the frame's own number through `u()` — the type and the month head at
+    // `scale`, the prints at `pscale`, which the 390 frame alone takes further
+    // down. What the 390 frame genuinely re-sets is listed as it comes: the
+    // column padding, the gaps between cells, the row height, the height of the
+    // prints' half — and the seal, which it drops.
+    const scale = s.narrow || s.mob ? 1 : 0.82
+    const pscale = s.mob ? 0.613 : scale
+    const u = (v) => `${Math.round(v * scale)}px`
+    const pu = (v) => `${Math.round(v * pscale)}px`
+
     const nav = (icon) => (
       <span style={{
-        width: s.mob ? 30 : 40, height: s.mob ? 30 : 40, flex: 'none', borderRadius: s.radiusSm,
-        background: s.pillBg, color: contrastInk(s.pillBg), border: `${s.bw} solid ${s.tx}`,
+        width: u(55), height: u(54), flex: 'none', borderRadius: s.radiusSm,
+        background: s.pillBg, color: s.pillFg, border: `${s.bw} solid ${s.tx}`,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
       }}>{icon}</span>
     )
 
+    // The 1440 and 768 frames space the seven columns by half a cell (30 on a
+    // 60.5 one) and the five weeks by a third; the 390 one closes both to 2 and
+    // takes the row height down with them.
+    const cols = {
+      display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)',
+      columnGap: s.mob ? '2px' : u(30),
+      rowGap: s.mob ? '2px' : u(20),
+    }
+
+    // The frames' own day-name row keeps the desktop's fixed 57.4px cells at
+    // every width, so on the 390 canvas it overruns the panel and the last name
+    // is clipped off. Ours stays on the grid's columns instead: the labels are
+    // only legible over the days they head.
+    const dayName = (d) => (
+      <span key={d} style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: s.body, fontSize: u(15.11), color: s.muted,
+      }}>{d}</span>
+    )
+
+    // The frame's cell is wider than it is tall, edged in a 0.15 hairline, and
+    // the picked day is the accent block lettered in the mustard — no offset
+    // shadow under it.
+    const cell = (c, i) => (
+      <span key={i} style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: u(s.mob ? 55.1 : 57.286),
+        fontFamily: s.body, fontSize: u(18.132),
+        borderRadius: u(12.088),
+        border: c.d === '' ? 'none' : `${s.bw} solid ${c.on ? s.tx : s.line}`,
+        background: c.on ? s.ac : 'transparent',
+        color: c.on ? (s.retro ? s.pillBg : s.acFg) : s.tx,
+        cursor: c.d === '' ? 'default' : 'pointer',
+      }}>{c.d}</span>
+    )
+
     const grid = (
-      <div style={col(s.mob ? '14px' : '20px', { padding: s.mob ? '16px' : '24px' })}>
-        <div style={row('12px', { justifyContent: 'space-between' })}>
-          {nav(<ArrowLeft size={15} />)}
-          <span style={{ fontFamily: s.display, fontSize: s.dispSm, letterSpacing: s.dls, color: s.ac }}>
+      <div style={col(u(21.154), { padding: s.mob ? '20px 10px' : u(30.219) })}>
+        <div style={row(s.mob ? '8px' : '12px', { justifyContent: 'space-between' })}>
+          {nav(<ArrowLeft size={Math.round(16 * scale)} />)}
+          <span style={{
+            fontFamily: s.display,
+            // The 390 frame heads the month at the same 48 as the wider two,
+            // and it only just clears its two nav buttons: 227px of type in the
+            // 240 its 10px gutter leaves. The 390 *canvas* keeps the page's own
+            // 22px gutter, which is 24px it does not have — so the line comes
+            // down instead of wrapping under the buttons. Fraunces measures
+            // within 2px of Soulway here, so this is the canvas, not the face.
+            fontSize: u(s.mob ? 40 : 48),
+            // Fraunces at its natural leading stands half again as tall as its
+            // type size and pushes the header row past the frame's nav; the
+            // frame's own line box is the type size and change.
+            lineHeight: 1.1, letterSpacing: s.dls, color: s.ac,
+          }}>
             {s.calMonth}
           </span>
-          {nav(<ArrowRight size={15} />)}
+          {nav(<ArrowRight size={Math.round(16 * scale)} />)}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: s.mob ? '4px' : '8px' }}>
-          {s.calDays.map((d) => (
-            <span key={d} style={{
-              textAlign: 'center', fontFamily: s.body, fontSize: s.eyebrow, color: s.muted, paddingBottom: '4px',
-            }}>{d}</span>
-          ))}
-          {s.sched.map((c, i) => (
-            <span key={i} style={{
-              aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: s.body, fontSize: s.labelXs, borderRadius: s.radiusSm,
-              border: c.d === '' ? 'none' : `${c.on ? s.bw : '1px'} solid ${c.on ? s.tx : s.line2}`,
-              background: c.on ? s.ac : 'transparent', color: c.on ? s.acFg : s.tx,
-              boxShadow: c.on ? hard(s, s.tx, 2, 2) : 'none', cursor: c.d === '' ? 'default' : 'pointer',
-            }}>{c.d}</span>
-          ))}
+        <div style={{ ...cols, height: u(30.219) }}>{s.calDays.map(dayName)}</div>
+        <div style={cols}>{s.sched.map(cell)}</div>
+      </div>
+    )
+
+    // The frame fans three prints of the same photograph out of the centre of
+    // the half — 366 x 407 at the two wider canvases and 0.613 of that on the
+    // 390 one — leaning 28.7, 3.2 and 15 degrees back to front, each stamped
+    // along its foot with a rule and the location.
+    const LEAN = [28.7, 3.2, 15]
+    const SHIFT = [0, -47.3, -12.1]
+    const stampInk = (s.retro && s.chips[3]?.bg) || s.paperFg
+    const print = (i) => (
+      <div key={i} style={{
+        position: 'absolute', left: '50%', top: '50%', zIndex: i + 1, width: pu(366.382),
+        transform: `translate(calc(-50% + ${pu(SHIFT[i])}), -50%)`
+          + (s.retro ? ` rotate(${LEAN[i]}deg)` : ''),
+        background: s.paper, borderRadius: pu(11.308), boxShadow: soft(s),
+        padding: `${pu(11.308)} ${pu(11.308)} 0`,
+      }}>
+        <div style={{ aspectRatio: '1', overflow: 'hidden', borderRadius: pu(6.219) }}>
+          <Photo s={s} initialsSize={34} />
         </div>
+        <span style={row(pu(12), { height: pu(52), justifyContent: 'space-between' })}>
+          <span style={{ height: '1px', width: pu(107.992), background: stampInk, flex: 'none' }} />
+          <span style={row(pu(5.654), { color: stampInk })}>
+            <span style={labelStyle(s, pu(12.1))}>{s.location}</span>
+            <GlobeMark size={Math.round(15.47 * pscale)} color={stampInk} />
+          </span>
+        </span>
+        {/* The frame lays its scratch sheet over the whole print, paper and
+            all, not just the photograph. At the .5 the photographic cards take
+            it would bleach the paper; .2 is where the print's board still reads
+            as the panel's own tone, as it does in the frame. */}
+        <Grain s={s} exact blend="screen" opacity={0.2} radius={pu(11.308)} />
       </div>
     )
 
     const stack = (
       <div style={{
-        position: 'relative', padding: s.mob ? '20px' : '34px',
-        minHeight: s.mob ? '260px' : '340px', display: 'flex',
-        alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
+        // Stacked, the prints' half has no sibling column to take its height
+        // from and every print in it is absolute, so it states the frame's. On
+        // desktop the grid row is that height already.
+        height: s.narrow ? u(s.mob ? 324 : 553.398) : undefined,
       }}>
-        {[2, 1, 0].map((k) => (
-          <div key={k} style={{
-            position: k === 0 ? 'relative' : 'absolute',
-            width: s.mob ? '70%' : '62%',
-            transform: `${tilt(s, -6 + k * 5)} translate(${k * -10}px, ${k * 6}px)`,
-            background: s.paper, borderRadius: s.radiusSm, boxShadow: soft(s),
-            padding: s.mob ? '8px 8px 22px' : '12px 12px 30px', zIndex: 3 - k,
-          }}>
-            <div style={{ aspectRatio: '4 / 4.4', overflow: 'hidden', borderRadius: '3px' }}>
-              <Photo s={s} initialsSize={34} />
-            </div>
-            {k === 0 && (
-              <span style={row('6px', {
-                position: 'absolute', right: '14px', bottom: '9px', color: s.paperFg,
-              })}>
-                <span style={labelStyle(s, '9px')}>{s.location}</span>
-                <GlobeMark size={11} color={s.paperFg} />
-              </span>
-            )}
-          </div>
-        ))}
-        <SealBadge s={s} hue={s.chips[4 % s.chips.length].bg} size={s.mob ? 66 : 94} tilt={-20}
-                   style={{ right: s.mob ? '6%' : '10%', bottom: s.mob ? '6%' : '8%', zIndex: 4 }} />
+        {[0, 1, 2].map(print)}
+        {/* Pinned to the half's corner, and gone on the 390 frame — which
+            scaled its prints to .613 but left the seal at the left and the size
+            the wider frames give it, so it lands off the end of a half half the
+            width and the panel clips it away. Taken as the absence it renders
+            as; the same leak in that frame's day-name row is not, because there
+            it costs a column its label (see `dayName`). The two frames that do
+            keep the seal do not share an inset: same left, wider half. */}
+        {!s.mob && (
+          <SealBadge s={s} hue={s.chips[4 % s.chips.length].bg}
+                     size={Math.round(125.37 * scale)} tilt={32.38}
+                     style={{
+                       right: u(s.narrow ? 79.8 : 35.8),
+                       bottom: u(s.narrow ? 33.2 : 30.2), zIndex: 4,
+                     }} />
+        )}
       </div>
     )
 
@@ -2133,22 +2550,42 @@ function Calendar({ s }) {
       <div style={{ position: 'relative' }}>
         <TornEdge s={s} side="top" height={30} />
         <div style={{
-          border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius, overflow: 'hidden',
+          // The frame stands the panel a tone off the sheet it sits on, which
+          // for Retro is `paper` over the cream. The flat templates keep the
+          // page ground: their `paper` is the lightest palette colour, which is
+          // also `tx` in a dark palette — the month would be pale on pale.
+          background: s.retro ? s.paper : undefined,
+          border: `${s.bw} solid ${s.tx}`,
+          borderRadius: u(20), overflow: 'hidden',
         }}>
           <div style={{
             display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
             borderBottom: `${s.bw} solid ${s.tx}`,
           }}>
             {grid}
+            {/* A grid item stretches to the row, and so does its own single
+                child once it is a grid too — which is what gives the stack of
+                absolutely placed prints the month's height to centre in. */}
             <div style={{
+              display: 'grid',
               borderLeft: s.narrow ? 'none' : `${s.bw} solid ${s.tx}`,
               borderTop: s.narrow ? `${s.bw} solid ${s.tx}` : 'none',
             }}>{stack}</div>
           </div>
-          <div style={{ padding: s.mob ? '12px 16px' : '16px 24px' }}>
-            <span style={labelStyle(s, s.eyebrow, {
-              color: s.ac, letterSpacing: '0.12em', whiteSpace: 'normal',
-            })}>{s.calEnquiry}</span>
+          <div style={{
+            padding: u(30.22),
+            // Flexed so the strut of the block's own inherited leading does not
+            // stand the line off the frame's foot.
+            display: 'flex', alignItems: 'center',
+          }}>
+            {/* The frame sets this line in Space Mono Bold — the body face in
+                this project's mapping of the reference's three, not the Anton
+                every other small label takes. It wraps on the 390 canvas, as
+                the frame has it. */}
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: u(13.371), lineHeight: 1.3,
+              letterSpacing: '0.08em', textTransform: 'uppercase', color: s.ac,
+            }}>{s.calEnquiry}</span>
           </div>
         </div>
       </div>
@@ -2316,66 +2753,194 @@ function EventsMap({ s }) {
 }
 
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
-// quote card sitting on two rotated coloured cards, flanked by arrows.
+// cream quote card standing on two rotated, ink-outlined coloured cards, with
+// the pager arrows thrown out to the page's own gutters.
 function Testimonials({ s }) {
   if (s.v0) {
+    // §5.5 — three frames: 1440 (964:58585) on the 1180 canvas at × 0.82, 768
+    // (986:39711) and 390 (986:39733) verbatim. The narrow two are not the
+    // desktop squeezed. All three stand the same 730 band, but the desktop lays
+    // the card out landscape at a stated 420, while both narrow frames set it
+    // portrait on its own content, at the desktop's own type sizes — so their
+    // quote runs long and their stops open from 14 to 37. Mobile goes further
+    // and takes the arrows off the card's flanks, setting them in a 270 row
+    // under it. Almost every box below is therefore `narrow ? <frame> :
+    // <frame × 0.82>`, and the two narrow frames differ from each other in the
+    // card's width, the backs behind it and that arrow row.
+    const tab = isTablet(s)
+    const scale = s.narrow ? 1 : 0.82
+    const u = (v) => `${Math.round(v * scale)}px`
     const q = s.quotes[0]
+    const ink = s.paperFg
+    // The frames' 3px stroke, verbatim on both narrow ones; u(3) rounds to 2 on
+    // desktop and reads visibly lighter, so it takes the literal the
+    // repertoire's song cards take, for the same reason.
+    const bw = s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw
+    // The frames' arrow is a 10.23 × 8.91 vector; lucide draws its own inside
+    // 14/24 of the size it is given, so the frame's width backs out to 17.5.
+    const glyph = Math.round(17.5 * scale)
+
     const arrow = (icon) => (
       <span style={{
-        width: s.mob ? 32 : 42, height: s.mob ? 32 : 42, flex: 'none', borderRadius: s.radiusSm,
-        background: s.pillBg, color: contrastInk(s.pillBg), border: `${s.bw} solid ${s.tx}`,
+        width: u(55), height: u(54), flex: 'none', borderRadius: u(18.5),
+        background: s.pillBg, color: s.pillFg, border: `${bw} solid ${ink}`,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
       }}>{icon}</span>
     )
-    const backing = (hue, deg, dx, dy) => (
-      <div style={{
-        position: 'absolute', inset: 0, background: hue, borderRadius: s.radius,
-        transform: `${tilt(s, deg)} translate(${dx}px, ${dy}px)`,
+
+    // Each back as its frame draws it: the chip it is painted in, its rotation,
+    // the offset of its centre from the card's, and the inset of its box off the
+    // card's own — positive pulls it in, negative pushes it out. Desktop stands
+    // 700 × 440 behind a 720 × 420 card, so both backs read as bands above and
+    // below it; the tablet's are 440 behind a 490 card and read as a band across
+    // the top and a strip down the left; the mobile's are narrower than the card
+    // again and read as a top band and one corner. Stating them as insets rather
+    // than boxes keeps that relationship when a long quote grows the card. The
+    // centres are each group's emitted CSS left/top less the card's own:
+    // `get_metadata` gives a rotated group's x/y in its rotated parent's space,
+    // and that does not agree with what the frames render.
+    const backs = s.mob
+      ? [[1, 3, -4.4, -6.3, 16, -5], [3, -3.71, -2, -16.2, 24.9, -5]]
+      : tab
+        ? [[1, 3, -4.4, -36.6, 0.3, 25], [3, -3.71, -2, -46.5, 7.1, 25]]
+        : [[1, 3, -12, -2, 10, -10], [3, -3.71, -2, -11.5, 10, -10]]
+
+    const backing = ([chip, deg, dx, dy, ix, iy], i) => (
+      <div key={i} style={{
+        position: 'absolute', top: u(iy), bottom: u(iy), left: u(ix), right: u(ix),
+        background: s.chips[chip % s.chips.length].bg,
+        border: `${bw} solid ${ink}`, borderRadius: u(18),
+        // Not `tilt()`: it returns the string 'none' off Retro, and a transform
+        // list carrying that is invalid CSS which the browser drops whole.
+        transform: `translate(${u(dx)}, ${u(dy)}) rotate(${deg}deg)`,
       }} />
+    )
+
+    // The frames pair the two pills against each other — orange lettered in the
+    // mustard, mustard lettered in the orange — which is a Retro reading rather
+    // than a legibility rule, so the flat themes keep contrastInk.
+    const tag = (label, bg, fg) => (
+      <span key={label} style={{
+        background: bg, color: fg, borderRadius: s.btnR,
+        padding: `${u(6)} ${u(12)}`, ...labelStyle(s, u(20)),
+        // labelStyle sets Anton's tight 1.1; the frames' pill is a 41px box
+        // round a 29px text box, which is the face's own leading.
+        lineHeight: 29 / 20,
+      }}>{label}</span>
+    )
+
+    // The mobile frame's card is 364 wide in a 390 canvas — wider than the 346
+    // this page's own padX leaves — so there it takes the column instead.
+    const card = (
+      <div style={{
+        position: 'relative', flex: 'none', minWidth: 0,
+        width: s.mob ? 'auto' : u(tab ? 464 : 720),
+      }}>
+        {/* Orange, then olive, then the card: that order is what puts the
+            orange under the olive where the two overlap. */}
+        {s.retro && backs.map(backing)}
+        <div style={{
+          position: 'relative', background: s.retro ? '#FBF6EA' : s.paper,
+          color: ink, border: `${bw} solid ${ink}`, borderRadius: u(18),
+          padding: u(50),
+          // The desktop card is a stated 420 box with its tag row parked on the
+          // floor; both narrow ones are their content's height, so there it is
+          // the gap that holds them apart. minHeight either way, never height:
+          // the quote is an editable field, so a longer one has to grow the card
+          // rather than be clipped by it.
+          ...(s.narrow ? { gap: u(50) } : { minHeight: u(420) }),
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        }}>
+          {/* One gap reproduces the frames' three absolute stops: a 16px
+              eyebrow, the quote's 45px lines, then a 29px attribution. */}
+          <div style={col(u(s.narrow ? 37 : 14))}>
+            {/* Space Mono in the frames — the body face in this project's
+                mapping of the reference's three, not the Anton label. */}
+            <span style={{
+              fontFamily: s.body, fontSize: u(11), letterSpacing: u(1.5),
+              textTransform: 'uppercase', color: s.ac,
+            }}>{q.when}</span>
+            <p style={{
+              margin: 0, fontFamily: s.display,
+              // The 390 frame is the one place the quote is not Soulway 40/45:
+              // it renders through a Display/MD token that resolves to another
+              // template's Bebas Neue at leading 1 — the §5.5 leak, not a
+              // decision. Its 40 is that condensed face's measure, and none of
+              // the five display faces holds it inside the 246 this page's own
+              // padX leaves: Fraunces breaks "Professional" mid-word. Mobile
+              // therefore takes the ramp's own display step, the same fallback
+              // the enquiry form makes for its 390 heading, which puts the quote
+              // on four lines and the card within a few px of the frame's 430.
+              // The leading stays the 45 the other two frames state.
+              fontSize: s.mob ? s.dispSm : u(40),
+              lineHeight: 45 / 40, letterSpacing: s.dls, overflowWrap: 'break-word',
+            }}>{s.quote1}</p>
+            {/* labelStyle keeps its labels on one line; this one is content,
+                and at the frames' 20 it clears the 240 the mobile card leaves in
+                Anton but not in Grunge's wider label face — so it wraps rather
+                than running off the card. */}
+            <span style={labelStyle(s, u(20), { whiteSpace: 'normal' })}>{q.who} · {q.role}</span>
+          </div>
+          <div style={row(u(8), { flexWrap: 'wrap', paddingTop: s.narrow ? 0 : u(20) })}>
+            {tag(q.who, s.ac, s.retro ? s.pillBg : contrastInk(s.ac))}
+            {tag(q.role, s.pillBg, s.retro ? s.ac : contrastInk(s.pillBg))}
+          </div>
+        </div>
+      </div>
+    )
+
+    // Each frame centres its wrap but not the card inside it: the clearance
+    // above and below the card is 165/145 on desktop, 137.5/102.5 on tablet and
+    // 137/78 on mobile, where the 78 is measured to the foot of the arrow row.
+    // What the root's own padY does not already give is what is left here, so
+    // each lands on the frames' shared 730.
+    const shell = s.mob ? (
+      <div style={col(u(31), { position: 'relative', padding: `${u(93)} 0 ${u(34)}` })}>
+        {card}
+        {/* Mobile takes the arrows off the card's flanks and sets them in a 270
+            row centred under it. */}
+        <div style={row('0px', {
+          width: u(270), maxWidth: '100%', margin: '0 auto', justifyContent: 'space-between',
+        })}>
+          {arrow(<ArrowLeft size={glyph} />)}
+          {arrow(<ArrowRight size={glyph} />)}
+        </div>
+      </div>
+    ) : (
+      <div style={row('0px', {
+        justifyContent: 'space-between', position: 'relative',
+        padding: `${u(tab ? 82 : 67)} 0 ${u(tab ? 47 : 48)}`,
+      })}>
+        {arrow(<ArrowLeft size={glyph} />)}
+        {card}
+        {arrow(<ArrowRight size={glyph} />)}
+      </div>
     )
 
     return (
       <div style={{ position: 'relative' }}>
-        <TornEdge s={s} side="top" height={30} />
-        <Grain s={s} opacity={0.18} style={{
+        {/* The one torn edge that is not the section above showing through.
+            TornEdge defaults to the beige page ground because that is what the
+            repertoire's and the calendar's tears reveal — both follow a beige
+            section. The testimonials follow the enquiry form, which stands on
+            the same cream this section does, so the frame fills its tear with
+            that cream and the tear reads as the torn top of the *grain* rather
+            than of a coloured band: the sheet below is grained and the strip
+            above it is not, because the edge paints over it at zIndex 3. A
+            beige strip here would be a stripe belonging to no section. The
+            literal is the root render's `cream` — change one, change both. */}
+        <TornEdge s={s} side="top" height={Math.round(43 * scale)}
+                  colour={s.retro ? '#FBF6EA' : undefined} />
+        {shell}
+        {/* The frames lay their scratched sheet over the composition rather than
+            under it: the card's interior and the ground either side of it
+            measure the same mean and the same variance. Still under the torn
+            edge, whose own zIndex is 3. */}
+        <Grain s={s} opacity={0.1} blend="hard-light" exact style={{
           left: `calc(-1 * ${s.padX})`, right: `calc(-1 * ${s.padX})`,
           top: `calc(-1 * ${s.padY})`, bottom: `calc(-1 * ${s.padY})`,
+          zIndex: 2,
         }} />
-
-        <div style={row(s.mob ? '10px' : '24px', {
-          justifyContent: 'center', position: 'relative',
-          padding: s.mob ? '10px 0 8px' : '40px 0 34px',
-        })}>
-          {arrow(<ArrowLeft size={15} />)}
-          <div style={{
-            position: 'relative', flex: 1, maxWidth: '622px',
-            padding: s.mob ? '4px' : '10px',
-          }}>
-            {backing(s.chips[3 % s.chips.length].bg, -1.6, 0, -8)}
-            {backing(s.chips[1 % s.chips.length].bg, 1.8, -8, 4)}
-            <div style={{
-              position: 'relative', background: s.paper, color: s.paperFg,
-              border: `${s.bw} solid ${s.paperFg}`, borderRadius: s.radius,
-              padding: s.mob ? '22px' : '34px', minHeight: s.mob ? '220px' : '345px',
-              ...col(s.mob ? '14px' : '18px'),
-            }}>
-              <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>{q.when}</span>
-              <p style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.1, letterSpacing: s.dls,
-              }}>{s.quote1}</p>
-              <span style={labelStyle(s, s.labelXs)}>{q.who} · {q.role}</span>
-              <div style={row('10px', { marginTop: 'auto', paddingTop: '18px', flexWrap: 'wrap' })}>
-                {[[q.who, s.ac], [q.role, s.pillBg]].map(([l, hue], i) => (
-                  <span key={i} style={{
-                    background: hue, color: contrastInk(hue), borderRadius: s.btnR,
-                    padding: '6px 14px', ...labelStyle(s, s.eyebrow),
-                  }}>{l}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-          {arrow(<ArrowRight size={15} />)}
-        </div>
       </div>
     )
   }
@@ -2414,6 +2979,18 @@ function EnquiryForm({ s }) {
   // design): an olive context panel welded to a mustard form panel inside one
   // rounded, clipped shell.
   if (s.v0) {
+    // §5.5 — one form across three frames: the 768 (986:39583) and 390
+    // (986:39647) ones verbatim, the 1440 one (964:58584) on the 1180 canvas at
+    // × 0.82. The two narrow frames only stack the halves, which the shell
+    // already does on `s.narrow`, so every dimension below is the frame's own
+    // number through `u()`. Three things the frames genuinely re-set, listed as
+    // they come: the inset round each panel, the fields' columns and the gap
+    // between them, and the height of the message box.
+    const scale = s.narrow ? 1 : 0.82
+    const u = (v) => `${Math.round(v * scale)}px`
+    // 44/40 on the 1440 frame, 30 on the 768 one, 30/20 on the 390 one.
+    const inset = s.mob ? `${u(30)} ${u(20)}` : s.narrow ? u(30) : `${u(44)} ${u(40)}`
+
     const ctxBg = s.chips[3 % s.chips.length].bg      // Retro: olive
     const ctxFg = contrastInk(ctxBg)
     const formBg = s.pillBg
@@ -2421,94 +2998,144 @@ function EnquiryForm({ s }) {
     // The controls sit on the pill hue, so their ink is the accent only while
     // it stays legible against it — s.pillFg already encodes that fallback.
     const ctlInk = s.pillFg
+    // The frame fills every control a step off the panel it sits on (#EFB42C on
+    // the mustard). That lift is not derivable from the palette, so it is taken
+    // as what it reads as: a thin veil of the accent's own ink.
+    const ctlBg = s.acFg12
+    // Every frame throws the picked chip and the submit pill onto the olive of
+    // the panel beside them, the way every §10.2 card throws its block.
+    const block = hard(s, ctxBg, 3 * scale, 4 * scale)
+
+    const label = (t) => (
+      <span style={{
+        fontFamily: s.body, fontSize: u(10), letterSpacing: '0.03em',
+        textTransform: 'uppercase', color: ctlInk,
+      }}>{t}</span>
+    )
 
     const field = (f) => (
-      <div key={f.l} style={col('6px')}>
-        <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>{f.l}</span>
+      <div key={f.l} style={col(u(6))}>
+        {label(f.l)}
         <span style={{
-          border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR,
-          padding: s.mob ? '10px 16px' : '13px 20px',
-          fontFamily: s.body, fontSize: s.labelXs, color: ctlInk,
+          display: 'flex', alignItems: 'center',
+          border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, background: ctlBg,
+          // Stated heights, not padding: the reset boxes these border-box, so
+          // the frame's stroke sits inside its 60 the way Figma draws it.
+          height: u(60), padding: `0 ${u(24)}`,
+          fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
         }}>{f.p}</span>
       </div>
     )
 
+    // Two to a row on the 1440 and 768 frames, one to a row on the 390 one,
+    // which also closes the gap between them from 12 to 10.
+    const fieldRow = (fs) => (
+      <div style={{
+        display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+        gap: u(s.mob ? 10 : 12),
+      }}>{fs.map(field)}</div>
+    )
+
     return (
       <div style={{
-        borderRadius: s.radius, overflow: 'hidden', display: 'grid',
+        position: 'relative',
+        // The frame rings the whole shell in a tan hairline — it stands on the
+        // cream sheet (see `cream` in EncoreSection), not on the page ground,
+        // and without the ring the mustard half would float off it.
+        border: `1px solid ${s.edge}`,
+        borderRadius: u(16), overflow: 'hidden', display: 'grid',
         gridTemplateColumns: s.narrow ? '1fr' : '0.62fr 1.38fr',
       }}>
-        <div style={{
-          position: 'relative', background: ctxBg, color: ctxFg,
-          padding: s.mob ? '24px' : '34px', ...col(s.mob ? '18px' : '26px'),
-        }}>
-          <Grain s={s} opacity={0.22} />
-          <span style={row('12px', { position: 'relative' })}>
+        <div style={{ background: ctxBg, color: ctxFg, padding: inset, ...col(u(20)) }}>
+          <span style={row(u(14))}>
             <span style={{
-              width: 42, height: 42, flex: 'none', borderRadius: '999px', overflow: 'hidden',
+              width: Math.round(48 * scale), height: Math.round(48 * scale),
+              flex: 'none', borderRadius: '999px', overflow: 'hidden', background: s.bg,
             }}><Photo s={s} initialsSize={15} /></span>
-            <span style={col('3px')}>
-              <span style={{ fontFamily: s.display, fontSize: s.labelXs, letterSpacing: s.dls }}>{s.brand}</span>
-              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8 }}>{s.kicker}</span>
+            <span style={col('2px')}>
+              <span style={{
+                fontFamily: s.display, fontSize: u(15), letterSpacing: s.dls,
+              }}>{s.brand}</span>
+              <span style={{ fontFamily: s.body, fontSize: u(12) }}>{s.kicker}</span>
             </span>
           </span>
           <h2 style={{
-            margin: 0, position: 'relative', fontFamily: s.display, fontSize: s.dispSm,
-            lineHeight: 1.06, letterSpacing: s.dls,
+            margin: 0, fontFamily: s.display,
+            // The frames' 40 is Soulway's measure. It clears the 1440 and 768
+            // panels in any of the five display faces, but on the 390 one the
+            // line is 306px wide and "unforgettable." is a single unbreakable
+            // word — Titan One and Special Elite run off the end of it. Those
+            // four keep the theme's own display step there; Retro, whose frame
+            // this is, keeps the 40.
+            fontSize: s.mob && !s.retro ? s.dispSm : u(40),
+            // The heading is a content field, so a long enough word overflows
+            // whatever the face: break it rather than let the shell clip it.
+            overflowWrap: 'break-word',
+            lineHeight: 0.98, letterSpacing: s.dls,
           }}>{s.title}</h2>
-          <div style={col('10px', { position: 'relative' })}>
+          <div style={col(u(10))}>
             {s.formPromises.map((p) => (
-              <span key={p} style={row('8px', {
-                alignItems: 'flex-start', fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.4,
+              <span key={p} style={row(u(10), {
+                fontFamily: s.body, fontSize: u(13),
+                // The frame sets each promise on a 16px line at 13px type.
+                lineHeight: 1.2,
               })}>
-                <Check size={13} style={{ flex: 'none', marginTop: '2px', color: formBg }} />
+                <Check size={Math.round(13 * scale)} style={{ flex: 'none', color: formBg }} />
                 {p}
               </span>
             ))}
           </div>
         </div>
 
-        <div style={{
-          position: 'relative', background: formBg, color: formFg,
-          padding: s.mob ? '24px' : '34px', ...col(s.mob ? '14px' : '18px'),
-        }}>
-          <Grain s={s} opacity={0.22} />
-          <div style={{
-            position: 'relative', display: 'grid',
-            gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr', gap: s.mob ? '14px' : '18px',
-          }}>
-            {s.formFields.map(field)}
-          </div>
-          <div style={col('6px', { position: 'relative' })}>
-            <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>Event type</span>
-            <div style={row('8px', { flexWrap: 'wrap' })}>
+        <div style={{ background: formBg, color: formFg, padding: inset, ...col(u(14)) }}>
+          {fieldRow(s.formFields.slice(0, 2))}
+          {fieldRow(s.formFields.slice(2))}
+          <div style={col(u(8))}>
+            {label('Event type')}
+            <div style={row(u(8), { flexWrap: 'wrap' })}>
               {s.formTypes.map((t, i) => (
                 <span key={t} style={{
-                  border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, padding: '4px 12px',
+                  // Figma strokes inside the box, so its picked chip stands as
+                  // tall as the four outlined ones with no stroke at all. A CSS
+                  // border adds to the box, so the picked one keeps its border
+                  // and paints it its own fill, and the height is stated rather
+                  // than left to the padding and the line box.
+                  border: `${s.bw} solid ${i === 0 ? s.ac : formFg}`, borderRadius: s.btnR,
+                  display: 'inline-flex', alignItems: 'center',
+                  height: u(25), padding: `0 ${u(11)}`,
                   background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : formFg,
-                  cursor: 'pointer', ...labelStyle(s, s.eyebrow),
+                  boxShadow: i === 0 ? block : 'none', cursor: 'pointer',
+                  fontFamily: s.body, fontWeight: 700, fontSize: u(12.5), whiteSpace: 'nowrap',
                 }}>{t}</span>
               ))}
             </div>
           </div>
-          <div style={col('6px', { position: 'relative' })}>
-            <span style={labelStyle(s, '10px', { color: ctlInk, letterSpacing: '0.14em' })}>Message</span>
+          <div style={col(u(6))}>
+            {label('Message')}
             <span style={{
-              display: 'block', border: `${s.bw} solid ${formFg}`, borderRadius: s.radiusSm,
-              padding: s.mob ? '14px 16px' : '18px 20px', minHeight: s.mob ? '90px' : '110px',
-              fontFamily: s.body, fontSize: s.labelXs, color: ctlInk,
+              display: 'block', border: `${s.bw} solid ${formFg}`, background: ctlBg,
+              borderRadius: u(20), height: u(s.mob ? 100 : 134),
+              padding: `${u(20)} ${u(24)}`,
+              fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
             }}>{s.formMessage}</span>
           </div>
           <span style={{
-            position: 'relative', ...row('8px', { justifyContent: 'center' }),
-            background: s.ac, color: s.acFg, border: `${s.bw} solid ${formFg}`,
-            borderRadius: s.btnR, padding: s.mob ? '12px' : '14px', cursor: 'pointer',
-            boxShadow: hard(s, ctxBg, 3, 4), ...labelStyle(s, s.labelMd),
+            ...row(u(10), { justifyContent: 'center' }),
+            background: s.ac, color: s.acFg, borderRadius: s.btnR,
+            // The frame's 49px pill is its 10px padding plus the line box
+            // Anton's own leading gives 20px type. labelStyle sets the tighter
+            // 1.1 every other label in the page wants, so the padding carries
+            // the difference and the pill still stands the frame's height.
+            padding: `${u(14)} ${u(20)}`,
+            cursor: 'pointer', boxShadow: block, ...labelStyle(s, u(20)),
           }}>
             {s.formBtn}
-            <Asterisk size={15} color={s.acFg} />
+            <Asterisk size={Math.round(20 * scale)} color={s.acFg} />
           </span>
         </div>
+        {/* One sheet of grain over both halves, screened at the frame's .4 —
+            not a sheet per panel, which seams down the weld between them. */}
+        <Grain s={s} exact blend="screen" opacity={0.4} />
       </div>
     )
   }
@@ -2524,63 +3151,165 @@ function EnquiryForm({ s }) {
   )
 }
 
-// §10.2 reference design: wordmark and statement to the left of a full-height
-// rule, the two link columns and the Book Now pill to its right, the seal
-// straddling the divide, and the small print under a hairline.
+// §10.2 reference design: the wordmark over the statement to the left of a
+// full-height rule, the two link columns and the Book Now pill to its right,
+// the seal hung off the left column's outer edge, and the small print under a
+// hairline.
+//
+// §5.5 — three frames: 1440 (964:58586) on the 1180 canvas at × 0.82, 768
+// (907:12201) and 390 (986:39755) verbatim. The narrow two are not the desktop
+// squeezed: they stack it, the vertical rule turning into a hairline between
+// the statement and the links, so the composition splits on `s.narrow` and
+// every number below is its own frame's through `u()`.
+//
+// The frames carry 56 of their own padding above the wordmark, which the
+// section root's `padY` already stands in for; it is dropped here, and the 56
+// *below* the statement and around the link block — the breathing room that
+// holds each hairline off its content — is kept.
 function Footer({ s }) {
-  const linkCols = (
-    <div style={row(s.mob ? '30px' : '60px', { alignItems: 'flex-start', flexWrap: 'wrap' })}>
-      {s.footerLinks.map((colLinks, i) => (
-        <nav key={i} style={col('12px')}>
-          {colLinks.map((l) => (
-            <a key={l} href="#" style={labelStyle(s, s.labelMd, { color: s.ac })}>{l}</a>
-          ))}
-        </nav>
+  const scale = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * scale)}px`
+  // Line 17 and Line 19 are a 1px #1B1714 stroke — the page ink at full
+  // strength, not the tint every pre-§10.2 divider takes.
+  const rule = `1px solid ${s.tx}`
+  // The frames set 52 between link baselines, which is Anton's own 29px line
+  // box plus 23. labelStyle draws the label at the tighter 1.1 the rest of the
+  // page wants, so the gap carries the difference: 52 less the 22 box a 20px
+  // label makes. Same distance again before the pill.
+  const linkGap = u(30)
+  // The rotated seal's Figma frame is its *bounding* box — 237.56 is a 172.13
+  // disc turned 32.38° (× cos + sin). `size` is the disc.
+  const sealSize = s.mob ? 85 : Math.round(172.13 * scale)
+  // Measured off the renders, not the metadata: `get_metadata` gives a rotated
+  // group's x/y in its rotated parent's space. Desktop hangs the disc 20 past
+  // the left column's edge, into the gutter before the rule; both narrow frames
+  // stand it against the content's right edge instead.
+  const sealPos = s.mob ? { right: '29px', top: '-22px' }
+    : s.narrow ? { right: '4px', top: '-3px' }
+      : { right: u(-20.5), top: u(-8.6) }
+
+  // The stated 31, not the row's own content: the frame's height is the line
+  // box Anton's leading gives 21.4px type, and labelStyle sets the tighter 1.1
+  // the rest of the page wants, which would otherwise leave the globe to set a
+  // 27 row and pull everything under it up by four.
+  const wordmark = (
+    <span style={row(u(20), { height: u(31) })}>
+      <span style={row(u(10))}>
+        <GlobeMark size={Math.round(27.37 * scale)} color={s.ac} />
+        <span style={labelStyle(s, u(21.4), { color: s.ac })}>{s.brand}</span>
+      </span>
+      <span style={{ width: u(150), height: u(2), background: s.ac, flex: 'none' }} />
+    </span>
+  )
+
+  const statement = (
+    <h2 style={{
+      margin: 0, fontFamily: s.display, fontSize: u(40), lineHeight: 39 / 40,
+      // The frame breaks the line by hand after "make" and folds the rest in a
+      // 439.6 measure. Mobile drops the measure and takes the content column.
+      whiteSpace: 'pre-wrap',
+      letterSpacing: s.dls, color: s.ac, maxWidth: s.mob ? 'none' : u(440),
+    }}>{s.footerStatement}</h2>
+  )
+
+  const seal = (
+    <SealBadge s={s} hue={s.chips[0].bg} ink={s.tx} glyph="globe"
+               size={sealSize} tilt={32.38} style={{ ...sealPos, zIndex: 2 }} />
+  )
+
+  const linkCol = (colLinks, i) => (
+    <nav key={i} style={col(linkGap, {
+      alignItems: 'flex-start',
+      // Column 2 stands at a stated offset the pill's own width sets, so
+      // column 1 holds it whether or not the label face fills it.
+      minWidth: i === 0 ? u(148) : undefined,
+    })}>
+      {colLinks.map((l) => (
+        <a key={l} href="#" style={labelStyle(s, u(20), { color: s.ac })}>{l}</a>
       ))}
+      {/* The frames set the footer pill the other way up from every other one:
+          the accent is the ground, the page background is the type, and the
+          mustard the rest of the page puts *under* the type is its block. The
+          390 frame keeps the 768 pill at full size, hence `full`. */}
+      {i === 0 && (
+        <BookPill s={s} bg={s.ac} fg={s.bg} shadow={s.pillBg} full={s.mob} />
+      )}
+    </nav>
+  )
+
+  const links = (
+    <div style={{ display: 'flex', gap: s.mob ? u(26) : u(76) }}>
+      {s.footerLinks.map(linkCol)}
     </div>
   )
 
+  const smallPrint = (
+    <div style={{
+      // The 390 frame halves the row exactly — two 185 boxes filling its 370,
+      // each carrying its side over two lines — so there is no gap to give.
+      display: 'flex', justifyContent: 'space-between', gap: s.mob ? 0 : u(16),
+      // 24 under the hairline on the two wide frames; the mobile one sets both
+      // halves over two lines and takes 14.
+      paddingTop: s.mob ? u(14) : u(24),
+      fontFamily: s.display, fontSize: u(23), lineHeight: 0.86,
+      letterSpacing: '-0.038em', color: s.pillBg,
+    }}>
+      <span style={{ width: s.mob ? '50%' : 'auto' }}>{s.copyright}</span>
+      <span style={{ width: s.mob ? '50%' : 'auto', textAlign: 'right' }}>{s.footerCredit}</span>
+    </div>
+  )
+
+  if (s.narrow) {
+    // The narrow frames sit the first rule flush on the boundary between the
+    // two blocks — it is the 56 either side of it that holds it off the type —
+    // and give only the second one the 2 above and below that the desktop
+    // frame gives both.
+    return (
+      <div style={col(0)}>
+        <div style={col(u(20), { position: 'relative', paddingBottom: u(56) })}>
+          {wordmark}
+          {statement}
+          {seal}
+        </div>
+        <span style={{ height: 0, borderTop: rule }} />
+        <div style={{ padding: `${u(56)} 0` }}>{links}</div>
+        <span style={{ height: 0, borderTop: rule, margin: `${u(2)} 0` }} />
+        {smallPrint}
+      </div>
+    )
+  }
+
   return (
-    <div style={col(s.mob ? '24px' : '34px')}>
-      <div style={{
-        position: 'relative', display: 'grid',
-        gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr',
-        gap: s.mob ? '28px' : s.gGap,
-      }}>
-        <div style={col(s.mob ? '20px' : '34px', {
-          paddingRight: s.narrow ? 0 : s.gGap,
-          borderRight: s.narrow ? 'none' : `1px solid ${s.line2}`,
-        })}>
-          <span style={row('14px')}>
-            <GlobeMark size={20} color={s.ac} />
-            <span style={labelStyle(s, s.labelMd, { color: s.ac })}>{s.brand}</span>
-            <span style={{ height: '1.5px', background: s.ac, flex: 1, maxWidth: '140px' }} />
-          </span>
-          <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1.06,
-            letterSpacing: s.dls, color: s.ac, maxWidth: '14ch',
-          }}>{s.footerStatement}</h2>
+    <div style={col(u(2))}>
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: u(79) }}>
+        {/* The row's height is the left column's: the wordmark and the
+            statement are pushed to its ends over the frame's own 351.7, and
+            the links run short of it. */}
+        <div style={{
+          position: 'relative', width: u(743), flex: '0 1 auto',
+          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          minHeight: u(351.7), paddingBottom: u(56),
+        }}>
+          {wordmark}
+          {statement}
+          {seal}
         </div>
-
-        <div style={col(s.mob ? '20px' : '30px', {
-          alignItems: 'flex-start', paddingLeft: s.narrow ? 0 : s.gGap,
-        })}>
-          {linkCols}
-          <BookPill s={s} />
-        </div>
-
-        {!s.narrow && (
-          <SealBadge s={s} hue={s.chips[0].bg} size={104} tilt={-16}
-                     style={{ left: '50%', top: '6%', marginLeft: '-52px', zIndex: 2 }} />
-        )}
+        {/* The frame's rule is 411.4 against a 407.7 row: it starts level with
+            the top of the 56 dropped above the wordmark and runs on to meet
+            the hairline, so it reclaims both out of the section's own padding
+            rather than stopping at the type. */}
+        <span style={{
+          width: 0, borderLeft: rule, flex: 'none',
+          marginTop: u(-56), marginBottom: u(-4),
+        }} />
+        {/* Sized off its own content, not off a zero basis: the editor draws
+            the desktop canvas into whatever width the window leaves it, and a
+            zero-basis column would let the links overflow the page rather than
+            take the width out of the statement's. */}
+        <div style={{ flex: '1 1 auto' }}>{links}</div>
       </div>
-
-      <span style={{ height: '1px', background: s.line2, width: '100%' }} />
-
-      <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-        <span style={labelStyle(s, s.labelMd, { color: s.pillBg })}>{s.copyright}</span>
-        <span style={labelStyle(s, s.labelMd, { color: s.pillBg })}>{s.footerCredit}</span>
-      </div>
+      <span style={{ height: 0, borderTop: rule }} />
+      {smallPrint}
     </div>
   )
 }
@@ -2596,14 +3325,26 @@ export default function EncoreSection({ s }) {
   // §10.2 — the events map is the one section painted on a dark ground rather
   // than the page background, so its checkerboard bands and cream type read.
   const darkMap = s.mp && s.v0 && s.retro
-  // §10.2 — the media player (964:58578) and repertoire (964:58580) frames
-  // stand on cream rather than the beige page ground: the player so its beige
-  // checkerboard band and cream track cards read against it, the repertoire so
-  // its torn beige edge and olive song cards do. Retro's `paper` IS the page
-  // background, hence the literal.
-  const cream = (s.me || s.re) && s.v0 && s.retro
+  // §10.2 — the media player (964:58578), repertoire (964:58580), booking
+  // calendar (964:58583), enquiry form (964:58584) and testimonials
+  // (964:58585) and footer (964:58586) frames stand on cream rather than the
+  // beige page ground: the player so its beige checkerboard band and cream
+  // track cards read against it, the repertoire so its torn beige edge and
+  // olive song cards do, the calendar so its beige panel and the prints on it
+  // do, the form so the tan hairline round its shell does, the testimonials so
+  // its torn beige edge and the ink outlines round its stacked cards do —
+  // there the quote card's own body is that same cream, and only its outline
+  // parts it from the sheet — and the footer so its ink hairlines and the
+  // beige type on its Book Now pill do. Retro's `paper` IS the page
+  // background, hence the literal — which `Testimonials` takes a second copy
+  // of for its torn edge, because that tear reveals the form's cream and not
+  // the page's beige. Change one, change both.
+  const cream = (s.me || s.re || s.ca || s.fo || s.te || s.ft) && s.v0 && s.retro
   return (
-    <div style={{
+    // The id is the nav's scroll target, and it is live-gated: the editor
+    // document renders a dozen header previews at once through LayoutPicker
+    // and HeaderChoices, which would all claim id="header".
+    <div id={s.live ? s.anchor : undefined} style={{
       background: darkMap ? s.mapBg : cream ? '#FBF6EA' : s.bg,
       color: darkMap ? s.mapFg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,

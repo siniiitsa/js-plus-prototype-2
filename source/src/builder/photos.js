@@ -41,16 +41,27 @@ export const RETRO_PHOTOS = {
   bio: stage,
   calendar: stage,
   form: avatar,
-  // Figma dresses the track rows with real album covers (The Who, Pink Floyd,
-  // Nirvana). Those are not ours to ship, so these are neutral crops of the same
-  // live-set photography, in the square framing the design uses.
-  // Slots 1–5 are the track thumbnails; slot 6 is the now-playing sleeve.
-  media: [track1, track2, track3, track4, track5, sleeve],
+  // The media player's single photo slot is the big now-playing sleeve. The five
+  // track thumbnails are not here: they belong to the tracks themselves, and are
+  // seeded through RETRO_TRACK_ART below.
+  media: sleeve,
   // One per tile in the strip. galActive() highlights slot 4 and shows it in the
   // large viewer, so that slot carries the full-size spotlight photograph and the
   // other six are strip-sized.
   gallery: [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7],
 }
+
+// The seeded artwork for the media player's five track rows, in track order.
+//
+// Figma dresses the rows with real album covers (The Who, Pink Floyd, Nirvana).
+// Those are not ours to ship, so these are neutral crops of the same live-set
+// photography, in the square framing the design uses.
+//
+// Track art is per-track content, not a section-level photo array: it travels in
+// `c.tracks[i].image` once the artist edits the list, so this seeds only the
+// untouched default list. A sixth track the artist adds has no seed and falls
+// back to the initials placeholder.
+export const RETRO_TRACK_ART = [track1, track2, track3, track4, track5]
 
 // The artist avatar, cropped from the §10.2 hero frame's `pp` card (Figma node
 // 964:58576) — a tight portrait from a different shot than the backdrop behind
@@ -82,3 +93,8 @@ export const defaultImages = (cat, themeName) => {
   const v = isRetro(themeName) ? RETRO_PHOTOS[cat] : undefined
   return Array.isArray(v) ? v : undefined
 }
+
+// The third shape: artwork that belongs to a row of a list rather than to the
+// section. Only the media player's tracks have any, and only under Retro.
+export const defaultTrackArt = (cat, themeName) =>
+  (isRetro(themeName) && cat === 'media' ? RETRO_TRACK_ART : undefined)

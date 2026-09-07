@@ -36,10 +36,10 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 2370 | All state, all chrome, all three stages |
-| `src/builder/EncoreSection.jsx` | 2160 | Presentational renderer for all 14 section types |
-| `src/builder/data.js` | 540 | `THEMES`, all static data, colour helpers |
-| `src/builder/photos.js` | 76 | Retro's seeded Figma photography + the two resolvers |
+| `src/builder/EncoreBuilder.jsx` | 2605 | All state, all chrome, both stages, publish |
+| `src/builder/EncoreSection.jsx` | 3380 | Presentational renderer for all 14 section types |
+| `src/builder/data.js` | 615 | `THEMES`, all static data, colour helpers |
+| `src/builder/photos.js` | 100 | Retro's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
 
@@ -56,7 +56,7 @@ Two styling systems, deliberately (README §"Two styling systems, deliberately")
   utilities and shadcn/ui on the tokens in `src/index.css`.
 - **`EncoreSection.jsx`** uses **neither**. Every value is an inline `style={{}}`, because
   section colours are arbitrary runtime hexes (`background: s.bg` where `s.bg` is `#7A58A7`).
-  Its only import is `lucide-react`.
+  Its only library import is `lucide-react`; from React it takes `useId` and `useState`.
 
 Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross the boundary,
 because each reads the per-section `--ac` / `--acFg` custom properties.
@@ -70,28 +70,76 @@ argument rather than reading state, so previews can render a theme that is not t
 No router, no context, no state library. One flat `useState` object `st` in `EncoreBuilder`,
 mutated through a single `patch()` helper.
 
-- `st.stage` is `'option' | 'template' | 'editor'` — early returns dispatch to `OptionStage`,
-  `TemplateStage`, or the inline editor JSX. **There is no header stage any more**: SPEC §6's
-  full-screen picker is gone, and picking a template opens the editor on the built page with
-  `st.onboard` armed. Which of the three in-editor header treatments runs is `st.ux`
-  (`'modal' | 'sidebar' | 'rail'`), set by stage 0 — see README "Choosing a header". All three
-  render the same `HeaderChoices` component; `st.hdrHover` previews a layout on the canvas
-  without committing it. The editor always opens with the header `selectedId` so the sidebar
-  lands on its edit panel; the mobile edit drawer is opened only by the `'sidebar'` treatment,
-  which needs it — otherwise it would cover the page before it has been seen.
+- `st.stage` is `'template' | 'editor'` — an early return dispatches to `TemplateStage`, else the
+  inline editor JSX. **There is no header stage any more**: SPEC §6's full-screen picker is gone,
+  and picking a template opens the editor on the built page with `st.onboard` armed. The header
+  choice is then asked for by the **setup modal** — a `Dialog` over the finished page rendering
+  `HeaderChoices` — see README "Choosing a header". Its cards commit on click, not on hover;
+  there is no preview state. The editor opens with the header `selectedId` so the sidebar
+  lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
+  it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
-- The `startTheme` prop in `App.jsx` skips both picker stages when it names a real theme
-  (`"Picker"` deliberately matches nothing, giving the full flow).
+- The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
+  it names a real theme (`"Picker"` deliberately matches nothing, giving the full flow).
 
 ## Intentional limits — not bugs
 
 - **No persistence.** Reload loses everything, including uploaded images. No URL sync.
-- **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` in
-  `photos.js` gate on `T.name === 'Retro'`, the same name-match as `headerFamily()` and the
-  `retro` flag. **Remove** writes `null`, not `undefined` — `undefined` deletes the key, and an
-  absent key is exactly what selects the seeded photo, so it would come straight back.
+- **Publish opens a second tab, and that tab is a live React root** (the *Publish* block in
+  `EncoreBuilder.jsx`; it is post-SPEC, so it carries no § number),
+  not a serialised snapshot — it has to be, because `EncoreSection` has no media queries and
+  would otherwise be frozen at the editor's width. `PublishedPage` calls `sectionVm` directly,
+  never `makeVm`. Two rules there are load-bearing: build the popup's document by DOM mutation,
+  **never `document.write`** (it implies `document.open()`, which rewrites the popup's URL to the
+  opener's, so the tab would claim to be the builder and reload into it); and set the page
+  background on `documentElement`, not `body`, because the cloned reset already paints `html`.
+  The tab is a child of the editor and freezes if the editor reloads. Accepted.
+- **`s.live` is false everywhere except the published tab.** It is the seam for making a control
+  real, and **three things read it**: `Repertoire` — its search field, its filter chips and
+  its pager — the **header's navigation**, and the **media player's Soundcloud button**, the one
+  outbound link (`extLink()` in `EncoreSection`, `extUrl()` in `data.js`: it opens in a new tab,
+  and a schemeless address is given `https://`, or `<base href>` would resolve it against the
+  builder). Everything else — the gallery filmstrip, the events map's pager, the players — is
+  still a picture. Do **not** make `EncoreSection` interactive
+  without gating on it: the editor canvas is a picture of a website, and a live filter chip there
+  would both filter and select the section. `EncoreSection` therefore imports `useState` as well
+  as `useId`; that is the whole of its React surface and it stays that way — which is why
+  `NavMenu`'s panel has no Escape key, no scroll lock and no focus trap. Each of those wants an
+  effect.
+- **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
+  every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
+  id), the section root applies it as `id` **only when `s.live`** — the editor document renders a
+  dozen header previews and they would all claim `id="header"` — and one delegated `click`
+  listener in `dressPublishedWindow` turns a fragment href into a `scrollIntoView`. A fragment can
+  never be *followed* in the popup: `<base href>` pins it to the opener's URL, so the tab would
+  reload the builder. On the canvas the links carry **no href at all** (not `#`, which would jump
+  the builder to its own top); `navHref()` in `EncoreSection` is the whole of that gate.
+  `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
+  because Minimal's Shows and Book can resolve to the same section. Below `desktop` the links
+  collapse to `NavMenu`'s burger, in all six Retro layouts.
+- **Two list-shaped contents have a structured editor: the repertoire's songs and the media
+  player's tracks.** `c.songs` is an array of `{ title, artist, tags }` (tags a raw comma string),
+  maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image }`,
+  maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
+  (`RowThumb`, the 46px cousin of `ImageField`). `c.tracks` is deliberately one key with two
+  shapes — `audio` keeps the delimited *string* of its textarea, `media` owns the *array* — and
+  `sectionVm` reads both, plus the seeded `TRACKS` when the key is absent. Per-row art is never
+  re-seeded by index once the array exists, or a row inserted third would steal track three's
+  photograph. Every other repeated field is a delimited textarea (`FIELDS.audio.tracks`,
+  `FIELDS.tags.tags`) or a flattened key set (`pricing`'s `t1n`/`t1p`/…). It follows `images`, not
+  `image`: an absent key means the seeded `SONGS`, an emptied array means no songs, and there is no
+  `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
+  heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
+  both.
+- **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` /
+  `defaultTrackArt()` in `photos.js` gate on `T.name === 'Retro'`, the same name-match as
+  `headerFamily()` and the `retro` flag. **Remove** writes `null`, not `undefined` — `undefined`
+  deletes the key, and an absent key is exactly what selects the seeded photo, so it would come
+  straight back. For the same reason `Photo` treats `src={null}` (this slot has no picture) as
+  distinct from no `src` prop at all (fall back to `s.image`): the media player's section photo
+  is the now-playing sleeve, and an art-less track row must not wear it.
 - **Reordering** is drag-by-handle *or* arrows. `SectionList` owns the drag; `dragRef` is the
   source of truth and the `drag` state only mirrors it for rendering, so pointerup commits
   what it can see rather than what the last render observed. Rows are a uniform height, so

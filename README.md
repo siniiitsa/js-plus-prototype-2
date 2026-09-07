@@ -6,10 +6,11 @@ A single-page, client-only prototype of a website builder for musicians and DJs,
 Pick one of five visual **templates** from a spotlight-and-filmstrip picker and land straight in
 the editor on a filled-in example page — a stack of **sections** you add, remove, reorder, swap
 layouts on, recolour and rewrite — while seeing a live, fully re-skinned preview. The first thing
-the editor asks for is a **header layout**, in one of three competing treatments the build ships
-side by side; see *Choosing a header* below.
+the editor asks for is a **header layout**, in a setup modal over the finished page; see
+*Choosing a header* below.
 
-It is a demo: nothing persists, nothing is sent to a server, and **Publish** only shows a toast.
+It is a demo: nothing persists and nothing is sent to a server. **Publish** opens the finished
+page in a second browser tab, with the builder chrome gone — see *Publishing* below.
 All content is demo content for a fictional DJ, "Kai Mercer".
 
 ## Running it
@@ -66,8 +67,10 @@ This is the one architectural rule worth knowing before editing anything (§12.9
 - **`EncoreSection.jsx`** uses **neither** — every value is an inline `style={{}}`. Sections are
   painted with arbitrary hex values taken at runtime from the active theme's palette, plus six
   derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
-  `s.bg` is `#7A58A7` picked at runtime. Its only import is `lucide-react`, whose icons inherit
-  `currentColor` and so stay theme-driven.
+  `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
+  inherit `currentColor` and so stay theme-driven; from React it takes `useId` and — for the two
+  things that have live controls, Repertoire and the header's burger menu — `useState`, and
+  nothing else.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
@@ -78,7 +81,7 @@ rendering, so `EncoreSection` does zero colour maths.
 
 ## Deviations from SPEC.md
 
-Five, all deliberate:
+Six, all deliberate:
 
 1. **No reference images; the Figma file replaced them.** `docs/feedback-reference/` is not
    present in this repo. The Figma file
@@ -101,9 +104,13 @@ Five, all deliberate:
    `react()` + `tailwindcss()`.
 3. **Radix packages.** §2.2 expects the shadcn CLI to add individual `@radix-ui/react-*`
    packages; the current CLI installs the unified `radix-ui` package instead. Same primitives.
-4. **No stage 2.** §6's full-screen header-layout picker has been replaced by three in-editor
-   treatments, chosen from a new stage 0. See *Choosing a header* below for what and why.
-5. **Toast positioning.** §3.5 maps the toast to shadcn's `sonner`, and §9.2 also specifies a
+4. **No stage 2.** §6's full-screen header-layout picker has been replaced by an in-editor
+   setup modal. See *Choosing a header* below for what and why.
+5. **Publish opens the page, rather than only toasting.** SPEC.md has no publish flow beyond
+   §8.1's button, and §12.1 rules out persistence. The button now opens the finished page in a
+   second tab — see *Publishing* below. Nothing is persisted or sent anywhere, so §12.1 stands;
+   the tab is simply a second React root in the same session.
+6. **Toast positioning.** §3.5 maps the toast to shadcn's `sonner`, and §9.2 also specifies a
    hand-positioned `toastUp` entry animation. Sonner owns the positioning and the mount
    transition (bottom-centre, 28px desktop / `calc(72px + env(safe-area-inset-bottom))` mobile),
    which produces the same slide-up; the pill itself is styled to §9.2's exact values. The
@@ -117,33 +124,30 @@ and "Header layout 4" names nothing. It has been removed. Picking a template now
 and opens the editor on it directly, with the header on layout 1, and the header choice is asked
 for **inside** the editor.
 
-Which way it is asked for is the open question, so the build ships **all three candidates** and a
-front door to switch between them. `st.stage` is `'option' | 'template' | 'editor'`; stage 0
-(`OptionStage`) sets `st.ux` and nothing else, and the template picker carries a pill showing
-which treatment is armed with a **Change** link back.
+`st.stage` is `'template' | 'editor'`. The template picker is the app's first screen; picking one
+opens the editor with `st.onboard` armed, and the **setup modal** goes up over the finished page:
+a `Dialog` carrying a 3-up grid of the template's header layouts, one sentence saying what a
+header is, and *Decide later* / *Use this header*. It is a gate, so both exits are real ones —
+either clears `st.onboard` and the editor is then just the editor.
 
-| `st.ux` | Treatment | Shape |
-|---|---|---|
-| `'modal'` | **A · Setup modal** | A `Dialog` over the finished page: a 3-up grid, one sentence saying what a header is, *Decide later* / *Use this header*. |
-| `'sidebar'` | **B · Guided sidebar** | Nothing blocks. The header is selected, its edit panel is open, and its layout picker is expanded into a two-up grid under a coach mark. The content group is knocked back to 42% until a layout is tried. |
-| `'rail'` | **C · On-canvas rail** | Every section below the header is veiled, and a rail docks over the canvas with the layouts as a filmstrip. Clicking one swaps the real header at full size. |
+Three things about it are load-bearing:
 
-Three things are shared by all of them:
-
-- **One component.** `HeaderChoices` renders the cards in all three (`mode` is `'modal'`,
-  `'panel'` or `'strip'`) and is what the edit panel swaps its `LayoutPicker` for, so the control
-  a user meets first is the control they keep. Its frame is the *median* of the theme's measured
-  layout heights, so Retro's tall Polaroid neither crops nor strands the other five.
-- **Hover previews at full size.** `st.hdrHover` replaces the header's `arch` for rendering only
-  (`makeVm`), so the page previews a layout without committing it. `sec.arch` is untouched.
+- **One component.** `HeaderChoices` renders the grid — the same layouts the header's edit panel
+  offers afterwards in its `LayoutPicker` dropdown, under the same names. Its frame is the
+  *median* of the theme's measured layout heights, so Retro's tall Polaroid neither crops nor
+  strands the other five.
+- **Click to try, at full size.** Hovering a card lights the card and nothing else; clicking one
+  sets the real header behind the modal, which stays open. A click is a try rather than a
+  verdict — the layout can be swapped as often as the user likes, and *Use this header* is what
+  ends it. There is deliberately no hover preview: the page behind changed under the cursor
+  faster than it could be read, and a layout that reverted on mouse-out read as a bug.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Framed, Gradient stage, Polaroid,
   Overlay card, Stage wide (and Centred / Split / Rule for the flat family) — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
 
-`st.onboard` is the flag; any of the three exits sets it false and the editor is then just the
-editor. The `startTheme` prop still skips both picker stages, and skips the onboarding with them.
+The `startTheme` prop skips the template picker, and skips the onboarding with it.
 
 ## Seeded photography
 
@@ -151,9 +155,12 @@ Retro — the only designed template — opens with the Figma mock photography a
 The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
 the only module that imports them.
 
-- **Retro only.** `defaultImage()` / `defaultImages()` return `undefined` for Lime, Grunge,
-  Editorial and Pop, so those four render the initials placeholder exactly as before. The
-  photography is Retro's art direction, not the user's content, so switching template drops it.
+- **Retro only.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` return `undefined`
+  for Lime, Grunge, Editorial and Pop, so those four render the initials placeholder exactly as
+  before. The photography is Retro's art direction, not the user's content, so switching template
+  drops it — with one exception: the media player's track art is materialised into `c.tracks` the
+  moment the artist edits the list (it has to be, or renaming track one would delete five
+  photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
   `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all nineteen files are
   base64-inlined and the committed `index.html` still opens from `file://`. It is ~2.9 MB.
@@ -164,14 +171,82 @@ the only module that imports them.
   deleting the key, which would silently restore it. Absent → the mock photo, `null` → the
   initials placeholder, a string → an upload. `images` needs no sentinel: an emptied array is
   already distinguishable from an absent one.
-- The layout picker, the template spotlight and all three header treatments resolve through the
+- **Three shapes, not two.** A section's single `image`, a section's ordered `images`, and — since
+  the media player — a photograph belonging to one *row of a list*. Its track artwork travels in
+  `c.tracks[i].image` rather than in a section-level array, so the picture moves with the track
+  instead of slot 3 silently meaning track 3; `defaultTrackArt()` seeds the untouched list and a
+  sixth track the artist adds simply has none. `Photo` distinguishes `src` left off (fall back to
+  the section's own photo) from `src={null}` (this slot has no picture), which is what keeps the
+  now-playing sleeve off an art-less track row.
+- The layout picker, the template spotlight and the header setup modal all resolve through the
   same `sectionVm()`, so each shows the photography without any extra wiring.
+
+## Publishing
+
+**Publish** shows a success dialog naming the site, and **Open** puts the page in a new browser
+tab with none of the builder around it. There is no backend and there never will be, so
+"published" means a second tab rather than a URL — but it is a *live React root*, not a snapshot
+of the canvas DOM.
+
+That distinction is the whole design, and it buys two things:
+
+- **The published page is responsive.** `EncoreSection` carries no media queries — its
+  breakpoints are the `narrow` / `mob` booleans and the fixed px of `SIZES`, resolved into the
+  view-model. Serialised HTML would be frozen at whatever width the editor happened to show.
+  `PublishedPage` picks its own `Z` from its own window's width, at 390 / 768 / 1180+.
+- **…and it holds its measure.** Past the canvas its frame was drawn at, the design does not get
+  wider: `PublishedPage` puts the surplus into `padX`, so the content column stays the width the
+  type ramp was tuned for and the window keeps the rest. It does that through the gutter rather
+  than with a centred wrapper because `padX` is also what `bleedTo()` and `TornEdge` offset
+  against — so each section's background, its torn edges and its checker ribbons still run to both
+  window edges, and the page reads as full-bleed bands with the content centred in them. The Retro
+  hero is the one composition outside that padding, so it applies the gutter itself and clamps its
+  height to `heroH`; a `width: 100%` there is load-bearing, because an `aspect-ratio` box with a
+  biting `max-height` otherwise shrinks its own width to keep the ratio.
+- **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
+  flag, true only in the published tab, as the seam a control branches on: the same component
+  renders the editor canvas, and that is deliberately a picture of a website, so anything
+  interactive has to be off there. **Three things read it.**
+
+  **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
+  the artist typed, and its pager is derived from the result — all three inert on the canvas,
+  which still draws the picture the Figma frames show. What unblocked it was putting the songs in
+  the content model (`FIELDS.repertoire.songs`).
+
+  **The header's navigation.** Every section is given a DOM id — its category, which is unique per
+  page — so the nav links, *Book Now* and *Listen* all scroll to the section they name, and the
+  *Minimal* triple resolves Music / Shows / Book to the nearest section the page actually carries.
+  Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
+  before, layout 1's glyph opened nothing and layouts 2–6 dropped their links outright, so a
+  published phone had no navigation at all. The panel is deliberately thin — no Escape key, no
+  scroll lock, no focus trap — because each of those wants an effect, and `EncoreSection`'s whole
+  React surface is `useId` and `useState`.
+
+  **The media player's Soundcloud button.** The one *outbound* link on the page: `FIELDS.media`
+  takes an address, `extUrl()` normalises it to an absolute URL — a schemeless one would resolve
+  against `<base href>`, i.e. the builder — and `extLink()` turns the pill into an `<a>` with
+  `target="_blank"`, since the delegated listener below swallows fragments and nothing else. An
+  empty field, or the canvas, leaves it the picture it always was.
+
+  Everything else the page draws — the gallery filmstrip, the players, the testimonials carousel,
+  the events map's pager — is still a static span, and none of them needs new data to change that.
+  The enquiry form's *submit* is the one thing that cannot be front-end-only.
+
+Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
+domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the
+builder's own URL and reload into the builder. That is also why a nav link is never *followed*:
+`<base href>` pins the popup's fragment hrefs to the opener's URL, so one delegated click listener
+swallows every `#…` and does the scroll itself. And the tab is a child of the editor, so
+reloading or closing the editor freezes it. Publishing again re-renders the tab that is already
+open rather than piling up tabs.
 
 ## Scope boundaries
 
 These are intentional limits, not oversights — see §12 for the full list. The headlines:
 
-- **No persistence.** Reload loses everything, including uploaded images.
+- **No persistence.** Reload loses everything, including uploaded images — and, because the
+  published tab is a live root owned by the editor tab, reloading or closing the editor leaves
+  the published tab frozen on its last render.
 - **Reordering** is by dragging a row's `GripVertical` handle in the page list, or by the
   arrow buttons on each row. The handle uses pointer events, so the mobile Sections sheet
   reorders by touch too, and it mirrors the arrows on ArrowUp / ArrowDown when focused.
@@ -179,7 +254,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
   clamps to the slots between them.
 - **Only Retro is designed.** It ships six photographic header layouts. Lime, Grunge, Editorial
   and Pop are fully selectable and functional but render flat-colour sections and a three-layout
-  flat header family. The §10.2 *layouts* are shared by all five templates; its decorative
+  flat header family — whose nav is still the hardcoded `Music · Shows · Book` triple in
+  `FlatNav`, ignoring the artist's sections and never collapsing to a burger. Deliberate: the
+  live navigation was scoped to Retro. The §10.2 *layouts* are shared by all five templates; its decorative
   treatment — paper grain, torn edges, checkerboard, hard offset shadows, rotated cards — is
   gated on `s.retro`, the same split as `headerFamily()`. One piece of that treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
