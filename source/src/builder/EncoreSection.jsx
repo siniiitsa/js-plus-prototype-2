@@ -3185,6 +3185,15 @@ function EventsMap({ s }) {
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
 function Testimonials({ s }) {
+  // Which review the card is on. It starts at 0, not the -1 the player's `cur`,
+  // the gallery's `pick` and the map's `sel` start at and not the calendar's
+  // '': the frame draws a filled card, so here the picture *is* a choice — the
+  // enquiry form's event chip and pricing's `active` pin 0 for the same reason.
+  // Live-gated (§12.7) like every other control in this file: an arrow on the
+  // editor canvas would both page the card and select the section. Above the
+  // layout branch, because hooks are — LayoutPicker mounts every layout at once.
+  const [cur, setCur] = useState(0)
+
   if (s.v0) {
     // §5.5 — three frames: 1440 (964:58585) on the 1180 canvas at × 0.82, 768
     // (986:39711) and 390 (986:39733) verbatim. The narrow two are not the
@@ -3199,7 +3208,22 @@ function Testimonials({ s }) {
     const tab = isTablet(s)
     const scale = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * scale)}px`
-    const q = s.quotes[0]
+    const n = s.quotes.length
+    // Clamped the way pricing clamps its chip: the list is the artist's now, so
+    // a review they delete can leave `cur` past the end of it — and Publish
+    // re-renders a tab that is already open. `n` of 0 has to be caught before
+    // the index, or Math.min(cur, -1) reads off the front of the list.
+    const at = s.live && n ? Math.min(cur, n - 1) : 0
+    const q = n ? s.quotes[at] : null
+    // Wrapping at both ends, the media player's transport rule and the
+    // calendar's: a clamped first arrow opens the published page looking dead.
+    // The empty guard is `goTo`'s: nothing wires this up at one review, but a
+    // modulo by zero is NaN rather than an error, so it would strand `cur`.
+    const go = (i) => { if (n) setCur(((i % n) + n) % n) }
+    // Not drawn at one review — the pager's rule and the chip row's — and
+    // derived from the list, so it holds on the canvas too. The seed carries
+    // three, so the reference picture does not move.
+    const paging = n > 1
     const ink = s.paperFg
     // The frames' 3px stroke, verbatim on both narrow ones; u(3) rounds to 2 on
     // desktop and reads visibly lighter, so it takes the literal the
@@ -3209,13 +3233,20 @@ function Testimonials({ s }) {
     // 14/24 of the size it is given, so the frame's width backs out to 17.5.
     const glyph = Math.round(17.5 * scale)
 
-    const arrow = (icon) => (
-      <span style={{
+    // The handler is the second argument, Gallery's signature, and the cursor is
+    // read off it rather than off `s.live` — Pager's rule, and the reason the
+    // canvas arrows lose the pointer they used to carry over nothing.
+    const arrow = (icon, onClick) => (
+      <span onClick={onClick} style={{
         width: u(55), height: u(54), flex: 'none', borderRadius: u(18.5),
         background: s.pillBg, color: s.pillFg, border: `${bw} solid ${ink}`,
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        cursor: onClick ? 'pointer' : undefined,
       }}>{icon}</span>
     )
+    const step = (d) => (s.live && paging ? () => go(at + d) : undefined)
+    const prev = arrow(<ArrowLeft size={glyph} />, step(-1))
+    const next = arrow(<ArrowRight size={glyph} />, step(1))
 
     // Each back as its frame draws it: the chip it is painted in, its rotation,
     // the offset of its centre from the card's, and the inset of its box off the
@@ -3248,14 +3279,78 @@ function Testimonials({ s }) {
     // The frames pair the two pills against each other — orange lettered in the
     // mustard, mustard lettered in the orange — which is a Retro reading rather
     // than a legibility rule, so the flat themes keep contrastInk.
-    const tag = (label, bg, fg) => (
-      <span key={label} style={{
+    // Keyed positionally, not on the label: both strings are the artist's now,
+    // and two reviews' worth of identical pills would otherwise collide.
+    const tag = (label, i, bg, fg) => (
+      <span key={i} style={{
         background: bg, color: fg, borderRadius: s.btnR,
         padding: `${u(6)} ${u(12)}`, ...labelStyle(s, u(20)),
         // labelStyle sets Anton's tight 1.1; the frames' pill is a 41px box
         // round a 29px text box, which is the face's own leading.
         lineHeight: 29 / 20,
       }}>{label}</span>
+    )
+
+    // The card's contents. An empty list is a real state now that the reviews
+    // are the artist's, and it draws pricing's one message rather than the
+    // repertoire's two: there is no filter here that could empty a list which
+    // has something in it. The card, the two backs, the torn edge and the grain
+    // all stay — the section is a composition, and a hole where the card stands
+    // is not one of its states.
+    const body = q ? (
+      <>
+        {/* One gap reproduces the frames' three absolute stops: a 16px
+            eyebrow, the quote's 45px lines, then a 29px attribution. Each of
+            the three is the artist's now and each can be empty, so each is
+            rendered or not rather than printed blank: a `col` gap is spent on
+            an empty span the same as on a full one. */}
+        <div style={col(u(s.narrow ? 37 : 14))}>
+          {/* Space Mono in the frames — the body face in this project's
+              mapping of the reference's three, not the Anton label. */}
+          {!!q.when && (
+            <span style={{
+              fontFamily: s.body, fontSize: u(11), letterSpacing: u(1.5),
+              textTransform: 'uppercase', color: s.ac,
+            }}>{q.when}</span>
+          )}
+          <p style={{
+            margin: 0, fontFamily: s.display,
+            // The 390 frame is the one place the quote is not Soulway 40/45:
+            // it renders through a Display/MD token that resolves to another
+            // template's Bebas Neue at leading 1 — the §5.5 leak, not a
+            // decision. Its 40 is that condensed face's measure, and none of
+            // the five display faces holds it inside the 246 this page's own
+            // padX leaves: Fraunces breaks "Professional" mid-word. Mobile
+            // therefore takes the ramp's own display step, the same fallback
+            // the enquiry form makes for its 390 heading, which puts the quote
+            // on four lines and the card within a few px of the frame's 430.
+            // The leading stays the 45 the other two frames state.
+            fontSize: s.mob ? s.dispSm : u(40),
+            lineHeight: 45 / 40, letterSpacing: s.dls, overflowWrap: 'break-word',
+          }}>{q.quote}</p>
+          {/* labelStyle keeps its labels on one line; this one is content,
+              and at the frames' 20 it clears the 240 the mobile card leaves in
+              Anton but not in Grunge's wider label face — so it wraps rather
+              than running off the card. The two halves are joined in
+              sectionVm, which is what keeps a separator off a card whose
+              reviewer or role is blank. */}
+          {!!q.byline && (
+            <span style={labelStyle(s, u(20), { whiteSpace: 'normal' })}>{q.byline}</span>
+          )}
+        </div>
+        {/* The pills are the same two strings again, so an emptied one drops
+            its pill and an emptied pair drops the row with its padding. */}
+        {!!q.byline && (
+          <div style={row(u(8), { flexWrap: 'wrap', paddingTop: s.narrow ? 0 : u(20) })}>
+            {!!q.who && tag(q.who, 0, s.ac, s.retro ? s.pillBg : contrastInk(s.ac))}
+            {!!q.role && tag(q.role, 1, s.pillBg, s.retro ? s.ac : contrastInk(s.pillBg))}
+          </div>
+        )}
+      </>
+    ) : (
+      <span style={{
+        fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px', color: s.muted,
+      }}>No reviews yet.</span>
     )
 
     // The mobile frame's card is 364 wide in a 390 canvas — wider than the 346
@@ -3280,40 +3375,7 @@ function Testimonials({ s }) {
           ...(s.narrow ? { gap: u(50) } : { minHeight: u(420) }),
           display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         }}>
-          {/* One gap reproduces the frames' three absolute stops: a 16px
-              eyebrow, the quote's 45px lines, then a 29px attribution. */}
-          <div style={col(u(s.narrow ? 37 : 14))}>
-            {/* Space Mono in the frames — the body face in this project's
-                mapping of the reference's three, not the Anton label. */}
-            <span style={{
-              fontFamily: s.body, fontSize: u(11), letterSpacing: u(1.5),
-              textTransform: 'uppercase', color: s.ac,
-            }}>{q.when}</span>
-            <p style={{
-              margin: 0, fontFamily: s.display,
-              // The 390 frame is the one place the quote is not Soulway 40/45:
-              // it renders through a Display/MD token that resolves to another
-              // template's Bebas Neue at leading 1 — the §5.5 leak, not a
-              // decision. Its 40 is that condensed face's measure, and none of
-              // the five display faces holds it inside the 246 this page's own
-              // padX leaves: Fraunces breaks "Professional" mid-word. Mobile
-              // therefore takes the ramp's own display step, the same fallback
-              // the enquiry form makes for its 390 heading, which puts the quote
-              // on four lines and the card within a few px of the frame's 430.
-              // The leading stays the 45 the other two frames state.
-              fontSize: s.mob ? s.dispSm : u(40),
-              lineHeight: 45 / 40, letterSpacing: s.dls, overflowWrap: 'break-word',
-            }}>{s.quote1}</p>
-            {/* labelStyle keeps its labels on one line; this one is content,
-                and at the frames' 20 it clears the 240 the mobile card leaves in
-                Anton but not in Grunge's wider label face — so it wraps rather
-                than running off the card. */}
-            <span style={labelStyle(s, u(20), { whiteSpace: 'normal' })}>{q.who} · {q.role}</span>
-          </div>
-          <div style={row(u(8), { flexWrap: 'wrap', paddingTop: s.narrow ? 0 : u(20) })}>
-            {tag(q.who, s.ac, s.retro ? s.pillBg : contrastInk(s.ac))}
-            {tag(q.role, s.pillBg, s.retro ? s.ac : contrastInk(s.pillBg))}
-          </div>
+          {body}
         </div>
       </div>
     )
@@ -3328,21 +3390,26 @@ function Testimonials({ s }) {
         {card}
         {/* Mobile takes the arrows off the card's flanks and sets them in a 270
             row centred under it. */}
-        <div style={row('0px', {
-          width: u(270), maxWidth: '100%', margin: '0 auto', justifyContent: 'space-between',
-        })}>
-          {arrow(<ArrowLeft size={glyph} />)}
-          {arrow(<ArrowRight size={glyph} />)}
-        </div>
+        {paging && (
+          <div style={row('0px', {
+            width: u(270), maxWidth: '100%', margin: '0 auto', justifyContent: 'space-between',
+          })}>
+            {prev}
+            {next}
+          </div>
+        )}
       </div>
     ) : (
+      // With the arrows gone the row has one child, and space-between would
+      // stand the card against the left gutter rather than in the middle of the
+      // band the frames measure.
       <div style={row('0px', {
-        justifyContent: 'space-between', position: 'relative',
+        justifyContent: paging ? 'space-between' : 'center', position: 'relative',
         padding: `${u(tab ? 82 : 67)} 0 ${u(tab ? 47 : 48)}`,
       })}>
-        {arrow(<ArrowLeft size={glyph} />)}
+        {paging && prev}
         {card}
-        {arrow(<ArrowRight size={glyph} />)}
+        {paging && next}
       </div>
     )
 
@@ -3383,7 +3450,10 @@ function Testimonials({ s }) {
             display: 'flex', flexDirection: 'column', gap: '16px',
           }}>
             <span style={{ fontFamily: s.display, fontSize: '34px', color: s.ac, lineHeight: 0.4 }}>“</span>
-            <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.6 }}>{i === 0 ? s.quote1 : q.q}</p>
+            {/* Every card reads its own row now: this used to be
+                `i === 0 ? s.quote1 : q.q`, because only the first was editable
+                and only the first was cased. */}
+            <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.6 }}>{q.quote}</p>
             <div style={{ marginTop: 'auto' }}>
               <div style={{ fontSize: '13px', fontWeight: 700 }}>{q.who}</div>
               <div style={{ fontSize: '12px', color: s.muted }}>{q.role}</div>
@@ -3391,6 +3461,12 @@ function Testimonials({ s }) {
           </div>
         ))}
       </div>
+      {/* The card layout's empty state, in the layout that has no card. */}
+      {s.quotes.length === 0 && (
+        <span style={{
+          fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px', color: s.muted,
+        }}>No reviews yet.</span>
+      )}
     </div>
   )
 }

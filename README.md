@@ -213,7 +213,7 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Eight sections read it**, plus the three sets of outbound
+  interactive has to be off there. **Nine sections read it**, plus the three sets of outbound
   links below.
 
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
@@ -393,8 +393,41 @@ That distinction is the whole design, and it buys two things:
   where the canvas span draws it at full — Repertoire's box has always done that, so it is an
   accepted diff rather than a new one, and no fourth `.hv-*` class was added for it.
 
-  Everything else the page draws — the audio and video sections, the testimonials carousel — is
-  still a static span, and none of them needs new data to change that.
+  **The testimonials carousel, which pages.** It was the last §10.2 section that was a picture
+  on *both* sides rather than only on the canvas: the two arrows flanking the quote card carried
+  a pointer cursor and no handler in either mode, and layout 1 drew `QUOTES[0]` and nothing else,
+  so the other two seeded reviews could not be reached at all. Three flat keys reached that one
+  review — `quote`, `who`, `role` — the small date line above the quote was editable by nothing,
+  and no field could add a fourth review or drop one. The reviews are now the artist's list
+  (`FIELDS.testimonials.quotes`, a `QuotesField` repeater of `{ quote, who, role, when }` — the
+  sixth repeater and the seventh structured editor), and
+  on the published page the arrows walk them, wrapping at both ends the way the calendar's
+  months and the player's tracks do.
+
+  `cur` starts at **0** rather than the "nothing chosen" `-1` the player, the gallery and the map
+  start at: the frame draws a filled card, so here the picture already *is* a choice — the
+  enquiry form's event chip again. It is clamped against the list, because the artist can delete
+  the review the visitor happens to be on and Publish re-renders a tab that is already open. The
+  arrows are **not drawn at one review**, which is the pager's rule and the pricing chips'; that
+  is derived from the list rather than from `s.live`, so it holds on the canvas too, and the
+  desktop row then centres the card instead of standing it against the gutter. The seeded three
+  keep the reference picture, so the only diff to the Figma frames is the cursor the canvas
+  arrows no longer carry over nothing.
+
+  Every value on the card is emptiable now, so each is rendered or not rather than printed blank,
+  and the attribution is composed in `sectionVm` as `vm.quotes[].byline` — the calendar's
+  one-composed-line-per-cell rule, and what keeps a bare separator off a card whose role has been
+  cleared. The two pills below it are still the reviewer and the role, which is the frame's own
+  reading of the card, so they repeat the attribution deliberately. An emptied list keeps the
+  card, its two rotated backs, the torn edge and the grain and prints one message inside it, the
+  pricing deck's empty state: the section is a composition, and a hole where the card stands is
+  not one of its states. `vm.quote1` is gone with the flat keys, which also closes the three-up
+  layout's old `i === 0` seam — every card there is the artist's now, and every quote is cased,
+  where only the first used to be. There is no autoplay and no swipe: both want an effect or
+  touch state, and `EncoreSection` still has neither.
+
+  Everything else the page draws — the audio and video sections — is
+  still a static span, and neither needs new data to change that.
 
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
 domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the

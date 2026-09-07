@@ -580,11 +580,27 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
 
-  // testimonials
-  vm.quotes = QUOTES.map((q, i) => (i === 0
-    ? { ...q, q: cv('quote', q.q), who: cv('who', q.who), role: cv('role', q.role) }
-    : q))
-  vm.quote1 = cased(cv('quote', QUOTES[0].q))
+  // testimonials — the songs rule, the gigs' and the packages': an absent key
+  // means the seeded QUOTES, an emptied array means no reviews at all, and
+  // there is no null sentinel. It was three flat keys over a fixed three rows,
+  // which reached one review and could not add a fourth.
+  const quoteList = Array.isArray(c.quotes) ? c.quotes : QUOTES
+  vm.quotes = quoteList.map((r) => {
+    const who = String(r?.who ?? '').trim()
+    const role = String(r?.role ?? '').trim()
+    return {
+      // Cased, as the featured quote always was — but now every row rather than
+      // only the first, which is what closes the three-up layout's old seam.
+      quote: cased(String(r?.quote ?? '').trim()),
+      who,
+      role,
+      when: String(r?.when ?? '').trim(),
+      // The attribution is composed here and never in EncoreSection: with both
+      // halves editable, joining them there prints a bare separator the moment
+      // one is emptied. The calendar's one-composed-line-per-cell rule.
+      byline: [who, role].filter(Boolean).join(' · '),
+    }
+  })
 
   // form
   vm.formPara = cv('para', DEFS.formPara)
@@ -1817,6 +1833,118 @@ function BookedField({ value, open, onChange }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * §8.6h QuotesField — the testimonials' reviews.
+ *
+ * The sixth repeater, after SongsField, TracksField, GigsField,
+ * TiersField and FormFieldsField, and the seventh structured editor
+ * counting BookedField above. Row shape is
+ * { quote, who, role, when }.
+ *
+ * The second to replace a flattened key set rather than a textarea,
+ * TiersField being the first: quote/who/role reached exactly one review
+ * of a hardcoded three, the card's own date line was editable by
+ * nothing at all, and no field could add a fourth review or drop one.
+ *
+ * Laid out like TiersField, whose primary field is also the short one:
+ * the reviewer goes on the header line beside the ordinal, and the
+ * quote — a sentence, not a label — takes the same TIER_AREA textarea a
+ * package's blurb takes. Same house rules as the five above:
+ * whole-array rewrite per keystroke, numbered rows, a round X, a dashed
+ * add, an "n of max" footnote, no reordering — order is entry order,
+ * and it is the order the published card pages through.
+ * ------------------------------------------------------------------- */
+
+function QuotesField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { quote: '', who: '', role: '', when: '' }])
+
+  // The role and the date line share a line, as the gigs' city and time do:
+  // both are short, and stacking them would push the add button below the fold
+  // of the mobile edit sheet once there are three reviews.
+  const pair = (a, b) => (
+    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+  )
+
+  const row = (i, r) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        {/* shadcn Input for its focus ring — see SongsField above. */}
+        <Input
+          value={r.who ?? ''} placeholder="Reviewer" onClick={stopE}
+          onChange={(e) => setAt(i, 'who', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove review ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      {/* Same 25px gutter and 29px right inset as SongsField, so the lower
+          fields line up under the reviewer and clear the remove button. */}
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <Textarea
+          rows={3} value={r.quote ?? ''} placeholder="What they said" onClick={stopE}
+          onChange={(e) => setAt(i, 'quote', e.target.value)}
+          style={TIER_AREA}
+        />
+        {pair(
+          <Input
+            key="role" value={r.role ?? ''} placeholder="Private host" onClick={stopE}
+            onChange={(e) => setAt(i, 'role', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+          <Input
+            key="when" value={r.when ?? ''} placeholder="Reviewed 6 days ago" onClick={stopE}
+            onChange={(e) => setAt(i, 'when', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((r, i) => row(i, r || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add review</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · one to a card on the published page
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
@@ -1856,6 +1984,10 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
   // FormFieldsField edits and sectionVm reads.
   const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FORM_FIELDS)
+  // And for the testimonials' reviews: QUOTES is written as the
+  // { quote, who, role, when } row QuotesField edits, so this is the gigs' and
+  // the packages' one-liner rather than the tracks' dressing.
+  const quotesVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : QUOTES)
   // The booking calendar's two. `bookedVal` is the songs' rule with an empty
   // seed; `openVal` has to run sectionVm's whole expression rather than just
   // its default, because clearing a date input stores '' — which the canvas
@@ -1917,6 +2049,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <TiersField value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'formFields' ? (
                         <FormFieldsField value={formFieldsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'quotes' ? (
+                        <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month

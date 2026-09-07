@@ -295,12 +295,16 @@ export const TIERS = [
 // frame draws, because /event is one booking model among several.
 export const PRICE_UNIT = '/event'
 
+// The reviews the testimonials card pages through, in the row shape QuotesField
+// edits — the GIGS and TIERS case, so its seed needs no dressing. `when` is the
+// small line above the quote; `who` and `role` are printed twice by the §10.2
+// card, once as the attribution and once as the two pills.
 export const QUOTES = [
-  { q: '"Professional from the first email to the last encore."',
+  { quote: '"Professional from the first email to the last encore."',
     who: 'Hannah L.', role: 'Private host', when: 'Reviewed 6 days ago' },
-  { q: 'The room did not sit down once. Kai read the crowd like a setlist.',
+  { quote: 'The room did not sit down once. Kai read the crowd like a setlist.',
     who: 'Amara Okafor', role: 'Venue manager, Albert Hall', when: 'Reviewed 3 weeks ago' },
-  { q: 'Booked for one night, kept for the whole season.',
+  { quote: 'Booked for one night, kept for the whole season.',
     who: 'Dan Whitfield', role: 'The Warehouse Project', when: 'Reviewed last month' },
 ]
 
@@ -639,9 +643,13 @@ export const FIELDS = {
   ],
   testimonials: [
     { k: 'heading', l: 'Heading', d: 'Word of Mouth' },
-    { k: 'quote',   l: 'Featured quote', type: 'area', d: QUOTES[0].q },
-    { k: 'who',     l: 'Attribution', d: 'Hannah L.' },
-    { k: 'role',    l: 'Role', d: 'Private host' },
+    // The seventh structured editor and the sixth repeater. Replaces a flattened
+    // key set — quote/who/role reached one review of three, and nothing could
+    // add a fourth — which is the pricing packages' case, not a textarea's.
+    // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
+    { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
+      hint: 'Each row is one review, and the card pages through them on the published '
+          + 'page. The date line is the small type above the quote.' },
   ],
   form: [
     { k: 'image',    l: 'Photo', type: 'image', hint: 'The avatar above the heading.' },

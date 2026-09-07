@@ -103,19 +103,20 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **eleven things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **twelve things read it**: `Repertoire` — its search field, its filter chips and
   its pager — the **header's navigation**, the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
   the **pricing section's filter chips and Book pill** (below),
   the **booking calendar's month arrows, its day picking and its foot pill** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
+  the **testimonials carousel's arrows** (below),
   and the three sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows** and the
   **events map's per-gig tickets link**
   (`extLink()` in `EncoreSection`, `extUrl()` in
   `data.js`: they open in a new tab, and a schemeless address is given `https://`, or
   `<base href>` would resolve it against the builder). Everything else —
-  the audio and video sections, the testimonials carousel — is
+  the audio and video sections — is
   still a picture. Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
   would both filter and select the section. `EncoreSection` therefore imports `useState` and
@@ -270,12 +271,39 @@ mutated through a single `patch()` helper.
   `rowGap` — and an odd count trails one half-width cell, the pricing deck's rule; and a published
   placeholder draws at `::placeholder`'s `.45` where the canvas span draws it full, which is
   **Repertoire's accepted diff**, not a new one, and is why no fourth `.hv-*` class was added.
-- **Five list-shaped contents have a structured editor: the repertoire's songs, the media
-  player's tracks, the events map's gigs, the pricing section's packages and the enquiry form's
-  boxes** — and the booking
-  calendar's `booked` dates are a **sixth structured field that is not a list**: `BookedField` is
-  a month to click, not a repeater, because one row per blocked date is the wrong shape for a June
-  with eight of them, and it obeys the same seed-resolver rule as the four below. `c.songs` is an array of `{ title, artist, tags }`
+- **The testimonials carousel pages, in the published tab only, and the reviews are the
+  artist's.** It was the last §10.2 section that was a picture on *both* sides: its two arrows
+  carried a pointer cursor and no handler, and layout 1 drew `QUOTES[0]` and nothing else, so
+  the other two seeded reviews were unreachable. Three flat keys reached that one review —
+  `quote`, `who`, `role` — the card's own date line was editable by nothing at all, and no
+  field could add a fourth review; `c.quotes` is now a `QuotesField` repeater of
+  `{ quote, who, role, when }`, the pricing packages' flattened-key-set case rather than a
+  textarea's. `cur` starts at **0**, the enquiry form's chip and pricing's `active`, not the
+  `-1` the player's `cur`, the gallery's `pick` and the map's `sel` start at: the frame draws a
+  filled card, so the picture *is* a choice. It is clamped against the list — the artist can
+  delete the review the visitor is on, and Publish re-renders a tab that is already open — and
+  the arrows **wrap at both ends**, the player's rule, so the published page never opens on a
+  dead arrow. They are **not rendered at one review**, the pager's and the chip row's rule,
+  which is derived from the list and so holds on the canvas too; the desktop row then centres
+  the card, because `space-between` with one child would stand it against the gutter. The seed
+  carries three, so the reference picture does not move. Every value on the card is emptiable
+  now, so each is rendered or not rather than printed blank — a `col` gap is spent on an empty
+  span the same as on a full one — and the attribution is **composed in `sectionVm` as
+  `vm.quotes[].byline`**, the calendar's one-composed-line-per-cell rule, or an emptied role
+  would print a bare separator. The two pills are still `who` and `role`, the frame's own
+  reading of the card, so they repeat the attribution by design; they key **positionally**, both
+  strings being the artist's. An emptied list keeps the card, the two backs, the tear and the
+  grain and prints pricing's one message inside it: the section is a composition, and a hole
+  where the card stands is not one of its states. `vm.quote1` is gone, so the three-up layout's
+  `i === 0 ? s.quote1 : q.q` seam goes with it — **every** row is cased now, which is the
+  intended diff on a casing theme. There is **no autoplay and no swipe**: both want an effect
+  or touch state, and there is none in the file.
+- **Six list-shaped contents have a structured editor: the repertoire's songs, the media
+  player's tracks, the events map's gigs, the pricing section's packages, the enquiry form's
+  boxes and the testimonials' reviews** — and the booking
+  calendar's `booked` dates are a **seventh structured field that is not a list**: `BookedField`
+  is a month to click, not a repeater, because one row per blocked date is the wrong shape for a
+  June with eight of them, and it obeys the same seed-resolver rule as the six below. `c.songs` is an array of `{ title, artist, tags }`
   (tags a raw comma string),
   maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
@@ -304,17 +332,23 @@ mutated through a single `patch()` helper.
   fourth card) rather than a textarea. It carries the only rows with *two* delimited strings, and
   they are delimited differently on purpose: `tags` by commas, because it is the same `repChips()`
   row the songs' is, and `feats` by newlines, because a feature is a phrase that may contain a
-  comma (`tierFeats()` in `data.js` is the splitter). Every other repeated field is a
+  comma (`tierFeats()` in `data.js` is the splitter). `testimonials`' `c.quotes` is an array of
+  `{ quote, who, role, when }`, maintained by `QuotesField`, and it replaced the pricing deck's
+  flattened key set again in miniature (`quote`/`who`/`role` reached one review of a hardcoded
+  three, and `when` reached none): it is the gigs' shape of thing — one key, one shape, no
+  assets, no delimiters — laid out like `TiersField`, whose primary field is also the short one,
+  so the reviewer takes the header line and the quote the textarea. Every other repeated field
+  is a
   delimited textarea (`FIELDS.audio.tracks`,
-  `FIELDS.tags.tags`). All four follow
+  `FIELDS.tags.tags`). All five follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES`, an emptied array
   means none, and there is no
   `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`) has to
+  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
-  of — which is why `GIGS`, `TIERS` and `FORM_FIELDS` are written in the row shape their repeater edits, tags and
+  of — which is why `GIGS`, `TIERS`, `FORM_FIELDS` and `QUOTES` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
 - **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` /
   `defaultTrackArt()` in `photos.js` gate on `T.name === 'Retro'`, the same name-match as
