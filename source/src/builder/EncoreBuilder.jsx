@@ -308,9 +308,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
-  // The now-playing card names a track of the artist's choosing — FIELDS.media's
-  // `track`, defaulted to NOW_PLAYING's own, so the panel and the card agree.
-  vm.nowPlaying = { ...NOW_PLAYING, track: cased(cv('track', NOW_PLAYING.track)), by: cased(artistName) }
+  // The now-playing card is no longer content of its own: it names and shows
+  // the track the player is on, which `Media` resolves from `vm.tracks`. What
+  // is left here is the canvas's decorative clock — the frame draws a player
+  // mid-song — and the fallback label for a section with no tracks at all.
+  vm.nowPlaying = { ...NOW_PLAYING, by: cased(artistName) }
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
   // the opener, so a schemeless "soundcloud.com/kai" would resolve against the
@@ -325,9 +327,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   //
   // Per-row artwork is never re-seeded by index once the array exists: a row
   // inserted third would otherwise steal track three's photograph. `img` is
-  // therefore `null` — not undefined — wherever a row has no art of its own,
-  // because Photo falls back to the section photo (here the sleeve) on
-  // undefined alone.
+  // `null` — not undefined — wherever a row has no art of its own, because
+  // Photo falls back to the section photo on undefined alone, and the row must
+  // not inherit one. (The media player has no section photo left to inherit;
+  // the sentinel stays because the rule is Photo's, not this section's.)
   //
   // `src` is the row's sound file, and the whole of the media player's audio
   // seam (§10.2a): the published player loads it into its one <audio> element,

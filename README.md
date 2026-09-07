@@ -177,8 +177,10 @@ the only module that imports them.
   `c.tracks[i].image` rather than in a section-level array, so the picture moves with the track
   instead of slot 3 silently meaning track 3; `defaultTrackArt()` seeds the untouched list and a
   sixth track the artist adds simply has none. `Photo` distinguishes `src` left off (fall back to
-  the section's own photo) from `src={null}` (this slot has no picture), which is what keeps the
-  now-playing sleeve off an art-less track row.
+  the section's own photo) from `src={null}` (this slot has no picture), which is what stops an
+  art-less track row inheriting one. The media player is also the one section with **no photo of
+  its own**: the player shows the artwork of the track it is on, so the sleeve is track one's
+  until a visitor picks another.
 - The layout picker, the template spotlight and the header setup modal all resolve through the
   same `sectionVm()`, so each shows the photography without any extra wiring.
 
@@ -234,9 +236,13 @@ That distinction is the whole design, and it buys two things:
   a `src` prop, because a re-render four times a second must not reload the file under the
   playhead and Safari will not autoplay a freshly mounted element; and `playing` mirrors the
   element's own `play`/`pause` events rather than the click handlers, so a browser that refuses
-  the first `play()` cannot leave the button lying. Until the visitor picks something the card
-  stays the one the artist configured — `FIELDS.media`'s now-playing track and sleeve — rather
-  than pre-empting it with track one.
+  the first `play()` cannot leave the button lying. The card names and shows the track the player
+  is on — track one until a visitor picks another — so `FIELDS.media` no longer offers a
+  now-playing track or sleeve of its own: a separately editable copy of what the card shows could
+  only contradict the list it sits beside, and the section is now the one with no photo slot at
+  all. Nothing is *marked* as playing, and the clock stays at 00:00, until the first pick; the
+  canvas keeps `NOW_PLAYING`'s decorative clock, because the Figma frame draws a player caught
+  mid-song.
 
   **The media player's Soundcloud button.** The one *outbound* link on the page: `FIELDS.media`
   takes an address, `extUrl()` normalises it to an absolute URL — a schemeless one would resolve

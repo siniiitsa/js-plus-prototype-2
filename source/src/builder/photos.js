@@ -28,7 +28,6 @@ import track2 from './photos/track-2.jpg'
 import track3 from './photos/track-3.jpg'
 import track4 from './photos/track-4.jpg'
 import track5 from './photos/track-5.jpg'
-import sleeve from './photos/sleeve.jpg'
 import mapTile from './photos/map.jpg'
 import grain from './photos/grain.jpg'
 
@@ -41,10 +40,12 @@ export const RETRO_PHOTOS = {
   bio: stage,
   calendar: stage,
   form: avatar,
-  // The media player's single photo slot is the big now-playing sleeve. The five
-  // track thumbnails are not here: they belong to the tracks themselves, and are
-  // seeded through RETRO_TRACK_ART below.
-  media: sleeve,
+  // `media` is deliberately absent: the player shows the artwork of the track it
+  // is on, so the section has no photo of its own to seed. Its five track
+  // thumbnails belong to the tracks themselves and are seeded through
+  // RETRO_TRACK_ART below. (The Figma frame's separate sleeve photograph went
+  // with the field — the player was a picture then, and could name a record
+  // that was not in the list.)
   // One per tile in the strip. galActive() highlights slot 4 and shows it in the
   // large viewer, so that slot carries the full-size spotlight photograph and the
   // other six are strip-sized.

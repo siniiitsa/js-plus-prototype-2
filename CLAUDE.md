@@ -36,9 +36,9 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 2605 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 3380 | Presentational renderer for all 14 section types |
-| `src/builder/data.js` | 615 | `THEMES`, all static data, colour helpers |
+| `src/builder/EncoreBuilder.jsx` | 2630 | All state, all chrome, both stages, publish |
+| `src/builder/EncoreSection.jsx` | 3520 | Presentational renderer for all 14 section types |
+| `src/builder/data.js` | 635 | `THEMES`, all static data, colour helpers |
 | `src/builder/photos.js` | 100 | Retro's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
@@ -117,8 +117,11 @@ mutated through a single `patch()` helper.
   never as a `src` prop, or a re-render from `onTimeUpdate` would reload the file under the
   playhead — and Safari refuses to autoplay a freshly mounted element; `playing` mirrors the
   element's own `play`/`pause` events, not the click handlers, so a refused `play()` cannot leave
-  the icon lying; and `cur` starts at **-1**, meaning nothing has been chosen, so the card keeps
-  the artist's own now-playing track and sleeve until the visitor picks something. Do not mark the
+  the icon lying; and `cur` starts at **-1**, meaning nothing has been chosen, so nothing is
+  marked as playing and the clock does not start — the card still names and shows track one,
+  which is what the player is cued to. `FIELDS.media` therefore has **no now-playing track or
+  sleeve field**: a second, separately editable copy of what the card shows could only
+  contradict the list. Do not mark the
   playing card by raising it out of the stack — the cards overlap by 18px at the foot and a raised
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
@@ -155,8 +158,10 @@ mutated through a single `patch()` helper.
   `headerFamily()` and the `retro` flag. **Remove** writes `null`, not `undefined` — `undefined`
   deletes the key, and an absent key is exactly what selects the seeded photo, so it would come
   straight back. For the same reason `Photo` treats `src={null}` (this slot has no picture) as
-  distinct from no `src` prop at all (fall back to `s.image`): the media player's section photo
-  is the now-playing sleeve, and an art-less track row must not wear it.
+  distinct from no `src` prop at all (fall back to `s.image`): an empty gallery slot shows the
+  section photo and an emptied one does not, and the media player passes `null` for an art-less
+  track row so it cannot inherit anything. **`media` has no section photo at all** — no `image`
+  field, no `RETRO_PHOTOS.media` — because the player shows the artwork of the track it is on.
 - **Reordering** is drag-by-handle *or* arrows. `SectionList` owns the drag; `dragRef` is the
   source of truth and the `drag` state only mirrors it for rendering, so pointerup commits
   what it can see rather than what the last render observed. Rows are a uniform height, so

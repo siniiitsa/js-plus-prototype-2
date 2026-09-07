@@ -622,9 +622,10 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // whole point of giving it its own upload.
 // `src === undefined` — the prop left off entirely — is what falls back to the
 // section's own photo; `src={null}` is a caller saying "this slot has no
-// picture", and must not inherit it. The media player depends on the
-// difference: its section photo is the now-playing sleeve, and an art-less
-// track row would otherwise wear it.
+// picture", and must not inherit it. The gallery strip depends on the
+// difference: an empty slot there shows the section photo, an emptied one does
+// not. The media player passes `null` for an art-less track row so the row
+// cannot inherit anything, and `undefined` for the sleeve, which is allowed to.
 function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src }) {
   const url = avatar ? s.avatar : (src === undefined ? s.image : src)
   if (url) {
@@ -1289,11 +1290,10 @@ function Media({ s }) {
   // set by the click handlers, so a rejected autoplay or a pause from the OS
   // media keys cannot leave the button lying.
   //
-  // `cur` starts at -1, meaning nothing has been chosen yet: until the visitor
-  // picks a track the player keeps the card the artist configured — the
-  // now-playing title and sleeve of FIELDS.media — and only then does it
-  // become the element's own state. Otherwise publishing would silently
-  // replace two fields the edit panel still offers.
+  // `cur` starts at -1, meaning nothing has been chosen yet. The card still
+  // shows track one either way — it is the track the player is cued to — but
+  // nothing is *marked as playing* until the visitor picks, and the clock does
+  // not start until then.
   const el = useRef(null)
   const [cur, setCur] = useState(-1)
   const [playing, setPlaying] = useState(false)
@@ -1311,8 +1311,9 @@ function Media({ s }) {
   // a track deleted under the player would otherwise strand it past the end.
   const at = s.live && count ? Math.min(Math.max(cur, 0), count - 1) : 0
   const track = list[at]
-  // Has the visitor chosen anything yet? Everything the player prints hangs
-  // off this, and it is false on the canvas by construction.
+  // Has the visitor chosen anything yet? Only the cards' own marks hang off
+  // this — the now-playing block shows track one from the start — and it is
+  // false on the canvas by construction.
   const chosen = s.live && cur >= 0 && !!track
 
   // Load track `j` and play it, wrapping at both ends so Next off the last
@@ -1353,21 +1354,28 @@ function Media({ s }) {
     />
   ) : null
 
-  // The now-playing block: the element's clock once a track is chosen, the
-  // artist's own card until then. Before the metadata lands both ends read
-  // 00:00 — a track's `sub` is a release line, not a duration, so it cannot
-  // stand in.
+  // The now-playing block. The card always names the track the player is on —
+  // track one until the visitor picks another — because the section no longer
+  // carries a now-playing track or sleeve of its own to name instead.
+  //
+  // The clock is the one thing that still differs by side. Live it is the
+  // element's, from 00:00: before the metadata lands both ends read 00:00, and
+  // a track's `sub` is a release line, not a duration, so it cannot stand in.
+  // On the canvas it stays NOW_PLAYING's, because the frame draws a player
+  // caught mid-song and a dead 00:00 under an empty bar is not that picture.
   const np = s.nowPlaying
-  const now = chosen
+  const title = track ? track.name : np.track
+  const now = s.live
     ? {
-        track: track.name, by: np.by, at: clock(pos), of: clock(len),
+        track: title, by: np.by, at: clock(pos), of: clock(len),
         pct: len ? Math.min(100, (pos / len) * 100) : 0,
       }
-    : np
-  // The sleeve follows the track that is playing, falling back to the
-  // section's own photo where that track has no art — the opposite of the
-  // card rows, which must not wear the sleeve.
-  const sleeve = chosen ? (track.img ?? undefined) : undefined
+    : { ...np, track: title }
+  // And the sleeve is that track's artwork. `?? undefined` rather than the raw
+  // `null`: a track with no art of its own falls through to the section photo,
+  // which for the media player is now nothing, so it lands on the initials
+  // placeholder — the card rows keep their `null` and must not do this.
+  const sleeve = track?.img ?? undefined
 
   if (s.v0) {
     const desk = !s.narrow

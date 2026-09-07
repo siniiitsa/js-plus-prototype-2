@@ -258,9 +258,11 @@ export const TRACK_AUDIO = [
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
 ]
 
-// The "now playing" card that sits beside the track stack. It is the picture
-// the editor canvas keeps; the published player overwrites every field of it
-// from the <audio> element (§10.2a).
+// The clock on the "now playing" card beside the track stack — a player caught
+// mid-song, which is what the Figma frame draws. Only the editor canvas shows
+// it: the published player's clock is its <audio> element's own (§10.2a), and
+// the *track* named on the card is track one at both sizes, not `track` here,
+// which survives only as the label for a section with no tracks left in it.
 export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
@@ -476,14 +478,17 @@ export const FIELDS = {
   // absent key means the seeded TRACKS dressed in RETRO_TRACK_ART and
   // TRACK_AUDIO; an emptied array means no tracks. The `audio` category keeps
   // the *string* form of the same key — sectionVm reads both shapes.
+  //
+  // This is the one section with no `image` of its own. It had a "now-playing
+  // sleeve" and a "now-playing track" while the player was a picture; now that
+  // it plays, the card names and shows whatever track the player is on — track
+  // one until a visitor picks another — and a second copy of that, editable
+  // apart from the list, could only ever contradict it.
   media: [
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
       hint: 'Each row is one card in the stack, with its own artwork and audio file. '
-          + 'The published page plays them; the canvas stays a picture.' },
-    { k: 'image',   l: 'Now-playing sleeve', type: 'image',
-      hint: 'The large square inside the player.' },
+          + "The player shows the track it is on, so track one's artwork is the sleeve." },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },
-    { k: 'track',   l: 'Now-playing track', d: NOW_PLAYING.track },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
     { k: 'soundcloud', l: 'SoundCloud link', d: '',
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
