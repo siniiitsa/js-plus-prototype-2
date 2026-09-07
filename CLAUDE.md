@@ -56,7 +56,8 @@ Two styling systems, deliberately (README §"Two styling systems, deliberately")
   utilities and shadcn/ui on the tokens in `src/index.css`.
 - **`EncoreSection.jsx`** uses **neither**. Every value is an inline `style={{}}`, because
   section colours are arbitrary runtime hexes (`background: s.bg` where `s.bg` is `#7A58A7`).
-  Its only library import is `lucide-react`; from React it takes `useId` and `useState`.
+  Its only library import is `lucide-react`; from React it takes `useId`, `useState` and `useRef`
+  — and no effect.
 
 Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross the boundary,
 because each reads the per-section `--ac` / `--acFg` custom properties.
@@ -97,17 +98,29 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **three things read it**: `Repertoire` — its search field, its filter chips and
-  its pager — the **header's navigation**, and the **media player's Soundcloud button**, the one
-  outbound link (`extLink()` in `EncoreSection`, `extUrl()` in `data.js`: it opens in a new tab,
-  and a schemeless address is given `https://`, or `<base href>` would resolve it against the
-  builder). Everything else — the gallery filmstrip, the events map's pager, the players — is
+  real, and **four things read it**: `Repertoire` — its search field, its filter chips and
+  its pager — the **header's navigation**, the **media player** (below), and the **media player's
+  Soundcloud button**, the one outbound link (`extLink()` in `EncoreSection`, `extUrl()` in
+  `data.js`: it opens in a new tab, and a schemeless address is given `https://`, or
+  `<base href>` would resolve it against the builder). Everything else — the gallery filmstrip,
+  the events map's pager, the audio and video sections — is
   still a picture. Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
-  would both filter and select the section. `EncoreSection` therefore imports `useState` as well
-  as `useId`; that is the whole of its React surface and it stays that way — which is why
-  `NavMenu`'s panel has no Escape key, no scroll lock and no focus trap. Each of those wants an
-  effect.
+  would both filter and select the section. `EncoreSection` therefore imports `useState` and
+  `useRef` as well as `useId`; that is the whole of its React surface and it stays that way —
+  there is **no effect anywhere in the file**, which is why `NavMenu`'s panel has no Escape key,
+  no scroll lock and no focus trap. Each of those wants one.
+- **The media player plays, in the published tab only.** One `<audio>` element per section,
+  rendered only when `s.live`; a click anywhere on a track card loads that track, and the
+  transport is a real play/pause, previous and next, wrapping at both ends, with `ended`
+  advancing. Three rules there: the source is assigned **imperatively** (`a.src = url; a.play()`),
+  never as a `src` prop, or a re-render from `onTimeUpdate` would reload the file under the
+  playhead — and Safari refuses to autoplay a freshly mounted element; `playing` mirrors the
+  element's own `play`/`pause` events, not the click handlers, so a refused `play()` cannot leave
+  the icon lying; and `cur` starts at **-1**, meaning nothing has been chosen, so the card keeps
+  the artist's own now-playing track and sleeve until the visitor picks something. Do not mark the
+  playing card by raising it out of the stack — the cards overlap by 18px at the foot and a raised
+  one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
   every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
   id), the section root applies it as `id` **only when `s.live`** — the editor document renders a
@@ -121,11 +134,15 @@ mutated through a single `patch()` helper.
   collapse to `NavMenu`'s burger, in all six Retro layouts.
 - **Two list-shaped contents have a structured editor: the repertoire's songs and the media
   player's tracks.** `c.songs` is an array of `{ title, artist, tags }` (tags a raw comma string),
-  maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image }`,
+  maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
-  (`RowThumb`, the 46px cousin of `ImageField`). `c.tracks` is deliberately one key with two
+  (`RowThumb`, the 46px cousin of `ImageField`) and a sound file. `audio` is an address, not an
+  upload — an image is inlined as a data URI and a track is two orders of magnitude larger —
+  and `sectionVm` normalises it through `extUrl()` onto `vm.tracks[].src`. `c.tracks` is
+  deliberately one key with two
   shapes — `audio` keeps the delimited *string* of its textarea, `media` owns the *array* — and
-  `sectionVm` reads both, plus the seeded `TRACKS` when the key is absent. Per-row art is never
+  `sectionVm` reads both, plus the seeded `TRACKS` (dressed in `TRACK_AUDIO`) when the key is
+  absent. Per-row art and audio are never
   re-seeded by index once the array exists, or a row inserted third would steal track three's
   photograph. Every other repeated field is a delimited textarea (`FIELDS.audio.tracks`,
   `FIELDS.tags.tags`) or a flattened key set (`pricing`'s `t1n`/`t1p`/…). It follows `images`, not

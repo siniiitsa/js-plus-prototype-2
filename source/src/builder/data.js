@@ -244,7 +244,23 @@ export const TRACKS = [
   ['Roomtone',           '5:24', 'Hidden Sessions Vol. 2'],
 ]
 
-// The "now playing" card that sits beside the track stack.
+// The audio behind the seeded tracks above, one per TRACKS row. Unlike the
+// seeded photography this is *not* gated on Retro: it is what makes the
+// published media player audible in every theme before the artist has typed
+// anything. They are remote files — the double-clickable build plays them only
+// online, and a page whose tracks carry no address at all is still the picture
+// it always was.
+export const TRACK_AUDIO = [
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+]
+
+// The "now playing" card that sits beside the track stack. It is the picture
+// the editor canvas keeps; the published player overwrites every field of it
+// from the <audio> element (§10.2a).
 export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
@@ -454,15 +470,16 @@ export const FIELDS = {
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
   ],
   // The second list-shaped content type with a structured editor (see
-  // `repertoire` below): `tracks` here is an array of { title, sub, image },
-  // maintained by TracksField, and each row carries its own artwork rather
-  // than drawing from a section-level photo array. An absent key means the
-  // seeded TRACKS dressed in RETRO_TRACK_ART; an emptied array means no
-  // tracks. The `audio` category keeps the *string* form of the same key —
-  // sectionVm reads both shapes.
+  // `repertoire` below): `tracks` here is an array of { title, sub, image,
+  // audio }, maintained by TracksField, and each row carries its own artwork
+  // and its own sound file rather than drawing from a section-level array. An
+  // absent key means the seeded TRACKS dressed in RETRO_TRACK_ART and
+  // TRACK_AUDIO; an emptied array means no tracks. The `audio` category keeps
+  // the *string* form of the same key — sectionVm reads both shapes.
   media: [
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
-      hint: 'Each row is one card in the stack, with its own artwork.' },
+      hint: 'Each row is one card in the stack, with its own artwork and audio file. '
+          + 'The published page plays them; the canvas stays a picture.' },
     { k: 'image',   l: 'Now-playing sleeve', type: 'image',
       hint: 'The large square inside the player.' },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },

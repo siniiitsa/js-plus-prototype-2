@@ -36,7 +36,7 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, QUOTES,
   CITIES, PINS, BOOKED, HELD, EXAMPLE_PAGE,
-  NOW_PLAYING, TIER_MODES, SONGS, PAGES,
+  NOW_PLAYING, TRACK_AUDIO, TIER_MODES, SONGS, PAGES,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
@@ -328,21 +328,31 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // therefore `null` — not undefined — wherever a row has no art of its own,
   // because Photo falls back to the section photo (here the sleeve) on
   // undefined alone.
+  //
+  // `src` is the row's sound file, and the whole of the media player's audio
+  // seam (§10.2a): the published player loads it into its one <audio> element,
+  // and a row without one is unplayable rather than silent-but-selected. A
+  // typed address is normalised through extUrl for the same <base href> reason
+  // as the Soundcloud button; the seeds are already absolute. It follows the
+  // artwork's rule about re-seeding by index, for the same reason.
   const seedArt = defaultTrackArt(cat, T.name) ?? []
   if (Array.isArray(c.tracks)) {
     vm.tracks = c.tracks.map((t, i) => {
       const sub = (t?.sub ?? '').trim()
-      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, img: t?.image ?? null }
+      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub,
+               img: t?.image ?? null, src: extUrl(t?.audio ?? '') || null }
     })
   } else if (c.tracks !== undefined) {
     vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
       const parts = l.includes('—') ? l.split('—') : l.split('|')
       const dur = (parts[1] || '').trim()
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, img: seedArt[i] ?? null }
+      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur,
+               img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, img: seedArt[i] ?? null,
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`,
+      img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null,
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
@@ -1067,12 +1077,17 @@ function SongsField({ value, max, onChange }) {
  * with it rather than sitting in a section-level photo grid where slot 3
  * silently meant track 3.
  *
- * Row shape is { title, sub, image }. `sub` is the free line under the
- * title — the reference sets it "Hidden Sessions Vol. 2 · 6:18" — and
+ * Row shape is { title, sub, image, audio }. `sub` is the free line under
+ * the title — the reference sets it "Hidden Sessions Vol. 2 · 6:18" — and
  * `image` follows the same three states as every other photo slot:
  * absent or null is the initials placeholder, a string is an upload.
  * There is no per-index re-seeding once the array exists, so a row added
  * in the middle cannot inherit the photograph of the track it displaced.
+ *
+ * `audio` is an address rather than an upload: a sound file is two orders
+ * of magnitude larger than the artwork, and every image here is inlined
+ * as a data URI into a page that has no persistence to spill it into.
+ * The published player is what plays it (§10.2a); the canvas never does.
  * ------------------------------------------------------------------- */
 
 // The compact artwork control: a 46px square that is the dropzone, the
@@ -1136,7 +1151,7 @@ function TracksField({ value, max, onChange, onToast }) {
   // keeps `c.tracks` a plain value rather than something patched in place.
   const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
-  const add = () => onChange([...list, { title: '', sub: '', image: null }])
+  const add = () => onChange([...list, { title: '', sub: '', image: null, audio: '' }])
 
   const row = (i, t) => (
     <div key={i} style={{
@@ -1178,6 +1193,11 @@ function TracksField({ value, max, onChange, onToast }) {
           onChange={(e) => setAt(i, 'sub', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
         />
+        <Input
+          value={t.audio ?? ''} placeholder="Audio file URL (MP3)" onClick={stopE}
+          onChange={(e) => setAt(i, 'audio', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
+        />
       </div>
     </div>
   )
@@ -1200,7 +1220,7 @@ function TracksField({ value, max, onChange, onToast }) {
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · artwork PNG or JPG, from your device
+        {list.length} of {max} · artwork PNG or JPG, from your device · audio by link
       </p>
     </div>
   )
@@ -1224,14 +1244,15 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // repeater showed none.
   const songsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : SONGS)
   // And the same again for the media player's tracks, whose seed is TRACKS
-  // dressed in the Retro artwork. The first keystroke materialises this whole
-  // array into `c.tracks`, photographs included, so nothing the user could see
-  // disappears the moment they rename track one.
+  // dressed in the Retro artwork and the demo audio. The first keystroke
+  // materialises this whole array into `c.tracks`, photographs and sound files
+  // included, so nothing the user could see — or hear — disappears the moment
+  // they rename track one.
   const tracksVal = (k) => {
     if (Array.isArray(sec.c[k])) return sec.c[k]
     const art = defaultTrackArt(sec.cat, themeName) ?? []
     return TRACKS.map(([name, dur, rel], i) => ({
-      title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null,
+      title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null, audio: TRACK_AUDIO[i] ?? '',
     }))
   }
 

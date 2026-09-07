@@ -68,9 +68,10 @@ This is the one architectural rule worth knowing before editing anything (§12.9
   painted with arbitrary hex values taken at runtime from the active theme's palette, plus six
   derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
   `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
-  inherit `currentColor` and so stay theme-driven; from React it takes `useId` and — for the two
-  things that have live controls, Repertoire and the header's burger menu — `useState`, and
-  nothing else.
+  inherit `currentColor` and so stay theme-driven; from React it takes `useId`, `useState` — for
+  the things that have live controls, Repertoire, the header's burger menu and the media player —
+  and `useRef`, for the media player's one `<audio>` element, which is commanded rather than
+  described. There is no effect anywhere in the file, and nothing else is imported.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
@@ -206,7 +207,7 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Three things read it.**
+  interactive has to be off there. **Four things read it.**
 
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
   the artist typed, and its pager is derived from the result — all three inert on the canvas,
@@ -219,8 +220,23 @@ That distinction is the whole design, and it buys two things:
   Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
   before, layout 1's glyph opened nothing and layouts 2–6 dropped their links outright, so a
   published phone had no navigation at all. The panel is deliberately thin — no Escape key, no
-  scroll lock, no focus trap — because each of those wants an effect, and `EncoreSection`'s whole
-  React surface is `useId` and `useState`.
+  scroll lock, no focus trap — because each of those wants an effect, and `EncoreSection` has no
+  effects.
+
+  **The media player, which plays.** The section owns one `<audio>` element, rendered only when
+  `live`. A click anywhere on a track card loads that track and starts it; the transport under the
+  sleeve is a real play/pause, previous and next, wrapping at both ends; the now-playing title,
+  sleeve, clock and progress bar are the element's own state, and `ended` moves to the next track.
+  Each row carries its own address (`FIELDS.media.tracks` grew an `audio` field beside `image`),
+  normalised through `extUrl()` like the Soundcloud button below, and the five seeded demo tracks
+  carry `TRACK_AUDIO` — remote files, so the double-clickable build is audible only online. Two
+  details are load-bearing: the source is assigned to the element imperatively, never rendered as
+  a `src` prop, because a re-render four times a second must not reload the file under the
+  playhead and Safari will not autoplay a freshly mounted element; and `playing` mirrors the
+  element's own `play`/`pause` events rather than the click handlers, so a browser that refuses
+  the first `play()` cannot leave the button lying. Until the visitor picks something the card
+  stays the one the artist configured — `FIELDS.media`'s now-playing track and sleeve — rather
+  than pre-empting it with track one.
 
   **The media player's Soundcloud button.** The one *outbound* link on the page: `FIELDS.media`
   takes an address, `extUrl()` normalises it to an absolute URL — a schemeless one would resolve
@@ -228,8 +244,9 @@ That distinction is the whole design, and it buys two things:
   `target="_blank"`, since the delegated listener below swallows fragments and nothing else. An
   empty field, or the canvas, leaves it the picture it always was.
 
-  Everything else the page draws — the gallery filmstrip, the players, the testimonials carousel,
-  the events map's pager — is still a static span, and none of them needs new data to change that.
+  Everything else the page draws — the gallery filmstrip, the audio and video sections, the
+  testimonials carousel, the events map's pager — is still a static span, and none of them needs
+  new data to change that.
   The enquiry form's *submit* is the one thing that cannot be front-end-only.
 
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
@@ -238,7 +255,9 @@ builder's own URL and reload into the builder. That is also why a nav link is ne
 `<base href>` pins the popup's fragment hrefs to the opener's URL, so one delegated click listener
 swallows every `#…` and does the scroll itself. And the tab is a child of the editor, so
 reloading or closing the editor freezes it. Publishing again re-renders the tab that is already
-open rather than piling up tabs.
+open rather than piling up tabs. One consequence has a sound now: the `<audio>` element lives in
+the popup's own document, so a frozen tab keeps *playing* while its controls are dead. Close the
+tab to stop it.
 
 ## Scope boundaries
 

@@ -13,11 +13,16 @@
 // `useId` and — since Repertoire's search and chips, and then the header's
 // burger menu, became real controls on the published page — for `useState`,
 // which is gated on `s.live` throughout (§12.7: the editor canvas stays a
-// picture of a website).
+// picture of a website). `useRef` joined them for the media player's one
+// <audio> element, which has to be commanded rather than described: its
+// source is assigned imperatively so a re-render cannot reload it, and
+// Safari will not honour autoplay on a freshly mounted element. That is the
+// whole of this file's React surface; there is still no effect anywhere in
+// it, because every clock the player reads arrives as an event prop.
 
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import {
-  Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
+  Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
   Image as ImageIcon, Youtube, Instagram, Music2,
 } from 'lucide-react'
@@ -250,6 +255,14 @@ const navHref = (s, to) => (s.live && to ? `#${to}` : undefined)
 const extLink = (s, url) => (s.live && url
   ? { href: url, target: '_blank', rel: 'noopener noreferrer' }
   : null)
+
+// Seconds → mm:ss, for the media player's two clock labels. A track over an
+// hour long still counts in minutes; nothing here draws a third field. NaN is
+// what `duration` reads before the metadata arrives, hence the guard.
+const clock = (sec) => {
+  const v = Number.isFinite(sec) && sec > 0 ? Math.floor(sec) : 0
+  return `${String(Math.floor(v / 60)).padStart(2, '0')}:${String(v % 60).padStart(2, '0')}`
+}
 
 // The hamburger, and the panel behind it on the published page.
 //
@@ -1262,9 +1275,101 @@ function Bio({ s }) {
 // numbers are the 1440 frame (964:58578) × 0.82, per the RAMP rule; the 768
 // and 390 frames (986:37146, 986:35593) are exactly the tablet and mobile
 // canvases, so their numbers — shared, bar the lean — are used verbatim.
+//
+// §10.2a — and it plays. On the published page the section owns one <audio>
+// element: a click on a card loads that track, the transport under the sleeve
+// works, and the now-playing block — title, sleeve, clock, progress bar — is
+// the element's own state rather than NOW_PLAYING's picture. All of it is
+// gated on `s.live` (§12.7), like Repertoire's filters and the header's nav:
+// the editor canvas renders no <audio> at all and keeps the still picture,
+// because a card there would both start a track and select the section.
 function Media({ s }) {
+  // Hooks before the layout branch — the older three-card design plays too.
+  // `playing` mirrors the element's own play/pause events rather than being
+  // set by the click handlers, so a rejected autoplay or a pause from the OS
+  // media keys cannot leave the button lying.
+  //
+  // `cur` starts at -1, meaning nothing has been chosen yet: until the visitor
+  // picks a track the player keeps the card the artist configured — the
+  // now-playing title and sleeve of FIELDS.media — and only then does it
+  // become the element's own state. Otherwise publishing would silently
+  // replace two fields the edit panel still offers.
+  const el = useRef(null)
+  const [cur, setCur] = useState(-1)
+  const [playing, setPlaying] = useState(false)
+  const [pos, setPos] = useState(0)
+  const [len, setLen] = useState(0)
+
+  // What the transport can reach is what the layout draws: the older design
+  // shows three cards, and Next off the third has to return to the first
+  // rather than start a track with no card on the page. `s.v0` is a prop, not
+  // state, so branching on it above the hooks would be the error — branching
+  // on it here is not.
+  const list = s.v0 ? s.tracks : s.tracks3
+  const count = list.length
+  // Clamped the way Repertoire clamps its chip: the list is the artist's, and
+  // a track deleted under the player would otherwise strand it past the end.
+  const at = s.live && count ? Math.min(Math.max(cur, 0), count - 1) : 0
+  const track = list[at]
+  // Has the visitor chosen anything yet? Everything the player prints hangs
+  // off this, and it is false on the canvas by construction.
+  const chosen = s.live && cur >= 0 && !!track
+
+  // Load track `j` and play it, wrapping at both ends so Next off the last
+  // track returns to the first. The source is assigned to the element rather
+  // than rendered as a `src` prop: a re-render from onTimeUpdate must never
+  // reload the file under the playhead, and Safari refuses to autoplay an
+  // element that has only just mounted. A track with no address of its own
+  // still becomes the now-playing one — it simply has nothing to play.
+  const goTo = (i) => {
+    const a = el.current
+    if (!a || !count) return
+    const j = ((i % count) + count) % count
+    setCur(j); setPos(0); setLen(0)
+    const url = list[j].src
+    if (!url) { a.pause(); a.removeAttribute('src'); a.load(); return }
+    a.src = url
+    a.play().catch(() => {})   // an autoplay refusal is not an error here
+  }
+  const toggle = () => {
+    const a = el.current
+    if (!a) return
+    if (!a.src) { goTo(at); return }
+    if (a.paused) a.play().catch(() => {})
+    else a.pause()
+  }
+  // Clicking the card that is already loaded is a pause, not a restart.
+  const pick = (i) => (i === at && el.current?.src ? toggle() : goTo(i))
+  const onPick = (i) => (s.live ? () => pick(i) : undefined)
+
+  const audio = s.live ? (
+    <audio
+      ref={el} preload="none" style={{ display: 'none' }}
+      onPlay={() => setPlaying(true)}
+      onPause={() => setPlaying(false)}
+      onLoadedMetadata={(e) => setLen(e.currentTarget.duration || 0)}
+      onTimeUpdate={(e) => setPos(e.currentTarget.currentTime || 0)}
+      onEnded={() => goTo(at + 1)}
+    />
+  ) : null
+
+  // The now-playing block: the element's clock once a track is chosen, the
+  // artist's own card until then. Before the metadata lands both ends read
+  // 00:00 — a track's `sub` is a release line, not a duration, so it cannot
+  // stand in.
+  const np = s.nowPlaying
+  const now = chosen
+    ? {
+        track: track.name, by: np.by, at: clock(pos), of: clock(len),
+        pct: len ? Math.min(100, (pos / len) * 100) : 0,
+      }
+    : np
+  // The sleeve follows the track that is playing, falling back to the
+  // section's own photo where that track has no art — the opposite of the
+  // card rows, which must not wear the sleeve.
+  const sleeve = chosen ? (track.img ?? undefined) : undefined
+
   if (s.v0) {
-    const np = s.nowPlaying
     const desk = !s.narrow
     // The frame paints this section on cream with near-black ink, not the
     // beige page palette — EncoreSection swaps the section ground to match,
@@ -1324,8 +1429,17 @@ function Media({ s }) {
           const thrown = filled ? s.ac
             : s.retro ? (Math.floor(i / 2) % 2 ? '#8464AD' : '#FD638E')
             : s.chips[(4 + i) % n].bg
+          // The whole card is the button on the published page, not just the
+          // circle: the frame draws no other affordance, and a 29px target is
+          // not one on a phone. The playing card is marked by its circle
+          // turning to Pause and by the now-playing block beside the stack —
+          // deliberately nothing structural. Lifting it out of the stack, by
+          // z-index or by a deeper thrown block, covers the *next* card's
+          // title: the cards overlap by 18px at the foot, and the design
+          // depends on each one sitting above the one before it.
+          const on = chosen && i === at
           return (
-            <div key={i} style={{
+            <div key={i} onClick={onPick(i)} style={{
               ...row(desk ? '16px' : '20px'),
               marginLeft: filled ? (desk ? '49px' : '61px') : 0,
               marginRight: !filled ? (desk ? '49px' : '61px') : 0,
@@ -1337,6 +1451,7 @@ function Media({ s }) {
               border: `${s.bw} solid ${s.retro ? ink : fg}`, borderRadius: cardR,
               padding: desk ? '13px 13px 13px 20px' : '16px 16px 16px 24px',
               boxShadow: hard(s, thrown, -3, desk ? 8 : 9),
+              cursor: s.live ? 'pointer' : undefined,
             }}>
               <span style={{ fontFamily: s.body, fontSize: desk ? '15px' : '18px', flex: 'none' }}>{t.n}</span>
               <span style={col('3px', { flex: 1, minWidth: 0 })}>
@@ -1355,7 +1470,9 @@ function Media({ s }) {
                 background: filled ? (s.retro ? '#EDE0C4' : fg) : ink,
                 color: filled ? hue : cream,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              }}><Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} /></span>
+              }}>{on && playing
+                ? <Pause size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} />
+                : <Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} />}</span>
               <span style={{
                 width: desk ? 49 : 60, height: desk ? 49 : 60, flex: 'none',
                 borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
@@ -1386,28 +1503,38 @@ function Media({ s }) {
           width: desk ? '207px' : '252px', maxWidth: '100%',
           aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
           borderRadius: s.retro ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
-        }}><Photo s={s} initialsSize={44} /></div>
+        }}><Photo s={s} initialsSize={44} src={sleeve} /></div>
         <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
           {/* The frame sets the now-playing block in the body face, like a real
               player UI — not the display serif. */}
           <span style={{
             fontFamily: s.retro ? s.body : s.display, fontWeight: s.retro ? 600 : undefined,
             fontSize: desk ? '16px' : '20px', letterSpacing: s.retro ? 0 : s.dls,
-          }}>{np.track}</span>
-          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : '13px', opacity: 0.7 }}>{np.by}</span>
+            textAlign: 'center',
+          }}>{now.track}</span>
+          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : '13px', opacity: 0.7 }}>{now.by}</span>
         </div>
         <div style={row(desk ? '12px' : '14px', { position: 'relative' })}>
-          <span style={ctl(false)}><SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
-          <span style={ctl(true)}><Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} /></span>
-          <span style={ctl(false)}><SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
+          <span style={ctl(false)} onClick={s.live ? () => goTo(at - 1) : undefined}>
+            <SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} />
+          </span>
+          <span style={ctl(true)} onClick={s.live ? toggle : undefined}>
+            {playing
+              ? <Pause size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />
+              : <Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />}
+          </span>
+          <span style={ctl(false)} onClick={s.live ? () => goTo(at + 1) : undefined}>
+            <SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} />
+          </span>
         </div>
         <div style={row('10px', { width: '100%', position: 'relative' })}>
-          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{np.at}</span>
+          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{now.at}</span>
           <span style={{ flex: 1, height: '3px', background: s.retro ? 'rgba(0,0,0,0.28)' : s.deepFg25, borderRadius: '99px' }}>
-            <span style={{ display: 'block', width: `${np.pct}%`, height: '100%', background: wine, borderRadius: '99px' }} />
+            <span style={{ display: 'block', width: `${now.pct}%`, height: '100%', background: wine, borderRadius: '99px' }} />
           </span>
-          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{np.of}</span>
+          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{now.of}</span>
         </div>
+        {audio}
       </div>
     )
 
@@ -1455,7 +1582,11 @@ function Media({ s }) {
       <h2 style={{ margin: 0, ...h2Style(s) }}>{s.title}</h2>
       <div style={{ display: 'grid', gridTemplateColumns: s.g3, gap: '20px' }}>
         {s.tracks3.map((t, i) => (
-          <div key={i} style={{ border: `1.5px solid ${s.line}`, borderRadius: s.radius, padding: '18px', ...col('14px') }}>
+          <div key={i} onClick={onPick(i)} style={{
+            border: `1.5px solid ${chosen && i === at ? s.ac : s.line}`,
+            borderRadius: s.radius, padding: '18px',
+            cursor: s.live ? 'pointer' : undefined, ...col('14px'),
+          }}>
             {/* The track's own artwork where it has some, the big numeral where
                 it does not — this layout has no other picture to fall back on. */}
             <div style={{
@@ -1474,11 +1605,14 @@ function Media({ s }) {
               <span style={{
                 width: '36px', height: '36px', borderRadius: '999px', background: s.ac, color: s.acFg,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none', cursor: 'pointer',
-              }}><Play size={11} /></span>
+              }}>{chosen && i === at && playing ? <Pause size={11} /> : <Play size={11} />}</span>
             </div>
           </div>
         ))}
       </div>
+      {/* This layout has no transport of its own — the cards are the whole of
+          it — but it plays through the same element as the reference design. */}
+      {audio}
       {/* This layout draws no Soundcloud pill of its own — unlike the reference
           design above, where it is part of the frame. It appears only once the
           artist has an address for it, so a layout switch never grows a button
