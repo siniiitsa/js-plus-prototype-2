@@ -267,18 +267,33 @@ export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct:
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
 
+// Pricing — the packages beside the section's filter row, and the seed for
+// FIELDS.pricing's structured editor: used whenever the section carries no
+// `tiers` key of its own. Already the row shape TiersField writes, GIGS-style,
+// so the panel's seed resolver is the same expression sectionVm's is.
+//
+// `tags` is the raw comma string the artist would type, and it is what the
+// Solo / Trio / Band selector above the cards is now built from — songTags()
+// splits it and repChips() derives the row, exactly as for the repertoire, so
+// the chips are the artist's rather than a constant. `feats` is one feature a
+// line, joined here only to keep the seed readable.
 export const TIERS = [
-  { name: 'The House Party', price: '£450', blurb: 'Birthdays, anniversaries, intimate gatherings.',
-    feats: ['Solo DJ setup', 'Vinyl-only option', 'Requests welcome', 'Up to 50 mi travel'] },
-  { name: 'The Wedding Set', price: '£650', blurb: 'Ceremony, dinner, dance. One DJ for the whole day.', featured: true,
-    feats: ['Ceremony underscoring', 'Drinks + dinner ambience', 'Peak-time dance floor', 'Custom first dance', 'PA + lighting'] },
-  { name: 'The Festival Set', price: '£1,200', blurb: 'High-energy set built for outdoor stages and big rooms.',
-    feats: ['Tech rider provided', 'CDJ + vinyl combo', 'Visual sync available', 'Extended encore', 'Festival-grade PA'] },
+  { name: 'The House Party', price: '£450', tags: 'Solo',
+    blurb: 'Birthdays, anniversaries, intimate gatherings.',
+    feats: ['Solo DJ setup', 'Vinyl-only option', 'Requests welcome', 'Up to 50 mi travel'].join('\n') },
+  { name: 'The Wedding Set', price: '£650', tags: 'Solo, Trio, Band',
+    blurb: 'Ceremony, dinner, dance. One DJ for the whole day.',
+    feats: ['Ceremony underscoring', 'Drinks + dinner ambience', 'Peak-time dance floor',
+            'Custom first dance', 'PA + lighting'].join('\n') },
+  { name: 'The Festival Set', price: '£1,200', tags: 'Trio, Band',
+    blurb: 'High-energy set built for outdoor stages and big rooms.',
+    feats: ['Tech rider provided', 'CDJ + vinyl combo', 'Visual sync available',
+            'Extended encore', 'Festival-grade PA'].join('\n') },
 ]
 
-// The Solo / Trio / Band selector above the pricing cards. Static: the
-// preview is a picture of a website, not a working one (§12).
-export const TIER_MODES = ['Solo', 'Trio', 'Band']
+// The suffix beside every card's price. A field rather than the literal the
+// frame draws, because /event is one booking model among several.
+export const PRICE_UNIT = '/event'
 
 export const QUOTES = [
   { q: '"Professional from the first email to the last encore."',
@@ -302,9 +317,10 @@ export const PINS = [{ x: '20%', y: '26%' }, { x: '40%', y: '54%' }, { x: '62%',
 /* --- §10.2 demo content introduced by the Figma page ---------------- *
  * Mostly static like TRACKS / CITIES above: this is the picture of a
  * finished site, not editable copy, so most of it gets no FIELDS entry.
- * The exceptions are the three lists the artist owns — SONGS
- * (FIELDS.repertoire), the media player's tracks and GIGS (FIELDS.map) —
- * which are seeds for a structured editor rather than fixed copy.
+ * The exceptions are the lists the artist owns — SONGS (FIELDS.repertoire),
+ * the media player's tracks, GIGS (FIELDS.map) and TIERS (FIELDS.pricing,
+ * declared with the rest of §4.6 above) — which are seeds for a structured
+ * editor rather than fixed copy.
  * ------------------------------------------------------------------- */
 
 // Repertoire — the seeded song list, used whenever the section carries no
@@ -332,7 +348,7 @@ export const SONGS = [
 
 // The chip that clears the filter. It is index 0 of the row and carries a null
 // tag; repChips() skips a tag of the same name so an artist who writes "All" on
-// a song gets one chip here, not two.
+// a song — or on a pricing package — gets one chip here, not two.
 export const REP_ALL = 'All'
 
 // Events map — the upcoming-gigs list beside the map tile, and the seed for
@@ -521,15 +537,19 @@ export const FIELDS = {
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc' },
     { k: 'duration',    l: 'Duration', d: '04:18' },
   ],
+  // The fourth list-shaped content with a structured editor, and the one that
+  // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
+  // an array of { name, price, tags, blurb, feats } maintained by TiersField.
+  // It follows the `songs` rule — one key, one shape — so an absent key means
+  // the seeded TIERS, an emptied array means no packages, and there is no null
+  // sentinel. The tags are the section's filter row, the repertoire's rule.
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
+    { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
+      hint: 'Tags become the filter chips above the cards — separate them with commas. '
+          + 'Features are one to a line.' },
+    { k: 'unit',    l: 'Price unit', d: PRICE_UNIT },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
-    { k: 't1n', l: 'Tier 1 name',  d: 'The House Party' },
-    { k: 't1p', l: 'Tier 1 price', d: '£450' },
-    { k: 't2n', l: 'Tier 2 name',  d: 'The Wedding Set' },
-    { k: 't2p', l: 'Tier 2 price', d: '£650' },
-    { k: 't3n', l: 'Tier 3 name',  d: 'The Festival Set' },
-    { k: 't3p', l: 'Tier 3 price', d: '£1,200' },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of { title, artist, tags },
@@ -652,16 +672,26 @@ export function extUrl(v) {
   return /^[a-z][a-z0-9+.-]*:/i.test(t) || t.startsWith('//') ? t : `https://${t}`
 }
 
-// A song's raw `tags` string → its trimmed, non-empty labels.
+// A tagged row's raw `tags` string → its trimmed, non-empty labels. Song-named
+// for the list it was written for, but it reads nothing but the string: the
+// pricing tiers' tags go through it too.
 export function songTags(str) {
   return String(str ?? '').split(',').map((t) => t.trim()).filter(Boolean)
 }
 
-// The repertoire filter row: REP_ALL, then every tag any song carries, in
-// first-seen order. Deduped case-insensitively but keeping the casing it was
+// A filter row over any list of `{ tags }` rows — the repertoire's songs and
+// the pricing section's packages both: REP_ALL, then every tag any row carries,
+// in first-seen order. Deduped case-insensitively but keeping the casing it was
 // first typed in, so 'Weddings' and 'weddings' are one chip rather than two.
 // `label` is what the chip prints; `tag` is the raw value it matches against,
 // and is null on the All chip.
+// A package's raw `feats` string → one feature a line. The tiers' second
+// delimited field, and a line rather than a comma because a feature is a phrase
+// ("Drinks + dinner ambience") where a tag is a word.
+export function tierFeats(str) {
+  return String(str ?? '').split('\n').map((t) => t.trim()).filter(Boolean)
+}
+
 export function repChips(songs) {
   const seen = new Map()
   ;(songs || []).forEach((sg) => songTags(sg && sg.tags).forEach((t) => {

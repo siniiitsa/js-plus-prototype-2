@@ -98,9 +98,10 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **eight things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **nine things read it**: `Repertoire` — its search field, its filter chips and
   its pager — the **header's navigation**, the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
+  the **pricing section's filter chips and Book pill** (below),
   and the three sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows** and the
   **events map's per-gig tickets link**
@@ -178,8 +179,28 @@ mutated through a single `patch()` helper.
   `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
   because Minimal's Shows and Book can resolve to the same section. Below `desktop` the links
   collapse to `NavMenu`'s burger, in all six Retro layouts.
-- **Three list-shaped contents have a structured editor: the repertoire's songs, the media
-  player's tracks and the events map's gigs.** `c.songs` is an array of `{ title, artist, tags }`
+- **The pricing cards filter, in the published tab only.** The Solo / Trio / Band selector was a
+  constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's
+  (`FIELDS.pricing.tiers`, below) and the chip row is **derived from their tags** by the same
+  `repChips()` the repertoire uses, `REP_ALL` chip and all — so the seeds' tags are what redraw
+  the frame's three modes, behind an `All`. The row is **not rendered at one chip**: a page whose
+  packages carry no tags has nothing to filter, which is the pager's rule, and the extra `All`
+  chip on the reference picture is the intended diff. `active` is clamped against the row, the
+  canvas pins chip 0 and filters nothing, and the card **keys on the package's index in the whole
+  list** (`t.n`) rather than on its place in the filtered one: the card cross-fades its
+  background, so a positional key would hand a filtered-out card's node to its neighbour and
+  animate one card hue into another. The tilt and the mobile overlap take the *rendered* index
+  instead — they are decoration, and the deck has to read as a deck at any count. The hue is
+  computed over the whole list in `sectionVm`, the gigs' rule. The empty state is one message where
+  the repertoire's is two — every chip but `All` exists because some package carries its tag, so a
+  filter here cannot empty a list that has anything in it; there is no search box to do what the
+  repertoire's does. Three columns stay three columns:
+  a fourth package wraps to a second row rather than squeezing the first three. The card's Book
+  pill takes `vm.tierBookTo`, which is `vm.bookTo` **minus `pricing` itself** — `CTA_TARGETS.book`
+  ends there, so the pill would otherwise scroll the visitor to the section they are reading; with
+  neither a form nor a calendar on the page it resolves to nothing and `BookPill` stays a span.
+- **Four list-shaped contents have a structured editor: the repertoire's songs, the media
+  player's tracks, the events map's gigs and the pricing section's packages.** `c.songs` is an array of `{ title, artist, tags }`
   (tags a raw comma string),
   maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
@@ -192,17 +213,25 @@ mutated through a single `patch()` helper.
   absent. Per-row art and audio are never
   re-seeded by index once the array exists, or a row inserted third would steal track three's
   photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, link }`,
-  maintained by `GigsField` and the plainest of the three: one key, one shape, no assets, and
-  `link` normalised through `extUrl()` onto `vm.gigs[].url`. Every other repeated field is a
+  maintained by `GigsField` and the plainest of them: one key, one shape, no assets, and
+  `link` normalised through `extUrl()` onto `vm.gigs[].url`. `pricing`'s `c.tiers` is an array of
+  `{ name, price, tags, blurb, feats }`, maintained by `TiersField`, and it replaced a **flattened
+  key set** (`t1n`/`t1p`/…, which reached two of the five things a card prints and could not add a
+  fourth card) rather than a textarea. It carries the only rows with *two* delimited strings, and
+  they are delimited differently on purpose: `tags` by commas, because it is the same `repChips()`
+  row the songs' is, and `feats` by newlines, because a feature is a phrase that may contain a
+  comma (`tierFeats()` in `data.js` is the splitter). Every other repeated field is a
   delimited textarea (`FIELDS.audio.tracks`,
-  `FIELDS.tags.tags`) or a flattened key set (`pricing`'s `t1n`/`t1p`/…). All three follow
+  `FIELDS.tags.tags`). All four follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS`, an emptied array means
-  none, and there is no
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS`, an emptied array
+  means none, and there is no
   `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`) has to resolve
-  exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard of.
+  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`) has to
+  resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
+  of — which is why `GIGS` and `TIERS` are written in the row shape their repeater edits, tags and
+  features as the strings the artist types, and only `TRACKS` needs dressing.
 - **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` /
   `defaultTrackArt()` in `photos.js` gate on `T.name === 'Retro'`, the same name-match as
   `headerFamily()` and the `retro` flag. **Remove** writes `null`, not `undefined` — `undefined`

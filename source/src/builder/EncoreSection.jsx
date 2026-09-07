@@ -12,7 +12,8 @@
 // in the spec rather than a `size-*` class. React itself is imported for
 // `useId` and — since Repertoire's search and chips, then the header's burger
 // menu, then the media player's transport, then the gallery's arrows and
-// thumbnail strip, and now the events map's pager and its pin/row pairing
+// thumbnail strip, then the events map's pager and its pin/row pairing, and now
+// the pricing section's filter chips
 // became real controls on the published page — for `useState`,
 // which is gated on `s.live` throughout (§12.7: the editor canvas stays a
 // picture of a website). `useRef` joined them for the media player's one
@@ -1766,12 +1767,21 @@ function Video({ s }) {
   )
 }
 
-// v0 — Pricing layout 1 · 3-col in soft panel (§10.2 reference design): three
-// cards, each in its own palette hue, each a degree or two off square. Every
-// accent inside a card — the price numeral, the tick, the [ico] chip, the Book
-// Now pill and the hard offset block it throws — is that card's *second* hue,
+// v0 — Pricing layout 1 · 3-col in soft panel (§10.2 reference design): cards,
+// each in its own palette hue, each a degree or two off square. Every accent
+// inside a card — the price numeral, the tick, the [ico] chip, the Book Now
+// pill and the hard offset block it throws — is that card's *second* hue,
 // `t.acc` (see the pricing branch of sectionVm).
+//
+// Three cards is only what the seed carries: the packages are the artist's list
+// now, and the chip row above them filters it on the published page.
 function Pricing({ s }) {
+  // The selected filter chip, gated on `s.live` below like Repertoire's: it is
+  // a real control in the published tab and inert on the editor canvas, which
+  // is a picture of a website (§12.7) — a live chip there would both filter the
+  // cards and select the section. Above the layout branch, because hooks are.
+  const [chip, setChip] = useState(0)
+
   if (s.v0) {
     const TILT = [1, -3, 2]
     // §5.5 — the 768 and 390 frames are exactly the tablet and mobile canvases,
@@ -1791,6 +1801,14 @@ function Pricing({ s }) {
     // mobile frame, are the tell. Only the layout and the sizes are taken from
     // them; the faces stay the theme's, as everywhere else.
     const tab = isTablet(s)
+    // The chip index, clamped: the row is derived from the artist's tags, so a
+    // tag they delete can leave `chip` past the end of it. The canvas pins the
+    // first chip and filters nothing, which is the picture the frames show.
+    const active = s.live ? Math.min(chip, s.tierChips.length - 1) : 0
+    const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
+    const shown = s.live
+      ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
+      : s.tiers
     return (
       <div style={col(s.narrow ? '32px' : '26px')}>
         <div style={s.narrow
@@ -1802,19 +1820,29 @@ function Pricing({ s }) {
             maxWidth: s.mob ? '100%' : tab ? '640px' : '44%',
           }}>{s.title}</h2>
           {/* The one row in §10.2 whose chips are body-bold sentence case rather
-              than Anton caps, and whose selected chip drops its rule. */}
-          <div style={row('8px', { flexWrap: 'wrap' })}>
-            {s.tierModes.map((m, i) => (
-              <span key={m} style={{
-                border: i === 0 ? 'none' : `${s.bw} solid ${s.tx}`,
-                borderRadius: s.btnR, padding: s.narrow ? '5px 11px' : '4px 9px',
-                background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : s.tx,
-                boxShadow: i === 0 ? hard(s, s.pillBg, 3, 4) : 'none', cursor: 'pointer',
-                fontFamily: s.body, fontSize: s.narrow ? '12.5px' : '10px',
-                fontWeight: 700, whiteSpace: 'nowrap',
-              }}>{m}</span>
-            ))}
-          </div>
+              than Anton caps, and whose selected chip drops its rule. Built from
+              the tags the artist typed — the frame's Solo / Trio / Band is now
+              the seeds' tags, behind an All — so it is not drawn at one chip:
+              a filter with nothing to filter is the pager's case. */}
+          {s.tierChips.length > 1 && (
+            <div style={row('8px', { flexWrap: 'wrap' })}>
+              {s.tierChips.map((f, i) => (
+                <span
+                  key={i}
+                  onClick={s.live ? () => setChip(i) : undefined}
+                  style={{
+                    border: i === active ? 'none' : `${s.bw} solid ${s.tx}`,
+                    borderRadius: s.btnR, padding: s.narrow ? '5px 11px' : '4px 9px',
+                    background: i === active ? s.ac : 'transparent',
+                    color: i === active ? s.acFg : s.tx,
+                    boxShadow: i === active ? hard(s, s.pillBg, 3, 4) : 'none', cursor: 'pointer',
+                    fontFamily: s.body, fontSize: s.narrow ? '12.5px' : '10px',
+                    fontWeight: 700, whiteSpace: 'nowrap',
+                  }}
+                >{f.label}</span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div style={{
@@ -1827,21 +1855,30 @@ function Pricing({ s }) {
           // reads because the cards are rotated and throw an offset block — so
           // the four flat templates keep a plain gap instead of butting their
           // borders together.
+          // Three columns everywhere but the 390 frame whatever the package
+          // count is: a card holds the width it was drawn at, and a fourth
+          // wraps onto a second row rather than squeezing the first three.
           display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr 1fr',
           gap: s.mob ? (s.retro ? '0' : '22px') : tab ? '20px' : '36px',
           alignItems: 'stretch',
         }}>
-          {s.tiers.map((t, i) => {
+          {shown.map((t, i) => {
             const money = String(t.price)
             const symbol = /^[^\d]/.test(money) ? money[0] : ''
             const amount = symbol ? money.slice(1) : money
             return (
-              <div key={i} style={{
-                position: 'relative', transform: tilt(s, TILT[i]),
+              // Keyed on the package's place in the WHOLE list, not on this
+              // page of it: the card cross-fades its background, so a
+              // positional key would hand a filtered-out card's node to its
+              // neighbour and animate one card hue into another. The tilt and
+              // the overlap below take the *rendered* index instead — they are
+              // decoration, and the deck has to read as a deck at any count.
+              <div key={t.n} style={{
+                position: 'relative', transform: tilt(s, TILT[i % TILT.length]),
                 background: t.card, color: t.cardFg,
                 border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius,
                 padding: s.mob ? '24px' : tab ? '30px 20px' : '20px',
-                marginBottom: s.mob && s.retro && i < s.tiers.length - 1 ? '-18px' : undefined,
+                marginBottom: s.mob && s.retro && i < shown.length - 1 ? '-18px' : undefined,
                 // The block behind the card is the card's own second hue, so the
                 // gold card throws orange and the other two throw gold.
                 boxShadow: s.narrow ? hard(s, t.acc, 8, 8) : hard(s, t.acc, 6.6, 6.6),
@@ -1891,7 +1928,7 @@ function Pricing({ s }) {
                   }}>{amount}</span>
                   <span style={{
                     fontFamily: s.body, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
-                  }}>/event</span>
+                  }}>{s.tierUnit}</span>
                 </span>
 
                 <p style={{
@@ -1923,12 +1960,23 @@ function Pricing({ s }) {
                   marginTop: 'auto', paddingTop: s.mob ? '16px' : '6px',
                   position: 'relative', alignSelf: 'flex-start',
                 }}>
-                  <BookPill s={s} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob} />
+                  <BookPill s={s} to={s.tierBookTo} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob} />
                 </span>
               </div>
             )
           })}
         </div>
+
+        {/* An empty grid is a real state now that the packages are the
+            artist's. One message, not the repertoire's two: every chip but All
+            exists because some package carries its tag, so a live filter can
+            never empty a list that has anything in it — there is no search box
+            here to do what the repertoire's does. */}
+        {s.tiers.length === 0 && (
+          <span style={{
+            fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px', color: s.muted,
+          }}>No packages yet.</span>
+        )}
 
         <span style={{
           fontFamily: s.body, fontSize: s.narrow ? '11px' : '10px', color: s.pricingSubFg,

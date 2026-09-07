@@ -34,15 +34,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import EncoreSection from './EncoreSection.jsx'
 import {
-  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, QUOTES,
+  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, BOOKED, HELD, EXAMPLE_PAGE,
-  NOW_PLAYING, TRACK_AUDIO, TIER_MODES, SONGS,
+  NOW_PLAYING, TRACK_AUDIO, SONGS,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
+  tierFeats,
   headerFamily, layoutCount, designCount,
   headerLayout, headerLayoutLabel,
 } from './data.js'
@@ -204,9 +205,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
-    // become real. Two read it: Repertoire's search, chips and pager, and the
-    // header's navigation — its links, its Book Now and Listen, and the burger
-    // menu the narrow frames collapse to.
+    // become real. Nine things read it: Repertoire's search, chips and pager;
+    // the header's navigation — its links, its Book Now and Listen, and the
+    // burger menu the narrow frames collapse to; the media player's transport;
+    // the gallery's strip and arrows; the events map's pager and pin/row
+    // pairing; the pricing cards' filter chips and their Book pill; and the
+    // three sets of outbound links (Soundcloud, the gallery's socials, the
+    // gigs' tickets).
     live: !!live,
 
     // The section's own id on the published page, so a nav link can scroll to
@@ -281,6 +286,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // page takes a booking, Listen at wherever it plays something (§4.3a).
   vm.bookTo = firstPresent(CTA_TARGETS.book, navSections)
   vm.listenTo = firstPresent(CTA_TARGETS.listen, navSections)
+  // The pricing cards' own pills book too, but they cannot book at themselves:
+  // `pricing` is the last resort in CTA_TARGETS.book, so on a page with neither
+  // a form nor a calendar the pill would scroll the visitor to the section they
+  // are already reading. Dropping it leaves `undefined`, and BookPill's own rule
+  // — no target, no link — keeps the pill the picture it is today.
+  vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
 
   // chips — from TAGS, or from the tags field for a tags section
   const tagSource = cat === 'tags'
@@ -364,12 +375,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.videoDesc = cv('description', DEFS.videoDesc)
   vm.videoDur = cv('duration', '04:18')
 
-  // pricing
+  // pricing — the artist's own packages, else the seeded ones. The `songs`
+  // rule again: an absent key means TIERS, an emptied array means no packages,
+  // and there is no null sentinel. Everything the card prints comes off the row
+  // now, where only the name and the price used to (t1n/t1p/…, gone).
   vm.pricingSub = cv('sub', DEFS.pricingSub)
   // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
   vm.pricingSubFg = rgba(tx, 0.46)
-  vm.tierModes = TIER_MODES
-  vm.tiers = TIERS.map((t, i) => {
+  vm.tierUnit = cv('unit', PRICE_UNIT)
+  const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
+  vm.tiers = tierList.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
     // orange under Retro — the reference order — and stays in-palette elsewhere.
@@ -389,24 +404,28 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // card in a pale palette (Editorial's warm grey) does not, and there the
     // card's own ink stands in.
     const acc = Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink
-    const base = {
-      name: cv(`t${i + 1}n`, t.name), price: cv(`t${i + 1}p`, t.price),
-      blurb: t.blurb, feats: t.feats,
+    return {
+      // `n` is the row's place in the WHOLE list, not on the filtered page. The
+      // cards animate their background, so the renderer keys on it: a positional
+      // key would let a filtered-out card's DOM node become its neighbour's and
+      // cross-fade one card hue into another.
+      n: i,
+      name: String(t?.name ?? '').trim(), price: String(t?.price ?? '').trim(),
+      blurb: String(t?.blurb ?? '').trim(),
+      feats: tierFeats(t?.feats),
+      // Raw casing, deliberately — the repertoire's rule: a lower-case theme
+      // must not stop a chip from matching the tag it was derived from.
+      tags: songTags(t?.tags),
       card, acc, cardFg: ink,
-      // Only the light card drops its blurb and /event off full strength in the
-      // reference; on the two dark ones they sit at the feats' cream.
+      // Only the light card drops its blurb and the price unit off full strength
+      // in the reference; on the two dark ones they sit at the feats' cream.
       cardMut: lightCard ? rgba(ink, 0.72) : ink,
     }
-    return t.featured
-      ? {
-          ...base, bg: ac, tx: acFg, border: ac, nameC: acFg,
-          mut: rgba(acFg, 0.7), tick: acFg, btnBg: acFg, btnFg: ac,
-        }
-      : {
-          ...base, bg: 'transparent', tx, border: rgba(tx, 0.18), nameC: ac,
-          mut: rgba(tx, 0.6), tick: ac, btnBg: ac, btnFg: acFg,
-        }
   })
+  // The filter row above the cards, derived from the tags the artist typed the
+  // way the repertoire's is — `label` cased for printing, `tag` raw for
+  // comparing. It replaces TIER_MODES, which was a constant nothing could edit.
+  vm.tierChips = repChips(tierList).map((ch) => ({ ...ch, label: cased(ch.label) }))
 
   // repertoire — the artist's own list, else the seeded one. The semantics are
   // `images`, not `image`: an emptied array is already distinguishable from an
@@ -1392,6 +1411,126 @@ function GigsField({ value, max, onChange }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * §8.6e TiersField — the pricing section's packages.
+ *
+ * The fourth structured repeater, and the first to replace a flattened
+ * key set rather than a textarea: t1n/t1p/… reached two of the five
+ * things a card prints, and nothing at all could add a fourth package.
+ * Row shape is { name, price, tags, blurb, feats }.
+ *
+ * Two of those are delimited strings rather than arrays, and they are
+ * delimited differently on purpose: `tags` is comma-separated, exactly
+ * as SongsField's is — it is the same repChips() row on the other side
+ * — and `feats` is one feature a line, because a feature is a phrase
+ * that may itself contain a comma. Both stay strings all the way to
+ * sectionVm, which is the only place they are split.
+ *
+ * Same house rules as the three above: whole-array rewrite per
+ * keystroke, numbered rows, a round X, a dashed add, an "n of max"
+ * footnote, no reordering — order is entry order, and it is the order
+ * the cards take their palette hues in.
+ * ------------------------------------------------------------------- */
+
+// The two multi-line fields. A card's blurb is a sentence and its features are
+// a list, so neither fits the single-line Input the other repeaters use.
+const TIER_AREA = { ...SONG_ROW_INPUT, resize: 'vertical', lineHeight: 1.45 }
+
+function TiersField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { name: '', price: '', tags: '', blurb: '', feats: '' }])
+
+  // The price and the tags share a line, as the gigs' city and time do: both
+  // are short, and stacking them would push the two textareas below the fold of
+  // the mobile edit sheet.
+  const pair = (a, b) => (
+    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+  )
+
+  const row = (i, t) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        {/* shadcn Input for its focus ring — see SongsField above. */}
+        <Input
+          value={t.name ?? ''} placeholder="Package name" onClick={stopE}
+          onChange={(e) => setAt(i, 'name', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove package ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      {/* Same 25px gutter and 29px right inset as the three above. */}
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {pair(
+          <Input
+            key="price" value={t.price ?? ''} placeholder="£450" onClick={stopE}
+            onChange={(e) => setAt(i, 'price', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+          <Input
+            key="tags" value={t.tags ?? ''} placeholder="Tags — solo, trio" onClick={stopE}
+            onChange={(e) => setAt(i, 'tags', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+        )}
+        <Textarea
+          rows={2} value={t.blurb ?? ''} placeholder="What the package is for" onClick={stopE}
+          onChange={(e) => setAt(i, 'blurb', e.target.value)}
+          style={TIER_AREA}
+        />
+        <Textarea
+          rows={4} value={t.feats ?? ''} placeholder={'What it includes\nOne feature a line'}
+          onClick={stopE}
+          onChange={(e) => setAt(i, 'feats', e.target.value)}
+          style={TIER_AREA}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((t, i) => row(i, t || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add package</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max}
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
@@ -1423,6 +1562,10 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // And once more for the events map's gigs, whose seed needs no dressing —
   // GIGS is already the row shape GigsField writes.
   const gigsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : GIGS)
+  // And for the pricing packages, whose seed needs none either: TIERS carries
+  // its tags as the comma string and its features as the newline one, which is
+  // exactly what TiersField edits and what sectionVm splits.
+  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : TIERS)
 
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
@@ -1473,6 +1616,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'gigs' ? (
                         <GigsField value={gigsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'tiers' ? (
+                        <TiersField value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>

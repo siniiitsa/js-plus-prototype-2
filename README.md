@@ -69,9 +69,9 @@ This is the one architectural rule worth knowing before editing anything (§12.9
   derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
   `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
   inherit `currentColor` and so stay theme-driven; from React it takes `useId`, `useState` — for
-  the things that have live controls, Repertoire, the header's burger menu and the media player —
-  and `useRef`, for the media player's one `<audio>` element, which is commanded rather than
-  described. There is no effect anywhere in the file, and nothing else is imported.
+  the things that have live controls: Repertoire, the header's burger menu, the media player, the
+  gallery, the events map and the pricing cards — and `useRef`, for the media player's one
+  `<audio>` element, which is commanded rather than described. There is no effect anywhere in the file, and nothing else is imported.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
@@ -209,7 +209,8 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Four things read it.**
+  interactive has to be off there. **Six sections read it**, plus the three sets of outbound
+  links below.
 
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
   the artist typed, and its pager is derived from the result — all three inert on the canvas,
@@ -287,6 +288,25 @@ That distinction is the whole design, and it buys two things:
   stays the picture it was, the Soundcloud rule rather than the gallery's — a gig is a show, not
   a tile promising somewhere to go. `Pager`'s buttons also stopped showing a pointer when they
   carry no handler, which is what a pager on the canvas is.
+
+  **The pricing cards, which filter.** The Solo / Trio / Band selector above the cards was a
+  constant — `TIER_MODES`, three labels nothing could edit, over three cards hardcoded to the
+  seed. The packages are the artist's list now (`FIELDS.pricing.tiers`, a `TiersField` repeater of
+  `{ name, price, tags, blurb, feats }`), and the selector is **derived from the tags they type**,
+  by the same `repChips()` the repertoire's chips come from: the three seeds carry Solo, Solo /
+  Trio / Band and Trio / Band, so the reference row is redrawn out of content, behind the `All`
+  chip that clears the filter. That extra chip is the intended diff from the Figma frame, the way
+  the events map losing its pager was; the row is not drawn at all when the packages carry no
+  tags, since a filter with nothing to filter is the pager's case again. The cards key on the
+  package's index in the *whole* list, not its place in the filtered one — they cross-fade their
+  background, and a positional key would animate one card's hue into another's on every chip
+  click — while the tilt and the mobile deck's 18px overlap keep the rendered index, so the deck
+  reads as a deck at any count. Three columns stay three: a fourth package wraps to a second row
+  rather than squeezing the first three. Blurbs, feature lists and the `/event` suffix became
+  content on the way through (the suffix is a section field, the rest per row), and each card's
+  Book Now pill now scrolls to the booking section — `vm.tierBookTo`, which is the header's
+  `bookTo` minus `pricing` itself, since `CTA_TARGETS.book` ends there and the pill must not
+  scroll the visitor to the section they are already reading.
 
   Everything else the page draws — the audio and video sections, the testimonials carousel — is
   still a static span, and none of them needs new data to change that.
