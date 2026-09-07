@@ -715,7 +715,7 @@ export const FIELDS = {
     // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
     // array means no links at all, and there is no null sentinel.
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
-      hint: 'Split into two columns, the first column first. A link scrolls to a section on the page, or opens a web address in a new tab.' },
+      hint: 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.' },
     // Dead until the pill was given a target — the calendar's `cta`, which was
     // a field that edited nothing until it labelled that section's foot pill.
     { k: 'cta',      l: 'Button', d: 'Book Now',
