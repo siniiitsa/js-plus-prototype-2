@@ -38,13 +38,13 @@ import {
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
-  FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
+  FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
-  tierFeats,
+  tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount,
   headerLayout, headerLayoutLabel,
 } from './data.js'
@@ -206,14 +206,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
-    // become real. Ten things read it: Repertoire's search, chips and pager;
+    // become real. Eleven things read it: Repertoire's search, chips and pager;
     // the header's navigation — its links, its Book Now and Listen, and the
     // burger menu the narrow frames collapse to; the media player's transport;
     // the gallery's strip and arrows; the events map's pager and pin/row
     // pairing; the pricing cards' filter chips and their Book pill; the booking
-    // calendar's month arrows, its day picking and its foot pill; and the
-    // three sets of outbound links (Soundcloud, the gallery's socials, the
-    // gigs' tickets).
+    // calendar's month arrows, its day picking and its foot pill; the enquiry
+    // form's boxes, its event-type chips and its submit; and the three sets of
+    // outbound links (Soundcloud, the gallery's socials, the gigs' tickets).
     live: !!live,
 
     // The section's own id on the published page, so a nav link can scroll to
@@ -588,12 +588,57 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
   // form
   vm.formPara = cv('para', DEFS.formPara)
-  vm.formEmail = cv('email', 'bookings@kaimercer.co.uk')
+  // The address every enquiry is mailed to, and the whole of this section's
+  // live seam. It was a field that edited nothing until the submit was made
+  // real — cta's and para's state on the booking calendar before it.
+  vm.formEmail = String(cv('email', 'bookings@kaimercer.co.uk')).trim()
   vm.formBtn = cv('button', 'Book Now')
-  vm.formPromises = FORM_PROMISES
-  vm.formFields = FORM_FIELDS
-  vm.formTypes = FORM_TYPES.map((l) => cased(l))
-  vm.formMessage = FORM_MESSAGE
+  vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
+  // The boxes are the artist's now, on the `songs` rule — absent key means the
+  // seed, emptied array means none, no null sentinel. Every row is normalised
+  // here so EncoreSection can switch on `kind` without a default of its own;
+  // anything unrecognised is a text box.
+  const formList = Array.isArray(c.fields) ? c.fields : FORM_FIELDS
+  vm.formFields = formList.map((f) => ({
+    label: String((f && f.label) ?? '').trim(),
+    placeholder: String((f && f.placeholder) ?? '').trim(),
+    kind: (f && (f.kind === 'email' || f.kind === 'number')) ? f.kind : 'text',
+  }))
+  // Two to a row, paired HERE rather than in EncoreSection, which does no
+  // maths — the gigs' pin rule. It is not decoration: all three §10.2 frames
+  // space the two fields *inside* a row by 12 (10 on the 390 one) and the rows
+  // themselves by the panel's own 14, which one auto-flowing grid cannot
+  // express, having a single rowGap. An odd count trails one half-width cell,
+  // the pricing deck's rule — three columns stay three columns.
+  vm.formRows = vm.formFields.reduce(
+    (rows, f, i) => (i % 2 ? rows[rows.length - 1].push(f) : rows.push([f]), rows), [])
+  vm.formTypes = songTags(cv('types', FORM_TYPES.join(', '))).map((l) => cased(l))
+  vm.formMessage = cv('message', FORM_MESSAGE)
+  // The two labels the frame prints over its controls, and the four lines the
+  // live form needs. Literals the view-model owns, vm.calPrompt's rule, so the
+  // section looks them up rather than writing copy of its own. The two control
+  // labels stay raw — the render uppercases them in CSS, and the mailto body
+  // wants them as written.
+  vm.formTypeLabel = 'Event type'
+  vm.formMsgLabel = 'Message'
+  vm.formPrompt = 'Add the missing details and try again.'
+  vm.formSentTitle = cased('Check your mail app')
+  vm.formSentBody = 'Your enquiry should be open in it, ready to send. If nothing happened, write to:'
+  vm.formAgain = 'Write another'
+  // The only two function-valued keys on the whole view-model, and they are
+  // here for the reason enquiryLine() is not: their inputs are the visitor's
+  // keystrokes, which sectionVm never sees, so neither can be resolved to a
+  // string ahead of time. EncoreSection hands over indexes and raw strings and
+  // gets an href and a verdict back — every label, address and case decision
+  // is still bound in here, so the renderer composes nothing. Nothing
+  // stringifies or clones a vm, so a function on it is safe.
+  vm.formMailto = ({ vals, ti, msg }) => enquiryMailto(vm.formEmail, {
+    type: vm.formTypes[ti] ?? '',
+    fields: vm.formFields.map((f, i) => ({ label: f.label, value: (vals || [])[i] })),
+    message: msg,
+    msgLabel: vm.formMsgLabel,
+  })
+  vm.formCheck = ({ vals }) => formErrors(vm.formFields, vals)
 
   // footer
   vm.copyright = cv('copyright', DEFS.copyright)
@@ -1073,11 +1118,11 @@ const FIELD_BOX = {
 }
 
 /* ------------------------------------------------------------------ *
- * §8.6b SongsField — the repertoire's song list. The first of the four
+ * §8.6b SongsField — the repertoire's song list. The first of the five
  * list-shaped fields with a structured editor rather than a delimited
- * textarea (TracksField, GigsField and TiersField below are the others,
- * and BookedField after them is a structured editor of a fifth shape
- * that is not a list at all): the artist
+ * textarea (TracksField, GigsField, TiersField and FormFieldsField below
+ * are the others, and BookedField after them is a structured editor of a
+ * sixth shape that is not a list at all): the artist
  * types a title, an artist and any tags, and the tags are what the
  * section's filter chips are built from.
  *
@@ -1570,9 +1615,105 @@ function TiersField({ value, max, onChange }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §8.6f BookedField — the booking calendar's blocked dates.
+ * §8.6f FormFieldsField — the enquiry form's boxes.
  *
- * The fifth structured editor, and the first that is not a repeater: a
+ * The fifth repeater, after SongsField, TracksField, GigsField and TiersField,
+ * and the sixth structured editor counting BookedField below. One key, one
+ * shape, no assets: `{ label, placeholder, kind }`, where `kind` is the whole
+ * reason the row is not just a label and a placeholder — it is what lets the
+ * published form know which box holds the address a reply goes to, and so what
+ * makes validation derivable rather than guessed.
+ *
+ * Modelled on GigsField above, the plainest of them. Deliberately not
+ * reorderable, like the rest — but order matters more here than anywhere else,
+ * because it is the order the boxes appear in, two to a row.
+ * ------------------------------------------------------------------- */
+
+function FormFieldsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((f, j) => (j === i ? { ...f, [k]: v } : f)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { label: '', placeholder: '', kind: 'text' }])
+
+  const row = (i, f) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          value={f.label ?? ''} placeholder="Label — Name" onClick={stopE}
+          onChange={(e) => setAt(i, 'label', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove field ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <Input
+          value={f.placeholder ?? ''} placeholder="Placeholder — Full name" onClick={stopE}
+          onChange={(e) => setAt(i, 'placeholder', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+        {/* A stock <Select>, unlike §9.1's layout dropdown: the objection there
+            is that Radix's SelectItem wraps its children in ItemText, which
+            would mirror a thumbnail into the closed trigger. Three words are
+            exactly what it is for, and it keeps one select look in the panel. */}
+        <Select value={f.kind ?? 'text'} onValueChange={(v) => setAt(i, 'kind', v)}>
+          <SelectTrigger
+            onClick={stopE} className="w-full h-auto"
+            style={{ ...SONG_ROW_INPUT, paddingRight: '28px' }}
+          ><SelectValue /></SelectTrigger>
+          <SelectContent onClick={stopE}>
+            {FORM_KINDS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((f, i) => row(i, f || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add field</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · two to a row on the published page
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6g BookedField — the booking calendar's blocked dates.
+ *
+ * The sixth structured editor, and the only one that is not a repeater: a
  * month of the artist's own to click. One row per blocked date is the
  * wrong shape for a June with eight of them, and a date typed into a row
  * cannot be read against the month it falls in — which is the whole
@@ -1711,6 +1852,10 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // its tags as the comma string and its features as the newline one, which is
   // exactly what TiersField edits and what sectionVm splits.
   const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : TIERS)
+  // And for the enquiry form's boxes, whose seed needs no dressing either:
+  // FORM_FIELDS is written as the { label, placeholder, kind } row that
+  // FormFieldsField edits and sectionVm reads.
+  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FORM_FIELDS)
   // The booking calendar's two. `bookedVal` is the songs' rule with an empty
   // seed; `openVal` has to run sectionVm's whole expression rather than just
   // its default, because clearing a date input stores '' — which the canvas
@@ -1770,6 +1915,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <GigsField value={gigsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'tiers' ? (
                         <TiersField value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'formFields' ? (
+                        <FormFieldsField value={formFieldsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month

@@ -70,8 +70,8 @@ This is the one architectural rule worth knowing before editing anything (§12.9
   `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
   inherit `currentColor` and so stay theme-driven; from React it takes `useId`, `useState` — for
   the things that have live controls: Repertoire, the header's burger menu, the media player, the
-  gallery, the events map, the pricing cards and the booking calendar — and `useRef`, for the
-  media player's one
+  gallery, the events map, the pricing cards, the booking calendar and the enquiry form — and
+  `useRef`, for the media player's one
   `<audio>` element, which is commanded rather than described. There is no effect anywhere in the file, and nothing else is imported.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
@@ -79,7 +79,10 @@ Do not try to unify them. Only three hand-written CSS classes cross the boundary
 properties set per section at runtime.
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
-rendering, so `EncoreSection` does zero colour maths.
+rendering, so `EncoreSection` does zero colour maths. The enquiry form is the one exception to
+"fully-resolved": `vm.formMailto` and `vm.formCheck` are closures rather than values, because
+their inputs are the visitor's keystrokes and `sectionVm` never sees those. Every address, label
+and case decision is still bound in `sectionVm`, so the renderer composes nothing.
 
 ## Deviations from SPEC.md
 
@@ -210,7 +213,7 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Seven sections read it**, plus the three sets of outbound
+  interactive has to be off there. **Eight sections read it**, plus the three sets of outbound
   links below.
 
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
@@ -340,9 +343,58 @@ That distinction is the whole design, and it buys two things:
   because one row per blocked date is the wrong shape for a June with eight of them. `para` went
   with `DEFS.calPara` — it rendered in neither calendar layout.
 
+  **The enquiry form, which fills in and sends.** It was the last §10.2 section whose every
+  control was a picture — and the one the rest of the page points at, since `CTA_TARGETS.book`
+  starts at `form`, so the header's *Book Now*, the pricing pills and the calendar's foot pill all
+  scrolled the visitor to a set of `<span>`s they could not type into. Four of its seven values
+  also bypassed the content model outright (`FORM_PROMISES`, `FORM_FIELDS`, `FORM_TYPES`,
+  `FORM_MESSAGE` were constants), and `email` was a field that edited nothing. All of it is the
+  artist's now: the promises are a newline textarea, the event types a comma one, the message
+  placeholder a text field, and the boxes are `FIELDS.form.fields` — a `FormFieldsField` repeater
+  of `{ label, placeholder, kind }`, the fifth repeater and the sixth structured editor, and the
+  only one with a per-row select. `kind` is `text | email | number`, and it is what makes
+  validation derivable rather than guessed: with a label and a placeholder alone there is no way
+  to know which box holds the address a reply goes to.
+
+  **The submit is a `mailto:`**, and `email` is what it is addressed to. There is no backend and
+  never will be, so handing the enquiry to the visitor's own mail app is the one delivery that is
+  genuinely front-end-only — and it is honest, where an inline "Sent!" over nothing is not.
+  `enquiryMailto()` composes it in `data.js`, beside `extUrl()`, whose comment already said a
+  `mailto:` is passed through untouched; `sectionVm` binds that over the address and the labels
+  and hands the closure down, so `EncoreSection` — which imports nothing but React and lucide —
+  still composes nothing of its own. The pill is an **`<a href>`, and never a `<form>`**: a form
+  here has no action, so submitting it, which an Enter key in any text box does, would post to
+  `<base href>` — the opener's URL — and the published tab would reload into the builder. That is
+  the `document.write` failure through a second door, and with no form element there is no
+  implicit submission either. Rendering the address on the anchor rather than calling
+  `location.assign` in a handler is also what makes the whole thing verifiable: fill the boxes and
+  read `getAttribute('href')`. An empty address composes to `''` and the pill goes back to being
+  the span it always was — the Soundcloud button's rule rather than the gallery's, because a form
+  the artist has not addressed is still the picture their page is built around.
+
+  Three details are worth naming. The event chip starts at **0**, where the player's `cur`, the
+  gallery's `pick`, the map's `sel` and the calendar's `''` all start at "nothing chosen": here
+  the reference picture *is* chip 0 filled, and a form that defaults its first choice is what a
+  form does — pricing's `active` pins 0 on the canvas for the same reason. The flat fallback draws
+  no chip row and never has, so it sends the bare `Enquiry` rather than claiming a type the
+  visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
+  out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
+  box does not grow — under one prompt line. Errors are `useState`, set on a refused submit and
+  cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
+  valid submit swaps the mustard half alone for a confirmation that prints the address in plain
+  text, since a browser that opened no mail app must still show one, and *Write another* comes
+  back with what was typed.
+
+  One layout consequence, measured off the frames rather than assumed: the boxes are paired two
+  to a row in `sectionVm` (`vm.formRows`) rather than auto-flowed through one grid. All three
+  frames space the two fields *inside* a row by 12 (10 at 390) and the rows themselves by the
+  panel's own 14, and a single grid has one `rowGap`; an odd count trails one half-width cell,
+  which is the pricing deck's rule again. A published placeholder draws at `::placeholder`'s .45
+  where the canvas span draws it at full — Repertoire's box has always done that, so it is an
+  accepted diff rather than a new one, and no fourth `.hv-*` class was added for it.
+
   Everything else the page draws — the audio and video sections, the testimonials carousel — is
   still a static span, and none of them needs new data to change that.
-  The enquiry form's *submit* is the one thing that cannot be front-end-only.
 
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
 domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the

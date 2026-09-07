@@ -65,6 +65,11 @@ because each reads the per-section `--ac` / `--acFg` custom properties.
 Every section is projected through **`sectionVm()`** into a flat, fully-resolved view-model
 before rendering, so `EncoreSection` does zero colour maths. `sectionVm` takes `themeIdx` as an
 argument rather than reading state, so previews can render a theme that is not the active one.
+The **enquiry form is the one exception to "fully-resolved"**: `vm.formMailto` and `vm.formCheck`
+are *closures*, not values, because their inputs are the visitor's keystrokes and `sectionVm` never
+sees those. Everything else about them — the address, the labels, the casing — is still bound in
+`sectionVm`, so `EncoreSection` hands over indexes and raw strings and composes nothing. They are
+the only function-valued keys on the whole view-model.
 
 ## Navigation and state
 
@@ -98,11 +103,12 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **ten things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **eleven things read it**: `Repertoire` — its search field, its filter chips and
   its pager — the **header's navigation**, the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
   the **pricing section's filter chips and Book pill** (below),
   the **booking calendar's month arrows, its day picking and its foot pill** (below),
+  the **enquiry form's boxes, its event-type chips and its submit** (below),
   and the three sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows** and the
   **events map's per-gig tickets link**
@@ -229,9 +235,45 @@ mutated through a single `patch()` helper.
   a control, and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
   month needing six rows grows one where June needs five, the grid never being padded to 35.
   The flat layout (arch 1, 3) still draws the hardcoded `CITIES` and reads none of this.
-- **Four list-shaped contents have a structured editor: the repertoire's songs, the media
-  player's tracks, the events map's gigs and the pricing section's packages** — and the booking
-  calendar's `booked` dates are a **fifth structured field that is not a list**: `BookedField` is
+- **The enquiry form fills in and sends, in the published tab only.** It was the last §10.2
+  section whose every control was a picture, and the one the whole page points at:
+  `CTA_TARGETS.book` starts at `form`, so the header's Book Now, the pricing pills and the
+  calendar's foot pill all scroll the visitor to a set of `<span>`s. Four of its seven values also
+  bypassed `cv()` — `FORM_PROMISES`, `FORM_FIELDS`, `FORM_TYPES`, `FORM_MESSAGE` were constants —
+  and `email` was a field that edited nothing, `cta`'s and `para`'s state on the calendar. It is
+  now what the form is *for*: **the submit is a `mailto:`**, composed by `enquiryMailto()` in
+  `data.js` beside `extUrl()` (whose comment already said a `mailto:` is passed through untouched),
+  bound in `sectionVm` over the address and labels, and rendered as an **`<a href>`, never a
+  `<form>`**. That is load-bearing: a `<form>` here has no action, so submitting it — which an
+  Enter key in any text box does — posts to `<base href>`, the opener's URL, and the published tab
+  reloads into the builder. The `document.write` failure through a different door. There is no
+  `<form>` element in the section and there must never be one; with none, Enter does nothing at
+  all. The `<a>` is also what makes the whole thing testable from the opener: fill the boxes
+  synthetically and read the composed address off `getAttribute('href')`. An empty `email`
+  composes to `''` and the pill goes back to being a span — the Soundcloud rule, not the gallery's
+  hide-the-row rule: a form the artist has not addressed is still the picture their page is built
+  around. The chip starts at **0**, not the `-1` the player's `cur`, the gallery's `pick`, the
+  map's `sel` and the calendar's `''` start at — the frame draws chip 0 filled, so here the
+  picture *is* a choice, and pricing's `active` pins 0 on the canvas for the same reason; do not
+  "fix" it to -1. It is clamped for pricing's reason too, since Publish re-renders the tab that is
+  already open. `showTypes` is `s.v0 && nTypes`, and the **mailto reads it rather than the count**:
+  the flat layout draws no chip row, so it sends the bare `Enquiry` rather than claiming a type
+  the visitor was never offered. **No palette has a red**, so a refused box is an *inset* rule in
+  `ctlInk` — inset, so the frame's stated 60 does not grow — under a prompt line; errors are
+  `useState`, set on a refused submit and cleared per box as it is corrected, because there is
+  still no effect in the file. A valid submit swaps the **mustard half only** for a confirmation
+  that prints the address in **plain text**, since a browser that opened no mail app must still
+  show one; the olive half, the shell and the one sheet of grain do not move, and *Write another*
+  keeps what was typed. Two more rules: the boxes are **paired two to a row in `sectionVm`**
+  (`vm.formRows`), not auto-flowed, because all three frames space the two fields *inside* a row
+  by 12 (10 at 390) and the rows themselves by the panel's own 14 — one grid has a single
+  `rowGap` — and an odd count trails one half-width cell, the pricing deck's rule; and a published
+  placeholder draws at `::placeholder`'s `.45` where the canvas span draws it full, which is
+  **Repertoire's accepted diff**, not a new one, and is why no fourth `.hv-*` class was added.
+- **Five list-shaped contents have a structured editor: the repertoire's songs, the media
+  player's tracks, the events map's gigs, the pricing section's packages and the enquiry form's
+  boxes** — and the booking
+  calendar's `booked` dates are a **sixth structured field that is not a list**: `BookedField` is
   a month to click, not a repeater, because one row per blocked date is the wrong shape for a June
   with eight of them, and it obeys the same seed-resolver rule as the four below. `c.songs` is an array of `{ title, artist, tags }`
   (tags a raw comma string),
@@ -247,7 +289,16 @@ mutated through a single `patch()` helper.
   re-seeded by index once the array exists, or a row inserted third would steal track three's
   photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, link }`,
   maintained by `GigsField` and the plainest of them: one key, one shape, no assets, and
-  `link` normalised through `extUrl()` onto `vm.gigs[].url`. `pricing`'s `c.tiers` is an array of
+  `link` normalised through `extUrl()` onto `vm.gigs[].url`. `form`'s `c.fields` is an array of
+  `{ label, placeholder, kind }`, maintained by `FormFieldsField` and the only repeater with a
+  **per-row `<select>`** (a stock shadcn one, unlike §9.1's layout dropdown — Radix's `ItemText`
+  only breaks a row carrying a *thumbnail*): `kind` is `text | email | number`, and it is the whole
+  reason the row is not just a label and a placeholder, since it is what tells the published form
+  which box holds the address a reply goes to. `number` never becomes `type="number"` — the
+  spinners break the frame's 60px box, so it takes `inputMode` only — and a date stays a text box
+  with the artist's placeholder, the native picker being unstylable onto mustard. Its order is
+  load-bearing where the other repeaters' is merely entry order: it is the order the boxes appear
+  in, two to a row. `pricing`'s `c.tiers` is an array of
   `{ name, price, tags, blurb, feats }`, maintained by `TiersField`, and it replaced a **flattened
   key set** (`t1n`/`t1p`/…, which reached two of the five things a card prints and could not add a
   fourth card) rather than a textarea. It carries the only rows with *two* delimited strings, and
@@ -257,13 +308,13 @@ mutated through a single `patch()` helper.
   delimited textarea (`FIELDS.audio.tracks`,
   `FIELDS.tags.tags`). All four follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS`, an emptied array
   means none, and there is no
   `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`) has to
+  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
-  of — which is why `GIGS` and `TIERS` are written in the row shape their repeater edits, tags and
+  of — which is why `GIGS`, `TIERS` and `FORM_FIELDS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
 - **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` /
   `defaultTrackArt()` in `photos.js` gate on `T.name === 'Retro'`, the same name-match as

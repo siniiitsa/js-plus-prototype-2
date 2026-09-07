@@ -13,8 +13,9 @@
 // `useId` and — since Repertoire's search and chips, then the header's burger
 // menu, then the media player's transport, then the gallery's arrows and
 // thumbnail strip, then the events map's pager and its pin/row pairing, then
-// the pricing section's filter chips, and now the booking calendar's month
-// arrows and its day picking
+// the pricing section's filter chips, then the booking calendar's month
+// arrows and its day picking, and now the enquiry form's boxes, its
+// event-type chips and its submit
 // became real controls on the published page — for `useState`,
 // which is gated on `s.live` throughout (§12.7: the editor canvas stays a
 // picture of a website). `useRef` joined them for the media player's one
@@ -3395,13 +3396,70 @@ function Testimonials({ s }) {
 }
 
 function EnquiryForm({ s }) {
-  const submit = (
-    <span style={{
-      background: s.ac, color: s.acFg, textAlign: 'center', fontSize: '12px', fontWeight: 700,
-      letterSpacing: '1.2px', textTransform: 'uppercase', padding: '14px', borderRadius: s.btnR,
-      cursor: 'pointer',
-    }}>{s.formBtn}</span>
-  )
+  // What the visitor has typed, gated on `s.live` throughout: on the canvas
+  // every box is the span it has always been (§12.7), because a live field
+  // there would take the keystroke and select the section with it. Hooks sit
+  // above the layout branch, because hooks are — LayoutPicker mounts every
+  // layout of this section at once.
+  //
+  // `vals` is indexed by the field's place in s.formFields, which is also how
+  // `errs.f` is indexed and how the mailto composer zips labels onto values.
+  // It is sparse, so nothing ever maps over it — the field list is what is
+  // mapped, and `at(i)` reads through it.
+  const [vals, setVals] = useState([])
+  const [msg, setMsg] = useState('')
+  // The picked event type starts at 0, not the -1 the player's `cur`, the
+  // gallery's `pick`, the map's `sel` and the calendar's `''` start at. Those
+  // open on "nothing chosen" so the published first paint is the canvas's
+  // picture; here the picture *is* chip 0 picked — the §10.2 frame draws it
+  // filled, with the olive block under it — and a form that defaults its first
+  // choice is what a form does. The pricing chips pin 0 on the canvas for the
+  // same reason. Do not "fix" this to -1.
+  const [type, setType] = useState(0)
+  // null until a submit is refused, then { f: bool[], any }. Cleared per field
+  // as each is corrected, so the form stops marking a box the visitor has just
+  // filled. No effect anywhere: set on the click, read on the render.
+  const [errs, setErrs] = useState(null)
+  const [sent, setSent] = useState(false)
+
+  const nTypes = s.formTypes.length
+  // Clamped like the pricing chips': the row is the artist's list now, so a
+  // type they delete between publishes can leave `type` past the end of it —
+  // and Publish re-renders the tab that is already open.
+  const ti = s.live && nTypes ? Math.min(type, nTypes - 1) : 0
+  // Only the split layout draws the chip row — the flat fallback never has —
+  // so this is what decides whether a type is offered at all, and the mailto
+  // reads it rather than `nTypes`. A page whose artist emptied the list and a
+  // layout that never asks are the same case: no type was chosen, so the
+  // subject is the bare "Enquiry" rather than a claim the visitor never made.
+  const showTypes = !!s.v0 && nTypes > 0
+  const at = (i) => vals[i] ?? ''
+  const setAt = (i, v) => {
+    setVals((prev) => { const next = prev.slice(); next[i] = v; return next })
+    setErrs((e) => (e ? { ...e, f: e.f.map((x, j) => (j === i ? false : x)) } : e))
+  }
+
+  // The submit is an <a href="mailto:…">, never a <form>. A <form> here has no
+  // action, so submitting it — which an Enter key in any text field does — would
+  // post to <base href>, i.e. the opener's URL, and the published tab would
+  // reload into the builder. That is the document.write failure through a
+  // different door (see the Publish block in EncoreBuilder). With no <form>
+  // there is no implicit submission either, so Enter does nothing at all.
+  //
+  // The href is composed on every render, so the address always carries what is
+  // in the boxes and the click only decides whether to let it through. An empty
+  // `email` composes to '' and the pill goes back to being a span — the
+  // Soundcloud button's rule, not the gallery's hide-the-row rule: a form the
+  // artist has not addressed is still the picture their page is drawn around.
+  // No target and no rel: a mailto in a new tab leaves an empty tab behind, and
+  // the published document's delegated listener only ever swallows '#'.
+  const href = s.live && !sent ? s.formMailto({ vals, ti: showTypes ? ti : -1, msg }) : ''
+  const onSubmit = href ? (e) => {
+    const bad = s.formCheck({ vals })
+    if (bad.any) { e.preventDefault(); setErrs(bad) } else { setErrs(null); setSent(true) }
+  } : undefined
+  const Pill = href ? 'a' : 'span'
+  const pillLink = href ? { href } : null
 
   // v0 — Enquiry Form layout 1 · Split context + form (§10.2 reference
   // design): an olive context panel welded to a mustard form panel inside one
@@ -3441,27 +3499,62 @@ function EnquiryForm({ s }) {
       }}>{t}</span>
     )
 
-    const field = (f) => (
-      <div key={f.l} style={col(u(6))}>
-        {label(f.l)}
-        <span style={{
-          display: 'flex', alignItems: 'center',
-          border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, background: ctlBg,
-          // Stated heights, not padding: the reset boxes these border-box, so
-          // the frame's stroke sits inside its 60 the way Figma draws it.
-          height: u(60), padding: `0 ${u(24)}`,
-          fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
-        }}>{f.p}</span>
-      </div>
-    )
+    // One box, drawn once for both modes. There is no red in any THEMES
+    // palette and this file invents no hex, so a refused field is marked
+    // structurally: a rule under it in the accent's own ink, drawn *inset* so
+    // the stated 60 does not grow and nothing in the frame moves.
+    const ctl = (bad) => ({
+      border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, background: ctlBg,
+      // Stated heights, not padding: the reset boxes these border-box, so
+      // the frame's stroke sits inside its 60 the way Figma draws it.
+      height: u(60), padding: `0 ${u(24)}`,
+      fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
+      margin: 0, width: '100%',
+      boxShadow: bad ? `inset 0 ${u(-3)} 0 ${ctlInk}` : undefined,
+    })
+
+    // Repertoire's search box is the precedent: on the published page a real
+    // field, on the canvas the same span it has always been, both carrying the
+    // frame's own type so the box does not jump when the page is published.
+    // Keyed by index rather than by label — two boxes may be called the same
+    // thing, and an artist mid-rename has two called nothing.
+    const field = (f, i) => {
+      const bad = !!(errs && errs.f[i])
+      return (
+        <div key={i} style={col(u(6))}>
+          {label(f.label)}
+          {s.live ? (
+            <input
+              value={at(i)} placeholder={f.placeholder}
+              onChange={(e) => setAt(i, e.target.value)}
+              // type="email" is free semantics and a phone keyboard; `number`
+              // gets inputMode only, because type="number" draws spinners
+              // inside the frame's 60px box. A date is a text box carrying the
+              // artist's placeholder: the native picker cannot be styled onto
+              // mustard, and the frame draws a written date.
+              type={f.kind === 'email' ? 'email' : 'text'}
+              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              style={{ ...ctl(bad), outline: 'none' }}
+            />
+          ) : (
+            <span style={{ ...ctl(bad), display: 'flex', alignItems: 'center' }}>{f.placeholder}</span>
+          )}
+        </div>
+      )
+    }
 
     // Two to a row on the 1440 and 768 frames, one to a row on the 390 one,
-    // which also closes the gap between them from 12 to 10.
-    const fieldRow = (fs) => (
-      <div style={{
+    // which also closes the gap between them from 12 to 10. The pairing is
+    // sectionVm's (`vm.formRows`), not a grid's: the frames space the fields
+    // inside a row by that 12/10 and the rows themselves by the panel's own
+    // 14, and one auto-flowing grid has a single rowGap.
+    const fieldRow = (fs, r) => (
+      <div key={r} style={{
         display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
         gap: u(s.mob ? 10 : 12),
-      }}>{fs.map(field)}</div>
+      // r * 2 + j, not the row-local index: `at()` and `errs.f` are indexed
+      // against the whole field list, and a row is always a chunk of two.
+      }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
     )
 
     return (
@@ -3516,50 +3609,113 @@ function EnquiryForm({ s }) {
         </div>
 
         <div style={{ background: formBg, color: formFg, padding: inset, ...col(u(14)) }}>
-          {fieldRow(s.formFields.slice(0, 2))}
-          {fieldRow(s.formFields.slice(2))}
-          <div style={col(u(8))}>
-            {label('Event type')}
-            <div style={row(u(8), { flexWrap: 'wrap' })}>
-              {s.formTypes.map((t, i) => (
-                <span key={t} style={{
-                  // Figma strokes inside the box, so its picked chip stands as
-                  // tall as the four outlined ones with no stroke at all. A CSS
-                  // border adds to the box, so the picked one keeps its border
-                  // and paints it its own fill, and the height is stated rather
-                  // than left to the padding and the line box.
-                  border: `${s.bw} solid ${i === 0 ? s.ac : formFg}`, borderRadius: s.btnR,
-                  display: 'inline-flex', alignItems: 'center',
-                  height: u(25), padding: `0 ${u(11)}`,
-                  background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : formFg,
-                  boxShadow: i === 0 ? block : 'none', cursor: 'pointer',
-                  fontFamily: s.body, fontWeight: 700, fontSize: u(12.5), whiteSpace: 'nowrap',
-                }}>{t}</span>
-              ))}
+          {sent ? (
+            // The mustard half alone — the shell, the olive panel and the one
+            // sheet of grain below are untouched, so the composition does not
+            // move. `sent` can only be set under s.live, so the canvas never
+            // draws this.
+            <div style={col(u(14))}>
+              <h3 style={{
+                margin: 0, fontFamily: s.display, fontSize: u(28),
+                letterSpacing: s.dls, lineHeight: 1, overflowWrap: 'break-word',
+              }}>{s.formSentTitle}</h3>
+              <p style={{
+                margin: 0, fontFamily: s.body, fontSize: u(13.5), lineHeight: 1.5,
+              }}>{s.formSentBody}</p>
+              {/* Plain text, deliberately, and not a second mailto: this line
+                  is the fallback for a visitor whose browser opened nothing,
+                  and a link they cannot follow is no fallback at all. */}
+              <span style={{
+                fontFamily: s.body, fontWeight: 700, fontSize: u(15),
+                overflowWrap: 'break-word',
+              }}>{s.formEmail}</span>
+              <span
+                onClick={() => setSent(false)}
+                style={{
+                  ...row(u(10), { justifyContent: 'center' }),
+                  background: s.ac, color: s.acFg, borderRadius: s.btnR,
+                  padding: `${u(14)} ${u(20)}`,
+                  cursor: 'pointer', boxShadow: block, ...labelStyle(s, u(20)),
+                }}
+              >{s.formAgain}</span>
             </div>
-          </div>
-          <div style={col(u(6))}>
-            {label('Message')}
-            <span style={{
-              display: 'block', border: `${s.bw} solid ${formFg}`, background: ctlBg,
-              borderRadius: u(20), height: u(s.mob ? 100 : 134),
-              padding: `${u(20)} ${u(24)}`,
-              fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
-            }}>{s.formMessage}</span>
-          </div>
-          <span style={{
-            ...row(u(10), { justifyContent: 'center' }),
-            background: s.ac, color: s.acFg, borderRadius: s.btnR,
-            // The frame's 49px pill is its 10px padding plus the line box
-            // Anton's own leading gives 20px type. labelStyle sets the tighter
-            // 1.1 every other label in the page wants, so the padding carries
-            // the difference and the pill still stands the frame's height.
-            padding: `${u(14)} ${u(20)}`,
-            cursor: 'pointer', boxShadow: block, ...labelStyle(s, u(20)),
-          }}>
-            {s.formBtn}
-            <Asterisk size={Math.round(20 * scale)} color={s.acFg} />
-          </span>
+          ) : (
+            <>
+              {s.formRows.map(fieldRow)}
+              {/* Not drawn at no chips: a picker with nothing to pick is the
+                  pager's case and the pricing chips'. */}
+              {showTypes && (
+                <div style={col(u(8))}>
+                  {label(s.formTypeLabel)}
+                  <div style={row(u(8), { flexWrap: 'wrap' })}>
+                    {s.formTypes.map((t, i) => {
+                      const onClick = s.live ? () => setType(i) : undefined
+                      return (
+                        <span key={i} onClick={onClick} style={{
+                          // Figma strokes inside the box, so its picked chip stands as
+                          // tall as the four outlined ones with no stroke at all. A CSS
+                          // border adds to the box, so the picked one keeps its border
+                          // and paints it its own fill, and the height is stated rather
+                          // than left to the padding and the line box.
+                          border: `${s.bw} solid ${i === ti ? s.ac : formFg}`, borderRadius: s.btnR,
+                          display: 'inline-flex', alignItems: 'center',
+                          height: u(25), padding: `0 ${u(11)}`,
+                          background: i === ti ? s.ac : 'transparent', color: i === ti ? s.acFg : formFg,
+                          boxShadow: i === ti ? block : 'none',
+                          // Read off the handler, Pager's rule: a chip on the
+                          // canvas is a picture of a chip.
+                          cursor: onClick ? 'pointer' : undefined,
+                          fontFamily: s.body, fontWeight: 700, fontSize: u(12.5), whiteSpace: 'nowrap',
+                        }}>{t}</span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+              <div style={col(u(6))}>
+                {label(s.formMsgLabel)}
+                {s.live ? (
+                  <textarea
+                    value={msg} placeholder={s.formMessage}
+                    onChange={(e) => setMsg(e.target.value)}
+                    style={{
+                      ...ctl(false), display: 'block',
+                      borderRadius: u(20), height: u(s.mob ? 100 : 134),
+                      padding: `${u(20)} ${u(24)}`,
+                      // The box is the frame's; it cannot be dragged out of it.
+                      resize: 'none', outline: 'none',
+                    }}
+                  />
+                ) : (
+                  <span style={{
+                    ...ctl(false), display: 'block',
+                    borderRadius: u(20), height: u(s.mob ? 100 : 134),
+                    padding: `${u(20)} ${u(24)}`,
+                  }}>{s.formMessage}</span>
+                )}
+              </div>
+              <Pill {...pillLink} onClick={onSubmit} style={{
+                ...row(u(10), { justifyContent: 'center' }),
+                background: s.ac, color: s.acFg, borderRadius: s.btnR,
+                // The frame's 49px pill is its 10px padding plus the line box
+                // Anton's own leading gives 20px type. labelStyle sets the tighter
+                // 1.1 every other label in the page wants, so the padding carries
+                // the difference and the pill still stands the frame's height.
+                padding: `${u(14)} ${u(20)}`,
+                textDecoration: 'none',
+                cursor: onSubmit ? 'pointer' : undefined,
+                boxShadow: block, ...labelStyle(s, u(20)),
+              }}>
+                {s.formBtn}
+                <Asterisk size={Math.round(20 * scale)} color={s.acFg} />
+              </Pill>
+              {errs && (
+                <span style={{
+                  fontFamily: s.body, fontSize: u(12), color: formFg, textAlign: 'center',
+                }}>{s.formPrompt}</span>
+              )}
+            </>
+          )}
         </div>
         {/* One sheet of grain over both halves, screened at the frame's .4 —
             not a sheet per panel, which seams down the weld between them. */}
@@ -3567,14 +3723,66 @@ function EnquiryForm({ s }) {
       </div>
     )
   }
+  // The flat fallback (arch 1, 3, 5). Its three boxes were hardcoded literals
+  // unrelated to the field list; they are the artist's now, off the same state
+  // and the same hooks as v0 — there is no second state model.
+  //
+  // It draws no chip row, and never has: this is the plain layout, and the
+  // artist's types are not lost, merely not offered here. `showTypes` above is
+  // false for the whole layout, so the mailto goes with no type at all.
+  const flatCtl = (bad) => ({
+    ...inputStyle(s),
+    // The inset rule again — no palette has a red, and inset costs no layout.
+    boxShadow: bad ? `inset 0 -3px 0 ${s.ac}` : undefined,
+  })
+  const flatPill = {
+    background: s.ac, color: s.acFg, textAlign: 'center', fontSize: '12px', fontWeight: 700,
+    letterSpacing: '1.2px', textTransform: 'uppercase', padding: '14px', borderRadius: s.btnR,
+    textDecoration: 'none', display: 'block',
+  }
+  if (sent) {
+    return (
+      <div style={col('14px', { maxWidth: '560px', margin: '0 auto', textAlign: 'center' })}>
+        <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.04 }}>{s.formSentTitle}</h2>
+        <p style={{ margin: 0, fontSize: '15px', color: s.muted, lineHeight: 1.6 }}>{s.formSentBody}</p>
+        <span style={{ fontSize: '16px', fontWeight: 700, wordBreak: 'break-word' }}>{s.formEmail}</span>
+        <span onClick={() => setSent(false)} style={{ ...flatPill, cursor: 'pointer' }}>{s.formAgain}</span>
+      </div>
+    )
+  }
   return (
     <div style={col('14px', { maxWidth: '560px', margin: '0 auto', textAlign: 'center' })}>
       <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.04 }}>{s.title}</h2>
       <p style={{ margin: '0 0 8px', fontSize: '15px', color: s.muted, lineHeight: 1.6 }}>{s.formPara}</p>
-      <input style={inputStyle(s)} placeholder="Your name" readOnly />
-      <input style={inputStyle(s)} placeholder="Email" readOnly />
-      <textarea rows={3} style={{ ...inputStyle(s), resize: 'none' }} placeholder="Tell me about the event…" readOnly />
-      {submit}
+      {s.formFields.map((f, i) => (s.live ? (
+        <input
+          key={i} value={at(i)} placeholder={f.placeholder}
+          onChange={(e) => setAt(i, e.target.value)}
+          type={f.kind === 'email' ? 'email' : 'text'}
+          inputMode={f.kind === 'number' ? 'numeric' : undefined}
+          style={flatCtl(!!(errs && errs.f[i]))}
+        />
+      ) : (
+        // The one place a canvas control stays an <input readOnly> rather than
+        // becoming a span: this layout has always drawn inputs, and a span here
+        // would change the placeholder's own colour.
+        <input key={i} style={flatCtl(false)} placeholder={f.placeholder} readOnly />
+      )))}
+      {s.live ? (
+        <textarea
+          rows={3} value={msg} placeholder={s.formMessage}
+          onChange={(e) => setMsg(e.target.value)}
+          style={{ ...flatCtl(false), resize: 'none' }}
+        />
+      ) : (
+        <textarea rows={3} style={{ ...flatCtl(false), resize: 'none' }} placeholder={s.formMessage} readOnly />
+      )}
+      <Pill {...pillLink} onClick={onSubmit} style={{ ...flatPill, cursor: onSubmit ? 'pointer' : undefined }}>
+        {s.formBtn}
+      </Pill>
+      {errs && (
+        <span style={{ fontSize: '13px', color: s.muted }}>{s.formPrompt}</span>
+      )}
     </div>
   )
 }

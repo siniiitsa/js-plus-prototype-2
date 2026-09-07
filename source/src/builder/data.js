@@ -382,13 +382,28 @@ export const GALLERY_SOURCES = [
   { l: 'TikTok',    k: 'tiktok' },
 ]
 
-// Enquiry form — the split context panel and the field set beside it.
+// Enquiry form — the split context panel and the field set beside it. All four
+// of these were the section's content until it became the artist's: they are
+// the *seeds* of FIELDS.form's promises, fields, types and message now, and
+// nothing renders them directly.
 export const FORM_PROMISES = ['Replies within 24 hrs', 'Free, no-obligation quote', 'Covers 120 mi from Manchester']
+// Written in the row shape FormFieldsField edits and sectionVm reads — the
+// GIGS/TIERS rule, so the panel's seed resolver needs no dressing.
 export const FORM_FIELDS = [
-  { l: 'Name',       p: 'Full name' },
-  { l: 'Email',      p: 'you@email.com' },
-  { l: 'Event date', p: 'dd / mm / yyyy' },
-  { l: 'Guests',     p: 'approx.' },
+  { label: 'Name',       placeholder: 'Full name',      kind: 'text' },
+  { label: 'Email',      placeholder: 'you@email.com',  kind: 'email' },
+  // Deliberately `text`, not a date kind: the native picker cannot be styled
+  // onto the mustard panel, so a date is the artist's placeholder and nothing
+  // more. `number` likewise never becomes type="number" — see EncoreSection.
+  { label: 'Event date', placeholder: 'dd / mm / yyyy', kind: 'text' },
+  { label: 'Guests',     placeholder: 'approx.',        kind: 'number' },
+]
+// The three kinds a row can be, in the { v, l } shape EditPanel's own select
+// branch reads. Anything else sectionVm resolves to 'text'.
+export const FORM_KINDS = [
+  { v: 'text',   l: 'Text' },
+  { v: 'email',  l: 'Email' },
+  { v: 'number', l: 'Number' },
 ]
 export const FORM_TYPES = ['Wedding', 'Event', 'Pub', 'Party', 'Other']
 export const FORM_MESSAGE = 'Tell me about your event…'
@@ -629,11 +644,23 @@ export const FIELDS = {
     { k: 'role',    l: 'Role', d: 'Private host' },
   ],
   form: [
-    { k: 'image',   l: 'Photo', type: 'image', hint: 'The avatar above the heading.' },
-    { k: 'heading', l: 'Heading', d: "Let's make your night unforgettable." },
-    { k: 'para',    l: 'Paragraph', type: 'area', def: 'formPara' },
-    { k: 'email',   l: 'Email address', d: 'bookings@kaimercer.co.uk' },
-    { k: 'button',  l: 'Button', d: 'Book Now' },
+    { k: 'image',    l: 'Photo', type: 'image', hint: 'The avatar above the heading.' },
+    { k: 'heading',  l: 'Heading', d: "Let's make your night unforgettable." },
+    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara' },
+    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
+      hint: 'One per line — the ticked list beside the form.' },
+    // The sixth structured editor and the fifth repeater. Follows the `songs`
+    // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
+    // no boxes at all, and there is no null sentinel.
+    { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
+      hint: 'One box each, two to a row. The published form emails you what the visitor types.' },
+    { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
+      hint: 'Comma separated. The form opens on the first; empty hides the row.' },
+    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE },
+    // Dead until the submit was made real — this is now what the form is for.
+    { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
+      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
+    { k: 'button',   l: 'Button', d: 'Book Now' },
   ],
   footer: [
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },
@@ -695,9 +722,55 @@ export function extUrl(v) {
   return /^[a-z][a-z0-9+.-]*:/i.test(t) || t.startsWith('//') ? t : `https://${t}`
 }
 
+// The enquiry form's submit, composed here for the reason enquiryLine() is:
+// EncoreSection composes nothing. It cannot be resolved in sectionVm either —
+// the values are the visitor's keystrokes, which sectionVm never sees — so
+// sectionVm binds this over the section's address and labels and hands the
+// closure down on the view-model.
+//
+// A mailto is the whole of the submit: there is no backend and never will be,
+// and handing the enquiry to the visitor's own mail app is the one delivery
+// that is genuinely front-end-only. The result is already absolute, so it does
+// NOT go back through extUrl() — whose own comment above says a mailto: is
+// passed through untouched. An empty address returns '', and the pill goes
+// back to being the span it always was: the Soundcloud button's rule.
+export function enquiryMailto(email, { type, fields, message, msgLabel }) {
+  const to = String(email ?? '').trim()
+  if (!to) return ''
+  const body = [
+    ...(fields || [])
+      .filter((f) => String(f.value ?? '').trim())
+      .map((f) => `${f.label || 'Detail'}: ${String(f.value).trim()}`),
+    ...(String(message ?? '').trim() ? ['', `${msgLabel}:`, String(message).trim()] : []),
+  ].join('\r\n')
+  // No type row on a layout that draws no chips, and none on a page whose
+  // artist deleted them: the clause is dropped rather than left dangling, the
+  // calendar's trailing-" at " rule.
+  const subject = type ? `${type} enquiry` : 'Enquiry'
+  return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
+// What the submit refuses to send. Index-aligned with the field list, so the
+// section can mark the boxes it is missing without working anything out — the
+// pin sectionVm pairs with a gig, again.
+//
+// Every box the artist put on the form is required: they chose to ask for it.
+// An `email` row must also look like an address, since it is where a reply
+// goes. A `number` row is required but not checked — "approx." invites "~150".
+// The message is optional: the four boxes above it are the enquiry.
+export function formErrors(fields, vals) {
+  const f = (fields || []).map((fd, i) => {
+    const v = String((vals || [])[i] ?? '').trim()
+    if (!v) return true
+    return fd.kind === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+  })
+  return { f, any: f.some(Boolean) }
+}
+
 // A tagged row's raw `tags` string → its trimmed, non-empty labels. Song-named
 // for the list it was written for, but it reads nothing but the string: the
-// pricing tiers' tags go through it too.
+// pricing tiers' tags go through it too, and so does the enquiry form's
+// comma-separated list of event types.
 export function songTags(str) {
   return String(str ?? '').split(',').map((t) => t.trim()).filter(Boolean)
 }
@@ -710,7 +783,8 @@ export function songTags(str) {
 // and is null on the All chip.
 // A package's raw `feats` string → one feature a line. The tiers' second
 // delimited field, and a line rather than a comma because a feature is a phrase
-// ("Drinks + dinner ambience") where a tag is a word.
+// ("Drinks + dinner ambience") where a tag is a word. The enquiry form's
+// promises are the same shape and go through it too.
 export function tierFeats(str) {
   return String(str ?? '').split('\n').map((t) => t.trim()).filter(Boolean)
 }
