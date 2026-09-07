@@ -416,24 +416,36 @@ export const DEFS = {
   statement:  'Reads the room.',
   videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
-  calPara:    'August is filling fast. Highlighted dates are already booked — everything else is yours.',
   mapSub:     '12 dates · 8 cities · this season',
   formPara:   'Tell me about the night — date, venue, crowd. Replies within 24 hours.',
   copyright:  'C 2026 Kai Mercer',
 }
 
-// Calendar highlighting for the legacy list design (August)
-export const BOOKED = [3, 4, 10, 11, 17, 24, 25]
-export const HELD   = [12, 18]
+// §10.2 scheduler — the date the calendar is cued to, and the time its enquiry
+// line prints. One date does both jobs: CAL_OPEN names the month the grid opens
+// on *and* the day it opens picked, the way the media player's card names track
+// one before anything has been chosen. June 2025 starts on a Sunday, so the seed
+// has no leading blanks, its grid runs 1..30, and the 12th is the Thursday the
+// reference frame highlights — every number the retired CAL_LEAD / CAL_LENGTH /
+// CAL_PICKED stated is now derived from this one string.
+export const CAL_OPEN   = '2025-06-12'
+export const CAL_TIME   = '9:00pm'
+export const CAL_DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+// The dates the artist is already booked on, and cannot be enquired for. Empty
+// on purpose: the frame draws a month in which every cell is identical but the
+// pick, so an empty seed is the only one that reproduces it. It follows the
+// gallery's three social addresses rather than GIGS and TIERS — absent and
+// emptied both mean none, because there is nothing here to seed.
+export const CAL_BOOKED = []
+// How far ahead the calendar reaches, in months from CAL_OPEN's. The arrows
+// wrap at both ends of it rather than clamping — see EncoreSection's Calendar.
+export const CAL_SPAN   = 12
 
-// §10.2 scheduler — June 2025 starts on a Sunday, so there are no leading
-// blanks and the grid runs 1..30. Day 12 is the selected Thursday.
-export const CAL_MONTH   = 'June 2025'
-export const CAL_DAYS    = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-export const CAL_LEAD    = 0
-export const CAL_LENGTH  = 30
-export const CAL_PICKED  = 12
-export const CAL_ENQUIRY = 'Enquiry for Thursday, June 12 at 9:00pm'
+export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December']
+// The enquiry line names the weekday in full; CAL_DAYS heads the grid's columns.
+export const DAY_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+  'Friday', 'Saturday']
 
 /* ------------------------------------------------------------------ *
  * §4.7 Starting pages — [categoryId, layoutIndex]
@@ -577,10 +589,21 @@ export const FIELDS = {
     { k: 'tiktok',    l: 'TikTok link', d: '',
       hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture.' },
   ],
+  // `heading` heads the flat layout only — the scheduler frame draws no title —
+  // but the other four are all read by it. `open` is the one date the section is
+  // built from, `booked` the days it will not take, `time` the hour the foot
+  // line names, and `cta` the label on the pill beside that line, which was an
+  // unread key until the pill existed.
   calendar: [
     { k: 'image',   l: 'Photo', type: 'image', hint: 'Fills the polaroid stack beside the month.' },
     { k: 'heading', l: 'Heading', d: 'Availability' },
-    { k: 'para',    l: 'Paragraph', type: 'area', def: 'calPara' },
+    { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
+      hint: 'The month the calendar opens on, and the date it opens picked. '
+          + `It reaches ${CAL_SPAN} months from there.` },
+    { k: 'booked',  l: 'Booked dates', type: 'booked',
+      hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
+    { k: 'time',    l: 'Enquiry time', d: CAL_TIME,
+      hint: 'Printed in the line along the foot of the panel. Leave it empty and the line stops at the date.' },
     { k: 'cta',     l: 'Button', d: 'Check a date' },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
@@ -699,4 +722,65 @@ export function repChips(songs) {
     if (k !== REP_ALL.toLowerCase() && !seen.has(k)) seen.set(k, t)
   }))
   return [{ label: REP_ALL, tag: null }, ...[...seen.values()].map((t) => ({ label: t, tag: t }))]
+}
+
+/* ------------------------------------------------------------------ *
+ * §4.10 The booking calendar's dates
+ *
+ * Every date the calendar handles is an ISO 'YYYY-MM-DD' string — what a
+ * date input stores, what `c.booked` holds and what the section's `sel`
+ * names — and every sum over one goes through `Date.UTC`. A local-time
+ * Date built from those parts lands on the previous day west of
+ * Greenwich, which would name the wrong weekday in the enquiry line.
+ *
+ * Nothing here reads the clock. The calendar opens on the date the artist
+ * set, not on today, so a published page draws the same month whenever it
+ * is opened — and the canvas's picture cannot drift off the reference
+ * frame's June overnight.
+ * ------------------------------------------------------------------ */
+
+// The shape of one month's grid: the blank cells that lead it, and the days
+// that follow. Day 0 of the next month is the last of this one.
+export function monthSpan(y, m) {
+  return {
+    lead: new Date(Date.UTC(y, m, 1)).getUTCDay(),
+    length: new Date(Date.UTC(y, m + 1, 0)).getUTCDate(),
+  }
+}
+
+// 'YYYY-MM-DD' → { y, m, d }, `m` zero-based, or null if it is not one. A date
+// that does not exist (31 June, 30 February) is rejected rather than rolled
+// over, so an emptied or half-typed field falls back to the seed instead of
+// silently opening the calendar on a month the artist did not choose.
+export function parseDate(v) {
+  const t = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v ?? '').trim())
+  if (!t) return null
+  const y = +t[1], m = +t[2] - 1, d = +t[3]
+  if (m < 0 || m > 11 || d < 1 || d > monthSpan(y, m).length) return null
+  return { y, m, d }
+}
+
+export function isoDate(y, m, d) {
+  return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
+export function weekdayOf(y, m, d) {
+  return new Date(Date.UTC(y, m, d)).getUTCDay()
+}
+
+export function monthLabel(y, m) {
+  return `${MONTHS[m]} ${y}`
+}
+
+// The line along the foot of the scheduler panel, composed rather than stored:
+// it has to follow the day the visitor picks, and the retired CAL_ENQUIRY could
+// only ever name one. `enquiryLine(2025, 5, 12, '9:00pm')` reproduces that
+// constant exactly, which is what keeps the seeded canvas on the frame.
+//
+// An emptied time drops its clause rather than printing a trailing " at " —
+// the Soundcloud button's rule for a field the artist has not filled.
+export function enquiryLine(y, m, d, time) {
+  const t = String(time ?? '').trim()
+  return `Enquiry for ${DAY_FULL[weekdayOf(y, m, d)]}, ${MONTHS[m]} ${d}`
+    + (t ? ` at ${t}` : '')
 }

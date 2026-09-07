@@ -12,8 +12,9 @@
 // in the spec rather than a `size-*` class. React itself is imported for
 // `useId` and — since Repertoire's search and chips, then the header's burger
 // menu, then the media player's transport, then the gallery's arrows and
-// thumbnail strip, then the events map's pager and its pin/row pairing, and now
-// the pricing section's filter chips
+// thumbnail strip, then the events map's pager and its pin/row pairing, then
+// the pricing section's filter chips, and now the booking calendar's month
+// arrows and its day picking
 // became real controls on the published page — for `useState`,
 // which is gated on `s.live` throughout (§12.7: the editor canvas stays a
 // picture of a website). `useRef` joined them for the media player's one
@@ -2671,6 +2672,21 @@ function Gallery({ s }) {
 // bordered panel split between the month grid and a stack of polaroids, with
 // the resulting enquiry line along the foot.
 function Calendar({ s }) {
+  // The month on show, as an offset into `s.calMonths`, and the day the visitor
+  // has picked. Both inert on the editor canvas, where the section is a picture
+  // of a website (§12.7): a live day there would both pick a date and select the
+  // section, and the month arrows would walk the canvas off the frame it is
+  // drawn to match.
+  //
+  // `sel` is an ISO date rather than a cell index because, like the map's, it
+  // has to survive the page turning — it names a day, not a square of whatever
+  // month is on screen. The empty string is this section's -1: nothing chosen,
+  // so `s.calPick` renders and the published page's first paint is the canvas's
+  // picture by construction. Hooks sit above the layout branch because
+  // LayoutPicker mounts every layout.
+  const [mi, setMi] = useState(0)
+  const [sel, setSel] = useState('')
+
   if (s.v0) {
     // §5.5 — one scheduler across three frames: the 768 (986:39251) and 390
     // (986:39417) ones verbatim, the 1440 one (964:58583) on the 1180 canvas at
@@ -2686,13 +2702,42 @@ function Calendar({ s }) {
     const u = (v) => `${Math.round(v * scale)}px`
     const pu = (v) => `${Math.round(v * pscale)}px`
 
-    const nav = (icon) => (
-      <span style={{
-        width: u(55), height: u(54), flex: 'none', borderRadius: s.radiusSm,
-        background: s.pillBg, color: s.pillFg, border: `${s.bw} solid ${s.tx}`,
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-      }}>{icon}</span>
-    )
+    // The month on show, and the day that is lit. The canvas pins both to what
+    // the view-model resolved, which is the frame's June with its 12th picked.
+    const nMonths = s.calMonths.length
+    const at = s.live ? ((mi % nMonths) + nMonths) % nMonths : 0
+    const month = s.calMonths[at]
+    // The cell the pick names, looked up rather than composed — sectionVm wrote a
+    // line onto every one of them. The whole window is searched, not just the
+    // month on screen, so a day picked in August still names itself from
+    // September. A **booked** cell is never picked: publishing again re-renders
+    // the open tab, so the artist can block the day a visitor had lit, and `on`
+    // would otherwise beat the strike-through.
+    const want = (s.live && sel) || s.calPick
+    const hit = want
+      ? s.calMonths.reduce((f, mo) => f || mo.cells.find((c) => c.iso === want), null)
+      : null
+    const cur = hit && !hit.booked ? hit.iso : ''
+    const line = cur ? hit.line : s.calPrompt
+
+    // The month arrows. They *wrap* at both ends of the window rather than
+    // clamping: a clamped first month would open the published page on a
+    // dead-looking left arrow, which is a diff from the canvas — the media
+    // player's transport takes the same view. The cursor is read off the
+    // handler, Pager's rule, so the canvas no longer offers a pointer over a
+    // button that does nothing.
+    const step = (dir) => (s.live ? () => setMi((v) => v + dir) : undefined)
+    const nav = (icon, dir) => {
+      const onClick = step(dir)
+      return (
+        <span onClick={onClick} style={{
+          width: u(55), height: u(54), flex: 'none', borderRadius: s.radiusSm,
+          background: s.pillBg, color: s.pillFg, border: `${s.bw} solid ${s.tx}`,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          cursor: onClick ? 'pointer' : undefined,
+        }}>{icon}</span>
+      )
+    }
 
     // The 1440 and 768 frames space the seven columns by half a cell (30 on a
     // 60.5 one) and the five weeks by a third; the 390 one closes both to 2 and
@@ -2717,23 +2762,37 @@ function Calendar({ s }) {
     // The frame's cell is wider than it is tall, edged in a 0.15 hairline, and
     // the picked day is the accent block lettered in the mustard — no offset
     // shadow under it.
-    const cell = (c, i) => (
-      <span key={i} style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: u(s.mob ? 55.1 : 57.286),
-        fontFamily: s.body, fontSize: u(18.132),
-        borderRadius: u(12.088),
-        border: c.d === '' ? 'none' : `${s.bw} solid ${c.on ? s.tx : s.line}`,
-        background: c.on ? s.ac : 'transparent',
-        color: c.on ? (s.retro ? s.pillBg : s.acFg) : s.tx,
-        cursor: c.d === '' ? 'default' : 'pointer',
-      }}>{c.d}</span>
-    )
+    //
+    // Three states where the frame draws two, because a visitor who cannot see
+    // which days are taken would click one and watch nothing happen: a booked
+    // day is muted ink on the section's own soft tone, and takes no handler.
+    // That is a *content* state, not a live one, so it renders on the canvas
+    // too — and since CAL_BOOKED is empty, the seeded picture does not move.
+    // Clicking the lit day again unlights it, the map's pin/row toggle.
+    const cell = (c, i) => {
+      const on = c.iso !== undefined && c.iso === cur
+      const onClick = s.live && c.iso !== undefined && !c.booked
+        ? () => setSel((v) => (v === c.iso ? '' : c.iso))
+        : undefined
+      return (
+        <span key={i} onClick={onClick} style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          height: u(s.mob ? 55.1 : 57.286),
+          fontFamily: s.body, fontSize: u(18.132),
+          borderRadius: u(12.088),
+          border: c.d === '' ? 'none' : `${s.bw} solid ${on ? s.tx : s.line}`,
+          background: on ? s.ac : c.booked ? s.soft : 'transparent',
+          color: on ? (s.retro ? s.pillBg : s.acFg) : c.booked ? s.muted : s.tx,
+          textDecoration: c.booked ? 'line-through' : undefined,
+          cursor: onClick ? 'pointer' : undefined,
+        }}>{c.d}</span>
+      )
+    }
 
     const grid = (
       <div style={col(u(21.154), { padding: s.mob ? '20px 10px' : u(30.219) })}>
         <div style={row(s.mob ? '8px' : '12px', { justifyContent: 'space-between' })}>
-          {nav(<ArrowLeft size={Math.round(16 * scale)} />)}
+          {nav(<ArrowLeft size={Math.round(16 * scale)} />, -1)}
           <span style={{
             fontFamily: s.display,
             // The 390 frame heads the month at the same 48 as the wider two,
@@ -2742,18 +2801,24 @@ function Calendar({ s }) {
             // 22px gutter, which is 24px it does not have — so the line comes
             // down instead of wrapping under the buttons. Fraunces measures
             // within 2px of Soulway here, so this is the canvas, not the face.
-            fontSize: u(s.mob ? 40 : 48),
+            //
+            // And it only just clears them for `June 2025`. Now that the arrows
+            // turn, `September 2026` follows it into the same row, so past the
+            // seed's nine characters the mobile line comes down in proportion —
+            // which leaves June itself at the frame's own 40. The two wider
+            // canvases have the room and keep 48.
+            fontSize: u(s.mob ? Math.round(40 * Math.min(1, 9 / month.label.length)) : 48),
             // Fraunces at its natural leading stands half again as tall as its
             // type size and pushes the header row past the frame's nav; the
             // frame's own line box is the type size and change.
             lineHeight: 1.1, letterSpacing: s.dls, color: s.ac,
           }}>
-            {s.calMonth}
+            {month.label}
           </span>
-          {nav(<ArrowRight size={Math.round(16 * scale)} />)}
+          {nav(<ArrowRight size={Math.round(16 * scale)} />, 1)}
         </div>
         <div style={{ ...cols, height: u(30.219) }}>{s.calDays.map(dayName)}</div>
-        <div style={cols}>{s.sched.map(cell)}</div>
+        <div style={cols}>{month.cells.map(cell)}</div>
       </div>
     )
 
@@ -2848,6 +2913,10 @@ function Calendar({ s }) {
             // Flexed so the strut of the block's own inherited leading does not
             // stand the line off the frame's foot.
             display: 'flex', alignItems: 'center',
+            // The pill sits at the other end of the frame's own foot rule, and
+            // wraps under the line rather than squeezing it on the 390 canvas,
+            // where the line already takes two of its own.
+            justifyContent: 'space-between', flexWrap: 'wrap', gap: u(16),
           }}>
             {/* The frame sets this line in Space Mono Bold — the body face in
                 this project's mapping of the reference's three, not the Anton
@@ -2856,7 +2925,14 @@ function Calendar({ s }) {
             <span style={{
               fontFamily: s.body, fontWeight: 700, fontSize: u(13.371), lineHeight: 1.3,
               letterSpacing: '0.08em', textTransform: 'uppercase', color: s.ac,
-            }}>{s.calEnquiry}</span>
+            }}>{line}</span>
+            {/* The one deliberate addition to the frame, which draws this row as
+                a line of type and nothing else: a date the visitor has picked
+                has to lead somewhere, and `cta` was a field that edited nothing
+                until it labelled this. `calBookTo` is the enquiry form (or the
+                pricing section), never this panel — and where the page carries
+                neither, BookPill stays the span it is on the canvas. */}
+            <BookPill s={s} to={s.calBookTo} label={s.calCta} />
           </div>
         </div>
       </div>

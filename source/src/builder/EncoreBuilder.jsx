@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
-  Pencil, Palette, X, Trash2, ChevronLeft, ArrowRight,
+  Pencil, Palette, X, Trash2, ChevronLeft, ChevronRight, ArrowRight,
   Layers, Plus, Check, Upload, Lock, ExternalLink,
 } from 'lucide-react'
 import { toast as sonnerToast, Toaster } from 'sonner'
@@ -35,12 +35,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
-  CITIES, PINS, BOOKED, HELD, EXAMPLE_PAGE,
+  CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN,
+  parseDate, isoDate, monthSpan, monthLabel, enquiryLine,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats,
@@ -205,11 +206,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
-    // become real. Nine things read it: Repertoire's search, chips and pager;
+    // become real. Ten things read it: Repertoire's search, chips and pager;
     // the header's navigation — its links, its Book Now and Listen, and the
     // burger menu the narrow frames collapse to; the media player's transport;
     // the gallery's strip and arrows; the events map's pager and pin/row
-    // pairing; the pricing cards' filter chips and their Book pill; and the
+    // pairing; the pricing cards' filter chips and their Book pill; the booking
+    // calendar's month arrows, its day picking and its foot pill; and the
     // three sets of outbound links (Soundcloud, the gallery's socials, the
     // gigs' tickets).
     live: !!live,
@@ -470,31 +472,66 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }
   })
 
-  // calendar — 2 leading blanks, days 1..31, padded to 35 cells
+  // §10.2 scheduler — CAL_SPAN months of grid, resolved here so that
+  // EncoreSection does no date arithmetic: it turns a page of this window and
+  // prints the line it finds on a cell, the way it draws the pin sectionVm
+  // paired with a gig rather than working one out.
+  //
+  // The whole section is built from one date. `open` names the month the grid
+  // opens on *and* the day it opens picked; a field that is empty, half-typed
+  // or impossible (31 June) parses to null and falls back to the seed, so the
+  // calendar can never open on a month the artist did not choose.
   if (cat === 'calendar') {
-    const cells = [{ d: '' }, { d: '' }]
-    for (let day = 1; day <= 31; day++) {
-      if (BOOKED.includes(day)) cells.push({ d: day, bg: ac, fg: acFg })
-      else if (HELD.includes(day)) cells.push({ d: day, bg: rgba(tx, 0.14), fg: tx })
-      else cells.push({ d: day, bg: 'transparent', fg: tx })
-    }
-    while (cells.length < 35) cells.push({ d: '' })
-    vm.cal = cells.map((c2) => ({ d: c2.d, bg: c2.bg ?? 'transparent', fg: c2.fg ?? tx }))
+    const open = parseDate(cv('open', CAL_OPEN)) ?? parseDate(CAL_OPEN)
+    // Absent and emptied both mean none: there is no seeded booking to lose, so
+    // this follows the gallery's social addresses rather than the songs' rule.
+    const booked = new Set(Array.isArray(c.booked) ? c.booked : CAL_BOOKED)
+    const time = cv('time', CAL_TIME)
 
-    // §10.2 scheduler — a plain month grid with one picked day, no legend.
-    const grid = Array.from({ length: CAL_LEAD }, () => ({ d: '' }))
-    for (let day = 1; day <= CAL_LENGTH; day++) grid.push({ d: day, on: day === CAL_PICKED })
-    vm.sched = grid
+    vm.calMonths = Array.from({ length: CAL_SPAN }, (_, i) => {
+      const m = open.m + i
+      const y = open.y + Math.floor(m / 12)
+      const mo = ((m % 12) + 12) % 12
+      const { lead, length } = monthSpan(y, mo)
+      // Lead blanks are `{ d: '' }` — the cell renderer's own test for the
+      // borderless, inert cell it has always drawn. The grid is not padded out
+      // to five rows: a month that needs six simply grows one, and the
+      // polaroids beside it take their height from the row (see `stack`).
+      const cells = Array.from({ length: lead }, () => ({ d: '' }))
+      for (let d = 1; d <= length; d++) {
+        const iso = isoDate(y, mo, d)
+        cells.push({
+          d, iso, booked: booked.has(iso),
+          // Composed per cell rather than on the pick, because the line is what
+          // the foot prints and EncoreSection composes nothing.
+          line: enquiryLine(y, mo, d, time),
+        })
+      }
+      return { label: cased(monthLabel(y, mo)), cells }
+    })
+    vm.calDays = CAL_DAYS
+    // The day the calendar is cued to, which is what the foot prints and the
+    // grid lights until the visitor picks something — the media player's card
+    // naming track one while `cur` is still -1. A booked opening day cues
+    // nothing: the artist blocked it, and the section does not quietly slide
+    // the pick sideways to the day after.
+    // Off the *parsed* date, not the raw field: an unparseable `open` falls back
+    // to CAL_OPEN above, and testing the field would then cue a June 12 the
+    // artist has blocked — lit and struck through at once.
+    const openIso = isoDate(open.y, open.m, open.d)
+    vm.calPick = booked.has(openIso) ? '' : openIso
+    vm.calPrompt = cased('Pick a date to enquire')
+    vm.calCta = cased(cv('cta', 'Check a date'))
+    // `bookTo` minus `calendar` itself — the tier pills' rule, and for the same
+    // reason: CTA_TARGETS.book ends at this section, so the pill would otherwise
+    // scroll the visitor to the panel they are already reading. With neither a
+    // form nor a pricing section on the page it resolves to nothing and BookPill
+    // stays a span.
+    vm.calBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'calendar'), navSections)
   }
   // The tour-date rows of the calendar's flat layout. It sat under `map` for
   // years on the strength of its name; nothing in the events map reads it.
   vm.cities = CITIES
-  vm.calPara = cv('para', DEFS.calPara)
-  vm.calCta = cv('cta', 'Check a date')
-  vm.monthLabel = cased('August 2026')
-  vm.calMonth = CAL_MONTH
-  vm.calDays = CAL_DAYS
-  vm.calEnquiry = CAL_ENQUIRY
 
   // map
   //
@@ -1036,9 +1073,11 @@ const FIELD_BOX = {
 }
 
 /* ------------------------------------------------------------------ *
- * §8.6b SongsField — the repertoire's song list. The first of the three
+ * §8.6b SongsField — the repertoire's song list. The first of the four
  * list-shaped fields with a structured editor rather than a delimited
- * textarea (TracksField and GigsField below are the others): the artist
+ * textarea (TracksField, GigsField and TiersField below are the others,
+ * and BookedField after them is a structured editor of a fifth shape
+ * that is not a list at all): the artist
  * types a title, an artist and any tags, and the tags are what the
  * section's filter chips are built from.
  *
@@ -1531,6 +1570,112 @@ function TiersField({ value, max, onChange }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * §8.6f BookedField — the booking calendar's blocked dates.
+ *
+ * The fifth structured editor, and the first that is not a repeater: a
+ * month of the artist's own to click. One row per blocked date is the
+ * wrong shape for a June with eight of them, and a date typed into a row
+ * cannot be read against the month it falls in — which is the whole
+ * question being asked here.
+ *
+ * It pages the same CAL_SPAN window from the same opening date the
+ * section does, and wraps at both ends the way the published arrows do,
+ * so there is no date it can block that the published grid cannot show.
+ *
+ * `value` is the array of ISO dates, rewritten whole and sorted — the
+ * repeaters' rule — and an empty array is a real answer: absent and
+ * emptied both mean nothing is blocked, because there is no seeded
+ * booking to lose. Hence no max, no add affordance and no remove button:
+ * every one of them is the same click again.
+ * ------------------------------------------------------------------- */
+
+const CAL_NAV_BTN = {
+  width: '24px', height: '24px', flex: 'none', borderRadius: '7px',
+  border: '1px solid #D8D5CC', background: '#FFFFFF', color: '#5B5850',
+  cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+  justifyContent: 'center', padding: 0,
+}
+
+function BookedField({ value, open, onChange }) {
+  const [mi, setMi] = useState(0)
+  const list = Array.isArray(value) ? value : []
+
+  const at = ((mi % CAL_SPAN) + CAL_SPAN) % CAL_SPAN
+  const abs = open.m + at
+  const y = open.y + Math.floor(abs / 12)
+  const mo = ((abs % 12) + 12) % 12
+  const { lead, length } = monthSpan(y, mo)
+
+  const toggle = (iso) => onChange(
+    list.includes(iso) ? list.filter((d) => d !== iso) : [...list, iso].sort(),
+  )
+
+  const arrow = (icon, dir) => (
+    <button
+      type="button" aria-label={dir < 0 ? 'Previous month' : 'Next month'}
+      onClick={(e) => { stopE(e); setMi((v) => v + dir) }}
+      className="hover:border-foreground" style={CAL_NAV_BTN}
+    >{icon}</button>
+  )
+
+  const cells = [
+    ...Array.from({ length: lead }, (_, i) => <span key={`b${i}`} />),
+    ...Array.from({ length }, (_, i) => {
+      const d = i + 1
+      const iso = isoDate(y, mo, d)
+      const off = list.includes(iso)
+      return (
+        <button
+          key={iso} type="button"
+          aria-pressed={off} aria-label={`${d} ${monthLabel(y, mo)}`}
+          onClick={(e) => { stopE(e); toggle(iso) }}
+          className={off ? undefined : 'hover:border-foreground'}
+          style={{
+            height: '25px', borderRadius: '7px', padding: 0, cursor: 'pointer',
+            fontFamily: 'inherit', fontSize: '11px',
+            fontWeight: off ? 700 : 500,
+            border: `1px solid ${off ? '#1B1A17' : '#E9E7E0'}`,
+            background: off ? '#1B1A17' : '#FFFFFF',
+            color: off ? '#FFFFFF' : '#5B5850',
+          }}
+        >{d}</button>
+      )
+    }),
+  ]
+
+  // The month's own blocked count, not the list's: the artist is looking at one
+  // month, and a total would not tell them whether this one is the eight.
+  const here = list.filter((iso) => iso.startsWith(`${y}-${String(mo + 1).padStart(2, '0')}-`)).length
+
+  return (
+    <div onClick={stopE} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '9px',
+      background: '#FCFBF8', display: 'flex', flexDirection: 'column', gap: '7px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+        {arrow(<ChevronLeft size={13} />, -1)}
+        <span style={{ fontSize: '12px', fontWeight: 700, color: '#1B1A17' }}>{monthLabel(y, mo)}</span>
+        {arrow(<ChevronRight size={13} />, 1)}
+      </div>
+      {/* The section's own short day names, so the panel's week starts where
+          the published one does. */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
+        {CAL_DAYS.map((d) => (
+          <span key={d} style={{
+            fontSize: '9px', fontWeight: 700, color: '#98958A',
+            textAlign: 'center', letterSpacing: '0.04em',
+          }}>{d.slice(0, 1)}</span>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>{cells}</div>
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} blocked · {here} in {monthLabel(y, mo)}
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
@@ -1566,6 +1711,13 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // its tags as the comma string and its features as the newline one, which is
   // exactly what TiersField edits and what sectionVm splits.
   const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : TIERS)
+  // The booking calendar's two. `bookedVal` is the songs' rule with an empty
+  // seed; `openVal` has to run sectionVm's whole expression rather than just
+  // its default, because clearing a date input stores '' — which the canvas
+  // parses to null and resolves back to CAL_OPEN. A panel that read the raw ''
+  // would page BookedField from a month the calendar is not on.
+  const bookedVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : CAL_BOOKED)
+  const openVal = (k) => parseDate(sec.c[k] ?? CAL_OPEN) ?? parseDate(CAL_OPEN)
 
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
@@ -1618,6 +1770,19 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <GigsField value={gigsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'tiers' ? (
                         <TiersField value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'booked' ? (
+                        // The one rung that takes a second value, the way
+                        // TracksField is the one that takes a toast: the month
+                        // it opens on is the calendar's own opening date.
+                        <BookedField value={bookedVal(f.k)} open={openVal('open')} onChange={(v) => set(v)} />
+                      ) : f.type === 'date' ? (
+                        // The platform picker, and its value is already the ISO
+                        // string parseDate reads.
+                        <Input
+                          type="date" value={val} onClick={stopE}
+                          onChange={(e) => set(e.target.value)}
+                          style={FIELD_BOX}
+                        />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>

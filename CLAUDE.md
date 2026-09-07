@@ -98,10 +98,11 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **nine things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **ten things read it**: `Repertoire` — its search field, its filter chips and
   its pager — the **header's navigation**, the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
   the **pricing section's filter chips and Book pill** (below),
+  the **booking calendar's month arrows, its day picking and its foot pill** (below),
   and the three sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows** and the
   **events map's per-gig tickets link**
@@ -199,8 +200,40 @@ mutated through a single `patch()` helper.
   pill takes `vm.tierBookTo`, which is `vm.bookTo` **minus `pricing` itself** — `CTA_TARGETS.book`
   ends there, so the pill would otherwise scroll the visitor to the section they are reading; with
   neither a form nor a calendar on the page it resolves to nothing and `BookPill` stays a span.
+- **The booking calendar navigates and picks, in the published tab only.** It was the last §10.2
+  section that was entirely a picture — arrows and day cells with a pointer cursor and no handler
+  in either mode, over three constants and a sentence. The whole section is built from **one
+  date** now: `FIELDS.calendar.open` is the month the grid opens on *and* the day it opens picked,
+  and a field that is empty, half-typed or impossible (31 June) parses to null and falls back to
+  `CAL_OPEN`, so the calendar can never open on a month the artist did not choose. `booked` is
+  the dates they are taken on and `time` the hour the foot line names; an emptied `time` drops
+  its clause rather than printing a trailing " at ", the Soundcloud rule.
+  **All the date maths lives in `data.js` and `sectionVm`**, never in `EncoreSection`: every sum
+  goes through `Date.UTC` (a local-time `Date` names the wrong weekday west of Greenwich), and
+  `vm.calMonths` resolves the whole `CAL_SPAN` window — label, cells, booked flags and **one
+  composed enquiry line per cell** — so the section looks a line up rather than working a date
+  out, the way it draws the pin `sectionVm` paired with a gig. Nothing reads the clock: the
+  calendar opens on the artist's date, not on today, or the canvas's picture would drift off the
+  reference frame's June overnight. The arrows **wrap** at both ends rather than clamping, the
+  media player's rule — a clamped first month opens the published page on a dead-looking arrow,
+  a diff from the canvas — and their cursor is read off the handler, `Pager`'s rule. `sel` is an
+  **ISO date, not an index**, because it must survive the month turning, and the **empty string is
+  this section's `-1`**: nothing chosen, so `vm.calPick` renders and the published first paint is
+  the canvas's picture by construction. Blocking the *cued* day cues nothing (`vm.calPick` is
+  `''`) and the foot prints `vm.calPrompt`, rather than sliding the pick to the day after — the
+  artist blocked it. A booked day is muted, struck through and handlerless, which is a **content**
+  state and not a live one, so it renders on the canvas too; the seed blocks nothing, which is
+  what keeps the reference picture. Two **intended diffs from the frame**: the foot row gains the
+  Book pill on `vm.calBookTo` — `bookTo` minus `calendar` itself, the tier pills' rule, since
+  `CTA_TARGETS.book` ends here — which is what turned `cta` from a field that edited nothing into
+  a control, and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
+  month needing six rows grows one where June needs five, the grid never being padded to 35.
+  The flat layout (arch 1, 3) still draws the hardcoded `CITIES` and reads none of this.
 - **Four list-shaped contents have a structured editor: the repertoire's songs, the media
-  player's tracks, the events map's gigs and the pricing section's packages.** `c.songs` is an array of `{ title, artist, tags }`
+  player's tracks, the events map's gigs and the pricing section's packages** — and the booking
+  calendar's `booked` dates are a **fifth structured field that is not a list**: `BookedField` is
+  a month to click, not a repeater, because one row per blocked date is the wrong shape for a June
+  with eight of them, and it obeys the same seed-resolver rule as the four below. `c.songs` is an array of `{ title, artist, tags }`
   (tags a raw comma string),
   maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph

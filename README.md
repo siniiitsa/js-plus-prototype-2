@@ -70,7 +70,8 @@ This is the one architectural rule worth knowing before editing anything (§12.9
   `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
   inherit `currentColor` and so stay theme-driven; from React it takes `useId`, `useState` — for
   the things that have live controls: Repertoire, the header's burger menu, the media player, the
-  gallery, the events map and the pricing cards — and `useRef`, for the media player's one
+  gallery, the events map, the pricing cards and the booking calendar — and `useRef`, for the
+  media player's one
   `<audio>` element, which is commanded rather than described. There is no effect anywhere in the file, and nothing else is imported.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
@@ -209,7 +210,7 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Six sections read it**, plus the three sets of outbound
+  interactive has to be off there. **Seven sections read it**, plus the three sets of outbound
   links below.
 
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
@@ -307,6 +308,37 @@ That distinction is the whole design, and it buys two things:
   Book Now pill now scrolls to the booking section — `vm.tierBookTo`, which is the header's
   `bookTo` minus `pricing` itself, since `CTA_TARGETS.book` ends there and the pill must not
   scroll the visitor to the section they are already reading.
+
+  **The booking calendar, which navigates and picks.** It was the last §10.2 section that was
+  entirely a picture: its month arrows and its thirty day cells carried a pointer cursor and no
+  handler at all, in both modes, and the month itself was three constants and a sentence
+  (`CAL_MONTH`, `CAL_LEAD`/`CAL_LENGTH`, `CAL_PICKED`, `CAL_ENQUIRY`). The whole section is built
+  from **one date** now — `FIELDS.calendar.open`, the month the grid opens on and the day it opens
+  picked — plus the dates the artist is already taken on (`booked`) and the hour the foot line
+  names (`time`). A visitor turns the month, picks a free day, and the line along the foot follows
+  it; the pill beside that line takes them to the enquiry form.
+
+  Every sum over a date goes through `Date.UTC` in `data.js`, and `sectionVm` resolves the whole
+  twelve-month window — labels, cells, booked flags and one composed enquiry line per cell — so
+  `EncoreSection` looks a line up rather than working a date out, the way it draws the pin
+  `sectionVm` paired with a gig. The arrows **wrap** at both ends of that window rather than
+  clamping, the media player's rule: a clamped first month would open the published page on a
+  dead-looking arrow, which is a diff from the canvas. `sel` is an ISO date rather than a cell
+  index, because it has to survive the month turning — it names a day, not a square of whatever
+  month is on screen — and the empty string is this section's `-1`, so `vm.calPick` renders until
+  a visitor picks something and the published first paint is the canvas's picture by construction.
+  Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
+  blocked it. Booked days are muted and struck through and take no handler, which is a **content**
+  state rather than a live one — it renders on the canvas too, and since the seed blocks nothing
+  the reference picture does not move. Two intended diffs from the Figma frame: the foot row gains
+  the Book pill (`vm.calBookTo`, `bookTo` minus `calendar` itself, the tier pills' rule), which is
+  what turns `cta` from a field that edited nothing into a real control; and a month that needs
+  six rows simply grows one, where June needs five.
+
+  Its editor is the fifth structured field and the first that is not a repeater: `BookedField` is
+  a month of the artist's own to click, paging the same twelve-month window the section does,
+  because one row per blocked date is the wrong shape for a June with eight of them. `para` went
+  with `DEFS.calPara` — it rendered in neither calendar layout.
 
   Everything else the page draws — the audio and video sections, the testimonials carousel — is
   still a static span, and none of them needs new data to change that.
