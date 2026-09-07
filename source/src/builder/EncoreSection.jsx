@@ -11,8 +11,9 @@
 // `currentColor`, so they stay theme-driven, and each takes the px size given
 // in the spec rather than a `size-*` class. React itself is imported for
 // `useId` and — since Repertoire's search and chips, then the header's burger
-// menu, then the media player's transport and now the gallery's arrows and
-// thumbnail strip became real controls on the published page — for `useState`,
+// menu, then the media player's transport, then the gallery's arrows and
+// thumbnail strip, and now the events map's pager and its pin/row pairing
+// became real controls on the published page — for `useState`,
 // which is gated on `s.live` throughout (§12.7: the editor canvas stays a
 // picture of a website). `useRef` joined them for the media player's one
 // <audio> element, which has to be commanded rather than described: its
@@ -1963,7 +1964,8 @@ function Pricing({ s }) {
 // box on a heavier border, an active page that keeps the same border rather
 // than dissolving into its own fill, the centred row its tablet uses and the
 // full-measure one its mobile does, on a shorter page list. The map passes
-// none of it and keeps the flatter default.
+// none of that and keeps the flatter default, but both now pass the page list
+// and the handlers.
 // The pager's button row for `n` pages, windowed around the active one and
 // elided with '…' where it skips — the shape the static PAGES constant used to
 // hardcode. Lives here rather than in data.js because the page count depends on
@@ -1991,8 +1993,9 @@ function pageWindow(n, active, narrow) {
 
 // `frame.active` is an index into the *rendered* button row, which stops
 // matching the page number as soon as pageWindow() elides it with '…' — hence
-// pageWindow returning both. `active`, `onPage` and `onStep` are all optional:
-// omitting them is the events map's static picture of a pager, unchanged.
+// pageWindow returning both. `active`, `onPage` and `onStep` are all optional,
+// and both callers omit the handlers on the editor canvas: a pager with none is
+// the picture of a pager, and the cursor below follows.
 function Pager({ s, colour, fill, frame = {} }) {
   const c = colour || s.tx
   const w = frame.size || (s.mob ? 30 : 42)
@@ -2002,7 +2005,12 @@ function Pager({ s, colour, fill, frame = {} }) {
       borderRadius: frame.radius || s.radiusSm,
       border: `${frame.bw || s.bw} solid ${on ? (frame.activeEdge || s.pillBg) : c}`,
       background: on ? s.pillBg : (ends ? (fill || 'transparent') : 'transparent'),
-      color: on ? (frame.activeFg || contrastInk(s.pillBg)) : c, cursor: 'pointer',
+      color: on ? (frame.activeFg || contrastInk(s.pillBg)) : c,
+      // Off the published page there is no handler, and a pointer over a button
+      // that does nothing is the gallery's rule broken (it gates its own on
+      // `s.live`). Reading the handler says the same thing without Pager having
+      // to know about `live`.
+      cursor: onClick ? 'pointer' : undefined,
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       ...(frame.font || labelStyle(s, s.eyebrow)),
       // `grow` spreads the row across the whole measure, so it comes after the
@@ -2015,7 +2023,7 @@ function Pager({ s, colour, fill, frame = {} }) {
       flexWrap: frame.grow ? 'nowrap' : 'wrap', justifyContent: frame.justify,
     })}>
       {btn('prev', <ArrowLeft size={14} />, false, true, frame.onStep && (() => frame.onStep(-1)))}
-      {(frame.pages || s.pages).map((p, i) => btn(
+      {(frame.pages || []).map((p, i) => btn(
         `p${i}`, p, i === (frame.active || 0), false,
         // '…' is a gap in the row, not a page.
         frame.onPage && p !== '…' ? () => frame.onPage(p) : undefined,
@@ -2827,18 +2835,55 @@ function Calendar({ s }) {
 }
 
 function EventsMap({ s }) {
-  const pins = s.pins.map((p, i) => (
-    <span key={i} style={{
-      position: 'absolute', left: p.x, top: p.y, width: '12px', height: '12px',
-      borderRadius: '999px', background: s.ac, boxShadow: `0 0 0 5px ${s.soft2}`,
-      transform: 'translate(-50%, -50%)',
-    }} />
-  ))
+  // The page of gigs, and the gig the visitor has picked out on the map. Both
+  // are inert on the editor canvas, where the section is a picture of a website
+  // (§12.7): a live pin there would both light a row and select the section.
+  // `sel` starts at -1 — nothing picked — so the published page's first paint is
+  // the canvas's picture by construction, the same start `cur` and `pick` take.
+  // Hooks sit above the layout branch because LayoutPicker mounts every layout.
+  const [page, setPage] = useState(0)
+  const [sel, setSel] = useState(-1)
 
   // v0 — Events Map layout 1 · Compact tile (§10.2 reference design): the
   // coverage tile beside the upcoming-gigs list, banded top and bottom with
   // full-bleed checkerboard.
   if (s.v0) {
+    // Five to a page, which is both the row count the reference frame draws and
+    // the number of pin positions there are: one page of gigs is exactly one
+    // set of distinct pins, so a page never lights the same dot twice. It comes
+    // off `s` rather than being counted here — this file does no maths.
+    const perPage = s.gigPage
+    const pages = Math.max(1, Math.ceil(s.gigs.length / perPage))
+    // Clamped rather than reset through an effect, as the repertoire's is: a
+    // republish re-renders the open tab, so the list can shrink under the pager.
+    const pg = s.live ? Math.min(page, pages - 1) : 0
+    const shown = s.gigs.slice(pg * perPage, (pg + 1) * perPage)
+    const { labels, at } = pageWindow(pages, pg, s.mob)
+    // `sel` indexes the whole list, not the page, so turning the pager away from
+    // a lit gig and back finds it still lit.
+    const lit = (i) => s.live && sel === pg * perPage + i
+    const onPick = (i) => (s.live ? () => {
+      const j = pg * perPage + i
+      setSel((v) => (v === j ? -1 : j))
+    } : undefined)
+
+    // One pin per gig on this page, at the position sectionVm paired it with.
+    // The lit one grows and takes a heavier halo; that and the row's fill are
+    // the whole of the pairing's vocabulary.
+    const pins = shown.map((g, i) => {
+      const on = lit(i)
+      const d = on ? 16 : 12
+      return (
+        <span key={i} onClick={onPick(i)} style={{
+          position: 'absolute', left: g.pin.x, top: g.pin.y, width: `${d}px`, height: `${d}px`,
+          borderRadius: '999px', background: on ? s.pillBg : s.ac,
+          boxShadow: `0 0 0 ${on ? 7 : 5}px ${on ? s.ac : s.soft2}`,
+          transform: 'translate(-50%, -50%)',
+          cursor: s.live ? 'pointer' : undefined,
+        }} />
+      )
+    })
+
     const tile = (
       <div style={{
         border: `${s.bw} solid ${s.ac}`, borderRadius: s.radiusSm, overflow: 'hidden',
@@ -2896,31 +2941,66 @@ function EventsMap({ s }) {
         })}>
           Upcoming gigs · {s.gigs.length}
         </span>
-        {s.gigs.map((g, i) => (
-          <div key={i} style={{
-            ...row('12px', { justifyContent: 'space-between' }),
-            border: `${s.bw} solid ${g.hue}`, borderRadius: s.radiusSm,
-            padding: s.mob ? '10px 12px' : '12px 16px', position: 'relative',
-          }}>
-            <span style={col('4px', { minWidth: 0 })}>
-              <span style={{
-                fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls, color: g.hue,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>{g.venue}</span>
-              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8 }}>
-                {g.city} · {g.time}
+        {shown.map((g, i) => {
+          // A row with a tickets address becomes an anchor, the gallery's seam:
+          // `target="_blank"`, so the click both opens the tab and lights the
+          // pin, and the published page is still behind it. A row without one
+          // stays the picture it has always been — the Soundcloud rule rather
+          // than the gallery's, because a gig is a show the artist is playing,
+          // not a tile promising somewhere to go.
+          const link = extLink(s, g.url)
+          const Tag = link ? 'a' : 'div'
+          const on = lit(i)
+          return (
+            <Tag key={i} {...link} onClick={onPick(i)} style={{
+              ...row('12px', { justifyContent: 'space-between' }),
+              border: `${s.bw} solid ${g.hue}`, borderRadius: s.radiusSm,
+              padding: s.mob ? '10px 12px' : '12px 16px', position: 'relative',
+              // The lit row fills rather than lifting: these sit in a column
+              // with no room to raise one, and the fill is what the pin echoes.
+              background: on ? g.hue : 'transparent',
+              // Anchors inherit the card's colour instead of the UA's blue.
+              textDecoration: 'none', color: 'inherit',
+              cursor: s.live ? 'pointer' : undefined,
+            }}>
+              <span style={col('4px', { minWidth: 0 })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls,
+                  color: on ? contrastInk(g.hue) : g.hue,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{g.venue}</span>
+                <span style={{
+                  fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8,
+                  color: on ? contrastInk(g.hue) : undefined,
+                }}>
+                  {g.city} · {g.time}
+                </span>
               </span>
-            </span>
-            <span style={col('0', {
-              alignItems: 'center', flex: 'none', border: `${s.bw} solid ${g.hue}`,
-              borderRadius: s.radiusSm, padding: '5px 10px', lineHeight: 1.1,
-            })}>
-              <span style={labelStyle(s, '10px')}>{g.month}</span>
-              <span style={labelStyle(s, s.labelXs)}>{g.day}</span>
-            </span>
-          </div>
-        ))}
-        <Pager s={s} colour={s.ac} fill={s.soft2} />
+              <span style={col('0', {
+                alignItems: 'center', flex: 'none', border: `${s.bw} solid ${on ? contrastInk(g.hue) : g.hue}`,
+                borderRadius: s.radiusSm, padding: '5px 10px', lineHeight: 1.1,
+                color: on ? contrastInk(g.hue) : undefined,
+              })}>
+                <span style={labelStyle(s, '10px')}>{g.month}</span>
+                <span style={labelStyle(s, s.labelXs)}>{g.day}</span>
+              </span>
+            </Tag>
+          )
+        })}
+        {/* Derived from the list, so it cannot claim pages that are not there,
+            and gone entirely at one page — the repertoire's rule. The five
+            seeded gigs are one page, so the reference picture no longer carries
+            the old static 1 2 3 … 20 row. */}
+        {labels.length > 0 && (
+          <Pager s={s} colour={s.ac} fill={s.soft2} frame={{
+            pages: labels, active: at,
+            // Static on the canvas, like the repertoire's.
+            onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+            onStep: s.live
+              ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+              : undefined,
+          }} />
+        )}
       </div>
     )
 
@@ -2958,7 +3038,16 @@ function EventsMap({ s }) {
       background: s.soft, aspectRatio: '16 / 7', borderRadius: s.radius, position: 'relative',
       overflow: 'hidden', display: 'flex', alignItems: 'flex-end', padding: '26px',
     }}>
-      {pins}
+      {/* The flat layout has no gig list to pair with, so its dots stay the raw
+          five positions rather than one per gig — twelve gigs would otherwise
+          stack twelve dots on five spots. */}
+      {s.pins.map((p, i) => (
+        <span key={i} style={{
+          position: 'absolute', left: p.x, top: p.y, width: '12px', height: '12px',
+          borderRadius: '999px', background: s.ac, boxShadow: `0 0 0 5px ${s.soft2}`,
+          transform: 'translate(-50%, -50%)',
+        }} />
+      ))}
       <div style={{ position: 'relative' }}>
         <h2 style={{ margin: 0, fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1 }}>{s.title}</h2>
         <div style={{ fontSize: '13px', fontWeight: 600, color: s.muted, marginTop: '8px' }}>{s.mapSub}</div>

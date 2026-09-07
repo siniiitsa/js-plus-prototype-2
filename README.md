@@ -272,8 +272,24 @@ That distinction is the whole design, and it buys two things:
   decoration, not once the fourth carries an address. Wrapping keeps every tile at the size Figma
   draws it, and the row's 20px gap is the row gap too, so the open tile's offset shadow clears.
 
-  Everything else the page draws — the audio and video sections, the testimonials carousel, the
-  events map's pager — is still a static span, and none of them needs new data to change that.
+  **The events map, which pages and pairs.** Its gig list became the artist's
+  (`FIELDS.map.gigs`, a `GigsField` repeater of `{ venue, city, time, month, day, link }`), and a
+  list the artist owns cannot keep a pager that hardcodes twenty pages over five rows. So the
+  pager is derived the way the repertoire's is, `PAGES` is deleted, and — again like the
+  repertoire's — it is not drawn at one page: the five seeded gigs are one page, so the reference
+  picture simply no longer shows a pager. Five to a page is `PINS.length`, not a literal: one page
+  of gigs is one set of distinct pin positions, so the map redraws with the pager and never lights
+  the same dot twice. Each gig carries the pin it lights, paired by index in `sectionVm`, and
+  clicking either side lights both — a click, never a hover, because a phone has none and a
+  `mouseleave` reset would fight the pin. `sel` starts at `-1` and indexes the whole list, so
+  paging away from a lit gig and back finds it lit. A gig with a tickets link is an `<a
+  target="_blank">`, so the one click both opens the tab and lights the pin; a gig without one
+  stays the picture it was, the Soundcloud rule rather than the gallery's — a gig is a show, not
+  a tile promising somewhere to go. `Pager`'s buttons also stopped showing a pointer when they
+  carry no handler, which is what a pager on the canvas is.
+
+  Everything else the page draws — the audio and video sections, the testimonials carousel — is
+  still a static span, and none of them needs new data to change that.
   The enquiry form's *submit* is the one thing that cannot be front-end-only.
 
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake

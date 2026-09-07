@@ -36,7 +36,7 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, QUOTES,
   CITIES, PINS, BOOKED, HELD, EXAMPLE_PAGE,
-  NOW_PLAYING, TRACK_AUDIO, TIER_MODES, SONGS, PAGES,
+  NOW_PLAYING, TRACK_AUDIO, TIER_MODES, SONGS,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
@@ -427,8 +427,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // silently discards what they typed.
   vm.repFlat = vm.songs.map((t) => ({ t: t.title, g: t.artist }))
   vm.repHue = legible(T.tags[3 % T.tags.length])
-  // Still static, and still only for the events map's picture of a pager.
-  vm.pages = PAGES
   // The heading counts the list unless the artist has written their own, so it
   // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
   // the same fallback, or the panel and the canvas would disagree.
@@ -469,6 +467,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     for (let day = 1; day <= CAL_LENGTH; day++) grid.push({ d: day, on: day === CAL_PICKED })
     vm.sched = grid
   }
+  // The tour-date rows of the calendar's flat layout. It sat under `map` for
+  // years on the strength of its name; nothing in the events map reads it.
+  vm.cities = CITIES
   vm.calPara = cv('para', DEFS.calPara)
   vm.calCta = cv('cta', 'Check a date')
   vm.monthLabel = cased('August 2026')
@@ -477,22 +478,51 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.calEnquiry = CAL_ENQUIRY
 
   // map
-  vm.cities = CITIES
+  //
+  // `pins` stays the raw five positions for the *flat* map layout, which draws
+  // them as decoration over a banner and has no list to pair them with. The
+  // compact tile pairs instead: every gig below carries the pin it lights.
   vm.pins = PINS
   vm.mapSub = cv('sub', DEFS.mapSub)
   // The events map renders on `mapBg` for Retro rather than the page background,
   // so a row hue has to separate from that charcoal — Retro's near-black tag reads
   // fine on sand and disappears on the dark. Fall back to the cream, as §10.2 does.
-  const gigDark = cat === 'map' && T.name === 'Retro'
+  // `v0` too, matching the section root's own `darkMap`: the gig rows only render
+  // in that layout, and the flat one keeps the page's ground.
+  const gigDark = cat === 'map' && vm.v0 && T.name === 'Retro'
   const gigGround = gigDark ? vm.mapBg : bg
   const gigFallback = gigDark ? vm.mapFg : tx
-  vm.gigs = GIGS.map((g, i) => {
+  // The gig list follows `songs`, not `tracks`: one key, one shape. An absent
+  // key means the seeded GIGS, an emptied array means no gigs, and there is no
+  // null sentinel. Venue and city are *not* put through cased() — the seeds are
+  // deliberately mixed-case ("Private wedding", "Lake District") and the
+  // renderer sets the venue in the display face without a transform.
+  //
+  // Two things are resolved here rather than in EncoreSection, which does no
+  // maths of its own: `url`, the row's tickets link, normalised through extUrl
+  // for the same <base href> reason as the Soundcloud button — a schemeless
+  // address would resolve against the builder; and `pin`, the position this gig
+  // lights on the map, paired by index because PINS is a fixed five over a fixed
+  // raster. The hue is computed over the *whole* list, never a page of it, or a
+  // gig would change colour as the pager turned.
+  const gigList = Array.isArray(c.gigs) ? c.gigs : GIGS
+  vm.gigs = gigList.map((g, i) => {
     const h = T.tags[i % T.tags.length]
-    return { ...g, hue: Math.abs(lum(h) - lum(gigGround)) > 0.22 ? h : gigFallback }
+    return {
+      venue: g?.venue ?? '', city: g?.city ?? '', time: g?.time ?? '',
+      month: g?.month ?? '', day: g?.day ?? '',
+      url: extUrl(g?.link ?? ''),
+      pin: PINS[i % PINS.length],
+      hue: Math.abs(lum(h) - lum(gigGround)) > 0.22 ? h : gigFallback,
+    }
   })
-  vm.mapRadius = MAP_RADIUS
-  vm.mapBase = MAP_BASE
-  vm.mapTerms = MAP_TERMS
+  // Gigs to a page in the compact tile. It is PINS.length rather than a literal
+  // five: a page's worth of gigs is what one set of distinct pin positions can
+  // light, so the two counts have to move together.
+  vm.gigPage = PINS.length
+  vm.mapRadius = cv('radius', MAP_RADIUS)
+  vm.mapBase = cv('base', MAP_BASE)
+  vm.mapTerms = cv('terms', MAP_TERMS)
 
   // testimonials
   vm.quotes = QUOTES.map((q, i) => (i === 0
@@ -987,10 +1017,11 @@ const FIELD_BOX = {
 }
 
 /* ------------------------------------------------------------------ *
- * §8.6b SongsField — the repertoire's song list. The one list-shaped
- * field with a structured editor rather than a delimited textarea: the
- * artist types a title, an artist and any tags, and the tags are what
- * the section's filter chips are built from.
+ * §8.6b SongsField — the repertoire's song list. The first of the three
+ * list-shaped fields with a structured editor rather than a delimited
+ * textarea (TracksField and GigsField below are the others): the artist
+ * types a title, an artist and any tags, and the tags are what the
+ * section's filter chips are built from.
  *
  * Modelled on ImagesField above — numbered rows, a round X per row, an
  * add affordance, an "n of max" footnote — and, like it, deliberately
@@ -1239,6 +1270,128 @@ function TracksField({ value, max, onChange, onToast }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * §8.6d GigsField — the events map's list of shows.
+ *
+ * The third structured repeater. Row shape is
+ * { venue, city, time, month, day, link }: the first five are what the
+ * gig card prints, and `link` is where its tickets go on the published
+ * page — an address rather than anything uploaded, normalised through
+ * extUrl() in sectionVm like the media player's Soundcloud button. A row
+ * without one stays the picture it has always been.
+ *
+ * `month` and `day` are two fields rather than one date because the card
+ * draws them as two lines of a boxed stamp, and because an artist writing
+ * "Jul"/"12" is not committing to a year, a format or a calendar the
+ * section does not have. Nothing here parses them.
+ *
+ * Same house rules as the two above: whole-array rewrite per keystroke,
+ * numbered rows, a round X, a dashed add, an "n of max" footnote, no
+ * reordering — order is entry order, and it is the order the map pins
+ * pair against.
+ * ------------------------------------------------------------------- */
+
+function GigsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { venue: '', city: '', time: '', month: '', day: '', link: '' }])
+
+  // The two short fields that share a line. Wider than half at this panel's
+  // width would push the pair to wrap, which reads as two rows rather than one.
+  const pair = (a, b) => (
+    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+  )
+
+  const row = (i, g) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        {/* shadcn Input for its focus ring — see SongsField above. */}
+        <Input
+          value={g.venue ?? ''} placeholder="Venue" onClick={stopE}
+          onChange={(e) => setAt(i, 'venue', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove gig ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      {/* Same 25px gutter and 29px right inset as SongsField, so the lower
+          fields line up under the venue and clear the remove button. */}
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {pair(
+          <Input
+            key="city" value={g.city ?? ''} placeholder="City" onClick={stopE}
+            onChange={(e) => setAt(i, 'city', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+          <Input
+            key="time" value={g.time ?? ''} placeholder="22:00" onClick={stopE}
+            onChange={(e) => setAt(i, 'time', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+        )}
+        {pair(
+          <Input
+            key="month" value={g.month ?? ''} placeholder="Jul" onClick={stopE}
+            onChange={(e) => setAt(i, 'month', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+          <Input
+            key="day" value={g.day ?? ''} placeholder="12" onClick={stopE}
+            onChange={(e) => setAt(i, 'day', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+        )}
+        <Input
+          value={g.link ?? ''} placeholder="Tickets link" onClick={stopE}
+          onChange={(e) => setAt(i, 'link', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((g, i) => row(i, g || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add gig</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · {PINS.length} to a page on the published site
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
@@ -1267,6 +1420,9 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
       title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null, audio: TRACK_AUDIO[i] ?? '',
     }))
   }
+  // And once more for the events map's gigs, whose seed needs no dressing —
+  // GIGS is already the row shape GigsField writes.
+  const gigsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : GIGS)
 
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
@@ -1315,6 +1471,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <SongsField value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'tracks' ? (
                         <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
+                      ) : f.type === 'gigs' ? (
+                        <GigsField value={gigsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>

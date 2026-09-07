@@ -300,9 +300,11 @@ export const PINS = [{ x: '20%', y: '26%' }, { x: '40%', y: '54%' }, { x: '62%',
                      { x: '74%', y: '64%' }, { x: '46%', y: '76%' }]
 
 /* --- §10.2 demo content introduced by the Figma page ---------------- *
- * Static like TRACKS / CITIES above: this is the picture of a finished
- * site, not editable copy, so none of it gets a FIELDS entry — with the
- * one exception of SONGS, which the artist owns (FIELDS.repertoire).
+ * Mostly static like TRACKS / CITIES above: this is the picture of a
+ * finished site, not editable copy, so most of it gets no FIELDS entry.
+ * The exceptions are the three lists the artist owns — SONGS
+ * (FIELDS.repertoire), the media player's tracks and GIGS (FIELDS.map) —
+ * which are seeds for a structured editor rather than fixed copy.
  * ------------------------------------------------------------------- */
 
 // Repertoire — the seeded song list, used whenever the section carries no
@@ -333,16 +335,20 @@ export const SONGS = [
 // a song gets one chip here, not two.
 export const REP_ALL = 'All'
 
-// The events map's pager is still a picture, so it keeps its static row.
-export const PAGES = ['1', '2', '3', '…', '20']
-
-// Events map — the upcoming-gigs list beside the map tile.
+// Events map — the upcoming-gigs list beside the map tile, and the seed for
+// FIELDS.map's structured editor: used whenever the section carries no `gigs`
+// key of its own. `link` is where the row's tickets go on the published page,
+// normalised through extUrl() in sectionVm; the seeds carry none, so out of the
+// box the rows stay the picture they have always been.
+//
+// One gig pairs with one pin, by index — PINS is five positions over the seeded
+// Manchester raster and sectionVm hands each gig `PINS[i % PINS.length]`.
 export const GIGS = [
-  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12' },
-  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25' },
-  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02' },
-  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16' },
-  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30' },
+  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12', link: '' },
+  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25', link: '' },
+  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02', link: '' },
+  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', link: '' },
+  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', link: '' },
 ]
 export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
@@ -557,8 +563,20 @@ export const FIELDS = {
     { k: 'para',    l: 'Paragraph', type: 'area', def: 'calPara' },
     { k: 'cta',     l: 'Button', d: 'Check a date' },
   ],
+  // The third list-shaped content with a structured editor, after `repertoire`
+  // and `media`: `gigs` is an array of { venue, city, time, month, day, link }
+  // maintained by GigsField. It follows the `songs` rule rather than the
+  // tracks' — one key, one shape — so an absent key means the seeded GIGS, an
+  // emptied array means no gigs, and there is no null sentinel.
   map: [
+    { k: 'gigs',    l: 'Upcoming gigs', type: 'gigs', max: 12,
+      // The page size is PINS.length, not a literal — see vm.gigPage.
+      hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
+          + `a real link on the published page; the list pages ${PINS.length} at a time.` },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
+    { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
+    { k: 'base',    l: 'Based in',       d: MAP_BASE },
+    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS },
     { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [

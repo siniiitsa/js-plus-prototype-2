@@ -98,14 +98,16 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **six things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **eight things read it**: `Repertoire` — its search field, its filter chips and
   its pager — the **header's navigation**, the **media player** (below), the **gallery's arrows
-  and thumbnail strip** (below), and the two sets of outbound links — the **media player's
-  Soundcloud button** and the **gallery's YouTube / Instagram / TikTok rows**
+  and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
+  and the three sets of outbound links — the **media player's
+  Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows** and the
+  **events map's per-gig tickets link**
   (`extLink()` in `EncoreSection`, `extUrl()` in
   `data.js`: they open in a new tab, and a schemeless address is given `https://`, or
   `<base href>` would resolve it against the builder). Everything else —
-  the events map's pager, the audio and video sections — is
+  the audio and video sections, the testimonials carousel — is
   still a picture. Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
   would both filter and select the section. `EncoreSection` therefore imports `useState` and
@@ -146,6 +148,25 @@ mutated through a single `patch()` helper.
   Figma frame lets it run off the right edge, which put TikTok — now a link — off the page. Four
   content-sized tiles come to ~430px against a 390 frame, so wrapping is what keeps every tile at
   its drawn size.
+- **The events map pages and pairs, in the published tab only.** Layout 1's gig list is the
+  artist's (`FIELDS.map.gigs`, above), so nothing about it can stay a fixed five. The pager is
+  **derived** from the list the way the repertoire's is, `PAGES` is gone, and it is **not
+  rendered at one page** — with the seeded five gigs the reference picture therefore carries no
+  pager at all, which is the intended diff, not a regression. `perPage` is `vm.gigPage`, which is
+  `PINS.length`: one page of gigs is exactly one set of distinct pin positions, so the two counts
+  move together and a page never lights the same dot twice. Each gig carries the `pin` it lights
+  (`PINS[i % PINS.length]`, paired in `sectionVm` — `EncoreSection` does no maths), and the tile
+  draws a pin per gig **on the current page**, so the map follows the pager. `sel` starts at
+  **-1** for the reason `cur` and `pick` do, and it indexes the **whole** list rather than the
+  page, so paging away from a lit gig and back finds it lit. Clicking a row *or* its pin toggles
+  the pairing — **click on both sides, never hover**: a phone has no hover, a `<div>` is not
+  focusable, and a `mouseleave` reset would wipe a pin click the moment the pointer crossed a
+  row. The row's tickets link does not fight that: it is `target="_blank"`, so one click both
+  opens the tab and lights the pin. An **empty link leaves the row a picture** — the Soundcloud
+  rule, not the gallery's hide-the-row rule, because a gig is a show the artist is playing, not
+  a tile promising somewhere to go. The hue is computed over the whole list in `sectionVm`, or a
+  gig would change colour as the pager turned. The flat map layout keeps raw `vm.pins`: it has
+  no list to pair with, and twelve gigs would stack twelve dots on five spots.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
   every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
   id), the section root applies it as `id` **only when `s.live`** — the editor document renders a
@@ -157,8 +178,9 @@ mutated through a single `patch()` helper.
   `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
   because Minimal's Shows and Book can resolve to the same section. Below `desktop` the links
   collapse to `NavMenu`'s burger, in all six Retro layouts.
-- **Two list-shaped contents have a structured editor: the repertoire's songs and the media
-  player's tracks.** `c.songs` is an array of `{ title, artist, tags }` (tags a raw comma string),
+- **Three list-shaped contents have a structured editor: the repertoire's songs, the media
+  player's tracks and the events map's gigs.** `c.songs` is an array of `{ title, artist, tags }`
+  (tags a raw comma string),
   maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
   (`RowThumb`, the 46px cousin of `ImageField`) and a sound file. `audio` is an address, not an
@@ -169,12 +191,18 @@ mutated through a single `patch()` helper.
   `sectionVm` reads both, plus the seeded `TRACKS` (dressed in `TRACK_AUDIO`) when the key is
   absent. Per-row art and audio are never
   re-seeded by index once the array exists, or a row inserted third would steal track three's
-  photograph. Every other repeated field is a delimited textarea (`FIELDS.audio.tracks`,
-  `FIELDS.tags.tags`) or a flattened key set (`pricing`'s `t1n`/`t1p`/…). It follows `images`, not
-  `image`: an absent key means the seeded `SONGS`, an emptied array means no songs, and there is no
+  photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, link }`,
+  maintained by `GigsField` and the plainest of the three: one key, one shape, no assets, and
+  `link` normalised through `extUrl()` onto `vm.gigs[].url`. Every other repeated field is a
+  delimited textarea (`FIELDS.audio.tracks`,
+  `FIELDS.tags.tags`) or a flattened key set (`pricing`'s `t1n`/`t1p`/…). All three follow
+  `images`, not
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS`, an emptied array means
+  none, and there is no
   `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both.
+  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`) has to resolve
+  exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard of.
 - **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` /
   `defaultTrackArt()` in `photos.js` gate on `T.name === 'Retro'`, the same name-match as
   `headerFamily()` and the `retro` flag. **Remove** writes `null`, not `undefined` — `undefined`
