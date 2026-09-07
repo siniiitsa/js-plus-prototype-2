@@ -348,8 +348,17 @@ export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
 
-// Gallery — the media-source selector down the left of the section.
-export const GALLERY_SOURCES = ['Gallery', 'YouTube', 'Instagram', 'TikTok']
+// Gallery — the media-source selector down the left of the section. The first
+// row is the page's own strip of photographs and has no address; the other
+// three carry the content key of the link the artist types, and become real
+// outbound links on the published page (sectionVm resolves `k` through
+// extUrl(), the same normalisation the media player's Soundcloud button gets).
+export const GALLERY_SOURCES = [
+  { l: 'Gallery' },
+  { l: 'YouTube',   k: 'youtube' },
+  { l: 'Instagram', k: 'instagram' },
+  { l: 'TikTok',    k: 'tiktok' },
+]
 
 // Enquiry form — the split context panel and the field set beside it.
 export const FORM_PROMISES = ['Replies within 24 hrs', 'Free, no-obligation quote', 'Covers 120 mi from Manchester']
@@ -527,10 +536,20 @@ export const FIELDS = {
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       hint: 'Tags become the filter chips above the list — separate them with commas.' },
   ],
+  // The three social addresses follow the photos, and follow `media.soundcloud`
+  // in shape: an empty default, normalised through extUrl() in sectionVm, and a
+  // row that stays a picture until it is filled. GALLERY_SOURCES names the key
+  // each row reads — change one, change both.
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile in the strip. The highlighted tile is the one shown in the large viewer.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
+    { k: 'youtube',   l: 'YouTube link', d: '',
+      hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture.' },
+    { k: 'instagram', l: 'Instagram link', d: '',
+      hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture.' },
+    { k: 'tiktok',    l: 'TikTok link', d: '',
+      hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture.' },
   ],
   calendar: [
     { k: 'image',   l: 'Photo', type: 'image', hint: 'Fills the polaroid stack beside the month.' },

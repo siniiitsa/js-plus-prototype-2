@@ -98,11 +98,13 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **four things read it**: `Repertoire` — its search field, its filter chips and
-  its pager — the **header's navigation**, the **media player** (below), and the **media player's
-  Soundcloud button**, the one outbound link (`extLink()` in `EncoreSection`, `extUrl()` in
-  `data.js`: it opens in a new tab, and a schemeless address is given `https://`, or
-  `<base href>` would resolve it against the builder). Everything else — the gallery filmstrip,
+  real, and **six things read it**: `Repertoire` — its search field, its filter chips and
+  its pager — the **header's navigation**, the **media player** (below), the **gallery's arrows
+  and thumbnail strip** (below), and the two sets of outbound links — the **media player's
+  Soundcloud button** and the **gallery's YouTube / Instagram / TikTok rows**
+  (`extLink()` in `EncoreSection`, `extUrl()` in
+  `data.js`: they open in a new tab, and a schemeless address is given `https://`, or
+  `<base href>` would resolve it against the builder). Everything else —
   the events map's pager, the audio and video sections — is
   still a picture. Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
@@ -124,6 +126,26 @@ mutated through a single `patch()` helper.
   contradict the list. Do not mark the
   playing card by raising it out of the stack — the cards overlap by 18px at the foot and a raised
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
+- **The gallery browses, in the published tab only, and its three social rows leave the page.**
+  Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" rewinds, and the
+  tile counter and viewer follow. `pick` starts at **-1** for the same reason `cur` does: nothing
+  chosen, so both sides open on `galActive()` and the published first paint is the canvas's
+  picture by construction. All **seven slots** are navigable, not just the filled ones — an empty
+  one shows in the viewer the placeholder it shows in the strip, so the count cannot shift under
+  the visitor. Mobile draws four of the seven, and that window **slides** once the visitor walks
+  past the fourth (`from = clamp(active - 3, 0, 3)`), which leaves the first four anchored at 0 so
+  the canvas's mobile picture is the Figma frame's, unchanged. The three social rows read
+  `youtube` / `instagram` / `tiktok`, whose keys live on `GALLERY_SOURCES` — change the field list
+  in `FIELDS.gallery`, change that array. The first row has no key: it *is* the strip. An
+  **unfilled social row is not rendered at all when `s.live`** — an artist with no TikTok should
+  not publish a tile promising one — which is where the gallery parts company with the Soundcloud
+  button, still a picture when empty. The **canvas keeps all four regardless**: it is the reference
+  design, the three fields start empty, and a fresh page would otherwise open on a single tile with
+  no clue the others are a field away. The filter carries the index, because `srcIcons` and the
+  per-source colours are positional. And the mobile source row **wraps** rather than clipping: the
+  Figma frame lets it run off the right edge, which put TikTok — now a link — off the page. Four
+  content-sized tiles come to ~430px against a 390 frame, so wrapping is what keeps every tile at
+  its drawn size.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
   every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
   id), the section root applies it as `id` **only when `s.live`** — the editor document renders a

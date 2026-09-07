@@ -244,15 +244,36 @@ That distinction is the whole design, and it buys two things:
   canvas keeps `NOW_PLAYING`'s decorative clock, because the Figma frame draws a player caught
   mid-song.
 
-  **The media player's Soundcloud button.** The one *outbound* link on the page: `FIELDS.media`
-  takes an address, `extUrl()` normalises it to an absolute URL — a schemeless one would resolve
-  against `<base href>`, i.e. the builder — and `extLink()` turns the pill into an `<a>` with
-  `target="_blank"`, since the delegated listener below swallows fragments and nothing else. An
-  empty field, or the canvas, leaves it the picture it always was.
+  **The gallery, which browses.** The seven-tile strip is a real filmstrip on the published page:
+  every thumbnail is clickable, the rail's two arrows step through the slots and wrap at both
+  ends, and "Back to beginning" rewinds. The tile counter and the large viewer follow. State is a
+  single `pick`, starting at `-1` — nothing chosen — so both sides open on `galActive()` and the
+  published tab's first paint is the canvas's picture by construction. Every slot is navigable,
+  not just the filled ones, so the count never shifts under the visitor as photos are added or
+  removed. The mobile frame draws four of the seven tiles; rather than stranding photos 5–7 where
+  no phone can reach them, that window of four slides once the visitor walks past the fourth — and
+  it is anchored at 0 for the first four, so the canvas's mobile picture is unchanged.
 
-  Everything else the page draws — the gallery filmstrip, the audio and video sections, the
-  testimonials carousel, the events map's pager — is still a static span, and none of them needs
-  new data to change that.
+  **The gallery's three social rows, and the media player's Soundcloud button.** The page's
+  *outbound* links. `FIELDS.gallery` grew `youtube`, `instagram` and `tiktok` beside
+  `FIELDS.media`'s `soundcloud`; `GALLERY_SOURCES` names the key each row reads, so the first
+  row — the page's own strip, which the arrows already drive — has none. `extUrl()` normalises
+  each to an absolute URL, since a schemeless one would resolve against `<base href>`, i.e. the
+  builder, and `extLink()` turns the row or the pill into an `<a>` with `target="_blank"`, since
+  the delegated listener below swallows fragments and nothing else. An empty field leaves the
+  Soundcloud pill the picture it always was — but an empty *gallery* row is not published at all.
+  A tile that promises a destination it cannot go to is worse than no tile, and unlike the pill,
+  which sits alone, these sit in a row that reads as a list of where to follow the artist. The
+  canvas still draws all four: it is the reference design, the three fields start empty, and an
+  untouched page would otherwise open on a single tile with no hint that the rest are a field away.
+  One layout consequence: the mobile source row now **wraps**
+  onto a second line instead of letting the frame clip its right edge. Four content-sized tiles
+  come to ~430px against a 390 frame, and the clipped one was TikTok — fine while the rows were
+  decoration, not once the fourth carries an address. Wrapping keeps every tile at the size Figma
+  draws it, and the row's 20px gap is the row gap too, so the open tile's offset shadow clears.
+
+  Everything else the page draws — the audio and video sections, the testimonials carousel, the
+  events map's pager — is still a static span, and none of them needs new data to change that.
   The enquiry form's *submit* is the one thing that cannot be front-end-only.
 
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake

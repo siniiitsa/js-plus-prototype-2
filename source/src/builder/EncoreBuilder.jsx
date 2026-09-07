@@ -439,9 +439,18 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.gal4 = vm.gal.slice(0, 4)
   // Tag order per the Figma gallery frame: Gallery/YouTube/Instagram/TikTok
   // tiles read accent-red, olive, purple, yellow — tags 1, 3, 0, 2 in Retro.
-  vm.gallerySources = GALLERY_SOURCES.map((l, i) => {
+  //
+  // `url` is the row's outbound address, and only the three social rows have a
+  // key to read: the first row is the page's own strip, which the arrows and
+  // the thumbnails already navigate. Normalised through extUrl for the same
+  // <base href> reason as the Soundcloud button, and an empty field leaves the
+  // row a picture rather than a dead link.
+  vm.gallerySources = GALLERY_SOURCES.map((g, i) => {
     const cbg = T.tags[[1, 3, 0, 2][i] % T.tags.length]
-    return { label: cased(l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0 }
+    return {
+      label: cased(g.l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0,
+      url: g.k ? extUrl(cv(g.k, '')) : '',
+    }
   })
 
   // calendar — 2 leading blanks, days 1..31, padded to 35 cells

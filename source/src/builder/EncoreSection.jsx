@@ -10,8 +10,9 @@
 // lucide-react is the one component/style import: its icons inherit
 // `currentColor`, so they stay theme-driven, and each takes the px size given
 // in the spec rather than a `size-*` class. React itself is imported for
-// `useId` and — since Repertoire's search and chips, and then the header's
-// burger menu, became real controls on the published page — for `useState`,
+// `useId` and — since Repertoire's search and chips, then the header's burger
+// menu, then the media player's transport and now the gallery's arrows and
+// thumbnail strip became real controls on the published page — for `useState`,
 // which is gated on `s.live` throughout (§12.7: the editor canvas stays a
 // picture of a website). `useRef` joined them for the media player's one
 // <audio> element, which has to be commanded rather than described: its
@@ -2295,12 +2296,25 @@ function Repertoire({ s }) {
   )
 }
 
-// Which thumbnail the strip highlights, and therefore which photo the large
-// viewer shows. §10.2 marks the fourth tile — but only once there are four
-// photos to mark, so a part-filled strip never highlights an empty slot.
+// Which thumbnail the strip opens on, and therefore which photo the large
+// viewer shows first. §10.2 marks the fourth tile — but only once there are
+// four photos to mark, so a part-filled strip never highlights an empty slot.
+// On the published page this is only the starting tile; `pick` takes over from
+// the first click.
 const galActive = (s) => (s.images.length > 3 ? 3 : 0)
 
 function Gallery({ s }) {
+  // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
+  // and not a hook's business, so the branch below cannot be the thing that
+  // decides whether state exists.
+  //
+  // `pick` starts at -1, meaning the visitor has not chosen a tile yet, so both
+  // sides open on galActive() and the published tab's first paint is exactly
+  // the canvas's picture. Live-gated (§12.7) like Repertoire's chips: a
+  // thumbnail on the canvas would both change the viewer and select the
+  // section.
+  const [pick, setPick] = useState(-1)
+
   const tile = (label, aspect, extra) => (
     <div key={label} style={{
       background: s.soft, borderRadius: s.radiusSm, aspectRatio: aspect, position: 'relative', ...extra,
@@ -2315,17 +2329,29 @@ function Gallery({ s }) {
   // rows on the left, the active source's viewer and its thumbnail strip on
   // the right. Only the first row is open; the rest offer a "+".
   if (s.v0) {
-    const active = galActive(s)
     const desk = !s.narrow
     const tab = isTablet(s)
     const strip = [0, 1, 2, 3, 4, 5, 6]
+    // The seven slots are always navigable — an empty one shows the same
+    // placeholder in the viewer that it shows in the strip, so the count never
+    // shifts under the visitor as photos are added or removed, and nothing here
+    // has to be clamped against the artist's list the way Media clamps `cur`.
+    // Everything that writes `pick` walks the same fixed seven.
+    const active = s.live && pick >= 0 ? pick : galActive(s)
+    const go = (i) => setPick(((i % strip.length) + strip.length) % strip.length)
+    // Mobile draws four of the seven tiles. Rather than stranding photos 5–7
+    // where no phone can reach them, the four slide once the visitor walks past
+    // the fourth — and the window is anchored at 0 for the first four, so the
+    // canvas's mobile picture is the frame's, unchanged.
+    const shown = s.mob ? 4 : strip.length
+    const from = Math.min(Math.max(active - (shown - 1), 0), strip.length - shown)
     const cardR = s.retro ? (desk ? '25px' : '30px') : s.radius
     const rowR = s.retro ? (desk ? '16px' : '20px') : s.btnR
     // The Figma frame gives each media source its brand glyph; lucide has no
     // TikTok mark, so the closest note glyph stands in.
     const srcIcons = [ImageIcon, Youtube, Instagram, Music2]
-    const arrow = (icon) => (
-      <span style={{
+    const arrow = (icon, onClick) => (
+      <span onClick={onClick} style={{
         width: desk ? 29 : 35, height: desk ? 29 : 35, flex: 'none',
         borderRadius: '999px', background: s.deep, color: s.deepFg,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
@@ -2346,47 +2372,84 @@ function Gallery({ s }) {
 
     // The Figma tablet and mobile frames fold the source list into a row of
     // icon-only tiles: no labels, and only the open tile carries a dismiss
-    // glyph. Tablet spreads four equal tiles across the page; mobile keeps
-    // them content-sized and lets the frame clip the row's right edge.
+    // glyph. Tablet spreads four equal tiles across the page; mobile keeps them
+    // content-sized, and **wraps** rather than clipping.
+    //
+    // The frame itself lets the row run off the right edge, which cost nothing
+    // while the tiles were decoration — but three of them now carry an address
+    // the artist typed, and the fourth, TikTok, was the one off the page. Four
+    // content-sized tiles come to ~430px against a 390 frame, so nothing short
+    // of shrinking them fits on one line; wrapping keeps every Figma dimension
+    // exactly as drawn and spends a second row instead. The 20px gap is the
+    // row gap too, which clears the open tile's offset shadow.
+    // A row with an address the artist typed is an outbound link on the
+    // published page, the same seam BookPill takes: `extLink` returns the props
+    // or null, the tag follows, and the style object is the same either way so
+    // the picture never moves. The first row has no address — it is the strip
+    // the arrows and thumbnails already drive.
+    //
+    // A social row with no address does not appear on the published page at
+    // all: an artist who left TikTok blank has no TikTok, and the tile would
+    // promise a destination it cannot go to. This is where the gallery parts
+    // company with the Soundcloud button, which stays a picture when empty —
+    // that pill sits alone, where these sit in a row that reads as a list of
+    // the places you can follow them.
+    //
+    // The canvas keeps all four regardless. It is the reference design, the
+    // three fields start empty, and a fresh page would otherwise open on a
+    // single tile where Figma draws a row of them — with no clue that the other
+    // three are a field away. The index is carried through the filter because
+    // `srcIcons` is positional.
+    const srcRows = s.gallerySources
+      .map((g, i) => ({ g, i }))
+      .filter(({ g, i }) => !s.live || i === 0 || !!g.url)
     const sources = !desk ? (
       <div style={row('20px', {
-        alignItems: 'stretch', ...(s.mob ? { overflowX: 'clip' } : {}),
+        alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}),
       })}>
-        {s.gallerySources.map((g, i) => (
-          <div key={i} style={{
-            ...(tab ? { flex: 1, minWidth: 0, height: '92px' } : { flex: 'none' }),
-            ...row(tab ? '16px' : '5px', { justifyContent: g.on ? 'space-between' : 'center' }),
-            position: 'relative', overflow: 'hidden',
-            background: g.on ? s.pillBg : 'transparent',
-            color: g.on ? s.pillFg : (s.retro ? g.bg : g.ink),
-            border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
-            padding: tab ? '16px 24px 16px 16px' : '10px',
-            boxShadow: g.on ? hard(s, s.ac, 7, 9) : 'none',
-            transform: g.on ? tilt(s, -1) : 'none',
-          }}>
-            {g.on && <Grain s={s} radius={rowR} />}
-            {iconSq(g, srcIcons[i] || ImageIcon, 60, 28)}
-            {g.on && <X size={30} strokeWidth={2.4} style={{ position: 'relative' }} />}
-          </div>
-        ))}
+        {srcRows.map(({ g, i }) => {
+          const link = extLink(s, g.url)
+          const Tag = link ? 'a' : 'div'
+          return (
+            <Tag key={i} {...link} style={{
+              ...(tab ? { flex: 1, minWidth: 0, height: '92px' } : { flex: 'none' }),
+              ...row(tab ? '16px' : '5px', { justifyContent: g.on ? 'space-between' : 'center' }),
+              position: 'relative', overflow: 'hidden', textDecoration: 'none',
+              background: g.on ? s.pillBg : 'transparent',
+              color: g.on ? s.pillFg : (s.retro ? g.bg : g.ink),
+              border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
+              padding: tab ? '16px 24px 16px 16px' : '10px',
+              boxShadow: g.on ? hard(s, s.ac, 7, 9) : 'none',
+              transform: g.on ? tilt(s, -1) : 'none',
+              cursor: link ? 'pointer' : undefined,
+            }}>
+              {g.on && <Grain s={s} radius={rowR} />}
+              {iconSq(g, srcIcons[i] || ImageIcon, 60, 28)}
+              {g.on && <X size={30} strokeWidth={2.4} style={{ position: 'relative' }} />}
+            </Tag>
+          )
+        })}
       </div>
     ) : (
       <div style={col('16px')}>
-        {s.gallerySources.map((g, i) => {
+        {srcRows.map(({ g, i }) => {
           // The Figma frame letters each closed row in its source colour even
           // when that is low-contrast (TikTok's yellow); the legible() fallback
           // stays on for the flat themes.
           const ink = s.retro ? g.bg : g.ink
+          const link = extLink(s, g.url)
+          const Tag = link ? 'a' : 'div'
           return (
-            <div key={i} style={{
+            <Tag key={i} {...link} style={{
               ...row('16px'),
-              position: 'relative', overflow: 'hidden',
+              position: 'relative', overflow: 'hidden', textDecoration: 'none',
               background: g.on ? s.pillBg : 'transparent',
               color: g.on ? s.pillFg : ink,
               border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
               padding: '13px 20px 13px 13px',
               boxShadow: g.on ? hard(s, s.ac, 6, 7) : 'none',
               transform: g.on ? tilt(s, -1) : 'none',
+              cursor: link ? 'pointer' : undefined,
             }}>
               {g.on && <Grain s={s} radius={rowR} />}
               {iconSq(g, srcIcons[i] || ImageIcon, 49, 24)}
@@ -2396,7 +2459,7 @@ function Gallery({ s }) {
               {g.on
                 ? <X size={25} strokeWidth={2.4} style={{ position: 'relative' }} />
                 : <Plus size={25} strokeWidth={2.4} style={{ position: 'relative' }} />}
-            </div>
+            </Tag>
           )
         })}
       </div>
@@ -2408,7 +2471,8 @@ function Gallery({ s }) {
     // a footer row under the photo instead.
     const railArrows = (
       <div style={row(desk ? '4px' : '5px')}>
-        {arrow(<ArrowLeft size={desk ? 14 : 16} />)}{arrow(<ArrowRight size={desk ? 14 : 16} />)}
+        {arrow(<ArrowLeft size={desk ? 14 : 16} />, s.live ? () => go(active - 1) : undefined)}
+        {arrow(<ArrowRight size={desk ? 14 : 16} />, s.live ? () => go(active + 1) : undefined)}
       </div>
     )
     const rail = s.mob ? (
@@ -2438,11 +2502,19 @@ function Gallery({ s }) {
     )
 
     const viewer = (
-      // minWidth 0 so the mobile frame's overflowing source row cannot widen
-      // the grid column past the canvas.
+      // minWidth 0 so nothing inside can widen the grid column past the canvas
+      // — a flex item's default `min-width: auto` floors it at its content.
       <div style={col(desk ? '20px' : '24px', { minWidth: 0 })}>
         <div style={row('12px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          <span style={row('8px', labelStyle(s, s.eyebrow, { color: s.ac }))}>
+          {/* A dead reset beside two live arrows would read as a bug, so it
+              rewinds the strip on the published page and stays lettering on
+              the canvas. */}
+          <span
+            onClick={s.live ? () => setPick(0) : undefined}
+            style={row('8px', labelStyle(s, s.eyebrow, {
+              color: s.ac, cursor: s.live ? 'pointer' : undefined,
+            }))}
+          >
             <ArrowLeft size={13} color={s.tx} /> Back to beginning
           </span>
           <span style={col('2px', { alignItems: 'flex-end' })}>
@@ -2495,11 +2567,12 @@ function Gallery({ s }) {
         </div>
 
         <div style={row(desk ? '10px' : '12px', { overflow: 'hidden', marginTop: desk ? '13px' : '16px' })}>
-          {(s.mob ? strip.slice(0, 4) : strip).map((i) => (
-            <span key={i} style={{
+          {strip.slice(from, from + shown).map((i) => (
+            <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
               flex: 1, minWidth: 0, aspectRatio: '1', overflow: 'hidden',
               borderRadius: s.retro ? (desk ? '16px' : '20px') : s.radiusSm,
               border: `${desk ? '4px' : '5px'} solid ${i === active ? s.pillBg : s.ac}`,
+              cursor: s.live ? 'pointer' : undefined,
             }}><Photo s={s} initialsSize={12} src={s.images[i]} /></span>
           ))}
         </div>
