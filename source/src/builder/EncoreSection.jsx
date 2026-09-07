@@ -3936,22 +3936,47 @@ function Footer({ s }) {
       // column 1 holds it whether or not the label face fills it.
       minWidth: i === 0 ? u(148) : undefined,
     })}>
-      {colLinks.map((l) => (
-        <a key={l} href="#" style={labelStyle(s, u(20), { color: s.ac })}>{l}</a>
-      ))}
+      {colLinks.map((l, j) => {
+        // The gigs' seam, at a link: an address the artist typed leaves the page
+        // in a new tab, a section id scrolls, and on the canvas both resolve to
+        // an <a> with no href at all — never `#`, which is what this column used
+        // to carry and which jumps the *builder* to its own top. navHref's rule,
+        // and its other half too: an href-less anchor takes the text cursor, so
+        // the style states the pointer for itself. Keyed positionally, because
+        // the labels are the artist's now and two of them can read the same.
+        const ext = extLink(s, l.url)
+        return (
+          <a key={j} {...(ext || { href: navHref(s, l.to) })}
+             style={labelStyle(s, u(20), {
+               color: s.ac, cursor: 'pointer', textDecoration: 'none',
+             })}>{l.label}</a>
+        )
+      })}
       {/* The frames set the footer pill the other way up from every other one:
           the accent is the ground, the page background is the type, and the
           mustard the rest of the page puts *under* the type is its block. The
-          390 frame keeps the 768 pill at full size, hence `full`. */}
-      {i === 0 && (
-        <BookPill s={s} bg={s.ac} fg={s.bg} shadow={s.pillBg} full={s.mob} />
+          390 frame keeps the 768 pill at full size, hence `full`.
+
+          It books at `bookTo` with no self-exclusion filter, unlike the pricing
+          cards' pills and the calendar's: `footer` is not in CTA_TARGETS.book,
+          so the pill can never point at the section it stands in. With none of
+          the three on the page it resolves to nothing and BookPill stays the
+          span it has always been here.
+
+          An emptied label drops it, which the calendar's foot pill does not do:
+          there the pill sits at the end of a row of type, here it is the block
+          the whole column is built round, and a wordless block is not one of
+          this section's states. */}
+      {i === 0 && s.footerCta && (
+        <BookPill s={s} to={s.bookTo} label={s.footerCta}
+                  bg={s.ac} fg={s.bg} shadow={s.pillBg} full={s.mob} />
       )}
     </nav>
   )
 
   const links = (
     <div style={{ display: 'flex', gap: s.mob ? u(26) : u(76) }}>
-      {s.footerLinks.map(linkCol)}
+      {s.footerCols.map(linkCol)}
     </div>
   )
 

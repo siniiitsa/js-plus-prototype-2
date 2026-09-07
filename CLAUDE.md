@@ -103,16 +103,17 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **twelve things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **fourteen things read it**: `Repertoire` — its search field, its filter chips and
   its pager — the **header's navigation**, the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
   the **pricing section's filter chips and Book pill** (below),
   the **booking calendar's month arrows, its day picking and its foot pill** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
   the **testimonials carousel's arrows** (below),
-  and the three sets of outbound links — the **media player's
-  Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows** and the
-  **events map's per-gig tickets link**
+  the **footer's link columns and its Book pill** (below),
+  and the four sets of outbound links — the **media player's
+  Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
+  **events map's per-gig tickets link** and the **footer's web-address rows**
   (`extLink()` in `EncoreSection`, `extUrl()` in
   `data.js`: they open in a new tab, and a schemeless address is given `https://`, or
   `<base href>` would resolve it against the builder). Everything else —
@@ -298,12 +299,45 @@ mutated through a single `patch()` helper.
   `i === 0 ? s.quote1 : q.q` seam goes with it — **every** row is cased now, which is the
   intended diff on a casing theme. There is **no autoplay and no swipe**: both want an effect
   or touch state, and there is none in the file.
-- **Six list-shaped contents have a structured editor: the repertoire's songs, the media
+- **The footer is the artist's sitemap, and the published one navigates.** It was the last
+  §10.2 section that was a picture on *both* sides, and the only one whose links were dead by
+  the **header's own rule**: `linkCol` drew `<a href="#">`, which the published tab's delegated
+  listener swallows (`href.length > 1` is false) and which on the canvas jumps the *builder* to
+  its own top — exactly what `navHref()` was written to remove everywhere else. The Book pill
+  beside them was passed neither `to` nor `ext`, so it was a `<span>` on both surfaces, and its
+  label read `s.cta1`, a key no footer field named. `FOOTER_LINKS` was two hardcoded columns of
+  four strings; `c.links` is now a `LinksField` repeater of `{ label, to, url }`, the **eighth
+  structured editor and the seventh repeater**, and the first whose row carries two *kinds* of
+  target — `to` is a section id resolved against the page, or `link`, which takes the row's own
+  address through `extUrl()`. That is `BookPill`'s own `ext ? … : to` seam moved down to a row.
+  `FOOTER_TARGETS` lists **every category the page can carry, not the ones it does**: a Radix
+  `Select` whose value names no item blanks its trigger, so a link to a section since deleted
+  must still read as what it points at, and one can be aimed at a section not added yet.
+  Resolving it against the page is `sectionVm`'s job, and §4.3a already says what happens when
+  it fails — the label keeps its place in the design and simply does not link, which is also
+  the whole of `BLANK_PAGE`'s footer. The two columns are **derived**, not stored: the frames
+  draw four and four, so the list is halved with the remainder in **column one** — the pricing
+  deck's odd-count rule, and column one is the one the pill stands in, so it is the one that
+  should run long — and an empty second column is dropped rather than rendered as a `nav` with
+  no children, because `links` is a flex row and an empty child still spends its gap. The pill
+  takes `vm.bookTo` with **no self-exclusion filter**, unlike the tier pills' and the
+  calendar's: `footer` is not in `CTA_TARGETS.book`, so it can never point at the section it
+  stands in. An emptied `cta` **drops** it, which the calendar's foot pill does not do — there
+  the pill sits at the end of a row of type, here it is the block the column is built round,
+  and a wordless block is not one of the section's states. `showBadge` is the header's own key,
+  and `vm.showBadge` already read this section's content: the seal was hidable by nothing only
+  because no field here named it. `FOOTER_CREDIT` stays a constant on purpose — it is the
+  platform's byline, not the artist's. `vm.footerCta` is **uncased** where `vm.footerStatement`
+  and the labels are cased, because the pill has always drawn the uncased `cta1` and casing it
+  would upper-case the footer's pill on Grunge and Pop. The footer keeps **no local state**:
+  every link is an `<a>` whose href is `navHref()` or `extLink()`, so nothing here needs the
+  `useState` the eight sections above it take.
+- **Seven list-shaped contents have a structured editor: the repertoire's songs, the media
   player's tracks, the events map's gigs, the pricing section's packages, the enquiry form's
-  boxes and the testimonials' reviews** — and the booking
-  calendar's `booked` dates are a **seventh structured field that is not a list**: `BookedField`
+  boxes, the testimonials' reviews and the footer's links** — and the booking
+  calendar's `booked` dates are an **eighth structured field that is not a list**: `BookedField`
   is a month to click, not a repeater, because one row per blocked date is the wrong shape for a
-  June with eight of them, and it obeys the same seed-resolver rule as the six below. `c.songs` is an array of `{ title, artist, tags }`
+  June with eight of them, and it obeys the same seed-resolver rule as the seven below. `c.songs` is an array of `{ title, artist, tags }`
   (tags a raw comma string),
   maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
@@ -337,18 +371,27 @@ mutated through a single `patch()` helper.
   flattened key set again in miniature (`quote`/`who`/`role` reached one review of a hardcoded
   three, and `when` reached none): it is the gigs' shape of thing — one key, one shape, no
   assets, no delimiters — laid out like `TiersField`, whose primary field is also the short one,
-  so the reviewer takes the header line and the quote the textarea. Every other repeated field
-  is a
+  so the reviewer takes the header line and the quote the textarea. `footer`'s `c.links` is an
+  array of `{ label, to, url }`, maintained by `LinksField`, and it replaced a **constant** —
+  two hardcoded columns of four strings on a bare `#` — rather than a flattened key set or a
+  textarea. It is the second repeater with a **per-row `<select>`** and the first whose row
+  carries two *kinds* of target: `to` is a section id or the sentinel `link`, `url` is only read
+  on a `link` row, and it is the only row whose third control is **conditionally rendered** — an
+  address box under eight section rows is noise. Its `to` options are `FOOTER_TARGETS`, every
+  category the page *can* carry rather than the ones it does, because a Radix value naming no
+  item blanks the trigger; `sectionVm` is what resolves it against the page. Its order is
+  load-bearing the way `FIELDS.form.fields`' is: `sectionVm` halves the list into the two
+  columns. Every other repeated field is a
   delimited textarea (`FIELDS.audio.tracks`,
-  `FIELDS.tags.tags`). All five follow
+  `FIELDS.tags.tags`). All seven follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS`, an emptied array
   means none, and there is no
   `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`) has to
+  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
-  of — which is why `GIGS`, `TIERS`, `FORM_FIELDS` and `QUOTES` are written in the row shape their repeater edits, tags and
+  of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES` and `FOOTER_LINKS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
 - **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` /
   `defaultTrackArt()` in `photos.js` gate on `T.name === 'Retro'`, the same name-match as

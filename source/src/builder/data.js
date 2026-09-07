@@ -412,11 +412,49 @@ export const FORM_KINDS = [
 export const FORM_TYPES = ['Wedding', 'Event', 'Pub', 'Party', 'Other']
 export const FORM_MESSAGE = 'Tell me about your event…'
 
-// Footer — two link columns and the small print either side of the rule.
+// Footer — the sitemap either side of the rule, and the small print under it.
+//
+// Written in the { label, to } row shape LinksField edits, the GIGS / TIERS /
+// QUOTES rule, so its seed resolver is a one-liner and needs no dressing. `to`
+// is a section id (§4.3a), 'link' for a web address in the row's own `url`, or
+// 'none'. The eight targets are the categories EXAMPLE_PAGE carries, so the
+// seeded page publishes fully linked; on BLANK_PAGE every one of them resolves
+// to nothing and the column is the picture it has always been, exactly as the
+// header's nav is empty there.
+//
+// A flat list, not two columns: sectionVm does the halving, or a repeater row
+// would have to carry which column it stands in.
 export const FOOTER_LINKS = [
-  ['About', 'Top Tracks', 'Media', 'Repertoire'],
-  ['Shows/Coverage', 'Pricing', 'Enquiries', 'Reviews'],
+  { label: 'About',          to: 'bio' },
+  { label: 'Top Tracks',     to: 'media' },
+  { label: 'Media',          to: 'gallery' },
+  { label: 'Repertoire',     to: 'repertoire' },
+  { label: 'Shows/Coverage', to: 'map' },
+  { label: 'Pricing',        to: 'pricing' },
+  { label: 'Enquiries',      to: 'form' },
+  { label: 'Reviews',        to: 'testimonials' },
 ]
+
+// The per-row target select, in the { v, l } shape EditPanel's own select
+// branch reads — FORM_KINDS' shape.
+//
+// Every category the page *can* carry rather than the ones it does: a Radix
+// Select whose value names no item blanks its trigger, so a row pointing at a
+// section the artist has since deleted must still read as what it points at,
+// and a link can be aimed at a section that has not been added yet. Resolving
+// it against the actual page is sectionVm's job — §4.3a, "a label whose every
+// candidate is missing keeps its place in the design and simply does not link".
+//
+// 'none' and 'link' are non-empty sentinels because Radix refuses a SelectItem
+// with an empty value; no category is named either of them.
+export const FOOTER_TARGETS = [
+  { v: 'none', l: 'Nothing' },
+  ...CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
+    .map((c) => ({ v: c.id, l: c.name })),
+  { v: 'link', l: 'Web address' },
+]
+
+// Not a field: it is the platform's byline, not the artist's.
 export const FOOTER_CREDIT = 'A JustPay Product'
 // The frames' own hard break — see sectionVm, which is the other half of it.
 export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
@@ -672,6 +710,20 @@ export const FIELDS = {
   ],
   footer: [
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },
+    // The eighth structured editor and the seventh repeater — and the section's
+    // whole sitemap, which was a constant no field could reach. Follows the
+    // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
+    // array means no links at all, and there is no null sentinel.
+    { k: 'links',    l: 'Footer links', type: 'links', max: 10,
+      hint: 'Split into two columns, the first column first. A link scrolls to a section on the page, or opens a web address in a new tab.' },
+    // Dead until the pill was given a target — the calendar's `cta`, which was
+    // a field that edited nothing until it labelled that section's foot pill.
+    { k: 'cta',      l: 'Button', d: 'Book Now',
+      hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
+    // The same key the header's seal takes: `vm.showBadge` already reads this
+    // section's own content, so the footer's seal was hidable by nothing only
+    // because no field here named it.
+    { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
     { k: 'copyright', l: 'Small print', def: 'copyright' },
   ],
 }

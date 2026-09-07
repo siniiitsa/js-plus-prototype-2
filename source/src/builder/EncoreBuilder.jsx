@@ -39,7 +39,7 @@ import {
   NOW_PLAYING, TRACK_AUDIO, SONGS,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
-  FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
+  FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine,
   CTA_TARGETS, firstPresent, minimalNav,
@@ -206,14 +206,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
-    // become real. Eleven things read it: Repertoire's search, chips and pager;
-    // the header's navigation — its links, its Book Now and Listen, and the
-    // burger menu the narrow frames collapse to; the media player's transport;
-    // the gallery's strip and arrows; the events map's pager and pin/row
-    // pairing; the pricing cards' filter chips and their Book pill; the booking
-    // calendar's month arrows, its day picking and its foot pill; the enquiry
-    // form's boxes, its event-type chips and its submit; and the three sets of
-    // outbound links (Soundcloud, the gallery's socials, the gigs' tickets).
+    // become real. Fourteen things read it: Repertoire's search, chips and
+    // pager; the header's navigation — its links, its Book Now and Listen, and
+    // the burger menu the narrow frames collapse to; the media player's
+    // transport; the gallery's strip and arrows; the events map's pager and
+    // pin/row pairing; the pricing cards' filter chips and their Book pill; the
+    // booking calendar's month arrows, its day picking and its foot pill; the
+    // enquiry form's boxes, its event-type chips and its submit; the
+    // testimonials carousel's arrows; the footer's link columns and its Book
+    // pill; and the four sets of outbound links (Soundcloud, the gallery's
+    // socials, the gigs' tickets, the footer's web-address rows).
     live: !!live,
 
     // The section's own id on the published page, so a nav link can scroll to
@@ -664,7 +666,40 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // display face narrower than the frame's. Kept in step with FIELDS.footer's
   // own default, and rendered `pre-wrap` so an edited statement can break too.
   vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
-  vm.footerLinks = FOOTER_LINKS.map((col) => col.map((l) => cased(l)))
+  // The sitemap is the artist's now, so a row carries where it goes as well as
+  // what it says — and it goes to one of two kinds of place, which is BookPill's
+  // own `ext ? … : to` seam moved down to the row. 'link' takes the row's own
+  // address through extUrl(), the normalisation living here and never in the
+  // renderer (the gigs' rule); anything else is a section id, resolved against
+  // the page the way firstPresent resolves the header's. A target the page does
+  // not carry — a section deleted after the link was written, or the whole of
+  // BLANK_PAGE — resolves to undefined rather than to a dead fragment, and §4.3a
+  // has already said what happens then: the label keeps its place in the design
+  // and simply does not link.
+  const linkRows = Array.isArray(c.links) ? c.links : FOOTER_LINKS
+  vm.footerLinks = linkRows.map((r) => {
+    const to = String(r?.to ?? '').trim()
+    return {
+      label: cased(String(r?.label ?? '').trim()),
+      to: to !== 'link' && navSections.some((n) => n.cat === to) ? to : undefined,
+      url: to === 'link' ? extUrl(r?.url) : '',
+    }
+  })
+  // The frames draw four and four, so the columns are the list halved with the
+  // remainder in the first — the pricing deck's odd-count rule, and the first is
+  // the column the Book pill stands in, so it is the one that should run long.
+  // An empty second column is dropped rather than rendered as a nav with no
+  // children: `links` is a flex row and an empty child still spends its gap. The
+  // first is kept at any count, the pill being what it is there for.
+  const footHalf = Math.ceil(vm.footerLinks.length / 2)
+  vm.footerCols = [vm.footerLinks.slice(0, footHalf), vm.footerLinks.slice(footHalf)]
+    .filter((colLinks, i) => i === 0 || colLinks.length)
+  // Uncased, unlike vm.calCta and unlike every other string in this block: the
+  // pill has always drawn `cta1`, which is uncased too, and caseText is only a
+  // passthrough on the two `title` themes. Casing it here would upper-case the
+  // footer's pill on Grunge and Pop — a picture that moved, on a change that was
+  // only meant to hand the artist a field for a default they already had.
+  vm.footerCta = cv('cta', 'Book Now')
   vm.footerCredit = FOOTER_CREDIT
 
   vm[FLAG[cat]] = true
@@ -1944,6 +1979,117 @@ function QuotesField({ value, max, onChange }) {
   )
 }
 
+/* ------------------------------------------------------------------- *
+ * §8.6i LinksField — the footer's sitemap.
+ *
+ * The seventh repeater, after SongsField, TracksField, GigsField,
+ * TiersField, FormFieldsField and QuotesField, and the eighth
+ * structured editor counting BookedField above. Row shape is
+ * { label, to, url }.
+ *
+ * It replaces a constant rather than a flattened key set: FOOTER_LINKS
+ * was two hardcoded columns of four strings, rendered as anchors on a
+ * bare `#`, so nothing about the footer's navigation was the artist's
+ * and none of it went anywhere on either surface.
+ *
+ * Laid out like FormFieldsField, the only other repeater with a per-row
+ * <select>, and for the same reason: the target is what makes the row
+ * more than a label. One thing here that no other repeater does — the
+ * address box renders only on a row whose target is `link`. It is the
+ * first row with two *kinds* of target, and an empty web-address box
+ * standing under eight section rows is noise, not an affordance.
+ *
+ * Same house rules as the six above: whole-array rewrite per keystroke,
+ * numbered rows, a round X, a dashed add, an "n of max" footnote, no
+ * reordering — and here the order is load-bearing the way the enquiry
+ * form's is, because sectionVm halves this list into the two columns.
+ * ------------------------------------------------------------------- */
+
+function LinksField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  // A new row points at nothing: the label is the artist's to write first, and
+  // 'none' is a real value rather than the empty string Radix refuses.
+  const add = () => onChange([...list, { label: '', to: 'none', url: '' }])
+
+  const row = (i, r) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          value={r.label ?? ''} placeholder="Link — About" onClick={stopE}
+          onChange={(e) => setAt(i, 'label', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove link ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {/* FOOTER_TARGETS is every category the page *can* carry, not the ones
+            it does: a value naming no item blanks a Radix trigger, so a link to
+            a section since deleted must still read as what it points at. The
+            canvas resolves it against the page instead (§4.3a). */}
+        <Select value={r.to ?? 'none'} onValueChange={(v) => setAt(i, 'to', v)}>
+          <SelectTrigger
+            onClick={stopE} className="w-full h-auto"
+            style={{ ...SONG_ROW_INPUT, paddingRight: '28px' }}
+          ><SelectValue /></SelectTrigger>
+          <SelectContent onClick={stopE}>
+            {FOOTER_TARGETS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        {r.to === 'link' && (
+          <Input
+            value={r.url ?? ''} placeholder="instagram.com/kaimercer" onClick={stopE}
+            onChange={(e) => setAt(i, 'url', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((r, i) => row(i, r || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add link</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · two columns on the published page
+      </p>
+    </div>
+  )
+}
+
 /* ------------------------------------------------------------------ *
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
@@ -1988,6 +2134,10 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // { quote, who, role, when } row QuotesField edits, so this is the gigs' and
   // the packages' one-liner rather than the tracks' dressing.
   const quotesVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : QUOTES)
+  // And for the footer's sitemap: FOOTER_LINKS is written as the
+  // { label, to } row LinksField edits — a `url` only appears on a row the
+  // artist points at a web address — so this is the gigs' one-liner again.
+  const linksVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FOOTER_LINKS)
   // The booking calendar's two. `bookedVal` is the songs' rule with an empty
   // seed; `openVal` has to run sectionVm's whole expression rather than just
   // its default, because clearing a date input stores '' — which the canvas
@@ -2051,6 +2201,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <FormFieldsField value={formFieldsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'quotes' ? (
                         <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'links' ? (
+                        <LinksField value={linksVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month
@@ -2601,8 +2753,10 @@ function dressPublishedWindow(win, artistName, pageBg) {
   // load the builder. Every fragment is therefore swallowed, exactly as before,
   // and the scroll is done by hand against this document's own ids. Sections
   // carry theirs from `vm.anchor` (§4.3a), gated on `live`, so a link that names
-  // nothing on the page — the footer's columns, or a Minimal label whose
-  // sections were all deleted — simply does nothing.
+  // nothing on the page — a footer link, or a Minimal label, whose target
+  // section has been deleted — simply does nothing. It carries no href at all
+  // by then, sectionVm having resolved the target against the page, so it never
+  // even reaches this listener; the swallow is what catches the rest.
   doc.addEventListener('click', (e) => {
     const a = e.target.closest?.('a')
     const href = a ? a.getAttribute('href') || '' : ''

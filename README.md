@@ -213,7 +213,7 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Nine sections read it**, plus the three sets of outbound
+  interactive has to be off there. **Ten sections read it**, plus the four sets of outbound
   links below.
 
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
@@ -425,6 +425,47 @@ That distinction is the whole design, and it buys two things:
   layout's old `i === 0` seam — every card there is the artist's now, and every quote is cased,
   where only the first used to be. There is no autoplay and no swipe: both want an effect or
   touch state, and `EncoreSection` still has neither.
+
+  **The footer, which navigates.** It was the last §10.2 section that was a picture on both
+  sides, and the only one whose links were dead by the *header's own* rule: `linkCol` drew
+  `<a href="#">`, which is precisely what `navHref()` had removed everywhere else — the published
+  tab's delegated listener swallows a bare `#`, and on the canvas it jumps the builder to its own
+  top. The Book pill beside them was passed no target, so it was a `<span>` on both surfaces, and
+  its label read the header's `cta1`, a key no footer field named. `FOOTER_LINKS` was two
+  hardcoded columns of four strings; the sitemap is the artist's now
+  (`FIELDS.footer.links`, a `LinksField` repeater of `{ label, to, url }` — the seventh repeater
+  and the eighth structured editor), and on the published page every link either scrolls to its
+  section or opens an address in a new tab.
+
+  It is the first repeater whose row carries two *kinds* of target, which is `BookPill`'s own
+  `ext ? … : to` seam moved down to a row: `to` is a section id, or the sentinel `link`, and only
+  a `link` row reads `url` — and only a `link` row renders the box for it, because an address
+  field standing empty under eight section rows is noise rather than an affordance. Its options
+  are `FOOTER_TARGETS`, every category a page *can* carry rather than the ones this one does: a
+  Radix `Select` whose value names no item blanks its trigger, so a link to a section since
+  deleted must still read as what it points at, and a link can be aimed at a section not yet
+  added. Resolving the target against the actual page is `sectionVm`'s job, and §4.3a had already
+  written down what happens when it fails — the label keeps its place in the design and simply
+  does not link. That is also the whole of the footer on a blank page, exactly as the header's
+  nav is empty there.
+
+  The two columns are derived rather than stored. The frames draw four and four, so the list is
+  halved with the remainder in column one — the pricing deck's odd-count rule, and column one is
+  the one the pill stands in, so it is the one that should run long — and an empty second column
+  is dropped rather than rendered as a `nav` with no children, `links` being a flex row where an
+  empty child still spends its gap. The pill takes `vm.bookTo` with no self-exclusion filter,
+  unlike the tier pills' and the calendar's: `footer` is not in `CTA_TARGETS.book`, so it can
+  never point at the section it stands in. An emptied `cta` drops it, which the calendar's foot
+  pill does not do — there the pill sits at the end of a row of type, here it is the block the
+  column is built round, and a wordless block is not one of the section's states. Two smaller
+  gaps close with it: `showBadge` is the header's own key and `vm.showBadge` already read this
+  section's content, so the seal was hidable by nothing only because no field here named it; and
+  `vm.footerCta` is deliberately **uncased** where the statement and the labels are cased,
+  because the pill has always drawn the uncased `cta1` and casing it would upper-case the
+  footer's pill on Grunge and Pop. `FOOTER_CREDIT` stays a constant on purpose — it is the
+  platform's byline, not the artist's. The footer keeps no local state: every link is an anchor
+  whose href is `navHref()` or `extLink()`, so it needs none of the `useState` the sections above
+  it take.
 
   Everything else the page draws — the audio and video sections — is
   still a static span, and neither needs new data to change that.
