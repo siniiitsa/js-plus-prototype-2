@@ -36,7 +36,7 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
-  NOW_PLAYING, TRACK_AUDIO, SONGS,
+  NOW_PLAYING, TRACK_AUDIO, SONGS, VIDEOS, VIDEO_MARK, clockAt,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
@@ -382,9 +382,32 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
 
-  // video
+  // video — the stage's own three values, and the list of other videos beside
+  // it that layout 2 draws.
   vm.videoDesc = cv('description', DEFS.videoDesc)
   vm.videoDur = cv('duration', '04:18')
+  // Where the transport bar is caught. The section has no <video> element on
+  // either surface, so there is no playhead to read: `clockAt` composes one
+  // from the running time above and `videoPct` fills the bar to the same
+  // fraction, so the two cannot disagree. An unparseable duration leaves both
+  // empty rather than inventing a position — see data.js.
+  vm.videoAt = clockAt(vm.videoDur, VIDEO_MARK)
+  vm.videoPct = vm.videoAt ? VIDEO_MARK * 100 : 0
+  // The `songs` rule once more: an absent key means the seeded VIDEOS, an
+  // emptied array means none, and there is no null sentinel. `c.videos` has no
+  // structured editor yet, so today it is always the seed — the shape is here
+  // so that adding one changes nothing on this side. Artwork follows the
+  // tracks': `null`, not undefined, wherever a row has none, because Photo
+  // falls back to the *section* photo on undefined and a video row must not
+  // inherit the poster; and it is never re-seeded by index once the array
+  // exists, or a row inserted third would steal video three's still.
+  vm.videos = (Array.isArray(c.videos)
+    ? c.videos.map((v) => ({ ...v, img: v?.image ?? null }))
+    : VIDEOS.map((v, i) => ({ ...v, img: seedArt[i] ?? null }))
+  ).map((v) => ({
+    title: cased(v.title ?? ''), sub: (v.sub ?? '').trim(),
+    length: (v.length ?? '').trim(), when: (v.when ?? '').trim(), img: v.img,
+  }))
 
   // pricing — the artist's own packages, else the seeded ones. The `songs`
   // rule again: an absent key means TIERS, an emptied array means no packages,

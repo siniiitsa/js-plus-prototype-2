@@ -30,6 +30,7 @@ import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search, MapPin,
   Image as ImageIcon, Youtube, Instagram, Music2,
+  Settings, Volume2, Maximize, Bookmark, Link2, Bell,
 } from 'lucide-react'
 
 /* ------------------------------------------------------------------ *
@@ -2317,6 +2318,279 @@ function Video({ s }) {
       </div>
     )
   }
+
+  // v1 — Video layout 2 · Dashboard player (Figma 964:64645)
+  //
+  // A stage on the left — the poster in a deep-rounded card with a transport
+  // bar floating in its foot — and under it the video's name, its description
+  // and the artist's own row. Beside it, a rust-outlined cream panel listing
+  // the other videos: a thumbnail carrying its running time, then the title,
+  // where it came from and when.
+  //
+  // Still a picture, on both surfaces. Video is one of the two categories with
+  // no `s.live` seam at all (CLAUDE.md, "Intentional limits") — there is no
+  // <video> element and no handler in here, so nothing carries a pointer
+  // cursor either: the calendar's rule that a cursor is read off the handler.
+  //
+  // What the frame draws and this does not: the view counts ("8,175M views",
+  // "25,284M View"), the follower count ("22.7M followers"), the like/dislike
+  // pair ("👍 509,325 · 👎 245", which the frame's own 158px title box clips
+  // away in any case) and the verified tick beside the name. Not one of them
+  // has a field or can be derived, and a published page that prints a number
+  // the artist never typed is making a claim — the gallery's rule about a tile
+  // promising a TikTok that does not exist, read one step on. Every line that
+  // does have a field takes it: the heading, the description, the running
+  // time, the artist's name and both photographs.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
+  // 56 inset is dropped for the page root's own padding, so the pair is the
+  // content width (1052) and not the frame's 1328 × 0.82. The 37px goes out of
+  // the *player*, which is an aspect-ratio box and simply gets shorter: the
+  // panel's row is a thumbnail beside two lines of nowrap type and is the one
+  // of the two that cannot give anything back.
+  if (s.v1) {
+    const desk = !s.narrow
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const n = s.chips.length
+    const mustard = s.chips[2 % n].bg
+    const rust = s.ac
+    // Figma box/1 — the bio's cream. Retro's own `paper` IS the beige page, so
+    // the panel, the badges and the progress track need the literal; the flat
+    // four have a real second paper and take it, with `paperFg` for the ink,
+    // because `s.tx` is chosen against the page and need not read on it.
+    const cream = s.retro ? '#FAECD5' : s.paper
+    const creamInk = s.retro ? '#111111' : s.paperFg
+    // Figma box/2, the ground under a photograph that has not loaded — one
+    // step down from the cream, and never seen with the seeds in place.
+    const shade = s.retro ? '#E1CAA5' : s.soft
+
+    const metaType = (extra) => ({
+      fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...extra,
+    })
+    // The frame's two disc sizes. The transport's are rust filled and held by a
+    // mustard hairline in mustard glyphs; the action row's below the rule
+    // invert that and throw a hard block with it. Retro's pairing is the
+    // frame's own two hues; the flat four have no such pairing and take the
+    // two the palette guarantees — the accent on its own foreground, and the
+    // Book pill's lightest-hue-and-accent-type pair (§10.2) — because
+    // `chips[2]` is an arbitrary tag colour that can land on the page ground.
+    const ctl = {
+      width: u(28), height: u(28), flex: 'none', borderRadius: '999px',
+      background: s.retro ? rust : s.ac, color: s.retro ? mustard : s.acFg,
+      border: `1px solid ${s.retro ? mustard : s.acFg}`,
+      ...row('0', { justifyContent: 'center' }),
+    }
+    const act = {
+      width: u(36), height: u(36), flex: 'none', borderRadius: '999px',
+      background: s.retro ? mustard : s.pillBg, color: s.retro ? rust : s.pillFg,
+      boxShadow: hard(s, rust, 4.1, 4.1),
+      ...row('0', { justifyContent: 'center' }),
+    }
+    // ⋮ and ⋯ stay text: lucide has both, but they are the two glyphs in this
+    // frame that are typography rather than iconography, and the media
+    // player's bar sets its own the same way.
+    const dots = (g) => <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1 }}>{g}</span>
+
+    const player = (
+      <div style={{
+        position: 'relative', width: '100%', aspectRatio: '819 / 478',
+        background: cream, borderRadius: u(40), overflow: 'hidden',
+        padding: u(20),
+        ...col('0', { alignItems: 'center', justifyContent: 'space-between' }),
+      }}>
+        <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={44} /></span>
+        {/* Two hairline discs in the top corner, cream on the photograph. */}
+        <span style={row(u(8), { alignSelf: 'flex-end', position: 'relative' })}>
+          {[<Settings key="s" size={13} />, dots('⋯')].map((g, i) => (
+            <span key={i} style={{
+              width: u(34), height: u(34), flex: 'none', borderRadius: '999px',
+              background: cream, color: creamInk, border: `1px solid ${creamInk}`,
+              ...row('0', { justifyContent: 'center' }),
+            }}>{g}</span>
+          ))}
+        </span>
+        {/* The bar is the page's own beige on the photograph, not a cream —
+            the one place in the frame where the section ground reappears
+            inside a card. `maxWidth` because the 390 canvas cannot seat it. */}
+        <span style={{
+          position: 'relative', maxWidth: '100%',
+          background: s.bg, color: s.tx, borderRadius: '999px',
+          padding: `${u(8)} ${u(12)}`, ...row(u(10)),
+        }}>
+          <span style={row(u(5), { flex: 'none' })}>
+            <span style={ctl}><SkipBack size={11} fill="currentColor" /></span>
+            {/* A player caught mid-song, which is the picture the frame
+                draws — and the picture is all this section is. */}
+            <span style={ctl}><Pause size={11} fill="currentColor" /></span>
+            <span style={ctl}><SkipForward size={11} fill="currentColor" /></span>
+          </span>
+          {s.videoAt && <span style={metaType({ flex: 'none' })}>{s.videoAt}</span>}
+          <span style={{
+            // The frame's 215 wherever there is room for it; on the 390 canvas
+            // the track is what gives way, so the clocks and the glyphs do not.
+            width: u(215), maxWidth: '100%', flex: s.mob ? 1 : 'none', minWidth: u(40),
+            height: u(4), borderRadius: u(2), overflow: 'hidden',
+            // Retro's box/1 against the beige bar. A flat template's `paper`
+            // is a near-white on a near-white bar and the unfilled half would
+            // vanish, so there the track is a rule instead.
+            background: s.retro ? cream : s.line2,
+          }}>
+            <span style={{
+              display: 'block', width: `${s.videoPct}%`, height: '100%',
+              background: rust, borderRadius: u(2),
+            }} />
+          </span>
+          <span style={metaType({ flex: 'none' })}>{s.videoDur}</span>
+          <span style={ctl}><Volume2 size={11} /></span>
+          {/* The 390 canvas has no frame of its own and cannot seat the whole
+              bar: the last two glyphs go, rather than squeeze the track off
+              it — the media player's own rule at the same width. */}
+          {!s.mob && <span style={ctl}><Maximize size={11} /></span>}
+          {!s.mob && <span style={ctl}>{dots('⋮')}</span>}
+        </span>
+      </div>
+    )
+
+    const stage = (
+      <div style={col(u(14), { flex: 1, minWidth: 0 })}>
+        {player}
+        {/* The frame's name-and-metric block. Ours is the heading in the label
+            face over the description — the field layout 1 already prints —
+            and it takes the whole column rather than the frame's clipped 158,
+            because a sentence is not a two-word metric. */}
+        <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
+          <span style={labelStyle(s, u(20), { overflow: 'hidden', textOverflow: 'ellipsis' })}>{s.title}</span>
+          {s.videoDesc && <span style={metaType()}>{s.videoDesc}</span>}
+        </div>
+        <div style={row(u(12), {
+          borderTop: `1px solid ${s.retro ? '#111111' : s.line2}`,
+          paddingTop: u(15), paddingBottom: u(20), flexWrap: 'wrap',
+        })}>
+          <span style={{
+            width: u(40), height: u(40), flex: 'none', borderRadius: '999px',
+            overflow: 'hidden', background: shade,
+          }}><Photo s={s} avatar initialsSize={14} /></span>
+          <span style={{
+            fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>{s.brand}</span>
+          <span style={{ flex: 1, minWidth: 0 }} />
+          <span style={act}><Bookmark size={13} /></span>
+          <span style={act}><Link2 size={13} /></span>
+          <span style={act}><Bell size={13} /></span>
+          {/* A label with nowhere to go, like the frame's "View All ›" and
+              layout 1's own play disc: this section is a picture, and the
+              pill is drawn rather than wired. */}
+          <span style={{
+            ...act, width: 'auto', height: 'auto', padding: `${u(8)} ${u(16)}`,
+            fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+          }}>Follow</span>
+        </div>
+      </div>
+    )
+
+    // The panel holds its frame width and the player gives the 37 back, so this
+    // is a fixed column on desktop and the full width below it.
+    const panel = (
+      <div style={{
+        width: desk ? u(392) : '100%', flex: 'none',
+        background: cream, color: creamInk,
+        border: `${u(3)} solid ${rust}`, borderRadius: u(14), padding: u(14),
+        ...col(u(10), { minWidth: 0 }),
+      }}>
+        <div style={row('0', {
+          flex: 'none', justifyContent: 'space-between', paddingBottom: u(6), gap: u(10),
+        })}>
+          <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, whiteSpace: 'nowrap' }}>
+            Top music video
+          </span>
+          <span style={metaType({ flex: 'none' })}>View All ›</span>
+        </div>
+        {/* The frame's panel is a picture of a section with something in it.
+            An emptied list keeps the panel and prints the pricing deck's one
+            message inside it, rather than leaving a rust outline round
+            nothing. */}
+        {!s.videos.length && (
+          <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5 }}>No videos yet.</span>
+        )}
+        {/* The frame sizes these rows by dividing the panel's height and lets
+            the thumbnail take its width from that — which only works while the
+            panel has a height to divide, and ours does not: the list is what
+            makes the panel tall, not the other way round. So the thumbnail is
+            sized by *width* instead, at the 142.9 the frame's own division
+            lands on, and the row's height follows the aspect. The two agree at
+            the seeded six; a longer list simply makes the panel taller, which
+            is what `items-start` on the pair is for. */}
+        <div style={col(u(23))}>
+          {s.videos.map((v, i) => (
+            <div key={i} style={row(u(12), { flex: 'none', alignItems: 'flex-start' })}>
+              <span style={{
+                position: 'relative', flex: 'none',
+                width: u(142.9), maxWidth: '42%',
+                aspectRatio: '140 / 80', background: s.bg,
+                borderRadius: u(8), overflow: 'hidden',
+              }}>
+                <Photo s={s} initialsSize={16} src={v.img} />
+                {v.length && (
+                  <span style={{
+                    position: 'absolute', left: u(5), top: u(5),
+                    background: cream, color: creamInk, borderRadius: u(4),
+                    padding: `${u(2)} ${u(6)}`,
+                    fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+                  }}>{v.length}</span>
+                )}
+                <span style={{
+                  position: 'absolute', right: u(4.67), bottom: u(4.67),
+                  width: u(24), height: u(24), borderRadius: '999px',
+                  background: cream, color: creamInk,
+                  ...row('0', { justifyContent: 'center' }),
+                }}><Play size={9} fill="currentColor" strokeWidth={0} /></span>
+              </span>
+              <span style={col(u(7.4), { flex: 1, minWidth: 0 })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: u(16), lineHeight: 1.2,
+                  letterSpacing: s.dls,
+                  // The accent is not guaranteed to read on `paper` (Lime's is
+                  // acid green on pale lime), so only Retro's frame-literal
+                  // rust goes here; the flat four take the paper's own ink.
+                  color: s.retro ? rust : creamInk,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{v.title}</span>
+                {v.sub && (
+                  <span style={row(u(7.4), { minWidth: 0 })}>
+                    <span style={{
+                      width: u(19.8), height: u(19.8), flex: 'none', borderRadius: '999px',
+                      overflow: 'hidden', background: shade,
+                    }}><Photo s={s} avatar initialsSize={8} /></span>
+                    <span style={metaType()}>{v.sub}</span>
+                  </span>
+                )}
+                {v.when && <span style={metaType()}>{v.when}</span>}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+
+    // The frame's own `items-start`, and it has to stay that: the frame draws
+    // the two columns exactly as tall as each other because both are fixed, and
+    // ours are not — the panel's height is whatever its list makes it. Stretched
+    // instead, the taller column would have to hand its slack to something, and
+    // there is nothing in either that should take 250px of it at twelve videos.
+    // So the two simply end where they end; at the seeded six the panel runs
+    // about 20px past the stage's rule.
+    return (
+      <div style={desk
+        ? row(u(40), { alignItems: 'flex-start' })
+        : col(u(28), { alignItems: 'stretch' })}>
+        {stage}
+        {panel}
+      </div>
+    )
+  }
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '44px', alignItems: 'center' }}>
       <div style={col('14px')}>

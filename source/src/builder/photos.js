@@ -40,6 +40,10 @@ export const RETRO_PHOTOS = {
   bio: stage,
   calendar: stage,
   form: avatar,
+  // The poster the video section's layout 2 stands its player on. The same
+  // live-set frame the bio and the calendar use, which is the shot the
+  // section's own seeded heading names ("Live at Roomtone").
+  video: stage,
   // `media` is deliberately absent: the player shows the artwork of the track it
   // is on, so the section has no photo of its own to seed. Its five track
   // thumbnails belong to the tracks themselves and are seeded through
@@ -64,6 +68,20 @@ export const RETRO_PHOTOS = {
 // back to the initials placeholder.
 export const RETRO_TRACK_ART = [track1, track2, track3, track4, track5]
 
+// The same shape one category along: the thumbnails for the video section's
+// seeded VIDEOS, in list order. Figma dresses these rows with stock stills we
+// have no more right to ship than it had album covers, so they are the gallery
+// photography re-used in the 140×80 crop the panel draws — everything but
+// gallery slot 4, which is the gallery's own spotlight shot and should not be
+// the first thing two sections of one page both open with.
+export const RETRO_VIDEO_ART = [gallery1, gallery2, gallery3, gallery5, gallery6, gallery7]
+
+// Per-row artwork by category. Both lists seed only the untouched default rows:
+// once the artist edits the list, the art travels in the row itself
+// (`c.tracks[i].image`), so a row they add past the seed has none and falls
+// back to the initials placeholder.
+const ROW_ART = { media: RETRO_TRACK_ART, video: RETRO_VIDEO_ART }
+
 // The artist avatar, cropped from the §10.2 hero frame's `pp` card (Figma node
 // 964:58576) — a tight portrait from a different shot than the backdrop behind
 // it, which is the whole reason the header's two photos are separate `image` /
@@ -80,12 +98,13 @@ const isRetro = (themeName) => themeName === 'Retro'
 // Resolvers for the two shapes. Both return undefined for the other four themes,
 // which is what leaves them rendering exactly as they did before.
 //
-// The header is the one category with two independent single-photo slots, so
-// this one takes the field key as well as the category. Every other caller wants
-// the category's own photo and can leave `key` alone.
+// The header and the video section are the two categories with two independent
+// single-photo slots — a scene and the artist — so this one takes the field key
+// as well as the category. Every other caller wants the category's own photo
+// and can leave `key` alone.
 export const defaultImage = (cat, themeName, key = 'image') => {
   if (!isRetro(themeName)) return undefined
-  if (key === 'avatar') return cat === 'header' ? RETRO_HEADER_AVATAR : undefined
+  if (key === 'avatar') return cat === 'header' || cat === 'video' ? RETRO_HEADER_AVATAR : undefined
   const v = RETRO_PHOTOS[cat]
   return Array.isArray(v) ? undefined : v
 }
@@ -96,6 +115,7 @@ export const defaultImages = (cat, themeName) => {
 }
 
 // The third shape: artwork that belongs to a row of a list rather than to the
-// section. Only the media player's tracks have any, and only under Retro.
+// section. The media player's tracks and the video section's list have some,
+// and only under Retro.
 export const defaultTrackArt = (cat, themeName) =>
-  (isRetro(themeName) && cat === 'media' ? RETRO_TRACK_ART : undefined)
+  (isRetro(themeName) ? ROW_ART[cat] : undefined)

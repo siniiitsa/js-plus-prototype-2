@@ -44,11 +44,18 @@ const navSections = [
 ]
 
 // &n=8 fills the section's list-shaped content with n rows, to see a design
-// hold at a count the seed does not reach (FIELDS.media.tracks allows 8).
-const count = Number(q.get('n') ?? 0)
-const c = count
-  ? { tracks: Array.from({ length: count }, (_, i) => ({ title: `Track ${i + 1}`, sub: 'Single' })) }
-  : {}
+// hold at a count the seed does not reach (FIELDS.media.tracks allows 8). It
+// fills the key the section under test actually reads — one entry per category
+// whose layout 2 draws a list — so `&n=0` is also how an emptied list is seen.
+const LIST = {
+  media: (i) => ({ title: `Track ${i + 1}`, sub: 'Single' }),
+  video: (i) => ({ title: `Video ${i + 1}`, sub: 'Live set', length: '03:50', when: 'April 2026' }),
+}
+const KEY = { media: 'tracks', video: 'videos' }
+const count = q.get('n') === null ? null : Number(q.get('n'))
+const c = count === null || !LIST[cat]
+  ? {}
+  : { [KEY[cat]]: Array.from({ length: count }, (_, i) => LIST[cat](i)) }
 
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by

@@ -265,6 +265,42 @@ export const TRACK_AUDIO = [
 // which survives only as the label for a section with no tracks left in it.
 export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
 
+// The other videos, listed in the panel beside the stage in the video
+// section's layout 2 — used whenever the section carries no `videos` key of
+// its own, which today is always: there is no structured editor for them yet
+// (see LAYOUT-2-PLAN's open questions). Written in the row shape that editor
+// will edit, GIGS-style, so adding it later changes nothing here or in
+// sectionVm: one key, one shape, the delimiter-free strings the artist types.
+// Only the artwork needs dressing, which RETRO_VIDEO_ART does under Retro.
+//
+// `sub` is the frame's channel line — where the video came from, not who made
+// it — and `when` is the date the frame spends on a view count. Neither is a
+// number about how many people watched: nothing on this page claims that.
+export const VIDEOS = [
+  { title: 'Manchester at 3am',  sub: 'Hidden Sessions', length: '03:50', when: 'April 2026' },
+  { title: 'Disco Maghreb (edit)', sub: 'Single',        length: '04:12', when: 'March 2026' },
+  { title: 'Slow Burn',          sub: 'Single',          length: '03:28', when: 'February 2026' },
+  { title: 'Echo & The Floor',   sub: 'Live set',        length: '05:04', when: 'November 2025' },
+  { title: 'Roomtone',           sub: 'Hidden Sessions', length: '02:57', when: 'October 2025' },
+  { title: 'Field Day (live)',   sub: 'Festival',        length: '06:41', when: 'August 2025' },
+]
+
+// Where the video section's transport bar is caught. The section has no
+// <video> element on either surface — it is still a picture (§12.7) — so the
+// playhead is composed from the running time the artist typed rather than read
+// off anything: VIDEO_MARK of it, formatted back. The fill under it takes the
+// same fraction, so the two agree; the Figma frame's own 02:05 against a bar
+// filled to 93% of 03:57 does not, and that disagreement is the one thing here
+// not worth reproducing. A duration that will not parse gives '', and the bar
+// renders empty rather than inventing a position for it.
+export const VIDEO_MARK = 0.48
+export const clockAt = (dur, frac) => {
+  const m = /^\s*(\d{1,3}):([0-5]\d)\s*$/.exec(String(dur ?? ''))
+  if (!m) return ''
+  const at = Math.round((Number(m[1]) * 60 + Number(m[2])) * frac)
+  return `${String(Math.floor(at / 60)).padStart(2, '0')}:${String(at % 60).padStart(2, '0')}`
+}
+
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
 
 // Pricing — the packages beside the section's filter row, and the seed for
@@ -601,10 +637,19 @@ export const FIELDS = {
     { k: 'tracks',  l: 'Tracks (one per line: Name — 3:42)', type: 'area',
       d: TRACKS.map(([n, dur]) => `${n} — ${dur}`).join('\n') },
   ],
+  // The two photo slots are layout 2's alone — layout 1 and the flat tail draw
+  // a play disc on a soft panel and no photograph at all — which is the
+  // media player's Soundcloud case the other way round, and why both hints say
+  // where they land. `avatar` is the header's own key, on the header's own
+  // three states, so `defaultImage` seeds it with the same §10.2 portrait.
   video: [
     { k: 'heading',     l: 'Heading', d: 'Live at Roomtone' },
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc' },
     { k: 'duration',    l: 'Duration', d: '04:18' },
+    { k: 'image',       l: 'Poster', type: 'image',
+      hint: "Fills the player in layout 2." },
+    { k: 'avatar',      l: 'Artist photo', type: 'image',
+      hint: 'The circle beside your name, and beside every video in the list.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
   // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
