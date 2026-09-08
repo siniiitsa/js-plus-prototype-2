@@ -199,7 +199,7 @@ export const designCount = (catId, themeName) =>
 const HEADER_NAMES = {
   photographic: [
     ['Hero', 'Full-bleed photo'],
-    ['Framed', 'Photo in a frame'],
+    ['Feature spread', 'Photo beside the details'],
     ['Gradient stage', 'Colour wash'],
     ['Polaroid', 'Photo card beside text'],
     ['Overlay card', 'Details on a card'],

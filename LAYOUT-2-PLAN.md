@@ -25,7 +25,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 
 | # | Cat | Figma node | Frame name | Size | Status |
 |---|---|---|---|---|---|
-| 1 | `header` | `964:64637` | Headers — **E · Feature Spread** — Desktop | 1440 × 888 | todo — see *Open questions* |
+| 1 | `header` | `964:64637` | Headers — **E · Feature Spread** — Desktop | 1440 × 888 | **done** (desktop) |
 | 2 | `bio` | `964:64638` | Bios — **F · Portrait + sub-cards** — Desktop | 1440 × 760 | **done** (desktop) |
 | 3 | `media` | `964:64639` | *Section* wrapper — see note below | 1440 × 965 | todo |
 | 4 | `video` | `964:64645` | Video Players — **A · Dashboard player** — Desktop | 1440 × 782 | todo |
@@ -141,14 +141,29 @@ Learned on the bio (section 2):
 - **The harness's `Z` is a hand copy of `SIZES` + `RAMP` + `WIDE`.** If a digest ever disagrees
   with the app, diff those three objects against `EncoreBuilder.jsx` before believing the digest.
 
+Learned on the header (section 1):
+
+- **A frame that floats something above its own content inset has to rise out of the root's
+  padding.** The header's nav sits 30px from the frame top where the spread starts at 144, and the
+  root pads 80 — so the nav carries a `marginTop` of `calc(38px - s.padY)`, which adapts on
+  the two narrow canvases. Without it the bar sat 55px lower than the frame's and the section
+  opened on dead air. Nothing else in the frame needs this; the body still follows the root.
+- **Decoration that hangs off a card can spill off a narrow page.** The seal overhangs the mount
+  by 21px, and its 32° rotation adds ~20 more to the box — inside the desktop 64px padding, but
+  past the edge at `padX` 22. It tucks in under `s.narrow`.
+- **`BookPill` also takes `disc`** (the arrow disc's diameter). The same pill appears twice in this
+  frame at two sizes, and only the disc changes; the arrow scales with it at 0.6.
+- **`ListenLink` now spreads a `style` prop last** — the frame sets it in the label face beside the
+  wordmark, not in the flat templates' tracked-out bold.
+- The mount is a **third** Retro cream, `#F3E3C8` (Figma tag/6/text), a shade deeper than box/1's
+  `#FAECD5`.
+
 ## Open questions
 
-1. **The header.** All six header layouts already exist, but only layout 1 came from Figma —
-   layouts 2–6 (`HeaderV1`…`HeaderV5`) were designed here, and their names are surfaced to the user
-   in the setup modal (`HEADER_NAMES` in `data.js`). This page's header is
-   *E · Feature Spread*, which is none of those six names. So fitting it means **replacing
-   `HeaderV1` ("Framed", full-bleed) and renaming layout 2** in `HEADER_NAMES` — a user-visible
-   change, unlike every other row here. Confirm before starting it, or do the header last.
+1. ~~**The header.**~~ *Settled.* `HeaderV1` was the invented "Framed" full-bleed; it is now the
+   frame's *Feature spread*, and `HEADER_NAMES` (and the README's list) were renamed with it, so
+   the setup modal offers "Feature spread · Photo beside the details". Layouts 3–6 are still
+   invented designs with no Figma frame behind them.
 2. **`tags` and `audio` have no layout-2 design.** This page omits both. They keep their generic
    flat `v1` unless a frame turns up.
 3. **The bio's credit line is fixed copy.** Layout 2's foot sets *"Five years of rooms read &

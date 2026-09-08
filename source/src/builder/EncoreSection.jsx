@@ -18,7 +18,7 @@
 import { useId, useState } from 'react'
 import {
   Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
-  ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
+  ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search, MapPin,
   Image as ImageIcon, Youtube, Instagram, Music2,
 } from 'lucide-react'
 
@@ -347,7 +347,10 @@ function NavLinks({ s, color, pills = false }) {
 // filled disc instead of the asterisk. The disc sits flush in the pill's right
 // end rather than inside its padding, so that inset collapses to the disc's own
 // margin and the pill keeps its height.
-function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star' }) {
+// `disc` overrides that disc's diameter: the layout-2 header sets the same pill
+// twice, small in its nav and large as the hero's own call to action, and only
+// the disc changes size between them.
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize }) {
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
@@ -366,7 +369,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
     const face = fg ?? s.pillFg
     const block = shadow ?? s.ac
     const disc = glyph === 'arrow'
-    const discSize = pick(27, 22, 17)
+    const dia = discSize ?? pick(27, 22, 17)
     return (
       <Tag {...link} style={{
         ...row(pick('10px', '8px', '6.2px')),
@@ -384,10 +387,10 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
         {text}
         {disc ? (
           <span style={{
-            width: discSize, height: discSize, borderRadius: '999px', flex: 'none',
+            width: dia, height: dia, borderRadius: '999px', flex: 'none',
             background: face, color: s.retro ? '#FBF6EA' : (bg ?? s.pillBg),
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          }}><ArrowRight size={pick(16, 13, 10)} /></span>
+          }}><ArrowRight size={Math.round(dia * 0.6)} /></span>
         ) : <Asterisk size={pick(20, 16, 12.4)} color={face} />}
       </Tag>
     )
@@ -408,14 +411,17 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
 }
 
 // Same seam as BookPill: a link to wherever the page plays something, but only
-// once the page is live.
-function ListenLink({ s, color, to }) {
+// once the page is live. `style` is spread last, for the layout-2 header, whose
+// frame sets this link in the label face beside a wordmark rather than in the
+// flat templates' tracked-out bold.
+function ListenLink({ s, color, to, style }) {
   const Tag = s.live && to ? 'a' : 'span'
   const link = s.live && to ? { href: `#${to}` } : null
   return (
     <Tag {...link} style={{
       fontSize: '10px', fontWeight: 700, letterSpacing: '1.2px',
       textTransform: 'uppercase', color: color || s.tx, cursor: 'pointer', whiteSpace: 'nowrap',
+      ...style,
     }}>{s.cta2}</Tag>
   )
 }
@@ -849,37 +855,179 @@ function HeaderV0({ s }) {
   )
 }
 
-// v1 — Header layout 2 · Framed full-bleed
+// v1 — Header layout 2 · Feature spread (Figma 964:64637)
+//
+// The one header that is a spread rather than a picture: a tilted photograph in
+// a cream mount on the left, its rail carrying the globe and the location the
+// long way up; the identity block on the right over two bordered sub-cards. The
+// nav rides above both — links in a pill, the wordmark centred, Listen and Book
+// Now on the right — and a checkerboard runs off the section's floor with the
+// seal caught on the mount's bottom corner.
+//
+// Desktop numbers are the 1440 frame × 0.82 (§5.5). The frame lays its nav out
+// absolutely over a 144px top inset; here it is in flow, because the root's own
+// padding already stands where that inset does. The 768 and 390 frames are not
+// fitted yet, so `narrow` stacks the spread and hands the links to NavMenu, the
+// way every Retro header collapses below desktop.
 function HeaderV1({ s }) {
-  return (
-    <div style={{
-      position: 'relative', aspectRatio: s.mob ? '4 / 5' : '16 / 8.5',
-      borderRadius: s.radius, overflow: 'hidden',
-    }}>
-      <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={72} /></div>
-      <div style={{ position: 'absolute', inset: 0, background: SCRIM.v1 }} />
+  const olive = (s.retro && s.chips[3]?.bg) || s.line2
+  const mustard = s.pillBg
+  // Three creams, all literal under Retro, whose `paper` IS the page ground:
+  // the mount is a shade deeper than the sub-card (Figma tag/6/text vs box/1).
+  const mount = s.retro ? '#F3E3C8' : s.paper
+  const cream = s.retro ? '#FAECD5' : s.paper
+  const ink = s.retro ? '#111111' : s.tx
+  const card = {
+    flex: 1, minWidth: 0, borderRadius: '25px', padding: '23px 21px',
+    border: `2.5px solid ${olive}`, overflow: 'hidden',
+    ...col('0', { justifyContent: 'space-between' }),
+  }
+  const cardTitle = (t, colour) => (
+    <span style={{
+      fontFamily: s.display, fontSize: '20px', lineHeight: 1.1,
+      letterSpacing: s.dls, color: colour, maxWidth: '127px',
+    }}>{t}</span>
+  )
+  const cardBody = (t, colour) => (
+    <span style={{ fontFamily: s.body, fontSize: '10px', lineHeight: 1.4, color: colour }}>{t}</span>
+  )
+
+  const nav = (
+    // The frame floats its nav 30px from the frame's own top, well above the
+    // 144px inset the spread starts at — and the root's padding is the only
+    // thing standing there for us, so the bar rises out of it rather than
+    // sitting on it. `padY` is a string, so this reads 38 − 80 = −42 on the
+    // 1180 canvas and adapts on the two narrow ones.
+    <div style={row('13px', { width: '100%', marginTop: `calc(38px - ${s.padY})` })}>
+      {!s.narrow && (
+        <nav style={{
+          ...row('15px', { flexWrap: 'wrap' }),
+          background: s.bg, border: `1px solid ${olive}`, borderRadius: '999px',
+          padding: '7px 15px', minWidth: 0,
+        }}>
+          {s.navLinks.map((l) => (
+            <a key={l.label} href={navHref(s, l.to)}
+               style={labelStyle(s, '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
+          ))}
+        </nav>
+      )}
+      <span style={{ flex: 1 }} />
+      <span style={labelStyle(s, '20px', { color: ink })}>{s.brand}</span>
+      <span style={{ flex: 1 }} />
+      <span style={row(s.narrow ? '13px' : '10px', { flex: 'none' })}>
+        {!s.narrow && (
+          <ListenLink s={s} to={s.listenTo} style={labelStyle(s, '13px', { color: ink })} />
+        )}
+        <BookPill s={s} to={s.bookTo} glyph="arrow" />
+        {s.narrow && <NavMenu s={s} color={ink} />}
+      </span>
+    </div>
+  )
+
+  const photoCard = (
+    <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
       <div style={{
-        position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-        justifyContent: 'space-between', padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
+        position: 'relative', height: '100%', overflow: 'hidden',
+        background: mount, borderRadius: '25px', boxShadow: soft(s),
+        transform: tilt(s, 2), padding: '16px 0 16px 16px',
+        ...row('0', { alignItems: 'stretch' }),
       }}>
-        <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          <NavLinks s={s} color="#FFFFFF" pills />
-          <Wordmark s={s} color="#FFFFFF" />
-          <span style={row('14px')}>
-            <ListenLink s={s} color="#FFFFFF" to={s.listenTo} />
-            <BookPill s={s} to={s.bookTo} />
-          </span>
+        <div style={{ flex: 1, minWidth: 0, borderRadius: '9px', overflow: 'hidden' }}>
+          <Photo s={s} initialsSize={72} />
         </div>
-        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
-          <div style={col('12px', { alignItems: 'flex-start' })}>
-            <LocationLine s={s} color="rgba(255,255,255,.75)" />
-            <Title s={s} size={s.mob ? s.h2 : s.h1} color="#FFFFFF" />
-            <TagChips s={s} />
+        {/* The mount's rail: the same globe-over-vertical-location column the
+            layout-1 bio's polaroid carries, in the frame's olive. */}
+        <div style={col('0', {
+          width: '74px', flex: 'none', padding: '5px 10px',
+          alignItems: 'center', justifyContent: 'space-between',
+        })}>
+          <div style={col('8px', { alignItems: 'center' })}>
+            <span style={{ transform: 'rotate(-90deg)' }}><GlobeMark size={22} color={olive} /></span>
+            {/* vertical-rl reads top-down; the frame's label runs the other way. */}
+            <span style={labelStyle(s, '16px', {
+              color: olive, writingMode: 'vertical-rl', transform: 'rotate(180deg)',
+            })}>{s.location}</span>
           </div>
-          <InsetCard s={s} />
+          <span style={{ width: '2px', height: '157px', background: olive, flex: 'none' }} />
+        </div>
+        <Grain s={s} exact blend="screen" opacity={0.5} radius="25px" />
+      </div>
+      {/* The frame hangs the seal off the mount's bottom-left corner, which on
+          the 1180 canvas still lands inside the root's 64px padding. The narrow
+          canvases pad by 22 and 40, where the same overhang — 21px, plus the
+          20 the 32° rotation adds to the box — would spill off the page. */}
+      <SealBadge s={s} hue={(s.retro && s.chips[4]?.bg) || s.ac} tilt={32.38} size={103}
+                 style={{ left: s.narrow ? '10px' : '-21px', bottom: '-13px' }} />
+    </div>
+  )
+
+  const identity = (
+    <div style={col('15px', { alignItems: 'flex-start' })}>
+      <span style={{
+        border: `1px solid ${olive}`, borderRadius: '999px', padding: '5px 10px',
+        fontFamily: s.body, fontSize: '10px', lineHeight: 1.4, color: s.ac, whiteSpace: 'nowrap',
+      }}>● Available for bookings</span>
+      <Title s={s} size={s.narrow ? s.h1 : s.dispLg} lh={0.89} inline
+             twoTone toneA={mustard} toneB={s.ac} />
+      <p style={{
+        margin: 0, fontFamily: s.body, fontSize: '13px', lineHeight: 1.5, color: s.ac, width: '100%',
+      }}>{s.subtitle}</p>
+      <BookPill s={s} to={s.bookTo} label="Enquire about a date" glyph="arrow" disc={38}
+                bg={s.ac} fg={mustard} shadow={mustard} />
+    </div>
+  )
+
+  const subCards = (
+    <div style={row('13px', { flex: 1, minHeight: 0, alignItems: 'stretch', width: '100%' })}>
+      <div style={{ ...card, background: cream }}>
+        <div style={{
+          width: '88px', height: '88px', flex: 'none', borderRadius: '16px',
+          border: `2.5px solid ${olive}`, overflow: 'hidden',
+        }}>
+          <Photo s={s} avatar initialsSize={34} />
+        </div>
+        <div style={col('7px', { alignItems: 'flex-start' })}>
+          {cardTitle('The face of the act', mustard)}
+          {cardBody("Same person you'll meet on the night. Performing since 2021.", s.ac)}
         </div>
       </div>
-      <Checkerboard s={s} style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }} />
+      <div style={{ ...card, background: mustard }}>
+        <div style={{
+          width: '72px', height: '72px', flex: 'none', borderRadius: '16px', background: s.ac,
+          color: mustard, ...row('0', { justifyContent: 'center' }),
+        }}><MapPin size={38} /></div>
+        <div style={col('7px', { alignItems: 'flex-start' })}>
+          {cardTitle(s.location, s.ac)}
+          {cardBody('Available across the UK · 120 mi standard travel radius.', ink)}
+        </div>
+      </div>
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', ...col('45px') }}>
+      {nav}
+      {s.narrow ? (
+        <div style={col(s.gGap)}>
+          {identity}
+          <div style={{ height: s.mob ? '400px' : '520px' }}>{photoCard}</div>
+          {subCards}
+        </div>
+      ) : (
+        <div style={row('46px', { height: '540px', alignItems: 'stretch' })}>
+          {photoCard}
+          <div style={col('49px', { flex: 1, minWidth: 0 })}>
+            {identity}
+            {subCards}
+          </div>
+        </div>
+      )}
+      {/* Two rows of the frame's 11.8px checker, run off the section's own
+          edges rather than the column's. */}
+      <Checkerboard s={s} cell={10} colour={ink} style={{
+        position: 'absolute', height: '20px', width: `calc(100% + ${s.padX} + ${s.padX})`,
+        ...bleedTo(s, 'bottom'), right: undefined,
+      }} />
     </div>
   )
 }
