@@ -57,7 +57,9 @@ Three of those rows need their own note.
 
 ## Per-session procedure
 
-One section per session. Clear context between sections; git and this file are the memory.
+One section per session. Clear context between sections; git and this file are the memory. The
+session that finishes a section does not start the next one — it hands over a paste-ready prompt
+and stops (step 7).
 
 1. Read `CLAUDE.md`, this file, and the two memory notes.
 2. `mcp__plugin_figma_figma__get_screenshot` on the row's node (`maxDimension` 1400–2000 for
@@ -97,10 +99,37 @@ One section per session. Clear context between sections; git and this file are t
    rather than killing someone else's browser.
 5. Commit, with the section named in the subject.
 6. Flip the row's Status to `done <sha>`, add anything the next section needs to *Conventions*,
-   and commit that too. Then clear.
+   and commit that too.
+7. **Stop there and hand off.** Do not start the next section in the same context. Say that the
+   section is closed and that this is the moment to `/clear`, then print the next section's
+   opening prompt as a fenced block the user can paste straight into a fresh window — filled in,
+   not a template to complete. Keep it to the shape below: the row's facts, the reading list, and
+   whichever two or three conventions this pass has learned that the next section is most likely
+   to trip over.
+
+   ```
+   Continue the Retro layout-2 pass with section N, `cat`.
+
+   Read CLAUDE.md, then LAYOUT-2-PLAN.md, then the `figma-frame-reading` and
+   `verifying-the-published-tab` memory notes, and follow the per-session procedure there.
+
+   The frame is `<node id>` — "<frame name>", <W> × <H> — in Figma file
+   uFoUbPaBrDicjyuSBEbtGT. Fit it as the `s.v1` branch of `<Component>` in
+   EncoreSection.jsx, desktop only.
+
+   <the two or three conventions most likely to bite this section>
+
+   Branch: retro-layout-2. Do not refresh the root index.html.
+   ```
+
+   The clearing is not about running out of room — the window is large and summarises itself. It
+   is what proves this file is complete: every convention below was written because a fresh
+   session would otherwise have re-derived it, and one of them (the cream aside) was found to be
+   *wrong* only because a later session read it cold.
 
 Do **not** run `npm run build:standalone` / refresh the root `index.html` per section — that is one
 deliberate step at the end of the whole pass (`cp source/dist-standalone/index.html index.html`).
+The `media-player-playback` merge is the one exception so far, and it said why in its own commit.
 
 ## Conventions
 
