@@ -30,7 +30,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | 3 | `media` | `964:64639` | *Section* wrapper — see note below | 1440 × 965 | **done** (desktop) `44405c6` |
 | 4 | `video` | `964:64645` | Video Players — **A · Dashboard player** — Desktop | 1440 × 782 | **done** (desktop) `33e4d97` |
 | 5 | `repertoire` | `964:64646` | Repertoire — **G · Mobile list** — Desktop | 1440 × 792 | **done** (desktop) `2bb0637` |
-| 6 | `gallery` | `964:64647` | Gallery Sections — **C · Split showcase** — Desktop | 1440 × 675 | todo |
+| 6 | `gallery` | `964:64647` | Gallery Sections — **C · Split showcase** — Desktop | 1440 × 675 | **done** (desktop) `4b4ca5a` |
 | 7 | `pricing` | `964:64648` | Pricing — **D · Single big plan** — Desktop | 1440 × 707 | todo |
 | 8 | `calendar` | `964:64650` | Booking Calendar — **E · Bold slot list** — Desktop | 1328 × 896 | todo |
 | 9 | `map` | `964:64651` | Events Map — **B · Featured gig + route** — Desktop | 1440 × 780 | todo |
@@ -328,6 +328,41 @@ Learned on the repertoire (section 5):
   At one page `pageWindow` returns nothing; the foot inset stays (dropping to
   the head's own `gPad`) or the sheet ends flush on the last row's rule.
 
+Learned on the gallery (section 6):
+
+- **A frame that draws only pictures may still need none of its own copy.**
+  Sort the frame's strings the video section's way, then check what the
+  *section* has that the frame left no room for. Here the answer was the
+  heading — and the pill it went in was already there, so nothing was
+  invented and no field was left editing nothing. Prefer that over a literal
+  every time: the bio's credit line (open question 3) is the case where it
+  was not available.
+- **A design with the same count as an existing seam is a seat problem, not a
+  content problem.** Seven photographs, seven slots — so the hero is a seat
+  and the slots *rotate* through the seats, wrapping, exactly as the media
+  player's fan rotates tracks. That reuses `pick` whole, keeps the geometry
+  attached to the seat rather than the photograph, and makes the published
+  first paint the canvas's picture for free. It also makes "the hero plus the
+  other six in order" and "seat j holds slot (active + j) % 7" the same
+  sentence, so there is no branch for the hero.
+- **`flex: <n> 1 0` is not the way to divide a frame's fixed heights.**
+  `box-sizing: border-box` floors a `0`-basis item at its own border, which is
+  not proportional — a 1px hairline landed the six tiles up to 0.6px off the
+  frame. `flex: ${h} 1 auto` with `height: u(h)` is exact where the container
+  is the frame's own height (free space is nil, so each tile is its basis) and
+  still divides any surplus in the frame's proportions on a canvas that is
+  taller. Figma strokes inside the height it states, so the basis already
+  carries the hairline.
+- **A flex item wrapping a `<Photo>` needs `minHeight: 0` *and* `overflow:
+  hidden`, and the photo needs an `inset: 0` wrapper** — the video panel's
+  ~270px thumbnail bug in a different coat: the `<img>`'s intrinsic height
+  otherwise floors the item during the `min-height: auto` pass and blows the
+  column open. `overflow: hidden` is wanted for the radius anyway.
+- **`&n=` now fills `c.images`**, one `null` per slot, so `&n=0` is an emptied
+  gallery. A `null` slot and an absent one are not the same thing (`photos.js`'s
+  Remove rule) but both render the placeholder here, so the switch proves the
+  geometry holds and not much else — the seat rotation is what `live=1` proves.
+
 Learned on the header (section 1):
 
 - **A frame that floats something above its own content inset has to rise out of the root's
@@ -379,6 +414,16 @@ Learned on the header (section 1):
    repertoire's, in both layouts, is not; layout 2 follows layout 1 deliberately
    rather than making the two halves of one section disagree. If the rule should
    be the section's, it belongs in `Repertoire` once, not in the v1 branch.
-7. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
+7. **The gallery's three social links have no home in layout 2.** The split
+   showcase is seven photographs and a caption pill: it draws no media-source
+   rows, so `FIELDS.gallery`'s `youtube` / `instagram` / `tiktok` — the
+   section's three *outbound links*, and the subject of CLAUDE.md's
+   hide-the-empty-row rule — have no effect on it. That is open question 4
+   (the media player's Soundcloud button) three times over, and the same call
+   was made: inventing a row the frame does not draw would be worse than the
+   absence. The three hints now say "Layout 1 only". If the addresses should
+   follow the artist across layouts, that is a design call for all of them at
+   once, not a fidelity fix here.
+8. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
    unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
    signed off.
