@@ -168,7 +168,13 @@ mutated through a single `patch()` helper.
   per-source colours are positional. And the mobile source row **wraps** rather than clipping: the
   Figma frame lets it run off the right edge, which put TikTok — now a link — off the page. Four
   content-sized tiles come to ~430px against a 390 frame, so wrapping is what keeps every tile at
-  its drawn size.
+  its drawn size. **Everything in this paragraph from "Mobile draws four" on is layout 1's**:
+  layout 2 browses through the same `pick`, but it is a hero photograph beside a masonry of six
+  and it draws **no source rows at all**, so the hide-the-empty-row rule and the four-tile mobile
+  window are that layout's and not the section's. Its seven slots **rotate through seven fixed
+  seats**, the media player's fan rule, so the hero seat always holds the slot the visitor is on;
+  the three social addresses reach layout 1 only, which is `FIELDS.media.soundcloud`'s case three
+  times over and is why their hints name a layout.
 - **The events map pages and pairs, in the published tab only.** Layout 1's gig list is the
   artist's (`FIELDS.map.gigs`, above), so nothing about it can stay a fixed five. The pager is
   **derived** from the list the way the repertoire's is, `PAGES` is gone, and it is **not
