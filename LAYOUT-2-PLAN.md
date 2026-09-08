@@ -33,7 +33,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | 6 | `gallery` | `964:64647` | Gallery Sections — **C · Split showcase** — Desktop | 1440 × 675 | **done** (desktop) `4b4ca5a` |
 | 7 | `pricing` | `964:64648` | Pricing — **D · Single big plan** — Desktop | 1440 × 707 | **done** (desktop) `4f8ec90` |
 | 8 | `calendar` | `964:64650` | Booking Calendar — **E · Bold slot list** — Desktop | 1328 × 896 | **done** (desktop) `d78619c` |
-| 9 | `map` | `964:64651` | Events Map — **B · Featured gig + route** — Desktop | 1440 × 780 | todo |
+| 9 | `map` | `964:64651` | Events Map — **B · Featured gig + route** — Desktop | 1440 × 780 | **done** (desktop) `22e5ea1` |
 | 10 | `form` | `964:64652` | Enquiry Forms — **E · Sticky sidebar card** — Desktop | 1440 × 792 | todo |
 | 11 | `testimonials` | `964:64653` | Testimonials — **A · Editorial feature** — Desktop | 1440 × 782 | todo |
 | — | `tags` | *none* | — | — | **no layout-2 design on this page** |
@@ -453,6 +453,64 @@ Learned on the booking calendar (section 8):
   reaches both layouts. `CAL_BOOKED` is empty on purpose, so it is the
   one calendar state no seed shows, and it is what proves the dead row
   really is handlerless (`cursor: auto`, no state change on click).
+
+Learned on the events map (section 9):
+
+- **A frame that features one row of a list has already told you what
+  the section's live state means here.** The map's `sel` lit a row in
+  layout 1; in layout 2 it *is* the featured gig, and `page` pages the
+  same list at the same `gigPage`. Nothing new was added — no state, no
+  vm key, no field — and the two halves of the section stay one seam,
+  the calendar's slot-list rule. Two consequences fall straight out:
+  the list beside the panel is the page **minus** the featured gig, so
+  the frame's own "Other upcoming · 4" beside five gigs is *derived*
+  rather than transcribed; and the map still draws exactly one pin per
+  gig on the page, so the pins can never collide however many gigs the
+  artist adds. A layout 2 that paged differently from layout 1 would
+  have had to invent its own answer to that.
+- **`s.live` state that must always hold something is picked, not
+  toggled.** Layout 1's row toggles back to nothing; a featured panel
+  cannot, so `onPick` sets rather than flips, and `feat` falls back to
+  the page's first gig whenever `sel` is off-page (which covers the
+  canvas, the -1 start and a gig deleted under the visitor at once — no
+  clamp of its own). Read it as `sel >= first && sel < first + shown.length`,
+  not as a clamp: a clamp would drag a pick from page 3 onto page 1.
+- **Sort the frame's copy before writing any of it, and count the
+  section's own fields against the slots that survive.** Eleven strings
+  here were claims (two fabricated metrics, three statuses, three ring
+  labels, two dead controls) and each one freed a slot that a real field
+  or a real fact could take: the coverage badge went in the chip, the
+  travel terms along the map's foot, the gig's hour in the row chip, its
+  date and set time in the stat row. **Allocate each field exactly
+  once** — the first draft here put `mapTerms` in two places and lost a
+  cell to it. Where a frame label duplicates what our field's own copy
+  says ("Based in" over `base`, whose default *is* "Based in
+  Manchester"), drop the label, not the field.
+- **The flat four's dark card needs an outline as much as the cream one
+  does.** `deep` is the darkest *tag*, which on Grunge is `#000000` —
+  the page ground itself. The calendar's note only covered a palette
+  whose lightest colour is its background; this is the same hole at the
+  other end, and `line2` (rgba(tx, .4)) is the token that reads against
+  the page whichever way the palette runs.
+- **`BookPill`'s `bg`/`fg` are a Retro literal here, not a flat fix.**
+  Passing `s.pillBg`/`s.pillFg` for all five themes — the pricing
+  section's "pass them when the ground is not the page's" — made
+  Editorial's pill pale-on-pale. On a *dark* card the accent pair
+  BookPill already defaults to is legible by construction, so the
+  override is `{...(s.retro ? { fg: '#5B5E2E' } : null)}`. Its
+  `shadow="transparent"` is how a frame that draws no offset block asks
+  for one.
+- **There is no `rgba()` in `EncoreSection` and there should not be.**
+  A translucent wash of a colour the branch chose (the lit pin's halo)
+  is either an existing vm token, an `opacity` on an element that is
+  only a border, or a different design — here a 2px ring instead of a
+  halo.
+- **The harness's `&n=` rows should exercise the seam, not just the
+  count.** `LIST.map` gives every other gig a tickets address and every
+  fourth an empty time, so one `live=1` render shows the ↗ present and
+  absent, the pill flipping span↔anchor as a linked and an unlinked gig
+  is featured, and the chip that drops. The seeded five carry no links
+  at all and prove none of it.
 
 Learned on the header (section 1):
 
