@@ -772,7 +772,14 @@ export const FIELDS = {
           + 'page. The date line is the small type above the quote.' },
   ],
   form: [
-    { k: 'image',    l: 'Photo', type: 'image', hint: 'The avatar above the heading.' },
+    { k: 'image',    l: 'Portrait', type: 'image', hint: 'The round photo beside your name.' },
+    // Layout 2's stage shot. The section's two photographs are the artist and
+    // the scene — the header's and the video section's pair the other way up,
+    // this one's `image` having been the artist since layout 1 drew it as an
+    // avatar. FIELDS.media.soundcloud's case: it reaches one layout, so the
+    // hint says which.
+    { k: 'photo',    l: 'Stage photo', type: 'image',
+      hint: 'The big picture above the heading. Layout 2 only.' },
     { k: 'heading',  l: 'Heading', d: "Let's make your night unforgettable." },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
@@ -781,10 +788,12 @@ export const FIELDS = {
     // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
     // no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
-      hint: 'One box each, two to a row. The published form emails you what the visitor types.' },
+      hint: 'One box each — two to a row in layout 1, one to a row in layout 2, which '
+          + 'sets the label inside the box and draws no placeholder. The published form '
+          + 'emails you what the visitor types.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
-      hint: 'Comma separated. The form opens on the first; empty hides the row.' },
-    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE },
+      hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
+    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, hint: 'Layout 1 only.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },

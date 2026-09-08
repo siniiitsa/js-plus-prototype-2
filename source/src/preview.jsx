@@ -87,10 +87,20 @@ const LIST = {
     kind: ['Evening', 'Full day', 'Late', 'Wedding'][i % 4],
     price: `From £${(i + 1) * 400}`,
   }),
+  // The enquiry form's boxes. All three kinds cycle, so one `live=1` render
+  // exercises the whole submit seam at once: `formErrors` refuses an empty box
+  // of any kind *and* a malformed address, `number` takes inputMode and not
+  // type="number", and the composed mailto zips every label onto its value.
+  // Every fourth label is long enough to test what a 999px pill does with one.
+  form: (i) => ({
+    label: i % 4 === 3 ? `Anything else about box ${i + 1}` : `Field ${i + 1}`,
+    placeholder: `Placeholder ${i + 1}`,
+    kind: ['text', 'email', 'number'][i % 3],
+  }),
 }
 const KEY = {
   media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images', pricing: 'tiers',
-  calendar: 'slots', map: 'gigs',
+  calendar: 'slots', map: 'gigs', form: 'fields',
 }
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const c = count === null || !LIST[cat]

@@ -701,6 +701,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
   // form
   vm.formPara = cv('para', DEFS.formPara)
+  // Layout 2's stage photograph, and the third single-photo slot in the file
+  // after `image` and `avatar`. It is a slot of its own for the reason the
+  // header's and the video section's two are: this section's `image` is
+  // *already* the artist — RETRO_PHOTOS.form is the portrait crop, and layout 1
+  // draws it as the 48px circle beside the brand — so the scene above the
+  // heading cannot share the key without changing what layout 1 renders. Same
+  // three states as vm.image: absent → the seed, null → the placeholder,
+  // string → an upload.
+  vm.formPhoto = c.photo !== undefined ? (c.photo ?? undefined) : defaultImage(cat, T.name, 'photo')
   // The address every enquiry is mailed to, and the whole of this section's
   // live seam. It was a field that edited nothing until the submit was made
   // real — cta's and para's state on the booking calendar before it.

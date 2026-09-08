@@ -98,13 +98,21 @@ const isRetro = (themeName) => themeName === 'Retro'
 // Resolvers for the two shapes. Both return undefined for the other four themes,
 // which is what leaves them rendering exactly as they did before.
 //
-// The header and the video section are the two categories with two independent
-// single-photo slots — a scene and the artist — so this one takes the field key
-// as well as the category. Every other caller wants the category's own photo
-// and can leave `key` alone.
+// The header, the video section and the enquiry form are the three categories
+// with two independent single-photo slots — a scene and the artist — so this one
+// takes the field key as well as the category. Every other caller wants the
+// category's own photo and can leave `key` alone.
+//
+// The form is the odd one of the three: its `image` is the *artist* (layout 1
+// draws it as the 48px circle beside the brand), so its second slot is the
+// scene rather than the portrait, and it is keyed `photo` rather than `avatar`.
+// It takes the same live-set frame the bio, the calendar and the video section
+// stand on — layout 2's frame is a stage shot, and it is the only photograph in
+// the seeded set that is one.
 export const defaultImage = (cat, themeName, key = 'image') => {
   if (!isRetro(themeName)) return undefined
   if (key === 'avatar') return cat === 'header' || cat === 'video' ? RETRO_HEADER_AVATAR : undefined
+  if (key === 'photo') return cat === 'form' ? stage : undefined
   const v = RETRO_PHOTOS[cat]
   return Array.isArray(v) ? undefined : v
 }

@@ -662,7 +662,12 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // difference: an empty slot there shows the section photo, an emptied one does
 // not. The media player passes `null` for an art-less track row so the row
 // cannot inherit anything, and `undefined` for the sleeve, which is allowed to.
-function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src }) {
+// `ink` is the initials' colour, defaulting to `s.muted` — additive, `Pager`'s
+// `idle` precedent, so every caller written before it is untouched. A section
+// standing on its own ground needs it: `muted` is rgba(tx, .64) computed
+// against the PAGE (the repertoire's lesson), so on a palette whose text colour
+// is also the sheet's the placeholder came back invisible.
+function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src, ink }) {
   const url = avatar ? s.avatar : (src === undefined ? s.image : src)
   if (url) {
     return <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
@@ -681,7 +686,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
       width: '100%', height: '100%', background: s.soft, display: 'flex',
       alignItems: 'center', justifyContent: 'center', ...style,
     }}>
-      <span style={{ fontFamily: s.display, fontSize: `${initialsSize}px`, color: s.muted, letterSpacing: s.dls }}>
+      <span style={{ fontFamily: s.display, fontSize: `${initialsSize}px`, color: ink ?? s.muted, letterSpacing: s.dls }}>
         {s.initials}
       </span>
     </div>
@@ -5614,11 +5619,12 @@ function EnquiryForm({ s }) {
   // type they delete between publishes can leave `type` past the end of it —
   // and Publish re-renders the tab that is already open.
   const ti = s.live && nTypes ? Math.min(type, nTypes - 1) : 0
-  // Only the split layout draws the chip row — the flat fallback never has —
-  // so this is what decides whether a type is offered at all, and the mailto
-  // reads it rather than `nTypes`. A page whose artist emptied the list and a
-  // layout that never asks are the same case: no type was chosen, so the
-  // subject is the bare "Enquiry" rather than a claim the visitor never made.
+  // Only the split layout draws the chip row — the sidebar card's frame draws
+  // none, and the flat fallback never has — so this is what decides whether a
+  // type is offered at all, and the mailto reads it rather than `nTypes`. A
+  // page whose artist emptied the list and a layout that never asks are the
+  // same case: no type was chosen, so the subject is the bare "Enquiry" rather
+  // than a claim the visitor never made.
   const showTypes = !!s.v0 && nTypes > 0
   const at = (i) => vals[i] ?? ''
   const setAt = (i, v) => {
@@ -5910,9 +5916,282 @@ function EnquiryForm({ s }) {
       </div>
     )
   }
-  // The flat fallback (arch 1, 3, 5). Its three boxes were hardcoded literals
-  // unrelated to the field list; they are the artist's now, off the same state
-  // and the same hooks as v0 — there is no second state model.
+  // v1 — Enquiry Form layout 2 · Sticky sidebar card (Figma 964:64652,
+  // 1440 × 792). A mustard page: a big rounded stage photograph over the
+  // display heading and the ticked promises, the artist's own credit row set
+  // against them, and beside it a narrow outlined card holding the boxes, a
+  // near-black submit pill with an accent arrow disc, and one line of prose.
+  // No grain, no tear, no checkerboard, no tilt — a scan of the ground and of
+  // the card gives a standard deviation of 0, so this is the third layout-2
+  // frame with no texture at all.
+  //
+  // Full-bleed, the repertoire's rule: the frame's ground is `#D8A227`, which
+  // is the page's mustard and not its beige, so the sheet writes its own
+  // negative margins over the root's padding and the root goes on painting the
+  // page behind it. Nothing shared moves. Its inset is `s.gPad` (+ `s.surplus`
+  // horizontally) for HeaderV0's reason — past the canvas the frame was drawn
+  // at, the sheet keeps bleeding while its content stays on the measure. That
+  // is 46 where the frame's vertical inset is 60 × 0.82 = 49.2; the 3px is the
+  // page's own rhythm winning, not a transcription slip.
+  //
+  // Four readings of the frame that are not transcriptions:
+  //
+  //  - The price (`£1,200 from / event`) and the credit line (`★★★★★ 42
+  //    bookings`) are gone. Both are numbers the artist never typed, which is
+  //    the video section's rule and the pricing deck's — and dropping the
+  //    number takes its stars with it. The card's one remaining line of prose
+  //    is `s.formPara`, a field NO §10.2 layout has drawn until now: it sits
+  //    where the frame sets "No charge to enquire", which is the same centred
+  //    12px line and is itself a claim about the artist's terms.
+  //  - The boxes carry the field's **label**, not its placeholder, because that
+  //    is what the frame draws in them and because a form with no separate
+  //    label row has nowhere else to put it. Live, the label is the input's
+  //    placeholder, so the published first paint is the canvas's picture. The
+  //    row's `placeholder` column therefore reaches layout 1 alone, as do the
+  //    event types (the frame draws no chip row — `showTypes` is already
+  //    `s.v0`, so the mailto sends the bare "Enquiry") and the message
+  //    placeholder (it draws no textarea, and pinning a height for one would be
+  //    inventing a number).
+  //  - The heading is one line where the frame hand-breaks two, so everything
+  //    under it stands ~33px higher than the frame's own y. Measure the
+  //    promises and the credit row against the heading's foot, not the frame.
+  //  - The stage photograph is `s.formPhoto`, a new slot: this section's
+  //    `image` is the artist, which layout 1 draws as the credit row's circle
+  //    and layout 2 draws as the same circle in the same block.
+  if (s.v1) {
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const desk = !s.narrow
+    // The page inset. Horizontally it also carries `surplus`, so a window wider
+    // than the canvas widens the sheet and not the measure.
+    const padH = `calc(${s.surplus} + ${s.gPad})`
+
+    // The ground is the pill hue for all five: Retro's IS the frame's `#D8A227`,
+    // and it is by construction the palette's lightest tag, so a section-wide
+    // sheet of it separates from the page on every theme. Its ink is Retro's
+    // fixed cream; elsewhere whatever reads on the hue the palette supplied.
+    const ground = s.pillBg
+    const groundFg = s.retro ? '#FBF6EA' : contrastInk(ground)
+    // Rust on the mustard — `pillFg` already encodes "the accent while it stays
+    // legible against the pill hue, else its own contrast", which is exactly
+    // the question the frame's heading and its submit label ask.
+    const mark = s.pillFg
+
+    // The card is a register lighter than the ground it stands on. That step
+    // has no equivalent in the other four palettes, so they take their real
+    // second paper — and on Lime and Grunge `paper` IS `pillBg`, which is why
+    // the hairline below cannot be `line2`: every soft tint is computed against
+    // the PAGE (the repertoire's lesson), and the card would be a hole.
+    // `contrastInk(ground)` reads on all five; Retro takes its own `tx`, which
+    // IS the frame's `sem/stroke/1` #111 where contrastInk would round it to
+    // its own near-black.
+    const card = s.retro ? '#E8B33B' : s.paper
+    const cardInk = s.retro ? '#FBF6EA' : s.paperFg
+    const cardLine = s.retro ? s.tx : contrastInk(ground)
+    // The accent as it reads ON the card rather than on the page: the media
+    // player's rule, since the palette's accent is not guaranteed against a
+    // `paper` surface.
+    const cardAc = s.retro ? s.ac : s.paperFg
+
+    // The frame's boxes are set in the label face, uppercase. The label is
+    // uppercased as a *string* rather than by `textTransform`, so the live
+    // input can carry it as a placeholder without also shouting whatever the
+    // visitor types into it — the canvas span and the placeholder are then the
+    // same glyphs by construction.
+    const up = (t) => String(t).toUpperCase()
+    const boxType = labelStyle(s, u(16), { textTransform: 'none' })
+    const boxShell = (bad) => ({
+      border: `1px solid ${cardLine}`, borderRadius: '999px', background: 'transparent',
+      // Stated height, not padding: Figma strokes inside its 41.6, so a
+      // border-box box of that height draws the frame's pill exactly.
+      height: u(41.6), padding: `0 ${u(14)}`, width: '100%', margin: 0,
+      // No palette has a red, so a refused box thickens its own ring in the
+      // card's accent — inset, so the stated height does not grow and nothing
+      // below it moves. Layout 1's rule, in the shape a 999px pill can wear.
+      boxShadow: bad ? `inset 0 0 0 ${u(2)} ${cardAc}` : undefined,
+      ...boxType, color: cardInk,
+    })
+
+    // The submit, and the "Write another" that replaces it once an enquiry has
+    // been composed. A near-black pill with the label in the accent and the
+    // arrow disc in it, thrown onto the accent's own offset block.
+    const pill = (children, extra) => ({
+      ...row(u(10), { justifyContent: 'space-between' }),
+      background: s.deep, color: s.retro ? s.ac : s.deepFg,
+      borderRadius: '999px', width: '100%', boxSizing: 'border-box',
+      padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`,
+      textDecoration: 'none', boxShadow: hard(s, s.ac, 4.1, 4.1),
+      fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+      ...extra,
+    })
+    const discDia = Math.round(44 * 0.82)
+    const arrowDisc = (
+      <span style={{
+        width: discDia, height: discDia, borderRadius: '999px', flex: 'none',
+        background: s.ac, color: s.deep,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}><ArrowRight size={Math.round(discDia * 0.5)} /></span>
+    )
+
+    const foot = (
+      <p style={{
+        margin: 0, fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+        textAlign: 'center', color: cardInk,
+      }}>{s.formPara}</p>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: ground, color: groundFg,
+        padding: `${s.gPad} ${padH}`,
+        display: 'flex', gap: u(40), alignItems: 'flex-start',
+        // Below desktop the two columns stack, the card going under the block
+        // it sits beside. The 768 and 390 masters for this option are unfitted
+        // — see LAYOUT-2-PLAN's open question 11 — so the narrow canvases only
+        // degrade on the page's own ramp rather than on a second frame.
+        flexDirection: desk ? 'row' : 'column',
+      }}>
+        <div style={col(u(30), { flex: desk ? 1 : 'none', minWidth: 0, width: desk ? undefined : '100%' })}>
+          <div style={{
+            // The frame's 437 on desktop; on the narrow canvases the photo is
+            // the page's own hero band rather than a number this design has a
+            // frame for.
+            height: desk ? u(437) : (s.mob ? '220px' : '300px'),
+            borderRadius: u(30), border: `1px solid ${mark}`,
+            // The empty slot takes the card's pair, not `s.soft`/`s.muted`:
+            // both are rgba of the page's text colour, and this sheet is not
+            // the page — on Lime and Grunge the initials came back invisible.
+            overflow: 'hidden', background: card,
+          }}>
+            {/* `null`, not undefined: an emptied stage photo must show the
+                placeholder rather than fall through to `s.image`, which here is
+                the portrait in the credit row below (photos.js's Remove rule). */}
+            <Photo s={s} src={s.formPhoto ?? null} ink={cardInk} initialsSize={desk ? 56 : 40} />
+          </div>
+          <h2 style={{
+            margin: 0, fontFamily: s.display,
+            // The frame's 40 is Soulway's. On the 390 canvas the display faces
+            // that set wider than it — the calendar's lesson — take the page's
+            // own step instead.
+            fontSize: s.mob ? s.dispSm : u(40),
+            lineHeight: 1, letterSpacing: s.dls, color: mark,
+            overflowWrap: 'break-word',
+          }}>{s.title}</h2>
+          <div style={row(u(20), {
+            justifyContent: 'space-between', alignItems: 'flex-end',
+            flexWrap: 'wrap', rowGap: u(20),
+          })}>
+            <div style={col(u(10), { minWidth: 0 })}>
+              {s.formPromises.map((p) => (
+                <span key={p} style={row(u(10), {
+                  fontFamily: s.body, fontSize: u(20), lineHeight: 1.26,
+                })}>
+                  <Check size={Math.round(12 * 0.82)} style={{ flex: 'none' }} />
+                  {p}
+                </span>
+              ))}
+            </div>
+            <span style={row(u(14), { flex: 'none' })}>
+              <span style={{
+                width: Math.round(48 * 0.82), height: Math.round(48 * 0.82),
+                flex: 'none', borderRadius: '999px', overflow: 'hidden', background: card,
+              }}><Photo s={s} ink={cardInk} initialsSize={15} /></span>
+              <span style={col(u(2))}>
+                <span style={{
+                  fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+                }}>{s.brand}</span>
+                <span style={{ fontFamily: s.body, fontSize: u(20), lineHeight: 1.26 }}>{s.kicker}</span>
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div style={{ width: desk ? u(450) : '100%', flex: 'none' }}>
+          <div style={col(u(14), {
+            background: card, color: cardInk,
+            border: `1px solid ${cardLine}`, borderRadius: u(30),
+            padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
+            // The frame's own name for this option. Nothing between here and
+            // the sheet clips, so it engages on a page whose left column runs
+            // longer than the card — which is what a long field list does.
+            position: 'sticky', top: 0,
+          })}>
+            {sent ? (
+              // The card alone changes, the way layout 1 swaps its mustard half
+              // and leaves the shell standing. `sent` is only ever set under
+              // s.live, so the canvas never draws this.
+              <>
+                <h3 style={{
+                  margin: 0, fontFamily: s.display, fontSize: u(24),
+                  lineHeight: 1.1, letterSpacing: s.dls, color: cardAc,
+                  overflowWrap: 'break-word',
+                }}>{s.formSentTitle}</h3>
+                <p style={{
+                  margin: 0, fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+                }}>{s.formSentBody}</p>
+                {/* Plain text, not a second mailto: this line is the fallback
+                    for a visitor whose browser opened nothing. */}
+                <span style={{
+                  fontFamily: s.body, fontWeight: 700, fontSize: u(14),
+                  overflowWrap: 'break-word',
+                }}>{s.formEmail}</span>
+                <span onClick={() => setSent(false)} style={pill(null, { cursor: 'pointer' })}>
+                  {s.formAgain}
+                  {arrowDisc}
+                </span>
+              </>
+            ) : (
+              <>
+                <div style={col(u(10))}>
+                  {s.formFields.map((f, i) => {
+                    const bad = !!(errs && errs.f[i])
+                    return s.live ? (
+                      <input
+                        key={i} value={at(i)} placeholder={up(f.label)}
+                        onChange={(e) => setAt(i, e.target.value)}
+                        // Layout 1's rule: type="email" is free semantics and a
+                        // phone keyboard, `number` gets inputMode only because
+                        // the spinners break the stated height, and a date is a
+                        // text box — the native picker cannot be styled onto
+                        // this card.
+                        type={f.kind === 'email' ? 'email' : 'text'}
+                        inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                        style={{ ...boxShell(bad), outline: 'none' }}
+                      />
+                    ) : (
+                      <span key={i} style={{
+                        ...boxShell(bad), display: 'flex', alignItems: 'center',
+                      }}>{up(f.label)}</span>
+                    )
+                  })}
+                  <Pill {...pillLink} onClick={onSubmit} style={pill(null, {
+                    cursor: onSubmit ? 'pointer' : undefined,
+                  })}>
+                    {s.formBtn}
+                    {arrowDisc}
+                  </Pill>
+                </div>
+                {/* Immediately under the pill, where layout 1 puts it, so the
+                    paragraph stays the card's last line in both states. */}
+                {errs && (
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(12), textAlign: 'center',
+                  }}>{s.formPrompt}</span>
+                )}
+                {foot}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+  // Layouts 3+ — the generic flat design. `NVAR.form` is 2, so nothing reaches
+  // this today; it is what a third layout would render until it is fitted.
+  // Its three boxes were hardcoded literals unrelated to the field list; they
+  // are the artist's now, off the same state and the same hooks as v0 and v1 —
+  // there is no second state model.
   //
   // It draws no chip row, and never has: this is the plain layout, and the
   // artist's types are not lost, merely not offered here. `showTypes` above is
