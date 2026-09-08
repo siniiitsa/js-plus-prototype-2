@@ -70,6 +70,16 @@ const LIST = {
     blurb: 'What this one covers, in a sentence that runs to about this length.',
     feats: Array.from({ length: 3 + (i % 2) }, (_, j) => `Feature ${j + 1}`).join('\n'),
   }),
+  // The events map's gigs. Every other row carries a tickets address, so one
+  // `live=1` render shows both sides of the outbound seam at once — the ↗ on
+  // the rows that have one, and the Venue Link pill flipping between a span and
+  // an anchor as a linked and an unlinked gig is featured.
+  map: (i) => ({
+    venue: `Venue number ${i + 1}`, city: ['Manchester', 'Leeds', 'Glasgow'][i % 3],
+    time: i % 4 === 3 ? '' : `${19 + (i % 4)}:00`,
+    month: ['Jul', 'Aug', 'Sep'][i % 3], day: String(4 + i * 2).padStart(2, '0'),
+    link: i % 2 ? 'example.com/tickets' : '',
+  }),
   // The calendar's slot list. Dates step a day at a time from CAL_OPEN, so the
   // first row is still the one `calPick` cues and every row parses.
   calendar: (i) => ({
@@ -80,7 +90,7 @@ const LIST = {
 }
 const KEY = {
   media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images', pricing: 'tiers',
-  calendar: 'slots',
+  calendar: 'slots', map: 'gigs',
 }
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const c = count === null || !LIST[cat]

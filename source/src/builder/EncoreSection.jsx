@@ -4882,6 +4882,389 @@ function EventsMap({ s }) {
       </div>
     )
   }
+
+  // v1 — Events Map layout 2 · Featured gig + route (964:64651, 1440 × 780, so
+  // every number below is the frame's × 0.82): an olive travel card over the
+  // rest of the page's gigs on the left, and the one gig the panel features —
+  // its venue, its city and the route to it — on the right.
+  //
+  // The two designs share the whole of the section's live seam. `page` pages
+  // the same list `gigPage` at a time, so the map still draws one pin per gig
+  // on the current page and never lights a position twice; `sel` still indexes
+  // the whole list, and here it names the gig the panel features rather than
+  // the row that lights. That is the pricing deck's rule — a layout that draws
+  // one of something has to reach all of it — and it is why the list beside it
+  // is the page *minus* the featured gig, which is exactly the frame's own
+  // "Other upcoming · 4" beside its five seeded shows.
+  if (s.v1) {
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const desk = !s.narrow
+    // The 768 and 390 masters of this option are not fitted yet — this pass is
+    // desktop only — so below desktop the two panels stack and the frame's 32
+    // inset drops to the canvas's own `gPad`, on the page's ramp rather than on
+    // invented numbers.
+    const pad = desk ? u(32) : s.gPad
+
+    // The frame's olive card and its two creams are literals under Retro, whose
+    // `paper` IS the page ground (the calendar's rule). The flat four take the
+    // palette's darkest hue for the card and `paper` for the two panels — and
+    // an outline with it, because a palette whose lightest colour is its
+    // background draws an un-outlined card as a hole in the page. Grunge's
+    // `deep` is the page ground itself, so the dark card needs one too.
+    const card = s.retro ? '#6D7040' : s.deep
+    const cardFg = s.retro ? '#FBF6EA' : s.deepFg
+    const panel = s.retro ? '#FFFEFB' : s.paper
+    const panelFg = s.retro ? s.tx : s.paperFg
+    const rowBg = s.retro ? '#FAECD5' : s.paper
+    // The frame's hairline is ink on every surface it draws. `line2` is
+    // rgba(tx), which reads against the page ground whichever way the palette
+    // runs; inside the olive card the rules take a wash of the card's own type.
+    const hair = s.retro ? s.tx : s.line2
+    const cardLine = s.retro ? s.tx : s.deepFg25
+    // The map viewport is a dark olive plate. `mapBg` is the lifted charcoal
+    // layout 1 stands its whole section on, which is the same idea one level in.
+    const plate = s.retro ? '#292A1C' : s.mapBg
+    const plateFg = s.retro ? '#FBF6EA' : s.mapFg
+    // The panel's own tab. Rust on cream under Retro; the accent is not
+    // guaranteed against `paper` elsewhere (Lime's is acid green on pale lime),
+    // so the flat four keep the panel's ink.
+    const tabFg = s.retro ? s.ac : s.paperFg
+    const tabBg = s.retro ? '#FBF6EA' : s.soft
+
+    // The page of gigs, exactly as layout 1 pages it: `gigPage` is PINS.length,
+    // so a page's worth of gigs is one set of distinct pin positions.
+    const perPage = s.gigPage
+    const pages = Math.max(1, Math.ceil(s.gigs.length / perPage))
+    const pg = s.live ? Math.min(page, pages - 1) : 0
+    const shown = s.gigs.slice(pg * perPage, (pg + 1) * perPage)
+    const { labels, at } = pageWindow(pages, pg, s.mob)
+    const first = pg * perPage
+    // Which gig the panel features. `sel` indexes the whole list and starts at
+    // -1, so a page the visitor has not picked on — and the canvas, where
+    // nothing is live — features that page's first gig. The picture is a
+    // choice here, the pricing chips' and the testimonials' `cur` rule, not the
+    // map's own -1: the frame draws a featured card and there is always one.
+    const feat = s.live && sel >= first && sel < first + shown.length ? sel : first
+    const g = s.gigs[feat]
+    // Picking features a gig rather than toggling one lit, layout 1's other
+    // half of the same seam: the panel always holds one, so there is nothing to
+    // toggle back to. The index is the gig's place in the whole list.
+    const onPick = (j) => (s.live ? () => setSel(j) : undefined)
+    // The page minus the gig the panel is on, each row keeping the index it has
+    // in the whole list so a click features the right show.
+    const rest = shown.map((gg, i) => ({ gg, i: first + i })).filter((r) => r.i !== feat)
+
+    const label12 = { fontFamily: s.body, fontSize: u(12), lineHeight: 1.4 }
+    const chip12 = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(12), lineHeight: 1,
+      letterSpacing: u(-0.72), textTransform: 'uppercase', whiteSpace: 'nowrap',
+    }
+
+    // The travel card. Its head is the section's own heading under the frame's
+    // label, with the coverage badge in the chip — which is where layout 1
+    // prints it too, at the head of the section rather than of a card. Its two
+    // locations are the artist's base and the city the featured gig is in, so
+    // the card is the route to whatever the panel beside it is showing.
+    //
+    // The frame's own "Travel time · ~2 hrs" and "Booking fee · £1,200" are
+    // dropped: a published page printing a number the artist never typed is
+    // making a claim (the video section's rule), and the third cell's "Max
+    // travel · 100 mi" is the coverage badge, which is already the chip. What
+    // is left in that row is the featured gig's date and set time — the two
+    // facts the section holds that the panel has nowhere to print.
+    const stats = [
+      g && { l: 'Date', v: `${g.month} ${g.day}` },
+      g && g.time && { l: 'Set time', v: g.time },
+    ].filter(Boolean)
+
+    const travel = (
+      <div style={col(u(18), {
+        background: card, color: cardFg, border: `1px solid ${hair}`,
+        // Figma strokes an auto-layout frame inside the size it states, so every
+        // outlined box in this design gives its hairline back out of its own
+        // padding — the repertoire's rule, and the card, the two chips and the
+        // gig rows all inherit the drift otherwise.
+        borderRadius: u(30), padding: `calc(${u(18)} - 1px) calc(${u(20)} - 1px)`,
+        // Left-aligned rather than stretched, so the one pill at the foot keeps
+        // the width of its own label; every row above it asks for 100%.
+        alignItems: 'flex-start',
+      })}>
+        <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
+          <div style={col(u(4), { minWidth: 0 })}>
+            <span style={label12}>Travel radius</span>
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: u(24), lineHeight: 1.1,
+              letterSpacing: s.dls,
+            }}>{s.title}</h2>
+          </div>
+          <span style={{
+            ...label12, flex: 'none', border: `1px solid ${cardLine}`, borderRadius: '999px',
+            padding: `calc(${u(5)} - 1px) calc(${u(12)} - 1px)`, whiteSpace: 'nowrap',
+          }}>● {s.mapRadius}</span>
+        </div>
+
+        <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
+          {/* Two lines a column, not the frame's three: its "Based in" label
+              over "Manchester, UK" is what our `base` field's own copy already
+              says ("Based in Manchester"), so printing both would stutter. The
+              captions carry the meaning the labels did. */}
+          <div style={col(u(3), { flex: '1 1 0', minWidth: u(160) })}>
+            <span style={{
+              fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+            }}>{s.mapBase}</span>
+            <span style={label12}>Home location</span>
+          </div>
+          {!!g && (
+            <>
+              {/* The frame's ──●── connector, drawn rather than typed. It joins
+                  two columns, so it goes with them once the row wraps. */}
+              <span aria-hidden style={row(0, { flex: 'none', display: desk ? 'flex' : 'none' })}>
+                <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
+                <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: cardFg }} />
+                <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
+              </span>
+              <div style={col(u(3), { flex: '1 1 0', minWidth: u(160) })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+                }}>{g.city}</span>
+                <span style={label12}>Venue location</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        {stats.length > 0 && (
+          <div style={row(u(18), {
+            width: '100%', padding: `${u(12)} 0`, alignItems: 'flex-start',
+            borderTop: `1px solid ${cardLine}`, borderBottom: `1px solid ${cardLine}`,
+          })}>
+            {stats.map((st) => (
+              <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+                <span style={label12}>{st.l}</span>
+                <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5 }}>{st.v}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* The frame's pair of buttons, minus "Get Directions" — nothing in the
+            section addresses a venue, and a second pill that went nowhere would
+            be the footer's dead `href="#"` again. This one is the featured
+            gig's own tickets link: an empty one leaves it the picture it is on
+            the seeded page, the Soundcloud rule that layout 1's rows follow.
+            The frame draws no offset block under it, hence the clear shadow,
+            and sets its type in the card's own olive rather than the pill's
+            usual accent — a Retro literal, so the flat four keep the accent
+            pair BookPill defaults to, which is legible on the dark card by
+            construction where `pillFg` is not (Editorial's all but vanished). */}
+        {!!g && (
+          <BookPill s={s} ext={g.url} label="Venue Link" glyph="arrow"
+                    disc={desk ? 38 : undefined} shadow="transparent"
+                    {...(s.retro ? { fg: '#5B5E2E' } : null)} />
+        )}
+      </div>
+    )
+
+    const gigRow = ({ gg, i }) => {
+      // The ↗ is a link affordance, so live it is drawn only where there is
+      // somewhere to go — the gallery's hide-the-empty-row rule — while the
+      // canvas keeps it on every row, that being the reference design. The rest
+      // of the row features the gig; the anchor's own click does both, which is
+      // layout 1's rule for a row with a tickets address.
+      const tix = extLink(s, gg.url)
+      return (
+        <div key={i} onClick={onPick(i)} style={row(u(12), {
+          width: '100%', background: rowBg, color: s.retro ? s.tx : s.paperFg,
+          border: `1px solid ${hair}`, borderRadius: u(30),
+          padding: `calc(${u(10)} - 1px) calc(${u(14)} - 1px)`,
+          cursor: s.live ? 'pointer' : undefined,
+        })}>
+          <span style={labelStyle(s, u(20), {
+            width: u(36), height: u(36), flex: 'none', display: 'inline-flex',
+            alignItems: 'center', justifyContent: 'center',
+          })}>{gg.day}</span>
+          <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
+            <div style={row(u(5), { minWidth: 0 })}>
+              <span style={{
+                fontFamily: s.display, fontSize: u(24), lineHeight: 1.1, letterSpacing: s.dls,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{gg.venue}</span>
+              {(tix || !s.live) && (
+                <span {...tix} style={{
+                  ...label12, flex: 'none', color: 'inherit', textDecoration: 'none',
+                  cursor: tix ? 'pointer' : undefined,
+                }}>↗</span>
+              )}
+            </div>
+            <span style={label12}>
+              {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
+            </span>
+          </div>
+          {/* The frame's "In transit" is a status the section cannot know. The
+              row's own hour is what belongs in that chip, and an emptied one
+              drops it rather than printing an empty pill. */}
+          {!!gg.time && (
+            <span style={{
+              ...label12, flex: 'none', border: `1px solid ${hair}`, borderRadius: '999px',
+              padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`, whiteSpace: 'nowrap',
+            }}>{gg.time}</span>
+          )}
+        </div>
+      )
+    }
+
+    const list = (
+      <div style={col(u(8), { width: '100%' })}>
+        {/* Dropped with the rows: the last page can hold the featured gig
+            alone, and a count of nothing over nothing is not a state. */}
+        {rest.length > 0 && (
+          <span style={{ ...label12, color: s.tx }}>Other upcoming · {rest.length}</span>
+        )}
+        {rest.map(gigRow)}
+        {/* Derived from the list and not drawn at one page, the repertoire's
+            rule — so the seeded five gigs are one page and carry no pager, the
+            same intended diff from the frame that layout 1 has. */}
+        {labels.length > 0 && (
+          <Pager s={s} colour={s.ac} fill={s.soft2} frame={{
+            pages: labels, active: at,
+            onPage: s.live ? (n) => setPage(Number(n) - 1) : undefined,
+            onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+          }} />
+        )}
+      </div>
+    )
+
+    // The route. Its pins are the page's gigs at the positions sectionVm paired
+    // them with, the featured one lit; the marker at the middle is the artist's
+    // base, which is what the frame's rings are drawn around. The frame's
+    // 30/60/120mi ring labels and its zoom controls are gone with the fabricated
+    // metrics — the first are numbers the artist never typed and contradict the
+    // coverage badge, the second a control this file has nothing to do.
+    const pins = shown.map((gg, i) => {
+      const on = first + i === feat
+      const d = on ? u(16) : u(8)
+      return (
+        <span key={i} onClick={onPick(first + i)} style={{
+          position: 'absolute', left: gg.pin.x, top: gg.pin.y, width: d, height: d,
+          borderRadius: '999px', background: on ? s.ac : plateFg,
+          // The lit pin is ringed rather than haloed: a halo wants a wash of
+          // the plate's cream, and this file is handed colours rather than
+          // computing them.
+          border: on ? `2px solid ${plateFg}` : undefined,
+          boxSizing: 'content-box',
+          transform: 'translate(-50%, -50%)',
+          cursor: s.live ? 'pointer' : undefined,
+        }} />
+      )
+    })
+
+    const featured = (
+      <div style={col(u(24), {
+        background: panel, color: panelFg, borderRadius: u(30), padding: pad,
+        border: s.retro ? undefined : `${s.bw} solid ${hair}`,
+      })}>
+        <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
+          {/* The frame's "● IN TRANSIT" is a claim about a booking; what the
+              tab can honestly say is what the panel is. The media player's
+              centre seat already carries a Featured tab. */}
+          <span style={row(u(8), {
+            background: tabBg, color: tabFg, borderRadius: '999px',
+            padding: `${u(6)} ${u(12)}`, ...chip12,
+          })}>
+            <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: tabFg }} />
+            Featured
+          </span>
+          {g ? (
+            <div style={col(u(4), { width: '100%', minWidth: 0 })}>
+              <h3 style={{
+                margin: 0, fontFamily: s.display, fontSize: u(24), lineHeight: 1.1,
+                letterSpacing: s.dls,
+              }}>{g.venue}</h3>
+              <span style={{
+                fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, opacity: 0.7,
+              }}>{g.city}</span>
+            </div>
+          ) : (
+            // The pricing deck's one-message empty state: the panel is a
+            // composition, and a hole where the gig stands is not one of its
+            // states — the route below it still draws, with nothing on it.
+            <span style={{
+              fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, opacity: 0.7,
+            }}>No dates yet.</span>
+          )}
+        </div>
+
+        <div style={col(0, {
+          width: '100%', border: `1px solid ${hair}`, borderRadius: u(14), overflow: 'hidden',
+        })}>
+          <div style={{
+            position: 'relative', width: '100%', aspectRatio: '588 / 448', background: plate,
+          }}>
+            {/* §10.2's street raster, inverted onto the dark plate so the roads
+                read as light lines; the flat four keep layout 1's crossed grid,
+                there being no raster outside Retro. */}
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0,
+              ...(s.mapSrc
+                ? {
+                  backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover',
+                  backgroundPosition: 'center', filter: 'invert(1) grayscale(1) contrast(1.6)',
+                  opacity: 0.26, mixBlendMode: 'screen',
+                }
+                : {
+                  backgroundImage:
+                    `linear-gradient(${s.ac55} 1px, transparent 1px), `
+                    + `linear-gradient(90deg, ${s.ac55} 1px, transparent 1px)`,
+                  backgroundSize: '38px 38px',
+                }),
+            }} />
+            {/* The three coverage rings. The outer one already runs past the
+                frame's own viewport, so the clip is the frame's picture. */}
+            {[81.6, 51, 23.8].map((w, i) => (
+              <span key={w} aria-hidden style={{
+                position: 'absolute', left: '50%', top: '50%', width: `${w}%`,
+                aspectRatio: '1', borderRadius: '999px',
+                border: `1px solid ${plateFg}`, opacity: i === 0 ? 0.28 : 0.45,
+                transform: 'translate(-50%, -50%)',
+              }} />
+            ))}
+            {pins}
+            <span aria-hidden style={row(0, {
+              position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
+              background: s.retro ? '#5B5E2E' : s.ac, color: plateFg,
+              border: `2px solid ${plateFg}`, borderRadius: '999px', padding: u(4),
+            })}>
+              <GlobeMark size={Math.round(16 * 0.82)} color={plateFg} />
+            </span>
+          </div>
+          <div style={row(u(12), {
+            justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
+            borderTop: `1px solid ${hair}`,
+          })}>
+            {/* The frame's data line and its "EXPAND VIEW ›" — a control with
+                nowhere to expand to — become the artist's travel terms and the
+                count the frame's own line carries. */}
+            <span style={label12}>{s.mapTerms}</span>
+            <span style={{ ...chip12, flex: 'none' }}>{s.gigs.length} pins</span>
+          </div>
+        </div>
+      </div>
+    )
+
+    return (
+      <div style={{
+        display: 'grid', gridTemplateColumns: desk ? '1fr 1fr' : '1fr',
+        gap: u(24), alignItems: 'start',
+      }}>
+        {/* Not stretched to the panel beside it, the video dashboard's rule: at
+            twelve gigs the left column is the taller by 250px, and the map
+            would have to take that slack. */}
+        <div style={col(u(18))}>{travel}{list}</div>
+        {featured}
+      </div>
+    )
+  }
+
   return (
     <div style={{
       background: s.soft, aspectRatio: '16 / 7', borderRadius: s.radius, position: 'relative',
