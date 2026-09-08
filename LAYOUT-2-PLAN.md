@@ -76,10 +76,19 @@ One section per session. Clear context between sections; git and this file are t
    ```
 
    `arch=1` is layout 2 (`s.v1`); `arch=0` renders the fitted layout 1 beside it for comparison,
-   and `theme=1…4` checks that the other four templates still render flat. Screenshot it against
-   the Figma render, then read the real geometry with `evaluate_script` and compare **numbers, not
-   screenshots** — `getBoundingClientRect()` on the section's own boxes. The
-   `verifying-the-published-tab` note still applies for anything that has to be checked live.
+   `theme=1…4` checks that the other four templates still render flat, and `n=8` fills the
+   section's list-shaped content with that many rows. Screenshot it against the Figma render,
+   then read the real geometry with `evaluate_script` and compare **numbers, not screenshots** —
+   `getBoundingClientRect()` on the section's own boxes. The `verifying-the-published-tab` note
+   still applies for anything that has to be checked live.
+
+   The harness is untracked, so `n` may need re-adding: it reads `q.get('n')` and passes
+   `c: { tracks: [...] }` (or `songs`) into `sectionVm` in place of the empty `c`.
+
+   Note the dev server takes 5174, 5175… when another session holds 5173, and
+   **chrome-devtools MCP refuses to start while another Chrome holds its profile** — the
+   claude-in-chrome tools drive an ordinary `http://` harness page perfectly well, so use those
+   rather than killing someone else's browser.
 5. Commit, with the section named in the subject.
 6. Flip the row's Status to `done <sha>`, add anything the next section needs to *Conventions*,
    and commit that too. Then clear.
@@ -174,6 +183,11 @@ Learned on the media player (section 3):
 - **The frame's own `overflow-clip` frames rarely clip on desktop.** Check before inheriting one:
   this fan's cards fit their 371px band with room to spare, and the clip only starts mattering on
   the 390 canvas.
+- **Render the list-shaped contents past the count the seed happens to hold.** The harness now
+  takes `&n=8`, which fills `c.tracks` with n rows (the array shape, so it also exercises
+  art-less rows and the `dur === rel` case). `FIELDS.media.tracks` allows 8 where the frame seats
+  5, and the two extra cards fanned straight over the list beside them — a defect no screenshot
+  of the seeded five could show. The repertoire (`c.songs`) will want the same check.
 
 Learned on the header (section 1):
 
