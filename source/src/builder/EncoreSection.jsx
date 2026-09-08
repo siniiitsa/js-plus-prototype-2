@@ -5072,6 +5072,10 @@ function EventsMap({ s }) {
       // of the row features the gig; the anchor's own click does both, which is
       // layout 1's rule for a row with a tickets address.
       const tix = extLink(s, gg.url)
+      // The tag is picked from the link, BookPill's and layout 1's rule:
+      // spreading an href onto a span sets an inert attribute and navigates
+      // nowhere.
+      const Tix = tix ? 'a' : 'span'
       return (
         <div key={i} onClick={onPick(i)} style={row(u(12), {
           width: '100%', background: rowBg, color: s.retro ? s.tx : s.paperFg,
@@ -5090,10 +5094,10 @@ function EventsMap({ s }) {
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{gg.venue}</span>
               {(tix || !s.live) && (
-                <span {...tix} style={{
+                <Tix {...tix} style={{
                   ...label12, flex: 'none', color: 'inherit', textDecoration: 'none',
                   cursor: tix ? 'pointer' : undefined,
-                }}>↗</span>
+                }}>↗</Tix>
               )}
             </div>
             <span style={label12}>

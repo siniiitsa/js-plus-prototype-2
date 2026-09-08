@@ -193,7 +193,17 @@ mutated through a single `patch()` helper.
   opens the tab and lights the pin. An **empty link leaves the row a picture** — the Soundcloud
   rule, not the gallery's hide-the-row rule, because a gig is a show the artist is playing, not
   a tile promising somewhere to go. The hue is computed over the whole list in `sectionVm`, or a
-  gig would change colour as the pager turned. The flat map layout keeps raw `vm.pins`: it has
+  gig would change colour as the pager turned. **Everything in this paragraph from "Clicking a
+  row *or* its pin" on is layout 1's**: layout 2 is a featured gig beside the rest of the page,
+  and it shares the seam whole rather than growing one — the same `page` over the same
+  `gigPage`, so its map draws the same one-pin-per-gig-on-the-page and cannot collide either;
+  the same `sel` over the whole list, except that there it names the gig the **panel features**
+  rather than the row that lights, so it is **picked, not toggled** (a featured panel always
+  holds one, and there is nothing to toggle back to). Its list is the page **minus** that gig,
+  which is where the frame's own "Other upcoming · 4" comes from, and `feat` falls back to the
+  page's first gig whenever `sel` is off-page — the canvas, the -1 start and a gig deleted under
+  the visitor, all in one test. A gig's `link` reaches both: layout 1's whole row, layout 2's ↗
+  and, for the featured gig, the Venue Link pill. The flat map layout keeps raw `vm.pins`: it has
   no list to pair with, and twelve gigs would stack twelve dots on five spots.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
   every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
