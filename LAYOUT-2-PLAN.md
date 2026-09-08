@@ -133,7 +133,8 @@ Everything a fresh session would otherwise re-derive. Append to this list as the
   import-free data). `defaultImage()`/`defaultImages()`/`defaultTrackArt()` gate on
   `T.name === 'Retro'`; **Remove** writes `null`, not `undefined`.
 - **`EncoreSection` stays inert.** No new interactivity unless it is gated on `s.live`, and no new
-  React imports beyond `useId`/`useState`.
+  React imports beyond `useId`/`useState`/`useRef` (the third arrived with the media player's one
+  `<audio>` element; there is still no effect anywhere in the file).
 
 Learned on the bio (section 2):
 
