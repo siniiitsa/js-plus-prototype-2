@@ -213,7 +213,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // pin/row pairing; the pricing cards' filter chips and their Book pill; the
     // booking calendar's month arrows, its day picking and its foot pill; the
     // enquiry form's boxes, its event-type chips and its submit; the
-    // testimonials carousel's arrows; the footer's link columns and its Book
+    // testimonials carousel's arrows and layout 2's rail of tiles, which page
+    // the same review; the footer's link columns and its Book
     // pill; and the four sets of outbound links (Soundcloud, the gallery's
     // socials, the gigs' tickets, the footer's web-address rows).
     live: !!live,

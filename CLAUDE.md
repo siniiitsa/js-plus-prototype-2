@@ -110,7 +110,8 @@ mutated through a single `patch()` helper.
   and picks the single big plan in layout 2),
   the **booking calendar's month arrows, its day picking and its foot pill** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
-  the **testimonials carousel's arrows** (below),
+  the **testimonials carousel's arrows** (below — layout 2 pages the same `cur` from a rail of
+  initial tiles instead),
   the **footer's link columns and its Book pill** (below),
   and the four sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
@@ -365,7 +366,23 @@ mutated through a single `patch()` helper.
   where the card stands is not one of its states. `vm.quote1` is gone, so the three-up layout's
   `i === 0 ? s.quote1 : q.q` seam goes with it — **every** row is cased now, which is the
   intended diff on a casing theme. There is **no autoplay and no swipe**: both want an effect
-  or touch state, and there is none in the file.
+  or touch state, and there is none in the file. **The two arrows, their wrapping and the two
+  pills are layout 1's**: layout 2 is an editorial feature — a centred display head over one
+  wide orange card — and it pages through a **rail of initial tiles** down the card's left,
+  one per review, sharing the seam whole rather than growing one: the same `cur`, the same
+  clamp, the same pinned 0 on the canvas and the same not-drawn-at-one, which there means the
+  card simply takes the whole width. The tile's mark is **`vm.quotes[].mark`**, composed in
+  `sectionVm` beside `byline` — the reviewer's initials, or the row's number when the name is
+  empty, punctuation spaced out first so "Sarah &amp; Tom" marks the tile `ST` and not `S&`.
+  The frame's `★★★★★` is a rating the artist never typed and is **dropped** (the enquiry
+  form's layout 2 dropped this very row), and the slot it frees prints the review's own
+  `when`, so layout 2 reads every column of `c.quotes` where layout 1 puts the date above the
+  quote. It also draws the section's **head**, which no earlier layout did: `heading` had
+  reached the flat tail alone, and `FIELDS.testimonials` gained `sub` and `cta` — a line of
+  prose and the centred Book Now pill on `vm.bookTo`, which needs no self-exclusion because
+  `testimonials` is not in `CTA_TARGETS.book` (the footer's rule). Layout 2 draws neither the
+  grain nor the torn edge: its frame carries no texture at all and stands on the beige page,
+  so the root's `cream` flag stays layout 1's.
 - **The footer is the artist's sitemap, and the published one navigates.** It was the last
   §10.2 section that was a picture on *both* sides, and the only one whose links were dead by
   the **header's own rule**: `linkCol` drew `<a href="#">`, which the published tab's delegated

@@ -35,7 +35,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | 8 | `calendar` | `964:64650` | Booking Calendar — **E · Bold slot list** — Desktop | 1328 × 896 | **done** (desktop) `d78619c` |
 | 9 | `map` | `964:64651` | Events Map — **B · Featured gig + route** — Desktop | 1440 × 780 | **done** (desktop) `22e5ea1` |
 | 10 | `form` | `964:64652` | Enquiry Forms — **E · Sticky sidebar card** — Desktop | 1440 × 792 | **done** (desktop) `9619235` |
-| 11 | `testimonials` | `964:64653` | Testimonials — **A · Editorial feature** — Desktop | 1440 × 782 | todo |
+| 11 | `testimonials` | `964:64653` | Testimonials — **A · Editorial feature** — Desktop | 1440 × 782 | **done** (desktop) `5a56bb6` |
 | — | `tags` | *none* | — | — | **no layout-2 design on this page** |
 | — | `audio` | *none* | — | — | **no layout-2 design on this page** |
 | — | `footer` | `964:64654` | Component 2 | 1440 × 480 | **out of scope** — same design as the fitted footer, and `NVAR.footer` is 1 |
@@ -573,6 +573,50 @@ Learned on the enquiry form (section 10):
   0 0 2px` in the card's accent is the same no-red constraint kept, the
   same no-layout-change, and it reads as the box thickening.
 
+Learned on the testimonials (section 11):
+
+- **A frame's padding can be inert, and transcribing it is then a
+  defect.** The rail's three tiles measure 98.63, which is the column
+  divided three ways — not the 36 + 19 + 36 the emitted code states,
+  and the tiles carry `min-h-px` besides. Keeping the padding floors a
+  tile at 74 and stands the rail past the card the moment a fifth
+  review is added; dropping it in the column direction (and keeping it
+  for the row the narrow canvases lay out) reproduces the frame at
+  three and degrades to small legible pills at eight. Multiply the
+  frame's own numbers out before transcribing any of them: `98.63 × 3 +
+  12 × 2 = 319.9` says which mechanism is real.
+- **A `flex-basis: 0` item's border is added after its share is worked
+  out**, so the frame's 2px selected tile came out 2px taller than its
+  1px neighbours and the column stopped dividing evenly. The extra px
+  is an inset ring — the enquiry form's refused-box rule, load-bearing
+  here rather than cosmetic.
+- **`alignItems` is the cross axis, so a `desk ? row : column` wrapper
+  has to swap it too.** `flex-start` is right for the desktop row (the
+  card is the taller column and stretching it hands a short review the
+  rail's slack) and wrong stacked, where it shrank both blocks to their
+  content and stood them off the left gutter. The same call flips the
+  card's own `flex: 1 1 0` to `width: 100%`, the pricing card's rule.
+- **The stars go, and their slot is where the freed field lands.** This
+  is the third frame to draw a rating nobody typed (the pricing deck's
+  `32 reviews · 4.9 ★`, the enquiry form's `★★★★★ 42 bookings`), so the
+  call was already made; what it bought here was the one place `when`
+  could go, which is what leaves every column of `c.quotes` read. Sort
+  the copy first, then check which of the section's own fields the
+  survivors can carry — the events map's rule.
+- **Initials are content, so they are composed in `sectionVm`.**
+  `vm.quotes[].mark` sits beside `byline` and carries its own empty-name
+  fallback (the row's number). `initialsOf` splits on whitespace alone,
+  so the frame's own "Sarah & Tom" marks a tile `S&` unless the
+  punctuation is spaced out first — put that case in the harness rows.
+- **A section can reach layout 2 with a field that edits nothing
+  today.** `FIELDS.testimonials.heading` drew in the flat tail and in
+  neither fitted layout; layout 2 is the first design to head the
+  section, so it took the field rather than a literal, and the two new
+  plain-text fields beside it (`sub`, `cta`) cost a line each in
+  `FIELDS`, in `DEFS` and in `sectionVm`. Check what the section already
+  has before writing a literal sentence — the bio's credit line
+  (question 3) is the case where nothing was available.
+
 ## Open questions
 
 1. ~~**The header.**~~ *Settled.* `HeaderV1` was the invented "Framed" full-bleed; it is now the
@@ -667,3 +711,13 @@ Learned on the enquiry form (section 10):
    two image fields are now `image` = the artist and `photo` = the scene,
    which is the *opposite* of the header's and the video section's
    `image`/`avatar` pair. Renaming either would move a signed-off layout.
+14. **The testimonials' three head fields reach layout 2 alone.** Layout 1
+   is the card and nothing else, so `heading` drew in the flat tail only
+   and the new `sub` and `cta` draw nowhere else either. That is question
+   10's and 13's shape — a field reaching one layout rather than a layout
+   missing a field — and it is the friendlier half of it, since nothing
+   the artist typed goes unread: layout 2 is the first design here to
+   have anywhere to put a head. It is only worth naming because the
+   section is now the one place where **layout 1 reads strictly fewer
+   fields than layout 2**. Giving layout 1 a head would move a
+   signed-off design, which is a design call and not a fidelity one.
