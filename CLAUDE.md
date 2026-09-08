@@ -267,6 +267,18 @@ mutated through a single `patch()` helper.
   a control, and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
   month needing six rows grows one where June needs five, the grid never being padded to 35.
   The flat layout (arch 1, 3) still draws the hardcoded `CITIES` and reads none of this.
+  **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**: layout 2 is a
+  bold list of named slots — `CAL_SLOTS`, seeded in `data.js` in the row shape a repeater
+  would edit and resolved by the `songs` rule onto `vm.calSlots`, `VIDEOS`' case rather than
+  `TIERS`' — and it has no month, so no arrows and no `mi`. Everything else it shares whole:
+  `sel` is the same ISO date, `open` cues the same day (slot one *is* `CAL_OPEN`, so the
+  seeded page opens on the frame's picture), `booked` kills a row there as it strikes a cell
+  here, the foot prints the same composed line or the same `calPrompt`, and the pill takes the
+  same `calBookTo`. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
+  the page, this section leading and dotted and never linking to itself, the footer's rule for
+  a link column. `heading`, which headed the flat layout alone, heads it; `image` does not
+  reach it at all. And the slot list is the one list-shaped content with **no** editor beside
+  the video section's, so `FIELDS.calendar` still names no `slots`.
 - **The enquiry form fills in and sends, in the published tab only.** It was the last §10.2
   section whose every control was a picture, and the one the whole page points at:
   `CTA_TARGETS.book` starts at `form`, so the header's Book Now, the pricing pills and the

@@ -32,7 +32,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | 5 | `repertoire` | `964:64646` | Repertoire — **G · Mobile list** — Desktop | 1440 × 792 | **done** (desktop) `2bb0637` |
 | 6 | `gallery` | `964:64647` | Gallery Sections — **C · Split showcase** — Desktop | 1440 × 675 | **done** (desktop) `4b4ca5a` |
 | 7 | `pricing` | `964:64648` | Pricing — **D · Single big plan** — Desktop | 1440 × 707 | **done** (desktop) `4f8ec90` |
-| 8 | `calendar` | `964:64650` | Booking Calendar — **E · Bold slot list** — Desktop | 1328 × 896 | todo |
+| 8 | `calendar` | `964:64650` | Booking Calendar — **E · Bold slot list** — Desktop | 1328 × 896 | **done** (desktop) `d78619c` |
 | 9 | `map` | `964:64651` | Events Map — **B · Featured gig + route** — Desktop | 1440 × 780 | todo |
 | 10 | `form` | `964:64652` | Enquiry Forms — **E · Sticky sidebar card** — Desktop | 1440 × 792 | todo |
 | 11 | `testimonials` | `964:64653` | Testimonials — **A · Editorial feature** — Desktop | 1440 × 782 | todo |
@@ -410,6 +410,50 @@ Learned on the pricing section (section 7):
   height for an empty state, and any minimum would be a made-up number.
   It is only ever seen mid-edit.
 
+Learned on the booking calendar (section 8):
+
+- **When a frame wants a list the section has no field for, check what
+  the section's *existing* fields can still reach through it before
+  reaching for the seeded constant — and then reach for it anyway.**
+  The slot list is genuinely new content (`booked` is the artist's
+  negative space; inverting it prints every remaining day of the
+  month), so it is `CAL_SLOTS` in the repeater row shape, the video
+  section's `VIDEOS` rule. What made that cheap rather than a second
+  design was seeding slot one at `CAL_OPEN`: `calPick` then lights it,
+  `booked` strikes a slot through as it strikes a cell, `sel` stays the
+  same ISO date, and the two layouts share the *whole* live seam
+  instead of layout 2 growing one of its own. A layout 2 that leaves
+  the section's core fields unread is worse than open questions 4/7/8 —
+  those were outbound links.
+- **A frame's second column can be ragged because its display numerals
+  are.** Its four weekdays land on four different x, and its own column
+  head sits 66 to the left of the column it heads. Both are hand-set
+  type, not a design (the pricing deck's normalise-and-say-so rule):
+  pin the column and give the head the rows' gap. **Measure the pin,
+  never transcribe it** — the frame's 330 is what Soulway needs; the
+  widest mark Fraunces draws at u(96) is `MAR 09` at 304.6, so the pin
+  is u(372), which also clears the flat four's display faces. Loop all
+  12 abbreviations × 31 days in the harness rather than eyeballing the
+  seeded four.
+- **Retro's `paper` IS its page ground** (`paperOf()` returns `bg` when
+  the background is the palette's lightest colour), so a frame's cream
+  *panel* is a literal under Retro and `s.paper` on the flat four —
+  and there it needs an outline too, or a palette whose lightest colour
+  is its background draws the card as a hole in the page. Sample the
+  wrapper node's ground before assuming a panel bleeds or a root flag
+  has to widen; this one stands on the beige page ground and nothing
+  shared moved.
+- **A desktop-only fit still has to not break the other two canvases.**
+  The editor renders all three, and u(96) display type overflowed the
+  390 panel outright. Degrade on the page's *own* ramp rather than on
+  invented numbers — `s.dispLg` for the mark, `s.gPad`/`s.gGap` for the
+  frame's 40/66 insets, and drop the pinned column once the row wraps —
+  and say in the branch that the narrow masters are still unfitted.
+- **The harness now takes `&booked=2025-06-14,2025-06-20`**, which
+  reaches both layouts. `CAL_BOOKED` is empty on purpose, so it is the
+  one calendar state no seed shows, and it is what proves the dead row
+  really is handlerless (`cursor: auto`, no state change on click).
+
 Learned on the header (section 1):
 
 - **A frame that floats something above its own content inset has to rise out of the root's
@@ -480,6 +524,22 @@ Learned on the header (section 1):
    does not draw would be worse than the absence. The field's hint now says
    which layout reads them. If the tags should follow the artist across
    layouts, that is one design call for all three cases at once.
-9. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
+9. **The calendar's slot list has no editor.** `c.slots` is resolved by
+   `sectionVm` in the shape a repeater would write and today always falls
+   through to the seeded `CAL_SLOTS`, so an artist can set the heading, the
+   button, the hour, the opening date and the days they are booked — all of
+   which layout 2 reads — but not the four slots themselves. This is open
+   question 5 (the video list) a second time, and cheaper: `SlotsField` is
+   `GigsField` with three plain columns and no assets, so it is that repeater
+   copied down rather than `VideosField`'s `RowThumb` work — ~40 lines, a
+   `slotsVal` seed resolver in `EditPanel` and one `FIELDS.calendar` entry,
+   with no change on the rendering side. It would close this question and
+   question 5's sibling half at once if both are done together.
+10. **Layout 2's photo field edits nothing.** `FIELDS.calendar.image` fills
+   layout 1's polaroid stack, and the slot list draws no photograph at all.
+   That is `FIELDS.media.soundcloud`'s case again — the hint now says
+   "Layout 1 only" — and unlike questions 4, 7 and 8 nothing is lost by it:
+   a table of dates has nowhere a photograph belongs.
+11. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
    unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
    signed off.
