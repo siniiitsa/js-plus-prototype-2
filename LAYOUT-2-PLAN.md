@@ -34,7 +34,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | 7 | `pricing` | `964:64648` | Pricing — **D · Single big plan** — Desktop | 1440 × 707 | **done** (desktop) `4f8ec90` |
 | 8 | `calendar` | `964:64650` | Booking Calendar — **E · Bold slot list** — Desktop | 1328 × 896 | **done** (desktop) `d78619c` |
 | 9 | `map` | `964:64651` | Events Map — **B · Featured gig + route** — Desktop | 1440 × 780 | **done** (desktop) `22e5ea1` |
-| 10 | `form` | `964:64652` | Enquiry Forms — **E · Sticky sidebar card** — Desktop | 1440 × 792 | todo |
+| 10 | `form` | `964:64652` | Enquiry Forms — **E · Sticky sidebar card** — Desktop | 1440 × 792 | **done** (desktop) `9619235` |
 | 11 | `testimonials` | `964:64653` | Testimonials — **A · Editorial feature** — Desktop | 1440 × 782 | todo |
 | — | `tags` | *none* | — | — | **no layout-2 design on this page** |
 | — | `audio` | *none* | — | — | **no layout-2 design on this page** |
@@ -529,6 +529,50 @@ Learned on the header (section 1):
 - The mount is a **third** Retro cream, `#F3E3C8` (Figma tag/6/text), a shade deeper than box/1's
   `#FAECD5`.
 
+Learned on the enquiry form (section 10):
+
+- **A section with two photographs is not always `image` + `avatar`.**
+  The header's and the video section's `image` is the scene and their
+  `avatar` the artist; this section's `image` had been the *artist* since
+  layout 1 drew it as a 48px circle, so layout 2's stage shot could not
+  take either key without moving a signed-off layout. It is a third key,
+  `photo`, resolved in `sectionVm`'s form block and seeded by one line in
+  `defaultImage` — `imgVal(f.k)` passes the key straight through, so
+  `EditPanel` needed nothing. Check which of a section's photographs its
+  existing key already means before assuming the pair.
+- **A frame's box can hold a label *or* a placeholder, and the canvas
+  decides.** Layout 1 draws both (label above, placeholder inside);
+  layout 2 has one slot and the frame fills it with the label. Since the
+  published first paint must be the canvas's picture, one string has to
+  serve both surfaces — so it is uppercased as a **string** rather than
+  by `textTransform`, and the live `<input>` carries it as its
+  placeholder without also shouting whatever the visitor types. The
+  row's `placeholder` column then reaches layout 1 alone, which is open
+  question 4's case at the level of a *column of a repeater* rather than
+  a field.
+- **`Photo` now takes `ink`** — the initials placeholder's colour,
+  defaulting to `s.muted`. `Pager`'s `idle` and `BookPill`'s `glyph`
+  precedent: additive, so every caller written before it is untouched.
+  A section standing on its own sheet needs it, and the wrapper's own
+  ground with it: `soft` and `muted` are both rgba of the PAGE's text
+  colour, so on Lime (whose `tx` IS the sheet) a 686 × 358 empty photo
+  slot came back as an outlined rectangle with invisible initials in it.
+  The repertoire's lesson reaches the shared components too.
+- **Three unread fields is the frame's answer, not a failure to try.**
+  The types, the message placeholder and the rows' placeholders all have
+  no home in the sidebar card. The discriminating question is whether
+  the frame draws the control: a textarea would have meant pinning a
+  height nothing measures (the pricing deck's invented-number rule), and
+  a chip row would have been the gallery's hide-the-empty-TikTok rule in
+  reverse. `enquiryMailto` already drops both clauses, so a details-only
+  enquiry is a complete one — which is what makes the absence honest
+  rather than a hole.
+- **A refused control on a 999px pill marks itself with an inset ring,
+  not an inset rule.** Layout 1's `inset 0 -3px 0` is a rule under a
+  14px-radius box; on a fully rounded one it reads as a smear. `inset 0
+  0 0 2px` in the card's accent is the same no-red constraint kept, the
+  same no-layout-change, and it reads as the box thickening.
+
 ## Open questions
 
 1. ~~**The header.**~~ *Settled.* `HeaderV1` was the invented "Framed" full-bleed; it is now the
@@ -601,3 +645,25 @@ Learned on the header (section 1):
 11. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
    unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
    signed off.
+12. **Three of the enquiry form's fields have no home in layout 2.** The
+   sidebar card draws no chip row, so `FIELDS.form.types` reaches layout 1
+   alone; it draws no textarea, so `message` does too; and its boxes hold the
+   field's *label*, so each row's `placeholder` column does as well. That is
+   open question 4 (the media player's Soundcloud button), 7 (the gallery's
+   socials) and 8 (the pricing tags) a fourth, fifth and sixth time, and the
+   same call was made three more times: a control the frame does not draw
+   would be worse than the absence, and `enquiryMailto` already drops the
+   type clause and the message clause, so a details-only enquiry is a
+   complete one rather than a crippled one. All three hints now say which
+   layout reads them. The `placeholder` case is the first at the level of a
+   *column of a repeater* rather than a whole field — if the addresses,
+   tags, types and placeholders should all follow the artist across layouts,
+   that is one design call for six cases at once.
+13. **Layout 2's stage photo is not editable in layout 1, and layout 1's
+   own photo is the artist.** `FIELDS.form.photo` is new and reads in one
+   layout, which is question 10's shape (the calendar's polaroid) the other
+   way round — nothing is lost by it, since a split context panel has
+   nowhere a 437px scene belongs. Worth naming only because the section's
+   two image fields are now `image` = the artist and `photo` = the scene,
+   which is the *opposite* of the header's and the video section's
+   `image`/`avatar` pair. Renaming either would move a signed-off layout.

@@ -324,6 +324,21 @@ mutated through a single `patch()` helper.
   `rowGap` — and an odd count trails one half-width cell, the pricing deck's rule; and a published
   placeholder draws at `::placeholder`'s `.45` where the canvas span draws it full, which is
   **Repertoire's accepted diff**, not a new one, and is why no fourth `.hv-*` class was added.
+  **Everything in this paragraph from "The chip starts at 0" on is layout 1's**: layout 2 is a
+  narrow sidebar card on a full-bleed mustard sheet, and it shares the seam whole rather than
+  growing one — the same `vals`, the same `errs`, the same `sent`, the same `<a href="mailto:">`
+  and the same *Write another*. What it does not draw is the chip row (so `showTypes` stays
+  `!!s.v0 && nTypes` and its mailto sends the bare `Enquiry`), the message textarea, or the
+  boxes' placeholders: its box holds the field's **label** instead, uppercased as a *string* so
+  the live input can carry it as a placeholder without also shouting whatever the visitor types,
+  which is what keeps the published first paint the canvas's picture. Its refused box thickens an
+  inset **ring** where layout 1 draws an inset rule — a rule under a 999px pill reads as a smear
+  — and its card's one line of prose is `s.formPara`, which until then no §10.2 layout drew. The
+  frame's price and its `★★★★★ 42 bookings` are numbers the artist never typed and are
+  **dropped**, the video section's rule. The stage photograph above the heading is
+  `FIELDS.form.photo`, a **third single-photo slot** beside `image` and `avatar`, because this
+  section's `image` **is** the artist: the header's and the video section's pair the other way up,
+  and layout 1 has drawn `image` as the 48px circle since it was fitted.
 - **The testimonials carousel pages, in the published tab only, and the reviews are the
   artist's.** It was the last §10.2 section that was a picture on *both* sides: its two arrows
   carried a pointer cursor and no handler, and layout 1 drew `QUOTES[0]` and nothing else, so
@@ -454,6 +469,14 @@ mutated through a single `patch()` helper.
   section photo and an emptied one does not, and the media player passes `null` for an art-less
   track row so it cannot inherit anything. **`media` has no section photo at all** — no `image`
   field, no `RETRO_PHOTOS.media` — because the player shows the artwork of the track it is on.
+  Three categories carry **two** independent single-photo slots, and `defaultImage` takes the
+  field key for them: the header's and the video section's are `image` (the scene) and `avatar`
+  (the artist), and the enquiry form's are the other way up — its `image` **is** the artist,
+  which layout 1 draws as a 48px circle, so layout 2's stage shot is a third key, `photo`.
+  `Photo` also takes `ink`, the initials placeholder's colour, defaulting to `s.muted`: `muted`
+  and `soft` are rgba of the **page's** text colour, so a section standing on its own sheet has
+  to pass a pair that reads there (`Pager`'s `idle` precedent — additive, every earlier caller
+  untouched).
 - **Reordering** is drag-by-handle *or* arrows. `SectionList` owns the drag; `dragRef` is the
   source of truth and the `drag` state only mirrors it for rendering, so pointerup commits
   what it can see rather than what the last render observed. Rows are a uniform height, so
