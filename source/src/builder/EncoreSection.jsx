@@ -17,7 +17,7 @@
 
 import { useId, useState } from 'react'
 import {
-  Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
+  Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
   Image as ImageIcon, Youtube, Instagram, Music2,
 } from 'lucide-react'
@@ -343,7 +343,11 @@ function NavLinks({ s, color, pills = false }) {
 // only becomes a link on the published page: `Tag` is a span everywhere else,
 // and the style object is the same either way, so the picture never moves. The
 // pricing tiers' pills pass no target and stay spans.
-function BookPill({ s, label, bg, fg, shadow, full = false, to, ext }) {
+// `glyph` is the §10.2 layout-2 frames' variant of the same pill: an arrow in a
+// filled disc instead of the asterisk. The disc sits flush in the pill's right
+// end rather than inside its padding, so that inset collapses to the disc's own
+// margin and the pill keeps its height.
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star' }) {
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
@@ -361,11 +365,15 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext }) {
     )
     const face = fg ?? s.pillFg
     const block = shadow ?? s.ac
+    const disc = glyph === 'arrow'
+    const discSize = pick(27, 22, 17)
     return (
       <Tag {...link} style={{
         ...row(pick('10px', '8px', '6.2px')),
         background: bg ?? s.pillBg, color: face,
-        padding: pick('10px 20px', '8px 16px', '6.2px 12.4px'),
+        padding: disc
+          ? pick('4px 4px 4px 18px', '3.5px 3.5px 3.5px 15px', '3px 3px 3px 12px')
+          : pick('10px 20px', '8px 16px', '6.2px 12.4px'),
         borderRadius: s.btnR, cursor: 'pointer',
         boxShadow: scale === 'small' ? hard(s, block, 1.9, 2.5) : hard(s, block, 3, 4),
         // The type is one of the scaled dimensions: it was the only one left on
@@ -374,7 +382,13 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext }) {
         ...labelStyle(s, pick('20px', undefined, '12.4px')),
       }}>
         {text}
-        <Asterisk size={pick(20, 16, 12.4)} color={face} />
+        {disc ? (
+          <span style={{
+            width: discSize, height: discSize, borderRadius: '999px', flex: 'none',
+            background: face, color: s.retro ? '#FBF6EA' : (bg ?? s.pillBg),
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          }}><ArrowRight size={pick(16, 13, 10)} /></span>
+        ) : <Asterisk size={pick(20, 16, 12.4)} color={face} />}
       </Tag>
     )
   }
@@ -1244,6 +1258,104 @@ function Bio({ s }) {
       </div>
     )
   }
+
+  // v1 — Bio layout 2 · Portrait + sub-cards (Figma 964:64638)
+  //
+  // An outlined cream card — eyebrow and prose at its head, the tag chips and a
+  // credit line over the Book Now pill at its foot, the frame's own daylight
+  // between them — beside a fixed portrait card whose photograph carries a
+  // caption in its floor. Desktop numbers are the 1440 frame × 0.82 (§5.5);
+  // the section's own 56px inset is dropped, because the page root's padding
+  // stands in for it. The 768 and 390 frames are not fitted yet, so `narrow`
+  // simply stacks the two columns.
+  if (s.v1) {
+    // Figma box/1 and the portrait card's mount are two different creams, and
+    // Retro's `paper` IS the page background — same literals as v0's polaroid.
+    const cream = s.retro ? '#FAECD5' : s.paper
+    const mount = s.retro ? '#FBF6EA' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    // The frame's 648px portrait card. The text card stretches to it.
+    const cardH = '531px'
+    const body = { fontFamily: s.body, fontSize: '13px', lineHeight: 1.5 }
+
+    const photoCard = (
+      <div style={{
+        position: 'relative', flex: 'none', overflow: 'hidden',
+        width: s.narrow ? '100%' : '355px',
+        height: s.narrow ? undefined : cardH,
+        aspectRatio: s.narrow ? '433 / 648' : undefined,
+        background: mount, borderRadius: '21px', padding: '8px', boxShadow: soft(s),
+        ...col('0', { alignItems: 'stretch' }),
+      }}>
+        <div style={{
+          position: 'relative', flex: 1, minHeight: 0, borderRadius: '18px', overflow: 'hidden',
+          ...col('0', { justifyContent: 'flex-end' }),
+        }}>
+          <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={54} /></div>
+          <div style={{ position: 'relative', padding: '16px' }}>
+            <div style={{
+              ...row('10px'), background: cream, borderRadius: '7px', padding: '15px 16px', color: ink,
+            }}>
+              <div style={col('3px', { flex: 1, minWidth: 0 })}>
+                <span style={labelStyle(s, '20px', { whiteSpace: 'normal' })}>{s.brand}</span>
+                <span style={{ ...body, fontSize: '10px', lineHeight: 1.4 }}>{s.kicker} · {s.location}</span>
+              </div>
+              <span style={{
+                width: '30px', height: '30px', borderRadius: '999px', flex: 'none', color: ink,
+                background: (s.retro && s.chips[0]?.bg) || s.soft2,
+                ...row('0', { justifyContent: 'center' }),
+              }}><ChevronsRight size={15} /></span>
+            </div>
+          </div>
+        </div>
+        <Grain s={s} exact blend="screen" opacity={0.5} radius="21px" />
+      </div>
+    )
+
+    const textCard = (
+      <div style={{
+        flex: 1, minWidth: 0, background: cream, color: ink,
+        border: `1px solid ${ink}`, borderRadius: '25px', padding: '25px',
+        height: s.narrow ? undefined : cardH,
+        ...col('0', { justifyContent: 'space-between' }),
+      }}>
+        <div style={col('21px', { alignItems: 'flex-start' })}>
+          <span style={labelStyle(s, '13px', {
+            border: `1.2px solid ${(s.retro && s.chips[3]?.bg) || s.line2}`,
+            borderRadius: '999px', padding: '5px 12px',
+          })}>/Featured</span>
+          <p style={{ margin: 0, ...body }}>{s.bioP1}</p>
+        </div>
+        <div style={col('8px')}>
+          {/* The frame drops the Tags section's own chip row in here, at its
+              own width — which is what wraps five chips onto two lines. */}
+          <div style={{
+            display: 'flex', flexWrap: 'wrap', gap: '5px', maxWidth: '217px', padding: '18px 0',
+          }}>
+            {s.chips.map((c, i) => (
+              <span key={i} style={{
+                background: c.bg, color: s.retro ? '#FBF6EA' : c.fg, borderRadius: '5px',
+                fontFamily: s.body, fontSize: '13px', lineHeight: 1.26, padding: '3px 7px',
+                whiteSpace: 'nowrap',
+              }}>{c.label}</span>
+            ))}
+          </div>
+          <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
+            {/* The frame's own credit line, two-tone the way it sets it. */}
+            <span style={body}>
+              <span style={{ color: s.ac }}>Five years of </span>
+              rooms read &amp; floors moved
+            </span>
+            <BookPill s={s} to={s.bookTo} glyph="arrow" />
+          </div>
+        </div>
+      </div>
+    )
+
+    if (s.narrow) return <div style={col(s.gGap)}>{photoCard}{textCard}</div>
+    return <div style={row('25px', { alignItems: 'stretch' })}>{textCard}{photoCard}</div>
+  }
+
   return (
     <div style={col('20px', { alignItems: 'center', textAlign: 'center', maxWidth: '760px', margin: '0 auto' })}>
       <span style={kickerStyle(s)}>About</span>

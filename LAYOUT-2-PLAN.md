@@ -26,7 +26,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | # | Cat | Figma node | Frame name | Size | Status |
 |---|---|---|---|---|---|
 | 1 | `header` | `964:64637` | Headers — **E · Feature Spread** — Desktop | 1440 × 888 | todo — see *Open questions* |
-| 2 | `bio` | `964:64638` | Bios — **F · Portrait + sub-cards** — Desktop | 1440 × 760 | todo |
+| 2 | `bio` | `964:64638` | Bios — **F · Portrait + sub-cards** — Desktop | 1440 × 760 | **done** (desktop) |
 | 3 | `media` | `964:64639` | *Section* wrapper — see note below | 1440 × 965 | todo |
 | 4 | `video` | `964:64645` | Video Players — **A · Dashboard player** — Desktop | 1440 × 782 | todo |
 | 5 | `repertoire` | `964:64646` | Repertoire — **G · Mobile list** — Desktop | 1440 × 792 | todo |
@@ -65,9 +65,21 @@ One section per session. Clear context between sections; git and this file are t
    Use `get_metadata` for the subtree when you need child ids and sizes.
 3. Implement it as the `s.v1` branch of the section's component in `EncoreSection.jsx` — see
    *Conventions*. Numbers are the 1440 values × 0.82.
-4. Verify: run the app, put the section on the page at layout 2, and compare the desktop render
-   against the Figma render. Compare **digests, not screenshots** where geometry matters — see the
-   `verifying-the-published-tab` note, which also carries every trap for driving the published tab.
+4. Verify with the **preview harness** — `source/preview.html` + `source/src/preview.jsx`, added
+   for this pass. It renders one section at one canvas with no editor chrome, so nothing has to be
+   clicked and no popup has to be driven:
+
+   ```
+   cd source && npm run dev
+   # then open, or point chrome-devtools MCP at:
+   http://localhost:5173/preview.html?cat=bio&arch=1&w=desktop     # &w=tablet | mobile
+   ```
+
+   `arch=1` is layout 2 (`s.v1`); `arch=0` renders the fitted layout 1 beside it for comparison,
+   and `theme=1…4` checks that the other four templates still render flat. Screenshot it against
+   the Figma render, then read the real geometry with `evaluate_script` and compare **numbers, not
+   screenshots** — `getBoundingClientRect()` on the section's own boxes. The
+   `verifying-the-published-tab` note still applies for anything that has to be checked live.
 5. Commit, with the section named in the subject.
 6. Flip the row's Status to `done <sha>`, add anything the next section needs to *Conventions*,
    and commit that too. Then clear.
@@ -104,6 +116,22 @@ Everything a fresh session would otherwise re-derive. Append to this list as the
   `T.name === 'Retro'`; **Remove** writes `null`, not `undefined`.
 - **`EncoreSection` stays inert.** No new interactivity unless it is gated on `s.live`, and no new
   React imports beyond `useId`/`useState`.
+
+Learned on the bio (section 2):
+
+- **The section is shorter than its frame, by design.** The frame's 56px inset × 0.82 is 46, and
+  the page supplies `padY` 80 / `padX` 64 instead — so a 760-high frame lands 691 high and its
+  content column is 1052 wide, not 1089. Fit the **card**, not the frame height.
+- **`BookPill` now takes `glyph="arrow"`** — the layout-2 frames swap the asterisk for an arrow in
+  a filled disc flush in the pill's right end. The header's layout-2 frame uses the same pill.
+  Default is `"star"`, so every fitted layout-1 caller is untouched.
+- **Retro's chips are cream on every hue** in these frames, including the light mustard — the
+  palette's own `c.fg` computes to ink there, so pass `s.retro ? '#FBF6EA' : c.fg`.
+- **The preview harness has no Tailwind preflight unless `index.css` is imported**, and without it
+  `box-sizing` is `content-box`, which silently inflates every padded box by its padding. It is
+  imported; do not remove it, and distrust any geometry digest that is off by exactly a padding.
+- Two creams, both literal under Retro, whose `paper` IS the page ground: `#FAECD5` (Figma box/1 —
+  the text card, the caption card) and `#FBF6EA` (the portrait card's mount, and cream type).
 
 ## Open questions
 
