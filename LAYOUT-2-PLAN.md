@@ -72,22 +72,23 @@ Three of those rows need their own note.
 ## The narrow masters
 
 The next pass. One section per session as before, and each session fits **both** narrow canvases
-of its section unless the two turn out to be different compositions. Every row is `todo`.
+of its section unless the two turn out to be different compositions. Every row is `todo` unless a
+Status says otherwise.
 
-| # | Cat | Tablet node (768) | Size | Mobile node (390) | Size |
-|---|---|---|---|---|---|
-| 1 | `header` | `984:34438` | 768 × 1024 | `984:34636` | 390 × 926 |
-| 2 | `bio` | `984:34877` | 768 × 1138.8 | `984:34834` | 390 × 881.3 |
-| 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 |
-| 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 |
-| 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 |
-| 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 |
-| 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 |
-| 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 |
-| 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 |
-| 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 |
-| 11 | `testimonials` | `986:11675` | 768 × 796 | `986:11701` | 390 × 870.3 |
-| — | `footer` | `986:11787` | 768 × 721 | `986:11727` | 390 × 721 | 
+| # | Cat | Tablet node (768) | Size | Mobile node (390) | Size | Status |
+|---|---|---|---|---|---|---|
+| 1 | `header` | `984:34438` | 768 × 1024 | `984:34636` | 390 × 926 | **done** `16304dc` |
+| 2 | `bio` | `984:34877` | 768 × 1138.8 | `984:34834` | 390 × 881.3 | todo |
+| 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 | todo |
+| 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 | todo |
+| 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | todo |
+| 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | todo |
+| 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | todo |
+| 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | todo |
+| 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 | todo |
+| 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 | todo |
+| 11 | `testimonials` | `986:11675` | 768 × 796 | `986:11701` | 390 × 870.3 | todo |
+| — | `footer` | `986:11787` | 768 × 721 | `986:11727` | 390 × 721 | out of scope |
 
 Five things about these that a fresh session would otherwise re-derive.
 
@@ -688,6 +689,66 @@ Learned on the testimonials (section 11):
   `FIELDS`, in `DEFS` and in `sectionVm`. Check what the section already
   has before writing a literal sentence — the bio's credit line
   (question 3) is the case where nothing was available.
+
+Learned on the header's narrow masters (section 1, and the first of the narrow pass):
+
+- **The narrow frames are the desktop component at its *own* numbers, and only
+  the type ramps.** Every box dimension in both header masters is the 1440
+  frame's unscaled value — the mount's padding is 20 at 768 where the 1180
+  canvas draws 16, the rail 90 where it draws 74, the card's rule 3 where it
+  draws 2.5 — so a padding can be *larger* at 768 than at desktop and still be
+  right. What does ramp is the type: `size/label-lg` goes 24 → ~19 → ~17 across
+  the three widths. Transcribe the boxes, measure the type.
+- **`var(--size/…, N)` is the component's default, and at these widths that
+  bites three times.** The wordmark emits 24 at both narrow widths and measures
+  20 and 17; the rail label emits 20 and measures 17 and 16; the hero emits
+  `display-lg 96` at both and is 59.5 at 768 (the 768 text node's own 106 over
+  two lines at leading .89) and 40 at 390. **A node's measured width or height
+  is a fact; a token in the emitted CSS is a default.** Where they disagree the
+  geometry wins.
+- **Divide the face out before comparing any width.** The frames' face runs
+  **~0.76 of Anton's set width** (and Fraunces is wider than Soulway the same
+  way — the calendar's lesson). So "our line is 30% longer than the frame's" is
+  the expected reading at the *right* size, not evidence of the wrong one. Two
+  ways to size against it: match the ink **cap band**, or divide the measured
+  set width by 0.76. They agreed to within a pixel on every string here; the
+  raw width alone said 16 where the truth was 20.
+- **When the wider face will not fit, the decoration is what gives way.** The
+  390 rail is 169 tall and holds a globe, `s.location` and a rule. At the
+  frame's own label size our line ate the lot, clipped, and pushed the rule out
+  of the rail entirely. `flex: 0 1 auto` on the rule and `overflow: hidden` on
+  the rail is the fix: the rule shrinks from 37 to whatever is left, and a long
+  city clips the way the frame's own `overflow-clip` rail does. Do not shrink
+  the artist's line to protect a hairline.
+- **A frame's *count* is still the component's default, even in the chrome.**
+  The 768 nav draws three links; `navLinks` is the artist's page and the seeded
+  eleven sections give nine, which at the master's own 16px is 765px of type in
+  a 688px canvas. The burger therefore holds at 768 — the bio's five-chip rule
+  reaching the navigation — and what the masters settle is the *capsule* the
+  burger stands in (the 390 one draws the burger inside the very pill the 768
+  one fills with links), the wordmark, Listen and the pill's scale. Check the
+  real count against the real width before transcribing a nav.
+- **A rotated square in the metadata is a bounding box; a rotated *disc* is
+  not.** The seal's `173.02` at 768 is the 1.38 inflation the memory note
+  describes, and the disc is 125. But because a circle's bbox is itself, the
+  "the 32° rotation adds ~20 to the box" worry the desktop fit wrote down was
+  never real — both narrow seals sit inside the root's padding at the frame's
+  own offsets (centred 63 from the mount's right edge and 4.6 above its bottom
+  at 768; 55 and 0 at 390).
+- **`Checkerboard`'s `cell` is the repeating tile, which is two squares wide.**
+  The desktop fit read it as the square and drew four 5px rows where its own
+  comment claimed two of 9.7. Its `height` default is one tile, so stating
+  `cell` alone is both correct and self-documenting. Worth grepping for: any
+  caller passing `cell` *and* a height is asserting something.
+- **Take the desktop before/after digest by `git stash`, not from a second
+  build.** One tab, one origin, one window size: stash the file, reload, walk
+  the section into `localStorage`, pop, reload, diff in the page. It caught
+  exactly one row here (the checker) out of 86 and cost two navigations — far
+  cheaper than the two-server recipe in `verifying-the-published-tab`, which
+  exists for comparing two *builds*.
+- **`headerFamily()` renders `HeaderV1` under Retro alone**, so the header is
+  the one §10.2 section where the `theme=1…4` check does not apply. Every other
+  section still needs it.
 
 ## Open questions
 

@@ -216,7 +216,11 @@ mutated through a single `patch()` helper.
   the builder to its own top); `navHref()` in `EncoreSection` is the whole of that gate.
   `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
   because Minimal's Shows and Book can resolve to the same section. Below `desktop` the links
-  collapse to `NavMenu`'s burger, in all six Retro layouts.
+  collapse to `NavMenu`'s burger, in all six Retro layouts. Layout 2's 768 master draws the
+  links instead, and is **not** followed: its three are the Figma component's default, where
+  `navLinks` is the artist's page and the seeded eleven sections give nine — 765px of type in a
+  688px canvas. What that master does settle is the bordered capsule the burger stands in, which
+  its own 390 sibling draws the same way.
 - **The pricing cards filter, in the published tab only.** The Solo / Trio / Band selector was a
   constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's
   (`FIELDS.pricing.tiers`, below) and the chip row is **derived from their tags** by the same
