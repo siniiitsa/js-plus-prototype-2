@@ -68,16 +68,21 @@ This is the one architectural rule worth knowing before editing anything (§12.9
   painted with arbitrary hex values taken at runtime from the active theme's palette, plus six
   derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
   `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
-  inherit `currentColor` and so stay theme-driven; from React it takes `useId` and — for the two
-  things that have live controls, Repertoire and the header's burger menu — `useState`, and
-  nothing else.
+  inherit `currentColor` and so stay theme-driven; from React it takes `useId`, `useState` — for
+  the things that have live controls: Repertoire, the header's burger menu, the media player, the
+  gallery, the events map, the pricing cards, the booking calendar and the enquiry form — and
+  `useRef`, for the media player's one
+  `<audio>` element, which is commanded rather than described. There is no effect anywhere in the file, and nothing else is imported.
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
 properties set per section at runtime.
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
-rendering, so `EncoreSection` does zero colour maths.
+rendering, so `EncoreSection` does zero colour maths. The enquiry form is the one exception to
+"fully-resolved": `vm.formMailto` and `vm.formCheck` are closures rather than values, because
+their inputs are the visitor's keystrokes and `sectionVm` never sees those. Every address, label
+and case decision is still bound in `sectionVm`, so the renderer composes nothing.
 
 ## Deviations from SPEC.md
 
@@ -176,8 +181,10 @@ the only module that imports them.
   `c.tracks[i].image` rather than in a section-level array, so the picture moves with the track
   instead of slot 3 silently meaning track 3; `defaultTrackArt()` seeds the untouched list and a
   sixth track the artist adds simply has none. `Photo` distinguishes `src` left off (fall back to
-  the section's own photo) from `src={null}` (this slot has no picture), which is what keeps the
-  now-playing sleeve off an art-less track row.
+  the section's own photo) from `src={null}` (this slot has no picture), which is what stops an
+  art-less track row inheriting one. The media player is also the one section with **no photo of
+  its own**: the player shows the artwork of the track it is on, so the sleeve is track one's
+  until a visitor picks another.
 - The layout picker, the template spotlight and the header setup modal all resolve through the
   same `sectionVm()`, so each shows the photography without any extra wiring.
 
@@ -206,7 +213,8 @@ That distinction is the whole design, and it buys two things:
 - **It is interactive, where a control has been made real.** `sectionVm` carries a **`live`**
   flag, true only in the published tab, as the seam a control branches on: the same component
   renders the editor canvas, and that is deliberately a picture of a website, so anything
-  interactive has to be off there. **Three things read it.**
+  interactive has to be off there. **Ten sections read it**, plus the four sets of outbound
+  links below.
 
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
   the artist typed, and its pager is derived from the result — all three inert on the canvas,
@@ -219,18 +227,248 @@ That distinction is the whole design, and it buys two things:
   Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
   before, layout 1's glyph opened nothing and layouts 2–6 dropped their links outright, so a
   published phone had no navigation at all. The panel is deliberately thin — no Escape key, no
-  scroll lock, no focus trap — because each of those wants an effect, and `EncoreSection`'s whole
-  React surface is `useId` and `useState`.
+  scroll lock, no focus trap — because each of those wants an effect, and `EncoreSection` has no
+  effects.
 
-  **The media player's Soundcloud button.** The one *outbound* link on the page: `FIELDS.media`
-  takes an address, `extUrl()` normalises it to an absolute URL — a schemeless one would resolve
-  against `<base href>`, i.e. the builder — and `extLink()` turns the pill into an `<a>` with
-  `target="_blank"`, since the delegated listener below swallows fragments and nothing else. An
-  empty field, or the canvas, leaves it the picture it always was.
+  **The media player, which plays.** The section owns one `<audio>` element, rendered only when
+  `live`. A click anywhere on a track card loads that track and starts it; the transport under the
+  sleeve is a real play/pause, previous and next, wrapping at both ends; the now-playing title,
+  sleeve, clock and progress bar are the element's own state, and `ended` moves to the next track.
+  Each row carries its own address (`FIELDS.media.tracks` grew an `audio` field beside `image`),
+  normalised through `extUrl()` like the Soundcloud button below, and the five seeded demo tracks
+  carry `TRACK_AUDIO` — remote files, so the double-clickable build is audible only online. Two
+  details are load-bearing: the source is assigned to the element imperatively, never rendered as
+  a `src` prop, because a re-render four times a second must not reload the file under the
+  playhead and Safari will not autoplay a freshly mounted element; and `playing` mirrors the
+  element's own `play`/`pause` events rather than the click handlers, so a browser that refuses
+  the first `play()` cannot leave the button lying. The card names and shows the track the player
+  is on — track one until a visitor picks another — so `FIELDS.media` no longer offers a
+  now-playing track or sleeve of its own: a separately editable copy of what the card shows could
+  only contradict the list it sits beside, and the section is now the one with no photo slot at
+  all. Nothing is *marked* as playing, and the clock stays at 00:00, until the first pick; the
+  canvas keeps `NOW_PLAYING`'s decorative clock, because the Figma frame draws a player caught
+  mid-song.
 
-  Everything else the page draws — the gallery filmstrip, the players, the testimonials carousel,
-  the events map's pager — is still a static span, and none of them needs new data to change that.
-  The enquiry form's *submit* is the one thing that cannot be front-end-only.
+  **The gallery, which browses.** The seven-tile strip is a real filmstrip on the published page:
+  every thumbnail is clickable, the rail's two arrows step through the slots and wrap at both
+  ends, and "Back to beginning" rewinds. The tile counter and the large viewer follow. State is a
+  single `pick`, starting at `-1` — nothing chosen — so both sides open on `galActive()` and the
+  published tab's first paint is the canvas's picture by construction. Every slot is navigable,
+  not just the filled ones, so the count never shifts under the visitor as photos are added or
+  removed. The mobile frame draws four of the seven tiles; rather than stranding photos 5–7 where
+  no phone can reach them, that window of four slides once the visitor walks past the fourth — and
+  it is anchored at 0 for the first four, so the canvas's mobile picture is unchanged.
+
+  **The gallery's three social rows, and the media player's Soundcloud button.** The page's
+  *outbound* links. `FIELDS.gallery` grew `youtube`, `instagram` and `tiktok` beside
+  `FIELDS.media`'s `soundcloud`; `GALLERY_SOURCES` names the key each row reads, so the first
+  row — the page's own strip, which the arrows already drive — has none. `extUrl()` normalises
+  each to an absolute URL, since a schemeless one would resolve against `<base href>`, i.e. the
+  builder, and `extLink()` turns the row or the pill into an `<a>` with `target="_blank"`, since
+  the delegated listener below swallows fragments and nothing else. An empty field leaves the
+  Soundcloud pill the picture it always was — but an empty *gallery* row is not published at all.
+  A tile that promises a destination it cannot go to is worse than no tile, and unlike the pill,
+  which sits alone, these sit in a row that reads as a list of where to follow the artist. The
+  canvas still draws all four: it is the reference design, the three fields start empty, and an
+  untouched page would otherwise open on a single tile with no hint that the rest are a field away.
+  One layout consequence: the mobile source row now **wraps**
+  onto a second line instead of letting the frame clip its right edge. Four content-sized tiles
+  come to ~430px against a 390 frame, and the clipped one was TikTok — fine while the rows were
+  decoration, not once the fourth carries an address. Wrapping keeps every tile at the size Figma
+  draws it, and the row's 20px gap is the row gap too, so the open tile's offset shadow clears.
+
+  **The events map, which pages and pairs.** Its gig list became the artist's
+  (`FIELDS.map.gigs`, a `GigsField` repeater of `{ venue, city, time, month, day, link }`), and a
+  list the artist owns cannot keep a pager that hardcodes twenty pages over five rows. So the
+  pager is derived the way the repertoire's is, `PAGES` is deleted, and — again like the
+  repertoire's — it is not drawn at one page: the five seeded gigs are one page, so the reference
+  picture simply no longer shows a pager. Five to a page is `PINS.length`, not a literal: one page
+  of gigs is one set of distinct pin positions, so the map redraws with the pager and never lights
+  the same dot twice. Each gig carries the pin it lights, paired by index in `sectionVm`, and
+  clicking either side lights both — a click, never a hover, because a phone has none and a
+  `mouseleave` reset would fight the pin. `sel` starts at `-1` and indexes the whole list, so
+  paging away from a lit gig and back finds it lit. A gig with a tickets link is an `<a
+  target="_blank">`, so the one click both opens the tab and lights the pin; a gig without one
+  stays the picture it was, the Soundcloud rule rather than the gallery's — a gig is a show, not
+  a tile promising somewhere to go. `Pager`'s buttons also stopped showing a pointer when they
+  carry no handler, which is what a pager on the canvas is.
+
+  **The pricing cards, which filter.** The Solo / Trio / Band selector above the cards was a
+  constant — `TIER_MODES`, three labels nothing could edit, over three cards hardcoded to the
+  seed. The packages are the artist's list now (`FIELDS.pricing.tiers`, a `TiersField` repeater of
+  `{ name, price, tags, blurb, feats }`), and the selector is **derived from the tags they type**,
+  by the same `repChips()` the repertoire's chips come from: the three seeds carry Solo, Solo /
+  Trio / Band and Trio / Band, so the reference row is redrawn out of content, behind the `All`
+  chip that clears the filter. That extra chip is the intended diff from the Figma frame, the way
+  the events map losing its pager was; the row is not drawn at all when the packages carry no
+  tags, since a filter with nothing to filter is the pager's case again. The cards key on the
+  package's index in the *whole* list, not its place in the filtered one — they cross-fade their
+  background, and a positional key would animate one card's hue into another's on every chip
+  click — while the tilt and the mobile deck's 18px overlap keep the rendered index, so the deck
+  reads as a deck at any count. Three columns stay three: a fourth package wraps to a second row
+  rather than squeezing the first three. Blurbs, feature lists and the `/event` suffix became
+  content on the way through (the suffix is a section field, the rest per row), and each card's
+  Book Now pill now scrolls to the booking section — `vm.tierBookTo`, which is the header's
+  `bookTo` minus `pricing` itself, since `CTA_TARGETS.book` ends there and the pill must not
+  scroll the visitor to the section they are already reading.
+
+  **The booking calendar, which navigates and picks.** It was the last §10.2 section that was
+  entirely a picture: its month arrows and its thirty day cells carried a pointer cursor and no
+  handler at all, in both modes, and the month itself was three constants and a sentence
+  (`CAL_MONTH`, `CAL_LEAD`/`CAL_LENGTH`, `CAL_PICKED`, `CAL_ENQUIRY`). The whole section is built
+  from **one date** now — `FIELDS.calendar.open`, the month the grid opens on and the day it opens
+  picked — plus the dates the artist is already taken on (`booked`) and the hour the foot line
+  names (`time`). A visitor turns the month, picks a free day, and the line along the foot follows
+  it; the pill beside that line takes them to the enquiry form.
+
+  Every sum over a date goes through `Date.UTC` in `data.js`, and `sectionVm` resolves the whole
+  twelve-month window — labels, cells, booked flags and one composed enquiry line per cell — so
+  `EncoreSection` looks a line up rather than working a date out, the way it draws the pin
+  `sectionVm` paired with a gig. The arrows **wrap** at both ends of that window rather than
+  clamping, the media player's rule: a clamped first month would open the published page on a
+  dead-looking arrow, which is a diff from the canvas. `sel` is an ISO date rather than a cell
+  index, because it has to survive the month turning — it names a day, not a square of whatever
+  month is on screen — and the empty string is this section's `-1`, so `vm.calPick` renders until
+  a visitor picks something and the published first paint is the canvas's picture by construction.
+  Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
+  blocked it. Booked days are muted and struck through and take no handler, which is a **content**
+  state rather than a live one — it renders on the canvas too, and since the seed blocks nothing
+  the reference picture does not move. Two intended diffs from the Figma frame: the foot row gains
+  the Book pill (`vm.calBookTo`, `bookTo` minus `calendar` itself, the tier pills' rule), which is
+  what turns `cta` from a field that edited nothing into a real control; and a month that needs
+  six rows simply grows one, where June needs five.
+
+  Its editor is the fifth structured field and the first that is not a repeater: `BookedField` is
+  a month of the artist's own to click, paging the same twelve-month window the section does,
+  because one row per blocked date is the wrong shape for a June with eight of them. `para` went
+  with `DEFS.calPara` — it rendered in neither calendar layout.
+
+  **The enquiry form, which fills in and sends.** It was the last §10.2 section whose every
+  control was a picture — and the one the rest of the page points at, since `CTA_TARGETS.book`
+  starts at `form`, so the header's *Book Now*, the pricing pills and the calendar's foot pill all
+  scrolled the visitor to a set of `<span>`s they could not type into. Four of its seven values
+  also bypassed the content model outright (`FORM_PROMISES`, `FORM_FIELDS`, `FORM_TYPES`,
+  `FORM_MESSAGE` were constants), and `email` was a field that edited nothing. All of it is the
+  artist's now: the promises are a newline textarea, the event types a comma one, the message
+  placeholder a text field, and the boxes are `FIELDS.form.fields` — a `FormFieldsField` repeater
+  of `{ label, placeholder, kind }`, the fifth repeater and the sixth structured editor, and the
+  only one with a per-row select. `kind` is `text | email | number`, and it is what makes
+  validation derivable rather than guessed: with a label and a placeholder alone there is no way
+  to know which box holds the address a reply goes to.
+
+  **The submit is a `mailto:`**, and `email` is what it is addressed to. There is no backend and
+  never will be, so handing the enquiry to the visitor's own mail app is the one delivery that is
+  genuinely front-end-only — and it is honest, where an inline "Sent!" over nothing is not.
+  `enquiryMailto()` composes it in `data.js`, beside `extUrl()`, whose comment already said a
+  `mailto:` is passed through untouched; `sectionVm` binds that over the address and the labels
+  and hands the closure down, so `EncoreSection` — which imports nothing but React and lucide —
+  still composes nothing of its own. The pill is an **`<a href>`, and never a `<form>`**: a form
+  here has no action, so submitting it, which an Enter key in any text box does, would post to
+  `<base href>` — the opener's URL — and the published tab would reload into the builder. That is
+  the `document.write` failure through a second door, and with no form element there is no
+  implicit submission either. Rendering the address on the anchor rather than calling
+  `location.assign` in a handler is also what makes the whole thing verifiable: fill the boxes and
+  read `getAttribute('href')`. An empty address composes to `''` and the pill goes back to being
+  the span it always was — the Soundcloud button's rule rather than the gallery's, because a form
+  the artist has not addressed is still the picture their page is built around.
+
+  Three details are worth naming. The event chip starts at **0**, where the player's `cur`, the
+  gallery's `pick`, the map's `sel` and the calendar's `''` all start at "nothing chosen": here
+  the reference picture *is* chip 0 filled, and a form that defaults its first choice is what a
+  form does — pricing's `active` pins 0 on the canvas for the same reason. The flat fallback draws
+  no chip row and never has, so it sends the bare `Enquiry` rather than claiming a type the
+  visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
+  out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
+  box does not grow — under one prompt line. Errors are `useState`, set on a refused submit and
+  cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
+  valid submit swaps the mustard half alone for a confirmation that prints the address in plain
+  text, since a browser that opened no mail app must still show one, and *Write another* comes
+  back with what was typed.
+
+  One layout consequence, measured off the frames rather than assumed: the boxes are paired two
+  to a row in `sectionVm` (`vm.formRows`) rather than auto-flowed through one grid. All three
+  frames space the two fields *inside* a row by 12 (10 at 390) and the rows themselves by the
+  panel's own 14, and a single grid has one `rowGap`; an odd count trails one half-width cell,
+  which is the pricing deck's rule again. A published placeholder draws at `::placeholder`'s .45
+  where the canvas span draws it at full — Repertoire's box has always done that, so it is an
+  accepted diff rather than a new one, and no fourth `.hv-*` class was added for it.
+
+  **The testimonials carousel, which pages.** It was the last §10.2 section that was a picture
+  on *both* sides rather than only on the canvas: the two arrows flanking the quote card carried
+  a pointer cursor and no handler in either mode, and layout 1 drew `QUOTES[0]` and nothing else,
+  so the other two seeded reviews could not be reached at all. Three flat keys reached that one
+  review — `quote`, `who`, `role` — the small date line above the quote was editable by nothing,
+  and no field could add a fourth review or drop one. The reviews are now the artist's list
+  (`FIELDS.testimonials.quotes`, a `QuotesField` repeater of `{ quote, who, role, when }` — the
+  sixth repeater and the seventh structured editor), and
+  on the published page the arrows walk them, wrapping at both ends the way the calendar's
+  months and the player's tracks do.
+
+  `cur` starts at **0** rather than the "nothing chosen" `-1` the player, the gallery and the map
+  start at: the frame draws a filled card, so here the picture already *is* a choice — the
+  enquiry form's event chip again. It is clamped against the list, because the artist can delete
+  the review the visitor happens to be on and Publish re-renders a tab that is already open. The
+  arrows are **not drawn at one review**, which is the pager's rule and the pricing chips'; that
+  is derived from the list rather than from `s.live`, so it holds on the canvas too, and the
+  desktop row then centres the card instead of standing it against the gutter. The seeded three
+  keep the reference picture, so the only diff to the Figma frames is the cursor the canvas
+  arrows no longer carry over nothing.
+
+  Every value on the card is emptiable now, so each is rendered or not rather than printed blank,
+  and the attribution is composed in `sectionVm` as `vm.quotes[].byline` — the calendar's
+  one-composed-line-per-cell rule, and what keeps a bare separator off a card whose role has been
+  cleared. The two pills below it are still the reviewer and the role, which is the frame's own
+  reading of the card, so they repeat the attribution deliberately. An emptied list keeps the
+  card, its two rotated backs, the torn edge and the grain and prints one message inside it, the
+  pricing deck's empty state: the section is a composition, and a hole where the card stands is
+  not one of its states. `vm.quote1` is gone with the flat keys, which also closes the three-up
+  layout's old `i === 0` seam — every card there is the artist's now, and every quote is cased,
+  where only the first used to be. There is no autoplay and no swipe: both want an effect or
+  touch state, and `EncoreSection` still has neither.
+
+  **The footer, which navigates.** It was the last §10.2 section that was a picture on both
+  sides, and the only one whose links were dead by the *header's own* rule: `linkCol` drew
+  `<a href="#">`, which is precisely what `navHref()` had removed everywhere else — the published
+  tab's delegated listener swallows a bare `#`, and on the canvas it jumps the builder to its own
+  top. The Book pill beside them was passed no target, so it was a `<span>` on both surfaces, and
+  its label read the header's `cta1`, a key no footer field named. `FOOTER_LINKS` was two
+  hardcoded columns of four strings; the sitemap is the artist's now
+  (`FIELDS.footer.links`, a `LinksField` repeater of `{ label, to, url }` — the seventh repeater
+  and the eighth structured editor), and on the published page every link either scrolls to its
+  section or opens an address in a new tab.
+
+  It is the first repeater whose row carries two *kinds* of target, which is `BookPill`'s own
+  `ext ? … : to` seam moved down to a row: `to` is a section id, or the sentinel `link`, and only
+  a `link` row reads `url` — and only a `link` row renders the box for it, because an address
+  field standing empty under eight section rows is noise rather than an affordance. Its options
+  are `FOOTER_TARGETS`, every category a page *can* carry rather than the ones this one does: a
+  Radix `Select` whose value names no item blanks its trigger, so a link to a section since
+  deleted must still read as what it points at, and a link can be aimed at a section not yet
+  added. Resolving the target against the actual page is `sectionVm`'s job, and §4.3a had already
+  written down what happens when it fails — the label keeps its place in the design and simply
+  does not link. That is also the whole of the footer on a blank page, exactly as the header's
+  nav is empty there.
+
+  The two columns are derived rather than stored. The frames draw four and four, so the list is
+  halved with the remainder in column one — the pricing deck's odd-count rule, and column one is
+  the one the pill stands in, so it is the one that should run long — and an empty second column
+  is dropped rather than rendered as a `nav` with no children, `links` being a flex row where an
+  empty child still spends its gap. The pill takes `vm.bookTo` with no self-exclusion filter,
+  unlike the tier pills' and the calendar's: `footer` is not in `CTA_TARGETS.book`, so it can
+  never point at the section it stands in. An emptied `cta` drops it, which the calendar's foot
+  pill does not do — there the pill sits at the end of a row of type, here it is the block the
+  column is built round, and a wordless block is not one of the section's states. Two smaller
+  gaps close with it: `showBadge` is the header's own key and `vm.showBadge` already read this
+  section's content, so the seal was hidable by nothing only because no field here named it; and
+  `vm.footerCta` is deliberately **uncased** where the statement and the labels are cased,
+  because the pill has always drawn the uncased `cta1` and casing it would upper-case the
+  footer's pill on Grunge and Pop. `FOOTER_CREDIT` stays a constant on purpose — it is the
+  platform's byline, not the artist's. The footer keeps no local state: every link is an anchor
+  whose href is `navHref()` or `extLink()`, so it needs none of the `useState` the sections above
+  it take.
+
+  Everything else the page draws — the audio and video sections — is
+  still a static span, and neither needs new data to change that.
 
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
 domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the
@@ -238,7 +476,9 @@ builder's own URL and reload into the builder. That is also why a nav link is ne
 `<base href>` pins the popup's fragment hrefs to the opener's URL, so one delegated click listener
 swallows every `#…` and does the scroll itself. And the tab is a child of the editor, so
 reloading or closing the editor freezes it. Publishing again re-renders the tab that is already
-open rather than piling up tabs.
+open rather than piling up tabs. One consequence has a sound now: the `<audio>` element lives in
+the popup's own document, so a frozen tab keeps *playing* while its controls are dead. Close the
+tab to stop it.
 
 ## Scope boundaries
 

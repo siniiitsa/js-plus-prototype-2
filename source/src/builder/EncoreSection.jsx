@@ -10,12 +10,22 @@
 // lucide-react is the one component/style import: its icons inherit
 // `currentColor`, so they stay theme-driven, and each takes the px size given
 // in the spec rather than a `size-*` class. React itself is imported for
-// `useId` and — since Repertoire's search and chips, and then the header's
-// burger menu, became real controls on the published page — for `useState`,
+// `useId` and — since Repertoire's search and chips, then the header's burger
+// menu, then the media player's transport, then the gallery's arrows and
+// thumbnail strip, then the events map's pager and its pin/row pairing, then
+// the pricing section's filter chips, then the booking calendar's month
+// arrows and its day picking, and now the enquiry form's boxes, its
+// event-type chips and its submit
+// became real controls on the published page — for `useState`,
 // which is gated on `s.live` throughout (§12.7: the editor canvas stays a
-// picture of a website).
+// picture of a website). `useRef` joined them for the media player's one
+// <audio> element, which has to be commanded rather than described: its
+// source is assigned imperatively so a re-render cannot reload it, and
+// Safari will not honour autoplay on a freshly mounted element. That is the
+// whole of this file's React surface; there is still no effect anywhere in
+// it, because every clock the player reads arrives as an event prop.
 
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search, MapPin,
@@ -250,6 +260,14 @@ const navHref = (s, to) => (s.live && to ? `#${to}` : undefined)
 const extLink = (s, url) => (s.live && url
   ? { href: url, target: '_blank', rel: 'noopener noreferrer' }
   : null)
+
+// Seconds → mm:ss, for the media player's two clock labels. A track over an
+// hour long still counts in minutes; nothing here draws a third field. NaN is
+// what `duration` reads before the metadata arrives, hence the guard.
+const clock = (sec) => {
+  const v = Number.isFinite(sec) && sec > 0 ? Math.floor(sec) : 0
+  return `${String(Math.floor(v / 60)).padStart(2, '0')}:${String(v % 60).padStart(2, '0')}`
+}
 
 // The hamburger, and the panel behind it on the published page.
 //
@@ -629,9 +647,10 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // whole point of giving it its own upload.
 // `src === undefined` — the prop left off entirely — is what falls back to the
 // section's own photo; `src={null}` is a caller saying "this slot has no
-// picture", and must not inherit it. The media player depends on the
-// difference: its section photo is the now-playing sleeve, and an art-less
-// track row would otherwise wear it.
+// picture", and must not inherit it. The gallery strip depends on the
+// difference: an empty slot there shows the section photo, an emptied one does
+// not. The media player passes `null` for an art-less track row so the row
+// cannot inherit anything, and `undefined` for the sleeve, which is allowed to.
 function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src }) {
   const url = avatar ? s.avatar : (src === undefined ? s.image : src)
   if (url) {
@@ -1522,9 +1541,109 @@ function Bio({ s }) {
 // numbers are the 1440 frame (964:58578) × 0.82, per the RAMP rule; the 768
 // and 390 frames (986:37146, 986:35593) are exactly the tablet and mobile
 // canvases, so their numbers — shared, bar the lean — are used verbatim.
+//
+// §10.2a — and it plays. On the published page the section owns one <audio>
+// element: a click on a card loads that track, the transport under the sleeve
+// works, and the now-playing block — title, sleeve, clock, progress bar — is
+// the element's own state rather than NOW_PLAYING's picture. All of it is
+// gated on `s.live` (§12.7), like Repertoire's filters and the header's nav:
+// the editor canvas renders no <audio> at all and keeps the still picture,
+// because a card there would both start a track and select the section.
 function Media({ s }) {
+  // Hooks before the layout branch — the older three-card design plays too.
+  // `playing` mirrors the element's own play/pause events rather than being
+  // set by the click handlers, so a rejected autoplay or a pause from the OS
+  // media keys cannot leave the button lying.
+  //
+  // `cur` starts at -1, meaning nothing has been chosen yet. The card still
+  // shows track one either way — it is the track the player is cued to — but
+  // nothing is *marked as playing* until the visitor picks, and the clock does
+  // not start until then.
+  const el = useRef(null)
+  const [cur, setCur] = useState(-1)
+  const [playing, setPlaying] = useState(false)
+  const [pos, setPos] = useState(0)
+  const [len, setLen] = useState(0)
+
+  // What the transport can reach is what the layout draws: the older design
+  // shows three cards, and Next off the third has to return to the first
+  // rather than start a track with no card on the page. Layouts 1 and 2 both
+  // draw the whole list — layout 2 draws it twice, as the fan and as the
+  // numbered list beside it. `s.v0` is a prop, not state, so branching on it
+  // above the hooks would be the error — branching on it here is not.
+  const list = s.v0 || s.v1 ? s.tracks : s.tracks3
+  const count = list.length
+  // Clamped the way Repertoire clamps its chip: the list is the artist's, and
+  // a track deleted under the player would otherwise strand it past the end.
+  const at = s.live && count ? Math.min(Math.max(cur, 0), count - 1) : 0
+  const track = list[at]
+  // Has the visitor chosen anything yet? Only the cards' own marks hang off
+  // this — the now-playing block shows track one from the start — and it is
+  // false on the canvas by construction.
+  const chosen = s.live && cur >= 0 && !!track
+
+  // Load track `j` and play it, wrapping at both ends so Next off the last
+  // track returns to the first. The source is assigned to the element rather
+  // than rendered as a `src` prop: a re-render from onTimeUpdate must never
+  // reload the file under the playhead, and Safari refuses to autoplay an
+  // element that has only just mounted. A track with no address of its own
+  // still becomes the now-playing one — it simply has nothing to play.
+  const goTo = (i) => {
+    const a = el.current
+    if (!a || !count) return
+    const j = ((i % count) + count) % count
+    setCur(j); setPos(0); setLen(0)
+    const url = list[j].src
+    if (!url) { a.pause(); a.removeAttribute('src'); a.load(); return }
+    a.src = url
+    a.play().catch(() => {})   // an autoplay refusal is not an error here
+  }
+  const toggle = () => {
+    const a = el.current
+    if (!a) return
+    if (!a.src) { goTo(at); return }
+    if (a.paused) a.play().catch(() => {})
+    else a.pause()
+  }
+  // Clicking the card that is already loaded is a pause, not a restart.
+  const pick = (i) => (i === at && el.current?.src ? toggle() : goTo(i))
+  const onPick = (i) => (s.live ? () => pick(i) : undefined)
+
+  const audio = s.live ? (
+    <audio
+      ref={el} preload="none" style={{ display: 'none' }}
+      onPlay={() => setPlaying(true)}
+      onPause={() => setPlaying(false)}
+      onLoadedMetadata={(e) => setLen(e.currentTarget.duration || 0)}
+      onTimeUpdate={(e) => setPos(e.currentTarget.currentTime || 0)}
+      onEnded={() => goTo(at + 1)}
+    />
+  ) : null
+
+  // The now-playing block. The card always names the track the player is on —
+  // track one until the visitor picks another — because the section no longer
+  // carries a now-playing track or sleeve of its own to name instead.
+  //
+  // The clock is the one thing that still differs by side. Live it is the
+  // element's, from 00:00: before the metadata lands both ends read 00:00, and
+  // a track's `sub` is a release line, not a duration, so it cannot stand in.
+  // On the canvas it stays NOW_PLAYING's, because the frame draws a player
+  // caught mid-song and a dead 00:00 under an empty bar is not that picture.
+  const np = s.nowPlaying
+  const title = track ? track.name : np.track
+  const now = s.live
+    ? {
+        track: title, by: np.by, at: clock(pos), of: clock(len),
+        pct: len ? Math.min(100, (pos / len) * 100) : 0,
+      }
+    : { ...np, track: title }
+  // And the sleeve is that track's artwork. `?? undefined` rather than the raw
+  // `null`: a track with no art of its own falls through to the section photo,
+  // which for the media player is now nothing, so it lands on the initials
+  // placeholder — the card rows keep their `null` and must not do this.
+  const sleeve = track?.img ?? undefined
+
   if (s.v0) {
-    const np = s.nowPlaying
     const desk = !s.narrow
     // The frame paints this section on cream with near-black ink, not the
     // beige page palette — EncoreSection swaps the section ground to match,
@@ -1584,8 +1703,17 @@ function Media({ s }) {
           const thrown = filled ? s.ac
             : s.retro ? (Math.floor(i / 2) % 2 ? '#8464AD' : '#FD638E')
             : s.chips[(4 + i) % n].bg
+          // The whole card is the button on the published page, not just the
+          // circle: the frame draws no other affordance, and a 29px target is
+          // not one on a phone. The playing card is marked by its circle
+          // turning to Pause and by the now-playing block beside the stack —
+          // deliberately nothing structural. Lifting it out of the stack, by
+          // z-index or by a deeper thrown block, covers the *next* card's
+          // title: the cards overlap by 18px at the foot, and the design
+          // depends on each one sitting above the one before it.
+          const on = chosen && i === at
           return (
-            <div key={i} style={{
+            <div key={i} onClick={onPick(i)} style={{
               ...row(desk ? '16px' : '20px'),
               marginLeft: filled ? (desk ? '49px' : '61px') : 0,
               marginRight: !filled ? (desk ? '49px' : '61px') : 0,
@@ -1597,6 +1725,7 @@ function Media({ s }) {
               border: `${s.bw} solid ${s.retro ? ink : fg}`, borderRadius: cardR,
               padding: desk ? '13px 13px 13px 20px' : '16px 16px 16px 24px',
               boxShadow: hard(s, thrown, -3, desk ? 8 : 9),
+              cursor: s.live ? 'pointer' : undefined,
             }}>
               <span style={{ fontFamily: s.body, fontSize: desk ? '15px' : '18px', flex: 'none' }}>{t.n}</span>
               <span style={col('3px', { flex: 1, minWidth: 0 })}>
@@ -1615,7 +1744,9 @@ function Media({ s }) {
                 background: filled ? (s.retro ? '#EDE0C4' : fg) : ink,
                 color: filled ? hue : cream,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              }}><Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} /></span>
+              }}>{on && playing
+                ? <Pause size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} />
+                : <Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} />}</span>
               <span style={{
                 width: desk ? 49 : 60, height: desk ? 49 : 60, flex: 'none',
                 borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
@@ -1646,28 +1777,38 @@ function Media({ s }) {
           width: desk ? '207px' : '252px', maxWidth: '100%',
           aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
           borderRadius: s.retro ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
-        }}><Photo s={s} initialsSize={44} /></div>
+        }}><Photo s={s} initialsSize={44} src={sleeve} /></div>
         <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
           {/* The frame sets the now-playing block in the body face, like a real
               player UI — not the display serif. */}
           <span style={{
             fontFamily: s.retro ? s.body : s.display, fontWeight: s.retro ? 600 : undefined,
             fontSize: desk ? '16px' : '20px', letterSpacing: s.retro ? 0 : s.dls,
-          }}>{np.track}</span>
-          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : '13px', opacity: 0.7 }}>{np.by}</span>
+            textAlign: 'center',
+          }}>{now.track}</span>
+          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : '13px', opacity: 0.7 }}>{now.by}</span>
         </div>
         <div style={row(desk ? '12px' : '14px', { position: 'relative' })}>
-          <span style={ctl(false)}><SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
-          <span style={ctl(true)}><Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} /></span>
-          <span style={ctl(false)}><SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} /></span>
+          <span style={ctl(false)} onClick={s.live ? () => goTo(at - 1) : undefined}>
+            <SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} />
+          </span>
+          <span style={ctl(true)} onClick={s.live ? toggle : undefined}>
+            {playing
+              ? <Pause size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />
+              : <Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />}
+          </span>
+          <span style={ctl(false)} onClick={s.live ? () => goTo(at + 1) : undefined}>
+            <SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} />
+          </span>
         </div>
         <div style={row('10px', { width: '100%', position: 'relative' })}>
-          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{np.at}</span>
+          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{now.at}</span>
           <span style={{ flex: 1, height: '3px', background: s.retro ? 'rgba(0,0,0,0.28)' : s.deepFg25, borderRadius: '99px' }}>
-            <span style={{ display: 'block', width: `${np.pct}%`, height: '100%', background: wine, borderRadius: '99px' }} />
+            <span style={{ display: 'block', width: `${now.pct}%`, height: '100%', background: wine, borderRadius: '99px' }} />
           </span>
-          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{np.of}</span>
+          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{now.of}</span>
         </div>
+        {audio}
       </div>
     )
 
@@ -1775,7 +1916,25 @@ function Media({ s }) {
       { w: 202.507, h: 274.792, art: 170.4, y: 27.48, op: 0.82 },
       { w: 185.187, h: 250.551, art: 152.8, y: 42.42, op: 0.64 },
     ]
-    const mid = Math.floor((s.tracks.length - 1) / 2)
+    // The fan has a fixed set of seats — the middle one and its neighbours out
+    // to either side — and the tracks rotate *through* them, wrapping, so that
+    // the centre seat always holds the track the player is on. That is what
+    // makes it a *fanned carousel* and it is the only mark the composition has
+    // room for: picking any card deals the stack round to it.
+    //
+    // The seats cannot instead be centred on `at` directly. `at` is 0 until a
+    // visitor picks, so the fan would open one-sided — every card to the right
+    // of the middle — which is not the design at any count.
+    const seat = Math.floor((s.tracks.length - 1) / 2)
+    const anchor = s.live && count ? at : seat
+    // The frame pairs the centre card with the bar under it — both name the
+    // same track — and live they are the same track by construction, because
+    // the centre seat holds `at`. On the canvas they would part company: the
+    // shared now-playing block names the track the player is *cued* to, which
+    // is the first, so the bar takes the centre seat's title there instead.
+    const centre = s.tracks[anchor]
+    const nowTitle = s.live || !centre ? now.track : centre.name
+    const nowArt = s.live || !centre ? sleeve : (centre.img ?? undefined)
 
     // Inter Bold at the frame's chip size, tracked in by its own −6%. Both
     // ends of the list's counter row are set in it, and so is the Featured
@@ -1791,6 +1950,13 @@ function Media({ s }) {
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
     })
     const subType = { fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+    // The frame draws the transport as bare glyphs. Live they are buttons, so
+    // each takes a square a little larger than its 14px icon — which also
+    // brings the group's width back towards the frame's 96.
+    const ctl = {
+      width: u(20), height: u(20), flex: 'none', cursor: s.live ? 'pointer' : undefined,
+      ...row('0', { justifyContent: 'center' }),
+    }
 
     const fan = (
       <div style={{
@@ -1804,20 +1970,28 @@ function Media({ s }) {
         // The stack is centred, so a clip always takes both sides evenly.
         overflow: desk && s.tracks.length <= CARD.length + 2 ? 'visible' : 'hidden',
       }}>
-        {s.tracks.map((t, i) => {
-          const k = i - mid
+        {/* `j` is the seat in the fan, `i` the track dealt to it — the two
+            part company as soon as the carousel turns. Geometry and hue belong
+            to the seat, so the composition holds still and its centre stays
+            the accent; only the content rotates. */}
+        {s.tracks.map((_, j) => {
+          const k = j - seat
+          const i = (anchor + k + s.tracks.length) % s.tracks.length
+          const t = s.tracks[i]
           const g = CARD[Math.min(Math.abs(k), 2)]
-          const hue = i === mid ? FEATURED : FAN[(i < mid ? i : i - 1) % FAN.length]
+          const hue = k === 0 ? FEATURED : FAN[(j < seat ? j : j - 1) % FAN.length]
           const fg = s.retro ? '#FBF6EA' : contrastInk(hue)
           return (
-            <div key={i} style={{
+            // The whole card is the button on the published page, as it is in
+            // layout 1: the frame draws no other affordance on it.
+            <div key={j} onClick={onPick(i)} style={{
               position: 'absolute',
               left: off(k * 101.5 - g.w / 2), top: off(g.y - g.h / 2),
               width: u(g.w), height: u(g.h),
               transform: tilt(s, k * 5.33), opacity: g.op, zIndex: 10 - Math.abs(k),
               background: hue, color: fg,
               border: `1px solid ${s.retro ? '#111111' : fg}`, borderRadius: u(14),
-              padding: u(16), overflow: 'hidden',
+              padding: u(16), overflow: 'hidden', cursor: s.live ? 'pointer' : undefined,
               ...col(u(12), { alignItems: 'stretch' }),
             }}>
               <div style={{
@@ -1828,7 +2002,7 @@ function Media({ s }) {
                 <span style={{ ...titleType(16), lineHeight: 1.2 }}>{t.name}</span>
                 <span style={subType}>{t.rel || t.sub}</span>
               </div>
-              {i === mid && (
+              {k === 0 && (
                 <span style={chip({
                   position: 'absolute', left: u(25.5), top: u(25),
                   background: s.chips[4 % n].bg, color: s.retro ? '#FBF6EA' : s.chips[4 % n].fg,
@@ -1841,7 +2015,6 @@ function Media({ s }) {
       </div>
     )
 
-    const np = s.nowPlaying
     const bar = (
       <div style={{
         // The frame's bar is a shade lighter than the panel it sits on and is
@@ -1858,25 +2031,39 @@ function Media({ s }) {
         {/* Filled *and* stroked, unlike layout 1's player: the frame's skip
             glyphs carry the bar beside the triangle, which is the stroke. */}
         <span style={row(u(24), { flex: 'none' })}>
-          <SkipBack size={14} fill="currentColor" />
-          <Pause size={14} fill="currentColor" />
-          <SkipForward size={14} fill="currentColor" />
+          <span style={ctl} onClick={s.live ? () => goTo(at - 1) : undefined}>
+            <SkipBack size={14} fill="currentColor" />
+          </span>
+          {/* The frame draws a player caught mid-song — the same picture its
+              clock draws — so the canvas keeps Pause however this renders
+              live. */}
+          <span style={ctl} onClick={s.live ? toggle : undefined}>
+            {s.live && !playing ? <Play size={14} fill="currentColor" /> : <Pause size={14} fill="currentColor" />}
+          </span>
+          <span style={ctl} onClick={s.live ? () => goTo(at + 1) : undefined}>
+            <SkipForward size={14} fill="currentColor" />
+          </span>
         </span>
-        {/* The now-playing block, as layout 1 reads it: the section's sleeve
-            and FIELDS.media's own track, not whichever card is in the middle. */}
-        <span style={row(u(12), { flex: 1, minWidth: 0, paddingRight: desk ? u(30) : 0 })}>
+        {/* The now-playing block is the player's own state, not the section's:
+            the sleeve is the current track's artwork and the clock runs. */}
+        {/* The frame's inner pill carries a 30px right padding before the
+            glyphs. Our bar is ~18px narrower than the frame's — the panel is
+            the page's content width — and that padding is the one gap here
+            that costs nothing to give back, where a truncated track title
+            costs the most. */}
+        <span style={row(u(12), { flex: 1, minWidth: 0, paddingRight: desk ? u(12) : 0 })}>
           <span style={{
             width: u(60), height: u(60), flex: 'none',
             borderRadius: '999px', overflow: 'hidden', position: 'relative',
-          }}><Photo s={s} initialsSize={16} /></span>
+          }}><Photo s={s} initialsSize={16} src={nowArt} /></span>
           <span style={col(u(2), { flex: 1, minWidth: 0 })}>
-            <span style={titleType(24)}>{np.track}</span>
-            <span style={subType}>{np.by}</span>
+            <span style={titleType(24)}>{nowTitle}</span>
+            <span style={subType}>{now.by}</span>
           </span>
           {/* The 390 canvas has no frame of its own and cannot seat the whole
               bar: the running time and the glyphs below go, rather than
               squeeze the track off it. */}
-          {!s.mob && <span style={{ ...subType, flex: 'none' }}>{np.at} / {np.of}</span>}
+          {!s.mob && <span style={{ ...subType, flex: 'none' }}>{now.at} / {now.of}</span>}
         </span>
         {/* Text glyphs in the frame, not icons. */}
         {!s.mob && (
@@ -1884,6 +2071,7 @@ function Media({ s }) {
             flex: 'none', fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
           })}><span>♡</span><span>↓</span><span>⋯</span></span>
         )}
+        {audio}
       </div>
     )
 
@@ -1922,14 +2110,25 @@ function Media({ s }) {
           // subtitle in both keys — so the running time only sets where the
           // two differ.
           const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+          // The row is the same button the fan card is — the two columns are
+          // one list — and the playing row swaps its number for the transport
+          // glyph, the way layout 1's card swaps its circle. The slot keeps
+          // its width in both states so nothing shifts under the pointer.
+          const on = chosen && i === at
           return (
-            <div key={i} style={{
+            <div key={i} onClick={onPick(i)} style={{
               flex: desk ? 1 : 'none', minHeight: 0, overflow: 'hidden',
               background: r.bg, color: fg, border: `${s.bw} solid ${s.retro ? r.line : fg}`,
               borderRadius: u(30), padding: `${u(14)} ${desk ? u(30) : u(18)}`,
+              cursor: s.live ? 'pointer' : undefined,
               ...row(desk ? u(20) : u(14)),
             }}>
-              <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, flex: 'none' }}>{t.n}</span>
+              <span style={{
+                fontFamily: s.body, fontSize: u(16), lineHeight: 1.5,
+                width: u(24), flex: 'none', ...row('0', { justifyContent: 'center' }),
+              }}>{on
+                ? (playing ? <Pause size={13} fill="currentColor" /> : <Play size={13} fill="currentColor" />)
+                : t.n}</span>
               <span style={{
                 width: u(64), height: u(64), flex: 'none', display: 'block',
                 borderRadius: u(4), overflow: 'hidden', position: 'relative',
@@ -1964,7 +2163,11 @@ function Media({ s }) {
       <h2 style={{ margin: 0, ...h2Style(s) }}>{s.title}</h2>
       <div style={{ display: 'grid', gridTemplateColumns: s.g3, gap: '20px' }}>
         {s.tracks3.map((t, i) => (
-          <div key={i} style={{ border: `1.5px solid ${s.line}`, borderRadius: s.radius, padding: '18px', ...col('14px') }}>
+          <div key={i} onClick={onPick(i)} style={{
+            border: `1.5px solid ${chosen && i === at ? s.ac : s.line}`,
+            borderRadius: s.radius, padding: '18px',
+            cursor: s.live ? 'pointer' : undefined, ...col('14px'),
+          }}>
             {/* The track's own artwork where it has some, the big numeral where
                 it does not — this layout has no other picture to fall back on. */}
             <div style={{
@@ -1983,11 +2186,14 @@ function Media({ s }) {
               <span style={{
                 width: '36px', height: '36px', borderRadius: '999px', background: s.ac, color: s.acFg,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none', cursor: 'pointer',
-              }}><Play size={11} /></span>
+              }}>{chosen && i === at && playing ? <Pause size={11} /> : <Play size={11} />}</span>
             </div>
           </div>
         ))}
       </div>
+      {/* This layout has no transport of its own — the cards are the whole of
+          it — but it plays through the same element as the reference design. */}
+      {audio}
       {/* This layout draws no Soundcloud pill of its own — unlike the reference
           design above, where it is part of the frame. It appears only once the
           artist has an address for it, so a layout switch never grows a button
@@ -2131,12 +2337,21 @@ function Video({ s }) {
   )
 }
 
-// v0 — Pricing layout 1 · 3-col in soft panel (§10.2 reference design): three
-// cards, each in its own palette hue, each a degree or two off square. Every
-// accent inside a card — the price numeral, the tick, the [ico] chip, the Book
-// Now pill and the hard offset block it throws — is that card's *second* hue,
+// v0 — Pricing layout 1 · 3-col in soft panel (§10.2 reference design): cards,
+// each in its own palette hue, each a degree or two off square. Every accent
+// inside a card — the price numeral, the tick, the [ico] chip, the Book Now
+// pill and the hard offset block it throws — is that card's *second* hue,
 // `t.acc` (see the pricing branch of sectionVm).
+//
+// Three cards is only what the seed carries: the packages are the artist's list
+// now, and the chip row above them filters it on the published page.
 function Pricing({ s }) {
+  // The selected filter chip, gated on `s.live` below like Repertoire's: it is
+  // a real control in the published tab and inert on the editor canvas, which
+  // is a picture of a website (§12.7) — a live chip there would both filter the
+  // cards and select the section. Above the layout branch, because hooks are.
+  const [chip, setChip] = useState(0)
+
   if (s.v0) {
     const TILT = [1, -3, 2]
     // §5.5 — the 768 and 390 frames are exactly the tablet and mobile canvases,
@@ -2156,6 +2371,14 @@ function Pricing({ s }) {
     // mobile frame, are the tell. Only the layout and the sizes are taken from
     // them; the faces stay the theme's, as everywhere else.
     const tab = isTablet(s)
+    // The chip index, clamped: the row is derived from the artist's tags, so a
+    // tag they delete can leave `chip` past the end of it. The canvas pins the
+    // first chip and filters nothing, which is the picture the frames show.
+    const active = s.live ? Math.min(chip, s.tierChips.length - 1) : 0
+    const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
+    const shown = s.live
+      ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
+      : s.tiers
     return (
       <div style={col(s.narrow ? '32px' : '26px')}>
         <div style={s.narrow
@@ -2167,19 +2390,29 @@ function Pricing({ s }) {
             maxWidth: s.mob ? '100%' : tab ? '640px' : '44%',
           }}>{s.title}</h2>
           {/* The one row in §10.2 whose chips are body-bold sentence case rather
-              than Anton caps, and whose selected chip drops its rule. */}
-          <div style={row('8px', { flexWrap: 'wrap' })}>
-            {s.tierModes.map((m, i) => (
-              <span key={m} style={{
-                border: i === 0 ? 'none' : `${s.bw} solid ${s.tx}`,
-                borderRadius: s.btnR, padding: s.narrow ? '5px 11px' : '4px 9px',
-                background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : s.tx,
-                boxShadow: i === 0 ? hard(s, s.pillBg, 3, 4) : 'none', cursor: 'pointer',
-                fontFamily: s.body, fontSize: s.narrow ? '12.5px' : '10px',
-                fontWeight: 700, whiteSpace: 'nowrap',
-              }}>{m}</span>
-            ))}
-          </div>
+              than Anton caps, and whose selected chip drops its rule. Built from
+              the tags the artist typed — the frame's Solo / Trio / Band is now
+              the seeds' tags, behind an All — so it is not drawn at one chip:
+              a filter with nothing to filter is the pager's case. */}
+          {s.tierChips.length > 1 && (
+            <div style={row('8px', { flexWrap: 'wrap' })}>
+              {s.tierChips.map((f, i) => (
+                <span
+                  key={i}
+                  onClick={s.live ? () => setChip(i) : undefined}
+                  style={{
+                    border: i === active ? 'none' : `${s.bw} solid ${s.tx}`,
+                    borderRadius: s.btnR, padding: s.narrow ? '5px 11px' : '4px 9px',
+                    background: i === active ? s.ac : 'transparent',
+                    color: i === active ? s.acFg : s.tx,
+                    boxShadow: i === active ? hard(s, s.pillBg, 3, 4) : 'none', cursor: 'pointer',
+                    fontFamily: s.body, fontSize: s.narrow ? '12.5px' : '10px',
+                    fontWeight: 700, whiteSpace: 'nowrap',
+                  }}
+                >{f.label}</span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div style={{
@@ -2192,21 +2425,30 @@ function Pricing({ s }) {
           // reads because the cards are rotated and throw an offset block — so
           // the four flat templates keep a plain gap instead of butting their
           // borders together.
+          // Three columns everywhere but the 390 frame whatever the package
+          // count is: a card holds the width it was drawn at, and a fourth
+          // wraps onto a second row rather than squeezing the first three.
           display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr 1fr',
           gap: s.mob ? (s.retro ? '0' : '22px') : tab ? '20px' : '36px',
           alignItems: 'stretch',
         }}>
-          {s.tiers.map((t, i) => {
+          {shown.map((t, i) => {
             const money = String(t.price)
             const symbol = /^[^\d]/.test(money) ? money[0] : ''
             const amount = symbol ? money.slice(1) : money
             return (
-              <div key={i} style={{
-                position: 'relative', transform: tilt(s, TILT[i]),
+              // Keyed on the package's place in the WHOLE list, not on this
+              // page of it: the card cross-fades its background, so a
+              // positional key would hand a filtered-out card's node to its
+              // neighbour and animate one card hue into another. The tilt and
+              // the overlap below take the *rendered* index instead — they are
+              // decoration, and the deck has to read as a deck at any count.
+              <div key={t.n} style={{
+                position: 'relative', transform: tilt(s, TILT[i % TILT.length]),
                 background: t.card, color: t.cardFg,
                 border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius,
                 padding: s.mob ? '24px' : tab ? '30px 20px' : '20px',
-                marginBottom: s.mob && s.retro && i < s.tiers.length - 1 ? '-18px' : undefined,
+                marginBottom: s.mob && s.retro && i < shown.length - 1 ? '-18px' : undefined,
                 // The block behind the card is the card's own second hue, so the
                 // gold card throws orange and the other two throw gold.
                 boxShadow: s.narrow ? hard(s, t.acc, 8, 8) : hard(s, t.acc, 6.6, 6.6),
@@ -2256,7 +2498,7 @@ function Pricing({ s }) {
                   }}>{amount}</span>
                   <span style={{
                     fontFamily: s.body, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
-                  }}>/event</span>
+                  }}>{s.tierUnit}</span>
                 </span>
 
                 <p style={{
@@ -2288,12 +2530,23 @@ function Pricing({ s }) {
                   marginTop: 'auto', paddingTop: s.mob ? '16px' : '6px',
                   position: 'relative', alignSelf: 'flex-start',
                 }}>
-                  <BookPill s={s} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob} />
+                  <BookPill s={s} to={s.tierBookTo} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob} />
                 </span>
               </div>
             )
           })}
         </div>
+
+        {/* An empty grid is a real state now that the packages are the
+            artist's. One message, not the repertoire's two: every chip but All
+            exists because some package carries its tag, so a live filter can
+            never empty a list that has anything in it — there is no search box
+            here to do what the repertoire's does. */}
+        {s.tiers.length === 0 && (
+          <span style={{
+            fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px', color: s.muted,
+          }}>No packages yet.</span>
+        )}
 
         <span style={{
           fontFamily: s.body, fontSize: s.narrow ? '11px' : '10px', color: s.pricingSubFg,
@@ -2329,7 +2582,8 @@ function Pricing({ s }) {
 // box on a heavier border, an active page that keeps the same border rather
 // than dissolving into its own fill, the centred row its tablet uses and the
 // full-measure one its mobile does, on a shorter page list. The map passes
-// none of it and keeps the flatter default.
+// none of that and keeps the flatter default, but both now pass the page list
+// and the handlers.
 // The pager's button row for `n` pages, windowed around the active one and
 // elided with '…' where it skips — the shape the static PAGES constant used to
 // hardcode. Lives here rather than in data.js because the page count depends on
@@ -2357,8 +2611,9 @@ function pageWindow(n, active, narrow) {
 
 // `frame.active` is an index into the *rendered* button row, which stops
 // matching the page number as soon as pageWindow() elides it with '…' — hence
-// pageWindow returning both. `active`, `onPage` and `onStep` are all optional:
-// omitting them is the events map's static picture of a pager, unchanged.
+// pageWindow returning both. `active`, `onPage` and `onStep` are all optional,
+// and both callers omit the handlers on the editor canvas: a pager with none is
+// the picture of a pager, and the cursor below follows.
 function Pager({ s, colour, fill, frame = {} }) {
   const c = colour || s.tx
   const w = frame.size || (s.mob ? 30 : 42)
@@ -2368,7 +2623,12 @@ function Pager({ s, colour, fill, frame = {} }) {
       borderRadius: frame.radius || s.radiusSm,
       border: `${frame.bw || s.bw} solid ${on ? (frame.activeEdge || s.pillBg) : c}`,
       background: on ? s.pillBg : (ends ? (fill || 'transparent') : 'transparent'),
-      color: on ? (frame.activeFg || contrastInk(s.pillBg)) : c, cursor: 'pointer',
+      color: on ? (frame.activeFg || contrastInk(s.pillBg)) : c,
+      // Off the published page there is no handler, and a pointer over a button
+      // that does nothing is the gallery's rule broken (it gates its own on
+      // `s.live`). Reading the handler says the same thing without Pager having
+      // to know about `live`.
+      cursor: onClick ? 'pointer' : undefined,
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       ...(frame.font || labelStyle(s, s.eyebrow)),
       // `grow` spreads the row across the whole measure, so it comes after the
@@ -2381,7 +2641,7 @@ function Pager({ s, colour, fill, frame = {} }) {
       flexWrap: frame.grow ? 'nowrap' : 'wrap', justifyContent: frame.justify,
     })}>
       {btn('prev', <ArrowLeft size={14} />, false, true, frame.onStep && (() => frame.onStep(-1)))}
-      {(frame.pages || s.pages).map((p, i) => btn(
+      {(frame.pages || []).map((p, i) => btn(
         `p${i}`, p, i === (frame.active || 0), false,
         // '…' is a gap in the row, not a page.
         frame.onPage && p !== '…' ? () => frame.onPage(p) : undefined,
@@ -2662,12 +2922,25 @@ function Repertoire({ s }) {
   )
 }
 
-// Which thumbnail the strip highlights, and therefore which photo the large
-// viewer shows. §10.2 marks the fourth tile — but only once there are four
-// photos to mark, so a part-filled strip never highlights an empty slot.
+// Which thumbnail the strip opens on, and therefore which photo the large
+// viewer shows first. §10.2 marks the fourth tile — but only once there are
+// four photos to mark, so a part-filled strip never highlights an empty slot.
+// On the published page this is only the starting tile; `pick` takes over from
+// the first click.
 const galActive = (s) => (s.images.length > 3 ? 3 : 0)
 
 function Gallery({ s }) {
+  // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
+  // and not a hook's business, so the branch below cannot be the thing that
+  // decides whether state exists.
+  //
+  // `pick` starts at -1, meaning the visitor has not chosen a tile yet, so both
+  // sides open on galActive() and the published tab's first paint is exactly
+  // the canvas's picture. Live-gated (§12.7) like Repertoire's chips: a
+  // thumbnail on the canvas would both change the viewer and select the
+  // section.
+  const [pick, setPick] = useState(-1)
+
   const tile = (label, aspect, extra) => (
     <div key={label} style={{
       background: s.soft, borderRadius: s.radiusSm, aspectRatio: aspect, position: 'relative', ...extra,
@@ -2682,17 +2955,29 @@ function Gallery({ s }) {
   // rows on the left, the active source's viewer and its thumbnail strip on
   // the right. Only the first row is open; the rest offer a "+".
   if (s.v0) {
-    const active = galActive(s)
     const desk = !s.narrow
     const tab = isTablet(s)
     const strip = [0, 1, 2, 3, 4, 5, 6]
+    // The seven slots are always navigable — an empty one shows the same
+    // placeholder in the viewer that it shows in the strip, so the count never
+    // shifts under the visitor as photos are added or removed, and nothing here
+    // has to be clamped against the artist's list the way Media clamps `cur`.
+    // Everything that writes `pick` walks the same fixed seven.
+    const active = s.live && pick >= 0 ? pick : galActive(s)
+    const go = (i) => setPick(((i % strip.length) + strip.length) % strip.length)
+    // Mobile draws four of the seven tiles. Rather than stranding photos 5–7
+    // where no phone can reach them, the four slide once the visitor walks past
+    // the fourth — and the window is anchored at 0 for the first four, so the
+    // canvas's mobile picture is the frame's, unchanged.
+    const shown = s.mob ? 4 : strip.length
+    const from = Math.min(Math.max(active - (shown - 1), 0), strip.length - shown)
     const cardR = s.retro ? (desk ? '25px' : '30px') : s.radius
     const rowR = s.retro ? (desk ? '16px' : '20px') : s.btnR
     // The Figma frame gives each media source its brand glyph; lucide has no
     // TikTok mark, so the closest note glyph stands in.
     const srcIcons = [ImageIcon, Youtube, Instagram, Music2]
-    const arrow = (icon) => (
-      <span style={{
+    const arrow = (icon, onClick) => (
+      <span onClick={onClick} style={{
         width: desk ? 29 : 35, height: desk ? 29 : 35, flex: 'none',
         borderRadius: '999px', background: s.deep, color: s.deepFg,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
@@ -2713,47 +2998,84 @@ function Gallery({ s }) {
 
     // The Figma tablet and mobile frames fold the source list into a row of
     // icon-only tiles: no labels, and only the open tile carries a dismiss
-    // glyph. Tablet spreads four equal tiles across the page; mobile keeps
-    // them content-sized and lets the frame clip the row's right edge.
+    // glyph. Tablet spreads four equal tiles across the page; mobile keeps them
+    // content-sized, and **wraps** rather than clipping.
+    //
+    // The frame itself lets the row run off the right edge, which cost nothing
+    // while the tiles were decoration — but three of them now carry an address
+    // the artist typed, and the fourth, TikTok, was the one off the page. Four
+    // content-sized tiles come to ~430px against a 390 frame, so nothing short
+    // of shrinking them fits on one line; wrapping keeps every Figma dimension
+    // exactly as drawn and spends a second row instead. The 20px gap is the
+    // row gap too, which clears the open tile's offset shadow.
+    // A row with an address the artist typed is an outbound link on the
+    // published page, the same seam BookPill takes: `extLink` returns the props
+    // or null, the tag follows, and the style object is the same either way so
+    // the picture never moves. The first row has no address — it is the strip
+    // the arrows and thumbnails already drive.
+    //
+    // A social row with no address does not appear on the published page at
+    // all: an artist who left TikTok blank has no TikTok, and the tile would
+    // promise a destination it cannot go to. This is where the gallery parts
+    // company with the Soundcloud button, which stays a picture when empty —
+    // that pill sits alone, where these sit in a row that reads as a list of
+    // the places you can follow them.
+    //
+    // The canvas keeps all four regardless. It is the reference design, the
+    // three fields start empty, and a fresh page would otherwise open on a
+    // single tile where Figma draws a row of them — with no clue that the other
+    // three are a field away. The index is carried through the filter because
+    // `srcIcons` is positional.
+    const srcRows = s.gallerySources
+      .map((g, i) => ({ g, i }))
+      .filter(({ g, i }) => !s.live || i === 0 || !!g.url)
     const sources = !desk ? (
       <div style={row('20px', {
-        alignItems: 'stretch', ...(s.mob ? { overflowX: 'clip' } : {}),
+        alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}),
       })}>
-        {s.gallerySources.map((g, i) => (
-          <div key={i} style={{
-            ...(tab ? { flex: 1, minWidth: 0, height: '92px' } : { flex: 'none' }),
-            ...row(tab ? '16px' : '5px', { justifyContent: g.on ? 'space-between' : 'center' }),
-            position: 'relative', overflow: 'hidden',
-            background: g.on ? s.pillBg : 'transparent',
-            color: g.on ? s.pillFg : (s.retro ? g.bg : g.ink),
-            border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
-            padding: tab ? '16px 24px 16px 16px' : '10px',
-            boxShadow: g.on ? hard(s, s.ac, 7, 9) : 'none',
-            transform: g.on ? tilt(s, -1) : 'none',
-          }}>
-            {g.on && <Grain s={s} radius={rowR} />}
-            {iconSq(g, srcIcons[i] || ImageIcon, 60, 28)}
-            {g.on && <X size={30} strokeWidth={2.4} style={{ position: 'relative' }} />}
-          </div>
-        ))}
+        {srcRows.map(({ g, i }) => {
+          const link = extLink(s, g.url)
+          const Tag = link ? 'a' : 'div'
+          return (
+            <Tag key={i} {...link} style={{
+              ...(tab ? { flex: 1, minWidth: 0, height: '92px' } : { flex: 'none' }),
+              ...row(tab ? '16px' : '5px', { justifyContent: g.on ? 'space-between' : 'center' }),
+              position: 'relative', overflow: 'hidden', textDecoration: 'none',
+              background: g.on ? s.pillBg : 'transparent',
+              color: g.on ? s.pillFg : (s.retro ? g.bg : g.ink),
+              border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
+              padding: tab ? '16px 24px 16px 16px' : '10px',
+              boxShadow: g.on ? hard(s, s.ac, 7, 9) : 'none',
+              transform: g.on ? tilt(s, -1) : 'none',
+              cursor: link ? 'pointer' : undefined,
+            }}>
+              {g.on && <Grain s={s} radius={rowR} />}
+              {iconSq(g, srcIcons[i] || ImageIcon, 60, 28)}
+              {g.on && <X size={30} strokeWidth={2.4} style={{ position: 'relative' }} />}
+            </Tag>
+          )
+        })}
       </div>
     ) : (
       <div style={col('16px')}>
-        {s.gallerySources.map((g, i) => {
+        {srcRows.map(({ g, i }) => {
           // The Figma frame letters each closed row in its source colour even
           // when that is low-contrast (TikTok's yellow); the legible() fallback
           // stays on for the flat themes.
           const ink = s.retro ? g.bg : g.ink
+          const link = extLink(s, g.url)
+          const Tag = link ? 'a' : 'div'
           return (
-            <div key={i} style={{
+            <Tag key={i} {...link} style={{
               ...row('16px'),
-              position: 'relative', overflow: 'hidden',
+              position: 'relative', overflow: 'hidden', textDecoration: 'none',
               background: g.on ? s.pillBg : 'transparent',
               color: g.on ? s.pillFg : ink,
               border: `${s.bw} solid ${s.tx}`, borderRadius: rowR,
               padding: '13px 20px 13px 13px',
               boxShadow: g.on ? hard(s, s.ac, 6, 7) : 'none',
               transform: g.on ? tilt(s, -1) : 'none',
+              cursor: link ? 'pointer' : undefined,
             }}>
               {g.on && <Grain s={s} radius={rowR} />}
               {iconSq(g, srcIcons[i] || ImageIcon, 49, 24)}
@@ -2763,7 +3085,7 @@ function Gallery({ s }) {
               {g.on
                 ? <X size={25} strokeWidth={2.4} style={{ position: 'relative' }} />
                 : <Plus size={25} strokeWidth={2.4} style={{ position: 'relative' }} />}
-            </div>
+            </Tag>
           )
         })}
       </div>
@@ -2775,7 +3097,8 @@ function Gallery({ s }) {
     // a footer row under the photo instead.
     const railArrows = (
       <div style={row(desk ? '4px' : '5px')}>
-        {arrow(<ArrowLeft size={desk ? 14 : 16} />)}{arrow(<ArrowRight size={desk ? 14 : 16} />)}
+        {arrow(<ArrowLeft size={desk ? 14 : 16} />, s.live ? () => go(active - 1) : undefined)}
+        {arrow(<ArrowRight size={desk ? 14 : 16} />, s.live ? () => go(active + 1) : undefined)}
       </div>
     )
     const rail = s.mob ? (
@@ -2805,11 +3128,19 @@ function Gallery({ s }) {
     )
 
     const viewer = (
-      // minWidth 0 so the mobile frame's overflowing source row cannot widen
-      // the grid column past the canvas.
+      // minWidth 0 so nothing inside can widen the grid column past the canvas
+      // — a flex item's default `min-width: auto` floors it at its content.
       <div style={col(desk ? '20px' : '24px', { minWidth: 0 })}>
         <div style={row('12px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          <span style={row('8px', labelStyle(s, s.eyebrow, { color: s.ac }))}>
+          {/* A dead reset beside two live arrows would read as a bug, so it
+              rewinds the strip on the published page and stays lettering on
+              the canvas. */}
+          <span
+            onClick={s.live ? () => setPick(0) : undefined}
+            style={row('8px', labelStyle(s, s.eyebrow, {
+              color: s.ac, cursor: s.live ? 'pointer' : undefined,
+            }))}
+          >
             <ArrowLeft size={13} color={s.tx} /> Back to beginning
           </span>
           <span style={col('2px', { alignItems: 'flex-end' })}>
@@ -2862,11 +3193,12 @@ function Gallery({ s }) {
         </div>
 
         <div style={row(desk ? '10px' : '12px', { overflow: 'hidden', marginTop: desk ? '13px' : '16px' })}>
-          {(s.mob ? strip.slice(0, 4) : strip).map((i) => (
-            <span key={i} style={{
+          {strip.slice(from, from + shown).map((i) => (
+            <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
               flex: 1, minWidth: 0, aspectRatio: '1', overflow: 'hidden',
               borderRadius: s.retro ? (desk ? '16px' : '20px') : s.radiusSm,
               border: `${desk ? '4px' : '5px'} solid ${i === active ? s.pillBg : s.ac}`,
+              cursor: s.live ? 'pointer' : undefined,
             }}><Photo s={s} initialsSize={12} src={s.images[i]} /></span>
           ))}
         </div>
@@ -2909,6 +3241,21 @@ function Gallery({ s }) {
 // bordered panel split between the month grid and a stack of polaroids, with
 // the resulting enquiry line along the foot.
 function Calendar({ s }) {
+  // The month on show, as an offset into `s.calMonths`, and the day the visitor
+  // has picked. Both inert on the editor canvas, where the section is a picture
+  // of a website (§12.7): a live day there would both pick a date and select the
+  // section, and the month arrows would walk the canvas off the frame it is
+  // drawn to match.
+  //
+  // `sel` is an ISO date rather than a cell index because, like the map's, it
+  // has to survive the page turning — it names a day, not a square of whatever
+  // month is on screen. The empty string is this section's -1: nothing chosen,
+  // so `s.calPick` renders and the published page's first paint is the canvas's
+  // picture by construction. Hooks sit above the layout branch because
+  // LayoutPicker mounts every layout.
+  const [mi, setMi] = useState(0)
+  const [sel, setSel] = useState('')
+
   if (s.v0) {
     // §5.5 — one scheduler across three frames: the 768 (986:39251) and 390
     // (986:39417) ones verbatim, the 1440 one (964:58583) on the 1180 canvas at
@@ -2924,13 +3271,42 @@ function Calendar({ s }) {
     const u = (v) => `${Math.round(v * scale)}px`
     const pu = (v) => `${Math.round(v * pscale)}px`
 
-    const nav = (icon) => (
-      <span style={{
-        width: u(55), height: u(54), flex: 'none', borderRadius: s.radiusSm,
-        background: s.pillBg, color: s.pillFg, border: `${s.bw} solid ${s.tx}`,
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-      }}>{icon}</span>
-    )
+    // The month on show, and the day that is lit. The canvas pins both to what
+    // the view-model resolved, which is the frame's June with its 12th picked.
+    const nMonths = s.calMonths.length
+    const at = s.live ? ((mi % nMonths) + nMonths) % nMonths : 0
+    const month = s.calMonths[at]
+    // The cell the pick names, looked up rather than composed — sectionVm wrote a
+    // line onto every one of them. The whole window is searched, not just the
+    // month on screen, so a day picked in August still names itself from
+    // September. A **booked** cell is never picked: publishing again re-renders
+    // the open tab, so the artist can block the day a visitor had lit, and `on`
+    // would otherwise beat the strike-through.
+    const want = (s.live && sel) || s.calPick
+    const hit = want
+      ? s.calMonths.reduce((f, mo) => f || mo.cells.find((c) => c.iso === want), null)
+      : null
+    const cur = hit && !hit.booked ? hit.iso : ''
+    const line = cur ? hit.line : s.calPrompt
+
+    // The month arrows. They *wrap* at both ends of the window rather than
+    // clamping: a clamped first month would open the published page on a
+    // dead-looking left arrow, which is a diff from the canvas — the media
+    // player's transport takes the same view. The cursor is read off the
+    // handler, Pager's rule, so the canvas no longer offers a pointer over a
+    // button that does nothing.
+    const step = (dir) => (s.live ? () => setMi((v) => v + dir) : undefined)
+    const nav = (icon, dir) => {
+      const onClick = step(dir)
+      return (
+        <span onClick={onClick} style={{
+          width: u(55), height: u(54), flex: 'none', borderRadius: s.radiusSm,
+          background: s.pillBg, color: s.pillFg, border: `${s.bw} solid ${s.tx}`,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          cursor: onClick ? 'pointer' : undefined,
+        }}>{icon}</span>
+      )
+    }
 
     // The 1440 and 768 frames space the seven columns by half a cell (30 on a
     // 60.5 one) and the five weeks by a third; the 390 one closes both to 2 and
@@ -2955,23 +3331,37 @@ function Calendar({ s }) {
     // The frame's cell is wider than it is tall, edged in a 0.15 hairline, and
     // the picked day is the accent block lettered in the mustard — no offset
     // shadow under it.
-    const cell = (c, i) => (
-      <span key={i} style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: u(s.mob ? 55.1 : 57.286),
-        fontFamily: s.body, fontSize: u(18.132),
-        borderRadius: u(12.088),
-        border: c.d === '' ? 'none' : `${s.bw} solid ${c.on ? s.tx : s.line}`,
-        background: c.on ? s.ac : 'transparent',
-        color: c.on ? (s.retro ? s.pillBg : s.acFg) : s.tx,
-        cursor: c.d === '' ? 'default' : 'pointer',
-      }}>{c.d}</span>
-    )
+    //
+    // Three states where the frame draws two, because a visitor who cannot see
+    // which days are taken would click one and watch nothing happen: a booked
+    // day is muted ink on the section's own soft tone, and takes no handler.
+    // That is a *content* state, not a live one, so it renders on the canvas
+    // too — and since CAL_BOOKED is empty, the seeded picture does not move.
+    // Clicking the lit day again unlights it, the map's pin/row toggle.
+    const cell = (c, i) => {
+      const on = c.iso !== undefined && c.iso === cur
+      const onClick = s.live && c.iso !== undefined && !c.booked
+        ? () => setSel((v) => (v === c.iso ? '' : c.iso))
+        : undefined
+      return (
+        <span key={i} onClick={onClick} style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          height: u(s.mob ? 55.1 : 57.286),
+          fontFamily: s.body, fontSize: u(18.132),
+          borderRadius: u(12.088),
+          border: c.d === '' ? 'none' : `${s.bw} solid ${on ? s.tx : s.line}`,
+          background: on ? s.ac : c.booked ? s.soft : 'transparent',
+          color: on ? (s.retro ? s.pillBg : s.acFg) : c.booked ? s.muted : s.tx,
+          textDecoration: c.booked ? 'line-through' : undefined,
+          cursor: onClick ? 'pointer' : undefined,
+        }}>{c.d}</span>
+      )
+    }
 
     const grid = (
       <div style={col(u(21.154), { padding: s.mob ? '20px 10px' : u(30.219) })}>
         <div style={row(s.mob ? '8px' : '12px', { justifyContent: 'space-between' })}>
-          {nav(<ArrowLeft size={Math.round(16 * scale)} />)}
+          {nav(<ArrowLeft size={Math.round(16 * scale)} />, -1)}
           <span style={{
             fontFamily: s.display,
             // The 390 frame heads the month at the same 48 as the wider two,
@@ -2980,18 +3370,24 @@ function Calendar({ s }) {
             // 22px gutter, which is 24px it does not have — so the line comes
             // down instead of wrapping under the buttons. Fraunces measures
             // within 2px of Soulway here, so this is the canvas, not the face.
-            fontSize: u(s.mob ? 40 : 48),
+            //
+            // And it only just clears them for `June 2025`. Now that the arrows
+            // turn, `September 2026` follows it into the same row, so past the
+            // seed's nine characters the mobile line comes down in proportion —
+            // which leaves June itself at the frame's own 40. The two wider
+            // canvases have the room and keep 48.
+            fontSize: u(s.mob ? Math.round(40 * Math.min(1, 9 / month.label.length)) : 48),
             // Fraunces at its natural leading stands half again as tall as its
             // type size and pushes the header row past the frame's nav; the
             // frame's own line box is the type size and change.
             lineHeight: 1.1, letterSpacing: s.dls, color: s.ac,
           }}>
-            {s.calMonth}
+            {month.label}
           </span>
-          {nav(<ArrowRight size={Math.round(16 * scale)} />)}
+          {nav(<ArrowRight size={Math.round(16 * scale)} />, 1)}
         </div>
         <div style={{ ...cols, height: u(30.219) }}>{s.calDays.map(dayName)}</div>
-        <div style={cols}>{s.sched.map(cell)}</div>
+        <div style={cols}>{month.cells.map(cell)}</div>
       </div>
     )
 
@@ -3086,6 +3482,10 @@ function Calendar({ s }) {
             // Flexed so the strut of the block's own inherited leading does not
             // stand the line off the frame's foot.
             display: 'flex', alignItems: 'center',
+            // The pill sits at the other end of the frame's own foot rule, and
+            // wraps under the line rather than squeezing it on the 390 canvas,
+            // where the line already takes two of its own.
+            justifyContent: 'space-between', flexWrap: 'wrap', gap: u(16),
           }}>
             {/* The frame sets this line in Space Mono Bold — the body face in
                 this project's mapping of the reference's three, not the Anton
@@ -3094,7 +3494,14 @@ function Calendar({ s }) {
             <span style={{
               fontFamily: s.body, fontWeight: 700, fontSize: u(13.371), lineHeight: 1.3,
               letterSpacing: '0.08em', textTransform: 'uppercase', color: s.ac,
-            }}>{s.calEnquiry}</span>
+            }}>{line}</span>
+            {/* The one deliberate addition to the frame, which draws this row as
+                a line of type and nothing else: a date the visitor has picked
+                has to lead somewhere, and `cta` was a field that edited nothing
+                until it labelled this. `calBookTo` is the enquiry form (or the
+                pricing section), never this panel — and where the page carries
+                neither, BookPill stays the span it is on the canvas. */}
+            <BookPill s={s} to={s.calBookTo} label={s.calCta} />
           </div>
         </div>
       </div>
@@ -3121,18 +3528,55 @@ function Calendar({ s }) {
 }
 
 function EventsMap({ s }) {
-  const pins = s.pins.map((p, i) => (
-    <span key={i} style={{
-      position: 'absolute', left: p.x, top: p.y, width: '12px', height: '12px',
-      borderRadius: '999px', background: s.ac, boxShadow: `0 0 0 5px ${s.soft2}`,
-      transform: 'translate(-50%, -50%)',
-    }} />
-  ))
+  // The page of gigs, and the gig the visitor has picked out on the map. Both
+  // are inert on the editor canvas, where the section is a picture of a website
+  // (§12.7): a live pin there would both light a row and select the section.
+  // `sel` starts at -1 — nothing picked — so the published page's first paint is
+  // the canvas's picture by construction, the same start `cur` and `pick` take.
+  // Hooks sit above the layout branch because LayoutPicker mounts every layout.
+  const [page, setPage] = useState(0)
+  const [sel, setSel] = useState(-1)
 
   // v0 — Events Map layout 1 · Compact tile (§10.2 reference design): the
   // coverage tile beside the upcoming-gigs list, banded top and bottom with
   // full-bleed checkerboard.
   if (s.v0) {
+    // Five to a page, which is both the row count the reference frame draws and
+    // the number of pin positions there are: one page of gigs is exactly one
+    // set of distinct pins, so a page never lights the same dot twice. It comes
+    // off `s` rather than being counted here — this file does no maths.
+    const perPage = s.gigPage
+    const pages = Math.max(1, Math.ceil(s.gigs.length / perPage))
+    // Clamped rather than reset through an effect, as the repertoire's is: a
+    // republish re-renders the open tab, so the list can shrink under the pager.
+    const pg = s.live ? Math.min(page, pages - 1) : 0
+    const shown = s.gigs.slice(pg * perPage, (pg + 1) * perPage)
+    const { labels, at } = pageWindow(pages, pg, s.mob)
+    // `sel` indexes the whole list, not the page, so turning the pager away from
+    // a lit gig and back finds it still lit.
+    const lit = (i) => s.live && sel === pg * perPage + i
+    const onPick = (i) => (s.live ? () => {
+      const j = pg * perPage + i
+      setSel((v) => (v === j ? -1 : j))
+    } : undefined)
+
+    // One pin per gig on this page, at the position sectionVm paired it with.
+    // The lit one grows and takes a heavier halo; that and the row's fill are
+    // the whole of the pairing's vocabulary.
+    const pins = shown.map((g, i) => {
+      const on = lit(i)
+      const d = on ? 16 : 12
+      return (
+        <span key={i} onClick={onPick(i)} style={{
+          position: 'absolute', left: g.pin.x, top: g.pin.y, width: `${d}px`, height: `${d}px`,
+          borderRadius: '999px', background: on ? s.pillBg : s.ac,
+          boxShadow: `0 0 0 ${on ? 7 : 5}px ${on ? s.ac : s.soft2}`,
+          transform: 'translate(-50%, -50%)',
+          cursor: s.live ? 'pointer' : undefined,
+        }} />
+      )
+    })
+
     const tile = (
       <div style={{
         border: `${s.bw} solid ${s.ac}`, borderRadius: s.radiusSm, overflow: 'hidden',
@@ -3190,31 +3634,66 @@ function EventsMap({ s }) {
         })}>
           Upcoming gigs · {s.gigs.length}
         </span>
-        {s.gigs.map((g, i) => (
-          <div key={i} style={{
-            ...row('12px', { justifyContent: 'space-between' }),
-            border: `${s.bw} solid ${g.hue}`, borderRadius: s.radiusSm,
-            padding: s.mob ? '10px 12px' : '12px 16px', position: 'relative',
-          }}>
-            <span style={col('4px', { minWidth: 0 })}>
-              <span style={{
-                fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls, color: g.hue,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>{g.venue}</span>
-              <span style={{ fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8 }}>
-                {g.city} · {g.time}
+        {shown.map((g, i) => {
+          // A row with a tickets address becomes an anchor, the gallery's seam:
+          // `target="_blank"`, so the click both opens the tab and lights the
+          // pin, and the published page is still behind it. A row without one
+          // stays the picture it has always been — the Soundcloud rule rather
+          // than the gallery's, because a gig is a show the artist is playing,
+          // not a tile promising somewhere to go.
+          const link = extLink(s, g.url)
+          const Tag = link ? 'a' : 'div'
+          const on = lit(i)
+          return (
+            <Tag key={i} {...link} onClick={onPick(i)} style={{
+              ...row('12px', { justifyContent: 'space-between' }),
+              border: `${s.bw} solid ${g.hue}`, borderRadius: s.radiusSm,
+              padding: s.mob ? '10px 12px' : '12px 16px', position: 'relative',
+              // The lit row fills rather than lifting: these sit in a column
+              // with no room to raise one, and the fill is what the pin echoes.
+              background: on ? g.hue : 'transparent',
+              // Anchors inherit the card's colour instead of the UA's blue.
+              textDecoration: 'none', color: 'inherit',
+              cursor: s.live ? 'pointer' : undefined,
+            }}>
+              <span style={col('4px', { minWidth: 0 })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls,
+                  color: on ? contrastInk(g.hue) : g.hue,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{g.venue}</span>
+                <span style={{
+                  fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8,
+                  color: on ? contrastInk(g.hue) : undefined,
+                }}>
+                  {g.city} · {g.time}
+                </span>
               </span>
-            </span>
-            <span style={col('0', {
-              alignItems: 'center', flex: 'none', border: `${s.bw} solid ${g.hue}`,
-              borderRadius: s.radiusSm, padding: '5px 10px', lineHeight: 1.1,
-            })}>
-              <span style={labelStyle(s, '10px')}>{g.month}</span>
-              <span style={labelStyle(s, s.labelXs)}>{g.day}</span>
-            </span>
-          </div>
-        ))}
-        <Pager s={s} colour={s.ac} fill={s.soft2} />
+              <span style={col('0', {
+                alignItems: 'center', flex: 'none', border: `${s.bw} solid ${on ? contrastInk(g.hue) : g.hue}`,
+                borderRadius: s.radiusSm, padding: '5px 10px', lineHeight: 1.1,
+                color: on ? contrastInk(g.hue) : undefined,
+              })}>
+                <span style={labelStyle(s, '10px')}>{g.month}</span>
+                <span style={labelStyle(s, s.labelXs)}>{g.day}</span>
+              </span>
+            </Tag>
+          )
+        })}
+        {/* Derived from the list, so it cannot claim pages that are not there,
+            and gone entirely at one page — the repertoire's rule. The five
+            seeded gigs are one page, so the reference picture no longer carries
+            the old static 1 2 3 … 20 row. */}
+        {labels.length > 0 && (
+          <Pager s={s} colour={s.ac} fill={s.soft2} frame={{
+            pages: labels, active: at,
+            // Static on the canvas, like the repertoire's.
+            onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+            onStep: s.live
+              ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+              : undefined,
+          }} />
+        )}
       </div>
     )
 
@@ -3252,7 +3731,16 @@ function EventsMap({ s }) {
       background: s.soft, aspectRatio: '16 / 7', borderRadius: s.radius, position: 'relative',
       overflow: 'hidden', display: 'flex', alignItems: 'flex-end', padding: '26px',
     }}>
-      {pins}
+      {/* The flat layout has no gig list to pair with, so its dots stay the raw
+          five positions rather than one per gig — twelve gigs would otherwise
+          stack twelve dots on five spots. */}
+      {s.pins.map((p, i) => (
+        <span key={i} style={{
+          position: 'absolute', left: p.x, top: p.y, width: '12px', height: '12px',
+          borderRadius: '999px', background: s.ac, boxShadow: `0 0 0 5px ${s.soft2}`,
+          transform: 'translate(-50%, -50%)',
+        }} />
+      ))}
       <div style={{ position: 'relative' }}>
         <h2 style={{ margin: 0, fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1 }}>{s.title}</h2>
         <div style={{ fontSize: '13px', fontWeight: 600, color: s.muted, marginTop: '8px' }}>{s.mapSub}</div>
@@ -3265,6 +3753,15 @@ function EventsMap({ s }) {
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
 function Testimonials({ s }) {
+  // Which review the card is on. It starts at 0, not the -1 the player's `cur`,
+  // the gallery's `pick` and the map's `sel` start at and not the calendar's
+  // '': the frame draws a filled card, so here the picture *is* a choice — the
+  // enquiry form's event chip and pricing's `active` pin 0 for the same reason.
+  // Live-gated (§12.7) like every other control in this file: an arrow on the
+  // editor canvas would both page the card and select the section. Above the
+  // layout branch, because hooks are — LayoutPicker mounts every layout at once.
+  const [cur, setCur] = useState(0)
+
   if (s.v0) {
     // §5.5 — three frames: 1440 (964:58585) on the 1180 canvas at × 0.82, 768
     // (986:39711) and 390 (986:39733) verbatim. The narrow two are not the
@@ -3279,7 +3776,22 @@ function Testimonials({ s }) {
     const tab = isTablet(s)
     const scale = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * scale)}px`
-    const q = s.quotes[0]
+    const n = s.quotes.length
+    // Clamped the way pricing clamps its chip: the list is the artist's now, so
+    // a review they delete can leave `cur` past the end of it — and Publish
+    // re-renders a tab that is already open. `n` of 0 has to be caught before
+    // the index, or Math.min(cur, -1) reads off the front of the list.
+    const at = s.live && n ? Math.min(cur, n - 1) : 0
+    const q = n ? s.quotes[at] : null
+    // Wrapping at both ends, the media player's transport rule and the
+    // calendar's: a clamped first arrow opens the published page looking dead.
+    // The empty guard is `goTo`'s: nothing wires this up at one review, but a
+    // modulo by zero is NaN rather than an error, so it would strand `cur`.
+    const go = (i) => { if (n) setCur(((i % n) + n) % n) }
+    // Not drawn at one review — the pager's rule and the chip row's — and
+    // derived from the list, so it holds on the canvas too. The seed carries
+    // three, so the reference picture does not move.
+    const paging = n > 1
     const ink = s.paperFg
     // The frames' 3px stroke, verbatim on both narrow ones; u(3) rounds to 2 on
     // desktop and reads visibly lighter, so it takes the literal the
@@ -3289,13 +3801,20 @@ function Testimonials({ s }) {
     // 14/24 of the size it is given, so the frame's width backs out to 17.5.
     const glyph = Math.round(17.5 * scale)
 
-    const arrow = (icon) => (
-      <span style={{
+    // The handler is the second argument, Gallery's signature, and the cursor is
+    // read off it rather than off `s.live` — Pager's rule, and the reason the
+    // canvas arrows lose the pointer they used to carry over nothing.
+    const arrow = (icon, onClick) => (
+      <span onClick={onClick} style={{
         width: u(55), height: u(54), flex: 'none', borderRadius: u(18.5),
         background: s.pillBg, color: s.pillFg, border: `${bw} solid ${ink}`,
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        cursor: onClick ? 'pointer' : undefined,
       }}>{icon}</span>
     )
+    const step = (d) => (s.live && paging ? () => go(at + d) : undefined)
+    const prev = arrow(<ArrowLeft size={glyph} />, step(-1))
+    const next = arrow(<ArrowRight size={glyph} />, step(1))
 
     // Each back as its frame draws it: the chip it is painted in, its rotation,
     // the offset of its centre from the card's, and the inset of its box off the
@@ -3328,14 +3847,78 @@ function Testimonials({ s }) {
     // The frames pair the two pills against each other — orange lettered in the
     // mustard, mustard lettered in the orange — which is a Retro reading rather
     // than a legibility rule, so the flat themes keep contrastInk.
-    const tag = (label, bg, fg) => (
-      <span key={label} style={{
+    // Keyed positionally, not on the label: both strings are the artist's now,
+    // and two reviews' worth of identical pills would otherwise collide.
+    const tag = (label, i, bg, fg) => (
+      <span key={i} style={{
         background: bg, color: fg, borderRadius: s.btnR,
         padding: `${u(6)} ${u(12)}`, ...labelStyle(s, u(20)),
         // labelStyle sets Anton's tight 1.1; the frames' pill is a 41px box
         // round a 29px text box, which is the face's own leading.
         lineHeight: 29 / 20,
       }}>{label}</span>
+    )
+
+    // The card's contents. An empty list is a real state now that the reviews
+    // are the artist's, and it draws pricing's one message rather than the
+    // repertoire's two: there is no filter here that could empty a list which
+    // has something in it. The card, the two backs, the torn edge and the grain
+    // all stay — the section is a composition, and a hole where the card stands
+    // is not one of its states.
+    const body = q ? (
+      <>
+        {/* One gap reproduces the frames' three absolute stops: a 16px
+            eyebrow, the quote's 45px lines, then a 29px attribution. Each of
+            the three is the artist's now and each can be empty, so each is
+            rendered or not rather than printed blank: a `col` gap is spent on
+            an empty span the same as on a full one. */}
+        <div style={col(u(s.narrow ? 37 : 14))}>
+          {/* Space Mono in the frames — the body face in this project's
+              mapping of the reference's three, not the Anton label. */}
+          {!!q.when && (
+            <span style={{
+              fontFamily: s.body, fontSize: u(11), letterSpacing: u(1.5),
+              textTransform: 'uppercase', color: s.ac,
+            }}>{q.when}</span>
+          )}
+          <p style={{
+            margin: 0, fontFamily: s.display,
+            // The 390 frame is the one place the quote is not Soulway 40/45:
+            // it renders through a Display/MD token that resolves to another
+            // template's Bebas Neue at leading 1 — the §5.5 leak, not a
+            // decision. Its 40 is that condensed face's measure, and none of
+            // the five display faces holds it inside the 246 this page's own
+            // padX leaves: Fraunces breaks "Professional" mid-word. Mobile
+            // therefore takes the ramp's own display step, the same fallback
+            // the enquiry form makes for its 390 heading, which puts the quote
+            // on four lines and the card within a few px of the frame's 430.
+            // The leading stays the 45 the other two frames state.
+            fontSize: s.mob ? s.dispSm : u(40),
+            lineHeight: 45 / 40, letterSpacing: s.dls, overflowWrap: 'break-word',
+          }}>{q.quote}</p>
+          {/* labelStyle keeps its labels on one line; this one is content,
+              and at the frames' 20 it clears the 240 the mobile card leaves in
+              Anton but not in Grunge's wider label face — so it wraps rather
+              than running off the card. The two halves are joined in
+              sectionVm, which is what keeps a separator off a card whose
+              reviewer or role is blank. */}
+          {!!q.byline && (
+            <span style={labelStyle(s, u(20), { whiteSpace: 'normal' })}>{q.byline}</span>
+          )}
+        </div>
+        {/* The pills are the same two strings again, so an emptied one drops
+            its pill and an emptied pair drops the row with its padding. */}
+        {!!q.byline && (
+          <div style={row(u(8), { flexWrap: 'wrap', paddingTop: s.narrow ? 0 : u(20) })}>
+            {!!q.who && tag(q.who, 0, s.ac, s.retro ? s.pillBg : contrastInk(s.ac))}
+            {!!q.role && tag(q.role, 1, s.pillBg, s.retro ? s.ac : contrastInk(s.pillBg))}
+          </div>
+        )}
+      </>
+    ) : (
+      <span style={{
+        fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px', color: s.muted,
+      }}>No reviews yet.</span>
     )
 
     // The mobile frame's card is 364 wide in a 390 canvas — wider than the 346
@@ -3360,40 +3943,7 @@ function Testimonials({ s }) {
           ...(s.narrow ? { gap: u(50) } : { minHeight: u(420) }),
           display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         }}>
-          {/* One gap reproduces the frames' three absolute stops: a 16px
-              eyebrow, the quote's 45px lines, then a 29px attribution. */}
-          <div style={col(u(s.narrow ? 37 : 14))}>
-            {/* Space Mono in the frames — the body face in this project's
-                mapping of the reference's three, not the Anton label. */}
-            <span style={{
-              fontFamily: s.body, fontSize: u(11), letterSpacing: u(1.5),
-              textTransform: 'uppercase', color: s.ac,
-            }}>{q.when}</span>
-            <p style={{
-              margin: 0, fontFamily: s.display,
-              // The 390 frame is the one place the quote is not Soulway 40/45:
-              // it renders through a Display/MD token that resolves to another
-              // template's Bebas Neue at leading 1 — the §5.5 leak, not a
-              // decision. Its 40 is that condensed face's measure, and none of
-              // the five display faces holds it inside the 246 this page's own
-              // padX leaves: Fraunces breaks "Professional" mid-word. Mobile
-              // therefore takes the ramp's own display step, the same fallback
-              // the enquiry form makes for its 390 heading, which puts the quote
-              // on four lines and the card within a few px of the frame's 430.
-              // The leading stays the 45 the other two frames state.
-              fontSize: s.mob ? s.dispSm : u(40),
-              lineHeight: 45 / 40, letterSpacing: s.dls, overflowWrap: 'break-word',
-            }}>{s.quote1}</p>
-            {/* labelStyle keeps its labels on one line; this one is content,
-                and at the frames' 20 it clears the 240 the mobile card leaves in
-                Anton but not in Grunge's wider label face — so it wraps rather
-                than running off the card. */}
-            <span style={labelStyle(s, u(20), { whiteSpace: 'normal' })}>{q.who} · {q.role}</span>
-          </div>
-          <div style={row(u(8), { flexWrap: 'wrap', paddingTop: s.narrow ? 0 : u(20) })}>
-            {tag(q.who, s.ac, s.retro ? s.pillBg : contrastInk(s.ac))}
-            {tag(q.role, s.pillBg, s.retro ? s.ac : contrastInk(s.pillBg))}
-          </div>
+          {body}
         </div>
       </div>
     )
@@ -3408,21 +3958,26 @@ function Testimonials({ s }) {
         {card}
         {/* Mobile takes the arrows off the card's flanks and sets them in a 270
             row centred under it. */}
-        <div style={row('0px', {
-          width: u(270), maxWidth: '100%', margin: '0 auto', justifyContent: 'space-between',
-        })}>
-          {arrow(<ArrowLeft size={glyph} />)}
-          {arrow(<ArrowRight size={glyph} />)}
-        </div>
+        {paging && (
+          <div style={row('0px', {
+            width: u(270), maxWidth: '100%', margin: '0 auto', justifyContent: 'space-between',
+          })}>
+            {prev}
+            {next}
+          </div>
+        )}
       </div>
     ) : (
+      // With the arrows gone the row has one child, and space-between would
+      // stand the card against the left gutter rather than in the middle of the
+      // band the frames measure.
       <div style={row('0px', {
-        justifyContent: 'space-between', position: 'relative',
+        justifyContent: paging ? 'space-between' : 'center', position: 'relative',
         padding: `${u(tab ? 82 : 67)} 0 ${u(tab ? 47 : 48)}`,
       })}>
-        {arrow(<ArrowLeft size={glyph} />)}
+        {paging && prev}
         {card}
-        {arrow(<ArrowRight size={glyph} />)}
+        {paging && next}
       </div>
     )
 
@@ -3463,7 +4018,10 @@ function Testimonials({ s }) {
             display: 'flex', flexDirection: 'column', gap: '16px',
           }}>
             <span style={{ fontFamily: s.display, fontSize: '34px', color: s.ac, lineHeight: 0.4 }}>“</span>
-            <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.6 }}>{i === 0 ? s.quote1 : q.q}</p>
+            {/* Every card reads its own row now: this used to be
+                `i === 0 ? s.quote1 : q.q`, because only the first was editable
+                and only the first was cased. */}
+            <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.6 }}>{q.quote}</p>
             <div style={{ marginTop: 'auto' }}>
               <div style={{ fontSize: '13px', fontWeight: 700 }}>{q.who}</div>
               <div style={{ fontSize: '12px', color: s.muted }}>{q.role}</div>
@@ -3471,18 +4029,81 @@ function Testimonials({ s }) {
           </div>
         ))}
       </div>
+      {/* The card layout's empty state, in the layout that has no card. */}
+      {s.quotes.length === 0 && (
+        <span style={{
+          fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px', color: s.muted,
+        }}>No reviews yet.</span>
+      )}
     </div>
   )
 }
 
 function EnquiryForm({ s }) {
-  const submit = (
-    <span style={{
-      background: s.ac, color: s.acFg, textAlign: 'center', fontSize: '12px', fontWeight: 700,
-      letterSpacing: '1.2px', textTransform: 'uppercase', padding: '14px', borderRadius: s.btnR,
-      cursor: 'pointer',
-    }}>{s.formBtn}</span>
-  )
+  // What the visitor has typed, gated on `s.live` throughout: on the canvas
+  // every box is the span it has always been (§12.7), because a live field
+  // there would take the keystroke and select the section with it. Hooks sit
+  // above the layout branch, because hooks are — LayoutPicker mounts every
+  // layout of this section at once.
+  //
+  // `vals` is indexed by the field's place in s.formFields, which is also how
+  // `errs.f` is indexed and how the mailto composer zips labels onto values.
+  // It is sparse, so nothing ever maps over it — the field list is what is
+  // mapped, and `at(i)` reads through it.
+  const [vals, setVals] = useState([])
+  const [msg, setMsg] = useState('')
+  // The picked event type starts at 0, not the -1 the player's `cur`, the
+  // gallery's `pick`, the map's `sel` and the calendar's `''` start at. Those
+  // open on "nothing chosen" so the published first paint is the canvas's
+  // picture; here the picture *is* chip 0 picked — the §10.2 frame draws it
+  // filled, with the olive block under it — and a form that defaults its first
+  // choice is what a form does. The pricing chips pin 0 on the canvas for the
+  // same reason. Do not "fix" this to -1.
+  const [type, setType] = useState(0)
+  // null until a submit is refused, then { f: bool[], any }. Cleared per field
+  // as each is corrected, so the form stops marking a box the visitor has just
+  // filled. No effect anywhere: set on the click, read on the render.
+  const [errs, setErrs] = useState(null)
+  const [sent, setSent] = useState(false)
+
+  const nTypes = s.formTypes.length
+  // Clamped like the pricing chips': the row is the artist's list now, so a
+  // type they delete between publishes can leave `type` past the end of it —
+  // and Publish re-renders the tab that is already open.
+  const ti = s.live && nTypes ? Math.min(type, nTypes - 1) : 0
+  // Only the split layout draws the chip row — the flat fallback never has —
+  // so this is what decides whether a type is offered at all, and the mailto
+  // reads it rather than `nTypes`. A page whose artist emptied the list and a
+  // layout that never asks are the same case: no type was chosen, so the
+  // subject is the bare "Enquiry" rather than a claim the visitor never made.
+  const showTypes = !!s.v0 && nTypes > 0
+  const at = (i) => vals[i] ?? ''
+  const setAt = (i, v) => {
+    setVals((prev) => { const next = prev.slice(); next[i] = v; return next })
+    setErrs((e) => (e ? { ...e, f: e.f.map((x, j) => (j === i ? false : x)) } : e))
+  }
+
+  // The submit is an <a href="mailto:…">, never a <form>. A <form> here has no
+  // action, so submitting it — which an Enter key in any text field does — would
+  // post to <base href>, i.e. the opener's URL, and the published tab would
+  // reload into the builder. That is the document.write failure through a
+  // different door (see the Publish block in EncoreBuilder). With no <form>
+  // there is no implicit submission either, so Enter does nothing at all.
+  //
+  // The href is composed on every render, so the address always carries what is
+  // in the boxes and the click only decides whether to let it through. An empty
+  // `email` composes to '' and the pill goes back to being a span — the
+  // Soundcloud button's rule, not the gallery's hide-the-row rule: a form the
+  // artist has not addressed is still the picture their page is drawn around.
+  // No target and no rel: a mailto in a new tab leaves an empty tab behind, and
+  // the published document's delegated listener only ever swallows '#'.
+  const href = s.live && !sent ? s.formMailto({ vals, ti: showTypes ? ti : -1, msg }) : ''
+  const onSubmit = href ? (e) => {
+    const bad = s.formCheck({ vals })
+    if (bad.any) { e.preventDefault(); setErrs(bad) } else { setErrs(null); setSent(true) }
+  } : undefined
+  const Pill = href ? 'a' : 'span'
+  const pillLink = href ? { href } : null
 
   // v0 — Enquiry Form layout 1 · Split context + form (§10.2 reference
   // design): an olive context panel welded to a mustard form panel inside one
@@ -3522,27 +4143,62 @@ function EnquiryForm({ s }) {
       }}>{t}</span>
     )
 
-    const field = (f) => (
-      <div key={f.l} style={col(u(6))}>
-        {label(f.l)}
-        <span style={{
-          display: 'flex', alignItems: 'center',
-          border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, background: ctlBg,
-          // Stated heights, not padding: the reset boxes these border-box, so
-          // the frame's stroke sits inside its 60 the way Figma draws it.
-          height: u(60), padding: `0 ${u(24)}`,
-          fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
-        }}>{f.p}</span>
-      </div>
-    )
+    // One box, drawn once for both modes. There is no red in any THEMES
+    // palette and this file invents no hex, so a refused field is marked
+    // structurally: a rule under it in the accent's own ink, drawn *inset* so
+    // the stated 60 does not grow and nothing in the frame moves.
+    const ctl = (bad) => ({
+      border: `${s.bw} solid ${formFg}`, borderRadius: s.btnR, background: ctlBg,
+      // Stated heights, not padding: the reset boxes these border-box, so
+      // the frame's stroke sits inside its 60 the way Figma draws it.
+      height: u(60), padding: `0 ${u(24)}`,
+      fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
+      margin: 0, width: '100%',
+      boxShadow: bad ? `inset 0 ${u(-3)} 0 ${ctlInk}` : undefined,
+    })
+
+    // Repertoire's search box is the precedent: on the published page a real
+    // field, on the canvas the same span it has always been, both carrying the
+    // frame's own type so the box does not jump when the page is published.
+    // Keyed by index rather than by label — two boxes may be called the same
+    // thing, and an artist mid-rename has two called nothing.
+    const field = (f, i) => {
+      const bad = !!(errs && errs.f[i])
+      return (
+        <div key={i} style={col(u(6))}>
+          {label(f.label)}
+          {s.live ? (
+            <input
+              value={at(i)} placeholder={f.placeholder}
+              onChange={(e) => setAt(i, e.target.value)}
+              // type="email" is free semantics and a phone keyboard; `number`
+              // gets inputMode only, because type="number" draws spinners
+              // inside the frame's 60px box. A date is a text box carrying the
+              // artist's placeholder: the native picker cannot be styled onto
+              // mustard, and the frame draws a written date.
+              type={f.kind === 'email' ? 'email' : 'text'}
+              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              style={{ ...ctl(bad), outline: 'none' }}
+            />
+          ) : (
+            <span style={{ ...ctl(bad), display: 'flex', alignItems: 'center' }}>{f.placeholder}</span>
+          )}
+        </div>
+      )
+    }
 
     // Two to a row on the 1440 and 768 frames, one to a row on the 390 one,
-    // which also closes the gap between them from 12 to 10.
-    const fieldRow = (fs) => (
-      <div style={{
+    // which also closes the gap between them from 12 to 10. The pairing is
+    // sectionVm's (`vm.formRows`), not a grid's: the frames space the fields
+    // inside a row by that 12/10 and the rows themselves by the panel's own
+    // 14, and one auto-flowing grid has a single rowGap.
+    const fieldRow = (fs, r) => (
+      <div key={r} style={{
         display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
         gap: u(s.mob ? 10 : 12),
-      }}>{fs.map(field)}</div>
+      // r * 2 + j, not the row-local index: `at()` and `errs.f` are indexed
+      // against the whole field list, and a row is always a chunk of two.
+      }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
     )
 
     return (
@@ -3597,50 +4253,113 @@ function EnquiryForm({ s }) {
         </div>
 
         <div style={{ background: formBg, color: formFg, padding: inset, ...col(u(14)) }}>
-          {fieldRow(s.formFields.slice(0, 2))}
-          {fieldRow(s.formFields.slice(2))}
-          <div style={col(u(8))}>
-            {label('Event type')}
-            <div style={row(u(8), { flexWrap: 'wrap' })}>
-              {s.formTypes.map((t, i) => (
-                <span key={t} style={{
-                  // Figma strokes inside the box, so its picked chip stands as
-                  // tall as the four outlined ones with no stroke at all. A CSS
-                  // border adds to the box, so the picked one keeps its border
-                  // and paints it its own fill, and the height is stated rather
-                  // than left to the padding and the line box.
-                  border: `${s.bw} solid ${i === 0 ? s.ac : formFg}`, borderRadius: s.btnR,
-                  display: 'inline-flex', alignItems: 'center',
-                  height: u(25), padding: `0 ${u(11)}`,
-                  background: i === 0 ? s.ac : 'transparent', color: i === 0 ? s.acFg : formFg,
-                  boxShadow: i === 0 ? block : 'none', cursor: 'pointer',
-                  fontFamily: s.body, fontWeight: 700, fontSize: u(12.5), whiteSpace: 'nowrap',
-                }}>{t}</span>
-              ))}
+          {sent ? (
+            // The mustard half alone — the shell, the olive panel and the one
+            // sheet of grain below are untouched, so the composition does not
+            // move. `sent` can only be set under s.live, so the canvas never
+            // draws this.
+            <div style={col(u(14))}>
+              <h3 style={{
+                margin: 0, fontFamily: s.display, fontSize: u(28),
+                letterSpacing: s.dls, lineHeight: 1, overflowWrap: 'break-word',
+              }}>{s.formSentTitle}</h3>
+              <p style={{
+                margin: 0, fontFamily: s.body, fontSize: u(13.5), lineHeight: 1.5,
+              }}>{s.formSentBody}</p>
+              {/* Plain text, deliberately, and not a second mailto: this line
+                  is the fallback for a visitor whose browser opened nothing,
+                  and a link they cannot follow is no fallback at all. */}
+              <span style={{
+                fontFamily: s.body, fontWeight: 700, fontSize: u(15),
+                overflowWrap: 'break-word',
+              }}>{s.formEmail}</span>
+              <span
+                onClick={() => setSent(false)}
+                style={{
+                  ...row(u(10), { justifyContent: 'center' }),
+                  background: s.ac, color: s.acFg, borderRadius: s.btnR,
+                  padding: `${u(14)} ${u(20)}`,
+                  cursor: 'pointer', boxShadow: block, ...labelStyle(s, u(20)),
+                }}
+              >{s.formAgain}</span>
             </div>
-          </div>
-          <div style={col(u(6))}>
-            {label('Message')}
-            <span style={{
-              display: 'block', border: `${s.bw} solid ${formFg}`, background: ctlBg,
-              borderRadius: u(20), height: u(s.mob ? 100 : 134),
-              padding: `${u(20)} ${u(24)}`,
-              fontFamily: s.body, fontSize: u(13.5), color: ctlInk,
-            }}>{s.formMessage}</span>
-          </div>
-          <span style={{
-            ...row(u(10), { justifyContent: 'center' }),
-            background: s.ac, color: s.acFg, borderRadius: s.btnR,
-            // The frame's 49px pill is its 10px padding plus the line box
-            // Anton's own leading gives 20px type. labelStyle sets the tighter
-            // 1.1 every other label in the page wants, so the padding carries
-            // the difference and the pill still stands the frame's height.
-            padding: `${u(14)} ${u(20)}`,
-            cursor: 'pointer', boxShadow: block, ...labelStyle(s, u(20)),
-          }}>
-            {s.formBtn}
-            <Asterisk size={Math.round(20 * scale)} color={s.acFg} />
-          </span>
+          ) : (
+            <>
+              {s.formRows.map(fieldRow)}
+              {/* Not drawn at no chips: a picker with nothing to pick is the
+                  pager's case and the pricing chips'. */}
+              {showTypes && (
+                <div style={col(u(8))}>
+                  {label(s.formTypeLabel)}
+                  <div style={row(u(8), { flexWrap: 'wrap' })}>
+                    {s.formTypes.map((t, i) => {
+                      const onClick = s.live ? () => setType(i) : undefined
+                      return (
+                        <span key={i} onClick={onClick} style={{
+                          // Figma strokes inside the box, so its picked chip stands as
+                          // tall as the four outlined ones with no stroke at all. A CSS
+                          // border adds to the box, so the picked one keeps its border
+                          // and paints it its own fill, and the height is stated rather
+                          // than left to the padding and the line box.
+                          border: `${s.bw} solid ${i === ti ? s.ac : formFg}`, borderRadius: s.btnR,
+                          display: 'inline-flex', alignItems: 'center',
+                          height: u(25), padding: `0 ${u(11)}`,
+                          background: i === ti ? s.ac : 'transparent', color: i === ti ? s.acFg : formFg,
+                          boxShadow: i === ti ? block : 'none',
+                          // Read off the handler, Pager's rule: a chip on the
+                          // canvas is a picture of a chip.
+                          cursor: onClick ? 'pointer' : undefined,
+                          fontFamily: s.body, fontWeight: 700, fontSize: u(12.5), whiteSpace: 'nowrap',
+                        }}>{t}</span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+              <div style={col(u(6))}>
+                {label(s.formMsgLabel)}
+                {s.live ? (
+                  <textarea
+                    value={msg} placeholder={s.formMessage}
+                    onChange={(e) => setMsg(e.target.value)}
+                    style={{
+                      ...ctl(false), display: 'block',
+                      borderRadius: u(20), height: u(s.mob ? 100 : 134),
+                      padding: `${u(20)} ${u(24)}`,
+                      // The box is the frame's; it cannot be dragged out of it.
+                      resize: 'none', outline: 'none',
+                    }}
+                  />
+                ) : (
+                  <span style={{
+                    ...ctl(false), display: 'block',
+                    borderRadius: u(20), height: u(s.mob ? 100 : 134),
+                    padding: `${u(20)} ${u(24)}`,
+                  }}>{s.formMessage}</span>
+                )}
+              </div>
+              <Pill {...pillLink} onClick={onSubmit} style={{
+                ...row(u(10), { justifyContent: 'center' }),
+                background: s.ac, color: s.acFg, borderRadius: s.btnR,
+                // The frame's 49px pill is its 10px padding plus the line box
+                // Anton's own leading gives 20px type. labelStyle sets the tighter
+                // 1.1 every other label in the page wants, so the padding carries
+                // the difference and the pill still stands the frame's height.
+                padding: `${u(14)} ${u(20)}`,
+                textDecoration: 'none',
+                cursor: onSubmit ? 'pointer' : undefined,
+                boxShadow: block, ...labelStyle(s, u(20)),
+              }}>
+                {s.formBtn}
+                <Asterisk size={Math.round(20 * scale)} color={s.acFg} />
+              </Pill>
+              {errs && (
+                <span style={{
+                  fontFamily: s.body, fontSize: u(12), color: formFg, textAlign: 'center',
+                }}>{s.formPrompt}</span>
+              )}
+            </>
+          )}
         </div>
         {/* One sheet of grain over both halves, screened at the frame's .4 —
             not a sheet per panel, which seams down the weld between them. */}
@@ -3648,14 +4367,66 @@ function EnquiryForm({ s }) {
       </div>
     )
   }
+  // The flat fallback (arch 1, 3, 5). Its three boxes were hardcoded literals
+  // unrelated to the field list; they are the artist's now, off the same state
+  // and the same hooks as v0 — there is no second state model.
+  //
+  // It draws no chip row, and never has: this is the plain layout, and the
+  // artist's types are not lost, merely not offered here. `showTypes` above is
+  // false for the whole layout, so the mailto goes with no type at all.
+  const flatCtl = (bad) => ({
+    ...inputStyle(s),
+    // The inset rule again — no palette has a red, and inset costs no layout.
+    boxShadow: bad ? `inset 0 -3px 0 ${s.ac}` : undefined,
+  })
+  const flatPill = {
+    background: s.ac, color: s.acFg, textAlign: 'center', fontSize: '12px', fontWeight: 700,
+    letterSpacing: '1.2px', textTransform: 'uppercase', padding: '14px', borderRadius: s.btnR,
+    textDecoration: 'none', display: 'block',
+  }
+  if (sent) {
+    return (
+      <div style={col('14px', { maxWidth: '560px', margin: '0 auto', textAlign: 'center' })}>
+        <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.04 }}>{s.formSentTitle}</h2>
+        <p style={{ margin: 0, fontSize: '15px', color: s.muted, lineHeight: 1.6 }}>{s.formSentBody}</p>
+        <span style={{ fontSize: '16px', fontWeight: 700, wordBreak: 'break-word' }}>{s.formEmail}</span>
+        <span onClick={() => setSent(false)} style={{ ...flatPill, cursor: 'pointer' }}>{s.formAgain}</span>
+      </div>
+    )
+  }
   return (
     <div style={col('14px', { maxWidth: '560px', margin: '0 auto', textAlign: 'center' })}>
       <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.04 }}>{s.title}</h2>
       <p style={{ margin: '0 0 8px', fontSize: '15px', color: s.muted, lineHeight: 1.6 }}>{s.formPara}</p>
-      <input style={inputStyle(s)} placeholder="Your name" readOnly />
-      <input style={inputStyle(s)} placeholder="Email" readOnly />
-      <textarea rows={3} style={{ ...inputStyle(s), resize: 'none' }} placeholder="Tell me about the event…" readOnly />
-      {submit}
+      {s.formFields.map((f, i) => (s.live ? (
+        <input
+          key={i} value={at(i)} placeholder={f.placeholder}
+          onChange={(e) => setAt(i, e.target.value)}
+          type={f.kind === 'email' ? 'email' : 'text'}
+          inputMode={f.kind === 'number' ? 'numeric' : undefined}
+          style={flatCtl(!!(errs && errs.f[i]))}
+        />
+      ) : (
+        // The one place a canvas control stays an <input readOnly> rather than
+        // becoming a span: this layout has always drawn inputs, and a span here
+        // would change the placeholder's own colour.
+        <input key={i} style={flatCtl(false)} placeholder={f.placeholder} readOnly />
+      )))}
+      {s.live ? (
+        <textarea
+          rows={3} value={msg} placeholder={s.formMessage}
+          onChange={(e) => setMsg(e.target.value)}
+          style={{ ...flatCtl(false), resize: 'none' }}
+        />
+      ) : (
+        <textarea rows={3} style={{ ...flatCtl(false), resize: 'none' }} placeholder={s.formMessage} readOnly />
+      )}
+      <Pill {...pillLink} onClick={onSubmit} style={{ ...flatPill, cursor: onSubmit ? 'pointer' : undefined }}>
+        {s.formBtn}
+      </Pill>
+      {errs && (
+        <span style={{ fontSize: '13px', color: s.muted }}>{s.formPrompt}</span>
+      )}
     </div>
   )
 }
@@ -3733,22 +4504,47 @@ function Footer({ s }) {
       // column 1 holds it whether or not the label face fills it.
       minWidth: i === 0 ? u(148) : undefined,
     })}>
-      {colLinks.map((l) => (
-        <a key={l} href="#" style={labelStyle(s, u(20), { color: s.ac })}>{l}</a>
-      ))}
+      {colLinks.map((l, j) => {
+        // The gigs' seam, at a link: an address the artist typed leaves the page
+        // in a new tab, a section id scrolls, and on the canvas both resolve to
+        // an <a> with no href at all — never `#`, which is what this column used
+        // to carry and which jumps the *builder* to its own top. navHref's rule,
+        // and its other half too: an href-less anchor takes the text cursor, so
+        // the style states the pointer for itself. Keyed positionally, because
+        // the labels are the artist's now and two of them can read the same.
+        const ext = extLink(s, l.url)
+        return (
+          <a key={j} {...(ext || { href: navHref(s, l.to) })}
+             style={labelStyle(s, u(20), {
+               color: s.ac, cursor: 'pointer', textDecoration: 'none',
+             })}>{l.label}</a>
+        )
+      })}
       {/* The frames set the footer pill the other way up from every other one:
           the accent is the ground, the page background is the type, and the
           mustard the rest of the page puts *under* the type is its block. The
-          390 frame keeps the 768 pill at full size, hence `full`. */}
-      {i === 0 && (
-        <BookPill s={s} bg={s.ac} fg={s.bg} shadow={s.pillBg} full={s.mob} />
+          390 frame keeps the 768 pill at full size, hence `full`.
+
+          It books at `bookTo` with no self-exclusion filter, unlike the pricing
+          cards' pills and the calendar's: `footer` is not in CTA_TARGETS.book,
+          so the pill can never point at the section it stands in. With none of
+          the three on the page it resolves to nothing and BookPill stays the
+          span it has always been here.
+
+          An emptied label drops it, which the calendar's foot pill does not do:
+          there the pill sits at the end of a row of type, here it is the block
+          the whole column is built round, and a wordless block is not one of
+          this section's states. */}
+      {i === 0 && s.footerCta && (
+        <BookPill s={s} to={s.bookTo} label={s.footerCta}
+                  bg={s.ac} fg={s.bg} shadow={s.pillBg} full={s.mob} />
       )}
     </nav>
   )
 
   const links = (
     <div style={{ display: 'flex', gap: s.mob ? u(26) : u(76) }}>
-      {s.footerLinks.map(linkCol)}
+      {s.footerCols.map(linkCol)}
     </div>
   )
 

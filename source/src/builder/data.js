@@ -244,30 +244,67 @@ export const TRACKS = [
   ['Roomtone',           '5:24', 'Hidden Sessions Vol. 2'],
 ]
 
-// The "now playing" card that sits beside the track stack.
+// The audio behind the seeded tracks above, one per TRACKS row. Unlike the
+// seeded photography this is *not* gated on Retro: it is what makes the
+// published media player audible in every theme before the artist has typed
+// anything. They are remote files — the double-clickable build plays them only
+// online, and a page whose tracks carry no address at all is still the picture
+// it always was.
+export const TRACK_AUDIO = [
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+]
+
+// The clock on the "now playing" card beside the track stack — a player caught
+// mid-song, which is what the Figma frame draws. Only the editor canvas shows
+// it: the published player's clock is its <audio> element's own (§10.2a), and
+// the *track* named on the card is track one at both sizes, not `track` here,
+// which survives only as the label for a section with no tracks left in it.
 export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
 
+// Pricing — the packages beside the section's filter row, and the seed for
+// FIELDS.pricing's structured editor: used whenever the section carries no
+// `tiers` key of its own. Already the row shape TiersField writes, GIGS-style,
+// so the panel's seed resolver is the same expression sectionVm's is.
+//
+// `tags` is the raw comma string the artist would type, and it is what the
+// Solo / Trio / Band selector above the cards is now built from — songTags()
+// splits it and repChips() derives the row, exactly as for the repertoire, so
+// the chips are the artist's rather than a constant. `feats` is one feature a
+// line, joined here only to keep the seed readable.
 export const TIERS = [
-  { name: 'The House Party', price: '£450', blurb: 'Birthdays, anniversaries, intimate gatherings.',
-    feats: ['Solo DJ setup', 'Vinyl-only option', 'Requests welcome', 'Up to 50 mi travel'] },
-  { name: 'The Wedding Set', price: '£650', blurb: 'Ceremony, dinner, dance. One DJ for the whole day.', featured: true,
-    feats: ['Ceremony underscoring', 'Drinks + dinner ambience', 'Peak-time dance floor', 'Custom first dance', 'PA + lighting'] },
-  { name: 'The Festival Set', price: '£1,200', blurb: 'High-energy set built for outdoor stages and big rooms.',
-    feats: ['Tech rider provided', 'CDJ + vinyl combo', 'Visual sync available', 'Extended encore', 'Festival-grade PA'] },
+  { name: 'The House Party', price: '£450', tags: 'Solo',
+    blurb: 'Birthdays, anniversaries, intimate gatherings.',
+    feats: ['Solo DJ setup', 'Vinyl-only option', 'Requests welcome', 'Up to 50 mi travel'].join('\n') },
+  { name: 'The Wedding Set', price: '£650', tags: 'Solo, Trio, Band',
+    blurb: 'Ceremony, dinner, dance. One DJ for the whole day.',
+    feats: ['Ceremony underscoring', 'Drinks + dinner ambience', 'Peak-time dance floor',
+            'Custom first dance', 'PA + lighting'].join('\n') },
+  { name: 'The Festival Set', price: '£1,200', tags: 'Trio, Band',
+    blurb: 'High-energy set built for outdoor stages and big rooms.',
+    feats: ['Tech rider provided', 'CDJ + vinyl combo', 'Visual sync available',
+            'Extended encore', 'Festival-grade PA'].join('\n') },
 ]
 
-// The Solo / Trio / Band selector above the pricing cards. Static: the
-// preview is a picture of a website, not a working one (§12).
-export const TIER_MODES = ['Solo', 'Trio', 'Band']
+// The suffix beside every card's price. A field rather than the literal the
+// frame draws, because /event is one booking model among several.
+export const PRICE_UNIT = '/event'
 
+// The reviews the testimonials card pages through, in the row shape QuotesField
+// edits — the GIGS and TIERS case, so its seed needs no dressing. `when` is the
+// small line above the quote; `who` and `role` are printed twice by the §10.2
+// card, once as the attribution and once as the two pills.
 export const QUOTES = [
-  { q: '"Professional from the first email to the last encore."',
+  { quote: '"Professional from the first email to the last encore."',
     who: 'Hannah L.', role: 'Private host', when: 'Reviewed 6 days ago' },
-  { q: 'The room did not sit down once. Kai read the crowd like a setlist.',
+  { quote: 'The room did not sit down once. Kai read the crowd like a setlist.',
     who: 'Amara Okafor', role: 'Venue manager, Albert Hall', when: 'Reviewed 3 weeks ago' },
-  { q: 'Booked for one night, kept for the whole season.',
+  { quote: 'Booked for one night, kept for the whole season.',
     who: 'Dan Whitfield', role: 'The Warehouse Project', when: 'Reviewed last month' },
 ]
 
@@ -282,9 +319,12 @@ export const PINS = [{ x: '20%', y: '26%' }, { x: '40%', y: '54%' }, { x: '62%',
                      { x: '74%', y: '64%' }, { x: '46%', y: '76%' }]
 
 /* --- §10.2 demo content introduced by the Figma page ---------------- *
- * Static like TRACKS / CITIES above: this is the picture of a finished
- * site, not editable copy, so none of it gets a FIELDS entry — with the
- * one exception of SONGS, which the artist owns (FIELDS.repertoire).
+ * Mostly static like TRACKS / CITIES above: this is the picture of a
+ * finished site, not editable copy, so most of it gets no FIELDS entry.
+ * The exceptions are the lists the artist owns — SONGS (FIELDS.repertoire),
+ * the media player's tracks, GIGS (FIELDS.map) and TIERS (FIELDS.pricing,
+ * declared with the rest of §4.6 above) — which are seeds for a structured
+ * editor rather than fixed copy.
  * ------------------------------------------------------------------- */
 
 // Repertoire — the seeded song list, used whenever the section carries no
@@ -312,43 +352,109 @@ export const SONGS = [
 
 // The chip that clears the filter. It is index 0 of the row and carries a null
 // tag; repChips() skips a tag of the same name so an artist who writes "All" on
-// a song gets one chip here, not two.
+// a song — or on a pricing package — gets one chip here, not two.
 export const REP_ALL = 'All'
 
-// The events map's pager is still a picture, so it keeps its static row.
-export const PAGES = ['1', '2', '3', '…', '20']
-
-// Events map — the upcoming-gigs list beside the map tile.
+// Events map — the upcoming-gigs list beside the map tile, and the seed for
+// FIELDS.map's structured editor: used whenever the section carries no `gigs`
+// key of its own. `link` is where the row's tickets go on the published page,
+// normalised through extUrl() in sectionVm; the seeds carry none, so out of the
+// box the rows stay the picture they have always been.
+//
+// One gig pairs with one pin, by index — PINS is five positions over the seeded
+// Manchester raster and sectionVm hands each gig `PINS[i % PINS.length]`.
 export const GIGS = [
-  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12' },
-  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25' },
-  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02' },
-  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16' },
-  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30' },
+  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12', link: '' },
+  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25', link: '' },
+  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02', link: '' },
+  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', link: '' },
+  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', link: '' },
 ]
 export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
 
-// Gallery — the media-source selector down the left of the section.
-export const GALLERY_SOURCES = ['Gallery', 'YouTube', 'Instagram', 'TikTok']
+// Gallery — the media-source selector down the left of the section. The first
+// row is the page's own strip of photographs and has no address; the other
+// three carry the content key of the link the artist types, and become real
+// outbound links on the published page (sectionVm resolves `k` through
+// extUrl(), the same normalisation the media player's Soundcloud button gets).
+export const GALLERY_SOURCES = [
+  { l: 'Gallery' },
+  { l: 'YouTube',   k: 'youtube' },
+  { l: 'Instagram', k: 'instagram' },
+  { l: 'TikTok',    k: 'tiktok' },
+]
 
-// Enquiry form — the split context panel and the field set beside it.
+// Enquiry form — the split context panel and the field set beside it. All four
+// of these were the section's content until it became the artist's: they are
+// the *seeds* of FIELDS.form's promises, fields, types and message now, and
+// nothing renders them directly.
 export const FORM_PROMISES = ['Replies within 24 hrs', 'Free, no-obligation quote', 'Covers 120 mi from Manchester']
+// Written in the row shape FormFieldsField edits and sectionVm reads — the
+// GIGS/TIERS rule, so the panel's seed resolver needs no dressing.
 export const FORM_FIELDS = [
-  { l: 'Name',       p: 'Full name' },
-  { l: 'Email',      p: 'you@email.com' },
-  { l: 'Event date', p: 'dd / mm / yyyy' },
-  { l: 'Guests',     p: 'approx.' },
+  { label: 'Name',       placeholder: 'Full name',      kind: 'text' },
+  { label: 'Email',      placeholder: 'you@email.com',  kind: 'email' },
+  // Deliberately `text`, not a date kind: the native picker cannot be styled
+  // onto the mustard panel, so a date is the artist's placeholder and nothing
+  // more. `number` likewise never becomes type="number" — see EncoreSection.
+  { label: 'Event date', placeholder: 'dd / mm / yyyy', kind: 'text' },
+  { label: 'Guests',     placeholder: 'approx.',        kind: 'number' },
+]
+// The three kinds a row can be, in the { v, l } shape EditPanel's own select
+// branch reads. Anything else sectionVm resolves to 'text'.
+export const FORM_KINDS = [
+  { v: 'text',   l: 'Text' },
+  { v: 'email',  l: 'Email' },
+  { v: 'number', l: 'Number' },
 ]
 export const FORM_TYPES = ['Wedding', 'Event', 'Pub', 'Party', 'Other']
 export const FORM_MESSAGE = 'Tell me about your event…'
 
-// Footer — two link columns and the small print either side of the rule.
+// Footer — the sitemap either side of the rule, and the small print under it.
+//
+// Written in the { label, to } row shape LinksField edits, the GIGS / TIERS /
+// QUOTES rule, so its seed resolver is a one-liner and needs no dressing. `to`
+// is a section id (§4.3a), 'link' for a web address in the row's own `url`, or
+// 'none'. The eight targets are the categories EXAMPLE_PAGE carries, so the
+// seeded page publishes fully linked; on BLANK_PAGE every one of them resolves
+// to nothing and the column is the picture it has always been, exactly as the
+// header's nav is empty there.
+//
+// A flat list, not two columns: sectionVm does the halving, or a repeater row
+// would have to carry which column it stands in.
 export const FOOTER_LINKS = [
-  ['About', 'Top Tracks', 'Media', 'Repertoire'],
-  ['Shows/Coverage', 'Pricing', 'Enquiries', 'Reviews'],
+  { label: 'About',          to: 'bio' },
+  { label: 'Top Tracks',     to: 'media' },
+  { label: 'Media',          to: 'gallery' },
+  { label: 'Repertoire',     to: 'repertoire' },
+  { label: 'Shows/Coverage', to: 'map' },
+  { label: 'Pricing',        to: 'pricing' },
+  { label: 'Enquiries',      to: 'form' },
+  { label: 'Reviews',        to: 'testimonials' },
 ]
+
+// The per-row target select, in the { v, l } shape EditPanel's own select
+// branch reads — FORM_KINDS' shape.
+//
+// Every category the page *can* carry rather than the ones it does: a Radix
+// Select whose value names no item blanks its trigger, so a row pointing at a
+// section the artist has since deleted must still read as what it points at,
+// and a link can be aimed at a section that has not been added yet. Resolving
+// it against the actual page is sectionVm's job — §4.3a, "a label whose every
+// candidate is missing keeps its place in the design and simply does not link".
+//
+// 'none' and 'link' are non-empty sentinels because Radix refuses a SelectItem
+// with an empty value; no category is named either of them.
+export const FOOTER_TARGETS = [
+  { v: 'none', l: 'Nothing' },
+  ...CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
+    .map((c) => ({ v: c.id, l: c.name })),
+  { v: 'link', l: 'Web address' },
+]
+
+// Not a field: it is the platform's byline, not the artist's.
 export const FOOTER_CREDIT = 'A JustPay Product'
 // The frames' own hard break — see sectionVm, which is the other half of it.
 export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
@@ -367,24 +473,36 @@ export const DEFS = {
   statement:  'Reads the room.',
   videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
-  calPara:    'August is filling fast. Highlighted dates are already booked — everything else is yours.',
   mapSub:     '12 dates · 8 cities · this season',
   formPara:   'Tell me about the night — date, venue, crowd. Replies within 24 hours.',
   copyright:  'C 2026 Kai Mercer',
 }
 
-// Calendar highlighting for the legacy list design (August)
-export const BOOKED = [3, 4, 10, 11, 17, 24, 25]
-export const HELD   = [12, 18]
+// §10.2 scheduler — the date the calendar is cued to, and the time its enquiry
+// line prints. One date does both jobs: CAL_OPEN names the month the grid opens
+// on *and* the day it opens picked, the way the media player's card names track
+// one before anything has been chosen. June 2025 starts on a Sunday, so the seed
+// has no leading blanks, its grid runs 1..30, and the 12th is the Thursday the
+// reference frame highlights — every number the retired CAL_LEAD / CAL_LENGTH /
+// CAL_PICKED stated is now derived from this one string.
+export const CAL_OPEN   = '2025-06-12'
+export const CAL_TIME   = '9:00pm'
+export const CAL_DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+// The dates the artist is already booked on, and cannot be enquired for. Empty
+// on purpose: the frame draws a month in which every cell is identical but the
+// pick, so an empty seed is the only one that reproduces it. It follows the
+// gallery's three social addresses rather than GIGS and TIERS — absent and
+// emptied both mean none, because there is nothing here to seed.
+export const CAL_BOOKED = []
+// How far ahead the calendar reaches, in months from CAL_OPEN's. The arrows
+// wrap at both ends of it rather than clamping — see EncoreSection's Calendar.
+export const CAL_SPAN   = 12
 
-// §10.2 scheduler — June 2025 starts on a Sunday, so there are no leading
-// blanks and the grid runs 1..30. Day 12 is the selected Thursday.
-export const CAL_MONTH   = 'June 2025'
-export const CAL_DAYS    = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-export const CAL_LEAD    = 0
-export const CAL_LENGTH  = 30
-export const CAL_PICKED  = 12
-export const CAL_ENQUIRY = 'Enquiry for Thursday, June 12 at 9:00pm'
+export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December']
+// The enquiry line names the weekday in full; CAL_DAYS heads the grid's columns.
+export const DAY_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+  'Friday', 'Saturday']
 
 /* ------------------------------------------------------------------ *
  * §4.7 Starting pages — [categoryId, layoutIndex]
@@ -454,19 +572,23 @@ export const FIELDS = {
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
   ],
   // The second list-shaped content type with a structured editor (see
-  // `repertoire` below): `tracks` here is an array of { title, sub, image },
-  // maintained by TracksField, and each row carries its own artwork rather
-  // than drawing from a section-level photo array. An absent key means the
-  // seeded TRACKS dressed in RETRO_TRACK_ART; an emptied array means no
-  // tracks. The `audio` category keeps the *string* form of the same key —
-  // sectionVm reads both shapes.
+  // `repertoire` below): `tracks` here is an array of { title, sub, image,
+  // audio }, maintained by TracksField, and each row carries its own artwork
+  // and its own sound file rather than drawing from a section-level array. An
+  // absent key means the seeded TRACKS dressed in RETRO_TRACK_ART and
+  // TRACK_AUDIO; an emptied array means no tracks. The `audio` category keeps
+  // the *string* form of the same key — sectionVm reads both shapes.
+  //
+  // This is the one section with no `image` of its own. It had a "now-playing
+  // sleeve" and a "now-playing track" while the player was a picture; now that
+  // it plays, the card names and shows whatever track the player is on — track
+  // one until a visitor picks another — and a second copy of that, editable
+  // apart from the list, could only ever contradict it.
   media: [
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
-      hint: 'Each row is one card in the stack, with its own artwork.' },
-    { k: 'image',   l: 'Now-playing sleeve', type: 'image',
-      hint: 'The large square inside the player.' },
+      hint: 'Each row is one card in the stack, with its own artwork and audio file. '
+          + "The player shows the track it is on, so track one's artwork is the sleeve." },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },
-    { k: 'track',   l: 'Now-playing track', d: NOW_PLAYING.track },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
     { k: 'soundcloud', l: 'SoundCloud link', d: '',
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
@@ -484,15 +606,19 @@ export const FIELDS = {
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc' },
     { k: 'duration',    l: 'Duration', d: '04:18' },
   ],
+  // The fourth list-shaped content with a structured editor, and the one that
+  // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
+  // an array of { name, price, tags, blurb, feats } maintained by TiersField.
+  // It follows the `songs` rule — one key, one shape — so an absent key means
+  // the seeded TIERS, an emptied array means no packages, and there is no null
+  // sentinel. The tags are the section's filter row, the repertoire's rule.
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
+    { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
+      hint: 'Tags become the filter chips above the cards — separate them with commas. '
+          + 'Features are one to a line.' },
+    { k: 'unit',    l: 'Price unit', d: PRICE_UNIT },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
-    { k: 't1n', l: 'Tier 1 name',  d: 'The House Party' },
-    { k: 't1p', l: 'Tier 1 price', d: '£450' },
-    { k: 't2n', l: 'Tier 2 name',  d: 'The Wedding Set' },
-    { k: 't2p', l: 'Tier 2 price', d: '£650' },
-    { k: 't3n', l: 'Tier 3 name',  d: 'The Festival Set' },
-    { k: 't3p', l: 'Tier 3 price', d: '£1,200' },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of { title, artist, tags },
@@ -505,36 +631,99 @@ export const FIELDS = {
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       hint: 'Tags become the filter chips above the list — separate them with commas.' },
   ],
+  // The three social addresses follow the photos, and follow `media.soundcloud`
+  // in shape: an empty default, normalised through extUrl() in sectionVm, and a
+  // row that stays a picture until it is filled. GALLERY_SOURCES names the key
+  // each row reads — change one, change both.
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile in the strip. The highlighted tile is the one shown in the large viewer.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
+    { k: 'youtube',   l: 'YouTube link', d: '',
+      hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture.' },
+    { k: 'instagram', l: 'Instagram link', d: '',
+      hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture.' },
+    { k: 'tiktok',    l: 'TikTok link', d: '',
+      hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture.' },
   ],
+  // `heading` heads the flat layout only — the scheduler frame draws no title —
+  // but the other four are all read by it. `open` is the one date the section is
+  // built from, `booked` the days it will not take, `time` the hour the foot
+  // line names, and `cta` the label on the pill beside that line, which was an
+  // unread key until the pill existed.
   calendar: [
     { k: 'image',   l: 'Photo', type: 'image', hint: 'Fills the polaroid stack beside the month.' },
     { k: 'heading', l: 'Heading', d: 'Availability' },
-    { k: 'para',    l: 'Paragraph', type: 'area', def: 'calPara' },
+    { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
+      hint: 'The month the calendar opens on, and the date it opens picked. '
+          + `It reaches ${CAL_SPAN} months from there.` },
+    { k: 'booked',  l: 'Booked dates', type: 'booked',
+      hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
+    { k: 'time',    l: 'Enquiry time', d: CAL_TIME,
+      hint: 'Printed in the line along the foot of the panel. Leave it empty and the line stops at the date.' },
     { k: 'cta',     l: 'Button', d: 'Check a date' },
   ],
+  // The third list-shaped content with a structured editor, after `repertoire`
+  // and `media`: `gigs` is an array of { venue, city, time, month, day, link }
+  // maintained by GigsField. It follows the `songs` rule rather than the
+  // tracks' — one key, one shape — so an absent key means the seeded GIGS, an
+  // emptied array means no gigs, and there is no null sentinel.
   map: [
+    { k: 'gigs',    l: 'Upcoming gigs', type: 'gigs', max: 12,
+      // The page size is PINS.length, not a literal — see vm.gigPage.
+      hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
+          + `a real link on the published page; the list pages ${PINS.length} at a time.` },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
+    { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
+    { k: 'base',    l: 'Based in',       d: MAP_BASE },
+    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS },
     { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [
     { k: 'heading', l: 'Heading', d: 'Word of Mouth' },
-    { k: 'quote',   l: 'Featured quote', type: 'area', d: QUOTES[0].q },
-    { k: 'who',     l: 'Attribution', d: 'Hannah L.' },
-    { k: 'role',    l: 'Role', d: 'Private host' },
+    // The seventh structured editor and the sixth repeater. Replaces a flattened
+    // key set — quote/who/role reached one review of three, and nothing could
+    // add a fourth — which is the pricing packages' case, not a textarea's.
+    // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
+    { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
+      hint: 'Each row is one review, and the card pages through them on the published '
+          + 'page. The date line is the small type above the quote.' },
   ],
   form: [
-    { k: 'image',   l: 'Photo', type: 'image', hint: 'The avatar above the heading.' },
-    { k: 'heading', l: 'Heading', d: "Let's make your night unforgettable." },
-    { k: 'para',    l: 'Paragraph', type: 'area', def: 'formPara' },
-    { k: 'email',   l: 'Email address', d: 'bookings@kaimercer.co.uk' },
-    { k: 'button',  l: 'Button', d: 'Book Now' },
+    { k: 'image',    l: 'Photo', type: 'image', hint: 'The avatar above the heading.' },
+    { k: 'heading',  l: 'Heading', d: "Let's make your night unforgettable." },
+    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara' },
+    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
+      hint: 'One per line — the ticked list beside the form.' },
+    // The sixth structured editor and the fifth repeater. Follows the `songs`
+    // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
+    // no boxes at all, and there is no null sentinel.
+    { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
+      hint: 'One box each, two to a row. The published form emails you what the visitor types.' },
+    { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
+      hint: 'Comma separated. The form opens on the first; empty hides the row.' },
+    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE },
+    // Dead until the submit was made real — this is now what the form is for.
+    { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
+      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
+    { k: 'button',   l: 'Button', d: 'Book Now' },
   ],
   footer: [
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },
+    // The eighth structured editor and the seventh repeater — and the section's
+    // whole sitemap, which was a constant no field could reach. Follows the
+    // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
+    // array means no links at all, and there is no null sentinel.
+    { k: 'links',    l: 'Footer links', type: 'links', max: 10,
+      hint: 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.' },
+    // Dead until the pill was given a target — the calendar's `cta`, which was
+    // a field that edited nothing until it labelled that section's foot pill.
+    { k: 'cta',      l: 'Button', d: 'Book Now',
+      hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
+    // The same key the header's seal takes: `vm.showBadge` already reads this
+    // section's own content, so the footer's seal was hidable by nothing only
+    // because no field here named it.
+    { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
     { k: 'copyright', l: 'Small print', def: 'copyright' },
   ],
 }
@@ -593,16 +782,73 @@ export function extUrl(v) {
   return /^[a-z][a-z0-9+.-]*:/i.test(t) || t.startsWith('//') ? t : `https://${t}`
 }
 
-// A song's raw `tags` string → its trimmed, non-empty labels.
+// The enquiry form's submit, composed here for the reason enquiryLine() is:
+// EncoreSection composes nothing. It cannot be resolved in sectionVm either —
+// the values are the visitor's keystrokes, which sectionVm never sees — so
+// sectionVm binds this over the section's address and labels and hands the
+// closure down on the view-model.
+//
+// A mailto is the whole of the submit: there is no backend and never will be,
+// and handing the enquiry to the visitor's own mail app is the one delivery
+// that is genuinely front-end-only. The result is already absolute, so it does
+// NOT go back through extUrl() — whose own comment above says a mailto: is
+// passed through untouched. An empty address returns '', and the pill goes
+// back to being the span it always was: the Soundcloud button's rule.
+export function enquiryMailto(email, { type, fields, message, msgLabel }) {
+  const to = String(email ?? '').trim()
+  if (!to) return ''
+  const body = [
+    ...(fields || [])
+      .filter((f) => String(f.value ?? '').trim())
+      .map((f) => `${f.label || 'Detail'}: ${String(f.value).trim()}`),
+    ...(String(message ?? '').trim() ? ['', `${msgLabel}:`, String(message).trim()] : []),
+  ].join('\r\n')
+  // No type row on a layout that draws no chips, and none on a page whose
+  // artist deleted them: the clause is dropped rather than left dangling, the
+  // calendar's trailing-" at " rule.
+  const subject = type ? `${type} enquiry` : 'Enquiry'
+  return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
+// What the submit refuses to send. Index-aligned with the field list, so the
+// section can mark the boxes it is missing without working anything out — the
+// pin sectionVm pairs with a gig, again.
+//
+// Every box the artist put on the form is required: they chose to ask for it.
+// An `email` row must also look like an address, since it is where a reply
+// goes. A `number` row is required but not checked — "approx." invites "~150".
+// The message is optional: the four boxes above it are the enquiry.
+export function formErrors(fields, vals) {
+  const f = (fields || []).map((fd, i) => {
+    const v = String((vals || [])[i] ?? '').trim()
+    if (!v) return true
+    return fd.kind === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+  })
+  return { f, any: f.some(Boolean) }
+}
+
+// A tagged row's raw `tags` string → its trimmed, non-empty labels. Song-named
+// for the list it was written for, but it reads nothing but the string: the
+// pricing tiers' tags go through it too, and so does the enquiry form's
+// comma-separated list of event types.
 export function songTags(str) {
   return String(str ?? '').split(',').map((t) => t.trim()).filter(Boolean)
 }
 
-// The repertoire filter row: REP_ALL, then every tag any song carries, in
-// first-seen order. Deduped case-insensitively but keeping the casing it was
+// A filter row over any list of `{ tags }` rows — the repertoire's songs and
+// the pricing section's packages both: REP_ALL, then every tag any row carries,
+// in first-seen order. Deduped case-insensitively but keeping the casing it was
 // first typed in, so 'Weddings' and 'weddings' are one chip rather than two.
 // `label` is what the chip prints; `tag` is the raw value it matches against,
 // and is null on the All chip.
+// A package's raw `feats` string → one feature a line. The tiers' second
+// delimited field, and a line rather than a comma because a feature is a phrase
+// ("Drinks + dinner ambience") where a tag is a word. The enquiry form's
+// promises are the same shape and go through it too.
+export function tierFeats(str) {
+  return String(str ?? '').split('\n').map((t) => t.trim()).filter(Boolean)
+}
+
 export function repChips(songs) {
   const seen = new Map()
   ;(songs || []).forEach((sg) => songTags(sg && sg.tags).forEach((t) => {
@@ -610,4 +856,65 @@ export function repChips(songs) {
     if (k !== REP_ALL.toLowerCase() && !seen.has(k)) seen.set(k, t)
   }))
   return [{ label: REP_ALL, tag: null }, ...[...seen.values()].map((t) => ({ label: t, tag: t }))]
+}
+
+/* ------------------------------------------------------------------ *
+ * §4.10 The booking calendar's dates
+ *
+ * Every date the calendar handles is an ISO 'YYYY-MM-DD' string — what a
+ * date input stores, what `c.booked` holds and what the section's `sel`
+ * names — and every sum over one goes through `Date.UTC`. A local-time
+ * Date built from those parts lands on the previous day west of
+ * Greenwich, which would name the wrong weekday in the enquiry line.
+ *
+ * Nothing here reads the clock. The calendar opens on the date the artist
+ * set, not on today, so a published page draws the same month whenever it
+ * is opened — and the canvas's picture cannot drift off the reference
+ * frame's June overnight.
+ * ------------------------------------------------------------------ */
+
+// The shape of one month's grid: the blank cells that lead it, and the days
+// that follow. Day 0 of the next month is the last of this one.
+export function monthSpan(y, m) {
+  return {
+    lead: new Date(Date.UTC(y, m, 1)).getUTCDay(),
+    length: new Date(Date.UTC(y, m + 1, 0)).getUTCDate(),
+  }
+}
+
+// 'YYYY-MM-DD' → { y, m, d }, `m` zero-based, or null if it is not one. A date
+// that does not exist (31 June, 30 February) is rejected rather than rolled
+// over, so an emptied or half-typed field falls back to the seed instead of
+// silently opening the calendar on a month the artist did not choose.
+export function parseDate(v) {
+  const t = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v ?? '').trim())
+  if (!t) return null
+  const y = +t[1], m = +t[2] - 1, d = +t[3]
+  if (m < 0 || m > 11 || d < 1 || d > monthSpan(y, m).length) return null
+  return { y, m, d }
+}
+
+export function isoDate(y, m, d) {
+  return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
+export function weekdayOf(y, m, d) {
+  return new Date(Date.UTC(y, m, d)).getUTCDay()
+}
+
+export function monthLabel(y, m) {
+  return `${MONTHS[m]} ${y}`
+}
+
+// The line along the foot of the scheduler panel, composed rather than stored:
+// it has to follow the day the visitor picks, and the retired CAL_ENQUIRY could
+// only ever name one. `enquiryLine(2025, 5, 12, '9:00pm')` reproduces that
+// constant exactly, which is what keeps the seeded canvas on the frame.
+//
+// An emptied time drops its clause rather than printing a trailing " at " —
+// the Soundcloud button's rule for a field the artist has not filled.
+export function enquiryLine(y, m, d, time) {
+  const t = String(time ?? '').trim()
+  return `Enquiry for ${DAY_FULL[weekdayOf(y, m, d)]}, ${MONTHS[m]} ${d}`
+    + (t ? ` at ${t}` : '')
 }

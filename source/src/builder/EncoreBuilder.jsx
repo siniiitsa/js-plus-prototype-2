@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
-  Pencil, Palette, X, Trash2, ChevronLeft, ArrowRight,
+  Pencil, Palette, X, Trash2, ChevronLeft, ChevronRight, ArrowRight,
   Layers, Plus, Check, Upload, Lock, ExternalLink,
 } from 'lucide-react'
 import { toast as sonnerToast, Toaster } from 'sonner'
@@ -34,15 +34,17 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import EncoreSection from './EncoreSection.jsx'
 import {
-  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, QUOTES,
-  CITIES, PINS, BOOKED, HELD, EXAMPLE_PAGE,
-  NOW_PLAYING, TIER_MODES, SONGS, PAGES,
+  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
+  CITIES, PINS, EXAMPLE_PAGE,
+  NOW_PLAYING, TRACK_AUDIO, SONGS,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
-  FORM_PROMISES, FORM_FIELDS, FORM_TYPES, FORM_MESSAGE,
-  FOOTER_LINKS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_MONTH, CAL_DAYS, CAL_LEAD, CAL_LENGTH, CAL_PICKED, CAL_ENQUIRY,
+  FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
+  FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN,
+  parseDate, isoDate, monthSpan, monthLabel, enquiryLine,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
+  tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount,
   headerLayout, headerLayoutLabel,
 } from './data.js'
@@ -204,9 +206,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
-    // become real. Two read it: Repertoire's search, chips and pager, and the
-    // header's navigation — its links, its Book Now and Listen, and the burger
-    // menu the narrow frames collapse to.
+    // become real. Fourteen things read it: Repertoire's search, chips and
+    // pager; the header's navigation — its links, its Book Now and Listen, and
+    // the burger menu the narrow frames collapse to; the media player's
+    // transport; the gallery's strip and arrows; the events map's pager and
+    // pin/row pairing; the pricing cards' filter chips and their Book pill; the
+    // booking calendar's month arrows, its day picking and its foot pill; the
+    // enquiry form's boxes, its event-type chips and its submit; the
+    // testimonials carousel's arrows; the footer's link columns and its Book
+    // pill; and the four sets of outbound links (Soundcloud, the gallery's
+    // socials, the gigs' tickets, the footer's web-address rows).
     live: !!live,
 
     // The section's own id on the published page, so a nav link can scroll to
@@ -281,6 +290,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // page takes a booking, Listen at wherever it plays something (§4.3a).
   vm.bookTo = firstPresent(CTA_TARGETS.book, navSections)
   vm.listenTo = firstPresent(CTA_TARGETS.listen, navSections)
+  // The pricing cards' own pills book too, but they cannot book at themselves:
+  // `pricing` is the last resort in CTA_TARGETS.book, so on a page with neither
+  // a form nor a calendar the pill would scroll the visitor to the section they
+  // are already reading. Dropping it leaves `undefined`, and BookPill's own rule
+  // — no target, no link — keeps the pill the picture it is today.
+  vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
 
   // chips — from TAGS, or from the tags field for a tags section
   const tagSource = cat === 'tags'
@@ -308,9 +323,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
-  // The now-playing card names a track of the artist's choosing — FIELDS.media's
-  // `track`, defaulted to NOW_PLAYING's own, so the panel and the card agree.
-  vm.nowPlaying = { ...NOW_PLAYING, track: cased(cv('track', NOW_PLAYING.track)), by: cased(artistName) }
+  // The now-playing card is no longer content of its own: it names and shows
+  // the track the player is on, which `Media` resolves from `vm.tracks`. What
+  // is left here is the canvas's decorative clock — the frame draws a player
+  // mid-song — and the fallback label for a section with no tracks at all.
+  vm.nowPlaying = { ...NOW_PLAYING, by: cased(artistName) }
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
   // the opener, so a schemeless "soundcloud.com/kai" would resolve against the
@@ -325,9 +342,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   //
   // Per-row artwork is never re-seeded by index once the array exists: a row
   // inserted third would otherwise steal track three's photograph. `img` is
-  // therefore `null` — not undefined — wherever a row has no art of its own,
-  // because Photo falls back to the section photo (here the sleeve) on
-  // undefined alone.
+  // `null` — not undefined — wherever a row has no art of its own, because
+  // Photo falls back to the section photo on undefined alone, and the row must
+  // not inherit one. (The media player has no section photo left to inherit;
+  // the sentinel stays because the rule is Photo's, not this section's.)
+  //
+  // `src` is the row's sound file, and the whole of the media player's audio
+  // seam (§10.2a): the published player loads it into its one <audio> element,
+  // and a row without one is unplayable rather than silent-but-selected. A
+  // typed address is normalised through extUrl for the same <base href> reason
+  // as the Soundcloud button; the seeds are already absolute. It follows the
+  // artwork's rule about re-seeding by index, for the same reason.
   //
   // `sub` is the one subline the fitted layout 1 sets; `rel` is the same line
   // with the duration taken off it, for a design that columns the release and
@@ -339,17 +364,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   if (Array.isArray(c.tracks)) {
     vm.tracks = c.tracks.map((t, i) => {
       const sub = (t?.sub ?? '').trim()
-      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub, img: t?.image ?? null }
+      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
+               img: t?.image ?? null, src: extUrl(t?.audio ?? '') || null }
     })
   } else if (c.tracks !== undefined) {
     vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
       const parts = l.includes('—') ? l.split('—') : l.split('|')
       const dur = (parts[1] || '').trim()
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, rel: '', img: seedArt[i] ?? null }
+      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, rel: '',
+               img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel, img: seedArt[i] ?? null,
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel,
+      img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null,
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
@@ -358,12 +386,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.videoDesc = cv('description', DEFS.videoDesc)
   vm.videoDur = cv('duration', '04:18')
 
-  // pricing
+  // pricing — the artist's own packages, else the seeded ones. The `songs`
+  // rule again: an absent key means TIERS, an emptied array means no packages,
+  // and there is no null sentinel. Everything the card prints comes off the row
+  // now, where only the name and the price used to (t1n/t1p/…, gone).
   vm.pricingSub = cv('sub', DEFS.pricingSub)
   // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
   vm.pricingSubFg = rgba(tx, 0.46)
-  vm.tierModes = TIER_MODES
-  vm.tiers = TIERS.map((t, i) => {
+  vm.tierUnit = cv('unit', PRICE_UNIT)
+  const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
+  vm.tiers = tierList.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
     // orange under Retro — the reference order — and stays in-palette elsewhere.
@@ -383,24 +415,28 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // card in a pale palette (Editorial's warm grey) does not, and there the
     // card's own ink stands in.
     const acc = Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink
-    const base = {
-      name: cv(`t${i + 1}n`, t.name), price: cv(`t${i + 1}p`, t.price),
-      blurb: t.blurb, feats: t.feats,
+    return {
+      // `n` is the row's place in the WHOLE list, not on the filtered page. The
+      // cards animate their background, so the renderer keys on it: a positional
+      // key would let a filtered-out card's DOM node become its neighbour's and
+      // cross-fade one card hue into another.
+      n: i,
+      name: String(t?.name ?? '').trim(), price: String(t?.price ?? '').trim(),
+      blurb: String(t?.blurb ?? '').trim(),
+      feats: tierFeats(t?.feats),
+      // Raw casing, deliberately — the repertoire's rule: a lower-case theme
+      // must not stop a chip from matching the tag it was derived from.
+      tags: songTags(t?.tags),
       card, acc, cardFg: ink,
-      // Only the light card drops its blurb and /event off full strength in the
-      // reference; on the two dark ones they sit at the feats' cream.
+      // Only the light card drops its blurb and the price unit off full strength
+      // in the reference; on the two dark ones they sit at the feats' cream.
       cardMut: lightCard ? rgba(ink, 0.72) : ink,
     }
-    return t.featured
-      ? {
-          ...base, bg: ac, tx: acFg, border: ac, nameC: acFg,
-          mut: rgba(acFg, 0.7), tick: acFg, btnBg: acFg, btnFg: ac,
-        }
-      : {
-          ...base, bg: 'transparent', tx, border: rgba(tx, 0.18), nameC: ac,
-          mut: rgba(tx, 0.6), tick: ac, btnBg: ac, btnFg: acFg,
-        }
   })
+  // The filter row above the cards, derived from the tags the artist typed the
+  // way the repertoire's is — `label` cased for printing, `tag` raw for
+  // comparing. It replaces TIER_MODES, which was a constant nothing could edit.
+  vm.tierChips = repChips(tierList).map((ch) => ({ ...ch, label: cased(ch.label) }))
 
   // repertoire — the artist's own list, else the seeded one. The semantics are
   // `images`, not `image`: an emptied array is already distinguishable from an
@@ -421,8 +457,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // silently discards what they typed.
   vm.repFlat = vm.songs.map((t) => ({ t: t.title, g: t.artist }))
   vm.repHue = legible(T.tags[3 % T.tags.length])
-  // Still static, and still only for the events map's picture of a pager.
-  vm.pages = PAGES
   // The heading counts the list unless the artist has written their own, so it
   // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
   // the same fallback, or the panel and the canvas would disagree.
@@ -433,66 +467,203 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.gal4 = vm.gal.slice(0, 4)
   // Tag order per the Figma gallery frame: Gallery/YouTube/Instagram/TikTok
   // tiles read accent-red, olive, purple, yellow — tags 1, 3, 0, 2 in Retro.
-  vm.gallerySources = GALLERY_SOURCES.map((l, i) => {
+  //
+  // `url` is the row's outbound address, and only the three social rows have a
+  // key to read: the first row is the page's own strip, which the arrows and
+  // the thumbnails already navigate. Normalised through extUrl for the same
+  // <base href> reason as the Soundcloud button, and an empty field leaves the
+  // row a picture rather than a dead link.
+  vm.gallerySources = GALLERY_SOURCES.map((g, i) => {
     const cbg = T.tags[[1, 3, 0, 2][i] % T.tags.length]
-    return { label: cased(l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0 }
+    return {
+      label: cased(g.l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0,
+      url: g.k ? extUrl(cv(g.k, '')) : '',
+    }
   })
 
-  // calendar — 2 leading blanks, days 1..31, padded to 35 cells
+  // §10.2 scheduler — CAL_SPAN months of grid, resolved here so that
+  // EncoreSection does no date arithmetic: it turns a page of this window and
+  // prints the line it finds on a cell, the way it draws the pin sectionVm
+  // paired with a gig rather than working one out.
+  //
+  // The whole section is built from one date. `open` names the month the grid
+  // opens on *and* the day it opens picked; a field that is empty, half-typed
+  // or impossible (31 June) parses to null and falls back to the seed, so the
+  // calendar can never open on a month the artist did not choose.
   if (cat === 'calendar') {
-    const cells = [{ d: '' }, { d: '' }]
-    for (let day = 1; day <= 31; day++) {
-      if (BOOKED.includes(day)) cells.push({ d: day, bg: ac, fg: acFg })
-      else if (HELD.includes(day)) cells.push({ d: day, bg: rgba(tx, 0.14), fg: tx })
-      else cells.push({ d: day, bg: 'transparent', fg: tx })
-    }
-    while (cells.length < 35) cells.push({ d: '' })
-    vm.cal = cells.map((c2) => ({ d: c2.d, bg: c2.bg ?? 'transparent', fg: c2.fg ?? tx }))
+    const open = parseDate(cv('open', CAL_OPEN)) ?? parseDate(CAL_OPEN)
+    // Absent and emptied both mean none: there is no seeded booking to lose, so
+    // this follows the gallery's social addresses rather than the songs' rule.
+    const booked = new Set(Array.isArray(c.booked) ? c.booked : CAL_BOOKED)
+    const time = cv('time', CAL_TIME)
 
-    // §10.2 scheduler — a plain month grid with one picked day, no legend.
-    const grid = Array.from({ length: CAL_LEAD }, () => ({ d: '' }))
-    for (let day = 1; day <= CAL_LENGTH; day++) grid.push({ d: day, on: day === CAL_PICKED })
-    vm.sched = grid
+    vm.calMonths = Array.from({ length: CAL_SPAN }, (_, i) => {
+      const m = open.m + i
+      const y = open.y + Math.floor(m / 12)
+      const mo = ((m % 12) + 12) % 12
+      const { lead, length } = monthSpan(y, mo)
+      // Lead blanks are `{ d: '' }` — the cell renderer's own test for the
+      // borderless, inert cell it has always drawn. The grid is not padded out
+      // to five rows: a month that needs six simply grows one, and the
+      // polaroids beside it take their height from the row (see `stack`).
+      const cells = Array.from({ length: lead }, () => ({ d: '' }))
+      for (let d = 1; d <= length; d++) {
+        const iso = isoDate(y, mo, d)
+        cells.push({
+          d, iso, booked: booked.has(iso),
+          // Composed per cell rather than on the pick, because the line is what
+          // the foot prints and EncoreSection composes nothing.
+          line: enquiryLine(y, mo, d, time),
+        })
+      }
+      return { label: cased(monthLabel(y, mo)), cells }
+    })
+    vm.calDays = CAL_DAYS
+    // The day the calendar is cued to, which is what the foot prints and the
+    // grid lights until the visitor picks something — the media player's card
+    // naming track one while `cur` is still -1. A booked opening day cues
+    // nothing: the artist blocked it, and the section does not quietly slide
+    // the pick sideways to the day after.
+    // Off the *parsed* date, not the raw field: an unparseable `open` falls back
+    // to CAL_OPEN above, and testing the field would then cue a June 12 the
+    // artist has blocked — lit and struck through at once.
+    const openIso = isoDate(open.y, open.m, open.d)
+    vm.calPick = booked.has(openIso) ? '' : openIso
+    vm.calPrompt = cased('Pick a date to enquire')
+    vm.calCta = cased(cv('cta', 'Check a date'))
+    // `bookTo` minus `calendar` itself — the tier pills' rule, and for the same
+    // reason: CTA_TARGETS.book ends at this section, so the pill would otherwise
+    // scroll the visitor to the panel they are already reading. With neither a
+    // form nor a pricing section on the page it resolves to nothing and BookPill
+    // stays a span.
+    vm.calBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'calendar'), navSections)
   }
-  vm.calPara = cv('para', DEFS.calPara)
-  vm.calCta = cv('cta', 'Check a date')
-  vm.monthLabel = cased('August 2026')
-  vm.calMonth = CAL_MONTH
-  vm.calDays = CAL_DAYS
-  vm.calEnquiry = CAL_ENQUIRY
+  // The tour-date rows of the calendar's flat layout. It sat under `map` for
+  // years on the strength of its name; nothing in the events map reads it.
+  vm.cities = CITIES
 
   // map
-  vm.cities = CITIES
+  //
+  // `pins` stays the raw five positions for the *flat* map layout, which draws
+  // them as decoration over a banner and has no list to pair them with. The
+  // compact tile pairs instead: every gig below carries the pin it lights.
   vm.pins = PINS
   vm.mapSub = cv('sub', DEFS.mapSub)
   // The events map renders on `mapBg` for Retro rather than the page background,
   // so a row hue has to separate from that charcoal — Retro's near-black tag reads
   // fine on sand and disappears on the dark. Fall back to the cream, as §10.2 does.
-  const gigDark = cat === 'map' && T.name === 'Retro'
+  // `v0` too, matching the section root's own `darkMap`: the gig rows only render
+  // in that layout, and the flat one keeps the page's ground.
+  const gigDark = cat === 'map' && vm.v0 && T.name === 'Retro'
   const gigGround = gigDark ? vm.mapBg : bg
   const gigFallback = gigDark ? vm.mapFg : tx
-  vm.gigs = GIGS.map((g, i) => {
+  // The gig list follows `songs`, not `tracks`: one key, one shape. An absent
+  // key means the seeded GIGS, an emptied array means no gigs, and there is no
+  // null sentinel. Venue and city are *not* put through cased() — the seeds are
+  // deliberately mixed-case ("Private wedding", "Lake District") and the
+  // renderer sets the venue in the display face without a transform.
+  //
+  // Two things are resolved here rather than in EncoreSection, which does no
+  // maths of its own: `url`, the row's tickets link, normalised through extUrl
+  // for the same <base href> reason as the Soundcloud button — a schemeless
+  // address would resolve against the builder; and `pin`, the position this gig
+  // lights on the map, paired by index because PINS is a fixed five over a fixed
+  // raster. The hue is computed over the *whole* list, never a page of it, or a
+  // gig would change colour as the pager turned.
+  const gigList = Array.isArray(c.gigs) ? c.gigs : GIGS
+  vm.gigs = gigList.map((g, i) => {
     const h = T.tags[i % T.tags.length]
-    return { ...g, hue: Math.abs(lum(h) - lum(gigGround)) > 0.22 ? h : gigFallback }
+    return {
+      venue: g?.venue ?? '', city: g?.city ?? '', time: g?.time ?? '',
+      month: g?.month ?? '', day: g?.day ?? '',
+      url: extUrl(g?.link ?? ''),
+      pin: PINS[i % PINS.length],
+      hue: Math.abs(lum(h) - lum(gigGround)) > 0.22 ? h : gigFallback,
+    }
   })
-  vm.mapRadius = MAP_RADIUS
-  vm.mapBase = MAP_BASE
-  vm.mapTerms = MAP_TERMS
+  // Gigs to a page in the compact tile. It is PINS.length rather than a literal
+  // five: a page's worth of gigs is what one set of distinct pin positions can
+  // light, so the two counts have to move together.
+  vm.gigPage = PINS.length
+  vm.mapRadius = cv('radius', MAP_RADIUS)
+  vm.mapBase = cv('base', MAP_BASE)
+  vm.mapTerms = cv('terms', MAP_TERMS)
 
-  // testimonials
-  vm.quotes = QUOTES.map((q, i) => (i === 0
-    ? { ...q, q: cv('quote', q.q), who: cv('who', q.who), role: cv('role', q.role) }
-    : q))
-  vm.quote1 = cased(cv('quote', QUOTES[0].q))
+  // testimonials — the songs rule, the gigs' and the packages': an absent key
+  // means the seeded QUOTES, an emptied array means no reviews at all, and
+  // there is no null sentinel. It was three flat keys over a fixed three rows,
+  // which reached one review and could not add a fourth.
+  const quoteList = Array.isArray(c.quotes) ? c.quotes : QUOTES
+  vm.quotes = quoteList.map((r) => {
+    const who = String(r?.who ?? '').trim()
+    const role = String(r?.role ?? '').trim()
+    return {
+      // Cased, as the featured quote always was — but now every row rather than
+      // only the first, which is what closes the three-up layout's old seam.
+      quote: cased(String(r?.quote ?? '').trim()),
+      who,
+      role,
+      when: String(r?.when ?? '').trim(),
+      // The attribution is composed here and never in EncoreSection: with both
+      // halves editable, joining them there prints a bare separator the moment
+      // one is emptied. The calendar's one-composed-line-per-cell rule.
+      byline: [who, role].filter(Boolean).join(' · '),
+    }
+  })
 
   // form
   vm.formPara = cv('para', DEFS.formPara)
-  vm.formEmail = cv('email', 'bookings@kaimercer.co.uk')
+  // The address every enquiry is mailed to, and the whole of this section's
+  // live seam. It was a field that edited nothing until the submit was made
+  // real — cta's and para's state on the booking calendar before it.
+  vm.formEmail = String(cv('email', 'bookings@kaimercer.co.uk')).trim()
   vm.formBtn = cv('button', 'Book Now')
-  vm.formPromises = FORM_PROMISES
-  vm.formFields = FORM_FIELDS
-  vm.formTypes = FORM_TYPES.map((l) => cased(l))
-  vm.formMessage = FORM_MESSAGE
+  vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
+  // The boxes are the artist's now, on the `songs` rule — absent key means the
+  // seed, emptied array means none, no null sentinel. Every row is normalised
+  // here so EncoreSection can switch on `kind` without a default of its own;
+  // anything unrecognised is a text box.
+  const formList = Array.isArray(c.fields) ? c.fields : FORM_FIELDS
+  vm.formFields = formList.map((f) => ({
+    label: String((f && f.label) ?? '').trim(),
+    placeholder: String((f && f.placeholder) ?? '').trim(),
+    kind: (f && (f.kind === 'email' || f.kind === 'number')) ? f.kind : 'text',
+  }))
+  // Two to a row, paired HERE rather than in EncoreSection, which does no
+  // maths — the gigs' pin rule. It is not decoration: all three §10.2 frames
+  // space the two fields *inside* a row by 12 (10 on the 390 one) and the rows
+  // themselves by the panel's own 14, which one auto-flowing grid cannot
+  // express, having a single rowGap. An odd count trails one half-width cell,
+  // the pricing deck's rule — three columns stay three columns.
+  vm.formRows = vm.formFields.reduce(
+    (rows, f, i) => (i % 2 ? rows[rows.length - 1].push(f) : rows.push([f]), rows), [])
+  vm.formTypes = songTags(cv('types', FORM_TYPES.join(', '))).map((l) => cased(l))
+  vm.formMessage = cv('message', FORM_MESSAGE)
+  // The two labels the frame prints over its controls, and the four lines the
+  // live form needs. Literals the view-model owns, vm.calPrompt's rule, so the
+  // section looks them up rather than writing copy of its own. The two control
+  // labels stay raw — the render uppercases them in CSS, and the mailto body
+  // wants them as written.
+  vm.formTypeLabel = 'Event type'
+  vm.formMsgLabel = 'Message'
+  vm.formPrompt = 'Add the missing details and try again.'
+  vm.formSentTitle = cased('Check your mail app')
+  vm.formSentBody = 'Your enquiry should be open in it, ready to send. If nothing happened, write to:'
+  vm.formAgain = 'Write another'
+  // The only two function-valued keys on the whole view-model, and they are
+  // here for the reason enquiryLine() is not: their inputs are the visitor's
+  // keystrokes, which sectionVm never sees, so neither can be resolved to a
+  // string ahead of time. EncoreSection hands over indexes and raw strings and
+  // gets an href and a verdict back — every label, address and case decision
+  // is still bound in here, so the renderer composes nothing. Nothing
+  // stringifies or clones a vm, so a function on it is safe.
+  vm.formMailto = ({ vals, ti, msg }) => enquiryMailto(vm.formEmail, {
+    type: vm.formTypes[ti] ?? '',
+    fields: vm.formFields.map((f, i) => ({ label: f.label, value: (vals || [])[i] })),
+    message: msg,
+    msgLabel: vm.formMsgLabel,
+  })
+  vm.formCheck = ({ vals }) => formErrors(vm.formFields, vals)
 
   // footer
   vm.copyright = cv('copyright', DEFS.copyright)
@@ -502,7 +673,40 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // display face narrower than the frame's. Kept in step with FIELDS.footer's
   // own default, and rendered `pre-wrap` so an edited statement can break too.
   vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
-  vm.footerLinks = FOOTER_LINKS.map((col) => col.map((l) => cased(l)))
+  // The sitemap is the artist's now, so a row carries where it goes as well as
+  // what it says — and it goes to one of two kinds of place, which is BookPill's
+  // own `ext ? … : to` seam moved down to the row. 'link' takes the row's own
+  // address through extUrl(), the normalisation living here and never in the
+  // renderer (the gigs' rule); anything else is a section id, resolved against
+  // the page the way firstPresent resolves the header's. A target the page does
+  // not carry — a section deleted after the link was written, or the whole of
+  // BLANK_PAGE — resolves to undefined rather than to a dead fragment, and §4.3a
+  // has already said what happens then: the label keeps its place in the design
+  // and simply does not link.
+  const linkRows = Array.isArray(c.links) ? c.links : FOOTER_LINKS
+  vm.footerLinks = linkRows.map((r) => {
+    const to = String(r?.to ?? '').trim()
+    return {
+      label: cased(String(r?.label ?? '').trim()),
+      to: to !== 'link' && navSections.some((n) => n.cat === to) ? to : undefined,
+      url: to === 'link' ? extUrl(r?.url) : '',
+    }
+  })
+  // The frames draw four and four, so the columns are the list halved with the
+  // remainder in the first — the pricing deck's odd-count rule, and the first is
+  // the column the Book pill stands in, so it is the one that should run long.
+  // An empty second column is dropped rather than rendered as a nav with no
+  // children: `links` is a flex row and an empty child still spends its gap. The
+  // first is kept at any count, the pill being what it is there for.
+  const footHalf = Math.ceil(vm.footerLinks.length / 2)
+  vm.footerCols = [vm.footerLinks.slice(0, footHalf), vm.footerLinks.slice(footHalf)]
+    .filter((colLinks, i) => i === 0 || colLinks.length)
+  // Uncased, unlike vm.calCta and unlike every other string in this block: the
+  // pill has always drawn `cta1`, which is uncased too, and caseText is only a
+  // passthrough on the two `title` themes. Casing it here would upper-case the
+  // footer's pill on Grunge and Pop — a picture that moved, on a change that was
+  // only meant to hand the artist a field for a default they already had.
+  vm.footerCta = cv('cta', 'Book Now')
   vm.footerCredit = FOOTER_CREDIT
 
   vm[FLAG[cat]] = true
@@ -972,10 +1176,13 @@ const FIELD_BOX = {
 }
 
 /* ------------------------------------------------------------------ *
- * §8.6b SongsField — the repertoire's song list. The one list-shaped
- * field with a structured editor rather than a delimited textarea: the
- * artist types a title, an artist and any tags, and the tags are what
- * the section's filter chips are built from.
+ * §8.6b SongsField — the repertoire's song list. The first of the five
+ * list-shaped fields with a structured editor rather than a delimited
+ * textarea (TracksField, GigsField, TiersField and FormFieldsField below
+ * are the others, and BookedField after them is a structured editor of a
+ * sixth shape that is not a list at all): the artist
+ * types a title, an artist and any tags, and the tags are what the
+ * section's filter chips are built from.
  *
  * Modelled on ImagesField above — numbered rows, a round X per row, an
  * add affordance, an "n of max" footnote — and, like it, deliberately
@@ -1074,12 +1281,17 @@ function SongsField({ value, max, onChange }) {
  * with it rather than sitting in a section-level photo grid where slot 3
  * silently meant track 3.
  *
- * Row shape is { title, sub, image }. `sub` is the free line under the
- * title — the reference sets it "Hidden Sessions Vol. 2 · 6:18" — and
+ * Row shape is { title, sub, image, audio }. `sub` is the free line under
+ * the title — the reference sets it "Hidden Sessions Vol. 2 · 6:18" — and
  * `image` follows the same three states as every other photo slot:
  * absent or null is the initials placeholder, a string is an upload.
  * There is no per-index re-seeding once the array exists, so a row added
  * in the middle cannot inherit the photograph of the track it displaced.
+ *
+ * `audio` is an address rather than an upload: a sound file is two orders
+ * of magnitude larger than the artwork, and every image here is inlined
+ * as a data URI into a page that has no persistence to spill it into.
+ * The published player is what plays it (§10.2a); the canvas never does.
  * ------------------------------------------------------------------- */
 
 // The compact artwork control: a 46px square that is the dropzone, the
@@ -1143,7 +1355,7 @@ function TracksField({ value, max, onChange, onToast }) {
   // keeps `c.tracks` a plain value rather than something patched in place.
   const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
-  const add = () => onChange([...list, { title: '', sub: '', image: null }])
+  const add = () => onChange([...list, { title: '', sub: '', image: null, audio: '' }])
 
   const row = (i, t) => (
     <div key={i} style={{
@@ -1185,6 +1397,11 @@ function TracksField({ value, max, onChange, onToast }) {
           onChange={(e) => setAt(i, 'sub', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
         />
+        <Input
+          value={t.audio ?? ''} placeholder="Audio file URL (MP3)" onClick={stopE}
+          onChange={(e) => setAt(i, 'audio', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
+        />
       </div>
     </div>
   )
@@ -1207,7 +1424,674 @@ function TracksField({ value, max, onChange, onToast }) {
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · artwork PNG or JPG, from your device
+        {list.length} of {max} · artwork PNG or JPG, from your device · audio by link
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6d GigsField — the events map's list of shows.
+ *
+ * The third structured repeater. Row shape is
+ * { venue, city, time, month, day, link }: the first five are what the
+ * gig card prints, and `link` is where its tickets go on the published
+ * page — an address rather than anything uploaded, normalised through
+ * extUrl() in sectionVm like the media player's Soundcloud button. A row
+ * without one stays the picture it has always been.
+ *
+ * `month` and `day` are two fields rather than one date because the card
+ * draws them as two lines of a boxed stamp, and because an artist writing
+ * "Jul"/"12" is not committing to a year, a format or a calendar the
+ * section does not have. Nothing here parses them.
+ *
+ * Same house rules as the two above: whole-array rewrite per keystroke,
+ * numbered rows, a round X, a dashed add, an "n of max" footnote, no
+ * reordering — order is entry order, and it is the order the map pins
+ * pair against.
+ * ------------------------------------------------------------------- */
+
+function GigsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { venue: '', city: '', time: '', month: '', day: '', link: '' }])
+
+  // The two short fields that share a line. Wider than half at this panel's
+  // width would push the pair to wrap, which reads as two rows rather than one.
+  const pair = (a, b) => (
+    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+  )
+
+  const row = (i, g) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        {/* shadcn Input for its focus ring — see SongsField above. */}
+        <Input
+          value={g.venue ?? ''} placeholder="Venue" onClick={stopE}
+          onChange={(e) => setAt(i, 'venue', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove gig ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      {/* Same 25px gutter and 29px right inset as SongsField, so the lower
+          fields line up under the venue and clear the remove button. */}
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {pair(
+          <Input
+            key="city" value={g.city ?? ''} placeholder="City" onClick={stopE}
+            onChange={(e) => setAt(i, 'city', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+          <Input
+            key="time" value={g.time ?? ''} placeholder="22:00" onClick={stopE}
+            onChange={(e) => setAt(i, 'time', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+        )}
+        {pair(
+          <Input
+            key="month" value={g.month ?? ''} placeholder="Jul" onClick={stopE}
+            onChange={(e) => setAt(i, 'month', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+          <Input
+            key="day" value={g.day ?? ''} placeholder="12" onClick={stopE}
+            onChange={(e) => setAt(i, 'day', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+        )}
+        <Input
+          value={g.link ?? ''} placeholder="Tickets link" onClick={stopE}
+          onChange={(e) => setAt(i, 'link', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((g, i) => row(i, g || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add gig</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · {PINS.length} to a page on the published site
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6e TiersField — the pricing section's packages.
+ *
+ * The fourth structured repeater, and the first to replace a flattened
+ * key set rather than a textarea: t1n/t1p/… reached two of the five
+ * things a card prints, and nothing at all could add a fourth package.
+ * Row shape is { name, price, tags, blurb, feats }.
+ *
+ * Two of those are delimited strings rather than arrays, and they are
+ * delimited differently on purpose: `tags` is comma-separated, exactly
+ * as SongsField's is — it is the same repChips() row on the other side
+ * — and `feats` is one feature a line, because a feature is a phrase
+ * that may itself contain a comma. Both stay strings all the way to
+ * sectionVm, which is the only place they are split.
+ *
+ * Same house rules as the three above: whole-array rewrite per
+ * keystroke, numbered rows, a round X, a dashed add, an "n of max"
+ * footnote, no reordering — order is entry order, and it is the order
+ * the cards take their palette hues in.
+ * ------------------------------------------------------------------- */
+
+// The two multi-line fields. A card's blurb is a sentence and its features are
+// a list, so neither fits the single-line Input the other repeaters use.
+const TIER_AREA = { ...SONG_ROW_INPUT, resize: 'vertical', lineHeight: 1.45 }
+
+function TiersField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { name: '', price: '', tags: '', blurb: '', feats: '' }])
+
+  // The price and the tags share a line, as the gigs' city and time do: both
+  // are short, and stacking them would push the two textareas below the fold of
+  // the mobile edit sheet.
+  const pair = (a, b) => (
+    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+  )
+
+  const row = (i, t) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        {/* shadcn Input for its focus ring — see SongsField above. */}
+        <Input
+          value={t.name ?? ''} placeholder="Package name" onClick={stopE}
+          onChange={(e) => setAt(i, 'name', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove package ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      {/* Same 25px gutter and 29px right inset as the three above. */}
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {pair(
+          <Input
+            key="price" value={t.price ?? ''} placeholder="£450" onClick={stopE}
+            onChange={(e) => setAt(i, 'price', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+          <Input
+            key="tags" value={t.tags ?? ''} placeholder="Tags — solo, trio" onClick={stopE}
+            onChange={(e) => setAt(i, 'tags', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+        )}
+        <Textarea
+          rows={2} value={t.blurb ?? ''} placeholder="What the package is for" onClick={stopE}
+          onChange={(e) => setAt(i, 'blurb', e.target.value)}
+          style={TIER_AREA}
+        />
+        <Textarea
+          rows={4} value={t.feats ?? ''} placeholder={'What it includes\nOne feature a line'}
+          onClick={stopE}
+          onChange={(e) => setAt(i, 'feats', e.target.value)}
+          style={TIER_AREA}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((t, i) => row(i, t || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add package</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max}
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6f FormFieldsField — the enquiry form's boxes.
+ *
+ * The fifth repeater, after SongsField, TracksField, GigsField and TiersField,
+ * and the sixth structured editor counting BookedField below. One key, one
+ * shape, no assets: `{ label, placeholder, kind }`, where `kind` is the whole
+ * reason the row is not just a label and a placeholder — it is what lets the
+ * published form know which box holds the address a reply goes to, and so what
+ * makes validation derivable rather than guessed.
+ *
+ * Modelled on GigsField above, the plainest of them. Deliberately not
+ * reorderable, like the rest — but order matters more here than anywhere else,
+ * because it is the order the boxes appear in, two to a row.
+ * ------------------------------------------------------------------- */
+
+function FormFieldsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((f, j) => (j === i ? { ...f, [k]: v } : f)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { label: '', placeholder: '', kind: 'text' }])
+
+  const row = (i, f) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          value={f.label ?? ''} placeholder="Label — Name" onClick={stopE}
+          onChange={(e) => setAt(i, 'label', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove field ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <Input
+          value={f.placeholder ?? ''} placeholder="Placeholder — Full name" onClick={stopE}
+          onChange={(e) => setAt(i, 'placeholder', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+        {/* A stock <Select>, unlike §9.1's layout dropdown: the objection there
+            is that Radix's SelectItem wraps its children in ItemText, which
+            would mirror a thumbnail into the closed trigger. Three words are
+            exactly what it is for, and it keeps one select look in the panel. */}
+        <Select value={f.kind ?? 'text'} onValueChange={(v) => setAt(i, 'kind', v)}>
+          <SelectTrigger
+            onClick={stopE} className="w-full h-auto"
+            style={{ ...SONG_ROW_INPUT, paddingRight: '28px' }}
+          ><SelectValue /></SelectTrigger>
+          <SelectContent onClick={stopE}>
+            {FORM_KINDS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((f, i) => row(i, f || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add field</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · two to a row on the published page
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6g BookedField — the booking calendar's blocked dates.
+ *
+ * The sixth structured editor, and the only one that is not a repeater: a
+ * month of the artist's own to click. One row per blocked date is the
+ * wrong shape for a June with eight of them, and a date typed into a row
+ * cannot be read against the month it falls in — which is the whole
+ * question being asked here.
+ *
+ * It pages the same CAL_SPAN window from the same opening date the
+ * section does, and wraps at both ends the way the published arrows do,
+ * so there is no date it can block that the published grid cannot show.
+ *
+ * `value` is the array of ISO dates, rewritten whole and sorted — the
+ * repeaters' rule — and an empty array is a real answer: absent and
+ * emptied both mean nothing is blocked, because there is no seeded
+ * booking to lose. Hence no max, no add affordance and no remove button:
+ * every one of them is the same click again.
+ * ------------------------------------------------------------------- */
+
+const CAL_NAV_BTN = {
+  width: '24px', height: '24px', flex: 'none', borderRadius: '7px',
+  border: '1px solid #D8D5CC', background: '#FFFFFF', color: '#5B5850',
+  cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+  justifyContent: 'center', padding: 0,
+}
+
+function BookedField({ value, open, onChange }) {
+  const [mi, setMi] = useState(0)
+  const list = Array.isArray(value) ? value : []
+
+  const at = ((mi % CAL_SPAN) + CAL_SPAN) % CAL_SPAN
+  const abs = open.m + at
+  const y = open.y + Math.floor(abs / 12)
+  const mo = ((abs % 12) + 12) % 12
+  const { lead, length } = monthSpan(y, mo)
+
+  const toggle = (iso) => onChange(
+    list.includes(iso) ? list.filter((d) => d !== iso) : [...list, iso].sort(),
+  )
+
+  const arrow = (icon, dir) => (
+    <button
+      type="button" aria-label={dir < 0 ? 'Previous month' : 'Next month'}
+      onClick={(e) => { stopE(e); setMi((v) => v + dir) }}
+      className="hover:border-foreground" style={CAL_NAV_BTN}
+    >{icon}</button>
+  )
+
+  const cells = [
+    ...Array.from({ length: lead }, (_, i) => <span key={`b${i}`} />),
+    ...Array.from({ length }, (_, i) => {
+      const d = i + 1
+      const iso = isoDate(y, mo, d)
+      const off = list.includes(iso)
+      return (
+        <button
+          key={iso} type="button"
+          aria-pressed={off} aria-label={`${d} ${monthLabel(y, mo)}`}
+          onClick={(e) => { stopE(e); toggle(iso) }}
+          className={off ? undefined : 'hover:border-foreground'}
+          style={{
+            height: '25px', borderRadius: '7px', padding: 0, cursor: 'pointer',
+            fontFamily: 'inherit', fontSize: '11px',
+            fontWeight: off ? 700 : 500,
+            border: `1px solid ${off ? '#1B1A17' : '#E9E7E0'}`,
+            background: off ? '#1B1A17' : '#FFFFFF',
+            color: off ? '#FFFFFF' : '#5B5850',
+          }}
+        >{d}</button>
+      )
+    }),
+  ]
+
+  // The month's own blocked count, not the list's: the artist is looking at one
+  // month, and a total would not tell them whether this one is the eight.
+  const here = list.filter((iso) => iso.startsWith(`${y}-${String(mo + 1).padStart(2, '0')}-`)).length
+
+  return (
+    <div onClick={stopE} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '9px',
+      background: '#FCFBF8', display: 'flex', flexDirection: 'column', gap: '7px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+        {arrow(<ChevronLeft size={13} />, -1)}
+        <span style={{ fontSize: '12px', fontWeight: 700, color: '#1B1A17' }}>{monthLabel(y, mo)}</span>
+        {arrow(<ChevronRight size={13} />, 1)}
+      </div>
+      {/* The section's own short day names, so the panel's week starts where
+          the published one does. */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
+        {CAL_DAYS.map((d) => (
+          <span key={d} style={{
+            fontSize: '9px', fontWeight: 700, color: '#98958A',
+            textAlign: 'center', letterSpacing: '0.04em',
+          }}>{d.slice(0, 1)}</span>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>{cells}</div>
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} blocked · {here} in {monthLabel(y, mo)}
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6h QuotesField — the testimonials' reviews.
+ *
+ * The sixth repeater, after SongsField, TracksField, GigsField,
+ * TiersField and FormFieldsField, and the seventh structured editor
+ * counting BookedField above. Row shape is
+ * { quote, who, role, when }.
+ *
+ * The second to replace a flattened key set rather than a textarea,
+ * TiersField being the first: quote/who/role reached exactly one review
+ * of a hardcoded three, the card's own date line was editable by
+ * nothing at all, and no field could add a fourth review or drop one.
+ *
+ * Laid out like TiersField, whose primary field is also the short one:
+ * the reviewer goes on the header line beside the ordinal, and the
+ * quote — a sentence, not a label — takes the same TIER_AREA textarea a
+ * package's blurb takes. Same house rules as the five above:
+ * whole-array rewrite per keystroke, numbered rows, a round X, a dashed
+ * add, an "n of max" footnote, no reordering — order is entry order,
+ * and it is the order the published card pages through.
+ * ------------------------------------------------------------------- */
+
+function QuotesField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { quote: '', who: '', role: '', when: '' }])
+
+  // The role and the date line share a line, as the gigs' city and time do:
+  // both are short, and stacking them would push the add button below the fold
+  // of the mobile edit sheet once there are three reviews.
+  const pair = (a, b) => (
+    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+  )
+
+  const row = (i, r) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        {/* shadcn Input for its focus ring — see SongsField above. */}
+        <Input
+          value={r.who ?? ''} placeholder="Reviewer" onClick={stopE}
+          onChange={(e) => setAt(i, 'who', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove review ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      {/* Same 25px gutter and 29px right inset as SongsField, so the lower
+          fields line up under the reviewer and clear the remove button. */}
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <Textarea
+          rows={3} value={r.quote ?? ''} placeholder="What they said" onClick={stopE}
+          onChange={(e) => setAt(i, 'quote', e.target.value)}
+          style={TIER_AREA}
+        />
+        {pair(
+          <Input
+            key="role" value={r.role ?? ''} placeholder="Private host" onClick={stopE}
+            onChange={(e) => setAt(i, 'role', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+          <Input
+            key="when" value={r.when ?? ''} placeholder="Reviewed 6 days ago" onClick={stopE}
+            onChange={(e) => setAt(i, 'when', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((r, i) => row(i, r || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add review</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · one to a card on the published page
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------- *
+ * §8.6i LinksField — the footer's sitemap.
+ *
+ * The seventh repeater, after SongsField, TracksField, GigsField,
+ * TiersField, FormFieldsField and QuotesField, and the eighth
+ * structured editor counting BookedField above. Row shape is
+ * { label, to, url }.
+ *
+ * It replaces a constant rather than a flattened key set: FOOTER_LINKS
+ * was two hardcoded columns of four strings, rendered as anchors on a
+ * bare `#`, so nothing about the footer's navigation was the artist's
+ * and none of it went anywhere on either surface.
+ *
+ * Laid out like FormFieldsField, the only other repeater with a per-row
+ * <select>, and for the same reason: the target is what makes the row
+ * more than a label. One thing here that no other repeater does — the
+ * address box renders only on a row whose target is `link`. It is the
+ * first row with two *kinds* of target, and an empty web-address box
+ * standing under eight section rows is noise, not an affordance.
+ *
+ * Same house rules as the six above: whole-array rewrite per keystroke,
+ * numbered rows, a round X, a dashed add, an "n of max" footnote, no
+ * reordering — and here the order is load-bearing the way the enquiry
+ * form's is, because sectionVm halves this list into the two columns.
+ * ------------------------------------------------------------------- */
+
+function LinksField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  // A new row points at nothing: the label is the artist's to write first, and
+  // 'none' is a real value rather than the empty string Radix refuses.
+  const add = () => onChange([...list, { label: '', to: 'none', url: '' }])
+
+  const row = (i, r) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          value={r.label ?? ''} placeholder="Link — About" onClick={stopE}
+          onChange={(e) => setAt(i, 'label', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove link ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {/* FOOTER_TARGETS is every category the page *can* carry, not the ones
+            it does: a value naming no item blanks a Radix trigger, so a link to
+            a section since deleted must still read as what it points at. The
+            canvas resolves it against the page instead (§4.3a). */}
+        <Select value={r.to ?? 'none'} onValueChange={(v) => setAt(i, 'to', v)}>
+          <SelectTrigger
+            onClick={stopE} className="w-full h-auto"
+            style={{ ...SONG_ROW_INPUT, paddingRight: '28px' }}
+          ><SelectValue /></SelectTrigger>
+          <SelectContent onClick={stopE}>
+            {FOOTER_TARGETS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        {r.to === 'link' && (
+          <Input
+            value={r.url ?? ''} placeholder="instagram.com/kaimercer" onClick={stopE}
+            onChange={(e) => setAt(i, 'url', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((r, i) => row(i, r || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add link</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
+        {list.length} of {max} · two columns on the published page
       </p>
     </div>
   )
@@ -1231,16 +2115,43 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // repeater showed none.
   const songsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : SONGS)
   // And the same again for the media player's tracks, whose seed is TRACKS
-  // dressed in the Retro artwork. The first keystroke materialises this whole
-  // array into `c.tracks`, photographs included, so nothing the user could see
-  // disappears the moment they rename track one.
+  // dressed in the Retro artwork and the demo audio. The first keystroke
+  // materialises this whole array into `c.tracks`, photographs and sound files
+  // included, so nothing the user could see — or hear — disappears the moment
+  // they rename track one.
   const tracksVal = (k) => {
     if (Array.isArray(sec.c[k])) return sec.c[k]
     const art = defaultTrackArt(sec.cat, themeName) ?? []
     return TRACKS.map(([name, dur, rel], i) => ({
-      title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null,
+      title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null, audio: TRACK_AUDIO[i] ?? '',
     }))
   }
+  // And once more for the events map's gigs, whose seed needs no dressing —
+  // GIGS is already the row shape GigsField writes.
+  const gigsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : GIGS)
+  // And for the pricing packages, whose seed needs none either: TIERS carries
+  // its tags as the comma string and its features as the newline one, which is
+  // exactly what TiersField edits and what sectionVm splits.
+  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : TIERS)
+  // And for the enquiry form's boxes, whose seed needs no dressing either:
+  // FORM_FIELDS is written as the { label, placeholder, kind } row that
+  // FormFieldsField edits and sectionVm reads.
+  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FORM_FIELDS)
+  // And for the testimonials' reviews: QUOTES is written as the
+  // { quote, who, role, when } row QuotesField edits, so this is the gigs' and
+  // the packages' one-liner rather than the tracks' dressing.
+  const quotesVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : QUOTES)
+  // And for the footer's sitemap: FOOTER_LINKS is written as the
+  // { label, to } row LinksField edits — a `url` only appears on a row the
+  // artist points at a web address — so this is the gigs' one-liner again.
+  const linksVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FOOTER_LINKS)
+  // The booking calendar's two. `bookedVal` is the songs' rule with an empty
+  // seed; `openVal` has to run sectionVm's whole expression rather than just
+  // its default, because clearing a date input stores '' — which the canvas
+  // parses to null and resolves back to CAL_OPEN. A panel that read the raw ''
+  // would page BookedField from a month the calendar is not on.
+  const bookedVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : CAL_BOOKED)
+  const openVal = (k) => parseDate(sec.c[k] ?? CAL_OPEN) ?? parseDate(CAL_OPEN)
 
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
@@ -1289,6 +2200,29 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                         <SongsField value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'tracks' ? (
                         <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
+                      ) : f.type === 'gigs' ? (
+                        <GigsField value={gigsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'tiers' ? (
+                        <TiersField value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'formFields' ? (
+                        <FormFieldsField value={formFieldsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'quotes' ? (
+                        <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'links' ? (
+                        <LinksField value={linksVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'booked' ? (
+                        // The one rung that takes a second value, the way
+                        // TracksField is the one that takes a toast: the month
+                        // it opens on is the calendar's own opening date.
+                        <BookedField value={bookedVal(f.k)} open={openVal('open')} onChange={(v) => set(v)} />
+                      ) : f.type === 'date' ? (
+                        // The platform picker, and its value is already the ISO
+                        // string parseDate reads.
+                        <Input
+                          type="date" value={val} onClick={stopE}
+                          onChange={(e) => set(e.target.value)}
+                          style={FIELD_BOX}
+                        />
                       ) : f.type === 'select' ? (
                         <Select value={val} onValueChange={set}>
                           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
@@ -1826,8 +2760,10 @@ function dressPublishedWindow(win, artistName, pageBg) {
   // load the builder. Every fragment is therefore swallowed, exactly as before,
   // and the scroll is done by hand against this document's own ids. Sections
   // carry theirs from `vm.anchor` (§4.3a), gated on `live`, so a link that names
-  // nothing on the page — the footer's columns, or a Minimal label whose
-  // sections were all deleted — simply does nothing.
+  // nothing on the page — a footer link, or a Minimal label, whose target
+  // section has been deleted — simply does nothing. It carries no href at all
+  // by then, sectionVm having resolved the target against the page, so it never
+  // even reaches this listener; the swallow is what catches the rest.
   doc.addEventListener('click', (e) => {
     const a = e.target.closest?.('a')
     const href = a ? a.getAttribute('href') || '' : ''

@@ -50,9 +50,12 @@ const c = count
   ? { tracks: Array.from({ length: count }, (_, i) => ({ title: `Track ${i + 1}`, sub: 'Single' })) }
   : {}
 
+// &live=1 renders the section as the published page does, so the controls that
+// are gated on `s.live` can be exercised with a real click here rather than by
+// driving the editor and its popup.
 const s = sectionVm({
   themeIdx, cat, arch, c, artistName: 'Kai Mercer',
-  Z: Z[device], mob: device === 'mobile', live: false, navSections,
+  Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections,
 })
 
 createRoot(document.getElementById('root')).render(
