@@ -328,21 +328,28 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // therefore `null` — not undefined — wherever a row has no art of its own,
   // because Photo falls back to the section photo (here the sleeve) on
   // undefined alone.
+  //
+  // `sub` is the one subline the fitted layout 1 sets; `rel` is the same line
+  // with the duration taken off it, for a design that columns the release and
+  // the running time apart (media layout 2). The seeded shape is the only one
+  // that knows both: a typed textarea row is "title — duration" and has no
+  // release, and TracksField has no duration field at all, so there `rel` is
+  // just the row's own subtitle and equals `dur`.
   const seedArt = defaultTrackArt(cat, T.name) ?? []
   if (Array.isArray(c.tracks)) {
     vm.tracks = c.tracks.map((t, i) => {
       const sub = (t?.sub ?? '').trim()
-      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, img: t?.image ?? null }
+      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub, img: t?.image ?? null }
     })
   } else if (c.tracks !== undefined) {
     vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
       const parts = l.includes('—') ? l.split('—') : l.split('|')
       const dur = (parts[1] || '').trim()
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, img: seedArt[i] ?? null }
+      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, rel: '', img: seedArt[i] ?? null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, img: seedArt[i] ?? null,
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel, img: seedArt[i] ?? null,
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)

@@ -17,7 +17,7 @@
 
 import { useId, useState } from 'react'
 import {
-  Play, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
+  Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
   ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search, MapPin,
   Image as ImageIcon, Youtube, Instagram, Music2,
 } from 'lucide-react'
@@ -1710,6 +1710,250 @@ function Media({ s }) {
       </div>
     )
   }
+
+  // v1 — Media Player layout 2 · Fanned carousel + editorial list (Figma
+  // 964:64639)
+  //
+  // One cream panel on the beige page — the section root keeps the page ground
+  // here, unlike layout 1, and only the panel is cream. Left: the display
+  // heading, a fanned stack of the tracks leaning out from the middle one, and
+  // a pill transport bar carrying the now-playing block. Right: the same tracks
+  // again as a numbered list of hue-filled rows under a small counter.
+  //
+  // The frame composes two instances into one Section — Media Player B ·
+  // Fanned carousel (964:64643) and A · Editorial numbered list (964:64644) —
+  // so this is one branch, and the *whole* Section is what gets fitted.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
+  // own 56/86 inset is dropped, the page root's padding standing in for it, so
+  // the panel is the content width (1052) and not the frame's 1089 — which is
+  // why the fan is 20px wider than its column and rides into the panel's
+  // padding rather than being clipped. The 768 and 390 frames are not fitted
+  // yet, so `narrow` stacks the two columns and clips the fan symmetrically.
+  if (s.v1) {
+    const desk = !s.narrow
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    // The fan's cards are centred on the stack, so their x/y are signed
+    // offsets from its middle rather than a box position.
+    const off = (v) => `calc(50% ${v < 0 ? '-' : '+'} ${Math.abs(Math.round(v * 0.82 * 10) / 10)}px)`
+
+    // The panel is the third cream again — Retro's own `paper` IS the beige
+    // page, hence the literal. Under it the ink is near-black, not the
+    // section's own text colour on beige.
+    const panel = s.retro ? '#FBF6EA' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    const n = s.chips.length
+    const olive = s.chips[3 % n].bg
+    const mustard = s.chips[2 % n].bg
+    const rust = s.ac
+
+    // The list's five rows run a three-hue cycle, and each hue carries its own
+    // type and outline colour — the frame's pairings, not a contrast rule.
+    // The flat templates have no such pairings, so they fall back to one.
+    const ROWS = [
+      { bg: olive, fg: mustard, line: mustard },
+      { bg: mustard, fg: rust, line: olive },
+      { bg: rust, fg: mustard, line: mustard },
+    ]
+
+    // The fan paints in a lighter register than the list — the same four hues
+    // lifted about 7% towards white, which is a decision the frame makes and
+    // not one the palette can express, so Retro's are literal (as v0's thrown
+    // pink and violet are). The middle card is always the accent.
+    const FAN = s.retro
+      ? ['#E8B33B', '#6D7040', '#E8B33B', '#8B6AB8']
+      : [mustard, olive, mustard, s.chips[0 % n].bg]
+    const FEATURED = s.retro ? '#DF5B30' : rust
+
+    // The frame's three card states, at |k| = 0, 1 and 2 from the middle: the
+    // width, the height, the artwork's height and the opacity all step. They
+    // are read off the frame rather than ramped, because Figma resized these
+    // by hand and the steps are not quite even. A sixth or seventh track keeps
+    // the outermost state and simply fans further out.
+    const CARD = [
+      { w: 220, h: 285, art: 188, y: 19.5, op: 1 },
+      { w: 202.507, h: 274.792, art: 170.4, y: 27.48, op: 0.82 },
+      { w: 185.187, h: 250.551, art: 152.8, y: 42.42, op: 0.64 },
+    ]
+    const mid = Math.floor((s.tracks.length - 1) / 2)
+
+    // Inter Bold at the frame's chip size, tracked in by its own −6%. Both
+    // ends of the list's counter row are set in it, and so is the Featured
+    // tab on the middle card — this is not the Anton label face. The counter
+    // is the only one the frame sets in caps; the tab is title case.
+    const chip = (extra) => ({
+      fontFamily: s.body, fontWeight: 700, fontSize: u(12), lineHeight: 1,
+      letterSpacing: u(-0.72), whiteSpace: 'nowrap', ...extra,
+    })
+    // Display face, sentence case — the frame sets every title in it.
+    const titleType = (size) => ({
+      fontFamily: s.display, fontSize: u(size), lineHeight: 1.1, letterSpacing: s.dls,
+      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+    })
+    const subType = { fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+
+    const fan = (
+      <div style={{
+        // Desktop takes the stack's height off the column; the narrow canvases
+        // have no fixed column to divide, so there it is the frame's own.
+        position: 'relative', flex: 1, minHeight: desk ? 0 : u(371),
+        // Desktop lets the outer cards ride into the panel's own padding,
+        // which is cream either way; the narrow canvases cannot afford that,
+        // and the stack is centred, so it clips evenly on both sides.
+        overflow: desk ? 'visible' : 'hidden',
+      }}>
+        {s.tracks.map((t, i) => {
+          const k = i - mid
+          const g = CARD[Math.min(Math.abs(k), 2)]
+          const hue = i === mid ? FEATURED : FAN[(i < mid ? i : i - 1) % FAN.length]
+          const fg = s.retro ? '#FBF6EA' : contrastInk(hue)
+          return (
+            <div key={i} style={{
+              position: 'absolute',
+              left: off(k * 101.5 - g.w / 2), top: off(g.y - g.h / 2),
+              width: u(g.w), height: u(g.h),
+              transform: tilt(s, k * 5.33), opacity: g.op, zIndex: 10 - Math.abs(k),
+              background: hue, color: fg,
+              border: `1px solid ${s.retro ? '#111111' : fg}`, borderRadius: u(14),
+              padding: u(16), overflow: 'hidden',
+              ...col(u(12), { alignItems: 'stretch' }),
+            }}>
+              <div style={{
+                position: 'relative', height: u(g.art), flex: 'none',
+                borderRadius: u(4), overflow: 'hidden',
+              }}><Photo s={s} initialsSize={20} src={t.img} /></div>
+              <div style={col(u(4), { minWidth: 0 })}>
+                <span style={{ ...titleType(16), lineHeight: 1.2 }}>{t.name}</span>
+                <span style={subType}>{t.rel || t.sub}</span>
+              </div>
+              {i === mid && (
+                <span style={chip({
+                  position: 'absolute', left: u(25.5), top: u(25),
+                  background: s.chips[4 % n].bg, color: s.retro ? '#FBF6EA' : s.chips[4 % n].fg,
+                  borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
+                })}>● Featured</span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    )
+
+    const np = s.nowPlaying
+    const bar = (
+      <div style={{
+        // The frame's bar is a shade lighter than the panel it sits on and is
+        // held by an olive outline in accent-coloured type. The flat templates
+        // have only the one paper, so there the outline is the one that has to
+        // carry it — and `paperLine` / `paperFg` are the two that read on it,
+        // where `line2` and the accent need not.
+        flex: 'none', height: u(108), background: s.retro ? '#FFFEFB' : s.paper,
+        color: s.retro ? rust : ink,
+        border: `${s.bw} solid ${s.retro ? olive : s.paperLine}`, borderRadius: '999px',
+        padding: `0 ${desk ? u(40) : u(20)}`,
+        ...row(desk ? u(24) : u(14)),
+      }}>
+        {/* Filled *and* stroked, unlike layout 1's player: the frame's skip
+            glyphs carry the bar beside the triangle, which is the stroke. */}
+        <span style={row(u(24), { flex: 'none' })}>
+          <SkipBack size={14} fill="currentColor" />
+          <Pause size={14} fill="currentColor" />
+          <SkipForward size={14} fill="currentColor" />
+        </span>
+        {/* The now-playing block, as layout 1 reads it: the section's sleeve
+            and FIELDS.media's own track, not whichever card is in the middle. */}
+        <span style={row(u(12), { flex: 1, minWidth: 0, paddingRight: desk ? u(30) : 0 })}>
+          <span style={{
+            width: u(60), height: u(60), flex: 'none',
+            borderRadius: '999px', overflow: 'hidden', position: 'relative',
+          }}><Photo s={s} initialsSize={16} /></span>
+          <span style={col(u(2), { flex: 1, minWidth: 0 })}>
+            <span style={titleType(24)}>{np.track}</span>
+            <span style={subType}>{np.by}</span>
+          </span>
+          {/* The 390 canvas has no frame of its own and cannot seat the whole
+              bar: the running time and the glyphs below go, rather than
+              squeeze the track off it. */}
+          {!s.mob && <span style={{ ...subType, flex: 'none' }}>{np.at} / {np.of}</span>}
+        </span>
+        {/* Text glyphs in the frame, not icons. */}
+        {!s.mob && (
+          <span style={row(u(12), {
+            flex: 'none', fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
+          })}><span>♡</span><span>↓</span><span>⋯</span></span>
+        )}
+      </div>
+    )
+
+    const left = (
+      <div style={col('0', { minWidth: 0, height: desk ? u(673) : undefined })}>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+          // Accent on the frame's near-white panel; on a flat template the
+          // panel is `paper`, where only `paperFg` is guaranteed to read.
+          letterSpacing: s.dls, color: s.retro ? rust : ink, flex: 'none',
+          // Layout 1's measure, for the frame's same break after "worth".
+          maxWidth: '5.8em',
+        }}>{s.title}</h2>
+        <div style={col(u(24), { flex: 1, minHeight: 0 })}>{fan}{bar}</div>
+      </div>
+    )
+
+    const list = (
+      <div style={col(u(10), { minWidth: 0 })}>
+        <div style={row('0', {
+          flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: ink,
+        })}>
+          <span style={chip({ textTransform: 'uppercase' })}>● Popular</span>
+          {/* Layout 1 derives its counter from the track count the same way. */}
+          <span style={chip({ textTransform: 'uppercase' })}>
+            {s.tracks.length} Featured / {s.tracks.length} Max
+          </span>
+        </div>
+        {s.tracks.map((t, i) => {
+          const r = ROWS[i % ROWS.length]
+          const fg = s.retro ? r.fg : contrastInk(r.bg)
+          // TracksField has no duration of its own — its rows carry the
+          // subtitle in both keys — so the running time only sets where the
+          // two differ.
+          const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+          return (
+            <div key={i} style={{
+              flex: desk ? 1 : 'none', minHeight: 0, overflow: 'hidden',
+              background: r.bg, color: fg, border: `${s.bw} solid ${s.retro ? r.line : fg}`,
+              borderRadius: u(30), padding: `${u(14)} ${desk ? u(30) : u(18)}`,
+              ...row(desk ? u(20) : u(14)),
+            }}>
+              <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, flex: 'none' }}>{t.n}</span>
+              <span style={{
+                width: u(64), height: u(64), flex: 'none', display: 'block',
+                borderRadius: u(4), overflow: 'hidden', position: 'relative',
+              }}><Photo s={s} initialsSize={16} src={t.img} /></span>
+              <span style={col(u(4), { flex: 1, minWidth: 0 })}>
+                <span style={titleType(24)}>{t.name}</span>
+                <span style={subType}>{t.rel}</span>
+              </span>
+              {dur && <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, flex: 'none' }}>{dur}</span>}
+            </div>
+          )
+        })}
+      </div>
+    )
+
+    return (
+      <div style={{
+        background: panel, color: ink, borderRadius: u(22),
+        padding: desk ? u(60) : u(28),
+        ...(desk ? {
+          display: 'grid', alignItems: 'stretch',
+          gridTemplateColumns: 'minmax(0, 629fr) minmax(0, 529fr)', gap: u(50),
+        } : col(s.gGap)),
+      }}>
+        {left}{list}
+      </div>
+    )
+  }
+
   return (
     <div style={col('28px')}>
       <h2 style={{ margin: 0, ...h2Style(s) }}>{s.title}</h2>
