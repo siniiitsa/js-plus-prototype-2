@@ -6014,7 +6014,7 @@ function EnquiryForm({ s }) {
     // The submit, and the "Write another" that replaces it once an enquiry has
     // been composed. A near-black pill with the label in the accent and the
     // arrow disc in it, thrown onto the accent's own offset block.
-    const pill = (children, extra) => ({
+    const pill = (extra) => ({
       ...row(u(10), { justifyContent: 'space-between' }),
       background: s.deep, color: s.retro ? s.ac : s.deepFg,
       borderRadius: '999px', width: '100%', boxSizing: 'border-box',
@@ -6107,7 +6107,13 @@ function EnquiryForm({ s }) {
           </div>
         </div>
 
-        <div style={{ width: desk ? u(450) : '100%', flex: 'none' }}>
+        {/* `alignSelf: stretch` is the frame's own `self-stretch`, and it is
+            what makes the card below actually sticky: a sticky element in a
+            column exactly its own height has nowhere to travel. */}
+        <div style={{
+          width: desk ? u(450) : '100%', flex: 'none',
+          alignSelf: desk ? 'stretch' : undefined,
+        }}>
           <div style={col(u(14), {
             background: card, color: cardInk,
             border: `1px solid ${cardLine}`, borderRadius: u(30),
@@ -6136,7 +6142,7 @@ function EnquiryForm({ s }) {
                   fontFamily: s.body, fontWeight: 700, fontSize: u(14),
                   overflowWrap: 'break-word',
                 }}>{s.formEmail}</span>
-                <span onClick={() => setSent(false)} style={pill(null, { cursor: 'pointer' })}>
+                <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>
                   {s.formAgain}
                   {arrowDisc}
                 </span>
@@ -6165,7 +6171,7 @@ function EnquiryForm({ s }) {
                       }}>{up(f.label)}</span>
                     )
                   })}
-                  <Pill {...pillLink} onClick={onSubmit} style={pill(null, {
+                  <Pill {...pillLink} onClick={onSubmit} style={pill({
                     cursor: onSubmit ? 'pointer' : undefined,
                   })}>
                     {s.formBtn}
