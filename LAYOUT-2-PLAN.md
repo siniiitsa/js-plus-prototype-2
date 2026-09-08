@@ -18,10 +18,24 @@ instances are `964:58576`…`964:58586`. **Layout 2 is the frame `964:64636` ("F
 
 `fileKey` = `uFoUbPaBrDicjyuSBEbtGT`.
 
+**The same page exists at both narrow widths** (this closes open question 11 — every one of the
+eleven options has a 768 and a 390 master):
+
+| Canvas | Frame | Node | Size |
+|---|---|---|---|
+| Desktop | Frame 254 | `964:64636` | 1440 × 9410 |
+| Tablet | Frame 255 | `984:33491` | 768 × 11057.4 |
+| Mobile | Frame 256 | `984:34437` | 390 × 10711.8 |
+
+- Tablet: <https://www.figma.com/design/uFoUbPaBrDicjyuSBEbtGT/SAAS-Final--Copy-?node-id=984-33491&m=dev>
+- Mobile: <https://www.figma.com/design/uFoUbPaBrDicjyuSBEbtGT/SAAS-Final--Copy-?node-id=984-34437&m=dev>
+
 ## The sections
 
-Desktop only for now — tablet (768) and mobile (390) come after desktop is signed off. Sizes are
-the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Conventions* below).
+**Desktop is fitted, all eleven.** Tablet (768) and mobile (390) are the next pass and come after
+the desktop half is signed off. Sizes below are the 1440 frame's; the 1180 canvas takes them
+× 0.82 (§5.5, and see *Conventions* below). The 768 and 390 frames are used **verbatim** — no
+ramp — so the narrow pass reads its numbers straight off the tables further down.
 
 | # | Cat | Figma node | Frame name | Size | Status |
 |---|---|---|---|---|---|
@@ -55,18 +69,66 @@ Three of those rows need their own note.
 - **"Repertoire — G · Mobile list" is a *desktop* frame.** "Mobile list" is the composition's
   name (a phone-style single-column list), not the device. The frame is 1440 wide.
 
+## The narrow masters
+
+The next pass. One section per session as before, and each session fits **both** narrow canvases
+of its section unless the two turn out to be different compositions. Every row is `todo`.
+
+| # | Cat | Tablet node (768) | Size | Mobile node (390) | Size |
+|---|---|---|---|---|---|
+| 1 | `header` | `984:34438` | 768 × 1024 | `984:34636` | 390 × 926 |
+| 2 | `bio` | `984:34877` | 768 × 1138.8 | `984:34834` | 390 × 881.3 |
+| 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 |
+| 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 |
+| 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 |
+| 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 |
+| 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 |
+| 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 |
+| 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 |
+| 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 |
+| 11 | `testimonials` | `986:11675` | 768 × 796 | `986:11701` | 390 × 870.3 |
+| — | `footer` | `986:11787` | 768 × 721 | `986:11727` | 390 × 721 | 
+
+Five things about these that a fresh session would otherwise re-derive.
+
+- **Match on width, never on the name.** The rule the memory note already states, and this page
+  is full of examples: the *mobile* header is called "Headers — E · Feature Spread — **Tablet**"
+  at 390 wide, both media-player lists are called "— **Desktop**" at 648 and 330, both booking
+  calendars are "— **Desktop**" at 708 and 370, and both footers are "— **Desktop**". Only the
+  size is trustworthy.
+- **`media` and `calendar` keep their desktop wrappers**, at the narrow insets: the media
+  `Section` is `Frame 299` → `Frame 297` → `Frame 296` (the *"Five Worth your ear"* heading over
+  the fanned carousel) beside the numbered list, and the calendar's `Frame 298` exists only to
+  inset its instance. Fit the wrapper's *contents*, as desktop did.
+- **The frames' own insets are not our `padX`/`padY`, and at these widths the gap is real.** The
+  media wrapper insets 30/60 at 768 and 10/40 at 390; the calendar's 30/56 and 10/40. Our
+  canvases carry `padX` 40 / `padY` 56 at tablet and 22 / 44 at mobile. So a line that "just
+  fits" in the frame may not here — verify against **content** edges, never against frame `y`.
+- **Two sections change shape rather than shrink.** The events map goes 823 → 1286 (the featured
+  panel stacks over the list) and the gallery 468 → 364. Read the render before assuming the
+  desktop composition simply reflows.
+- **The footer stays out of scope** at both widths, for the desktop reason: `NVAR.footer` is 1
+  and the fitted footer is already this design.
+
 ## Per-session procedure
 
 One section per session. Clear context between sections; git and this file are the memory. The
 session that finishes a section does not start the next one — it hands over a paste-ready prompt
-and stops (step 7).
+and stops (step 7). **In the narrow pass a session takes one section's tablet *and* mobile
+masters together** — they are two states of one branch, the `s.narrow` / `s.mob` split every
+fitted layout 1 already carries, and splitting them across sessions would have the second one
+re-deriving the first's decisions.
 
 1. Read `CLAUDE.md`, this file, and the two memory notes.
 2. `mcp__plugin_figma_figma__get_screenshot` on the row's node (`maxDimension` 1400–2000 for
    detail), then load the `figma-design-to-code` skill and `get_design_context` on the same node.
    Use `get_metadata` for the subtree when you need child ids and sizes.
 3. Implement it as the `s.v1` branch of the section's component in `EncoreSection.jsx` — see
-   *Conventions*. Numbers are the 1440 values × 0.82.
+   *Conventions*. Numbers are the 1440 values × 0.82 on desktop, and the 768 / 390 frames'
+   **verbatim** on the two narrow canvases. Every desktop fit already left a narrow fallback in
+   place — it degrades on the page's own ramp (`s.gPad`, `s.gGap`, `s.dispLg`) and says so in a
+   comment — so the narrow pass is replacing a stated placeholder, not filling a hole. Delete the
+   "the 768 and 390 masters are not fitted yet" comment as you go.
 4. Verify with the **preview harness** — `source/preview.html` + `source/src/preview.jsx`, added
    for this pass. It renders one section at one canvas with no editor chrome, so nothing has to be
    clicked and no popup has to be driven:
@@ -120,6 +182,16 @@ and stops (step 7).
    <the two or three conventions most likely to bite this section>
 
    Branch: retro-layout-2. Do not refresh the root index.html.
+   ```
+
+   In the narrow pass the middle paragraph names both masters instead, and drops "desktop only":
+
+   ```
+   The masters are `<tablet node>` (768 × <H>) and `<mobile node>` (390 × <H>) in Figma
+   file uFoUbPaBrDicjyuSBEbtGT — the same option this section's desktop fit came from.
+   Fit both inside the existing `s.v1` branch of `<Component>` in EncoreSection.jsx,
+   using its `s.narrow` / `s.mob` split; the 768 and 390 frames are used verbatim, with
+   no × 0.82. Replace the branch's "the 768 and 390 masters are not fitted yet" comment.
    ```
 
    The clearing is not about running out of room — the window is large and summarises itself. It
@@ -686,9 +758,12 @@ Learned on the testimonials (section 11):
    That is `FIELDS.media.soundcloud`'s case again — the hint now says
    "Layout 1 only" — and unlike questions 4, 7 and 8 nothing is lost by it:
    a table of dates has nowhere a photograph belongs.
-11. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
-   unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
-   signed off.
+11. ~~**Tablet and mobile.**~~ *Settled.* The 1440 page is not the only one: **Frame 255**
+   (`984:33491`, 768 × 11057.4) and **Frame 256** (`984:34437`, 390 × 10711.8) carry the same
+   eleven options at the two narrow widths, and their per-section nodes are tabled under *The
+   narrow masters* above. No `page.query` was needed — the user supplied the two frame links and
+   one `get_metadata` on each listed every child. The masters are misnamed even more freely than
+   the layout-1 ones (a 390 header called "— Tablet"), so match on width.
 12. **Three of the enquiry form's fields have no home in layout 2.** The
    sidebar card draws no chip row, so `FIELDS.form.types` reaches layout 1
    alone; it draws no textarea, so `message` does too; and its boxes hold the
