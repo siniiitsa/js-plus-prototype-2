@@ -447,7 +447,7 @@ export const FIELDS = {
     ] },
   ],
   bio: [
-    { k: 'image',     l: 'Photo', type: 'image', hint: 'Fills the tilted portrait card.' },
+    { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
     { k: 'heading',   l: 'Heading', d: 'Reads the room.' },
     { k: 'statement', l: 'Statement (centred layout)', def: 'statement' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
