@@ -475,9 +475,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   }))
   // `label` is cased for the chip, `tag` is what the filter compares.
   vm.repChips = repChips(songList).map((ch) => ({ ...ch, label: cased(ch.label) }))
-  // Layout 2 has no chip row, so its right-hand column takes the artist rather
-  // than a tag — but it takes the artist's *songs*, so swapping layouts never
-  // silently discards what they typed.
+  // The generic flat list, for a layout past the two that are fitted. It has no
+  // chip row, so its right-hand column takes the artist rather than a tag — but
+  // it takes the artist's *songs*, so swapping layouts never silently discards
+  // what they typed.
   vm.repFlat = vm.songs.map((t) => ({ t: t.title, g: t.artist }))
   vm.repHue = legible(T.tags[3 % T.tags.length])
   // The heading counts the list unless the artist has written their own, so it

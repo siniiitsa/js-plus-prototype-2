@@ -2896,7 +2896,12 @@ function Pager({ s, colour, fill, frame = {} }) {
       minWidth: w, height: w, padding: '0 8px',
       borderRadius: frame.radius || s.radiusSm,
       border: `${frame.bw || s.bw} solid ${on ? (frame.activeEdge || s.pillBg) : c}`,
-      background: on ? s.pillBg : (ends ? (fill || 'transparent') : 'transparent'),
+      // `fill` is the ends' own colour, `idle` every other unselected button's.
+      // Both default to transparent, so the sheet or the page shows through and
+      // every caller written before `idle` existed is untouched — the
+      // repertoire's layout 2 is the first frame to step its idle buttons off
+      // the ground they stand on.
+      background: on ? s.pillBg : (ends ? (fill || 'transparent') : (frame.idle || 'transparent')),
       color: on ? (frame.activeFg || contrastInk(s.pillBg)) : c,
       // Off the published page there is no handler, and a pointer over a button
       // that does nothing is the gallery's rule broken (it gates its own on
@@ -3174,24 +3179,311 @@ function Repertoire({ s }) {
     )
   }
 
+  // v1 — Repertoire layout 2 · Mobile list (Figma 964:64646)
+  //
+  // A phone's song list blown out to the page: a sheet running the full width
+  // of the section, an ink rule under its head, then the songs as plain rows
+  // — number, title, artist — each closed by its own rule, in two columns
+  // parted by a vertical one. Under them a row of seven wide olive-outlined
+  // buttons is the pager. No card, no checkerboard, no tear, no grain: a scan
+  // of the frame's ground and of a row gives a standard deviation of 0, so
+  // this is the second layout-2 frame with no texture at all.
+  //
+  // This is the second **full-bleed** composition after the header (§10.2) —
+  // the rules and the sheet run to the section's own edges, past the root's
+  // padding. It gets there without touching the root's `bleed` flag: the sheet
+  // is a block with `bleedTo`'s own negative margins, so the diff stays inside
+  // this section and the root goes on painting the page ground behind it. The
+  // frame's cream is box/1 `#FAECD5`, a shade deeper than the `#FBF6EA` that
+  // layout 1 stands on, so widening the root's `cream` flag would have been
+  // the wrong cream anyway.
+  //
+  // The inset is `s.gPad` all round (+ `s.surplus` horizontally), which is
+  // HeaderV0's rule for the same reason: past the canvas the frame was drawn
+  // at, the sheet keeps bleeding while its content stays on the page's measure.
+  // At desktop `gPad` is 46, which is exactly the frame's own 56 × 0.82 — the
+  // two agree here, unlike `padX`'s 64.
+  //
+  // Everything else is the 1440 frame × 0.82 through `u()`. Three readings of
+  // the frame that are not transcriptions:
+  //
+  //  - The heading is `s.title`, not the frame's literal "Repertoire". Layout 1
+  //    sets that word as an eyebrow *over* the heading; layout 2 has one
+  //    display line, and giving it to the literal would leave the section's
+  //    heading field editing nothing here — the calendar's `cta` and the form's
+  //    `email` before this pass got to them. On the seed it reads "12 Songs".
+  //  - The rows' 84.2px height is what the frame's `flex-1` division of a fixed
+  //    421 landed on, and our list has no height to divide (the video panel's
+  //    lesson). It is pinned at that number instead, so the picture holds at
+  //    any count and a short last page simply makes the sheet shorter.
+  //  - The frame's right-hand column is the phone component instanced a second
+  //    time, so it carries the phone's own 20px insets on *both* sides — which
+  //    would leave the right column's type 20px off the window edge where
+  //    everything else on the page is 46. The 20 is kept as the *interior*
+  //    inset, either side of the divider, and both outer edges take `gPad`.
+  //    Nothing moves in the picture: the info block is `flex: 1` and its text
+  //    is left-aligned, so the right padding only decides where a long title
+  //    is clipped.
+  if (s.v1) {
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const desk = !s.narrow
+    const bw = s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw
+    // The sheet and its ink. Retro's own `paper` IS the beige page ground, so
+    // the cream is the literal box/1 again; the flat four have a real second
+    // paper and take it, with `paperFg` for the ink, because `s.tx` is chosen
+    // against the page and need not read on the sheet.
+    const sheet = s.retro ? '#FAECD5' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    // Olive: the pager's outline and the type in its unselected buttons. The
+    // media player's rule decides the flat four — `repHue` is `legible()` and
+    // every soft tint in the palette (`soft2`, `muted`, `line2`) is computed
+    // against the PAGE, so on Grunge's white sheet over a black page the whole
+    // pager came back white on white. `paperFg` and `paperLine` are the two
+    // that read on a `paper` surface, so those are what the sheet takes.
+    const hue = s.retro ? s.repHue : s.paperFg
+    // The frame steps the pager's idle buttons one register brighter than the
+    // sheet they stand on — `#FBF6EA` on `#FAECD5` — and washes its two arrows
+    // in the accent at 27% over that cream, a different blush from the one
+    // layout 1 reserves. Neither has an equivalent away from Retro: the sheet
+    // already IS `paper`, and there is no tint of it in the palette, so the
+    // flat four keep Pager's transparent default on both and read as an
+    // outlined row with only the current page filled.
+    const idle = s.retro ? '#FBF6EA' : undefined
+    const blush = s.retro ? '#ECBFA3' : undefined
+    const pageFg = s.retro ? '#FBF6EA' : undefined
+    // The selected chip's type is the page's own beige, sampled off the render
+    // and confirmed by the frame's `sem/bg` token. It is deliberately NOT the
+    // cream the bio's note says Retro's chips take on every hue: that held for
+    // the bio's and the header's frames, and this one contradicts it.
+    const chipFg = s.retro ? s.bg : s.acFg
+    // The page inset. Horizontally it also carries `surplus`, so a window wider
+    // than the canvas widens the sheet and not the measure.
+    const padH = `calc(${s.surplus} + ${s.gPad})`
+    // Ten to a page — the frame's five rows in each of its two columns. The
+    // seeded twelve songs therefore make two pages, so the reference picture
+    // gains a working pager where the frame draws a fictional twenty; that is
+    // the events map's rule, the row being derived from the list.
+    const perPage = desk ? 10 : 6
+
+    const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
+    const needle = q.trim().toLowerCase()
+    const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
+    const hit = (t) => (
+      (active === 0 || t.tags.some((g) => eq(g, s.repChips[active].tag)))
+      && (!needle || t.title.toLowerCase().includes(needle) || t.artist.toLowerCase().includes(needle))
+    )
+    const filtered = s.live ? s.songs.filter(hit) : s.songs
+    const pages = Math.max(1, Math.ceil(filtered.length / perPage))
+    const pg = Math.min(page, pages - 1)
+    const shown = filtered.slice(pg * perPage, (pg + 1) * perPage)
+    // Layout 1's split: the page runs DOWN each column, the remainder falling
+    // to the left one, so a part-filled page keeps both columns standing and
+    // the divider between them keeps its full height.
+    const half = Math.ceil(shown.length / 2)
+    const columns = (desk ? [shown.slice(0, half), shown.slice(half)] : [shown])
+      .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
+    const { labels, at } = pageWindow(pages, pg, s.mob)
+
+    const chipRow = (
+      <div style={row('0', {
+        // The frame's own padding less the border it draws inside it, layout
+        // 1's rule: Figma strokes an auto-layout frame without growing it, so
+        // a border-box 6 + 3 would stand the pill 5px taller than its 41.
+        border: `${bw} solid ${ink}`, borderRadius: '999px',
+        padding: `calc(${u(6)} - ${bw})`,
+        flexWrap: 'wrap', rowGap: u(6), minWidth: 0,
+      })}>
+        {/* The artist's tags, behind the `All` that clears them — so the frame's
+            three modes are four here, the pricing deck's intended diff. */}
+        {s.repChips.map((f, i) => (
+          <span
+            key={i}
+            onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
+            style={{
+              padding: `${u(6)} ${u(14)}`, borderRadius: '999px',
+              background: i === active ? s.ac : 'transparent',
+              color: i === active ? chipFg : ink,
+              // The calendar's rule: the cursor is read off the handler, so the
+              // canvas's picture of a chip does not claim to be a control.
+              cursor: s.live ? 'pointer' : undefined,
+              fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+            }}
+          >{f.label}</span>
+        ))}
+      </div>
+    )
+
+    const searchType = {
+      fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: ink,
+    }
+    const searchBox = (
+      <div style={row(u(8), {
+        border: `${bw} solid ${ink}`, borderRadius: '999px',
+        // The frame's own 10px vertical padding is dropped: its 41px height
+        // already leaves the 21px line less room than it needs, and the frame
+        // clips the difference. Centring in the stated height draws the same
+        // pill without asking the box to overflow.
+        padding: `0 ${u(20)}`, height: u(41),
+        width: desk ? u(380) : '100%',
+        flex: desk ? `0 1 ${u(380)}` : undefined,
+        minWidth: 0, overflow: 'hidden',
+      })}>
+        <Search size={desk ? 13 : 15} style={{ flex: 'none' }} />
+        {/* Layout 1's seam, unchanged: a real field on the published page and
+            the same span it has always been on the canvas, both carrying the
+            frame's type so the head does not move when the page is published. */}
+        {s.live ? (
+          <input
+            value={q} placeholder="Search songs or artists…"
+            onChange={(e) => { setQ(e.target.value); setPage(0) }}
+            style={{
+              ...searchType, flex: 1, minWidth: 0,
+              border: 'none', outline: 'none', background: 'transparent', padding: 0,
+            }}
+          />
+        ) : (
+          <span style={{ ...searchType, whiteSpace: 'nowrap' }}>Search songs or artists…</span>
+        )}
+      </div>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding,
+        // which is what makes the rules below run the full width of the page.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: sheet, color: ink,
+        // The frame closes the whole composition on a hairline rather than on
+        // the 3px the rows carry.
+        borderBottom: `1px solid ${ink}`,
+      }}>
+        <div style={col(u(12), {
+          // The rule the frame paints at the head's foot sits *inside* its 56,
+          // so the padding gives the border back — the toggle's rule again.
+          padding: `${s.gPad} ${padH} calc(${s.gPad} - ${bw})`,
+          borderBottom: `${bw} solid ${ink}`,
+        })}>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(40),
+            lineHeight: 1, letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+          <div style={row(u(16), {
+            justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(12),
+            flexDirection: s.mob ? 'column' : 'row',
+            alignItems: s.mob ? 'stretch' : 'center',
+          })}>
+            {chipRow}
+            {searchBox}
+          </div>
+        </div>
+
+        {shown.length === 0 ? (
+          <div style={{
+            height: u(84.2), padding: `0 ${padH}`, borderBottom: `${bw} solid ${ink}`,
+            display: 'flex', alignItems: 'center',
+            // `muted` is 64% of the page's own text colour, so it is the same
+            // wrong token as `repHue` above on a sheet the page did not choose.
+            fontFamily: s.body, fontSize: u(12),
+            color: s.retro ? s.muted : s.paperLine,
+          }}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}</div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: desk ? '1fr 1fr' : '1fr' }}>
+            {columns.map((colSongs, ci) => (
+              <div key={ci} style={{
+                minWidth: 0,
+                // Dropped when the second column is empty — a one-song page
+                // should not part the sheet down the middle. The columns
+                // stretch to the taller of the two, so an odd count leaves the
+                // divider full height, the way the frame draws it.
+                borderRight: ci === 0 && columns.length > 1 && columns[1].length
+                  ? `${bw} solid ${ink}` : undefined,
+              }}>
+                {colSongs.map((t) => (
+                  <div key={t.n} style={row('0', {
+                    height: u(84.2), overflow: 'hidden',
+                    borderBottom: `${bw} solid ${ink}`,
+                    paddingLeft: ci === 0 ? padH : u(20),
+                    paddingRight: ci === 0 && columns.length > 1 ? u(20) : padH,
+                  })}>
+                    {/* The frame lets the number size itself and spends a 14px
+                        gap after it — 20px in all for a single digit. Pinned at
+                        that 20 instead, with the gap folded in: the title lands
+                        exactly where the frame puts it, and a two-digit number
+                        no longer shunts its own row's title to the right. */}
+                    <span style={{
+                      width: u(20), flex: 'none',
+                      fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+                    }}>{t.n}</span>
+                    <span style={col(u(2), { flex: 1, minWidth: 0 })}>
+                      {/* Literal sizes, not `s.title`: the view-model's content
+                          `title` shadows the RAMP size of that name. */}
+                      <span style={{
+                        fontFamily: s.display, fontSize: u(16), lineHeight: 1.2,
+                        letterSpacing: s.dls,
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>{t.title}</span>
+                      <span style={{
+                        fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>{t.artist}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* The frame's seven buttons divide the whole measure, so the row is
+            `grow` and the count is the pager's own. At one page `pageWindow`
+            returns nothing and the row goes with it — the pager's rule — but
+            the foot inset stays, or the sheet would end flush on the last
+            row's rule; it drops to the head's own 46 rather than keeping the
+            band a vanished row of buttons was sitting in. */}
+        <div style={{ padding: labels.length > 0 ? `${s.gPad} ${padH}` : `0 0 ${s.gPad}` }}>
+          {labels.length > 0 && (
+            <Pager s={s} colour={hue} fill={blush} frame={{
+              size: 44.3, radius: u(20), bw,
+              idle, activeFg: pageFg,
+              // The frame outlines the current page in the same olive as the
+              // rest. The flat four cannot: `pillBg` is the palette's lightest
+              // tag hue and `paper` is its lightest colour outright, so on
+              // Grunge they are the same white and the filled button vanishes
+              // into the row. The accent on the edge is what marks it there —
+              // Pager's own `activeFg` still contrasts against the fill.
+              activeEdge: s.retro ? hue : s.ac,
+              font: labelStyle(s, u(12), { letterSpacing: 0 }),
+              grow: true, justify: 'center', pages: labels, active: at,
+              onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+              onStep: s.live
+                ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+                : undefined,
+            }} />
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Layouts 3+ — the generic flat design. `NVAR.repertoire` is 2, so nothing
+  // reaches this today; it is what a third layout would render until it is
+  // fitted, which is why the two-column list below is no longer gated on `v1`.
   return (
     <div>
       <h2 style={{ margin: '0 0 30px', ...h2Style(s) }}>{s.title}</h2>
-      {s.v1 && (
-        <div style={{ display: 'grid', gridTemplateColumns: s.g2, gap: '0 44px' }}>
-          {s.repFlat.map((it, i) => (
-            <div key={i} style={row('12px', {
-              justifyContent: 'space-between', padding: '13px 2px',
-              borderBottom: `1.5px solid ${s.line}`, fontSize: '14px',
-            })}>
-              <span style={{ fontWeight: 600 }}>{it.t}</span>
-              <span style={{
-                color: s.ac, fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase',
-              }}>{it.g}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      <div style={{ display: 'grid', gridTemplateColumns: s.g2, gap: '0 44px' }}>
+        {s.repFlat.map((it, i) => (
+          <div key={i} style={row('12px', {
+            justifyContent: 'space-between', padding: '13px 2px',
+            borderBottom: `1.5px solid ${s.line}`, fontSize: '14px',
+          })}>
+            <span style={{ fontWeight: 600 }}>{it.t}</span>
+            <span style={{
+              color: s.ac, fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase',
+            }}>{it.g}</span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

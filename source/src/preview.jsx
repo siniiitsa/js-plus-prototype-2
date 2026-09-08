@@ -50,8 +50,13 @@ const navSections = [
 const LIST = {
   media: (i) => ({ title: `Track ${i + 1}`, sub: 'Single' }),
   video: (i) => ({ title: `Video ${i + 1}`, sub: 'Live set', length: '03:50', when: 'April 2026' }),
+  // Three tags cycling, so the chip row and the filter are exercised too.
+  repertoire: (i) => ({
+    title: `Song number ${i + 1}`, artist: `Artist ${i + 1}`,
+    tags: ['Weddings', 'Pubs', 'Birthdays'][i % 3],
+  }),
 }
-const KEY = { media: 'tracks', video: 'videos' }
+const KEY = { media: 'tracks', video: 'videos', repertoire: 'songs' }
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const c = count === null || !LIST[cat]
   ? {}
