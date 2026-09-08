@@ -97,10 +97,22 @@ const LIST = {
     placeholder: `Placeholder ${i + 1}`,
     kind: ['text', 'email', 'number'][i % 3],
   }),
+  // The testimonials' reviews. Every third row drops its role and its date, so
+  // one render shows the card's foot with both halves, with the name alone and
+  // with nothing at all; every fourth names an ampersanded couple, which is the
+  // frame's own "Sarah & Tom" and the case that would mark the rail's tile
+  // "S&" if `mark` split on whitespace alone; and every fifth has no name, so
+  // the tile falls back to the row's number.
+  testimonials: (i) => ({
+    quote: `Review number ${i + 1}. ${'They read the room and kept it moving. '.repeat(1 + (i % 3))}`,
+    who: i % 5 === 4 ? '' : i % 4 === 3 ? `Sarah & Tom ${i + 1}` : `Reviewer ${i + 1}`,
+    role: i % 3 === 2 ? '' : `Venue manager ${i + 1}`,
+    when: i % 3 === 2 ? '' : `Reviewed ${i + 1} weeks ago`,
+  }),
 }
 const KEY = {
   media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images', pricing: 'tiers',
-  calendar: 'slots', map: 'gigs', form: 'fields',
+  calendar: 'slots', map: 'gigs', form: 'fields', testimonials: 'quotes',
 }
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const c = count === null || !LIST[cat]

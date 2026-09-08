@@ -682,7 +682,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // there is no null sentinel. It was three flat keys over a fixed three rows,
   // which reached one review and could not add a fourth.
   const quoteList = Array.isArray(c.quotes) ? c.quotes : QUOTES
-  vm.quotes = quoteList.map((r) => {
+  vm.quotes = quoteList.map((r, i) => {
     const who = String(r?.who ?? '').trim()
     const role = String(r?.role ?? '').trim()
     return {
@@ -696,8 +696,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       // halves editable, joining them there prints a bare separator the moment
       // one is emptied. The calendar's one-composed-line-per-cell rule.
       byline: [who, role].filter(Boolean).join(' · '),
+      // Layout 2's selector tile, composed here for the same reason: the
+      // reviewer's initials, or the row's own number when the name is empty,
+      // since a rail of blank tiles cannot be picked from. Punctuation is
+      // spaced out first — `initialsOf` splits on whitespace alone, and the
+      // frame's own "Sarah & Tom" would otherwise mark the tile "S&".
+      mark: initialsOf(who.replace(/[^\p{L}\p{N}\s]/gu, ' ')) || String(i + 1),
     }
   })
+  // Layout 2 is the first design to head this section — layout 1 is the card
+  // alone — so both of these reach it and nothing else, the way FIELDS.video's
+  // photographs reach one layout. The line is prose and stays uncased; the pill
+  // keeps the uncased label every other Book Now on the page draws.
+  vm.testiSub = cv('sub', DEFS.testiSub)
+  vm.testiCta = cv('cta', 'Book Now')
 
   // form
   vm.formPara = cv('para', DEFS.formPara)

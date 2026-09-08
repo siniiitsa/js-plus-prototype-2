@@ -514,6 +514,10 @@ export const DEFS = {
   // reference picture holds. Emptying it drops the line.
   pricingQuote: "“Kai read the room better than any DJ we'd worked with. We had him back twice that year.”",
   mapSub:     '12 dates · 8 cities · this season',
+  // §10.2 layout 2 heads the testimonials with a line about who the reviews are
+  // from, where layout 1 draws no head at all — the frame's own sentence, kept
+  // as the seed so the reference picture holds. Emptying it drops the line.
+  testiSub:   'Real words from couples, planners and venues across the North West.',
   formPara:   'Tell me about the night — date, venue, crowd. Replies within 24 hours.',
   copyright:  'C 2026 Kai Mercer',
 }
@@ -763,13 +767,23 @@ export const FIELDS = {
   ],
   testimonials: [
     { k: 'heading', l: 'Heading', d: 'Word of Mouth' },
+    // Layout 2 is the first design to head this section, so both of the plain
+    // strings below reach it alone — FIELDS.media.soundcloud's case the other
+    // way up, hence the layout in each hint.
+    { k: 'sub',     l: 'Intro line', def: 'testiSub',
+      hint: 'The line under the heading. Layout 2 only.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
     // key set — quote/who/role reached one review of three, and nothing could
     // add a fourth — which is the pricing packages' case, not a textarea's.
     // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
     { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
       hint: 'Each row is one review, and the card pages through them on the published '
-          + 'page. The date line is the small type above the quote.' },
+          + 'page. The date line is the small type above the quote in layout 1 and '
+          + "sits beside the reviewer in layout 2, whose selector takes the name's "
+          + 'initials.' },
+    { k: 'cta',     l: 'Button', d: 'Book Now',
+      hint: 'The pill under the card, which scrolls to wherever the page takes a '
+          + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],
   form: [
     { k: 'image',    l: 'Portrait', type: 'image', hint: 'The round photo beside your name.' },

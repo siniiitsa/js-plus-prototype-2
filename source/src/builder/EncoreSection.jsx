@@ -5556,6 +5556,221 @@ function Testimonials({ s }) {
       </div>
     )
   }
+
+  // v1 — Testimonials layout 2 · Editorial feature (964:64653, 1440 × 782 at
+  // × 0.82): a centred display head over one wide coloured card, with a rail of
+  // initial tiles down its left picking the review it shows, and the section's
+  // Book Now pill centred under both. It draws neither grain nor a torn edge —
+  // the frame carries no texture at all (stddev 0 over both the page ground and
+  // the card) and stands on the beige page, so the root's `cream` flag stays
+  // layout 1's and nothing shared moves.
+  if (s.v1) {
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const desk = !s.narrow
+    // The 768 and 390 masters of this option are not fitted yet — this pass is
+    // desktop only — so below desktop the rail and the card stack, the rail
+    // laying its tiles out as a wrapping row, and the frame's 32/12 insets drop
+    // to the canvas's own ramp rather than to invented numbers.
+    const gap = desk ? u(32) : s.gGap
+    const n = s.quotes.length
+    // Clamped as layout 1 clamps it, and for the same two reasons: the artist
+    // can delete the review the visitor is on, and Publish re-renders a tab
+    // that is already open.
+    const at = s.live && n ? Math.min(cur, n - 1) : 0
+    const q = n ? s.quotes[at] : null
+    // The rail is a picker, so it is not drawn at one review — layout 1's arrow
+    // rule and the pricing chips', derived from the list so it holds on the
+    // canvas too. At one review the card simply takes the whole width.
+    const rail = n > 1
+
+    // The frame's orange card, its purple selected tile and its two creams are
+    // literals under Retro, whose `paper` IS the page ground (the calendar's
+    // rule). The purple is a register lighter than the palette's own #7A58A7,
+    // the media player's fanned cards again, so it is sampled rather than
+    // taken from `chips`. The flat four paint the card in the accent and mark
+    // the picked tile with the same fill against the others' outline, which is
+    // what carries the selection whatever hue the card lands on.
+    const card = s.retro ? '#DF5B30' : s.ac
+    const cardFg = s.retro ? '#FBF6EA' : s.acFg
+    // The frame rules the card in ink. That is invisible on a palette whose
+    // darkest colour is the card, so the flat four take a wash of the card's
+    // own type — the events map's rule for its dark panel.
+    const cardLine = s.retro ? s.tx : s.acFg20
+    const tile = s.retro ? '#FAECD5' : s.paper
+    const tileFg = s.retro ? s.tx : s.paperFg
+    const onTile = s.retro ? '#8B6AB8' : s.ac
+    const onTileFg = s.retro ? '#FBF6EA' : s.acFg
+
+    const body12 = { fontFamily: s.body, fontSize: u(12), lineHeight: 1.4 }
+
+    // The head. Its eyebrow is the frame's own label, a literal the way the
+    // media player's "● Popular" is; the display line is the section's
+    // `heading`, which layout 1 draws nowhere; and the sentence under it is the
+    // new `sub`. Each of the two fields is rendered or not rather than printed
+    // blank, since a `col` gap is spent on an empty span the same as a full one.
+    const head = (
+      <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center' })}>
+        <span style={body12}>&#9998; What clients say</span>
+        {!!s.title && (
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+        )}
+        {!!s.testiSub && (
+          <p style={{
+            margin: 0, fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
+          }}>{s.testiSub}</p>
+        )}
+      </div>
+    )
+
+    // One tile a review, marked with the reviewer's initials — `mark` is
+    // composed in sectionVm, which is also where its empty-name fallback lives,
+    // so nothing here works a name out. Live it picks the review the card
+    // shows; on the canvas tile 0 is lit where the frame lights the middle one,
+    // which is `cur`'s pinned 0 and the pricing deck's intended diff.
+    const tiles = (
+      <div style={{
+        display: 'flex', flexDirection: desk ? 'column' : 'row', flexWrap: 'wrap',
+        gap: u(12), alignSelf: desk ? 'stretch' : 'auto', flex: 'none',
+      }}>
+        {s.quotes.map((r, i) => {
+          const on = i === at
+          return (
+            <div key={i} onClick={s.live ? () => setCur(i) : undefined} style={{
+              width: u(88), flex: desk ? '1 1 0' : 'none',
+              background: on ? onTile : tile, color: on ? onTileFg : tileFg,
+              // The frame draws the picked tile's outline at 2 where the others
+              // are at 1. The second px is an inset ring rather than a thicker
+              // border — the enquiry form's refused-box rule, and here it is
+              // load-bearing: a `flex-basis: 0` item's border is added *after*
+              // its share of the rail is worked out, so a 2px tile comes out
+              // 2px taller than its neighbours and the column stops dividing
+              // evenly.
+              border: `1px solid ${on ? s.tx : s.ac}`, borderRadius: u(30),
+              boxShadow: on ? `inset 0 0 0 1px ${s.tx}` : undefined,
+              // The frame's 36px vertical padding is inert in the column: its
+              // three tiles measure 98.63, which is the rail's height divided
+              // three ways and not 36 + 19 + 36. Transcribing it would floor
+              // the tile at 74 and stand the rail past the card the moment the
+              // artist adds a fifth review, so the padding is kept for the row
+              // the narrow canvases lay out and the column takes the division —
+              // `min-h-px` on the frame's own tiles, which is Figma for "this
+              // may shrink past its contents". Figma strokes inside the size it
+              // states, so the row's padding gives the border back, the
+              // repertoire's rule.
+              ...(desk
+                ? { minHeight: 0 }
+                : { padding: `calc(${u(36)} - 1px) 0` }),
+              overflow: 'hidden',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: s.live ? 'pointer' : undefined,
+            }}>
+              <span style={{
+                fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+              }}>{r.mark}</span>
+            </div>
+          )
+        })}
+      </div>
+    )
+
+    // The card. Its foot pairs the reviewer over their role, and where the
+    // frame prints ★★★★★ it prints the review's own date: a rating the artist
+    // never typed is a claim (the video section's rule, and the enquiry form
+    // dropped this very row of stars), and dropping it frees the one slot
+    // `when` has in this design — the events map's rule that each dropped claim
+    // hands its place to a real field. `byline` is layout 1's composed pair and
+    // is deliberately not used here: the line above it is already `who`.
+    const big = (
+      <div style={col(u(40), {
+        ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+        background: card, color: cardFg,
+        border: `1px solid ${cardLine}`, borderRadius: u(30),
+        padding: `calc(${u(40)} - 1px)`, alignItems: 'flex-start',
+      })}>
+        {q ? (
+          <>
+            {/* The frame's 128px mark in a box shorter than its own line: the
+                glyph has no descender, so the box is what the 40px gap under it
+                measures from. `dispXl` is the ramp's own step at that size. */}
+            <span aria-hidden style={{
+              fontFamily: s.display, fontSize: s.dispXl, lineHeight: 0.75,
+              height: u(56), flex: 'none',
+            }}>&rdquo;</span>
+            <p style={{
+              margin: 0, width: '100%', fontFamily: s.body, fontSize: u(16), lineHeight: 1.5,
+            }}>{q.quote}</p>
+            {/* Rendered or not, each of them: every value on the card is
+                emptiable, and an emptied pair drops the row with its padding. */}
+            {(!!q.byline || !!q.when) && (
+              <div style={row(u(12), {
+                width: '100%', paddingTop: u(16), flexWrap: 'wrap',
+                justifyContent: 'space-between', alignItems: 'flex-end',
+              })}>
+                <div style={col(u(4), { minWidth: 0 })}>
+                  {!!q.who && (
+                    <span style={{
+                      fontFamily: s.display, fontSize: u(16), lineHeight: 1.2,
+                      letterSpacing: s.dls,
+                    }}>{q.who}</span>
+                  )}
+                  {!!q.role && <span style={body12}>{q.role}</span>}
+                </div>
+                {!!q.when && (
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, flex: 'none',
+                  }}>{q.when}</span>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          // Pricing's one message, layout 1's rule here too: the card is the
+          // composition, and a hole where it stands is not one of the
+          // section's states.
+          <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5 }}>
+            No reviews yet.
+          </span>
+        )}
+      </div>
+    )
+
+    return (
+      <div style={col(gap)}>
+        {head}
+        <div style={{
+          display: 'flex', flexDirection: desk ? 'row' : 'column', gap,
+          // Desktop tops the two columns rather than stretching them: the card
+          // is the taller of the pair by construction, and stretching it would
+          // hand a card with one short review the rail's slack. Stacked, the
+          // same property is the cross axis and has to stretch, or both blocks
+          // would shrink to their own content and stand off the left gutter.
+          alignItems: desk ? 'flex-start' : 'stretch', width: '100%',
+        }}>
+          {rail && tiles}
+          {big}
+        </div>
+        {/* The frame draws no offset block under the pill, hence the clear
+            shadow, and fills it in the accent with cream type where BookPill's
+            own default is the mustard — so the arrow disc takes the cream and
+            its glyph the accent back. `bookTo` needs no self-exclusion, the
+            footer's rule: `testimonials` is not in CTA_TARGETS.book, so the
+            pill can never point at the section it stands in. An emptied label
+            drops it and the row it stands in, or the column would spend this
+            gap on nothing. */}
+        {!!s.testiCta && (
+          <div style={row('0px', { width: '100%', justifyContent: 'center' })}>
+            <BookPill s={s} to={s.bookTo} label={s.testiCta} glyph="arrow"
+                      disc={desk ? 38 : undefined} shadow="transparent"
+                      bg={s.ac} discFg={s.ac}
+                      {...(s.retro ? { fg: '#FBF6EA' } : null)} />
+          </div>
+        )}
+      </div>
+    )
+  }
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>
