@@ -373,7 +373,7 @@ function NavLinks({ s, color, pills = false }) {
 // written before it got — Retro's cream, the flat four's pill ground — and is
 // passed only by the calendar's slot list, whose frame stands a cream disc on
 // an ink pill and would otherwise draw cream on cream.
-function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg }) {
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg, size: sizeProp }) {
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
@@ -405,7 +405,15 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
         // The type is one of the scaled dimensions: it was the only one left on
         // label-md, which made the tablet pill's type *smaller* than the
         // desktop one's even though every other dimension was bigger.
-        ...labelStyle(s, pick('20px', undefined, '12.4px')),
+        //
+        // `size` overrides it, and the 768 header master is why: Figma ramped
+        // `size/label-sm` down for the narrow frames (20 → 16) while leaving
+        // every *box* dimension at the desktop component's own numbers, so a
+        // tablet pill wants the full-scale box with the desktop canvas's type.
+        // Additive — `glyph`/`disc`'s precedent — so the callers written before
+        // it, and the `full` scale the 390 pricing frame asks for, are
+        // untouched.
+        ...labelStyle(s, sizeProp ?? pick('20px', undefined, '12.4px')),
       }}>
         {text}
         {disc ? (
@@ -912,19 +920,54 @@ function HeaderV1({ s }) {
   const mount = s.retro ? '#F3E3C8' : s.paper
   const cream = s.retro ? '#FAECD5' : s.paper
   const ink = s.retro ? '#111111' : s.tx
+  // The 768 (`984:34438`) and 390 (`984:34636`) masters are the *desktop*
+  // component at its own numbers: Figma ramped the type variables down and left
+  // every box dimension unscaled, so the narrow branches below read those two
+  // frames verbatim where the desktop branch reads the 1440 one × 0.82. That is
+  // why a padding here can be larger at 768 than at 1180 and still be right.
+  const nar = s.narrow
+  const tab = isTablet(s)
+  // The sub-card turns on its side at both narrow widths — a photograph beside
+  // its two lines rather than above them — so the whole card is a different
+  // shape, not a smaller one.
   const card = {
-    flex: 1, minWidth: 0, borderRadius: '25px', padding: '23px 21px',
-    border: `2.5px solid ${olive}`, overflow: 'hidden',
-    ...col('0', { justifyContent: 'space-between' }),
+    overflow: 'hidden',
+    ...(nar
+      ? {
+          width: '100%', borderRadius: '30px', padding: '28px 26px',
+          border: `3px solid ${olive}`, ...row('20px'),
+        }
+      : {
+          flex: 1, minWidth: 0, borderRadius: '25px', padding: '23px 21px',
+          border: `2.5px solid ${olive}`, ...col('0', { justifyContent: 'space-between' }),
+        }),
   }
   const cardTitle = (t, colour) => (
     <span style={{
-      fontFamily: s.display, fontSize: '20px', lineHeight: 1.1,
-      letterSpacing: s.dls, color: colour, maxWidth: '127px',
+      fontFamily: s.display, fontSize: nar ? '24px' : '20px', lineHeight: 1.1,
+      letterSpacing: s.dls, color: colour, maxWidth: nar ? '155px' : '127px',
     }}>{t}</span>
   )
   const cardBody = (t, colour) => (
-    <span style={{ fontFamily: s.body, fontSize: '10px', lineHeight: 1.4, color: colour }}>{t}</span>
+    <span style={{ fontFamily: s.body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4, color: colour }}>{t}</span>
+  )
+  // The text column is a flex child only in the narrow card, where it shares a
+  // row with the photograph; stacked, it is the whole width already.
+  const cardText = (a, b) => (
+    <div style={col(nar ? '8px' : '7px', {
+      alignItems: 'flex-start', ...(nar ? { flex: 1, minWidth: 0 } : null),
+    })}>{a}{b}</div>
+  )
+
+  // The links pill and the burger stand in the same bordered capsule: the 390
+  // master draws the burger inside the very pill the 768 one fills with links,
+  // so one wrapper serves both and only its contents change.
+  const navCapsule = (kids) => (
+    <nav style={{
+      background: s.bg, border: `1px solid ${olive}`, borderRadius: '999px',
+      padding: nar ? '8px 18px' : '7px 15px', minWidth: 0,
+      ...row(nar ? '18px' : '15px', { flexWrap: 'wrap' }),
+    }}>{kids}</nav>
   )
 
   const nav = (
@@ -932,29 +975,44 @@ function HeaderV1({ s }) {
     // 144px inset the spread starts at — and the root's padding is the only
     // thing standing there for us, so the bar rises out of it rather than
     // sitting on it. `padY` is a string, so this reads 38 − 80 = −42 on the
-    // 1180 canvas and adapts on the two narrow ones.
-    <div style={row('13px', { width: '100%', marginTop: `calc(38px - ${s.padY})` })}>
-      {!s.narrow && (
-        <nav style={{
-          ...row('15px', { flexWrap: 'wrap' }),
-          background: s.bg, border: `1px solid ${olive}`, borderRadius: '999px',
-          padding: '7px 15px', minWidth: 0,
-        }}>
-          {s.navLinks.map((l) => (
+    // 1180 canvas. The two narrow masters float it at 20 + their own 16 / 10 of
+    // padding, which is 36 at 768 — the same 38 within rounding — and 18 at
+    // 390, where the whole bar sits much higher up the page.
+    <div style={row(nar ? '16px' : '13px', {
+      width: '100%', marginTop: `calc(${s.mob ? '18px' : '38px'} - ${s.padY})`,
+    })}>
+      {/* The 768 master fills the capsule with links and the 390 one with the
+          burger — but its three links are the *component's* default, the bio's
+          five-chip rule, and `navLinks` is the artist's page: the seeded eleven
+          sections give nine, which at the master's own 16px comes to 765px of
+          type inside a 688px canvas. Even the harness's six overflow it. So the
+          burger holds at 768 as well, which is also what the other five Retro
+          headers do below desktop; what the master settles is the capsule the
+          burger stands in, and everything else in the bar. */}
+      {s.narrow
+        ? navCapsule(<NavMenu s={s} color={ink} />)
+        : navCapsule(s.navLinks.map((l) => (
             <a key={l.label} href={navHref(s, l.to)}
                style={labelStyle(s, '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
-          ))}
-        </nav>
-      )}
+          )))}
       <span style={{ flex: 1 }} />
-      <span style={labelStyle(s, '20px', { color: ink })}>{s.brand}</span>
+      {/* The masters emit `size/label-lg, 24px` here, which is the component's
+          default and not either instance's: measured off the renders' own cap
+          bands and set widths, 768 draws the wordmark at the desktop canvas's
+          own 20 and 390 a register under it. The frames' face is ~0.80 of
+          Anton's set width, so widths only compare once that is divided out —
+          cap height is the invariant to size against. */}
+      <span style={labelStyle(s, s.mob ? '17px' : '20px', { color: ink })}>{s.brand}</span>
       <span style={{ flex: 1 }} />
-      <span style={row(s.narrow ? '13px' : '10px', { flex: 'none' })}>
-        {!s.narrow && (
-          <ListenLink s={s} to={s.listenTo} style={labelStyle(s, '13px', { color: ink })} />
+      <span style={row(nar ? '12px' : '10px', { flex: 'none' })}>
+        {!s.mob && (
+          <ListenLink s={s} to={s.listenTo} style={labelStyle(s, tab ? '16px' : '13px', { color: ink })} />
         )}
-        <BookPill s={s} to={s.bookTo} glyph="arrow" />
-        {s.narrow && <NavMenu s={s} color={ink} />}
+        {/* 768 takes BookPill's own tablet scale; 390's master draws it at
+            × 0.75 of that, where the `small` scale — cut for the *layout-1*
+            390 header — is × 0.62, so only the disc has to be named. */}
+        <BookPill s={s} to={s.bookTo} glyph="arrow"
+                  size={tab ? '16px' : undefined} disc={s.mob ? 21 : undefined} />
       </span>
     </div>
   )
@@ -963,90 +1021,155 @@ function HeaderV1({ s }) {
     <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
       <div style={{
         position: 'relative', height: '100%', overflow: 'hidden',
-        background: mount, borderRadius: '25px', boxShadow: soft(s),
-        transform: tilt(s, 2), padding: '16px 0 16px 16px',
+        background: mount, borderRadius: nar ? '30px' : '25px', boxShadow: soft(s),
+        transform: tilt(s, 2),
+        padding: tab ? '20px 0 20px 20px' : s.mob ? '10px 0 10px 10px' : '16px 0 16px 16px',
         ...row('0', { alignItems: 'stretch' }),
       }}>
-        <div style={{ flex: 1, minWidth: 0, borderRadius: '9px', overflow: 'hidden' }}>
+        <div style={{ flex: 1, minWidth: 0, borderRadius: nar ? '11px' : '9px', overflow: 'hidden' }}>
           <Photo s={s} initialsSize={72} />
         </div>
         {/* The mount's rail: the same globe-over-vertical-location column the
-            layout-1 bio's polaroid carries, in the frame's olive. */}
+            layout-1 bio's polaroid carries, in the frame's olive. 768 pins it at
+            90; 390 lets it take its content's width, which is the globe's. It
+            clips, because `s.location` is the artist's and the 390 card is only
+            206 tall — the frame's own rail carries `overflow-clip` for the same
+            reason. */}
         <div style={col('0', {
-          width: '74px', flex: 'none', padding: '5px 10px',
+          width: tab ? '90px' : s.mob ? undefined : '74px', flex: 'none',
+          padding: nar ? '6px 12px' : '5px 10px', overflow: 'hidden',
           alignItems: 'center', justifyContent: 'space-between',
         })}>
-          <div style={col('8px', { alignItems: 'center' })}>
-            <span style={{ transform: 'rotate(-90deg)' }}><GlobeMark size={22} color={olive} /></span>
-            {/* vertical-rl reads top-down; the frame's label runs the other way. */}
-            <span style={labelStyle(s, '16px', {
+          <div style={col(nar ? '10px' : '8px', { alignItems: 'center', flex: 'none' })}>
+            <span style={{ transform: 'rotate(-90deg)' }}><GlobeMark size={nar ? 27 : 22} color={olive} /></span>
+            {/* vertical-rl reads top-down; the frame's label runs the other way.
+                Sized off the two renders' own set widths rather than off the
+                emitted `size/label-md`: the frames' face runs ~0.76 of Anton's
+                width, so transcribing its 20 would set this line a third longer
+                than the frame draws it — and at 390 that is a third of a rail
+                only 169 tall. */}
+            <span style={labelStyle(s, tab ? '17px' : '16px', {
               color: olive, writingMode: 'vertical-rl', transform: 'rotate(180deg)',
             })}>{s.location}</span>
           </div>
-          <span style={{ width: '2px', height: '157px', background: olive, flex: 'none' }} />
+          {/* The rule is the one thing in the rail that is *not* the desktop
+              component's number at 390: the card is 206 tall there, so the frame
+              cuts 191 down to 37. It is also the only part of the rail that can
+              afford to give way, so it is the one that shrinks — `s.location` is
+              the artist's, and a long one would otherwise push the rule out of
+              the clip and leave the rail looking unfinished. */}
+          <span style={{
+            width: '2px', height: tab ? '191px' : s.mob ? '37px' : '157px',
+            background: olive, flex: s.mob ? '0 1 auto' : 'none', minHeight: 0,
+          }} />
         </div>
-        <Grain s={s} exact blend="screen" opacity={0.5} radius="25px" />
+        <Grain s={s} exact blend="screen" opacity={0.5} radius={nar ? '30px' : '25px'} />
       </div>
-      {/* The frame hangs the seal off the mount's bottom-left corner, which on
-          the 1180 canvas still lands inside the root's 64px padding. The narrow
-          canvases pad by 22 and 40, where the same overhang — 21px, plus the
-          20 the 32° rotation adds to the box — would spill off the page. */}
-      <SealBadge s={s} hue={(s.retro && s.chips[4]?.bg) || s.ac} tilt={32.38} size={103}
-                 style={{ left: s.narrow ? '10px' : '-21px', bottom: '-13px' }} />
+      {/* The 1440 frame hangs the seal off the mount's bottom-*left* corner; both
+          narrow masters move it to the bottom-right and drop it half clear of the
+          edge. It is a disc, so its rotation adds nothing to its box (the
+          rotated-bounding-box rule is Figma's metadata, not the render), and at
+          both widths it lands inside the root's padding. */}
+      <SealBadge s={s} hue={(s.retro && s.chips[4]?.bg) || s.ac} tilt={32.38}
+                 size={tab ? 125 : s.mob ? 85 : 103}
+                 style={nar
+                   ? { right: tab ? '0px' : '13px', bottom: tab ? '-58px' : '-42px' }
+                   : { left: '-21px', bottom: '-13px' }} />
     </div>
   )
 
   const identity = (
-    <div style={col('15px', { alignItems: 'flex-start' })}>
+    <div style={col(nar ? '18px' : '15px', { alignItems: 'flex-start' })}>
       <span style={{
-        border: `1px solid ${olive}`, borderRadius: '999px', padding: '5px 10px',
-        fontFamily: s.body, fontSize: '10px', lineHeight: 1.4, color: s.ac, whiteSpace: 'nowrap',
+        border: `1px solid ${olive}`, borderRadius: '999px',
+        padding: nar ? '6px 12px' : '5px 10px',
+        fontFamily: s.body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4,
+        color: s.ac, whiteSpace: 'nowrap',
       }}>● Available for bookings</span>
-      <Title s={s} size={s.narrow ? s.h1 : s.dispLg} lh={0.89} inline
+      {/* 768 sets the hero at the canvas's own `h1`, which is the frame's 59.5
+          to within half a pixel; 390 sets it a register smaller than that, at
+          `dispLg`. Measured off both renders' cap bands, not off the emitted
+          `size/display-lg`, whose 96 is the component's default. */}
+      <Title s={s} size={tab ? s.h1 : s.dispLg} lh={0.89} inline
              twoTone toneA={mustard} toneB={s.ac} />
       <p style={{
-        margin: 0, fontFamily: s.body, fontSize: '13px', lineHeight: 1.5, color: s.ac, width: '100%',
+        margin: 0, fontFamily: s.body, fontSize: nar ? '16px' : '13px', lineHeight: 1.5,
+        color: s.ac, width: '100%',
       }}>{s.subtitle}</p>
-      <BookPill s={s} to={s.bookTo} label="Enquire about a date" glyph="arrow" disc={38}
+      {/* Both narrow masters draw this pill at the *same* full-scale box the
+          768 one does — `full` is what buys that at 390, where BookPill would
+          otherwise take its `small` scale and hang a 46px disc off a pill
+          padded for a 17px one. */}
+      <BookPill s={s} to={s.bookTo} label="Enquire about a date" glyph="arrow"
+                disc={nar ? 46 : 38} full={s.mob} size={nar ? '16px' : undefined}
                 bg={s.ac} fg={mustard} shadow={mustard} />
     </div>
   )
 
-  const subCards = (
+  const faceCard = (
+    <div style={{ ...card, background: cream }}>
+      <div style={{
+        width: '88px', height: '88px', flex: 'none', borderRadius: nar ? '20px' : '16px',
+        border: `${nar ? '3px' : '2.5px'} solid ${olive}`, overflow: 'hidden',
+      }}>
+        <Photo s={s} avatar initialsSize={34} />
+      </div>
+      {cardText(
+        cardTitle('The face of the act', mustard),
+        cardBody("Same person you'll meet on the night. Performing since 2021.", s.ac),
+      )}
+    </div>
+  )
+  const placeCard = (
+    <div style={{ ...card, background: mustard }}>
+      <div style={{
+        width: nar ? '88px' : '72px', height: nar ? '88px' : '72px', flex: 'none',
+        borderRadius: nar ? '20px' : '16px', background: s.ac,
+        color: mustard, ...row('0', { justifyContent: 'center' }),
+      }}><MapPin size={nar ? 46 : 38} /></div>
+      {cardText(
+        cardTitle(s.location, s.ac),
+        cardBody('Available across the UK · 120 mi standard travel radius.', ink),
+      )}
+    </div>
+  )
+  // Side by side on the 1180 canvas, stacked on both narrow ones — where each
+  // card has turned on its side, so the pair reads as two rows either way.
+  const subCards = nar ? (
+    <div style={col('16px', { width: '100%' })}>{faceCard}{placeCard}</div>
+  ) : (
     <div style={row('13px', { flex: 1, minHeight: 0, alignItems: 'stretch', width: '100%' })}>
-      <div style={{ ...card, background: cream }}>
-        <div style={{
-          width: '88px', height: '88px', flex: 'none', borderRadius: '16px',
-          border: `2.5px solid ${olive}`, overflow: 'hidden',
-        }}>
-          <Photo s={s} avatar initialsSize={34} />
-        </div>
-        <div style={col('7px', { alignItems: 'flex-start' })}>
-          {cardTitle('The face of the act', mustard)}
-          {cardBody("Same person you'll meet on the night. Performing since 2021.", s.ac)}
-        </div>
-      </div>
-      <div style={{ ...card, background: mustard }}>
-        <div style={{
-          width: '72px', height: '72px', flex: 'none', borderRadius: '16px', background: s.ac,
-          color: mustard, ...row('0', { justifyContent: 'center' }),
-        }}><MapPin size={38} /></div>
-        <div style={col('7px', { alignItems: 'flex-start' })}>
-          {cardTitle(s.location, s.ac)}
-          {cardBody('Available across the UK · 120 mi standard travel radius.', ink)}
-        </div>
-      </div>
+      {faceCard}{placeCard}
     </div>
   )
 
+  // The root's own gap is the one between the floated nav and the spread. The
+  // frames set the spread's top as page padding instead (100 at 768, 90 at
+  // 390), so what lands it there for us is this gap plus the nav's height.
   return (
-    <div style={{ position: 'relative', ...col('45px') }}>
+    <div style={{ position: 'relative', ...col(s.mob ? '36px' : tab ? '29px' : '45px') }}>
       {nav}
-      {s.narrow ? (
-        <div style={col(s.gGap)}>
-          {identity}
-          <div style={{ height: s.mob ? '400px' : '520px' }}>{photoCard}</div>
-          {subCards}
+      {s.mob ? (
+        // 390 is one column throughout, and the photograph leads it — the
+        // master puts the mount above the name, where the fallback this
+        // replaces had it between the name and the cards.
+        <div style={col('36px')}>
+          <div style={{ height: '206px', display: 'flex' }}>{photoCard}</div>
+          <div style={col('30px')}>
+            {identity}
+            {subCards}
+          </div>
+        </div>
+      ) : tab ? (
+        // 768 runs the mount full width and sets the name beside the cards
+        // under it, centred on each other — the desktop composition turned
+        // through ninety degrees rather than narrowed.
+        <div style={col('56px')}>
+          <div style={{ height: '450px', display: 'flex' }}>{photoCard}</div>
+          <div style={row('60px', { alignItems: 'center' })}>
+            <div style={{ flex: 1, minWidth: 0 }}>{identity}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>{subCards}</div>
+          </div>
         </div>
       ) : (
         <div style={row('46px', { height: '540px', alignItems: 'stretch' })}>
@@ -1057,10 +1180,14 @@ function HeaderV1({ s }) {
           </div>
         </div>
       )}
-      {/* Two rows of the frame's 11.8px checker, run off the section's own
-          edges rather than the column's. */}
-      <Checkerboard s={s} cell={10} colour={ink} style={{
-        position: 'absolute', height: '20px', width: `calc(100% + ${s.padX} + ${s.padX})`,
+      {/* Two rows of the frame's 11.803px checker, run off the section's own
+          edges rather than the column's. `cell` is the repeating *tile*, which
+          is two squares wide — the desktop fit read it as the square and drew
+          four 5px rows where all three frames draw two of 11.8 (× 0.82 = 9.7 on
+          the 1180 canvas), so the height goes with it and Checkerboard's own
+          default — one tile — is now what states it. */}
+      <Checkerboard s={s} cell={nar ? 23.6 : 19.4} colour={ink} style={{
+        position: 'absolute', width: `calc(100% + ${s.padX} + ${s.padX})`,
         ...bleedTo(s, 'bottom'), right: undefined,
       }} />
     </div>
