@@ -29,7 +29,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | 2 | `bio` | `964:64638` | Bios — **F · Portrait + sub-cards** — Desktop | 1440 × 760 | **done** (desktop) |
 | 3 | `media` | `964:64639` | *Section* wrapper — see note below | 1440 × 965 | **done** (desktop) `44405c6` |
 | 4 | `video` | `964:64645` | Video Players — **A · Dashboard player** — Desktop | 1440 × 782 | **done** (desktop) `33e4d97` |
-| 5 | `repertoire` | `964:64646` | Repertoire — **G · Mobile list** — Desktop | 1440 × 792 | todo |
+| 5 | `repertoire` | `964:64646` | Repertoire — **G · Mobile list** — Desktop | 1440 × 792 | **done** (desktop) `2bb0637` |
 | 6 | `gallery` | `964:64647` | Gallery Sections — **C · Split showcase** — Desktop | 1440 × 675 | todo |
 | 7 | `pricing` | `964:64648` | Pricing — **D · Single big plan** — Desktop | 1440 × 707 | todo |
 | 8 | `calendar` | `964:64650` | Booking Calendar — **E · Bold slot list** — Desktop | 1328 × 896 | todo |
@@ -281,6 +281,48 @@ Learned on the video section (section 4):
 - **The harness's `&n=` now fills the key the section reads** (`c.tracks` for
   media, `c.videos` for video), and `&n=0` is how the emptied-list state is seen.
 
+Learned on the repertoire (section 5):
+
+- **A full-bleed layout 2 does not need the root's flags.** The convention above
+  says a layout 2 standing on cream "would have to widen its own flag to
+  `(s.v0 || s.v1)`". It does not, and should not: a block carrying `bleedTo`'s
+  own negative margins (`margin: calc(-1 * padY) calc(-1 * padX)`) covers the
+  root's border box exactly, so the sheet paints its own ground, the rules run
+  to the page edges, and the diff stays inside the section. Widening `cream`
+  would also have been the *wrong* cream — the frame stands on box/1 `#FAECD5`
+  where layout 1 stands on `#FBF6EA`. Verify by reading the section root's and
+  the sheet's `getBoundingClientRect()`: they must be identical.
+- **A bleed design's own inset is `s.gPad` (+ `s.surplus` horizontally), not
+  `s.padX`.** That is HeaderV0's rule and it is there for the published tab: on
+  a window wider than the canvas the sheet keeps bleeding while its content
+  stays on the page's measure. At desktop `gPad` is 46, which is exactly the
+  frames' usual 56 × 0.82 — the two agree, unlike `padX`'s 64.
+- **A section standing on `paper` has to re-token the flat four, all of them.**
+  The media player's note named `paperLine`/`paperFg` for *type*; the whole
+  palette is affected. `repHue` is `legible()` against the page, and `soft2`,
+  `muted` and `line2` are all `rgba(tx, …)` — on Grunge (white `paper` over a
+  black page) the entire pager came back white on white and vanished. Worse,
+  `pillBg` is the palette's lightest tag hue and `paper` its lightest colour
+  outright, so the *filled* current-page button was the same white as its
+  neighbours: the mark had to move to an accent **edge**. Retro's own literals
+  hid all of this — check `theme=1…4` before believing a design is done.
+- **Figma strokes an auto-layout frame without growing it**, so a `border-box`
+  transcription of "padding 6, border 3" stands 5px taller than the frame's own
+  41. Layout 1 already said this ("the frames' own padding less the border they
+  draw inside"); it costs `calc(${u(6)} - ${bw})` and it is worth doing, because
+  every such box below it inherits the drift.
+- **Pin what the frame lets flow, when the frame only ever drew five of it.**
+  The row's number is `shrink-0` with a 14px gap after it — 20px in all for a
+  single digit, and the frame never draws a tenth row. Pinning the number at
+  that same 20 with the gap folded in puts the title exactly where the frame
+  puts it *and* stops "10" shunting its own row's title right.
+- **`Pager` now takes `frame.idle`** — the unselected buttons' fill, defaulting
+  to transparent. `BookPill`'s `glyph`/`disc` precedent: additive, so every
+  caller written before it is untouched.
+- **A pager row that is derived can vanish, and the block below it must not.**
+  At one page `pageWindow` returns nothing; the foot inset stays (dropping to
+  the head's own `gPad`) or the sheet ends flush on the last row's rule.
+
 Learned on the header (section 1):
 
 - **A frame that floats something above its own content inset has to rise out of the root's
@@ -326,6 +368,12 @@ Learned on the header (section 1):
    and it needs no change on the rendering side. `FIELDS.video` would also want
    the panel's own heading ("Top music video", a literal today, `mediaKicker`'s
    case) if that editor lands.
-6. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
+6. **The repertoire's chip row is not gated at one chip.** With an emptied song
+   list the toggle draws a lone `All` inside its outline — a filter that can
+   filter nothing. Pricing's row *is* gated ("not rendered at one chip") and the
+   repertoire's, in both layouts, is not; layout 2 follows layout 1 deliberately
+   rather than making the two halves of one section disagree. If the rule should
+   be the section's, it belongs in `Repertoire` once, not in the v1 branch.
+7. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
    unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
    signed off.
