@@ -82,8 +82,14 @@ One section per session. Clear context between sections; git and this file are t
    `getBoundingClientRect()` on the section's own boxes. The `verifying-the-published-tab` note
    still applies for anything that has to be checked live.
 
-   The harness is untracked, so `n` may need re-adding: it reads `q.get('n')` and passes
-   `c: { tracks: [...] }` (or `songs`) into `sectionVm` in place of the empty `c`.
+   `live=1` renders the section as the published page does, so anything gated on `s.live` can be
+   exercised here instead of by driving the editor, publishing and hooking the popup. Note that a
+   *synthetic* click proves the wiring but never the sound: `play()` is refused with
+   `NotAllowedError` until the document has a real user gesture, and neither a coordinate click
+   nor a `find` ref click delivered one in this harness (`navigator.userActivation.hasBeenActive`
+   stays false). Hook `HTMLMediaElement.prototype.play` to record which file it was called on and
+   how it settled — that is the whole of what can be proved from here; the last step is a human
+   clicking it.
 
    Note the dev server takes 5174, 5175… when another session holds 5173, and
    **chrome-devtools MCP refuses to start while another Chrome holds its profile** — the
@@ -155,6 +161,12 @@ Learned on the bio (section 2):
 
 Learned on the media player (section 3):
 
+- **Check what the published page already does before fitting a section.** The media player's
+  layout 1 plays; layout 2 had to be wired to the same hooks after the fact (see CLAUDE.md, "The
+  media player plays"). A layout 2 is not finished when it matches the frame on the canvas — the
+  section's live seam has to reach it too. `git branch -a` is part of that check: the live work
+  for eight sections sat on an unmerged branch, and a section can look inert here and not be.
+
 - **The emitted `var(--token, #hex)` fallback is the *component's* default, not the instance's.**
   The transport bar came back as `bg-[var(--sem/box/1,#faecd5)]`; the render is `#FFFEFB`, and the
   five fanned cards are a register lighter than the same hues in the list beside them. Sample the
@@ -219,10 +231,11 @@ Learned on the header (section 1):
    read as the artist's own on a published page. Precedent exists for literal *labels* in these
    designs; this is the first literal *sentence*. It needs a `FIELDS.bio` entry if that matters.
 4. **The media player's layout 2 has no Soundcloud control.** The frame draws none, so
-   `FIELDS.media.soundcloud` — layout 1's one outbound link and the section's whole `s.live`
-   seam — has no effect on layout 2. Inventing a home for it on the bar's `↓` or `⋯` glyph would
-   be worse than the absence, so it is left out; if the field should follow the artist across
-   layouts, that is a design call, not a fidelity one.
+   `FIELDS.media.soundcloud` — layout 1's one *outbound link* — has no effect on layout 2.
+   Inventing a home for it on the bar's `↓` or `⋯` glyph would be worse than the absence, so it
+   is left out; if the field should follow the artist across layouts, that is a design call, not
+   a fidelity one. (Layout 2 is not otherwise dead on the published page: since the
+   `media-player-playback` merge it plays, through the same `<audio>` element layout 1 uses.)
 5. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
    unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
    signed off.
