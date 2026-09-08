@@ -43,8 +43,15 @@ const navSections = [
   { cat: 'media', label: 'Top tracks' }, { cat: 'form', label: 'Enquiries' },
 ]
 
+// &n=8 fills the section's list-shaped content with n rows, to see a design
+// hold at a count the seed does not reach (FIELDS.media.tracks allows 8).
+const count = Number(q.get('n') ?? 0)
+const c = count
+  ? { tracks: Array.from({ length: count }, (_, i) => ({ title: `Track ${i + 1}`, sub: 'Single' })) }
+  : {}
+
 const s = sectionVm({
-  themeIdx, cat, arch, c: {}, artistName: 'Kai Mercer',
+  themeIdx, cat, arch, c, artistName: 'Kai Mercer',
   Z: Z[device], mob: device === 'mobile', live: false, navSections,
 })
 

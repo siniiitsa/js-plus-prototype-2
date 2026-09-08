@@ -1797,10 +1797,12 @@ function Media({ s }) {
         // Desktop takes the stack's height off the column; the narrow canvases
         // have no fixed column to divide, so there it is the frame's own.
         position: 'relative', flex: 1, minHeight: desk ? 0 : u(371),
-        // Desktop lets the outer cards ride into the panel's own padding,
-        // which is cream either way; the narrow canvases cannot afford that,
-        // and the stack is centred, so it clips evenly on both sides.
-        overflow: desk ? 'visible' : 'hidden',
+        // Desktop lets the frame's own five ride into the panel's padding,
+        // which is cream either way. Everything else clips: the narrow
+        // canvases cannot afford the overhang, and a sixth track onwards fans
+        // out far enough to cross the gap and paint over the list beside it.
+        // The stack is centred, so a clip always takes both sides evenly.
+        overflow: desk && s.tracks.length <= CARD.length + 2 ? 'visible' : 'hidden',
       }}>
         {s.tracks.map((t, i) => {
           const k = i - mid
@@ -1885,8 +1887,11 @@ function Media({ s }) {
       </div>
     )
 
+    // `minHeight`, not `height`: a list longer than the frame's five grows the
+    // grid row past 673, and the stack should take that height rather than
+    // leave the bar floating half way up a taller panel.
     const left = (
-      <div style={col('0', { minWidth: 0, height: desk ? u(673) : undefined })}>
+      <div style={col('0', { minWidth: 0, minHeight: desk ? u(673) : undefined })}>
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
           // Accent on the frame's near-white panel; on a flat template the
