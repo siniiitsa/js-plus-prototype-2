@@ -28,7 +28,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | 1 | `header` | `964:64637` | Headers — **E · Feature Spread** — Desktop | 1440 × 888 | **done** (desktop) |
 | 2 | `bio` | `964:64638` | Bios — **F · Portrait + sub-cards** — Desktop | 1440 × 760 | **done** (desktop) |
 | 3 | `media` | `964:64639` | *Section* wrapper — see note below | 1440 × 965 | **done** (desktop) `44405c6` |
-| 4 | `video` | `964:64645` | Video Players — **A · Dashboard player** — Desktop | 1440 × 782 | todo |
+| 4 | `video` | `964:64645` | Video Players — **A · Dashboard player** — Desktop | 1440 × 782 | **done** (desktop) `33e4d97` |
 | 5 | `repertoire` | `964:64646` | Repertoire — **G · Mobile list** — Desktop | 1440 × 792 | todo |
 | 6 | `gallery` | `964:64647` | Gallery Sections — **C · Split showcase** — Desktop | 1440 × 675 | todo |
 | 7 | `pricing` | `964:64648` | Pricing — **D · Single big plan** — Desktop | 1440 × 707 | todo |
@@ -231,6 +231,56 @@ Learned on the media player (section 3):
   5, and the two extra cards fanned straight over the list beside them — a defect no screenshot
   of the seeded five could show. The repertoire (`c.songs`) will want the same check.
 
+Learned on the video section (section 4):
+
+- **A frame can ask for content the section has no field for, and the answer is
+  not always to invent one.** This one wanted six videos, a view count, a follower
+  count, a like/dislike pair and a verified tick. Sort them: a **list** gets a
+  seeded constant in `data.js` written in the row shape a future repeater would
+  edit (`VIDEOS`, exactly as `GIGS` and `TIERS` existed before theirs), resolved
+  in `sectionVm` by the `songs` rule, so adding the editor later changes nothing
+  in `EncoreSection`; a **fabricated metric** gets *dropped*, because a published
+  page printing a number the artist never typed is making a claim, which is the
+  gallery's hide-the-empty-TikTok rule read one step on. A frame **label**
+  ("Top music video", "View All ›", "Follow") stays a literal, the media
+  player's "● Popular" precedent. Say in the commit which strings went, verbatim,
+  so the call can be reversed.
+- **A field the frame needs and no layout has is cheap; a repeater is not.**
+  `FIELDS.video` gained `image` and `avatar` — two `type: 'image'` entries, which
+  `EditPanel`'s `imgVal`/`ImageField` already handle generically, so the diff is
+  the two lines plus one category in `defaultImage`'s avatar branch. A ninth
+  structured editor would have been a session of its own. Both live in a layout
+  the section's *other* layouts do not draw, which is `FIELDS.media.soundcloud`'s
+  case the other way round — say so in the hint.
+- **`defaultTrackArt` is a lookup now**, not a `cat === 'media'` test, so a second
+  list of per-row seeded artwork costs a line. It is still one of photos.js's
+  three resolvers, and `sectionVm`'s `seedArt` is already in scope where the video
+  keys are resolved.
+- **Match the frame's flex mechanism only where its inputs exist.** The panel's
+  rows divide a fixed height and let the thumbnail take its width from that; ours
+  have no height to divide, because the list is what makes the panel tall. Sizing
+  the thumbnail by *width* at the number the frame's own division lands on (142.9)
+  gets the same picture and holds at any count. The `height: 100%` + `aspectRatio`
+  transcription silently blew the thumbnails up to ~270px, which no reading of the
+  emitted code predicts.
+- **Two columns the frame draws flush need not be made flush.** Stretching one to
+  the other means the taller column hands its slack to something — and at twelve
+  videos that is 250px, which nothing in the stage should take. `items-start` (the
+  frame's own) leaves the panel ~20px past the stage's rule at the seeded six, and
+  degrades honestly. `marginTop: auto` looks right at six and absurd at twelve.
+- **The flat four need their own pairs wherever Retro takes two frame hues.**
+  `s.chips[2]` is an arbitrary tag colour that can land on the page ground, and
+  the accent is not guaranteed on `paper` — so the discs take `s.ac`/`s.acFg` and
+  `s.pillBg`/`s.pillFg`, the list titles take `paperFg`, and the progress track's
+  unfilled half takes `line2`, since `paper` on a `bg` bar vanishes on Pop.
+- **The emitted colour vars lie about the instance here too**, the media player's
+  lesson again: the transport pill came back as `sem/bg` and *is* `#EAD7B8`, but
+  its progress track came back as `sem/box/1` and is the cream — sampling the two
+  neighbouring pixels is what settles it. The frame carries **no grain** (stddev 0
+  over the page ground and the panel).
+- **The harness's `&n=` now fills the key the section reads** (`c.tracks` for
+  media, `c.videos` for video), and `&n=0` is how the emptied-list state is seen.
+
 Learned on the header (section 1):
 
 - **A frame that floats something above its own content inset has to rise out of the root's
@@ -266,6 +316,16 @@ Learned on the header (section 1):
    is left out; if the field should follow the artist across layouts, that is a design call, not
    a fidelity one. (Layout 2 is not otherwise dead on the published page: since the
    `media-player-playback` merge it plays, through the same `<audio>` element layout 1 uses.)
-5. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
+5. **The video section's list has no editor.** `c.videos` is resolved by
+   `sectionVm` in the shape a repeater would write, and today always falls
+   through to the seeded `VIDEOS`, so an artist can change the poster, the
+   heading, the description, the running time and their own photograph but not
+   the six videos beside them. Adding `VideosField` — the ninth structured editor
+   and the eighth repeater, rows of `{ title, sub, length, when, image }` with a
+   `RowThumb`, `TracksField`'s shape minus the audio — is a session of its own,
+   and it needs no change on the rendering side. `FIELDS.video` would also want
+   the panel's own heading ("Top music video", a literal today, `mediaKicker`'s
+   case) if that editor lands.
+6. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
    unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
    signed off.
