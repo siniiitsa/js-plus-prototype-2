@@ -27,7 +27,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 |---|---|---|---|---|---|
 | 1 | `header` | `964:64637` | Headers — **E · Feature Spread** — Desktop | 1440 × 888 | **done** (desktop) |
 | 2 | `bio` | `964:64638` | Bios — **F · Portrait + sub-cards** — Desktop | 1440 × 760 | **done** (desktop) |
-| 3 | `media` | `964:64639` | *Section* wrapper — see note below | 1440 × 965 | todo |
+| 3 | `media` | `964:64639` | *Section* wrapper — see note below | 1440 × 965 | **done** (desktop) `44405c6` |
 | 4 | `video` | `964:64645` | Video Players — **A · Dashboard player** — Desktop | 1440 × 782 | todo |
 | 5 | `repertoire` | `964:64646` | Repertoire — **G · Mobile list** — Desktop | 1440 × 792 | todo |
 | 6 | `gallery` | `964:64647` | Gallery Sections — **C · Split showcase** — Desktop | 1440 × 675 | todo |
@@ -100,9 +100,12 @@ Everything a fresh session would otherwise re-derive. Append to this list as the
   for all five themes, with grain, torn edges, checkerboard, hard offset shadows and rotation gated
   on `s.retro`, and palette-derived values (`s.ac`, `s.bg`, `s.tx`) standing in for Retro's literal
   hexes elsewhere. Only Retro is designed; the other four must still render, flat.
-- **The section root's ground flags gate on `s.v0`** — `bleed`, `darkMap` and `cream` at
-  `EncoreSection.jsx:3324-3342`. Each is a per-design decision, so a layout 2 that stands on cream
-  (the media player plainly does) has to widen its own flag to `(s.v0 || s.v1)`, not inherit it.
+- **The section root's ground flags gate on `s.v0`** — `bleed`, `darkMap` and `cream` near the
+  foot of `EncoreSection.jsx`. Each is a per-design decision, so a layout 2 that stands on cream
+  would have to widen its own flag to `(s.v0 || s.v1)` rather than inherit it. **None has needed
+  to yet, and the media player — the one this note used to name — is the counter-example:** its
+  layout 2 keeps the beige page ground and paints a cream *panel* inside it. Sample the frame's
+  own ground before assuming.
 - **The desktop ramp.** The 1440 frame lands on the 1180 canvas at **× 0.82**; the 768 and 390
   frames are used verbatim when we get to them. Our canvases carry the page's own `s.padX`/`padY`,
   not the frames' insets — verify against **content** edges, never frame `y`.
@@ -141,6 +144,37 @@ Learned on the bio (section 2):
 - **The harness's `Z` is a hand copy of `SIZES` + `RAMP` + `WIDE`.** If a digest ever disagrees
   with the app, diff those three objects against `EncoreBuilder.jsx` before believing the digest.
 
+Learned on the media player (section 3):
+
+- **The emitted `var(--token, #hex)` fallback is the *component's* default, not the instance's.**
+  The transport bar came back as `bg-[var(--sem/box/1,#faecd5)]`; the render is `#FFFEFB`, and the
+  five fanned cards are a register lighter than the same hues in the list beside them. Sample the
+  PNG for every fill that matters — a `python3` + PIL scan of the render also settles the corner
+  radius (walk the corner until the edge column stops moving), whether there is a shadow, and
+  whether the frame carries grain at all (stddev 0 over a flat patch means it does not).
+- **A fixed-composition frame has to be told which way to lose its 20px.** The panel is the page's
+  *content* width, 1052, where the frame's is 1089, so an `fr` split lands each column ~20px under
+  the frame's. Anything centred (this fan) can simply ride into the panel's padding — keep it
+  `overflow: visible` on desktop and clip only where the canvas cannot afford it. Anything
+  left-aligned would have to give the 20 back somewhere visible.
+- **Centre absolutely-positioned decoration with `calc(50% ± …)`, not `translate(-50%,-50%)`** —
+  the transform slot is wanted for `tilt()`, and the sizes are known anyway. `zIndex` off the
+  distance from the middle reproduces the frame's paint order without reordering the map.
+- **Read a hand-fanned stack's states off the frame; do not ramp them.** Figma resized these five
+  cards by hand, so width, height and artwork step at three different rates and a linear ramp is
+  ~7px out at |k| = 1 — which the geometry digest then flags as a defect.
+- **A vm key is the honest fix when a design columns apart what layout 1 sets on one line.**
+  `sectionVm` gained `rel` (the track subline minus its running time) rather than v1
+  string-stripping the ` · 5:42` off `sub`. Additive keys are safe; changing an existing one is
+  not, because `dur` is the audio player's whole right-hand column.
+- **`paperLine` and `paperFg` are the two that read on a `paper` panel.** `line2` is
+  `rgba(paper, .4)` — meant for the dark page ground, invisible on the panel — and the accent is
+  not guaranteed against it either (Lime's is acid green on pale lime). Retro keeps the frame's
+  literal olive and rust; the flat four take the paper pair.
+- **The frame's own `overflow-clip` frames rarely clip on desktop.** Check before inheriting one:
+  this fan's cards fit their 371px band with room to spare, and the clip only starts mattering on
+  the 390 canvas.
+
 Learned on the header (section 1):
 
 - **A frame that floats something above its own content inset has to rise out of the root's
@@ -170,6 +204,11 @@ Learned on the header (section 1):
    floors moved"* two-tone, and the bio has no field for it, so it is a literal — prose that will
    read as the artist's own on a published page. Precedent exists for literal *labels* in these
    designs; this is the first literal *sentence*. It needs a `FIELDS.bio` entry if that matters.
-4. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
+4. **The media player's layout 2 has no Soundcloud control.** The frame draws none, so
+   `FIELDS.media.soundcloud` — layout 1's one outbound link and the section's whole `s.live`
+   seam — has no effect on layout 2. Inventing a home for it on the bar's `↓` or `⋯` glyph would
+   be worse than the absence, so it is left out; if the field should follow the artist across
+   layouts, that is a design call, not a fidelity one.
+5. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
    unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
    signed off.
