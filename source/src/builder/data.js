@@ -538,6 +538,27 @@ export const CAL_BOOKED = []
 // wrap at both ends of it rather than clamping — see EncoreSection's Calendar.
 export const CAL_SPAN   = 12
 
+// §10.2 layout 2 — the bold slot list. Where layout 1 draws a month and lets
+// the visitor pick any unbooked day out of it, layout 2 draws a short list of
+// named slots: a date, what the artist plays that night, and what it starts
+// from. None of that is derivable — `booked` is the days the artist is *not*
+// free, and inverting it would print every remaining day of June — so the list
+// is seeded here in the row shape a repeater would edit, exactly as VIDEOS,
+// GIGS and TIERS were seeded before their editors existed. The price is a row
+// value like TIERS' `price`, not the video section's dropped view count: it is
+// the thing the row is for, and the whole phrase is the artist's, so an emptied
+// one drops its line rather than printing a bare "From".
+//
+// Slot one is CAL_OPEN, so the seeded page opens with that row already picked —
+// `vm.calPick` lights it — and the reference picture matches the frame with no
+// second field to keep in step.
+export const CAL_SLOTS  = [
+  { date: '2025-06-12', kind: 'Evening',  price: 'From £1,200' },
+  { date: '2025-06-14', kind: 'Full day', price: 'From £2,400' },
+  { date: '2025-06-20', kind: 'Late',     price: 'From £1,400' },
+  { date: '2025-07-05', kind: 'Wedding',  price: 'From £2,800' },
+]
+
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
 // The enquiry line names the weekday in full; CAL_DAYS heads the grid's columns.
@@ -704,13 +725,16 @@ export const FIELDS = {
     { k: 'tiktok',    l: 'TikTok link', d: '',
       hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
   ],
-  // `heading` heads the flat layout only — the scheduler frame draws no title —
-  // but the other four are all read by it. `open` is the one date the section is
-  // built from, `booked` the days it will not take, `time` the hour the foot
-  // line names, and `cta` the label on the pill beside that line, which was an
-  // unread key until the pill existed.
+  // `heading` heads the flat layout and layout 2's slot list — the scheduler
+  // frame draws no title — and the other four are read by both designed
+  // layouts. `open` is the one date the section is built from (in layout 2 the
+  // slot it opens picked), `booked` the days it will not take (in layout 2 the
+  // slots it strikes through), `time` the hour the foot line names, and `cta`
+  // the label on the pill beside that line, which was an unread key until the
+  // pill existed.
   calendar: [
-    { k: 'image',   l: 'Photo', type: 'image', hint: 'Fills the polaroid stack beside the month.' },
+    { k: 'image',   l: 'Photo', type: 'image',
+      hint: 'Fills the polaroid stack beside the month. Layout 1 only.' },
     { k: 'heading', l: 'Heading', d: 'Availability' },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '

@@ -369,7 +369,11 @@ function NavLinks({ s, color, pills = false }) {
 // `disc` overrides that disc's diameter: the layout-2 header sets the same pill
 // twice, small in its nav and large as the hero's own call to action, and only
 // the disc changes size between them.
-function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize }) {
+// `discFg` is the arrow inside the disc. It defaults to what every caller
+// written before it got — Retro's cream, the flat four's pill ground — and is
+// passed only by the calendar's slot list, whose frame stands a cream disc on
+// an ink pill and would otherwise draw cream on cream.
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg }) {
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
@@ -407,7 +411,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
         {disc ? (
           <span style={{
             width: dia, height: dia, borderRadius: '999px', flex: 'none',
-            background: face, color: s.retro ? '#FBF6EA' : (bg ?? s.pillBg),
+            background: face, color: discFg ?? (s.retro ? '#FBF6EA' : (bg ?? s.pillBg)),
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           }}><ArrowRight size={Math.round(dia * 0.6)} /></span>
         ) : <Asterisk size={pick(20, 16, 12.4)} color={face} />}
@@ -4450,6 +4454,215 @@ function Calendar({ s }) {
       </div>
     )
   }
+
+  // v1 — Booking Calendar layout 2 · Bold slot list (964:64650, 1328 × 896 on
+  // the 1440 page, so every number below is the frame's × 0.82): a rust head
+  // carrying the artist's mark, the booking flow's own links and the section
+  // heading, over a cream table of named slots, over a foot that names the one
+  // the visitor is on.
+  //
+  // Where layout 1 offers a month and lets the visitor find a free day in it,
+  // this offers the four the artist is selling. The rows are `s.calSlots`, but
+  // the two designs share the whole of the section's live seam: `sel` is the
+  // same ISO date — it names a day, not a row, so a slot deleted under it does
+  // not slide the pick sideways — `s.calPick` cues the same opening date, and
+  // `booked` strikes a slot through here as it does a cell there. `mi` reaches
+  // nothing: this design has no month to turn.
+  if (s.v1) {
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const desk = !s.narrow
+    // The width the date column is pinned at. The frame's own head states 330,
+    // which is what Soulway needs for "JUN 12" at 96; Fraunces is wider, so the
+    // pin is the measured width of the widest mark this design can draw rather
+    // than the frame's number — under it the weekdays go ragged again.
+    const DATE_COL = u(372)
+    // The 768 and 390 masters of this option are not fitted yet — this pass is
+    // desktop only — so below desktop the design keeps its structure and stops
+    // overflowing, on the page's own ramp rather than on invented numbers: the
+    // display mark drops to `dispLg`, the frame's 40/66 insets to the canvas's
+    // `gPad`/`gGap`, and the date column is no longer pinned, there being no
+    // second column left to line it up against once the row wraps.
+    const padX = desk ? u(40) : s.gPad
+    const gap = desk ? u(66) : s.gGap
+
+    // The frame's panel is the literal cream, which under Retro is *not*
+    // `paper`: this palette's lightest colour is the page ground itself, so
+    // paperOf() returns the beige the panel stands on (the repertoire's rule,
+    // where widening the root's `cream` flag would also have been the wrong
+    // cream). The flat four take their own `paper` — and an outline with it,
+    // because a palette whose lightest colour IS its background would otherwise
+    // draw this card as a hole in the page.
+    const panel = s.retro ? '#FBF6EA' : s.paper
+    const ink = s.retro ? s.tx : s.paperFg
+    const rule = s.retro ? s.tx : s.paperLine
+    // Muted, not struck alone: a blocked slot has to read as unavailable before
+    // it is read at all. `muted` is rgba(tx) and vanishes on a panel whose ink
+    // is not tx, so the flat four take the panel's own half-tone.
+    const gone = s.retro ? s.muted : s.paperLine
+    // Retro's chips are cream on every hue (the bio's note), and the head is
+    // the accent.
+    const headFg = s.retro ? '#FBF6EA' : s.acFg
+    // The frame rules the head in olive — a tag colour, which on the flat four
+    // is an arbitrary hue that can be the accent itself. They take a wash of
+    // the head's own type instead.
+    const headRule = s.retro ? s.chips[3].bg : s.acFg25
+    // The column heads are the accent on the panel, which is not guaranteed to
+    // separate from it (Lime's is acid green on pale lime), so the flat four
+    // keep the panel's ink.
+    const hue = s.retro ? s.ac : s.paperFg
+
+    // The pick, exactly as layout 1 resolves it: the visitor's date once the
+    // page is live, else the one the artist cued. A booked slot is never
+    // picked — publishing again re-renders the open tab, so the artist can
+    // block the date a visitor had lit.
+    const want = (s.live && sel) || s.calPick
+    const hit = want ? s.calSlots.find((sl) => sl.iso && sl.iso === want) : null
+    const cur = hit && !hit.booked ? hit.iso : ''
+    const line = cur ? hit.line : s.calPrompt
+
+    // The head's link list. `s.calFlow` is CTA_TARGETS.book resolved against
+    // the page, this section first and dotted; a link is keyed on its label,
+    // the header's rule, and the current one is a span because it would only
+    // scroll the visitor to what they are reading.
+    const flow = (
+      <div style={col(u(4), { alignItems: 'flex-start', flex: 'none' })}>
+        {s.calFlow.map((n) => {
+          const href = navHref(s, n.to)
+          const Tag = href ? 'a' : 'span'
+          return (
+            <Tag key={n.label} {...(href ? { href } : null)} style={{
+              fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+              color: headFg, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
+            }}>{n.on ? `● ${n.label}` : n.label}</Tag>
+          )
+        })}
+      </div>
+    )
+
+    const head = (
+      <div style={col(u(28), {
+        background: s.ac, padding: `${u(28)} ${padX} ${u(36)}`, alignItems: 'flex-start',
+      })}>
+        <div style={row(u(24), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
+          <span style={{
+            fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, color: headFg,
+          }}>{s.brand}</span>
+          {flow}
+        </div>
+        <div style={{ width: '100%', paddingBottom: u(20), borderBottom: `1px solid ${headRule}` }}>
+          {/* The one thing the section already had that this frame left room
+              for: `heading` headed the flat layout alone, the scheduler frame
+              drawing no title at all. The frame's own sentence goes with it. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(48), lineHeight: 1,
+            letterSpacing: s.dls, color: headFg, maxWidth: u(571),
+          }}>{s.title}</h2>
+        </div>
+      </div>
+    )
+
+    // The frame's own column head sits 66 to the left of the column it heads —
+    // it pins "Date ↓" at 330 where the rows put the weekday at the date's own
+    // width plus the row gap. Ours takes the rows' gap so the two agree; the
+    // arrows are the frame's label, not a sort control, and nothing here reads
+    // a click.
+    const colHead = (
+      <div style={row(gap, {
+        padding: `${u(18)} ${padX}`, borderBottom: `1px solid ${rule}`,
+        fontFamily: s.body, fontSize: u(20), lineHeight: 1.26, color: hue,
+      })}>
+        <span style={{ flex: 'none', minWidth: desk ? DATE_COL : undefined }}>Date ↓</span>
+        <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
+      </div>
+    )
+
+    // A row is a date, the weekday it falls on and what the artist plays that
+    // night. The frame lets the display numerals set the second column's start,
+    // so its four weekdays land on four different x — an artefact of hand-set
+    // type, not a design, so the date column is pinned and the weekdays line
+    // up. The frame draws no state for the row the visitor is on: the foot's
+    // chip and line are the whole cue, the media player's now-playing rule.
+    const slotRow = (sl, i) => {
+      const onClick = s.live && sl.iso && !sl.booked
+        ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
+        : undefined
+      return (
+        <div key={i} onClick={onClick} style={row(gap, {
+          padding: `${u(16)} ${padX}`, borderBottom: `1px solid ${rule}`,
+          flexWrap: desk ? undefined : 'wrap',
+          color: sl.booked ? gone : ink, cursor: onClick ? 'pointer' : undefined,
+        })}>
+          <span style={{
+            fontFamily: s.display, fontSize: desk ? u(96) : s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, whiteSpace: 'nowrap', flex: 'none',
+            minWidth: desk ? DATE_COL : undefined,
+            textDecoration: sl.booked ? 'line-through' : undefined,
+          }}>{sl.mark}</span>
+          <span style={{
+            flex: '1 1 0', minWidth: 0,
+            fontFamily: s.body, fontSize: u(20), lineHeight: 1.26,
+          }}>{sl.day}</span>
+          {/* Each line is rendered or not rather than printed blank — a column
+              gap is spent on an empty span the same as on a full one. */}
+          <div style={col(u(2), { flex: 'none', alignItems: 'flex-end', textAlign: 'right' })}>
+            {!!sl.kind && (
+              <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, whiteSpace: 'nowrap' }}>
+                {sl.kind}
+              </span>
+            )}
+            {!!sl.price && (
+              <span style={{ fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap' }}>
+                {sl.price}
+              </span>
+            )}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div style={{
+        background: panel, color: ink, borderRadius: u(30), overflow: 'hidden',
+        border: s.retro ? undefined : `${s.bw} solid ${rule}`,
+      }}>
+        {head}
+        {colHead}
+        {/* The pricing deck's one-message empty state: the table is a
+            composition, and a hole where its rows stand is not one of its
+            states. */}
+        {s.calSlots.length === 0 ? (
+          <div style={{
+            padding: `${u(16)} ${padX}`, borderBottom: `1px solid ${rule}`,
+            fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: gone,
+          }}>No dates yet.</div>
+        ) : s.calSlots.map(slotRow)}
+        <div style={row(u(24), {
+          minHeight: u(100), padding: `${u(12)} ${padX}`, flexWrap: 'wrap',
+        })}>
+          <div style={row(u(12), { flex: '1 1 0', minWidth: u(200) })}>
+            {/* No pick, no chip — the foot then prints the prompt, which is
+                what an emptied or fully booked list leaves it on. */}
+            {!!cur && (
+              <span style={{
+                flex: 'none', background: s.ac, color: headFg, borderRadius: '999px',
+                padding: `${u(6)} ${u(12)}`, fontFamily: s.body, fontWeight: 700,
+                fontSize: u(12), lineHeight: 1, letterSpacing: u(-0.72), whiteSpace: 'nowrap',
+              }}>{hit.mark}</span>
+            )}
+            <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5 }}>{line}</span>
+          </div>
+          {/* The frame's pill is the ink one, with a cream disc and the arrow
+              in the accent — which is what `discFg` was added for. */}
+          <BookPill s={s} to={s.calBookTo} label={s.calCta} glyph="arrow"
+                    disc={desk ? 38 : undefined}
+                    {...(s.retro
+                      ? { bg: s.tx, fg: '#FBF6EA', shadow: s.ac, discFg: s.ac }
+                      : null)} />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 26px', ...h2Style(s) }}>{s.title}</h2>

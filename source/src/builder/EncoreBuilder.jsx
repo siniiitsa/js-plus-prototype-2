@@ -40,8 +40,8 @@ import {
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN,
-  parseDate, isoDate, monthSpan, monthLabel, enquiryLine,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, MONTHS, DAY_FULL,
+  parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
@@ -577,6 +577,48 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     vm.calPick = booked.has(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
+
+    // §10.2 layout 2 — the bold slot list. The rows are the artist's named
+    // slots (CAL_SLOTS), resolved by the `songs` rule: absent means the seed,
+    // an emptied array means none, and there is no null sentinel. Everything
+    // the row prints is composed here, the way every cell above carries its own
+    // enquiry line — EncoreSection looks a row up rather than working a date
+    // out. `booked` reaches the list too: a slot the artist has blocked is a
+    // dead row, which is the one field that ties the two layouts together.
+    //
+    // A row whose date does not parse keeps its place and simply does not pick,
+    // §4.3a's rule for a link whose target is missing; it cannot happen from
+    // the seed, and there is no editor for the list yet.
+    const slots = Array.isArray(c.slots) ? c.slots : CAL_SLOTS
+    vm.calSlots = slots.map((sl) => {
+      const at = parseDate(sl.date)
+      const iso = at ? isoDate(at.y, at.m, at.d) : ''
+      return {
+        iso,
+        // A date format, not artist copy, so it is upper-cased here rather than
+        // through cased(): "JUN 12", "JUL 05".
+        mark: at ? `${MONTHS[at.m].slice(0, 3).toUpperCase()} ${String(at.d).padStart(2, '0')}` : '',
+        day: at ? DAY_FULL[weekdayOf(at.y, at.m, at.d)] : '',
+        kind: cased(sl.kind ?? ''),
+        price: sl.price ?? '',
+        booked: iso ? booked.has(iso) : false,
+        line: at ? enquiryLine(at.y, at.m, at.d, time) : '',
+      }
+    })
+    // The head's link list. The frame draws three — the section itself, marked
+    // with a dot, then packages and enquiries — which is CTA_TARGETS.book
+    // resolved against the page, the footer's rule for a link column rather
+    // than an invented nav. The current section leads and does not link to
+    // itself; a page carrying neither of the other two is left with one entry,
+    // which still reads as the head's own label.
+    const flow = navSections.filter((n) => CTA_TARGETS.book.includes(n.cat))
+    vm.calFlow = [
+      ...flow.filter((n) => n.cat === 'calendar'),
+      ...flow.filter((n) => n.cat !== 'calendar'),
+    ].map((n) => ({
+      label: cased(n.label), to: n.cat === 'calendar' ? undefined : n.cat,
+      on: n.cat === 'calendar',
+    }))
     // `bookTo` minus `calendar` itself — the tier pills' rule, and for the same
     // reason: CTA_TARGETS.book ends at this section, so the pill would otherwise
     // scroll the visitor to the panel they are already reading. With neither a

@@ -40,7 +40,8 @@ const themeIdx = Number(q.get('theme') ?? 0)
 
 const navSections = [
   { cat: 'header', label: 'Header' }, { cat: 'bio', label: 'About' },
-  { cat: 'media', label: 'Top tracks' }, { cat: 'form', label: 'Enquiries' },
+  { cat: 'media', label: 'Top tracks' }, { cat: 'pricing', label: 'Pricing' },
+  { cat: 'calendar', label: 'Booking Calendar' }, { cat: 'form', label: 'Enquiries' },
 ]
 
 // &n=8 fills the section's list-shaped content with n rows, to see a design
@@ -69,14 +70,27 @@ const LIST = {
     blurb: 'What this one covers, in a sentence that runs to about this length.',
     feats: Array.from({ length: 3 + (i % 2) }, (_, j) => `Feature ${j + 1}`).join('\n'),
   }),
+  // The calendar's slot list. Dates step a day at a time from CAL_OPEN, so the
+  // first row is still the one `calPick` cues and every row parses.
+  calendar: (i) => ({
+    date: `2025-06-${String(12 + i).padStart(2, '0')}`,
+    kind: ['Evening', 'Full day', 'Late', 'Wedding'][i % 4],
+    price: `From £${(i + 1) * 400}`,
+  }),
 }
 const KEY = {
   media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images', pricing: 'tiers',
+  calendar: 'slots',
 }
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const c = count === null || !LIST[cat]
   ? {}
   : { [KEY[cat]]: Array.from({ length: count }, (_, i) => LIST[cat](i)) }
+
+// &booked=2025-06-14,2025-06-20 blocks those dates. It is the one calendar
+// state neither seed shows — CAL_BOOKED is empty on purpose — and it reaches
+// both layouts: the struck cell in the month, and the dead row in the slot list.
+if (q.get('booked')) c.booked = q.get('booked').split(',')
 
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
