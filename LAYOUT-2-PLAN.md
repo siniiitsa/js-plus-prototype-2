@@ -31,7 +31,7 @@ the 1440 frame's; the 1180 canvas takes them × 0.82 (§5.5, and see *Convention
 | 4 | `video` | `964:64645` | Video Players — **A · Dashboard player** — Desktop | 1440 × 782 | **done** (desktop) `33e4d97` |
 | 5 | `repertoire` | `964:64646` | Repertoire — **G · Mobile list** — Desktop | 1440 × 792 | **done** (desktop) `2bb0637` |
 | 6 | `gallery` | `964:64647` | Gallery Sections — **C · Split showcase** — Desktop | 1440 × 675 | **done** (desktop) `4b4ca5a` |
-| 7 | `pricing` | `964:64648` | Pricing — **D · Single big plan** — Desktop | 1440 × 707 | todo |
+| 7 | `pricing` | `964:64648` | Pricing — **D · Single big plan** — Desktop | 1440 × 707 | **done** (desktop) `4f8ec90` |
 | 8 | `calendar` | `964:64650` | Booking Calendar — **E · Bold slot list** — Desktop | 1328 × 896 | todo |
 | 9 | `map` | `964:64651` | Events Map — **B · Featured gig + route** — Desktop | 1440 × 780 | todo |
 | 10 | `form` | `964:64652` | Enquiry Forms — **E · Sticky sidebar card** — Desktop | 1440 × 792 | todo |
@@ -363,6 +363,53 @@ Learned on the gallery (section 6):
   Remove rule) but both render the placeholder here, so the switch proves the
   geometry holds and not much else — the seat rotation is what `live=1` proves.
 
+Learned on the pricing section (section 7):
+
+- **A layout that draws one of something has to reach all of it.** The
+  frame shows a single plan; the section holds a list. Wiring the
+  frame's in-card toggle row to the *packages* — one chip per package,
+  the card showing the one selected — is what stops the design stranding
+  every package but the first, which is exactly the defect
+  `c.quotes` was written to fix in the testimonials. It also reuses the
+  section's existing chip state whole: same `useState`, same `s.live`
+  gate, same clamp, same pinned 0 on the canvas, same not-drawn-at-one.
+  Prefer that to inventing a control, and prefer it to reproducing a
+  frame's own stranding.
+- **A hue that has to survive a control belongs to the seat.** The card
+  cannot take the *selected* package's colours — it would recolour on
+  every toggle (the media player's fan rule) and open on whichever hue
+  package 0 happens to draw. `vm.tierHero` pins one, computed by the
+  same `tierHues()` the deck's cards now share, and it doubles as the
+  empty state's card so both states are one composition.
+- **Check the shared pill against the ground you put it on.**
+  `BookPill`'s flat branch ignored `bg`/`fg` and painted `ac` on `acFg`,
+  which is right on the page ground and invisible on a card in the
+  accent hue — Pop's `T.tags[1]` **is** its accent, so layout 1's third
+  card was already drawing a pill with only its type showing. Honouring
+  them with `?? s.ac` / `?? s.acFg` is additive; the only other caller
+  that passes them is `HeaderV1`, which `headerFamily()` renders under
+  Retro alone, so the flat diff is confined to this section. Grep the
+  callers before touching a shared component — that is what settles
+  whether the fix is the component's or the section's.
+- **A frame's own copy can be a claim.** Sort it the video section's
+  way, and note that dropping a *number* can strip the block around it:
+  with `32 reviews · 4.9 ★` gone the avatars and the five stars
+  substantiate nothing, so the whole credit row went and only the quote
+  stayed — which then needed a `FIELDS.pricing` entry, `FIELDS.video`'s
+  `image`/`avatar` case.
+- **Two gaps in one grid beat a paired-rows vm key.** The enquiry form
+  pairs its boxes in `sectionVm` because its rows and its columns are
+  spaced differently; a CSS grid with `columnGap` and `rowGap` carries
+  exactly that on its own, and an odd count trails one half-width cell
+  regardless. Reach for the vm key only when the pairing is content, not
+  spacing.
+- **A frame that sets four of eight list items in a second type style is
+  an artefact, not a design** — normalise, and say so in the commit.
+- **An emptied list leaves a content-sized card very short** (46px here).
+  That is accepted rather than floored: nothing else in the file pins a
+  height for an empty state, and any minimum would be a made-up number.
+  It is only ever seen mid-edit.
+
 Learned on the header (section 1):
 
 - **A frame that floats something above its own content inset has to rise out of the root's
@@ -424,6 +471,15 @@ Learned on the header (section 1):
    absence. The three hints now say "Layout 1 only". If the addresses should
    follow the artist across layouts, that is a design call for all of them at
    once, not a fidelity fix here.
-8. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
+8. **The pricing section's tags have no home in layout 2.** The single big
+   plan names the *packages* in its chip row, so `s.tierChips` — the row
+   derived from `FIELDS.pricing.tiers`' tags, and the whole reason the tags
+   are a field — reaches layout 1 only. That is open question 4 (the media
+   player's Soundcloud button) and open question 7 (the gallery's three social
+   addresses) a third time, and the same call was made: a tag row the frame
+   does not draw would be worse than the absence. The field's hint now says
+   which layout reads them. If the tags should follow the artist across
+   layouts, that is one design call for all three cases at once.
+9. **Tablet and mobile.** This page is 1440 only. Whether each option has 768/390 masters is
    unverified — check with one `use_figma` `page.query('[name^=…]')` when the desktop pass is
    signed off.

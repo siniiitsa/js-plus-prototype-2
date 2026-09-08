@@ -660,7 +660,8 @@ export const FIELDS = {
   // an array of { name, price, tags, blurb, feats } maintained by TiersField.
   // It follows the `songs` rule — one key, one shape — so an absent key means
   // the seeded TIERS, an emptied array means no packages, and there is no null
-  // sentinel. The tags are the section's filter row, the repertoire's rule.
+  // sentinel. The tags are layout 1's filter row, the repertoire's rule; layout 2
+  // names the packages themselves in its chip row and reads no tags at all.
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
