@@ -285,10 +285,15 @@ Learned on the repertoire (section 5):
 
 - **A full-bleed layout 2 does not need the root's flags.** The convention above
   says a layout 2 standing on cream "would have to widen its own flag to
-  `(s.v0 || s.v1)`". It does not, and should not: a block carrying `bleedTo`'s
-  own negative margins (`margin: calc(-1 * padY) calc(-1 * padX)`) covers the
-  root's border box exactly, so the sheet paints its own ground, the rules run
-  to the page edges, and the diff stays inside the section. Widening `cream`
+  `(s.v0 || s.v1)`". It does not, and should not: a block whose margin is
+  `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})` covers the root's border box
+  exactly, so the sheet paints its own ground, the rules run to the page edges,
+  and the diff stays inside the section. Write that margin out in the section —
+  `bleedTo()` is not it, because it returns left/right and *one* side, for a
+  decoration on a seam rather than a sheet on both. `-padX` is enough on a
+  window wider than the canvas because `padX` already carries `surplus`
+  (`EncoreBuilder.jsx:2733`), which is also why the sheet's own inset has to add
+  `surplus` back to re-centre its content. Widening `cream`
   would also have been the *wrong* cream — the frame stands on box/1 `#FAECD5`
   where layout 1 stands on `#FBF6EA`. Verify by reading the section root's and
   the sheet's `getBoundingClientRect()`: they must be identical.
