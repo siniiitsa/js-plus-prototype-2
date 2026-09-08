@@ -509,6 +509,10 @@ export const DEFS = {
   statement:  'Reads the room.',
   videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
+  // §10.2 layout 2 stands a line of praise beside the plan, where layout 1 has
+  // nothing of the sort — the frame's own sentence, kept as the seed so the
+  // reference picture holds. Emptying it drops the line.
+  pricingQuote: "“Kai read the room better than any DJ we'd worked with. We had him back twice that year.”",
   mapSub:     '12 dates · 8 cities · this season',
   formPara:   'Tell me about the night — date, venue, crowd. Replies within 24 hours.',
   copyright:  'C 2026 Kai Mercer',
@@ -660,9 +664,12 @@ export const FIELDS = {
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
-      hint: 'Tags become the filter chips above the cards — separate them with commas. '
-          + 'Features are one to a line.' },
+      hint: 'Tags become the filter chips above the cards in layout 1 — separate them with '
+          + 'commas. Features are one to a line. Layout 2 shows one package at a time and '
+          + 'names them in its own chip row, so it reads no tags.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT },
+    { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote',
+      hint: 'A line of praise beside the plan. Layout 2 only.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
   // The other list-shaped content type with a structured editor rather than a

@@ -417,13 +417,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
   vm.pricingSubFg = rgba(tx, 0.46)
   vm.tierUnit = cv('unit', PRICE_UNIT)
-  const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
-  vm.tiers = tierList.map((t, i) => {
-    // §10.2 paints the three cards in three different palette hues rather than
-    // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
-    // orange under Retro — the reference order — and stays in-palette elsewhere.
-    const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
-    // Each card also carries a *second* hue. The price numeral, the tick, the
+  // §10.2 layout 2 stands a line of praise beside the plan. Layout 1 draws no
+  // such line, so an emptied field simply drops it — the Soundcloud rule.
+  vm.pricingQuote = cv('quote', DEFS.pricingQuote)
+  // A card's four colours, given the ground it stands on. Layout 1 walks that
+  // ground round T.tags, one hue per card; layout 2 has a single card and pins
+  // it, so both go through here and the pairing rule is written once.
+  const tierHues = (card) => {
+    // Each card carries a *second* hue. The price numeral, the tick, the
     // [ico] chip and the Book Now pill are all painted in it, and it is the
     // colour of the offset block behind the card too. The reference uses the
     // palette's gold for the olive and orange cards and the accent for the gold
@@ -433,11 +434,25 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // in pure white/black: contrast() picks the side, the palette the tone.
     const lightCard = contrast(card) === '#141414'
     const ink = lightCard ? vm.deep : vm.paper
-    // Same caveat as `legible()` above: the second hue only reads while it
-    // separates from the card it sits on. Retro's three clear it; a mid-tone
-    // card in a pale palette (Editorial's warm grey) does not, and there the
-    // card's own ink stands in.
-    const acc = Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink
+    return {
+      card,
+      // Same caveat as `legible()` above: the second hue only reads while it
+      // separates from the card it sits on. Retro's three clear it; a mid-tone
+      // card in a pale palette (Editorial's warm grey) does not, and there the
+      // card's own ink stands in.
+      acc: Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink,
+      cardFg: ink,
+      // Only the light card drops its blurb and the price unit off full strength
+      // in the reference; on the two dark ones they sit at the feats' cream.
+      cardMut: lightCard ? rgba(ink, 0.72) : ink,
+    }
+  }
+  const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
+  vm.tiers = tierList.map((t, i) => {
+    // §10.2 paints the three cards in three different palette hues rather than
+    // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
+    // orange under Retro — the reference order — and stays in-palette elsewhere.
+    const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
     return {
       // `n` is the row's place in the WHOLE list, not on the filtered page. The
       // cards animate their background, so the renderer keys on it: a positional
@@ -450,12 +465,19 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       // Raw casing, deliberately — the repertoire's rule: a lower-case theme
       // must not stop a chip from matching the tag it was derived from.
       tags: songTags(t?.tags),
-      card, acc, cardFg: ink,
-      // Only the light card drops its blurb and the price unit off full strength
-      // in the reference; on the two dark ones they sit at the feats' cream.
-      cardMut: lightCard ? rgba(ink, 0.72) : ink,
+      ...tierHues(card),
     }
   })
+  // §10.2 layout 2's single big plan. Its card is a fixed composition, not the
+  // selected package's: the hue belongs to the seat, the media player's fan
+  // rule, or the one card would recolour on every toggle — and it opens on
+  // whichever hue package 0 happened to draw. T.tags[1] is Retro's burnt orange,
+  // the frame's own card, and it is a *tag* hue rather than the accent so that
+  // the Book pill standing on it still reads on the four undesigned templates,
+  // whose BookPill branch paints `ac` on `acFg` and honours neither `bg` nor
+  // `fg`. It is also what the card falls back to with no packages at all, so
+  // the empty state and the filled one are the same composition.
+  vm.tierHero = tierHues(T.tags[1 % T.tags.length])
   // The filter row above the cards, derived from the tags the artist typed the
   // way the repertoire's is — `label` cased for printing, `tag` raw for
   // comparing. It replaces TIER_MODES, which was a constant nothing could edit.

@@ -60,8 +60,19 @@ const LIST = {
   // placeholder) and `&n=3` fills three, leaving slots 3-6 to fall back to the
   // section photo, which is layout 1's existing behaviour.
   gallery: () => null,
+  // Two tags cycling, so layout 1's filter row still has something to filter,
+  // and a feature count that is odd on half the rows — layout 2 lays them out
+  // two to a grid row and the odd one trails a half-width cell.
+  pricing: (i) => ({
+    name: `Package ${i + 1}`, price: `£${(i + 1) * 250}`,
+    tags: ['Solo', 'Band'][i % 2],
+    blurb: 'What this one covers, in a sentence that runs to about this length.',
+    feats: Array.from({ length: 3 + (i % 2) }, (_, j) => `Feature ${j + 1}`).join('\n'),
+  }),
 }
-const KEY = { media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images' }
+const KEY = {
+  media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images', pricing: 'tiers',
+}
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const c = count === null || !LIST[cat]
   ? {}

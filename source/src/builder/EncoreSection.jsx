@@ -414,9 +414,15 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
       </Tag>
     )
   }
+  // The flat four honour `bg`/`fg` too, defaulting to the accent pair. They
+  // used to ignore both, which is fine for a pill on the page ground and wrong
+  // for one standing on a card: a caller passes them precisely because the
+  // ground under the pill is not the page's, and on Pop — whose T.tags[1] IS
+  // the accent — the pricing deck's third card already drew an accent pill on
+  // an accent card with only its type showing.
   return (
     <Tag {...link} style={{
-      ...row('8px'), background: s.ac, color: s.acFg, fontSize: '10px', fontWeight: 700,
+      ...row('8px'), background: bg ?? s.ac, color: fg ?? s.acFg, fontSize: '10px', fontWeight: 700,
       letterSpacing: '1.2px', textTransform: 'uppercase', padding: '9px 18px',
       borderRadius: s.btnR, cursor: 'pointer', whiteSpace: 'nowrap',
     }}>
@@ -2828,6 +2834,208 @@ function Pricing({ s }) {
       </div>
     )
   }
+
+  // Layout 2 — "Pricing — D · Single big plan" (Figma 964:64648, 1440 × 707).
+  // A two-column grid on the page's own beige: left, a kicker over the display
+  // heading and a line of praise; right, one large rounded card tilted 3° off
+  // square, carrying the plan's name, its blurb, its price, the Book pill, a
+  // rule and its features in two columns. Under it, the small print.
+  //
+  // The frame's chip row is *inside* the card and reads "↻ Per event" /
+  // "⚡ Custom brief" — a pricing-model toggle this section has no notion of.
+  // It is the packages instead: one chip per package, the card showing the one
+  // selected, which is what stops a single-card layout stranding every package
+  // but the first (the testimonials' own defect, and the reason `c.quotes`
+  // exists). That reuses `chip` whole — the same state layout 1 filters with,
+  // the same `s.live` gate, the same clamp against a list the artist can
+  // shorten, and the same pinned 0 on the canvas, where the frame draws chip 0
+  // filled and so the picture *is* a choice. It leaves `s.tierChips` — the tags
+  // — reaching layout 1 only, which is FIELDS.media.soundcloud's case again;
+  // the field's hint says so. Not drawn at one package: nothing to select is
+  // the row's own rule in layout 1 too.
+  //
+  // Dropped from the frame, verbatim, so the call can be reversed: the two
+  // chips' glyphs `↻` and `⚡`; the three reviewer avatars; the `★ ★ ★ ★ ★`
+  // row; `32 reviews · 4.9 ★`; and `3 dates open for Sept '26` beside the pill.
+  // All but the glyphs are claims about the artist that no field backs — the
+  // video section's rule — and with the count gone the faces and the stars
+  // substantiate nothing. The frame's second price (`— £2,200/event`) becomes
+  // `s.tierUnit`, which is the one the section already owns. What is kept as a
+  // literal is the two frame labels, `[ PRICING ]` and `WHAT'S INCLUDED`.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
+  // own 56/32 inset is dropped for the page root's padding, so the pair spans
+  // the content width (1052) and not the frame's 1328. The frame carries no
+  // grain at all (stddev 0 over both the ground and the card), unlike layout
+  // 1's cards, so this branch draws none.
+  if (s.v1) {
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const desk = !s.narrow
+    // The card's own four colours, pinned in the view-model rather than taken
+    // from the selected package: the hue belongs to the seat, so toggling
+    // changes the plan and not the composition.
+    const h = s.tierHero
+    // The selector's index, clamped — the artist can delete the package the
+    // visitor is on, and Publish re-renders a tab that is already open.
+    const sel = s.live ? Math.max(0, Math.min(chip, s.tiers.length - 1)) : 0
+    const t = s.tiers[sel]
+
+    // Figma strokes an auto-layout frame without growing it, so the frame's
+    // 8/14 padding on a 1px border is 1px less each side here (the
+    // repertoire's rule) and the chip keeps the 28px it is drawn at.
+    const chipType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(12), lineHeight: 1,
+      letterSpacing: u(-0.72), whiteSpace: 'nowrap',
+    }
+
+    const left = (
+      <div style={col(u(20), {
+        ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+        alignItems: 'flex-start',
+      })}>
+        <span style={chipType}>[ PRICING ]</span>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: u(48), lineHeight: 1,
+          letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+        {/* An emptied quote drops the block rather than spending its gap. */}
+        {!!s.pricingQuote && (
+          <p style={{
+            margin: 0, paddingTop: u(12), width: '100%',
+            fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, color: s.tx,
+          }}>{s.pricingQuote}</p>
+        )}
+      </div>
+    )
+
+    const money = String(t ? t.price : '')
+    const symbol = /^[^\d]/.test(money) ? money[0] : ''
+    const amount = symbol ? money.slice(1) : money
+
+    const card = (
+      <div style={{
+        // The wrapper takes the column so the rotation has something square to
+        // turn inside; the card itself is content-sized, as the frame's is.
+        ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+        transform: tilt(s, -3),
+      }}>
+        <div style={{
+          background: h.card, color: h.cardFg,
+          border: `${s.bw} solid ${h.acc}`, borderRadius: u(30),
+          padding: u(32), overflow: 'hidden',
+          ...col(u(30), { alignItems: 'flex-start' }),
+        }}>
+          {t ? (
+            <>
+              <div style={col(u(14), { width: '100%', alignItems: 'flex-start' })}>
+                {/* Not drawn at one package: there is nothing to select. The
+                    seeded three make it three chips where the frame draws two,
+                    which is the intended diff. */}
+                {s.tiers.length > 1 && (
+                  <div style={row(u(8), { flexWrap: 'wrap', width: '100%' })}>
+                    {s.tiers.map((p, i) => (
+                      <span
+                        key={p.n}
+                        onClick={s.live ? () => setChip(i) : undefined}
+                        style={{
+                          ...chipType,
+                          border: `1px solid ${h.acc}`, borderRadius: u(8),
+                          padding: `calc(${u(8)} - 1px) calc(${u(14)} - 1px)`,
+                          background: i === sel ? h.acc : 'transparent',
+                          color: i === sel ? h.card : h.acc,
+                          cursor: s.live ? 'pointer' : undefined,
+                        }}
+                      >{p.name}</span>
+                    ))}
+                  </div>
+                )}
+                <span style={{
+                  fontFamily: s.display, fontSize: u(40), lineHeight: 1, letterSpacing: s.dls,
+                }}>{t.name}</span>
+                <p style={{
+                  margin: 0, width: '100%',
+                  fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: h.cardMut,
+                }}>{t.blurb}</p>
+                {/* The frame sets a second price where the section has a unit,
+                    so `— £2,200/event` is `s.tierUnit` — layout 1's own three
+                    spans, in the frame's sizes. */}
+                <span style={row(u(6), { alignItems: 'baseline', width: '100%' })}>
+                  <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5 }}>{symbol}</span>
+                  <span style={{
+                    fontFamily: s.display, fontSize: u(48), lineHeight: 1,
+                    letterSpacing: s.dls, color: h.acc,
+                  }}>{amount}</span>
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: h.cardMut,
+                  }}>{s.tierUnit}</span>
+                </span>
+                <span style={row(u(16), { flexWrap: 'wrap' })}>
+                  {/* The frame's pill is the cream one with the arrow disc: the
+                      card's ink filled, its ground as the type, its second hue
+                      as the offset block. The disc is the frame's 44 × 0.82;
+                      the narrow canvases keep BookPill's own scale. */}
+                  <BookPill s={s} to={s.tierBookTo} glyph="arrow" disc={desk ? 36 : undefined}
+                            bg={h.cardFg} fg={h.card} shadow={h.acc} />
+                </span>
+              </div>
+
+              {/* The frame rules the card in ink. That vanishes on the palette's
+                  own near-black card, which six packages reach, so the rule is
+                  the card's second hue — the one colour computed to separate
+                  from the ground it sits on. */}
+              <span style={{ width: '100%', height: '1px', background: h.acc, flex: 'none' }} />
+
+              <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
+                <span style={chipType}>WHAT&rsquo;S INCLUDED</span>
+                {/* One grid rather than the enquiry form's paired rows: the
+                    frame spaces the two columns by 24 and the rows by 10, and a
+                    grid carries two different gaps on its own. An odd count
+                    trails one half-width cell, the pricing deck's rule.
+                    The frame's own last four features are set a register
+                    smaller than its first four — a Figma artefact, not a
+                    design — so every feature takes the label face. */}
+                <div style={{
+                  display: 'grid', width: '100%', alignItems: 'start',
+                  gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+                  columnGap: u(24), rowGap: u(10),
+                }}>
+                  {t.feats.map((f, i) => (
+                    <span key={i} style={row(u(8), { minWidth: 0 })}>
+                      <span style={{ ...chipType, color: h.acc, flex: 'none' }}>+</span>
+                      <span style={{
+                        fontFamily: s.body, fontSize: u(20), lineHeight: 1.26, minWidth: 0,
+                      }}>{f}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            // The card is the composition, so an emptied list keeps it and
+            // prints layout 1's one message inside — the testimonials' rule.
+            <span style={{
+              fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: h.cardMut,
+            }}>No packages yet.</span>
+          )}
+        </div>
+      </div>
+    )
+
+    return (
+      <div style={col(u(24))}>
+        <div style={{
+          ...(desk ? row(u(48), { alignItems: 'flex-start' }) : col(u(32))),
+          width: '100%',
+        }}>{left}{card}</div>
+        {/* The frame sets the small print in the text colour at body-bold,
+            where layout 1 has it in `pricingSubFg`'s warm grey. */}
+        <span style={{
+          fontFamily: s.body, fontWeight: 700, fontSize: u(15), lineHeight: 1.3, color: s.tx,
+        }}>{s.pricingSub}</span>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>
