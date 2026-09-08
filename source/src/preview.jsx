@@ -55,8 +55,13 @@ const LIST = {
     title: `Song number ${i + 1}`, artist: `Artist ${i + 1}`,
     tags: ['Weddings', 'Pubs', 'Birthdays'][i % 3],
   }),
+  // The gallery's list is its seven photograph slots, so a row is simply the
+  // absence of a photograph: `&n=0` empties the array (every seat a
+  // placeholder) and `&n=3` fills three, leaving slots 3-6 to fall back to the
+  // section photo, which is layout 1's existing behaviour.
+  gallery: () => null,
 }
-const KEY = { media: 'tracks', video: 'videos', repertoire: 'songs' }
+const KEY = { media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images' }
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const c = count === null || !LIST[cat]
   ? {}

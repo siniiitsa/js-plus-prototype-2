@@ -3793,6 +3793,175 @@ function Gallery({ s }) {
     )
   }
 
+  // v1 — Gallery layout 2 · Split showcase (Figma 964:64647, 1440 × 675): one
+  // hero photograph with a caption pill in its bottom-left corner, and beside
+  // it a two-column masonry of six more. The strip reads as if it ran on past
+  // the section band — the first tile in each column drops its top border and
+  // top rounding, the last drops its bottom pair — so the six are a crop of a
+  // longer wall rather than a closed block.
+  //
+  // Seven photographs for the section's seven slots, which is what makes this
+  // frame fit the gallery without inventing anything: the hero is a **seat**,
+  // not slot 0. The slots rotate through the seven seats, wrapping, so the
+  // hero seat always holds the one the visitor is on and the other six follow
+  // it in order — the media player's fanned carousel rule verbatim (CLAUDE.md,
+  // "Layout 2 plays through the same hooks"). Geometry belongs to the seat,
+  // so the composition never reshuffles its shapes; only which photograph
+  // stands in each. On the canvas that puts `galActive()` — slot 3 — in the
+  // hero, which is deliberately the same photograph layout 1's viewer opens on.
+  //
+  // Clicking a tile is `pick`, the state layout 1 already owns, so the two
+  // layouts share one seam and the published tab's first paint is the canvas's
+  // picture by construction (`pick` starts at -1: nothing chosen).
+  //
+  // What the frame draws and this does not: nothing. What the *section* has and
+  // the frame has no room for: the heading is the caption pill's first line and
+  // the four media-source rows are gone, three of them outbound links. That is
+  // the media player's Soundcloud call three times over — see LAYOUT-2-PLAN's
+  // open questions. The frame's own two lines, `MTV "MOOD SWING"` and
+  // `FEATURED REEL`, are named here so the call can be reversed: both are
+  // claims about the artist (an MTV feature, a reel) that no field backs, the
+  // video section's rule, so the pill takes `s.title` over `s.brand` instead —
+  // two strings the artist owns, reading as a caption credit on a photograph.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
+  // 56/46 inset is dropped for the page root's own padding, so the pair spans
+  // the content width (1052) and not the frame's 1328 × 0.82. The 37px goes out
+  // of the *hero*, because that is the frame's own mechanism — its right block
+  // is `shrink-0 w-[520px]` and its hero `flex-1` — and a hero is a photograph,
+  // which simply crops. The row's height is pinned at the frame's 583 (the
+  // repertoire's rule: pin what the frame lets flow when the frame's own
+  // `h-full` has nothing here to divide), and each tile takes its share of it
+  // as a `flex-grow`, so the six heights divide exactly as the frame's do at
+  // any canvas.
+  if (s.v1) {
+    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const desk = !s.narrow
+    // The frame draws hairlines, not the theme's own stroke: 1px in ink round
+    // the hero (`scheme/1/stroke/1`) and 1px in the accent round every tile
+    // (`sem/text/1`). Both tokens are palette values on Retro — #111 is `s.tx`
+    // and #C8461C is `s.ac` — so this branch needs no literal hex at all, and
+    // the flat four take their own two colours without a fallback pair.
+    const bw = s.retro ? '1px' : s.bw
+    const r = u(30)
+    const seats = 7
+    const active = s.live && pick >= 0 ? pick : galActive(s)
+    const slot = (k) => (active + k) % seats
+
+    // The masonry, column by column, in the heights the frame draws. Their
+    // sums are equal by construction (563 + two 10px gaps = 583), which is what
+    // lets both columns be pure `flex-grow` against one pinned height.
+    const COLUMNS = [[123, 215, 225], [194, 242, 127]]
+    const edge = `${bw} solid ${s.ac}`
+    const grid = (
+      <div style={{
+        ...(desk
+          ? { width: u(520), flex: 'none', height: '100%' }
+          : { width: '100%', aspectRatio: '520 / 583' }),
+        ...row(u(10), { alignItems: 'stretch' }),
+      }}>
+        {COLUMNS.map((hs, ci) => (
+          <div key={ci} style={col(u(10), { flex: '1 1 0', minWidth: 0, height: '100%' })}>
+            {hs.map((h, i) => {
+              const seat = 1 + ci * hs.length + i
+              const first = i === 0
+              const last = i === hs.length - 1
+              return (
+                <div
+                  key={i}
+                  onClick={s.live ? () => setPick(slot(seat)) : undefined}
+                  style={{
+                    // The frame's own height is the basis, so on the canvas the
+                    // three are exactly it and the column's free space is nil;
+                    // grow and shrink then divide any surplus in the frame's
+                    // own proportions, which is what carries the composition to
+                    // a canvas whose grid is taller or shorter. A `0` basis
+                    // would not: `border-box` floors such an item at its own
+                    // border, which is not proportional and lands each tile up
+                    // to 0.6px off the frame — Figma strokes inside the 123 it
+                    // states (the repertoire's rule), so the height already
+                    // carries the hairline.
+                    //
+                    // `minHeight: 0` with `overflow: hidden`, or the <img>
+                    // inside would floor the item at its intrinsic height and
+                    // blow the column open (the video panel's thumbnail bug).
+                    flex: `${h} 1 auto`, height: u(h), minHeight: 0, overflow: 'hidden',
+                    position: 'relative',
+                    borderLeft: edge, borderRight: edge,
+                    borderTop: first ? 'none' : edge,
+                    borderBottom: last ? 'none' : edge,
+                    borderRadius: first ? `0 0 ${r} ${r}` : last ? `${r} ${r} 0 0` : r,
+                    cursor: s.live ? 'pointer' : undefined,
+                  }}
+                >
+                  <span style={{ position: 'absolute', inset: 0 }}>
+                    <Photo s={s} initialsSize={26} src={s.images[slot(seat)]} />
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        ))}
+      </div>
+    )
+
+    // The caption. Each line is rendered or not rather than printed blank (the
+    // testimonials' rule), and with neither string the pill goes with them: a
+    // wordless block over a photograph is not one of the design's states.
+    const lines = [s.title, s.brand].filter(Boolean)
+    const caption = lines.length > 0 && (
+      <div style={{
+        position: 'absolute', left: u(40), bottom: u(40),
+        // The frame sets the two lines `nowrap`; bounded here and clipped per
+        // line, so a long heading ends in an ellipsis inside the hero rather
+        // than running out under its own clip.
+        maxWidth: `calc(100% - ${u(80)})`,
+        background: s.chips[0].bg,
+        // Ink on the purple, which is what the frame sets and what the bio's
+        // "Retro's chips are cream on every hue" note does not cover — the
+        // repertoire's frame already contradicted it once. The flat four take
+        // the chip's own computed foreground, which is guaranteed against it.
+        color: s.retro ? s.tx : s.chips[0].fg,
+        borderRadius: u(4), padding: `${u(10)} ${u(14)}`,
+        ...col(u(4), { alignItems: 'flex-start' }),
+      }}>
+        {lines.map((t, i) => (
+          <span key={i} style={{
+            maxWidth: '100%',
+            // The frame's own body face at chip size, not the label face: this
+            // pill is set in Inter Bold where layout 1's corner block is Anton.
+            fontFamily: s.body, fontWeight: 700, fontSize: u(12), lineHeight: 1,
+            textTransform: 'uppercase', letterSpacing: u(-0.72),
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>{t}</span>
+        ))}
+      </div>
+    )
+
+    return (
+      <div style={desk
+        ? row(u(24), { alignItems: 'stretch', height: u(583) })
+        : col(u(24))}>
+        <div style={{
+          position: 'relative', overflow: 'hidden', minWidth: 0,
+          border: `${bw} solid ${s.tx}`, borderRadius: r,
+          ...(desk
+            ? { flex: '1 1 0', height: '100%' }
+            : { width: '100%', aspectRatio: '784 / 583' }),
+        }}>
+          <span style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} initialsSize={52} src={s.images[active]} />
+          </span>
+          {caption}
+          {/* Last, the way the frame paints it: the sheet crosses the caption
+              too, and lifts its ink off #111 by a few points. */}
+          <Grain s={s} exact blend="lighten" opacity={0.29} />
+        </div>
+        {grid}
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>

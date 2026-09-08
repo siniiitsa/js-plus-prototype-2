@@ -680,16 +680,21 @@ export const FIELDS = {
   // in shape: an empty default, normalised through extUrl() in sectionVm, and a
   // row that stays a picture until it is filled. GALLERY_SOURCES names the key
   // each row reads — change one, change both.
+  //
+  // They are also `media.soundcloud`'s case in the other sense: the source rows
+  // are layout 1's, and layout 2's split showcase draws no row for them at all,
+  // so each hint says which layout it edits — the video section's `image` and
+  // `avatar` rule, the other way round.
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
-      hint: 'One per tile in the strip. The highlighted tile is the one shown in the large viewer.' },
+      hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layout 2 shows it as the large photo beside the other six.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
     { k: 'youtube',   l: 'YouTube link', d: '',
-      hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture.' },
+      hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'instagram', l: 'Instagram link', d: '',
-      hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture.' },
+      hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'tiktok',    l: 'TikTok link', d: '',
-      hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture.' },
+      hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
   ],
   // `heading` heads the flat layout only — the scheduler frame draws no title —
   // but the other four are all read by it. `open` is the one date the section is
