@@ -5211,7 +5211,11 @@ function Calendar({ s }) {
             break inside "Thursday,". So the pill takes its own row under the
             line, at the column's own left edge, which is where the fallback
             this replaced already put it. The media player's rule: honouring a
-            master that destroys its own content publishes the damage. */}
+            master that destroys its own content publishes the damage. The 12
+            between the two is therefore the one number here with no master
+            behind it — the frame never stacks this foot — and it is the foot's
+            own 12, the padding it opens and closes on and the gap between the
+            chip and the line, rather than a value invented for the occasion. */}
         <div style={(s.mob ? col : row)(u(s.mob ? 12 : 24), {
           minHeight: u(s.mob ? 84 : 100),
           padding: `${u(12)} ${u(s.mob ? 20 : 40)}`,
