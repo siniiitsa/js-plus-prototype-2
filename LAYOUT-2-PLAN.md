@@ -86,7 +86,7 @@ Status says otherwise.
 | 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | **done** `47168c4` |
 | 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | **done** `886d14d` |
 | 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 | **done** `74929f0` |
-| 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 | todo |
+| 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 | **done** `d033540` |
 | 11 | `testimonials` | `986:11675` | 768 × 796 | `986:11701` | 390 × 870.3 | todo |
 | — | `footer` | `986:11787` | 768 × 721 | `986:11727` | 390 × 721 | out of scope |
 
@@ -110,8 +110,9 @@ Five things about these that a fresh session would otherwise re-derive.
   desktop composition simply reflows. *(The gallery turned out not to be one: both of its narrow
   masters are the desktop row, and the 364 is the band getting shorter — see its notes below.
   The events map turned out to be one, but at **390 only**: its 768 master keeps the desktop's
-  two columns and only the 390 one stacks, which is why the two narrow widths part company there
-  and nowhere else in the pass.)*
+  two columns and only the 390 one stacks. The enquiry form is the second of those, with the
+  same split at the same width — so "768 keeps the columns, 390 stacks" is now the pass's
+  commonest narrow shape and not a one-off.)*
 - **The footer stays out of scope** at both widths, for the desktop reason: `NVAR.footer` is 1
   and the fitted footer is already this design.
 
@@ -1185,6 +1186,59 @@ Learned on the events map's narrow masters (section 9):
   unlinked gig is featured — because `LIST.map` gives every other gig an
   address. `&n=1` is the one that proves the "Other upcoming" line goes with
   its rows.
+
+Learned on the enquiry form's narrow masters (section 10):
+
+- **The cheapest check that a narrow master is cheap is three
+  `get_metadata` calls read as arithmetic.** All three masters here state
+  the card's padding at 28/24, its gaps at 10 and 14, the boxes' text
+  inset at 14, the pill's 21/5/5 and its 46 × 44 disc, the left column's
+  30s, the credit's 14 and 2, and the two columns' 40 — every one of them
+  the desktop component's number unscaled. What is left after that sum is
+  four numbers (the box's 38/37, the photo's 262, the page inset and the
+  type table) and two structural facts. The booking calendar's
+  "read the two narrow masters beside the desktop one" is the whole
+  method; run it *first* and the session's shape is decided before a
+  single render is fetched.
+- **A `desk ? A : B` fallback that was written as a guess can be right at
+  one width and wrong at the other.** The unfitted branch stacked both
+  narrow canvases; 768 keeps the columns. That is the events map's split
+  a second time and at the same width, so the pass's default assumption
+  should now be `s.mob ? stack : row` — with `tab` checked, never
+  inferred. The tell is the metadata's x again: two children at x 30 and
+  x 404 against two at x 10 under one another.
+- **The same block can flip axis in the *middle* of the ramp.** The
+  promises/credit block is a space-between row at 1440, a **column** at
+  768, and a row again at 390 — non-monotonic structure, the type ramps'
+  own habit. There is a reason at 390 (its two halves come to the
+  master's 370 exactly, so they sit flush) and none at 768 beyond the
+  designer's hand. So a narrow branch is not always `desk ? … : narrow`
+  *or* `mob ? … : rest`; this one needed all three arms in one ternary,
+  and `flexWrap` — which the desktop half uses — had to be kept for
+  desktop alone or the stash digest would have moved.
+- **Keep the desktop style object byte-identical when you branch one.**
+  Spreading the desktop-only keys (`...(desk ? { flexWrap, rowGap } :
+  null)`) rather than dropping them wholesale is what kept 36 rows at
+  zero. The gallery's "wrap at the width that needs it" rule, applied to
+  a property rather than an element.
+- **`u()`'s `z` switch pays for itself on a branch with no reflow.** Once
+  every literal runs through it, the narrow fit is a type table, four
+  numbers and two ternaries — and `git stash` + reload + diff in the page
+  is a two-navigation proof that none of them leaked. 36 elements, zero
+  rows.
+- **The invented numbers are the ones to name.** The sent card's
+  plain-text address (no frame draws that state) and the two
+  `initialsSize`s (the frames are photographs and Retro seeds them) are
+  the only values here that are not read off a master. Both are
+  commented as such where they are written, the gallery's placeholder-ramp
+  rule.
+- **`live=1` at 390 is four calls and it exercises the whole seam.**
+  Refuse (all four boxes take the 2px inset ring and stay 37 tall — the
+  ring is why the stated height does not grow), fill through the native
+  setter, submit behind a capture-phase `mailto:` intercept (the subject
+  is the bare `Enquiry`, since layout 2 draws no chip row), then *Write
+  another* — which restores the boxes with what was typed and the rings
+  cleared. React commits asynchronously, so one action per call.
 
 ## Open questions
 
