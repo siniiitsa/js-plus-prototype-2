@@ -3965,8 +3965,8 @@ function Repertoire({ s }) {
         <div style={col(u(12), {
           // The rule each frame paints at the head's foot sits *inside* its own
           // inset, so the padding gives the border back — the toggle's rule
-          // again, and the reason the two narrow heads measure exactly their
-          // masters' 205 and 210.
+          // again, and the reason the two narrow heads measure their masters'
+          // 205 and 210 to within the chip's own line-box rounding.
           padding: `${headPadY} ${padH} calc(${headPadY} - ${bw})`,
           borderBottom: `${bw} solid ${ink}`,
         })}>
