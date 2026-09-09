@@ -2617,9 +2617,36 @@ function Video({ s }) {
   // the *player*, which is an aspect-ratio box and simply gets shorter: the
   // panel's row is a thumbnail beside two lines of nowrap type and is the one
   // of the two that cannot give anything back.
+  //
+  // The 768 (984:35259) and 390 (984:35737) masters change the composition
+  // rather than narrowing it: the panel leaves the stage's side for a
+  // full-width block under it, and its list becomes two columns — a thumbnail
+  // beside its lines at 768 and above them at 390. Everything else is the
+  // desktop component at its own unscaled numbers, so `u()` is the identity
+  // there; only the type ramps, and the transport bar shrinks its discs at 390.
+  // See `z` below. Both masters' player is a *flattened raster* in Figma, so
+  // the bar's own geometry was measured off the two renders rather than read.
   if (s.v1) {
     const desk = !s.narrow
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const tab = isTablet(s)
+    const nar = s.narrow
+    // The narrow-master scale, the media player's rule: both frames draw the
+    // desktop component's box dimensions verbatim, so nothing is ramped below
+    // 1180 except the type and the transport's discs.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The type, measured off all three renders rather than read off the emitted
+    // `var(--size/…)`, whose values are the component's defaults at every width.
+    // Two readings agree on each: the text node's height over its own leading,
+    // and the six row titles' set widths as a ratio of the 1440 frame's.
+    //   label   20 → 14 → 13     display/list 16 → 12 → 13
+    //   body-md 14 → 13 → 13     body-sm      12 → 12 → 12  (Inter's does not move)
+    // The row title is the odd one — *larger* at 390 than at 768 — because the
+    // 390 grid's columns are the wider pair (163.5 against 150.5). It is not a
+    // slip; do not "correct" it.
+    const labelSz = tab ? '14px' : s.mob ? '13px' : u(20)
+    const rowSz = tab ? '12px' : s.mob ? '13px' : u(16)
+    const bodySz = nar ? '13px' : u(14)
     const n = s.chips.length
     const mustard = s.chips[2 % n].bg
     const rust = s.ac
@@ -2644,8 +2671,14 @@ function Video({ s }) {
     // two the palette guarantees — the accent on its own foreground, and the
     // Book pill's lightest-hue-and-accent-type pair (§10.2) — because
     // `chips[2]` is an arbitrary tag colour that can land on the page ground.
+    // The transport disc is the one box either master shrinks: measured 28 at
+    // 768 as at 1440, and 22 at 390, where the bar has to seat six of them, two
+    // clocks and a progress track inside the player's 330. Its glyph goes with
+    // it, and so do the two gaps below.
+    const cd = s.mob ? 22 : 28
+    const cg = s.mob ? 9 : 11
     const ctl = {
-      width: u(28), height: u(28), flex: 'none', borderRadius: '999px',
+      width: u(cd), height: u(cd), flex: 'none', borderRadius: '999px',
       background: s.retro ? rust : s.ac, color: s.retro ? mustard : s.acFg,
       border: `1px solid ${s.retro ? mustard : s.acFg}`,
       ...row('0', { justifyContent: 'center' }),
@@ -2685,14 +2718,14 @@ function Video({ s }) {
         <span style={{
           position: 'relative', maxWidth: '100%',
           background: s.bg, color: s.tx, borderRadius: '999px',
-          padding: `${u(8)} ${u(12)}`, ...row(u(10)),
+          padding: `${u(s.mob ? 7 : 8)} ${u(12)}`, ...row(u(s.mob ? 6 : 10)),
         }}>
-          <span style={row(u(5), { flex: 'none' })}>
-            <span style={ctl}><SkipBack size={11} fill="currentColor" /></span>
+          <span style={row(u(s.mob ? 4 : 5), { flex: 'none' })}>
+            <span style={ctl}><SkipBack size={cg} fill="currentColor" /></span>
             {/* A player caught mid-song, which is the picture the frame
                 draws — and the picture is all this section is. */}
-            <span style={ctl}><Pause size={11} fill="currentColor" /></span>
-            <span style={ctl}><SkipForward size={11} fill="currentColor" /></span>
+            <span style={ctl}><Pause size={cg} fill="currentColor" /></span>
+            <span style={ctl}><SkipForward size={cg} fill="currentColor" /></span>
           </span>
           {s.videoAt && <span style={metaType({ flex: 'none' })}>{s.videoAt}</span>}
           <span style={{
@@ -2711,14 +2744,46 @@ function Video({ s }) {
             }} />
           </span>
           <span style={metaType({ flex: 'none' })}>{s.videoDur}</span>
-          <span style={ctl}><Volume2 size={11} /></span>
-          {/* The 390 canvas has no frame of its own and cannot seat the whole
-              bar: the last two glyphs go, rather than squeeze the track off
-              it — the media player's own rule at the same width. */}
-          {!s.mob && <span style={ctl}><Maximize size={11} /></span>}
-          {!s.mob && <span style={ctl}>{dots('⋮')}</span>}
+          <span style={ctl}><Volume2 size={cg} /></span>
+          {/* The 390 master keeps all six discs and pays for them out of their
+              own size and spacing rather than by dropping the last two — which
+              is what the fallback this replaces did, on the media player's
+              rule at the same width. Its own bar fills the player's content
+              width exactly; ours is 24px narrower, and the track is what
+              absorbs that, down to its stated floor. */}
+          <span style={ctl}><Maximize size={cg} /></span>
+          <span style={ctl}>{dots('⋮')}</span>
         </span>
       </div>
+    )
+
+    // The two halves of the artist row, named because the 390 master puts them
+    // on separate lines and the other two do not.
+    const artist = (
+      <>
+        <span style={{
+          width: u(40), height: u(40), flex: 'none', borderRadius: '999px',
+          overflow: 'hidden', background: shade,
+        }}><Photo s={s} avatar initialsSize={14} /></span>
+        <span style={{
+          fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>{s.brand}</span>
+      </>
+    )
+    const actions = (
+      <>
+        <span style={act}><Bookmark size={13} /></span>
+        <span style={act}><Link2 size={13} /></span>
+        <span style={act}><Bell size={13} /></span>
+        {/* A label with nowhere to go, like the frame's "View All ›" and
+            layout 1's own play disc: this section is a picture, and the
+            pill is drawn rather than wired. */}
+        <span style={{
+          ...act, width: 'auto', height: 'auto', padding: `${u(8)} ${u(16)}`,
+          fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+        }}>Follow</span>
+      </>
     )
 
     const stage = (
@@ -2729,32 +2794,23 @@ function Video({ s }) {
             and it takes the whole column rather than the frame's clipped 158,
             because a sentence is not a two-word metric. */}
         <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
-          <span style={labelStyle(s, u(20), { overflow: 'hidden', textOverflow: 'ellipsis' })}>{s.title}</span>
+          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{s.title}</span>
           {s.videoDesc && <span style={metaType()}>{s.videoDesc}</span>}
         </div>
-        <div style={row(u(12), {
+        {/* The artist row. All three frames rule it off above and pad it 15/20;
+            what the 390 master changes is that the four controls drop to a line
+            of their own 25 under the name, at their own tighter 5px gap, rather
+            than sharing the row. That is transcribed rather than left to
+            `flexWrap`, which wraps wherever the artist's name happens to run
+            out and puts the spacer in an unpredictable place. */}
+        <div style={{
           borderTop: `1px solid ${s.retro ? '#111111' : s.line2}`,
-          paddingTop: u(15), paddingBottom: u(20), flexWrap: 'wrap',
-        })}>
-          <span style={{
-            width: u(40), height: u(40), flex: 'none', borderRadius: '999px',
-            overflow: 'hidden', background: shade,
-          }}><Photo s={s} avatar initialsSize={14} /></span>
-          <span style={{
-            fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>{s.brand}</span>
-          <span style={{ flex: 1, minWidth: 0 }} />
-          <span style={act}><Bookmark size={13} /></span>
-          <span style={act}><Link2 size={13} /></span>
-          <span style={act}><Bell size={13} /></span>
-          {/* A label with nowhere to go, like the frame's "View All ›" and
-              layout 1's own play disc: this section is a picture, and the
-              pill is drawn rather than wired. */}
-          <span style={{
-            ...act, width: 'auto', height: 'auto', padding: `${u(8)} ${u(16)}`,
-            fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
-          }}>Follow</span>
+          paddingTop: u(15), paddingBottom: u(20),
+          ...(s.mob ? col('25px') : row(u(12), { flexWrap: 'wrap' })),
+        }}>
+          {s.mob ? <span style={row(u(12), { minWidth: 0 })}>{artist}</span> : artist}
+          {!s.mob && <span style={{ flex: 1, minWidth: 0 }} />}
+          {s.mob ? <span style={row('5px', { flex: 'none' })}>{actions}</span> : actions}
         </div>
       </div>
     )
@@ -2765,13 +2821,20 @@ function Video({ s }) {
       <div style={{
         width: desk ? u(392) : '100%', flex: 'none',
         background: cream, color: creamInk,
-        border: `${u(3)} solid ${rust}`, borderRadius: u(14), padding: u(14),
+        border: `${u(3)} solid ${rust}`, borderRadius: u(14),
+        // The frames' inset, which Figma states *including* the 3px stroke it
+        // draws inside the box — so all three of these run 3px wide, the
+        // repertoire's `calc(padding − border)` case. Left as it is because the
+        // desktop half of this very property already carries the same drift and
+        // moving it is a signed-off change; consistency inside one branch, the
+        // bio's rule.
+        padding: desk ? u(14) : tab ? '30px' : '10px',
         ...col(u(10), { minWidth: 0 }),
       }}>
         <div style={row('0', {
           flex: 'none', justifyContent: 'space-between', paddingBottom: u(6), gap: u(10),
         })}>
-          <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, whiteSpace: 'nowrap' }}>
+          <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5, whiteSpace: 'nowrap' }}>
             Top music video
           </span>
           <span style={metaType({ flex: 'none' })}>View All ›</span>
@@ -2781,7 +2844,7 @@ function Video({ s }) {
             message inside it, rather than leaving a rust outline round
             nothing. */}
         {!s.videos.length && (
-          <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5 }}>No videos yet.</span>
+          <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5 }}>No videos yet.</span>
         )}
         {/* The frame sizes these rows by dividing the panel's height and lets
             the thumbnail take its width from that — which only works while the
@@ -2790,13 +2853,26 @@ function Video({ s }) {
             sized by *width* instead, at the 142.9 the frame's own division
             lands on, and the row's height follows the aspect. The two agree at
             the seeded six; a longer list simply makes the panel taller, which
-            is what `items-start` on the pair is for. */}
-        <div style={col(u(23))}>
+            is what `items-start` on the pair is for.
+
+            Both narrow masters lay the same rows out **two to a line** instead,
+            at the same 23 in both directions — so the grid is what states it
+            there, and an odd count trails one half-width cell, the pricing
+            deck's rule. The thumbnail then stops being a fraction of a row and
+            becomes the frame's own 150: it is 48% of the 768 column and sits
+            *above* its lines at 390, where 150 is very nearly the whole of a
+            148.5px column. */}
+        <div style={desk ? col(u(23)) : {
+          display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: '23px', alignItems: 'start',
+        }}>
           {s.videos.map((v, i) => (
-            <div key={i} style={row(u(12), { flex: 'none', alignItems: 'flex-start' })}>
+            <div key={i} style={s.mob
+              ? col('12px', { minWidth: 0 })
+              : row(u(12), { flex: 'none', alignItems: 'flex-start' })}>
               <span style={{
                 position: 'relative', flex: 'none',
-                width: u(142.9), maxWidth: '42%',
+                width: desk ? u(142.9) : '150px', maxWidth: desk ? '42%' : '100%',
                 aspectRatio: '140 / 80', background: s.bg,
                 borderRadius: u(8), overflow: 'hidden',
               }}>
@@ -2816,9 +2892,9 @@ function Video({ s }) {
                   ...row('0', { justifyContent: 'center' }),
                 }}><Play size={9} fill="currentColor" strokeWidth={0} /></span>
               </span>
-              <span style={col(u(7.4), { flex: 1, minWidth: 0 })}>
+              <span style={col(u(7.4), s.mob ? { minWidth: 0, width: '100%' } : { flex: 1, minWidth: 0 })}>
                 <span style={{
-                  fontFamily: s.display, fontSize: u(16), lineHeight: 1.2,
+                  fontFamily: s.display, fontSize: rowSz, lineHeight: 1.2,
                   letterSpacing: s.dls,
                   // The accent is not guaranteed to read on `paper` (Lime's is
                   // acid green on pale lime), so only Retro's frame-literal
@@ -2850,10 +2926,16 @@ function Video({ s }) {
     // there is nothing in either that should take 250px of it at twelve videos.
     // So the two simply end where they end; at the seeded six the panel runs
     // about 20px past the stage's rule.
+    //
+    // Below 1180 the two are one column, which is what both masters draw. The
+    // 390 one sets the gap at nothing at all: the artist row's own 20px of
+    // bottom padding is the whole of the space between its Follow pill and the
+    // panel's outline, and that is the frame's picture rather than an oversight
+    // — it is the same 20 the 768 master stands 32 further off.
     return (
       <div style={desk
         ? row(u(40), { alignItems: 'flex-start' })
-        : col(u(28), { alignItems: 'stretch' })}>
+        : col(tab ? '32px' : '0', { alignItems: 'stretch' })}>
         {stage}
         {panel}
       </div>
