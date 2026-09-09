@@ -4971,11 +4971,12 @@ function Calendar({ s }) {
     )
   }
 
-  // v1 — Booking Calendar layout 2 · Bold slot list (964:64650, 1328 × 896 on
-  // the 1440 page, so every number below is the frame's × 0.82): a rust head
-  // carrying the artist's mark, the booking flow's own links and the section
-  // heading, over a cream table of named slots, over a foot that names the one
-  // the visitor is on.
+  // v1 — Booking Calendar layout 2 · Bold slot list, one composition across
+  // three frames: the 768 (986:10607) and 390 (986:10800) masters verbatim, the
+  // 1440 one (964:64650, 1328 × 896 on the page) on the 1180 canvas at × 0.82,
+  // which is the whole of `z` below. A rust head carrying the artist's mark,
+  // the booking flow's own links and the section heading, over a cream table of
+  // named slots, over a foot that names the one the visitor is on.
   //
   // Where layout 1 offers a month and lets the visitor find a free day in it,
   // this offers the four the artist is selling. The rows are `s.calSlots`, but
@@ -4984,22 +4985,42 @@ function Calendar({ s }) {
   // not slide the pick sideways — `s.calPick` cues the same opening date, and
   // `booked` strikes a slot through here as it does a cell there. `mi` reaches
   // nothing: this design has no month to turn.
+  //
+  // The 768 master is the desktop composition at its own unscaled numbers —
+  // every box in it (the 40/28/36 head, the 18 column head, the 16 rows, the
+  // 30 corner, the 100 foot, the pill's 54) is the 1440 frame's own value, and
+  // only the type ramps. The 390 one re-sets three things and only three: it
+  // pads by 10 rather than 40, it stacks each row's mark over its weekday, and
+  // its column head becomes the two ends of one row.
   if (s.v1) {
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
     const desk = !s.narrow
-    // The width the date column is pinned at. The frame's own head states 330,
-    // which is what Soulway needs for "JUN 12" at 96; Fraunces is wider, so the
-    // pin is the measured width of the widest mark this design can draw rather
-    // than the frame's number — under it the weekdays go ragged again.
-    const DATE_COL = u(372)
-    // The 768 and 390 masters of this option are not fitted yet — this pass is
-    // desktop only — so below desktop the design keeps its structure and stops
-    // overflowing, on the page's own ramp rather than on invented numbers: the
-    // display mark drops to `dispLg`, the frame's 40/66 insets to the canvas's
-    // `gPad`/`gGap`, and the date column is no longer pinned, there being no
-    // second column left to line it up against once the row wraps.
-    const padX = desk ? u(40) : s.gPad
-    const gap = desk ? u(66) : s.gGap
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The type ramp, off `get_variable_defs` on all three masters rather than
+    // measured — every one of these comes back in the emitted CSS as the
+    // desktop default. `list` is the pill's label and goes 16 → 12 → **13**:
+    // non-monotonic, like the repertoire's, and with no column-width reason
+    // behind it either, so the values are recorded and the cause left alone.
+    const T = desk
+      ? { bodyLg: 16, bodySm: 12, bodyMd: 14, labelXs: 20, dispMd: 48, dispLg: 96, chip: 12, list: 16 }
+      : s.mob
+        ? { bodyLg: 15, bodySm: 12, bodyMd: 13, labelXs: 12, dispMd: 30, dispLg: 40, chip: 11, list: 13 }
+        : { bodyLg: 15, bodySm: 12, bodyMd: 13, labelXs: 14, dispMd: 38, dispLg: 60, chip: 11, list: 12 }
+    // The width the date column is pinned at, and it is measured rather than
+    // transcribed: the frames' own head states 330 at 1440 and again at 768,
+    // which is what Soulway needs for "JUN 12", where Fraunces is wider — so
+    // the pin is the widest mark this design can draw at each master's display
+    // size (`MAR 09`, 304.6 rendered at 1440's 96 and 232.3 at 768's 60, and
+    // wider than any of the flat four's display faces at both). Under it the
+    // weekdays go ragged again. The 390 master stacks the two, so there is no
+    // second column to line up and no pin.
+    const dateCol = s.mob ? undefined : u(desk ? 372 : 233)
+    const padX = u(s.mob ? 10 : 40)
+    // The rows' gap is the 66 all three frames put between a mark and its
+    // weekday. At 390 the only row left holding two ends is the column head,
+    // which the master spaces apart rather than gapping, so the number is a
+    // minimum there and nothing more.
+    const gap = u(s.mob ? 12 : 66)
 
     // The frame's panel is the literal cream, which under Retro is *not*
     // `paper`: this palette's lightest colour is the page ground itself, so
@@ -5047,7 +5068,7 @@ function Calendar({ s }) {
           const Tag = href ? 'a' : 'span'
           return (
             <Tag key={n.label} {...(href ? { href } : null)} style={{
-              fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+              fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
               color: headFg, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
             }}>{n.on ? `● ${n.label}` : n.label}</Tag>
           )
@@ -5061,33 +5082,42 @@ function Calendar({ s }) {
       })}>
         <div style={row(u(24), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
           <span style={{
-            fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, color: headFg,
+            fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: headFg,
           }}>{s.brand}</span>
           {flow}
         </div>
         <div style={{ width: '100%', paddingBottom: u(20), borderBottom: `1px solid ${headRule}` }}>
           {/* The one thing the section already had that this frame left room
               for: `heading` headed the flat layout alone, the scheduler frame
-              drawing no title at all. The frame's own sentence goes with it. */}
+              drawing no title at all. The frame's own sentence goes with it —
+              which is also why the head is shorter than the master's here: two
+              lines of "Find a date that works for your event" against our one
+              word. The 1440 and 768 masters both fix this text node at 571.1,
+              the desktop component's own measure, and it still binds inside the
+              768 one's 628 column; the 390 master states the full width
+              instead, so the measure stops there rather than being carried down
+              into a 326px column it could only fight. */}
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: u(48), lineHeight: 1,
-            letterSpacing: s.dls, color: headFg, maxWidth: u(571),
+            margin: 0, fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
+            letterSpacing: s.dls, color: headFg, maxWidth: s.mob ? undefined : u(571),
           }}>{s.title}</h2>
         </div>
       </div>
     )
 
-    // The frame's own column head sits 66 to the left of the column it heads —
-    // it pins "Date ↓" at 330 where the rows put the weekday at the date's own
-    // width plus the row gap. Ours takes the rows' gap so the two agree; the
-    // arrows are the frame's label, not a sort control, and nothing here reads
-    // a click.
+    // The 1440 and 768 frames' own column head sits 66 to the left of the
+    // column it heads — it pins "Date ↓" at 330 where the rows put the weekday
+    // at the date's own width plus the row gap. Ours takes the rows' gap so the
+    // two agree; the arrows are the frame's label, not a sort control, and
+    // nothing here reads a click. The 390 master has no column to head, its
+    // rows being stacked, so it hangs the two labels off the panel's two edges.
     const colHead = (
       <div style={row(gap, {
         padding: `${u(18)} ${padX}`, borderBottom: `1px solid ${rule}`,
-        fontFamily: s.body, fontSize: u(20), lineHeight: 1.26, color: hue,
+        fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, color: hue,
+        justifyContent: s.mob ? 'space-between' : undefined,
       })}>
-        <span style={{ flex: 'none', minWidth: desk ? DATE_COL : undefined }}>Date ↓</span>
+        <span style={{ flex: 'none', minWidth: dateCol }}>Date ↓</span>
         <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
       </div>
     )
@@ -5102,32 +5132,50 @@ function Calendar({ s }) {
       const onClick = s.live && sl.iso && !sl.booked
         ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
         : undefined
+      const mark = (
+        <span style={{
+          fontFamily: s.display, fontSize: u(T.dispLg), lineHeight: 0.89,
+          letterSpacing: s.dls, whiteSpace: 'nowrap', flex: 'none',
+          minWidth: dateCol,
+          textDecoration: sl.booked ? 'line-through' : undefined,
+        }}>{sl.mark}</span>
+      )
+      const day = (
+        <span style={{
+          flex: s.mob ? 'none' : '1 1 0', minWidth: 0,
+          fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+        }}>{sl.day}</span>
+      )
       return (
         <div key={i} onClick={onClick} style={row(gap, {
           padding: `${u(16)} ${padX}`, borderBottom: `1px solid ${rule}`,
-          flexWrap: desk ? undefined : 'wrap',
           color: sl.booked ? gone : ink, cursor: onClick ? 'pointer' : undefined,
         })}>
-          <span style={{
-            fontFamily: s.display, fontSize: desk ? u(96) : s.dispLg, lineHeight: 0.89,
-            letterSpacing: s.dls, whiteSpace: 'nowrap', flex: 'none',
-            minWidth: desk ? DATE_COL : undefined,
-            textDecoration: sl.booked ? 'line-through' : undefined,
-          }}>{sl.mark}</span>
-          <span style={{
-            flex: '1 1 0', minWidth: 0,
-            fontFamily: s.body, fontSize: u(20), lineHeight: 1.26,
-          }}>{sl.day}</span>
+          {/* The 390 master stacks the mark over the weekday, tight against it
+              at no gap at all, and leaves the availability block where it is.
+              The column goes in at that width alone, the gallery's rule: at the
+              other two the two spans are the row's own children and the desktop
+              tree is untouched.
+              The row lands 1.4px over each master's stated height (86.4 against
+              768's 85, 83.7 against 390's 83), because Figma strokes a padded
+              frame inside the height it states — the repertoire's
+              `calc(padding − border)` case, carried here for the reason the
+              bio's pill carries it: the desktop half of this very property has
+              the same drift, and consistency inside one branch beats accuracy
+              in half of it. */}
+          {s.mob
+            ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
+            : <>{mark}{day}</>}
           {/* Each line is rendered or not rather than printed blank — a column
               gap is spent on an empty span the same as on a full one. */}
           <div style={col(u(2), { flex: 'none', alignItems: 'flex-end', textAlign: 'right' })}>
             {!!sl.kind && (
-              <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, whiteSpace: 'nowrap' }}>
+              <span style={{ fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, whiteSpace: 'nowrap' }}>
                 {sl.kind}
               </span>
             )}
             {!!sl.price && (
-              <span style={{ fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap' }}>
+              <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, whiteSpace: 'nowrap' }}>
                 {sl.price}
               </span>
             )}
@@ -5149,28 +5197,55 @@ function Calendar({ s }) {
         {s.calSlots.length === 0 ? (
           <div style={{
             padding: `${u(16)} ${padX}`, borderBottom: `1px solid ${rule}`,
-            fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: gone,
+            fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: gone,
           }}>No dates yet.</div>
         ) : s.calSlots.map(slotRow)}
-        <div style={row(u(24), {
-          minHeight: u(100), padding: `${u(12)} ${padX}`, flexWrap: 'wrap',
+        {/* The foot pads by 20 at 390 where its own rows pad by 10 — the
+            master's own number on both sides of it, the repertoire's 390 pager
+            band taking 20 against a 10 page inset.
+            It is also the one place the 390 master is not followed. It keeps
+            the pill beside the line and pays for it out of the line, which gets
+            78px and wraps its "Thursday evening selected" to three; our line is
+            `enquiryLine`'s composed sentence, and on a canvas 24px narrower
+            than the frame the same division leaves it 54 — not a wrap but a
+            break inside "Thursday,". So the pill takes its own row under the
+            line, at the column's own left edge, which is where the fallback
+            this replaced already put it. The media player's rule: honouring a
+            master that destroys its own content publishes the damage. */}
+        <div style={(s.mob ? col : row)(u(s.mob ? 12 : 24), {
+          minHeight: u(s.mob ? 84 : 100),
+          padding: `${u(12)} ${u(s.mob ? 20 : 40)}`,
+          ...(s.mob ? { alignItems: 'flex-start' } : { flexWrap: 'wrap' }),
         })}>
-          <div style={row(u(12), { flex: '1 1 0', minWidth: u(200) })}>
+          <div style={row(u(12), s.mob
+            ? { width: '100%' }
+            : { flex: '1 1 0', minWidth: u(200) })}>
             {/* No pick, no chip — the foot then prints the prompt, which is
                 what an emptied or fully booked list leaves it on. */}
             {!!cur && (
               <span style={{
                 flex: 'none', background: s.ac, color: headFg, borderRadius: '999px',
                 padding: `${u(6)} ${u(12)}`, fontFamily: s.body, fontWeight: 700,
-                fontSize: u(12), lineHeight: 1, letterSpacing: u(-0.72), whiteSpace: 'nowrap',
+                fontSize: u(T.chip), lineHeight: 1,
+                // Figma states this as -6%, so it ramps with the token rather
+                // than being frozen at the desktop pixel it happens to make.
+                letterSpacing: u(-0.06 * T.chip), whiteSpace: 'nowrap',
               }}>{hit.mark}</span>
             )}
-            <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5 }}>{line}</span>
+            <span style={{ fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5 }}>{line}</span>
           </div>
           {/* The frame's pill is the ink one, with a cream disc and the arrow
-              in the accent — which is what `discFg` was added for. */}
+              in the accent — which is what `discFg` was added for. Its box does
+              not ramp at all: 54 tall on a 46 disc in all three masters, so the
+              46 is passed at both narrow widths and `full` opts the 390 canvas
+              back up to it (the 390 pricing frame's case). Only the label
+              moves, on `size/list` — and at 768 that is a 12 against the
+              desktop branch's `labelMd` 16, which is the existing diff between
+              that branch and its own frame's 16 × 0.82, not a new one. */}
           <BookPill s={s} to={s.calBookTo} label={s.calCta} glyph="arrow"
-                    disc={desk ? 38 : undefined}
+                    disc={desk ? 38 : 46}
+                    {...(desk ? null : { size: u(T.list) })}
+                    {...(s.mob ? { full: true } : null)}
                     {...(s.retro
                       ? { bg: s.tx, fg: '#FBF6EA', shadow: s.ac, discFg: s.ac }
                       : null)} />
