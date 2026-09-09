@@ -4421,12 +4421,13 @@ function Gallery({ s }) {
     )
   }
 
-  // v1 — Gallery layout 2 · Split showcase (Figma 964:64647, 1440 × 675): one
-  // hero photograph with a caption pill in its bottom-left corner, and beside
-  // it a two-column masonry of six more. The strip reads as if it ran on past
-  // the section band — the first tile in each column drops its top border and
-  // top rounding, the last drops its bottom pair — so the six are a crop of a
-  // longer wall rather than a closed block.
+  // v1 — Gallery layout 2 · Split showcase (Figma 964:64647, 1440 × 675;
+  // 984:36046, 768 × 468; 984:36070, 390 × 364): one hero photograph with a
+  // caption pill in its bottom-left corner, and beside it a two-column masonry
+  // of six more. The strip reads as if it ran on past the section band — the
+  // first tile in each column drops its top border and top rounding, the last
+  // drops its bottom pair — so the six are a crop of a longer wall rather than
+  // a closed block.
   //
   // Seven photographs for the section's seven slots, which is what makes this
   // frame fit the gallery without inventing anything: the hero is a **seat**,
@@ -4443,49 +4444,83 @@ function Gallery({ s }) {
   // picture by construction (`pick` starts at -1: nothing chosen).
   //
   // What the frame draws and this does not: nothing. What the *section* has and
-  // the frame has no room for: the heading is the caption pill's first line and
-  // the four media-source rows are gone, three of them outbound links. That is
-  // the media player's Soundcloud call three times over — see LAYOUT-2-PLAN's
-  // open questions. The frame's own two lines, `MTV "MOOD SWING"` and
-  // `FEATURED REEL`, are named here so the call can be reversed: both are
-  // claims about the artist (an MTV feature, a reel) that no field backs, the
-  // video section's rule, so the pill takes `s.title` over `s.brand` instead —
-  // two strings the artist owns, reading as a caption credit on a photograph.
+  // the frame has no room for: the heading is the caption pill's first line
+  // (its own row at 768 — below) and the four media-source rows are gone, three
+  // of them outbound links. That is the media player's Soundcloud call three
+  // times over — see LAYOUT-2-PLAN's open questions. The frame's own two lines,
+  // `MTV "MOOD SWING"` and `FEATURED REEL`, are named here so the call can be
+  // reversed: both are claims about the artist (an MTV feature, a reel) that no
+  // field backs, the video section's rule, so the pill takes `s.title` over
+  // `s.brand` instead — two strings the artist owns, reading as a caption
+  // credit on a photograph.
   //
-  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
-  // 56/46 inset is dropped for the page root's own padding, so the pair spans
-  // the content width (1052) and not the frame's 1328 × 0.82. The 37px goes out
-  // of the *hero*, because that is the frame's own mechanism — its right block
-  // is `shrink-0 w-[520px]` and its hero `flex-1` — and a hero is a photograph,
-  // which simply crops. The row's height is pinned at the frame's 583 (the
-  // repertoire's rule: pin what the frame lets flow when the frame's own
-  // `h-full` has nothing here to divide), and each tile takes its share of it
-  // as a `flex-grow`, so the six heights divide exactly as the frame's do at
-  // any canvas.
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`; the two
+  // narrow masters are used verbatim, which is the `z` switch inside it (the
+  // media player's rule). The frame's own inset — 56/46 at 1440, 30 at 768,
+  // 20/40 at 390 — is dropped for the page root's own padding, so the pair
+  // spans the content width (1052 / 688 / 346) and not the frame's. The 37px
+  // goes out of the *hero*, because that is the frame's own mechanism — its
+  // right block is `shrink-0 w-[520px]` and its hero `flex-1` — and a hero is a
+  // photograph, which simply crops. The row's height is pinned at the frame's
+  // 583 / 392 / 284 (the repertoire's rule: pin what the frame lets flow when
+  // the frame's own `h-full` has nothing here to divide), and each tile takes
+  // its share of it as a `flex-grow`, so the six heights divide exactly as the
+  // frame's do at any canvas.
+  //
+  // Neither narrow master stacks — both are the same hero-beside-strip row — so
+  // `z` carries nearly all of it and only four things genuinely differ:
+  //
+  //  · **768 unhides the component's head row**, which the desktop master
+  //    carries `hidden` (Figma 436:863) and the 390 sub-component does not have
+  //    at all. It is the only slot this design has for the section's heading,
+  //    so `s.title` moves up into it there and the caption pill keeps the
+  //    artist's name alone — each field allocated exactly once, the events
+  //    map's rule. The row's own "View list" and "✕" are dead controls and are
+  //    dropped, named here so the call can be reversed; what is left is the
+  //    label, in the frame's own 20px row so the band below stays 358.
+  //  · **The 390 rail rounds its tiles at 10** where every other tile on the
+  //    page rounds at 30. They still drop the first tile's top border and the
+  //    last tile's bottom one, so the "runs on" reading survives the radius —
+  //    only the corners it is drawn with change.
+  //  · **The 768 master hides two of the six photographs, and that is an
+  //    artefact.** Its third tile in each column is `flex: 1 0 0` under two
+  //    tiles still carrying the desktop component's own heights (123/215,
+  //    194/242 against a 358 band), so the fill has nothing left and Figma
+  //    squeezes it to `min-h-px`. That is `figma-frame-reading`'s leaked-number
+  //    case, and honouring it would leave two seats of the rotation invisible
+  //    and unclickable. The band is divided in the frame's proportions instead
+  //    — which is what this branch already does at every width.
+  //  · **The 390 rail seats ten tiles at 48.8**, all of them `flex: 1 0 0`: the
+  //    count is what divides the height there, so the section's six stand at
+  //    (284 − 20) / 3 = 88 by the master's own mechanism rather than by a ramp.
   if (s.v1) {
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
     const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
     // The frame draws hairlines, not the theme's own stroke: 1px in ink round
     // the hero (`scheme/1/stroke/1`) and 1px in the accent round every tile
     // (`sem/text/1`). Both tokens are palette values on Retro — #111 is `s.tx`
     // and #C8461C is `s.ac` — so this branch needs no literal hex at all, and
     // the flat four take their own two colours without a fallback pair.
     const bw = s.retro ? '1px' : s.bw
-    const r = u(30)
+    const r = u(s.mob ? 10 : 30)
     const seats = 7
     const active = s.live && pick >= 0 ? pick : galActive(s)
     const slot = (k) => (active + k) % seats
 
     // The masonry, column by column, in the heights the frame draws. Their
     // sums are equal by construction (563 + two 10px gaps = 583), which is what
-    // lets both columns be pure `flex-grow` against one pinned height.
-    const COLUMNS = [[123, 215, 225], [194, 242, 127]]
+    // lets both columns be pure `flex-grow` against one pinned height. The 390
+    // master's are equal instead — its ten tiles are all `flex: 1 0 0` — so the
+    // six divide the 284 band three to a column.
+    const COLUMNS = s.mob ? [[88, 88, 88], [88, 88, 88]] : [[123, 215, 225], [194, 242, 127]]
     const edge = `${bw} solid ${s.ac}`
     const grid = (
       <div style={{
-        ...(desk
-          ? { width: u(520), flex: 'none', height: '100%' }
-          : { width: '100%', aspectRatio: '520 / 583' }),
+        ...(desk ? { width: u(520), flex: 'none', height: '100%' }
+          : tab ? { flex: '1 1 auto', minHeight: 0, width: '100%' }
+          : { width: u(83), flex: 'none', height: '100%' }),
         ...row(u(10), { alignItems: 'stretch' }),
       }}>
         {COLUMNS.map((hs, ci) => (
@@ -4518,12 +4553,18 @@ function Gallery({ s }) {
                     borderLeft: edge, borderRight: edge,
                     borderTop: first ? 'none' : edge,
                     borderBottom: last ? 'none' : edge,
-                    borderRadius: first ? `0 0 ${r} ${r}` : last ? `${r} ${r} 0 0` : r,
+                    // The 390 rail rounds every tile whole; the two wider
+                    // masters square off the corners the dropped border would
+                    // have run through.
+                    borderRadius: s.mob ? r : first ? `0 0 ${r} ${r}` : last ? `${r} ${r} 0 0` : r,
                     cursor: s.live ? 'pointer' : undefined,
                   }}
                 >
                   <span style={{ position: 'absolute', inset: 0 }}>
-                    <Photo s={s} initialsSize={26} src={s.images[slot(seat)]} />
+                    {/* Placeholder initials only — the frames are photographs
+                        throughout, and Retro seeds them. The three sizes are
+                        the tile's own width read off each master. */}
+                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[slot(seat)]} />
                   </span>
                 </div>
               )
@@ -4533,10 +4574,26 @@ function Gallery({ s }) {
       </div>
     )
 
+    // The head row, 768's alone: the frame's own label slot, holding the
+    // heading the two other masters put in the caption pill's first line. The
+    // 20 is the frame's — its own row is that tall because of the ✕ we drop —
+    // and keeping it is what leaves the band below at the master's 358.
+    const head = tab && s.title ? (
+      <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+        <span style={{
+          fontFamily: s.body, fontWeight: 700, fontSize: u(11), lineHeight: 1,
+          letterSpacing: u(-0.66), color: s.tx,
+          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+        }}>{s.title}</span>
+      </div>
+    ) : null
+
     // The caption. Each line is rendered or not rather than printed blank (the
     // testimonials' rule), and with neither string the pill goes with them: a
-    // wordless block over a photograph is not one of the design's states.
-    const lines = [s.title, s.brand].filter(Boolean)
+    // wordless block over a photograph is not one of the design's states. At
+    // 768 the heading has the head row above, so only the artist's name is
+    // left here — the pill is one line there by allocation, not by truncation.
+    const lines = (tab ? [s.brand] : [s.title, s.brand]).filter(Boolean)
     const caption = lines.length > 0 && (
       <div style={{
         position: 'absolute', left: u(40), bottom: u(40),
@@ -4558,8 +4615,11 @@ function Gallery({ s }) {
             maxWidth: '100%',
             // The frame's own body face at chip size, not the label face: this
             // pill is set in Inter Bold where layout 1's corner block is Anton.
-            fontFamily: s.body, fontWeight: 700, fontSize: u(12), lineHeight: 1,
-            textTransform: 'uppercase', letterSpacing: u(-0.72),
+            // `size/chip` is 12 on the 1440 master and 11 on both narrow ones —
+            // the one token here that is not the desktop number verbatim, so it
+            // is read off `get_variable_defs` rather than left to `z`.
+            fontFamily: s.body, fontWeight: 700, fontSize: u(desk ? 12 : 11), lineHeight: 1,
+            textTransform: 'uppercase', letterSpacing: u(desk ? -0.72 : -0.66),
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>{t}</span>
         ))}
@@ -4567,25 +4627,27 @@ function Gallery({ s }) {
     )
 
     return (
-      <div style={desk
-        ? row(u(24), { alignItems: 'stretch', height: u(583) })
-        : col(u(24))}>
+      <div style={row(u(s.mob ? 14 : 24), {
+        alignItems: 'stretch', height: u(desk ? 583 : tab ? 392 : 284),
+      })}>
         <div style={{
           position: 'relative', overflow: 'hidden', minWidth: 0,
-          border: `${bw} solid ${s.tx}`, borderRadius: r,
-          ...(desk
-            ? { flex: '1 1 0', height: '100%' }
-            : { width: '100%', aspectRatio: '784 / 583' }),
+          // The hero rounds at 30 on all three masters; only the 390 rail's
+          // tiles drop to 10, so this is not `r`.
+          border: `${bw} solid ${s.tx}`, borderRadius: u(30),
+          flex: '1 1 0', height: '100%',
         }}>
           <span style={{ position: 'absolute', inset: 0 }}>
-            <Photo s={s} initialsSize={52} src={s.images[active]} />
+            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} />
           </span>
           {caption}
           {/* Last, the way the frame paints it: the sheet crosses the caption
               too, and lifts its ink off #111 by a few points. */}
           <Grain s={s} exact blend="lighten" opacity={0.29} />
         </div>
-        {grid}
+        {/* Only 768 wraps: the head row is its alone, and an extra element in
+            the desktop tree would move every row of the geometry digest. */}
+        {tab ? <div style={col(u(14), { flex: '1 1 0', minWidth: 0, height: '100%' })}>{head}{grid}</div> : grid}
       </div>
     )
   }
