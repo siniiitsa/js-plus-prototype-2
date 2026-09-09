@@ -3732,7 +3732,8 @@ function Repertoire({ s }) {
     )
   }
 
-  // v1 — Repertoire layout 2 · Mobile list (Figma 964:64646)
+  // v1 — Repertoire layout 2 · Mobile list
+  // (Figma 964:64646 at 1440, 984:35876 at 768, 984:35961 at 390)
   //
   // A phone's song list blown out to the page: a sheet running the full width
   // of the section, an ink rule under its head, then the songs as plain rows
@@ -3751,36 +3752,56 @@ function Repertoire({ s }) {
   // layout 1 stands on, so widening the root's `cream` flag would have been
   // the wrong cream anyway.
   //
-  // The inset is `s.gPad` all round (+ `s.surplus` horizontally), which is
-  // HeaderV0's rule for the same reason: past the canvas the frame was drawn
-  // at, the sheet keeps bleeding while its content stays on the page's measure.
-  // At desktop `gPad` is 46, which is exactly the frame's own 56 × 0.82 — the
-  // two agree here, unlike `padX`'s 64.
+  // The desktop inset is `s.gPad` all round (+ `s.surplus` horizontally),
+  // which is HeaderV0's rule for the same reason: past the canvas the frame was
+  // drawn at, the sheet keeps bleeding while its content stays on the page's
+  // measure. At desktop `gPad` is 46, which is exactly the frame's own 56 ×
+  // 0.82 — the two agree there, unlike `padX`'s 64, and they stop agreeing at
+  // both narrow widths (see `padH` below).
   //
-  // Everything else is the 1440 frame × 0.82 through `u()`. Three readings of
-  // the frame that are not transcriptions:
+  // Everything else is the frame being drawn × `z` through `u()` — 0.82 on the
+  // 1180 canvas and the identity on the two narrow ones. Three readings that
+  // are not transcriptions:
   //
   //  - The heading is `s.title`, not the frame's literal "Repertoire". Layout 1
   //    sets that word as an eyebrow *over* the heading; layout 2 has one
   //    display line, and giving it to the literal would leave the section's
   //    heading field editing nothing here — the calendar's `cta` and the form's
   //    `email` before this pass got to them. On the seed it reads "12 Songs".
-  //  - The rows' 84.2px height is what the frame's `flex-1` division of a fixed
-  //    421 landed on, and our list has no height to divide (the video panel's
-  //    lesson). It is pinned at that number instead, so the picture holds at
+  //  - Each frame's row height is what its own `flex-1` division of a fixed
+  //    list landed on — 84.2 of 421 at 1440, 82.6 of 413 at 768, 58 of 290 at
+  //    390 — and our list has no height to divide (the video panel's lesson).
+  //    Each is pinned at its master's number instead, so the picture holds at
   //    any count and a short last page simply makes the sheet shorter.
-  //  - The frame's right-hand column is the phone component instanced a second
-  //    time, so it carries the phone's own 20px insets on *both* sides — which
-  //    would leave the right column's type 20px off the window edge where
+  //  - The 1440 frame's right-hand column is the phone component instanced a
+  //    second time, so it carries the phone's own 20px insets on *both* sides —
+  //    which would leave the right column's type 20px off the window edge where
   //    everything else on the page is 46. The 20 is kept as the *interior*
   //    inset, either side of the divider, and both outer edges take `gPad`.
   //    Nothing moves in the picture: the info block is `flex: 1` and its text
   //    is left-aligned, so the right padding only decides where a long title
-  //    is clipped.
+  //    is clipped. The narrow masters need none of this — they repeat their
+  //    own page inset on all four sides of both columns, and it is small
+  //    enough that the seam is not worth reading past.
   if (s.v1) {
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
     const desk = !s.narrow
-    const bw = s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw
+    const tab = isTablet(s)
+    // The 768 (`984:35876`) and 390 (`984:35961`) masters are the *desktop*
+    // composition at its own numbers — the same head, the same two columns of
+    // five and the same seven-slot pager — so the scale below is the identity
+    // on both narrow canvases where the 1440 frame lands on the 1180 one at
+    // × 0.82. One switch then carries nearly every box in the branch.
+    //
+    // What the masters do move is the type, and `get_variable_defs` resolves
+    // each mode's tokens outright rather than leaving them to be measured off
+    // a render: `size/display-sm` 40 → 32 → 26, `size/list` 16 → 12 → **13**
+    // (up again at 390, where the column is 195 wide against 768's 384),
+    // `size/body-md` 14 → 13 → 13, and `size/body-sm` 12 at all three.
+    // `border/default` is 3 at both narrow widths, which is the desktop 2.5
+    // unscaled — so the rule below goes through the switch as well.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const bw = s.retro ? u(3) : s.bw
     // The sheet and its ink. Retro's own `paper` IS the beige page ground, so
     // the cream is the literal box/1 again; the flat four have a real second
     // paper and take it, with `paperFg` for the ink, because `s.tx` is chosen
@@ -3809,14 +3830,37 @@ function Repertoire({ s }) {
     // cream the bio's note says Retro's chips take on every hue: that held for
     // the bio's and the header's frames, and this one contradicts it.
     const chipFg = s.retro ? s.bg : s.acFg
-    // The page inset. Horizontally it also carries `surplus`, so a window wider
-    // than the canvas widens the sheet and not the measure.
-    const padH = `calc(${s.surplus} + ${s.gPad})`
-    // Ten to a page — the frame's five rows in each of its two columns. The
-    // seeded twelve songs therefore make two pages, so the reference picture
-    // gains a working pager where the frame draws a fictional twenty; that is
-    // the events map's rule, the row being derived from the list.
-    const perPage = desk ? 10 : 6
+    // The page inset. The three frames' own is 56 → 30 → 10, and only the
+    // desktop one has a ramp token that matches it (`gPad` 46 = 56 × 0.82):
+    // at 768 `gPad` is 32 against the master's 30 and at 390 it is 20 against
+    // 10, so the two narrow numbers are the masters' verbatim and are
+    // deliberately NOT `s.gPad`. The 10 is what leaves the 390 row's info block
+    // its 155px, and Fraunces runs ~1.3× the frame's Soulway at this size, so
+    // it is the width the titles can least afford to give back.
+    // Horizontally it also carries `surplus`, so a window wider than the canvas
+    // widens the sheet and not the measure.
+    const padH = `calc(${s.surplus} + ${desk ? s.gPad : u(tab ? 30 : 10)})`
+    // The two vertical insets, which the masters part company over where the
+    // 1440 frame draws one 56 all round: 60 above the head and 60 around the
+    // pager at 768, but 40 and 20 at 390.
+    const headPadY = desk ? s.gPad : u(tab ? 60 : 40)
+    const footPadY = desk ? s.gPad : u(tab ? 60 : 20)
+    // The row's own height. Every master divides a stated list height between
+    // rows that are `flex: 1 0 0`, so these three are division results rather
+    // than numbers the frames state — 5 × 82.6 = the 768 list's 413, 5 × 58 =
+    // the 390 list's 290. We have no height to divide (the list is what makes
+    // the section tall), so each is pinned at what its own master landed on.
+    const rowH = u(desk ? 84.2 : tab ? 82.6 : 58)
+    // Ten to a page — five rows in each of two columns. **Both narrow masters
+    // keep the two columns**, at 384 and 195, rather than collapsing to one:
+    // the unfitted fallback this replaces dropped to a single column of six,
+    // which is what layout 1's narrow masters do and not what either of these
+    // draws — 195 is a tight column, and it is the one they chose. The seeded
+    // twelve songs
+    // therefore make two pages at every width, so the reference picture gains a
+    // working pager where the frames draw a fictional twenty; that is the
+    // events map's rule, the row being derived from the list.
+    const perPage = 10
 
     const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
     const needle = q.trim().toLowerCase()
@@ -3833,9 +3877,14 @@ function Repertoire({ s }) {
     // to the left one, so a part-filled page keeps both columns standing and
     // the divider between them keeps its full height.
     const half = Math.ceil(shown.length / 2)
-    const columns = (desk ? [shown.slice(0, half), shown.slice(half)] : [shown])
+    const columns = [shown.slice(0, half), shown.slice(half)]
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob)
+    // `false`, not `s.mob`: `pageWindow`'s narrow mode keeps three numbered
+    // buttons, which is what layout 1's own 390 master draws. This composition
+    // draws the *desktop* row at both narrow widths — the 390 master's seven
+    // buttons are the 768 one's seven — and it fits, because they divide the
+    // measure and simply land at 46 where 768 lands at 94.
+    const { labels, at } = pageWindow(pages, pg, false)
 
     const chipRow = (
       <div style={row('0', {
@@ -3867,7 +3916,7 @@ function Repertoire({ s }) {
     )
 
     const searchType = {
-      fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: ink,
+      fontFamily: s.body, fontSize: u(desk ? 14 : 13), lineHeight: 1.5, color: ink,
     }
     const searchBox = (
       <div style={row(u(8), {
@@ -3877,8 +3926,11 @@ function Repertoire({ s }) {
         // clips the difference. Centring in the stated height draws the same
         // pill without asking the box to overflow.
         padding: `0 ${u(20)}`, height: u(41),
-        width: desk ? u(380) : '100%',
-        flex: desk ? `0 1 ${u(380)}` : undefined,
+        // 380 at 1440 and at 768 alike — the 768 master leaves it beside the
+        // toggle in a `space-between` row and pays for it out of the gap. Only
+        // 390, where the two stack, gives it the whole measure.
+        width: s.mob ? '100%' : u(380),
+        flex: s.mob ? undefined : `0 1 ${u(380)}`,
         minWidth: 0, overflow: 'hidden',
       })}>
         <Search size={desk ? 13 : 15} style={{ flex: 'none' }} />
@@ -3911,19 +3963,28 @@ function Repertoire({ s }) {
         borderBottom: `1px solid ${ink}`,
       }}>
         <div style={col(u(12), {
-          // The rule the frame paints at the head's foot sits *inside* its 56,
-          // so the padding gives the border back — the toggle's rule again.
-          padding: `${s.gPad} ${padH} calc(${s.gPad} - ${bw})`,
+          // The rule each frame paints at the head's foot sits *inside* its own
+          // inset, so the padding gives the border back — the toggle's rule
+          // again, and the reason the two narrow heads measure exactly their
+          // masters' 205 and 210.
+          padding: `${headPadY} ${padH} calc(${headPadY} - ${bw})`,
           borderBottom: `${bw} solid ${ink}`,
         })}>
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: u(40),
+            margin: 0, fontFamily: s.display, fontSize: u(desk ? 40 : tab ? 32 : 26),
             lineHeight: 1, letterSpacing: s.dls, color: s.ac,
           }}>{s.title}</h2>
           <div style={row(u(16), {
-            justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(12),
+            // Stacked at 390, the column direction IS the row gap, so the
+            // master's own 10 has to be set here and not in the 16 above —
+            // which reaches the wrapped second line of chips at the other two
+            // widths and nothing at this one.
+            justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(s.mob ? 10 : 12),
             flexDirection: s.mob ? 'column' : 'row',
-            alignItems: s.mob ? 'stretch' : 'center',
+            // Stacked, the toggle keeps its content width — the 390 master
+            // draws it at 217 in a 370 row and gives the whole measure to the
+            // search box under it, which carries its own `width: 100%`.
+            alignItems: s.mob ? 'flex-start' : 'center',
           })}>
             {chipRow}
             {searchBox}
@@ -3932,7 +3993,7 @@ function Repertoire({ s }) {
 
         {shown.length === 0 ? (
           <div style={{
-            height: u(84.2), padding: `0 ${padH}`, borderBottom: `${bw} solid ${ink}`,
+            height: rowH, padding: `0 ${padH}`, borderBottom: `${bw} solid ${ink}`,
             display: 'flex', alignItems: 'center',
             // `muted` is 64% of the page's own text colour, so it is the same
             // wrong token as `repHue` above on a sheet the page did not choose.
@@ -3940,7 +4001,7 @@ function Repertoire({ s }) {
             color: s.retro ? s.muted : s.paperLine,
           }}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}</div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: desk ? '1fr 1fr' : '1fr' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
             {columns.map((colSongs, ci) => (
               <div key={ci} style={{
                 minWidth: 0,
@@ -3953,10 +4014,15 @@ function Repertoire({ s }) {
               }}>
                 {colSongs.map((t) => (
                   <div key={t.n} style={row('0', {
-                    height: u(84.2), overflow: 'hidden',
+                    height: rowH, overflow: 'hidden',
                     borderBottom: `${bw} solid ${ink}`,
-                    paddingLeft: ci === 0 ? padH : u(20),
-                    paddingRight: ci === 0 && columns.length > 1 ? u(20) : padH,
+                    // The 1440 frame insets the pair of columns by its own 56
+                    // and parts them by 20 either side of the divider; both
+                    // narrow masters simply repeat their page inset on all four
+                    // sides of both columns, so at 768 and 390 the inner
+                    // padding is the outer one.
+                    paddingLeft: ci === 0 || !desk ? padH : u(20),
+                    paddingRight: ci === 0 && desk ? u(20) : padH,
                   })}>
                     {/* The frame lets the number size itself and spends a 14px
                         gap after it — 20px in all for a single digit. Pinned at
@@ -3971,8 +4037,15 @@ function Repertoire({ s }) {
                       {/* Literal sizes, not `s.title`: the view-model's content
                           `title` shadows the RAMP size of that name. */}
                       <span style={{
-                        fontFamily: s.display, fontSize: u(16), lineHeight: 1.2,
-                        letterSpacing: s.dls,
+                        // `size/list`, the one token here that does not run
+                        // down the widths: 16 → 12 → **13**. The 390 mode sets
+                        // it a point larger than the 768 one even though its
+                        // column is 195 against 384 — a phone's floor, not a
+                        // measure — so do not "fix" it into a ramp. The
+                        // rendered set widths say the same thing as the token
+                        // (43 → 47 for "Valerie", a ratio of 13/12).
+                        fontFamily: s.display, fontSize: u(desk ? 16 : tab ? 12 : 13),
+                        lineHeight: 1.2, letterSpacing: s.dls,
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>{t.title}</span>
                       <span style={{
@@ -3987,16 +4060,18 @@ function Repertoire({ s }) {
           </div>
         )}
 
-        {/* The frame's seven buttons divide the whole measure, so the row is
-            `grow` and the count is the pager's own. At one page `pageWindow`
-            returns nothing and the row goes with it — the pager's rule — but
-            the foot inset stays, or the sheet would end flush on the last
-            row's rule; it drops to the head's own 46 rather than keeping the
-            band a vanished row of buttons was sitting in. */}
-        <div style={{ padding: labels.length > 0 ? `${s.gPad} ${padH}` : `0 0 ${s.gPad}` }}>
+        {/* The frames' seven buttons divide the whole measure, so the row is
+            `grow` and the count is the pager's own — 94.3 wide at 768 and 46 at
+            390, both of them that master's measure less six 8px gaps. At one
+            page `pageWindow` returns nothing and the row goes with it — the
+            pager's rule — but the foot inset stays, or the sheet would end
+            flush on the last row's rule; it drops to the band's own inset
+            rather than keeping the band a vanished row of buttons was sitting
+            in. */}
+        <div style={{ padding: labels.length > 0 ? `${footPadY} ${padH}` : `0 0 ${footPadY}` }}>
           {labels.length > 0 && (
             <Pager s={s} colour={hue} fill={blush} frame={{
-              size: 44.3, radius: u(20), bw,
+              size: desk ? 44.3 : 54, radius: u(20), bw,
               idle, activeFg: pageFg,
               // The frame outlines the current page in the same olive as the
               // rest. The flat four cannot: `pillBg` is the palette's lightest
