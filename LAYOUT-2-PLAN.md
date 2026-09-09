@@ -82,7 +82,7 @@ Status says otherwise.
 | 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 | **done** `9bc548d` |
 | 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 | **done** `dc07cb8` |
 | 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | **done** `46747ad` |
-| 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | todo |
+| 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | **done** `7c43ca6` |
 | 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | todo |
 | 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | todo |
 | 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 | todo |
@@ -107,7 +107,9 @@ Five things about these that a fresh session would otherwise re-derive.
   fits" in the frame may not here — verify against **content** edges, never against frame `y`.
 - **Two sections change shape rather than shrink.** The events map goes 823 → 1286 (the featured
   panel stacks over the list) and the gallery 468 → 364. Read the render before assuming the
-  desktop composition simply reflows.
+  desktop composition simply reflows. *(The gallery turned out not to be one: both of its narrow
+  masters are the desktop row, and the 364 is the band getting shorter — see its notes below.
+  The events map's 1286 is still unread.)*
 - **The footer stays out of scope** at both widths, for the desktop reason: `NVAR.footer` is 1
   and the fitted footer is already this design.
 
@@ -976,6 +978,55 @@ Learned on the repertoire's narrow masters (section 5):
   81 elements at `?w=desktop`, zero rows differing — which is only meaningful
   because every number in the branch now flows through `z`, `bw` (`u(3)`)
   included. Take it in the harness, in one tab, before committing.
+
+Learned on the gallery's narrow masters (section 6):
+
+- **A master can *unhide* a node the desktop master hides, and that is the
+  cleanest kind of narrow diff there is.** The 768 head row is
+  `hidden="true"` on the 1440 master (`get_metadata` prints the attribute;
+  the emitted code simply omits the node, so `get_design_context` alone would
+  never have shown it) and absent from the 390 sub-component, so it belongs to
+  one width. Read the desktop metadata beside the narrow one for exactly this:
+  it is how you tell "the master added a row" from "the desktop fit missed a
+  row".
+- **A slot that appears at one width only is where a field the design had
+  nowhere for finally goes.** The heading was the caption pill's first line
+  because the desktop frame had no other place; at 768 it has one, so it moves
+  and the pill keeps the artist's name alone. Allocate each field exactly once
+  (the events map's rule) rather than printing it in both — and check the
+  *frame's* own copy for the same duplication before transcribing it.
+- **`flex: 1 0 0` under siblings carrying leaked desktop heights is the tell
+  for a squeezed master.** The 768 masonry's third tile in each column is a
+  fill; its two siblings still state 123/215 and 194/242 against a 358 band,
+  so Figma collapses the fill to `min-h-px` and the render shows four tiles
+  where the component has six. That is not a four-tile tablet design — a
+  designer does not leave two 1px frames in one. Divide the band in the
+  frame's proportions instead: it shows all six, and it is what the desktop
+  branch's `flex: ${h} 1 auto` already does. **Honouring a squeeze costs
+  content**, which is the one thing a fidelity argument never buys.
+- **When every tile in a rail is `flex: 1 0 0`, the count is the design and
+  the height is derived.** The 390 rail seats ten at 48.8; the section has
+  six, so the same mechanism at our count stands them at (284 − 20) / 3 = 88.
+  No ramp, no invented number, and nothing to reconcile with the frame — the
+  frame states the mechanism, not the pixels. Contrast the bio's five chips
+  (a *count* default to ignore) — here the count is ours by construction.
+- **Wrap at the width that needs it, not at all three.** The head row wants a
+  column round it; putting that column in at every width inserts an element
+  into the desktop tree and every row of the `git stash` digest shifts under
+  it. `tab ? <div col>{head}{grid}</div> : grid` keeps the desktop DOM
+  identical, which is what makes the digest a test rather than a diff to read.
+- **`size/chip` is 12 at 1440 and 11 at both narrow widths** — one
+  `get_variable_defs` call, and the only token in this section that is not the
+  desktop number verbatim. Everything else the two masters state (the 30
+  radius, the 10 gaps, the pill's 40/14/10/4, the 1px hairlines) is the
+  desktop component's own value unscaled, the header's rule holding for a
+  fourth section.
+- **A placeholder ramp is still an invented number; say so where it is
+  written.** `Photo`'s `initialsSize` goes 52/34/26 on the hero and 26/20/10
+  on the tiles, read off each master's tile *width*. The frames are
+  photographs throughout and Retro seeds them, so this is only ever seen on
+  the flat four and mid-edit — which is the reason it is allowed to be
+  approximate and the reason it has to be commented.
 
 ## Open questions
 
