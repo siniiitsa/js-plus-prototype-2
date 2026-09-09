@@ -6848,12 +6848,58 @@ function EnquiryForm({ s }) {
   //  - The stage photograph is `s.formPhoto`, a new slot: this section's
   //    `image` is the artist, which layout 1 draws as the credit row's circle
   //    and layout 2 draws as the same circle in the same block.
+  //
+  // §5.5 — the narrow masters are `986:11591` (768 × 865) and `986:11633`
+  // (390 × 912), used verbatim, so every number below runs through `u()`'s
+  // `z` switch rather than a second set of literals. Two structural facts,
+  // both read off `get_metadata` before any render:
+  //
+  //  - **768 keeps the two columns and only 390 stacks** — the events map's
+  //    case, the second in this pass. At 768 the sheet's 708 of measure is
+  //    split 334 + 40 + 334, so the card stops being a fixed 450 beside a
+  //    flexible column and the two become equal halves. Every `desk` in the
+  //    branch therefore had to be re-asked as `desk`, `tab` or `s.mob`.
+  //  - **The promises/credit block is a row at 1440 and at 390, and a column
+  //    at 768** — the one width where it is not the frame's own space-between
+  //    row. At 390 its two halves come to exactly the 370 measure, so they sit
+  //    flush rather than spaced.
   if (s.v1) {
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    // The 1440 frame lands on the 1180 canvas at × 0.82; the 768 and 390
+    // masters are their own canvases' width, so they are used unscaled. One
+    // switch inside `u()` carries the whole branch — the boxes, the paddings,
+    // the pill, the disc and the offset block all flow through it.
     const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+
+    // The type ramp, `get_variable_defs` on all three masters rather than
+    // measured: the emitted CSS prints the desktop default at every width.
+    //
+    //   size/display-sm  40 → 32 → 26      size/label-sm  16 → 13 → 12
+    //   size/title       24 → 19 → 18      size/label-xs  20 → 14 → 12
+    //   size/list        16 → 12 → 13      size/body-sm   12 → 12 → 12
+    //
+    // `size/list` goes back **up** at 390, the repertoire's and the pricing
+    // section's non-monotonic case a third time. There is no column-width
+    // explanation here either — the card is 402 of measure at 1440, 286 at 768
+    // and 322 at 390 — so the token is written down and the cause left alone.
+    // `email` is the odd one out: it is the sent card's plain-text address,
+    // a state no frame draws, so its ramp is invented rather than read.
+    const T = desk
+      ? { disp: 40, title: 24, list: 16, labelSm: 16, labelXs: 20, bodySm: 12, email: 14 }
+      : s.mob
+        ? { disp: 26, title: 18, list: 13, labelSm: 12, labelXs: 12, bodySm: 12, email: 13 }
+        : { disp: 32, title: 19, list: 12, labelSm: 13, labelXs: 14, bodySm: 12, email: 13 }
+
     // The page inset. Horizontally it also carries `surplus`, so a window wider
-    // than the canvas widens the sheet and not the measure.
-    const padH = `calc(${s.surplus} + ${s.gPad})`
+    // than the canvas widens the sheet and not the measure. A bleed design
+    // supplies its own inset (the repertoire's rule), and below desktop the
+    // frames' own stop being one number: 30/60 at 768 and 10/40 at 390, against
+    // `s.gPad`'s 32 and 20. Taking the frames' gives the sheet exactly their
+    // measure — 708 in a 768 canvas and 370 in a 390 one.
+    const padV = desk ? s.gPad : s.mob ? '40px' : '60px'
+    const padH = `calc(${s.surplus} + ${desk ? s.gPad : s.mob ? '10px' : '30px'})`
 
     // The ground is the pill hue for all five: Retro's IS the frame's `#D8A227`,
     // and it is by construction the palette's lightest tag, so a section-wide
@@ -6888,12 +6934,15 @@ function EnquiryForm({ s }) {
     // visitor types into it — the canvas span and the placeholder are then the
     // same glyphs by construction.
     const up = (t) => String(t).toUpperCase()
-    const boxType = labelStyle(s, u(16), { textTransform: 'none' })
+    const boxType = labelStyle(s, u(T.labelSm), { textTransform: 'none' })
     const boxShell = (bad) => ({
       border: `1px solid ${cardLine}`, borderRadius: '999px', background: 'transparent',
       // Stated height, not padding: Figma strokes inside its 41.6, so a
-      // border-box box of that height draws the frame's pill exactly.
-      height: u(41.6), padding: `0 ${u(14)}`, width: '100%', margin: 0,
+      // border-box box of that height draws the frame's pill exactly. The
+      // narrow masters state 38 and 37 — their own numbers, and the only box
+      // inside the card that moves at all: its padding, its radius, its gaps
+      // and its pill are the desktop component's at both narrow widths.
+      height: desk ? u(41.6) : s.mob ? '37px' : '38px', padding: `0 ${u(14)}`, width: '100%', margin: 0,
       // No palette has a red, so a refused box thickens its own ring in the
       // card's accent — inset, so the stated height does not grow and nothing
       // below it moves. Layout 1's rule, in the shape a 999px pill can wear.
@@ -6909,11 +6958,17 @@ function EnquiryForm({ s }) {
       background: s.deep, color: s.retro ? s.ac : s.deepFg,
       borderRadius: '999px', width: '100%', boxSizing: 'border-box',
       padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`,
-      textDecoration: 'none', boxShadow: hard(s, s.ac, 4.1, 4.1),
-      fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+      // Figma's "Retro/Poster" — a 5,5 offset in `sem/text/1` — at each
+      // master's own scale, which is 4.1 on the 1180 canvas.
+      textDecoration: 'none', boxShadow: hard(s, s.ac, 5 * z, 5 * z),
+      fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
       ...extra,
     })
-    const discDia = Math.round(44 * 0.82)
+    // The frame draws a 46 × 44 oval; the desktop half of this branch already
+    // rounds it to a 36px circle off the height, so the narrow one takes the
+    // same reading at 44 — consistency inside one branch over accuracy in half
+    // of it (the bio's `/featured` pill rule). 5 + 44 + 5 is the pill's 54.
+    const discDia = Math.round(44 * z)
     const arrowDisc = (
       <span style={{
         width: discDia, height: discDia, borderRadius: '999px', flex: 'none',
@@ -6924,7 +6979,7 @@ function EnquiryForm({ s }) {
 
     const foot = (
       <p style={{
-        margin: 0, fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+        margin: 0, fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
         textAlign: 'center', color: cardInk,
       }}>{s.formPara}</p>
     )
@@ -6934,20 +6989,24 @@ function EnquiryForm({ s }) {
         // The sheet: out to the section's own edges, past the root's padding.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
         background: ground, color: groundFg,
-        padding: `${s.gPad} ${padH}`,
+        padding: `${padV} ${padH}`,
         display: 'flex', gap: u(40), alignItems: 'flex-start',
-        // Below desktop the two columns stack, the card going under the block
-        // it sits beside. The 768 and 390 masters for this option are unfitted
-        // — see LAYOUT-2-PLAN's open question 11 — so the narrow canvases only
-        // degrade on the page's own ramp rather than on a second frame.
-        flexDirection: desk ? 'row' : 'column',
+        // Only 390 stacks. The 768 master keeps the frame's two columns, at
+        // 334 + 40 + 334 in its 708 of measure — so they stop being "a
+        // flexible block beside a 450 card" and become equal halves.
+        flexDirection: s.mob ? 'column' : 'row',
       }}>
-        <div style={col(u(30), { flex: desk ? 1 : 'none', minWidth: 0, width: desk ? undefined : '100%' })}>
+        <div style={col(u(30), {
+          flex: desk ? 1 : tab ? '1 1 0' : 'none',
+          minWidth: 0, width: s.mob ? '100%' : undefined,
+        })}>
           <div style={{
-            // The frame's 437 on desktop; on the narrow canvases the photo is
-            // the page's own hero band rather than a number this design has a
-            // frame for.
-            height: desk ? u(437) : (s.mob ? '220px' : '300px'),
+            // 437 at 1440 *and* at 768 — the desktop component's own number,
+            // unscaled, which is the narrow pass's usual finding. Only 390
+            // states its own, 262.
+            height: u(s.mob ? 262 : 437),
+            // A corner-walk of both narrow renders gives the same profile as
+            // the desktop one, so the 30 is verbatim at all three widths.
             borderRadius: u(30), border: `1px solid ${mark}`,
             // The empty slot takes the card's pair, not `s.soft`/`s.muted`:
             // both are rgba of the page's text colour, and this sheet is not
@@ -6956,42 +7015,54 @@ function EnquiryForm({ s }) {
           }}>
             {/* `null`, not undefined: an emptied stage photo must show the
                 placeholder rather than fall through to `s.image`, which here is
-                the portrait in the credit row below (photos.js's Remove rule). */}
+                the portrait in the credit row below (photos.js's Remove rule).
+                Both `initialsSize`s in this block are invented — the frames are
+                photographs throughout and Retro seeds them, so they are only
+                ever seen on the flat four and mid-edit. */}
             <Photo s={s} src={s.formPhoto ?? null} ink={cardInk} initialsSize={desk ? 56 : 40} />
           </div>
           <h2 style={{
             margin: 0, fontFamily: s.display,
-            // The frame's 40 is Soulway's. On the 390 canvas the display faces
-            // that set wider than it — the calendar's lesson — take the page's
-            // own step instead.
-            fontSize: s.mob ? s.dispSm : u(40),
+            // `size/display-sm`, which is the one token here that ramps at both
+            // narrow widths. Its 26 at 390 is what `s.dispSm` happened to be,
+            // so only the 768 line moves (34 → 32).
+            fontSize: u(T.disp),
             lineHeight: 1, letterSpacing: s.dls, color: mark,
             overflowWrap: 'break-word',
           }}>{s.title}</h2>
-          <div style={row(u(20), {
-            justifyContent: 'space-between', alignItems: 'flex-end',
-            flexWrap: 'wrap', rowGap: u(20),
-          })}>
+          {/* Frame 284. A space-between row at 1440 and at 390 — where its two
+              halves come to the master's 370 exactly, so they sit flush — and
+              a **column** at 768, the one width that stacks them. Transcribed
+              rather than left to `flexWrap` (the video section's rule), and
+              `alignItems` flips with the axis (the testimonials'): `flex-end`
+              bottom-aligns the credit against the last tick in a row, and
+              `flex-start` stops the stacked credit stretching to the measure. */}
+          <div style={tab
+            ? col(u(30), { alignItems: 'flex-start' })
+            : row(u(20), {
+              justifyContent: 'space-between', alignItems: 'flex-end',
+              ...(desk ? { flexWrap: 'wrap', rowGap: u(20) } : null),
+            })}>
             <div style={col(u(10), { minWidth: 0 })}>
               {s.formPromises.map((p) => (
                 <span key={p} style={row(u(10), {
-                  fontFamily: s.body, fontSize: u(20), lineHeight: 1.26,
+                  fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
                 })}>
-                  <Check size={Math.round(12 * 0.82)} style={{ flex: 'none' }} />
+                  <Check size={Math.round(12 * z)} style={{ flex: 'none' }} />
                   {p}
                 </span>
               ))}
             </div>
             <span style={row(u(14), { flex: 'none' })}>
               <span style={{
-                width: Math.round(48 * 0.82), height: Math.round(48 * 0.82),
+                width: Math.round(48 * z), height: Math.round(48 * z),
                 flex: 'none', borderRadius: '999px', overflow: 'hidden', background: card,
-              }}><Photo s={s} ink={cardInk} initialsSize={15} /></span>
+              }}><Photo s={s} ink={cardInk} initialsSize={desk ? 15 : 18} /></span>
               <span style={col(u(2))}>
                 <span style={{
-                  fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+                  fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
                 }}>{s.brand}</span>
-                <span style={{ fontFamily: s.body, fontSize: u(20), lineHeight: 1.26 }}>{s.kicker}</span>
+                <span style={{ fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{s.kicker}</span>
               </span>
             </span>
           </div>
@@ -7001,8 +7072,13 @@ function EnquiryForm({ s }) {
             what makes the card below actually sticky: a sticky element in a
             column exactly its own height has nowhere to travel. */}
         <div style={{
-          width: desk ? u(450) : '100%', flex: 'none',
-          alignSelf: desk ? 'stretch' : undefined,
+          // 450 beside a flexible column at 1440; an equal half at 768, where
+          // the master splits its 708 as 334 + 40 + 334; the whole measure at
+          // 390. `stretch` is what gives the sticky card somewhere to travel,
+          // so it holds wherever the two columns stand side by side.
+          width: s.mob ? '100%' : desk ? u(450) : undefined,
+          flex: tab ? '1 1 0' : 'none', minWidth: 0,
+          alignSelf: s.mob ? undefined : 'stretch',
         }}>
           <div style={col(u(14), {
             background: card, color: cardInk,
@@ -7019,17 +7095,17 @@ function EnquiryForm({ s }) {
               // s.live, so the canvas never draws this.
               <>
                 <h3 style={{
-                  margin: 0, fontFamily: s.display, fontSize: u(24),
+                  margin: 0, fontFamily: s.display, fontSize: u(T.title),
                   lineHeight: 1.1, letterSpacing: s.dls, color: cardAc,
                   overflowWrap: 'break-word',
                 }}>{s.formSentTitle}</h3>
                 <p style={{
-                  margin: 0, fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+                  margin: 0, fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
                 }}>{s.formSentBody}</p>
                 {/* Plain text, not a second mailto: this line is the fallback
                     for a visitor whose browser opened nothing. */}
                 <span style={{
-                  fontFamily: s.body, fontWeight: 700, fontSize: u(14),
+                  fontFamily: s.body, fontWeight: 700, fontSize: u(T.email),
                   overflowWrap: 'break-word',
                 }}>{s.formEmail}</span>
                 <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>
@@ -7072,7 +7148,7 @@ function EnquiryForm({ s }) {
                     paragraph stays the card's last line in both states. */}
                 {errs && (
                   <span style={{
-                    fontFamily: s.body, fontSize: u(12), textAlign: 'center',
+                    fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
                   }}>{s.formPrompt}</span>
                 )}
                 {foot}
