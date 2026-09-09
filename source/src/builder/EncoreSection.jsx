@@ -2054,14 +2054,29 @@ function Media({ s }) {
   // own 56/86 inset is dropped, the page root's padding standing in for it, so
   // the panel is the content width (1052) and not the frame's 1089 — which is
   // why the fan is 20px wider than its column and rides into the panel's
-  // padding rather than being clipped. The 768 and 390 frames are not fitted
-  // yet, so `narrow` stacks the two columns and clips the fan symmetrically.
+  // padding rather than being clipped.
+  //
+  // The 768 (984:35122) and 390 (984:35396) masters wrap the same two instances
+  // and stack them — the heading over the fan over the bar, then the list under
+  // all three at the desktop grid's own 50 — and both draw the component at its
+  // own unscaled numbers, so `u()` is the identity there. See `z` below.
   if (s.v1) {
     const desk = !s.narrow
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    const tab = isTablet(s)
+    // The 768 (`984:35122`) and 390 (`984:35396`) masters are the *desktop*
+    // component at its own numbers: Figma ramped the type variables down and
+    // left every box dimension unscaled. So the scale below is the identity on
+    // both narrow canvases where the 1440 frame lands on the 1180 one at
+    // × 0.82 — one switch, and the fan's five hand-set card states, the bar's
+    // 108, the rows' 64px artwork and every padding here come straight off
+    // whichever frame is being drawn.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
     // The fan's cards are centred on the stack, so their x/y are signed
     // offsets from its middle rather than a box position.
-    const off = (v) => `calc(50% ${v < 0 ? '-' : '+'} ${Math.abs(Math.round(v * 0.82 * 10) / 10)}px)`
+    const off = (v) => `calc(50% ${v < 0 ? '-' : '+'} ${Math.abs(Math.round(v * z * 10) / 10)}px)`
+    // The panel's own side padding, which the fan bleeds back over below.
+    const pad = tab ? 30 : 20
 
     // The panel is the third cream again — Retro's own `paper` IS the beige
     // page, hence the literal. Under it the ink is near-black, not the
@@ -2110,6 +2125,12 @@ function Media({ s }) {
     // The seats cannot instead be centred on `at` directly. `at` is 0 until a
     // visitor picks, so the fan would open one-sided — every card to the right
     // of the middle — which is not the design at any count.
+    //
+    // How far apart the seats stand is the one thing the 390 master changes
+    // about the fan: it keeps every card at the desktop component's size and
+    // tightens only the spread, to ~42 where 768 and 1440 both step 101.5, so
+    // the stack there is very nearly all overlap.
+    const step = s.mob ? 42 : 101.5
     const seat = Math.floor((s.tracks.length - 1) / 2)
     const anchor = s.live && count ? at : seat
     // The frame pairs the centre card with the bar under it — both name the
@@ -2146,14 +2167,23 @@ function Media({ s }) {
     const fan = (
       <div style={{
         // Desktop takes the stack's height off the column; the narrow canvases
-        // have no fixed column to divide, so there it is the frame's own.
-        position: 'relative', flex: 1, minHeight: desk ? 0 : u(371),
+        // have no fixed column to divide, so there it is the frame's own — and
+        // both masters state the same 468 where the 1440 one states 371.
+        position: 'relative', flex: 1, minHeight: desk ? 0 : '468px',
         // Desktop lets the frame's own five ride into the panel's padding,
-        // which is cream either way. Everything else clips: the narrow
-        // canvases cannot afford the overhang, and a sixth track onwards fans
-        // out far enough to cross the gap and paint over the list beside it.
-        // The stack is centred, so a clip always takes both sides evenly.
+        // which is cream either way. Everything else clips: a sixth track
+        // onwards fans out far enough to cross the gap and paint over the list
+        // beside it. The stack is centred, so a clip always takes both sides
+        // evenly.
         overflow: desk && s.tracks.length <= CARD.length + 2 ? 'visible' : 'hidden',
+        // Both narrow masters run the fan to the panel's own inside edges — the
+        // five span 623 of a 648 column at 768, and at 390 the outermost card
+        // touches the panel's corner exactly — so the band bleeds back over the
+        // padding rather than clipping at the column. Our canvases are 20px
+        // (768) and 24px (390) narrower than the frames', so at 390 the outer
+        // pair still gives up about twelve pixels; clipping at the column would
+        // have taken forty.
+        ...(desk ? null : { margin: `0 -${pad}px`, width: `calc(100% + ${pad * 2}px)` }),
       }}>
         {/* `j` is the seat in the fan, `i` the track dealt to it — the two
             part company as soon as the carousel turns. Geometry and hue belong
@@ -2171,7 +2201,7 @@ function Media({ s }) {
             // layout 1: the frame draws no other affordance on it.
             <div key={j} onClick={onPick(i)} style={{
               position: 'absolute',
-              left: off(k * 101.5 - g.w / 2), top: off(g.y - g.h / 2),
+              left: off(k * step - g.w / 2), top: off(g.y - g.h / 2),
               width: u(g.w), height: u(g.h),
               transform: tilt(s, k * 5.33), opacity: g.op, zIndex: 10 - Math.abs(k),
               background: hue, color: fg,
@@ -2210,12 +2240,19 @@ function Media({ s }) {
         flex: 'none', height: u(108), background: s.retro ? '#FFFEFB' : s.paper,
         color: s.retro ? rust : ink,
         border: `${s.bw} solid ${s.retro ? olive : s.paperLine}`, borderRadius: '999px',
-        padding: `0 ${desk ? u(40) : u(20)}`,
-        ...row(desk ? u(24) : u(14)),
+        // 768 takes the frame's 40 and 24 verbatim. 390 does not: its master
+        // emits the very same pair into a 330px bar and squeezes the track it
+        // is playing down to a sliver of its sleeve, which is the frame's own
+        // render being the artefact rather than the design.
+        padding: `0 ${s.mob ? '20px' : u(40)}`,
+        ...row(s.mob ? '14px' : u(24)),
       }}>
         {/* Filled *and* stroked, unlike layout 1's player: the frame's skip
-            glyphs carry the bar beside the triangle, which is the stroke. */}
-        <span style={row(u(24), { flex: 'none' })}>
+            glyphs carry the bar beside the triangle, which is the stroke. The
+            group closes up at 390 for the same reason the bar's own padding
+            does: having decided the master swallowed the track it is playing,
+            the transport's spacing is what pays for naming it. */}
+        <span style={row(s.mob ? '14px' : u(24), { flex: 'none' })}>
           <span style={ctl} onClick={s.live ? () => goTo(at - 1) : undefined}>
             <SkipBack size={14} fill="currentColor" />
           </span>
@@ -2235,8 +2272,9 @@ function Media({ s }) {
             glyphs. Our bar is ~18px narrower than the frame's — the panel is
             the page's content width — and that padding is the one gap here
             that costs nothing to give back, where a truncated track title
-            costs the most. */}
-        <span style={row(u(12), { flex: 1, minWidth: 0, paddingRight: desk ? u(12) : 0 })}>
+            costs the most. 768 has the room for the frame's own 30; 390, which
+            has already dropped the clock and the glyphs below, has none. */}
+        <span style={row(u(12), { flex: 1, minWidth: 0, paddingRight: desk ? u(12) : tab ? '30px' : 0 })}>
           <span style={{
             width: u(60), height: u(60), flex: 'none',
             borderRadius: '999px', overflow: 'hidden', position: 'relative',
@@ -2266,19 +2304,52 @@ function Media({ s }) {
     const left = (
       <div style={col('0', { minWidth: 0, minHeight: desk ? u(673) : undefined })}>
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+          // 768 sets the head at the canvas's own `h1`, which is its master's
+          // measured 59.5 to within half a pixel; 1180 and 390 both land on
+          // `dispLg`. Measured off the two renders' line boxes — 53 on one line
+          // and 72 on two, at leading .89 — and not off the emitted
+          // `size/display-lg`, whose 96 is the component's default at all three
+          // widths.
+          margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg, lineHeight: 0.89,
           // Accent on the frame's near-white panel; on a flat template the
           // panel is `paper`, where only `paperFg` is guaranteed to read.
           letterSpacing: s.dls, color: s.retro ? rust : ink, flex: 'none',
-          // Layout 1's measure, for the frame's same break after "worth".
-          maxWidth: '5.8em',
+          // Layout 1's measure, for the frame's same break after "worth". Both
+          // narrow masters break where the column runs out instead — one line
+          // at 768, two at 390 — so the measure would only force a break
+          // neither frame draws.
+          maxWidth: desk ? '5.8em' : undefined,
         }}>{s.title}</h2>
-        <div style={col(u(24), { flex: 1, minHeight: 0 })}>{fan}{bar}</div>
+        <div style={col(u(24), {
+          flex: 1, minHeight: 0,
+          // 768 sets the heading ten above the carousel. 390 runs the two
+          // *into* each other: the fan band's top 111px are empty, and the
+          // master takes 49 of them back rather than stack two blocks, which
+          // is what puts its bar 514 down a 622-tall column. The heading's box
+          // then ends 49 into the band with 62 still clear of the first card,
+          // so a third line of title spends 36 of that and a fourth would
+          // collide — the frame's own composition, at the frame's own risk.
+          marginTop: desk ? undefined : tab ? '10px' : '-49px',
+        })}>{fan}{bar}</div>
       </div>
     )
 
     const list = (
-      <div style={col(u(10), { minWidth: 0 })}>
+      <div style={col(u(10), {
+        minWidth: 0,
+        // Both narrow masters state this column at 596 and let its five rows
+        // divide what the counter row and the gaps leave: 44 + 5 × 96 + 5 × 10
+        // is 574, so each row takes a fifth of the 22 over and stands at the
+        // 100.4 both renders measure. `minHeight` rather than a height, and the
+        // rows' `1 1 auto` rather than desktop's `1 1 0`: past five tracks the
+        // column grows and every row keeps its own 96 instead of being squeezed
+        // into a twelfth of a fixed one. An emptied list drops it rather than
+        // standing 596px of nothing under the player: the number is a division
+        // target, and with no rows there is nothing to divide. Desktop reserves
+        // the space either way — there the height is the grid stretching this
+        // column against the fan's, not a number this branch states.
+        minHeight: desk || !s.tracks.length ? undefined : '596px',
+      })}>
         <div style={row('0', {
           flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: ink,
         })}>
@@ -2302,11 +2373,18 @@ function Media({ s }) {
           const on = chosen && i === at
           return (
             <div key={i} onClick={onPick(i)} style={{
-              flex: desk ? 1 : 'none', minHeight: 0, overflow: 'hidden',
+              flex: desk ? 1 : '1 1 auto', minHeight: 0, overflow: 'hidden',
               background: r.bg, color: fg, border: `${s.bw} solid ${s.retro ? r.line : fg}`,
-              borderRadius: u(30), padding: `${u(14)} ${desk ? u(30) : u(18)}`,
+              // 768 takes the frame's 30 and 20 verbatim, which leaves its
+              // title 396px. 390 does not: the same pair in a 306px row leaves
+              // 74 for a 24px display title, and the master's own render duly
+              // hard-clips "Manchester at 3am" mid-word. The tighter set is
+              // this branch's own, kept from the placeholder it replaces as the
+              // least-invented number available; the title still ellipsises,
+              // which is the honest form of what the frame does.
+              borderRadius: u(30), padding: `${u(14)} ${s.mob ? '18px' : u(30)}`,
               cursor: s.live ? 'pointer' : undefined,
-              ...row(desk ? u(20) : u(14)),
+              ...row(s.mob ? '14px' : u(20)),
             }}>
               <span style={{
                 fontFamily: s.body, fontSize: u(16), lineHeight: 1.5,
@@ -2331,12 +2409,19 @@ function Media({ s }) {
 
     return (
       <div style={{
-        background: panel, color: ink, borderRadius: u(22),
-        padding: desk ? u(60) : u(28),
+        background: panel, color: ink,
+        // The panel is the one box the narrow masters draw *larger* than the
+        // 1440 one relative to its canvas: a 30px corner against the desktop
+        // frame's 22, and a side padding that halves while the vertical one
+        // stays the desktop component's 60 at 768. The 50 between the carousel
+        // and the list is the same at all three widths — it is the desktop
+        // grid's own gap, stood on end.
+        borderRadius: desk ? u(22) : '30px',
+        padding: desk ? u(60) : tab ? '60px 30px' : '40px 20px',
         ...(desk ? {
           display: 'grid', alignItems: 'stretch',
           gridTemplateColumns: 'minmax(0, 629fr) minmax(0, 529fr)', gap: u(50),
-        } : col(s.gGap)),
+        } : col('50px')),
       }}>
         {left}{list}
       </div>
