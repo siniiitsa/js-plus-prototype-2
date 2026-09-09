@@ -85,7 +85,7 @@ Status says otherwise.
 | 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | **done** `7c43ca6` |
 | 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | **done** `47168c4` |
 | 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | **done** `886d14d` |
-| 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 | todo |
+| 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 | **done** `74929f0` |
 | 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 | todo |
 | 11 | `testimonials` | `986:11675` | 768 × 796 | `986:11701` | 390 × 870.3 | todo |
 | — | `footer` | `986:11787` | 768 × 721 | `986:11727` | 390 × 721 | out of scope |
@@ -109,7 +109,9 @@ Five things about these that a fresh session would otherwise re-derive.
   panel stacks over the list) and the gallery 468 → 364. Read the render before assuming the
   desktop composition simply reflows. *(The gallery turned out not to be one: both of its narrow
   masters are the desktop row, and the 364 is the band getting shorter — see its notes below.
-  The events map's 1286 is still unread.)*
+  The events map turned out to be one, but at **390 only**: its 768 master keeps the desktop's
+  two columns and only the 390 one stacks, which is why the two narrow widths part company there
+  and nowhere else in the pass.)*
 - **The footer stays out of scope** at both widths, for the desktop reason: `NVAR.footer` is 1
   and the fitted footer is already this design.
 
@@ -1123,6 +1125,66 @@ Learned on the booking calendar's narrow masters (section 8):
   none in two navigations. The `live=1` check is worth running at 390
   specifically here: the row's DOM changed, and the handler is on the
   row rather than the mark.
+
+Learned on the events map's narrow masters (section 9):
+
+- **The two narrow masters can want different *compositions*, and this is the
+  first section in the pass where they do.** 768 keeps the desktop's two
+  columns at 342 + 342; only 390 stacks. So `desk ? A : B` is not the shape of
+  a narrow branch by default — every `desk` in the branch has to be re-asked as
+  `desk`, `tab` or `s.mob`, and here five of the seven turned out to be `s.mob`
+  or "all three widths" rather than `desk`. The tell is the metadata's x, the
+  video section's rule: two children at x 30 and x 396 against two at x 10
+  under one another. The plan's own table already said 823 → 1286 and that was
+  the whole warning it gave.
+- **A number stated on a *parent* is what makes a child look ramped.** Both
+  masters draw the gig rows at 76.5 / 76.75 against a content height of 61 / 60.
+  Neither is a row height: the masters state the **left column** at 703 — the
+  same number at 768 and at 390 — and every row is `flex: 1 0 0` under it, so
+  the 62 and the 67 the column has over its content divide four ways. Reading
+  a child's stated height without checking the parent's is how you transcribe
+  a division residue as a design. And the .25 between the two masters is the
+  proof: a stated height does not differ by a quarter pixel, a division does.
+- **The same constant can be intent at one width and inert at the next.** That
+  703 squares the 768 master's two columns (its map panel is 703 too) and does
+  nothing at all at 390, where the panel is 479 and there is no sibling. So it
+  was declined at both: honouring it pins a number that only divides at four
+  gigs, and the desktop half of the same branch already declines to stretch
+  this column. The visible cost is that a 30 radius on a 61px row reads as a
+  full pill — worth naming in the commit, the bio's stated-height rule.
+- **`get_variable_defs` will not tell you which of two 16s is which, and the
+  desktop digest cannot either.** The travel card sets its location names in
+  Display/List and its stat values in Body/LG; both are 16 at 1440 and they part
+  company at 12/13 and 15/15 below it. The discriminator is the **line-height**
+  the desktop branch already wrote down (1.2 vs 1.5), not the number. The
+  pricing section's "guessing which of two 16s is `body-lg`" met at the point
+  where getting it wrong is invisible until 768.
+- **A radius can ramp when every other radius does not.** `radius/control` is 14
+  at 1440 and a raw 20 at both narrow masters — it is the one corner here that
+  moves, and it is absent from the narrow `get_variable_defs` output precisely
+  *because* it is a raw value there. A corner-walk of the three renders settles
+  the rest in one pass: identical profiles mean the desktop number verbatim.
+  (The profile is not circular — Figma corner smoothing — so read the walks
+  against **each other**, not against a circle; `radius ≈ walk_length / 0.73`.)
+- **A viewport that is `flex: 1 0 0` has a derived shape, and the aspect is how
+  it travels.** 588 × 448, then a portrait 318 × 530 at 768 and a landscape
+  346 × 307 at 390 — three shapes, none of them designed, all of them what the
+  stated panel height left over. Our panel is content-tall, so the aspect
+  reproduces each master's picture on a canvas whose width is not the frame's.
+  The rings inside it stay absolute 480/300/140 at every width, so they are
+  written as the share of each master's own viewport they cover.
+- **`BookPill`'s box did not ramp and its label did** — 54 tall on a 46 disc at
+  all three masters, the booking calendar's case a second time, so `disc={46}`
+  and `full` at narrow. Its `size` is `size/list`, and the automatic pick would
+  have drawn 20px at 768 against the master's 12. Desktop kept its `undefined`
+  (16 where the frame's own is 13.1): an existing drift in a signed-off half is
+  left alone, or the digest stops being a test.
+- **The harness's `live=1` is the whole check at 390 and it is two clicks.**
+  `&n=8&live=1` pages, features a row on click, rebuilds the list as the page
+  minus it, and flips the Venue Link pill span↔anchor as a linked and an
+  unlinked gig is featured — because `LIST.map` gives every other gig an
+  address. `&n=1` is the one that proves the "Other upcoming" line goes with
+  its rows.
 
 ## Open questions
 
