@@ -81,7 +81,7 @@ Status says otherwise.
 | 2 | `bio` | `984:34877` | 768 × 1138.8 | `984:34834` | 390 × 881.3 | **done** `7c18379` |
 | 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 | **done** `9bc548d` |
 | 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 | **done** `dc07cb8` |
-| 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | todo |
+| 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | **done** `46747ad` |
 | 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | todo |
 | 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | todo |
 | 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | todo |
@@ -123,7 +123,11 @@ re-deriving the first's decisions.
 1. Read `CLAUDE.md`, this file, and the two memory notes.
 2. `mcp__plugin_figma_figma__get_screenshot` on the row's node (`maxDimension` 1400–2000 for
    detail), then load the `figma-design-to-code` skill and `get_design_context` on the same node.
-   Use `get_metadata` for the subtree when you need child ids and sizes.
+   Use `get_metadata` for the subtree when you need child ids and sizes — in the narrow pass read
+   it *first*, because it is where a master that changes shape rather than shrinking shows up.
+   And **always `get_variable_defs` on the node**: it resolves that master's mode, so every
+   `size/…`, `border/…` and `radius/…` the emitted code prints as the desktop default comes back
+   at its real value. One call, and it settles the type ramp the four sections before it measured.
 3. Implement it as the `s.v1` branch of the section's component in `EncoreSection.jsx` — see
    *Conventions*. Numbers are the 1440 values × 0.82 on desktop, and the 768 / 390 frames'
    **verbatim** on the two narrow canvases. Every desktop fit already left a narrow fallback in
@@ -917,6 +921,61 @@ Learned on the video section's narrow masters (section 4):
 - **`&n=7` is the odd-count check a 2-column grid needs** — four rows with the
   last a single half-width cell — and there is no `live=1` check to run: video
   is one of the two categories with no `s.live` seam at all.
+
+Learned on the repertoire's narrow masters (section 5):
+
+- **`get_variable_defs` resolves the mode's tokens outright — call it on every
+  narrow master, first.** It is the tool the four sections before this one did
+  without, and it answers in one call what they each spent a session measuring:
+  on this section it returned `size/display-sm` 32, `size/list` 12,
+  `size/body-md` 13, `size/body-sm` 12 and `border/default` 3 for the 768
+  master and the same list with 26 and 13 for the 390 one. The header's
+  "`var(--size/…, N)` is the component's default, and a node's measured width is
+  a fact" still holds for what the *emitted code* says — every one of these came
+  back in the emitted CSS as the desktop default — but the variable defs are a
+  third source that is neither, and they are exact. Measure only to confirm.
+- **Do not size a token off a Figma text node's stated height.** They are line
+  boxes rounded to whole pixels, which is far too coarse: 14 and 16 here are
+  12 × 1.2 and 13 × 1.2 rounded, and reading them as exact gives 11.67 and 13.33
+  — a ratio of 1.14 where the rendered set widths (43 → 47) say 1.08. The
+  widths are the honest measurement, the token is better than both, and the
+  height's only real use is a box whose height is a *sum* of things you are
+  transcribing (the bio's caption card).
+- **A type ramp can go back up at 390, and the reason need not be the column.**
+  `size/list` is 16 → 12 → **13** with the column going 529 → 384 → 195. The
+  video section's non-monotonic row title had a column-width explanation; this
+  one does not, and inventing one would have been worse than saying so. Write
+  the token values in the comment and leave the cause alone.
+- **The masters can keep a two-column grid a phone has no business with.**
+  195px columns at 390, five rows in each. The unfitted fallback had collapsed
+  to one column of six — which is what layout 1's own 390 master does — so the
+  narrow pass here *removed* a device branch rather than adding one. Read the
+  metadata's x/y before assuming a narrow master reflows: two children sharing a
+  `y` is the video section's giveaway and it fires here too.
+- **The frames' page inset stops being one number below desktop.** 56 all round
+  at 1440, but 30 horizontal / 60 vertical at 768 and 10 / 40 at 390 — and the
+  pager band takes 20 rather than 40 at 390, so even the two vertical insets
+  part company. For a **bleed** design, which supplies its own, that is three
+  constants to write out (`padH`, `headPadY`, `footPadY`); `s.gPad` matched the
+  frame only at desktop (46 = 56 × 0.82) and is 32 against 30 and 20 against 10
+  below it. The 10 is worth taking rather than rounding up to `gPad`: it is what
+  leaves the 390 row its 155px of title.
+- **`gap` and `rowGap` are the same axis once a row becomes a column.** The head
+  sets `gap` for the desktop row and `rowGap` for its wrapped chips; at 390,
+  where `flexDirection` flips, the master's 10 has to go in the `rowGap` or the
+  wrap's 12 silently wins — worth 2px, and the whole section stood 2px tall
+  until the digest caught it. `alignItems` flips with it, the testimonials'
+  lesson: `stretch` blew the 217px toggle out to the full measure.
+- **`pageWindow`'s `narrow` argument is layout 1's answer, not the section's.**
+  Its three-button mode is what layout 1's 390 master draws; this composition
+  draws the desktop's seven-slot row at both narrow widths and fits it by
+  dividing the measure (46 at 390 against 94.3 at 768). Pass `false`, and note
+  that our row runs one button longer than the frames' at their fictional
+  twenty pages — an existing desktop diff, not a new one.
+- **The `git stash` desktop digest is the whole safety net for a `z` switch.**
+  81 elements at `?w=desktop`, zero rows differing — which is only meaningful
+  because every number in the branch now flows through `z`, `bw` (`u(3)`)
+  included. Take it in the harness, in one tab, before committing.
 
 ## Open questions
 
