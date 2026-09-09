@@ -80,7 +80,7 @@ Status says otherwise.
 | 1 | `header` | `984:34438` | 768 × 1024 | `984:34636` | 390 × 926 | **done** `16304dc` |
 | 2 | `bio` | `984:34877` | 768 × 1138.8 | `984:34834` | 390 × 881.3 | **done** `7c18379` |
 | 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 | **done** `9bc548d` |
-| 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 | todo |
+| 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 | **done** `dc07cb8` |
 | 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | todo |
 | 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | todo |
 | 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | todo |
@@ -868,6 +868,54 @@ Learned on the media player's narrow masters (section 3):
   assumed: `size/title` 24 (the row and bar titles), `size/body-sm` 12, `chip`
   12. The 390 row's title-plus-sub block is 47.2 tall and sits centred in a
   100.4 row, which is the one arithmetic that pins both at once.
+
+Learned on the video section's narrow masters (section 4):
+
+- **Read the masters' *structure* out of `get_metadata` before believing they
+  only shrink.** The media player's "only the type ramps" is not a general law:
+  here the panel leaves the stage's side for a full-width block, its list goes
+  to two columns, the row's thumbnail moves from beside its lines to above them
+  at 390, and the artist row's controls drop to a line of their own. All four
+  are visible in the metadata's x/y before any render is fetched — the giveaway
+  is two children sharing a `y` (a grid) or a child whose `x` is 0 under a
+  sibling (a stack). Only after that does the `z = desk ? 0.82 : 1` switch carry
+  the rest, and here it carried a great deal: every box in the player, the
+  stage's gaps, the artist row, the panel's rule and corner, the list's 23s.
+- **A narrow master can be a flattened raster.** Both players here are a single
+  image node with no children, so the transport bar's discs, gaps, paddings and
+  track are simply not in the emitted code. Measure them off the PNG — find the
+  bar's own fill inside the player, then take the columns that are *not* that
+  fill and read the runs. That gave 28px discs at 768 (the desktop number) and
+  22 at 390, with the gaps and paddings falling out of the same scan.
+- **Two independent readings pin a type size; one does not.** For every token
+  here the text node's height over its own leading and the set width as a ratio
+  of the 1440 node's agreed to within a rounding: label 20 → 14 → 13,
+  display/list 16 → **12 → 13**, body-md 14 → 13 → 13, body-sm 12 throughout.
+  Take both readings — the ratio is what catches a leading you assumed wrong,
+  and the height is what catches a string whose glyphs differ.
+- **A type ramp need not be monotonic, and the reason is the column.** The row
+  title is *smaller* at 768 than at 390 because the 768 grid's columns are
+  150.5 and the 390 grid's are 163.5. Write the reason in the comment or the
+  next reader will "fix" it.
+- **Where the master shrinks a control instead of dropping it, follow it.** The
+  fallback this replaced dropped the bar's Maximize and ⋮ at 390, on the media
+  player's rule; the master keeps all six discs and pays out of their size and
+  spacing. Both are legitimate answers to the same squeeze — which is why the
+  master has to be *read* rather than reasoned from the section next door.
+- **Transcribe a stack; do not leave it to `flexWrap`.** The 390 artist row
+  wraps in the frame at a fixed point (name, then controls 25 below). A
+  `flexWrap` row with a `flex: 1` spacer wraps wherever the artist's own name
+  runs out, which is a different picture on every page. Name the two halves and
+  branch the wrapper.
+- **Figma states a padded, stroked box's inset *including* the stroke.** The
+  panel's 30 (768) and 10 (390) each already contain the 3px rule, so a plain
+  `padding` runs 3px wide — the repertoire's `calc(padding − border)` case,
+  third sighting. Left as it is here because the desktop half of the very same
+  property carries the same drift and moving it is a signed-off change; at 390
+  the 6px it costs is exactly cancelled by the rows measuring 1.8 short.
+- **`&n=7` is the odd-count check a 2-column grid needs** — four rows with the
+  last a single half-width cell — and there is no `live=1` check to run: video
+  is one of the two categories with no `s.live` seam at all.
 
 ## Open questions
 
