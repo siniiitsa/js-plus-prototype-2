@@ -83,7 +83,7 @@ Status says otherwise.
 | 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 | **done** `dc07cb8` |
 | 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | **done** `46747ad` |
 | 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | **done** `7c43ca6` |
-| 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | todo |
+| 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | **done** `47168c4` |
 | 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | todo |
 | 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 | todo |
 | 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 | todo |
@@ -1027,6 +1027,49 @@ Learned on the gallery's narrow masters (section 6):
   photographs throughout and Retro seeds them, so this is only ever seen on
   the flat four and mid-edit — which is the reason it is allowed to be
   approximate and the reason it has to be commented.
+
+Learned on the pricing section's narrow masters (section 7):
+
+- **The cheapest narrow pass is the one whose fallback was already the
+  master's structure.** Both masters here are the desktop composition
+  *stacked* — the `left` block, then the same card at `w-full`, at the grid's
+  own 32 gap — which is exactly what the desktop fit's `desk ? row : col`
+  fallback drew. So the whole session was the `z` switch, a type table and
+  four one-line diffs, and the `git stash` digest came back at 42 elements and
+  zero rows. Read `get_metadata` first anyway: the *reason* it was cheap is
+  visible there in one glance (two children with `x` 0 under one another), and
+  the video section's masters said the opposite from the same tool.
+- **`get_variable_defs` on all three nodes, not just the two narrow ones.**
+  The desktop call is what proves the branch's existing hardcoded sizes *are*
+  the tokens — 12/48/40/16/14/20/15 came back naming `chip`, `display-md`,
+  `display-sm`, `body-lg`, `body-md`, `label-xs`, `eyebrow` exactly — which is
+  what makes a `T` table a rename rather than a redesign, and what lets the
+  desktop digest be a real test of it. Without it you are guessing which of
+  two 16s is `body-lg` and which is `list`.
+- **A tracking value ramps with its token.** Figma states `letterSpacing: -6`
+  (percent), which the emitted CSS prints as the desktop `-0.72px`.
+  Transcribing the pixel value freezes it; `-0.06 × T.chip` is the honest
+  expression and it rounds to the same `-0.6` on desktop, so the digest stays
+  clean.
+- **A rotated frame's angle is per master, and the metadata gives it away
+  before the emitted code does.** 390 turns the card -1° where 1440 and 768
+  turn it -3°. Solve it from the wrapper: Figma sets the wrapper's height to
+  the rotated bbox and lets the card overflow it sideways, so `x` is
+  −(bbox_w − w)/2 and the two simultaneous equations in θ and h have one
+  solution. (`-rotate-1` in the emitted class list then confirms it — but the
+  arithmetic is what tells you to go looking.)
+- **`BookPill`'s `full` was added by an earlier session for this frame, and
+  the comment saying so is what found it.** Grep a shared component's comments
+  for your own section before adding a prop: the header's narrow fit had
+  already read the 390 pricing master and written "the 390 pricing frame keeps
+  it at full size — hence `full`". Its `size` prop is the other half — the
+  full-scale default of 20px is the *header's* 768 number, not a universal.
+- Sizes that did **not** ramp between the two narrow masters, so a diff
+  between them is worth checking twice: `body-lg` 15, `body-md` 13,
+  `body-sm` 12, `chip` 11, `border/thin` 2, `border/hairline` 1,
+  `radius/chip` 8, `radius/control` 14. `size/list` went **back up** at 390
+  (12 → 13), the repertoire's non-monotonic case again, and again with no
+  column-width explanation.
 
 ## Open questions
 
