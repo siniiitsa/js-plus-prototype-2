@@ -3249,7 +3249,8 @@ function Pricing({ s }) {
 
     // Figma strokes an auto-layout frame without growing it, so the frame's
     // 8/14 padding on a 1px border is 1px less each side here (the
-    // repertoire's rule) and the chip keeps the 28px it is drawn at.
+    // repertoire's rule) and the chip keeps the height it is drawn at — 28 at
+    // 1440's chip 12, 27 at both narrow masters' 11.
     const chipType = {
       fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
       // Figma's -6% of the size, so it ramps with the token rather than staying
