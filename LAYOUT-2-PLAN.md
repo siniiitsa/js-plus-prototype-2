@@ -79,7 +79,7 @@ Status says otherwise.
 |---|---|---|---|---|---|---|
 | 1 | `header` | `984:34438` | 768 × 1024 | `984:34636` | 390 × 926 | **done** `16304dc` |
 | 2 | `bio` | `984:34877` | 768 × 1138.8 | `984:34834` | 390 × 881.3 | **done** `7c18379` |
-| 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 | todo |
+| 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 | **done** `9bc548d` |
 | 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 | todo |
 | 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | todo |
 | 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | todo |
@@ -804,6 +804,66 @@ Learned on the bio's narrow masters (section 2):
   `calc(padding − border)` fix is the correct one if this element is ever
   revisited, at all three widths together.
 
+Learned on the media player's narrow masters (section 3):
+
+- **Make the ×0.82 a variable, not a search-and-replace.** The header's "the
+  narrow frames are the desktop component at its own numbers" is a statement
+  about the *whole* branch, so the honest expression is one `z = desk ? 0.82 : 1`
+  inside the existing `u()` and `off()`. Here that one line carried the fan's
+  five hand-set card states, the bar's 108 and its 60px sleeve, the rows' 64px
+  artwork, the Featured tab's offsets and a dozen paddings — and what was left
+  to write was only the handful of places the masters genuinely differ. It also
+  makes the desktop digest a real test: every number in the branch now flows
+  through the switch, so a slip shows up at `?w=desktop` immediately.
+- **A master can overlap its own blocks, and the arithmetic is what proves it
+  rather than a guess.** The 390 Frame 296 is 622 tall where a 72 heading, a 10
+  gap, a 468 band, a 24 gap and a 108 bar come to 682 — so it reclaims 49 of the
+  fan band's empty top rather than stacking the two. Read it off the *bar*: its
+  top is 514 down the column in both the metadata and a PIL row scan, and
+  `71.2 + g + 468 + 24 = 514` gives `g = −49.2` exactly. Then state the
+  collision bound in the comment (62px clear of the first card, a third title
+  line spends 36 of it) — a negative margin without one is a trap.
+- **A frame's own render can be the artefact, and the tell is that it destroys
+  its own content.** The 390 bar emits the desktop 40/24 into a 330px pill and
+  leaves the track it is playing a sliver of its sleeve; the 390 rows emit 30/20
+  and hard-clip "Manchester at 3am" mid-word. Both are the leaked-desktop-number
+  case (`figma-frame-reading`'s fourth bullet) at the point where honouring the
+  absence would publish a player naming nothing. Override at 390 only, keep 768
+  verbatim, and say in the commit which numbers went and what paid for what.
+  Once the call is made it applies consistently: having decided the bar's
+  padding pays for the track, the transport's internal gap does too.
+- **`flex: 1 1 auto` + a `minHeight` on the column is how a frame's stated
+  instance height survives a variable list.** Both masters state the list at 596
+  and let five rows divide what the counter row and the gaps leave — 574, so each
+  row takes a fifth of the 22 over and stands at 100.4. `1 1 0` would squeeze
+  eight rows into the same 596; `flex: none` would give up the 22 and run 4.4px
+  short per row. This is the gallery's `flex: h 1 auto` rule with the basis left
+  to the content. **And drop the minimum when the list is empty** — the number is
+  a division target, so with nothing to divide it is 596px of hole.
+- **Both narrow canvases are narrower than their frame, and for a centred
+  composition that is a clip, not a reflow.** 688 against 708 at 768 and 346
+  against 370 at 390. Bleeding the fan band back over the panel's own padding
+  (`margin: 0 -pad; width: calc(100% + 2·pad)`) is what keeps the loss to twelve
+  pixels at 390 instead of forty — the repertoire's written-out-margin pattern
+  used for a band inside a panel rather than a sheet on the page.
+- **`tab ? s.h1 : s.dispLg` is the display head's ramp on this page.** 60 at 768
+  is the masters' measured 59.5 to within half a pixel and 40 at 390 is exact,
+  which is the same call `HeaderV1`'s hero makes. Measure it off the line
+  box — 53 on one line, 72 on two at leading .89 — never off the emitted
+  `size/display-lg`, whose 96 is the component's default at all three widths.
+  And **drop a desktop `maxWidth` at narrow**: layout 1's 5.8em measure exists to
+  reproduce a break the 1440 frame draws, and forcing it at 768 would break a
+  line the master sets whole.
+- **Our display face runs ~1.3× the frames' set width, so a title that fits
+  there truncates here.** The header's ~0.76 factor, met again in the list rows:
+  the 390 master shows "Late Lights" in 99px of Soulway where Fraunces needs 130.
+  Nothing to do about it — but do not read the truncation as a wrong size, and
+  do check it against the frame's own clipping before calling it a defect.
+- Sizes that did **not** ramp at either narrow width, measured rather than
+  assumed: `size/title` 24 (the row and bar titles), `size/body-sm` 12, `chip`
+  12. The 390 row's title-plus-sub block is 47.2 tall and sits centred in a
+  100.4 row, which is the one arithmetic that pins both at once.
+
 ## Open questions
 
 1. ~~**The header.**~~ *Settled.* `HeaderV1` was the invented "Framed" full-bleed; it is now the
@@ -911,3 +971,17 @@ Learned on the bio's narrow masters (section 2):
    section is now the one place where **layout 1 reads strictly fewer
    fields than layout 2**. Giving layout 1 a head would move a
    signed-off design, which is a design call and not a fidelity one.
+15. **The media player's bar draws an invisible sleeve on the flat four.**
+   Its `<Photo>` falls through to the initials placeholder when the track
+   has no artwork — which is every track on Lime, Grunge, Editorial and
+   Pop, since only Retro seeds photography — and the placeholder's ink
+   defaults to `s.muted`, an rgba of the *page's* text colour, against a
+   bar standing on its own near-white ground. On Grunge the initials
+   vanish outright. This is the enquiry form's `Photo` `ink` lesson (the
+   prop exists for exactly this) reaching a branch fitted before it, and
+   it is **desktop's**, not the narrow masters': the same hole renders at
+   all three widths, and it was found running the `theme=1…4` check for
+   the narrow pass rather than introduced by it. Left alone deliberately —
+   fixing it moves a signed-off design and shows up in the desktop
+   digest. It is one `ink` prop on the bar's `<Photo>`, and the fan
+   cards' and the rows' want checking at the same time.
