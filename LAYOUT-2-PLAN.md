@@ -84,7 +84,7 @@ Status says otherwise.
 | 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | **done** `46747ad` |
 | 6 | `gallery` | `984:36046` | 768 × 468 | `984:36070` | 390 × 364 | **done** `7c43ca6` |
 | 7 | `pricing` | `986:10425` | 768 × 915.4 | `986:10492` | 390 × 849.4 | **done** `47168c4` |
-| 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | todo |
+| 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | **done** `886d14d` |
 | 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 | todo |
 | 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 | todo |
 | 11 | `testimonials` | `986:11675` | 768 × 796 | `986:11701` | 390 × 870.3 | todo |
@@ -1070,6 +1070,59 @@ Learned on the pricing section's narrow masters (section 7):
   `radius/chip` 8, `radius/control` 14. `size/list` went **back up** at 390
   (12 → 13), the repertoire's non-monotonic case again, and again with no
   column-width explanation.
+
+Learned on the booking calendar's narrow masters (section 8):
+
+- **Read the two narrow masters' metadata *beside the desktop one's*, and
+  the whole session's shape falls out of the arithmetic.** All three heads
+  here are `28 + 59 + 28 + (text + 20) + 36`, all three column heads
+  `18 + line + 18`, all three rows `16 + line + 16`, all three feet 100
+  (84 at 390) — so the boxes are the desktop component's throughout and
+  the only real questions are the three places 390 genuinely differs. The
+  gallery's "read the desktop metadata beside the narrow one" was about
+  spotting an *unhidden* node; the same trick run over sums tells you
+  which numbers you do not have to think about at all.
+- **A box whose height is a sum is also the check.** The bio's rule used
+  once to *find* a type size and again here to *prove* one: 85/83 row and
+  54/51 column head at 768/390 pin `display-lg` 60/40 and `label-xs`
+  14/12 against the paddings in one measurement each, and the 1.4px our
+  rows run over is Figma stroking inside its stated height — the
+  repertoire's `calc(padding − border)`, fifth sighting, left alone
+  because the desktop half of the same property already carries it.
+- **A pill's box can ramp not at all while its label does.** 54 tall on
+  a 46 disc at 1440, 768 *and* 390 — so `disc` is the frame's 46 at both
+  narrow widths and `full` opts the 390 canvas back up to the full-size
+  box (the 390 pricing frame's case, second sighting). Only `size/list`
+  moves, and BookPill's auto-`pick` would have drawn 20px type at 768
+  against the master's 12. Check a shared component's *automatic* scale
+  against the master before assuming the caller needs to pass nothing.
+- **The heading's own measure is a leaked desktop number that still
+  binds.** 571.1 is stated on the 1440 and 768 text nodes alike, and at
+  768 it is genuinely narrower than the 628 column, so it is honest
+  there; 390 states the full width, so it stops. The bio's "a leaked
+  desktop width can be the thing that produces the frame's layout" with
+  the opposite verdict — check whether the leak *does* anything at the
+  narrow width before dropping or keeping it.
+- **A measured pin has to be re-measured per master, not scaled.** The
+  desktop fit's u(372) came from looping 12 × 31 marks in Fraunces at
+  the frame's display size; the 768 one is the same loop at 60, giving
+  232.3 (so u(233)) — which happens to be within half a pixel of
+  372 × 60/96, and would not have been safe to assume, Fraunces being
+  optically sized (the media player's per-token factor). Loop the flat
+  four's display faces in the same pass: all four are narrower at both.
+- **When our content is longer than the frame's, the frame's own squeeze
+  is not transferable.** The 390 foot gives its line 78px and wraps
+  "Thursday evening selected" to three; ours is `enquiryLine`'s composed
+  sentence on a canvas 24px narrower, where the same division leaves 54
+  — a break inside "Thursday,". The pill takes its own row. And write
+  that as an `s.mob ? col : row` branch, not as `flexWrap` plus a
+  `minWidth` that happens to wrap at one width only: the video section's
+  transcribe-a-stack rule applies to a deviation as much as to a master.
+- **`&n=` reaches this section's `c.slots`** (and `&booked=` still
+  strikes a row), so the 390 stack is checkable at eight rows and at
+  none in two navigations. The `live=1` check is worth running at 390
+  specifically here: the row's DOM changed, and the handler is on the
+  row rather than the mark.
 
 ## Open questions
 
