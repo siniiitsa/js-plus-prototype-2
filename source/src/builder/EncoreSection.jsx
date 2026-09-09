@@ -5479,9 +5479,15 @@ function EventsMap({ s }) {
   }
 
   // v1 — Events Map layout 2 · Featured gig + route (964:64651, 1440 × 780, so
-  // every number below is the frame's × 0.82): an olive travel card over the
-  // rest of the page's gigs on the left, and the one gig the panel features —
-  // its venue, its city and the route to it — on the right.
+  // every number below is the frame's × 0.82 on the 1180 canvas and verbatim on
+  // the two narrow ones): an olive travel card over the rest of the page's gigs
+  // on the left, and the one gig the panel features — its venue, its city and
+  // the route to it — on the right.
+  //
+  // **768 keeps the two columns; only 390 stacks them.** That is the one thing
+  // in this section that `get_metadata` settles before any render is fetched:
+  // the 768 master's two children sit at x 30 and x 396, the 390 master's at
+  // x 10 under one another. The unfitted fallback this replaces stacked at both.
   //
   // The two designs share the whole of the section's live seam. `page` pages
   // the same list `gigPage` at a time, so the map still draws one pin per gig
@@ -5492,13 +5498,28 @@ function EventsMap({ s }) {
   // is the page *minus* the featured gig, which is exactly the frame's own
   // "Other upcoming · 4" beside its five seeded shows.
   if (s.v1) {
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
     const desk = !s.narrow
-    // The 768 and 390 masters of this option are not fitted yet — this pass is
-    // desktop only — so below desktop the two panels stack and the frame's 32
-    // inset drops to the canvas's own `gPad`, on the page's ramp rather than on
-    // invented numbers.
-    const pad = desk ? u(32) : s.gPad
+    const tab = isTablet(s)
+    // The narrow masters are 986:10974 (768 × 823) and 986:11467 (390 × 1286),
+    // and they are the desktop component at its own numbers — every box in the
+    // card, the rows and the panel is the 1440 frame's value unscaled — so the
+    // whole branch flows through one scale rather than a search-and-replace.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The type ramp, resolved by `get_variable_defs` on all three masters
+    // rather than measured: the emitted CSS prints the desktop default at every
+    // width. `size/list` goes back *up* at 390 (16 → 12 → 13) with no
+    // column-width reason — the repertoire's non-monotonic case — so the values
+    // are written down and the cause left alone. `body-sm` is the one token
+    // that does not move at all.
+    const T = desk
+      ? { title: 24, list: 16, bodyLg: 16, bodyMd: 14, bodySm: 12, labelXs: 20, chip: 12 }
+      : s.mob
+        ? { title: 18, list: 13, bodyLg: 15, bodyMd: 13, bodySm: 12, labelXs: 12, chip: 11 }
+        : { title: 19, list: 12, bodyLg: 15, bodyMd: 13, bodySm: 12, labelXs: 14, chip: 11 }
+    // The panel's own inset, and the one box in this design that does not carry
+    // the desktop number down: 32 at 1440, 12 at both narrow masters.
+    const pad = u(desk ? 32 : 12)
 
     // The frame's olive card and its two creams are literals under Retro, whose
     // `paper` IS the page ground (the calendar's rule). The flat four take the
@@ -5549,10 +5570,13 @@ function EventsMap({ s }) {
     // in the whole list so a click features the right show.
     const rest = shown.map((gg, i) => ({ gg, i: first + i })).filter((r) => r.i !== feat)
 
-    const label12 = { fontFamily: s.body, fontSize: u(12), lineHeight: 1.4 }
+    // Body/SM and Body/Chip. The tracking is stated as a percentage (-6) and
+    // ramps with its own token, so it is written as the product rather than
+    // frozen at the desktop -0.72 (the pricing deck's rule).
+    const label12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
     const chip12 = {
-      fontFamily: s.body, fontWeight: 700, fontSize: u(12), lineHeight: 1,
-      letterSpacing: u(-0.72), textTransform: 'uppercase', whiteSpace: 'nowrap',
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      letterSpacing: u(-0.06 * T.chip), textTransform: 'uppercase', whiteSpace: 'nowrap',
     }
 
     // The travel card. Its head is the section's own heading under the frame's
@@ -5588,7 +5612,7 @@ function EventsMap({ s }) {
           <div style={col(u(4), { minWidth: 0 })}>
             <span style={label12}>Travel radius</span>
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: u(24), lineHeight: 1.1,
+              margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
               letterSpacing: s.dls,
             }}>{s.title}</h2>
           </div>
@@ -5602,25 +5626,38 @@ function EventsMap({ s }) {
           {/* Two lines a column, not the frame's three: its "Based in" label
               over "Manchester, UK" is what our `base` field's own copy already
               says ("Based in Manchester"), so printing both would stutter. The
-              captions carry the meaning the labels did. */}
-          <div style={col(u(3), { flex: '1 1 0', minWidth: u(160) })}>
+              captions carry the meaning the labels did.
+
+              Both names are Display/List here. All three masters set the home
+              location's in Display/List and the venue location's in Body/MD,
+              which is hand-set type rather than a design (the pricing deck's
+              normalise-and-say-so rule) — the desktop fit already normalised
+              them and the narrow pass keeps that.
+
+              The desktop measure wraps the two columns under a narrow card;
+              both narrow masters draw them on one row beside the connector, and
+              at 390 that is 306px of inner card for two columns and a 92px
+              connector, so the minimum goes and the basis divides it. */}
+          <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
             <span style={{
-              fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+              fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
             }}>{s.mapBase}</span>
             <span style={label12}>Home location</span>
           </div>
           {!!g && (
             <>
               {/* The frame's ──●── connector, drawn rather than typed. It joins
-                  two columns, so it goes with them once the row wraps. */}
-              <span aria-hidden style={row(0, { flex: 'none', display: desk ? 'flex' : 'none' })}>
+                  two columns, so it goes with them once the row wraps — which
+                  on the desktop canvas is the only way the row ever loses it;
+                  both narrow masters draw it. */}
+              <span aria-hidden style={row(0, { flex: 'none' })}>
                 <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
                 <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: cardFg }} />
                 <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
               </span>
-              <div style={col(u(3), { flex: '1 1 0', minWidth: u(160) })}>
+              <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
                 <span style={{
-                  fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+                  fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
                 }}>{g.city}</span>
                 <span style={label12}>Venue location</span>
               </div>
@@ -5636,7 +5673,10 @@ function EventsMap({ s }) {
             {stats.map((st) => (
               <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
                 <span style={label12}>{st.l}</span>
-                <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5 }}>{st.v}</span>
+                {/* Body/LG, where the two location names above are Display/List
+                    — the frame's two 16s are different tokens and only the
+                    line-height tells them apart. */}
+                <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{st.v}</span>
               </div>
             ))}
           </div>
@@ -5651,10 +5691,20 @@ function EventsMap({ s }) {
             and sets its type in the card's own olive rather than the pill's
             usual accent — a Retro literal, so the flat four keep the accent
             pair BookPill defaults to, which is legible on the dark card by
-            construction where `pillFg` is not (Editorial's all but vanished). */}
+            construction where `pillFg` is not (Editorial's all but vanished).
+
+            The pill's *box* does not ramp: 54 tall on a 46 disc at all three
+            masters, which is the booking calendar's case exactly — so `disc` is
+            the frame's own 46 at narrow (38 being 46 × 0.82) and `full` opts
+            the 390 canvas back up to the full-size box. Its label does ramp,
+            with `size/list`, and BookPill's automatic pick would draw 20px at
+            768 against the master's 12. Desktop keeps its `undefined`, which
+            resolves to `labelMd` 16 where the frame's own is 13.1 — an existing
+            drift in a signed-off half, the bio's `/featured` pill case. */}
         {!!g && (
           <BookPill s={s} ext={g.url} label="Venue Link" glyph="arrow"
-                    disc={desk ? 38 : undefined} shadow="transparent"
+                    disc={desk ? 38 : 46} full={!desk} size={desk ? undefined : u(T.list)}
+                    shadow="transparent"
                     {...(s.retro ? { fg: '#5B5E2E' } : null)} />
         )}
       </div>
@@ -5672,20 +5722,34 @@ function EventsMap({ s }) {
       // nowhere.
       const Tix = tix ? 'a' : 'span'
       return (
+        // The row keeps its content height at every width, where both narrow
+        // masters draw it at 76.5 / 76.75. That is not a stated row height: the
+        // masters state the *left column* at 703 — the same number at 768 and
+        // at 390 — and every row is `flex: 1 0 0` under it, so the 62 (768) and
+        // 67 (390) the column has over its content divide four ways into the
+        // 15.5 and 16.75 each row runs over 10 + text + 10. At 768 that squares
+        // the two columns; at 390 there is no second column and the 703 does
+        // nothing at all. Honouring it would pin a number that only divides at
+        // four gigs, and the desktop half of this very branch already declines
+        // to stretch this column (the video dashboard's rule) — so the radius
+        // ends up drawing a 61px row as a full pill, which is the diff.
         <div key={i} onClick={onPick(i)} style={row(u(12), {
           width: '100%', background: rowBg, color: s.retro ? s.tx : s.paperFg,
           border: `1px solid ${hair}`, borderRadius: u(30),
           padding: `calc(${u(10)} - 1px) calc(${u(14)} - 1px)`,
           cursor: s.live ? 'pointer' : undefined,
         })}>
-          <span style={labelStyle(s, u(20), {
+          {/* Label/XS. The masters set row one's mark in it and rows two to
+              four in Body/MD, hand-set type again — normalised, as the desktop
+              master's own 25/21/21/21 marks already were. */}
+          <span style={labelStyle(s, u(T.labelXs), {
             width: u(36), height: u(36), flex: 'none', display: 'inline-flex',
             alignItems: 'center', justifyContent: 'center',
           })}>{gg.day}</span>
           <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
             <div style={row(u(5), { minWidth: 0 })}>
               <span style={{
-                fontFamily: s.display, fontSize: u(24), lineHeight: 1.1, letterSpacing: s.dls,
+                fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1, letterSpacing: s.dls,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{gg.venue}</span>
               {(tix || !s.live) && (
@@ -5776,11 +5840,11 @@ function EventsMap({ s }) {
           {g ? (
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               <h3 style={{
-                margin: 0, fontFamily: s.display, fontSize: u(24), lineHeight: 1.1,
+                margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
                 letterSpacing: s.dls,
               }}>{g.venue}</h3>
               <span style={{
-                fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, opacity: 0.7,
+                fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, opacity: 0.7,
               }}>{g.city}</span>
             </div>
           ) : (
@@ -5788,16 +5852,28 @@ function EventsMap({ s }) {
             // composition, and a hole where the gig stands is not one of its
             // states — the route below it still draws, with nothing on it.
             <span style={{
-              fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, opacity: 0.7,
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, opacity: 0.7,
             }}>No dates yet.</span>
           )}
         </div>
 
+        {/* The one radius in this design that ramps: `radius/control` 14 at
+            1440, a raw 20 at both narrow masters. Every other corner here — the
+            card's, the rows', the panel's own 30 — is the desktop component's
+            value verbatim, which a corner-walk of the three renders confirms
+            (identical profiles at all three widths). */}
         <div style={col(0, {
-          width: '100%', border: `1px solid ${hair}`, borderRadius: u(14), overflow: 'hidden',
+          width: '100%', border: `1px solid ${hair}`, borderRadius: u(desk ? 14 : 20),
+          overflow: 'hidden',
         })}>
+          {/* The viewport is `flex: 1 0 0` inside a panel whose height the
+              masters state, so its shape is derived rather than designed: 588 ×
+              448 at 1440, a portrait 318 × 530 at 768 and a landscape 346 × 307
+              at 390. Our panel is content-tall, so the aspect is what carries
+              each master's picture across. */}
           <div style={{
-            position: 'relative', width: '100%', aspectRatio: '588 / 448', background: plate,
+            position: 'relative', width: '100%', background: plate,
+            aspectRatio: desk ? '588 / 448' : tab ? '318 / 530' : '346 / 307',
           }}>
             {/* §10.2's street raster, inverted onto the dark plate so the roads
                 read as light lines; the flat four keep layout 1's crossed grid,
@@ -5817,9 +5893,13 @@ function EventsMap({ s }) {
                   backgroundSize: '38px 38px',
                 }),
             }} />
-            {/* The three coverage rings. The outer one already runs past the
-                frame's own viewport, so the clip is the frame's picture. */}
-            {[81.6, 51, 23.8].map((w, i) => (
+            {/* The three coverage rings. All three masters draw them at the
+                same absolute 480 / 300 / 140, so what changes is only how much
+                of the viewport they cover — and expressed as a share of its
+                width they carry to a canvas the frame's width is not. The outer
+                one already runs past the frame's own viewport at every width
+                (and the middle one too at 390), so the clip is the picture. */}
+            {(desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]).map((w, i) => (
               <span key={w} aria-hidden style={{
                 position: 'absolute', left: '50%', top: '50%', width: `${w}%`,
                 aspectRatio: '1', borderRadius: '999px',
@@ -5833,7 +5913,7 @@ function EventsMap({ s }) {
               background: s.retro ? '#5B5E2E' : s.ac, color: plateFg,
               border: `2px solid ${plateFg}`, borderRadius: '999px', padding: u(4),
             })}>
-              <GlobeMark size={Math.round(16 * 0.82)} color={plateFg} />
+              <GlobeMark size={Math.round(16 * z)} color={plateFg} />
             </span>
           </div>
           <div style={row(u(12), {
@@ -5852,12 +5932,17 @@ function EventsMap({ s }) {
 
     return (
       <div style={{
-        display: 'grid', gridTemplateColumns: desk ? '1fr 1fr' : '1fr',
+        display: 'grid',
+        // 768 keeps the desktop's two columns at 342 + 342; only 390 stacks.
+        // The 24 gap is the frames' own at all three widths.
+        gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
         gap: u(24), alignItems: 'start',
       }}>
         {/* Not stretched to the panel beside it, the video dashboard's rule: at
             twelve gigs the left column is the taller by 250px, and the map
-            would have to take that slack. */}
+            would have to take that slack. The 768 master does square the two
+            (both 703) — by dividing the slack into its four gig rows, which is
+            the row comment's case and does not survive a fifth gig. */}
         <div style={col(u(18))}>{travel}{list}</div>
         {featured}
       </div>
