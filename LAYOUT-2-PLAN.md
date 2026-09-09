@@ -795,10 +795,14 @@ Learned on the bio's narrow masters (section 2):
   than the editor — `?w=desktop` needs no clicks, no sidebar state and no
   popup, so the "canvas width is the digest's whole premise" trap in
   `verifying-the-published-tab` does not arise.
-- **A stale doc comment is left over above `HeaderV1`** — it still says the 768
-  and 390 frames "are not fitted yet", which `16304dc` made untrue. Step 3 asks
-  for that line's removal; the header's session missed it. Whoever touches the
-  header next should take it out.
+- **The `/featured` pill is 2.3px taller than the frame's, and that is a
+  geometry diff, not a content one.** Figma strokes an auto-layout frame without
+  growing it (the repertoire's lesson) and this pill's 1.417 rule is drawn
+  outside our padding, so 27.6 stands against the master's 25.34. It was left
+  that way to match what the *desktop* branch of the same element already does —
+  consistency inside one branch beat accuracy in half of it — but the
+  `calc(padding − border)` fix is the correct one if this element is ever
+  revisited, at all three widths together.
 
 ## Open questions
 

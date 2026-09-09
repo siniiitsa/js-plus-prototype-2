@@ -909,9 +909,10 @@ function HeaderV0({ s }) {
 //
 // Desktop numbers are the 1440 frame × 0.82 (§5.5). The frame lays its nav out
 // absolutely over a 144px top inset; here it is in flow, because the root's own
-// padding already stands where that inset does. The 768 and 390 frames are not
-// fitted yet, so `narrow` stacks the spread and hands the links to NavMenu, the
-// way every Retro header collapses below desktop.
+// padding already stands where that inset does. The 768 (`984:34438`) and 390
+// (`984:34636`) masters lead with the photograph instead of the identity block,
+// and both hand the links to NavMenu — the way every Retro header collapses
+// below desktop, and for the reason the nav's own comment gives.
 function HeaderV1({ s }) {
   const olive = (s.retro && s.chips[3]?.bg) || s.line2
   const mustard = s.pillBg
