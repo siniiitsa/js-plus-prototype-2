@@ -78,7 +78,7 @@ Status says otherwise.
 | # | Cat | Tablet node (768) | Size | Mobile node (390) | Size | Status |
 |---|---|---|---|---|---|---|
 | 1 | `header` | `984:34438` | 768 × 1024 | `984:34636` | 390 × 926 | **done** `16304dc` |
-| 2 | `bio` | `984:34877` | 768 × 1138.8 | `984:34834` | 390 × 881.3 | todo |
+| 2 | `bio` | `984:34877` | 768 × 1138.8 | `984:34834` | 390 × 881.3 | **done** `7c18379` |
 | 3 | `media` | `984:35122` *(wrapper)* | 768 × 1549 | `984:35396` *(wrapper)* | 390 × 1428 | todo |
 | 4 | `video` | `984:35259` | 768 × 1112.2 | `984:35737` | 390 × 1101.8 | todo |
 | 5 | `repertoire` | `984:35876` | 768 × 792 | `984:35961` | 390 × 594 | todo |
@@ -749,6 +749,56 @@ Learned on the header's narrow masters (section 1, and the first of the narrow p
 - **`headerFamily()` renders `HeaderV1` under Retro alone**, so the header is
   the one §10.2 section where the `theme=1…4` check does not apply. Every other
   section still needs it.
+
+Learned on the bio's narrow masters (section 2):
+
+- **"Only the type ramps" is true but not uniform — it ramps by *face*, and
+  every token has to be measured on its own.** Both masters emit the desktop
+  component's `var(--size/…, N)` for all of them, and the three renders say
+  otherwise in three different ways: the Anton labels drop hard (label-lg
+  24 → 16 → 14, label-sm 16 → 13 → 12), the Tags component dropped into the
+  card drops hardest (15.4 → 11 → 9.5), Inter's **body-sm does not move at
+  all** — the caption's sub line measures 201px in all three renders — and
+  body-lg gives up a single point, 16 → 15. The header's "measure the type"
+  is right; what it does not say is that one measurement does not settle the
+  next.
+- **Two ways to measure a label, and the integrated one is better.** A set
+  width off the render tells you a ratio; the **card's own height** tells you
+  the size *and* checks the paddings around it in one number. The caption card
+  is `36 + 1.1·T + 4 + 16.8`, so 83 / 75 / 71 across the three widths pins the
+  title at 24 / 16 / 14 and confirms the 18px padding is verbatim at the same
+  time. Prefer a box whose height is a sum of the things you are transcribing.
+- **The body face is Inter on both sides, so body widths compare directly** —
+  unlike the header's Anton/Soulway and the calendar's Fraunces/Soulway, where
+  the ~0.76 division applies. Our 11px chip came out 54.3 against the frame's
+  53. Check which face a token uses before reaching for a correction factor.
+- **A component's fixed height is no more its instance's than a type token
+  is.** The caption's 36px disc is a circle on desktop and a 36 × 16.8 **pill**
+  in both narrow instances, because there the height hugs its one 12px line.
+  The emitted class list is the tell — `w-[36px]` with no `h-[…]` — so read hug
+  vs fixed on every small box, not just the type.
+- **A leaked desktop width can be the thing that produces the frame's layout,
+  which makes the layout an artefact.** The 390 credit row still carries the
+  desktop component's `w-[637.498px]`, and that is *why* the pill wraps under
+  the line. The master itself is a column at `gap-[9.644px]` — so transcribe
+  the column, not the wrap. (The memory note's "absolute numbers leak
+  unadapted" case, one step on: here the leak is invisible because Figma's own
+  wrap absorbs it.)
+- **The narrow canvas is narrower than the frame, and a stated height does not
+  care.** 688 against the frame's 708 at 768, 346 against 370 at 390 — so a
+  card given `h-[648px] w-full` lands 3% and 6.5% more upright than the master
+  draws it. That is the honest transcription and it is worth naming in the
+  commit; deriving the height from the width instead would have been inventing
+  a number the frame does not state.
+- **A `git stash` desktop digest is two navigations and settles the whole
+  question.** 35 rows here, zero differing. Take it in the *harness* rather
+  than the editor — `?w=desktop` needs no clicks, no sidebar state and no
+  popup, so the "canvas width is the digest's whole premise" trap in
+  `verifying-the-published-tab` does not arise.
+- **A stale doc comment is left over above `HeaderV1`** — it still says the 768
+  and 390 frames "are not fitted yet", which `16304dc` made untrue. Step 3 asks
+  for that line's removal; the header's session missed it. Whoever touches the
+  header next should take it out.
 
 ## Open questions
 
