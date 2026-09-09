@@ -854,11 +854,16 @@ Learned on the media player's narrow masters (section 3):
   And **drop a desktop `maxWidth` at narrow**: layout 1's 5.8em measure exists to
   reproduce a break the 1440 frame draws, and forcing it at 768 would break a
   line the master sets whole.
-- **Our display face runs ~1.3× the frames' set width, so a title that fits
-  there truncates here.** The header's ~0.76 factor, met again in the list rows:
-  the 390 master shows "Late Lights" in 99px of Soulway where Fraunces needs 130.
-  Nothing to do about it — but do not read the truncation as a wrong size, and
-  do check it against the frame's own clipping before calling it a defect.
+- **The face factor is per *token*, not per face, because Fraunces is optically
+  sized.** At `size/title` 24 ours runs ~1.3× the frame's set width — the
+  header's ~0.76 the other way up — so the 390 master shows "Late Lights" in
+  99px of Soulway where Fraunces needs 130, and a title that fits there
+  truncates here. But at the display head's 60 ours came out *narrower*: 531px
+  against the master's ~612 of ink for the same string. Same two faces, opposite
+  directions. So do not carry a correction factor from one token to the next —
+  measure each, and never conclude a display size is wrong because a body-sized
+  ratio says so. And check a truncation against the frame's own clipping before
+  calling it a defect: both narrow masters clip these titles too.
 - Sizes that did **not** ramp at either narrow width, measured rather than
   assumed: `size/title` 24 (the row and bar titles), `size/body-sm` 12, `chip`
   12. The 390 row's title-plus-sub block is 47.2 tall and sits centred in a
