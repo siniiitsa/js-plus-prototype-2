@@ -911,8 +911,9 @@ Learned on the video section's narrow masters (section 4):
   panel's 30 (768) and 10 (390) each already contain the 3px rule, so a plain
   `padding` runs 3px wide — the repertoire's `calc(padding − border)` case,
   third sighting. Left as it is here because the desktop half of the very same
-  property carries the same drift and moving it is a signed-off change; at 390
-  the 6px it costs is exactly cancelled by the rows measuring 1.8 short.
+  property carries the same drift and moving it is a signed-off change. (At 390
+  the 6px it costs happens to be cancelled by the rows measuring 1.8 short —
+  a coincidence in the panel's total height, not a reason the drift is safe.)
 - **`&n=7` is the odd-count check a 2-column grid needs** — four rows with the
   last a single half-width cell — and there is no `live=1` check to run: video
   is one of the two categories with no `s.live` seam at all.
