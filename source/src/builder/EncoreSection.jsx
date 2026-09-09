@@ -3213,9 +3213,31 @@ function Pricing({ s }) {
   // the content width (1052) and not the frame's 1328. The frame carries no
   // grain at all (stddev 0 over both the ground and the card), unlike layout
   // 1's cards, so this branch draws none.
+  //
+  // The narrow masters are 986:10425 (768 × 915.4) and 986:10492 (390 × 849.4).
+  // Both are the desktop composition **stacked**: the same `left` block, then
+  // the same card at `w-full`, at the same 32 gap. Every box either master
+  // states is the desktop component's own number unscaled — the card's 30
+  // radius, its 30 gap, the 14/8/6/16/12/10/24/8 gaps, the chip's 8/14 on a
+  // hairline — so the whole branch flows through one `z` switch (the media
+  // player's rule) and only four things genuinely differ: the type (below),
+  // the card's padding (32 at 768, 30/20 at 390), its tilt (-3° at 768, -1° at
+  // 390) and the pill's scale. The includes grid stays **two columns at 390**,
+  // which the repertoire's masters did too — it is the master's answer, not the
+  // phone's.
   if (s.v1) {
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
     const desk = !s.narrow
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The three masters' type, off `get_variable_defs` — the only source that
+    // resolves a master's mode, the emitted CSS printing the desktop default at
+    // all three widths. 1440 → 768 → 390, and note `label-xs` (the feature
+    // lines) drops hardest of the seven, 20 → 14 → 12.
+    const T = desk
+      ? { chip: 12, dispMd: 48, dispSm: 40, bodyLg: 16, bodyMd: 14, labelXs: 20, eyebrow: 15, list: 16 }
+      : s.mob
+        ? { chip: 11, dispMd: 30, dispSm: 26, bodyLg: 15, bodyMd: 13, labelXs: 12, eyebrow: 11, list: 13 }
+        : { chip: 11, dispMd: 38, dispSm: 32, bodyLg: 15, bodyMd: 13, labelXs: 14, eyebrow: 12, list: 12 }
     // The card's own four colours, pinned in the view-model rather than taken
     // from the selected package: the hue belongs to the seat, so toggling
     // changes the plan and not the composition.
@@ -3229,8 +3251,10 @@ function Pricing({ s }) {
     // 8/14 padding on a 1px border is 1px less each side here (the
     // repertoire's rule) and the chip keeps the 28px it is drawn at.
     const chipType = {
-      fontFamily: s.body, fontWeight: 700, fontSize: u(12), lineHeight: 1,
-      letterSpacing: u(-0.72), whiteSpace: 'nowrap',
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      // Figma's -6% of the size, so it ramps with the token rather than staying
+      // the desktop -0.72.
+      letterSpacing: u(-0.06 * T.chip), whiteSpace: 'nowrap',
     }
 
     const left = (
@@ -3240,14 +3264,14 @@ function Pricing({ s }) {
       })}>
         <span style={chipType}>[ PRICING ]</span>
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: u(48), lineHeight: 1,
+          margin: 0, fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
           letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>
         {/* An emptied quote drops the block rather than spending its gap. */}
         {!!s.pricingQuote && (
           <p style={{
             margin: 0, paddingTop: u(12), width: '100%',
-            fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, color: s.tx,
+            fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: s.tx,
           }}>{s.pricingQuote}</p>
         )}
       </div>
@@ -3262,12 +3286,15 @@ function Pricing({ s }) {
         // The wrapper takes the column so the rotation has something square to
         // turn inside; the card itself is content-sized, as the frame's is.
         ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
-        transform: tilt(s, -3),
+        // The 390 master turns the card a third as far as the other two do.
+        transform: tilt(s, s.mob ? -1 : -3),
       }}>
         <div style={{
           background: h.card, color: h.cardFg,
           border: `${s.bw} solid ${h.acc}`, borderRadius: u(30),
-          padding: u(32), overflow: 'hidden',
+          // 32 all round at 1440 and 768; the 390 master pays for its narrower
+          // measure out of the sides alone.
+          padding: s.mob ? `${u(30)} ${u(20)}` : u(32), overflow: 'hidden',
           ...col(u(30), { alignItems: 'flex-start' }),
         }}>
           {t ? (
@@ -3295,31 +3322,38 @@ function Pricing({ s }) {
                   </div>
                 )}
                 <span style={{
-                  fontFamily: s.display, fontSize: u(40), lineHeight: 1, letterSpacing: s.dls,
+                  fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1, letterSpacing: s.dls,
                 }}>{t.name}</span>
                 <p style={{
                   margin: 0, width: '100%',
-                  fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: h.cardMut,
+                  fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: h.cardMut,
                 }}>{t.blurb}</p>
                 {/* The frame sets a second price where the section has a unit,
                     so `— £2,200/event` is `s.tierUnit` — layout 1's own three
                     spans, in the frame's sizes. */}
                 <span style={row(u(6), { alignItems: 'baseline', width: '100%' })}>
-                  <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5 }}>{symbol}</span>
+                  <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{symbol}</span>
                   <span style={{
-                    fontFamily: s.display, fontSize: u(48), lineHeight: 1,
+                    fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                     letterSpacing: s.dls, color: h.acc,
                   }}>{amount}</span>
                   <span style={{
-                    fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: h.cardMut,
+                    fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: h.cardMut,
                   }}>{s.tierUnit}</span>
                 </span>
                 <span style={row(u(16), { flexWrap: 'wrap' })}>
                   {/* The frame's pill is the cream one with the arrow disc: the
                       card's ink filled, its ground as the type, its second hue
-                      as the offset block. The disc is the frame's 44 × 0.82;
-                      the narrow canvases keep BookPill's own scale. */}
-                  <BookPill s={s} to={s.tierBookTo} glyph="arrow" disc={desk ? 36 : undefined}
+                      as the offset block. Both narrow masters draw the pill at
+                      the desktop component's own size — the 46 × 44 disc, the
+                      21/5 padding, the 10 gap — so `full` opts the 390 canvas
+                      back up out of BookPill's `small` scale, which is the case
+                      that prop was added for. The label is the one part that
+                      ramps: `size/list` 16 → 12 → 13, where BookPill's own
+                      full-scale default (20px) is the *header's* 768 number. */}
+                  <BookPill s={s} to={s.tierBookTo} glyph="arrow"
+                            full={!desk} disc={desk ? 36 : 44}
+                            size={desk ? undefined : u(T.list)}
                             bg={h.cardFg} fg={h.card} shadow={h.acc} />
                 </span>
               </div>
@@ -3338,17 +3372,20 @@ function Pricing({ s }) {
                     trails one half-width cell, the pricing deck's rule.
                     The frame's own last four features are set a register
                     smaller than its first four — a Figma artefact, not a
-                    design — so every feature takes the label face. */}
+                    design — so every feature takes the label face.
+                    Two columns at every width: the 390 master keeps them at
+                    153px apiece, which is the repertoire's "the masters can
+                    keep a grid a phone has no business with". */}
                 <div style={{
                   display: 'grid', width: '100%', alignItems: 'start',
-                  gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+                  gridTemplateColumns: '1fr 1fr',
                   columnGap: u(24), rowGap: u(10),
                 }}>
                   {t.feats.map((f, i) => (
                     <span key={i} style={row(u(8), { minWidth: 0 })}>
                       <span style={{ ...chipType, color: h.acc, flex: 'none' }}>+</span>
                       <span style={{
-                        fontFamily: s.body, fontSize: u(20), lineHeight: 1.26, minWidth: 0,
+                        fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, minWidth: 0,
                       }}>{f}</span>
                     </span>
                   ))}
@@ -3359,7 +3396,7 @@ function Pricing({ s }) {
             // The card is the composition, so an emptied list keeps it and
             // prints layout 1's one message inside — the testimonials' rule.
             <span style={{
-              fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, color: h.cardMut,
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: h.cardMut,
             }}>No packages yet.</span>
           )}
         </div>
@@ -3375,7 +3412,7 @@ function Pricing({ s }) {
         {/* The frame sets the small print in the text colour at body-bold,
             where layout 1 has it in `pricingSubFg`'s warm grey. */}
         <span style={{
-          fontFamily: s.body, fontWeight: 700, fontSize: u(15), lineHeight: 1.3, color: s.tx,
+          fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3, color: s.tx,
         }}>{s.pricingSub}</span>
       </div>
     )
