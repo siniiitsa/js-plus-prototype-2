@@ -1569,100 +1569,141 @@ function Bio({ s }) {
     )
   }
 
-  // v1 — Bio layout 2 · Portrait + sub-cards (Figma 964:64638)
+  // v1 — Bio layout 2 · Portrait + sub-cards
+  // (Figma 964:64638 · 984:34877 at 768 · 984:34834 at 390)
   //
   // An outlined cream card — eyebrow and prose at its head, the tag chips and a
   // credit line over the Book Now pill at its foot, the frame's own daylight
   // between them — beside a fixed portrait card whose photograph carries a
   // caption in its floor. Desktop numbers are the 1440 frame × 0.82 (§5.5);
   // the section's own 56px inset is dropped, because the page root's padding
-  // stands in for it. The 768 and 390 frames are not fitted yet, so `narrow`
-  // simply stacks the two columns.
+  // stands in for it. Both narrow masters stack the two cards — the text card
+  // first, which is the reverse of the fallback this branch used to carry — and
+  // are the desktop component at its *own* box numbers, so a padding here is
+  // larger at 768 than on the 1180 canvas and still right.
+  //
+  // What ramps is the type, and it ramps **by face**, not by one factor. The
+  // Anton labels drop hard (label-lg 24 → 16 → 14, label-sm 16 → 13 → 12) and
+  // the chips of the Tags component the frame drops in here drop hardest
+  // (15.4 → 11 → 9.5), while Inter's body-sm holds at 12 across all three
+  // widths and body-lg gives up a single point (16 → 15). Every one of those is
+  // measured off the three renders' own set widths and the caption card's
+  // height, because `var(--size/label-lg, 24)` is the *component's* default and
+  // both narrow masters emit it unchanged.
   if (s.v1) {
+    const nar = s.narrow
+    const tab = isTablet(s)
     // Figma box/1 and the portrait card's mount are two different creams, and
     // Retro's `paper` IS the page background — same literals as v0's polaroid.
     const cream = s.retro ? '#FAECD5' : s.paper
     const mount = s.retro ? '#FBF6EA' : s.paper
     const ink = s.retro ? '#111111' : s.paperFg
-    // The frame's 648px portrait card. The text card stretches to it.
+    // The frame's 648px portrait card. The text card stretches to it on
+    // desktop; both narrow masters let it hug its content and state the
+    // portrait card's height outright (648 at 768, 362 at 390).
     const cardH = '531px'
-    const body = { fontFamily: s.body, fontSize: '13px', lineHeight: 1.5 }
+    const photoH = tab ? '648px' : '362px'
+    const cardR = nar ? '26.25px' : '21px'
+    const body = { fontFamily: s.body, fontSize: nar ? '15px' : '13px', lineHeight: 1.5 }
 
     const photoCard = (
       <div style={{
         position: 'relative', flex: 'none', overflow: 'hidden',
-        width: s.narrow ? '100%' : '355px',
-        height: s.narrow ? undefined : cardH,
-        aspectRatio: s.narrow ? '433 / 648' : undefined,
-        background: mount, borderRadius: '21px', padding: '8px', boxShadow: soft(s),
+        width: nar ? '100%' : '355px',
+        height: nar ? photoH : cardH,
+        background: mount, borderRadius: cardR, padding: nar ? '10px' : '8px', boxShadow: soft(s),
         ...col('0', { alignItems: 'stretch' }),
       }}>
         <div style={{
-          position: 'relative', flex: 1, minHeight: 0, borderRadius: '18px', overflow: 'hidden',
+          position: 'relative', flex: 1, minHeight: 0, overflow: 'hidden',
+          borderRadius: nar ? '21.44px' : '18px',
           ...col('0', { justifyContent: 'flex-end' }),
         }}>
           <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={54} /></div>
-          <div style={{ position: 'relative', padding: '16px' }}>
+          <div style={{ position: 'relative', padding: nar ? '20px' : '16px' }}>
             <div style={{
-              ...row('10px'), background: cream, borderRadius: '7px', padding: '15px 16px', color: ink,
+              ...row(nar ? '12px' : '10px'), background: cream, color: ink,
+              borderRadius: nar ? '9px' : '7px', padding: nar ? '18px 20px' : '15px 16px',
             }}>
-              <div style={col('3px', { flex: 1, minWidth: 0 })}>
-                <span style={labelStyle(s, '20px', { whiteSpace: 'normal' })}>{s.brand}</span>
-                <span style={{ ...body, fontSize: '10px', lineHeight: 1.4 }}>{s.kicker} · {s.location}</span>
+              <div style={col(nar ? '4px' : '3px', { flex: 1, minWidth: 0 })}>
+                <span style={labelStyle(s, tab ? '16px' : nar ? '14px' : '20px', { whiteSpace: 'normal' })}>{s.brand}</span>
+                <span style={{ ...body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4 }}>{s.kicker} · {s.location}</span>
               </div>
+              {/* A 36px disc on desktop, where the frame pins its height; both
+                  narrow instances let the same box hug its one 12px line, so it
+                  is a 36 × 16.8 pill there rather than a smaller circle. */}
               <span style={{
-                width: '30px', height: '30px', borderRadius: '999px', flex: 'none', color: ink,
+                width: nar ? '36px' : '30px', height: nar ? '16.8px' : '30px',
+                borderRadius: '999px', flex: 'none', color: ink,
                 background: (s.retro && s.chips[0]?.bg) || s.soft2,
                 ...row('0', { justifyContent: 'center' }),
               }}><ChevronsRight size={15} /></span>
             </div>
           </div>
         </div>
-        <Grain s={s} exact blend="screen" opacity={0.5} radius="21px" />
+        <Grain s={s} exact blend="screen" opacity={0.5} radius={cardR} />
       </div>
     )
 
     const textCard = (
       <div style={{
-        flex: 1, minWidth: 0, background: cream, color: ink,
-        border: `1px solid ${ink}`, borderRadius: '25px', padding: '25px',
-        height: s.narrow ? undefined : cardH,
-        ...col('0', { justifyContent: 'space-between' }),
+        flex: nar ? 'none' : 1, minWidth: 0, background: cream, color: ink,
+        border: `1px solid ${ink}`, borderRadius: nar ? '30px' : '25px',
+        padding: tab ? '30px' : nar ? '20px' : '25px',
+        height: nar ? undefined : cardH,
+        ...col(nar ? '18px' : '0', { justifyContent: 'space-between' }),
       }}>
-        <div style={col('21px', { alignItems: 'flex-start' })}>
-          <span style={labelStyle(s, '13px', {
-            border: `1.2px solid ${(s.retro && s.chips[3]?.bg) || s.line2}`,
-            borderRadius: '999px', padding: '5px 12px',
+        <div style={col(nar ? '25.5px' : '21px', { alignItems: 'flex-start' })}>
+          <span style={labelStyle(s, s.mob ? '12px' : '13px', {
+            border: `${nar ? '1.417px' : '1.2px'} solid ${(s.retro && s.chips[3]?.bg) || s.line2}`,
+            borderRadius: '999px', padding: nar ? '5.669px 14.174px' : '5px 12px',
           })}>/Featured</span>
           <p style={{ margin: 0, ...body }}>{s.bioP1}</p>
         </div>
-        <div style={col('8px')}>
+        <div style={col(nar ? '10px' : '8px', { padding: s.mob ? '10px 0' : undefined })}>
           {/* The frame drops the Tags section's own chip row in here, at its
-              own width — which is what wraps five chips onto two lines. */}
+              own width — which is what wraps five chips onto two lines. The
+              264.4 is the one number the narrow masters leave unchanged; only
+              the chips inside it shrink, which is why 768 wraps 3 + 2 where
+              390 fits 4 + 1 in the same measure. */}
           <div style={{
-            display: 'flex', flexWrap: 'wrap', gap: '5px', maxWidth: '217px', padding: '18px 0',
+            display: 'flex', flexWrap: 'wrap',
+            gap: nar ? '6.149px' : '5px',
+            maxWidth: nar ? '264.4px' : '217px',
+            padding: nar ? '22.19px 0' : '18px 0',
           }}>
             {s.chips.map((c, i) => (
               <span key={i} style={{
-                background: c.bg, color: s.retro ? '#FBF6EA' : c.fg, borderRadius: '5px',
-                fontFamily: s.body, fontSize: '13px', lineHeight: 1.26, padding: '3px 7px',
+                background: c.bg, color: s.retro ? '#FBF6EA' : c.fg,
+                borderRadius: nar ? '6.149px' : '5px',
+                fontFamily: s.body, fontSize: tab ? '11px' : nar ? '9.5px' : '13px',
+                lineHeight: 1.26, padding: nar ? '3.843px 8.455px' : '3px 7px',
                 whiteSpace: 'nowrap',
               }}>{c.label}</span>
             ))}
           </div>
-          <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
+          {/* 390 sets the pill under the credit line rather than beside it —
+              a column with its own 9.6 gap, not a wrapped row: the master's
+              own row still carries the desktop component's 637.5px width, so
+              its wrap is a leaked default and the column is the design. */}
+          <div style={s.mob
+            ? col('9.6px', { alignItems: 'flex-start' })
+            : row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
             {/* The frame's own credit line, two-tone the way it sets it. */}
             <span style={body}>
               <span style={{ color: s.ac }}>Five years of </span>
               rooms read &amp; floors moved
             </span>
-            <BookPill s={s} to={s.bookTo} glyph="arrow" />
+            {/* Both masters draw the pill at the *same* full-scale box — 390
+                included, which is what `full` buys — and only ramp its type. */}
+            <BookPill s={s} to={s.bookTo} glyph="arrow"
+                      full={s.mob} size={nar ? (tab ? '13px' : '12px') : undefined} />
           </div>
         </div>
       </div>
     )
 
-    if (s.narrow) return <div style={col(s.gGap)}>{photoCard}{textCard}</div>
+    if (nar) return <div style={col(tab ? '30px' : '10px')}>{textCard}{photoCard}</div>
     return <div style={row('25px', { alignItems: 'stretch' })}>{textCard}{photoCard}</div>
   }
 
