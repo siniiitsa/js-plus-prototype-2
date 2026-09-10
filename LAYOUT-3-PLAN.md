@@ -481,8 +481,18 @@ Learned on the audio player (section 4):
   frame to wire to the list instead. What made it cheap: card 0 keeps the frame's played
   head and every card below it is unplayed, which is the media player's `cur = -1` cue
   rule and leaves the top of the stack the master's picture bar for bar. **Media (section
-  5) is the other half of that same Section and draws the same list** — read this
-  paragraph before deciding what its numbered list is for.
+  5) is the other half of that same Section and draws the same `vm.tracks`** — so a page
+  carrying both at layout 3 now prints the same five tracks twice, ~1200px of cards and
+  then a numbered list of the identical five. On the Figma page that pairing is intended,
+  but the intent rested on the bar being *singular*; it no longer is. Read this paragraph
+  before deciding how tall media's list is, whether it draws a head, and whether it should
+  page rather than print. Do not "fix" it by shrinking the audio stack back to one card —
+  that re-strands the list.
+- **A tall layout is fine in the layout picker.** `LayoutPicker` renders at `Z:
+  SIZES.desktop` into a ~390px pane, so `ScaledPreview`'s scale is `390 / 1180 ≈ 0.33` and
+  its `autoMax` of 210 shows the top ~636 CSS px of the render — here the head and two
+  cards — then clips, which is what `autoMax` is documented to do. No thumbnail check is
+  needed for a design that simply runs long; media layout 2 already exercised the path.
 - **When a frame's fixed-size children fill its own width, the pitch is the design and
   the count is derived.** 57 bars at `shrink-0 w-[10px] gap-[4px]` fill the 810 box
   exactly; the narrow masters keep the *same* absolute positions under `justify-center` +
