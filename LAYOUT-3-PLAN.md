@@ -51,7 +51,7 @@ one session.
 | 5 | `media` | `964:68642` | Media Player — **A · Editorial numbered list** | 858 × 647 | `977:22728` | 708 × 647 | `982:9779` | 370 × 647 | **done 16d28b0** |
 | 6 | `calendar` | `964:68645` | Booking Calendar — **C · Mobile availability** | 405 × 497.9 | `984:10605` | 708 × 456.9 | `984:10673` | 370 × 433.9 | **done f9c768e** |
 | 7 | `repertoire` | `964:68646` | Repertoire — **E · Curated set-list cards** | 1440 × 621 | `977:23041` | 708 × 636 | `982:10193` | 390 × 697 | **done 8c09b90** |
-| 8 | `gallery` | `964:68647` | Gallery Sections — **B · Masonry grid** | 1440 × 789 | `977:23131` | 768 × 865 | `982:10257` | 390 × 678 | todo |
+| 8 | `gallery` | `964:68647` | Gallery Sections — **B · Masonry grid** | 1440 × 789 | `977:23131` | 768 × 865 | `982:10257` | 390 × 678 | **done c1836da** |
 | 9 | `pricing` | `964:68648` | Pricing — **F · Stacked rows** | 1440 × 1022 | `977:23149` | 768 × 941 | `982:10274` | 390 × 1358 | todo |
 | 10 | `map` | `964:68649` | Events Map — **A · Split list + map** | 1440 × 804 | `977:23264` | 768 × 809 | `982:10389` | 390 × 878 | todo |
 | 11 | `form` | `964:68650` | Enquiry Forms — **F · Full-bleed hero form** | 1440 × 548 | `977:23406` | 768 × 680 | `982:10472` | 390 × 722 | todo |
@@ -737,6 +737,64 @@ Learned on the repertoire (section 7):
   long title and artist every fourth is what shows the row's ellipsis at 290. The bio's
   add-the-switch-in-the-same-session rule, for a *shape* of row rather than a field.
 
+Learned on the gallery (section 8):
+
+- **The header's y-range table is one band short: the gallery stands on its own cream sheet.**
+  A column scan of the 1440 page samples `#FBF6EA` from 4049 to 4838 where the sections either
+  side sample the beige `#EAD7B8` — a third full-bleed sheet beside the pricing tail's olive
+  (5600–5760) and the events map's mustard (5900–6510). The 238px thumbnail that table was read
+  off was too coarse to separate the two creams. **Re-sample your own band before trusting it**,
+  and `get_variable_defs` will corroborate: `sem/bg` came back `#fbf6ea` here where the media
+  player's came back as the page's beige.
+- **A bleed is not only a fidelity choice — it hands the section the frame's own measure.**
+  Every other section this pass has fitted lives inside the root's `padX`, so its desktop content
+  is 1052 against the frame's 1088 and the narrow ones 688/346 against 708/350. A sheet that
+  bleeds and then re-insets at the frame's own number gets 708 and 350 back exactly: the tablet
+  and mobile tiles measure **230.7 × 150 and 111.3 × 107.5, their masters' numbers to the pixel**,
+  and desktop lands within 0.2. That is the cheapest fidelity in the pass and it came free with a
+  decision made for a different reason. Worth checking on any remaining section whose frame paints
+  its own ground.
+- **The count is the section's when a field states it.** The masters draw twelve tiles;
+  `FIELDS.gallery.images` is `max: 7` and both fitted layouts already walk a fixed seven, so
+  twelve is the Figma component's own default padded with repeated photographs (its rows repeat
+  images 1, 2 and 4 — check for duplicates before reading a count as a design). The bio's
+  five-chip rule, now with the section's own field settling it rather than a judgement.
+- **A frame with no short row cannot tell you what a short row does, so read the other two
+  masters.** The desktop master's grid is a `flex-wrap` row of `flex-[1_0_0] min-w-[298px]`
+  children, which at seven would widen the second row's three tiles to a third of the measure
+  each — and, with the aspect below, heighten them too. Twelve into four never leaves a short row,
+  so the master is silent; both narrow masters are explicit
+  `grid-cols-[repeat(3,…)] grid-rows-[repeat(4,…)]` grids, which are not, and 4 + 3 / 3 + 3 + 1
+  with trailing empty cells is the pricing deck's odd-count rule anyway. **Also check the min-w
+  across widths before deriving a count from it**: 298 gives 4 columns at our 1052 and *2* at the
+  tablet master's own 688, against the 3 it draws — so it is a desktop artefact and the three
+  counts are literals.
+- **A tile whose height comes from the page's own section height is a residue, and it travels as
+  a ratio.** 789 less its insets, its head and the 32 leaves 560, three rows of which is 181.33;
+  the 768 master states `h-[660px]` and the 390 one is `flex-[1_0_0]` of the section's 678. Three
+  different aspects (1.798 / 1.538 / 1.036), none of them designed — the events map's
+  derived-viewport rule, and the first time in this pass it has decided a whole grid.
+- **`Photo`'s `ink` is owed by every section on its own sheet, and the tell is which layout you
+  copied from.** Layout 2's gallery passes none because its tiles stand on the page ground;
+  layout 3's stand on `paper`, and the default `s.muted` is an rgba of the **page's** `tx`, which
+  on Lime is the same pale lime the sheet is. `ink={s.retro ? undefined : s.paperFg}` keeps
+  Retro's softer placeholder and fixes the four. `theme=1&n=0` is the render that shows it.
+- **Grep the file before gating a radius on `s.retro`.** Nearly every fitted branch writes the
+  frame's corner as a bare `u(30)` for all five themes, layout 2's gallery included, so a `s.retro
+  ? u(30) : s.radius` here would have been the outlier rather than the correction. One grep for
+  `borderRadius: u(` settles it.
+- **`s.ac` on a `paper` sheet is a known cost, not a new one.** Retro's rust, Grunge's red and
+  Editorial's and Pop's accents all read on their sheets; Lime's acid green on pale lime does not,
+  and this is the second head to ship that way after the repertoire's. The conventions already
+  name the property twice ("the accent is not guaranteed against `paper`"), and the alternative —
+  `s.paperFg` for the flat four — flattens three themes to fix one. `EncoreSection` does no colour
+  maths, so there is no third answer. Name it in the commit.
+- **The whole section can be one `col()` with a padding.** No width branch outside `u()`'s `z`,
+  the column count, the ratio and the two insets; no state, no handler, no decoration, no
+  `s.retro` gate beyond the sheet's two literals. The booking calendar held the record for the
+  cheapest master in the pass; this one is cheaper, and the diff is 130 lines of which 61 are the
+  comment.
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five, and
@@ -842,3 +900,15 @@ Learned on the repertoire (section 7):
     every fifth row is untagged), it is only ever seen mid-edit, and it is the pricing deck's
     lone-fourth-card picture — left as it is rather than special-cased into a full-width card,
     which would be a second composition for one state.
+11. **The gallery's layout 3 has no live seam at all**, which is the fifth sighting of a
+    control or field a layout cannot reach — the header's seal (5), media's `heading` (6), the
+    calendar's `cta` (8) and the repertoire's search (9) — and the first where the *whole* seam
+    goes. The masonry frame draws no viewer, no arrows, no thumbnail strip and no source rows,
+    so `pick` reaches nothing while layout 3 is selected and `youtube` / `instagram` / `tiktok`
+    have no row to go in. The three addresses are layout 2's Soundcloud call already made
+    (their `FIELDS` hints say "Layout 1 only", which stays true), so what is genuinely new is
+    that a section CLAUDE.md lists among the fourteen `s.live` readers now has a layout in
+    which it reads nothing. *Named, not open*: a lightbox is a control the frame does not draw,
+    and the video and audio sections are the precedent for a §10.2 section that is a picture on
+    both surfaces. Worth watching if the remaining four sections meet the same shape — it is
+    the one thing this pass has dropped that a visitor could otherwise have used.
