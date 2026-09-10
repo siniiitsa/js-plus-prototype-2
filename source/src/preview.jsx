@@ -124,11 +124,18 @@ const c = count === null || !LIST[cat]
 // both layouts: the struck cell in the month, and the dead row in the slot list.
 if (q.get('booked')) c.booked = q.get('booked').split(',')
 
+// &since=June%202021 fills FIELDS.bio.since, which has no default on purpose —
+// so it is the only way to see the bio's layout-3 ID card at the three stat
+// columns its frame draws, which is where its head row runs out of room.
+if (q.get('since')) c.since = q.get('since')
+
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
 // driving the editor and its popup.
 const s = sectionVm({
-  themeIdx, cat, arch, c, artistName: 'Kai Mercer',
+  // &name=Poppy%20Jaeggy is how a display slot is checked against descenders
+  // and a longer string — the seeded "Kai Mercer" has neither.
+  themeIdx, cat, arch, c, artistName: q.get('name') || 'Kai Mercer',
   Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections,
 })
 

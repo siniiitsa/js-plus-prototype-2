@@ -403,6 +403,25 @@ Learned on the bio (section 2):
 - **The seeded canvas can honestly draw fewer of something than the frame.** The master's three
   stat columns are two facts and a duplicate; `since` has no default, so the reference picture
   shows two. That is the pricing chip row's `All` diff again — intended, and named in the commit.
+- **A state the seed cannot reach still has to be rendered, and a field with no default has no
+  other way in.** `since` was fitted and shipped without one render at three columns, and the
+  three-column state clips: the masters seat three because they hand-break their *values* to two
+  lines (57 and 30 wide against our one-line 70 and 92), and our canvases are 20 and 24 narrower
+  than the frames besides, so at 390 "Manchester, UK" lost its "UK" behind the head's
+  `overflow-clip`. The row wraps now (the media player's rule — a frame's own squeeze is an
+  artefact once it destroys content the artist typed). **Add the harness switch in the same
+  session you add the field**: `preview.jsx` takes `&since=` beside `&booked=`, and `&name=` now
+  overrides the artist, which is how any display slot gets checked against a string that is not
+  "Kai Mercer".
+- **`overflow-clip` on a `leading-none` text frame cuts every descender off at the baseline.** The
+  master's name frame states it, and neither of the two names Figma draws has a descender to show
+  it — "Poppy Jaeggy" loses four. It was inert besides, `maxWidth` and `wordBreak` already
+  bounding the width. Check any transcribed clip against a string the frame never set.
+- **Put a frame's stated box on the element whose *unwrapped* picture needs it.** The stat
+  columns state 96 each; carried on the column it is right unwrapped and opens a 58px hole
+  between wrapped rows, because our values are one line where the frame's are two. Carried on the
+  row as `minHeight` with `alignContent: flex-end` it is the same picture unwrapped — the head
+  band still measures the frame's 144 — and tight when it wraps.
 
 ## Open questions
 

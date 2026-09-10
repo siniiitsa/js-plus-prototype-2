@@ -2021,11 +2021,13 @@ function Bio({ s }) {
     // its column's width; the labels are ours to write, so the break is kept
     // as a literal newline rather than left to a measure nothing states.
     const stat = (label, value) => (
-      // The 96 and the `justify-end` are the column's own in every master:
-      // the value sits on the box's floor whether its label takes one line or
-      // two, which is what keeps the row's baseline where the frame draws it.
+      // Every master states 96 on the *column*; it is carried on the row below
+      // instead, as a floor. Unwrapped the two are the same picture — the
+      // values sit on the 96 box's floor, which is what keeps the head band at
+      // the frame's 144 — and wrapped they are not: a second line of 96-tall
+      // columns holding our one-line values opens a 58px hole between the rows.
       <div key={label} style={col(u(15), {
-        flex: 'none', height: u(96), alignItems: 'flex-start', justifyContent: 'flex-end',
+        flex: 'none', alignItems: 'flex-start',
       })}>
         <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
         <span style={labelStyle(s, u(T.label), { whiteSpace: 'nowrap' })}>{value}</span>
@@ -2050,9 +2052,15 @@ function Bio({ s }) {
         gap: u(s.mob ? 10 : 40), overflow: 'hidden',
         padding: `${u(24)} ${pad}`,
       }}>
+        {/* The master's name frame is `overflow-clip`, and that is *not*
+            transcribed: at `leading-none` the line box is exactly 1em, so the
+            clip cuts every descender off at the baseline — "Poppy Jaeggy"
+            loses four of them. It is inert here anyway, `maxWidth` and
+            `wordBreak` already bounding the width, and the master's own two
+            names have no descender to show it. */}
         <div style={{
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
-          minWidth: 0, maxWidth: u(179), overflow: 'hidden',
+          minWidth: 0, maxWidth: u(179),
         }}>
           {/* The 179 is the same at all three masters and only wraps the name
               at 1440, where Soulway at 40 just misses it. Fraunces is the
@@ -2064,9 +2072,20 @@ function Bio({ s }) {
             letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
           }}>{s.brand}</p>
         </div>
+        {/* The row wraps, where every master states `whitespace-nowrap` inside
+            an `overflow-clip` head. The masters fit three columns because they
+            hand-break their *values* to two lines — 57 and 30 wide against our
+            one-line 70 and 92 — and our canvases are 20 (768) and 24 (390)
+            narrower than the frames besides, so with `since` filled the third
+            column ran 7px past the card and "Manchester, UK" lost its "UK".
+            The media player's rule: a frame's own squeeze is an artefact once
+            it destroys content the artist typed. `rowGap` is the columns' own
+            15, and the height belongs to each column rather than the row, or a
+            wrapped line would divide it. */}
         <div style={row(u(s.mob ? 52 : 100), {
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
-          minWidth: 0, height: u(96), color: ink,
+          minWidth: 0, color: ink, flexWrap: 'wrap', rowGap: u(15),
+          minHeight: u(96), alignItems: 'flex-end', alignContent: 'flex-end',
         })}>{stats}</div>
       </div>
     )
