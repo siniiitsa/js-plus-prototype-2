@@ -47,7 +47,7 @@ one session.
 | 1 | `header` | `964:68622` | Headers — **D · Inset Hero** | 1440 × 900 | `977:22532` | 768 × 1024 | `982:9583` | 390 × 930.5 | **done 43fa3ae** |
 | 2 | `bio` | `964:68631` | Bios — **E · Stacked ID card** | 858 × 882 | `977:22717` | 708 × 912 | `982:10013` | 370 × 860 | **done dac7d44** |
 | 3 | `tags` | `964:68632` | **Tags — Frame** | 858 × 75 | `977:22718` | 708 × 67 | `982:9769` | 370 × 97 | **done 3df9565** |
-| 4 | `audio` | `964:68641` | Audio Player Componenets — **H · Bar-meter player** | 858 × 243 | `977:22727` | 708 × 243 | `982:9778` | 370 × 243 | todo |
+| 4 | `audio` | `964:68641` | Audio Player Componenets — **H · Bar-meter player** | 858 × 243 | `977:22727` | 708 × 243 | `982:9778` | 370 × 243 | **done 47b9d22** |
 | 5 | `media` | `964:68642` | Media Player — **A · Editorial numbered list** | 858 × 647 | `977:22728` | 708 × 647 | `982:9779` | 370 × 647 | todo |
 | 6 | `calendar` | `964:68645` | Booking Calendar — **C · Mobile availability** | 405 × 497.9 | `984:10605` | 708 × 456.9 | `984:10673` | 370 × 433.9 | todo |
 | 7 | `repertoire` | `964:68646` | Repertoire — **E · Curated set-list cards** | 1440 × 621 | `977:23041` | 708 × 636 | `982:10193` | 390 × 697 | todo |
@@ -471,6 +471,57 @@ Learned on the tags row (section 3):
   theme. It is a property of `vm.chips` and shows in every layout that draws them, v0 included —
   not this branch's regression, and not this pass's to fix.
 
+Learned on the audio player (section 4):
+
+- **A frame that draws one of a list is a stranding, and on this page the reason it is
+  not the designer's mistake is the section next door.** The bar-meter is a single
+  now-playing bar because the composed page puts the whole list in the *media* instance
+  under it. Our sections are independent, so the card became the row and the section the
+  stack — the pricing deck's and the testimonials' rule, and here with no control in the
+  frame to wire to the list instead. What made it cheap: card 0 keeps the frame's played
+  head and every card below it is unplayed, which is the media player's `cur = -1` cue
+  rule and leaves the top of the stack the master's picture bar for bar. **Media (section
+  5) is the other half of that same Section and draws the same list** — read this
+  paragraph before deciding what its numbered list is for.
+- **When a frame's fixed-size children fill its own width, the pitch is the design and
+  the count is derived.** 57 bars at `shrink-0 w-[10px] gap-[4px]` fill the 810 box
+  exactly; the narrow masters keep the *same* absolute positions under `justify-center` +
+  `overflow-clip`, so 708 clips half the played head off and **390 renders no accent bar
+  at all**. That is the gallery rail's `flex: 1 0 0` rule the other way up, and the media
+  player's destroys-its-own-content rule with a pixel scan to prove it.
+- **`EncoreSection` cannot measure, but it does know the content column: 1052 / 688 /
+  346.** It is `canvasW − 2·padX` in the editor *and* in the published tab, because
+  `PublishedPage` folds the surplus past the canvas into `padX` and it cancels. So a
+  design whose count has to come off a width can have one, keyed on `desk`/`tab`/`s.mob`,
+  with a published window under 390 the single case it overshoots — absorbed by the
+  frame's own clip. Write the arithmetic out rather than the three answers.
+- **`s.pillBg` is a page token and dies on a paper card.** Retro's is the mustard and
+  `pillFg` resolves to the rust ▶ by construction — the frame exactly — but `pillBg` is
+  the lightest *tag* where `paper` is the palette's lightest colour outright, so Lime,
+  Grunge and Pop all drew the disc in the card's own colour. `s.ac` is no better (acid
+  green on pale lime). The pair that is legible on paper by construction is `paperFg` on
+  `paper`, and it is what the names and the played bars take too. The repertoire's lesson,
+  now with a shared *token* rather than a shared component as the carrier.
+- **Size an icon off its ink, not off the token that sets it.** The frame's ▶ is a
+  body-md text node in a 21px line box and its triangle measures **9 × 10** inside the 44
+  disc on all three renders; lucide's fills 14/24 of its `size`, so `size` 15.5 is what
+  draws the frame's 9. The header's divide-the-face-out rule, for an icon. A Figma text
+  node's box is no more the glyph than it is the type size.
+- **`&n=` reaches a delimited string by joining the rows.** `audio` is the second
+  list-shaped content that is not an array (`tags` was the first), so the harness builds
+  the rows and `.join('\n')`s them for that one category rather than growing a second
+  switch. Its rows drop every third duration and lengthen every fourth title, which is
+  what shows the meter's right-hand scale absent and both foot blocks ellipsising.
+- **A brace-depth walk of the diff is still the whole safety net, and a *replacement*
+  makes it a two-sided one.** All 237 added lines fell inside the new `if (s.v2)` block,
+  its comment header, the module-level `WAVE` constant or one blank separator, and all 13
+  removed lines inside the old `{s.v2 && …}` block — so v0 and v1 are byte-identical at
+  every width, theme and layout without a browser digest at all.
+- **A module-level decoration constant belongs in `EncoreSection`, not `data.js`.**
+  `WAVE` is the frame's own 57 bar heights; `GRAIN_URL`, `TORN_D` and `SCRIM` are the
+  precedent, and the alternative would have been a vm key for something that is not
+  content — `CITIES` and `PINS` reach the file through `sectionVm` because they *are*.
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five.*
@@ -480,14 +531,18 @@ Learned on the tags row (section 3):
    because its two drawn widths disagree about the composition rather than only its size. If
    none exists — and none did for the bio, whose main component is 858 itself — the rule above
    applies to it unchanged.
-2. **Whether the bar-meter player plays.** The frame draws a real transport — a waveform, a
-   playhead and a scrubber — over `FIELDS.audio.tracks`, which is a delimited textarea, not the
-   media player's `c.tracks` repeater with its per-row `audio` address. So making it play would
-   need a field the section does not have, on top of the `s.live` work. Fitting it as a picture
-   keeps CLAUDE.md's rule intact and loses nothing the artist typed. This is a scope call, not a
-   fidelity one.
-3. **Whether `tags` and `audio` should have been fitted at layout 1.** *Half answered on the
-   tags row (section 3), and the answer stands:* `tags` now has one fitted layout out of three,
+2. ~~**Whether the bar-meter player plays.**~~ *Answered on the audio player (section 4): it
+   does not.* The frame draws a real transport — a waveform, a playhead and a scrubber — over
+   `FIELDS.audio.tracks`, which is a delimited textarea, not the media player's `c.tracks`
+   repeater with its per-row `audio` address. So making it play would need a field the section
+   does not have, on top of the `s.live` work. It is fitted as a picture, which keeps CLAUDE.md's
+   rule intact, and it now **loses nothing the artist typed** — that claim was only true once the
+   card became one per track. There is no handler and therefore no pointer cursor on the five
+   discs (the calendar's rule). Making it play stays a separate merge, the way
+   `media-player-playback` was, and it would want a per-row address field first.
+3. **Whether `tags` and `audio` should have been fitted at layout 1.** *Answered on the tags row
+   (section 3) and again on the audio player (section 4), and the answer stands:* each now has one
+   fitted layout out of three,
    and a user who picks layout 1 or 2 still gets an invented flat design. Nothing about fitting
    it made the numbering read better and nothing about it needed to. Neither has ever been
    Figma-fitted — no commit in the repo's history fits either, and both components are generic
@@ -513,6 +568,16 @@ Learned on the tags row (section 3):
    case rests on the mirrored structure rather than on matching copy. Worth naming because it is
    the first time a section takes copy from outside its own instance; the "KM BIO" eyebrow above
    each head is the part that is *not* claimed.
+
+   *Settled on the audio player (section 4).* The seat is the wrapper's and the copy is the
+   section's: `s.title` heads it and the default stays "Selected Tracks", because re-pointing it
+   the way `TITLES.tags` was re-pointed would make v0 and v1 newly honour a different word —
+   question 7's objection, and the discriminator the tags row already wrote down. The eyebrow is
+   taken as a *pattern* rather than a string: the second wrapper still carries the bio head's
+   hidden `the` / `room.` nodes, which is what proves it is the bio's Section duplicated, so
+   "KM BIO" over a track head is a leftover and the eyebrow is the initials plus the category's
+   own name. It is written out as a literal — `EncoreSection` imports nothing from `data.js`, so
+   `catName()` is not reachable and must not be made so.
 7. **The bio's `kicker` and `location` are not editable.** `FIELDS.bio` names neither, so
    `cv('kicker', …)` and `cv('location', …)` always resolve to the page-level literals "DJ ·
    Live Act" and "Manchester, UK". Layout 3's ID card now sets them as two of its three stats,
