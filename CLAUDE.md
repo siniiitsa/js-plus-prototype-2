@@ -141,8 +141,9 @@ mutated through a single `patch()` helper.
   playing card by raising it out of the stack — the cards overlap by 18px at the foot and a raised
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
   **Layout 2 plays through the same hooks**, and draws the one list twice: the fan and the
-  numbered list beside it are both the whole of `s.tracks`, so `list` is `s.v0 || s.v1 ?
-  s.tracks : s.tracks3` — the flat design still shows three and Next must not leave the page.
+  numbered list beside it are both the whole of `s.tracks`, and **layout 3 is that numbered
+  list on its own**, so `list` is `s.v0 || s.v1 || s.v2 ? s.tracks : s.tracks3` — the flat
+  design still shows three and Next must not leave the page.
   Its fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
