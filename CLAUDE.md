@@ -376,6 +376,26 @@ mutated through a single `patch()` helper.
   `FIELDS.form.photo`, a **third single-photo slot** beside `image` and `avatar`, because this
   section's `image` **is** the artist: the header's and the video section's pair the other way up,
   and layout 1 has drawn `image` as the 48px circle since it was fitted.
+  **Layout 3 is layout 2's card again, beside a display head instead of under a
+  photograph**, and it shares the seam whole for the second time — the same `vals`, the
+  same `errs`, the same `sent`, the same `<a href="mailto:">`, the same *Write another*,
+  the same label-in-the-box and the same bare `Enquiry` subject, since `showTypes` is
+  still `!!s.v0`. What it does not draw is the portrait, so **`image` now reaches layouts
+  1 and 2 alone** — the frame has no credit row, and what comes back in its place is the
+  artist's *name*, which heads the left column as the eyebrow because the frame's own
+  "AVAILABLE 2025 / 2026" is a claim about the clock and nothing in this file reads one
+  (the booking calendar's rule). Its two prose slots are the section's one prose field and
+  one derivation: `para` takes the paragraph under the head, which is what its field is
+  called, and the centred line under the pill takes **`vm.formPromiseLine`** — the ticked
+  promises run together with ` · `, because the frame's "No charge to enquire" is a
+  promise in `FORM_PROMISES`' own register and a frame that draws one of a list is the
+  audio player's stranding. Emptied promises drop the line and the card ends on its pill.
+  Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
+  two `minmax(0, 1fr)` grid columns, because a zero flex-basis resolves against the
+  *content* box whatever `box-sizing` says and the padded card came out 41 wider than the
+  block beside it; and the card's stated `sticky` is dropped rather than written inert,
+  since the frame's own `items-center` gives it nowhere to travel where layout 2's
+  `alignSelf: stretch` made it real.
 - **The testimonials carousel pages, in the published tab only, and the reviews are the
   artist's.** It was the last §10.2 section that was a picture on *both* sides: its two arrows
   carried a pointer cursor and no handler, and layout 1 drew `QUOTES[0]` and nothing else, so
