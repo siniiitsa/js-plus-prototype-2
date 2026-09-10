@@ -45,7 +45,7 @@ one session.
 | # | Cat | Desktop node | Frame name | Size | Tablet node | Size | Mobile node | Size | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:68622` | Headers — **D · Inset Hero** | 1440 × 900 | `977:22532` | 768 × 1024 | `982:9583` | 390 × 930.5 | **done 43fa3ae** |
-| 2 | `bio` | `964:68631` | Bios — **E · Stacked ID card** | 858 × 882 | `977:22717` | 708 × 912 | `982:10013` | 370 × 860 | todo |
+| 2 | `bio` | `964:68631` | Bios — **E · Stacked ID card** | 858 × 882 | `977:22717` | 708 × 912 | `982:10013` | 370 × 860 | **done dac7d44** |
 | 3 | `tags` | `964:68632` | **Tags — Frame** | 858 × 75 | `977:22718` | 708 × 67 | `982:9769` | 370 × 97 | todo |
 | 4 | `audio` | `964:68641` | Audio Player Componenets — **H · Bar-meter player** | 858 × 243 | `977:22727` | 708 × 243 | `982:9778` | 370 × 243 | todo |
 | 5 | `media` | `964:68642` | Media Player — **A · Editorial numbered list** | 858 × 647 | `977:22728` | 708 × 647 | `982:9779` | 370 × 647 | todo |
@@ -339,15 +339,80 @@ Learned on the header (section 1):
   as layout 2's open questions 4/7/8/12, and the same call: inventing a seal the frame
   does not draw would be worse than the absence.
 
+Learned on the bio (section 2):
+
+- **Open question 1, settled for all five: the card fills 1052, and *which parts* stretch is
+  read off the master's emitted flex declarations rather than decided.** `flex: 1 0 0` fills —
+  the photograph, the stat block, the prose column, both rules — and `shrink-0` / `max-width`
+  holds at the frame's own number: the name's 179 cap, the 188 spacer, every stat column. That
+  is a better rule than any width, because `tags`, `audio`, `media` and the calendar each have
+  their own declarations to read. **Run `get_design_context` for them; `get_metadata` alone
+  cannot tell a fill from a hug.** What decided *fill* over a 704 cap: there is no wider master
+  (the bio's main component, `432:607`, is 858 itself — check yours the same way), both narrow
+  pages give every one of these instances their page's whole content width, and a 704 box
+  centred in 1052 would be plainly wrong for a chip row and a player bar, which is what `tags`
+  and `audio` are.
+- **Name the fill's costs; do not engineer them away.** Three here, all written into the
+  branch: the photograph goes 2.1:1 → 3.2:1 because its 380 height is *stated* and the bio's
+  own layout-2 rule forbids deriving a height from a width; the head row trails ~508px of air,
+  because its stat columns are `shrink-0` at a fixed 100 gap (the frame's own slack grows
+  linearly with its width — 42 at 708, 129 at 858); and the prose measure reaches 813 where the
+  widest master draws 566. A `maxWidth` on the prose would have been the one place a stated
+  mechanism was overridden, so it was not added.
+- **A `flex: 1 0 0` item never takes a slot in a CSS wrap, and Figma's "wrap" is not CSS's.**
+  The 1440 head row emits `flex-wrap` with `gap-[10px_40px]`, and the 390 sub-component is
+  visibly that row wrapped — same 10, same 179 cap. Transcribing it as `flexWrap` fitted both
+  blocks on one line at 390 and overflowed the card by 60px, because both are zero-basis. Write
+  the stack (the video section's rule, and the testimonials' basis lesson from the other side).
+- **A column's stated height is what keeps a row's baseline where the frame draws it.** Each
+  stat column is `h-[96px] justify-end`, and the 96 is also what makes the head band 144 (=
+  24 + 96 + 24) at 1440 and 768 and 180 at 390. Put the height on the *column*, not on the row:
+  on the row alone the columns centre in it and the values float 15px above the floor. Our
+  values are one line where the frame hand-breaks its own to two, so the box carries dead space
+  at the top — that is the bottom-justify working, not a defect.
+- **A rotated seal wrapper is the bounding box, and its offset is worth checking against the
+  *band* rather than the card.** 173.02 / 1.38 = 125.37 at 1440 *and* 768 (a leaked desktop
+  number that is right anyway), 86.51 / 1.38 = 62.68 at 390. The two wider masters put its
+  centre 150.4 down and 105.6 in from the about band's top-left — identical to the pixel, where
+  the offset from the card's foot differs by 30 — so anchor to the band. And **give the band a
+  `minHeight` of `seal top + seal size + the band's own bottom padding`**: the masters' bands are
+  248/278 tall only because their prose is 600 characters of filler, ours is two real
+  paragraphs, and the card is `overflow-clip`.
+- **Two tokens needed the flat four's own pair, both already documented.** The foot rule is
+  `pillBg` under Retro, which is the palette's lightest tag where `paper` is its lightest colour
+  outright — so on Lime and Grunge the two are the same value and the rule vanished into the
+  card (the repertoire's lesson); the flat four take `paperLine`. And the master outlines the
+  card at 1440 and 768 and not at 390: only Retro follows that absence, because `paperOf()`
+  returns the page ground itself on Editorial and Pop (the calendar's lesson). `theme=1…4` at
+  390 is what shows both.
+- **The wrapper's display head is reachable with nothing invented.** `s.title` is
+  `cased(cv('heading', TITLES.bio))` and `TITLES.bio` *is* "Reads the room."; the "KM" of "KM
+  BIO" is `s.initials`, which v0 already draws. Its eyebrow is `size/label-xs` in **Inter**, not
+  the label face — `get_variable_defs` on the head frame is the only thing that says so. Audio's
+  head (section 4) has the same shape but no matching copy, so check its own frame before
+  assuming its `heading` fits.
+- **`get_variable_defs` on all three masters replaced every measurement.** display-lg 96/60/40,
+  display-sm 40/32/26, label-lg 24/16/14, label-xs 20/14/12, chip 12/11/11, body-md 14/13/13 —
+  and none of them line up with `RAMP`'s `dispSm`/`labelMd`/`eyebrow`, so write a per-width `T`
+  table and run it through `u()`. Every *box* number is the desktop component's own, unscaled at
+  768 and 390: the header's rule, holding for a fifth section.
+- **A brace-depth walk of the diff beats a browser digest.** All 242 added lines in
+  `EncoreSection.jsx` fell inside the new `if (s.v2)` block, its comment header, or one blank
+  separator — which proves v0 and v1 unchanged at every width, theme and layout at once, and
+  costs one script rather than two navigations (the end-of-pass refresh's rule).
+- **The seeded canvas can honestly draw fewer of something than the frame.** The master's three
+  stat columns are two facts and a duplicate; `since` has no default, so the reference picture
+  shows two. That is the pricing chip row's `All` diff again — intended, and named in the commit.
+
 ## Open questions
 
-1. **What the columned five do at 1052.** Stated in full under *The composed page* above: the
-   desktop column is 1052 and the ramped instances are 704, so bio, tags, audio, media and the
-   calendar all have to be either stretched half again past any drawn state or capped. **The bio
-   session decides for all five and records the decision in *Conventions*.** The calendar is the
-   extreme case — 405 → 1052, and its two drawn widths disagree about the composition rather than
-   only its size — so check the Components page for a wider master of "Booking Calendar — C ·
-   Mobile availability" before its session commits to anything.
+1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five.*
+   **Fill, and the masters' own flex declarations say which parts stretch** — see *Learned on
+   the bio* in *Conventions*. The calendar still owes its half of the check: look for a
+   1440-wide master of "Booking Calendar — C · Mobile availability" before its session commits,
+   because its two drawn widths disagree about the composition rather than only its size. If
+   none exists — and none did for the bio, whose main component is 858 itself — the rule above
+   applies to it unchanged.
 2. **Whether the bar-meter player plays.** The frame draws a real transport — a waveform, a
    playhead and a scrubber — over `FIELDS.audio.tracks`, which is a delimited textarea, not the
    media player's `c.tracks` repeater with its per-row `audio` address. So making it play would
@@ -378,3 +443,11 @@ Learned on the header (section 1):
    case rests on the mirrored structure rather than on matching copy. Worth naming because it is
    the first time a section takes copy from outside its own instance; the "KM BIO" eyebrow above
    each head is the part that is *not* claimed.
+7. **The bio's `kicker` and `location` are not editable.** `FIELDS.bio` names neither, so
+   `cv('kicker', …)` and `cv('location', …)` always resolve to the page-level literals "DJ ·
+   Live Act" and "Manchester, UK". Layout 3's ID card now sets them as two of its three stats,
+   where v0 prints them as a credit line and v1 as a caption — so all three layouts print copy
+   the artist cannot change. Adding the two `FIELDS.bio` entries is two lines and would change
+   no default rendering, but it *would* make two signed-off layouts newly honour an edit, which
+   is a design call rather than a fidelity one. Named here rather than taken; `since` was added
+   because layout 3 draws a seat nothing could reach, which is not this case.
