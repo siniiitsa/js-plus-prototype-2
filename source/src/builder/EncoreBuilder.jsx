@@ -36,12 +36,12 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
-  NOW_PLAYING, TRACK_AUDIO, SONGS,
+  NOW_PLAYING, TRACK_AUDIO, SONGS, VIDEOS, VIDEO_MARK, clockAt,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN,
-  parseDate, isoDate, monthSpan, monthLabel, enquiryLine,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, MONTHS, DAY_FULL,
+  parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
@@ -213,7 +213,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // pin/row pairing; the pricing cards' filter chips and their Book pill; the
     // booking calendar's month arrows, its day picking and its foot pill; the
     // enquiry form's boxes, its event-type chips and its submit; the
-    // testimonials carousel's arrows; the footer's link columns and its Book
+    // testimonials carousel's arrows and layout 2's rail of tiles, which page
+    // the same review; the footer's link columns and its Book
     // pill; and the four sets of outbound links (Soundcloud, the gallery's
     // socials, the gigs' tickets, the footer's web-address rows).
     live: !!live,
@@ -353,31 +354,61 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // typed address is normalised through extUrl for the same <base href> reason
   // as the Soundcloud button; the seeds are already absolute. It follows the
   // artwork's rule about re-seeding by index, for the same reason.
+  //
+  // `sub` is the one subline the fitted layout 1 sets; `rel` is the same line
+  // with the duration taken off it, for a design that columns the release and
+  // the running time apart (media layout 2). The seeded shape is the only one
+  // that knows both: a typed textarea row is "title — duration" and has no
+  // release, and TracksField has no duration field at all, so there `rel` is
+  // just the row's own subtitle and equals `dur`.
   const seedArt = defaultTrackArt(cat, T.name) ?? []
   if (Array.isArray(c.tracks)) {
     vm.tracks = c.tracks.map((t, i) => {
       const sub = (t?.sub ?? '').trim()
-      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub,
+      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
                img: t?.image ?? null, src: extUrl(t?.audio ?? '') || null }
     })
   } else if (c.tracks !== undefined) {
     vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
       const parts = l.includes('—') ? l.split('—') : l.split('|')
       const dur = (parts[1] || '').trim()
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur,
+      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, rel: '',
                img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`,
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel,
       img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null,
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
 
-  // video
+  // video — the stage's own three values, and the list of other videos beside
+  // it that layout 2 draws.
   vm.videoDesc = cv('description', DEFS.videoDesc)
   vm.videoDur = cv('duration', '04:18')
+  // Where the transport bar is caught. The section has no <video> element on
+  // either surface, so there is no playhead to read: `clockAt` composes one
+  // from the running time above and `videoPct` fills the bar to the same
+  // fraction, so the two cannot disagree. An unparseable duration leaves both
+  // empty rather than inventing a position — see data.js.
+  vm.videoAt = clockAt(vm.videoDur, VIDEO_MARK)
+  vm.videoPct = vm.videoAt ? VIDEO_MARK * 100 : 0
+  // The `songs` rule once more: an absent key means the seeded VIDEOS, an
+  // emptied array means none, and there is no null sentinel. `c.videos` has no
+  // structured editor yet, so today it is always the seed — the shape is here
+  // so that adding one changes nothing on this side. Artwork follows the
+  // tracks': `null`, not undefined, wherever a row has none, because Photo
+  // falls back to the *section* photo on undefined and a video row must not
+  // inherit the poster; and it is never re-seeded by index once the array
+  // exists, or a row inserted third would steal video three's still.
+  vm.videos = (Array.isArray(c.videos)
+    ? c.videos.map((v) => ({ ...v, img: v?.image ?? null }))
+    : VIDEOS.map((v, i) => ({ ...v, img: seedArt[i] ?? null }))
+  ).map((v) => ({
+    title: cased(v.title ?? ''), sub: (v.sub ?? '').trim(),
+    length: (v.length ?? '').trim(), when: (v.when ?? '').trim(), img: v.img,
+  }))
 
   // pricing — the artist's own packages, else the seeded ones. The `songs`
   // rule again: an absent key means TIERS, an emptied array means no packages,
@@ -387,13 +418,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
   vm.pricingSubFg = rgba(tx, 0.46)
   vm.tierUnit = cv('unit', PRICE_UNIT)
-  const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
-  vm.tiers = tierList.map((t, i) => {
-    // §10.2 paints the three cards in three different palette hues rather than
-    // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
-    // orange under Retro — the reference order — and stays in-palette elsewhere.
-    const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
-    // Each card also carries a *second* hue. The price numeral, the tick, the
+  // §10.2 layout 2 stands a line of praise beside the plan. Layout 1 draws no
+  // such line, so an emptied field simply drops it — the Soundcloud rule.
+  vm.pricingQuote = cv('quote', DEFS.pricingQuote)
+  // A card's four colours, given the ground it stands on. Layout 1 walks that
+  // ground round T.tags, one hue per card; layout 2 has a single card and pins
+  // it, so both go through here and the pairing rule is written once.
+  const tierHues = (card) => {
+    // Each card carries a *second* hue. The price numeral, the tick, the
     // [ico] chip and the Book Now pill are all painted in it, and it is the
     // colour of the offset block behind the card too. The reference uses the
     // palette's gold for the olive and orange cards and the accent for the gold
@@ -403,11 +435,25 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // in pure white/black: contrast() picks the side, the palette the tone.
     const lightCard = contrast(card) === '#141414'
     const ink = lightCard ? vm.deep : vm.paper
-    // Same caveat as `legible()` above: the second hue only reads while it
-    // separates from the card it sits on. Retro's three clear it; a mid-tone
-    // card in a pale palette (Editorial's warm grey) does not, and there the
-    // card's own ink stands in.
-    const acc = Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink
+    return {
+      card,
+      // Same caveat as `legible()` above: the second hue only reads while it
+      // separates from the card it sits on. Retro's three clear it; a mid-tone
+      // card in a pale palette (Editorial's warm grey) does not, and there the
+      // card's own ink stands in.
+      acc: Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink,
+      cardFg: ink,
+      // Only the light card drops its blurb and the price unit off full strength
+      // in the reference; on the two dark ones they sit at the feats' cream.
+      cardMut: lightCard ? rgba(ink, 0.72) : ink,
+    }
+  }
+  const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
+  vm.tiers = tierList.map((t, i) => {
+    // §10.2 paints the three cards in three different palette hues rather than
+    // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
+    // orange under Retro — the reference order — and stays in-palette elsewhere.
+    const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
     return {
       // `n` is the row's place in the WHOLE list, not on the filtered page. The
       // cards animate their background, so the renderer keys on it: a positional
@@ -420,12 +466,19 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       // Raw casing, deliberately — the repertoire's rule: a lower-case theme
       // must not stop a chip from matching the tag it was derived from.
       tags: songTags(t?.tags),
-      card, acc, cardFg: ink,
-      // Only the light card drops its blurb and the price unit off full strength
-      // in the reference; on the two dark ones they sit at the feats' cream.
-      cardMut: lightCard ? rgba(ink, 0.72) : ink,
+      ...tierHues(card),
     }
   })
+  // §10.2 layout 2's single big plan. Its card is a fixed composition, not the
+  // selected package's: the hue belongs to the seat, the media player's fan
+  // rule, or the one card would recolour on every toggle — and it opens on
+  // whichever hue package 0 happened to draw. T.tags[1] is Retro's burnt orange,
+  // the frame's own card, and it is a *tag* hue rather than the accent so that
+  // the Book pill standing on it still reads on the four undesigned templates,
+  // whose BookPill branch paints `ac` on `acFg` and honours neither `bg` nor
+  // `fg`. It is also what the card falls back to with no packages at all, so
+  // the empty state and the filled one are the same composition.
+  vm.tierHero = tierHues(T.tags[1 % T.tags.length])
   // The filter row above the cards, derived from the tags the artist typed the
   // way the repertoire's is — `label` cased for printing, `tag` raw for
   // comparing. It replaces TIER_MODES, which was a constant nothing could edit.
@@ -445,9 +498,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   }))
   // `label` is cased for the chip, `tag` is what the filter compares.
   vm.repChips = repChips(songList).map((ch) => ({ ...ch, label: cased(ch.label) }))
-  // Layout 2 has no chip row, so its right-hand column takes the artist rather
-  // than a tag — but it takes the artist's *songs*, so swapping layouts never
-  // silently discards what they typed.
+  // The generic flat list, for a layout past the two that are fitted. It has no
+  // chip row, so its right-hand column takes the artist rather than a tag — but
+  // it takes the artist's *songs*, so swapping layouts never silently discards
+  // what they typed.
   vm.repFlat = vm.songs.map((t) => ({ t: t.title, g: t.artist }))
   vm.repHue = legible(T.tags[3 % T.tags.length])
   // The heading counts the list unless the artist has written their own, so it
@@ -524,6 +578,48 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     vm.calPick = booked.has(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
+
+    // §10.2 layout 2 — the bold slot list. The rows are the artist's named
+    // slots (CAL_SLOTS), resolved by the `songs` rule: absent means the seed,
+    // an emptied array means none, and there is no null sentinel. Everything
+    // the row prints is composed here, the way every cell above carries its own
+    // enquiry line — EncoreSection looks a row up rather than working a date
+    // out. `booked` reaches the list too: a slot the artist has blocked is a
+    // dead row, which is the one field that ties the two layouts together.
+    //
+    // A row whose date does not parse keeps its place and simply does not pick,
+    // §4.3a's rule for a link whose target is missing; it cannot happen from
+    // the seed, and there is no editor for the list yet.
+    const slots = Array.isArray(c.slots) ? c.slots : CAL_SLOTS
+    vm.calSlots = slots.map((sl) => {
+      const at = parseDate(sl.date)
+      const iso = at ? isoDate(at.y, at.m, at.d) : ''
+      return {
+        iso,
+        // A date format, not artist copy, so it is upper-cased here rather than
+        // through cased(): "JUN 12", "JUL 05".
+        mark: at ? `${MONTHS[at.m].slice(0, 3).toUpperCase()} ${String(at.d).padStart(2, '0')}` : '',
+        day: at ? DAY_FULL[weekdayOf(at.y, at.m, at.d)] : '',
+        kind: cased(sl.kind ?? ''),
+        price: sl.price ?? '',
+        booked: iso ? booked.has(iso) : false,
+        line: at ? enquiryLine(at.y, at.m, at.d, time) : '',
+      }
+    })
+    // The head's link list. The frame draws three — the section itself, marked
+    // with a dot, then packages and enquiries — which is CTA_TARGETS.book
+    // resolved against the page, the footer's rule for a link column rather
+    // than an invented nav. The current section leads and does not link to
+    // itself; a page carrying neither of the other two is left with one entry,
+    // which still reads as the head's own label.
+    const flow = navSections.filter((n) => CTA_TARGETS.book.includes(n.cat))
+    vm.calFlow = [
+      ...flow.filter((n) => n.cat === 'calendar'),
+      ...flow.filter((n) => n.cat !== 'calendar'),
+    ].map((n) => ({
+      label: cased(n.label), to: n.cat === 'calendar' ? undefined : n.cat,
+      on: n.cat === 'calendar',
+    }))
     // `bookTo` minus `calendar` itself — the tier pills' rule, and for the same
     // reason: CTA_TARGETS.book ends at this section, so the pill would otherwise
     // scroll the visitor to the panel they are already reading. With neither a
@@ -587,7 +683,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // there is no null sentinel. It was three flat keys over a fixed three rows,
   // which reached one review and could not add a fourth.
   const quoteList = Array.isArray(c.quotes) ? c.quotes : QUOTES
-  vm.quotes = quoteList.map((r) => {
+  vm.quotes = quoteList.map((r, i) => {
     const who = String(r?.who ?? '').trim()
     const role = String(r?.role ?? '').trim()
     return {
@@ -601,11 +697,32 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       // halves editable, joining them there prints a bare separator the moment
       // one is emptied. The calendar's one-composed-line-per-cell rule.
       byline: [who, role].filter(Boolean).join(' · '),
+      // Layout 2's selector tile, composed here for the same reason: the
+      // reviewer's initials, or the row's own number when the name is empty,
+      // since a rail of blank tiles cannot be picked from. Punctuation is
+      // spaced out first — `initialsOf` splits on whitespace alone, and the
+      // frame's own "Sarah & Tom" would otherwise mark the tile "S&".
+      mark: initialsOf(who.replace(/[^\p{L}\p{N}\s]/gu, ' ')) || String(i + 1),
     }
   })
+  // Layout 2 is the first design to head this section — layout 1 is the card
+  // alone — so both of these reach it and nothing else, the way FIELDS.video's
+  // photographs reach one layout. The line is prose and stays uncased; the pill
+  // keeps the uncased label every other Book Now on the page draws.
+  vm.testiSub = cv('sub', DEFS.testiSub)
+  vm.testiCta = cv('cta', 'Book Now')
 
   // form
   vm.formPara = cv('para', DEFS.formPara)
+  // Layout 2's stage photograph, and the third single-photo slot in the file
+  // after `image` and `avatar`. It is a slot of its own for the reason the
+  // header's and the video section's two are: this section's `image` is
+  // *already* the artist — RETRO_PHOTOS.form is the portrait crop, and layout 1
+  // draws it as the 48px circle beside the brand — so the scene above the
+  // heading cannot share the key without changing what layout 1 renders. Same
+  // three states as vm.image: absent → the seed, null → the placeholder,
+  // string → an upload.
+  vm.formPhoto = c.photo !== undefined ? (c.photo ?? undefined) : defaultImage(cat, T.name, 'photo')
   // The address every enquiry is mailed to, and the whole of this section's
   // live seam. It was a field that edited nothing until the submit was made
   // real — cta's and para's state on the booking calendar before it.

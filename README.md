@@ -147,7 +147,7 @@ Three things about it are load-bearing:
   ends it. There is deliberately no hover preview: the page behind changed under the cursor
   faster than it could be read, and a layout that reverted on mouse-out read as a bug.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
-  already carried in `EncoreSection`'s §10.2 comments — Hero, Framed, Gradient stage, Polaroid,
+  already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Gradient stage, Polaroid,
   Overlay card, Stage wide (and Centred / Split / Rule for the flat family) — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.

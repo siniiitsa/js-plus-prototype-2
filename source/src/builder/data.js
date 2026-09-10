@@ -199,7 +199,7 @@ export const designCount = (catId, themeName) =>
 const HEADER_NAMES = {
   photographic: [
     ['Hero', 'Full-bleed photo'],
-    ['Framed', 'Photo in a frame'],
+    ['Feature spread', 'Photo beside the details'],
     ['Gradient stage', 'Colour wash'],
     ['Polaroid', 'Photo card beside text'],
     ['Overlay card', 'Details on a card'],
@@ -264,6 +264,42 @@ export const TRACK_AUDIO = [
 // the *track* named on the card is track one at both sizes, not `track` here,
 // which survives only as the label for a section with no tracks left in it.
 export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
+
+// The other videos, listed in the panel beside the stage in the video
+// section's layout 2 — used whenever the section carries no `videos` key of
+// its own, which today is always: there is no structured editor for them yet
+// (see LAYOUT-2-PLAN's open questions). Written in the row shape that editor
+// will edit, GIGS-style, so adding it later changes nothing here or in
+// sectionVm: one key, one shape, the delimiter-free strings the artist types.
+// Only the artwork needs dressing, which RETRO_VIDEO_ART does under Retro.
+//
+// `sub` is the frame's channel line — where the video came from, not who made
+// it — and `when` is the date the frame spends on a view count. Neither is a
+// number about how many people watched: nothing on this page claims that.
+export const VIDEOS = [
+  { title: 'Manchester at 3am',  sub: 'Hidden Sessions', length: '03:50', when: 'April 2026' },
+  { title: 'Disco Maghreb (edit)', sub: 'Single',        length: '04:12', when: 'March 2026' },
+  { title: 'Slow Burn',          sub: 'Single',          length: '03:28', when: 'February 2026' },
+  { title: 'Echo & The Floor',   sub: 'Live set',        length: '05:04', when: 'November 2025' },
+  { title: 'Roomtone',           sub: 'Hidden Sessions', length: '02:57', when: 'October 2025' },
+  { title: 'Field Day (live)',   sub: 'Festival',        length: '06:41', when: 'August 2025' },
+]
+
+// Where the video section's transport bar is caught. The section has no
+// <video> element on either surface — it is still a picture (§12.7) — so the
+// playhead is composed from the running time the artist typed rather than read
+// off anything: VIDEO_MARK of it, formatted back. The fill under it takes the
+// same fraction, so the two agree; the Figma frame's own 02:05 against a bar
+// filled to 93% of 03:57 does not, and that disagreement is the one thing here
+// not worth reproducing. A duration that will not parse gives '', and the bar
+// renders empty rather than inventing a position for it.
+export const VIDEO_MARK = 0.48
+export const clockAt = (dur, frac) => {
+  const m = /^\s*(\d{1,3}):([0-5]\d)\s*$/.exec(String(dur ?? ''))
+  if (!m) return ''
+  const at = Math.round((Number(m[1]) * 60 + Number(m[2])) * frac)
+  return `${String(Math.floor(at / 60)).padStart(2, '0')}:${String(at % 60).padStart(2, '0')}`
+}
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
 
@@ -473,7 +509,15 @@ export const DEFS = {
   statement:  'Reads the room.',
   videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
+  // §10.2 layout 2 stands a line of praise beside the plan, where layout 1 has
+  // nothing of the sort — the frame's own sentence, kept as the seed so the
+  // reference picture holds. Emptying it drops the line.
+  pricingQuote: "“Kai read the room better than any DJ we'd worked with. We had him back twice that year.”",
   mapSub:     '12 dates · 8 cities · this season',
+  // §10.2 layout 2 heads the testimonials with a line about who the reviews are
+  // from, where layout 1 draws no head at all — the frame's own sentence, kept
+  // as the seed so the reference picture holds. Emptying it drops the line.
+  testiSub:   'Real words from couples, planners and venues across the North West.',
   formPara:   'Tell me about the night — date, venue, crowd. Replies within 24 hours.',
   copyright:  'C 2026 Kai Mercer',
 }
@@ -497,6 +541,27 @@ export const CAL_BOOKED = []
 // How far ahead the calendar reaches, in months from CAL_OPEN's. The arrows
 // wrap at both ends of it rather than clamping — see EncoreSection's Calendar.
 export const CAL_SPAN   = 12
+
+// §10.2 layout 2 — the bold slot list. Where layout 1 draws a month and lets
+// the visitor pick any unbooked day out of it, layout 2 draws a short list of
+// named slots: a date, what the artist plays that night, and what it starts
+// from. None of that is derivable — `booked` is the days the artist is *not*
+// free, and inverting it would print every remaining day of June — so the list
+// is seeded here in the row shape a repeater would edit, exactly as VIDEOS,
+// GIGS and TIERS were seeded before their editors existed. The price is a row
+// value like TIERS' `price`, not the video section's dropped view count: it is
+// the thing the row is for, and the whole phrase is the artist's, so an emptied
+// one drops its line rather than printing a bare "From".
+//
+// Slot one is CAL_OPEN, so the seeded page opens with that row already picked —
+// `vm.calPick` lights it — and the reference picture matches the frame with no
+// second field to keep in step.
+export const CAL_SLOTS  = [
+  { date: '2025-06-12', kind: 'Evening',  price: 'From £1,200' },
+  { date: '2025-06-14', kind: 'Full day', price: 'From £2,400' },
+  { date: '2025-06-20', kind: 'Late',     price: 'From £1,400' },
+  { date: '2025-07-05', kind: 'Wedding',  price: 'From £2,800' },
+]
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
@@ -565,7 +630,7 @@ export const FIELDS = {
     ] },
   ],
   bio: [
-    { k: 'image',     l: 'Photo', type: 'image', hint: 'Fills the tilted portrait card.' },
+    { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
     { k: 'heading',   l: 'Heading', d: 'Reads the room.' },
     { k: 'statement', l: 'Statement (centred layout)', def: 'statement' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
@@ -601,23 +666,36 @@ export const FIELDS = {
     { k: 'tracks',  l: 'Tracks (one per line: Name — 3:42)', type: 'area',
       d: TRACKS.map(([n, dur]) => `${n} — ${dur}`).join('\n') },
   ],
+  // The two photo slots are layout 2's alone — layout 1 and the flat tail draw
+  // a play disc on a soft panel and no photograph at all — which is the
+  // media player's Soundcloud case the other way round, and why both hints say
+  // where they land. `avatar` is the header's own key, on the header's own
+  // three states, so `defaultImage` seeds it with the same §10.2 portrait.
   video: [
     { k: 'heading',     l: 'Heading', d: 'Live at Roomtone' },
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc' },
     { k: 'duration',    l: 'Duration', d: '04:18' },
+    { k: 'image',       l: 'Poster', type: 'image',
+      hint: "Fills the player in layout 2." },
+    { k: 'avatar',      l: 'Artist photo', type: 'image',
+      hint: 'The circle beside your name, and beside every video in the list.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
   // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
   // an array of { name, price, tags, blurb, feats } maintained by TiersField.
   // It follows the `songs` rule — one key, one shape — so an absent key means
   // the seeded TIERS, an emptied array means no packages, and there is no null
-  // sentinel. The tags are the section's filter row, the repertoire's rule.
+  // sentinel. The tags are layout 1's filter row, the repertoire's rule; layout 2
+  // names the packages themselves in its chip row and reads no tags at all.
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
-      hint: 'Tags become the filter chips above the cards — separate them with commas. '
-          + 'Features are one to a line.' },
+      hint: 'Tags become the filter chips above the cards in layout 1 — separate them with '
+          + 'commas. Features are one to a line. Layout 2 shows one package at a time and '
+          + 'names them in its own chip row, so it reads no tags.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT },
+    { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote',
+      hint: 'A line of praise beside the plan. Layout 2 only.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
   // The other list-shaped content type with a structured editor rather than a
@@ -635,24 +713,32 @@ export const FIELDS = {
   // in shape: an empty default, normalised through extUrl() in sectionVm, and a
   // row that stays a picture until it is filled. GALLERY_SOURCES names the key
   // each row reads — change one, change both.
+  //
+  // They are also `media.soundcloud`'s case in the other sense: the source rows
+  // are layout 1's, and layout 2's split showcase draws no row for them at all,
+  // so each hint says which layout it edits — the video section's `image` and
+  // `avatar` rule, the other way round.
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
-      hint: 'One per tile in the strip. The highlighted tile is the one shown in the large viewer.' },
+      hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layout 2 shows it as the large photo beside the other six.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
     { k: 'youtube',   l: 'YouTube link', d: '',
-      hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture.' },
+      hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'instagram', l: 'Instagram link', d: '',
-      hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture.' },
+      hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'tiktok',    l: 'TikTok link', d: '',
-      hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture.' },
+      hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
   ],
-  // `heading` heads the flat layout only — the scheduler frame draws no title —
-  // but the other four are all read by it. `open` is the one date the section is
-  // built from, `booked` the days it will not take, `time` the hour the foot
-  // line names, and `cta` the label on the pill beside that line, which was an
-  // unread key until the pill existed.
+  // `heading` heads the flat layout and layout 2's slot list — the scheduler
+  // frame draws no title — and the other four are read by both designed
+  // layouts. `open` is the one date the section is built from (in layout 2 the
+  // slot it opens picked), `booked` the days it will not take (in layout 2 the
+  // slots it strikes through), `time` the hour the foot line names, and `cta`
+  // the label on the pill beside that line, which was an unread key until the
+  // pill existed.
   calendar: [
-    { k: 'image',   l: 'Photo', type: 'image', hint: 'Fills the polaroid stack beside the month.' },
+    { k: 'image',   l: 'Photo', type: 'image',
+      hint: 'Fills the polaroid stack beside the month. Layout 1 only.' },
     { k: 'heading', l: 'Heading', d: 'Availability' },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
@@ -681,16 +767,33 @@ export const FIELDS = {
   ],
   testimonials: [
     { k: 'heading', l: 'Heading', d: 'Word of Mouth' },
+    // Layout 2 is the first design to head this section, so both of the plain
+    // strings below reach it alone — FIELDS.media.soundcloud's case the other
+    // way up, hence the layout in each hint.
+    { k: 'sub',     l: 'Intro line', def: 'testiSub',
+      hint: 'The line under the heading. Layout 2 only.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
     // key set — quote/who/role reached one review of three, and nothing could
     // add a fourth — which is the pricing packages' case, not a textarea's.
     // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
     { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
       hint: 'Each row is one review, and the card pages through them on the published '
-          + 'page. The date line is the small type above the quote.' },
+          + 'page. The date line is the small type above the quote in layout 1 and '
+          + "sits beside the reviewer in layout 2, whose selector takes the name's "
+          + 'initials.' },
+    { k: 'cta',     l: 'Button', d: 'Book Now',
+      hint: 'The pill under the card, which scrolls to wherever the page takes a '
+          + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],
   form: [
-    { k: 'image',    l: 'Photo', type: 'image', hint: 'The avatar above the heading.' },
+    { k: 'image',    l: 'Portrait', type: 'image', hint: 'The round photo beside your name.' },
+    // Layout 2's stage shot. The section's two photographs are the artist and
+    // the scene — the header's and the video section's pair the other way up,
+    // this one's `image` having been the artist since layout 1 drew it as an
+    // avatar. FIELDS.media.soundcloud's case: it reaches one layout, so the
+    // hint says which.
+    { k: 'photo',    l: 'Stage photo', type: 'image',
+      hint: 'The big picture above the heading. Layout 2 only.' },
     { k: 'heading',  l: 'Heading', d: "Let's make your night unforgettable." },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
@@ -699,10 +802,12 @@ export const FIELDS = {
     // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
     // no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
-      hint: 'One box each, two to a row. The published form emails you what the visitor types.' },
+      hint: 'One box each — two to a row in layout 1, one to a row in layout 2, which '
+          + 'sets the label inside the box and draws no placeholder. The published form '
+          + 'emails you what the visitor types.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
-      hint: 'Comma separated. The form opens on the first; empty hides the row.' },
-    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE },
+      hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
+    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, hint: 'Layout 1 only.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },

@@ -27,9 +27,10 @@
 
 import { useId, useRef, useState } from 'react'
 import {
-  Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
-  ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search,
+  Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
+  ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search, MapPin,
   Image as ImageIcon, Youtube, Instagram, Music2,
+  Settings, Volume2, Maximize, Bookmark, Link2, Bell,
 } from 'lucide-react'
 
 /* ------------------------------------------------------------------ *
@@ -361,7 +362,18 @@ function NavLinks({ s, color, pills = false }) {
 // only becomes a link on the published page: `Tag` is a span everywhere else,
 // and the style object is the same either way, so the picture never moves. The
 // pricing tiers' pills pass no target and stay spans.
-function BookPill({ s, label, bg, fg, shadow, full = false, to, ext }) {
+// `glyph` is the §10.2 layout-2 frames' variant of the same pill: an arrow in a
+// filled disc instead of the asterisk. The disc sits flush in the pill's right
+// end rather than inside its padding, so that inset collapses to the disc's own
+// margin and the pill keeps its height.
+// `disc` overrides that disc's diameter: the layout-2 header sets the same pill
+// twice, small in its nav and large as the hero's own call to action, and only
+// the disc changes size between them.
+// `discFg` is the arrow inside the disc. It defaults to what every caller
+// written before it got — Retro's cream, the flat four's pill ground — and is
+// passed only by the calendar's slot list, whose frame stands a cream disc on
+// an ink pill and would otherwise draw cream on cream.
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg, size: sizeProp }) {
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
@@ -379,26 +391,50 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext }) {
     )
     const face = fg ?? s.pillFg
     const block = shadow ?? s.ac
+    const disc = glyph === 'arrow'
+    const dia = discSize ?? pick(27, 22, 17)
     return (
       <Tag {...link} style={{
         ...row(pick('10px', '8px', '6.2px')),
         background: bg ?? s.pillBg, color: face,
-        padding: pick('10px 20px', '8px 16px', '6.2px 12.4px'),
+        padding: disc
+          ? pick('4px 4px 4px 18px', '3.5px 3.5px 3.5px 15px', '3px 3px 3px 12px')
+          : pick('10px 20px', '8px 16px', '6.2px 12.4px'),
         borderRadius: s.btnR, cursor: 'pointer',
         boxShadow: scale === 'small' ? hard(s, block, 1.9, 2.5) : hard(s, block, 3, 4),
         // The type is one of the scaled dimensions: it was the only one left on
         // label-md, which made the tablet pill's type *smaller* than the
         // desktop one's even though every other dimension was bigger.
-        ...labelStyle(s, pick('20px', undefined, '12.4px')),
+        //
+        // `size` overrides it, and the 768 header master is why: Figma ramped
+        // `size/label-sm` down for the narrow frames (20 → 16) while leaving
+        // every *box* dimension at the desktop component's own numbers, so a
+        // tablet pill wants the full-scale box with the desktop canvas's type.
+        // Additive — `glyph`/`disc`'s precedent — so the callers written before
+        // it, and the `full` scale the 390 pricing frame asks for, are
+        // untouched.
+        ...labelStyle(s, sizeProp ?? pick('20px', undefined, '12.4px')),
       }}>
         {text}
-        <Asterisk size={pick(20, 16, 12.4)} color={face} />
+        {disc ? (
+          <span style={{
+            width: dia, height: dia, borderRadius: '999px', flex: 'none',
+            background: face, color: discFg ?? (s.retro ? '#FBF6EA' : (bg ?? s.pillBg)),
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          }}><ArrowRight size={Math.round(dia * 0.6)} /></span>
+        ) : <Asterisk size={pick(20, 16, 12.4)} color={face} />}
       </Tag>
     )
   }
+  // The flat four honour `bg`/`fg` too, defaulting to the accent pair. They
+  // used to ignore both, which is fine for a pill on the page ground and wrong
+  // for one standing on a card: a caller passes them precisely because the
+  // ground under the pill is not the page's, and on Pop — whose T.tags[1] IS
+  // the accent — the pricing deck's third card already drew an accent pill on
+  // an accent card with only its type showing.
   return (
     <Tag {...link} style={{
-      ...row('8px'), background: s.ac, color: s.acFg, fontSize: '10px', fontWeight: 700,
+      ...row('8px'), background: bg ?? s.ac, color: fg ?? s.acFg, fontSize: '10px', fontWeight: 700,
       letterSpacing: '1.2px', textTransform: 'uppercase', padding: '9px 18px',
       borderRadius: s.btnR, cursor: 'pointer', whiteSpace: 'nowrap',
     }}>
@@ -412,14 +448,17 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext }) {
 }
 
 // Same seam as BookPill: a link to wherever the page plays something, but only
-// once the page is live.
-function ListenLink({ s, color, to }) {
+// once the page is live. `style` is spread last, for the layout-2 header, whose
+// frame sets this link in the label face beside a wordmark rather than in the
+// flat templates' tracked-out bold.
+function ListenLink({ s, color, to, style }) {
   const Tag = s.live && to ? 'a' : 'span'
   const link = s.live && to ? { href: `#${to}` } : null
   return (
     <Tag {...link} style={{
       fontSize: '10px', fontWeight: 700, letterSpacing: '1.2px',
       textTransform: 'uppercase', color: color || s.tx, cursor: 'pointer', whiteSpace: 'nowrap',
+      ...style,
     }}>{s.cta2}</Tag>
   )
 }
@@ -631,7 +670,12 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // difference: an empty slot there shows the section photo, an emptied one does
 // not. The media player passes `null` for an art-less track row so the row
 // cannot inherit anything, and `undefined` for the sleeve, which is allowed to.
-function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src }) {
+// `ink` is the initials' colour, defaulting to `s.muted` — additive, `Pager`'s
+// `idle` precedent, so every caller written before it is untouched. A section
+// standing on its own ground needs it: `muted` is rgba(tx, .64) computed
+// against the PAGE (the repertoire's lesson), so on a palette whose text colour
+// is also the sheet's the placeholder came back invisible.
+function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src, ink }) {
   const url = avatar ? s.avatar : (src === undefined ? s.image : src)
   if (url) {
     return <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
@@ -650,7 +694,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
       width: '100%', height: '100%', background: s.soft, display: 'flex',
       alignItems: 'center', justifyContent: 'center', ...style,
     }}>
-      <span style={{ fontFamily: s.display, fontSize: `${initialsSize}px`, color: s.muted, letterSpacing: s.dls }}>
+      <span style={{ fontFamily: s.display, fontSize: `${initialsSize}px`, color: ink ?? s.muted, letterSpacing: s.dls }}>
         {s.initials}
       </span>
     </div>
@@ -854,37 +898,299 @@ function HeaderV0({ s }) {
   )
 }
 
-// v1 — Header layout 2 · Framed full-bleed
+// v1 — Header layout 2 · Feature spread (Figma 964:64637)
+//
+// The one header that is a spread rather than a picture: a tilted photograph in
+// a cream mount on the left, its rail carrying the globe and the location the
+// long way up; the identity block on the right over two bordered sub-cards. The
+// nav rides above both — links in a pill, the wordmark centred, Listen and Book
+// Now on the right — and a checkerboard runs off the section's floor with the
+// seal caught on the mount's bottom corner.
+//
+// Desktop numbers are the 1440 frame × 0.82 (§5.5). The frame lays its nav out
+// absolutely over a 144px top inset; here it is in flow, because the root's own
+// padding already stands where that inset does. The 768 (`984:34438`) and 390
+// (`984:34636`) masters lead with the photograph instead of the identity block,
+// and both hand the links to NavMenu — the way every Retro header collapses
+// below desktop, and for the reason the nav's own comment gives.
 function HeaderV1({ s }) {
-  return (
-    <div style={{
-      position: 'relative', aspectRatio: s.mob ? '4 / 5' : '16 / 8.5',
-      borderRadius: s.radius, overflow: 'hidden',
-    }}>
-      <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={72} /></div>
-      <div style={{ position: 'absolute', inset: 0, background: SCRIM.v1 }} />
+  const olive = (s.retro && s.chips[3]?.bg) || s.line2
+  const mustard = s.pillBg
+  // Three creams, all literal under Retro, whose `paper` IS the page ground:
+  // the mount is a shade deeper than the sub-card (Figma tag/6/text vs box/1).
+  const mount = s.retro ? '#F3E3C8' : s.paper
+  const cream = s.retro ? '#FAECD5' : s.paper
+  const ink = s.retro ? '#111111' : s.tx
+  // The 768 (`984:34438`) and 390 (`984:34636`) masters are the *desktop*
+  // component at its own numbers: Figma ramped the type variables down and left
+  // every box dimension unscaled, so the narrow branches below read those two
+  // frames verbatim where the desktop branch reads the 1440 one × 0.82. That is
+  // why a padding here can be larger at 768 than at 1180 and still be right.
+  const nar = s.narrow
+  const tab = isTablet(s)
+  // The sub-card turns on its side at both narrow widths — a photograph beside
+  // its two lines rather than above them — so the whole card is a different
+  // shape, not a smaller one.
+  const card = {
+    overflow: 'hidden',
+    ...(nar
+      ? {
+          width: '100%', borderRadius: '30px', padding: '28px 26px',
+          border: `3px solid ${olive}`, ...row('20px'),
+        }
+      : {
+          flex: 1, minWidth: 0, borderRadius: '25px', padding: '23px 21px',
+          border: `2.5px solid ${olive}`, ...col('0', { justifyContent: 'space-between' }),
+        }),
+  }
+  const cardTitle = (t, colour) => (
+    <span style={{
+      fontFamily: s.display, fontSize: nar ? '24px' : '20px', lineHeight: 1.1,
+      letterSpacing: s.dls, color: colour, maxWidth: nar ? '155px' : '127px',
+    }}>{t}</span>
+  )
+  const cardBody = (t, colour) => (
+    <span style={{ fontFamily: s.body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4, color: colour }}>{t}</span>
+  )
+  // The text column is a flex child only in the narrow card, where it shares a
+  // row with the photograph; stacked, it is the whole width already.
+  const cardText = (a, b) => (
+    <div style={col(nar ? '8px' : '7px', {
+      alignItems: 'flex-start', ...(nar ? { flex: 1, minWidth: 0 } : null),
+    })}>{a}{b}</div>
+  )
+
+  // The links pill and the burger stand in the same bordered capsule: the 390
+  // master draws the burger inside the very pill the 768 one fills with links,
+  // so one wrapper serves both and only its contents change.
+  const navCapsule = (kids) => (
+    <nav style={{
+      background: s.bg, border: `1px solid ${olive}`, borderRadius: '999px',
+      padding: nar ? '8px 18px' : '7px 15px', minWidth: 0,
+      ...row(nar ? '18px' : '15px', { flexWrap: 'wrap' }),
+    }}>{kids}</nav>
+  )
+
+  const nav = (
+    // The frame floats its nav 30px from the frame's own top, well above the
+    // 144px inset the spread starts at — and the root's padding is the only
+    // thing standing there for us, so the bar rises out of it rather than
+    // sitting on it. `padY` is a string, so this reads 38 − 80 = −42 on the
+    // 1180 canvas. The two narrow masters float it at 20 + their own 16 / 10 of
+    // padding, which is 36 at 768 — the same 38 within rounding — and 18 at
+    // 390, where the whole bar sits much higher up the page.
+    <div style={row(nar ? '16px' : '13px', {
+      width: '100%', marginTop: `calc(${s.mob ? '18px' : '38px'} - ${s.padY})`,
+    })}>
+      {/* The 768 master fills the capsule with links and the 390 one with the
+          burger — but its three links are the *component's* default, the bio's
+          five-chip rule, and `navLinks` is the artist's page: the seeded eleven
+          sections give nine, which at the master's own 16px comes to 765px of
+          type inside a 688px canvas. Even the harness's six overflow it. So the
+          burger holds at 768 as well, which is also what the other five Retro
+          headers do below desktop; what the master settles is the capsule the
+          burger stands in, and everything else in the bar. */}
+      {s.narrow
+        ? navCapsule(<NavMenu s={s} color={ink} />)
+        : navCapsule(s.navLinks.map((l) => (
+            <a key={l.label} href={navHref(s, l.to)}
+               style={labelStyle(s, '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
+          )))}
+      <span style={{ flex: 1 }} />
+      {/* The masters emit `size/label-lg, 24px` here, which is the component's
+          default and not either instance's: measured off the renders' own cap
+          bands and set widths, 768 draws the wordmark at the desktop canvas's
+          own 20 and 390 a register under it. The frames' face is ~0.80 of
+          Anton's set width, so widths only compare once that is divided out —
+          cap height is the invariant to size against. */}
+      <span style={labelStyle(s, s.mob ? '17px' : '20px', { color: ink })}>{s.brand}</span>
+      <span style={{ flex: 1 }} />
+      <span style={row(nar ? '12px' : '10px', { flex: 'none' })}>
+        {!s.mob && (
+          <ListenLink s={s} to={s.listenTo} style={labelStyle(s, tab ? '16px' : '13px', { color: ink })} />
+        )}
+        {/* 768 takes BookPill's own tablet scale; 390's master draws it at
+            × 0.75 of that, where the `small` scale — cut for the *layout-1*
+            390 header — is × 0.62, so only the disc has to be named. */}
+        <BookPill s={s} to={s.bookTo} glyph="arrow"
+                  size={tab ? '16px' : undefined} disc={s.mob ? 21 : undefined} />
+      </span>
+    </div>
+  )
+
+  const photoCard = (
+    <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
       <div style={{
-        position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-        justifyContent: 'space-between', padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
+        position: 'relative', height: '100%', overflow: 'hidden',
+        background: mount, borderRadius: nar ? '30px' : '25px', boxShadow: soft(s),
+        transform: tilt(s, 2),
+        padding: tab ? '20px 0 20px 20px' : s.mob ? '10px 0 10px 10px' : '16px 0 16px 16px',
+        ...row('0', { alignItems: 'stretch' }),
       }}>
-        <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          <NavLinks s={s} color="#FFFFFF" pills />
-          <Wordmark s={s} color="#FFFFFF" />
-          <span style={row('14px')}>
-            <ListenLink s={s} color="#FFFFFF" to={s.listenTo} />
-            <BookPill s={s} to={s.bookTo} />
-          </span>
+        <div style={{ flex: 1, minWidth: 0, borderRadius: nar ? '11px' : '9px', overflow: 'hidden' }}>
+          <Photo s={s} initialsSize={72} />
         </div>
-        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
-          <div style={col('12px', { alignItems: 'flex-start' })}>
-            <LocationLine s={s} color="rgba(255,255,255,.75)" />
-            <Title s={s} size={s.mob ? s.h2 : s.h1} color="#FFFFFF" />
-            <TagChips s={s} />
+        {/* The mount's rail: the same globe-over-vertical-location column the
+            layout-1 bio's polaroid carries, in the frame's olive. 768 pins it at
+            90; 390 lets it take its content's width, which is the globe's. It
+            clips, because `s.location` is the artist's and the 390 card is only
+            206 tall — the frame's own rail carries `overflow-clip` for the same
+            reason. */}
+        <div style={col('0', {
+          width: tab ? '90px' : s.mob ? undefined : '74px', flex: 'none',
+          padding: nar ? '6px 12px' : '5px 10px', overflow: 'hidden',
+          alignItems: 'center', justifyContent: 'space-between',
+        })}>
+          <div style={col(nar ? '10px' : '8px', { alignItems: 'center', flex: 'none' })}>
+            <span style={{ transform: 'rotate(-90deg)' }}><GlobeMark size={nar ? 27 : 22} color={olive} /></span>
+            {/* vertical-rl reads top-down; the frame's label runs the other way.
+                Sized off the two renders' own set widths rather than off the
+                emitted `size/label-md`: the frames' face runs ~0.76 of Anton's
+                width, so transcribing its 20 would set this line a third longer
+                than the frame draws it — and at 390 that is a third of a rail
+                only 169 tall. */}
+            <span style={labelStyle(s, tab ? '17px' : '16px', {
+              color: olive, writingMode: 'vertical-rl', transform: 'rotate(180deg)',
+            })}>{s.location}</span>
           </div>
-          <InsetCard s={s} />
+          {/* The rule is the one thing in the rail that is *not* the desktop
+              component's number at 390: the card is 206 tall there, so the frame
+              cuts 191 down to 37. It is also the only part of the rail that can
+              afford to give way, so it is the one that shrinks — `s.location` is
+              the artist's, and a long one would otherwise push the rule out of
+              the clip and leave the rail looking unfinished. */}
+          <span style={{
+            width: '2px', height: tab ? '191px' : s.mob ? '37px' : '157px',
+            background: olive, flex: s.mob ? '0 1 auto' : 'none', minHeight: 0,
+          }} />
         </div>
+        <Grain s={s} exact blend="screen" opacity={0.5} radius={nar ? '30px' : '25px'} />
       </div>
-      <Checkerboard s={s} style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }} />
+      {/* The 1440 frame hangs the seal off the mount's bottom-*left* corner; both
+          narrow masters move it to the bottom-right and drop it half clear of the
+          edge. It is a disc, so its rotation adds nothing to its box (the
+          rotated-bounding-box rule is Figma's metadata, not the render), and at
+          both widths it lands inside the root's padding. */}
+      <SealBadge s={s} hue={(s.retro && s.chips[4]?.bg) || s.ac} tilt={32.38}
+                 size={tab ? 125 : s.mob ? 85 : 103}
+                 style={nar
+                   ? { right: tab ? '0px' : '13px', bottom: tab ? '-58px' : '-42px' }
+                   : { left: '-21px', bottom: '-13px' }} />
+    </div>
+  )
+
+  const identity = (
+    <div style={col(nar ? '18px' : '15px', { alignItems: 'flex-start' })}>
+      <span style={{
+        border: `1px solid ${olive}`, borderRadius: '999px',
+        padding: nar ? '6px 12px' : '5px 10px',
+        fontFamily: s.body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4,
+        color: s.ac, whiteSpace: 'nowrap',
+      }}>● Available for bookings</span>
+      {/* 768 sets the hero at the canvas's own `h1`, which is the frame's 59.5
+          to within half a pixel; 390 sets it a register smaller than that, at
+          `dispLg`. Measured off both renders' cap bands, not off the emitted
+          `size/display-lg`, whose 96 is the component's default. */}
+      <Title s={s} size={tab ? s.h1 : s.dispLg} lh={0.89} inline
+             twoTone toneA={mustard} toneB={s.ac} />
+      <p style={{
+        margin: 0, fontFamily: s.body, fontSize: nar ? '16px' : '13px', lineHeight: 1.5,
+        color: s.ac, width: '100%',
+      }}>{s.subtitle}</p>
+      {/* Both narrow masters draw this pill at the *same* full-scale box the
+          768 one does — `full` is what buys that at 390, where BookPill would
+          otherwise take its `small` scale and hang a 46px disc off a pill
+          padded for a 17px one. */}
+      <BookPill s={s} to={s.bookTo} label="Enquire about a date" glyph="arrow"
+                disc={nar ? 46 : 38} full={s.mob} size={nar ? '16px' : undefined}
+                bg={s.ac} fg={mustard} shadow={mustard} />
+    </div>
+  )
+
+  const faceCard = (
+    <div style={{ ...card, background: cream }}>
+      <div style={{
+        width: '88px', height: '88px', flex: 'none', borderRadius: nar ? '20px' : '16px',
+        border: `${nar ? '3px' : '2.5px'} solid ${olive}`, overflow: 'hidden',
+      }}>
+        <Photo s={s} avatar initialsSize={34} />
+      </div>
+      {cardText(
+        cardTitle('The face of the act', mustard),
+        cardBody("Same person you'll meet on the night. Performing since 2021.", s.ac),
+      )}
+    </div>
+  )
+  const placeCard = (
+    <div style={{ ...card, background: mustard }}>
+      <div style={{
+        width: nar ? '88px' : '72px', height: nar ? '88px' : '72px', flex: 'none',
+        borderRadius: nar ? '20px' : '16px', background: s.ac,
+        color: mustard, ...row('0', { justifyContent: 'center' }),
+      }}><MapPin size={nar ? 46 : 38} /></div>
+      {cardText(
+        cardTitle(s.location, s.ac),
+        cardBody('Available across the UK · 120 mi standard travel radius.', ink),
+      )}
+    </div>
+  )
+  // Side by side on the 1180 canvas, stacked on both narrow ones — where each
+  // card has turned on its side, so the pair reads as two rows either way.
+  const subCards = nar ? (
+    <div style={col('16px', { width: '100%' })}>{faceCard}{placeCard}</div>
+  ) : (
+    <div style={row('13px', { flex: 1, minHeight: 0, alignItems: 'stretch', width: '100%' })}>
+      {faceCard}{placeCard}
+    </div>
+  )
+
+  // The root's own gap is the one between the floated nav and the spread. The
+  // frames set the spread's top as page padding instead (100 at 768, 90 at
+  // 390), so what lands it there for us is this gap plus the nav's height.
+  return (
+    <div style={{ position: 'relative', ...col(s.mob ? '36px' : tab ? '29px' : '45px') }}>
+      {nav}
+      {s.mob ? (
+        // 390 is one column throughout, and the photograph leads it — the
+        // master puts the mount above the name, where the fallback this
+        // replaces had it between the name and the cards.
+        <div style={col('36px')}>
+          <div style={{ height: '206px', display: 'flex' }}>{photoCard}</div>
+          <div style={col('30px')}>
+            {identity}
+            {subCards}
+          </div>
+        </div>
+      ) : tab ? (
+        // 768 runs the mount full width and sets the name beside the cards
+        // under it, centred on each other — the desktop composition turned
+        // through ninety degrees rather than narrowed.
+        <div style={col('56px')}>
+          <div style={{ height: '450px', display: 'flex' }}>{photoCard}</div>
+          <div style={row('60px', { alignItems: 'center' })}>
+            <div style={{ flex: 1, minWidth: 0 }}>{identity}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>{subCards}</div>
+          </div>
+        </div>
+      ) : (
+        <div style={row('46px', { height: '540px', alignItems: 'stretch' })}>
+          {photoCard}
+          <div style={col('49px', { flex: 1, minWidth: 0 })}>
+            {identity}
+            {subCards}
+          </div>
+        </div>
+      )}
+      {/* Two rows of the frame's 11.803px checker, run off the section's own
+          edges rather than the column's. `cell` is the repeating *tile*, which
+          is two squares wide — the desktop fit read it as the square and drew
+          four 5px rows where all three frames draw two of 11.8 (× 0.82 = 9.7 on
+          the 1180 canvas), so the height goes with it and Checkerboard's own
+          default — one tile — is now what states it. */}
+      <Checkerboard s={s} cell={nar ? 23.6 : 19.4} colour={ink} style={{
+        position: 'absolute', width: `calc(100% + ${s.padX} + ${s.padX})`,
+        ...bleedTo(s, 'bottom'), right: undefined,
+      }} />
     </div>
   )
 }
@@ -1263,6 +1569,145 @@ function Bio({ s }) {
       </div>
     )
   }
+
+  // v1 — Bio layout 2 · Portrait + sub-cards
+  // (Figma 964:64638 · 984:34877 at 768 · 984:34834 at 390)
+  //
+  // An outlined cream card — eyebrow and prose at its head, the tag chips and a
+  // credit line over the Book Now pill at its foot, the frame's own daylight
+  // between them — beside a fixed portrait card whose photograph carries a
+  // caption in its floor. Desktop numbers are the 1440 frame × 0.82 (§5.5);
+  // the section's own 56px inset is dropped, because the page root's padding
+  // stands in for it. Both narrow masters stack the two cards — the text card
+  // first, which is the reverse of the fallback this branch used to carry — and
+  // are the desktop component at its *own* box numbers, so a padding here is
+  // larger at 768 than on the 1180 canvas and still right.
+  //
+  // What ramps is the type, and it ramps **by face**, not by one factor. The
+  // Anton labels drop hard (label-lg 24 → 16 → 14, label-sm 16 → 13 → 12) and
+  // the chips of the Tags component the frame drops in here drop hardest
+  // (15.4 → 11 → 9.5), while Inter's body-sm holds at 12 across all three
+  // widths and body-lg gives up a single point (16 → 15). Every one of those is
+  // measured off the three renders' own set widths and the caption card's
+  // height, because `var(--size/label-lg, 24)` is the *component's* default and
+  // both narrow masters emit it unchanged.
+  if (s.v1) {
+    const nar = s.narrow
+    const tab = isTablet(s)
+    // Figma box/1 and the portrait card's mount are two different creams, and
+    // Retro's `paper` IS the page background — same literals as v0's polaroid.
+    const cream = s.retro ? '#FAECD5' : s.paper
+    const mount = s.retro ? '#FBF6EA' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    // The frame's 648px portrait card. The text card stretches to it on
+    // desktop; both narrow masters let it hug its content and state the
+    // portrait card's height outright (648 at 768, 362 at 390).
+    const cardH = '531px'
+    const photoH = tab ? '648px' : '362px'
+    const cardR = nar ? '26.25px' : '21px'
+    const body = { fontFamily: s.body, fontSize: nar ? '15px' : '13px', lineHeight: 1.5 }
+
+    const photoCard = (
+      <div style={{
+        position: 'relative', flex: 'none', overflow: 'hidden',
+        width: nar ? '100%' : '355px',
+        height: nar ? photoH : cardH,
+        background: mount, borderRadius: cardR, padding: nar ? '10px' : '8px', boxShadow: soft(s),
+        ...col('0', { alignItems: 'stretch' }),
+      }}>
+        <div style={{
+          position: 'relative', flex: 1, minHeight: 0, overflow: 'hidden',
+          borderRadius: nar ? '21.44px' : '18px',
+          ...col('0', { justifyContent: 'flex-end' }),
+        }}>
+          <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={54} /></div>
+          <div style={{ position: 'relative', padding: nar ? '20px' : '16px' }}>
+            <div style={{
+              ...row(nar ? '12px' : '10px'), background: cream, color: ink,
+              borderRadius: nar ? '9px' : '7px', padding: nar ? '18px 20px' : '15px 16px',
+            }}>
+              <div style={col(nar ? '4px' : '3px', { flex: 1, minWidth: 0 })}>
+                <span style={labelStyle(s, tab ? '16px' : nar ? '14px' : '20px', { whiteSpace: 'normal' })}>{s.brand}</span>
+                <span style={{ ...body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4 }}>{s.kicker} · {s.location}</span>
+              </div>
+              {/* A 36px disc on desktop, where the frame pins its height; both
+                  narrow instances let the same box hug its one 12px line, so it
+                  is a 36 × 16.8 pill there rather than a smaller circle. */}
+              <span style={{
+                width: nar ? '36px' : '30px', height: nar ? '16.8px' : '30px',
+                borderRadius: '999px', flex: 'none', color: ink,
+                background: (s.retro && s.chips[0]?.bg) || s.soft2,
+                ...row('0', { justifyContent: 'center' }),
+              }}><ChevronsRight size={15} /></span>
+            </div>
+          </div>
+        </div>
+        <Grain s={s} exact blend="screen" opacity={0.5} radius={cardR} />
+      </div>
+    )
+
+    const textCard = (
+      <div style={{
+        flex: nar ? 'none' : 1, minWidth: 0, background: cream, color: ink,
+        border: `1px solid ${ink}`, borderRadius: nar ? '30px' : '25px',
+        padding: tab ? '30px' : nar ? '20px' : '25px',
+        height: nar ? undefined : cardH,
+        ...col(nar ? '18px' : '0', { justifyContent: 'space-between' }),
+      }}>
+        <div style={col(nar ? '25.5px' : '21px', { alignItems: 'flex-start' })}>
+          <span style={labelStyle(s, s.mob ? '12px' : '13px', {
+            border: `${nar ? '1.417px' : '1.2px'} solid ${(s.retro && s.chips[3]?.bg) || s.line2}`,
+            borderRadius: '999px', padding: nar ? '5.669px 14.174px' : '5px 12px',
+          })}>/Featured</span>
+          <p style={{ margin: 0, ...body }}>{s.bioP1}</p>
+        </div>
+        <div style={col(nar ? '10px' : '8px', { padding: s.mob ? '10px 0' : undefined })}>
+          {/* The frame drops the Tags section's own chip row in here, at its
+              own width — which is what wraps five chips onto two lines. The
+              264.4 is the one number the narrow masters leave unchanged; only
+              the chips inside it shrink, which is why 768 wraps 3 + 2 where
+              390 fits 4 + 1 in the same measure. */}
+          <div style={{
+            display: 'flex', flexWrap: 'wrap',
+            gap: nar ? '6.149px' : '5px',
+            maxWidth: nar ? '264.4px' : '217px',
+            padding: nar ? '22.19px 0' : '18px 0',
+          }}>
+            {s.chips.map((c, i) => (
+              <span key={i} style={{
+                background: c.bg, color: s.retro ? '#FBF6EA' : c.fg,
+                borderRadius: nar ? '6.149px' : '5px',
+                fontFamily: s.body, fontSize: tab ? '11px' : nar ? '9.5px' : '13px',
+                lineHeight: 1.26, padding: nar ? '3.843px 8.455px' : '3px 7px',
+                whiteSpace: 'nowrap',
+              }}>{c.label}</span>
+            ))}
+          </div>
+          {/* 390 sets the pill under the credit line rather than beside it —
+              a column with its own 9.6 gap, not a wrapped row: the master's
+              own row still carries the desktop component's 637.5px width, so
+              its wrap is a leaked default and the column is the design. */}
+          <div style={s.mob
+            ? col('9.6px', { alignItems: 'flex-start' })
+            : row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
+            {/* The frame's own credit line, two-tone the way it sets it. */}
+            <span style={body}>
+              <span style={{ color: s.ac }}>Five years of </span>
+              rooms read &amp; floors moved
+            </span>
+            {/* Both masters draw the pill at the *same* full-scale box — 390
+                included, which is what `full` buys — and only ramp its type. */}
+            <BookPill s={s} to={s.bookTo} glyph="arrow"
+                      full={s.mob} size={nar ? (tab ? '13px' : '12px') : undefined} />
+          </div>
+        </div>
+      </div>
+    )
+
+    if (nar) return <div style={col(tab ? '30px' : '10px')}>{textCard}{photoCard}</div>
+    return <div style={row('25px', { alignItems: 'stretch' })}>{textCard}{photoCard}</div>
+  }
+
   return (
     <div style={col('20px', { alignItems: 'center', textAlign: 'center', maxWidth: '760px', margin: '0 auto' })}>
       <span style={kickerStyle(s)}>About</span>
@@ -1307,10 +1752,11 @@ function Media({ s }) {
 
   // What the transport can reach is what the layout draws: the older design
   // shows three cards, and Next off the third has to return to the first
-  // rather than start a track with no card on the page. `s.v0` is a prop, not
-  // state, so branching on it above the hooks would be the error — branching
-  // on it here is not.
-  const list = s.v0 ? s.tracks : s.tracks3
+  // rather than start a track with no card on the page. Layouts 1 and 2 both
+  // draw the whole list — layout 2 draws it twice, as the fan and as the
+  // numbered list beside it. `s.v0` is a prop, not state, so branching on it
+  // above the hooks would be the error — branching on it here is not.
+  const list = s.v0 || s.v1 ? s.tracks : s.tracks3
   const count = list.length
   // Clamped the way Repertoire clamps its chip: the list is the artist's, and
   // a track deleted under the player would otherwise strand it past the end.
@@ -1590,6 +2036,398 @@ function Media({ s }) {
       </div>
     )
   }
+
+  // v1 — Media Player layout 2 · Fanned carousel + editorial list (Figma
+  // 964:64639)
+  //
+  // One cream panel on the beige page — the section root keeps the page ground
+  // here, unlike layout 1, and only the panel is cream. Left: the display
+  // heading, a fanned stack of the tracks leaning out from the middle one, and
+  // a pill transport bar carrying the now-playing block. Right: the same tracks
+  // again as a numbered list of hue-filled rows under a small counter.
+  //
+  // The frame composes two instances into one Section — Media Player B ·
+  // Fanned carousel (964:64643) and A · Editorial numbered list (964:64644) —
+  // so this is one branch, and the *whole* Section is what gets fitted.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
+  // own 56/86 inset is dropped, the page root's padding standing in for it, so
+  // the panel is the content width (1052) and not the frame's 1089 — which is
+  // why the fan is 20px wider than its column and rides into the panel's
+  // padding rather than being clipped.
+  //
+  // The 768 (984:35122) and 390 (984:35396) masters wrap the same two instances
+  // and stack them — the heading over the fan over the bar, then the list under
+  // all three at the desktop grid's own 50 — and both draw the component at its
+  // own unscaled numbers, so `u()` is the identity there. See `z` below.
+  if (s.v1) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    // The 768 (`984:35122`) and 390 (`984:35396`) masters are the *desktop*
+    // component at its own numbers: Figma ramped the type variables down and
+    // left every box dimension unscaled. So the scale below is the identity on
+    // both narrow canvases where the 1440 frame lands on the 1180 one at
+    // × 0.82 — one switch, and the fan's five hand-set card states, the bar's
+    // 108, the rows' 64px artwork and every padding here come straight off
+    // whichever frame is being drawn.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The fan's cards are centred on the stack, so their x/y are signed
+    // offsets from its middle rather than a box position.
+    const off = (v) => `calc(50% ${v < 0 ? '-' : '+'} ${Math.abs(Math.round(v * z * 10) / 10)}px)`
+    // The panel's own side padding, which the fan bleeds back over below.
+    const pad = tab ? 30 : 20
+
+    // The panel is the third cream again — Retro's own `paper` IS the beige
+    // page, hence the literal. Under it the ink is near-black, not the
+    // section's own text colour on beige.
+    const panel = s.retro ? '#FBF6EA' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    const n = s.chips.length
+    const olive = s.chips[3 % n].bg
+    const mustard = s.chips[2 % n].bg
+    const rust = s.ac
+
+    // The list's five rows run a three-hue cycle, and each hue carries its own
+    // type and outline colour — the frame's pairings, not a contrast rule.
+    // The flat templates have no such pairings, so they fall back to one.
+    const ROWS = [
+      { bg: olive, fg: mustard, line: mustard },
+      { bg: mustard, fg: rust, line: olive },
+      { bg: rust, fg: mustard, line: mustard },
+    ]
+
+    // The fan paints in a lighter register than the list — the same four hues
+    // lifted about 7% towards white, which is a decision the frame makes and
+    // not one the palette can express, so Retro's are literal (as v0's thrown
+    // pink and violet are). The middle card is always the accent.
+    const FAN = s.retro
+      ? ['#E8B33B', '#6D7040', '#E8B33B', '#8B6AB8']
+      : [mustard, olive, mustard, s.chips[0 % n].bg]
+    const FEATURED = s.retro ? '#DF5B30' : rust
+
+    // The frame's three card states, at |k| = 0, 1 and 2 from the middle: the
+    // width, the height, the artwork's height and the opacity all step. They
+    // are read off the frame rather than ramped, because Figma resized these
+    // by hand and the steps are not quite even. A sixth or seventh track keeps
+    // the outermost state and simply fans further out.
+    const CARD = [
+      { w: 220, h: 285, art: 188, y: 19.5, op: 1 },
+      { w: 202.507, h: 274.792, art: 170.4, y: 27.48, op: 0.82 },
+      { w: 185.187, h: 250.551, art: 152.8, y: 42.42, op: 0.64 },
+    ]
+    // The fan has a fixed set of seats — the middle one and its neighbours out
+    // to either side — and the tracks rotate *through* them, wrapping, so that
+    // the centre seat always holds the track the player is on. That is what
+    // makes it a *fanned carousel* and it is the only mark the composition has
+    // room for: picking any card deals the stack round to it.
+    //
+    // The seats cannot instead be centred on `at` directly. `at` is 0 until a
+    // visitor picks, so the fan would open one-sided — every card to the right
+    // of the middle — which is not the design at any count.
+    //
+    // How far apart the seats stand is the one thing the 390 master changes
+    // about the fan: it keeps every card at the desktop component's size and
+    // tightens only the spread, to ~42 where 768 and 1440 both step 101.5, so
+    // the stack there is very nearly all overlap.
+    const step = s.mob ? 42 : 101.5
+    const seat = Math.floor((s.tracks.length - 1) / 2)
+    const anchor = s.live && count ? at : seat
+    // The frame pairs the centre card with the bar under it — both name the
+    // same track — and live they are the same track by construction, because
+    // the centre seat holds `at`. On the canvas they would part company: the
+    // shared now-playing block names the track the player is *cued* to, which
+    // is the first, so the bar takes the centre seat's title there instead.
+    const centre = s.tracks[anchor]
+    const nowTitle = s.live || !centre ? now.track : centre.name
+    const nowArt = s.live || !centre ? sleeve : (centre.img ?? undefined)
+
+    // Inter Bold at the frame's chip size, tracked in by its own −6%. Both
+    // ends of the list's counter row are set in it, and so is the Featured
+    // tab on the middle card — this is not the Anton label face. The counter
+    // is the only one the frame sets in caps; the tab is title case.
+    const chip = (extra) => ({
+      fontFamily: s.body, fontWeight: 700, fontSize: u(12), lineHeight: 1,
+      letterSpacing: u(-0.72), whiteSpace: 'nowrap', ...extra,
+    })
+    // Display face, sentence case — the frame sets every title in it.
+    const titleType = (size) => ({
+      fontFamily: s.display, fontSize: u(size), lineHeight: 1.1, letterSpacing: s.dls,
+      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+    })
+    const subType = { fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+    // The frame draws the transport as bare glyphs. Live they are buttons, so
+    // each takes a square a little larger than its 14px icon — which also
+    // brings the group's width back towards the frame's 96.
+    const ctl = {
+      width: u(20), height: u(20), flex: 'none', cursor: s.live ? 'pointer' : undefined,
+      ...row('0', { justifyContent: 'center' }),
+    }
+
+    const fan = (
+      <div style={{
+        // Desktop takes the stack's height off the column; the narrow canvases
+        // have no fixed column to divide, so there it is the frame's own — and
+        // both masters state the same 468 where the 1440 one states 371.
+        position: 'relative', flex: 1, minHeight: desk ? 0 : '468px',
+        // Desktop lets the frame's own five ride into the panel's padding,
+        // which is cream either way. Everything else clips: a sixth track
+        // onwards fans out far enough to cross the gap and paint over the list
+        // beside it. The stack is centred, so a clip always takes both sides
+        // evenly.
+        overflow: desk && s.tracks.length <= CARD.length + 2 ? 'visible' : 'hidden',
+        // Both narrow masters run the fan to the panel's own inside edges — the
+        // five span 623 of a 648 column at 768, and at 390 the outermost card
+        // touches the panel's corner exactly — so the band bleeds back over the
+        // padding rather than clipping at the column. Our canvases are 20px
+        // (768) and 24px (390) narrower than the frames', so at 390 the outer
+        // pair still gives up about twelve pixels; clipping at the column would
+        // have taken forty.
+        ...(desk ? null : { margin: `0 -${pad}px`, width: `calc(100% + ${pad * 2}px)` }),
+      }}>
+        {/* `j` is the seat in the fan, `i` the track dealt to it — the two
+            part company as soon as the carousel turns. Geometry and hue belong
+            to the seat, so the composition holds still and its centre stays
+            the accent; only the content rotates. */}
+        {s.tracks.map((_, j) => {
+          const k = j - seat
+          const i = (anchor + k + s.tracks.length) % s.tracks.length
+          const t = s.tracks[i]
+          const g = CARD[Math.min(Math.abs(k), 2)]
+          const hue = k === 0 ? FEATURED : FAN[(j < seat ? j : j - 1) % FAN.length]
+          const fg = s.retro ? '#FBF6EA' : contrastInk(hue)
+          return (
+            // The whole card is the button on the published page, as it is in
+            // layout 1: the frame draws no other affordance on it.
+            <div key={j} onClick={onPick(i)} style={{
+              position: 'absolute',
+              left: off(k * step - g.w / 2), top: off(g.y - g.h / 2),
+              width: u(g.w), height: u(g.h),
+              transform: tilt(s, k * 5.33), opacity: g.op, zIndex: 10 - Math.abs(k),
+              background: hue, color: fg,
+              border: `1px solid ${s.retro ? '#111111' : fg}`, borderRadius: u(14),
+              padding: u(16), overflow: 'hidden', cursor: s.live ? 'pointer' : undefined,
+              ...col(u(12), { alignItems: 'stretch' }),
+            }}>
+              <div style={{
+                position: 'relative', height: u(g.art), flex: 'none',
+                borderRadius: u(4), overflow: 'hidden',
+              }}><Photo s={s} initialsSize={20} src={t.img} /></div>
+              <div style={col(u(4), { minWidth: 0 })}>
+                <span style={{ ...titleType(16), lineHeight: 1.2 }}>{t.name}</span>
+                <span style={subType}>{t.rel || t.sub}</span>
+              </div>
+              {k === 0 && (
+                <span style={chip({
+                  position: 'absolute', left: u(25.5), top: u(25),
+                  background: s.chips[4 % n].bg, color: s.retro ? '#FBF6EA' : s.chips[4 % n].fg,
+                  borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
+                })}>● Featured</span>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    )
+
+    const bar = (
+      <div style={{
+        // The frame's bar is a shade lighter than the panel it sits on and is
+        // held by an olive outline in accent-coloured type. The flat templates
+        // have only the one paper, so there the outline is the one that has to
+        // carry it — and `paperLine` / `paperFg` are the two that read on it,
+        // where `line2` and the accent need not.
+        flex: 'none', height: u(108), background: s.retro ? '#FFFEFB' : s.paper,
+        color: s.retro ? rust : ink,
+        border: `${s.bw} solid ${s.retro ? olive : s.paperLine}`, borderRadius: '999px',
+        // 768 takes the frame's 40 and 24 verbatim. 390 does not: its master
+        // emits the very same pair into a 330px bar and squeezes the track it
+        // is playing down to a sliver of its sleeve, which is the frame's own
+        // render being the artefact rather than the design.
+        padding: `0 ${s.mob ? '20px' : u(40)}`,
+        ...row(s.mob ? '14px' : u(24)),
+      }}>
+        {/* Filled *and* stroked, unlike layout 1's player: the frame's skip
+            glyphs carry the bar beside the triangle, which is the stroke. The
+            group closes up at 390 for the same reason the bar's own padding
+            does: having decided the master swallowed the track it is playing,
+            the transport's spacing is what pays for naming it. */}
+        <span style={row(s.mob ? '14px' : u(24), { flex: 'none' })}>
+          <span style={ctl} onClick={s.live ? () => goTo(at - 1) : undefined}>
+            <SkipBack size={14} fill="currentColor" />
+          </span>
+          {/* The frame draws a player caught mid-song — the same picture its
+              clock draws — so the canvas keeps Pause however this renders
+              live. */}
+          <span style={ctl} onClick={s.live ? toggle : undefined}>
+            {s.live && !playing ? <Play size={14} fill="currentColor" /> : <Pause size={14} fill="currentColor" />}
+          </span>
+          <span style={ctl} onClick={s.live ? () => goTo(at + 1) : undefined}>
+            <SkipForward size={14} fill="currentColor" />
+          </span>
+        </span>
+        {/* The now-playing block is the player's own state, not the section's:
+            the sleeve is the current track's artwork and the clock runs. */}
+        {/* The frame's inner pill carries a 30px right padding before the
+            glyphs. Our bar is ~18px narrower than the frame's — the panel is
+            the page's content width — and that padding is the one gap here
+            that costs nothing to give back, where a truncated track title
+            costs the most. 768 has the room for the frame's own 30; 390, which
+            has already dropped the clock and the glyphs below, has none. */}
+        <span style={row(u(12), { flex: 1, minWidth: 0, paddingRight: desk ? u(12) : tab ? '30px' : 0 })}>
+          <span style={{
+            width: u(60), height: u(60), flex: 'none',
+            borderRadius: '999px', overflow: 'hidden', position: 'relative',
+          }}><Photo s={s} initialsSize={16} src={nowArt} /></span>
+          <span style={col(u(2), { flex: 1, minWidth: 0 })}>
+            <span style={titleType(24)}>{nowTitle}</span>
+            <span style={subType}>{now.by}</span>
+          </span>
+          {/* The 390 canvas has no frame of its own and cannot seat the whole
+              bar: the running time and the glyphs below go, rather than
+              squeeze the track off it. */}
+          {!s.mob && <span style={{ ...subType, flex: 'none' }}>{now.at} / {now.of}</span>}
+        </span>
+        {/* Text glyphs in the frame, not icons. */}
+        {!s.mob && (
+          <span style={row(u(12), {
+            flex: 'none', fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
+          })}><span>♡</span><span>↓</span><span>⋯</span></span>
+        )}
+        {audio}
+      </div>
+    )
+
+    // `minHeight`, not `height`: a list longer than the frame's five grows the
+    // grid row past 673, and the stack should take that height rather than
+    // leave the bar floating half way up a taller panel.
+    const left = (
+      <div style={col('0', { minWidth: 0, minHeight: desk ? u(673) : undefined })}>
+        <h2 style={{
+          // 768 sets the head at the canvas's own `h1`, which is its master's
+          // measured 59.5 to within half a pixel; 1180 and 390 both land on
+          // `dispLg`. Measured off the two renders' line boxes — 53 on one line
+          // and 72 on two, at leading .89 — and not off the emitted
+          // `size/display-lg`, whose 96 is the component's default at all three
+          // widths.
+          margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg, lineHeight: 0.89,
+          // Accent on the frame's near-white panel; on a flat template the
+          // panel is `paper`, where only `paperFg` is guaranteed to read.
+          letterSpacing: s.dls, color: s.retro ? rust : ink, flex: 'none',
+          // Layout 1's measure, for the frame's same break after "worth". Both
+          // narrow masters break where the column runs out instead — one line
+          // at 768, two at 390 — so the measure would only force a break
+          // neither frame draws.
+          maxWidth: desk ? '5.8em' : undefined,
+        }}>{s.title}</h2>
+        <div style={col(u(24), {
+          flex: 1, minHeight: 0,
+          // 768 sets the heading ten above the carousel. 390 runs the two
+          // *into* each other: the fan band's top 111px are empty, and the
+          // master takes 49 of them back rather than stack two blocks, which
+          // is what puts its bar 514 down a 622-tall column. The heading's box
+          // then ends 49 into the band with 62 still clear of the first card,
+          // so a third line of title spends 36 of that and a fourth would
+          // collide — the frame's own composition, at the frame's own risk.
+          marginTop: desk ? undefined : tab ? '10px' : '-49px',
+        })}>{fan}{bar}</div>
+      </div>
+    )
+
+    const list = (
+      <div style={col(u(10), {
+        minWidth: 0,
+        // Both narrow masters state this column at 596 and let its five rows
+        // divide what the counter row and the gaps leave: 44 + 5 × 96 + 5 × 10
+        // is 574, so each row takes a fifth of the 22 over and stands at the
+        // 100.4 both renders measure. `minHeight` rather than a height, and the
+        // rows' `1 1 auto` rather than desktop's `1 1 0`: past five tracks the
+        // column grows and every row keeps its own 96 instead of being squeezed
+        // into a twelfth of a fixed one. An emptied list drops it rather than
+        // standing 596px of nothing under the player: the number is a division
+        // target, and with no rows there is nothing to divide. Desktop reserves
+        // the space either way — there the height is the grid stretching this
+        // column against the fan's, not a number this branch states.
+        minHeight: desk || !s.tracks.length ? undefined : '596px',
+      })}>
+        <div style={row('0', {
+          flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: ink,
+        })}>
+          <span style={chip({ textTransform: 'uppercase' })}>● Popular</span>
+          {/* Layout 1 derives its counter from the track count the same way. */}
+          <span style={chip({ textTransform: 'uppercase' })}>
+            {s.tracks.length} Featured / {s.tracks.length} Max
+          </span>
+        </div>
+        {s.tracks.map((t, i) => {
+          const r = ROWS[i % ROWS.length]
+          const fg = s.retro ? r.fg : contrastInk(r.bg)
+          // TracksField has no duration of its own — its rows carry the
+          // subtitle in both keys — so the running time only sets where the
+          // two differ.
+          const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+          // The row is the same button the fan card is — the two columns are
+          // one list — and the playing row swaps its number for the transport
+          // glyph, the way layout 1's card swaps its circle. The slot keeps
+          // its width in both states so nothing shifts under the pointer.
+          const on = chosen && i === at
+          return (
+            <div key={i} onClick={onPick(i)} style={{
+              flex: desk ? 1 : '1 1 auto', minHeight: 0, overflow: 'hidden',
+              background: r.bg, color: fg, border: `${s.bw} solid ${s.retro ? r.line : fg}`,
+              // 768 takes the frame's 30 and 20 verbatim, which leaves its
+              // title 396px. 390 does not: the same pair in a 306px row leaves
+              // 74 for a 24px display title, and the master's own render duly
+              // hard-clips "Manchester at 3am" mid-word. The tighter set is
+              // this branch's own, kept from the placeholder it replaces as the
+              // least-invented number available; the title still ellipsises,
+              // which is the honest form of what the frame does.
+              borderRadius: u(30), padding: `${u(14)} ${s.mob ? '18px' : u(30)}`,
+              cursor: s.live ? 'pointer' : undefined,
+              ...row(s.mob ? '14px' : u(20)),
+            }}>
+              <span style={{
+                fontFamily: s.body, fontSize: u(16), lineHeight: 1.5,
+                width: u(24), flex: 'none', ...row('0', { justifyContent: 'center' }),
+              }}>{on
+                ? (playing ? <Pause size={13} fill="currentColor" /> : <Play size={13} fill="currentColor" />)
+                : t.n}</span>
+              <span style={{
+                width: u(64), height: u(64), flex: 'none', display: 'block',
+                borderRadius: u(4), overflow: 'hidden', position: 'relative',
+              }}><Photo s={s} initialsSize={16} src={t.img} /></span>
+              <span style={col(u(4), { flex: 1, minWidth: 0 })}>
+                <span style={titleType(24)}>{t.name}</span>
+                <span style={subType}>{t.rel}</span>
+              </span>
+              {dur && <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, flex: 'none' }}>{dur}</span>}
+            </div>
+          )
+        })}
+      </div>
+    )
+
+    return (
+      <div style={{
+        background: panel, color: ink,
+        // The panel is the one box the narrow masters draw *larger* than the
+        // 1440 one relative to its canvas: a 30px corner against the desktop
+        // frame's 22, and a side padding that halves while the vertical one
+        // stays the desktop component's 60 at 768. The 50 between the carousel
+        // and the list is the same at all three widths — it is the desktop
+        // grid's own gap, stood on end.
+        borderRadius: desk ? u(22) : '30px',
+        padding: desk ? u(60) : tab ? '60px 30px' : '40px 20px',
+        ...(desk ? {
+          display: 'grid', alignItems: 'stretch',
+          gridTemplateColumns: 'minmax(0, 629fr) minmax(0, 529fr)', gap: u(50),
+        } : col('50px')),
+      }}>
+        {left}{list}
+      </div>
+    )
+  }
+
   return (
     <div style={col('28px')}>
       <h2 style={{ margin: 0, ...h2Style(s) }}>{s.title}</h2>
@@ -1749,6 +2587,361 @@ function Video({ s }) {
       </div>
     )
   }
+
+  // v1 — Video layout 2 · Dashboard player (Figma 964:64645)
+  //
+  // A stage on the left — the poster in a deep-rounded card with a transport
+  // bar floating in its foot — and under it the video's name, its description
+  // and the artist's own row. Beside it, a rust-outlined cream panel listing
+  // the other videos: a thumbnail carrying its running time, then the title,
+  // where it came from and when.
+  //
+  // Still a picture, on both surfaces. Video is one of the two categories with
+  // no `s.live` seam at all (CLAUDE.md, "Intentional limits") — there is no
+  // <video> element and no handler in here, so nothing carries a pointer
+  // cursor either: the calendar's rule that a cursor is read off the handler.
+  //
+  // What the frame draws and this does not: the view counts ("8,175M views",
+  // "25,284M View"), the follower count ("22.7M followers"), the like/dislike
+  // pair ("👍 509,325 · 👎 245", which the frame's own 158px title box clips
+  // away in any case) and the verified tick beside the name. Not one of them
+  // has a field or can be derived, and a published page that prints a number
+  // the artist never typed is making a claim — the gallery's rule about a tile
+  // promising a TikTok that does not exist, read one step on. Every line that
+  // does have a field takes it: the heading, the description, the running
+  // time, the artist's name and both photographs.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
+  // 56 inset is dropped for the page root's own padding, so the pair is the
+  // content width (1052) and not the frame's 1328 × 0.82. The 37px goes out of
+  // the *player*, which is an aspect-ratio box and simply gets shorter: the
+  // panel's row is a thumbnail beside two lines of nowrap type and is the one
+  // of the two that cannot give anything back.
+  //
+  // The 768 (984:35259) and 390 (984:35737) masters change the composition
+  // rather than narrowing it: the panel leaves the stage's side for a
+  // full-width block under it, and its list becomes two columns — a thumbnail
+  // beside its lines at 768 and above them at 390. Everything else is the
+  // desktop component at its own unscaled numbers, so `u()` is the identity
+  // there; only the type ramps, and the transport bar shrinks its discs at 390.
+  // See `z` below. Both masters' player is a *flattened raster* in Figma, so
+  // the bar's own geometry was measured off the two renders rather than read.
+  if (s.v1) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const nar = s.narrow
+    // The narrow-master scale, the media player's rule: both frames draw the
+    // desktop component's box dimensions verbatim, so nothing is ramped below
+    // 1180 except the type and the transport's discs.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The type, measured off all three renders rather than read off the emitted
+    // `var(--size/…)`, whose values are the component's defaults at every width.
+    // Two readings agree on each: the text node's height over its own leading,
+    // and the six row titles' set widths as a ratio of the 1440 frame's.
+    //   label   20 → 14 → 13     display/list 16 → 12 → 13
+    //   body-md 14 → 13 → 13     body-sm      12 → 12 → 12  (Inter's does not move)
+    // The row title is the odd one — *larger* at 390 than at 768 — because the
+    // 390 grid's columns are the wider pair (163.5 against 150.5). It is not a
+    // slip; do not "correct" it.
+    const labelSz = tab ? '14px' : s.mob ? '13px' : u(20)
+    const rowSz = tab ? '12px' : s.mob ? '13px' : u(16)
+    const bodySz = nar ? '13px' : u(14)
+    const n = s.chips.length
+    const mustard = s.chips[2 % n].bg
+    const rust = s.ac
+    // Figma box/1 — the bio's cream. Retro's own `paper` IS the beige page, so
+    // the panel, the badges and the progress track need the literal; the flat
+    // four have a real second paper and take it, with `paperFg` for the ink,
+    // because `s.tx` is chosen against the page and need not read on it.
+    const cream = s.retro ? '#FAECD5' : s.paper
+    const creamInk = s.retro ? '#111111' : s.paperFg
+    // Figma box/2, the ground under a photograph that has not loaded — one
+    // step down from the cream, and never seen with the seeds in place.
+    const shade = s.retro ? '#E1CAA5' : s.soft
+
+    const metaType = (extra) => ({
+      fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...extra,
+    })
+    // The frame's two disc sizes. The transport's are rust filled and held by a
+    // mustard hairline in mustard glyphs; the action row's below the rule
+    // invert that and throw a hard block with it. Retro's pairing is the
+    // frame's own two hues; the flat four have no such pairing and take the
+    // two the palette guarantees — the accent on its own foreground, and the
+    // Book pill's lightest-hue-and-accent-type pair (§10.2) — because
+    // `chips[2]` is an arbitrary tag colour that can land on the page ground.
+    // The transport disc is the one box either master shrinks: measured 28 at
+    // 768 as at 1440, and 22 at 390, where the bar has to seat six of them, two
+    // clocks and a progress track inside the player's 330. Its glyph goes with
+    // it, and so do the two gaps below.
+    const cd = s.mob ? 22 : 28
+    const cg = s.mob ? 9 : 11
+    const ctl = {
+      width: u(cd), height: u(cd), flex: 'none', borderRadius: '999px',
+      background: s.retro ? rust : s.ac, color: s.retro ? mustard : s.acFg,
+      border: `1px solid ${s.retro ? mustard : s.acFg}`,
+      ...row('0', { justifyContent: 'center' }),
+    }
+    const act = {
+      width: u(36), height: u(36), flex: 'none', borderRadius: '999px',
+      background: s.retro ? mustard : s.pillBg, color: s.retro ? rust : s.pillFg,
+      boxShadow: hard(s, rust, 4.1, 4.1),
+      ...row('0', { justifyContent: 'center' }),
+    }
+    // ⋮ and ⋯ stay text: lucide has both, but they are the two glyphs in this
+    // frame that are typography rather than iconography, and the media
+    // player's bar sets its own the same way.
+    const dots = (g) => <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1 }}>{g}</span>
+
+    const player = (
+      <div style={{
+        position: 'relative', width: '100%', aspectRatio: '819 / 478',
+        background: cream, borderRadius: u(40), overflow: 'hidden',
+        padding: u(20),
+        ...col('0', { alignItems: 'center', justifyContent: 'space-between' }),
+      }}>
+        <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={44} /></span>
+        {/* Two hairline discs in the top corner, cream on the photograph. */}
+        <span style={row(u(8), { alignSelf: 'flex-end', position: 'relative' })}>
+          {[<Settings key="s" size={13} />, dots('⋯')].map((g, i) => (
+            <span key={i} style={{
+              width: u(34), height: u(34), flex: 'none', borderRadius: '999px',
+              background: cream, color: creamInk, border: `1px solid ${creamInk}`,
+              ...row('0', { justifyContent: 'center' }),
+            }}>{g}</span>
+          ))}
+        </span>
+        {/* The bar is the page's own beige on the photograph, not a cream —
+            the one place in the frame where the section ground reappears
+            inside a card. `maxWidth` because the 390 canvas cannot seat it. */}
+        <span style={{
+          position: 'relative', maxWidth: '100%',
+          background: s.bg, color: s.tx, borderRadius: '999px',
+          padding: `${u(s.mob ? 7 : 8)} ${u(12)}`, ...row(u(s.mob ? 6 : 10)),
+        }}>
+          <span style={row(u(s.mob ? 4 : 5), { flex: 'none' })}>
+            <span style={ctl}><SkipBack size={cg} fill="currentColor" /></span>
+            {/* A player caught mid-song, which is the picture the frame
+                draws — and the picture is all this section is. */}
+            <span style={ctl}><Pause size={cg} fill="currentColor" /></span>
+            <span style={ctl}><SkipForward size={cg} fill="currentColor" /></span>
+          </span>
+          {s.videoAt && <span style={metaType({ flex: 'none' })}>{s.videoAt}</span>}
+          <span style={{
+            // The frame's 215 wherever there is room for it; on the 390 canvas
+            // the track is what gives way, so the clocks and the glyphs do not.
+            width: u(215), maxWidth: '100%', flex: s.mob ? 1 : 'none', minWidth: u(40),
+            height: u(4), borderRadius: u(2), overflow: 'hidden',
+            // Retro's box/1 against the beige bar. A flat template's `paper`
+            // is a near-white on a near-white bar and the unfilled half would
+            // vanish, so there the track is a rule instead.
+            background: s.retro ? cream : s.line2,
+          }}>
+            <span style={{
+              display: 'block', width: `${s.videoPct}%`, height: '100%',
+              background: rust, borderRadius: u(2),
+            }} />
+          </span>
+          <span style={metaType({ flex: 'none' })}>{s.videoDur}</span>
+          <span style={ctl}><Volume2 size={cg} /></span>
+          {/* The 390 master keeps all six discs and pays for them out of their
+              own size and spacing rather than by dropping the last two — which
+              is what the fallback this replaces did, on the media player's
+              rule at the same width. Its own bar fills the player's content
+              width exactly; ours is 24px narrower, and the track is what
+              absorbs that, down to its stated floor. */}
+          <span style={ctl}><Maximize size={cg} /></span>
+          <span style={ctl}>{dots('⋮')}</span>
+        </span>
+      </div>
+    )
+
+    // The two halves of the artist row, named because the 390 master puts them
+    // on separate lines and the other two do not.
+    const artist = (
+      <>
+        <span style={{
+          width: u(40), height: u(40), flex: 'none', borderRadius: '999px',
+          overflow: 'hidden', background: shade,
+        }}><Photo s={s} avatar initialsSize={14} /></span>
+        <span style={{
+          fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>{s.brand}</span>
+      </>
+    )
+    const actions = (
+      <>
+        <span style={act}><Bookmark size={13} /></span>
+        <span style={act}><Link2 size={13} /></span>
+        <span style={act}><Bell size={13} /></span>
+        {/* A label with nowhere to go, like the frame's "View All ›" and
+            layout 1's own play disc: this section is a picture, and the
+            pill is drawn rather than wired. */}
+        <span style={{
+          ...act, width: 'auto', height: 'auto', padding: `${u(8)} ${u(16)}`,
+          fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+        }}>Follow</span>
+      </>
+    )
+
+    const stage = (
+      <div style={col(u(14), { flex: 1, minWidth: 0 })}>
+        {player}
+        {/* The frame's name-and-metric block. Ours is the heading in the label
+            face over the description — the field layout 1 already prints —
+            and it takes the whole column rather than the frame's clipped 158,
+            because a sentence is not a two-word metric. */}
+        <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
+          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{s.title}</span>
+          {s.videoDesc && <span style={metaType()}>{s.videoDesc}</span>}
+        </div>
+        {/* The artist row. All three frames rule it off above and pad it 15/20;
+            what the 390 master changes is that the four controls drop to a line
+            of their own 25 under the name, at their own tighter 5px gap, rather
+            than sharing the row. That is transcribed rather than left to
+            `flexWrap`, which wraps wherever the artist's name happens to run
+            out and puts the spacer in an unpredictable place. */}
+        <div style={{
+          borderTop: `1px solid ${s.retro ? '#111111' : s.line2}`,
+          paddingTop: u(15), paddingBottom: u(20),
+          ...(s.mob ? col('25px') : row(u(12), { flexWrap: 'wrap' })),
+        }}>
+          {s.mob ? <span style={row(u(12), { minWidth: 0 })}>{artist}</span> : artist}
+          {!s.mob && <span style={{ flex: 1, minWidth: 0 }} />}
+          {s.mob ? <span style={row('5px', { flex: 'none' })}>{actions}</span> : actions}
+        </div>
+      </div>
+    )
+
+    // The panel holds its frame width and the player gives the 37 back, so this
+    // is a fixed column on desktop and the full width below it.
+    const panel = (
+      <div style={{
+        width: desk ? u(392) : '100%', flex: 'none',
+        background: cream, color: creamInk,
+        border: `${u(3)} solid ${rust}`, borderRadius: u(14),
+        // The frames' inset, which Figma states *including* the 3px stroke it
+        // draws inside the box — so all three of these run 3px wide, the
+        // repertoire's `calc(padding − border)` case. Left as it is because the
+        // desktop half of this very property already carries the same drift and
+        // moving it is a signed-off change; consistency inside one branch, the
+        // bio's rule.
+        padding: desk ? u(14) : tab ? '30px' : '10px',
+        ...col(u(10), { minWidth: 0 }),
+      }}>
+        <div style={row('0', {
+          flex: 'none', justifyContent: 'space-between', paddingBottom: u(6), gap: u(10),
+        })}>
+          <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5, whiteSpace: 'nowrap' }}>
+            Top music video
+          </span>
+          <span style={metaType({ flex: 'none' })}>View All ›</span>
+        </div>
+        {/* The frame's panel is a picture of a section with something in it.
+            An emptied list keeps the panel and prints the pricing deck's one
+            message inside it, rather than leaving a rust outline round
+            nothing. */}
+        {!s.videos.length && (
+          <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5 }}>No videos yet.</span>
+        )}
+        {/* The frame sizes these rows by dividing the panel's height and lets
+            the thumbnail take its width from that — which only works while the
+            panel has a height to divide, and ours does not: the list is what
+            makes the panel tall, not the other way round. So the thumbnail is
+            sized by *width* instead, at the 142.9 the frame's own division
+            lands on, and the row's height follows the aspect. The two agree at
+            the seeded six; a longer list simply makes the panel taller, which
+            is what `items-start` on the pair is for.
+
+            Both narrow masters lay the same rows out **two to a line** instead,
+            at the same 23 in both directions — so the grid is what states it
+            there, and an odd count trails one half-width cell, the pricing
+            deck's rule. The thumbnail then stops being a fraction of a row and
+            becomes the frame's own 150: it is 48% of the 768 column and sits
+            *above* its lines at 390, where 150 is very nearly the whole of a
+            148.5px column. */}
+        <div style={desk ? col(u(23)) : {
+          display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: '23px', alignItems: 'start',
+        }}>
+          {s.videos.map((v, i) => (
+            <div key={i} style={s.mob
+              ? col('12px', { minWidth: 0 })
+              : row(u(12), { flex: 'none', alignItems: 'flex-start' })}>
+              <span style={{
+                position: 'relative', flex: 'none',
+                width: desk ? u(142.9) : '150px', maxWidth: desk ? '42%' : '100%',
+                aspectRatio: '140 / 80', background: s.bg,
+                borderRadius: u(8), overflow: 'hidden',
+              }}>
+                <Photo s={s} initialsSize={16} src={v.img} />
+                {v.length && (
+                  <span style={{
+                    position: 'absolute', left: u(5), top: u(5),
+                    background: cream, color: creamInk, borderRadius: u(4),
+                    padding: `${u(2)} ${u(6)}`,
+                    fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+                  }}>{v.length}</span>
+                )}
+                <span style={{
+                  position: 'absolute', right: u(4.67), bottom: u(4.67),
+                  width: u(24), height: u(24), borderRadius: '999px',
+                  background: cream, color: creamInk,
+                  ...row('0', { justifyContent: 'center' }),
+                }}><Play size={9} fill="currentColor" strokeWidth={0} /></span>
+              </span>
+              <span style={col(u(7.4), s.mob ? { minWidth: 0, width: '100%' } : { flex: 1, minWidth: 0 })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: rowSz, lineHeight: 1.2,
+                  letterSpacing: s.dls,
+                  // The accent is not guaranteed to read on `paper` (Lime's is
+                  // acid green on pale lime), so only Retro's frame-literal
+                  // rust goes here; the flat four take the paper's own ink.
+                  color: s.retro ? rust : creamInk,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{v.title}</span>
+                {v.sub && (
+                  <span style={row(u(7.4), { minWidth: 0 })}>
+                    <span style={{
+                      width: u(19.8), height: u(19.8), flex: 'none', borderRadius: '999px',
+                      overflow: 'hidden', background: shade,
+                    }}><Photo s={s} avatar initialsSize={8} /></span>
+                    <span style={metaType()}>{v.sub}</span>
+                  </span>
+                )}
+                {v.when && <span style={metaType()}>{v.when}</span>}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+
+    // The frame's own `items-start`, and it has to stay that: the frame draws
+    // the two columns exactly as tall as each other because both are fixed, and
+    // ours are not — the panel's height is whatever its list makes it. Stretched
+    // instead, the taller column would have to hand its slack to something, and
+    // there is nothing in either that should take 250px of it at twelve videos.
+    // So the two simply end where they end; at the seeded six the panel runs
+    // about 20px past the stage's rule.
+    //
+    // Below 1180 the two are one column, which is what both masters draw. The
+    // 390 one sets the gap at nothing at all: the artist row's own 20px of
+    // bottom padding is the whole of the space between its Follow pill and the
+    // panel's outline, and that is the frame's picture rather than an oversight
+    // — it is the same 20 the 768 master stands 32 further off.
+    return (
+      <div style={desk
+        ? row(u(40), { alignItems: 'flex-start' })
+        : col(tab ? '32px' : '0', { alignItems: 'stretch' })}>
+        {stage}
+        {panel}
+      </div>
+    )
+  }
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '44px', alignItems: 'center' }}>
       <div style={col('14px')}>
@@ -1986,6 +3179,246 @@ function Pricing({ s }) {
       </div>
     )
   }
+
+  // Layout 2 — "Pricing — D · Single big plan" (Figma 964:64648, 1440 × 707).
+  // A two-column grid on the page's own beige: left, a kicker over the display
+  // heading and a line of praise; right, one large rounded card tilted 3° off
+  // square, carrying the plan's name, its blurb, its price, the Book pill, a
+  // rule and its features in two columns. Under it, the small print.
+  //
+  // The frame's chip row is *inside* the card and reads "↻ Per event" /
+  // "⚡ Custom brief" — a pricing-model toggle this section has no notion of.
+  // It is the packages instead: one chip per package, the card showing the one
+  // selected, which is what stops a single-card layout stranding every package
+  // but the first (the testimonials' own defect, and the reason `c.quotes`
+  // exists). That reuses `chip` whole — the same state layout 1 filters with,
+  // the same `s.live` gate, the same clamp against a list the artist can
+  // shorten, and the same pinned 0 on the canvas, where the frame draws chip 0
+  // filled and so the picture *is* a choice. It leaves `s.tierChips` — the tags
+  // — reaching layout 1 only, which is FIELDS.media.soundcloud's case again;
+  // the field's hint says so. Not drawn at one package: nothing to select is
+  // the row's own rule in layout 1 too.
+  //
+  // Dropped from the frame, verbatim, so the call can be reversed: the two
+  // chips' glyphs `↻` and `⚡`; the three reviewer avatars; the `★ ★ ★ ★ ★`
+  // row; `32 reviews · 4.9 ★`; and `3 dates open for Sept '26` beside the pill.
+  // All but the glyphs are claims about the artist that no field backs — the
+  // video section's rule — and with the count gone the faces and the stars
+  // substantiate nothing. The frame's second price (`— £2,200/event`) becomes
+  // `s.tierUnit`, which is the one the section already owns. What is kept as a
+  // literal is the two frame labels, `[ PRICING ]` and `WHAT'S INCLUDED`.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
+  // own 56/32 inset is dropped for the page root's padding, so the pair spans
+  // the content width (1052) and not the frame's 1328. The frame carries no
+  // grain at all (stddev 0 over both the ground and the card), unlike layout
+  // 1's cards, so this branch draws none.
+  //
+  // The narrow masters are 986:10425 (768 × 915.4) and 986:10492 (390 × 849.4).
+  // Both are the desktop composition **stacked**: the same `left` block, then
+  // the same card at `w-full`, at the same 32 gap. Every box either master
+  // states is the desktop component's own number unscaled — the card's 30
+  // radius, its 30 gap, the 14/8/6/16/12/10/24/8 gaps, the chip's 8/14 on a
+  // hairline — so the whole branch flows through one `z` switch (the media
+  // player's rule) and only four things genuinely differ: the type (below),
+  // the card's padding (32 at 768, 30/20 at 390), its tilt (-3° at 768, -1° at
+  // 390) and the pill's scale. The includes grid stays **two columns at 390**,
+  // which the repertoire's masters did too — it is the master's answer, not the
+  // phone's.
+  if (s.v1) {
+    const desk = !s.narrow
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The three masters' type, off `get_variable_defs` — the only source that
+    // resolves a master's mode, the emitted CSS printing the desktop default at
+    // all three widths. 1440 → 768 → 390, and note `label-xs` (the feature
+    // lines) drops hardest of the seven, 20 → 14 → 12.
+    const T = desk
+      ? { chip: 12, dispMd: 48, dispSm: 40, bodyLg: 16, bodyMd: 14, labelXs: 20, eyebrow: 15, list: 16 }
+      : s.mob
+        ? { chip: 11, dispMd: 30, dispSm: 26, bodyLg: 15, bodyMd: 13, labelXs: 12, eyebrow: 11, list: 13 }
+        : { chip: 11, dispMd: 38, dispSm: 32, bodyLg: 15, bodyMd: 13, labelXs: 14, eyebrow: 12, list: 12 }
+    // The card's own four colours, pinned in the view-model rather than taken
+    // from the selected package: the hue belongs to the seat, so toggling
+    // changes the plan and not the composition.
+    const h = s.tierHero
+    // The selector's index, clamped — the artist can delete the package the
+    // visitor is on, and Publish re-renders a tab that is already open.
+    const sel = s.live ? Math.max(0, Math.min(chip, s.tiers.length - 1)) : 0
+    const t = s.tiers[sel]
+
+    // Figma strokes an auto-layout frame without growing it, so the frame's
+    // 8/14 padding on a 1px border is 1px less each side here (the
+    // repertoire's rule) and the chip keeps the height it is drawn at — 28 at
+    // 1440's chip 12, 27 at both narrow masters' 11.
+    const chipType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      // Figma's -6% of the size, so it ramps with the token rather than staying
+      // the desktop -0.72.
+      letterSpacing: u(-0.06 * T.chip), whiteSpace: 'nowrap',
+    }
+
+    const left = (
+      <div style={col(u(20), {
+        ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+        alignItems: 'flex-start',
+      })}>
+        <span style={chipType}>[ PRICING ]</span>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
+          letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+        {/* An emptied quote drops the block rather than spending its gap. */}
+        {!!s.pricingQuote && (
+          <p style={{
+            margin: 0, paddingTop: u(12), width: '100%',
+            fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: s.tx,
+          }}>{s.pricingQuote}</p>
+        )}
+      </div>
+    )
+
+    const money = String(t ? t.price : '')
+    const symbol = /^[^\d]/.test(money) ? money[0] : ''
+    const amount = symbol ? money.slice(1) : money
+
+    const card = (
+      <div style={{
+        // The wrapper takes the column so the rotation has something square to
+        // turn inside; the card itself is content-sized, as the frame's is.
+        ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+        // The 390 master turns the card a third as far as the other two do.
+        transform: tilt(s, s.mob ? -1 : -3),
+      }}>
+        <div style={{
+          background: h.card, color: h.cardFg,
+          border: `${s.bw} solid ${h.acc}`, borderRadius: u(30),
+          // 32 all round at 1440 and 768; the 390 master pays for its narrower
+          // measure out of the sides alone.
+          padding: s.mob ? `${u(30)} ${u(20)}` : u(32), overflow: 'hidden',
+          ...col(u(30), { alignItems: 'flex-start' }),
+        }}>
+          {t ? (
+            <>
+              <div style={col(u(14), { width: '100%', alignItems: 'flex-start' })}>
+                {/* Not drawn at one package: there is nothing to select. The
+                    seeded three make it three chips where the frame draws two,
+                    which is the intended diff. */}
+                {s.tiers.length > 1 && (
+                  <div style={row(u(8), { flexWrap: 'wrap', width: '100%' })}>
+                    {s.tiers.map((p, i) => (
+                      <span
+                        key={p.n}
+                        onClick={s.live ? () => setChip(i) : undefined}
+                        style={{
+                          ...chipType,
+                          border: `1px solid ${h.acc}`, borderRadius: u(8),
+                          padding: `calc(${u(8)} - 1px) calc(${u(14)} - 1px)`,
+                          background: i === sel ? h.acc : 'transparent',
+                          color: i === sel ? h.card : h.acc,
+                          cursor: s.live ? 'pointer' : undefined,
+                        }}
+                      >{p.name}</span>
+                    ))}
+                  </div>
+                )}
+                <span style={{
+                  fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1, letterSpacing: s.dls,
+                }}>{t.name}</span>
+                <p style={{
+                  margin: 0, width: '100%',
+                  fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: h.cardMut,
+                }}>{t.blurb}</p>
+                {/* The frame sets a second price where the section has a unit,
+                    so `— £2,200/event` is `s.tierUnit` — layout 1's own three
+                    spans, in the frame's sizes. */}
+                <span style={row(u(6), { alignItems: 'baseline', width: '100%' })}>
+                  <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{symbol}</span>
+                  <span style={{
+                    fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
+                    letterSpacing: s.dls, color: h.acc,
+                  }}>{amount}</span>
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: h.cardMut,
+                  }}>{s.tierUnit}</span>
+                </span>
+                <span style={row(u(16), { flexWrap: 'wrap' })}>
+                  {/* The frame's pill is the cream one with the arrow disc: the
+                      card's ink filled, its ground as the type, its second hue
+                      as the offset block. Both narrow masters draw the pill at
+                      the desktop component's own size — the 46 × 44 disc, the
+                      21/5 padding, the 10 gap — so `full` opts the 390 canvas
+                      back up out of BookPill's `small` scale, which is the case
+                      that prop was added for. The label is the one part that
+                      ramps: `size/list` 16 → 12 → 13, where BookPill's own
+                      full-scale default (20px) is the *header's* 768 number. */}
+                  <BookPill s={s} to={s.tierBookTo} glyph="arrow"
+                            full={!desk} disc={desk ? 36 : 44}
+                            size={desk ? undefined : u(T.list)}
+                            bg={h.cardFg} fg={h.card} shadow={h.acc} />
+                </span>
+              </div>
+
+              {/* The frame rules the card in ink. That vanishes on the palette's
+                  own near-black card, which six packages reach, so the rule is
+                  the card's second hue — the one colour computed to separate
+                  from the ground it sits on. */}
+              <span style={{ width: '100%', height: '1px', background: h.acc, flex: 'none' }} />
+
+              <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
+                <span style={chipType}>WHAT&rsquo;S INCLUDED</span>
+                {/* One grid rather than the enquiry form's paired rows: the
+                    frame spaces the two columns by 24 and the rows by 10, and a
+                    grid carries two different gaps on its own. An odd count
+                    trails one half-width cell, the pricing deck's rule.
+                    The frame's own last four features are set a register
+                    smaller than its first four — a Figma artefact, not a
+                    design — so every feature takes the label face.
+                    Two columns at every width: the 390 master keeps them at
+                    153px apiece, which is the repertoire's "the masters can
+                    keep a grid a phone has no business with". */}
+                <div style={{
+                  display: 'grid', width: '100%', alignItems: 'start',
+                  gridTemplateColumns: '1fr 1fr',
+                  columnGap: u(24), rowGap: u(10),
+                }}>
+                  {t.feats.map((f, i) => (
+                    <span key={i} style={row(u(8), { minWidth: 0 })}>
+                      <span style={{ ...chipType, color: h.acc, flex: 'none' }}>+</span>
+                      <span style={{
+                        fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, minWidth: 0,
+                      }}>{f}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            // The card is the composition, so an emptied list keeps it and
+            // prints layout 1's one message inside — the testimonials' rule.
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: h.cardMut,
+            }}>No packages yet.</span>
+          )}
+        </div>
+      </div>
+    )
+
+    return (
+      <div style={col(u(24))}>
+        <div style={{
+          ...(desk ? row(u(48), { alignItems: 'flex-start' }) : col(u(32))),
+          width: '100%',
+        }}>{left}{card}</div>
+        {/* The frame sets the small print in the text colour at body-bold,
+            where layout 1 has it in `pricingSubFg`'s warm grey. */}
+        <span style={{
+          fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3, color: s.tx,
+        }}>{s.pricingSub}</span>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>
@@ -2054,7 +3487,12 @@ function Pager({ s, colour, fill, frame = {} }) {
       minWidth: w, height: w, padding: '0 8px',
       borderRadius: frame.radius || s.radiusSm,
       border: `${frame.bw || s.bw} solid ${on ? (frame.activeEdge || s.pillBg) : c}`,
-      background: on ? s.pillBg : (ends ? (fill || 'transparent') : 'transparent'),
+      // `fill` is the ends' own colour, `idle` every other unselected button's.
+      // Both default to transparent, so the sheet or the page shows through and
+      // every caller written before `idle` existed is untouched — the
+      // repertoire's layout 2 is the first frame to step its idle buttons off
+      // the ground they stand on.
+      background: on ? s.pillBg : (ends ? (fill || 'transparent') : (frame.idle || 'transparent')),
       color: on ? (frame.activeFg || contrastInk(s.pillBg)) : c,
       // Off the published page there is no handler, and a pointer over a button
       // that does nothing is the gallery's rule broken (it gates its own on
@@ -2332,24 +3770,386 @@ function Repertoire({ s }) {
     )
   }
 
+  // v1 — Repertoire layout 2 · Mobile list
+  // (Figma 964:64646 at 1440, 984:35876 at 768, 984:35961 at 390)
+  //
+  // A phone's song list blown out to the page: a sheet running the full width
+  // of the section, an ink rule under its head, then the songs as plain rows
+  // — number, title, artist — each closed by its own rule, in two columns
+  // parted by a vertical one. Under them a row of seven wide olive-outlined
+  // buttons is the pager. No card, no checkerboard, no tear, no grain: a scan
+  // of the frame's ground and of a row gives a standard deviation of 0, so
+  // this is the second layout-2 frame with no texture at all.
+  //
+  // This is the second **full-bleed** composition after the header (§10.2) —
+  // the rules and the sheet run to the section's own edges, past the root's
+  // padding. It gets there without touching the root's `bleed` flag: the sheet
+  // is a block with `bleedTo`'s own negative margins, so the diff stays inside
+  // this section and the root goes on painting the page ground behind it. The
+  // frame's cream is box/1 `#FAECD5`, a shade deeper than the `#FBF6EA` that
+  // layout 1 stands on, so widening the root's `cream` flag would have been
+  // the wrong cream anyway.
+  //
+  // The desktop inset is `s.gPad` all round (+ `s.surplus` horizontally),
+  // which is HeaderV0's rule for the same reason: past the canvas the frame was
+  // drawn at, the sheet keeps bleeding while its content stays on the page's
+  // measure. At desktop `gPad` is 46, which is exactly the frame's own 56 ×
+  // 0.82 — the two agree there, unlike `padX`'s 64, and they stop agreeing at
+  // both narrow widths (see `padH` below).
+  //
+  // Everything else is the frame being drawn × `z` through `u()` — 0.82 on the
+  // 1180 canvas and the identity on the two narrow ones. Three readings that
+  // are not transcriptions:
+  //
+  //  - The heading is `s.title`, not the frame's literal "Repertoire". Layout 1
+  //    sets that word as an eyebrow *over* the heading; layout 2 has one
+  //    display line, and giving it to the literal would leave the section's
+  //    heading field editing nothing here — the calendar's `cta` and the form's
+  //    `email` before this pass got to them. On the seed it reads "12 Songs".
+  //  - Each frame's row height is what its own `flex-1` division of a fixed
+  //    list landed on — 84.2 of 421 at 1440, 82.6 of 413 at 768, 58 of 290 at
+  //    390 — and our list has no height to divide (the video panel's lesson).
+  //    Each is pinned at its master's number instead, so the picture holds at
+  //    any count and a short last page simply makes the sheet shorter.
+  //  - The 1440 frame's right-hand column is the phone component instanced a
+  //    second time, so it carries the phone's own 20px insets on *both* sides —
+  //    which would leave the right column's type 20px off the window edge where
+  //    everything else on the page is 46. The 20 is kept as the *interior*
+  //    inset, either side of the divider, and both outer edges take `gPad`.
+  //    Nothing moves in the picture: the info block is `flex: 1` and its text
+  //    is left-aligned, so the right padding only decides where a long title
+  //    is clipped. The narrow masters need none of this — they repeat their
+  //    own page inset on all four sides of both columns, and it is small
+  //    enough that the seam is not worth reading past.
+  if (s.v1) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    // The 768 (`984:35876`) and 390 (`984:35961`) masters are the *desktop*
+    // composition at its own numbers — the same head, the same two columns of
+    // five and the same seven-slot pager — so the scale below is the identity
+    // on both narrow canvases where the 1440 frame lands on the 1180 one at
+    // × 0.82. One switch then carries nearly every box in the branch.
+    //
+    // What the masters do move is the type, and `get_variable_defs` resolves
+    // each mode's tokens outright rather than leaving them to be measured off
+    // a render: `size/display-sm` 40 → 32 → 26, `size/list` 16 → 12 → **13**
+    // (up again at 390, where the column is 195 wide against 768's 384),
+    // `size/body-md` 14 → 13 → 13, and `size/body-sm` 12 at all three.
+    // `border/default` is 3 at both narrow widths, which is the desktop 2.5
+    // unscaled — so the rule below goes through the switch as well.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const bw = s.retro ? u(3) : s.bw
+    // The sheet and its ink. Retro's own `paper` IS the beige page ground, so
+    // the cream is the literal box/1 again; the flat four have a real second
+    // paper and take it, with `paperFg` for the ink, because `s.tx` is chosen
+    // against the page and need not read on the sheet.
+    const sheet = s.retro ? '#FAECD5' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    // Olive: the pager's outline and the type in its unselected buttons. The
+    // media player's rule decides the flat four — `repHue` is `legible()` and
+    // every soft tint in the palette (`soft2`, `muted`, `line2`) is computed
+    // against the PAGE, so on Grunge's white sheet over a black page the whole
+    // pager came back white on white. `paperFg` and `paperLine` are the two
+    // that read on a `paper` surface, so those are what the sheet takes.
+    const hue = s.retro ? s.repHue : s.paperFg
+    // The frame steps the pager's idle buttons one register brighter than the
+    // sheet they stand on — `#FBF6EA` on `#FAECD5` — and washes its two arrows
+    // in the accent at 27% over that cream, a different blush from the one
+    // layout 1 reserves. Neither has an equivalent away from Retro: the sheet
+    // already IS `paper`, and there is no tint of it in the palette, so the
+    // flat four keep Pager's transparent default on both and read as an
+    // outlined row with only the current page filled.
+    const idle = s.retro ? '#FBF6EA' : undefined
+    const blush = s.retro ? '#ECBFA3' : undefined
+    const pageFg = s.retro ? '#FBF6EA' : undefined
+    // The selected chip's type is the page's own beige, sampled off the render
+    // and confirmed by the frame's `sem/bg` token. It is deliberately NOT the
+    // cream the bio's note says Retro's chips take on every hue: that held for
+    // the bio's and the header's frames, and this one contradicts it.
+    const chipFg = s.retro ? s.bg : s.acFg
+    // The page inset. The three frames' own is 56 → 30 → 10, and only the
+    // desktop one has a ramp token that matches it (`gPad` 46 = 56 × 0.82):
+    // at 768 `gPad` is 32 against the master's 30 and at 390 it is 20 against
+    // 10, so the two narrow numbers are the masters' verbatim and are
+    // deliberately NOT `s.gPad`. The 10 is what leaves the 390 row's info block
+    // its 155px, and Fraunces runs ~1.3× the frame's Soulway at this size, so
+    // it is the width the titles can least afford to give back.
+    // Horizontally it also carries `surplus`, so a window wider than the canvas
+    // widens the sheet and not the measure.
+    const padH = `calc(${s.surplus} + ${desk ? s.gPad : u(tab ? 30 : 10)})`
+    // The two vertical insets, which the masters part company over where the
+    // 1440 frame draws one 56 all round: 60 above the head and 60 around the
+    // pager at 768, but 40 and 20 at 390.
+    const headPadY = desk ? s.gPad : u(tab ? 60 : 40)
+    const footPadY = desk ? s.gPad : u(tab ? 60 : 20)
+    // The row's own height. Every master divides a stated list height between
+    // rows that are `flex: 1 0 0`, so these three are division results rather
+    // than numbers the frames state — 5 × 82.6 = the 768 list's 413, 5 × 58 =
+    // the 390 list's 290. We have no height to divide (the list is what makes
+    // the section tall), so each is pinned at what its own master landed on.
+    const rowH = u(desk ? 84.2 : tab ? 82.6 : 58)
+    // Ten to a page — five rows in each of two columns. **Both narrow masters
+    // keep the two columns**, at 384 and 195, rather than collapsing to one:
+    // the unfitted fallback this replaces dropped to a single column of six,
+    // which is what layout 1's narrow masters do and not what either of these
+    // draws — 195 is a tight column, and it is the one they chose. The seeded
+    // twelve songs
+    // therefore make two pages at every width, so the reference picture gains a
+    // working pager where the frames draw a fictional twenty; that is the
+    // events map's rule, the row being derived from the list.
+    const perPage = 10
+
+    const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
+    const needle = q.trim().toLowerCase()
+    const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
+    const hit = (t) => (
+      (active === 0 || t.tags.some((g) => eq(g, s.repChips[active].tag)))
+      && (!needle || t.title.toLowerCase().includes(needle) || t.artist.toLowerCase().includes(needle))
+    )
+    const filtered = s.live ? s.songs.filter(hit) : s.songs
+    const pages = Math.max(1, Math.ceil(filtered.length / perPage))
+    const pg = Math.min(page, pages - 1)
+    const shown = filtered.slice(pg * perPage, (pg + 1) * perPage)
+    // Layout 1's split: the page runs DOWN each column, the remainder falling
+    // to the left one, so a part-filled page keeps both columns standing and
+    // the divider between them keeps its full height.
+    const half = Math.ceil(shown.length / 2)
+    const columns = [shown.slice(0, half), shown.slice(half)]
+      .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
+    // `false`, not `s.mob`: `pageWindow`'s narrow mode keeps three numbered
+    // buttons, which is what layout 1's own 390 master draws. This composition
+    // draws the *desktop* row at both narrow widths — the 390 master's seven
+    // buttons are the 768 one's seven — and it fits, because they divide the
+    // measure and simply land at 46 where 768 lands at 94.
+    const { labels, at } = pageWindow(pages, pg, false)
+
+    const chipRow = (
+      <div style={row('0', {
+        // The frame's own padding less the border it draws inside it, layout
+        // 1's rule: Figma strokes an auto-layout frame without growing it, so
+        // a border-box 6 + 3 would stand the pill 5px taller than its 41.
+        border: `${bw} solid ${ink}`, borderRadius: '999px',
+        padding: `calc(${u(6)} - ${bw})`,
+        flexWrap: 'wrap', rowGap: u(6), minWidth: 0,
+      })}>
+        {/* The artist's tags, behind the `All` that clears them — so the frame's
+            three modes are four here, the pricing deck's intended diff. */}
+        {s.repChips.map((f, i) => (
+          <span
+            key={i}
+            onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
+            style={{
+              padding: `${u(6)} ${u(14)}`, borderRadius: '999px',
+              background: i === active ? s.ac : 'transparent',
+              color: i === active ? chipFg : ink,
+              // The calendar's rule: the cursor is read off the handler, so the
+              // canvas's picture of a chip does not claim to be a control.
+              cursor: s.live ? 'pointer' : undefined,
+              fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+            }}
+          >{f.label}</span>
+        ))}
+      </div>
+    )
+
+    const searchType = {
+      fontFamily: s.body, fontSize: u(desk ? 14 : 13), lineHeight: 1.5, color: ink,
+    }
+    const searchBox = (
+      <div style={row(u(8), {
+        border: `${bw} solid ${ink}`, borderRadius: '999px',
+        // The frame's own 10px vertical padding is dropped: its 41px height
+        // already leaves the 21px line less room than it needs, and the frame
+        // clips the difference. Centring in the stated height draws the same
+        // pill without asking the box to overflow.
+        padding: `0 ${u(20)}`, height: u(41),
+        // 380 at 1440 and at 768 alike — the 768 master leaves it beside the
+        // toggle in a `space-between` row and pays for it out of the gap. Only
+        // 390, where the two stack, gives it the whole measure.
+        width: s.mob ? '100%' : u(380),
+        flex: s.mob ? undefined : `0 1 ${u(380)}`,
+        minWidth: 0, overflow: 'hidden',
+      })}>
+        <Search size={desk ? 13 : 15} style={{ flex: 'none' }} />
+        {/* Layout 1's seam, unchanged: a real field on the published page and
+            the same span it has always been on the canvas, both carrying the
+            frame's type so the head does not move when the page is published. */}
+        {s.live ? (
+          <input
+            value={q} placeholder="Search songs or artists…"
+            onChange={(e) => { setQ(e.target.value); setPage(0) }}
+            style={{
+              ...searchType, flex: 1, minWidth: 0,
+              border: 'none', outline: 'none', background: 'transparent', padding: 0,
+            }}
+          />
+        ) : (
+          <span style={{ ...searchType, whiteSpace: 'nowrap' }}>Search songs or artists…</span>
+        )}
+      </div>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding,
+        // which is what makes the rules below run the full width of the page.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: sheet, color: ink,
+        // The frame closes the whole composition on a hairline rather than on
+        // the 3px the rows carry.
+        borderBottom: `1px solid ${ink}`,
+      }}>
+        <div style={col(u(12), {
+          // The rule each frame paints at the head's foot sits *inside* its own
+          // inset, so the padding gives the border back — the toggle's rule
+          // again, and the reason the two narrow heads measure their masters'
+          // 205 and 210 to within the chip's own line-box rounding.
+          padding: `${headPadY} ${padH} calc(${headPadY} - ${bw})`,
+          borderBottom: `${bw} solid ${ink}`,
+        })}>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(desk ? 40 : tab ? 32 : 26),
+            lineHeight: 1, letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+          <div style={row(u(16), {
+            // Stacked at 390, the column direction IS the row gap, so the
+            // master's own 10 has to be set here and not in the 16 above —
+            // which reaches the wrapped second line of chips at the other two
+            // widths and nothing at this one.
+            justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(s.mob ? 10 : 12),
+            flexDirection: s.mob ? 'column' : 'row',
+            // Stacked, the toggle keeps its content width — the 390 master
+            // draws it at 217 in a 370 row and gives the whole measure to the
+            // search box under it, which carries its own `width: 100%`.
+            alignItems: s.mob ? 'flex-start' : 'center',
+          })}>
+            {chipRow}
+            {searchBox}
+          </div>
+        </div>
+
+        {shown.length === 0 ? (
+          <div style={{
+            height: rowH, padding: `0 ${padH}`, borderBottom: `${bw} solid ${ink}`,
+            display: 'flex', alignItems: 'center',
+            // `muted` is 64% of the page's own text colour, so it is the same
+            // wrong token as `repHue` above on a sheet the page did not choose.
+            fontFamily: s.body, fontSize: u(12),
+            color: s.retro ? s.muted : s.paperLine,
+          }}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}</div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+            {columns.map((colSongs, ci) => (
+              <div key={ci} style={{
+                minWidth: 0,
+                // Dropped when the second column is empty — a one-song page
+                // should not part the sheet down the middle. The columns
+                // stretch to the taller of the two, so an odd count leaves the
+                // divider full height, the way the frame draws it.
+                borderRight: ci === 0 && columns.length > 1 && columns[1].length
+                  ? `${bw} solid ${ink}` : undefined,
+              }}>
+                {colSongs.map((t) => (
+                  <div key={t.n} style={row('0', {
+                    height: rowH, overflow: 'hidden',
+                    borderBottom: `${bw} solid ${ink}`,
+                    // The 1440 frame insets the pair of columns by its own 56
+                    // and parts them by 20 either side of the divider; both
+                    // narrow masters simply repeat their page inset on all four
+                    // sides of both columns, so at 768 and 390 the inner
+                    // padding is the outer one.
+                    paddingLeft: ci === 0 || !desk ? padH : u(20),
+                    paddingRight: ci === 0 && desk ? u(20) : padH,
+                  })}>
+                    {/* The frame lets the number size itself and spends a 14px
+                        gap after it — 20px in all for a single digit. Pinned at
+                        that 20 instead, with the gap folded in: the title lands
+                        exactly where the frame puts it, and a two-digit number
+                        no longer shunts its own row's title to the right. */}
+                    <span style={{
+                      width: u(20), flex: 'none',
+                      fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+                    }}>{t.n}</span>
+                    <span style={col(u(2), { flex: 1, minWidth: 0 })}>
+                      {/* Literal sizes, not `s.title`: the view-model's content
+                          `title` shadows the RAMP size of that name. */}
+                      <span style={{
+                        // `size/list`, the one token here that does not run
+                        // down the widths: 16 → 12 → **13**. The 390 mode sets
+                        // it a point larger than the 768 one even though its
+                        // column is 195 against 384 — a phone's floor, not a
+                        // measure — so do not "fix" it into a ramp. The
+                        // rendered set widths say the same thing as the token
+                        // (43 → 47 for "Valerie", a ratio of 13/12).
+                        fontFamily: s.display, fontSize: u(desk ? 16 : tab ? 12 : 13),
+                        lineHeight: 1.2, letterSpacing: s.dls,
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>{t.title}</span>
+                      <span style={{
+                        fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>{t.artist}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* The frames' seven buttons divide the whole measure, so the row is
+            `grow` and the count is the pager's own — 94.3 wide at 768 and 46 at
+            390, both of them that master's measure less six 8px gaps. At one
+            page `pageWindow` returns nothing and the row goes with it — the
+            pager's rule — but the foot inset stays, or the sheet would end
+            flush on the last row's rule; it drops to the band's own inset
+            rather than keeping the band a vanished row of buttons was sitting
+            in. */}
+        <div style={{ padding: labels.length > 0 ? `${footPadY} ${padH}` : `0 0 ${footPadY}` }}>
+          {labels.length > 0 && (
+            <Pager s={s} colour={hue} fill={blush} frame={{
+              size: desk ? 44.3 : 54, radius: u(20), bw,
+              idle, activeFg: pageFg,
+              // The frame outlines the current page in the same olive as the
+              // rest. The flat four cannot: `pillBg` is the palette's lightest
+              // tag hue and `paper` is its lightest colour outright, so on
+              // Grunge they are the same white and the filled button vanishes
+              // into the row. The accent on the edge is what marks it there —
+              // Pager's own `activeFg` still contrasts against the fill.
+              activeEdge: s.retro ? hue : s.ac,
+              font: labelStyle(s, u(12), { letterSpacing: 0 }),
+              grow: true, justify: 'center', pages: labels, active: at,
+              onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+              onStep: s.live
+                ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+                : undefined,
+            }} />
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Layouts 3+ — the generic flat design. `NVAR.repertoire` is 2, so nothing
+  // reaches this today; it is what a third layout would render until it is
+  // fitted, which is why the two-column list below is no longer gated on `v1`.
   return (
     <div>
       <h2 style={{ margin: '0 0 30px', ...h2Style(s) }}>{s.title}</h2>
-      {s.v1 && (
-        <div style={{ display: 'grid', gridTemplateColumns: s.g2, gap: '0 44px' }}>
-          {s.repFlat.map((it, i) => (
-            <div key={i} style={row('12px', {
-              justifyContent: 'space-between', padding: '13px 2px',
-              borderBottom: `1.5px solid ${s.line}`, fontSize: '14px',
-            })}>
-              <span style={{ fontWeight: 600 }}>{it.t}</span>
-              <span style={{
-                color: s.ac, fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase',
-              }}>{it.g}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      <div style={{ display: 'grid', gridTemplateColumns: s.g2, gap: '0 44px' }}>
+        {s.repFlat.map((it, i) => (
+          <div key={i} style={row('12px', {
+            justifyContent: 'space-between', padding: '13px 2px',
+            borderBottom: `1.5px solid ${s.line}`, fontSize: '14px',
+          })}>
+            <span style={{ fontWeight: 600 }}>{it.t}</span>
+            <span style={{
+              color: s.ac, fontSize: '11px', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase',
+            }}>{it.g}</span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -2659,6 +4459,237 @@ function Gallery({ s }) {
     )
   }
 
+  // v1 — Gallery layout 2 · Split showcase (Figma 964:64647, 1440 × 675;
+  // 984:36046, 768 × 468; 984:36070, 390 × 364): one hero photograph with a
+  // caption pill in its bottom-left corner, and beside it a two-column masonry
+  // of six more. The strip reads as if it ran on past the section band — the
+  // first tile in each column drops its top border and top rounding, the last
+  // drops its bottom pair — so the six are a crop of a longer wall rather than
+  // a closed block.
+  //
+  // Seven photographs for the section's seven slots, which is what makes this
+  // frame fit the gallery without inventing anything: the hero is a **seat**,
+  // not slot 0. The slots rotate through the seven seats, wrapping, so the
+  // hero seat always holds the one the visitor is on and the other six follow
+  // it in order — the media player's fanned carousel rule verbatim (CLAUDE.md,
+  // "Layout 2 plays through the same hooks"). Geometry belongs to the seat,
+  // so the composition never reshuffles its shapes; only which photograph
+  // stands in each. On the canvas that puts `galActive()` — slot 3 — in the
+  // hero, which is deliberately the same photograph layout 1's viewer opens on.
+  //
+  // Clicking a tile is `pick`, the state layout 1 already owns, so the two
+  // layouts share one seam and the published tab's first paint is the canvas's
+  // picture by construction (`pick` starts at -1: nothing chosen).
+  //
+  // What the frame draws and this does not: nothing. What the *section* has and
+  // the frame has no room for: the heading is the caption pill's first line
+  // (its own row at 768 — below) and the four media-source rows are gone, three
+  // of them outbound links. That is the media player's Soundcloud call three
+  // times over — see LAYOUT-2-PLAN's open questions. The frame's own two lines,
+  // `MTV "MOOD SWING"` and `FEATURED REEL`, are named here so the call can be
+  // reversed: both are claims about the artist (an MTV feature, a reel) that no
+  // field backs, the video section's rule, so the pill takes `s.title` over
+  // `s.brand` instead — two strings the artist owns, reading as a caption
+  // credit on a photograph.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`; the two
+  // narrow masters are used verbatim, which is the `z` switch inside it (the
+  // media player's rule). The frame's own inset — 56/46 at 1440, 30 at 768,
+  // 20/40 at 390 — is dropped for the page root's own padding, so the pair
+  // spans the content width (1052 / 688 / 346) and not the frame's. The 37px
+  // goes out of the *hero*, because that is the frame's own mechanism — its
+  // right block is `shrink-0 w-[520px]` and its hero `flex-1` — and a hero is a
+  // photograph, which simply crops. The row's height is pinned at the frame's
+  // 583 / 392 / 284 (the repertoire's rule: pin what the frame lets flow when
+  // the frame's own `h-full` has nothing here to divide), and each tile takes
+  // its share of it as a `flex-grow`, so the six heights divide exactly as the
+  // frame's do at any canvas.
+  //
+  // Neither narrow master stacks — both are the same hero-beside-strip row — so
+  // `z` carries nearly all of it and only four things genuinely differ:
+  //
+  //  · **768 unhides the component's head row**, which the desktop master
+  //    carries `hidden` (Figma 436:863) and the 390 sub-component does not have
+  //    at all. It is the only slot this design has for the section's heading,
+  //    so `s.title` moves up into it there and the caption pill keeps the
+  //    artist's name alone — each field allocated exactly once, the events
+  //    map's rule. The row's own "View list" and "✕" are dead controls and are
+  //    dropped, named here so the call can be reversed; what is left is the
+  //    label, in the frame's own 20px row so the band below stays 358.
+  //  · **The 390 rail rounds its tiles at 10** where every other tile on the
+  //    page rounds at 30. They still drop the first tile's top border and the
+  //    last tile's bottom one, so the "runs on" reading survives the radius —
+  //    only the corners it is drawn with change.
+  //  · **The 768 master hides two of the six photographs, and that is an
+  //    artefact.** Its third tile in each column is `flex: 1 0 0` under two
+  //    tiles still carrying the desktop component's own heights (123/215,
+  //    194/242 against a 358 band), so the fill has nothing left and Figma
+  //    squeezes it to `min-h-px`. That is `figma-frame-reading`'s leaked-number
+  //    case, and honouring it would leave two seats of the rotation invisible
+  //    and unclickable. The band is divided in the frame's proportions instead
+  //    — which is what this branch already does at every width.
+  //  · **The 390 rail seats ten tiles at 48.8**, all of them `flex: 1 0 0`: the
+  //    count is what divides the height there, so the section's six stand at
+  //    (284 − 20) / 3 = 88 by the master's own mechanism rather than by a ramp.
+  if (s.v1) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The frame draws hairlines, not the theme's own stroke: 1px in ink round
+    // the hero (`scheme/1/stroke/1`) and 1px in the accent round every tile
+    // (`sem/text/1`). Both tokens are palette values on Retro — #111 is `s.tx`
+    // and #C8461C is `s.ac` — so this branch needs no literal hex at all, and
+    // the flat four take their own two colours without a fallback pair.
+    const bw = s.retro ? '1px' : s.bw
+    const r = u(s.mob ? 10 : 30)
+    const seats = 7
+    const active = s.live && pick >= 0 ? pick : galActive(s)
+    const slot = (k) => (active + k) % seats
+
+    // The masonry, column by column, in the heights the frame draws. Their
+    // sums are equal by construction (563 + two 10px gaps = 583), which is what
+    // lets both columns be pure `flex-grow` against one pinned height. The 390
+    // master's are equal instead — its ten tiles are all `flex: 1 0 0` — so the
+    // six divide the 284 band three to a column.
+    const COLUMNS = s.mob ? [[88, 88, 88], [88, 88, 88]] : [[123, 215, 225], [194, 242, 127]]
+    const edge = `${bw} solid ${s.ac}`
+    const grid = (
+      <div style={{
+        ...(desk ? { width: u(520), flex: 'none', height: '100%' }
+          : tab ? { flex: '1 1 auto', minHeight: 0, width: '100%' }
+          : { width: u(83), flex: 'none', height: '100%' }),
+        ...row(u(10), { alignItems: 'stretch' }),
+      }}>
+        {COLUMNS.map((hs, ci) => (
+          <div key={ci} style={col(u(10), { flex: '1 1 0', minWidth: 0, height: '100%' })}>
+            {hs.map((h, i) => {
+              const seat = 1 + ci * hs.length + i
+              const first = i === 0
+              const last = i === hs.length - 1
+              return (
+                <div
+                  key={i}
+                  onClick={s.live ? () => setPick(slot(seat)) : undefined}
+                  style={{
+                    // The frame's own height is the basis, so on the canvas the
+                    // three are exactly it and the column's free space is nil;
+                    // grow and shrink then divide any surplus in the frame's
+                    // own proportions, which is what carries the composition to
+                    // a canvas whose grid is taller or shorter. A `0` basis
+                    // would not: `border-box` floors such an item at its own
+                    // border, which is not proportional and lands each tile up
+                    // to 0.6px off the frame — Figma strokes inside the 123 it
+                    // states (the repertoire's rule), so the height already
+                    // carries the hairline.
+                    //
+                    // `minHeight: 0` with `overflow: hidden`, or the <img>
+                    // inside would floor the item at its intrinsic height and
+                    // blow the column open (the video panel's thumbnail bug).
+                    flex: `${h} 1 auto`, height: u(h), minHeight: 0, overflow: 'hidden',
+                    position: 'relative',
+                    borderLeft: edge, borderRight: edge,
+                    borderTop: first ? 'none' : edge,
+                    borderBottom: last ? 'none' : edge,
+                    // The 390 rail rounds every tile whole; the two wider
+                    // masters square off the corners the dropped border would
+                    // have run through.
+                    borderRadius: s.mob ? r : first ? `0 0 ${r} ${r}` : last ? `${r} ${r} 0 0` : r,
+                    cursor: s.live ? 'pointer' : undefined,
+                  }}
+                >
+                  <span style={{ position: 'absolute', inset: 0 }}>
+                    {/* Placeholder initials only — the frames are photographs
+                        throughout, and Retro seeds them. The three sizes are
+                        the tile's own width read off each master. */}
+                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[slot(seat)]} />
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        ))}
+      </div>
+    )
+
+    // The head row, 768's alone: the frame's own label slot, holding the
+    // heading the two other masters put in the caption pill's first line. The
+    // 20 is the frame's — its own row is that tall because of the ✕ we drop —
+    // and keeping it is what leaves the band below at the master's 358.
+    const head = tab && s.title ? (
+      <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+        <span style={{
+          fontFamily: s.body, fontWeight: 700, fontSize: u(11), lineHeight: 1,
+          letterSpacing: u(-0.66), color: s.tx,
+          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+        }}>{s.title}</span>
+      </div>
+    ) : null
+
+    // The caption. Each line is rendered or not rather than printed blank (the
+    // testimonials' rule), and with neither string the pill goes with them: a
+    // wordless block over a photograph is not one of the design's states. At
+    // 768 the heading has the head row above, so only the artist's name is
+    // left here — the pill is one line there by allocation, not by truncation.
+    const lines = (tab ? [s.brand] : [s.title, s.brand]).filter(Boolean)
+    const caption = lines.length > 0 && (
+      <div style={{
+        position: 'absolute', left: u(40), bottom: u(40),
+        // The frame sets the two lines `nowrap`; bounded here and clipped per
+        // line, so a long heading ends in an ellipsis inside the hero rather
+        // than running out under its own clip.
+        maxWidth: `calc(100% - ${u(80)})`,
+        background: s.chips[0].bg,
+        // Ink on the purple, which is what the frame sets and what the bio's
+        // "Retro's chips are cream on every hue" note does not cover — the
+        // repertoire's frame already contradicted it once. The flat four take
+        // the chip's own computed foreground, which is guaranteed against it.
+        color: s.retro ? s.tx : s.chips[0].fg,
+        borderRadius: u(4), padding: `${u(10)} ${u(14)}`,
+        ...col(u(4), { alignItems: 'flex-start' }),
+      }}>
+        {lines.map((t, i) => (
+          <span key={i} style={{
+            maxWidth: '100%',
+            // The frame's own body face at chip size, not the label face: this
+            // pill is set in Inter Bold where layout 1's corner block is Anton.
+            // `size/chip` is 12 on the 1440 master and 11 on both narrow ones —
+            // the one token here that is not the desktop number verbatim, so it
+            // is read off `get_variable_defs` rather than left to `z`.
+            fontFamily: s.body, fontWeight: 700, fontSize: u(desk ? 12 : 11), lineHeight: 1,
+            textTransform: 'uppercase', letterSpacing: u(desk ? -0.72 : -0.66),
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>{t}</span>
+        ))}
+      </div>
+    )
+
+    return (
+      <div style={row(u(s.mob ? 14 : 24), {
+        alignItems: 'stretch', height: u(desk ? 583 : tab ? 392 : 284),
+      })}>
+        <div style={{
+          position: 'relative', overflow: 'hidden', minWidth: 0,
+          // The hero rounds at 30 on all three masters; only the 390 rail's
+          // tiles drop to 10, so this is not `r`.
+          border: `${bw} solid ${s.tx}`, borderRadius: u(30),
+          flex: '1 1 0', height: '100%',
+        }}>
+          <span style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} />
+          </span>
+          {caption}
+          {/* Last, the way the frame paints it: the sheet crosses the caption
+              too, and lifts its ink off #111 by a few points. */}
+          <Grain s={s} exact blend="lighten" opacity={0.29} />
+        </div>
+        {/* Only 768 wraps: the head row is its alone, and an extra element in
+            the desktop tree would move every row of the geometry digest. */}
+        {tab ? <div style={col(u(14), { flex: '1 1 0', minWidth: 0, height: '100%' })}>{head}{grid}</div> : grid}
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>
@@ -2939,6 +4970,294 @@ function Calendar({ s }) {
       </div>
     )
   }
+
+  // v1 — Booking Calendar layout 2 · Bold slot list, one composition across
+  // three frames: the 768 (986:10607) and 390 (986:10800) masters verbatim, the
+  // 1440 one (964:64650, 1328 × 896 on the page) on the 1180 canvas at × 0.82,
+  // which is the whole of `z` below. A rust head carrying the artist's mark,
+  // the booking flow's own links and the section heading, over a cream table of
+  // named slots, over a foot that names the one the visitor is on.
+  //
+  // Where layout 1 offers a month and lets the visitor find a free day in it,
+  // this offers the four the artist is selling. The rows are `s.calSlots`, but
+  // the two designs share the whole of the section's live seam: `sel` is the
+  // same ISO date — it names a day, not a row, so a slot deleted under it does
+  // not slide the pick sideways — `s.calPick` cues the same opening date, and
+  // `booked` strikes a slot through here as it does a cell there. `mi` reaches
+  // nothing: this design has no month to turn.
+  //
+  // The 768 master is the desktop composition at its own unscaled numbers —
+  // every box in it (the 40/28/36 head, the 18 column head, the 16 rows, the
+  // 30 corner, the 100 foot, the pill's 54) is the 1440 frame's own value, and
+  // only the type ramps. The 390 one re-sets three things and only three: it
+  // pads by 10 rather than 40, it stacks each row's mark over its weekday, and
+  // its column head becomes the two ends of one row.
+  if (s.v1) {
+    const desk = !s.narrow
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The type ramp, off `get_variable_defs` on all three masters rather than
+    // measured — every one of these comes back in the emitted CSS as the
+    // desktop default. `list` is the pill's label and goes 16 → 12 → **13**:
+    // non-monotonic, like the repertoire's, and with no column-width reason
+    // behind it either, so the values are recorded and the cause left alone.
+    const T = desk
+      ? { bodyLg: 16, bodySm: 12, bodyMd: 14, labelXs: 20, dispMd: 48, dispLg: 96, chip: 12, list: 16 }
+      : s.mob
+        ? { bodyLg: 15, bodySm: 12, bodyMd: 13, labelXs: 12, dispMd: 30, dispLg: 40, chip: 11, list: 13 }
+        : { bodyLg: 15, bodySm: 12, bodyMd: 13, labelXs: 14, dispMd: 38, dispLg: 60, chip: 11, list: 12 }
+    // The width the date column is pinned at, and it is measured rather than
+    // transcribed: the frames' own head states 330 at 1440 and again at 768,
+    // which is what Soulway needs for "JUN 12", where Fraunces is wider — so
+    // the pin is the widest mark this design can draw at each master's display
+    // size (`MAR 09`, 304.6 rendered at 1440's 96 and 232.3 at 768's 60, and
+    // wider than any of the flat four's display faces at both). Under it the
+    // weekdays go ragged again. The 390 master stacks the two, so there is no
+    // second column to line up and no pin.
+    const dateCol = s.mob ? undefined : u(desk ? 372 : 233)
+    const padX = u(s.mob ? 10 : 40)
+    // The rows' gap is the 66 all three frames put between a mark and its
+    // weekday. At 390 the only row left holding two ends is the column head,
+    // which the master spaces apart rather than gapping, so the number is a
+    // minimum there and nothing more.
+    const gap = u(s.mob ? 12 : 66)
+
+    // The frame's panel is the literal cream, which under Retro is *not*
+    // `paper`: this palette's lightest colour is the page ground itself, so
+    // paperOf() returns the beige the panel stands on (the repertoire's rule,
+    // where widening the root's `cream` flag would also have been the wrong
+    // cream). The flat four take their own `paper` — and an outline with it,
+    // because a palette whose lightest colour IS its background would otherwise
+    // draw this card as a hole in the page.
+    const panel = s.retro ? '#FBF6EA' : s.paper
+    const ink = s.retro ? s.tx : s.paperFg
+    const rule = s.retro ? s.tx : s.paperLine
+    // Muted, not struck alone: a blocked slot has to read as unavailable before
+    // it is read at all. `muted` is rgba(tx) and vanishes on a panel whose ink
+    // is not tx, so the flat four take the panel's own half-tone.
+    const gone = s.retro ? s.muted : s.paperLine
+    // Retro's chips are cream on every hue (the bio's note), and the head is
+    // the accent.
+    const headFg = s.retro ? '#FBF6EA' : s.acFg
+    // The frame rules the head in olive — a tag colour, which on the flat four
+    // is an arbitrary hue that can be the accent itself. They take a wash of
+    // the head's own type instead.
+    const headRule = s.retro ? s.chips[3].bg : s.acFg25
+    // The column heads are the accent on the panel, which is not guaranteed to
+    // separate from it (Lime's is acid green on pale lime), so the flat four
+    // keep the panel's ink.
+    const hue = s.retro ? s.ac : s.paperFg
+
+    // The pick, exactly as layout 1 resolves it: the visitor's date once the
+    // page is live, else the one the artist cued. A booked slot is never
+    // picked — publishing again re-renders the open tab, so the artist can
+    // block the date a visitor had lit.
+    const want = (s.live && sel) || s.calPick
+    const hit = want ? s.calSlots.find((sl) => sl.iso && sl.iso === want) : null
+    const cur = hit && !hit.booked ? hit.iso : ''
+    const line = cur ? hit.line : s.calPrompt
+
+    // The head's link list. `s.calFlow` is CTA_TARGETS.book resolved against
+    // the page, this section first and dotted; a link is keyed on its label,
+    // the header's rule, and the current one is a span because it would only
+    // scroll the visitor to what they are reading.
+    const flow = (
+      <div style={col(u(4), { alignItems: 'flex-start', flex: 'none' })}>
+        {s.calFlow.map((n) => {
+          const href = navHref(s, n.to)
+          const Tag = href ? 'a' : 'span'
+          return (
+            <Tag key={n.label} {...(href ? { href } : null)} style={{
+              fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
+              color: headFg, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
+            }}>{n.on ? `● ${n.label}` : n.label}</Tag>
+          )
+        })}
+      </div>
+    )
+
+    const head = (
+      <div style={col(u(28), {
+        background: s.ac, padding: `${u(28)} ${padX} ${u(36)}`, alignItems: 'flex-start',
+      })}>
+        <div style={row(u(24), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
+          <span style={{
+            fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: headFg,
+          }}>{s.brand}</span>
+          {flow}
+        </div>
+        <div style={{ width: '100%', paddingBottom: u(20), borderBottom: `1px solid ${headRule}` }}>
+          {/* The one thing the section already had that this frame left room
+              for: `heading` headed the flat layout alone, the scheduler frame
+              drawing no title at all. The frame's own sentence goes with it —
+              which is also why the head is shorter than the master's here: two
+              lines of "Find a date that works for your event" against our one
+              word. The 1440 and 768 masters both fix this text node at 571.1,
+              the desktop component's own measure, and it still binds inside the
+              768 one's 628 column; the 390 master states the full width
+              instead, so the measure stops there rather than being carried down
+              into a 326px column it could only fight. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
+            letterSpacing: s.dls, color: headFg, maxWidth: s.mob ? undefined : u(571),
+          }}>{s.title}</h2>
+        </div>
+      </div>
+    )
+
+    // The 1440 and 768 frames' own column head sits 66 to the left of the
+    // column it heads — it pins "Date ↓" at 330 where the rows put the weekday
+    // at the date's own width plus the row gap. Ours takes the rows' gap so the
+    // two agree; the arrows are the frame's label, not a sort control, and
+    // nothing here reads a click. The 390 master has no column to head, its
+    // rows being stacked, so it hangs the two labels off the panel's two edges.
+    const colHead = (
+      <div style={row(gap, {
+        padding: `${u(18)} ${padX}`, borderBottom: `1px solid ${rule}`,
+        fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, color: hue,
+        justifyContent: s.mob ? 'space-between' : undefined,
+      })}>
+        <span style={{ flex: 'none', minWidth: dateCol }}>Date ↓</span>
+        <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
+      </div>
+    )
+
+    // A row is a date, the weekday it falls on and what the artist plays that
+    // night. The frame lets the display numerals set the second column's start,
+    // so its four weekdays land on four different x — an artefact of hand-set
+    // type, not a design, so the date column is pinned and the weekdays line
+    // up. The frame draws no state for the row the visitor is on: the foot's
+    // chip and line are the whole cue, the media player's now-playing rule.
+    const slotRow = (sl, i) => {
+      const onClick = s.live && sl.iso && !sl.booked
+        ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
+        : undefined
+      const mark = (
+        <span style={{
+          fontFamily: s.display, fontSize: u(T.dispLg), lineHeight: 0.89,
+          letterSpacing: s.dls, whiteSpace: 'nowrap', flex: 'none',
+          minWidth: dateCol,
+          textDecoration: sl.booked ? 'line-through' : undefined,
+        }}>{sl.mark}</span>
+      )
+      const day = (
+        <span style={{
+          flex: s.mob ? 'none' : '1 1 0', minWidth: 0,
+          fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+        }}>{sl.day}</span>
+      )
+      return (
+        <div key={i} onClick={onClick} style={row(gap, {
+          padding: `${u(16)} ${padX}`, borderBottom: `1px solid ${rule}`,
+          color: sl.booked ? gone : ink, cursor: onClick ? 'pointer' : undefined,
+        })}>
+          {/* The 390 master stacks the mark over the weekday, tight against it
+              at no gap at all, and leaves the availability block where it is.
+              The column goes in at that width alone, the gallery's rule: at the
+              other two the two spans are the row's own children and the desktop
+              tree is untouched.
+              The row lands 1.4px over each master's stated height (86.4 against
+              768's 85, 83.7 against 390's 83), because Figma strokes a padded
+              frame inside the height it states — the repertoire's
+              `calc(padding − border)` case, carried here for the reason the
+              bio's pill carries it: the desktop half of this very property has
+              the same drift, and consistency inside one branch beats accuracy
+              in half of it. */}
+          {s.mob
+            ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
+            : <>{mark}{day}</>}
+          {/* Each line is rendered or not rather than printed blank — a column
+              gap is spent on an empty span the same as on a full one. */}
+          <div style={col(u(2), { flex: 'none', alignItems: 'flex-end', textAlign: 'right' })}>
+            {!!sl.kind && (
+              <span style={{ fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, whiteSpace: 'nowrap' }}>
+                {sl.kind}
+              </span>
+            )}
+            {!!sl.price && (
+              <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, whiteSpace: 'nowrap' }}>
+                {sl.price}
+              </span>
+            )}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div style={{
+        background: panel, color: ink, borderRadius: u(30), overflow: 'hidden',
+        border: s.retro ? undefined : `${s.bw} solid ${rule}`,
+      }}>
+        {head}
+        {colHead}
+        {/* The pricing deck's one-message empty state: the table is a
+            composition, and a hole where its rows stand is not one of its
+            states. */}
+        {s.calSlots.length === 0 ? (
+          <div style={{
+            padding: `${u(16)} ${padX}`, borderBottom: `1px solid ${rule}`,
+            fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: gone,
+          }}>No dates yet.</div>
+        ) : s.calSlots.map(slotRow)}
+        {/* The foot pads by 20 at 390 where its own rows pad by 10 — the
+            master's own number on both sides of it, the repertoire's 390 pager
+            band taking 20 against a 10 page inset.
+            It is also the one place the 390 master is not followed. It keeps
+            the pill beside the line and pays for it out of the line, which gets
+            78px and wraps its "Thursday evening selected" to three; our line is
+            `enquiryLine`'s composed sentence, and on a canvas 24px narrower
+            than the frame the same division leaves it 54 — not a wrap but a
+            break inside "Thursday,". So the pill takes its own row under the
+            line, at the column's own left edge, which is where the fallback
+            this replaced already put it. The media player's rule: honouring a
+            master that destroys its own content publishes the damage. The 12
+            between the two is therefore the one number here with no master
+            behind it — the frame never stacks this foot — and it is the foot's
+            own 12, the padding it opens and closes on and the gap between the
+            chip and the line, rather than a value invented for the occasion. */}
+        <div style={(s.mob ? col : row)(u(s.mob ? 12 : 24), {
+          minHeight: u(s.mob ? 84 : 100),
+          padding: `${u(12)} ${u(s.mob ? 20 : 40)}`,
+          ...(s.mob ? { alignItems: 'flex-start' } : { flexWrap: 'wrap' }),
+        })}>
+          <div style={row(u(12), s.mob
+            ? { width: '100%' }
+            : { flex: '1 1 0', minWidth: u(200) })}>
+            {/* No pick, no chip — the foot then prints the prompt, which is
+                what an emptied or fully booked list leaves it on. */}
+            {!!cur && (
+              <span style={{
+                flex: 'none', background: s.ac, color: headFg, borderRadius: '999px',
+                padding: `${u(6)} ${u(12)}`, fontFamily: s.body, fontWeight: 700,
+                fontSize: u(T.chip), lineHeight: 1,
+                // Figma states this as -6%, so it ramps with the token rather
+                // than being frozen at the desktop pixel it happens to make.
+                letterSpacing: u(-0.06 * T.chip), whiteSpace: 'nowrap',
+              }}>{hit.mark}</span>
+            )}
+            <span style={{ fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5 }}>{line}</span>
+          </div>
+          {/* The frame's pill is the ink one, with a cream disc and the arrow
+              in the accent — which is what `discFg` was added for. Its box does
+              not ramp at all: 54 tall on a 46 disc in all three masters, so the
+              46 is passed at both narrow widths and `full` opts the 390 canvas
+              back up to it (the 390 pricing frame's case). Only the label
+              moves, on `size/list` — and at 768 that is a 12 against the
+              desktop branch's `labelMd` 16, which is the existing diff between
+              that branch and its own frame's 16 × 0.82, not a new one. */}
+          <BookPill s={s} to={s.calBookTo} label={s.calCta} glyph="arrow"
+                    disc={desk ? 38 : 46}
+                    {...(desk ? null : { size: u(T.list) })}
+                    {...(s.mob ? { full: true } : null)}
+                    {...(s.retro
+                      ? { bg: s.tx, fg: '#FBF6EA', shadow: s.ac, discFg: s.ac }
+                      : null)} />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 26px', ...h2Style(s) }}>{s.title}</h2>
@@ -3158,6 +5477,478 @@ function EventsMap({ s }) {
       </div>
     )
   }
+
+  // v1 — Events Map layout 2 · Featured gig + route (964:64651, 1440 × 780, so
+  // every number below is the frame's × 0.82 on the 1180 canvas and verbatim on
+  // the two narrow ones): an olive travel card over the rest of the page's gigs
+  // on the left, and the one gig the panel features — its venue, its city and
+  // the route to it — on the right.
+  //
+  // **768 keeps the two columns; only 390 stacks them.** That is the one thing
+  // in this section that `get_metadata` settles before any render is fetched:
+  // the 768 master's two children sit at x 30 and x 396, the 390 master's at
+  // x 10 under one another. The unfitted fallback this replaces stacked at both.
+  //
+  // The two designs share the whole of the section's live seam. `page` pages
+  // the same list `gigPage` at a time, so the map still draws one pin per gig
+  // on the current page and never lights a position twice; `sel` still indexes
+  // the whole list, and here it names the gig the panel features rather than
+  // the row that lights. That is the pricing deck's rule — a layout that draws
+  // one of something has to reach all of it — and it is why the list beside it
+  // is the page *minus* the featured gig, which is exactly the frame's own
+  // "Other upcoming · 4" beside its five seeded shows.
+  if (s.v1) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    // The narrow masters are 986:10974 (768 × 823) and 986:11467 (390 × 1286),
+    // and they are the desktop component at its own numbers — every box in the
+    // card, the rows and the panel is the 1440 frame's value unscaled — so the
+    // whole branch flows through one scale rather than a search-and-replace.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The type ramp, resolved by `get_variable_defs` on all three masters
+    // rather than measured: the emitted CSS prints the desktop default at every
+    // width. `size/list` goes back *up* at 390 (16 → 12 → 13) with no
+    // column-width reason — the repertoire's non-monotonic case — so the values
+    // are written down and the cause left alone. `body-sm` is the one token
+    // that does not move at all.
+    const T = desk
+      ? { title: 24, list: 16, bodyLg: 16, bodyMd: 14, bodySm: 12, labelXs: 20, chip: 12 }
+      : s.mob
+        ? { title: 18, list: 13, bodyLg: 15, bodyMd: 13, bodySm: 12, labelXs: 12, chip: 11 }
+        : { title: 19, list: 12, bodyLg: 15, bodyMd: 13, bodySm: 12, labelXs: 14, chip: 11 }
+    // The panel's own inset, and the one box in this design that does not carry
+    // the desktop number down: 32 at 1440, 12 at both narrow masters.
+    const pad = u(desk ? 32 : 12)
+
+    // The frame's olive card and its two creams are literals under Retro, whose
+    // `paper` IS the page ground (the calendar's rule). The flat four take the
+    // palette's darkest hue for the card and `paper` for the two panels — and
+    // an outline with it, because a palette whose lightest colour is its
+    // background draws an un-outlined card as a hole in the page. Grunge's
+    // `deep` is the page ground itself, so the dark card needs one too.
+    const card = s.retro ? '#6D7040' : s.deep
+    const cardFg = s.retro ? '#FBF6EA' : s.deepFg
+    const panel = s.retro ? '#FFFEFB' : s.paper
+    const panelFg = s.retro ? s.tx : s.paperFg
+    const rowBg = s.retro ? '#FAECD5' : s.paper
+    // The frame's hairline is ink on every surface it draws. `line2` is
+    // rgba(tx), which reads against the page ground whichever way the palette
+    // runs; inside the olive card the rules take a wash of the card's own type.
+    const hair = s.retro ? s.tx : s.line2
+    const cardLine = s.retro ? s.tx : s.deepFg25
+    // The map viewport is a dark olive plate. `mapBg` is the lifted charcoal
+    // layout 1 stands its whole section on, which is the same idea one level in.
+    const plate = s.retro ? '#292A1C' : s.mapBg
+    const plateFg = s.retro ? '#FBF6EA' : s.mapFg
+    // The panel's own tab. Rust on cream under Retro; the accent is not
+    // guaranteed against `paper` elsewhere (Lime's is acid green on pale lime),
+    // so the flat four keep the panel's ink.
+    const tabFg = s.retro ? s.ac : s.paperFg
+    const tabBg = s.retro ? '#FBF6EA' : s.soft
+
+    // The page of gigs, exactly as layout 1 pages it: `gigPage` is PINS.length,
+    // so a page's worth of gigs is one set of distinct pin positions.
+    const perPage = s.gigPage
+    const pages = Math.max(1, Math.ceil(s.gigs.length / perPage))
+    const pg = s.live ? Math.min(page, pages - 1) : 0
+    const shown = s.gigs.slice(pg * perPage, (pg + 1) * perPage)
+    const { labels, at } = pageWindow(pages, pg, s.mob)
+    const first = pg * perPage
+    // Which gig the panel features. `sel` indexes the whole list and starts at
+    // -1, so a page the visitor has not picked on — and the canvas, where
+    // nothing is live — features that page's first gig. The picture is a
+    // choice here, the pricing chips' and the testimonials' `cur` rule, not the
+    // map's own -1: the frame draws a featured card and there is always one.
+    const feat = s.live && sel >= first && sel < first + shown.length ? sel : first
+    const g = s.gigs[feat]
+    // Picking features a gig rather than toggling one lit, layout 1's other
+    // half of the same seam: the panel always holds one, so there is nothing to
+    // toggle back to. The index is the gig's place in the whole list.
+    const onPick = (j) => (s.live ? () => setSel(j) : undefined)
+    // The page minus the gig the panel is on, each row keeping the index it has
+    // in the whole list so a click features the right show.
+    const rest = shown.map((gg, i) => ({ gg, i: first + i })).filter((r) => r.i !== feat)
+
+    // Body/SM and Body/Chip. The tracking is stated as a percentage (-6) and
+    // ramps with its own token, so it is written as the product rather than
+    // frozen at the desktop -0.72 (the pricing deck's rule).
+    const label12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
+    const chip12 = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      letterSpacing: u(-0.06 * T.chip), textTransform: 'uppercase', whiteSpace: 'nowrap',
+    }
+
+    // The travel card. Its head is the section's own heading under the frame's
+    // label, with the coverage badge in the chip — which is where layout 1
+    // prints it too, at the head of the section rather than of a card. Its two
+    // locations are the artist's base and the city the featured gig is in, so
+    // the card is the route to whatever the panel beside it is showing.
+    //
+    // The frame's own "Travel time · ~2 hrs" and "Booking fee · £1,200" are
+    // dropped: a published page printing a number the artist never typed is
+    // making a claim (the video section's rule), and the third cell's "Max
+    // travel · 100 mi" is the coverage badge, which is already the chip. What
+    // is left in that row is the featured gig's date and set time — the two
+    // facts the section holds that the panel has nowhere to print.
+    const stats = [
+      g && { l: 'Date', v: `${g.month} ${g.day}` },
+      g && g.time && { l: 'Set time', v: g.time },
+    ].filter(Boolean)
+
+    const travel = (
+      <div style={col(u(18), {
+        background: card, color: cardFg, border: `1px solid ${hair}`,
+        // Figma strokes an auto-layout frame inside the size it states, so every
+        // outlined box in this design gives its hairline back out of its own
+        // padding — the repertoire's rule, and the card, the two chips and the
+        // gig rows all inherit the drift otherwise.
+        borderRadius: u(30), padding: `calc(${u(18)} - 1px) calc(${u(20)} - 1px)`,
+        // Left-aligned rather than stretched, so the one pill at the foot keeps
+        // the width of its own label; every row above it asks for 100%.
+        alignItems: 'flex-start',
+      })}>
+        <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
+          <div style={col(u(4), { minWidth: 0 })}>
+            <span style={label12}>Travel radius</span>
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+              letterSpacing: s.dls,
+            }}>{s.title}</h2>
+          </div>
+          <span style={{
+            ...label12, flex: 'none', border: `1px solid ${cardLine}`, borderRadius: '999px',
+            padding: `calc(${u(5)} - 1px) calc(${u(12)} - 1px)`, whiteSpace: 'nowrap',
+          }}>● {s.mapRadius}</span>
+        </div>
+
+        <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
+          {/* Two lines a column, not the frame's three: its "Based in" label
+              over "Manchester, UK" is what our `base` field's own copy already
+              says ("Based in Manchester"), so printing both would stutter. The
+              captions carry the meaning the labels did.
+
+              Both names are Display/List here. All three masters set the home
+              location's in Display/List and the venue location's in Body/MD,
+              which is hand-set type rather than a design (the pricing deck's
+              normalise-and-say-so rule) — the desktop fit already normalised
+              them and the narrow pass keeps that.
+
+              The desktop measure wraps the two columns under a narrow card;
+              both narrow masters draw them on one row beside the connector, and
+              at 390 that is 306px of inner card for two columns and a 92px
+              connector, so the minimum goes and the basis divides it. */}
+          <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+            <span style={{
+              fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+            }}>{s.mapBase}</span>
+            <span style={label12}>Home location</span>
+          </div>
+          {!!g && (
+            <>
+              {/* The frame's ──●── connector, drawn rather than typed. It joins
+                  two columns, so it goes with them once the row wraps — which
+                  on the desktop canvas is the only way the row ever loses it;
+                  both narrow masters draw it. */}
+              <span aria-hidden style={row(0, { flex: 'none' })}>
+                <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
+                <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: cardFg }} />
+                <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
+              </span>
+              <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+                }}>{g.city}</span>
+                <span style={label12}>Venue location</span>
+              </div>
+            </>
+          )}
+        </div>
+
+        {stats.length > 0 && (
+          <div style={row(u(18), {
+            width: '100%', padding: `${u(12)} 0`, alignItems: 'flex-start',
+            borderTop: `1px solid ${cardLine}`, borderBottom: `1px solid ${cardLine}`,
+          })}>
+            {stats.map((st) => (
+              <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+                <span style={label12}>{st.l}</span>
+                {/* Body/LG, where the two location names above are Display/List
+                    — the frame's two 16s are different tokens and only the
+                    line-height tells them apart. */}
+                <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{st.v}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* The frame's pair of buttons, minus "Get Directions" — nothing in the
+            section addresses a venue, and a second pill that went nowhere would
+            be the footer's dead `href="#"` again. This one is the featured
+            gig's own tickets link: an empty one leaves it the picture it is on
+            the seeded page, the Soundcloud rule that layout 1's rows follow.
+            The frame draws no offset block under it, hence the clear shadow,
+            and sets its type in the card's own olive rather than the pill's
+            usual accent — a Retro literal, so the flat four keep the accent
+            pair BookPill defaults to, which is legible on the dark card by
+            construction where `pillFg` is not (Editorial's all but vanished).
+
+            The pill's *box* does not ramp: 54 tall on a 46 disc at all three
+            masters, which is the booking calendar's case exactly — so `disc` is
+            the frame's own 46 at narrow (38 being 46 × 0.82) and `full` opts
+            the 390 canvas back up to the full-size box. Its label does ramp,
+            with `size/list`, and BookPill's automatic pick would draw 20px at
+            768 against the master's 12. Desktop keeps its `undefined`, which
+            resolves to `labelMd` 16 where the frame's own is 13.1 — an existing
+            drift in a signed-off half, the bio's `/featured` pill case. */}
+        {!!g && (
+          <BookPill s={s} ext={g.url} label="Venue Link" glyph="arrow"
+                    disc={desk ? 38 : 46} full={!desk} size={desk ? undefined : u(T.list)}
+                    shadow="transparent"
+                    {...(s.retro ? { fg: '#5B5E2E' } : null)} />
+        )}
+      </div>
+    )
+
+    const gigRow = ({ gg, i }) => {
+      // The ↗ is a link affordance, so live it is drawn only where there is
+      // somewhere to go — the gallery's hide-the-empty-row rule — while the
+      // canvas keeps it on every row, that being the reference design. The rest
+      // of the row features the gig; the anchor's own click does both, which is
+      // layout 1's rule for a row with a tickets address.
+      const tix = extLink(s, gg.url)
+      // The tag is picked from the link, BookPill's and layout 1's rule:
+      // spreading an href onto a span sets an inert attribute and navigates
+      // nowhere.
+      const Tix = tix ? 'a' : 'span'
+      return (
+        // The row keeps its content height at every width, where both narrow
+        // masters draw it at 76.5 / 76.75. That is not a stated row height: the
+        // masters state the *left column* at 703 — the same number at 768 and
+        // at 390 — and every row is `flex: 1 0 0` under it, so the 62 (768) and
+        // 67 (390) the column has over its content divide four ways into the
+        // 15.5 and 16.75 each row runs over 10 + text + 10. At 768 that squares
+        // the two columns; at 390 there is no second column and the 703 does
+        // nothing at all. Honouring it would pin a number that only divides at
+        // four gigs, and the desktop half of this very branch already declines
+        // to stretch this column (the video dashboard's rule) — so the radius
+        // ends up drawing a 61px row as a full pill, which is the diff.
+        <div key={i} onClick={onPick(i)} style={row(u(12), {
+          width: '100%', background: rowBg, color: s.retro ? s.tx : s.paperFg,
+          border: `1px solid ${hair}`, borderRadius: u(30),
+          padding: `calc(${u(10)} - 1px) calc(${u(14)} - 1px)`,
+          cursor: s.live ? 'pointer' : undefined,
+        })}>
+          {/* Label/XS. The masters set row one's mark in it and rows two to
+              four in Body/MD, hand-set type again — normalised, as the desktop
+              master's own 25/21/21/21 marks already were. */}
+          <span style={labelStyle(s, u(T.labelXs), {
+            width: u(36), height: u(36), flex: 'none', display: 'inline-flex',
+            alignItems: 'center', justifyContent: 'center',
+          })}>{gg.day}</span>
+          <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
+            <div style={row(u(5), { minWidth: 0 })}>
+              <span style={{
+                fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1, letterSpacing: s.dls,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{gg.venue}</span>
+              {(tix || !s.live) && (
+                <Tix {...tix} style={{
+                  ...label12, flex: 'none', color: 'inherit', textDecoration: 'none',
+                  cursor: tix ? 'pointer' : undefined,
+                }}>↗</Tix>
+              )}
+            </div>
+            <span style={label12}>
+              {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
+            </span>
+          </div>
+          {/* The frame's "In transit" is a status the section cannot know. The
+              row's own hour is what belongs in that chip, and an emptied one
+              drops it rather than printing an empty pill. */}
+          {!!gg.time && (
+            <span style={{
+              ...label12, flex: 'none', border: `1px solid ${hair}`, borderRadius: '999px',
+              padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`, whiteSpace: 'nowrap',
+            }}>{gg.time}</span>
+          )}
+        </div>
+      )
+    }
+
+    const list = (
+      <div style={col(u(8), { width: '100%' })}>
+        {/* Dropped with the rows: the last page can hold the featured gig
+            alone, and a count of nothing over nothing is not a state. */}
+        {rest.length > 0 && (
+          <span style={{ ...label12, color: s.tx }}>Other upcoming · {rest.length}</span>
+        )}
+        {rest.map(gigRow)}
+        {/* Derived from the list and not drawn at one page, the repertoire's
+            rule — so the seeded five gigs are one page and carry no pager, the
+            same intended diff from the frame that layout 1 has. */}
+        {labels.length > 0 && (
+          <Pager s={s} colour={s.ac} fill={s.soft2} frame={{
+            pages: labels, active: at,
+            onPage: s.live ? (n) => setPage(Number(n) - 1) : undefined,
+            onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+          }} />
+        )}
+      </div>
+    )
+
+    // The route. Its pins are the page's gigs at the positions sectionVm paired
+    // them with, the featured one lit; the marker at the middle is the artist's
+    // base, which is what the frame's rings are drawn around. The frame's
+    // 30/60/120mi ring labels and its zoom controls are gone with the fabricated
+    // metrics — the first are numbers the artist never typed and contradict the
+    // coverage badge, the second a control this file has nothing to do.
+    const pins = shown.map((gg, i) => {
+      const on = first + i === feat
+      const d = on ? u(16) : u(8)
+      return (
+        <span key={i} onClick={onPick(first + i)} style={{
+          position: 'absolute', left: gg.pin.x, top: gg.pin.y, width: d, height: d,
+          borderRadius: '999px', background: on ? s.ac : plateFg,
+          // The lit pin is ringed rather than haloed: a halo wants a wash of
+          // the plate's cream, and this file is handed colours rather than
+          // computing them.
+          border: on ? `2px solid ${plateFg}` : undefined,
+          boxSizing: 'content-box',
+          transform: 'translate(-50%, -50%)',
+          cursor: s.live ? 'pointer' : undefined,
+        }} />
+      )
+    })
+
+    const featured = (
+      <div style={col(u(24), {
+        background: panel, color: panelFg, borderRadius: u(30), padding: pad,
+        border: s.retro ? undefined : `${s.bw} solid ${hair}`,
+      })}>
+        <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
+          {/* The frame's "● IN TRANSIT" is a claim about a booking; what the
+              tab can honestly say is what the panel is. The media player's
+              centre seat already carries a Featured tab. */}
+          <span style={row(u(8), {
+            background: tabBg, color: tabFg, borderRadius: '999px',
+            padding: `${u(6)} ${u(12)}`, ...chip12,
+          })}>
+            <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: tabFg }} />
+            Featured
+          </span>
+          {g ? (
+            <div style={col(u(4), { width: '100%', minWidth: 0 })}>
+              <h3 style={{
+                margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+                letterSpacing: s.dls,
+              }}>{g.venue}</h3>
+              <span style={{
+                fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, opacity: 0.7,
+              }}>{g.city}</span>
+            </div>
+          ) : (
+            // The pricing deck's one-message empty state: the panel is a
+            // composition, and a hole where the gig stands is not one of its
+            // states — the route below it still draws, with nothing on it.
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, opacity: 0.7,
+            }}>No dates yet.</span>
+          )}
+        </div>
+
+        {/* The one radius in this design that ramps: `radius/control` 14 at
+            1440, a raw 20 at both narrow masters. Every other corner here — the
+            card's, the rows', the panel's own 30 — is the desktop component's
+            value verbatim, which a corner-walk of the three renders confirms
+            (identical profiles at all three widths). */}
+        <div style={col(0, {
+          width: '100%', border: `1px solid ${hair}`, borderRadius: u(desk ? 14 : 20),
+          overflow: 'hidden',
+        })}>
+          {/* The viewport is `flex: 1 0 0` inside a panel whose height the
+              masters state, so its shape is derived rather than designed: 588 ×
+              448 at 1440, a portrait 318 × 530 at 768 and a landscape 346 × 307
+              at 390. Our panel is content-tall, so the aspect is what carries
+              each master's picture across. */}
+          <div style={{
+            position: 'relative', width: '100%', background: plate,
+            aspectRatio: desk ? '588 / 448' : tab ? '318 / 530' : '346 / 307',
+          }}>
+            {/* §10.2's street raster, inverted onto the dark plate so the roads
+                read as light lines; the flat four keep layout 1's crossed grid,
+                there being no raster outside Retro. */}
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0,
+              ...(s.mapSrc
+                ? {
+                  backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover',
+                  backgroundPosition: 'center', filter: 'invert(1) grayscale(1) contrast(1.6)',
+                  opacity: 0.26, mixBlendMode: 'screen',
+                }
+                : {
+                  backgroundImage:
+                    `linear-gradient(${s.ac55} 1px, transparent 1px), `
+                    + `linear-gradient(90deg, ${s.ac55} 1px, transparent 1px)`,
+                  backgroundSize: '38px 38px',
+                }),
+            }} />
+            {/* The three coverage rings. All three masters draw them at the
+                same absolute 480 / 300 / 140, so what changes is only how much
+                of the viewport they cover — and expressed as a share of its
+                width they carry to a canvas the frame's width is not. The outer
+                one already runs past the frame's own viewport at every width
+                (and the middle one too at 390), so the clip is the picture. */}
+            {(desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]).map((w, i) => (
+              <span key={w} aria-hidden style={{
+                position: 'absolute', left: '50%', top: '50%', width: `${w}%`,
+                aspectRatio: '1', borderRadius: '999px',
+                border: `1px solid ${plateFg}`, opacity: i === 0 ? 0.28 : 0.45,
+                transform: 'translate(-50%, -50%)',
+              }} />
+            ))}
+            {pins}
+            <span aria-hidden style={row(0, {
+              position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
+              background: s.retro ? '#5B5E2E' : s.ac, color: plateFg,
+              border: `2px solid ${plateFg}`, borderRadius: '999px', padding: u(4),
+            })}>
+              <GlobeMark size={Math.round(16 * z)} color={plateFg} />
+            </span>
+          </div>
+          <div style={row(u(12), {
+            justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
+            borderTop: `1px solid ${hair}`,
+          })}>
+            {/* The frame's data line and its "EXPAND VIEW ›" — a control with
+                nowhere to expand to — become the artist's travel terms and the
+                count the frame's own line carries. */}
+            <span style={label12}>{s.mapTerms}</span>
+            <span style={{ ...chip12, flex: 'none' }}>{s.gigs.length} pins</span>
+          </div>
+        </div>
+      </div>
+    )
+
+    return (
+      <div style={{
+        display: 'grid',
+        // 768 keeps the desktop's two columns at 342 + 342; only 390 stacks.
+        // The 24 gap is the frames' own at all three widths.
+        gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+        gap: u(24), alignItems: 'start',
+      }}>
+        {/* Not stretched to the panel beside it, the video dashboard's rule: at
+            twelve gigs the left column is the taller by 250px, and the map
+            would have to take that slack. The 768 master does square the two
+            (both 703) — by dividing the slack into its four gig rows, which is
+            the row comment's case and does not survive a fifth gig. */}
+        <div style={col(u(18))}>{travel}{list}</div>
+        {featured}
+      </div>
+    )
+  }
+
   return (
     <div style={{
       background: s.soft, aspectRatio: '16 / 7', borderRadius: s.radius, position: 'relative',
@@ -3440,6 +6231,292 @@ function Testimonials({ s }) {
       </div>
     )
   }
+
+  // v1 — Testimonials layout 2 · Editorial feature (964:64653, 1440 × 782 at
+  // × 0.82): a centred display head over one wide coloured card, with a rail of
+  // initial tiles down its left picking the review it shows, and the section's
+  // Book Now pill centred under both. It draws neither grain nor a torn edge —
+  // the frame carries no texture at all (stddev 0 over both the page ground and
+  // the card) and stands on the beige page, so the root's `cream` flag stays
+  // layout 1's and nothing shared moves.
+  if (s.v1) {
+    // §5.5 — three masters: 1440 (964:64653) on the 1180 canvas at × 0.82, 768
+    // (986:11675) and 390 (986:11701) verbatim, hence the one `z` switch inside
+    // `u()` rather than a hand-scaled number per box. Every box here is the
+    // desktop component's own value at all three widths — the card's 40 padding
+    // and 40 gaps, the 30 radii, the grid's 32, the head's 12, the pill's 54 on
+    // a 46 disc — so what the narrow masters actually settle is the type table
+    // below and two structural facts: **768 keeps the desktop's two columns**
+    // (rail left, card right) and only 390 stacks, and there it *reorders*, the
+    // card over a rail laid out as a row.
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // 768 and desktop share the composition; only 390 parts from it.
+    const wide = !s.mob
+    // `get_variable_defs` on each master, which resolves that master's own mode
+    // — every one of these comes back in the emitted CSS as the desktop default.
+    // `list` going 16 → 12 → **13** is the repertoire's and the pricing deck's
+    // non-monotonic case a third time, and again with no column-width reason.
+    const T = desk
+      ? { list: 16, bodyLg: 16, bodyMd: 14, bodySm: 12 }
+      : { list: tab ? 12 : 13, bodyLg: 15, bodyMd: 13, bodySm: 12 }
+    const gap = u(32)
+    const n = s.quotes.length
+    // Clamped as layout 1 clamps it, and for the same two reasons: the artist
+    // can delete the review the visitor is on, and Publish re-renders a tab
+    // that is already open.
+    const at = s.live && n ? Math.min(cur, n - 1) : 0
+    const q = n ? s.quotes[at] : null
+    // The rail is a picker, so it is not drawn at one review — layout 1's arrow
+    // rule and the pricing chips', derived from the list so it holds on the
+    // canvas too. At one review the card simply takes the whole width.
+    const rail = n > 1
+
+    // The frame's orange card, its purple selected tile and its two creams are
+    // literals under Retro, whose `paper` IS the page ground (the calendar's
+    // rule). The purple is a register lighter than the palette's own #7A58A7,
+    // the media player's fanned cards again, so it is sampled rather than
+    // taken from `chips`. The flat four paint the card in the accent and mark
+    // the picked tile with the same fill against the others' outline, which is
+    // what carries the selection whatever hue the card lands on.
+    const card = s.retro ? '#DF5B30' : s.ac
+    const cardFg = s.retro ? '#FBF6EA' : s.acFg
+    // The frame rules the card in ink. That is invisible on a palette whose
+    // darkest colour is the card, so the flat four take a wash of the card's
+    // own type — the events map's rule for its dark panel.
+    const cardLine = s.retro ? s.tx : s.acFg20
+    const tile = s.retro ? '#FAECD5' : s.paper
+    const tileFg = s.retro ? s.tx : s.paperFg
+    const onTile = s.retro ? '#8B6AB8' : s.ac
+    const onTileFg = s.retro ? '#FBF6EA' : s.acFg
+
+    const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
+
+    // The head. Its eyebrow is the frame's own label, a literal the way the
+    // media player's "● Popular" is; the display line is the section's
+    // `heading`, which layout 1 draws nowhere; and the sentence under it is the
+    // new `sub`. Each of the two fields is rendered or not rather than printed
+    // blank, since a `col` gap is spent on an empty span the same as a full one.
+    const head = (
+      <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center' })}>
+        <span style={body12}>&#9998; What clients say</span>
+        {!!s.title && (
+          // `display-lg` 96 → 60 → 40, which is the page's own ramp read off
+          // two different keys — the media player's `tab ? s.h1 : s.dispLg`,
+          // since `dispLg` is 64 at tablet where the master states 60.
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+        )}
+        {/* The 390 master sets this line `whitespace-nowrap` at the desktop
+            component's own measure — 431px of type in a 350 column, overflowing
+            40 either side of a head that clips. Ours wraps, the bio's rule for a
+            leak that produces nothing the frame's layout depends on. */}
+        {!!s.testiSub && (
+          <p style={{
+            margin: 0, fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+          }}>{s.testiSub}</p>
+        )}
+      </div>
+    )
+
+    // One tile a review, marked with the reviewer's initials — `mark` is
+    // composed in sectionVm, which is also where its empty-name fallback lives,
+    // so nothing here works a name out. Live it picks the review the card
+    // shows; on the canvas tile 0 is lit where the frame lights the middle one,
+    // which is `cur`'s pinned 0 and the pricing deck's intended diff.
+    const tiles = (
+      <div style={{
+        display: 'flex', flexDirection: wide ? 'column' : 'row', flexWrap: 'wrap',
+        gap: u(12), alignSelf: wide ? 'stretch' : 'auto', flex: 'none',
+        // The 390 master's row is `justify-center`; the column never had a
+        // spare axis to justify on, so this is spread in rather than branched,
+        // and the desktop object stays byte-identical.
+        ...(s.mob ? { justifyContent: 'center' } : null),
+      }}>
+        {s.quotes.map((r, i) => {
+          const on = i === at
+          return (
+            <div key={i} onClick={s.live ? () => setCur(i) : undefined} style={{
+              // The column pins its width where the masters let it hug: 88 at
+              // 1440, and 84 at 768 because the widest of the frame's three
+              // hand-padded tiles comes to 84 there. The 390 row has no fixed
+              // width at all — see the height/padding block below.
+              width: wide ? u(desk ? 88 : 84) : undefined,
+              flex: wide ? '1 1 0' : (on ? '1 0 auto' : 'none'),
+              background: on ? onTile : tile, color: on ? onTileFg : tileFg,
+              // The frame draws the picked tile's outline at 2 where the others
+              // are at 1. The second px is an inset ring rather than a thicker
+              // border — the enquiry form's refused-box rule, and here it is
+              // load-bearing: a `flex-basis: 0` item's border is added *after*
+              // its share of the rail is worked out, so a 2px tile comes out
+              // 2px taller than its neighbours and the column stops dividing
+              // evenly.
+              border: `1px solid ${on ? s.tx : s.ac}`, borderRadius: u(30),
+              boxShadow: on ? `inset 0 0 0 1px ${s.tx}` : undefined,
+              // The frame's 36px vertical padding is inert in the column: its
+              // three tiles measure 98.63 at 1440 and 104.67 at 768, which is
+              // each rail's height divided three ways and not 36 + line + 36.
+              // Transcribing it would floor the tile and stand the rail past
+              // the card the moment the artist adds a fifth review, so the
+              // column takes the division — `min-h-px` on the frame's own
+              // tiles, which is Figma for "this may shrink past its contents".
+              //
+              // The 390 row is the mechanism turned on its side, and the master
+              // states it outright: the picked tile is `flex-[1_0_0] min-w-px`
+              // and the other two are `shrink-0` on their own horizontal
+              // padding, over a stated 107.303 height that makes the 36 inert
+              // there too. So the picked review's tile is the wide one — which
+              // is the 390 master's whole way of marking it beyond the fill.
+              // Two things fall out. On the canvas `at` is 0, so tile *one*
+              // widens where the frame widens the middle: `cur`'s pinned 0
+              // again, and it moves more of the picture here than it does in
+              // the column. And the row **wraps**, which the master does not:
+              // its own three tiles fill the 350 exactly, but eight hug tiles at
+              // ~80 would run 400 past a row the frame merely clips. Wrapped,
+              // the picked tile fills what is left of *its* line — the whole
+              // measure alone, ~85 beside three others. Its basis is `auto`
+              // where the master states 0: with a 0 basis the tile takes no slot
+              // in the wrap, so the line can pack tight enough to leave it less
+              // than its own mark and clip it, and the two are the same width
+              // wherever the row has any free space at all — which is every
+              // count the master itself draws.
+              ...(wide
+                ? { minHeight: 0 }
+                : { height: u(107.3), padding: `0 ${u(30)}`, minWidth: 0 }),
+              overflow: 'hidden',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: s.live ? 'pointer' : undefined,
+            }}>
+              {/* Both narrow masters pad these two tiles 30 and 35 — the same
+                  pair at both widths, and the reason the 768 column measures 84
+                  — which is a hand, not a design: normalised to the 30, which
+                  is also what leaves the 390 row its width. */}
+              <span style={{
+                fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+              }}>{r.mark}</span>
+            </div>
+          )
+        })}
+      </div>
+    )
+
+    // The card. Its foot pairs the reviewer over their role, and where the
+    // frame prints ★★★★★ it prints the review's own date: a rating the artist
+    // never typed is a claim (the video section's rule, and the enquiry form
+    // dropped this very row of stars), and dropping it frees the one slot
+    // `when` has in this design — the events map's rule that each dropped claim
+    // hands its place to a real field. `byline` is layout 1's composed pair and
+    // is deliberately not used here: the line above it is already `who`.
+    const big = (
+      <div style={col(u(40), {
+        ...(wide ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+        background: card, color: cardFg,
+        border: `1px solid ${cardLine}`, borderRadius: u(30),
+        padding: `calc(${u(40)} - 1px)`, alignItems: 'flex-start',
+      })}>
+        {q ? (
+          <>
+            {/* The 1440 master hand-sets this box shorter than its own line —
+                the glyph has no descender, so 56 is what the 40px gap under it
+                measures from. Both narrow masters drop that and let the 0.75
+                leading be the box (58 at 768, 36 at 390), so the height is
+                desktop's alone. `display-xl` is 128 → 77 → 48, and `s.dispXl`
+                is the ramp's own step at the first two; at 390 it is still 77,
+                so that one width states its size. */}
+            <span aria-hidden style={{
+              fontFamily: s.display, fontSize: s.mob ? u(48) : s.dispXl, lineHeight: 0.75,
+              flex: 'none', ...(desk ? { height: u(56) } : null),
+            }}>&rdquo;</span>
+            <p style={{
+              margin: 0, width: '100%', fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
+            }}>{q.quote}</p>
+            {/* Rendered or not, each of them: every value on the card is
+                emptiable, and an emptied pair drops the row with its padding. */}
+            {(!!q.byline || !!q.when) && (
+              <div style={row(u(12), {
+                width: '100%', paddingTop: u(16), flexWrap: 'wrap',
+                justifyContent: 'space-between', alignItems: 'flex-end',
+              })}>
+                <div style={col(u(4), { minWidth: 0 })}>
+                  {!!q.who && (
+                    <span style={{
+                      fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2,
+                      letterSpacing: s.dls,
+                    }}>{q.who}</span>
+                  )}
+                  {!!q.role && <span style={body12}>{q.role}</span>}
+                </div>
+                {!!q.when && (
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, flex: 'none',
+                  }}>{q.when}</span>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          // Pricing's one message, layout 1's rule here too: the card is the
+          // composition, and a hole where it stands is not one of the
+          // section's states.
+          <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>
+            No reviews yet.
+          </span>
+        )}
+      </div>
+    )
+
+    return (
+      <div style={col(gap)}>
+        {head}
+        <div style={{
+          display: 'flex', flexDirection: wide ? 'row' : 'column', gap,
+          // The two-column widths top their columns rather than stretching
+          // them: the card is the taller of the pair by construction, and
+          // stretching it would hand a card with one short review the rail's
+          // slack. Stacked, the same property is the cross axis and has to
+          // stretch, or both blocks would shrink to their own content and stand
+          // off the left gutter.
+          alignItems: wide ? 'flex-start' : 'stretch', width: '100%',
+        }}>
+          {/* 390 puts the card first and the rail under it; the two wider
+              masters put the rail beside it, on the left. Written as two
+              guarded children rather than a reordered pair, so the desktop DOM
+              is byte-identical — the gallery's rule. */}
+          {!s.mob && rail && tiles}
+          {big}
+          {s.mob && rail && tiles}
+        </div>
+        {/* The frame draws no offset block under the pill, hence the clear
+            shadow, and fills it in the accent with cream type where BookPill's
+            own default is the mustard — so the arrow disc takes the cream and
+            its glyph the accent back. `bookTo` needs no self-exclusion, the
+            footer's rule: `testimonials` is not in CTA_TARGETS.book, so the
+            pill can never point at the section it stands in. An emptied label
+            drops it and the row it stands in, or the column would spend this
+            gap on nothing. */}
+        {!!s.testiCta && (
+          <div style={row('0px', { width: '100%', justifyContent: 'center' })}>
+            {/* The pill's box does not ramp — 54 tall on a 46 disc at all three
+                masters, the booking calendar's and the events map's case a
+                third time — while its label follows `size/list`. So `full` opts
+                the 390 canvas back up to the full-size box, and `size` is
+                passed at narrow because BookPill's own pick would draw 20px
+                there against the masters' 12 and 13. Desktop keeps its
+                `undefined`: an existing drift in a signed-off half. */}
+            <BookPill s={s} to={s.bookTo} label={s.testiCta} glyph="arrow"
+                      disc={desk ? 38 : 46} full={!desk}
+                      size={desk ? undefined : u(T.list)} shadow="transparent"
+                      bg={s.ac} discFg={s.ac}
+                      {...(s.retro ? { fg: '#FBF6EA' } : null)} />
+          </div>
+        )}
+      </div>
+    )
+  }
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>
@@ -3503,11 +6580,12 @@ function EnquiryForm({ s }) {
   // type they delete between publishes can leave `type` past the end of it —
   // and Publish re-renders the tab that is already open.
   const ti = s.live && nTypes ? Math.min(type, nTypes - 1) : 0
-  // Only the split layout draws the chip row — the flat fallback never has —
-  // so this is what decides whether a type is offered at all, and the mailto
-  // reads it rather than `nTypes`. A page whose artist emptied the list and a
-  // layout that never asks are the same case: no type was chosen, so the
-  // subject is the bare "Enquiry" rather than a claim the visitor never made.
+  // Only the split layout draws the chip row — the sidebar card's frame draws
+  // none, and the flat fallback never has — so this is what decides whether a
+  // type is offered at all, and the mailto reads it rather than `nTypes`. A
+  // page whose artist emptied the list and a layout that never asks are the
+  // same case: no type was chosen, so the subject is the bare "Enquiry" rather
+  // than a claim the visitor never made.
   const showTypes = !!s.v0 && nTypes > 0
   const at = (i) => vals[i] ?? ''
   const setAt = (i, v) => {
@@ -3799,9 +6877,364 @@ function EnquiryForm({ s }) {
       </div>
     )
   }
-  // The flat fallback (arch 1, 3, 5). Its three boxes were hardcoded literals
-  // unrelated to the field list; they are the artist's now, off the same state
-  // and the same hooks as v0 — there is no second state model.
+  // v1 — Enquiry Form layout 2 · Sticky sidebar card (Figma 964:64652,
+  // 1440 × 792). A mustard page: a big rounded stage photograph over the
+  // display heading and the ticked promises, the artist's own credit row set
+  // against them, and beside it a narrow outlined card holding the boxes, a
+  // near-black submit pill with an accent arrow disc, and one line of prose.
+  // No grain, no tear, no checkerboard, no tilt — a scan of the ground and of
+  // the card gives a standard deviation of 0, so this is the third layout-2
+  // frame with no texture at all.
+  //
+  // Full-bleed, the repertoire's rule: the frame's ground is `#D8A227`, which
+  // is the page's mustard and not its beige, so the sheet writes its own
+  // negative margins over the root's padding and the root goes on painting the
+  // page behind it. Nothing shared moves. Its inset is `s.gPad` (+ `s.surplus`
+  // horizontally) for HeaderV0's reason — past the canvas the frame was drawn
+  // at, the sheet keeps bleeding while its content stays on the measure. That
+  // is 46 where the frame's vertical inset is 60 × 0.82 = 49.2; the 3px is the
+  // page's own rhythm winning, not a transcription slip.
+  //
+  // Four readings of the frame that are not transcriptions:
+  //
+  //  - The price (`£1,200 from / event`) and the credit line (`★★★★★ 42
+  //    bookings`) are gone. Both are numbers the artist never typed, which is
+  //    the video section's rule and the pricing deck's — and dropping the
+  //    number takes its stars with it. The card's one remaining line of prose
+  //    is `s.formPara`, a field NO §10.2 layout has drawn until now: it sits
+  //    where the frame sets "No charge to enquire", which is the same centred
+  //    12px line and is itself a claim about the artist's terms.
+  //  - The boxes carry the field's **label**, not its placeholder, because that
+  //    is what the frame draws in them and because a form with no separate
+  //    label row has nowhere else to put it. Live, the label is the input's
+  //    placeholder, so the published first paint is the canvas's picture. The
+  //    row's `placeholder` column therefore reaches layout 1 alone, as do the
+  //    event types (the frame draws no chip row — `showTypes` is already
+  //    `s.v0`, so the mailto sends the bare "Enquiry") and the message
+  //    placeholder (it draws no textarea, and pinning a height for one would be
+  //    inventing a number).
+  //  - The heading is one line where the frame hand-breaks two, so everything
+  //    under it stands ~33px higher than the frame's own y. Measure the
+  //    promises and the credit row against the heading's foot, not the frame.
+  //  - The stage photograph is `s.formPhoto`, a new slot: this section's
+  //    `image` is the artist, which layout 1 draws as the credit row's circle
+  //    and layout 2 draws as the same circle in the same block.
+  //
+  // §5.5 — the narrow masters are `986:11591` (768 × 865) and `986:11633`
+  // (390 × 912), used verbatim, so every number below runs through `u()`'s
+  // `z` switch rather than a second set of literals. Two structural facts,
+  // both read off `get_metadata` before any render:
+  //
+  //  - **768 keeps the two columns and only 390 stacks** — the events map's
+  //    case, the second in this pass. At 768 the sheet's 708 of measure is
+  //    split 334 + 40 + 334, so the card stops being a fixed 450 beside a
+  //    flexible column and the two become equal halves. Every `desk` in the
+  //    branch therefore had to be re-asked as `desk`, `tab` or `s.mob`.
+  //  - **The promises/credit block is a row at 1440 and at 390, and a column
+  //    at 768** — the one width where it is not the frame's own space-between
+  //    row. At 390 its two halves come to exactly the 370 measure, so they sit
+  //    flush rather than spaced.
+  if (s.v1) {
+    // The 1440 frame lands on the 1180 canvas at × 0.82; the 768 and 390
+    // masters are their own canvases' width, so they are used unscaled. One
+    // switch inside `u()` carries the whole branch — the boxes, the paddings,
+    // the pill, the disc and the offset block all flow through it.
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+
+    // The type ramp, `get_variable_defs` on all three masters rather than
+    // measured: the emitted CSS prints the desktop default at every width.
+    //
+    //   size/display-sm  40 → 32 → 26      size/label-sm  16 → 13 → 12
+    //   size/title       24 → 19 → 18      size/label-xs  20 → 14 → 12
+    //   size/list        16 → 12 → 13      size/body-sm   12 → 12 → 12
+    //
+    // `size/list` goes back **up** at 390, the repertoire's and the pricing
+    // section's non-monotonic case a third time. There is no column-width
+    // explanation here either — the card is 402 of measure at 1440, 286 at 768
+    // and 322 at 390 — so the token is written down and the cause left alone.
+    // `email` is the odd one out: it is the sent card's plain-text address,
+    // a state no frame draws, so its ramp is invented rather than read.
+    const T = desk
+      ? { disp: 40, title: 24, list: 16, labelSm: 16, labelXs: 20, bodySm: 12, email: 14 }
+      : s.mob
+        ? { disp: 26, title: 18, list: 13, labelSm: 12, labelXs: 12, bodySm: 12, email: 13 }
+        : { disp: 32, title: 19, list: 12, labelSm: 13, labelXs: 14, bodySm: 12, email: 13 }
+
+    // The page inset. Horizontally it also carries `surplus`, so a window wider
+    // than the canvas widens the sheet and not the measure. A bleed design
+    // supplies its own inset (the repertoire's rule), and below desktop the
+    // frames' own stop being one number: 30/60 at 768 and 10/40 at 390, against
+    // `s.gPad`'s 32 and 20. Taking the frames' gives the sheet exactly their
+    // measure — 708 in a 768 canvas and 370 in a 390 one.
+    const padV = desk ? s.gPad : s.mob ? '40px' : '60px'
+    const padH = `calc(${s.surplus} + ${desk ? s.gPad : s.mob ? '10px' : '30px'})`
+
+    // The ground is the pill hue for all five: Retro's IS the frame's `#D8A227`,
+    // and it is by construction the palette's lightest tag, so a section-wide
+    // sheet of it separates from the page on every theme. Its ink is Retro's
+    // fixed cream; elsewhere whatever reads on the hue the palette supplied.
+    const ground = s.pillBg
+    const groundFg = s.retro ? '#FBF6EA' : contrastInk(ground)
+    // Rust on the mustard — `pillFg` already encodes "the accent while it stays
+    // legible against the pill hue, else its own contrast", which is exactly
+    // the question the frame's heading and its submit label ask.
+    const mark = s.pillFg
+
+    // The card is a register lighter than the ground it stands on. That step
+    // has no equivalent in the other four palettes, so they take their real
+    // second paper — and on Lime and Grunge `paper` IS `pillBg`, which is why
+    // the hairline below cannot be `line2`: every soft tint is computed against
+    // the PAGE (the repertoire's lesson), and the card would be a hole.
+    // `contrastInk(ground)` reads on all five; Retro takes its own `tx`, which
+    // IS the frame's `sem/stroke/1` #111 where contrastInk would round it to
+    // its own near-black.
+    const card = s.retro ? '#E8B33B' : s.paper
+    const cardInk = s.retro ? '#FBF6EA' : s.paperFg
+    const cardLine = s.retro ? s.tx : contrastInk(ground)
+    // The accent as it reads ON the card rather than on the page: the media
+    // player's rule, since the palette's accent is not guaranteed against a
+    // `paper` surface.
+    const cardAc = s.retro ? s.ac : s.paperFg
+
+    // The frame's boxes are set in the label face, uppercase. The label is
+    // uppercased as a *string* rather than by `textTransform`, so the live
+    // input can carry it as a placeholder without also shouting whatever the
+    // visitor types into it — the canvas span and the placeholder are then the
+    // same glyphs by construction.
+    const up = (t) => String(t).toUpperCase()
+    const boxType = labelStyle(s, u(T.labelSm), { textTransform: 'none' })
+    const boxShell = (bad) => ({
+      border: `1px solid ${cardLine}`, borderRadius: '999px', background: 'transparent',
+      // Stated height, not padding: Figma strokes inside its 41.6, so a
+      // border-box box of that height draws the frame's pill exactly. The
+      // narrow masters state 38 and 37 — their own numbers, and the only box
+      // inside the card that moves at all: its padding, its radius, its gaps
+      // and its pill are the desktop component's at both narrow widths.
+      height: desk ? u(41.6) : s.mob ? '37px' : '38px', padding: `0 ${u(14)}`, width: '100%', margin: 0,
+      // No palette has a red, so a refused box thickens its own ring in the
+      // card's accent — inset, so the stated height does not grow and nothing
+      // below it moves. Layout 1's rule, in the shape a 999px pill can wear.
+      boxShadow: bad ? `inset 0 0 0 ${u(2)} ${cardAc}` : undefined,
+      ...boxType, color: cardInk,
+    })
+
+    // The submit, and the "Write another" that replaces it once an enquiry has
+    // been composed. A near-black pill with the label in the accent and the
+    // arrow disc in it, thrown onto the accent's own offset block.
+    const pill = (extra) => ({
+      ...row(u(10), { justifyContent: 'space-between' }),
+      background: s.deep, color: s.retro ? s.ac : s.deepFg,
+      borderRadius: '999px', width: '100%', boxSizing: 'border-box',
+      padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`,
+      // Figma's "Retro/Poster" — a 5,5 offset in `sem/text/1` — at each
+      // master's own scale, which is 4.1 on the 1180 canvas.
+      textDecoration: 'none', boxShadow: hard(s, s.ac, 5 * z, 5 * z),
+      fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+      ...extra,
+    })
+    // The frame draws a 46 × 44 oval; the desktop half of this branch already
+    // rounds it to a 36px circle off the height, so the narrow one takes the
+    // same reading at 44 — consistency inside one branch over accuracy in half
+    // of it (the bio's `/featured` pill rule). 5 + 44 + 5 is the pill's 54.
+    const discDia = Math.round(44 * z)
+    const arrowDisc = (
+      <span style={{
+        width: discDia, height: discDia, borderRadius: '999px', flex: 'none',
+        background: s.ac, color: s.deep,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}><ArrowRight size={Math.round(discDia * 0.5)} /></span>
+    )
+
+    const foot = (
+      <p style={{
+        margin: 0, fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
+        textAlign: 'center', color: cardInk,
+      }}>{s.formPara}</p>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: ground, color: groundFg,
+        padding: `${padV} ${padH}`,
+        display: 'flex', gap: u(40), alignItems: 'flex-start',
+        // Only 390 stacks. The 768 master keeps the frame's two columns, at
+        // 334 + 40 + 334 in its 708 of measure — so they stop being "a
+        // flexible block beside a 450 card" and become equal halves.
+        flexDirection: s.mob ? 'column' : 'row',
+      }}>
+        <div style={col(u(30), {
+          flex: desk ? 1 : tab ? '1 1 0' : 'none',
+          minWidth: 0, width: s.mob ? '100%' : undefined,
+        })}>
+          <div style={{
+            // 437 at 1440 *and* at 768 — the desktop component's own number,
+            // unscaled, which is the narrow pass's usual finding. Only 390
+            // states its own, 262.
+            height: u(s.mob ? 262 : 437),
+            // A corner-walk of both narrow renders gives the same profile as
+            // the desktop one, so the 30 is verbatim at all three widths.
+            borderRadius: u(30), border: `1px solid ${mark}`,
+            // The empty slot takes the card's pair, not `s.soft`/`s.muted`:
+            // both are rgba of the page's text colour, and this sheet is not
+            // the page — on Lime and Grunge the initials came back invisible.
+            overflow: 'hidden', background: card,
+          }}>
+            {/* `null`, not undefined: an emptied stage photo must show the
+                placeholder rather than fall through to `s.image`, which here is
+                the portrait in the credit row below (photos.js's Remove rule).
+                Both `initialsSize`s in this block are invented — the frames are
+                photographs throughout and Retro seeds them, so they are only
+                ever seen on the flat four and mid-edit. */}
+            <Photo s={s} src={s.formPhoto ?? null} ink={cardInk} initialsSize={desk ? 56 : 40} />
+          </div>
+          <h2 style={{
+            margin: 0, fontFamily: s.display,
+            // `size/display-sm`, which is the one token here that ramps at both
+            // narrow widths. Its 26 at 390 is what `s.dispSm` happened to be,
+            // so only the 768 line moves (34 → 32).
+            fontSize: u(T.disp),
+            lineHeight: 1, letterSpacing: s.dls, color: mark,
+            overflowWrap: 'break-word',
+          }}>{s.title}</h2>
+          {/* Frame 284. A space-between row at 1440 and at 390 — where its two
+              halves come to the master's 370 exactly, so they sit flush — and
+              a **column** at 768, the one width that stacks them. Transcribed
+              rather than left to `flexWrap` (the video section's rule), and
+              `alignItems` flips with the axis (the testimonials'): `flex-end`
+              bottom-aligns the credit against the last tick in a row, and
+              `flex-start` stops the stacked credit stretching to the measure. */}
+          <div style={tab
+            ? col(u(30), { alignItems: 'flex-start' })
+            : row(u(20), {
+              justifyContent: 'space-between', alignItems: 'flex-end',
+              ...(desk ? { flexWrap: 'wrap', rowGap: u(20) } : null),
+            })}>
+            <div style={col(u(10), { minWidth: 0 })}>
+              {s.formPromises.map((p) => (
+                <span key={p} style={row(u(10), {
+                  fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+                })}>
+                  <Check size={Math.round(12 * z)} style={{ flex: 'none' }} />
+                  {p}
+                </span>
+              ))}
+            </div>
+            <span style={row(u(14), { flex: 'none' })}>
+              <span style={{
+                width: Math.round(48 * z), height: Math.round(48 * z),
+                flex: 'none', borderRadius: '999px', overflow: 'hidden', background: card,
+              }}><Photo s={s} ink={cardInk} initialsSize={desk ? 15 : 18} /></span>
+              <span style={col(u(2))}>
+                <span style={{
+                  fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+                }}>{s.brand}</span>
+                <span style={{ fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{s.kicker}</span>
+              </span>
+            </span>
+          </div>
+        </div>
+
+        {/* `alignSelf: stretch` is the frame's own `self-stretch`, and it is
+            what makes the card below actually sticky: a sticky element in a
+            column exactly its own height has nowhere to travel. */}
+        <div style={{
+          // 450 beside a flexible column at 1440; an equal half at 768, where
+          // the master splits its 708 as 334 + 40 + 334; the whole measure at
+          // 390. `stretch` is what gives the sticky card somewhere to travel,
+          // so it holds wherever the two columns stand side by side.
+          width: s.mob ? '100%' : desk ? u(450) : undefined,
+          flex: tab ? '1 1 0' : 'none', minWidth: 0,
+          alignSelf: s.mob ? undefined : 'stretch',
+        }}>
+          <div style={col(u(14), {
+            background: card, color: cardInk,
+            border: `1px solid ${cardLine}`, borderRadius: u(30),
+            padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
+            // The frame's own name for this option. Nothing between here and
+            // the sheet clips, so it engages on a page whose left column runs
+            // longer than the card — which is what a long field list does.
+            position: 'sticky', top: 0,
+          })}>
+            {sent ? (
+              // The card alone changes, the way layout 1 swaps its mustard half
+              // and leaves the shell standing. `sent` is only ever set under
+              // s.live, so the canvas never draws this.
+              <>
+                <h3 style={{
+                  margin: 0, fontFamily: s.display, fontSize: u(T.title),
+                  lineHeight: 1.1, letterSpacing: s.dls, color: cardAc,
+                  overflowWrap: 'break-word',
+                }}>{s.formSentTitle}</h3>
+                <p style={{
+                  margin: 0, fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
+                }}>{s.formSentBody}</p>
+                {/* Plain text, not a second mailto: this line is the fallback
+                    for a visitor whose browser opened nothing. */}
+                <span style={{
+                  fontFamily: s.body, fontWeight: 700, fontSize: u(T.email),
+                  overflowWrap: 'break-word',
+                }}>{s.formEmail}</span>
+                <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>
+                  {s.formAgain}
+                  {arrowDisc}
+                </span>
+              </>
+            ) : (
+              <>
+                <div style={col(u(10))}>
+                  {s.formFields.map((f, i) => {
+                    const bad = !!(errs && errs.f[i])
+                    return s.live ? (
+                      <input
+                        key={i} value={at(i)} placeholder={up(f.label)}
+                        onChange={(e) => setAt(i, e.target.value)}
+                        // Layout 1's rule: type="email" is free semantics and a
+                        // phone keyboard, `number` gets inputMode only because
+                        // the spinners break the stated height, and a date is a
+                        // text box — the native picker cannot be styled onto
+                        // this card.
+                        type={f.kind === 'email' ? 'email' : 'text'}
+                        inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                        style={{ ...boxShell(bad), outline: 'none' }}
+                      />
+                    ) : (
+                      <span key={i} style={{
+                        ...boxShell(bad), display: 'flex', alignItems: 'center',
+                      }}>{up(f.label)}</span>
+                    )
+                  })}
+                  <Pill {...pillLink} onClick={onSubmit} style={pill({
+                    cursor: onSubmit ? 'pointer' : undefined,
+                  })}>
+                    {s.formBtn}
+                    {arrowDisc}
+                  </Pill>
+                </div>
+                {/* Immediately under the pill, where layout 1 puts it, so the
+                    paragraph stays the card's last line in both states. */}
+                {errs && (
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
+                  }}>{s.formPrompt}</span>
+                )}
+                {foot}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+  // Layouts 3+ — the generic flat design. `NVAR.form` is 2, so nothing reaches
+  // this today; it is what a third layout would render until it is fitted.
+  // Its three boxes were hardcoded literals unrelated to the field list; they
+  // are the artist's now, off the same state and the same hooks as v0 and v1 —
+  // there is no second state model.
   //
   // It draws no chip row, and never has: this is the plain layout, and the
   // artist's types are not lost, merely not offered here. `showTypes` above is
