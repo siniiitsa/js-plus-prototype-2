@@ -53,7 +53,7 @@ one session.
 | 7 | `repertoire` | `964:68646` | Repertoire — **E · Curated set-list cards** | 1440 × 621 | `977:23041` | 708 × 636 | `982:10193` | 390 × 697 | **done 8c09b90** |
 | 8 | `gallery` | `964:68647` | Gallery Sections — **B · Masonry grid** | 1440 × 789 | `977:23131` | 768 × 865 | `982:10257` | 390 × 678 | **done c1836da** |
 | 9 | `pricing` | `964:68648` | Pricing — **F · Stacked rows** | 1440 × 1022 | `977:23149` | 768 × 941 | `982:10274` | 390 × 1358 | **done ecba065** |
-| 10 | `map` | `964:68649` | Events Map — **A · Split list + map** | 1440 × 804 | `977:23264` | 768 × 809 | `982:10389` | 390 × 878 | todo |
+| 10 | `map` | `964:68649` | Events Map — **A · Split list + map** | 1440 × 804 | `977:23264` | 768 × 809 | `982:10389` | 390 × 878 | **done 791e0c1** |
 | 11 | `form` | `964:68650` | Enquiry Forms — **F · Full-bleed hero form** | 1440 × 548 | `977:23406` | 768 × 680 | `982:10472` | 390 × 722 | todo |
 | 12 | `testimonials` | `964:68651` | Testimonials — **D · Bento wall** | 1440 × 790 | `982:8584` | 768 × 777 | `982:10499` | 390 × 1076 | todo |
 | — | `video` | *none* | — | — | *none* | — | *none* | — | **no layout-3 design on this page** |
@@ -878,6 +878,81 @@ Learned on the pricing section (section 9):
   need a `setTimeout` chain (the published-tab note's rule, which bites through the preview
   harness too).
 
+Learned on the events map (section 10):
+
+- **The clearest case yet for deriving a control from the artist's data rather than
+  dropping it — and the discriminator is the section's own heading.** The frame's
+  All / Upcoming · 5 / Past · 3 / Filter ↓ is three claims and a dead control: nothing in
+  this file reads the clock, so "upcoming" and "past" are unknowable (the calendar's rule,
+  met from the other side). What made *cities* the right axis rather than an invention is
+  that `TITLES.map`'s own head is "Where I'm playing." — the row is asking the question the
+  section already asks. It is `repChips`' shape without being `repChips`: one chip per
+  distinct city with the count the frame's own `· 5` carries, deduped case-insensitively,
+  the match key case-folded in `sectionVm` beside the label (`vm.gigs[].cityKey`), and
+  **not built below two cities**, because All plus one chip filters to the same list twice.
+  A gig with no city joins no chip and is reachable under All alone, `repFlat`'s promise.
+- **A filter breaks an invariant a pager does not, and the fix that closes it opens
+  something worse.** CLAUDE.md's standing rule is that a page never lights the same dot
+  twice, which holds for v0 and v1 because `perPage` **is** `PINS.length` and
+  `PINS[i % 5]` therefore never repeats inside a page. Filtering punches holes in the
+  indices, so a filtered page of six gigs or more can seat two gigs ≡ mod 5. Pairing by the
+  row's place on the *page* closes it exactly — and at 390, where a page is one gig, would
+  pin every gig to dot 0 and stop the map moving on every page-turn. **Visible-every-time
+  beats rare-edge**; the edge is written into the branch rather than engineered away.
+- **A `desk ? … : …` count is not the only shape a derived count takes: `s.mob` is.**
+  `perPage` is `s.mob ? 1 : s.gigPage` — the two wide masters draw six rows and no pager,
+  the phone draws **one** row and two arrows. That is the repertoire's derived 3/3/1 in
+  this section's numbers, and the six is the Figma component's own default content where
+  five is the section's rule (the gallery's "the count is the section's when a field states
+  it"). The arrows are `Pager` with **`pages: []`** and `frame.grow` — the component
+  already renders prev and next unconditionally, so the master's two full-measure pills
+  cost no new component and the guard becomes `pages > 1` rather than `labels.length > 0`.
+- **`feat`'s on-page test has to be `some`, not layout 2's contiguous range.** `sel >= first
+  && sel < first + shown.length` assumes the page's indices run consecutively; under a
+  filter they do not. One `shown.some((r) => r.i === sel)` covers the canvas, the -1 start,
+  a filter that hides the picked gig, a page turned away from it and a gig deleted under
+  the visitor — no clamp of its own, layout 2's rule with a wider test.
+- **A frame's "hand-shifted" row can be the design stating an inset.** The 1440 master's
+  third row puts its date circle at x 10 where every other row puts it at 0, and its
+  Tickets at 549 where the others sit at 578 — which reads as a slip in `get_metadata` and
+  is `pl-[10px] pr-[29px]` in the emitted code: the lit pill insets its own content.
+  **Read the emitted padding before calling an offset an artefact**, and note that the same
+  master's day numerals (label-xs 20 / body-md 14 / body-lg 16 across six rows) genuinely
+  *are* hand-set — normalised to `Label/XS`, which is the token that ramps 20/14/12 and the
+  one whose 1.26 leading matches every measured text height.
+- **A 2px rule that does not grow its row is an inset shadow, not a border.** Every row in
+  the frame measures 84 whether it carries a rule or not (Figma strokes an auto-layout
+  frame without growing it), and `calc(padding − border)` — the repertoire's usual fix —
+  would have moved the row's *content* up by 2 rather than its edge. `boxShadow: inset 0
+  -2px 0` is the enquiry form's refused-box spelling used for a divider, and it costs the
+  layout nothing. The rule is suppressed on the lit pill **and on the row above it**, which
+  is what the frame's own `border-b-2` pattern says.
+- **Clip the viewport, not the container it shares with the foot bar.** Only the 390 master
+  states `overflow-clip` on the Map Viewport; without it a 480px ring in a 166px viewport
+  draws straight across the travel line below it, because the container's clip is one level
+  too far out. At desktop the same clip costs four pixels of a 30%-opacity edge, so it goes
+  in at all three widths.
+- **Render the head and read it — again, and this time it cost a field its first seat.**
+  `base` went in the frame's eyebrow on the gallery's prefer-a-field rule and printed
+  "Based in Manchester" over "Manchester", `TITLES.map`'s own default. The eyebrow keeps
+  the frame's label (layout 1's call in this very section, "Shows/coverage"), and the frame's
+  foot line — "UK · 8 pins · 120 mi radius", a region, a count and a distance — is what
+  seats `base` and `radius` instead, split across the bar with the count between them.
+  **A composed foot line can absorb two fields where two separate slots absorb one each.**
+- **The pass's first `mob`-only stack that is also a `mob`-only *count*.** Five of the
+  branch's width tests are `s.mob` (the grid, the row's axis, the foot bar's axis, the
+  panel's horizontal inset, `perPage`) and three are `desk` (`u()`'s `z`, the map corner,
+  the pill's numbers) — the testimonials' "re-ask every `desk`" holding for a fifth section.
+- **`{n} pins` is layout 2's expression copied, plural bug and all** ("1 pins" on a
+  one-gig page). Correcting it in `v2` alone would print the same count two ways depending
+  on the layout picked — the pricing deck's copy-the-spelling-not-the-slip rule met from
+  the wrong end. It is one expression in each branch when it is worth fixing.
+- **The live seam is testable in two `evaluate_script` calls and it is worth both.** Filter
+  → three rows and the pager gone; click a row → the lit row, the panel and the 14px dot
+  all move together; back to All → the pick survives the filter change; next page → `feat`
+  falls back to the new page's first gig. React commits asynchronously, so the clicks need
+  a `setTimeout` chain.
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five, and
@@ -1011,7 +1086,23 @@ Learned on the pricing section (section 9):
     honour or ignore. Worth watching if the remaining three sections meet the same shape —
     and worth revisiting if `TiersField` ever grows a column for another reason, since a
     checkbox there would retire the whole question.
-13. **`FIELDS.pricing` now has two fields reaching exactly one layout each and a third
+13. **The events map's layout 3 is the first design in this pass to give a section a
+    *new control* rather than a new seat for an old one.** Its chip row filters the gig
+    list by city — derived from `c.gigs`, so nothing is invented and no field is added —
+    but the section's other two layouts have no filter at all, which means the same page
+    gains and loses a control as the layout is switched. That is the reverse of questions
+    5/6/8/9/11, where a layout *lost* something the section had. It is shipped because the
+    frame draws the row and because dropping it would leave a visible hole under the head,
+    but it is worth watching: `s.live` state that only one layout can reach is a shape this
+    file has not carried before, and if a fourth layout ever wants a filter the derivation
+    belongs beside `repChips` in `data.js` rather than in `sectionVm`.
+14. **`FIELDS.map` now has one field reaching exactly one layout** — `cta` (layout 3) —
+    beside `sub`, which has reached only the flat tail since it was added. That is
+    `FIELDS.media.soundcloud`'s case again and the hint says so, but it is the second
+    editor in this pass to grow one (question 13 is the first, with three), and the
+    pattern is now general enough to be worth naming as a pass-level cost rather than a
+    per-section note.
+15. **`FIELDS.pricing` now has two fields reaching exactly one layout each and a third
     reaching two** — `quote` (layout 2), `intro` (layout 3) and the tags inside `tiers`
     (layouts 1 and 3, so layout 2 reads none of them). That is
     `FIELDS.media.soundcloud`'s case three times in one editor, and the panel says so in
