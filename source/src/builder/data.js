@@ -164,7 +164,7 @@ export const minimalNav = (navSections) =>
 
 export const NVAR = {
   header: 6, bio: 3, media: 3, tags: 3, audio: 3, video: 2, pricing: 3,
-  repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 2, form: 3, footer: 1,
+  repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -808,20 +808,24 @@ export const FIELDS = {
   ],
   testimonials: [
     { k: 'heading', l: 'Heading', d: 'Word of Mouth' },
-    // Layout 2 is the first design to head this section, so both of the plain
-    // strings below reach it alone — FIELDS.media.soundcloud's case the other
-    // way up, hence the layout in each hint.
+    // Layout 2 was the first design to head this section, so both of the plain
+    // strings below reached it alone — FIELDS.media.soundcloud's case the other
+    // way up, hence the layout in each hint. Layout 3's bento wall then gave
+    // `sub` a second seat: its stat card sets the sentence the frame fills with
+    // a fabricated event count.
     { k: 'sub',     l: 'Intro line', def: 'testiSub',
-      hint: 'The line under the heading. Layout 2 only.' },
+      hint: 'The line under the heading in layout 2, and the sentence on the stat '
+          + 'card in layout 3.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
     // key set — quote/who/role reached one review of three, and nothing could
     // add a fourth — which is the pricing packages' case, not a textarea's.
     // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
     { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
-      hint: 'Each row is one review, and the card pages through them on the published '
-          + 'page. The date line is the small type above the quote in layout 1 and '
-          + "sits beside the reviewer in layout 2, whose selector takes the name's "
-          + 'initials.' },
+      hint: 'Each row is one review. Layouts 1 and 2 page through them; layout 3 '
+          + 'gives each one a card on its wall, and a row with no name or role '
+          + 'becomes a plain quote card there. The date line is the small type '
+          + 'above the quote in layout 1 and sits beside the reviewer in layout 2, '
+          + "whose selector takes the name's initials; layout 3 has no seat for it." },
     { k: 'cta',     l: 'Button', d: 'Book Now',
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },

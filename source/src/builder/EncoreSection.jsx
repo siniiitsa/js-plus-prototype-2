@@ -8981,6 +8981,296 @@ function Testimonials({ s }) {
       </div>
     )
   }
+
+  // v2 — Testimonials layout 3 · Bento wall (964:68651, 1440 × 790 at × 0.82;
+  // 982:8584 at 768 and 982:10499 at 390, both verbatim): a display head over a
+  // wall of outlined, 30-radius cards — a stat card in the olive, then one card
+  // per review. It stands on the beige page ground (`sem/bg` is `#EAD7B8`
+  // exactly) and carries **no texture at all**: a stddev scan of all three
+  // renders is 0 over the page and over every cell, so there is neither grain
+  // nor a torn edge here and the root's `cream` flag stays `s.v0`'s, which is
+  // layout 2's call in this same section.
+  //
+  // **The frame's five quote cells are the component's default content, not the
+  // section's count.** Row 1's two cells carry the same string as each other and
+  // row 2's first two carry another — the gallery's repeated-photographs tell,
+  // twice in one frame — so the wall is *one card per review* and the seeded
+  // three draw a shorter wall than the master. `FIELDS.testimonials.quotes` is
+  // `max: 8`, so the count is the section's (the gallery's rule) and nothing the
+  // artist typed is stranded, which is what lets this layout draw no pager at
+  // all: layouts 1 and 2 page because they show one review, and there is nothing
+  // to page through when every review is on the wall. `cur` therefore reaches
+  // nothing here — the gallery's whole-seam-gone case, and the first time in
+  // this pass that the absence costs the visitor nothing.
+  //
+  // **The stat card is where the frame's claims are re-seated.** `4.9 /5`, the
+  // four photographed faces and the `★★★★★` are a rating and a following the
+  // artist never typed (the video section's rule; this section's layout 2 and
+  // the enquiry form's dropped this very row of stars), and `56+ events` is a
+  // fabricated metric inside a real sentence. What comes back in their place is
+  // the section's own arithmetic and its own fields: the big numeral is the
+  // **review count** with its unit beside it, the sentence is `sub` — which drew
+  // in layout 2 alone until now — the small line above the stack is `s.brand`
+  // (the enquiry form's layout-3 call), and the faces are one disc per review
+  // marked with `vm.quotes[].mark`, the same composed initials layout 2's rail
+  // picks from. The `®` goes with the stars: a trademark is a claim too. The
+  // stars' seat is not re-filled, because the count they would have carried is
+  // already the numeral — the events map's allocate-each-field-once rule.
+  //
+  // **A review with no attribution *is* the frame's bare cell.** The quote cells
+  // are one template — disc, quote, then name over role — with each part
+  // rendered or not rather than printed blank, layout 1's own rule; a row with
+  // neither `who` nor `role` collapses to exactly the `quote-cell` /
+  // `small-quote` / `feat-quote` the frame draws, and nothing is discarded to
+  // get there. `when` is the one column with no seat: the frame's `inf` is two
+  // lines and a third would be invented, so the date reaches layouts 1 and 2
+  // alone (the enquiry form's `placeholder` column). `cta` reaches neither —
+  // the wall carries no pill.
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    // Every box here is the desktop component's own number at all three widths
+    // — the 30 padding, the 30 radius, the 16 grid gap, the 14 cell gap, the 56
+    // avatar, the 24 stack disc and its −8 overlap, the 16/10/4 stacks inside
+    // the stat card, and the 275 / 276 the two fixed seats measure — so the
+    // whole branch flows through one scale and what is left to write is the type
+    // table, the wall's arithmetic and one mobile stack.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // `get_variable_defs` on each master, which resolves that master's own mode:
+    // the emitted CSS prints the desktop default at every width. `size/list`
+    // goes back *up* at 390 (16 → 12 → 13) with no column-width reason, which is
+    // the third time this section has written that table down.
+    const T = desk
+      ? { disp: 48, label: 24, list: 16, bodyLg: 16, bodyMd: 14, bodySm: 12 }
+      : tab
+        ? { disp: 38, label: 16, list: 12, bodyLg: 15, bodyMd: 13, bodySm: 12 }
+        : { disp: 30, label: 14, list: 13, bodyLg: 15, bodyMd: 13, bodySm: 12 }
+
+    // The stat card is the events map's dark panel: Retro's olive has no derived
+    // equivalent (`s.deep` is its `#111`), so the flat four take the palette's
+    // darkest tag with its own ink. Its hairline is `line2` and not `deepFg25`,
+    // which is the events map's own lesson written down rather than its code
+    // copied: the darkest *tag* is the page ground itself on Lime and Grunge, so
+    // the outline is the whole of what parts the card from the page, and
+    // `rgba(tx, .4)` is the one token that reads whichever way the palette runs
+    // — visible on the two palettes that need it and invisibly inert on the
+    // three whose card already contrasts. The numeral is `s.pillBg` at all five:
+    // the lightest tag on the darkest one is legible by construction, and under
+    // Retro it resolves to the frame's own `#D8A227` without a literal.
+    const cardBg = s.retro ? '#6D7040' : s.deep
+    const cardFg = s.retro ? '#FBF6EA' : s.deepFg
+    const cardLine = s.retro ? '#111111' : s.line2
+    // The three registers the frame's five quote cells cycle through: its own
+    // box/1 cream, a near-white a shade above it, and a mustard lifted off
+    // `pillBg` the way the media player's fanned cards lift their hues. The two
+    // light ones collapse to `s.paper` on the flat four — there is no second
+    // light register in the palette — and the accent carries the third, which is
+    // what keeps the wall from reading as one colour. Derived as a *pool*
+    // rather than a list, the repertoire's rule, so the cycle holds at any count
+    // and the seeded three show all three registers.
+    const REG = [
+      { bg: s.retro ? '#FAECD5' : s.paper, fg: s.retro ? '#111111' : s.paperFg },
+      { bg: s.retro ? '#FFFEFB' : s.paper, fg: s.retro ? '#111111' : s.paperFg },
+      { bg: s.retro ? '#E8B33B' : s.ac, fg: s.retro ? '#FBF6EA' : s.acFg },
+    ]
+    // The frame outlines five of its six cells in ink and leaves the row-1
+    // white one bare — one cell in six, normalised rather than transcribed (the
+    // pricing deck's rule). Retro keeps the `#111`; the flat four take each
+    // cell's own ink, which reads on whatever ground the register lands on
+    // (`s.tx` would be Lime's sheet and Grunge's white — the pricing capsule's
+    // lesson). `border/hairline` is 1 and `border/thin` 2 at all three widths,
+    // so neither goes through `u()`: 0.82 and 1.64 are what that would draw.
+    const edge = (fg) => `1px solid ${s.retro ? '#111111' : fg}`
+    const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
+    // Anton at Label/LG, and *not* `labelStyle`: the frame sets these quotes
+    // mixed-case at letterSpacing 0, where the helper's whole point is uppercase
+    // tracked-out caps. Casing is `sectionVm`'s (`cased`), so Grunge and Pop
+    // still shout and Retro does not.
+    const quoteType = {
+      fontFamily: s.label, fontSize: u(T.label), lineHeight: 1.1, overflowWrap: 'break-word',
+    }
+
+    const n = s.quotes.length
+    const marked = s.quotes.filter((r) => !!r.who)
+
+    // One reviewer's disc. The 56 in a quote cell carries Label/LG; the 24 in
+    // the stat card's stack has no type in the frame at all — its faces are
+    // photographs — so its 11 is an invented number, the gallery's
+    // placeholder-ramp rule, chosen to seat two marks inside the ring.
+    const disc = (mark, size, type, ring, extra, key) => (
+      <span key={key} style={{
+        width: u(size), height: u(size), flex: 'none', borderRadius: '999px',
+        background: s.ac, color: s.acFg, border: ring,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden',
+        fontFamily: s.label, fontSize: u(type), lineHeight: 1.1, ...extra,
+      }}>{mark}</span>
+    )
+
+    const statCard = (
+      <div key="stat" style={col(u(16), {
+        background: cardBg, color: cardFg, border: edge(cardLine), borderRadius: u(30),
+        padding: u(30), justifyContent: 'space-between', overflow: 'hidden',
+      })}>
+        <div style={col(u(16), { width: '100%' })}>
+          {/* The numeral hugs at 1440 (76 + 4 + 16 = the frame's 96) and fills at
+              both narrow widths (196 + 4 + 15 = 215, 291 + 4 + 15 = 310), which
+              is why `/5` sits against the cell's right edge in those two
+              renders. Baseline-aligned at all three. The unit is pluralised —
+              new copy no other layout prints, so the events map's
+              copy-the-plural-bug rule does not bind — and it takes twice the
+              frame's 4px gap, because that 4 sits under a `/`, which is its own
+              separator, where a word needs a word space (the calendar's rule
+              that a frame's squeeze is not transferable once our content
+              differs; at the frame's own 4 this reads "3reviews"). */}
+          <div style={row(u(8), {
+            alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
+          })}>
+            <span style={{
+              fontFamily: s.display, fontSize: u(T.disp), lineHeight: 1,
+              letterSpacing: s.dls, color: s.pillBg, flex: desk ? 'none' : '1 0 0',
+            }}>{n}</span>
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, flex: 'none',
+            }}>{n === 1 ? 'review' : 'reviews'}</span>
+          </div>
+          {!!s.testiSub && (
+            <p style={{
+              margin: 0, fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+            }}>{s.testiSub}</p>
+          )}
+        </div>
+        {/* `justify-between` is what spaces these two blocks in the stretched
+            row; at 390 the card hugs, and without the column's own 16 the foot
+            would land flush on the sentence (30 + 66 + 16 + 61 + 30 is the
+            master's 203 exactly). */}
+        <div style={col(u(10), { width: '100%', paddingTop: u(10) })}>
+          {!!s.brand && <span style={body12}>{s.brand}</span>}
+          {/* The frame's four photographed faces, as the marks `sectionVm`
+              already composes for layout 2's rail. Named reviewers only — the
+              same `who` the quote card gates its own disc on, so the stack
+              cannot invent a face for a review the wall itself shows
+              unattributed; `mark`'s row-number fallback exists because a rail
+              of blank tiles cannot be picked from, and there is nothing to pick
+              here. The stack is not a count: that is the numeral above it. */}
+          {!!marked.length && (
+            <div style={row('0px')}>
+              {marked.map((r, i) => (
+                disc(r.mark, 24, 11, `2px solid ${s.retro ? '#50532B' : cardLine}`,
+                     i === marked.length - 1 ? null : { marginRight: u(-8) }, i)
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+
+    const quoteCard = (q, i) => {
+      const reg = REG[i % REG.length]
+      return (
+        <div key={i} style={col(u(14), {
+          background: reg.bg, color: reg.fg, border: edge(reg.fg), borderRadius: u(30),
+          padding: u(30), justifyContent: 'center', alignItems: 'flex-start',
+          overflow: 'hidden',
+        })}>
+          {!!q.who && disc(q.mark, 56, T.label, edge(reg.fg))}
+          <p style={{ margin: 0, width: '100%', ...quoteType }}>{q.quote}</p>
+          {/* The frame sets this block `whitespace-nowrap` inside an
+              `overflow-clip` cell, which eats the seed's own "Venue manager,
+              Albert Hall" at 768 — 160px of Inter in a 130px measure. It wraps
+              here, the media player's destroys-its-own-content rule. */}
+          {!!q.byline && (
+            <div style={col(u(4), { width: '100%' })}>
+              {!!q.who && (
+                <span style={{
+                  fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2,
+                  letterSpacing: s.dls,
+                }}>{q.who}</span>
+              )}
+              {!!q.role && <span style={body12}>{q.role}</span>}
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    // An emptied list keeps the stat card and prints pricing's one message in a
+    // cell beside it — layouts 1 and 2 both keep their card and put the message
+    // inside it, and a stat card alone in a 275 seat is not one of this
+    // section's states either.
+    const empty = (
+      <div key="empty" style={col('0px', {
+        background: REG[0].bg, color: REG[0].fg, border: edge(REG[0].fg),
+        borderRadius: u(30), padding: u(30), justifyContent: 'center',
+      })}>
+        <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>
+          No reviews yet.
+        </span>
+      </div>
+    )
+
+    // The wall: the stat card, then the reviews, three to a row and one at 390.
+    // Two seats are stated rather than filling — the stat card's 275 leading row
+    // 0 and the 276 trailing row 1 — and both are the frame's own numbers at
+    // 1440 *and* 768, where they are in fact the *widest* cells on the row. The
+    // 276 is only taken when row 1 is full: the frame draws two rows and says
+    // nothing about a third, so rows past it are three equal fills (the pricing
+    // deck's a-fourth-package-wraps rule) rather than an alternation extrapolated
+    // from two samples. A row that is short fills too, which is what puts the
+    // seeded third review across the whole measure.
+    const items = n ? s.quotes.map(quoteCard) : [empty]
+    items.unshift(statCard)
+    const perRow = s.mob ? 1 : 3
+    const rows = []
+    for (let i = 0; i < items.length; i += perRow) rows.push(items.slice(i, i + perRow))
+    // Grid columns, not a flex row: `flex: 1 0 0` resolves its basis against the
+    // *content* box, so two cells carrying 30 of padding and a hairline do not
+    // split a row equally (the enquiry form's lesson). `minmax(0, 1fr)` is also
+    // what keeps a long unbroken word out of a neighbour's column.
+    const fill = 'minmax(0, 1fr)'
+    const template = (r, k) =>
+      s.mob ? fill
+        : r === 0 ? [u(275), ...Array(k - 1).fill(fill)].join(' ')
+        : r === 1 && k === perRow ? [fill, fill, u(276)].join(' ')
+        : Array(k).fill(fill).join(' ')
+
+    return (
+      <div style={col(u(24))}>
+        {/* The eyebrow is the frame's own label, the media player's "● Popular"
+            precedent; the display line is `heading`, which layout 2 was the
+            first design to draw. The 1440 master pins this column at 306 and
+            breaks "Experienc / es." mid-word inside an `overflow-clip` header —
+            both narrow masters give it the full measure and set it on one line,
+            so the cap is a leak that destroys its own content and is dropped
+            (the bio's rule). */}
+        <div style={col('0px', { width: '100%' })}>
+          <span style={body12}>&#9679; Testimonials</span>
+          {!!s.title && (
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: u(T.disp), lineHeight: 1,
+              letterSpacing: s.dls,
+            }}>{s.title}</h2>
+          )}
+        </div>
+        {/* The frame's rows are 262.5 tall because its grid is `flex-1` of a
+            stated 790 — a residue, and the tablet master's own grid does not
+            even fill its frame. Ours are content-tall, and the cells stretch to
+            the tallest in their row, which is what `items-center` + `h-full`
+            buys the master. */}
+        <div style={col(u(16), { width: '100%' })}>
+          {rows.map((cells, r) => (
+            <div key={r} style={{
+              display: 'grid', gap: u(16), width: '100%',
+              gridTemplateColumns: template(r, cells.length),
+            }}>
+              {cells}
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>

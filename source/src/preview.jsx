@@ -134,11 +134,14 @@ const LIST = {
   // with nothing at all; every fourth names an ampersanded couple, which is the
   // frame's own "Sarah & Tom" and the case that would mark the rail's tile
   // "S&" if `mark` split on whitespace alone; and every fifth has no name, so
-  // the tile falls back to the row's number.
+  // the tile falls back to the row's number. The fifth drops its **role** too,
+  // or the two would first empty together at row 15 — past `max: 8` — and
+  // layout 3's bare cell (a review with no attribution at all, which is what
+  // the bento wall's quote-only cards are) would never render.
   testimonials: (i) => ({
     quote: `Review number ${i + 1}. ${'They read the room and kept it moving. '.repeat(1 + (i % 3))}`,
     who: i % 5 === 4 ? '' : i % 4 === 3 ? `Sarah & Tom ${i + 1}` : `Reviewer ${i + 1}`,
-    role: i % 3 === 2 ? '' : `Venue manager ${i + 1}`,
+    role: i % 3 === 2 || i % 5 === 4 ? '' : `Venue manager ${i + 1}`,
     when: i % 3 === 2 ? '' : `Reviewed ${i + 1} weeks ago`,
   }),
 }
