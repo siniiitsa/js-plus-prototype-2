@@ -45,7 +45,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount,
+  headerFamily, layoutCount, designCount, pageLayout,
   headerLayout, headerLayoutLabel,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
@@ -3218,7 +3218,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
       // §6.2 — while the setup modal is up the header's own badge names the
-      // layout, so the click that swapped it is legible on the page itself.
+      // layout, so the click that just re-laid the whole page is legible on the
+      // page itself. It is the only badge showing, which is why the other ten
+      // sections were not given one: the dialog's overlay rules out hover, so
+      // `showOverlay` is true for the selected header alone.
       overlayLabel: isHeader && st.onboard
         ? `${cat.name} · ${headerLayout(T.name, sec.arch)[0]}`
         : cat.name + (selected ? ' · editing' : ''),
@@ -3245,13 +3248,32 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const nHeader = layoutCount('header', T.name)
   const headerArch = headerSec ? headerSec.arch : 0
 
-  // Clicking a card swaps the real header behind the modal, at full size. The
-  // modal stays open afterwards — a click is a try, not a verdict, and
-  // "Use this header" is what ends it.
-  const pickHeader = useCallback((i) => {
-    if (!headerSec) return
-    setSection(headerSec.id, { arch: i })
-  }, [headerSec, setSection])
+  // Clicking a card swaps the real header behind the modal, at full size, and
+  // takes the rest of the page with it: the page is one design, so a header on
+  // layout 3 stands over a body on layout 3. `pageLayout` folds the index into
+  // each category's own design count (§4.4), so every section lands on a layout
+  // it actually has — the seeded page's nine body sections have three designs
+  // each and the footer has one, so on Retro, whose header has six, the body
+  // repeats from the fourth card on. That is a fact about *this* page rather
+  // than about the fold: a video section has two designs, so a page carrying
+  // one has no single repeat period and the modal's cards cannot be given a
+  // page number. The modal stays open afterwards — a click is a try, not a
+  // verdict, and "Use this header" is what ends it.
+  //
+  // Safe as a page-wide write only because the modal is a one-shot gate over a
+  // page nobody has touched: `st.onboard` is armed once, by the template
+  // picker, on a page `buildPage` has just built at layout 1 throughout, and
+  // the dialog's overlay blocks the sidebar behind it. Nothing hand-picked can
+  // be clobbered — which is exactly why the sidebar's own LayoutPicker still
+  // moves the one section it is opened on, and must keep doing so.
+  //
+  // The theme comes off `s` rather than off `T`, so the updater is
+  // self-contained and the callback never has to be rebuilt; `headerSec` goes
+  // with the guard it fed, which was protecting a call that cannot happen
+  // (`onboarding` is false without a header).
+  const pickHeader = useCallback((i) => patch((s) => ({
+    sections: s.sections.map((x) => ({ ...x, arch: pageLayout(x.cat, i, THEMES[s.theme].name) })),
+  })), [patch])
 
   const endOnboard = useCallback(() => patch({ onboard: false }), [patch])
 
@@ -3349,8 +3371,8 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
               </DialogTitle>
               <DialogDescription style={{ margin: '7px 0 0', fontSize: '13px', lineHeight: 1.55, color: '#6B685E', maxWidth: '600px' }}>
                 The header is the first thing visitors see — your name, photo and menu. Choose how it is
-                arranged. Everything else on the page is already set up, and you can change this later from
-                the Header section.
+                arranged, and the rest of the page follows it: every section is laid out to match. You can
+                change any of them later, section by section.
               </DialogDescription>
             </div>
             {!isMobile && (

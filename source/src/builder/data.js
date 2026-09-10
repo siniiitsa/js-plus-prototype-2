@@ -184,6 +184,24 @@ export const layoutCount = (catId, themeName) =>
 export const designCount = (catId, themeName) =>
   catId === 'header' ? headerVariants(themeName) : NVAR[catId]
 
+// §6.2 — the layout every other category takes when the header takes `i`.
+// The page is one design: layouts 1, 2 and 3 of every section are one Figma
+// page each, so the header's index *is* the page's index, and the setup modal's
+// click is a page-wide write.
+//
+// Folded by designCount rather than by layoutCount for two reasons. It is never
+// the larger of the two, so the result always names a row the layout picker can
+// highlight; and `arch` reaches EncoreSection only through sectionVm's
+// `d = arch % designCount`, so folding to the lowest index that renders a given
+// design changes nothing on the page while leaving the sidebar reading "Bio
+// layout 3" rather than "Bio layout 6" for the identical render. Negative-safe,
+// sectionVm's own spelling, and `|| 1` for a category NVAR has no entry for —
+// `layoutCount` ends the same way.
+export const pageLayout = (catId, i, themeName) => {
+  const n = designCount(catId, themeName) || 1
+  return ((i % n) + n) % n
+}
+
 /* ------------------------------------------------------------------ *
  * §4.4b Header layout names.
  *

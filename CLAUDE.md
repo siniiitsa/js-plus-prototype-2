@@ -81,7 +81,15 @@ mutated through a single `patch()` helper.
   and picking a template opens the editor on the built page with `st.onboard` armed. The header
   choice is then asked for by the **setup modal** — a `Dialog` over the finished page rendering
   `HeaderChoices` — see README "Choosing a header". Its cards commit on click, not on hover;
-  there is no preview state. The editor opens with the header `selectedId` so the sidebar
+  there is no preview state. **A card lays out the whole page, not only the header**: the layout
+  indices are aligned across categories by construction (layouts 1, 2 and 3 of every section are
+  one Figma page each), so `pickHeader` writes `arch` to *every* section, folded through
+  `pageLayout()` in `data.js` — `i % designCount(cat)`, which is the lowest `arch` rendering the
+  design asked for and is therefore always a row the layout picker can highlight. That is the
+  setup modal alone: the sidebar's `LayoutPicker` still moves the one section it is opened on, and
+  must keep doing so, or a later header swap would silently undo everything the user had tuned.
+  The bulk write is only safe because the modal is a one-shot gate over a page nobody has touched
+  yet. The editor opens with the header `selectedId` so the sidebar
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.

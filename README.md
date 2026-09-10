@@ -126,8 +126,8 @@ Six, all deliberate:
 SPEC.md's stage 2 was a full-screen *Choose a header* page between the template picker and the
 editor. It tested badly: it asks for a decision about a part of a page the user has not seen yet,
 and "Header layout 4" names nothing. It has been removed. Picking a template now builds the page
-and opens the editor on it directly, with the header on layout 1, and the header choice is asked
-for **inside** the editor.
+and opens the editor on it directly, with the whole page on layout 1, and the header choice is
+asked for **inside** the editor — where it moves all of it, not just the masthead.
 
 `st.stage` is `'template' | 'editor'`. The template picker is the app's first screen; picking one
 opens the editor with `st.onboard` armed, and the **setup modal** goes up over the finished page:
@@ -135,17 +135,27 @@ a `Dialog` carrying a 3-up grid of the template's header layouts, one sentence s
 header is, and *Decide later* / *Use this header*. It is a gate, so both exits are real ones —
 either clears `st.onboard` and the editor is then just the editor.
 
-Three things about it are load-bearing:
+Four things about it are load-bearing:
 
 - **One component.** `HeaderChoices` renders the grid — the same layouts the header's edit panel
   offers afterwards in its `LayoutPicker` dropdown, under the same names. Its frame is the
   *median* of the theme's measured layout heights, so Retro's tall Polaroid neither crops nor
   strands the other five.
 - **Click to try, at full size.** Hovering a card lights the card and nothing else; clicking one
-  sets the real header behind the modal, which stays open. A click is a try rather than a
+  sets the real page behind the modal, which stays open. A click is a try rather than a
   verdict — the layout can be swapped as often as the user likes, and *Use this header* is what
   ends it. There is deliberately no hover preview: the page behind changed under the cursor
   faster than it could be read, and a layout that reverted on mouse-out read as a bug.
+- **The whole page follows, not only the header.** The layout indices are aligned across
+  categories by construction: layouts 1, 2 and 3 of every section are one Figma page each, so
+  *Feature spread* stands over the bio's split card and the testimonials' editorial feature, and
+  *Inset Hero* over the bento wall. A card therefore writes `arch` to every section, folded by
+  `pageLayout()` into that category's own design count — which is why Retro's six header cards
+  fold onto three body designs, and why the cards carry no page *number*: a page with a video
+  section in it (two designs) has no single repeat period. This is the setup modal only. The
+  ordinary `LayoutPicker` in the sidebar still moves one section, so nothing the user has tuned
+  by hand is ever overwritten; the modal can write the whole page because it is a one-shot gate
+  over a page that has just been built and not yet touched.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Polaroid,
   Overlay card, Stage wide (and Centred / Split / Rule for the flat family) — into every label,
