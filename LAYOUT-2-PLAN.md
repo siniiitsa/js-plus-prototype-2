@@ -171,10 +171,17 @@ re-deriving the first's decisions.
    this project's settings and is no longer an option; see the `browser-tool-choice` memory note
    for what it cost. One `evaluate_script` does a whole sequence — it is async, returns JSON and
    is not world-isolated, so `await sleep()` between a click and a read replaces the extension's
-   one-action-per-call dance. If it refuses to start because another Chrome holds
-   `~/.cache/chrome-devtools-mcp/chrome-profile`, the fix is `--isolated` (a temporary profile,
-   cleaned up on close) rather than killing someone else's browser — there is no second tool to
-   fall back to any more.
+   one-action-per-call dance.
+
+   The server runs `--isolated --viewport 1440x900`, which settles two things this pass kept
+   re-deriving. It never contends for `~/.cache/chrome-devtools-mcp/chrome-profile`, so the
+   "browser is already running" refusal — the whole reason the old advice here named the
+   extension — cannot happen and nobody's browser has to be killed. And the window is a fixed
+   1440 × 900, so a geometry digest is comparable across runs without a `resize_page` first;
+   that matters because the canvas width is the digest's whole premise, and a window that
+   changed size between two loads is what invalidated one comparison mid-session. The profile
+   is temporary, so `localStorage` survives navigations *within* a run — which is all the
+   two-build digest recipe needs — but not a restart.
 5. Commit, with the section named in the subject.
 6. Flip the row's Status to `done <sha>`, add anything the next section needs to *Conventions*,
    and commit that too.
