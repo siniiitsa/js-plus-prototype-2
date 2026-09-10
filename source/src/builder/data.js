@@ -200,7 +200,7 @@ const HEADER_NAMES = {
   photographic: [
     ['Hero', 'Full-bleed photo'],
     ['Feature spread', 'Photo beside the details'],
-    ['Gradient stage', 'Colour wash'],
+    ['Inset Hero', 'Framed photo on colour'],
     ['Polaroid', 'Photo card beside text'],
     ['Overlay card', 'Details on a card'],
     ['Stage wide', 'Centred, wide'],

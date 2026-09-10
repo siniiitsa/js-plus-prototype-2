@@ -515,7 +515,13 @@ function LocationLine({ s, color }) {
   )
 }
 
-function TagChips({ s, justify = 'flex-start' }) {
+// `radius` overrides the chip's corner. The Tags component is a pill everywhere
+// it had been dropped in before — hence the `s.btnR` default, which leaves every
+// caller written before this untouched (`Pager`'s `idle`, `BookPill`'s `glyph`
+// precedent) — but the layout-3 header's frame drops the same component in at
+// `radius/chip` 8, which on a 26px chip reads as a rounded rectangle and not a
+// pill. It is the component's own token; only that instance states it.
+function TagChips({ s, justify = 'flex-start', radius }) {
   if (s.showTags !== 'show') return null
   // §10.2 sets the chips in the body face at label-xs, sentence case — not the
   // tracked-out caps the flat templates use.
@@ -529,7 +535,7 @@ function TagChips({ s, justify = 'flex-start' }) {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: justify }}>
       {s.chips.map((c, i) => (
         <span key={i} style={{
-          background: c.bg, color: c.fg, borderRadius: s.btnR, whiteSpace: 'nowrap', ...chip,
+          background: c.bg, color: c.fg, borderRadius: radius ?? s.btnR, whiteSpace: 'nowrap', ...chip,
         }}>{c.label}</span>
       ))}
     </div>
@@ -1195,40 +1201,266 @@ function HeaderV1({ s }) {
   )
 }
 
-// v2 — Header layout 3 · Gradient stage
+// v2 — Header layout 3 · Inset Hero
+// (Figma 964:68622 desktop, 977:22532 tablet, 982:9583 mobile)
+//
+// The whole section is a mustard sheet with one rust-ruled photograph inset in
+// it: the nav rides the card's own top edge, the identity block stands on its
+// floor over the checker ribbon, and a tilted polaroid of the artist sits in the
+// bottom-right corner. It replaces the invented "Gradient stage · Colour wash",
+// the way layout 2 replaced the invented "Framed" — `NVAR.header` is 6 under
+// Retro, so this is a refit of an existing slot and no bump is needed;
+// `HEADER_NAMES[2]` and the README's list are renamed with it.
+//
+// Three things this frame settles that the two before it did not:
+//
+// - **The mustard is the section's own sheet, not the page ground.** Every
+//   render's margin samples `#D8A227` where the layout-3 page's ground below the
+//   header samples Retro's beige — so this is the repertoire's bleed, written
+//   out here (`margin: calc(-1 * padY) calc(-1 * padX)`) rather than widening the
+//   root's `bleed` flag, which stays layout 1's. The sheet's own inset re-adds
+//   `s.surplus` so the card keeps bleeding on a window wider than the canvas
+//   while its *content* stays on the page's measure — HeaderV0's rule.
+// - **Figma states this card's padding including its stroke.** The 1440 card's
+//   top inset is 16 and its nav pads 16, and the pill's top edge measures 52 in
+//   the render against the card's outer 20 — 20 + 16 + 16, with the 5px rule
+//   inside the 16 and not below it. So every inset here is `calc(frame − bw)`,
+//   the repertoire's rule taken rather than left (this branch writes all three
+//   widths at once, so there is no signed-off half carrying the drift).
+// - **There is no seal and no grain on the sheet.** The frame draws neither
+//   (a flat-patch scan of all three margins comes back stddev 0), so `showBadge`
+//   reaches this layout no more than `FIELDS.media.soundcloud` reaches layout 2.
+//   The one texture is over the polaroid, screen-blended, as layout 2's mount.
+//
+// Desktop is the 1440 frame × 0.82 and both narrow masters are verbatim, so the
+// ×0.82 is one `z` inside `u()` (the media player's rule) — and tablet is the
+// desktop composition at the desktop component's own numbers with only the type
+// ramped, the header's own layout-2 lesson holding for a third master. **Only
+// 390 reflows**: the polaroid leaves the corner for a centred row under the
+// checker, Listen is dropped, and the card's radius halves.
 function HeaderV2({ s }) {
+  const desk = !s.narrow
+  const tab = isTablet(s)
+  const z = desk ? 0.82 : 1
+  const u = (n) => `${+(n * z).toFixed(2)}px`
+  const mustard = s.pillBg
+  const olive = (s.retro && s.chips[3]?.bg) || s.line2
+  // sem/text/2 — the cream every label on the photograph is set in; sem/tag/3/bg
+  // is the polaroid's ink. Both literal under Retro, whose `paper` IS the page
+  // ground and is what the checker ribbon takes (sem/media, #EAD7B8 exactly).
+  const cream = s.retro ? '#FBF6EA' : s.paper
+  const ink = s.retro ? '#111111' : s.tx
+  const bw = u(5)                                     // border/heavy, 5 at all three
+  // `get_variable_defs` on each master, not the emitted CSS — which prints the
+  // desktop default at all three widths. `size/list` goes back *up* at 390
+  // (16 → 12 → 13), the repertoire's and the pricing deck's non-monotonic case
+  // for a third time, and again with no column-width explanation.
+  const T = {
+    labelLg: desk ? u(24) : tab ? '16px' : '14px',    // the wordmark
+    labelSm: desk ? u(16) : tab ? '13px' : '12px',    // nav, Listen, Book Now
+    list: desk ? u(16) : tab ? '12px' : '13px',       // location, polaroid name
+    disp: desk ? u(96) : tab ? '60px' : '40px',       // the hero
+    chip: desk ? u(12) : '11px',                      // the polaroid's sub
+  }
+
+  // The links pill and the burger stand in the same bordered capsule, layout 2's
+  // arrangement — and here the 390 master draws it literally, putting the burger
+  // inside the very pill the other two fill with links.
+  //
+  // The 768 master draws links too, and is not followed for layout 2's reason:
+  // its three are the component's default where `navLinks` is the artist's page,
+  // and the seeded nine come to more type than the capsule's share of a 684px
+  // bar. The burger therefore holds at 768, as it does in all six Retro headers.
+  const capsule = (
+    <nav style={{
+      // This rule is *not* inside its padding, where the card's 5px one is: the
+      // 1440 render puts the pill's outer edge at 51.5 against a content top of
+      // 52 and its height at 35.5 against a 33.6 inset box. Two nodes, two
+      // stroke alignments — measure the box rather than carrying the rule down.
+      background: mustard, border: `${u(1)} solid ${olive}`, borderRadius: '999px',
+      padding: `${u(8)} ${u(18)}`, minWidth: 0,
+      ...row(u(18), { flexWrap: 'wrap', alignItems: 'flex-start' }),
+    }}>
+      {desk
+        ? s.navLinks.map((l) => (
+            <a key={l.label} href={navHref(s, l.to)}
+               style={labelStyle(s, T.labelSm, { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
+          ))
+        : <NavMenu s={s} color={cream} />}
+    </nav>
+  )
+
+  // Four flex children either side of the wordmark, exactly as the frame lays
+  // the bar out. The capsule's group is `1 1 auto` rather than the frame's
+  // `1 0 0`: past three links it has to be allowed to run past its quarter of
+  // the bar, and the two spacers are what give — the wordmark's centring is the
+  // thing that yields, not the artist's own section names.
+  const nav = (
+    <div style={row(u(16), {
+      width: '100%', padding: `${desk || tab ? u(16) : '10px'} 0`, position: 'relative',
+    })}>
+      <div style={row(0, { flex: '1 1 auto', minWidth: 0 })}>{capsule}</div>
+      <span style={{ flex: '1 1 0' }} />
+      <span style={labelStyle(s, T.labelLg, { color: cream })}>{s.brand}</span>
+      <span style={{ flex: '1 1 0' }} />
+      <span style={row(u(12), { flex: 'none' })}>
+        {/* The 390 master drops Listen; the other two keep it. */}
+        {!s.mob && (
+          <ListenLink s={s} to={s.listenTo} style={labelStyle(s, T.labelSm, { color: cream })} />
+        )}
+        {/* The frame's pill is BookPill's own full-scale box at all three widths
+            — 4.267/17.921 padding, a 27.6 disc — which is the `full` scale to
+            within a rounding, so only 390 has to opt back up to it (the pricing
+            and calendar frames' case). Desktop takes `mid`, which is that box
+            × 0.82. Its label is `size/label-sm`, where the automatic pick would
+            draw 20px at 768 against the master's 13. */}
+        <BookPill s={s} to={s.bookTo} glyph="arrow" full={s.mob} size={T.labelSm} />
+      </span>
+    </div>
+  )
+
+  const locationLine = (
+    <span style={row(u(8))}>
+      {/* radius/chip 8 on a 14px square — a rounded block, not the ring
+          LocationLine draws for the flat templates. */}
+      <span style={{
+        width: u(14), height: u(14), borderRadius: u(8), background: s.ac, flex: 'none',
+      }} />
+      <span style={{
+        fontFamily: s.display, fontSize: T.list, lineHeight: 1.2,
+        letterSpacing: s.dls, color: cream,
+      }}>{s.location}</span>
+    </span>
+  )
+
+  // The identity column. `justifyContent: flex-end` is the master's own — on the
+  // 390 one it stands the block on the floor of a stated 568.125 band, which is
+  // the photograph showing above it. That number is a `minHeight` here rather
+  // than a height: the frame clips what overruns it and a longer name or a
+  // seventh chip should grow the card instead (the media player's division-target
+  // rule). The 700.74 the tags carry at every width is a leaked desktop measure
+  // that produces nothing — six chips run 497 inside it at 1440 and the parent
+  // clips it at 768 — so it is dropped, not honoured (the bio's rule, with the
+  // opposite verdict to the credit row's).
+  const stack = (
+    <div style={col(u(30), {
+      alignItems: 'flex-start', justifyContent: 'flex-end', width: '100%', overflow: 'hidden',
+      ...(s.mob ? { minHeight: '568.13px' } : null),
+    })}>
+      <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
+        {locationLine}
+        <Title s={s} size={T.disp} lh={0.89} color={cream} inline />
+      </div>
+      <TagChips s={s} radius={u(8)} />
+      {/* Two rows of the frame's 11.803 square — `cell` is the repeating tile,
+          which is two of them (the header's own layout-2 fix) — in `sem/media`,
+          which is Retro's paper exactly. */}
+      <Checkerboard s={s} cell={desk ? 19.36 : 23.61} colour={s.paper} />
+    </div>
+  )
+
+  // The polaroid, and the one place `avatar` reaches this layout: the card in
+  // the corner is the artist where the sheet behind it is the scene, the
+  // header's own `image`/`avatar` split. Its two lines are `brand` and `kicker`
+  // — `InsetCard`'s pair, with the globe in place of the thumbnail — so the
+  // frame's "Performing since 2021" is the artist's own strapline rather than a
+  // literal (the video section's sort-the-copy rule; nothing here is a claim).
+  //
+  // The wrapper is the *rotated bounding box* the frame states, with the card
+  // centred in it, so the tilt overhangs into the wrapper rather than into the
+  // card's padding — the one place a rotated group's inflated metadata is the
+  // number to take rather than the one to divide out.
+  const polW = s.mob ? 279.644 : 242.292
+  const polH = s.mob ? 253.45 : 250.575
+  const cardW = s.mob ? 262.463 : 225
+  const polaroid = (
+    <div style={{
+      width: u(polW), height: u(polH), flex: 'none',
+      ...row(0, { justifyContent: 'center' }),
+    }}>
+      <div style={{
+        position: 'relative', width: u(cardW), height: u(234), flex: 'none',
+        background: cream, borderRadius: u(6.25), overflow: 'hidden',
+        transform: tilt(s, 4.4),
+        // The frame's own card shadow at the polaroid's scale — a quarter of
+        // `soft()`'s 4/4/9, which is the same effect on a full-size card.
+        boxShadow: s.retro ? `${u(1.25)} ${u(1.25)} ${u(2.81)} rgba(0,0,0,.16)` : 'none',
+        padding: `${u(6.25)} ${u(6.25)} 0`,
+        ...col(0, { alignItems: 'center', justifyContent: 'center' }),
+      }}>
+        <div style={{
+          flex: 1, minHeight: 0, width: '100%', borderRadius: u(3.44), overflow: 'hidden',
+        }}>
+          {/* An invented ramp, and only ever seen on the flat four or mid-edit:
+              the frame is a photograph and Retro seeds one (the gallery's
+              placeholder-ramp rule). */}
+          <Photo s={s} avatar initialsSize={Math.round(cardW * z * 0.22)} ink={s.ac} />
+        </div>
+        <div style={col(0, {
+          alignItems: 'center', width: '100%', padding: `${u(8.87)} ${u(3.75)}`,
+        })}>
+          <span style={row(u(3.13))}>
+            <span style={{ display: 'flex', transform: 'rotate(-90deg)' }}>
+              <GlobeMark size={+(8.552 * z).toFixed(2)} color={ink} strokeWidth={1.8} />
+            </span>
+            <span style={{
+              fontFamily: s.display, fontSize: T.list, lineHeight: 1.2,
+              letterSpacing: s.dls, color: ink, whiteSpace: 'nowrap',
+            }}>{s.brand}</span>
+          </span>
+          <span style={{
+            fontFamily: s.body, fontWeight: 700, fontSize: T.chip, lineHeight: 1,
+            letterSpacing: '-0.06em', color: s.ac, whiteSpace: 'nowrap',
+          }}>{s.kicker}</span>
+        </div>
+        <Grain s={s} exact blend="screen" opacity={0.5} radius={u(6.25)} />
+      </div>
+    </div>
+  )
+
+  // 768 keeps the desktop row; only 390 stacks — the pass's default shape by
+  // now, and the metadata's own tell (two children under one another at x 0).
+  const body = s.mob ? (
+    <div style={col('24px', { alignItems: 'center', width: '100%' })}>
+      {stack}
+      {polaroid}
+    </div>
+  ) : (
+    <div style={row(u(24), { alignItems: 'flex-end', width: '100%', overflow: 'hidden' })}>
+      <div style={{ flex: 1, minWidth: 0 }}>{stack}</div>
+      {polaroid}
+    </div>
+  )
+
+  // The card's height is the frame's own — 860 inside a 900 instance at 1440,
+  // 1004 inside 1024 at 768 — and 390 states none, its card being content-tall.
+  // It is a `minHeight` for the reason the 568 band is one.
+  const inset = desk ? 20 : 10
+  const padX = Math.max(0, (desk || tab ? 32 : 10) - 5)
+  const padTop = Math.max(0, (desk || tab ? 16 : 0) - 5)
   return (
     <div style={{
-      position: 'relative', aspectRatio: s.mob ? '4 / 5' : '16 / 8',
-      borderRadius: s.radius, overflow: 'hidden',
+      background: mustard, padding: u(inset),
+      margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
     }}>
-      <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={72} /></div>
-      <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, rgba(0,0,0,.55), ${s.ac55})` }} />
       <div style={{
-        position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-        justifyContent: 'space-between', padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
+        position: 'relative', overflow: 'hidden',
+        border: `${bw} solid ${s.ac}`,
+        borderRadius: desk ? u(60) : tab ? '60px' : '30px',
+        minHeight: desk ? u(860) : tab ? '1004px' : undefined,
+        paddingTop: u(padTop),
+        paddingBottom: u(padX),
+        paddingLeft: `calc(${u(padX)} + ${s.surplus})`,
+        paddingRight: `calc(${u(padX)} + ${s.surplus})`,
+        ...col(0, { justifyContent: 'space-between' }),
       }}>
-        {/* Keep the bar clear of the seal, which floats over this corner. */}
-        <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap', paddingRight: sealGap(s) })}>
-          <Wordmark s={s} logo color="#FFFFFF" />
-          <span style={row('18px')}>
-            <NavLinks s={s} color="#FFFFFF" />
-            <BookPill s={s} to={s.bookTo} />
-          </span>
+        <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
+          <Photo s={s} backdrop />
         </div>
-        <div style={col('14px', { alignItems: 'flex-end', padding: s.mob ? '0' : '32px' })}>
-          <div style={{ alignSelf: 'flex-start', width: '100%', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <InsetCard s={s} thumb={56} style={{ alignSelf: 'flex-start' }} />
-            <div style={row('18px', { flexWrap: 'wrap' })}>
-              <LocationLine s={s} color="rgba(255,255,255,.75)" />
-              <Kicker s={s} />
-            </div>
-            <Title s={s} twoTone size={s.mob ? s.h2 : s.h1} />
-            <TagChips s={s} />
-          </div>
-        </div>
+        <div aria-hidden style={{ position: 'absolute', inset: 0, background: SCRIM.hero }} />
+        {nav}
+        <div style={{ position: 'relative', width: '100%' }}>{body}</div>
       </div>
-      <SealBadge s={s} style={{ top: '18px', right: '18px', zIndex: 2 }} />
     </div>
   )
 }
