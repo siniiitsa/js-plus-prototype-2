@@ -674,7 +674,8 @@ export const FIELDS = {
   // tag" and layout 2 is a bare rule-bounded strip.
   tags: [
     { k: 'heading', l: 'Heading', d: TITLES.tags,
-      hint: 'The label above the chips in layout 3. Layouts 1 and 2 draw their own.' },
+      hint: 'The label above the chips in layout 3. Layout 1 writes its own, and layout 2 '
+          + 'has no head at all.' },
     { k: 'tags', l: 'Tags (comma-separated)', type: 'area', d: TAGS.join(', ') },
   ],
   audio: [
