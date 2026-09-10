@@ -116,7 +116,8 @@ mutated through a single `patch()` helper.
   the **booking calendar's month arrows, its day picking and its foot pill** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
   the **testimonials carousel's arrows** (below — layout 2 pages the same `cur` from a rail of
-  initial tiles instead),
+  initial tiles instead, and layout 3 reads it **not at all**: it is a wall of every review,
+  so there is nothing to page),
   the **footer's link columns and its Book pill** (below),
   and the four sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
@@ -436,9 +437,25 @@ mutated through a single `patch()` helper.
   quote. It also draws the section's **head**, which no earlier layout did: `heading` had
   reached the flat tail alone, and `FIELDS.testimonials` gained `sub` and `cta` — a line of
   prose and the centred Book Now pill on `vm.bookTo`, which needs no self-exclusion because
-  `testimonials` is not in `CTA_TARGETS.book` (the footer's rule). Layout 2 draws neither the
+  `testimonials` is not in `CTA_TARGETS.book` (the footer's rule); `sub` since reaches layout
+  3 as well, `cta` still layout 2 alone. Layout 2 draws neither the
   grain nor the torn edge: its frame carries no texture at all and stands on the beige page,
-  so the root's `cream` flag stays layout 1's.
+  so the root's `cream` flag stays layout 1's, and **layout 3 draws neither either** for the
+  same reason. **Layout 3 is a bento wall and the one design here that pages nothing**: it is
+  the stat card and then *one card per review*, three to a row and one at 390, so `cur`
+  reaches no control at all — the arrows and the rail exist because their layouts draw a
+  single card, and a design that shows the whole list owes no pager. Its cards are one
+  template whose disc, name and role are each rendered or not, so a review with neither `who`
+  nor `role` collapses to the frame's own quote-only cell and nothing the artist typed is
+  discarded; two seats are stated (275 leading the first row, 276 trailing the second when it
+  is full) and every other cell is `minmax(0, 1fr)`, with rows past the second three equal
+  fills. Its stat card is where the frame's claims are re-seated: the big numeral is
+  **`s.quotes.length`** with a pluralised unit — arithmetic, not the frame's `4.9 /5` rating —
+  the sentence under it is `sub`, the line above the disc stack is `s.brand`, and the stack is
+  one `vm.quotes[].mark` per **named** review, so it never invents a face for a card the wall
+  itself shows unattributed. The `★★★★★` and the `®` go with the rating. `when` and `cta` have
+  no seat there, which is the only content this section's three layouts do not between them
+  read.
 - **The footer is the artist's sitemap, and the published one navigates.** It was the last
   §10.2 section that was a picture on *both* sides, and the only one whose links were dead by
   the **header's own rule**: `linkCol` drew `<a href="#">`, which the published tab's delegated

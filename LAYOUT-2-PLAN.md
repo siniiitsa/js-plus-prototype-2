@@ -1455,6 +1455,12 @@ Learned on the end-of-pass refresh (the `index.html` rebuild):
    section is now the one place where **layout 1 reads strictly fewer
    fields than layout 2**. Giving layout 1 a head would move a
    signed-off design, which is a design call and not a fidelity one.
+
+   *Still true, and no longer the whole picture.* Layout 3's bento wall
+   (`LAYOUT-3-PLAN.md`, section 12) reads `heading` and `sub` and not
+   `cta`, and drops the reviews' `when` besides — so the three layouts
+   now read three different subsets of the section's fields rather than
+   two nested ones, and `sub` is the one field that reaches two of them.
 15. **The media player's bar draws an invisible sleeve on the flat four.**
    Its `<Photo>` falls through to the initials placeholder when the track
    has no artwork — which is every track on Lime, Grunge, Editorial and
