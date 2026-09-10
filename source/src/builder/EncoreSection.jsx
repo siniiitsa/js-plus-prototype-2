@@ -6240,13 +6240,29 @@ function Testimonials({ s }) {
   // the card) and stands on the beige page, so the root's `cream` flag stays
   // layout 1's and nothing shared moves.
   if (s.v1) {
-    const u = (v) => `${Math.round(v * 0.82 * 10) / 10}px`
+    // §5.5 — three masters: 1440 (964:64653) on the 1180 canvas at × 0.82, 768
+    // (986:11675) and 390 (986:11701) verbatim, hence the one `z` switch inside
+    // `u()` rather than a hand-scaled number per box. Every box here is the
+    // desktop component's own value at all three widths — the card's 40 padding
+    // and 40 gaps, the 30 radii, the grid's 32, the head's 12, the pill's 54 on
+    // a 46 disc — so what the narrow masters actually settle is the type table
+    // below and two structural facts: **768 keeps the desktop's two columns**
+    // (rail left, card right) and only 390 stacks, and there it *reorders*, the
+    // card over a rail laid out as a row.
     const desk = !s.narrow
-    // The 768 and 390 masters of this option are not fitted yet — this pass is
-    // desktop only — so below desktop the rail and the card stack, the rail
-    // laying its tiles out as a wrapping row, and the frame's 32/12 insets drop
-    // to the canvas's own ramp rather than to invented numbers.
-    const gap = desk ? u(32) : s.gGap
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // 768 and desktop share the composition; only 390 parts from it.
+    const wide = !s.mob
+    // `get_variable_defs` on each master, which resolves that master's own mode
+    // — every one of these comes back in the emitted CSS as the desktop default.
+    // `list` going 16 → 12 → **13** is the repertoire's and the pricing deck's
+    // non-monotonic case a third time, and again with no column-width reason.
+    const T = desk
+      ? { list: 16, bodyLg: 16, bodyMd: 14, bodySm: 12 }
+      : { list: tab ? 12 : 13, bodyLg: 15, bodyMd: 13, bodySm: 12 }
+    const gap = u(32)
     const n = s.quotes.length
     // Clamped as layout 1 clamps it, and for the same two reasons: the artist
     // can delete the review the visitor is on, and Publish re-renders a tab
@@ -6276,7 +6292,7 @@ function Testimonials({ s }) {
     const onTile = s.retro ? '#8B6AB8' : s.ac
     const onTileFg = s.retro ? '#FBF6EA' : s.acFg
 
-    const body12 = { fontFamily: s.body, fontSize: u(12), lineHeight: 1.4 }
+    const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
 
     // The head. Its eyebrow is the frame's own label, a literal the way the
     // media player's "● Popular" is; the display line is the section's
@@ -6287,14 +6303,21 @@ function Testimonials({ s }) {
       <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center' })}>
         <span style={body12}>&#9998; What clients say</span>
         {!!s.title && (
+          // `display-lg` 96 → 60 → 40, which is the page's own ramp read off
+          // two different keys — the media player's `tab ? s.h1 : s.dispLg`,
+          // since `dispLg` is 64 at tablet where the master states 60.
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg, lineHeight: 0.89,
             letterSpacing: s.dls, color: s.ac,
           }}>{s.title}</h2>
         )}
+        {/* The 390 master sets this line `whitespace-nowrap` at the desktop
+            component's own measure — 431px of type in a 350 column, overflowing
+            40 either side of a head that clips. Ours wraps, the bio's rule for a
+            leak that produces nothing the frame's layout depends on. */}
         {!!s.testiSub && (
           <p style={{
-            margin: 0, fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
+            margin: 0, fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
           }}>{s.testiSub}</p>
         )}
       </div>
@@ -6307,14 +6330,23 @@ function Testimonials({ s }) {
     // which is `cur`'s pinned 0 and the pricing deck's intended diff.
     const tiles = (
       <div style={{
-        display: 'flex', flexDirection: desk ? 'column' : 'row', flexWrap: 'wrap',
-        gap: u(12), alignSelf: desk ? 'stretch' : 'auto', flex: 'none',
+        display: 'flex', flexDirection: wide ? 'column' : 'row', flexWrap: 'wrap',
+        gap: u(12), alignSelf: wide ? 'stretch' : 'auto', flex: 'none',
+        // The 390 master's row is `justify-center`; the column never had a
+        // spare axis to justify on, so this is spread in rather than branched,
+        // and the desktop object stays byte-identical.
+        ...(s.mob ? { justifyContent: 'center' } : null),
       }}>
         {s.quotes.map((r, i) => {
           const on = i === at
           return (
             <div key={i} onClick={s.live ? () => setCur(i) : undefined} style={{
-              width: u(88), flex: desk ? '1 1 0' : 'none',
+              // The column pins its width where the masters let it hug: 88 at
+              // 1440, and 84 at 768 because the widest of the frame's three
+              // hand-padded tiles comes to 84 there. The 390 row has no fixed
+              // width at all — see the height/padding block below.
+              width: wide ? u(desk ? 88 : 84) : undefined,
+              flex: wide ? '1 1 0' : (on ? '1 0 auto' : 'none'),
               background: on ? onTile : tile, color: on ? onTileFg : tileFg,
               // The frame draws the picked tile's outline at 2 where the others
               // are at 1. The second px is an inset ring rather than a thicker
@@ -6326,24 +6358,45 @@ function Testimonials({ s }) {
               border: `1px solid ${on ? s.tx : s.ac}`, borderRadius: u(30),
               boxShadow: on ? `inset 0 0 0 1px ${s.tx}` : undefined,
               // The frame's 36px vertical padding is inert in the column: its
-              // three tiles measure 98.63, which is the rail's height divided
-              // three ways and not 36 + 19 + 36. Transcribing it would floor
-              // the tile at 74 and stand the rail past the card the moment the
-              // artist adds a fifth review, so the padding is kept for the row
-              // the narrow canvases lay out and the column takes the division —
-              // `min-h-px` on the frame's own tiles, which is Figma for "this
-              // may shrink past its contents". Figma strokes inside the size it
-              // states, so the row's padding gives the border back, the
-              // repertoire's rule.
-              ...(desk
+              // three tiles measure 98.63 at 1440 and 104.67 at 768, which is
+              // each rail's height divided three ways and not 36 + line + 36.
+              // Transcribing it would floor the tile and stand the rail past
+              // the card the moment the artist adds a fifth review, so the
+              // column takes the division — `min-h-px` on the frame's own
+              // tiles, which is Figma for "this may shrink past its contents".
+              //
+              // The 390 row is the mechanism turned on its side, and the master
+              // states it outright: the picked tile is `flex-[1_0_0] min-w-px`
+              // and the other two are `shrink-0` on their own horizontal
+              // padding, over a stated 107.303 height that makes the 36 inert
+              // there too. So the picked review's tile is the wide one — which
+              // is the 390 master's whole way of marking it beyond the fill.
+              // Two things fall out. On the canvas `at` is 0, so tile *one*
+              // widens where the frame widens the middle: `cur`'s pinned 0
+              // again, and it moves more of the picture here than it does in
+              // the column. And the row **wraps**, which the master does not:
+              // its own three tiles fill the 350 exactly, but eight hug tiles at
+              // ~80 would run 400 past a row the frame merely clips. Wrapped,
+              // the picked tile fills what is left of *its* line — the whole
+              // measure alone, ~85 beside three others. Its basis is `auto`
+              // where the master states 0: with a 0 basis the tile takes no slot
+              // in the wrap, so the line can pack tight enough to leave it less
+              // than its own mark and clip it, and the two are the same width
+              // wherever the row has any free space at all — which is every
+              // count the master itself draws.
+              ...(wide
                 ? { minHeight: 0 }
-                : { padding: `calc(${u(36)} - 1px) 0` }),
+                : { height: u(107.3), padding: `0 ${u(30)}`, minWidth: 0 }),
               overflow: 'hidden',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: s.live ? 'pointer' : undefined,
             }}>
+              {/* Both narrow masters pad these two tiles 30 and 35 — the same
+                  pair at both widths, and the reason the 768 column measures 84
+                  — which is a hand, not a design: normalised to the 30, which
+                  is also what leaves the 390 row its width. */}
               <span style={{
-                fontFamily: s.display, fontSize: u(16), lineHeight: 1.2, letterSpacing: s.dls,
+                fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
               }}>{r.mark}</span>
             </div>
           )
@@ -6360,22 +6413,26 @@ function Testimonials({ s }) {
     // is deliberately not used here: the line above it is already `who`.
     const big = (
       <div style={col(u(40), {
-        ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+        ...(wide ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
         background: card, color: cardFg,
         border: `1px solid ${cardLine}`, borderRadius: u(30),
         padding: `calc(${u(40)} - 1px)`, alignItems: 'flex-start',
       })}>
         {q ? (
           <>
-            {/* The frame's 128px mark in a box shorter than its own line: the
-                glyph has no descender, so the box is what the 40px gap under it
-                measures from. `dispXl` is the ramp's own step at that size. */}
+            {/* The 1440 master hand-sets this box shorter than its own line —
+                the glyph has no descender, so 56 is what the 40px gap under it
+                measures from. Both narrow masters drop that and let the 0.75
+                leading be the box (58 at 768, 36 at 390), so the height is
+                desktop's alone. `display-xl` is 128 → 77 → 48, and `s.dispXl`
+                is the ramp's own step at the first two; at 390 it is still 77,
+                so that one width states its size. */}
             <span aria-hidden style={{
-              fontFamily: s.display, fontSize: s.dispXl, lineHeight: 0.75,
-              height: u(56), flex: 'none',
+              fontFamily: s.display, fontSize: s.mob ? u(48) : s.dispXl, lineHeight: 0.75,
+              flex: 'none', ...(desk ? { height: u(56) } : null),
             }}>&rdquo;</span>
             <p style={{
-              margin: 0, width: '100%', fontFamily: s.body, fontSize: u(16), lineHeight: 1.5,
+              margin: 0, width: '100%', fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
             }}>{q.quote}</p>
             {/* Rendered or not, each of them: every value on the card is
                 emptiable, and an emptied pair drops the row with its padding. */}
@@ -6387,7 +6444,7 @@ function Testimonials({ s }) {
                 <div style={col(u(4), { minWidth: 0 })}>
                   {!!q.who && (
                     <span style={{
-                      fontFamily: s.display, fontSize: u(16), lineHeight: 1.2,
+                      fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2,
                       letterSpacing: s.dls,
                     }}>{q.who}</span>
                   )}
@@ -6395,7 +6452,7 @@ function Testimonials({ s }) {
                 </div>
                 {!!q.when && (
                   <span style={{
-                    fontFamily: s.body, fontSize: u(14), lineHeight: 1.5, flex: 'none',
+                    fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, flex: 'none',
                   }}>{q.when}</span>
                 )}
               </div>
@@ -6405,7 +6462,7 @@ function Testimonials({ s }) {
           // Pricing's one message, layout 1's rule here too: the card is the
           // composition, and a hole where it stands is not one of the
           // section's states.
-          <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5 }}>
+          <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>
             No reviews yet.
           </span>
         )}
@@ -6416,16 +6473,22 @@ function Testimonials({ s }) {
       <div style={col(gap)}>
         {head}
         <div style={{
-          display: 'flex', flexDirection: desk ? 'row' : 'column', gap,
-          // Desktop tops the two columns rather than stretching them: the card
-          // is the taller of the pair by construction, and stretching it would
-          // hand a card with one short review the rail's slack. Stacked, the
-          // same property is the cross axis and has to stretch, or both blocks
-          // would shrink to their own content and stand off the left gutter.
-          alignItems: desk ? 'flex-start' : 'stretch', width: '100%',
+          display: 'flex', flexDirection: wide ? 'row' : 'column', gap,
+          // The two-column widths top their columns rather than stretching
+          // them: the card is the taller of the pair by construction, and
+          // stretching it would hand a card with one short review the rail's
+          // slack. Stacked, the same property is the cross axis and has to
+          // stretch, or both blocks would shrink to their own content and stand
+          // off the left gutter.
+          alignItems: wide ? 'flex-start' : 'stretch', width: '100%',
         }}>
-          {rail && tiles}
+          {/* 390 puts the card first and the rail under it; the two wider
+              masters put the rail beside it, on the left. Written as two
+              guarded children rather than a reordered pair, so the desktop DOM
+              is byte-identical — the gallery's rule. */}
+          {!s.mob && rail && tiles}
           {big}
+          {s.mob && rail && tiles}
         </div>
         {/* The frame draws no offset block under the pill, hence the clear
             shadow, and fills it in the accent with cream type where BookPill's
@@ -6437,8 +6500,16 @@ function Testimonials({ s }) {
             gap on nothing. */}
         {!!s.testiCta && (
           <div style={row('0px', { width: '100%', justifyContent: 'center' })}>
+            {/* The pill's box does not ramp — 54 tall on a 46 disc at all three
+                masters, the booking calendar's and the events map's case a
+                third time — while its label follows `size/list`. So `full` opts
+                the 390 canvas back up to the full-size box, and `size` is
+                passed at narrow because BookPill's own pick would draw 20px
+                there against the masters' 12 and 13. Desktop keeps its
+                `undefined`: an existing drift in a signed-off half. */}
             <BookPill s={s} to={s.bookTo} label={s.testiCta} glyph="arrow"
-                      disc={desk ? 38 : undefined} shadow="transparent"
+                      disc={desk ? 38 : 46} full={!desk}
+                      size={desk ? undefined : u(T.list)} shadow="transparent"
                       bg={s.ac} discFg={s.ac}
                       {...(s.retro ? { fg: '#FBF6EA' } : null)} />
           </div>
