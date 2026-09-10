@@ -144,6 +144,13 @@ const c = rows === null
 // both layouts: the struck cell in the month, and the dead row in the slot list.
 if (q.get('booked')) c.booked = q.get('booked').split(',')
 
+// &open=2025-03-01 sets FIELDS.calendar.open, the one date the whole section is
+// built from. CAL_OPEN's June 2025 starts on a Sunday and runs to five rows, so
+// the seed is the one month that shows neither a leading blank nor a sixth row —
+// both of which the grid has to draw, and layout 3 in particular, whose card
+// height is the row count. March 2025 (lead 6, six rows) is the far end of it.
+if (q.get('open')) c.open = q.get('open')
+
 // &since=June%202021 fills FIELDS.bio.since, which has no default on purpose —
 // so it is the only way to see the bio's layout-3 ID card at the three stat
 // columns its frame draws, which is where its head row runs out of room.

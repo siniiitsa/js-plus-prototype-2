@@ -567,7 +567,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
           line: enquiryLine(y, mo, d, time),
         })
       }
-      return { label: cased(monthLabel(y, mo)), cells }
+      // `label` is the one line layouts 1 draws; layout 3's head columns the
+      // same month apart — "JUNE" in the display face over "2025" in the body
+      // one — so the two halves are resolved here rather than split out of the
+      // label in EncoreSection. A date format, not artist copy, so the name is
+      // upper-cased here rather than through cased() (vm.calSlots[].mark's
+      // rule).
+      return { label: cased(monthLabel(y, mo)), name: MONTHS[mo].toUpperCase(), year: String(y), cells }
     })
     vm.calDays = CAL_DAYS
     // The day the calendar is cued to, which is what the foot prints and the

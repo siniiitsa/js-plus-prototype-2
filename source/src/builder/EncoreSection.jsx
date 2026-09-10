@@ -373,7 +373,11 @@ function NavLinks({ s, color, pills = false }) {
 // written before it got — Retro's cream, the flat four's pill ground — and is
 // passed only by the calendar's slot list, whose frame stands a cream disc on
 // an ink pill and would otherwise draw cream on cream.
-function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg, size: sizeProp }) {
+// `style` is spread last in both branches — ListenLink's precedent, and added
+// for the calendar's layout 3, whose frame draws this pill at the card's full
+// width with the label at one end and the disc at the other. No caller written
+// before it passes one, so it is a no-op by inspection.
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg, size: sizeProp, style }) {
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
@@ -414,6 +418,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
         // it, and the `full` scale the 390 pricing frame asks for, are
         // untouched.
         ...labelStyle(s, sizeProp ?? pick('20px', undefined, '12.4px')),
+        ...style,
       }}>
         {text}
         {disc ? (
@@ -437,6 +442,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
       ...row('8px'), background: bg ?? s.ac, color: fg ?? s.acFg, fontSize: '10px', fontWeight: 700,
       letterSpacing: '1.2px', textTransform: 'uppercase', padding: '9px 18px',
       borderRadius: s.btnR, cursor: 'pointer', whiteSpace: 'nowrap',
+      ...style,
     }}>
       {text}
       <span style={{
@@ -6250,6 +6256,217 @@ function Calendar({ s }) {
                     {...(s.retro
                       ? { bg: s.tx, fg: '#FBF6EA', shadow: s.ac, discFg: s.ac }
                       : null)} />
+        </div>
+      </div>
+    )
+  }
+
+  // v2 — Booking Calendar layout 3 · Mobile availability, one composition
+  // across three frames: the 768 (984:10605) and 390 (984:10673) masters
+  // verbatim, the 1440 one (964:68645) on the 1180 canvas at × 0.82, which is
+  // the whole of `z` below. A cream card carrying the day the visitor is on in
+  // display type, the month under it, one dot per day of that month, a
+  // three-state key, and the enquiry line as a full-width pill.
+  //
+  // Every box in all three masters is the desktop component's own number — the
+  // 20 padding, the 30 corner, the 2 outline, the 18 stack gap, the 8 grid gap,
+  // the 30.713 dot with its 2.559 ring, the 21 legend gap, the pill's 54 on a
+  // 46 disc — so the branch is one `z`, one type table and no width branch at
+  // all. This is the first section in the pass with none. Only the type ramps:
+  // title 24/19/18, display-lg 96/60/40, display-sm 40/32/26, body-lg 16/15/15,
+  // body-md 14/13/13, body-sm 12 throughout, and `list` 16/**12**/**13** —
+  // non-monotonic, the repertoire's and the pricing deck's case, and the very
+  // three numbers layout 2 reads off its own masters.
+  //
+  // The main component (436:1634) is **340** wide and the three instances draw
+  // it at 405, 708 and 370, all of them filling. That closes the plan's open
+  // question 1 for this section the way the bio's main component closed it
+  // there: there is no wider master to cap against, so the card fills our 1052
+  // column and the dot rows spread with it, the frame's own `justify-between`
+  // carried past any width it was ever drawn at. Its cost is named rather than
+  // engineered away — the dot is `shrink-0` at four widths, so at 1052 a 25px
+  // dot sits in a 144px column where the 708 master gives it 95 and the 405 one
+  // 52. Airier than anything Figma drew, and the mechanism is the frame's.
+  //
+  // This design has **no arrows**, so `mi` reaches nothing (layout 2's case).
+  // The grid is month 0 — the month the artist cued — and `sel` can only ever
+  // name a day in it, so the head, the grid and the pill agree by construction
+  // rather than by searching the whole CAL_SPAN window the way layout 1 must.
+  if (s.v2) {
+    const desk = !s.narrow
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const T = desk
+      ? { title: 24, dispLg: 96, dispSm: 40, bodyLg: 16, bodyMd: 14, bodySm: 12, list: 16 }
+      : s.mob
+        ? { title: 18, dispLg: 40, dispSm: 26, bodyLg: 15, bodyMd: 13, bodySm: 12, list: 13 }
+        : { title: 19, dispLg: 60, dispSm: 32, bodyLg: 15, bodyMd: 13, bodySm: 12, list: 12 }
+
+    // The frame's card is `sem/box/1`, which under Retro is a literal: this
+    // palette's lightest colour is the page ground itself, so paperOf() hands
+    // back the beige the card stands on (the repertoire's rule). The flat four
+    // take their own `paper`, and the 2px outline the frame draws goes round it
+    // on every theme — without it a palette whose lightest colour IS its
+    // background draws this card as a hole in the page (the calendar's own
+    // layout-1 lesson).
+    const panel = s.retro ? '#FAECD5' : s.paper
+    const ink = s.retro ? s.tx : s.paperFg
+    // The numeral and the picked dot are the accent, which is not guaranteed to
+    // separate from a paper card (Lime's is acid green on pale lime), so the
+    // flat four keep the card's own ink — layout 2's `hue`, and here it still
+    // leaves the three dot states distinct, the picked one being *filled* where
+    // a free one is a ring.
+    const hue = s.retro ? s.ac : s.paperFg
+    // A booked day is a filled dot a register down from the card — `sem/box/2`
+    // under Retro, a half-tone of the card's ink on the flat four, so it can
+    // never be mistaken for the solid picked dot or for the ring.
+    const taken = s.retro ? '#E1CAA5' : s.paperLine
+
+    // The month on show, and the day inside it that is lit. `at` is the day's
+    // index in `month.cells`, which carries the lead blanks — so `at % 7` is
+    // the weekday column, and the head reads its "Tue" off the grid rather than
+    // working a weekday out. A **booked** day is never picked: publishing again
+    // re-renders the open tab, so the artist can block the day a visitor had
+    // lit, and the head would otherwise name a day the dots draw as taken.
+    const month = s.calMonths[0]
+    const want = (s.live && sel) || s.calPick
+    const at = want ? month.cells.findIndex((c) => c.iso === want) : -1
+    const hit = at >= 0 && !month.cells[at].booked ? month.cells[at] : null
+    const line = hit ? hit.line : s.calPrompt
+
+    // The frame draws no numerals in the grid, so the head is the only place
+    // the date is named — which is why it is 96px tall and why both halves of
+    // it are rendered or not rather than printed blank. With nothing picked
+    // (the artist blocked their own opening day, or a visitor clicked the lit
+    // dot again) the card opens on the month alone and the pill prints
+    // `calPrompt`, the section's own empty cue in both earlier layouts.
+    const head = (
+      <div style={col('0')}>
+        {!!hit && (
+          <span style={{
+            fontFamily: s.display, fontSize: u(T.dispLg), lineHeight: 0.89,
+            letterSpacing: s.dls, color: hue,
+          }}>{hit.d}</span>
+        )}
+        {/* The frame spaces these two apart rather than gapping them, so the 12
+            is a minimum with no master behind it — layout 2's foot row, where
+            the same number is written for the same reason. It is inert at every
+            width the seed reaches and only ever stops a long month name butting
+            into the weekday on one of the flat four's wider display faces. */}
+        <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
+          <div style={col(u(2.745), { alignItems: 'flex-start' })}>
+            <span style={{
+              fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1, letterSpacing: s.dls,
+            }}>{month.name}</span>
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+            }}>{month.year}</span>
+          </div>
+          {!!hit && (
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, whiteSpace: 'nowrap',
+            }}>{s.calDays[at % 7]}</span>
+          )}
+        </div>
+      </div>
+    )
+
+    // The frame lays the day-name row out as seven `flex: 1 0 0` cells and the
+    // dot rows as `justify-between` over fixed dots — two different mechanisms,
+    // so its own letters miss the columns they head by 11px at 405 and by 32 at
+    // 708. That is hand-set, not a design (the pricing deck's normalise-and-
+    // say-so rule, and the layout-2 calendar's ragged weekday column), and at
+    // our 1052 it would be worse than either. Both rows go on one seven-column
+    // grid instead, which is also what makes a week a *row* of it: the month is
+    // the artist's, so it runs five rows for the seeded June and six when a
+    // month needs six, where the frame draws a flat four whatever the month.
+    const grid = { display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', rowGap: u(8) }
+    const dayName = (d, i) => (
+      <span key={i} style={{
+        height: u(20), display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, color: ink,
+      }}>{d.charAt(0)}</span>
+    )
+
+    // Three states, the legend's own: taken, picked, free. The ring is the
+    // frame's 2.559 rather than `border/thin`'s 2 — it is a raw value on the
+    // ellipse, not a token, and at 30px it is the whole of the dot's form.
+    // Clicking the lit dot unlights it, layout 1's cell and the map's pin.
+    const dot = (c, i) => {
+      if (c.iso === undefined) return <span key={i} />
+      const on = hit ? c.iso === hit.iso : false
+      const onClick = s.live && !c.booked
+        ? () => setSel((v) => (v === c.iso ? '' : c.iso))
+        : undefined
+      return (
+        <span key={i} onClick={onClick} style={{
+          width: u(30.713), height: u(30.713), borderRadius: '999px', justifySelf: 'center',
+          background: on ? hue : c.booked ? taken : 'transparent',
+          border: on || c.booked ? 'none' : `${u(2.559)} solid ${ink}`,
+          cursor: onClick ? 'pointer' : undefined,
+        }} />
+      )
+    }
+
+    return (
+      <div style={col(u(30))}>
+        {/* The wrapper frame's own head, which the plan allocates to this
+            section — "Book Me" over the card, at the page's left edge and on
+            the page ground rather than the card. It takes `heading`, whose
+            default stays "Availability": re-pointing TITLES.calendar at the
+            frame's words would move layout 2's signed-off head, which is
+            exactly the objection that let the tags row re-point its own dead
+            entry and stops this one. */}
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+          letterSpacing: s.dls, color: s.tx,
+        }}>{s.title}</h2>
+        <div style={col(u(18), {
+          background: panel, color: ink, padding: u(20),
+          border: `${s.bw} solid ${ink}`, borderRadius: u(30), overflow: 'hidden',
+        })}>
+          {head}
+          <div style={grid}>
+            {s.calDays.map(dayName)}
+            {month.cells.map(dot)}
+          </div>
+          {/* The three labels are the frame's own, the media player's "● Popular"
+              precedent, and the row is drawn whole whatever the month holds: a
+              key is the vocabulary of the design, not a summary of the page, so
+              it does not hide the line for a state this month happens not to be
+              in (the gallery's hide-the-empty-row rule is about a tile that
+              promises somewhere to go). */}
+          <div style={row(u(21), {
+            padding: `${u(4)} 0`, flexWrap: 'wrap',
+            fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, color: ink,
+          })}>
+            <span><span style={{ color: taken }}>●</span> Booked</span>
+            <span><span style={{ color: hue }}>●</span> Selected</span>
+            <span>○ Free</span>
+          </div>
+          {/* The frame's foot *is* the pill, and what it carries is the enquiry
+              line — so `time` reaches this layout as it reaches the other two,
+              and `cta` is the field this one has no seat for (the header's seal
+              in layout 3, and layout 2's questions 4/7/8/12). Labelling the
+              pill `calCta` instead would have dropped the composed line, which
+              is the section's own output and the only thing on the card that
+              names the hour.
+              Its box does not ramp — 54 tall on a 46 disc in all three masters,
+              layout 2's reading of the very same pill — so the 46 goes in at
+              both narrow widths and `full` opts the 390 canvas back up to it.
+              `size` is passed at all three here rather than at narrow only:
+              this branch has no signed-off half whose drift it has to match.
+              `whiteSpace` is the one override the new `style` prop is really
+              for besides the width — our line is `enquiryLine`'s whole
+              sentence where the frame's is four words, so at 390 it takes two
+              lines and the pill grows, rather than running off the card. */}
+          <BookPill s={s} to={s.calBookTo} label={line} glyph="arrow"
+                    disc={desk ? 38 : 46} size={u(T.list)} shadow="transparent"
+                    {...(s.mob ? { full: true } : null)}
+                    {...(s.retro ? { bg: s.ac, fg: '#FBF6EA', discFg: s.ac } : null)}
+                    style={{
+                      width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
+                    }} />
         </div>
       </div>
     )
