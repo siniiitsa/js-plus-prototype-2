@@ -761,9 +761,39 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       month: g?.month ?? '', day: g?.day ?? '',
       url: extUrl(g?.link ?? ''),
       pin: PINS[i % PINS.length],
+      // What layout 3's chip row matches a row against. Case-folded here rather
+      // than in EncoreSection, and beside the label it was folded from, so a
+      // theme that upper-cases the chip cannot stop it matching its own gigs —
+      // `vm.songs.tags`' rule exactly.
+      cityKey: String(g?.city ?? '').trim().toLowerCase(),
       hue: Math.abs(lum(h) - lum(gigGround)) > 0.22 ? h : gigFallback,
     }
   })
+  // §10.2 layout 3's filter row, derived from the gigs' own cities the way
+  // `repChips` derives the repertoire's from the songs' tags — one chip per
+  // distinct city with the number of shows in it, behind the same All reset.
+  // The frame's own row is All / Upcoming · 5 / Past · 3 / Filter ↓, and every
+  // one of those is a status the section cannot know (nothing here reads the
+  // clock) or a control with nothing to open; the city is what the heading
+  // "Where I'm playing." is actually about, and it is the artist's own typing.
+  //
+  // Deduped case-insensitively, keeping the casing it was first typed in, and
+  // **not built at one city**: a row of All plus one chip filters to the same
+  // list twice, which is the pager's and the pricing chip row's rule — a
+  // distinction that distinguishes nothing is not a design. A gig with no city
+  // joins no chip and is reachable under All alone, `repFlat`'s promise.
+  const gigCities = new Map()
+  gigList.forEach((g) => {
+    const label = String(g?.city ?? '').trim()
+    if (!label) return
+    const k = label.toLowerCase()
+    if (!gigCities.has(k)) gigCities.set(k, { label, city: k, n: 0 })
+    gigCities.get(k).n += 1
+  })
+  vm.gigChips = gigCities.size > 1
+    ? [{ label: cased(REP_ALL), city: null, n: vm.gigs.length },
+       ...[...gigCities.values()].map((ch) => ({ ...ch, label: cased(ch.label) }))]
+    : []
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
@@ -771,6 +801,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
+  // Layout 3's foot pill. Uncased, the footer's rule: the pill has always drawn
+  // an uncased label and casing it would shout on Grunge and Pop.
+  vm.mapCta = cv('cta', 'Book Now')
 
   // testimonials — the songs rule, the gigs' and the packages': an absent key
   // means the seeded QUOTES, an emptied array means no reviews at all, and

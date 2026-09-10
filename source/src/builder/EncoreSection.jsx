@@ -28,7 +28,7 @@
 import { useId, useRef, useState } from 'react'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
-  ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search, MapPin,
+  ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search, MapPin, User,
   Image as ImageIcon, Youtube, Instagram, Music2,
   Settings, Volume2, Maximize, Bookmark, Link2, Bell,
 } from 'lucide-react'
@@ -7193,6 +7193,11 @@ function EventsMap({ s }) {
   // Hooks sit above the layout branch because LayoutPicker mounts every layout.
   const [page, setPage] = useState(0)
   const [sel, setSel] = useState(-1)
+  // Layout 3's filter chip, and the one hook in this component the first two
+  // layouts do not read. It is appended rather than inserted, so v0's and v1's
+  // hook order is unchanged, and it indexes `s.gigChips` — which is derived
+  // from the gigs' own cities and is empty below two of them.
+  const [chip, setChip] = useState(0)
 
   // v0 — Events Map layout 1 · Compact tile (§10.2 reference design): the
   // coverage tile beside the upcoming-gigs list, banded top and bottom with
@@ -7851,6 +7856,559 @@ function EventsMap({ s }) {
             the row comment's case and does not survive a fifth gig. */}
         <div style={col(u(18))}>{travel}{list}</div>
         {featured}
+      </div>
+    )
+  }
+
+  // v2 — Events Map layout 3 · Split list + map (Figma 964:68649, 1440 × 804;
+  // 977:23264, 768 × 809; 982:10389, 390 × 878): the artist's gigs as a plain
+  // ruled list down the left of the section's own full-bleed mustard sheet,
+  // beside the olive radius-map panel that features whichever of them the
+  // visitor is on.
+  //
+  // **The section paints its own sheet.** `sem/bg` is `#D8A227` on all three
+  // masters and a column scan of each render samples it corner to corner — the
+  // mustard band the header session's y-range table put at y≈5900–6510 is this
+  // whole section, not a strip inside it. It gets there the repertoire's and
+  // the gallery's way, a block carrying the root's padding back as a negative
+  // margin, so the root's `darkMap` flag (which is `s.v0`'s) does not widen and
+  // the flat four get a sheet the Retro-only flag could not give them. The
+  // sheet is `s.pillBg` — the palette's lightest tag, which under Retro **is**
+  // that mustard, and whose `pillFg` is the rust the frame sets every display
+  // string in, legible against it by construction. There is **no grain**: a
+  // flat patch of the sheet and of the panel both scan at stddev 0.
+  //
+  // **768 keeps the two columns; only 390 stacks** — the events map's own
+  // narrow split, met for the second time in this section. Both wide masters
+  // are two `flex-[1_0_0]` halves (634 + 60 + 634, 339 + 30 + 339) and the 390
+  // one is a `flex-col gap-[30px]`.
+  //
+  // **The right-hand panel is the same Figma component layout 2 fitted**
+  // (`radius-map`), and it is written again rather than lifted — the media
+  // player's rule: grep first, then count the disagreements. Four here. Its
+  // head carries a second slot layout 2's panel has no seat for; its ground is
+  // the olive card where layout 2's is a cream panel, so every ink on it pairs
+  // the other way (the status tab is olive-on-olive with mustard type against
+  // layout 2's cream-with-rust); its viewport's derived shape differs at all
+  // three widths, most of all at 390, a landscape 350/166 strip against layout
+  // 2's 346/307 portrait; and its rings are mustard round a pinned map marker
+  // where layout 2's are cream round a globe disc. A shared leaf would have had
+  // to take a type table, two grounds and a head — the component rewritten with
+  // a signed-off branch hanging off it. What *is* identical is worth naming
+  // too: the 30 radius, the 24 gap, the 32/12/12 inset, the `radius/control`
+  // 14→20 corner, the raster treatment — and the whole live seam, the same
+  // `page` over the same `gigPage`, the same `sel`, picked and not toggled.
+  //
+  // **The chip row is the gigs' own cities** (`vm.gigChips`, above). The
+  // frame's All / Upcoming · 5 / Past · 3 / Filter ↓ is three claims and a dead
+  // control — nothing in this file reads the clock, so "upcoming" and "past"
+  // are unknowable — and the city is what the heading "Where I'm playing." is
+  // about. It is derived, it carries the frame's own `label · count`, and it is
+  // not drawn below two cities. Its cost is named rather than engineered away:
+  // `g.pin` pairs a gig with a dot by its index in the **whole** list, so a
+  // filtered page of six gigs or more can put two gigs on one dot (indices
+  // 0 and 5 both surviving a filter that hides 1–4). Pairing by the row's place
+  // on the *page* would close that and open something worse — at 390, where a
+  // page is one gig, every gig would light dot 0 and the map would never move.
+  //
+  // **Five things the frame draws are dropped**, all of them claims or controls
+  // with nowhere to go: the row's weekday (no year and no clock, so `SAT` is
+  // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (the row's
+  // own hour takes that seat, layout 2's own words), the 30/60/120mi ring
+  // labels and the zoom controls (numbers the artist never typed, and a control
+  // this file has nothing to do — layout 2 dropped both already), and
+  // "Updated 2m ago", a timestamp nothing here can produce. The row's `↗` goes
+  // too, because the row already carries the same address in its own
+  // `Tickets →` column and that is the column which shapes the row — the events
+  // map's allocate-each-field-once rule.
+  //
+  // **What is left seats every field the section has, exactly once**: `terms`
+  // in the panel's top row, and the frame's own foot line — "UK · 8 pins ·
+  // 120 mi radius", a region, a count and a distance — split into `base` with
+  // the count on the left and `radius` in the dead link's seat on the right.
+  // The eyebrow stays the frame's label, layout 1's call in this same section:
+  // `base` was tried there first and read back as a stutter, `TITLES.map` being
+  // "Manchester" already. Every column of `c.gigs` is on a row.
+  //
+  // **"See all gigs" becomes the page's Book Now.** The frame closes the column
+  // with a `Retro/Poster` pill that on a one-page site has nowhere to go, which
+  // is the footer's dead `href="#"` again; `FIELDS.map.cta` and `vm.bookTo`
+  // give the seat something real, and `map` is not in `CTA_TARGETS.book` so it
+  // needs no self-exclusion (the testimonials' layout-2 case).
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    // Every box in this design is the desktop component's own number at all
+    // three widths — the 56 date circle, the 14 row padding, the 14 row gap,
+    // the 18 between the column's blocks, the 8/5 chip gap, the 12/5 chip
+    // padding, the 30 panel radius, the 24 panel gap, the 46 pill disc — so the
+    // whole branch flows through one scale. What genuinely differs is the page
+    // inset, the panel's own inset, the map container's corner, the column gap
+    // and the type.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // Resolved by `get_variable_defs` on all three masters rather than
+    // measured: the emitted CSS prints the desktop default at every width.
+    // `size/list` goes back *up* at 390 (16 → 12 → 13) with no column-width
+    // reason, which is the same non-monotonic table layout 2 wrote down for
+    // this very section. `body-sm` does not move at all, and `Label/XXXS` is a
+    // literal 7 rather than a token, so the month above the day is 5.7px on the
+    // desktop canvas and 7 on both narrow ones.
+    const T = desk
+      ? { title: 24, list: 16, bodyMd: 14, bodySm: 12, labelXs: 20, chip: 12, eyebrow: 15 }
+      : tab
+        ? { title: 19, list: 12, bodyMd: 13, bodySm: 12, labelXs: 14, chip: 11, eyebrow: 12 }
+        : { title: 18, list: 13, bodyMd: 13, bodySm: 12, labelXs: 12, chip: 11, eyebrow: 12 }
+
+    // The sheet and the four inks that stand on it. Retro keeps the frame's own
+    // literals; the flat four get one legible ink where the frame has three
+    // (cream copy, `#111` hairlines, an olive rule), because `contrastInk` is
+    // the only value guaranteed to read on an arbitrary lightest tag — the row
+    // rule is the exception, taking the palette's darkest hue so the list still
+    // has a second tone. `#E8B33B` is the frame's lift of its own mustard for
+    // the date circle, which has no derived equivalent: the flat four leave the
+    // circle unfilled and let its hairline draw it.
+    const sheet = s.pillBg
+    const hot = s.pillFg
+    const ink = s.retro ? '#111111' : contrastInk(sheet)
+    const sheetFg = s.retro ? '#FBF6EA' : contrastInk(sheet)
+    const rule = s.retro ? '#5B5E2E' : s.deep
+    const dial = s.retro ? '#E8B33B' : 'transparent'
+    // The panel, its plate and its tab. Layout 2's pairs, with the tab moved to
+    // a dark card: the frame sets an olive pill on the olive panel with mustard
+    // type, so the flat four lift the card rather than trying to darken it.
+    const card = s.retro ? '#6D7040' : s.deep
+    const cardFg = s.retro ? '#FBF6EA' : s.deepFg
+    const cardLine = s.retro ? '#111111' : s.deepFg25
+    const plate = s.retro ? '#292A1C' : s.mapBg
+    const plateFg = s.retro ? '#FBF6EA' : s.mapFg
+    const tabBg = s.retro ? '#5B5E2E' : s.deepFg25
+    const tabFg = s.retro ? s.pillBg : s.deepFg
+
+    // Body/SM and Body/Chip. The tracking is stated as a percentage (-6) and
+    // ramps with its own token, so it is the product rather than the frozen
+    // desktop -0.72 (the pricing deck's rule).
+    const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
+    const chip12 = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      letterSpacing: u(-0.06 * T.chip), textTransform: 'uppercase', whiteSpace: 'nowrap',
+    }
+
+    // The filter, then the page, then the gig the panel features. `chip`
+    // indexes the derived row and is clamped against it (Publish re-renders a
+    // tab that is already open), pinned to 0 on the canvas as the pricing
+    // deck's `active` is — the frame draws its first chip filled, so here the
+    // picture *is* a choice. Each row keeps the index it has in the whole list,
+    // so `sel` survives both the filter and the pager and `g.pin` stays the dot
+    // this gig has always lit.
+    const chips = s.gigChips
+    const active = s.live && chips.length ? Math.min(Math.max(chip, 0), chips.length - 1) : 0
+    const all = s.gigs.map((g, i) => ({ g, i }))
+    const filtered = active > 0 ? all.filter((r) => r.g.cityKey === chips[active].city) : all
+    // Six rows is the Figma component's own default content; five is the
+    // section's own rule, `PINS.length`, so that one page of gigs is exactly
+    // one set of distinct dots (the gallery's "the count is the section's when
+    // a field states it"). 390 draws **one** row and two arrows, which is the
+    // repertoire's derived 3/3/1 in this section's numbers.
+    const perPage = s.mob ? 1 : s.gigPage
+    const pages = Math.max(1, Math.ceil(filtered.length / perPage))
+    const pg = s.live ? Math.min(page, pages - 1) : 0
+    const shown = filtered.slice(pg * perPage, (pg + 1) * perPage)
+    // Picked, not toggled — the panel always holds one — and falling back to
+    // the page's first gig whenever `sel` is off it, which covers the canvas,
+    // the -1 start, a filter that hides the picked gig and a gig deleted under
+    // the visitor in one expression. It is `some`, not layout 2's contiguous
+    // range test: a filtered page's indexes have holes in them.
+    const feat = s.live && shown.some((r) => r.i === sel) ? sel : (shown.length ? shown[0].i : -1)
+    const feature = s.gigs[feat]
+    const onPick = (i) => (s.live ? () => setSel(i) : undefined)
+    // The lit row is the featured gig — layout 1's lit row and layout 2's
+    // featured panel in one control — but it is **not drawn at one row**, the
+    // pager's and the chip row's rule: on a page holding a single gig it would
+    // distinguish nothing, which is exactly the 390 canvas and exactly what its
+    // master draws. On the canvas the lit row is the page's first where the
+    // 1440 frame lights its third; that is the -1 start showing, the same
+    // intended diff layout 2 ships.
+    const litRow = (i) => shown.length > 1 && i === feat
+
+    const head = (
+      <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%' })}>
+        {/* The eyebrow stays the frame's own label, which is layout 1's call in
+            this very section ("Shows/coverage"). `base` was tried here first,
+            on the gallery's prefer-a-field rule, and read back as a stutter:
+            `TITLES.map` is already "Manchester", so the head printed "Based in
+            Manchester" over "Manchester" — the pricing deck's
+            render-the-head-and-read-it rule. It goes along the map's foot
+            instead, where the frame's own line already names a place. */}
+        <span style={body12}>Gigs &amp; travel</span>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+          letterSpacing: s.dls, color: hot,
+        }}>{s.title}</h2>
+      </div>
+    )
+
+    // Every chip is Body/SM. The frame sets the selected one in Body/MD, two
+    // points larger, which grows whichever chip is picked and shunts the row —
+    // hand-set emphasis rather than a design, the pricing deck's
+    // normalise-and-say-so rule. The 390 master wraps its row; the two wide ones
+    // clip theirs, so wrapping is taken at all three (the tags row's rule).
+    const chipRow = chips.length > 0 && (
+      <div style={row(u(desk || tab ? 8 : 5), { flexWrap: 'wrap', maxWidth: '100%' })}>
+        {chips.map((ch, k) => {
+          const on = k === active
+          return (
+            <span
+              key={`${ch.city || 'all'}-${k}`}
+              onClick={s.live ? () => { setChip(k); setPage(0) } : undefined}
+              style={{
+                ...body12, flex: 'none', whiteSpace: 'nowrap',
+                border: `1px solid ${ink}`, borderRadius: '999px',
+                padding: `calc(${u(5)} - 1px) calc(${u(12)} - 1px)`,
+                background: on ? hot : 'transparent', color: on ? sheet : sheetFg,
+                cursor: s.live ? 'pointer' : undefined,
+              }}
+            >{ch.city ? `${ch.label} · ${ch.n}` : ch.label}</span>
+          )
+        })}
+      </div>
+    )
+
+    // One row per gig on the page. `k` is its place on the page rather than in
+    // the list, and it is only used for the rule below the row: the frame draws
+    // a 2px olive rule under every row except the lit pill and the row above
+    // it, both of which would run into its rounded edge.
+    const gigRow = ({ g: gg, i }, k) => {
+      const on = litRow(i)
+      const next = shown[k + 1]
+      // The gallery's hide-the-empty-row rule for a link affordance, which is
+      // what layout 2's ↗ already does here: live, the row is a link only where
+      // there is somewhere to go; the canvas keeps the label on every row,
+      // that being the reference design.
+      const tix = extLink(s, gg.url)
+      const Tix = tix ? 'a' : 'span'
+      const showTix = !!tix || !s.live
+      const mark = (
+        <span style={col(0, {
+          width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
+          borderRadius: '999px', overflow: 'hidden', boxSizing: 'border-box',
+          background: on ? ink : dial, border: `1px solid ${ink}`,
+          color: on ? hot : sheetFg,
+        })}>
+          {/* Label/XXXS, a literal 7 at every width rather than a token. The
+              frame's third line is the weekday, which needs a year and a clock
+              and so is not derivable from "Jul 12". */}
+          <span style={{
+            fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
+          }}>{gg.month}</span>
+          <span style={{ fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{gg.day}</span>
+        </span>
+      )
+      const lines = (
+        <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
+          <span style={{
+            fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+            color: on ? sheet : hot, overflowWrap: 'anywhere',
+          }}>{gg.venue}</span>
+          {/* The city alone, where the frame prints "Manchester · 22:00": the
+              hour has its own chip below, and putting it in both is what makes
+              the 768 master clip its own sub line at 107px of column. The lit
+              row sets it in Body/Eyebrow, which is the frame's own mark of the
+              featured show and the only place that token is used. */}
+          {!!gg.city && (
+            <span style={on
+              ? { fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3 }
+              : body12}>{gg.city}</span>
+          )}
+        </div>
+      )
+      // The frame's "Upcoming"/"Past" is a status the section cannot know, and
+      // the row's own hour is what belongs in that chip — layout 2's words, and
+      // its rule that an emptied `time` drops the chip rather than printing an
+      // empty pill.
+      const when = !!gg.time && (
+        <span style={{
+          ...body12, flex: 'none', whiteSpace: 'nowrap',
+          border: `1px solid ${on ? hot : ink}`, borderRadius: '999px',
+          padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`,
+          background: on ? ink : undefined, color: on ? hot : undefined,
+        }}>{gg.time}</span>
+      )
+      const tickets = showTix && (
+        <Tix {...tix} style={{
+          ...body12, flex: 'none', whiteSpace: 'nowrap',
+          color: 'inherit', textDecoration: 'none', cursor: tix ? 'pointer' : undefined,
+        }}>Tickets →</Tix>
+      )
+      return (
+        <div key={i} onClick={onPick(i)} style={{
+          width: '100%', boxSizing: 'border-box', color: on ? sheet : sheetFg,
+          cursor: s.live ? 'pointer' : undefined,
+          // Figma strokes an auto-layout frame inside the size it states — the
+          // lit pill measures the same 84 as the rows either side of it — so
+          // both outlined boxes here give their stroke back out of their own
+          // padding (the repertoire's rule). The pill also insets its content
+          // by 10 left and 29 right, which is why the frame's third row looks
+          // hand-shifted in the metadata and is not.
+          ...(on
+            ? {
+              background: hot, border: `2px solid ${ink}`, borderRadius: '999px',
+              padding: `calc(${u(14)} - 2px) calc(${u(29)} - 2px) calc(${u(14)} - 2px) calc(${u(10)} - 2px)`,
+            }
+            : {
+              padding: `${u(14)} 0`,
+              // The rule is an inset shadow, not a border: Figma strokes an
+              // auto-layout frame without growing it, and every row in the
+              // frame measures the same 84 whether it carries one or not (the
+              // repertoire's rule, met here where `calc(padding − border)`
+              // would have shifted the row's content instead of its edge).
+              ...(next && litRow(next.i) ? null : { boxShadow: `inset 0 -2px 0 ${rule}` }),
+            }),
+          ...(s.mob ? col(u(14), { alignItems: 'flex-start' }) : row(u(14))),
+        }}>
+          {/* 390 stacks the row: the circle and the lines on one line at the
+              master's own 20 gap, then the tickets link and the hour chip on a
+              second. The two wide masters run all four across. */}
+          {s.mob ? (
+            <>
+              <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
+              {(showTix || !!gg.time) && (
+                <div style={row(u(10), {
+                  width: '100%', justifyContent: showTix ? 'space-between' : 'flex-end',
+                })}>{tickets}{when}</div>
+              )}
+            </>
+          ) : <>{mark}{lines}{when}{tickets}</>}
+        </div>
+      )
+    }
+
+    const list = (
+      <div style={col(0, { width: '100%', borderTop: `1px solid ${ink}` })}>
+        {shown.map((r, k) => gigRow(r, k))}
+        {/* The pricing deck's one message: the column is a composition, and a
+            hole where the list stands is not one of its states. Only an emptied
+            `gigs` reaches it — the chips are derived from the gigs, so a filter
+            can never empty the list it was built from. */}
+        {shown.length === 0 && (
+          <span style={{ ...body12, padding: `${u(14)} 0` }}>No dates yet.</span>
+        )}
+        {/* Two arrows and no numbers, which is the only pager this component
+            draws — the 390 master's two full-measure pills. Derived from the
+            list and not drawn at one page, so the seeded five gigs carry none
+            at either wide width and five pages of one at 390. */}
+        {pages > 1 && (
+          <div style={{ marginTop: u(10) }}>
+            <Pager s={s} colour={hot} frame={{
+              pages: [], grow: true, size: u(54), radius: u(60), bw: '1px',
+              onStep: s.live
+                ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+                : undefined,
+            }} />
+          </div>
+        )}
+      </div>
+    )
+
+    // One dot per gig on the page, at the position sectionVm paired it with,
+    // the featured one grown and ringed. The frame's own five dots are absolute
+    // pixels leaked to all three masters (450, 200 in a 350-wide viewport at
+    // 390), which is the leaked-desktop-number case at its plainest.
+    const pins = shown.map(({ g: gg, i }) => {
+      const on = i === feat
+      return (
+        <span key={i} onClick={onPick(i)} style={{
+          position: 'absolute', left: gg.pin.x, top: gg.pin.y,
+          width: on ? u(14) : u(8), height: on ? u(14) : u(8),
+          borderRadius: '999px', background: on ? s.ac : plateFg, opacity: on ? 1 : 0.65,
+          border: on ? `2px solid ${plateFg}` : undefined, boxSizing: 'content-box',
+          transform: 'translate(-50%, -50%)', cursor: s.live ? 'pointer' : undefined,
+        }} />
+      )
+    })
+
+    const panel = (
+      <div style={col(u(24), {
+        background: card, color: cardFg, borderRadius: u(30), alignItems: 'flex-start',
+        // The one box in this design that does not carry the desktop number
+        // down: 32 at 1440 and 12 at both narrow masters, where 390 also gives
+        // its own 10 back horizontally.
+        padding: desk ? u(32) : tab ? u(12) : `${u(12)} ${u(10)}`,
+      })}>
+        <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
+          <div style={row(u(12), {
+            width: '100%', justifyContent: 'space-between',
+            ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+          })}>
+            {/* The frame's "● IN TRANSIT" is a claim about a booking; what the
+                tab can honestly say is what the panel is, which is layout 2's
+                own answer in this section and the media player's before it. */}
+            <span style={row(u(8), {
+              background: tabBg, color: tabFg, borderRadius: '999px', flex: 'none',
+              padding: `${u(6)} ${u(12)}`, ...chip12,
+            })}>
+              <span style={{
+                width: u(6), height: u(6), borderRadius: '999px', background: tabFg, flex: 'none',
+              }} />
+              Featured
+            </span>
+            {/* "Updated 2m ago" is a timestamp nothing here can produce. The
+                travel terms are the section's own note about how far it goes,
+                which is what a line in this seat is for; layout 2 put them
+                along the map's foot, and here the foot's two slots are already
+                spoken for by the other two fields. */}
+            {!!s.mapTerms && (
+              <span style={{ ...body12, flex: 'none', opacity: 0.6 }}>{s.mapTerms}</span>
+            )}
+          </div>
+          {feature ? (
+            <div style={col(u(4), { width: '100%', minWidth: 0 })}>
+              <h3 style={{
+                margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+                letterSpacing: s.dls, overflowWrap: 'anywhere',
+              }}>{feature.venue}</h3>
+              {!!feature.city && (
+                <span style={{
+                  fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, opacity: 0.7,
+                }}>{feature.city}</span>
+              )}
+            </div>
+          ) : (
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, opacity: 0.7,
+            }}>No dates yet.</span>
+          )}
+        </div>
+
+        {/* `radius/control` is 14 at 1440 and a raw 20 at both narrow masters —
+            the one corner in this component that ramps, exactly as layout 2
+            found it. */}
+        <div style={col(0, {
+          width: '100%', border: `1px solid ${cardLine}`, borderRadius: u(desk ? 14 : 20),
+          overflow: 'hidden',
+        })}>
+          {/* The viewport is `flex-[1_0_0]` inside a panel whose height the
+              masters state, so its shape is derived rather than designed:
+              570 × 472 at 1440, a portrait 315 × 524 at 768 and a landscape
+              350 × 166 at 390. Our panel is content-tall, so the aspect is what
+              carries each master's picture onto a canvas the frame's width is
+              not. */}
+          <div style={{
+            position: 'relative', width: '100%', background: plate, overflow: 'hidden',
+            aspectRatio: desk ? '570 / 472' : tab ? '315 / 524' : '350 / 166',
+          }}>
+            {/* §10.2's street raster, inverted onto the dark plate so the roads
+                read as light lines; the flat four keep layout 1's crossed grid,
+                there being no raster outside Retro. */}
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0,
+              ...(s.mapSrc
+                ? {
+                  backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover',
+                  backgroundPosition: 'center', filter: 'invert(1) grayscale(1) contrast(1.6)',
+                  opacity: 0.26, mixBlendMode: 'screen',
+                }
+                : {
+                  backgroundImage:
+                    `linear-gradient(${s.ac55} 1px, transparent 1px), `
+                    + `linear-gradient(90deg, ${s.ac55} 1px, transparent 1px)`,
+                  backgroundSize: '38px 38px',
+                }),
+            }} />
+            {/* The three coverage rings, at the same absolute 480 / 300 / 140 on
+                all three masters — so what changes is only how much of the
+                viewport they cover, and expressed as a share of its width they
+                carry to a canvas the frame's width is not. All three overrun
+                the frame's own viewport at 768 and 390, where the clip is the
+                picture — and it is the *viewport* that clips, not the container
+                it shares with the foot bar. Only the 390 master states
+                `overflow-clip` there, but without it a 480px ring in a 166px
+                viewport draws straight across the travel line below it, and at
+                desktop the same clip costs four pixels of a 30% edge. Their
+                30mi / 60mi / 120mi labels are distances the artist never typed
+                and contradict the coverage badge: dropped, as layout 2 dropped
+                them. */}
+            {(desk ? [84.2, 52.6, 24.6] : tab ? [152.4, 95.2, 44.4] : [137.1, 85.7, 40]).map((w, i) => (
+              <span key={w} aria-hidden style={{
+                position: 'absolute', left: '50%', top: '50%', width: `${w}%`,
+                aspectRatio: '1', borderRadius: '999px', border: `1px solid ${sheet}`,
+                opacity: i === 0 ? 0.3 : 0.8, transform: 'translate(-50%, -50%)',
+              }} />
+            ))}
+            {pins}
+            {/* The artist's own position, which is what the rings are drawn
+                around. A marker rather than layout 2's plain disc, because this
+                frame draws one: a ringed head over a tail, anchored so the
+                tail's tip is the centre the rings share. */}
+            <span aria-hidden style={col(0, {
+              position: 'absolute', left: '50%', top: '50%', alignItems: 'center',
+              transform: 'translate(-50%, -100%)',
+            })}>
+              <span style={row(0, {
+                background: sheet, color: contrastInk(sheet), padding: u(4),
+                border: `2px solid ${plateFg}`, borderRadius: '999px',
+              })}>
+                <User size={Math.round(16 * z)} />
+              </span>
+              <span style={{
+                width: 0, height: 0, borderLeft: `${u(5)} solid transparent`,
+                borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${sheet}`,
+              }} />
+            </span>
+          </div>
+          {/* The frame's data line is "UK · 8 pins · 120 mi radius" — a region,
+              a count and a distance — and its "EXPAND VIEW ›" is a control with
+              nowhere to expand to. So the same three facts are split across the
+              bar: the artist's base with the count the frame itself carries,
+              and the coverage badge in the link's seat, where the chip face
+              reads as a map legend. 390 stacks the two halves. */}
+          <div style={s.mob
+            ? col(u(10), {
+              width: '100%', alignItems: 'flex-start', padding: `${u(14)} ${u(10)}`,
+              borderTop: `1px solid ${cardLine}`,
+            })
+            : row(u(12), {
+              width: '100%', justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
+              borderTop: `1px solid ${cardLine}`,
+            })}>
+            <span style={body12}>
+              {s.mapBase ? `${s.mapBase} · ` : ''}{s.gigs.length} pins
+            </span>
+            {!!s.mapRadius && <span style={{ ...chip12, flex: 'none' }}>{s.mapRadius}</span>}
+          </div>
+        </div>
+      </div>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        // Horizontally the inset adds `surplus` back, so a published window
+        // wider than the canvas widens the sheet and not the measure.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: sheet, color: sheetFg,
+        padding: `${u(desk ? 56 : tab ? 56 : 60)} calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 10)})`,
+        display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+        gap: u(desk ? 60 : 30), alignItems: 'start',
+      }}>
+        <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0 })}>
+          {head}
+          {chipRow}
+          {list}
+          {/* An emptied label drops the pill — the footer's rule rather than the
+              calendar's, because here it is a block of its own and a wordless
+              block is not one of the column's states. Its box does not ramp
+              (54 tall on a 46 disc at all three masters) and its label does, so
+              `disc` is the frame's own 46 at narrow and `size` goes in at every
+              width: this branch is fresh, so there is no signed-off drift to
+              stay consistent with. */}
+          {!!s.mapCta && (
+            <BookPill s={s} to={s.bookTo} label={s.mapCta} glyph="arrow"
+                      bg={sheet} fg={hot} disc={desk ? 38 : 46} full={!desk} size={u(T.list)}
+                      {...(s.mob ? { style: { width: '100%', justifyContent: 'space-between' } } : null)} />
+          )}
+        </div>
+        {panel}
       </div>
     )
   }

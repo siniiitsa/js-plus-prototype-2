@@ -164,7 +164,7 @@ export const minimalNav = (navSections) =>
 
 export const NVAR = {
   header: 6, bio: 3, media: 3, tags: 3, audio: 3, video: 2, pricing: 3,
-  repertoire: 3, gallery: 3, calendar: 3, map: 2, testimonials: 2, form: 2, footer: 1,
+  repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 2, form: 2, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -786,13 +786,24 @@ export const FIELDS = {
   // emptied array means no gigs, and there is no null sentinel.
   map: [
     { k: 'gigs',    l: 'Upcoming gigs', type: 'gigs', max: 12,
-      // The page size is PINS.length, not a literal — see vm.gigPage.
+      // The page size is PINS.length, not a literal — see vm.gigPage. The
+      // cities are read a second time in layout 3, where they derive the split
+      // list's filter chips (vm.gigChips) the way the songs' tags derive the
+      // repertoire's — so a row's city is a control there as well as a fact.
       hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
-          + `a real link on the published page; the list pages ${PINS.length} at a time.` },
+          + `a real link on the published page; the list pages ${PINS.length} at a time. `
+          + 'Layout 3 also turns the cities into its filter chips.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
     { k: 'base',    l: 'Based in',       d: MAP_BASE },
     { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS },
+    // Layout 3's foot pill, and the only layout that draws one: the split
+    // list's frame closes with a "See all gigs" control that has nowhere on a
+    // one-page site to go, so the seat takes the page's own Book Now instead
+    // (the testimonials' layout-2 case). `map` is not in CTA_TARGETS.book, so
+    // it needs no self-exclusion; an emptied label drops the pill, the footer's
+    // rule rather than the calendar's, because here it is a block of its own.
+    { k: 'cta',     l: 'Button (layout 3)', d: 'Book Now' },
     { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [
