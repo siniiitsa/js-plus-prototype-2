@@ -5947,6 +5947,136 @@ function Gallery({ s }) {
     )
   }
 
+  // v2 — Gallery layout 3 · Masonry grid (Figma 964:68647, 1440 × 789;
+  // 977:23131, 768 × 865; 982:10257, 390 × 678): the section's heading in
+  // display type over a plain grid of bordered, rounded photographs, on the
+  // section's own cream sheet. It is the simplest master in the pass — three
+  // `get_metadata` calls read as arithmetic settle every box, and what is left
+  // is one type token, one colour pair and two questions the frame cannot
+  // answer because it answers them with the page's own height.
+  //
+  // The three masters agree on everything but their insets and their display
+  // size: `sem/bg` #FBF6EA behind the whole section, a 32 gap under the head,
+  // an 8px column gap, `radius/…` 30 and a 1px `scheme/1/stroke/1` outline on
+  // every tile. What they differ over is the page inset (56 all round at 1440,
+  // 30/60 at 768, 20/60 at 390), the row gap (8 at 1440, **20** at both narrow
+  // widths) and `size/display-lg` — 96 / 60 / 40, which is `tab ? s.h1 :
+  // s.dispLg` exactly, the header's own call (79 = 96 × 0.82).
+  //
+  // **The section stands on its own full-bleed cream sheet.** A column scan of
+  // the 1440 page puts #FBF6EA from the gallery's floor to its ceiling where
+  // the bands either side sample the beige #EAD7B8 — a third sheet beside the
+  // pricing tail's olive and the events map's mustard, which the header
+  // session's y-range table did not have. It gets there the repertoire's way,
+  // without touching the root's `cream` flag: the sheet is a block carrying
+  // the root's own padding back as a negative margin, so the diff stays inside
+  // the section and the flat four can take a `paper` the Retro-only root flag
+  // has no way to give them. Horizontally the inset adds `surplus` back, so a
+  // published window wider than the canvas widens the sheet and not the
+  // measure (HeaderV0's rule).
+  //
+  // **The frame draws twelve tiles and this draws seven**, which is the whole
+  // of the intended diff. `FIELDS.gallery.images` is `max: 7` and both fitted
+  // layouts already walk a fixed seven, so twelve is the Figma component's own
+  // count filled with duplicated photographs (its rows repeat images 1, 2 and
+  // 4) — the bio's five-chip rule, and here with the section's field stating
+  // the number outright. Seven into four columns is 4 + 3 and into three is
+  // 3 + 3 + 1, so the last row trails empty cells rather than stretching:
+  // that is the pricing deck's odd-count rule and the repertoire's lone card
+  // in `repeat(3, 1fr)`. The desktop master's own mechanism — a `flex-wrap`
+  // row of `flex-[1_0_0] min-w-[298px]` children — would instead widen the
+  // three tiles of a short second row to a third of the measure each, and with
+  // the aspect below that makes them taller as well: a ragged grid the master
+  // never draws, because twelve into four never leaves a short row. The two
+  // narrow masters settle it anyway, both being an explicit
+  // `grid-cols-[repeat(3,…)] grid-rows-[repeat(4,…)]`.
+  //
+  // **The tile's shape is a residue, not a design.** Every master derives the
+  // tile height from the *page's* stated section height — 789 less its insets,
+  // its head and the 32 leaves 560, three rows of it 181.33; the 768 master
+  // states `h-[660px]` on the grid and the 390 one makes it `flex-[1_0_0]` of
+  // the section's 678. Our section is content-tall and has no such height to
+  // divide, so each master's own ratio is carried instead and the width sets
+  // the height — the events map's derived-viewport rule ("three shapes, none
+  // of them designed, all of them what the stated panel height left over").
+  //
+  // **There is no live seam here at all.** The frame draws no viewer, no
+  // arrows, no thumbnail strip and no source rows, so `pick` — the state
+  // layouts 1 and 2 share — reaches nothing while layout 3 is selected, and
+  // the three social addresses have no row to go in (layout 2's Soundcloud
+  // call, made again). Nothing is clickable and nothing carries a pointer
+  // cursor: a handler-less control with a pointer cursor is the booking
+  // calendar's own rule, and inventing a lightbox the frame does not draw
+  // would be worse than the absence.
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The sheet and its ink, the repertoire's pair: Retro's own `paper` IS the
+    // beige page ground, so the cream is a literal, and the flat four have a
+    // real second paper and take it with `paperFg` for the ink — `s.tx` is
+    // chosen against the page and need not read on the sheet.
+    const sheet = s.retro ? '#FBF6EA' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    const bw = s.retro ? '1px' : s.bw
+    const slots = [0, 1, 2, 3, 4, 5, 6]
+    const cols = desk ? 4 : 3
+    // Each master's own tile, as a ratio: 326 / 181.333, 230.667 / 150 and
+    // 111.333 / 107.5. See the note above — these are what each page's stated
+    // height left over, so they travel as a shape rather than as a number.
+    const ratio = desk ? 326 / 181.3333 : tab ? 230.6667 / 150 : 111.3333 / 107.5
+    const padH = `calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 20)})`
+    const padV = u(desk ? 56 : 60)
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: sheet, color: ink,
+        padding: `${padV} ${padH}`,
+        ...col(u(32)),
+      }}>
+        {/* The head is the heading and nothing else. Each master sets a
+            `flex-[1_0_0] h-px` sibling beside it, and none of the three gives
+            it a fill — so it is a `space-between` spacer and not the hairline
+            its stated height looks like (the media player's rule), which a
+            column scan of the 1440 render confirms. The desktop master also
+            sets the heading `whitespace-nowrap`; both narrow ones let it wrap,
+            and nothing in any master's layout depends on the leak, so it wraps
+            here (the testimonials' rule). */}
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg,
+          lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+        <div style={{
+          display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          columnGap: u(8), rowGap: u(desk ? 8 : 20),
+        }}>
+          {slots.map((i) => (
+            <div key={i} style={{
+              aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
+              border: `${bw} solid ${ink}`, borderRadius: u(30),
+            }}>
+              <span style={{ position: 'absolute', inset: 0 }}>
+                {/* Placeholder initials only — the masters are photographs
+                    throughout and Retro seeds them, so the three sizes are
+                    invented, read off each master's own tile width. `ink` is
+                    what a section on its own sheet owes the placeholder: the
+                    default is `s.muted`, an rgba of the PAGE's text colour,
+                    which on Lime is the same pale lime the sheet is. */}
+                <Photo
+                  s={s} src={s.images[i]}
+                  initialsSize={desk ? 32 : tab ? 28 : 14}
+                  ink={s.retro ? undefined : s.paperFg}
+                />
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>

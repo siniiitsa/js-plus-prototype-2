@@ -164,7 +164,7 @@ export const minimalNav = (navSections) =>
 
 export const NVAR = {
   header: 6, bio: 3, media: 3, tags: 3, audio: 3, video: 2, pricing: 2,
-  repertoire: 3, gallery: 2, calendar: 3, map: 2, testimonials: 2, form: 2, footer: 1,
+  repertoire: 3, gallery: 3, calendar: 3, map: 2, testimonials: 2, form: 2, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
