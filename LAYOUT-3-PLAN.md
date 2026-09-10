@@ -49,7 +49,7 @@ one session.
 | 3 | `tags` | `964:68632` | **Tags — Frame** | 858 × 75 | `977:22718` | 708 × 67 | `982:9769` | 370 × 97 | **done 3df9565** |
 | 4 | `audio` | `964:68641` | Audio Player Componenets — **H · Bar-meter player** | 858 × 243 | `977:22727` | 708 × 243 | `982:9778` | 370 × 243 | **done 47b9d22** |
 | 5 | `media` | `964:68642` | Media Player — **A · Editorial numbered list** | 858 × 647 | `977:22728` | 708 × 647 | `982:9779` | 370 × 647 | **done 16d28b0** |
-| 6 | `calendar` | `964:68645` | Booking Calendar — **C · Mobile availability** | 405 × 497.9 | `984:10605` | 708 × 456.9 | `984:10673` | 370 × 433.9 | todo |
+| 6 | `calendar` | `964:68645` | Booking Calendar — **C · Mobile availability** | 405 × 497.9 | `984:10605` | 708 × 456.9 | `984:10673` | 370 × 433.9 | **done f9c768e** |
 | 7 | `repertoire` | `964:68646` | Repertoire — **E · Curated set-list cards** | 1440 × 621 | `977:23041` | 708 × 636 | `982:10193` | 390 × 697 | todo |
 | 8 | `gallery` | `964:68647` | Gallery Sections — **B · Masonry grid** | 1440 × 789 | `977:23131` | 768 × 865 | `982:10257` | 390 × 678 | todo |
 | 9 | `pricing` | `964:68648` | Pricing — **F · Stacked rows** | 1440 × 1022 | `977:23149` | 768 × 941 | `982:10274` | 390 × 1358 | todo |
@@ -586,15 +586,90 @@ Learned on the media player (section 5):
   check there is. A vm fact, not a harness gap: do not "fix" `LIST.media` by adding a duration
   the editor cannot type.
 
+Learned on the booking calendar (section 6):
+
+- **The cheapest master this pass has had, and three `get_metadata` calls read as arithmetic
+  said so before a render was fetched.** Every box is the desktop component's own at all three
+  widths, and the sums prove it in one pass: the 18 between every block, the 20 padding, the
+  176.132 grid frame *identical* at 405, 708 and 370, the 8 between its rows, the 21 between
+  the legend's three labels, the foot's 54 on a 46 disc inset 5. What is left after that sum is
+  a type table and two structural questions. The enquiry form's rule, and this is the first
+  section in the pass whose branch needs **no width branch at all** — no `desk ?`, no `s.mob ?`
+  outside `u()`'s own `z` and BookPill's three numbers.
+- **Find the main component before deciding what a design's width means.** `436:1634` is
+  **340** wide, narrower than every instance on the page, which is what closed open question
+  1's remaining half: there is no wider master, so the bio's fill rule applies unchanged. The
+  instance ids give it away for free — a child is `I<instance>;<componentChild>`, so the
+  component's own child is the id after the semicolon and its parent is one below. One probe,
+  not a `use_figma` query.
+- **Four widths agreeing on a `shrink-0` size is a stronger statement than any one of them.**
+  The dot is 30.713 at 340, 370, 405 *and* 708 while its pitch goes 44.9 → 49.9 → 55.7 → 106.
+  So the dot is the design and the spacing fills — and at our 1052 the pitch is 145, which is
+  where the fill's cost stops being a proportion and starts being a reading: the field is a
+  calendar at 390, sparse at 768, and seven columns of dots at 1052. It is shipped that way and
+  named, because the plan's own rule is to name the fill's costs rather than engineer them
+  away, and because every alternative is either a cap (question 1, settled against) or an
+  invented number. **This is the pass's clearest instance of what filling 1052 costs** — worth
+  reading before the remaining six sections decide how much of their own frame to trust.
+- **Two rows of one grid that Figma laid out by two different mechanisms are an artefact.** The
+  day-name row is seven `flex: 1 0 0` cells and the dot rows are `justify-between` over fixed
+  dots, so the frame's own letters miss the columns they head — by 11px at 405 and **32 at
+  708**, where it is plainly visible in the render. The pricing deck's normalise-and-say-so
+  rule, and the discriminator is that it gets monotonically worse with width: at 1052 it would
+  be 60. One `repeat(7, 1fr)` grid carries both rows, the day names centred and the dots
+  `justifySelf: center`, and the day-name row is simply its first seven cells.
+- **A frame with no navigation is a frame whose state cannot leave its own page.** There are no
+  month arrows here, so `mi` reaches nothing (layout 2's case) and the grid is `calMonths[0]`.
+  That is what lets the head be resolved against **month 0 alone** rather than layout 1's
+  `reduce` over the whole CAL_SPAN window: `sel` can only ever name a day the visitor clicked
+  in the month on screen, so the numeral, the lit dot and the pill agree by construction. A
+  window search would have let a republished `open` print a numeral from a month the grid does
+  not draw.
+- **A design that draws no numerals makes its readout load-bearing.** The dots carry no dates,
+  so the head is the only place the picked day is named — which is why it is 96px tall, why
+  both halves of it are rendered or not rather than printed blank, and why `booked=<the opening
+  day>` is the state worth rendering at all three widths: the card then opens on the month
+  alone and the pill prints `calPrompt`. The weekday comes off the **grid**, not a date
+  function: `at % 7` on the cell's index in `month.cells` is the weekday column, because the
+  lead blanks are in that array. `EncoreSection` does no date maths, still.
+- **`&open=` was the missing harness switch and the gap was invisible until it existed.**
+  CAL_OPEN's June 2025 starts on a Sunday and runs to five rows, so the seed is the one month
+  that shows **neither a leading blank nor a sixth row** — every render before the switch was
+  added exercised a lead-blank-free grid. March 2025 (`&open=2025-03-29`, lead 6, six rows, a
+  longer month name and a Saturday pick) is the far end of it. The bio's "add the harness
+  switch in the same session" rule, reaching a field that already had a default.
+- **A frame's legend is vocabulary, not a summary of the page.** All three rows are drawn
+  whatever the month holds — the gallery's hide-the-empty-row rule is about a tile promising
+  somewhere to go, and a key that dropped "Booked" on a month with no bookings would leave the
+  visitor unable to read the tan dot when one appears. Its three labels are the frame's own
+  literals, the media player's "● Popular" precedent.
+- **`BookPill` now takes `style`, spread last in both branches** — ListenLink's precedent, and
+  the first prop added to it that is not a scale or a glyph. Two things needed it: `width: 100%`
+  + `justifyContent: space-between`, which a hug-width inline-flex cannot be told from outside,
+  and `whiteSpace: 'normal'`, because `labelStyle` pins `nowrap` and the flat branch sets it
+  outright. Our label is `enquiryLine`'s whole sentence where the frame's is four words, so it
+  takes a second line on the flat four at 390 and the pill grows. Grep first: no caller written
+  before it passes one, so the spread is `...undefined` for all 26 of them.
+- **`size` goes in at all three widths on a fresh branch.** Layout 2 kept desktop `undefined`
+  because that half was signed off and its drift had to stay consistent; there is nothing here
+  to match, so `size/list` is passed at 16 × 0.82 / 12 / 13 and the pill's label is right at
+  every width. `disc={desk ? 38 : 46}` and `full` at 390 are layout 2's spelling copied verbatim
+  — the box does not ramp, for the fourth section running.
+- **The dot's ring is 2.559, and it is a raw value on the ellipse rather than `border/thin`.**
+  `get_variable_defs` returned no `radius/` or ring token for this component at any width, which
+  is the events map's tell — the SVG the emitter exports is the only source, and one `curl` of
+  it gave the stroke, the fill and the fact that the free dot's fill is the card's own cream.
+  The card's own outline *is* `border/thin` 2, so the two are written differently on purpose.
+
 ## Open questions
 
-1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five.*
-   **Fill, and the masters' own flex declarations say which parts stretch** — see *Learned on
-   the bio* in *Conventions*. The calendar still owes its half of the check: look for a
-   1440-wide master of "Booking Calendar — C · Mobile availability" before its session commits,
-   because its two drawn widths disagree about the composition rather than only its size. If
-   none exists — and none did for the bio, whose main component is 858 itself — the rule above
-   applies to it unchanged.
+1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five, and
+   the calendar's half closed on section 6.* **Fill, and the masters' own flex declarations say
+   which parts stretch** — see *Learned on the bio* in *Conventions*. No 1440-wide master of
+   "Booking Calendar — C · Mobile availability" exists: its main component (`436:1634`) is
+   **340** wide, narrower than any of the three instances, so the rule applied unchanged. What
+   the calendar adds is the price — see *Learned on the booking calendar*, where a 25px dot ends
+   up in a 144px column. All five columned sections are now fitted.
 2. ~~**Whether the bar-meter player plays.**~~ *Answered on the audio player (section 4): it
    does not.* The frame draws a real transport — a waveform, a playhead and a scrubber — over
    `FIELDS.audio.tracks`, which is a delimited textarea, not the media player's `c.tracks`
@@ -660,3 +735,13 @@ Learned on the media player (section 5):
    no default rendering, but it *would* make two signed-off layouts newly honour an edit, which
    is a design call rather than a fidelity one. Named here rather than taken; `since` was added
    because layout 3 draws a seat nothing could reach, which is not this case.
+8. **The booking calendar's `cta` has nowhere to go in layout 3.** *Named, not open.* The frame's
+   foot **is** the pill, and what it carries is the enquiry line — so the pill takes `line`, and
+   `FIELDS.calendar.cta` edits nothing while layout 3 is selected. That is the header's seal
+   (question 5) and media's `heading` (question 6) a third time, and here the trade was between
+   two fields rather than between a field and a literal: labelling the pill `calCta` would have
+   dropped the composed line, which is the section's own output and the only thing on the card
+   that names the hour `time` sets. The card's other borrowed seat went the other way — the
+   wrapper's "Book Me" is `s.title`, and `TITLES.calendar` stays "Availability", because
+   re-pointing it would move layout 2's signed-off head (question 7's discriminator, the tags
+   row's rule).
