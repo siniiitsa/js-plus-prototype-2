@@ -1086,7 +1086,16 @@ Learned on the events map (section 10):
     honour or ignore. Worth watching if the remaining three sections meet the same shape —
     and worth revisiting if `TiersField` ever grows a column for another reason, since a
     checkbox there would retire the whole question.
-13. **The events map's layout 3 is the first design in this pass to give a section a
+13. **`FIELDS.pricing` now has two fields reaching exactly one layout each and a third
+    reaching two** — `quote` (layout 2), `intro` (layout 3) and the tags inside `tiers`
+    (layouts 1 and 3, so layout 2 reads none of them). That is
+    `FIELDS.media.soundcloud`'s case three times in one editor, and the panel says so in
+    each hint, but it is the densest concentration of it in the file: an artist editing
+    this section sees two fields doing nothing whatever layout they pick. *Named, not
+    open* — the alternative is a per-layout editor, which is a much larger design than
+    this pass — but it is the clearest evidence yet that the hints are carrying weight the
+    panel's own structure should.
+14. **The events map's layout 3 is the first design in this pass to give a section a
     *new control* rather than a new seat for an old one.** Its chip row filters the gig
     list by city — derived from `c.gigs`, so nothing is invented and no field is added —
     but the section's other two layouts have no filter at all, which means the same page
@@ -1096,18 +1105,9 @@ Learned on the events map (section 10):
     but it is worth watching: `s.live` state that only one layout can reach is a shape this
     file has not carried before, and if a fourth layout ever wants a filter the derivation
     belongs beside `repChips` in `data.js` rather than in `sectionVm`.
-14. **`FIELDS.map` now has one field reaching exactly one layout** — `cta` (layout 3) —
+15. **`FIELDS.map` now has one field reaching exactly one layout** — `cta` (layout 3) —
     beside `sub`, which has reached only the flat tail since it was added. That is
     `FIELDS.media.soundcloud`'s case again and the hint says so, but it is the second
     editor in this pass to grow one (question 13 is the first, with three), and the
     pattern is now general enough to be worth naming as a pass-level cost rather than a
     per-section note.
-15. **`FIELDS.pricing` now has two fields reaching exactly one layout each and a third
-    reaching two** — `quote` (layout 2), `intro` (layout 3) and the tags inside `tiers`
-    (layouts 1 and 3, so layout 2 reads none of them). That is
-    `FIELDS.media.soundcloud`'s case three times in one editor, and the panel says so in
-    each hint, but it is the densest concentration of it in the file: an artist editing
-    this section sees two fields doing nothing whatever layout they pick. *Named, not
-    open* — the alternative is a per-layout editor, which is a much larger design than
-    this pass — but it is the clearest evidence yet that the hints are carrying weight the
-    panel's own structure should.
