@@ -7,7 +7,8 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~600 KB) is the generated single-file build, committed so the demo is
+- **`index.html`** (~2.9 MB — most of it the inlined Retro photography) is the generated
+  single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
 
