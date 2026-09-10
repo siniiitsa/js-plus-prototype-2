@@ -320,6 +320,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // bio
   vm.bioP1 = cv('para1', DEFS.bioP1)
   vm.bioP2 = cv('para2', DEFS.bioP2)
+  // Layout 3's first stat. No default on purpose (FIELDS.bio.since): the frame's
+  // own "June 2021" is a date the artist never typed, and an empty string is
+  // what tells the ID card not to draw the column.
+  vm.since = cv('since', '')
   vm.bioQuote = cased(cv('statement', DEFS.statement))
 
   // media

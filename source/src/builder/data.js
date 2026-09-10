@@ -163,7 +163,7 @@ export const minimalNav = (navSections) =>
  * ------------------------------------------------------------------ */
 
 export const NVAR = {
-  header: 6, bio: 2, media: 2, tags: 2, audio: 3, video: 2, pricing: 2,
+  header: 6, bio: 3, media: 2, tags: 2, audio: 3, video: 2, pricing: 2,
   repertoire: 2, gallery: 2, calendar: 2, map: 2, testimonials: 2, form: 2, footer: 1,
 }
 
@@ -635,6 +635,13 @@ export const FIELDS = {
     { k: 'statement', l: 'Statement (centred layout)', def: 'statement' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
+    // Layout 3's ID card draws a row of stats, and the frame's first one is
+    // "Performing since: June 2021" — a date nobody typed, so the value is
+    // dropped and the seat becomes this field instead. Deliberately without a
+    // default: an unfilled page would otherwise publish a fabricated one, and
+    // the column is simply not drawn while it is empty.
+    { k: 'since',     l: 'Performing since',
+      hint: 'The ID card’s first stat — layout 3 only. Left empty, the column is not drawn.' },
   ],
   // The second list-shaped content type with a structured editor (see
   // `repertoire` below): `tracks` here is an array of { title, sub, image,

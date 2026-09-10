@@ -1940,6 +1940,247 @@ function Bio({ s }) {
     return <div style={row('25px', { alignItems: 'stretch' })}>{textCard}{photoCard}</div>
   }
 
+  // v2 — Bio layout 3 · Stacked ID card
+  // (Figma 964:68631 · 977:22717 at 768 · 982:10013 at 390. The display head
+  // above the card is the composed page's own wrapper frame — 964:68626 ·
+  // 977:22712 · 982:9763 — not part of the instance; see below.)
+  //
+  // A cream ID card standing on the beige page: one photograph inset in its
+  // head, the artist's name beside a row of stats, a rust rule, the about
+  // column with the seal hanging in its left margin, and a mustard rule above
+  // the card's floor.
+  //
+  // ── The head is borrowed, and nothing in it is invented ────────────────
+  // The 1440 page wraps this instance and the tags row in a Section carrying
+  // one display head, and the bio takes it (LAYOUT-3-PLAN.md, "The composed
+  // page"): `FIELDS.bio.heading`'s default *is* the frame's "Reads the room.",
+  // and `s.initials` already spells the "KM" of its "KM BIO" eyebrow — v0
+  // draws those same two strings as its own flank labels. The head's 30px gap
+  // and the 30 between it and the card are the Section's own, at all three
+  // widths.
+  //
+  // ── What the columned five do at our width ─────────────────────────────
+  // The instance is drawn 858 wide because the page columns it, and there is
+  // no wider master — the main component (432:607) is 858 itself. Both narrow
+  // pages give it their page's whole content width (708 and 370), so the
+  // design is fluid by its author's hand and the card fills our 1052. **Which
+  // parts stretch is not a judgement call: the masters' own flex declarations
+  // say.** `flex: 1 0 0` fills — the photograph, the stat block, the prose
+  // column, both rules — and `shrink-0`/`max-width` holds at the frame's
+  // number: the name's 179 cap, the 188 spacer, every stat column. The cost is
+  // trailing air down the right of the head row and a prose measure past
+  // anything the masters draw; capping the card at 858 × 0.82 = 704 and
+  // centring it would instead put `tags`' chip row and `audio`'s player bar in
+  // a 704 box on a 1052 page. Open question 1, settled here for all five.
+  //
+  // ── The type is read, not measured ─────────────────────────────────────
+  // `get_variable_defs` on all three masters: display-lg 96/60/40 (the head,
+  // at the page's usual .89 leading), display-sm 40/32/26 (the name),
+  // label-lg 24/16/14 (the stat values, Anton), label-xs 20/14/12 (the
+  // eyebrow — Inter at 1.26, not the label face), chip 12/11/11 (the small
+  // labels) and body-md 14/13/13 (the prose). Every *box* number is the
+  // desktop component's own, unscaled at 768 and 390 and × 0.82 at desktop
+  // (the header's rule, holding for a fifth section), so the whole branch
+  // runs through one `z`.
+  //
+  // ── The frame's three stats, sorted ────────────────────────────────────
+  // The master draws "PERFORMING SINCE: JUNE 2021" and then "CURRENT ROLE: DJ
+  // & SELECTOR" *twice* — the third column is the component duplicating the
+  // second, not a third fact. "June 2021" is a date the artist never typed, so
+  // it goes the way the video section's view count and the pricing deck's
+  // rating went; what replaces it is `FIELDS.bio.since`, a new plain-text
+  // field with **no** default, so nothing is fabricated and the seat is still
+  // reachable (the video section's `image`/`avatar` rule). The duplicate seat
+  // takes `location`. Both surviving values — `kicker` and `location` — are
+  // the same pair v0 sets in its credit line and v1 in its caption, so layout
+  // 3 reads nothing the section did not already print.
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const T = desk
+      ? { disp: 96, name: 40, label: 24, chip: 12, body: 14, eyebrow: 20 }
+      : tab
+        ? { disp: 60, name: 32, label: 16, chip: 11, body: 13, eyebrow: 14 }
+        : { disp: 40, name: 26, label: 14, chip: 11, body: 13, eyebrow: 12 }
+    // Figma box/1 again — the card is a step lighter than the page, and
+    // Retro's `paper` IS the page ground, so it needs the literal v0's
+    // polaroid and v1's cards already carry.
+    const cream = s.retro ? '#FAECD5' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    const pad = u(s.mob ? 10 : 32)
+    // Inter Bold at `size/chip`; Figma states its tracking as -6%, so it is
+    // written as an em and ramps with the token (the pricing deck's rule).
+    const chipType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      letterSpacing: '-0.06em', textTransform: 'uppercase',
+    }
+
+    // The frame hand-breaks each stat label onto two lines, which is what sets
+    // its column's width; the labels are ours to write, so the break is kept
+    // as a literal newline rather than left to a measure nothing states.
+    const stat = (label, value) => (
+      // The 96 and the `justify-end` are the column's own in every master:
+      // the value sits on the box's floor whether its label takes one line or
+      // two, which is what keeps the row's baseline where the frame draws it.
+      <div key={label} style={col(u(15), {
+        flex: 'none', height: u(96), alignItems: 'flex-start', justifyContent: 'flex-end',
+      })}>
+        <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
+        <span style={labelStyle(s, u(T.label), { whiteSpace: 'nowrap' })}>{value}</span>
+      </div>
+    )
+    const stats = [
+      s.since ? stat('Performing\nsince:', s.since) : null,
+      stat('Current\nrole:', s.kicker),
+      stat('Based\nin:', s.location),
+    ].filter(Boolean)
+
+    // 390 draws this as a column — the name over the stats, at the same 10 the
+    // two wider masters carry as their row gap, and the same 179 cap on the
+    // name. It is written as a stack rather than left to `flexWrap`: both
+    // blocks are `flex: 1 0 0` in every master, and a zero-basis item never
+    // takes a slot in a CSS wrap (the testimonials' rule), so a wrapped row
+    // fits them on one line at 390 and overflows the card by 60px.
+    const head = (
+      <div style={{
+        display: 'flex', flexDirection: s.mob ? 'column' : 'row',
+        alignItems: s.mob ? 'flex-start' : 'flex-end',
+        gap: u(s.mob ? 10 : 40), overflow: 'hidden',
+        padding: `${u(24)} ${pad}`,
+      }}>
+        <div style={{
+          flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
+          minWidth: 0, maxWidth: u(179), overflow: 'hidden',
+        }}>
+          {/* The 179 is the same at all three masters and only wraps the name
+              at 1440, where Soulway at 40 just misses it. Fraunces is the
+              wider face, so ours may take the second line at 768 as well —
+              the artist's name is theirs, and pinning a per-width measure to
+              reproduce one string's break would fit the seed, not the field. */}
+          <p style={{
+            margin: 0, fontFamily: s.display, fontSize: u(T.name), lineHeight: 1,
+            letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
+          }}>{s.brand}</p>
+        </div>
+        <div style={row(u(s.mob ? 52 : 100), {
+          flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
+          minWidth: 0, height: u(96), color: ink,
+        })}>{stats}</div>
+      </div>
+    )
+
+    // The seal hangs in the about band's left margin, 150.4 down and 105.6 in
+    // from its top-left corner at 1440 *and* at 768 — the one number both
+    // masters agree on to the pixel, which is why it is anchored to the band's
+    // top rather than to the card, whose height differs. Its wrapper is the
+    // rotated bounding box (173.02 = 125.37 × 1.38 at 32.38°), so the disc is
+    // 125.37 and the box below is the disc's own.
+    const sealBox = 125.37
+    const sealTop = 87.7
+    const seal = (
+      <SealBadge s={s} hue={s.ac} size={(s.mob ? 62.68 : sealBox) * z} tilt={32.38}
+                 ink={s.retro ? '#111111' : undefined}
+                 glyph="asterisk"
+                 style={s.mob
+                   ? { right: u(30.76), top: u(52.51) }
+                   : { left: u(42.9), top: u(sealTop) }} />
+    )
+
+    const about = (
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', gap: u(40), overflow: 'hidden',
+        padding: `${u(24)} ${pad}`, position: 'relative',
+        // The band is 248/278 tall in the masters because their prose is 600
+        // characters of filler; ours is two paragraphs the artist actually
+        // typed, and at this measure that is two lines. The floor is the
+        // seal's own bottom edge plus the band's stated 24 — every term
+        // transcribed — because the card is `overflow-clip` and would
+        // otherwise cut the sticker in half.
+        ...(s.mob ? null : { minHeight: u(sealTop + sealBox + 24) }),
+      }}>
+        {/* Frame 9: an empty 188 × 64 box that reserves the left column the
+            seal hangs in. Absent from the 390 sub-component, where the seal
+            moves to the photograph. */}
+        {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
+        <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: ink })}>
+          <span style={chipType}>[ About ]</span>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5 }}>{s.bioP1}</p>
+          {/* The masters set one long paragraph here; the section has two, and
+              `para2` had until now drawn in no layout at all. Emptied, it is
+              not rendered rather than printed blank — the testimonials' rule —
+              and the column's own 12 is the gap between them. */}
+          {s.bioP2 && (
+            <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5 }}>{s.bioP2}</p>
+          )}
+        </div>
+        {!s.mob && seal}
+      </div>
+    )
+
+    return (
+      <div style={col(u(30), { alignItems: 'stretch' })}>
+        {/* The wrapper frame's head. Its eyebrow stands on the page ground, so
+            it takes the page's own ink rather than the card's. */}
+        <div style={col(u(30), { alignItems: 'flex-start' })}>
+          <span style={{
+            fontFamily: s.body, fontSize: u(T.eyebrow), lineHeight: 1.26,
+            textTransform: 'uppercase', color: s.tx,
+          }}>{s.initials} Bio</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(T.disp), lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+        </div>
+        <div style={{
+          background: cream, color: ink, overflow: 'hidden',
+          borderRadius: u(s.mob ? 30 : 50), paddingBottom: u(40),
+          // The masters outline the card at 1440 and 768 and not at 390. Only
+          // Retro follows that absence: `paperOf()` can return the page ground
+          // itself, and an unoutlined cream card is then a hole in the page
+          // (the booking calendar's lesson), so the flat four keep the rule at
+          // every width. The hairline is 1 in all three modes and does not ramp.
+          border: (s.mob && s.retro) ? undefined : `1px solid ${ink}`,
+          ...col('0', { alignItems: 'stretch' }),
+        }}>
+          <div style={{ position: 'relative', padding: u(s.mob ? 10 : 30), ...row('0') }}>
+            <div style={{
+              position: 'relative', flex: '1 0 0', minWidth: 0,
+              height: u(s.mob ? 259 : 380), borderRadius: u(30), overflow: 'hidden',
+            }}>
+              {/* Placeholder sizes are invented — the masters are photographs
+                  and Retro seeds them, so this is only seen on the flat four
+                  and mid-edit (the gallery's rule). `ink` because the card is
+                  its own sheet and `s.muted` is rgba of the *page's* text. */}
+              <div style={{ position: 'absolute', inset: 0 }}>
+                <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={ink} />
+              </div>
+              <Grain s={s} exact blend="screen" opacity={0.5} radius={u(30)} />
+            </div>
+            {s.mob && seal}
+          </div>
+          {/* 390 sets a 20 gap between the head, the rust rule and the about
+              band where the two wider masters run them flush; the mustard rule
+              is outside that column in all three, so it stays flush. */}
+          <div style={col(u(s.mob ? 20 : 0), { alignItems: 'stretch' })}>
+            {head}
+            <div style={{ height: u(5), background: s.ac, flex: 'none' }} />
+            {about}
+          </div>
+          {/* The frame's foot rule is the mustard, which is `pillBg` under
+              Retro — but `pillBg` is the palette's lightest tag and `paper`
+              its lightest colour outright, so on Lime and Grunge the two are
+              the same value and the rule vanished into the card (the
+              repertoire's lesson). The flat four take `paperLine`, which is
+              rgba(ink) and reads on a paper panel whichever way the palette
+              runs; the head rule above stays the accent at all five. */}
+          <div style={{ height: u(5), background: s.retro ? s.pillBg : s.paperLine, flex: 'none' }} />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={col('20px', { alignItems: 'center', textAlign: 'center', maxWidth: '760px', margin: '0 auto' })}>
       <span style={kickerStyle(s)}>About</span>
