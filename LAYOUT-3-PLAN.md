@@ -38,9 +38,18 @@ too. Only the width is trustworthy.
 
 ## The sections
 
-**Twelve to fit.** Sizes are the frames' own; the desktop numbers land on the 1180 canvas at
+**Twelve to fit — and all twelve are fitted** (the testimonials closed the list at
+`21a5afa`). Sizes are the frames' own; the desktop numbers land on the 1180 canvas at
 **× 0.82** as before, and the 768 / 390 frames are used **verbatim**. Each row's three masters are
 one session.
+
+What is left of the pass is the **end-of-pass `index.html` refresh**, which is one deliberate
+step and not a section: `npm run build:standalone`, `cp source/dist-standalone/index.html
+index.html`, and the checks in `LAYOUT-2-PLAN.md`'s *Learned on the end-of-pass refresh*. Expect
+the two-build digest to come back at **zero rows** — `EXAMPLE_PAGE` is `arch 0` throughout, so it
+renders layout 1 for every section and layout 3 appears only in the sidebar's layout-picker
+thumbnails — and prove the new work shipped by grepping the built file for a value only these
+branches emit.
 
 | # | Cat | Desktop node | Frame name | Size | Tablet node | Size | Mobile node | Size | Status |
 |---|---|---|---|---|---|---|---|---|---|
@@ -55,7 +64,7 @@ one session.
 | 9 | `pricing` | `964:68648` | Pricing — **F · Stacked rows** | 1440 × 1022 | `977:23149` | 768 × 941 | `982:10274` | 390 × 1358 | **done ecba065** |
 | 10 | `map` | `964:68649` | Events Map — **A · Split list + map** | 1440 × 804 | `977:23264` | 768 × 809 | `982:10389` | 390 × 878 | **done 791e0c1** |
 | 11 | `form` | `964:68650` | Enquiry Forms — **F · Full-bleed hero form** | 1440 × 548 | `977:23406` | 768 × 680 | `982:10472` | 390 × 722 | **done 262b968** |
-| 12 | `testimonials` | `964:68651` | Testimonials — **D · Bento wall** | 1440 × 790 | `982:8584` | 768 × 777 | `982:10499` | 390 × 1076 | todo |
+| 12 | `testimonials` | `964:68651` | Testimonials — **D · Bento wall** | 1440 × 790 | `982:8584` | 768 × 777 | `982:10499` | 390 × 1076 | **done 21a5afa** |
 | — | `video` | *none* | — | — | *none* | — | *none* | — | **no layout-3 design on this page** |
 | — | `footer` | `964:68652` | Component 2 | 1440 × 479.5 | `982:8688` | 768 × 721 | `982:10543` | 390 × 721 | **out of scope** |
 
@@ -1029,6 +1038,81 @@ Learned on the enquiry form (section 11):
   React commits asynchronously, so each step wants ~250ms — the published-tab note's rule,
   biting through the harness as it did for the pricing deck.
 
+Learned on the testimonials (section 12):
+
+- **A frame that draws the same string twice is telling you its cell count is
+  placeholder content, and that is the cheapest reading of a "wall" there is.** Row 1's
+  two cells carry one string and row 2's first two carry another — the gallery's
+  repeated-photographs tell, twice in one frame — so the six-cell bento is *one card per
+  review* plus the stat card, and the seeded three simply draw a shorter wall. The
+  alternative readings all break on the same fact: five seats fed by three reviews either
+  duplicates a quote on a published page or strands reviews 6–8 of a `max: 8` field
+  (`repFlat`'s promise). **Diff the frame's own strings against each other before reading a
+  count as a design** — it is the gallery's rule met at the level of copy rather than
+  photography.
+- **A section can lose its whole live seam and lose nothing, and this is the first time in
+  the pass that is true.** The gallery's question 11 gave up a viewer the visitor could
+  otherwise have used; here `cur` reaches nothing because the wall shows every review at
+  once, so there is nothing to page. The discriminator is not "does the frame draw a
+  control" — it is **what the missing control would have reached**. Layouts 1 and 2 page
+  because they draw one card; a design that draws all of them owes no pager.
+- **Two seats, not a column count, is what makes a bento generalise.** The 275 leading row
+  0 and the 276 trailing row 1 are the frame's own numbers at 1440 *and* 768 — where they
+  are the **widest** cells on their row, so "narrow seat" is a misnomer for a *stated* one
+  — and everything else is `minmax(0, 1fr)`. The 276 is taken only when row 1 is full, so a
+  short last row fills by construction and the seeded third review runs the whole measure.
+  **Rows past the second are three equal fills**: the frame states two and an alternation
+  extrapolated from two samples is engineering, where the pricing deck's
+  a-fourth-package-wraps rule is already written down.
+- **Grid columns, not a flex row, for any row of padded cells** — the enquiry form's
+  `flex: 1 0 0` lesson, and here it also gives the two stated seats a template for free.
+  One `gridTemplateColumns` expression covers all four cases (mobile, row 0, a full row 1,
+  everything else) and the desktop measurements land on 225.5 / 400.2 / 400.2 and
+  399.8 / 399.8 / 226.3 — the frame's grid to the tenth.
+- **The rendered-or-not rule can *be* a second cell design.** The frame draws a named cell
+  and a quote-only cell; one template whose disc, name and role are each rendered or not
+  (layout 1's own rule for this very section) collapses to the bare cell exactly when the
+  review has neither `who` nor `role`. No `named`/`bare` branch, no derivation to justify,
+  and nothing discarded — which is what the alternative, alternating the two kinds by
+  index, would have done to two reviewers in five.
+- **`&n=` could not reach that state and the gap was invisible until the branch needed
+  it.** `LIST.testimonials` empties `who` every fifth row and `role` every third, so the
+  two first coincide at row 15 — past `max: 8`. Emptying `role` on the `who` row too is one
+  expression. The bio's add-the-switch-in-the-same-session rule, for a *combination* of
+  columns rather than a column.
+- **A dropped claim can be replaced by the section's own arithmetic, not only by a
+  field.** Every earlier session re-seated a claim with a field (`base`, `radius`, `sub`) or
+  dropped it outright; the `4.9 /5` becomes the **review count**, which is neither. It is
+  the events map's `{n} pins` promoted to a display numeral, and it makes the stat card
+  read at any count including zero. Note what that then forbids: the `★★★★★` beside the
+  faces would naturally have taken "3 reviews" too, and does not, because the numeral
+  already has it — allocate-each-field-once reaching a *derivation*.
+- **`s.pillBg` is legible on `s.deep` by construction, which is the audio player's
+  dies-on-paper lesson from the useful end.** The lightest tag on the darkest tag needs no
+  literal and no `contrast()` call, and under Retro it resolves to the frame's own
+  `#D8A227` exactly. Reach for it whenever a dark card needs a highlight; reach for
+  `paperFg`/`paperFg` when the card is light.
+- **`line2`, not `deepFg25`, is the hairline on a `deep` card — the events map wrote the
+  rule down and then shipped the other value.** `deep` is the darkest *tag*, which **is**
+  the page ground on Lime and Grunge, so the outline is the whole of what parts the card
+  from the page; `rgba(tx, .4)` reads on exactly the two palettes that need it and is
+  inertly invisible on the three whose card already contrasts. Copy the convention, not the
+  neighbouring branch's code.
+- **A frame's gap is measured against the frame's own glyph.** The `4` `/5` pair sits at
+  gap 4 because `/` is its own separator; the same 4 under a *word* reads "3reviews". The
+  calendar's "our content is longer than the frame's, so its squeeze is not transferable",
+  at the scale of one character.
+- **Check a `whitespace-nowrap` against the seed, not against the frame's copy.** The
+  `inf` block states it inside an `overflow-clip` cell, and the seeded second review's own
+  "Venue manager, Albert Hall" is 160px of Inter in the 130px measure a 768 fill leaves.
+  The media player's destroys-its-own-content rule, caught by reading `QUOTES` rather than
+  the render.
+- **The whole branch is one `z`, one type table, one colour block and a four-armed
+  template.** No state, no handler, no decoration, no `s.retro` gate beyond the literals —
+  a stddev scan of all three renders is 0 over the page *and* every cell, so there is
+  neither grain nor a torn edge and the root's `cream` flag stays `s.v0`'s. Cheaper than
+  the gallery's, which held the record.
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five, and
@@ -1199,3 +1283,28 @@ Learned on the enquiry form (section 11):
     now says which layouts the portrait reaches. It does mean this editor has overtaken
     the pricing section's three (question 13) as the file's densest concentration of
     fields whose panel gives no clue they are idle beyond their own hint text.
+17. **The testimonials' layout 3 gives up the section's whole live seam, and it is the
+    first time in this pass that costs the visitor nothing.** Question 11 said the
+    gallery's masonry was "the one thing this pass has dropped that a visitor could
+    otherwise have used"; the bento wall drops more — no arrows, no rail, no `cur` at all
+    — and drops nothing, because every review is on the wall and a pager exists in layouts
+    1 and 2 only to reach the reviews their one card cannot show. **`s.live` state is owed
+    by a design that shows part of a list, not by a section**, which is the answer question
+    11 could not give and the thing to check first the next time a frame draws no control.
+    Nothing else is lost either: `heading`, `sub` and every column of `c.quotes` but one
+    are read, and `sub` *gains* a layout here (its hint now names two).
+18. **`FIELDS.testimonials.when` and `cta` have no seat in layout 3** — the seventh
+    sighting of questions 5/6/8/9/11's shape, and the mildest since the repertoire's. `cta`
+    is a whole field (the wall carries no pill, and inventing one the frame does not draw
+    would be worse); `when` is a *column* of a repeater, which is the enquiry form's
+    `placeholder` case (layout-2 question 12) a second time — the frame's `inf` block is
+    two lines and a third would be invented. Both hints say so. What is worth watching is
+    that this section's three layouts now read three different subsets of one repeater row:
+    layout 1 puts `when` above the quote, layout 2 opposite the byline, layout 3 nowhere.
+19. **Layout 3's review count is a derivation in a display slot, which is *not* question
+    12's shape and the distinction is worth keeping.** The pricing deck's FEATURED badge is
+    a claim about one package chosen by position; this numeral is arithmetic over the whole
+    list, the events map's `{n} pins` promoted from a foot line to 48px of display type. It
+    can be wrong about nothing. Named here only because a big mustard numeral *looks* like
+    the frame's rating and a later reader might take it for one — it is `s.quotes.length`,
+    and the frame's own `4.9 /5` is gone.
