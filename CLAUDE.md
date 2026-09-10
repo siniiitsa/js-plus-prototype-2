@@ -108,7 +108,8 @@ mutated through a single `patch()` helper.
   in the file that is a **reveal rather than a toggle**: the frame draws four song rows and a
   link, so the link is what reaches the fifth song and there is no way back — the **header's
   navigation**, the **media player** (below), the **gallery's arrows
-  and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
+  and thumbnail strip** (below), the **events map's pager, its pin/row pairing and — in
+  layout 3 alone — its city chip row** (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
   which row is featured),
@@ -208,9 +209,23 @@ mutated through a single `patch()` helper.
   holds one, and there is nothing to toggle back to). Its list is the page **minus** that gig,
   which is where the frame's own "Other upcoming · 4" comes from, and `feat` falls back to the
   page's first gig whenever `sel` is off-page — the canvas, the -1 start and a gig deleted under
-  the visitor, all in one test. A gig's `link` reaches both: layout 1's whole row, layout 2's ↗
-  and, for the featured gig, the Venue Link pill. The flat map layout keeps raw `vm.pins`: it has
-  no list to pair with, and twelve gigs would stack twelve dots on five spots.
+  the visitor, all in one test. **Layout 3 is layout 1's lit row and layout 2's featured panel
+  in one control**: its rows light *and* the panel beside them features, on the same `sel`, so
+  nothing is removed from the page the way layout 2 removes the featured gig from its list — and
+  the lit row is **not drawn at one row**, which is exactly the 390 canvas, where a page is one
+  gig. It is also the only layout with a **filter**: a chip row derived from the gigs' own
+  cities (`vm.gigChips`, one chip per distinct city with its count, behind an All and not built
+  below two cities), because the frame's own Upcoming/Past chips are a status nothing here can
+  know. That filter is the one thing in this section that can break the
+  one-pin-per-gig-on-a-page rule: it punches holes in the indices, so a filtered page of six or
+  more can seat two gigs on the same `PINS[i % 5]`. Pairing the dot with the row's place on the
+  *page* would close it and pin every gig to dot 0 at 390, where a page is one gig, so the edge
+  is named rather than fixed. `perPage` is `gigPage` at both wide widths and **1** at 390, where
+  the master draws one row over a two-arrow pager. A gig's `link` reaches all three: layout 1's
+  whole row, layout 2's ↗ and Venue Link pill, layout 3's Tickets → column — and layout 3 drops
+  the frame's second `↗` beside the venue, the same address marked twice. The flat map layout
+  keeps raw `vm.pins`: it has no list to pair with, and twelve gigs would stack twelve dots on
+  five spots.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
   every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
   id), the section root applies it as `id` **only when `s.live`** — the editor document renders a
@@ -456,7 +471,9 @@ mutated through a single `patch()` helper.
   re-seeded by index once the array exists, or a row inserted third would steal track three's
   photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, link }`,
   maintained by `GigsField` and the plainest of them: one key, one shape, no assets, and
-  `link` normalised through `extUrl()` onto `vm.gigs[].url`. `form`'s `c.fields` is an array of
+  `link` normalised through `extUrl()` onto `vm.gigs[].url`. Its `city` is read twice —
+  as a fact on every row, and, in layout 3, as the **control** `vm.gigChips` derives the
+  filter row from, which is why `vm.gigs[]` also carries a case-folded `cityKey`. `form`'s `c.fields` is an array of
   `{ label, placeholder, kind }`, maintained by `FormFieldsField` and the only repeater with a
   **per-row `<select>`** (a stock shadcn one, unlike §9.1's layout dropdown — Radix's `ItemText`
   only breaks a row carrying a *thumbnail*): `kind` is `text | email | number`, and it is the whole
