@@ -165,10 +165,16 @@ re-deriving the first's decisions.
    how it settled — that is the whole of what can be proved from here; the last step is a human
    clicking it.
 
-   Note the dev server takes 5174, 5175… when another session holds 5173, and
-   **chrome-devtools MCP refuses to start while another Chrome holds its profile** — the
-   claude-in-chrome tools drive an ordinary `http://` harness page perfectly well, so use those
-   rather than killing someone else's browser.
+   Note the dev server takes 5174, 5175… when another session holds 5173.
+
+   **Drive the harness with chrome-devtools MCP.** The claude-in-chrome extension is denied in
+   this project's settings and is no longer an option; see the `browser-tool-choice` memory note
+   for what it cost. One `evaluate_script` does a whole sequence — it is async, returns JSON and
+   is not world-isolated, so `await sleep()` between a click and a read replaces the extension's
+   one-action-per-call dance. If it refuses to start because another Chrome holds
+   `~/.cache/chrome-devtools-mcp/chrome-profile`, the fix is `--isolated` (a temporary profile,
+   cleaned up on close) rather than killing someone else's browser — there is no second tool to
+   fall back to any more.
 5. Commit, with the section named in the subject.
 6. Flip the row's Status to `done <sha>`, add anything the next section needs to *Conventions*,
    and commit that too.
