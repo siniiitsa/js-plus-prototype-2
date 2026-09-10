@@ -9694,8 +9694,297 @@ function EnquiryForm({ s }) {
       </div>
     )
   }
-  // Layouts 3+ — the generic flat design. `NVAR.form` is 2, so nothing reaches
-  // this today; it is what a third layout would render until it is fitted.
+  // v2 — Enquiry Form layout 3 · Full-bleed hero form (Figma 964:68650,
+  // 1440 × 548): an eyebrow, a display heading and a paragraph filling the left
+  // half of the measure, and layout 2's outlined card filling the right — the
+  // boxes, a mustard submit pill carrying a rust arrow disc, and one centred
+  // line under it.
+  //
+  // The frame's name is the one thing in it that is not there. Its "full-bleed
+  // hero" is a 1440 × 1147 panel the emitter prints as
+  // `bg-[sem/bg] inset-[0_0_-599px_0]` — the *page's own beige*, bleeding 599
+  // past the section's floor. A bleed that paints the page colour is a no-op,
+  // so this is not the gallery's sheet case and there is nothing to write: the
+  // section stands on the page ground inside the root's padding, and draws no
+  // photograph, no grain, no torn edge and no checkerboard (a pixel scan of all
+  // three renders gives the flat `#EAD7B8` and `#FAECD5` exactly). Its own
+  // `px-56 py-90` is `s.padX` / `s.padY` standing in, §5.5's usual reading.
+  //
+  // §5.5 — the 768 (977:23406) and 390 (982:10472) masters verbatim, the 1440
+  // one on the 1180 canvas at × 0.82. Only two things move across the three:
+  // the type, and the axis — 1440 sets the two halves side by side at a 60 gap
+  // and both narrow masters stack them at 32. Everything else is the desktop
+  // component's own number at every width: the card's 24/28 padding, its 14
+  // gaps, its 30 radius, the 10 between the boxes, the pill's 21/5 and its
+  // 46 × 44 disc. Even the boxes' 42 / 38 / 37 are not three numbers — they are
+  // one 12px padding over `size/label-sm`'s own line box.
+  //
+  // **This is layout 2's card component, and it is written again rather than
+  // lifted** (the media player's rule: count the disagreements). The two agree
+  // on every box number and on `size/title` 24/19/18, `size/list` 16/12/13,
+  // `size/label-sm` 16/13/12 and `size/body-sm` 12/12/12 to the pixel — and
+  // disagree about five things: the card's ground (this cream on the beige
+  // page, against a lifted mustard on a full-bleed mustard sheet, which is a
+  // different derivation and not a different literal); the pill's whole palette
+  // (mustard with rust ink and a rust disc, against near-black with an accent
+  // one); the column mechanism (two `flex: 1 0 0` halves, against a 450 card
+  // beside a flexible column and an equal split at 768); the left half's
+  // content (an eyebrow, `size/display-lg` and a paragraph, against a
+  // photograph, `size/display-sm`, the ticked promises and the artist's credit
+  // row); and the sheet. A shared leaf would have had to carry all five with a
+  // signed-off branch hanging off it.
+  //
+  // Three seats whose Figma copy could not be taken, and what they hold:
+  //
+  //  - The eyebrow's "AVAILABLE 2025 / 2026" is a claim about the clock, and
+  //    nothing in this file reads it (the booking calendar's rule). It takes
+  //    `s.brand`: both signed-off layouts pair the artist's name with this very
+  //    heading in a credit row, and it is the frame's *composition* that drops
+  //    the row — so the name comes back in the one small caps line the design
+  //    does draw, which is a reading of the section's own content rather than a
+  //    literal invented for the slot.
+  //  - The paragraph is `s.formPara`, whose field is called "Paragraph". Layout
+  //    2 sets it in a 12px foot only because it has no paragraph slot at all.
+  //  - So the card's foot takes the promises instead, run together as one
+  //    centred line — `vm.formPromiseLine`, composed in sectionVm. The frame's
+  //    "No charge to enquire" is a promise in FORM_PROMISES' own register, and
+  //    a frame that draws one of a list is the audio player's stranding read
+  //    the same way. The seeded three come to one line inside the card at 1440
+  //    and 768 and two at 390.
+  //
+  // Two intended diffs from the frame besides. It draws three boxes where
+  // FIELDS.form.fields seeds four, so the reference picture gains one — the
+  // gallery's "the count is the section's when a field states it". And the
+  // portrait (`image`) and the stage photograph (`photo`) reach no part of this
+  // design, question 5's shape for a sixth time.
+  if (s.v2) {
+    const desk = !s.narrow
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+
+    // `get_variable_defs` on all three masters, not measured — the emitted CSS
+    // prints the desktop default at every width.
+    //
+    //   size/display-lg  96 → 60 → 40      size/label-sm  16 → 13 → 12
+    //   size/title       24 → 19 → 18      size/body-md   14 → 13 → 13
+    //   size/list        16 → 12 → 13      size/body-sm   12 → 12 → 12
+    //   size/chip        12 → 11 → 11
+    //
+    // `size/list` goes back **up** at 390 again, exactly as it does on layout
+    // 2's masters — the same component, so the same non-monotonic token, and
+    // the same decision to write it down rather than explain it. `email` is the
+    // sent card's plain-text address, a state no frame draws, so its ramp is
+    // layout 2's invention copied rather than a reading.
+    const T = desk
+      ? { disp: 96, title: 24, list: 16, labelSm: 16, bodyMd: 14, bodySm: 12, chip: 12, email: 14 }
+      : s.mob
+        ? { disp: 40, title: 18, list: 13, labelSm: 12, bodyMd: 13, bodySm: 12, chip: 11, email: 13 }
+        : { disp: 60, title: 19, list: 12, labelSm: 13, bodyMd: 13, bodySm: 12, chip: 11, email: 13 }
+
+    // Figma box/1 on the beige page, which is the cream the bio's ID card and
+    // the gallery's tiles already carry: Retro's `paper` IS the page ground, so
+    // it needs the literal, and the flat four take their real second paper.
+    const cream = s.retro ? '#FAECD5' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    // The accent as it reads ON the card rather than on the page — the media
+    // player's rule, since no palette guarantees its accent against `paper`.
+    const cardAc = s.retro ? s.ac : s.paperFg
+
+    // The submit pill, and the audio player's lesson met head on: the frame
+    // stands `sem/text/3` on `sem/box/1`, which under Retro is the mustard on
+    // the cream and reads. But `pillBg` is the palette's lightest *tag* where
+    // `paper` is its lightest colour outright, and on Lime and Grunge the two
+    // resolve to the same value — a mustard pill on a mustard card, drawing
+    // nothing at all. The pair legible on paper by construction is `paperFg` on
+    // `paper`, so the flat four invert the frame's relationship (a dark pill
+    // carrying a light disc) rather than repeat it, which is also what layout
+    // 2's near-black pill does.
+    const pillBg = s.retro ? s.pillBg : s.paperFg
+    const pillInk = s.retro ? s.pillFg : s.paper
+    const discBg = s.retro ? s.ac : s.paper
+    const discInk = s.retro ? s.pillBg : s.paperFg
+
+    // Inter Bold at `size/chip`, tracked -6% — the bio ID card's own eyebrow
+    // object, same token and same expression, so the two read as one page.
+    const chipType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      letterSpacing: '-0.06em', textTransform: 'uppercase',
+    }
+
+    // Layout 2's rule, and the reason it is a string rather than a
+    // `textTransform`: the live input carries the label as its placeholder, and
+    // a CSS transform would shout whatever the visitor types into it as well.
+    // The canvas span and the placeholder are then the same glyphs.
+    const up = (t) => String(t).toUpperCase()
+    const boxShell = (bad) => ({
+      border: `1px solid ${ink}`, borderRadius: '999px', background: 'transparent',
+      // Stated height, layout 2's spelling with this frame's numbers: Figma
+      // strokes inside the box, so a border-box box of its height draws the
+      // pill exactly. The three are one mechanism — 12px of padding over
+      // `size/label-sm`'s 1.1 line box — but they are written out, because the
+      // padding that produced them is the *frame's* and ours is a different
+      // face at a different scale.
+      height: desk ? u(42) : s.mob ? '37px' : '38px', padding: `0 ${u(14)}`,
+      width: '100%', margin: 0, boxSizing: 'border-box',
+      // No palette has a red, so a refused box thickens its own ring in the
+      // card's accent — inset, so the stated height does not grow. Layout 2's
+      // rule, which is layout 1's in the shape a 999px pill can wear.
+      boxShadow: bad ? `inset 0 0 0 ${u(2)} ${cardAc}` : undefined,
+      ...labelStyle(s, u(T.labelSm), { textTransform: 'none' }), color: ink,
+    })
+
+    const pill = (extra) => ({
+      ...row(u(10), { justifyContent: 'space-between' }),
+      background: pillBg, color: pillInk,
+      borderRadius: '999px', width: '100%', boxSizing: 'border-box',
+      padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`,
+      // Figma's "Retro/Poster" — a 5,5 offset in `sem/text/1` — at each
+      // master's own scale, which is 4.1 on the 1180 canvas. `hard()` is
+      // Retro-only by construction, so the flat four lose it and want nothing.
+      textDecoration: 'none', boxShadow: hard(s, s.ac, 5 * z, 5 * z),
+      fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+      ...extra,
+    })
+    // The frame's 46 × 44 oval, rounded to a circle off its height as layout 2
+    // rounds the same one — 5 + 44 + 5 is the pill's stated 54.
+    const discDia = Math.round(44 * z)
+    const arrowDisc = (
+      <span style={{
+        width: discDia, height: discDia, borderRadius: '999px', flex: 'none',
+        background: discBg, color: discInk,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}><ArrowRight size={Math.round(discDia * 0.5)} /></span>
+    )
+
+    return (
+      <div style={{
+        // Both halves fill, read off the masters' own `flex-[1_0_0]` — the
+        // bio's settled rule for what a 634 column does in our 1052. Written as
+        // a grid rather than as the frame's flex, because a `flex: 1 0 0` pair
+        // does NOT split a row equally when one of the two carries padding: a
+        // zero basis is resolved against the content box whatever `box-sizing`
+        // says, so the card's own 24/28 and its hairline land *outside* its
+        // share and it measures 41 wider than the block beside it. `minmax(0,
+        // 1fr)` is two equal border boxes and cannot be blown out by a long
+        // display word either — the repertoire's grid lesson in a new dress.
+        display: 'grid', gap: u(desk ? 60 : 32),
+        gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+        // The frame centres the two halves against each other, and at 1440 the
+        // card is the taller of them, so it is the left block that moves.
+        alignItems: desk ? 'center' : 'stretch',
+      }}>
+        <div style={col(u(20), { wordBreak: 'break-word' })}>
+          <span style={chipType}>{s.brand}</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(T.disp),
+            // `Display/LG`'s own 0.89, which is what stacks the frame's two
+            // hand-broken lines at 170 in a 264 block. Ours is one string and
+            // the measure folds it, the enquiry form's own layout-2 finding.
+            lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+            overflowWrap: 'break-word',
+          }}>{s.title}</h2>
+          {/* No colour on either of these two: the frame's `sem/text/2` for the
+              eyebrow and the paragraph is `#111111`, which IS Retro's `tx`, and
+              this half of the design stands on the page ground rather than on
+              the card — so both inherit and the flat four are right by
+              construction (the media player's rule). `ink` is the card's pair
+              and reaches nothing out here: on Lime it is the near-black that
+              reads on pale lime, which is that theme's page ground exactly. */}
+          <p style={{
+            margin: 0, fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+          }}>{s.formPara}</p>
+        </div>
+
+        {/* The frame states `sticky top-0` on this card, as layout 2's frame
+            does — but `items-center` above gives a flex item a box exactly its
+            own content height, so there is nowhere for it to travel. Layout 2
+            made it real with `alignSelf: stretch`; stretching it here would
+            undo the centring that IS this frame's composition, so the property
+            is dropped rather than written inert. */}
+        <div style={col(u(14), {
+          boxSizing: 'border-box',
+          background: cream, color: ink,
+          border: `1px solid ${ink}`, borderRadius: u(30),
+          padding: `${u(28)} ${u(24)}`,
+        })}>
+          {sent ? (
+            // The card alone changes, the way layout 1 swaps its mustard half
+            // and layout 2 its sidebar. `sent` is only ever set under s.live,
+            // so the canvas never draws this.
+            <>
+              <h3 style={{
+                margin: 0, fontFamily: s.display, fontSize: u(T.title),
+                lineHeight: 1.1, letterSpacing: s.dls, color: cardAc,
+                overflowWrap: 'break-word',
+              }}>{s.formSentTitle}</h3>
+              <p style={{
+                margin: 0, fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
+              }}>{s.formSentBody}</p>
+              {/* Plain text, not a second mailto: this line is the fallback for
+                  a visitor whose browser opened nothing. */}
+              <span style={{
+                fontFamily: s.body, fontWeight: 700, fontSize: u(T.email),
+                overflowWrap: 'break-word',
+              }}>{s.formEmail}</span>
+              <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>
+                {s.formAgain}
+                {arrowDisc}
+              </span>
+            </>
+          ) : (
+            <>
+              <div style={col(u(10))}>
+                {s.formFields.map((f, i) => {
+                  const bad = !!(errs && errs.f[i])
+                  return s.live ? (
+                    <input
+                      key={i} value={at(i)} placeholder={up(f.label)}
+                      onChange={(e) => setAt(i, e.target.value)}
+                      // Layouts 1 and 2's rule: type="email" is free semantics
+                      // and a phone keyboard, `number` gets inputMode only
+                      // because the spinners break the stated height, and a
+                      // date is a text box — the native picker cannot be
+                      // styled onto this card.
+                      type={f.kind === 'email' ? 'email' : 'text'}
+                      inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                      style={{ ...boxShell(bad), outline: 'none' }}
+                    />
+                  ) : (
+                    <span key={i} style={{
+                      ...boxShell(bad), display: 'flex', alignItems: 'center',
+                    }}>{up(f.label)}</span>
+                  )
+                })}
+                <Pill {...pillLink} onClick={onSubmit} style={pill({
+                  cursor: onSubmit ? 'pointer' : undefined,
+                })}>
+                  {s.formBtn}
+                  {arrowDisc}
+                </Pill>
+              </div>
+              {errs && (
+                <span style={{
+                  fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
+                }}>{s.formPrompt}</span>
+              )}
+              {/* Emptied promises compose to '', and then the card simply ends
+                  on its pill — the Soundcloud button's rule, not the gallery's
+                  hide-the-row one, because there is no address here promising
+                  the visitor somewhere to go. */}
+              {s.formPromiseLine && (
+                <p style={{
+                  margin: 0, fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
+                  textAlign: 'center',
+                }}>{s.formPromiseLine}</p>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    )
+  }
+  // Layouts 4+ — the generic flat design. `NVAR.form` is 3, so nothing reaches
+  // this today; it is what a fourth layout would render until it is fitted.
   // Its three boxes were hardcoded literals unrelated to the field list; they
   // are the artist's now, off the same state and the same hooks as v0 and v1 —
   // there is no second state model.

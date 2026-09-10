@@ -164,7 +164,7 @@ export const minimalNav = (navSections) =>
 
 export const NVAR = {
   header: 6, bio: 3, media: 3, tags: 3, audio: 3, video: 2, pricing: 3,
-  repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 2, form: 2, footer: 1,
+  repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 2, form: 3, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -827,7 +827,8 @@ export const FIELDS = {
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],
   form: [
-    { k: 'image',    l: 'Portrait', type: 'image', hint: 'The round photo beside your name.' },
+    { k: 'image',    l: 'Portrait', type: 'image',
+      hint: 'The round photo beside your name. Layouts 1 and 2 — layout 3 draws no credit row.' },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's and the video section's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
@@ -836,15 +837,17 @@ export const FIELDS = {
     { k: 'photo',    l: 'Stage photo', type: 'image',
       hint: 'The big picture above the heading. Layout 2 only.' },
     { k: 'heading',  l: 'Heading', d: "Let's make your night unforgettable." },
-    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara' },
+    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara',
+      hint: 'The line under the heading in layout 3; the one under the card in layout 2.' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
-      hint: 'One per line — the ticked list beside the form.' },
+      hint: 'One per line — the ticked list beside the form. Layout 3 runs them together '
+          + 'as the one line under its button.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
     // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
     // no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
-      hint: 'One box each — two to a row in layout 1, one to a row in layout 2, which '
-          + 'sets the label inside the box and draws no placeholder. The published form '
+      hint: 'One box each — two to a row in layout 1, one to a row in layouts 2 and 3, which '
+          + 'set the label inside the box and draw no placeholder. The published form '
           + 'emails you what the visitor types.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },

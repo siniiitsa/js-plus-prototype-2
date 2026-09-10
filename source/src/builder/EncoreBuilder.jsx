@@ -856,6 +856,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.formEmail = String(cv('email', 'bookings@kaimercer.co.uk')).trim()
   vm.formBtn = cv('button', 'Book Now')
   vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
+  // The same promises run together as one line, which is layout 3's card foot:
+  // its frame sets a single centred "No charge to enquire" there, a promise in
+  // FORM_PROMISES' own register, and a frame that draws one of a list is the
+  // audio player's stranding. Composed here rather than in EncoreSection — the
+  // testimonials' byline rule and the events map's composed foot line — so the
+  // renderer prints a string. An emptied `promises` composes to '' and the line
+  // is not drawn at all, the Soundcloud button's rule.
+  vm.formPromiseLine = vm.formPromises.join(' · ')
   // The boxes are the artist's now, on the `songs` rule — absent key means the
   // seed, emptied array means none, no null sentinel. Every row is normalised
   // here so EncoreSection can switch on `kind` without a default of its own;
