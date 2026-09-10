@@ -858,6 +858,18 @@ Learned on the pricing section (section 9):
   word for word. The frame gets away with it because *its* title is the single word
   "Pricing"; stacked under ours it stutters. `DEFS.pricingIntro` is the closing clause
   alone. **Render the head and read it** before taking a frame's sentence whole.
+- **Copying a branch's spelling means copying its slips — so describe what the code does,
+  not what you assumed it did.** The media player's rule is to copy a branch's spelling and
+  not its slips; this is the same rule met from the other side. Both earlier layouts split
+  the price as `/^[^\d]/.test(money) ? money[0] : ''`, which takes the **first character**
+  when it is not a digit — so "POA" sets its P small and "OA" in the display size. The
+  expression was copied correctly and then described in the branch header as a guard it is
+  not ("a price with no digit keeps the whole string"), which is worse than the slip: the
+  next session would have believed the fallback existed. Keeping the slip is right — a
+  v2-only correction would make one page print the same `price` two ways depending on the
+  layout picked, the tags row's one-chip-everywhere rule from the wrong end, and it is one
+  expression in `sectionVm` when it is worth fixing. **Run a transcribed expression against
+  the inputs the comment claims for it before writing the claim down.**
 - **A `<a href>`-shaped seam is testable in one `evaluate_script`.** Clicking the capsule's
   chips through `s.live` and reading back each row's `backgroundColor` and whether its text
   contains FEATURED proves the filter, the clamp *and* the moving seat at once — All gives
@@ -999,8 +1011,9 @@ Learned on the pricing section (section 9):
     honour or ignore. Worth watching if the remaining three sections meet the same shape —
     and worth revisiting if `TiersField` ever grows a column for another reason, since a
     checkbox there would retire the whole question.
-13. **`FIELDS.pricing` now has three fields that each reach exactly one layout** — `quote`
-    (layout 2), `intro` (layout 3) and the tags inside `tiers` (layouts 1 and 3). That is
+13. **`FIELDS.pricing` now has two fields reaching exactly one layout each and a third
+    reaching two** — `quote` (layout 2), `intro` (layout 3) and the tags inside `tiers`
+    (layouts 1 and 3, so layout 2 reads none of them). That is
     `FIELDS.media.soundcloud`'s case three times in one editor, and the panel says so in
     each hint, but it is the densest concentration of it in the file: an artist editing
     this section sees two fields doing nothing whatever layout they pick. *Named, not

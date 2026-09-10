@@ -4456,8 +4456,15 @@ function Pricing({ s }) {
   //    field states, which is the frame's own `★★★★★ 42 bookings` again.
   //  - "— £1,400" is `s.tierUnit`, exactly as layout 2 reads the frame's second
   //    price. The small "£" before the numeral is layout 1's and layout 2's own
-  //    `symbol` / `amount` split, copied verbatim: a price with no digit in it
-  //    ("POA") keeps the whole string in the display size and prints no symbol.
+  //    `symbol` / `amount` split, copied verbatim — and it splits on the price's
+  //    **first character** rather than on a currency run, so a price that opens
+  //    with a digit ("1,200") prints no symbol and one that opens with a letter
+  //    ("POA") sets its P small and "OA" in the display size. That is what all
+  //    three layouts have always done with such a string, and it is deliberately
+  //    not corrected here: a v2-only split would make one page print the same
+  //    `price` two ways depending on the layout picked, which is the tags row's
+  //    one-chip-everywhere rule from the wrong end. It is one expression in
+  //    `sectionVm` when it is worth fixing, and it fixes all three at once.
   //  - "FEATURED" is a literal on a derived seat — see below.
   //
   // Every box number is the desktop component's own at all three widths — the
