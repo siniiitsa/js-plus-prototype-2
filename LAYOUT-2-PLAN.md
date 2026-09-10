@@ -32,8 +32,8 @@ eleven options has a 768 and a 390 master):
 
 ## The sections
 
-**Desktop is fitted, all eleven.** Tablet (768) and mobile (390) are the next pass and come after
-the desktop half is signed off. Sizes below are the 1440 frame's; the 1180 canvas takes them
+**Fitted, all eleven, at all three widths — this pass is complete.** Desktop first, then the
+narrow masters tabled below. Sizes below are the 1440 frame's; the 1180 canvas takes them
 × 0.82 (§5.5, and see *Conventions* below). The 768 and 390 frames are used **verbatim** — no
 ramp — so the narrow pass reads its numbers straight off the tables further down.
 
@@ -71,9 +71,9 @@ Three of those rows need their own note.
 
 ## The narrow masters
 
-The next pass. One section per session as before, and each session fits **both** narrow canvases
-of its section unless the two turn out to be different compositions. Every row is `todo` unless a
-Status says otherwise.
+**Done, all eleven.** One section per session as before, each session fitting **both** narrow
+canvases of its section unless the two turned out to be different compositions — which happened
+three times, always the same way: 768 keeps the desktop's columns and only 390 stacks.
 
 | # | Cat | Tablet node (768) | Size | Mobile node (390) | Size | Status |
 |---|---|---|---|---|---|---|
@@ -212,6 +212,9 @@ re-deriving the first's decisions.
 Do **not** run `npm run build:standalone` / refresh the root `index.html` per section — that is one
 deliberate step at the end of the whole pass (`cp source/dist-standalone/index.html index.html`).
 The `media-player-playback` merge is the one exception so far, and it said why in its own commit.
+
+**That step has now run** — see *Learned on the end-of-pass refresh* below for what the two-build
+comparison found and what it cost.
 
 ## Conventions
 
@@ -1286,6 +1289,51 @@ Learned on the testimonials' narrow masters (section 11):
   350 column, hanging 40 off each side of a head that clips. Unlike the bio's
   credit row, no part of the master's layout depends on it, so ours wraps to two
   lines. Check what the leak *produces* before honouring or dropping it.
+
+Learned on the end-of-pass refresh (the `index.html` rebuild):
+
+- **`git diff --stat` is the first check, and it can settle more than the digest
+  does.** Between the committed build and HEAD only `EncoreSection.jsx` changed
+  — `EncoreBuilder.jsx`, which owns every piece of chrome the digest is *driven
+  by* (the device tablist, the canvas width, the sidebar), was byte-identical.
+  That one fact later disproved an apparent regression in seconds, where the
+  browser had spent a dozen calls failing to. Run it before opening a page.
+- **Walk the diff for lines outside the branches you meant to touch.** A brace-
+  depth pass over the new file, marking every line inside an `if (s.v1) {`
+  block, put 937 of 1305 added lines inside one and the rest in `HeaderV1`
+  (which *is* the header's layout 2), in comments, or in a single additive
+  `BookPill` prop — `pick(…)` → `sizeProp ?? pick(…)`, a strict no-op unless
+  `size` is passed. That is a stronger statement than any digest: it covers
+  every width, every theme and every layout at once, and it takes one script.
+- **Record `background`, not `backgroundColor`.** The first walk of this pass
+  used `backgroundColor` and would have missed the only real difference there
+  was — `Checkerboard`'s tile going `10px 10px` → `19.4px 19.4px`, the
+  documented `cell` fix from the header's narrow fit (`16304dc`). Its *height*
+  moved 0.12px, which is what flagged it; a gradient that changed size without
+  moving anything would have been invisible. `backgroundImage`, `backgroundSize`,
+  `boxShadow`, `opacity` and `clipPath` all belong in the row.
+- **The seeded page is `arch 0` throughout, so a two-build diff of it proves the
+  *absence* of a regression, not the presence of the new work.** `EXAMPLE_PAGE`
+  is layout 1 for all eleven sections; layout 2 renders only in the sidebar's
+  layout-picker thumbnails. Expect **zero rows**, and prove the new work shipped
+  a different way — `grep` the built file for a value only the new branch emits
+  (`107.3` and `1 0 auto` here, both absent from the old build).
+- **The sidebar state decides what the walk even covers.** Landing on the
+  header's edit panel gives 17 `--ac` roots (eleven sections plus six header
+  previews); landing on the section list gives 11. The header previews render at
+  `Z: SIZES.desktop, mob: false`, so they never change with the device toggle —
+  which is why the one differing row showed up in the 17-root desktop walk and
+  in none of the three 11-root ones. Take both, or say which you took.
+- **Use chrome-devtools MCP for this, not claude-in-chrome.** The extension cost
+  this session five classifier stalls, one `[BLOCKED: Cookie/query string data]`
+  on a digest containing `?…&…`, four 45-second `Runtime.evaluate` wedges, and a
+  wedged renderer that silently stopped applying the device switch — producing a
+  711-row phantom diff that looked exactly like a regression. chrome-devtools ran
+  the identical flow — open, *Use this header*, three device switches, three
+  walks and three diffs — in **two** calls, because `evaluate_script` is async,
+  returns JSON and is not world-isolated. Step 4 above still recommends the
+  extension for the harness; that advice predates this evidence. Prefer
+  chrome-devtools whenever its profile is free.
 
 ## Open questions
 
