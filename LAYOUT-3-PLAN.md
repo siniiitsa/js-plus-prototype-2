@@ -52,7 +52,7 @@ one session.
 | 6 | `calendar` | `964:68645` | Booking Calendar — **C · Mobile availability** | 405 × 497.9 | `984:10605` | 708 × 456.9 | `984:10673` | 370 × 433.9 | **done f9c768e** |
 | 7 | `repertoire` | `964:68646` | Repertoire — **E · Curated set-list cards** | 1440 × 621 | `977:23041` | 708 × 636 | `982:10193` | 390 × 697 | **done 8c09b90** |
 | 8 | `gallery` | `964:68647` | Gallery Sections — **B · Masonry grid** | 1440 × 789 | `977:23131` | 768 × 865 | `982:10257` | 390 × 678 | **done c1836da** |
-| 9 | `pricing` | `964:68648` | Pricing — **F · Stacked rows** | 1440 × 1022 | `977:23149` | 768 × 941 | `982:10274` | 390 × 1358 | todo |
+| 9 | `pricing` | `964:68648` | Pricing — **F · Stacked rows** | 1440 × 1022 | `977:23149` | 768 × 941 | `982:10274` | 390 × 1358 | **done ecba065** |
 | 10 | `map` | `964:68649` | Events Map — **A · Split list + map** | 1440 × 804 | `977:23264` | 768 × 809 | `982:10389` | 390 × 878 | todo |
 | 11 | `form` | `964:68650` | Enquiry Forms — **F · Full-bleed hero form** | 1440 × 548 | `977:23406` | 768 × 680 | `982:10472` | 390 × 722 | todo |
 | 12 | `testimonials` | `964:68651` | Testimonials — **D · Bento wall** | 1440 × 790 | `982:8584` | 768 × 777 | `982:10499` | 390 × 1076 | todo |
@@ -795,6 +795,77 @@ Learned on the gallery (section 8):
   cheapest master in the pass; this one is cheaper, and the diff is 130 lines of which 61 are the
   comment.
 
+Learned on the pricing section (section 9):
+
+- **A frame that marks one row of a list is naming a *seat*, and the discriminator for
+  which seat is what the section already calls decoration.** The FEATURED badge and the
+  olive fill sit on the frame's third and last package, and nothing in `c.tiers` ranks a
+  package — so the honest fit is the **last rendered row**, which is layout 1's own rule
+  that its tilt and its mobile overlap take the rendered index while the card's *hue* keys
+  on `t.n`. That also settles what a live filter does with it: hiding the artist's last
+  package promotes whatever now ends the stack, because the climax belongs to the
+  composition and not to a package. Not drawn at one row, the pager's and the chip row's
+  rule — a distinction that distinguishes nothing is not a design. This is the pass's
+  first content rule whose *label* is invented on the artist's own data; see question 12.
+- **A seat hue that has to read against the *page* needs a guarded walk, not an index.**
+  `tierHero` pins `T.tags[1]` outright and gets away with it because it only ever paints a
+  card. This one outlines the plain rows *and* fills the featured one, so a tag that
+  matches the page ground draws neither — and **Grunge's `T.tags[3]` IS its black
+  background.** `vm.tierRow` therefore rotates from the frame's own index and takes the
+  first tag clearing `tierHues`' own 0.22: olive on Retro and pale lime on Lime (both
+  index 3), the stamp red on Grunge, and on Editorial the terracotta rather than the
+  `#E6B6A0` wash that misses the threshold by 0.035. **Run the five palettes through
+  `lum()` before pinning any index** — four of them agreed with the frame and the fifth
+  drew nothing at all.
+- **The one thing in a branch that does not stand on the page ground is the one thing that
+  needs `paperFg`.** Everything here inherits `s.tx` correctly because the page is its
+  ground; the selector capsule is `sem/box/1`, and its outline and idle labels first went
+  in as `s.tx` — which on Lime is the same pale lime `paperOf()` returns and on Grunge the
+  same white. Both rendered a capsule with nothing in it. `s.retro ? s.tx : s.paperFg` is
+  the calendar's own pairing and Retro keeps the frame's `#111` exactly. **A five-theme
+  colour digest is what caught it**, and it is worth running even on a branch that looks
+  palette-safe by inspection: `theme=0…4` in five hidden iframes, reading
+  `backgroundColor` / `borderTopColor` / `color` off the same four nodes, is one script.
+- **`sem/box/1` resolves against whatever it stands on, so the same token is two different
+  answers in one frame.** It is `#FAECD5` on the capsule (the beige page lifted) and
+  `#6D7040` on the badge (the olive row lifted) — which is exactly `rgba(the card's ink,
+  0.11)`, so `tierHues` gained a `badge` key rather than the section gaining a literal. An
+  alpha rather than a `mix()` because it composites to the same colour and is the shape
+  `soft`, `acFg12` and `deepFg25` already have.
+- **`get_metadata` is deep here and reads as arithmetic, but it cannot tell 1fr from a
+  fixed 248** — and this is the first master in the pass where the two columns' *ratio*
+  changes between widths. Desktop emits `flex-[1_0_0]` on both (616/616 of 1232); tablet
+  emits `flex-[1_0_0]` on the left and `w-[248px]` on the includes panel, which is why the
+  measured 364/248 is not the 306/306 the metadata alone would have implied. The bio's
+  rule, and note that **an instance-child `get_design_context` returns the node with
+  `size-full` and no children** — the fill/hug information only comes back when the call
+  is made on the top-level instance.
+- **Figma's stated padding contains the stroke here, and the row's own sum proves it
+  without a render.** 28 padding on a 1328 box leaves 1272 of content — 616 + 40 + 616 —
+  where a border outside the padding would leave 1270. So both boxes that carry a hairline
+  take `calc(u(n) - 1px)`, and the capsule then measures the master's 35 (28.5 at × 0.82)
+  instead of 37. **The hairline itself does not ramp**: `border/hairline` is 1 at all three
+  widths and `u(1)` would draw 0.8 at desktop.
+- **Check the palette for a second small-print field before adding one.** `DEFS.pricingSub`
+  was already the frame's foot line verbatim, and `TITLES.pricing`, `PRICE_UNIT` and the
+  whole of `TIERS` were already the frame's own copy — the seeded three packages *are* its
+  three rows, names, prices, blurbs and features. Only the head paragraph had no seat, and
+  question 7's discriminator let it in: `intro` is read by no signed-off layout.
+- **A default that repeats the section's own heading is worse than a shorter default.** The
+  frame's paragraph opens "Four ways to book this act." — a count of the artist's packages,
+  dropped the video section's way — and continues "Choose by the kind of night you're
+  throwing", which is `TITLES.pricing`'s "Choose the set that's right for your night" almost
+  word for word. The frame gets away with it because *its* title is the single word
+  "Pricing"; stacked under ours it stutters. `DEFS.pricingIntro` is the closing clause
+  alone. **Render the head and read it** before taking a frame's sentence whole.
+- **A `<a href>`-shaped seam is testable in one `evaluate_script`.** Clicking the capsule's
+  chips through `s.live` and reading back each row's `backgroundColor` and whether its text
+  contains FEATURED proves the filter, the clamp *and* the moving seat at once — All gives
+  three rows with the Festival Set filled, Solo gives two with the Wedding Set filled, Band
+  gives two with the Festival Set filled again. React commits asynchronously, so the clicks
+  need a `setTimeout` chain (the published-tab note's rule, which bites through the preview
+  harness too).
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five, and
@@ -912,3 +983,27 @@ Learned on the gallery (section 8):
     and the video and audio sections are the precedent for a §10.2 section that is a picture on
     both surfaces. Worth watching if the remaining four sections meet the same shape — it is
     the one thing this pass has dropped that a visitor could otherwise have used.
+12. **Layout 3's FEATURED badge is the first label this pass puts on the artist's own
+    content that no field backs.** Every earlier invention has been either a literal the
+    design chose about itself (the calendar's three legend labels, the media player's
+    "● POPULAR", `WHAT'S INCLUDED`) or a derivation of what the artist typed (the
+    repertoire's set cards, the pricing chip row). This is a *claim about one package*,
+    and the package it lands on is chosen by position rather than by anything the artist
+    said. The precedent is the media player's fan, whose centre seat "is the accent and
+    carries the Featured tab" — but that seat is the track being *played*, which the
+    visitor chose, where this one is the row that happens to end the stack. It is shipped
+    that way because every alternative is worse: dropping the badge loses the frame's
+    whole hierarchy (the fill would then mark a row for no stated reason), parsing `price`
+    for the dearest package breaks on "POA" and "From £2k", and a `featured` flag on
+    `c.tiers` is a seventh column on a repeater the deck's own layout would then have to
+    honour or ignore. Worth watching if the remaining three sections meet the same shape —
+    and worth revisiting if `TiersField` ever grows a column for another reason, since a
+    checkbox there would retire the whole question.
+13. **`FIELDS.pricing` now has three fields that each reach exactly one layout** — `quote`
+    (layout 2), `intro` (layout 3) and the tags inside `tiers` (layouts 1 and 3). That is
+    `FIELDS.media.soundcloud`'s case three times in one editor, and the panel says so in
+    each hint, but it is the densest concentration of it in the file: an artist editing
+    this section sees two fields doing nothing whatever layout they pick. *Named, not
+    open* — the alternative is a per-layout editor, which is a much larger design than
+    this pass — but it is the clearest evidence yet that the hints are carrying weight the
+    panel's own structure should.
