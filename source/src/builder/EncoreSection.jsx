@@ -4198,7 +4198,7 @@ function Pricing({ s }) {
   // the same `s.live` gate, the same clamp against a list the artist can
   // shorten, and the same pinned 0 on the canvas, where the frame draws chip 0
   // filled and so the picture *is* a choice. It leaves `s.tierChips` — the tags
-  // — reaching layout 1 only, which is FIELDS.media.soundcloud's case again;
+  // — reaching layouts 1 and 3, which is FIELDS.media.soundcloud's case again;
   // the field's hint says so. Not drawn at one package: nothing to select is
   // the row's own rule in layout 1 too.
   //
@@ -4418,6 +4418,307 @@ function Pricing({ s }) {
         <span style={{
           fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3, color: s.tx,
         }}>{s.pricingSub}</span>
+      </div>
+    )
+  }
+
+  // Layout 3 — "Pricing — F · Stacked rows" (Figma 964:68648, 1440 × 1022; the
+  // narrow masters are 977:23149 at 768 × 941 and 982:10274 at 390 × 1358).
+  // A title over a line of prose, a segmented selector, then one full-width
+  // rounded row per package: name, price, blurb and Book pill down the left,
+  // WHAT'S INCLUDED over a feature grid down the right. Under the stack, the
+  // small print. Every row is outlined on the page ground except the last one
+  // on show, which is *filled* in the same hue and carries a FEATURED badge.
+  //
+  // The section stands on the page ground — `sem/bg` is #EAD7B8 and the row's
+  // own fill is that same beige at stddev 0, so there is no sheet, no grain, no
+  // tilt and no offset block anywhere but inside BookPill. That leaves this
+  // branch with no `s.retro` gate at all beyond the selector's one literal
+  // (the gallery's rule, and the corner is a bare `u(30)` on all five themes
+  // for the same reason it is everywhere else in this file).
+  //
+  // Where the frame's copy went:
+  //
+  //  - "Pricing" is `s.title`. It is set in the display face at `size/title`,
+  //    which is what a title is, where layout 2's `[ PRICING ]` kicker is set
+  //    in the chip face — so this is the heading seat and not an eyebrow.
+  //  - The paragraph under it is `intro`, a field added for this layout, which
+  //    no signed-off layout reads (the tags row's discriminator for question 7).
+  //    Its default drops the frame's "Four ways to book this act." — a count of
+  //    the artist's own packages, the video section's rule — and the clause that
+  //    repeats TITLES.pricing almost word for word; see DEFS.pricingIntro.
+  //  - The Duo / Trio / Band capsule is `s.tierChips`, layout 1's filter row in
+  //    a different dress: the same `chip` state, the same `s.live` gate, the
+  //    same clamp, the same pinned 0 on the canvas and the same not-drawn-at-one
+  //    (a filter with nothing to filter is the pager's case). The extra `All`
+  //    that leads it is layout 1's intended diff, unchanged.
+  //  - "Save 15% on bundles" beside the capsule is **dropped**: a discount no
+  //    field states, which is the frame's own `★★★★★ 42 bookings` again.
+  //  - "— £1,400" is `s.tierUnit`, exactly as layout 2 reads the frame's second
+  //    price. The small "£" before the numeral is layout 1's and layout 2's own
+  //    `symbol` / `amount` split, copied verbatim: a price with no digit in it
+  //    ("POA") keeps the whole string in the display size and prints no symbol.
+  //  - "FEATURED" is a literal on a derived seat — see below.
+  //
+  // Every box number is the desktop component's own at all three widths — the
+  // 24 between the section's blocks, the 12 in the head, the 16 between rows,
+  // the 28 padding, the 40 column gap, the 30 corner, the 10 in the left
+  // column, the 6 in the price, the 12/8/24 in the includes grid, the badge's
+  // 8/3 on a 4 corner, and the pill's whole box. So the branch flows through
+  // one `z` and one type table, and only four things genuinely differ:
+  //
+  //    desktop  row is 1fr / 1fr        price row hugs        feature grid 2 col
+  //    tablet   row is fill / 248       price row full width  feature grid 1 col
+  //    mobile   row is a column         price row full width  feature grid 2 col
+  //
+  // The `1px` hairlines do **not** ramp — `border/hairline` is 1 at all three
+  // widths and `u(1)` would draw 0.8 at desktop — and the two boxes that carry
+  // one pay for it out of their own padding (`calc(… - 1px)`), because Figma
+  // strokes an auto-layout frame without growing it: the desktop row's stated
+  // 28 padding leaves 1272 of content inside a 1328 box, not 1270.
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const T = desk
+      ? { title: 24, dispMd: 48, list: 16, bodyLg: 16, bodyMd: 14, bodySm: 12,
+          labelXs: 20, chip: 12, eyebrow: 15 }
+      : s.mob
+        ? { title: 18, dispMd: 30, list: 13, bodyLg: 15, bodyMd: 13, bodySm: 12,
+            labelXs: 12, chip: 11, eyebrow: 11 }
+        : { title: 19, dispMd: 38, list: 12, bodyLg: 15, bodyMd: 13, bodySm: 12,
+            labelXs: 14, chip: 11, eyebrow: 12 };
+
+    // `Body/Chip`, layout 2's spelling: Figma's -6% of the size, so the tracking
+    // ramps with the token rather than freezing at the desktop -0.72.
+    const chipType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      letterSpacing: u(-0.06 * T.chip), whiteSpace: 'nowrap',
+    }
+
+    // The chip index and the filtered list, layout 1's two expressions whole:
+    // the row is derived from the artist's tags, so a tag they delete can leave
+    // `chip` past the end of it, and the canvas pins the first chip and filters
+    // nothing — which is the picture all three frames show.
+    const active = s.live ? Math.min(chip, s.tierChips.length - 1) : 0
+    const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
+    const shown = s.live
+      ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
+      : s.tiers
+
+    // The stack's one hue, resolved in the view-model against the page ground:
+    // `card` outlines the plain rows and fills the featured one, `acc` is that
+    // row's border and its numeral, `cardFg` its ink and `badge` the lift the
+    // FEATURED chip stands on. It belongs to the seat and not to a package, so
+    // it does not walk `T.tags` the way layout 1's cards do — the frame paints
+    // its whole stack from one token.
+    const h = s.tierRow
+
+    // The selector. Not a segmented control the section grew: it is the same
+    // filter layout 1 draws as a loose chip row, in the frame's capsule.
+    //
+    // The capsule's ground is `sem/box/1`, which under Retro is a literal for
+    // the calendar's own layout-3 reason — this palette's lightest colour is
+    // the page ground itself, so `paperOf()` hands back the beige the capsule
+    // stands on. The flat four take their own `paper`; the 1px outline is what
+    // draws the capsule on every theme either way.
+    //
+    // And the outline and the unselected labels are `paperFg` there rather than
+    // `tx`, the calendar's own pairing: this is the one thing in the branch that
+    // does not stand on the page, and in a palette whose text colour IS its
+    // lightest colour the two are the same value — Lime drew pale lime on pale
+    // lime and Grunge white on white, both of them a capsule with nothing in it.
+    const panelFg = s.retro ? s.tx : s.paperFg
+    const selector = s.tierChips.length > 1 && (
+      <div style={{
+        ...row('0', { flexWrap: 'wrap' }),
+        background: s.retro ? '#FAECD5' : s.paper,
+        border: `1px solid ${panelFg}`, borderRadius: s.btnR,
+        padding: `calc(${u(3)} - 1px)`,
+      }}>
+        {s.tierChips.map((f, i) => (
+          <span
+            key={i}
+            onClick={s.live ? () => setChip(i) : undefined}
+            style={{
+              padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
+              background: i === active ? s.ac : 'transparent',
+              color: i === active ? s.acFg : panelFg,
+              cursor: s.live ? 'pointer' : undefined,
+              fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, whiteSpace: 'nowrap',
+            }}
+          >{f.label}</span>
+        ))}
+      </div>
+    )
+
+    // One package. `feat` is the *rendered* index, not the package's place in
+    // the whole list: the fill and the badge are the composition's climax and
+    // belong to the last seat on show, so a filter that hides the artist's last
+    // package promotes whatever now ends the stack — the pricing deck's own
+    // rule that its tilt and its overlap take the rendered index because they
+    // are decoration. It is not drawn at one row, the pager's and the chip
+    // row's rule: a distinction that distinguishes nothing is not a design.
+    const packRow = (t, i) => {
+      const feat = shown.length > 1 && i === shown.length - 1
+      const ink = feat ? h.cardFg : s.tx
+      // The frame's `sem/text/1`: the accent on a plain row, the featured row's
+      // own second hue on that one — which under Retro is the mustard, since
+      // `tierHues` resolves the olive's accent as `pillBg`.
+      const acc = feat ? h.acc : s.ac
+      const money = t.price
+      const symbol = /^[^\d]/.test(money) ? money[0] : ''
+      const amount = symbol ? money.slice(1) : money
+      return (
+        <div key={t.n} style={{
+          ...(s.mob
+            ? col(u(40), { alignItems: 'flex-start' })
+            : row(u(40), { alignItems: 'flex-start' })),
+          width: '100%', color: ink,
+          background: feat ? h.card : 'transparent',
+          border: `1px solid ${feat ? h.acc : h.card}`,
+          borderRadius: u(30), padding: `calc(${u(28)} - 1px)`,
+        }}>
+          <div style={col(u(10), {
+            alignItems: 'flex-start',
+            ...(s.mob ? { width: '100%' } : { flex: '1 1 0', minWidth: 0 }),
+          })}>
+            <div style={row(u(8), { flexWrap: 'wrap' })}>
+              <span style={{
+                fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+              }}>{t.name}</span>
+              {feat && (
+                <span style={{
+                  ...chipType, background: h.badge, color: ink,
+                  borderRadius: u(4), padding: `${u(3)} ${u(8)}`,
+                }}>FEATURED</span>
+              )}
+            </div>
+            {/* The narrow masters give this row the column's whole width and let
+                the numeral fill it, which pushes the unit to the right edge; the
+                1440 one hugs. Both are the frame's own declarations. */}
+            {!!money && (
+              <div style={row(u(6), {
+                alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
+              })}>
+                {!!symbol && (
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
+                    whiteSpace: 'nowrap', flex: 'none',
+                  }}>{symbol}</span>
+                )}
+                <span style={{
+                  fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
+                  letterSpacing: s.dls, color: acc,
+                  ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
+                }}>{amount}</span>
+                {!!s.tierUnit && (
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+                    whiteSpace: 'nowrap', flex: 'none',
+                  }}>{s.tierUnit}</span>
+                )}
+              </div>
+            )}
+            {!!t.blurb && (
+              <p style={{
+                margin: 0, width: '100%',
+                fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+              }}>{t.blurb}</p>
+            )}
+            {/* The frame's pill is layout 2's, at layout 2's three scales — the
+                46 × 44 disc, the 21/5 padding and the 10 gap are the desktop
+                component's own at all three widths, so only the 1440 canvas
+                ramps them. `size` goes in at desktop too, this being a fresh
+                branch with no signed-off drift to match (the calendar's rule).
+                The arrow inside the disc is the frame's gold on both kinds of
+                row: on a plain one that is the pill's own ground, on the
+                featured one the row's second hue — BookPill's Retro default is
+                a cream, so it has to be said. */}
+            <BookPill s={s} to={s.tierBookTo} glyph="arrow"
+                      full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
+                      bg={feat ? h.cardFg : s.pillBg} fg={feat ? h.card : s.pillFg}
+                      shadow={acc} discFg={feat ? h.acc : s.pillBg} />
+          </div>
+
+          {/* Dropped whole rather than left as a bare label when a package lists
+              nothing — the frame has no such row, and "WHAT'S INCLUDED" over
+              nothing is the empty-span state the testimonials' card refuses. */}
+          {t.feats.length > 0 && (
+            <div style={col(u(12), {
+              alignItems: 'flex-start',
+              ...(desk ? { flex: '1 1 0', minWidth: 0 }
+                : tab ? { width: u(248), flex: 'none' } : { width: '100%' }),
+            })}>
+              <span style={chipType}>WHAT&rsquo;S INCLUDED</span>
+              {/* One grid, where the frame pairs the features two to a sub-frame
+                  and then spaces the pair by 9 against the pairs' own 8 — a 1px
+                  hand-set difference, normalised (the deck's rule). The column
+                  count is a literal at each width: the 248 tablet panel is one
+                  column where both the 616 desktop one and the 294 mobile one
+                  are two, so it is not a measure the phone loses. */}
+              <div style={{
+                display: 'grid', width: '100%', alignItems: 'start',
+                gridTemplateColumns: tab ? '1fr' : '1fr 1fr',
+                columnGap: u(24), rowGap: u(8),
+              }}>
+                {t.feats.map((f, j) => (
+                  <span key={j} style={row(u(8), { minWidth: 0 })}>
+                    <span style={{ ...chipType, flex: 'none' }}>&#10003;</span>
+                    <span style={{
+                      fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, minWidth: 0,
+                    }}>{f}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    return (
+      <div style={col(u(24), { alignItems: 'flex-start' })}>
+        <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
+          {!!s.title && (
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+              letterSpacing: s.dls, color: s.tx,
+            }}>{s.title}</h2>
+          )}
+          {/* The frame pins this at 560 at all three widths, which runs it off
+              the right edge of the 390 master. A `maxWidth` is the same measure
+              where there is room for it and none of the overflow where there
+              is not. */}
+          {!!s.pricingIntro && (
+            <p style={{
+              margin: 0, maxWidth: u(560),
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: s.tx,
+            }}>{s.pricingIntro}</p>
+          )}
+        </div>
+        {selector}
+        <div style={col(u(16), { width: '100%' })}>
+          {shown.length === 0 ? (
+            // Layout 1's one message, in a row of its own: the section here is a
+            // *stack*, and a stack with nothing in it is not one of its states —
+            // the testimonials' rule, where the card stays and the message goes
+            // inside it. One message and not the repertoire's two, for layout
+            // 1's reason: every chip but All exists because some package carries
+            // its tag, so a live filter cannot empty a list that has anything.
+            <div style={{
+              width: '100%', border: `1px solid ${h.card}`, borderRadius: u(30),
+              padding: `calc(${u(28)} - 1px)`,
+              fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, color: s.muted,
+            }}>No packages yet.</div>
+          ) : shown.map(packRow)}
+        </div>
+        {!!s.pricingSub && (
+          <span style={{
+            fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3, color: s.tx,
+          }}>{s.pricingSub}</span>
+        )}
       </div>
     )
   }

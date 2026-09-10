@@ -163,7 +163,7 @@ export const minimalNav = (navSections) =>
  * ------------------------------------------------------------------ */
 
 export const NVAR = {
-  header: 6, bio: 3, media: 3, tags: 3, audio: 3, video: 2, pricing: 2,
+  header: 6, bio: 3, media: 3, tags: 3, audio: 3, video: 2, pricing: 3,
   repertoire: 3, gallery: 3, calendar: 3, map: 2, testimonials: 2, form: 2, footer: 1,
 }
 
@@ -513,6 +513,17 @@ export const DEFS = {
   statement:  'Reads the room.',
   videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
+  // §10.2 layout 3 heads the stack with a line under the title, where neither
+  // earlier layout draws one — the frame's own sentence, kept as the seed so
+  // the reference picture holds. Emptying it drops the line.
+  //
+  // The frame's paragraph is two sentences and this is the tail of the second.
+  // "Four ways to book this act." is a count the artist never typed and goes
+  // the way the video section's numbers did; "Choose by the kind of night
+  // you're throwing" repeats TITLES.pricing's own words almost exactly, so
+  // stacking it under the title stutters where the frame — whose title is the
+  // single word "Pricing" — does not.
+  pricingIntro: 'The quote covers the whole booking.',
   // §10.2 layout 2 stands a line of praise beside the plan, where layout 1 has
   // nothing of the sort — the frame's own sentence, kept as the seed so the
   // reference picture holds. Emptying it drops the line.
@@ -707,10 +718,12 @@ export const FIELDS = {
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
-      hint: 'Tags become the filter chips above the cards in layout 1 — separate them with '
-          + 'commas. Features are one to a line. Layout 2 shows one package at a time and '
-          + 'names them in its own chip row, so it reads no tags.' },
+      hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
+          + 'them with commas. Features are one to a line. Layout 2 shows one package at a '
+          + 'time and names them in its own chip row, so it reads no tags.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT },
+    { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro',
+      hint: 'A line under the heading. Layout 3 only.' },
     { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote',
       hint: 'A line of praise beside the plan. Layout 2 only.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },

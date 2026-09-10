@@ -89,11 +89,18 @@ const LIST = {
   // Two tags cycling, so layout 1's filter row still has something to filter,
   // and a feature count that is odd on half the rows — layout 2 lays them out
   // two to a grid row and the odd one trails a half-width cell.
+  //
+  // Every third feature is long enough to wrap. Layout 3's includes panel is a
+  // single 248px column at 768 and two columns of a third of the measure at
+  // 390, and "Feature 3" never came near either edge — a grid that clipped
+  // rather than wrapped would have shipped unseen.
   pricing: (i) => ({
     name: `Package ${i + 1}`, price: `£${(i + 1) * 250}`,
     tags: ['Solo', 'Band'][i % 2],
     blurb: 'What this one covers, in a sentence that runs to about this length.',
-    feats: Array.from({ length: 3 + (i % 2) }, (_, j) => `Feature ${j + 1}`).join('\n'),
+    feats: Array.from({ length: 3 + (i % 2) }, (_, j) => (
+      j % 3 === 2 ? `Feature ${j + 1}, spelled out at the length a real one runs to` : `Feature ${j + 1}`
+    )).join('\n'),
   }),
   // The events map's gigs. Every other row carries a tickets address, so one
   // `live=1` render shows both sides of the outbound seam at once — the ↗ on

@@ -422,6 +422,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
   vm.pricingSubFg = rgba(tx, 0.46)
   vm.tierUnit = cv('unit', PRICE_UNIT)
+  // §10.2 layout 3 stands a line under the title, where layout 1 heads the chip
+  // row with the title alone and layout 2 puts its kicker above it. Layout 3
+  // only, so an emptied field drops the line — the Soundcloud rule.
+  vm.pricingIntro = cv('intro', DEFS.pricingIntro)
   // §10.2 layout 2 stands a line of praise beside the plan. Layout 1 draws no
   // such line, so an emptied field simply drops it — the Soundcloud rule.
   vm.pricingQuote = cv('quote', DEFS.pricingQuote)
@@ -450,6 +454,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       // Only the light card drops its blurb and the price unit off full strength
       // in the reference; on the two dark ones they sit at the feats' cream.
       cardMut: lightCard ? rgba(ink, 0.72) : ink,
+      // §10.2 layout 3 stands a FEATURED badge on the card, and the frame
+      // paints it `sem/box/1` — which resolves to the card's own hue lifted a
+      // ninth of the way towards its ink (#6D7040 on the olive row, which is
+      // exactly #5B5E2E at 11% of #FBF6EA). An alpha rather than a mix, because
+      // it composites to the same colour and is the shape every other lifted
+      // token here already has (`soft`, `acFg12`, `deepFg25`).
+      badge: rgba(ink, 0.11),
     }
   }
   const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
@@ -483,6 +494,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // `fg`. It is also what the card falls back to with no packages at all, so
   // the empty state and the filled one are the same composition.
   vm.tierHero = tierHues(T.tags[1 % T.tags.length])
+  // §10.2 layout 3's rows are one hue doing two jobs: it outlines the plain
+  // rows and fills the featured one, whose border is then that hue's own
+  // second colour. Like `tierHero` it belongs to the seat and not to a
+  // package — the frame paints its whole stack from `sem/stroke/2`, which
+  // under Retro is T.tags[3], the olive.
+  //
+  // Unlike `tierHero` it has to read against the *page*, on both jobs: an
+  // outline the ground swallows leaves the plain rows as loose type, and
+  // Grunge's T.tags[3] IS its black background. So the walk starts at 3 and
+  // takes the first tag that clears `tierHues`' own 0.22 — olive on Retro and
+  // pale lime on Lime (both index 3), the stamp red on Grunge and the
+  // terracotta on Editorial, whose index 3 is a wash only a shade off its
+  // paper. `ac` is the last resort and no palette reaches it.
+  const rowSeat = T.tags
+    .map((_, i) => T.tags[(3 + i) % T.tags.length])
+    .find((h) => Math.abs(lum(h) - lum(bg)) > 0.22) ?? ac
+  vm.tierRow = tierHues(rowSeat)
   // The filter row above the cards, derived from the tags the artist typed the
   // way the repertoire's is — `label` cased for printing, `tag` raw for
   // comparing. It replaces TIER_MODES, which was a constant nothing could edit.
