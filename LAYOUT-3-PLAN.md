@@ -50,7 +50,7 @@ one session.
 | 4 | `audio` | `964:68641` | Audio Player Componenets — **H · Bar-meter player** | 858 × 243 | `977:22727` | 708 × 243 | `982:9778` | 370 × 243 | **done 47b9d22** |
 | 5 | `media` | `964:68642` | Media Player — **A · Editorial numbered list** | 858 × 647 | `977:22728` | 708 × 647 | `982:9779` | 370 × 647 | **done 16d28b0** |
 | 6 | `calendar` | `964:68645` | Booking Calendar — **C · Mobile availability** | 405 × 497.9 | `984:10605` | 708 × 456.9 | `984:10673` | 370 × 433.9 | **done f9c768e** |
-| 7 | `repertoire` | `964:68646` | Repertoire — **E · Curated set-list cards** | 1440 × 621 | `977:23041` | 708 × 636 | `982:10193` | 390 × 697 | todo |
+| 7 | `repertoire` | `964:68646` | Repertoire — **E · Curated set-list cards** | 1440 × 621 | `977:23041` | 708 × 636 | `982:10193` | 390 × 697 | **done 8c09b90** |
 | 8 | `gallery` | `964:68647` | Gallery Sections — **B · Masonry grid** | 1440 × 789 | `977:23131` | 768 × 865 | `982:10257` | 390 × 678 | todo |
 | 9 | `pricing` | `964:68648` | Pricing — **F · Stacked rows** | 1440 × 1022 | `977:23149` | 768 × 941 | `982:10274` | 390 × 1358 | todo |
 | 10 | `map` | `964:68649` | Events Map — **A · Split list + map** | 1440 × 804 | `977:23264` | 768 × 809 | `982:10389` | 390 × 878 | todo |
@@ -661,6 +661,82 @@ Learned on the booking calendar (section 6):
   it gave the stroke, the fill and the fact that the free dot's fill is the card's own cream.
   The card's own outline *is* `border/thin` 2, so the two are written differently on purpose.
 
+Learned on the repertoire (section 7):
+
+- **The first master in this pass that wants content the section does not have, and the
+  answer was a *reading* of the content it does.** "Curated sets" over four songs and a
+  duration each is not a flat tagged song list — until you notice that `repChips` already
+  calls the tags the section's own curation, that the seeded three tags are the frame's three
+  cards, and that a mood and a card title are the same slot. Grouping by the tag row beat
+  every alternative: a `SETS` constant in the repeater row shape (the video section's
+  `VIDEOS` rule) would have left `c.songs` unread, which the calendar's note says is worse
+  than any unread field. **Look for the derivation before reaching for the seeded constant;
+  the constant is for content that genuinely does not exist yet.**
+- **A grouping can strand what a filter cannot, and this section has already written down
+  what to do about it.** `vm.repFlat`'s own comment — *"it takes the artist's songs, so
+  swapping layouts never silently discards what they typed"* — is the constraint, and it is
+  what forced the `All` card. Where it goes is the interesting half: **appended when the tag
+  cards do not already reach every song**, not led with always. Always-drawn was the first
+  answer and it is wrong at this scale — pricing's extra `All` *chip* is a 60px control that
+  does something, where an `All` *card* on a fully-tagged page duplicates every song and
+  costs a whole card at every width. **Ask what the extra thing costs before calling it the
+  pricing chip row's intended diff.** The condition is stated over the vm (`reached.size <
+  songs.length`), not as "some song is untagged", so the sentence names the promise rather
+  than the special case.
+- **A frame that draws a control beside a truncated list has told you the truncation is
+  real.** Four rows *and* a *View full set →* is the design saying the card is a subset — so
+  the four is not the bio's five-chip component default, and the honest fit is to wire the
+  frame's own link to a reveal (the pricing deck's rule) rather than to drop the cap, drop
+  the link, or leave it dead. A **reveal, not a toggle**: no second label had to be invented,
+  and the link is simply not drawn on a set of four or fewer. Key the state by the row's
+  **label**, not its index.
+- **`justify-center` over the whole row IS the seat rotation, at the master's own count.**
+  The 390 grid emits `flex gap-20 items-center justify-center` at 390 wide over three 290
+  cards — 910 of track centred, which is exactly the −260 the metadata shows — so the
+  "translate" the positions look like is not one. Reading the emitted flex declarations is
+  what settled translate-vs-rotate: rotation keeps both peeks filled at page 0, where a
+  translated track bares the left gutter and hands the canvas a picture the master does not
+  draw. Below three sets there is nothing to peek with, so the row is the current card alone.
+- **A seat wrapper must be a `grid`, not a `flex`.** The peek seats are fixed 290 boxes, and
+  as a row-flex the card inside sat at its own **content** width (214) — which put the left
+  peek's card entirely outside the clipped viewport and drew no peek at all, while the centre
+  card rendered 78px narrow. A grid item stretches on both axes, so one word fixes both.
+  **And the tell was invisible to `getBoundingClientRect` on the *seat*:** the wrapper
+  measured 290 correctly. What caught it was a PIL scan of the render disagreeing with the
+  rects — measure the *card*, not the box you put it in, and when a pixel scan and a rect
+  disagree, the rect you took is of the wrong element.
+- **Two counts derived from the same list make the pager agree with three masters at once.**
+  `perPage` 3 / 3 / **1** turns "the two wide frames draw no pager and the phone draws two
+  arrows" into one derived row that is not rendered at one page. It also answers the
+  four-sets question without a second mechanism: a fourth set is a second **page**, not a
+  second row, which bounds the section's height at any tag count where the pricing deck's
+  wrap does not — and the lone card then stands in column one of the three, which is the
+  pricing deck's picture anyway.
+- **`tierHues` is reusable from another section's block, and reusing it is what buys the
+  legibility guards.** It is a `const` at `sectionVm`'s top level, above the repertoire's, so
+  `...tierHues(hue)` hands over the card's ink *and* the mustard second hue with its 0.22
+  luminance check already written. What it does not give is the card's **outline**, which the
+  frame pairs the other way — `#111` on the olive and rust cards, cream on the near-black one
+  — and that is `tierHues`' own `accHue` shape written out one line: `card === deep ? paper :
+  deep`. On Lime and Grunge the darkest tag IS the page ground, so the outline is the whole of
+  what keeps the card visible (the events map's lesson).
+- **Derive the hue *pool*, not the hue list.** The frame's three cards are ink, olive and
+  rust and it sets cream type on all three — so the pool is the tag hues dark enough to carry
+  cream (`contrast(h) !== '#141414'`), and walking it backwards lands on exactly those three
+  under Retro. Retro's mustard and pink are excluded by the same test that explains why the
+  designer skipped them. Compute the luminances before writing an index sequence: `T.tags[(5
+  − 2i)]` reproduces the same three and cycles only those three forever.
+- **A `<div>` wrapping one `<span>` takes the *card's* inherited strut, not the span's
+  line-height.** The frame's `view` frame came out 10px taller than its stated 47 at desktop
+  because the wrapper was a block. `display: flex` on it makes the span a flex item and the
+  height is its own line box again. Worth checking on any single-line block whose height is
+  part of a sum you are transcribing.
+- **`&n=` rows are where a grouping's states live.** The old `LIST.repertoire` gave every song
+  exactly one of three tags, so neither the `All` card nor a song in two sets had ever
+  rendered. One untagged row every fifth and a two-tag row every seventh reach both, and a
+  long title and artist every fourth is what shows the row's ellipsis at 290. The bio's
+  add-the-switch-in-the-same-session rule, for a *shape* of row rather than a field.
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five, and
@@ -745,3 +821,19 @@ Learned on the booking calendar (section 6):
    wrapper's "Book Me" is `s.title`, and `TITLES.calendar` stays "Availability", because
    re-pointing it would move layout 2's signed-off head (question 7's discriminator, the tags
    row's rule).
+9. **The repertoire's search box and its filter chips have nowhere to go in layout 3.** *Named,
+   not open.* The frame draws neither, so `q` and `chip` reach nothing while layout 3 is
+   selected — the header's seal (5), media's `heading` (6) and the calendar's `cta` (8) a
+   fourth time, and the mildest of the four: the section's tags are read *harder* here than in
+   either fitted layout, since the set cards **are** the chip row, and every song reaches a
+   card. What is genuinely absent is the search, which is a control rather than a field and
+   has no editor entry to leave editing nothing.
+10. **Layout 3's `All` card is drawn conditionally, which is the first content rule in this
+    pass whose *presence* depends on the artist's data.** A page whose songs are all tagged
+    shows the frame's three cards; adding one untagged song adds a fourth card holding the
+    whole list, and at the two wide widths that also brings the pager in. Both are derived and
+    both are named in the branch, but it is a bigger jump than any other diff this pass ships
+    and it is worth watching if the remaining five sections meet the same shape. The
+    alternative — `All` always, at the front — was tried and rejected on the ground that a card
+    duplicating every song on a fully-tagged page is a design defect rather than a fidelity
+    diff; see *Learned on the repertoire*.
