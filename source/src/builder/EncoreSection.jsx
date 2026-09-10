@@ -2251,11 +2251,12 @@ function Media({ s }) {
 
   // What the transport can reach is what the layout draws: the older design
   // shows three cards, and Next off the third has to return to the first
-  // rather than start a track with no card on the page. Layouts 1 and 2 both
+  // rather than start a track with no card on the page. Layouts 1, 2 and 3 all
   // draw the whole list — layout 2 draws it twice, as the fan and as the
-  // numbered list beside it. `s.v0` is a prop, not state, so branching on it
-  // above the hooks would be the error — branching on it here is not.
-  const list = s.v0 || s.v1 ? s.tracks : s.tracks3
+  // numbered list beside it, and layout 3 draws that same list on its own.
+  // `s.v0` is a prop, not state, so branching on it above the hooks would be
+  // the error — branching on it here is not.
+  const list = s.v0 || s.v1 || s.v2 ? s.tracks : s.tracks3
   const count = list.length
   // Clamped the way Repertoire clamps its chip: the list is the artist's, and
   // a track deleted under the player would otherwise strand it past the end.
@@ -2923,6 +2924,210 @@ function Media({ s }) {
         } : col('50px')),
       }}>
         {left}{list}
+      </div>
+    )
+  }
+
+  // v2 — Media layout 3 · Editorial numbered list
+  // (Figma 964:68642 · 977:22728 at 708 · 982:9779 at 370.)
+  //
+  // A counter row over five numbered rows on the beige page: number, 64px
+  // sleeve, title over release, running time, each row a 30px pill in one of
+  // three hues. No panel, no carousel, no head.
+  //
+  // ── The same Figma component as layout 2's right column ────────────────
+  // `432:2092` is the component layout 2 draws *inside* its cream panel beside
+  // the fan, so LAYOUT-3-PLAN.md asked whether to lift a shared inner
+  // component or write it again. **Written again**, and the tags row's
+  // grep-before-you-copy rule is what settles it rather than overrides it:
+  // what would be shared is a whole branch, not a leaf, and the two branches
+  // disagree about four things at once. The type ramps here — `size/title`
+  // 24/**19**/**18**, chip 12/11/11, body-lg 16/15/15, body-md 14/13/13 —
+  // where layout 2's masters measured every one of them flat at the desktop
+  // number; the ground is the beige page rather than a cream panel, so the
+  // counter row's ink is the page's own; the rows are content-tall here and
+  // divide a stated column height there; and 390 is a hand-set deviation on
+  // both sides. A `TagChips`-shaped parameterisation would have to take a type
+  // table, a ground and a height mechanism — which is the component rewritten
+  // with a signed-off branch hanging off it.
+  //
+  // ── The rows are content-tall, and 647 is the page's number ────────────
+  // All three masters state the instance at 647 and divide it: the head hugs
+  // (44 desktop, 43 narrow, the chip's own ramp), a 10 gap, then five rows at
+  // `flex-[1_0_0]`. The residue is 110.6 at 858 and 110.**8** at 708 and 370 —
+  // a stated height does not differ by two tenths, a division does (the events
+  // map's rule). And the same component is 673 tall in layout 2's desktop
+  // panel and 596 in its narrow ones, so 647 is this page's allocation and not
+  // the component's. So the row is its own content: 64 sleeve + 2 × 14 padding
+  // + the 2px rule = 96, and the section stands 574 unscaled where the frame
+  // draws 647. The cost is named rather than engineered away — at the seeded
+  // five our rows are 96 against the frame's 110.6 — and it is the height
+  // layout 2's own narrow rows fall back to past five tracks.
+  //
+  // ── Filling 1052 ───────────────────────────────────────────────────────
+  // Open question 1's settled answer, read off the master's own declarations:
+  // the row is `w-full` and the title column is `flex-[1_0_0]`, so the row
+  // fills the content column and the title takes the slack. At desktop that is
+  // ~854px of measure where the widest master draws 626 × 0.82 = 513. No cap
+  // (the bio's rule) — the title is one line and ellipsises.
+  //
+  // ── 390, where the frame destroys its own content ──────────────────────
+  // The 370 master keeps the desktop component's 30 padding and 20 gaps, which
+  // leaves its title column 141px and a 234px title node inside it under
+  // `overflow-clip`: "Manchester at 3am" is hard-clipped mid-word in the
+  // master's own render. Our canvas is 346, where the same set leaves 117. So
+  // 390 takes layout 2's own override — 18 and 14 — for layout 2's reason, and
+  // the title ellipsises rather than clipping. Same section, same call.
+  //
+  // ── What is shared, and what is not drawn ──────────────────────────────
+  // The live seam is layout 2's row verbatim: the whole row is the button, the
+  // playing row swaps its number for the transport glyph in a slot that keeps
+  // its width, and the `<audio>` element rides at the foot of the column —
+  // there is no transport bar here to tuck it into. Nothing new: no state, no
+  // vm key, no field. What the frame does not draw, this does not either — the
+  // head (the wrapper's display head is audio's, LAYOUT-3-PLAN.md) and the
+  // Soundcloud button (layout 2's absence, for the same reason). `heading` and
+  // `kicker` therefore edit nothing while layout 3 is selected, which is open
+  // question 7's shape and named there.
+  //
+  // The composed page puts this list under the audio player's now-playing bar,
+  // and audio's own layout 3 now draws one card per track — so a page carrying
+  // both at layout 3 prints the same tracks twice. That is the Figma page's
+  // pairing surviving a section that had to stop stranding its list; it is not
+  // this branch's to fix by drawing fewer than the artist typed.
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // `get_variable_defs` on all three masters. Every *box* number is the
+    // desktop component's own — 30 radius, 2 rule, 30/14 padding, 20 gap, 64
+    // sleeve, 4 sleeve corner, 16 head padding, 10 column gap — unscaled at 768
+    // and 390 and × 0.82 at desktop, so the whole branch runs through one `z`.
+    const T = desk
+      ? { title: 24, num: 16, sub: 12, dur: 14, chip: 12 }
+      : tab
+        ? { title: 19, num: 15, sub: 12, dur: 13, chip: 11 }
+        : { title: 18, num: 15, sub: 12, dur: 13, chip: 11 }
+
+    const n = s.chips.length
+    const olive = s.chips[3 % n].bg
+    const mustard = s.chips[2 % n].bg
+    const rust = s.ac
+    // The frame's three-hue cycle, each hue carrying its own type and outline
+    // colour — layout 2's list draws the identical pairings, because it is the
+    // identical component. The flat templates have no such pairings and fall
+    // back to one contrast rule.
+    const ROWS = [
+      { bg: olive, fg: mustard, line: mustard },
+      { bg: mustard, fg: rust, line: olive },
+      { bg: rust, fg: mustard, line: mustard },
+    ]
+
+    // The counter row stands on the page, not on a card, so its ink is the
+    // page's own text colour — Retro's `tx` **is** the frame's `sem/text/2`
+    // #111111, so no literal is needed and the flat four are right by
+    // construction. (A pixel scan of the 858 render: the ground is #EAD7B8
+    // exactly, the three fills are the palette's own, and the masters carry no
+    // grain — stddev 0 over every flat patch.)
+    const chip = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      // Figma states −6%, which the emitted CSS freezes at the desktop
+      // −0.72px. The tracking ramps with its token (the pricing lesson).
+      letterSpacing: u(-0.06 * T.chip),
+      textTransform: 'uppercase', whiteSpace: 'nowrap',
+    }
+    const titleType = {
+      fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1, letterSpacing: s.dls,
+      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+    }
+    const subType = {
+      fontFamily: s.body, fontSize: u(T.sub), lineHeight: 1.4,
+      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+    }
+
+    return (
+      <div style={col(u(10), { alignItems: 'stretch' })}>
+        {/* The frame's own top line, and the whole of this section's head. Its
+            two labels are separated by an unfilled `flex-[1_0_0]` spacer — a
+            gap, not a rule, and the render draws nothing there — so this is a
+            space-between row, which is what layout 2's counter row already is.
+            The count is derived, as it is in layouts 1 and 2. */}
+        <div style={row('0', {
+          flex: 'none', justifyContent: 'space-between',
+          padding: `${u(16)} 0`, color: s.tx,
+        })}>
+          <span style={chip}>● Popular</span>
+          <span style={chip}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+        </div>
+
+        {/* An emptied list is a real state — the tracks are the artist's — and
+            the counter row above already names the count honestly, so this is
+            the audio player's one line rather than a hole. The pricing deck's
+            rule: any minimum height here would be an invented number, and it
+            is only ever seen mid-edit. */}
+        {s.tracks.length === 0 && (
+          <span style={{ fontFamily: s.body, fontSize: u(T.dur), color: s.muted }}>
+            No tracks yet.
+          </span>
+        )}
+
+        {s.tracks.map((t, i) => {
+          const r = ROWS[i % ROWS.length]
+          const fg = s.retro ? r.fg : contrastInk(r.bg)
+          // TracksField has no duration of its own — its rows carry the
+          // subtitle in both keys — so the running time only sets where the
+          // two differ, which is layout 2's reading of the same two columns.
+          const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+          const on = chosen && i === at
+          return (
+            <div key={i} onClick={onPick(i)} style={{
+              flex: 'none', overflow: 'hidden',
+              background: r.bg, color: fg,
+              // `s.bw` rather than `u(2)`: the frame's rule is 2 and ours is 2
+              // unscaled at desktop, where × 0.82 would be 1.64. That is the
+              // drift layout 2's own rows already carry, and consistency
+              // inside one section beats accuracy in half of it.
+              border: `${s.bw} solid ${s.retro ? r.line : fg}`,
+              borderRadius: u(30), padding: `${u(14)} ${s.mob ? '18px' : u(30)}`,
+              cursor: s.live ? 'pointer' : undefined,
+              ...row(s.mob ? '14px' : u(20)),
+            }}>
+              {/* The slot keeps its width in both states so nothing shifts
+                  under the pointer as a row starts playing. The frame lets the
+                  numeral flow — its sleeves sit at x 68, 70 and 71 for the same
+                  reason "10" would shunt a repertoire row — and pinning it at
+                  the widest is the repertoire's rule. */}
+              <span style={{
+                fontFamily: s.body, fontSize: u(T.num), lineHeight: 1.5,
+                width: u(24), flex: 'none', ...row('0', { justifyContent: 'center' }),
+              }}>{on
+                ? (playing ? <Pause size={13} fill="currentColor" /> : <Play size={13} fill="currentColor" />)
+                : t.n}</span>
+              <span style={{
+                width: u(64), height: u(64), flex: 'none', display: 'block',
+                borderRadius: u(4), overflow: 'hidden', position: 'relative',
+              }}><Photo s={s} initialsSize={16} src={t.img} /></span>
+              <span style={col(u(4), { flex: 1, minWidth: 0 })}>
+                <span style={titleType}>{t.name}</span>
+                {/* Rendered or not, rather than printed blank: a typed
+                    textarea row has no release line at all, and an empty span
+                    spends the column's gap and its own line box either way —
+                    which would push the title off the row's middle. */}
+                {t.rel && <span style={subType}>{t.rel}</span>}
+              </span>
+              {dur && (
+                <span style={{
+                  fontFamily: s.body, fontSize: u(T.dur), lineHeight: 1.5, flex: 'none',
+                }}>{dur}</span>
+              )}
+            </div>
+          )
+        })}
+        {/* This layout has no transport bar of its own — the rows are the whole
+            of it — so the element rides at the foot of the column. Without it
+            `el.current` is null and every row click is dead. */}
+        {audio}
       </div>
     )
   }

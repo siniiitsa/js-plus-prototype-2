@@ -49,7 +49,16 @@ const navSections = [
 // fills the key the section under test actually reads — one entry per category
 // whose layout 2 draws a list — so `&n=0` is also how an emptied list is seen.
 const LIST = {
-  media: (i) => ({ title: `Track ${i + 1}`, sub: 'Single' }),
+  // Every fourth title is long enough to make layout 3's row ellipsise one at
+  // 390, where the master's own render hard-clips its shortest. No row can
+  // ever show a running time under `&n=`: `sectionVm` gives an array-shaped
+  // `c.tracks` row `dur === rel === sub`, because TracksField has no duration
+  // column, and every layout drops the time where the two are equal. The
+  // seeded five are the only duration check there is.
+  media: (i) => ({
+    title: i % 4 === 3 ? `Track number ${i + 1}, at about the length a real one runs to` : `Track ${i + 1}`,
+    sub: 'Single',
+  }),
   // The audio player's tracks are the one list `&n=` reaches that is a
   // newline-delimited *string* rather than an array (the `&tags=` shape, as a
   // count), so the rows are joined below. Every fourth title is long enough to
