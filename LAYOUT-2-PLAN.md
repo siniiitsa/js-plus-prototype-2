@@ -87,7 +87,7 @@ Status says otherwise.
 | 8 | `calendar` | `986:10607` *(in `986:10606`)* | 708 × 741 | `986:10800` *(in `986:10751`)* | 370 × 698 | **done** `886d14d` |
 | 9 | `map` | `986:10974` | 768 × 823 | `986:11467` | 390 × 1286 | **done** `74929f0` |
 | 10 | `form` | `986:11591` | 768 × 865 | `986:11633` | 390 × 912 | **done** `d033540` |
-| 11 | `testimonials` | `986:11675` | 768 × 796 | `986:11701` | 390 × 870.3 | todo |
+| 11 | `testimonials` | `986:11675` | 768 × 796 | `986:11701` | 390 × 870.3 | **done** `56bb9af` |
 | — | `footer` | `986:11787` | 768 × 721 | `986:11727` | 390 × 721 | out of scope |
 
 Five things about these that a fresh session would otherwise re-derive.
@@ -1239,6 +1239,53 @@ Learned on the enquiry form's narrow masters (section 10):
   is the bare `Enquiry`, since layout 2 draws no chip row), then *Write
   another* — which restores the boxes with what was typed and the rings
   cleared. React commits asynchronously, so one action per call.
+
+Learned on the testimonials' narrow masters (section 11):
+
+- **A master can state a *live* mechanism, and that is the one kind of narrow
+  diff worth reading the emitted code for.** The 390 rail's three tiles are
+  82 / 159 / 85 — unequal, which no division explains — and `get_design_context`
+  says why in one line: the picked tile is `flex-[1_0_0] min-w-px` and the other
+  two are `shrink-0` on their own padding. So the widening *is* the selection,
+  a second mark beside the fill, and it changes as the visitor picks. The
+  metadata alone would have read as three hand-set widths and been transcribed
+  as an artefact. Where a narrow master's numbers do not divide, the emitted
+  flex declarations are the discriminator between a hand and a mechanism.
+- **A stated height makes a padding inert in *its* axis only.** This section's
+  desktop lesson dropped the frame's `py-36` in the column because the tiles
+  divide the rail's height, and kept it "for the row the narrow canvases lay
+  out". The 390 master then turned out to state a 107.303 height on the row's
+  tiles too — so the 36 is inert at every width and the padding that survives is
+  the *horizontal* 30, which is what gives the row its widths. The kept-for-later
+  half of a desktop decision is worth re-asking rather than cashing in.
+- **A `flex-basis: 0` item takes no slot in a wrap, which is a bug at high
+  counts and not a fidelity gain.** Transcribing the master's `1 0 0` literally
+  means the picked tile spends whatever its line has left — fine at the three
+  the master draws, and free to fall below its own mark on a tightly packed
+  wrapped line. `1 0 auto` is the identical width wherever the row has any free
+  space at all, so it costs nothing at every count the master itself shows and
+  removes the clip. Prefer the basis that participates in the wrap.
+- **Re-ask every `desk`, and expect most of them to become `!s.mob`.** 768 keeps
+  the desktop's two columns and only 390 stacks — the events map's and the
+  enquiry form's split, now the third sighting at the same width, so it is the
+  pass's default shape and `desk` in a fitted branch is usually the *wrong*
+  test. Five of this branch's six flipped to `wide = !s.mob`; the ones that
+  stayed `desk` are `u()`'s `z`, the mark's hand-set box and the pill's own
+  numbers. The 390 **reorder** (card over rail, where the other two put the rail
+  first) is written as two guarded children — `{!s.mob && rail}{big}{s.mob &&
+  rail}` — rather than a reordered pair, so the desktop DOM stays byte-identical
+  and the stash digest stays a test.
+- **The pill's box did not ramp and its label did**, for the third section
+  running: 54 tall on a 46 disc at all three masters, so `disc={desk ? 38 : 46}
+  full={!desk} size={desk ? undefined : u(T.list)}` — the events map's spelling
+  copied down verbatim. Desktop keeps its `undefined`, and BookPill's own 4/18
+  padding stands against the masters' 5/21 at all three widths: an existing
+  drift in a signed-off half.
+- **A `whitespace-nowrap` that overflows its own frame is a leak with nothing
+  behind it.** The 390 sub line carries the desktop measure — 431px of type in a
+  350 column, hanging 40 off each side of a head that clips. Unlike the bio's
+  credit row, no part of the master's layout depends on it, so ours wraps to two
+  lines. Check what the leak *produces* before honouring or dropping it.
 
 ## Open questions
 
