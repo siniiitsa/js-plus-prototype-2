@@ -109,8 +109,9 @@ mutated through a single `patch()` helper.
   link, so the link is what reaches the fifth song and there is no way back — the **header's
   navigation**, the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
-  the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1
-  and picks the single big plan in layout 2),
+  the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
+  picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
+  which row is featured),
   the **booking calendar's month arrows, its day picking and its foot pill** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
   the **testimonials carousel's arrows** (below — layout 2 pages the same `cur` from a rail of
@@ -245,18 +246,30 @@ mutated through a single `patch()` helper.
   pill takes `vm.tierBookTo`, which is `vm.bookTo` **minus `pricing` itself** — `CTA_TARGETS.book`
   ends there, so the pill would otherwise scroll the visitor to the section they are reading; with
   neither a form nor a calendar on the page it resolves to nothing and `BookPill` stays a span.
-  **Everything in this paragraph from "The row is *not* rendered at one chip" on is layout 1's,
-  and so is the filtering itself**: layout 2 is a single big plan, and its chip row names the
+  **Everything in this paragraph from "The row is *not* rendered at one chip" on is the deck's**
+  — layout 1's and, where it says the same thing, layout 3's: layout 2 is a single big plan, and
+  its chip row names the
   **packages** rather than their tags — one chip each, the card showing the one selected, so the
   design cannot strand every package but the first. It is the same `chip` state, the same
   `s.live` gate, the same clamp and the same pinned 0 on the canvas; what it is not is a filter,
-  which leaves `vm.tierChips` reaching layout 1 alone (`FIELDS.media.soundcloud`'s case again —
-  the field's hint says which layout reads the tags). Its card is painted from **`vm.tierHero`**,
+  which leaves `vm.tierChips` reaching layouts 1 and 3 (`FIELDS.media.soundcloud`'s case again —
+  the field's hint says which layouts read the tags). Its card is painted from **`vm.tierHero`**,
   not from the selected package: the hue belongs to the seat, the media player's fan rule, or one
-  card would recolour on every toggle. Both layouts' card colours now come out of one
+  card would recolour on every toggle. All three layouts' colours now come out of one
   `tierHues()` in `sectionVm`. Layout 2 also has no grain — its frame carries none — and it is
   what made **`BookPill`'s flat branch honour `bg`/`fg`** (defaulting to the accent pair): a pill
   standing on a card in the accent hue was invisible on Pop, in layout 1 as well as layout 2.
+  **Layout 3 is a stack of full-width rows on the page ground**, and it filters as layout 1 does
+  — the same `chip`, in the frame's segmented capsule instead of a loose chip row — but what it
+  adds is a **seat that the filter moves**: the last row *on show* is filled in `vm.tierRow`'s
+  hue where the others are merely outlined in it, and carries the frame's FEATURED badge, so
+  hiding the artist's last package promotes whatever now ends the stack. That is the deck's own
+  rule that the tilt and the mobile overlap take the **rendered** index while `t.n` keys the
+  card, and it is not drawn at one row. `vm.tierRow` is `tierHero`'s shape with one extra
+  constraint — it has to read against the **page** rather than on a card, so it walks `T.tags`
+  from the frame's own index to the first hue that clears `tierHues`' 0.22 against `bg`, Grunge's
+  `T.tags[3]` being its black background exactly. Its selector is the one thing in that branch
+  not standing on the page ground, so its outline and idle labels take `paperFg` and not `tx`.
 - **The booking calendar navigates and picks, in the published tab only.** It was the last §10.2
   section that was entirely a picture — arrows and day cells with a pointer cursor and no handler
   in either mode, over three constants and a sentence. The whole section is built from **one
