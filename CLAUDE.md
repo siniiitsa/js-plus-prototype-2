@@ -104,7 +104,10 @@ mutated through a single `patch()` helper.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
   real, and **fourteen things read it**: `Repertoire` — its search field, its filter chips and
-  its pager — the **header's navigation**, the **media player** (below), the **gallery's arrows
+  its pager, and in layout 3 the set cards' *View full set* reveal, which is the one control
+  in the file that is a **reveal rather than a toggle**: the frame draws four song rows and a
+  link, so the link is what reaches the fifth song and there is no way back — the **header's
+  navigation**, the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager and its pin/row pairing** (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1
   and picks the single big plan in layout 2),

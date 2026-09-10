@@ -836,4 +836,9 @@ Learned on the repertoire (section 7):
     and it is worth watching if the remaining five sections meet the same shape. The
     alternative — `All` always, at the front — was tried and rejected on the ground that a card
     duplicating every song on a fully-tagged page is a design defect rather than a fidelity
-    diff; see *Learned on the repertoire*.
+    diff; see *Learned on the repertoire*. Its far end is a page whose songs carry **no**
+    tags at all: `repChips` is `[All]`, so `repSets` is the one card, and `repeat(3, 1fr)`
+    seats it in column one at a third of the measure. `&n=` cannot reach that state (only
+    every fifth row is untagged), it is only ever seen mid-edit, and it is the pricing deck's
+    lone-fourth-card picture — left as it is rather than special-cased into a full-width card,
+    which would be a second composition for one state.
