@@ -46,7 +46,7 @@ one session.
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:68622` | Headers — **D · Inset Hero** | 1440 × 900 | `977:22532` | 768 × 1024 | `982:9583` | 390 × 930.5 | **done 43fa3ae** |
 | 2 | `bio` | `964:68631` | Bios — **E · Stacked ID card** | 858 × 882 | `977:22717` | 708 × 912 | `982:10013` | 370 × 860 | **done dac7d44** |
-| 3 | `tags` | `964:68632` | **Tags — Frame** | 858 × 75 | `977:22718` | 708 × 67 | `982:9769` | 370 × 97 | todo |
+| 3 | `tags` | `964:68632` | **Tags — Frame** | 858 × 75 | `977:22718` | 708 × 67 | `982:9769` | 370 × 97 | **done 3df9565** |
 | 4 | `audio` | `964:68641` | Audio Player Componenets — **H · Bar-meter player** | 858 × 243 | `977:22727` | 708 × 243 | `982:9778` | 370 × 243 | todo |
 | 5 | `media` | `964:68642` | Media Player — **A · Editorial numbered list** | 858 × 647 | `977:22728` | 708 × 647 | `982:9779` | 370 × 647 | todo |
 | 6 | `calendar` | `964:68645` | Booking Calendar — **C · Mobile availability** | 405 × 497.9 | `984:10605` | 708 × 456.9 | `984:10673` | 370 × 433.9 | todo |
@@ -423,6 +423,54 @@ Learned on the bio (section 2):
   row as `minHeight` with `alignContent: flex-end` it is the same picture unwrapped — the head
   band still measures the frame's 144 — and tight when it wraps.
 
+Learned on the tags row (section 3):
+
+- **`get_metadata` is deep again here, and it is worth calling first after all.** The header's
+  lesson was that this page's metadata stops at the section's outer frame; that is a property of
+  the *header's* masters, not of the page. All three tags masters came back as a full tree with
+  every chip's x/width, which settled the 8px gap, the 11/5 padding and the mobile 4 + 2 wrap
+  before a single screenshot. Call it on all three, then decide whether
+  `get_design_context` still owes you the structure.
+- **Check whether an earlier section already fitted your Figma component.** The chip row here
+  *is* `TagChips`, fitted when the layout-3 header dropped the same component into its identity
+  column — same face, same 1.26, same 5/11, same 8 gap, same `radius/chip` 8. Reusing it turned
+  a section into eight lines. Grep the component for the frame's distinctive number (`5px 11px`)
+  before writing a second copy; `media`'s layout 3 has the same shape of question waiting for it
+  (*Media's layout 3 is layout 2's right column*, above), and there the answer may go the other
+  way because the thing to share is a whole branch rather than a leaf.
+- **Extend a shared leaf with an additive prop, and say which branch it reaches.** `TagChips`
+  gained `size` beside the header's `radius`, defaulting to `s.labelXs` so all four earlier
+  callers are untouched by inspection — but it is applied in the **Retro branch only**. The flat
+  templates' 9px tracked-out caps are their own design, and a `size` that crossed the branch
+  would have stood the header's chips at 9 beside this row at 16.4 on the same flat page.
+- **Reuse costs the box ramp, and that is the right trade.** The component's 5/11 padding and
+  8px gap are literals, so at desktop the chips run ~4px wide of the frame × 0.82 (30.7 tall
+  against 28.7). One chip everywhere beats two that disagree by 2px; name it rather than
+  parameterising the component's whole box.
+- **`vm.chips[].fg` is `contrast(bg)` and the frame's is a cream, which inverts two chips, not
+  one.** Retro's mustard (lum .64) *and* its pink (lum .61) both clear `contrast`'s 0.58
+  threshold. Compute the luminances before claiming how many chips a colour rule moves.
+- **A dead `TITLES` entry is free to re-point.** `TITLES.tags` was 'Tags' and read by nothing —
+  no field named `heading`, and neither flat layout drew `s.title` — so moving it to the frame's
+  'Genres' and adding the mirroring `FIELDS` entry (the `media` pattern, where `d` *is*
+  `TITLES[cat]`) changed no rendering anywhere. Grep `vm.title`'s readers before assuming a
+  title field is load-bearing.
+- **Open question 7's objection is what tells you whether to add the field.** The bio declined
+  `kicker`/`location` because two signed-off layouts would newly honour the edit; `tags` takes
+  `heading` because none does. That is the discriminator, not "is the seat reachable" — and
+  unlike `since`, a default is honest here, because the frame's word is a label the design chose
+  rather than a fact about the artist. A field with a default needs no harness switch.
+- **`&n=` cannot reach a comma string.** `FIELDS.tags.tags` is the one list-shaped content that
+  is not an array, so the harness took `&tags=` beside `&booked=` and `&since=`. Empty is the
+  emptied-row state.
+- **The chip's `whiteSpace: 'nowrap'` is `TagChips`' and pre-dates this pass.** A single tag over
+  ~46 characters overflows the 346 mobile column. Twelve tags including a 25-character one wrap
+  cleanly, so it was left alone rather than moved under four signed-off callers — but a section
+  that adopts this component and expects long labels owns that decision.
+- **Lime's third tag hue is its page background**, so chip 3 vanishes into the page on that
+  theme. It is a property of `vm.chips` and shows in every layout that draws them, v0 included —
+  not this branch's regression, and not this pass's to fix.
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five.*
@@ -438,7 +486,10 @@ Learned on the bio (section 2):
    need a field the section does not have, on top of the `s.live` work. Fitting it as a picture
    keeps CLAUDE.md's rule intact and loses nothing the artist typed. This is a scope call, not a
    fidelity one.
-3. **Whether `tags` and `audio` should have been fitted at layout 1.** Neither has ever been
+3. **Whether `tags` and `audio` should have been fitted at layout 1.** *Half answered on the
+   tags row (section 3), and the answer stands:* `tags` now has one fitted layout out of three,
+   and a user who picks layout 1 or 2 still gets an invented flat design. Nothing about fitting
+   it made the numbering read better and nothing about it needed to. Neither has ever been
    Figma-fitted — no commit in the repo's history fits either, and both components are generic
    flat designs with no `s.retro` gating — so both are getting their first Figma design at
    layout 3, and a user who picks layout 1 or 2 for either still gets the flat one. That is
