@@ -3069,7 +3069,251 @@ function Tags({ s }) {
   )
 }
 
+// The bar-meter's own waveform, read off the Figma component's 57 bars
+// (`964:68641;761:8374…8430`) in order. A module-level decoration constant, the
+// way GRAIN_URL and TORN_D are: it belongs to one branch of one section and
+// EncoreSection imports nothing from data.js. The first 17 are the ones the
+// frame paints in the accent — the playhead — and everything from the 18th on
+// is drawn in identical pairs, which is the designer's hand, not a pattern to
+// preserve. Heights are the frame's, against its stated 96px band.
+const WAVE = [
+  60, 64, 70, 80, 90, 88, 74, 62, 55, 50, 48, 50, 60, 75, 88, 96, 92,
+  78, 78, 62, 62, 52, 52, 46, 46, 48, 48, 54, 54, 62, 62, 74, 74, 80, 80,
+  78, 78, 68, 68, 56, 56, 48, 48, 44, 44, 48, 48, 56, 56, 64, 64, 56, 56,
+  48, 48, 44, 44,
+]
+// The share of that row the frame paints played: 17 bars of 57. A fraction and
+// not a count, because our meter's bar count is derived from the width below —
+// see "The meter fills" in the branch.
+const WAVE_PLAYED = 17 / WAVE.length
+
 function Audio({ s }) {
+  // v2 — Audio layout 3 · Bar-meter player
+  // (Figma 964:68641 · 977:22727 at 708 · 982:9778 at 370.)
+  //
+  // A cream card standing on the beige page: a row of times over a bar meter
+  // with a played head, and under it the track's name, a mustard play disc on
+  // the page's hard offset shadow, and the artist. This is the section's first
+  // Figma design ever — its v0 and v1 are invented flat ones and stay that way
+  // (LAYOUT-3-PLAN.md, open question 3) — and it *replaces* an invented flat
+  // v2 rather than taking a new slot, so `NVAR.audio` stays 3 (the header's
+  // Inset Hero, the same refit-in-place).
+  //
+  // ── One card per track ─────────────────────────────────────────────────
+  // The frame draws a single now-playing bar and the composed page puts the
+  // rest of the list in the *media* section below it. Our sections are
+  // independent, so a single card would strand every track but the first —
+  // the defect `c.tiers` and `c.quotes` were each written to fix, and a
+  // visible one here, because `FIELDS.audio.tracks` is a textarea the artist
+  // types five lines into. So the card is the row and the section is the
+  // stack, at the Section's own 30 between them. Card 0 carries the frame's
+  // played head and every card below it is unplayed: that is the media
+  // player's cue rule (`cur` starts at -1, and the card still names and shows
+  // the track the player is cued to), and it is what keeps the reference
+  // picture the frame's at the top of the stack. The costs are named, not
+  // engineered away — five discs where the frame draws one, and ~1070px at
+  // the seeded five against v0's ~250.
+  //
+  // ── The meter fills, and the count is what the width buys ──────────────
+  // Every bar is `shrink-0 w-[10px]` under a `gap-[4px]`, and 57 of them fill
+  // the frame's own 810 box: **the pitch is the design and the count is
+  // derived** — the gallery rail's rule the other way up. Honouring the
+  // frame's fixed 57 instead would centre a 651px meter in our 1013px card at
+  // desktop, and at the two narrow widths it is the master itself that breaks:
+  // both keep the desktop component's bar positions under `justify-center` +
+  // `overflow-clip`, so 708 clips half the played head off and **390 renders
+  // no accent bar at all** (a pixel scan of the 370 master finds none). That
+  // is the media player's "a frame's own render can be the artefact, and the
+  // tell is that it destroys its own content". So the row is `flex-start` with
+  // its clip kept, and the count comes off the content column.
+  //
+  // ── The frame's copy, sorted ───────────────────────────────────────────
+  // What it draws and this does not: "1:30" (the elapsed half of "1:30 /
+  // 3:24") and "Mix 028" are a playhead time and a mix number the artist never
+  // typed, so they go the way the video section's view count and the pricing
+  // deck's rating went. What survives takes a real value: the two times
+  // bounding the meter become the track's own scale, `0:00` to `t.dur`, which
+  // is the one place a duration genuinely labels something; the title is
+  // `t.name` and the name beside the disc is `s.brand`. `t.rel` was the
+  // obvious candidate for the freed "Mix 028" seat and is declined — it is
+  // seeded-only for this section (`FIELDS.audio.tracks` has no release
+  // column), so the reference canvas would print a line the artist's own page
+  // can never have.
+  //
+  // ── The head is borrowed, and the eyebrow is derived ───────────────────
+  // The 1440 page wraps this instance and the media list in a Section carrying
+  // one display head, and audio takes it (LAYOUT-3-PLAN.md, "The composed
+  // page"): `s.title` is `FIELDS.audio.heading`, whose default stays "Selected
+  // Tracks" against the frame's "Five worth your ear" — re-pointing it would
+  // make v0 and v1 newly honour a different word (open question 7's
+  // objection). The eyebrow reads "KM BIO" in the frame, over a *track* head,
+  // and that same frame still carries the bio head's hidden `the` / `room.`
+  // nodes: it is the bio's Section duplicated. So the eyebrow is the bio's
+  // pattern rather than its string — the initials and the category's own name,
+  // written out because EncoreSection imports nothing from data.js.
+  //
+  // ── The type is read, not measured ─────────────────────────────────────
+  // `get_variable_defs` on all three masters: display-lg 96/60/40 (the head,
+  // at the page's .89), label-xs 20/14/12 (the eyebrow, Inter at 1.26),
+  // list 16/**12**/13 (the two Soulway names — the repertoire's non-monotonic
+  // case again, and again with no column-width reason), body-sm 12 flat (the
+  // times) and body-md 14/13/13 (which reaches the empty state alone — the
+  // play glyph is sized off its ink, below). Every box number is the desktop
+  // component's own — 24 padding, 16 gap, 30 radius, the 96 band, the 44 disc
+  // — unscaled at 768 and 390 and × 0.82 at desktop, so the whole branch runs
+  // through one `z`. The 30 radius is a corner walk of all three renders, not
+  // the emitted code. The masters carry no grain and no stroke (stddev 0 over
+  // the card).
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const T = desk
+      ? { disp: 96, eyebrow: 20, list: 16, sm: 12, md: 14 }
+      : tab
+        ? { disp: 60, eyebrow: 14, list: 12, sm: 12, md: 13 }
+        : { disp: 40, eyebrow: 12, list: 13, sm: 12, md: 13 }
+    // Figma box/1, which resolves to the off-white here rather than the bio's
+    // #FAECD5 (the media player's "the emitted fallback is the component's
+    // default, not the instance's" — this one is sampled off the render).
+    // Retro's own `paper` IS the beige page, so the card needs the literal;
+    // the flat four have a real second paper and take it, with `paperFg` for
+    // the ink and an outline, or a palette whose lightest colour is its
+    // background draws the card as a hole (the calendar's lesson). The master
+    // strokes nothing at any width, so only Retro follows that absence.
+    const cream = s.retro ? '#FFFEFB' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    // The frame sets both names in the accent. `s.ac` is chosen against the
+    // *page*, not against a cream card — Lime's is acid green on pale lime —
+    // so the flat four take the card's own ink, which is media layout 2's
+    // spelling for the same problem. The played bars follow the names.
+    const hot = s.retro ? s.ac : ink
+    // box/2, a shade under the card. `line2` is rgba of the page's text, which
+    // on a palette whose paper is white (Grunge) vanishes into it — the
+    // repertoire's lesson — so the unplayed bar takes the pair that is
+    // computed against paper.
+    const cold = s.retro ? '#F7EED7' : s.paperLine
+    const pad = 24 * z
+    const barW = 10 * z
+    const barGap = 4 * z
+    // Our content column is `canvasW − 2·padX` — 1052 / 688 / 346 — in the
+    // editor *and* in the published tab, where the surplus past the canvas
+    // folds into `padX` and cancels (EncoreBuilder's PublishedPage). Less the
+    // card's own padding either side, that is what the meter has to fill; at
+    // the frame's pitch it seats 88 / 46 / 21. A published window under 390
+    // is the one case this overshoots, and the row's own clip absorbs it.
+    const colW = desk ? 1052 : tab ? 688 : 346
+    const nBars = Math.max(1, Math.floor((colW - 2 * pad + barGap) / (barW + barGap)))
+    const nHot = Math.round(nBars * WAVE_PLAYED)
+
+    const card = (key, body) => (
+      <div key={key} style={{
+        background: cream, color: ink, borderRadius: u(30), padding: u(pad / z),
+        overflow: 'hidden', border: s.retro ? undefined : `1px solid ${ink}`,
+        ...col(u(16), { alignItems: 'stretch' }),
+      }}>{body}</div>
+    )
+
+    const small = {
+      fontFamily: s.body, fontSize: u(T.sm), lineHeight: 1.4, color: ink,
+      whiteSpace: 'nowrap',
+    }
+    const name = {
+      fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2,
+      letterSpacing: s.dls, color: hot,
+      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+    }
+
+    return (
+      <div style={col(u(30), { alignItems: 'stretch' })}>
+        {/* The wrapper frame's head, the bio's at every number: the same 30
+            between the two lines and between the head and what it heads, the
+            same eyebrow on the page's own ink because it stands on the page
+            rather than on the card. */}
+        <div style={col(u(30), { alignItems: 'flex-start' })}>
+          <span style={{
+            fontFamily: s.body, fontSize: u(T.eyebrow), lineHeight: 1.26,
+            textTransform: 'uppercase', color: s.tx,
+          }}>{s.initials} Audio Player</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(T.disp), lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+        </div>
+
+        {/* An empty list is a real state — the tracks are the artist's — and
+            it keeps one card rather than leaving a hole under the head. The
+            card is then very short, which is the pricing deck's accepted
+            answer: any minimum here would be a made-up number, and it is only
+            ever seen mid-edit. */}
+        {s.tracks.length === 0 && card('empty',
+          <span style={{ fontFamily: s.body, fontSize: u(T.md), color: s.muted }}>No tracks yet.</span>,
+        )}
+
+        {s.tracks.map((t, i) => card(i,
+          <>
+            {/* The meter's scale. The frame's "1:00" / "2:00" are the two ends
+                of the bar, so they become the two ends of the track. */}
+            <div style={row('0', { justifyContent: 'space-between' })}>
+              <span style={small}>0:00</span>
+              {t.dur && <span style={small}>{t.dur}</span>}
+            </div>
+            <div style={{
+              height: u(96), gap: u(4), overflow: 'hidden',
+              display: 'flex', alignItems: 'flex-end',
+            }}>
+              {Array.from({ length: nBars }, (_, j) => (
+                <span key={j} style={{
+                  flex: 'none', width: u(10), borderRadius: u(1),
+                  // The waveform rotates by a fixed step per card, so a stack
+                  // of five does not draw one shape five times. The step is
+                  // decoration and invented — the gallery's placeholder-ramp
+                  // rule — and 0 is deliberately unrotated, so the top card is
+                  // the frame's own bar for bar.
+                  height: u(WAVE[(j + i * 13) % WAVE.length]),
+                  background: i === 0 && j < nHot ? hot : cold,
+                }} />
+              ))}
+            </div>
+            <div style={row('0', { justifyContent: 'space-between' })}>
+              <span style={{ ...name, flex: '0 1 auto', minWidth: 0 }}>{t.name}</span>
+              {/* The one place the page's hard offset shadow lands in this
+                  section, so it is Retro's alone. `pillBg`/`pillFg` are the
+                  frame's own pair by construction — Retro's lightest tag is
+                  the mustard and the accent clears it, which is the rust ▶ —
+                  but only on the page they were chosen against. `pillBg` is
+                  the palette's lightest tag and `paper` its lightest colour
+                  outright (the repertoire's lesson), so on this cream card
+                  Lime, Grunge and Pop all draw the disc in the card's own
+                  colour and it disappears; `s.ac` is no better, being acid
+                  lime on pale lime. The flat four therefore take the one pair
+                  that is legible on paper by construction. */}
+              <span style={{
+                flex: 'none', width: u(44), height: u(44), borderRadius: '999px',
+                background: s.retro ? s.pillBg : ink, color: s.retro ? s.pillFg : cream,
+                boxShadow: s.retro ? `${u(5)} ${u(5)} 0 0 ${s.ac}` : undefined,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {/* The frame sets a "▶" text node; a filled lucide glyph is
+                    the file's own way of drawing one (media layout 2's
+                    transport), and it does not fall to a system font. Sized
+                    off the *ink*, not the em: the text node is body-md in a
+                    21px line box, but a pixel scan of all three renders puts
+                    its triangle at 9 × 10 inside the 44 disc — a fifth of it.
+                    Lucide's fills 14/24 of its `size`, so 15.5 is the size
+                    that draws the frame's 9. The header's divide-the-face-out
+                    rule, for an icon rather than a face. */}
+                <Play size={Math.round(15.5 * z)} fill="currentColor" />
+              </span>
+              <span style={{ ...name, flex: '0 1 auto', minWidth: 0, textAlign: 'right' }}>{s.brand}</span>
+            </div>
+          </>,
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>
@@ -3111,19 +3355,6 @@ function Audio({ s }) {
         </div>
       )}
 
-      {s.v2 && (
-        <div>
-          {s.tracks.map((t, i) => (
-            <div key={i} style={row('22px', {
-              alignItems: 'baseline', padding: '12px 0', borderBottom: `1.5px solid ${s.line}`,
-            })}>
-              <span style={{ fontFamily: s.display, fontSize: '30px', color: s.ac, width: '52px', flex: 'none', letterSpacing: s.dls }}>{t.n}</span>
-              <span style={{ flex: 1, fontFamily: s.display, fontSize: '24px', letterSpacing: s.dls, minWidth: 0 }}>{t.name}</span>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: s.muted }}>{t.dur}</span>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

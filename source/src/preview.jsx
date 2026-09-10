@@ -50,6 +50,14 @@ const navSections = [
 // whose layout 2 draws a list — so `&n=0` is also how an emptied list is seen.
 const LIST = {
   media: (i) => ({ title: `Track ${i + 1}`, sub: 'Single' }),
+  // The audio player's tracks are the one list `&n=` reaches that is a
+  // newline-delimited *string* rather than an array (the `&tags=` shape, as a
+  // count), so the rows are joined below. Every fourth title is long enough to
+  // make layout 3's card clip one, and every third row omits its duration, so
+  // one render shows the meter's right-hand scale present and absent.
+  audio: (i) => (i % 4 === 3
+    ? `Track number ${i + 1}, at about the length a real one runs to`
+    : `Track ${i + 1}`) + (i % 3 === 2 ? '' : ` — ${3 + (i % 5)}:${String(i * 7 % 60).padStart(2, '0')}`),
   video: (i) => ({ title: `Video ${i + 1}`, sub: 'Live set', length: '03:50', when: 'April 2026' }),
   // Three tags cycling, so the chip row and the filter are exercised too.
   repertoire: (i) => ({
@@ -111,13 +119,16 @@ const LIST = {
   }),
 }
 const KEY = {
-  media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images', pricing: 'tiers',
-  calendar: 'slots', map: 'gigs', form: 'fields', testimonials: 'quotes',
+  media: 'tracks', audio: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images',
+  pricing: 'tiers', calendar: 'slots', map: 'gigs', form: 'fields', testimonials: 'quotes',
 }
 const count = q.get('n') === null ? null : Number(q.get('n'))
-const c = count === null || !LIST[cat]
+const rows = count === null || !LIST[cat]
+  ? null
+  : Array.from({ length: count }, (_, i) => LIST[cat](i))
+const c = rows === null
   ? {}
-  : { [KEY[cat]]: Array.from({ length: count }, (_, i) => LIST[cat](i)) }
+  : { [KEY[cat]]: cat === 'audio' ? rows.join('\n') : rows }
 
 // &booked=2025-06-14,2025-06-20 blocks those dates. It is the one calendar
 // state neither seed shows — CAL_BOOKED is empty on purpose — and it reaches
