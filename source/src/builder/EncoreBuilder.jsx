@@ -36,7 +36,7 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
-  NOW_PLAYING, TRACK_AUDIO, SONGS, VIDEOS, VIDEO_MARK, clockAt,
+  NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL, VIDEOS, VIDEO_MARK, clockAt,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
@@ -512,6 +512,62 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
   // the same fallback, or the panel and the canvas would disagree.
   if (cat === 'repertoire' && c.heading === undefined) vm.title = cased(`${vm.songs.length} Songs`)
+  // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
+  // one card per tag, holding the songs that carry it. `repChips` leads with the
+  // All chip, which is a filter reset and not a set, so the cards are the chips
+  // behind it — the seeded three tags are the frame's own three cards.
+  //
+  // A song the artist tagged with nothing would then appear in no card at all,
+  // and `repFlat`'s note above is this section's standing promise that swapping
+  // layouts never silently discards what they typed. So the All card is
+  // appended — holding the whole list, so its label stays honest — exactly when
+  // the tag cards do not already reach every song. On a fully-tagged page it is
+  // not drawn and nothing is duplicated; that is why it is the remainder at the
+  // end rather than the reset at the front.
+  const setHue = (i) => {
+    // The frame paints its three cards near-black, olive and rust and sets cream
+    // type on all three — so the pool is the tag hues dark enough to carry that
+    // cream, and walking it backwards lands on exactly those three under Retro
+    // (#111111, #5B5E2E, #C8461C). Derived rather than listed: a palette with
+    // two dark tags gets two and cycles, and one with none falls back to the
+    // whole row, where `tierHues` picks each card's ink for itself.
+    const dark = T.tags.filter((h) => contrast(h) !== '#141414')
+    const pool = dark.length ? dark : T.tags
+    return pool[((pool.length - 1 - i) % pool.length + pool.length) % pool.length]
+  }
+  const repSet = (tag, songs, i) => {
+    // `tierHues` is the pricing deck's, and it is exactly this card's pairing:
+    // `cardFg` is the cream the frame sets on all three, and `acc` is the
+    // mustard of the meta line, already guarded for a palette where the two
+    // hues do not separate.
+    const hues = tierHues(setHue(i))
+    return {
+      label: cased(tag),
+      songs,
+      // "6 SONGS", where the frame's meta reads "MELLOW · 45 MIN": the mood IS
+      // the card's own title here, and a running time is a number the artist
+      // never typed (the video section's rule). Composed here because
+      // EncoreSection composes nothing; the caps are a style, not casing.
+      meta: `${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`,
+      // The card's outline and the rule under every row. The frame draws #111
+      // on the olive and rust cards and the cream on the near-black one, which
+      // is `tierHues`' own accHue shape: the palette's darkest tag, unless the
+      // card already IS it. It is what keeps the card visible on Lime and
+      // Grunge, whose darkest tag is the page ground itself.
+      edge: hues.card === vm.deep ? vm.paper : vm.deep,
+      ...hues,
+    }
+  }
+  const tagSets = vm.repChips.slice(1).map((ch, i) => repSet(
+    ch.tag,
+    vm.songs.filter((sg) => sg.tags.some((t) => t.toLowerCase() === ch.tag.toLowerCase())),
+    i,
+  ))
+  const reached = new Set()
+  tagSets.forEach((st) => st.songs.forEach((sg) => reached.add(sg.n)))
+  vm.repSets = reached.size >= vm.songs.length
+    ? tagSets
+    : [...tagSets, repSet(REP_ALL, vm.songs, tagSets.length)]
 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']

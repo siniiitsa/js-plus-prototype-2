@@ -4544,6 +4544,13 @@ function Repertoire({ s }) {
   const [q, setQ] = useState('')
   const [chip, setChip] = useState(0)
   const [page, setPage] = useState(0)
+  // Layout 3 only, and the one piece of state above these branches that neither
+  // fitted layout reads: which set cards have had their *View full set* link
+  // followed. Keyed by the set's label rather than by its place in the row,
+  // because a tag deleted under the visitor shifts every index below it — and
+  // the labels are unique by construction, `repChips` deduping the tags and
+  // skipping any the artist writes as `All`.
+  const [open, setOpen] = useState({})
 
   if (s.v0) {
     const tab = isTablet(s)
@@ -5134,8 +5141,255 @@ function Repertoire({ s }) {
     )
   }
 
-  // Layouts 3+ — the generic flat design. `NVAR.repertoire` is 2, so nothing
-  // reaches this today; it is what a third layout would render until it is
+  // v2 — Repertoire layout 3 · "Curated set-list cards"
+  //
+  // Desktop (964:68646, the 1440 frame × 0.82), tablet (977:23041) and mobile
+  // (982:10193) verbatim. A display line over a row of cards, one card per set:
+  // a title, a mustard meta line, four song rows each closed by a hairline, and
+  // a *View full set →* link at the foot. The section stands on the page ground
+  // — the frames' `sem/bg` is `#EAD7B8`, which IS Retro's `bg` — so the root's
+  // `cream` flag stays layout 1's and nothing shared moves.
+  //
+  // Every box is the desktop component's own number at all three widths: the 24
+  // padding, the 30 corner, the 10 stack gap, the 20 between cards, the 24
+  // between the head and the grid and again above the pager, the view block's
+  // 30, the hairline. Only the type ramps, and `get_variable_defs` on each
+  // master resolves it: display-lg 96/60/40, body-lg 16/15/15, chip 12/11/11,
+  // body-sm 12 throughout, and `size/list` 16/12/**13** — non-monotonic for the
+  // third time in this section, the same three numbers layout 2 reads off its
+  // own masters.
+  //
+  // Three readings that are not transcriptions:
+  //
+  //  - **The sets are the tags.** `sectionVm`'s `repSets` groups the songs by
+  //    the same vocabulary the chip row is derived from, so the frame's three
+  //    cards are the seed's three tags and nothing was invented; the meta line
+  //    is the set's own count where the frame's is a mood and a running time,
+  //    the mood being the card's title here and the time a number the artist
+  //    never typed. An untagged song would belong to no set, so `repSets`
+  //    appends an `All` card holding the whole list exactly when the tag cards
+  //    do not already reach every song — see the note there.
+  //  - **The card shows four songs and the link reveals the rest.** The frame
+  //    draws four rows *and* a *View full set →*, which is the design saying the
+  //    card is a subset; wiring that link to the reveal is the pricing deck's
+  //    rule — use the frame's own control rather than invent one, and never
+  //    reproduce a frame's own stranding. It is a reveal, not a toggle, so no
+  //    second label had to be invented, and the link is not drawn at all on a
+  //    set of four or fewer (the pager's not-drawn-at-one rule). On the canvas
+  //    there is no handler, so every card is the master's picture.
+  //  - **The row's right-hand column is the artist, not a duration** — the
+  //    section has no duration and every other layout pairs the two. The frame
+  //    holds both sides `shrink-0` under an `overflow-clip`; ours cannot, since
+  //    "Whitney Houston" beside "Don't Stop Me Now" would push off the 242px
+  //    mobile row, so the title takes the ellipsis and the artist holds its
+  //    width (the media player's destroys-its-own-content rule).
+  //
+  // The pager is derived, and it is the reason the three widths agree: `perPage`
+  // is 3 where the two wide masters draw three cards and **1** on mobile, whose
+  // master draws one centred with its neighbours peeking. The seeded three sets
+  // therefore make one page at 1440 and 768 — so no pager, exactly as those
+  // frames draw — and three at 390, where the master draws its two arrow pills.
+  // A fourth set is a second page rather than a second row: it bounds the
+  // section's height at any tag count, where wrapping does not, and the lone
+  // card then stands in column one of the three (the pricing deck's rule).
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // `border/hairline`, 1 in all three modes. The flat four keep their own
+    // rule weight, layout 2's spelling.
+    const hair = s.retro ? u(1) : s.bw
+    const T = {
+      // 96 × 0.82 = 78.7, which IS `dispLg` at desktop; `h1` is the tablet 60
+      // and `dispLg` the mobile 40. The header's and the calendar's ramp.
+      head: tab ? s.h1 : s.dispLg,
+      title: u(desk ? 16 : 15),               // body-lg — the set's name
+      meta: u(desk ? 12 : 11),                // chip — the count line
+      song: u(desk ? 16 : tab ? 12 : 13),     // list — non-monotonic at 390
+      small: u(12),                           // body-sm — the artist, the link
+    }
+    // Every master divides a stated card height between rows that are
+    // `flex: 1 0 0` — 239 over four at 1440, 280 over four at both narrow
+    // widths. We have no height to divide (the list is what makes the card
+    // tall), so each is pinned at what its own master landed on, the media
+    // player's and the video panel's rule. With the height pinned the frame's
+    // own `py-6` is inert (the testimonials' rule) and is not written out.
+    const rowH = u(desk ? 52.25 : 62.5)
+    // The four rows the masters draw. Not a component default — the frame puts
+    // a *View full set* link under them, which is the design stating that the
+    // card is a subset.
+    const cap = 4
+    const sets = s.repSets
+    const perPage = s.mob ? 1 : 3
+    const pages = Math.max(1, Math.ceil(sets.length / perPage))
+    // Clamped on read, layout 1's `pg`: the artist can delete the tag the
+    // visitor is on, Publish re-renders a tab that is already open, and the two
+    // wide widths page three at a time where 390 pages one — so the same `page`
+    // names a different card either side of a resize.
+    const pg = Math.min(Math.max(0, page), pages - 1)
+
+    const card = (st) => {
+      const opened = !!open[st.label]
+      const rows = opened ? st.songs : st.songs.slice(0, cap)
+      const more = st.songs.length > rows.length
+      return (
+        <div key={st.label} style={col(u(10), {
+          background: st.card, color: st.cardFg,
+          border: `${hair} solid ${st.edge}`, borderRadius: u(30),
+          padding: u(24), overflow: 'hidden',
+        })}>
+          <span style={{
+            fontFamily: s.body, fontSize: T.title, lineHeight: 1.5,
+          }}>{st.label}</span>
+          {/* The frame's mustard, which `tierHues` already resolves as the
+              card's second hue — and already checks that it separates from the
+              card it stands on. The caps are a style, not casing: `repSets`
+              composes the count and this row shouts it, the calendar's
+              date-format rule. */}
+          <span style={{
+            fontFamily: s.body, fontWeight: 700, fontSize: T.meta, lineHeight: 1,
+            // `letterSpacing: -6` percent, which the emitted CSS freezes at the
+            // desktop -0.72px. The honest expression is the share of the size.
+            letterSpacing: '-0.06em', textTransform: 'uppercase',
+            color: st.acc, whiteSpace: 'nowrap', overflow: 'hidden',
+          }}>{st.meta}</span>
+          {rows.map((sg) => (
+            <div key={sg.n} style={row(u(10), {
+              flex: 'none', height: rowH, justifyContent: 'space-between',
+              borderBottom: `${hair} solid ${st.edge}`, overflow: 'hidden',
+            })}>
+              <span style={{
+                fontFamily: s.display, fontSize: T.song, lineHeight: 1.2,
+                letterSpacing: s.dls, minWidth: 0,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{sg.title}</span>
+              <span style={{
+                fontFamily: s.body, fontSize: T.small, lineHeight: 1.4,
+                flex: 'none', whiteSpace: 'nowrap',
+              }}>{sg.artist}</span>
+            </div>
+          ))}
+          {/* `marginTop: auto` is what keeps the link on the card's floor once
+              the grid has stretched a short set to the tallest card beside it —
+              and what a revealed card does to its neighbours. The frame's own
+              cards are all `h-full`, so it is the same picture at equal counts. */}
+          {more && (
+            <div style={{
+              // A flex column, the frame's own `view` frame — and not a block,
+              // whose line box would take the card's inherited strut and stand
+              // 10px taller than the master's 47 at desktop.
+              marginTop: 'auto', paddingTop: u(30), display: 'flex', alignItems: 'flex-start',
+            }}>
+              <span
+                onClick={s.live ? () => setOpen((o) => ({ ...o, [st.label]: true })) : undefined}
+                style={{
+                  fontFamily: s.body, fontSize: T.small, lineHeight: 1.4,
+                  // The calendar's rule: the cursor is read off the handler, so
+                  // the canvas's picture of a link does not claim to be one.
+                  cursor: s.live ? 'pointer' : undefined, whiteSpace: 'nowrap',
+                }}
+              >View full set →</span>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    // The 390 master's `grid` is a `flex gap-20 justify-center` row 390 wide
+    // holding three 290 cards — 910 of track centred in 390, which is where its
+    // −260 offset comes from. So the carousel is three seats rather than a
+    // translated track (the media player's fan and the gallery's hero, a third
+    // time): the centre seat holds the set the visitor is on and the outer two
+    // always peek, where a track would bare the left gutter at page 0 and hand
+    // the canvas a different picture from the master's. Below three sets there
+    // is nothing to peek with — two 290 cards do not both fit — so the row is
+    // the current card alone, and the pager still turns it.
+    const seats = sets.length >= 3
+      ? [(pg - 1 + sets.length) % sets.length, pg, (pg + 1) % sets.length]
+      : [pg]
+    // 17.5 draws the master's 10.23 × 8.9 vector: lucide's arrow fills 14/24 of
+    // its `size`, the audio player's size-an-icon-off-its-ink rule.
+    const arrow = 17.5 * z
+
+    return (
+      <div style={col(u(24))}>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: T.head, lineHeight: 0.89,
+          letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+
+        {sets.length === 0 ? (
+          // This section's own empty state is a line, both fitted layouts print
+          // one, and a set card with no set in it would be a composition about
+          // nothing. There is no search here, so there is only the one message.
+          <span style={{
+            fontFamily: s.body, fontSize: T.small, lineHeight: 1.4, color: s.muted,
+          }}>No songs yet.</span>
+        ) : s.mob ? (
+          // Out to the canvas edges, past the root's padding, so the two
+          // neighbours show the master's 30px of their own edge — 290 centred in
+          // 390 leaves 50 a side and the 20 gap spends 20 of it. `padX` already
+          // carries `surplus`, so a published window wider than the canvas
+          // widens the viewport and leaves the card on the page's measure.
+          <div style={{ margin: `0 calc(-1 * ${s.padX})`, overflow: 'hidden' }}>
+            <div style={row(u(20), { justifyContent: 'center', alignItems: 'stretch' })}>
+              {seats.map((i) => (
+                <div key={sets[i].label} style={{
+                  // A one-cell grid, not a flex box: a grid item stretches on
+                  // both axes, so the card takes the seat's whole 290 and the
+                  // whole of whatever height the tallest seat sets. As a
+                  // `flex` row the card would have sat at its own content
+                  // width — which put the left peek's 214px card entirely
+                  // outside the viewport and drew no peek at all.
+                  width: u(290), flex: 'none', display: 'grid',
+                  // A peek is 30px of a card's rounded edge — its colour, and
+                  // nothing that can be read or aimed at. There is no swipe (no
+                  // touch state anywhere in this file), so the arrows are the
+                  // only way through and a tap on a peek does nothing.
+                  pointerEvents: sets.length >= 3 && i !== pg ? 'none' : undefined,
+                }}>{card(sets[i])}</div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: u(20),
+          }}>
+            {sets.slice(pg * perPage, (pg + 1) * perPage).map(card)}
+          </div>
+        )}
+
+        {/* The only pager this design draws is the 390 master's — two outlined
+            pills, gapped 10, whose 180 IS that frame's measure halved. So they
+            divide ours instead, which lands at 168 on the 346 mobile column and
+            at the frame's own 147.6 at desktop, where the maximum holds them.
+            At the two wide widths the row appears only past three sets, so the
+            masters that draw no pager keep their picture by construction. */}
+        {pages > 1 && (
+          <div style={row(u(10), { justifyContent: 'center' })}>
+            {[-1, 1].map((dir) => (
+              <span
+                key={dir}
+                onClick={s.live ? () => setPage(((pg + dir) % pages + pages) % pages) : undefined}
+                style={{
+                  flex: `1 1 ${u(180)}`, maxWidth: u(180), height: u(54),
+                  borderRadius: u(60), border: `${hair} solid ${s.ac}`, color: s.ac,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  // Wrapping at both ends, the media player's rule — a clamped
+                  // first page opens the published carousel on a dead arrow.
+                  cursor: s.live ? 'pointer' : undefined,
+                }}
+              >{dir < 0 ? <ArrowLeft size={arrow} /> : <ArrowRight size={arrow} />}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Layouts 4+ — the generic flat design. `NVAR.repertoire` is 3, so nothing
+  // reaches this today; it is what a fourth layout would render until it is
   // fitted, which is why the two-column list below is no longer gated on `v1`.
   return (
     <div>

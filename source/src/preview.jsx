@@ -68,10 +68,18 @@ const LIST = {
     ? `Track number ${i + 1}, at about the length a real one runs to`
     : `Track ${i + 1}`) + (i % 3 === 2 ? '' : ` — ${3 + (i % 5)}:${String(i * 7 % 60).padStart(2, '0')}`),
   video: (i) => ({ title: `Video ${i + 1}`, sub: 'Live set', length: '03:50', when: 'April 2026' }),
-  // Three tags cycling, so the chip row and the filter are exercised too.
+  // Three tags cycling, so the chip row and the filter are exercised too — and
+  // two rows that only layout 3 can see the point of, since it reads the tags as
+  // a *grouping* rather than as a filter: every fifth song carries none, which
+  // is what makes `repSets` append its All card, and every seventh carries two,
+  // which is what puts one song in two set cards at once. Every fourth title and
+  // artist are long enough to show the row's ellipsis on the 290px mobile card.
   repertoire: (i) => ({
-    title: `Song number ${i + 1}`, artist: `Artist ${i + 1}`,
-    tags: ['Weddings', 'Pubs', 'Birthdays'][i % 3],
+    title: i % 4 === 3
+      ? `Song number ${i + 1}, at about the length a real title runs to`
+      : `Song number ${i + 1}`,
+    artist: i % 4 === 3 ? `Artist number ${i + 1} and the Long Band Name` : `Artist ${i + 1}`,
+    tags: i % 5 === 4 ? '' : i % 7 === 6 ? 'Weddings, Pubs' : ['Weddings', 'Pubs', 'Birthdays'][i % 3],
   }),
   // The gallery's list is its seven photograph slots, so a row is simply the
   // absence of a photograph: `&n=0` empties the array (every seat a
