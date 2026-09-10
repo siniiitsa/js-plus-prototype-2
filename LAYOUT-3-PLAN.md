@@ -48,7 +48,7 @@ one session.
 | 2 | `bio` | `964:68631` | Bios — **E · Stacked ID card** | 858 × 882 | `977:22717` | 708 × 912 | `982:10013` | 370 × 860 | **done dac7d44** |
 | 3 | `tags` | `964:68632` | **Tags — Frame** | 858 × 75 | `977:22718` | 708 × 67 | `982:9769` | 370 × 97 | **done 3df9565** |
 | 4 | `audio` | `964:68641` | Audio Player Componenets — **H · Bar-meter player** | 858 × 243 | `977:22727` | 708 × 243 | `982:9778` | 370 × 243 | **done 47b9d22** |
-| 5 | `media` | `964:68642` | Media Player — **A · Editorial numbered list** | 858 × 647 | `977:22728` | 708 × 647 | `982:9779` | 370 × 647 | todo |
+| 5 | `media` | `964:68642` | Media Player — **A · Editorial numbered list** | 858 × 647 | `977:22728` | 708 × 647 | `982:9779` | 370 × 647 | **done 16d28b0** |
 | 6 | `calendar` | `964:68645` | Booking Calendar — **C · Mobile availability** | 405 × 497.9 | `984:10605` | 708 × 456.9 | `984:10673` | 370 × 433.9 | todo |
 | 7 | `repertoire` | `964:68646` | Repertoire — **E · Curated set-list cards** | 1440 × 621 | `977:23041` | 708 × 636 | `982:10193` | 390 × 697 | todo |
 | 8 | `gallery` | `964:68647` | Gallery Sections — **B · Masonry grid** | 1440 × 789 | `977:23131` | 768 × 865 | `982:10257` | 390 × 678 | todo |
@@ -269,11 +269,10 @@ is known about *this* page before any section has been fitted; append to it as t
   leaking (layout 2's conventions about leaked desktop numbers and flattened narrow masters).
   Fit the narrow widths from the row structure and the type ramp, and do not transcribe those
   heights.
-- **Media's layout 3 is layout 2's right column.** "Media Player — A · Editorial numbered list" is
-  the same component already fitted inside `Media`'s `v1` branch (layout 2's `media` section was a
-  `Section` holding the fanned carousel *beside* this list). The session decides whether to lift
-  the list into a shared inner component used by both branches or to write it again; if it lifts,
-  the `git stash` desktop digest has to prove `v1` byte-identical.
+- ~~**Media's layout 3 is layout 2's right column.**~~ *Settled on the media player (section 5):
+  written again, not lifted* — see *Learned on the media player* below for the four
+  disagreements that decided it. "Media Player — A · Editorial numbered list" is indeed the same
+  component (`432:2092`) already fitted inside `Media`'s `v1` branch.
 - **The audio bar-meter draws a transport.** CLAUDE.md's standing rule is that the audio section
   is still a picture — the media player is the only one that plays. Default is to fit it as a
   picture; making it play is a separate merge, the way `media-player-playback` was. Open question
@@ -532,6 +531,61 @@ Learned on the audio player (section 4):
   precedent, and the alternative would have been a vm key for something that is not
   content — `CITIES` and `PINS` reach the file through `sectionVm` because they *are*.
 
+Learned on the media player (section 5):
+
+- **The lift-or-rewrite question is settled by counting how many things the two branches
+  disagree about, not by whether the Figma component is the same one.** It *is* the same
+  component — `432:2092`, layout 2's right column — and it was still written again, because the
+  type ramps here (`size/title` 24/**19**/**18**, chip 12/11/11, body-lg 16/15/15, body-md
+  14/13/13) where layout 2's masters measured every one of them **flat** at the desktop number;
+  because the ground is the beige page rather than a cream panel; because the rows are
+  content-tall here and divide a stated column height there; and because 390 is a hand-set
+  deviation on both sides. A shared leaf would have had to take a type table, a ground *and* a
+  height mechanism — the component rewritten with a signed-off branch hanging off it. The tags
+  row's `TagChips` reuse is the other side of the same rule: **grep first, then count the
+  disagreements.** One page's mode is not another's, so re-run `get_variable_defs` even on a
+  component an earlier layout already fitted.
+- **A stated instance height is the page's number when the same component states three of
+  them.** 673 in layout 2's desktop panel, 596 in its narrow ones, 647 here — and *within* this
+  page the row residue is 110.6 at 858 and 110.**8** at 708 and 370, which is the events map's
+  quarter-pixel proof that a division is not a design. So the row is its own content (64 sleeve
+  + 2 × 14 + the 2px rule = 96) and the section stands 574 unscaled where the frame draws 647.
+  Two independent readings before declining a parent's constant: **the residue's decimals, and
+  the same component under a different page.**
+- **The cheapest master this pass has had, and `get_metadata` said so in one glance.** Every box
+  number is the desktop component's own at all three widths — 30 radius, 2 rule, 30/14 padding,
+  20 gap, 64 sleeve, 4 sleeve corner, 16 head padding, 10 column gap — so the whole branch is
+  one `z`, one type table and one 390 override. The enquiry form's "read the three metadata
+  calls as arithmetic *first*" holds for a sixth section: sleeve x at 68/70/71 against a number
+  at x 30 gives the 20 gap and the flowing numeral in the same line.
+- **A frame's `flex-[1_0_0]` spacer with no fill is a `space-between`, not a rule.** The counter
+  row's 681 × 1 child emits no `bg-…` class and the render draws nothing there. Check the
+  emitted class list before transcribing a hairline out of the metadata's `height="1"`.
+- **A section standing on the page ground needs no colour literal at all.** The frame's
+  `sem/text/2` is `#111111`, which *is* Retro's `tx` — so the counter row takes `s.tx` and the
+  flat four are right by construction, where every cream-panel section in this file needs a
+  literal and a `paperFg` fallback beside it. Sample the wrapper's ground (`#EAD7B8` exactly
+  here) and check the page palette before reaching for a pair.
+- **Copy a branch's *spelling*, not its slips.** Layout 2's list was the model for the row, and
+  two things were deliberately not carried across: its tracking is frozen at the desktop
+  `-0.72px` where the honest expression is `-0.06 × T.chip` (the pricing lesson), and its
+  release line renders blank rather than not at all, which spends a 4px gap and a line box and
+  pushes the title off the row's middle on a page whose `c.tracks` is a typed textarea. What
+  *was* carried is the 2px rule unscaled at desktop against the frame's 1.64 — a drift, but the
+  same drift in both halves of one section.
+- **`{audio}` is not optional, and it is easy to lose when the frame draws no transport.** Every
+  earlier media layout tucks the element inside a bar; this one has none, so it rides at the
+  foot of the column. Without it `el.current` is null and every row click is dead — which no
+  geometry digest would ever show.
+- **The `list` const above the branches is the one line outside it, and it has to move.**
+  `s.v0 || s.v1 ? s.tracks : s.tracks3` would have paged three tracks under a list of five.
+  Name it in the brace-depth walk and argue the no-op: v0's and v1's truthiness is unchanged.
+- **`&n=` can never show this section's running time, in any layout.** `sectionVm` gives an
+  array-shaped `c.tracks` row `dur === rel === sub` — TracksField has no duration column — and
+  every layout drops the time where the two are equal, so the seeded five are the only duration
+  check there is. A vm fact, not a harness gap: do not "fix" `LIST.media` by adding a duration
+  the editor cannot type.
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five.*
@@ -588,6 +642,16 @@ Learned on the audio player (section 4):
    "KM BIO" over a track head is a leftover and the eyebrow is the initials plus the category's
    own name. It is written out as a literal — `EncoreSection` imports nothing from `data.js`, so
    `catName()` is not reachable and must not be made so.
+
+   *The other half, on the media player (section 5): media takes none of it.* The wrapper's one
+   head went to audio, so media's layout 3 is the frame's instance and nothing else — which
+   leaves `FIELDS.media.heading` (and `kicker`) editing nothing while layout 3 is selected, the
+   header's seal in question 5 and layout 2's questions 4/7/8/12. The frame's counter row —
+   *● POPULAR … 5 FEATURED / 5 MAX* — is the section's own top line and reads as one, which is
+   what makes the absence honest rather than a hole. Note that `TITLES.media` already *is* the
+   wrapper's "Five worth your ear." — a stronger copy match than audio's — so the seat was
+   allocated by the plan's mirrored-structure reading and not by the copy; had it gone the other
+   way, audio would have been the headless one.
 7. **The bio's `kicker` and `location` are not editable.** `FIELDS.bio` names neither, so
    `cv('kicker', …)` and `cv('location', …)` always resolve to the page-level literals "DJ ·
    Live Act" and "Manchester, UK". Layout 3's ID card now sets them as two of its three stats,
