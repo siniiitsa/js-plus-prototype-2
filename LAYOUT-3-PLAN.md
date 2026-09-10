@@ -54,7 +54,7 @@ one session.
 | 8 | `gallery` | `964:68647` | Gallery Sections — **B · Masonry grid** | 1440 × 789 | `977:23131` | 768 × 865 | `982:10257` | 390 × 678 | **done c1836da** |
 | 9 | `pricing` | `964:68648` | Pricing — **F · Stacked rows** | 1440 × 1022 | `977:23149` | 768 × 941 | `982:10274` | 390 × 1358 | **done ecba065** |
 | 10 | `map` | `964:68649` | Events Map — **A · Split list + map** | 1440 × 804 | `977:23264` | 768 × 809 | `982:10389` | 390 × 878 | **done 791e0c1** |
-| 11 | `form` | `964:68650` | Enquiry Forms — **F · Full-bleed hero form** | 1440 × 548 | `977:23406` | 768 × 680 | `982:10472` | 390 × 722 | todo |
+| 11 | `form` | `964:68650` | Enquiry Forms — **F · Full-bleed hero form** | 1440 × 548 | `977:23406` | 768 × 680 | `982:10472` | 390 × 722 | **done 262b968** |
 | 12 | `testimonials` | `964:68651` | Testimonials — **D · Bento wall** | 1440 × 790 | `982:8584` | 768 × 777 | `982:10499` | 390 × 1076 | todo |
 | — | `video` | *none* | — | — | *none* | — | *none* | — | **no layout-3 design on this page** |
 | — | `footer` | `964:68652` | Component 2 | 1440 × 479.5 | `982:8688` | 768 × 721 | `982:10543` | 390 × 721 | **out of scope** |
@@ -953,6 +953,82 @@ Learned on the events map (section 10):
   falls back to the new page's first gig. React commits asynchronously, so the clicks need
   a `setTimeout` chain.
 
+Learned on the enquiry form (section 11):
+
+- **A frame whose name promises a photograph can draw none, and the emitted code is the
+  only place that says so.** "Full-bleed hero form" opens on a 1440 × 1147 child that
+  `get_metadata` reports as a bare `Frame` and that `get_design_context` prints as
+  `bg-[sem/bg] inset-[0_0_-599px_0]` — the *page's own beige*, bleeding 599 past the
+  section's floor. A bleed that paints the page colour is a no-op, so this is not the
+  gallery's sheet case at all: the section stands on the page ground inside the root's
+  padding and there is nothing to write. **Sample the render before believing a frame's
+  name**, and read a full-height child's *fill* before assuming it is an image the
+  instance failed to set.
+- **The lift-or-rewrite question, asked a second time, and answered the same way with a
+  much stronger case for lifting.** This IS layout 2's card component: the two agree on
+  every box number — 24/28 padding, 14 gaps, 30 radius, 10 between boxes, the pill's
+  21/5, the 46 × 44 disc, even the boxes' 42/38/37 — *and* on `size/title` 24/19/18,
+  `size/list` 16/12/13 (the same non-monotonic 390 step), `size/label-sm` 16/13/12 and
+  `size/body-sm` 12/12/12. It was still written again, because the disagreements are five
+  and they are structural rather than numeric: the card's ground, the pill's whole
+  palette, the column mechanism, the left half's content and the sheet. **The media
+  player's rule survives its hardest case: the test is what the two branches disagree
+  about, not how much they agree about**, because a shared leaf carrying all five would be
+  the component rewritten with a signed-off branch hanging off it. Where the reuse
+  actually happened is in the *spelling* — `up()`, `boxShell`, `pill()`, `arrowDisc` and
+  the `sent` block are layout 2's, transcribed with this frame's numbers and colours.
+- **`flex: 1 0 0` on two children does NOT split a row equally when one of them carries
+  padding.** The masters emit it on both halves and it measured 481 / 522 in our 1052: a
+  zero flex-basis is resolved against the **content** box whatever `box-sizing` says, so
+  the card's 24/28 and its hairline land outside its share. Two `minmax(0, 1fr)` grid
+  columns are the frame's equal halves, and they cannot be blown out by a long display
+  word either — the repertoire's grid lesson in a new dress. **Measure both children of a
+  transcribed `flex-[1_0_0]` pair; equal declarations are not equal boxes.**
+- **A frame property that another layout made real can be inert here, and the honest move
+  is to drop it rather than write it.** Both masters state `sticky top-0` on this card.
+  Layout 2 made it travel with `alignSelf: stretch`; here the frame's own `items-center`
+  gives a flex item a box exactly its content height, and stretching it would undo the
+  centring that IS this composition. Named in the branch, not written.
+- **Two prose seats and one prose field is a real allocation question, and the field's own
+  label settles it.** The frame sets a paragraph under the display head *and* a centred
+  line under the submit; `FIELDS.form.para` is called "Paragraph", so it takes the
+  paragraph, and layout 2 only put it in the 12px foot because it has no paragraph slot.
+  What then fills the foot is the audio player's stranding read the same way — the frame's
+  "No charge to enquire" is a promise in `FORM_PROMISES`' own register, so
+  `vm.formPromiseLine` runs the artist's list together with ` · ` (the testimonials'
+  `byline` rule, the events map's composed foot line). The seeded three come to one line
+  at 586 and 660 and two at 322, which keeps the frame's single-line picture at both wide
+  widths.
+- **An eyebrow that makes a claim about the clock has to be re-seated, and the section's
+  own dropped content is the first place to look.** "AVAILABLE 2025 / 2026" is unknowable
+  (the booking calendar's rule). It takes `s.brand`: v0 and v1 both pair the artist's name
+  with this very heading in a credit row, and it is this frame's *composition* that drops
+  the row — so the name returns in the one small caps line the design does draw. That is a
+  reading of content the section already has, which beats both a `vm` literal and a new
+  field with an invented default. Its `chipType` is the bio ID card's object verbatim,
+  same `size/chip` token and same `-0.06em`.
+- **The half standing on the page ground needs no colour, and mixing the two halves' pairs
+  is the easy slip.** `sem/text/2` is `#111111`, which IS Retro's `tx`, so the eyebrow and
+  the paragraph inherit and the flat four are right by construction (the media player's
+  rule). The paragraph shipped its first draft with the card's `ink` — `s.paperFg`, which
+  on Lime is the near-black that reads on pale lime and *is* that theme's page ground.
+  **A branch with two grounds wants the five-theme digest run over both**, not just over
+  the card.
+- **The pill is the audio player's `s.pillBg`-dies-on-paper lesson, exactly.** The frame
+  stands `sem/text/3` on `sem/box/1`, which under Retro is the mustard on the cream and
+  reads — but `pillBg` is the lightest *tag* where `paper` is the lightest colour
+  outright, and on Lime and Grunge the two resolve to the same value, drawing a mustard
+  pill on a mustard card. The flat four therefore **invert** the frame's relationship to
+  `paperFg` on `paper` (a dark pill carrying a light disc), which is what layout 2's
+  near-black pill already does. Four values move together: pill ground, pill ink, disc
+  ground, disc glyph.
+- **The whole live seam is one `evaluate_script` in a hidden iframe.** Arm a capture-phase
+  `preventDefault` on `a[href^="mailto:"]`, click the pill empty (four rings + the prompt),
+  fill through the native setter with the popup's own `Event`, read the composed href off
+  `getAttribute`, click again (the sent card), then *Write another* (the values survive).
+  React commits asynchronously, so each step wants ~250ms — the published-tab note's rule,
+  biting through the harness as it did for the pricing deck.
+
 ## Open questions
 
 1. ~~**What the columned five do at 1052.**~~ *Settled on the bio (section 2), for all five, and
@@ -1105,7 +1181,19 @@ Learned on the events map (section 10):
     but it is worth watching: `s.live` state that only one layout can reach is a shape this
     file has not carried before, and if a fourth layout ever wants a filter the derivation
     belongs beside `repChips` in `data.js` rather than in `sectionVm`.
-15. **`FIELDS.map` now has one field reaching exactly one layout** — `cta` (layout 3) —
+15. **The enquiry form's `image`, `photo`, `types` and `message` all reach layouts other
+    than 3**, which is the sixth sighting of questions 5/6/8/9/11's shape and the widest
+    yet: four of the section's ten fields edit nothing while layout 3 is selected, where
+    the earlier cases lost one apiece. Two were already single-layout before this session
+    (`types` and `message` say "Layout 1 only"; `photo` says "Layout 2 only"), so what is
+    new is only `image` — the portrait v0 draws as a 48px circle and v1 as the same circle
+    in its credit row. The frame draws no credit row at all, and the artist's *name* comes
+    back in its eyebrow instead, so the absence is the photograph's alone. *Named, not
+    open*: inventing a credit row this frame does not draw would be worse, and the hint
+    now says which layouts the portrait reaches. It does mean this editor has overtaken
+    the pricing section's three (question 13) as the file's densest concentration of
+    fields whose panel gives no clue they are idle beyond their own hint text.
+16. **`FIELDS.map` now has one field reaching exactly one layout** — `cta` (layout 3) —
     beside `sub`, which has reached only the flat tail since it was added. That is
     `FIELDS.media.soundcloud`'s case again and the hint says so, but it is the second
     editor in this pass to grow one (question 13 is the first, with three), and the
