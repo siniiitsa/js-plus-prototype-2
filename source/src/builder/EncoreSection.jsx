@@ -521,12 +521,19 @@ function LocationLine({ s, color }) {
 // precedent) — but the layout-3 header's frame drops the same component in at
 // `radius/chip` 8, which on a 26px chip reads as a rounded rectangle and not a
 // pill. It is the component's own token; only that instance states it.
-function TagChips({ s, justify = 'flex-start', radius }) {
+//
+// `size` is the same shape of override, added for the *tags* section's layout 3,
+// whose three masters ramp `size/label-xs` 20/14/12 where `s.labelXs` is a flat
+// 14 at every width. It reaches the Retro branch alone: the flat templates' 9px
+// tracked-out caps are a design constant, and on a flat page the header's chips
+// — the same component, passed no `size` — would otherwise stand at 9 beside a
+// tags row at 16.4. Every earlier caller passes nothing and keeps `s.labelXs`.
+function TagChips({ s, justify = 'flex-start', radius, size }) {
   if (s.showTags !== 'show') return null
   // §10.2 sets the chips in the body face at label-xs, sentence case — not the
   // tracked-out caps the flat templates use.
   const chip = s.retro
-    ? { fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.26, padding: '5px 11px' }
+    ? { fontFamily: s.body, fontSize: size || s.labelXs, lineHeight: 1.26, padding: '5px 11px' }
     : {
         fontSize: '9px', fontWeight: 700, letterSpacing: '1px',
         textTransform: 'uppercase', padding: '5px 11px',
@@ -2985,6 +2992,68 @@ function Tags({ s }) {
       </div>
     )
   }
+
+  // v2 — Tags layout 3 · Genres row
+  // (Figma 964:68632 · 977:22718 at 708 · 982:9769 at 370.)
+  //
+  // A rust label over a wrapping row of six coloured chips, left-aligned on the
+  // page ground. The section's first Figma design ever — its v0 and v1 are
+  // invented flat ones and stay that way (LAYOUT-3-PLAN.md, open question 3) —
+  // and by some distance the smallest master in the pass: three text styles,
+  // one gap and one radius, with no decoration, no rule and no sheet of its own.
+  //
+  // ── The chips are already written ──────────────────────────────────────
+  // `TagChips` *is* this frame's chip, fitted when the layout-3 header dropped
+  // the same Figma component into its identity column: the body face at 1.26,
+  // sentence case, 5/11 padding, an 8px gap and `radius/chip` 8. So the branch
+  // reuses it rather than drawing a second copy, and the only thing it has to
+  // add is the type ramp — `size/label-xs` is 20/14/12 across these three
+  // masters where `s.labelXs` is a flat 14.
+  //
+  // Two diffs from the frame follow from that reuse, both named rather than
+  // engineered away. The chip's ink is `contrast(bg)` and the masters' is a
+  // cream at every chip, so **two** of the six invert — the mustard (lum .64)
+  // and the pink (lum .61) take dark type where Figma sets #FBF6EA on both;
+  // that is the header's own settled reading of this component, and a fixed
+  // cream would vanish on Lime's pale tag and Editorial's sand besides. And
+  // the 5/11 padding and 8 gap are the component's literals at desktop, not
+  // the pass's × 0.82 — about 2px on a 30px chip, and the price of one chip
+  // everywhere over two that disagree.
+  //
+  // ── The head is the section's, and it is new ───────────────────────────
+  // "Genres" is inside the instance (`;516:1405`), not in the composed page's
+  // wrapper the way the bio's display head was, so it is this section's copy —
+  // but nothing could reach it: `FIELDS.tags` named one field, the tag string
+  // itself. `heading` is added here with the frame's own label as its default,
+  // which is the bio's `since` case with the one difference that a default is
+  // honest — "Genres" is a word the design chose, not a fact about the artist.
+  // Open question 7's objection does not apply: no signed-off layout newly
+  // honours the edit, v0 hard-writing "Browse by tag" and v1 drawing no head at
+  // all. It is `size/body-lg` in the body face at 1.5, in the accent — the one
+  // place this section prints anything but a chip.
+  if (s.v2) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // body-lg 16/15/15 (the head) and label-xs 20/14/12 (the chips), read off
+    // `get_variable_defs` on all three masters. `RAMP` has neither pair.
+    const T = desk ? { head: 16, chip: 20 } : tab ? { head: 15, chip: 14 } : { head: 15, chip: 12 }
+    // Both children are `w-full` in every master, which is what lets the chip
+    // row wrap: `col`'s default `stretch` gives it the column's width, where a
+    // `flex-start` would size it to max-content and run it off the page. The
+    // 6px gap inside the head frame is between "Genres" and a hidden leftover
+    // node, so it is inert and not transcribed; so is that frame's clip.
+    return (
+      <div style={col(u(16))}>
+        <span style={{
+          fontFamily: s.body, fontSize: u(T.head), lineHeight: 1.5, color: s.ac,
+        }}>{s.title}</span>
+        <TagChips s={s} radius={u(8)} size={u(T.chip)} />
+      </div>
+    )
+  }
+
   return (
     <div style={row('14px', {
       borderTop: `1.5px solid ${s.line}`, borderBottom: `1.5px solid ${s.line}`,

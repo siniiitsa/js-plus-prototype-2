@@ -163,7 +163,7 @@ export const minimalNav = (navSections) =>
  * ------------------------------------------------------------------ */
 
 export const NVAR = {
-  header: 6, bio: 3, media: 2, tags: 2, audio: 3, video: 2, pricing: 2,
+  header: 6, bio: 3, media: 2, tags: 3, audio: 3, video: 2, pricing: 2,
   repertoire: 2, gallery: 2, calendar: 2, map: 2, testimonials: 2, form: 2, footer: 1,
 }
 
@@ -497,7 +497,11 @@ export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
 // No `repertoire` entry: its heading counts the songs (see sectionVm), so a
 // literal here would never be read.
-export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Tags',
+// `tags` was 'Tags' and read by nothing: the category named no `heading` field
+// and neither of its two invented flat layouts drew a title. Layout 3's frame
+// heads its chip row "Genres", so the literal moves to that and `FIELDS.tags`
+// gains the field that mirrors it.
+export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Genres',
   audio: 'Selected Tracks', video: 'Live at Roomtone', pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
   map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make your night unforgettable.", footer: '' }
@@ -665,7 +669,12 @@ export const FIELDS = {
     { k: 'soundcloud', l: 'SoundCloud link', d: '',
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
+  // Layout 3 is the only one of the three that heads the row, so the hint says
+  // so (FIELDS.media.soundcloud's case): layout 1 writes its own "Browse by
+  // tag" and layout 2 is a bare rule-bounded strip.
   tags: [
+    { k: 'heading', l: 'Heading', d: TITLES.tags,
+      hint: 'The label above the chips in layout 3. Layouts 1 and 2 draw their own.' },
     { k: 'tags', l: 'Tags (comma-separated)', type: 'area', d: TAGS.join(', ') },
   ],
   audio: [

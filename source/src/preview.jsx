@@ -129,6 +129,11 @@ if (q.get('booked')) c.booked = q.get('booked').split(',')
 // columns its frame draws, which is where its head row runs out of room.
 if (q.get('since')) c.since = q.get('since')
 
+// &tags=Jazz,Funk,Soul sets FIELDS.tags.tags. It needs a switch of its own
+// because that content is a comma *string* where every list `&n=` reaches is an
+// array, and `&tags=` with nothing after it is also the emptied-row state.
+if (q.get('tags') !== null) c.tags = q.get('tags')
+
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
 // driving the editor and its popup.
