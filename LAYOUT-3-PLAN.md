@@ -1181,7 +1181,13 @@ Learned on the enquiry form (section 11):
     but it is worth watching: `s.live` state that only one layout can reach is a shape this
     file has not carried before, and if a fourth layout ever wants a filter the derivation
     belongs beside `repChips` in `data.js` rather than in `sectionVm`.
-15. **The enquiry form's `image`, `photo`, `types` and `message` all reach layouts other
+15. **`FIELDS.map` now has one field reaching exactly one layout** — `cta` (layout 3) —
+    beside `sub`, which has reached only the flat tail since it was added. That is
+    `FIELDS.media.soundcloud`'s case again and the hint says so, but it is the second
+    editor in this pass to grow one (question 13 is the first, with three), and the
+    pattern is now general enough to be worth naming as a pass-level cost rather than a
+    per-section note.
+16. **The enquiry form's `image`, `photo`, `types` and `message` all reach layouts other
     than 3**, which is the sixth sighting of questions 5/6/8/9/11's shape and the widest
     yet: four of the section's ten fields edit nothing while layout 3 is selected, where
     the earlier cases lost one apiece. Two were already single-layout before this session
@@ -1193,9 +1199,3 @@ Learned on the enquiry form (section 11):
     now says which layouts the portrait reaches. It does mean this editor has overtaken
     the pricing section's three (question 13) as the file's densest concentration of
     fields whose panel gives no clue they are idle beyond their own hint text.
-16. **`FIELDS.map` now has one field reaching exactly one layout** — `cta` (layout 3) —
-    beside `sub`, which has reached only the flat tail since it was added. That is
-    `FIELDS.media.soundcloud`'s case again and the hint says so, but it is the second
-    editor in this pass to grow one (question 13 is the first, with three), and the
-    pattern is now general enough to be worth naming as a pass-level cost rather than a
-    per-section note.
