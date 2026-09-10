@@ -44,7 +44,7 @@ one session.
 
 | # | Cat | Desktop node | Frame name | Size | Tablet node | Size | Mobile node | Size | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | `header` | `964:68622` | Headers — **D · Inset Hero** | 1440 × 900 | `977:22532` | 768 × 1024 | `982:9583` | 390 × 930.5 | todo |
+| 1 | `header` | `964:68622` | Headers — **D · Inset Hero** | 1440 × 900 | `977:22532` | 768 × 1024 | `982:9583` | 390 × 930.5 | **done 43fa3ae** |
 | 2 | `bio` | `964:68631` | Bios — **E · Stacked ID card** | 858 × 882 | `977:22717` | 708 × 912 | `982:10013` | 370 × 860 | todo |
 | 3 | `tags` | `964:68632` | **Tags — Frame** | 858 × 75 | `977:22718` | 708 × 67 | `982:9769` | 370 × 97 | todo |
 | 4 | `audio` | `964:68641` | Audio Player Componenets — **H · Bar-meter player** | 858 × 243 | `977:22727` | 708 × 243 | `982:9778` | 370 × 243 | todo |
@@ -281,6 +281,64 @@ is known about *this* page before any section has been fitted; append to it as t
 - **The repertoire's tablet master is inside the composed column** (`977:23041`), not a top-level
   child of the tablet page. Its desktop and mobile masters are standalone.
 
+Learned on the header (section 1):
+
+- **`get_metadata` is one level deep on this page, and it stops at the section's own
+  outer frame.** All three header masters came back as an `<instance>` holding one
+  `hero-card` frame with no children, and querying that child returned it as a leaf. It
+  is not a flattened raster — `get_design_context` returns the full tree — so the
+  layout-2 habit of reading structure off the metadata's x/y (the video section's
+  two-children-sharing-a-y trick, the pricing deck's two-children-at-x-0) simply does
+  not work here. **Call `get_design_context` on all three masters and read the
+  structure out of the emitted flex declarations instead**, then `get_variable_defs` on
+  each for the type. Budget for it: the checkerboard alone is ~120 absolute divs per
+  master.
+- **Sample a margin pixel of each render before deciding what a section stands on.**
+  One `PIL` read settled the header's whole DOM shape: the frames' ground is `#D8A227`
+  (Retro's `T.tags[2]`, `s.pillBg`) where a 238px-wide thumbnail of the *page*
+  (`964:68621`) samples `#EAD7B8` all the way down — so the mustard is the section's own
+  sheet and the design is a bleed. That thumbnail is worth taking once for the whole
+  pass: everything from the header's floor to the footer samples the beige except an
+  olive tail at y≈5600–5760 and a second mustard band at y≈5900–6510. The table's own
+  heights stack to 8481.5 with no gaps — header 0–900, Frame 299 900–3428, repertoire
+  3428–4049, gallery 4049–4838, pricing 4838–5860, map 5860–6664, form 6664–7212,
+  testimonials 7212–8002, footer 8002–8481.5 — so the olive is the **pricing** section's
+  tail and the mustard band is the **events map**, which therefore stands on its own
+  sheet here as it stands on `mapBg` at layout 1. Add that y-range table to your reading
+  before attributing a colour to a section.
+- **Figma's stated padding includes an INSIDE stroke on some nodes and not others, and
+  the render is the only arbiter.** The header card's `pt-[16px]` contains its 5px rule
+  (the pill's top edge measures 51.5 against the card's outer 20 + 16 + 16); the nav
+  pill's `py-[8px]` does *not* contain its 1px one (35.5 tall against a 33.6 inset box).
+  So the repertoire's `calc(padding − border)` is a per-node reading, not a page-wide
+  one — take it where a box's own measurement says to, and check the neighbour rather
+  than carrying it down. Both were settled by a single-column PIL scan of the 1440
+  render.
+- **A rotated card's Figma wrapper is exactly the CSS bounding box, so for once the
+  inflated metadata is the number to take.** The polaroid's 242.292 × 250.575 wrapper is
+  225 × 234 at 4.4°, and `getBoundingClientRect()` on our rotated card returns
+  198.68 × 205.47 = the same numbers × 0.82. Transcribing the wrapper and centring the
+  card in it keeps the tilt's overhang out of the parent's padding — which matters here,
+  because the card that holds it is `overflow: hidden` for its own radius.
+- **The rotation sign was clockwise, and the render says so unambiguously**: for a
+  clockwise turn the topmost corner is the top-*left* and the leftmost is the
+  bottom-left, which is what a cream-pixel scan of the polaroid found. `tilt(s, 4.4)`
+  — the memory note's CSS-clockwise rule, confirmed a second time. Do not eyeball it.
+- **`BookPill`'s `full` scale IS this page's pill.** The frame's 4.267/17.921 padding,
+  8.534 gap and 27.6 disc are `full`'s 4/4/4/18, 10 and 27 to within a rounding, at all
+  three widths — so desktop takes the automatic `mid` (that box × 0.82) and only 390 has
+  to pass `full`. Its label is `size/label-sm`, so `size` is passed at all three
+  (16 × 0.82 / 13 / 12) where the automatic pick would draw 20px at 768. Third section
+  running where the box does not ramp and the label does.
+- **`s.dispLg` and `s.h1` are already this page's display ramp.** `size/display-lg`
+  96/60/40 lands on `dispLg` 79 (96 × 0.82 = 78.7), `h1` 60 and `dispLg` 40 — the exact
+  `tab ? s.h1 : s.dispLg` call `HeaderV1` makes. Worth checking against `Z` before
+  writing a literal.
+- **The header's `showBadge` reaches layout 3 no more than layout 2's dropped fields
+  reach theirs.** This frame draws no seal, so the toggle edits nothing here. Same shape
+  as layout 2's open questions 4/7/8/12, and the same call: inventing a seal the frame
+  does not draw would be worse than the absence.
+
 ## Open questions
 
 1. **What the columned five do at 1052.** Stated in full under *The composed page* above: the
@@ -306,7 +364,12 @@ is known about *this* page before any section has been fitted; append to it as t
 4. **`video` has no layout-3 design**, so the twelve fitted sections are not the fourteen
    categories, and a page can be set to layout 3 throughout only if it carries no video section.
    Same shape as layout 2's missing `tags`/`audio`, and the same answer: leave it.
-5. **The composed page's two display heads are borrowed.** *"Reads the room."* and *"Five worth
+5. **The header's seal has nowhere to go in layout 3.** *Named, not open.* The Inset Hero frame
+   draws no seal, so `FIELDS.header.showBadge` edits nothing while layout 3 is selected. That is
+   layout 2's open questions 4/7/8/12 in the header — a field reaching some layouts and not
+   others — and the same answer: a seal the frame does not draw would be worse than the absence.
+   Layout 3 is also the second header layout to read `avatar`, which it draws as the polaroid.
+6. **The composed page's two display heads are borrowed.** *"Reads the room."* and *"Five worth
    your ear"* live in the wrapper frames, not in the instances, so bio and audio are each taking
    a heading the Figma component itself does not draw. Both sections have a `heading` field —
    and **`FIELDS.bio.heading`'s default is already the literal string "Reads the room."**, which
