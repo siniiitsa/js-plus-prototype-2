@@ -54,7 +54,7 @@ one session.
 | 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | done `d56fe1f` |
 | 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | done `104530e` |
 | 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | done `0cbf413` |
-| 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | todo |
+| 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | done `0e3fba6` |
 | 10 | `calendar` | `964:72844` | Booking Calendar — **D · Enquiry summary stack** | 478 × 491 | `964:79434` | 608 × 472 | `977:8514` | 350 × 469 | todo — read open question 5 first |
 | 11 | `form` | `964:72845` | Enquiry Forms — **F · Editorial form** | 1440 × 814 | `964:79477` | 768 × 950 | `977:8663` | 390 × 920 | todo |
 | 12 | `testimonials` | `964:72846` | Testimonials — **I · Video story wall** | 1440 × 716 | `964:79536` | 768 × 604.4 | `977:8764` | 390 × 588.4 | todo |
@@ -987,6 +987,60 @@ Learned on the events map (section 8):
   one place this branch reuses another's spelling wholesale is the one place a pixel sample
   proves it is the same picture, not a near miss.
 
+Learned on the pricing section (section 9):
+
+- **A frame can draw one list twice, and the tell that it is two fields is which row *omits*
+  one.** The service rows carry a small hairline chip row and a big coloured one; row 2's four
+  chips and its four pills are the **same four strings** in two orders, which reads as a
+  duplicate — but row 1 has no chip row *and the frame it would stand in is absent from the
+  component*, not `hidden`. An element that is optional by structure is an element with its own
+  content, so the two rows took `tags` and `feats`. The count corroborates it: our packages carry
+  1–3 tags and 4–5 features against the frame's four labels, so the other reading would have
+  drawn the seeded first row as a single chip. Written down as reversible (layout 2's
+  dropped-verbatim rule), because the hues give evidence both ways — they are the *tag* scheme's
+  four, assigned by each label's place in the **chip** list and then reordered in the pill row.
+- **An emitted colour literal can be a leak from another template, and the way to tell is to
+  name it.** The chips' `rgba(242,255,208,.15)` is **#F2FFD0 — Lime's text colour** — at 15% over
+  a beige, which measures (235,221,188) against the ground's (234,215,184): a border that is not
+  there. `border/hairline` and `radius/pill` beside it are real tokens and were taken; the colour
+  became `s.line`. The gallery's fill-versus-token lesson at the level of a single rgba.
+- **Reuse a *seat* the way the last layout reused a colour.** The frame's `sem/stroke/2` rule is
+  #5B5E2E, which is `vm.tierRow.card` exactly — layout 3's own walk for "the first palette tag
+  that clears 0.22 against the page ground". A 4px rule and a stack's outline have the same job,
+  so the seat was taken rather than a second derivation written. Zero new view-model, and Pop's
+  teal is the only palette where the pair is a colour difference rather than a contrast one
+  (1.69), which a 4px band carries and a hairline would not.
+- **Bleed the border, not the block.** This instance paints no sheet (root fill = `sem/bg` = the
+  page beige, the events map's case, stddev 0 over the ground), so there was nothing to stand out
+  to the page edges except the one rule the frame runs full width. The row cancels `s.padX` and
+  puts the **identical value** straight back as its own padding — not the frame's 46/30/10 — so
+  the content column stays the page's 1052/688/346 and only the border reaches the edge. Checked
+  in the editor as well as the harness: the rules span each `[--ac]` root exactly and
+  `document.documentElement.scrollWidth` does not move.
+- **A hug that the frame's own content made uniform.** Both of the frame's price columns come out
+  at 186 because each one's price is narrower than its pill; ours are not — "BOOK NOW" is a
+  shorter pill than "Star Enquiry" and a four-figure price a wider numeral — so a plain hug
+  stepped the right column left on exactly the rows with the biggest numbers. The frame's own 186
+  went in as a `minWidth`, which is the width it drew both rows at and still lets a longer price
+  grow. **Read a hug's number at more than one row before transcribing the hug.**
+- **The section's outer air is the root's padding *plus* the frame's own.** This instance has no
+  band around it — it is a direct child of the page frame with `py-48/30/30` on each row — so the
+  top and bottom rows sit at root `padY` (80/56/44) plus their own. Transcribed rather than
+  special-cased: every row keeps its padding, so the rule's rhythm is the frame's and a deleted
+  or added package cannot break the composition. The events map (section 8) kept root `padY` on
+  the page ground too, which is what makes the two neighbours consistent.
+- **`labelStyle` is where a moved field gets its casing.** `vm.tierKind` is composed in
+  `sectionVm` (the slash) and upper-cased by the label face, so nothing in the branch transforms
+  a string. Its sibling `tagLabels` had to be composed there for the opposite reason — `t.tags`
+  is deliberately raw so a chip can match the tag it was derived from, and printing it would have
+  read "Solo" on an upper-case theme where `vm.tierChips` reads "SOLO".
+- **The `Frame 46` chip is the tags row's chip, and the tags row's own layout-4 branch says so.**
+  `Label/XS` in the body face at 11/5 on a `radius/chip` 8 is exactly what `Tags`' `v3` passes
+  TagChips (`radius={u(8)} size={u(T.chip)}`, 20/14/12). Written again rather than routed through
+  it: TagChips is hardwired to `s.chips` *and* guarded on `showTags`, a header key with no
+  business gating a package's features — three disagreements, so the media player's write-it-again
+  rule rather than the tags row's reuse one.
+
 ## Open questions
 
 1. **The page carries the `form` category twice, and only one of them can be the fit.** The
@@ -1131,7 +1185,18 @@ Learned on the events map (section 8):
    intended diff), the category's own name as a literal (the eyebrow pattern), or the sub. The
    tags row's discriminator applies: re-pointing a default is free only where no signed-off layout
    would newly honour it, and here three would.
-9. **The pricing rows carry a *SET* / *PROJECT* kind label no field backs**, above the price. It
+9. ~~**The pricing rows carry a *SET* / *PROJECT* kind label no field backs**, above the price.~~
+   *Settled on section 9 (`0e3fba6`), and the answer was neither of the question's two: it is
+   **`unit`**, moved. Layout 4 is the one pricing design that prints no suffix after its price,
+   so the frame has simply put the unit above the numeral — `vm.tierKind` is `s.tierUnit` with a
+   leading slash dropped ("/EVENT" over a price is a suffix that has lost its number) and the
+   label face upper-cases the rest. What it costs is that one section-wide value prints on every
+   row where the frame types a different word on each: EVENT / EVENT / EVENT on the seed. The
+   discriminator the question was missing: **check what the layout stops drawing before deciding
+   a slot is unbacked** — every per-package field here already had a seat, and the one field that
+   lost its usual one was the only candidate left.* The original text follows.
+
+   It
    is not `name`, not `price` and not a tag — the tags are the chip row beside it. Either it is
    the first line of `feats` read as a label, or it is layout 3's FEATURED badge again: a claim
    about a package that nothing the artist typed can supply. The frame's foot line is

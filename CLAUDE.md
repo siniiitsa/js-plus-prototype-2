@@ -334,6 +334,21 @@ mutated through a single `patch()` helper.
   from the frame's own index to the first hue that clears `tierHues`' 0.22 against `bg`, Grunge's
   `T.tags[3]` being its black background exactly. Its selector is the one thing in that branch
   not standing on the page ground, so its outline and idle labels take `paperFg` and not `tx`.
+  **Layout 4 filters nothing at all**: it is a stack of service rows on the page ground, the one
+  pricing design with no chip row, no state and no control but the Book pill, so `chip` is
+  untouched there. One row per package, divided by a 4px rule in **`vm.tierRow.card`** — layout
+  3's own seat, reused because a rule has that outline's job of reading against the page — and
+  that rule is the one thing in the branch that **bleeds**: the row cancels the root's padding and
+  puts the identical value straight back, so the border reaches the page edges and the content
+  keeps the column (the events map's reading of a 1440-wide instance that paints no sheet). It is
+  the first pricing layout to draw **no heading at all**, so `heading` reaches layouts 1, 2 and 3
+  alone; and the only one to read a package's **tags and its features together** — the tags as the
+  frame's small hairline chips, cased in `sectionVm` as `vm.tiers[].tagLabels` because `t.tags`
+  stays raw for the filter matching, and the features as its coloured ones, one per feature over
+  **`vm.tierFeatSeats`** (`vm.chips`' construction, a seat per index rather than a hue per
+  feature). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
+  — the unit with its leading slash dropped — stands above the numeral where the frame writes
+  SET / PROJECT, which is one section-wide word against the frame's different one per row.
 - **The booking calendar navigates and picks, in the published tab only.** It was the last §10.2
   section that was entirely a picture — arrows and day cells with a pointer cursor and no handler
   in either mode, over three constants and a sentence. The whole section is built from **one
