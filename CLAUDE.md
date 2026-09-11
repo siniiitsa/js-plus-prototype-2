@@ -390,6 +390,24 @@ mutated through a single `patch()` helper.
   a link column. `heading`, which headed the flat layout alone, heads it; `image` does not
   reach it at all. And the slot list is the one list-shaped content with **no** editor beside
   the video section's, so `FIELDS.calendar` still names no `slots`.
+  **Layout 4 is that same slot list a second time, stacked rather than tabled**, and it is the
+  third design to share this section's seam whole rather than grow one: the same `want` /
+  `hit` / `cur`, the same `open` cueing the same slot, the same `booked` killing a row, and
+  `mi` reaching nothing again. What it adds is a **featured** card — the events map's layout-2
+  rule, so the rows are the list *minus* the slot on show and `sel` is therefore **picked, not
+  toggled**, a featured card always holding one. That card is the composed enquiry line taken
+  apart into a 2×2 of the slot's date, its `kind`, its `price` and the section's `time` (a new
+  `vm.calTime`, since this design draws no line at all), over the artist's name, `location`
+  and `image` — which gives `image` a **second** seat, the polaroid stack having been its only
+  one. A blocked cue features nothing and the card prints `calPrompt` instead, which is also
+  the emptied-list state. Its foot is `BookPill` at layout 3's own numbers, but labelled
+  `calCta`, so `cta` is a field again where layout 3 spends the pill on the line; and it is
+  the one calendar layout that paints a **sheet** — the Figma wrapper's tan panel, which
+  carries the page's own "Book Us" head and would otherwise leave that head on a ground no
+  master draws. Its card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
+  token, and `deep` is the page ground on two palettes and collides with the panel on the same
+  two. The cost, named: on Lime and Grunge `tx` and `paper` are one value, so the card and the
+  rows share a fill and only the rows' hairline parts them.
 - **The enquiry form fills in and sends, in the published tab only.** It was the last §10.2
   section whose every control was a picture, and the one the whole page points at:
   `CTA_TARGETS.book` starts at `form`, so the header's Book Now, the pricing pills and the

@@ -55,7 +55,7 @@ one session.
 | 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | done `104530e` |
 | 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | done `0cbf413` |
 | 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | done `0e3fba6` |
-| 10 | `calendar` | `964:72844` | Booking Calendar — **D · Enquiry summary stack** | 478 × 491 | `964:79434` | 608 × 472 | `977:8514` | 350 × 469 | todo — read open question 5 first |
+| 10 | `calendar` | `964:72844` | Booking Calendar — **D · Enquiry summary stack** | 478 × 491 | `964:79434` | 608 × 472 | `977:8514` | 350 × 469 | done `5da1c3a` |
 | 11 | `form` | `964:72845` | Enquiry Forms — **F · Editorial form** | 1440 × 814 | `964:79477` | 768 × 950 | `977:8663` | 390 × 920 | todo |
 | 12 | `testimonials` | `964:72846` | Testimonials — **I · Video story wall** | 1440 × 716 | `964:79536` | 768 × 604.4 | `977:8764` | 390 × 588.4 | todo |
 | — | `audio` | *none* | — | — | *none* | — | *none* | — | **no layout-4 design on this page** |
@@ -1041,6 +1041,79 @@ Learned on the pricing section (section 9):
   business gating a package's features — three disagreements, so the media player's write-it-again
   rule rather than the tags row's reuse one.
 
+Learned on the booking calendar (section 10):
+
+- **Before deciding a frame draws another section's content, grep the seed constants'
+  comments for the frame's own words.** Open question 5 had this master down as the enquiry
+  wizard's output and its "Live band — full / 5-piece + DJ" row as a pricing package; the
+  sentence that overturns both is in `data.js`, where `CAL_SLOTS` says a slot is *"a date,
+  what the artist plays that night, and what it starts from"*. Three phrases, three seats.
+  The section's own list had simply not been read, because the question was written from the
+  Figma tree. **That is the cheapest check in the pass and it turned a decline into a fit** —
+  and it generalises: the seeds were written in the row shape a repeater edits *and* with a
+  sentence saying what each column is for, so they are a content dictionary as well as data.
+- **Two adjacent frames that are structurally identical are one repeating element, whatever
+  their copy says.** The date row and the package row disagree about everything visible —
+  one holds a date and a time, the other a name and a link — and agree about every number:
+  same 81 height, same `SPACE_BETWEEN` shell, same 18/24 padding, same display-over-sub left
+  block. The pricing deck's rule was *which row omits something*; this is its complement,
+  **which two rows omit nothing and measure the same**. The frame's count is its filler for
+  the fourth time in this pass (2 rows against 4 seeded slots).
+- **A fourth layout can share a third seam rather than growing one, and the saving is the
+  whole branch.** `want` / `hit` / `cur` are copied from v1 unchanged, `sel` and `mi` are
+  already above the layout branch, and the entire live surface of this design is **one
+  `onClick` per row**. The events map's featured-panel rule came with its consequence
+  attached — the featured row leaves the list, so `sel` is **picked, not toggled**, and there
+  is nothing to toggle back to. Worth reaching for whenever a new layout's control is a list
+  the section already resolves.
+- **A frame that styles one cell of a grid differently is making a headline, and it is worth
+  checking all three masters before normalising it.** `GUESTS` is Display/Title 24 where
+  `SET LENGTH`, `BUDGET` and `SOUND` are Body/Chip 12 — which reads as an authoring slip
+  until the 768 and 390 masters do the same thing. Present at three widths is a design (the
+  gallery's sample-every-row rule, the other way up), and what it is *for* decided the
+  content: a big first fact with three footnotes is exactly the shape of the composed enquiry
+  line taken apart, so the date took the display cell.
+- **Bind a dark card to `tx`, not `deep`, when the palette has to survive both directions.**
+  The frame's card fill is `sem/text/2` — the *text* token, not a box one — and reading it
+  that way is what makes the flat four work. `deep` IS the page ground on Lime and Grunge,
+  and here it would also have collided with the panel (`edge` #323628 against `mapBg`
+  #2D3124, contrast 1.03, which is the gallery's warning arriving through a second door).
+  `tx` against `bg` is the palette's own guaranteed pair and measures 10.3 / 11.8 / 16.1 /
+  12.4 / 5.0 against the panel. **Re-ask which token a fill is bound to before deriving one.**
+- **The cost of that is named rather than fixed: on Lime and Grunge the card and the rows are
+  one colour.** Both `tx` and `paper` resolve to the palette's lightest value on a dark
+  palette, so the design's three-level tonal stack (page → panel → dark card over light rows)
+  flattens to two. It stays legible — the card is taller, carries the name, the disc and four
+  stats, and the rows keep a hairline the card does not — and the events map's
+  *the-outline-is-what-parts-them* fix is therefore already in place by construction. Every
+  alternative tried was worse: `paperFg` is a near-black on **all five**, which collides with
+  the panel on the same two palettes from the other side, and `pillBg` collapses onto `paper`
+  there as the conventions have warned three times.
+- **A wrapper that paints is the fit's even when it wraps two instances.** Frame 324 is
+  `sem/box/2` at radius 60 and holds the *Book Us* head beside both halves of the block; the
+  repertoire's rule said to walk `inst.parent` and read every level's `fills`, and the reason
+  to take it here rather than call it the page's composition is the head — allocated to this
+  section by the plan, and inside the panel at all three widths, so drawing one without the
+  other stands the head on a ground no master shows. Its ramp (60/60/30 vertical, 60/50/10
+  horizontal, radius halving at 390, gap 50/50/20) is the **only** hand-ramped thing in the
+  branch; the instance itself is one `z` and one type table with no width test.
+- **A pure-insertion diff is a stronger proof than the brace-depth walk.** `git diff
+  --unified=0` on `EncoreSection.jsx` reports one hunk, `@@ -9059,0 +9060,286 @@`, with zero
+  deletions — so v0, v1 and v2 are byte-identical by construction and the walk had nothing to
+  do. Worth running first for any fit that is a new branch rather than an edit. The other two
+  files were read by hand (the bio's rule): `EncoreBuilder.jsx` is `vm.calTime` and one
+  comment, `data.js` one digit, two hints and two comments.
+- **The nine-cell `arch` digest has a known floor, and it is the seal.** Seven of nine cells
+  matched exactly across a `git stash`; `arch=0` at desktop and tablet differed, and running
+  the *same* code twice reproduced the difference — four lines, all `SealBadge`'s `<text>` /
+  `<textPath>`, varying by ~0.1px in width and position. SVG text metrics are not
+  deterministic here. **Diff the digest line-by-line before reading a mismatch as a
+  regression**, and expect this one in any category whose layout 1 draws the seal.
+- **`preview.html`'s `&booked=` is the state worth rendering for this section**, and it
+  exercises three rules in one screenshot: the blocked cue features nothing, the card falls
+  back to `calPrompt`, and the struck rows keep their place and lose their handler. The
+  emptied-slot state is the same code path, which is why it needed no separate check.
+
 ## Open questions
 
 1. **The page carries the `form` category twice, and only one of them can be the fit.** The
@@ -1108,7 +1181,23 @@ Learned on the pricing section (section 9):
    the three above it did not move; the Video picker now does the same, its third card still
    drawing layout 1's design through the hand-fold. No further card appears in this pass — every
    remaining category already offers more rows than it has designs.*
-5. **The booking calendar's master is the wizard's output, misfiled under the calendar's name.**
+5. ~~**The booking calendar's master is the wizard's output, misfiled under the calendar's
+   name.**~~ *Settled on section 10 (`5da1c3a`), and the answer was **neither** of the
+   question's two: not fit-reduced and not declined, but fit **re-seated on the section's own
+   slot list**. The question read the two cream rows as a date row plus a pricing package,
+   which left three of the four blocks unbacked; what it was missing is `CAL_SLOTS`' own
+   comment, which defines `kind` as **"what the artist plays that night"** — exactly what
+   "Live band — full / 5-piece + DJ" is. Once that is seen the two rows are **one repeating
+   element** (identical frames, same inner geometry, 81 tall apiece) over a list the section
+   already owns and layout 2 already tables. So the card **features** a slot and the rows are
+   the list minus it — the events map's layout-2 rule taken whole — and the design's own name
+   is satisfied: the card is the enquiry the visitor is composing, out of what the artist is
+   actually selling. **The discriminator for the next session: before calling a frame's
+   content another section's, grep the seed constants' comments for the words the frame
+   uses.** The four stats are the enquiry line taken apart (date, SET, PRICE, TIME) rather
+   than the wizard's six, `NVAR.calendar` went to 4, and nothing was declined.* The original
+   text follows.
+
    *"D · Enquiry summary stack"* is a dark card reading *Summer wedding / Lake District · Outdoor
    / GUESTS 120 / SET LENGTH 4 hrs / BUDGET £1,200 / SOUND Provided*, then *Sat, June 12 ·
    Arrival 6pm · 9pm*, then *Live band — full / 5-piece + DJ / Package ›*, then a *Send Enquiry*
