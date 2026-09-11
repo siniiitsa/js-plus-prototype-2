@@ -9057,6 +9057,301 @@ function Calendar({ s }) {
     )
   }
 
+  // v3 — Booking Calendar layout 4 · Enquiry summary stack, one composition
+  // across three masters: the 768 (964:79434) and 390 (977:8514) ones verbatim,
+  // the 1440 one (964:72844) on the 1180 canvas at × 0.82, which is the whole
+  // of `z`. A tan panel carrying the page's "Book Us" head over a dark summary
+  // card, one cream row per remaining slot, and the enquiry pill along the foot.
+  //
+  // **What this design is, and why it is the slot list again.** The Figma page
+  // files this master under the booking calendar and draws it as the right half
+  // of a *Book Us* block whose left half is an enquiry wizard — so the plan's
+  // open question 5 read the dark card's GUESTS / SET LENGTH / BUDGET / SOUND
+  // as the wizard's collected answers and its "Live band — full / 5-piece + DJ"
+  // row as a pricing package, and asked whether this section could honestly
+  // draw any of it. It can, and CAL_SLOTS' own comment is the discriminator:
+  // `kind` is *"what the artist plays that night"*, which is exactly what
+  // "Live band — full / 5-piece + DJ" is. The two cream rows are one repeating
+  // element (identical frames, 81 tall, same inner geometry), and the section
+  // already owns a list of that shape — so this is layout 2's slot table again,
+  // composed as a stack: the card **features** the slot the visitor is on and
+  // the rows are the list *minus* that slot, which is the events map's layout-2
+  // rule taken whole, `feat`'s fallback and all. That also means `sel` is
+  // **picked, not toggled** here: a featured card always holds one and there is
+  // nothing to toggle back to.
+  //
+  // The seam is shared rather than grown, for the third time in this section:
+  // `want` / `hit` / `cur` are layout 2's four lines unchanged, `open` cues the
+  // same slot (slot one *is* CAL_OPEN, so the seeded page opens on the frame's
+  // picture), `booked` kills a row here as it strikes one there, and `mi`
+  // reaches nothing — this design has no month, layout 2's and layout 3's case.
+  // A blocked cue cues nothing and the card prints `calPrompt` rather than
+  // sliding the feature to the next slot: layout 1's rule, and it doubles as
+  // the emptied-list state, since `cur` cannot match a list with nothing in it.
+  //
+  // Every box in all three masters is its component's own number — the 16
+  // between blocks, the 24 padding, the 30 corner, the 1 hairline, the 48 disc,
+  // the foot's 54 on a 46 disc inset 5 — so the branch is one `z` and one type
+  // table with no width test, layout 3's case. Only the type ramps: title
+  // 24/19/18, body-lg 16/15/15, body-md 14/13/13, body-sm 12 throughout, chip
+  // 12/11/11 and `list` 16/**12**/**13**, the same non-monotonic three layouts
+  // 2 and 3 read off their own masters. The one thing that genuinely ramps is
+  // the wrapper panel, below.
+  if (s.v3) {
+    const desk = !s.narrow
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const T = desk
+      ? { title: 24, bodyLg: 16, bodyMd: 14, bodySm: 12, chip: 12, list: 16, disp: 96 }
+      : s.mob
+        ? { title: 18, bodyLg: 15, bodyMd: 13, bodySm: 12, chip: 11, list: 13, disp: 40 }
+        : { title: 19, bodyLg: 15, bodyMd: 13, bodySm: 12, chip: 11, list: 12, disp: 60 }
+
+    // The wrapper this instance stands in, and the one thing on the page this
+    // section has to draw that is not the instance. Frame 324 (964:72833 /
+    // 964:76760 / 977:8503) paints `sem/box/2` at radius 60 and holds the head
+    // *and* the stack — so drawing the head without it would stand "Book Us" on
+    // the page ground, which no master shows. The repertoire's rule (walk
+    // inst.parent to the Section and read every level's fills before deciding
+    // what the sheet is); the panel wrapping two instances rather than one is
+    // the page's composition, but its ground is not, and with the wizard
+    // dropped it holds exactly what we draw.
+    //
+    // It is the only part of this fit that ramps by hand: 60 all round at 1440,
+    // 60/50 at 768, 30/10 at 390, its corner halving with the last of those and
+    // its gap to the stack going 50/50/20.
+    const panelPad = `${u(s.mob ? 30 : 60)} ${u(desk ? 60 : s.mob ? 10 : 50)}`
+
+    // A stddev scan of the render settles Retro's decoration in one call, the
+    // bio's way: the panel reads #E1CAA5 at stddev 0, the card #111111 at 0 and
+    // the row sheets #FAECD5 at 0. No grain, no tear, no checkerboard, no seal
+    // — the branch has no `s.retro` gate beyond the two colour literals below.
+    //
+    // `sem/box/2` is the tan panel and `sem/box/1` the cream rows; neither is a
+    // derivation of the page ground (the arithmetic that worked for the bio's
+    // #6D7040 gives no single ratio here), so both stay Retro literals with a
+    // palette cousin behind them — `edge`, which is documented as exactly this,
+    // an opaque tonal shift of the background, and layout 3's own `paper`.
+    const panel = s.retro ? '#E1CAA5' : s.edge
+    const sheet = s.retro ? '#FAECD5' : s.paper
+    const sheetInk = s.retro ? s.tx : s.paperFg
+    // Muted, not struck alone — layout 2's reading of a blocked slot, and the
+    // same fallback, since `muted` is rgba(tx) and vanishes on a panel whose
+    // ink is not tx.
+    const gone = s.retro ? s.muted : s.paperLine
+
+    // The dark card is painted in **`sem/text/2`**, which is `s.tx` — the
+    // frame binds its fill to the text token, not to a box one, and under Retro
+    // that is #111111 exactly. Taking `tx` rather than `deep` is what makes the
+    // flat four work: the gallery's warning is that `deep` IS the page ground
+    // on Lime and Grunge, and here it would also collide with the panel (their
+    // `edge` and `mapBg` are within a point of each other). `tx` against `bg`
+    // is the palette's own guaranteed pair, and it holds against the panel too
+    // — 10.3 under Retro, 12.4 Editorial, 11.8 Lime, 16.1 Grunge, 5.0 Pop.
+    //
+    // Its two inks are the frame's own second reading of the same two tokens:
+    // the display stat label is `sem/bg` and the body type `sem/box/2`, so on
+    // Retro they are the beige and the tan, two neighbours a shade apart. The
+    // flat four collapse them onto `bg` — the bio's accepted collapse, and the
+    // cheapest one in the pass, since the two Retro values differ by 3%.
+    const card = s.tx
+    const cardInk = s.retro ? panel : s.bg
+    const cardHi = s.bg
+
+    // The pick, exactly as layouts 1 and 2 resolve it. A booked slot is never
+    // featured: publishing again re-renders the open tab, so the artist can
+    // block the date a visitor was on.
+    const want = (s.live && sel) || s.calPick
+    const hit = want ? s.calSlots.find((sl) => sl.iso && sl.iso === want) : null
+    const cur = hit && !hit.booked ? hit.iso : ''
+    const feat = cur ? hit : null
+
+    // One stat cell. The frame styles the **first** label in Display/Title 24
+    // and the other three in Body/Chip 12 Bold at −6% — present in all three
+    // masters, so it is the design and not an authoring slip, and what it makes
+    // is a headline fact with three footnotes. The date takes it: the card is
+    // the enquiry line (`Enquiry for Thursday, June 12 at 9:00pm`) taken apart,
+    // and the date is the half of it the visitor chose.
+    //
+    // A cell whose value is empty is not rendered, the Soundcloud rule, so the
+    // alignment is read off the **rendered** index — the pricing deck's reading
+    // of its own tilt: which side a cell hangs from is decoration, and an odd
+    // count trails one half-width cell.
+    const statCell = (label, value, big) => (value ? { label, value, big } : null)
+    const stats = feat ? [
+      statCell(feat.mark, feat.day, true),
+      statCell('SET', feat.kind),
+      statCell('PRICE', feat.price),
+      statCell('TIME', s.calTime),
+    ].filter(Boolean) : []
+
+    const summary = (
+      <div style={col(u(20), {
+        background: card, borderRadius: u(30), padding: u(24),
+      })}>
+        {/* The frame's own head row, which is layout 2's head row a second
+            time: the artist's name in Body/LG over their location in Body/MD,
+            with the section photo as a 48px disc at the other end. `location`
+            is read the way layout 1's polaroid stamp reads it — through the
+            section's own content, which carries no `location` key, so it is the
+            global default rather than a field this panel can edit. An inherited
+            limit, not a new one. */}
+        <div style={row(u(14), { justifyContent: 'space-between' })}>
+          <div style={col(u(4))}>
+            <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: cardInk }}>
+              {s.brand}
+            </span>
+            <span style={{ fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: cardInk }}>
+              {s.location}
+            </span>
+          </div>
+          {/* `image` reaches a second layout for the first time since it was
+              fitted — the polaroid stack was its only seat. The disc's ground
+              and its initials are a guaranteed pair rather than the frame's
+              single `sem/box/2`: Photo's placeholder draws `s.soft` over
+              whatever is behind it and its initials in `muted`, both of which
+              vanish on a near-black card (Pager's `idle` precedent). */}
+          <div style={{
+            width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
+            overflow: 'hidden', background: cardInk,
+          }}>
+            <Photo s={s} initialsSize={Math.round(18 * z)} ink={card} />
+          </div>
+        </div>
+        {stats.length ? (
+          // Two rows of two in the frame, each cell filling half and the second
+          // hanging off the right edge. One grid carries both, which is also
+          // what lets a dropped cell leave a half-width hole rather than
+          // reflowing the pair.
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+            gap: u(12),
+          }}>
+            {stats.map((st, i) => {
+              const right = i % 2 === 1
+              return (
+                <div key={st.label} style={col(u(6), {
+                  alignItems: right ? 'flex-end' : 'flex-start',
+                  textAlign: right ? 'right' : 'left',
+                })}>
+                  <span style={st.big ? {
+                    fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+                    letterSpacing: s.dls, color: cardHi,
+                  } : {
+                    fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip),
+                    lineHeight: 1, letterSpacing: '-0.06em', color: cardInk,
+                  }}>{st.label}</span>
+                  <span style={{
+                    fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: cardInk,
+                  }}>{st.value}</span>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          /* Nothing cued, the cue blocked, or no slots at all — one message
+             where the frame draws four stats, the pricing deck's rule. The card
+             itself stays: it is the block the stack is built round, and a hole
+             where it stands is not one of this design's states. */
+          <span style={{
+            fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: cardInk,
+          }}>{s.calPrompt}</span>
+        )}
+      </div>
+    )
+
+    // A row is one slot the card is not featuring: its date in Display/Title,
+    // what the artist plays that night under it, and what it starts from at the
+    // other end. Every value is rendered or not rather than printed blank, the
+    // testimonials' rule — an emptied `kind` or `price` costs its own line and
+    // nothing else. The border is `border/hairline` 1 and not `s.bw`: the
+    // frame's stroke here is a hairline where layout 3's outline is 2, and it
+    // is load-bearing on three palettes, whose `paper` sits at 1.2–1.3 against
+    // their own panel. Its `strokeAlign` is INSIDE, so the padding gives the
+    // pixel back — the repertoire's `calc(padding − border)`, and without it a
+    // row measures 68.6 against the frame's own 81 × 0.82 = 66.4. The dark card
+    // above carries a stroke too, in its own fill colour, and that one is not
+    // transcribed: it draws nothing at any width.
+    const slotRow = (sl, i) => {
+      const onClick = s.live && sl.iso && !sl.booked ? () => setSel(sl.iso) : undefined
+      return (
+        // Keyed on the date, which is what the row *is*, with the index behind
+        // it for the rows whose date does not parse — they keep their place and
+        // simply do not pick (§4.3a), and two of them would otherwise share a
+        // key. The featured slot leaves the list rather than being marked in
+        // it, so a positional key alone would hand one row's node to another.
+        <div key={sl.iso || `row${i}`} onClick={onClick} style={row(u(14), {
+          background: sheet, borderRadius: u(30),
+          padding: `calc(${u(18)} - 1px) calc(${u(24)} - 1px)`,
+          border: `1px solid ${sheetInk}`, justifyContent: 'space-between',
+          color: sl.booked ? gone : sheetInk, cursor: onClick ? 'pointer' : undefined,
+        })}>
+          <span style={col(u(2))}>
+            <span style={{
+              fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+              letterSpacing: s.dls,
+              textDecoration: sl.booked ? 'line-through' : undefined,
+            }}>{sl.mark}</span>
+            {sl.kind && (
+              <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }}>
+                {sl.kind}
+              </span>
+            )}
+          </span>
+          {sl.price && (
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
+              flex: 'none', textAlign: 'right',
+            }}>{sl.price}</span>
+          )}
+        </div>
+      )
+    }
+
+    return (
+      <div style={col(u(s.mob ? 20 : 50), {
+        background: panel, borderRadius: u(s.mob ? 30 : 60), padding: panelPad,
+      })}>
+        {/* The wrapper's own head, which the plan allocates to this section —
+            layout 3's "Book Me" precedent, and `TITLES.calendar` stays
+            "Availability" for its reason: re-pointing it would move two
+            signed-off heads. Display/LG at this page's own 96/60/40 ramp on a
+            .89 leading, in `sem/text/1`, which is `s.ac` on every palette. The
+            frame's own rust-on-tan is 2.63 and the flat four come back at
+            2.43–8.18, so the worst of them is no worse than Retro's — the tags
+            row's five-palette test, answered for keeping the accent again.
+            Its stated 639 measure is the desktop component's, leaked to both
+            narrow masters where "Book Us" inks a third of it: the leak does
+            nothing at any width, so it is declined (the calendar's own rule). */}
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: u(T.disp), lineHeight: 0.89,
+          letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+        <div style={col(u(16))}>
+          {summary}
+          {s.calSlots.filter((sl) => !cur || sl.iso !== cur).map(slotRow)}
+          {/* The frame's foot is BookPill at the very numbers layout 3 already
+              passes it — 54 on a 46 disc inset 5, the rust bar with a cream
+              label and a cream disc carrying a rust arrow, and no offset block.
+              What differs is the label: this frame writes a two-word control
+              where layout 3's carries the whole composed line, so `cta` is a
+              field again here, and `calBookTo` is `bookTo` minus `calendar`
+              itself — with neither a form nor a pricing section on the page it
+              resolves to nothing and the pill goes back to being a span.
+              The frame sets that label in Display/List sentence case where
+              BookPill's `labelStyle` sets every pill in the label face,
+              upper-cased; `size` reaches the size and not the face, so the diff
+              is layout 3's, inherited on the identical call rather than new. */}
+          <BookPill s={s} to={s.calBookTo} label={s.calCta} glyph="arrow"
+                    disc={desk ? 38 : 46} size={u(T.list)} shadow="transparent"
+                    {...(s.mob ? { full: true } : null)}
+                    {...(s.retro ? { bg: s.ac, fg: '#FBF6EA', discFg: s.ac } : null)}
+                    style={{ width: '100%', justifyContent: 'space-between' }} />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 26px', ...h2Style(s) }}>{s.title}</h2>

@@ -183,7 +183,7 @@ export const minimalNav = (navSections) =>
 // arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
   header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 4,
-  repertoire: 4, gallery: 4, calendar: 3, map: 4, testimonials: 3, form: 3, footer: 1,
+  repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 3, form: 3, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -603,7 +603,7 @@ export const CAL_BOOKED = []
 // wrap at both ends of it rather than clamping — see EncoreSection's Calendar.
 export const CAL_SPAN   = 12
 
-// §10.2 layout 2 — the bold slot list. Where layout 1 draws a month and lets
+// §10.2 layouts 2 and 4 — the named slots. Where layout 1 draws a month and lets
 // the visitor pick any unbooked day out of it, layout 2 draws a short list of
 // named slots: a date, what the artist plays that night, and what it starts
 // from. None of that is derivable — `booked` is the days the artist is *not*
@@ -816,16 +816,18 @@ export const FIELDS = {
     { k: 'tiktok',    l: 'TikTok link', d: '',
       hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
   ],
-  // `heading` heads the flat layout and layout 2's slot list — the scheduler
-  // frame draws no title — and the other four are read by both designed
-  // layouts. `open` is the one date the section is built from (in layout 2 the
-  // slot it opens picked), `booked` the days it will not take (in layout 2 the
-  // slots it strikes through), `time` the hour the foot line names, and `cta`
-  // the label on the pill beside that line, which was an unread key until the
-  // pill existed.
+  // `heading` heads the flat layout, layout 2's slot list and layout 4's whole
+  // block — the scheduler frame draws no title — and every other key is read by
+  // at least two designed layouts. `open` is the one date the section is built
+  // from (in layouts 2 and 4 the slot it opens picked), `booked` the days it
+  // will not take (in those two the slots it strikes through), `time` the hour
+  // the foot line names and layout 4's own stat cell, and `cta` the label on
+  // the pill beside that line, which was an unread key until the pill existed
+  // and which layout 3 alone still leaves editing nothing.
   calendar: [
     { k: 'image',   l: 'Photo', type: 'image',
-      hint: 'Fills the polaroid stack beside the month. Layout 1 only.' },
+      hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
+          + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
     { k: 'heading', l: 'Heading', d: 'Availability' },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
@@ -833,7 +835,8 @@ export const FIELDS = {
     { k: 'booked',  l: 'Booked dates', type: 'booked',
       hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME,
-      hint: 'Printed in the line along the foot of the panel. Leave it empty and the line stops at the date.' },
+      hint: 'Printed in the line along the foot of the panel, and on its own in '
+          + "layout 4's summary card. Leave it empty and the line stops at the date." },
     { k: 'cta',     l: 'Button', d: 'Check a date' },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`

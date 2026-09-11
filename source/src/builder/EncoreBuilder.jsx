@@ -725,8 +725,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     vm.calPick = booked.has(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
+    // The bare hour, beside the composed lines that already carry it. Layout 4
+    // draws no enquiry line at all — its foot is the pill and its card is that
+    // line taken apart into four stat cells — so `time` would otherwise reach
+    // that design through nothing. Raw rather than cased: it is a clock format,
+    // vm.calSlots[].mark's rule.
+    vm.calTime = time
 
-    // §10.2 layout 2 — the bold slot list. The rows are the artist's named
+    // §10.2 layouts 2 and 4 — the named slots. Layout 2 tables them and layout
+    // 4 features one and stacks the rest; both read exactly these keys, and
+    // layout 4 adds no column. The rows are the artist's named
     // slots (CAL_SLOTS), resolved by the `songs` rule: absent means the seed,
     // an emptied array means none, and there is no null sentinel. Everything
     // the row prints is composed here, the way every cell above carries its own
