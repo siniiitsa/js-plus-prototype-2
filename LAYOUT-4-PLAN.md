@@ -1109,6 +1109,13 @@ Learned on the booking calendar (section 10):
   `<textPath>`, varying by ~0.1px in width and position. SVG text metrics are not
   deterministic here. **Diff the digest line-by-line before reading a mismatch as a
   regression**, and expect this one in any category whose layout 1 draws the seal.
+- **A cased value beside an uncased one in the same block, named rather than fixed.** The
+  card's head row is `s.brand` over `s.location`, and on the three upper-casing themes it
+  reads "KAI MERCER / Manchester, UK": `brand` goes through `cased()` and `location` does not.
+  This is the first place in the section to draw `location` outside `labelStyle` — layout 1's
+  polaroid stamp upper-cases it through the label face, so the split had nowhere to show. It
+  is the section's own `day`-raw / `kind`-cased asymmetry arriving in one row, and casing
+  `vm.location` would move the header, which draws it in three fitted layouts. Left as it is.
 - **`preview.html`'s `&booked=` is the state worth rendering for this section**, and it
   exercises three rules in one screenshot: the blocked cue features nothing, the card falls
   back to `calPrompt`, and the struck rows keep their place and lose their handler. The
@@ -1116,7 +1123,15 @@ Learned on the booking calendar (section 10):
 
 ## Open questions
 
-1. **The page carries the `form` category twice, and only one of them can be the fit.** The
+1. ~~**The page carries the `form` category twice, and only one of them can be the fit.**~~
+   *Settled on section 10 (`5da1c3a`), by the deadline the question itself set, and it took
+   the recommendation unchanged: **`form` takes the editorial band**. What closed it is no
+   longer only the argument below — the calendar's fit **drew the *Book Us* block's tan panel
+   and its head**, so those two are spoken for, and the wizard is no longer fittable without
+   reopening section 10. Section 11 should read this as closed rather than re-weighing the
+   wizard.* The original text follows.
+
+   The
    *Book Us* block's left half is *"Enquiry Forms — C · Multi-step wizard"* (a three-step card:
    `1 Event / 2 Details / 3 Contact`, a "Step 1 of 3" line, event-type chips, an approx-date box
    and Back / Next Step pills); the band below it is *"Enquiry Forms — F · Editorial form"* (a
