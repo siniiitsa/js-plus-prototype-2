@@ -674,7 +674,7 @@ export const FIELDS = {
     // default: an unfilled page would otherwise publish a fabricated one, and
     // the column is simply not drawn while it is empty.
     { k: 'since',     l: 'Performing since',
-      hint: 'The ID card’s first stat and the overlay card’s middle line — layouts 3 and 4. Left empty, neither is drawn.' },
+      hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
   ],
   // The second list-shaped content type with a structured editor (see
   // `repertoire` below): `tracks` here is an array of { title, sub, image,

@@ -433,7 +433,10 @@ Learned on the bio (section 2):
   page that is not monotonic-ish: 116 is the desktop band's vertical centring of a 720-tall
   two-column composition. **`tags` shares this band at all three widths and must take the same
   pair and the same horizontal inset**, or a layout-4 page shows olive, then beige, then olive at
-  the seam.
+  the seam. Two of the three vertical numbers are read off the Section wrappers (`964:72512` at
+  1440, `964:76439` at 768, both symmetric); **the 390 bottom is inferred** — `971:14235` puts the
+  head frame at y 30 and the band scan leaves ~41 below the instance, so 30 was taken as
+  symmetric. One `get_metadata` on that head frame's parent settles it.
 - **A stddev scan settled the whole of Retro's decoration in one call: there is none.** The sheet
   reads `#5B5E2E` at stddev 0 top and bottom, the olive beside the card is exactly the same value
   (so no shadow), and the frame draws no torn edge and no checkerboard. The branch has no
@@ -482,6 +485,16 @@ Learned on the bio (section 2):
   the narrower one at display-xl**, so every break falls a line later than the frame's — two
   lines at 1440 against its three, one at 768 and 390 against its two. The media player's
   per-token face factor, a third time.
+- **`backdrop-filter` survives `ScaledPreview`, and it is the first branch in the pass to use
+  one.** The panel's `blur(22.1px)` is the one compositor property no earlier branch draws, and a
+  CSS `scale(0.33)` is where a filter can be dropped, drawn at the unscaled radius, or forced into
+  a stacking context that escapes its parent's clip. Read off the open layout picker: the blur is
+  applied, the panel's rect is inside the card's, the radius scales, and all six cards stay the
+  same 248px `autoMax` height. Worth re-reading if another section takes one.
+- **The brace-depth walk covers `EncoreSection.jsx` alone.** This commit touches three more files
+  and each was read by hand: `EncoreBuilder.jsx` is one comment (the `s.live` enumeration),
+  `data.js` is one digit and one hint, `CLAUDE.md` is the same enumeration. Say which files the
+  walk covered, or the next session inherits a proof that looks complete and is not.
 - **Name the fill's costs, again.** The card goes 664 × 720 → 1088 × 590, so `object-fit: cover`
   reframes the seeded portrait landscape and crops the head at desktop — the same thing layout 3's
   own 1052 × 311 photograph already does, and `Photo` has no `object-position`. The panel loses
