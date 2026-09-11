@@ -3253,12 +3253,12 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   // takes the rest of the page with it: the page is one design, so a header on
   // layout 3 stands over a body on layout 3. `pageLayout` folds the index into
   // each category's own design count (§4.4), so every section lands on a layout
-  // it actually has — the seeded page's nine body sections have three designs
-  // each and the footer has one, so on Retro, whose header has six, the body
-  // repeats from the fourth card on. That is a fact about *this* page rather
-  // than about the fold: a video section has two designs, so a page carrying
-  // one has no single repeat period and the modal's cards cannot be given a
-  // page number. The modal stays open afterwards — a click is a try, not a
+  // it actually has. The cards cannot be given a page number, though, because
+  // the counts differ per category: the seeded page's nine body sections have
+  // four designs each (bio, media) or three (the other seven), the footer has
+  // one, and a page carrying tags or video has four of those — so on Retro,
+  // whose header has six, there is no single index at which the whole body
+  // repeats. The modal stays open afterwards — a click is a try, not a
   // verdict, and "Use this header" is what ends it.
   //
   // Safe as a page-wide write only because the modal is a one-shot gate over a

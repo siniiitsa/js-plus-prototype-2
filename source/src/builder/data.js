@@ -115,7 +115,12 @@ export const CATS = [
   // of the three above it.
   { id: 'tags', name: 'Tags', n: 4 },
   { id: 'audio', name: 'Audio Player', n: 10 },
-  { id: 'video', name: 'Video', n: 3 },
+  // 3 → 4 with NVAR, the Tags row's case again and the second (and last) card
+  // this pass adds to the picker. Video is the one category whose NVAR went up
+  // by two — 2 → 4 — so that `arch 3` names layout 4's design rather than
+  // folding onto layout 2's; the Video list now offers four cards, the fourth
+  // at the end, and none of the three above it moves.
+  { id: 'video', name: 'Video', n: 4 },
   { id: 'pricing', name: 'Pricing', n: 8 },
   { id: 'repertoire', name: 'Repertoire', n: 7 },
   { id: 'gallery', name: 'Gallery', n: 4 },
@@ -168,8 +173,16 @@ export const minimalNav = (navSections) =>
  * than there are designs; the rendered design is `arch % NVAR[cat]`.
  * ------------------------------------------------------------------ */
 
+// `video` is 4 with a hole at index 2: its Figma pages supplied layouts 1, 2
+// and 4 and never a 3, so `Video` folds `v2` onto its `v0` branch by hand
+// (EncoreSection, "the one hand-fold in the file"). `audio` is the same gap
+// read the other way — it has no layout-4 design at all — and stays 3, so its
+// fourth picker card goes on folding onto layout 1 exactly as §4.4's comment
+// on this file describes. Nothing forces that: the seeded page carries no
+// audio section and addSection() opens a new one at `arch 0`, so no page can
+// arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
-  header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 2, pricing: 3,
+  header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 3,
   repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
 }
 
@@ -203,6 +216,14 @@ export const designCount = (catId, themeName) =>
 // layout 3" rather than "Bio layout 6" for the identical render. Negative-safe,
 // sectionVm's own spelling, and `|| 1` for a category NVAR has no entry for —
 // `layoutCount` ends the same way.
+//
+// "The lowest index that renders a given design" is `arch % NVAR` for thirteen
+// of the fourteen categories and no longer for all of them: `video`'s Figma
+// pages skipped layout 3, so its component folds `v2` onto `v0` by hand and
+// two of its four indices render the same design. That costs this function
+// nothing — the result still names a row the picker can highlight, which is
+// the only property it promises — but it does mean the index this returns is
+// not always the *lowest* one rendering that design.
 export const pageLayout = (catId, i, themeName) => {
   const n = designCount(catId, themeName) || 1
   return ((i % n) + n) % n
@@ -720,19 +741,22 @@ export const FIELDS = {
     { k: 'tracks',  l: 'Tracks (one per line: Name — 3:42)', type: 'area',
       d: TRACKS.map(([n, dur]) => `${n} — ${dur}`).join('\n') },
   ],
-  // The two photo slots are layout 2's alone — layout 1 and the flat tail draw
-  // a play disc on a soft panel and no photograph at all — which is the
-  // media player's Soundcloud case the other way round, and why both hints say
-  // where they land. `avatar` is the header's own key, on the header's own
-  // three states, so `defaultImage` seeds it with the same §10.2 portrait.
+  // The two photo slots reach the photographic layouts only — layout 1 and the
+  // flat tail draw a play disc on a soft panel and no photograph at all — which
+  // is the media player's Soundcloud case the other way round, and why both
+  // hints say where they land. They no longer land in the same place: layout 4
+  // is a full-bleed poster with no artist circle on it, so `image` reaches 2
+  // and 4 and `avatar` is layout 2's alone. `avatar` is the header's own key,
+  // on the header's own three states, so `defaultImage` seeds it with the same
+  // §10.2 portrait.
   video: [
     { k: 'heading',     l: 'Heading', d: 'Live at Roomtone' },
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc' },
     { k: 'duration',    l: 'Duration', d: '04:18' },
     { k: 'image',       l: 'Poster', type: 'image',
-      hint: "Fills the player in layout 2." },
+      hint: 'Fills the player in layouts 2 and 4.' },
     { k: 'avatar',      l: 'Artist photo', type: 'image',
-      hint: 'The circle beside your name, and beside every video in the list.' },
+      hint: 'The circle beside your name, and beside every video in the list. Layout 2 only.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
   // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
