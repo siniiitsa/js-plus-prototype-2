@@ -28,7 +28,7 @@
 import { useId, useRef, useState } from 'react'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight, ChevronsRight,
-  ArrowLeft, ArrowRight, ArrowUpRight, Star, Plus, X, Search, MapPin, User,
+  ArrowLeft, ArrowRight, ArrowUp, ArrowDown, ArrowUpRight, Star, Plus, X, Search, MapPin, User,
   Image as ImageIcon, Youtube, Instagram, Music2,
   Settings, Volume2, Maximize, Bookmark, Link2, Bell,
 } from 'lucide-react'
@@ -7489,6 +7489,278 @@ function Gallery({ s }) {
             </div>
           ))}
         </div>
+      </div>
+    )
+  }
+
+  // v3 — Gallery layout 4 · Spotlight + thumb rail (Figma 964:72815, 874 × 646;
+  // 964:78491, 768 × 594; 977:8142, 390 × 605.1): one big tilted photograph in
+  // an ink mount, a rail of thumbnails beside it and two arrow discs under the
+  // rail, on the section's own olive sheet with a torn top edge.
+  //
+  // **This is layout 1's spotlight with the source rows replaced by a display
+  // head and the rail stood vertical.** The wrapper the page drops it in
+  // (964:72780) still carries layout 1's four media-source rows as a
+  // `hidden="true"` Frame 186 — at the same 56/383, 608 × 383 at all three
+  // widths — so the composition is a copy of layout 1's with the rows turned
+  // off and the space given to the head. `youtube` / `instagram` / `tiktok`
+  // therefore reach nothing here, which is layout 2's and layout 3's Soulcloud
+  // call for the third time; their `FIELDS` hints already say "Layout 1 only".
+  //
+  // **The section stands on the olive band, which is the bio's.** The bio's
+  // layout-4 pair is taken whole — `#5B5E2E` / `#FBF6EA` under Retro, `mapBg` /
+  // `mapFg` on the flat four, the sheet a block carrying the root's padding
+  // back as a negative margin — and the band scan in LAYOUT-4-PLAN.md holds at
+  // all three widths. What is new is the **torn top**: a beige vector 1554 ×
+  // 580.99 hanging off the wrapper's head at y −534.67 (−544.67 at 390), so
+  // 46.32 of it shows at both wide widths and 36.32 at 390, in the page ground
+  // the vector's own fill already is (`TornEdge`'s default `colour`). The
+  // **repertoire owns the matching torn foot** — the two sections are one olive
+  // band on the Figma page (4019 → 5712) — so this branch draws the head edge
+  // only, and the foot inset it leaves for that seam is 56 / 30 / 40.
+  //
+  // **The seam is layout 1's, whole.** `pick` starts at -1, `galActive()` is
+  // slot 3, and the frame's own spotlight photograph *is* its fourth thumbnail
+  // — so the published first paint is the canvas's picture by construction,
+  // with nothing added. Clicking a thumbnail picks it, the arrows step and wrap
+  // (layout 1's `go`, which is local to that branch and rewritten here). The
+  // rail carries **no active mark**: all six of the frame's thumbnails draw the
+  // identical 4px mustard ring, and what names the chosen slot is the spotlight
+  // itself. Inventing a mark would be inventing a state (the booking calendar's
+  // rule about a control the frame does not draw), and the design does not need
+  // one.
+  //
+  // The arrows follow the **rail's own direction**, which is why the two
+  // masters order them differently and both are right: the wide rail runs down,
+  // so its pair is ↓ (next) then ↑ (previous); the 390 strip runs across, so
+  // its pair is ← (previous) then → (next).
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`; the 768 and
+  // 390 frames are verbatim, which is the `z` switch inside it. This component
+  // carries **no `size/` or `radius/` token at all** — `get_variable_defs`
+  // returns the same seven-entry colour list at all three widths — so every box
+  // below is a raw number, identical at all three: 121.028 rail, 67.748
+  // thumbnail, 55.514 disc, 50 between the halves, 25/30/20 radii, 12 and 10
+  // gaps, 4 ring, 20 mount.
+  //
+  // Three things genuinely differ, and only the third is a deviation:
+  //
+  //  · **390 lays the rail out across the foot** instead of down the side —
+  //    strip over arrows at the same 12, and the two discs become full-measure
+  //    pills (the frame's 180 each is `flex-[1_0_0]` of its 370).
+  //  · **The type ramps and the boxes do not**: the eyebrow is 15 / 12 / 11 in
+  //    Inter Bold at 1.3 (the bio's rule — this page's eyebrows are the body
+  //    face, not the label one) and the display head 96 / 60 / 40, which is
+  //    `tab ? s.h1 : s.dispLg` exactly, layout 3's own call on this section.
+  //    The head's stated 454 measure is **declined**: 454 is Frame 182's own
+  //    content width (566 − 2 × 56), so it is the column's measure and not a
+  //    break the designer chose — unlike the bio's 572.9 inside a 664 column.
+  //    Stacked, that column is gone, and honouring it would wrap a head that
+  //    fits (the booking calendar's check-whether-the-leak-does-anything rule,
+  //    answered the other way).
+  //  · **The 390 strip runs off its own page and this one windows it.** Its six
+  //    thumbnails are `shrink-0 w-[121.028px]` at gap 0 inside a 370 frame, so
+  //    the master draws three and a sliver and thumbnails 4–6 — including the
+  //    one its own spotlight is showing — are unreachable. That is the media
+  //    player's destroys-its-own-content rule, so the three visible tiles
+  //    become a **sliding window** on layout 1's own formula (`from =
+  //    clamp(active − 2, 0, 4)`), filling the measure rather than reproducing
+  //    the 6.9px sliver, which is the overflow and not a design. It is not
+  //    gated on `s.live` — that would break "the published first paint is the
+  //    canvas's picture" — so the canvas opens on slots 1–3 with the spotlight
+  //    on slot 3, where the frame opens on thumbnails 1–3 with its spotlight
+  //    off-page. An intended diff, and the better half of it.
+  //
+  // Two more costs of filling 1052, named rather than engineered away (the
+  // bio's rule). The row's 534 height is **stated** on the frame, so the
+  // desktop spotlight goes 590.97 × 534 → 947.8 × 437.9 and `object-fit:
+  // cover` reframes the seeded photograph; the tablet and 390 cards land on
+  // their masters' 536.97 × 534 and 370 × 343.14 exactly, because the bleed
+  // hands the section the frame's own measure (708 and 370). And the rail
+  // divides that stated height between **seven** thumbnails where the Figma
+  // component seats six, so each stands 56.4 unscaled against the frame's
+  // 67.75 — the count is the section's (`FIELDS.gallery.images` is `max: 7`
+  // and every other layout walks a fixed seven), the frame's six is the
+  // component's own default.
+  if (s.v3) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const T = desk
+      ? { eyebrow: 15, headGap: 36, mark: 88, tile: 18 }
+      : tab
+        ? { eyebrow: 12, headGap: 36, mark: 72, tile: 22 }
+        : { eyebrow: 11, headGap: 10, mark: 52, tile: 26 }
+    // The bio's layout-4 band, taken whole. `sem/bg` is the one token
+    // `get_variable_defs` gets wrong on this component — it answers #D8A227 at
+    // all three widths where the node's own `fills` is #5B5E2E — so the olive
+    // is read off the fill, not the token.
+    const band = s.retro ? '#5B5E2E' : s.mapBg
+    const cream = s.retro ? '#FBF6EA' : s.mapFg
+    // `sem/text/1` is the mustard here, not the rust it is elsewhere on the
+    // page: it rings every thumbnail and sets the display head, and it is
+    // `s.pillBg` on every palette by construction (the bio's note).
+    const mustard = s.pillBg
+    // `sem/text/3` #111111 is the mount the photograph sits in — 16px of frame
+    // at desktop, so it *is* the card rather than a hairline. The flat four
+    // cannot take `s.deep`, which the bio's card got away with: `deep` IS the
+    // page ground on Lime and Grunge and the sheet is that colour lifted 11%,
+    // which leaves the mount at contrast 1.4. They invert it to the band's own
+    // ink instead — a light mount on a dark band, which reads on all four.
+    const mount = s.retro ? '#111111' : cream
+    // `sem/box/3` #C08A0F is a mustard the palette does not carry, so it stays
+    // a Retro literal over `pillBg`; the glyph and the 5px offset block are
+    // `sem/text/1` resolved in the *effect style's* own mode, which is the rust
+    // — `s.ac` — and not the mustard the node's mode gives.
+    const disc = s.retro ? '#C08A0F' : mustard
+    const glyph = s.retro ? s.ac : s.pillFg
+    const slots = [0, 1, 2, 3, 4, 5, 6]
+    const active = s.live && pick >= 0 ? pick : galActive(s)
+    const go = (i) => setPick(((i % slots.length) + slots.length) % slots.length)
+    // 390 windows the strip; the two wide rails show every slot.
+    const shown = s.mob ? 3 : slots.length
+    const from = Math.min(Math.max(active - (shown - 1), 0), slots.length - shown)
+    // lucide's arrow inks 14/24 of its `size`; the frame's is 16.25 along by
+    // 14.2 across, measured off the render and agreeing with the vector node.
+    // 26 lands the mean — the audio player's size-an-icon-off-its-ink rule.
+    const gsz = Math.round(26 * z * 10) / 10
+
+    const thumb = (i) => (
+      <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
+        position: 'relative', overflow: 'hidden', minWidth: 0, minHeight: 0,
+        // Figma strokes this frame inside its stated 121.028 (a mobile row
+        // scan reads 4 / 113 / 4), so a border-box border is the frame's ring
+        // exactly — and every tile carries it, which is what makes a plain
+        // border safe here where the media player's layout-4 tile needed an
+        // inset ring. The mustard under it is the frame's own placeholder
+        // ground, seen through an empty slot.
+        border: `${u(4)} solid ${mustard}`, borderRadius: u(25), background: mustard,
+        cursor: s.live ? 'pointer' : undefined,
+      }}>
+        <span style={{ position: 'absolute', inset: 0 }}>
+          {/* An invented ramp, only ever seen on the flat four or mid-edit:
+              the masters are photographs and Retro seeds them (the gallery's
+              placeholder rule). `ink` is `pillFg` because the tile's ground is
+              `pillBg` and `s.muted` is an rgba of the *page's* text colour. */}
+          <Photo s={s} src={s.images[i]} initialsSize={T.tile}
+                 ink={s.retro ? undefined : s.pillFg} />
+        </span>
+      </span>
+    )
+
+    const arrowBtn = (key, Glyph, step) => (
+      <span key={key} onClick={s.live ? () => go(active + step) : undefined} style={{
+        height: u(55.514), borderRadius: '999px',
+        background: disc, color: glyph, boxShadow: hard(s, s.ac, 5, 5),
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        cursor: s.live ? 'pointer' : undefined,
+        // Two discs fill the 121.028 rail at 1440 and 768 (55.514 × 2 + 10 is
+        // that number exactly, which is where the rail's width comes from);
+        // at 390 the same pair fills the measure as two pills.
+        ...(s.mob ? { flex: '1 1 0', minWidth: 0 } : { width: u(55.514), flex: 'none' }),
+      }}><Glyph size={gsz} /></span>
+    )
+    // The frame's own order, per master: ↓ then ↑ down the side, ← then → across
+    // the foot. Both are the rail's direction rather than a fixed prev/next
+    // pair, which is why the two masters disagree and neither is a slip.
+    const back = arrowBtn('b', s.mob ? ArrowLeft : ArrowUp, -1)
+    const fwd = arrowBtn('f', s.mob ? ArrowRight : ArrowDown, 1)
+    const arrows = (
+      <div style={row(u(10), { justifyContent: 'center' })}>
+        {s.mob ? back : fwd}
+        {s.mob ? fwd : back}
+      </div>
+    )
+
+    // The rail is a **grid**, not the frame's `flex-[1_0_0]` column: a
+    // zero-basis item's border is added after its share is worked out (the
+    // testimonials' and the enquiry form's lesson), so seven ringed thumbnails
+    // would stand 56px past the stated 534. `minmax(0, 1fr)` rows divide the
+    // same height and let `border-box` do its job.
+    const rail = s.mob ? (
+      <div style={col(u(12))}>
+        <div style={{
+          display: 'grid', gridTemplateColumns: `repeat(${shown}, minmax(0, 1fr))`,
+          height: u(67.748),
+        }}>
+          {slots.slice(from, from + shown).map(thumb)}
+        </div>
+        {arrows}
+      </div>
+    ) : (
+      <div style={{
+        flex: 'none', width: u(121.028), height: '100%',
+        display: 'grid', rowGap: u(12),
+        gridTemplateRows: `repeat(${slots.length}, minmax(0, 1fr)) auto`,
+      }}>
+        {slots.map(thumb)}
+        {arrows}
+      </div>
+    )
+
+    const card = (
+      <div style={{
+        ...(s.mob
+          ? { width: '100%', height: u(343.142) }
+          : { flex: '1 1 0', minWidth: 0, height: '100%' }),
+        position: 'relative', overflow: 'hidden',
+        background: mount, borderRadius: u(30), padding: u(20),
+        boxShadow: soft(s), transform: tilt(s, -2),
+      }}>
+        {/* The frame nests an `overflow-clip rounded-[20px]` frame round a
+            `rounded-[4px]` one that fills it exactly, so the 4 can never show
+            and 20 is the corner the photograph draws. The cream under it is the
+            frame's own #FBF6EA backing, seen through an empty slot. */}
+        <div style={{
+          width: '100%', height: '100%', position: 'relative', overflow: 'hidden',
+          borderRadius: u(20), background: cream,
+        }}>
+          <Photo s={s} src={s.images[active]} initialsSize={T.mark}
+                 ink={s.retro ? undefined : s.paperFg} />
+        </div>
+        {/* Last and over everything, the way the frame paints its 635px sheet:
+            `mix-blend-screen` at .52, which is layout 1's viewer card verbatim. */}
+        <Grain s={s} exact blend="screen" opacity={0.52} radius={u(30)} />
+      </div>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        // The insets are the frames' own, read as the band's page inset plus
+        // each block's own padding — 100 + 56 / 100 + 30 / 60 + 0 above the
+        // eyebrow, and the instance's 56 / 30 / 40 below the row. The gutter
+        // between the head and the row is that same sum stood on end: 56 + 56
+        // at 1440, where the wrapper columns the two blocks, and the 30 + 30
+        // and 0 + 24 the two narrow wrappers already stack them at.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: band, color: cream, position: 'relative',
+        padding: `${u(desk ? 156 : tab ? 130 : 60)} `
+               + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
+               + `${u(desk ? 56 : tab ? 30 : 40)}`,
+        ...col(u(desk ? 112 : tab ? 60 : 24)),
+      }}>
+        {/* `bleed={false}`: this sheet already covers the section root, so the
+            strip wants the sheet's own edges and not a second negative pull. */}
+        <TornEdge s={s} height={u(s.mob ? 36.32 : 46.32)} bleed={false} />
+        <div style={col(u(T.headGap), { alignItems: 'flex-start' })}>
+          {/* The page's own eyebrow, and the one this section already writes:
+              v0's identity block letters it "Media" too, so the frame's string
+              costs no literal that was not here (the bio's `{initials} Bio`
+              pattern, which this wrapper's label does not follow). */}
+          <span style={{
+            fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow),
+            lineHeight: 1.3, textTransform: 'uppercase', color: cream,
+          }}>Media</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg,
+            lineHeight: 0.89, letterSpacing: s.dls, color: mustard,
+          }}>{s.title}</h2>
+        </div>
+        {s.mob
+          ? <div style={col(u(50))}>{card}{rail}</div>
+          : <div style={row(u(50), { alignItems: 'stretch', height: u(534) })}>{card}{rail}</div>}
       </div>
     )
   }

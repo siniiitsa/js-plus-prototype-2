@@ -203,7 +203,16 @@ mutated through a single `patch()` helper.
   window are that layout's and not the section's. Its seven slots **rotate through seven fixed
   seats**, the media player's fan rule, so the hero seat always holds the slot the visitor is on;
   the three social addresses reach layout 1 only, which is `FIELDS.media.soundcloud`'s case three
-  times over and is why their hints name a layout.
+  times over and is why their hints name a layout. **Layout 4 browses through the same `pick` for
+  the third time** — a spotlight photograph beside a rail of all seven thumbnails, with two arrow
+  discs under it that step and wrap on layout 1's own `go`. It carries **no active mark**: its
+  Figma frame rings all six of its thumbnails identically, and what names the chosen slot is the
+  spotlight, which on the canvas is `galActive()`'s slot 3 — the frame's own fourth thumbnail. Its
+  **390 master runs its strip off its own page** (six fixed 121px tiles in a 370 frame, so three
+  and a sliver show and the one its spotlight is on does not), so there the three visible tiles are
+  a **sliding window** on layout 1's formula, `from = clamp(active - 2, 0, 4)` — not live-gated, so
+  the canvas and the published first paint agree on slots 1–3. It draws no source rows either: the
+  Figma wrapper carries layout 1's four as a `hidden` frame.
 - **The events map pages and pairs, in the published tab only.** Layout 1's gig list is the
   artist's (`FIELDS.map.gigs`, above), so nothing about it can stay a fixed five. The pager is
   **derived** from the list the way the repertoire's is, `PAGES` is gone, and it is **not

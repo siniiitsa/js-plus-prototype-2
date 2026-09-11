@@ -183,7 +183,7 @@ export const minimalNav = (navSections) =>
 // arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
   header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 3,
-  repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
+  repertoire: 3, gallery: 4, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -795,12 +795,14 @@ export const FIELDS = {
   // each row reads — change one, change both.
   //
   // They are also `media.soundcloud`'s case in the other sense: the source rows
-  // are layout 1's, and layout 2's split showcase draws no row for them at all,
-  // so each hint says which layout it edits — the video section's `image` and
-  // `avatar` rule, the other way round.
+  // are layout 1's, and none of the other three designs draws a row for them —
+  // layout 2 has no room, layout 3 is a bare grid, and layout 4's Figma wrapper
+  // carries layout 1's four rows as a `hidden` frame — so each hint says which
+  // layout it edits, the video section's `image` and `avatar` rule the other
+  // way round.
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
-      hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layout 2 shows it as the large photo beside the other six.' },
+      hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
     { k: 'youtube',   l: 'YouTube link', d: '',
       hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
