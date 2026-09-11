@@ -56,7 +56,7 @@ one session.
 | 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | done `0cbf413` |
 | 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | done `0e3fba6` |
 | 10 | `calendar` | `964:72844` | Booking Calendar — **D · Enquiry summary stack** | 478 × 491 | `964:79434` | 608 × 472 | `977:8514` | 350 × 469 | done `5da1c3a` |
-| 11 | `form` | `964:72845` | Enquiry Forms — **F · Editorial form** | 1440 × 814 | `964:79477` | 768 × 950 | `977:8663` | 390 × 920 | todo |
+| 11 | `form` | `964:72845` | Enquiry Forms — **F · Editorial form** | 1440 × 814 | `964:79477` | 768 × 950 | `977:8663` | 390 × 920 | done `67c297a` |
 | 12 | `testimonials` | `964:72846` | Testimonials — **I · Video story wall** | 1440 × 716 | `964:79536` | 768 × 604.4 | `977:8764` | 390 × 588.4 | todo |
 | — | `audio` | *none* | — | — | *none* | — | *none* | — | **no layout-4 design on this page** |
 | — | *(form #2)* | `964:72843` | Enquiry Forms — **C · Multi-step wizard** | 680 × 491 | `964:79037` | 608 × 466 | `977:8513` | 350 × 465 | **not fitted** — see open question 1 |
@@ -1120,6 +1120,79 @@ Learned on the booking calendar (section 10):
   exercises three rules in one screenshot: the blocked cue features nothing, the card falls
   back to `calPrompt`, and the struck rows keep their place and lose their handler. The
   emptied-slot state is the same code path, which is why it needed no separate check.
+
+Learned on the enquiry form (section 11):
+
+- **A Figma layer's *name* is the string it was created with, so it is the component's
+  default and never a third vote.** Two of the three masters draw "KAI MERCER" as the
+  display head and the 1440 one overrides it to "Contact Us" — and `get_metadata` names
+  the text node "KAI MERCER" at **all three**, including the desktop one whose render
+  plainly reads "Contact Us". So the narrow pair are copies whose override was never
+  re-typed, the desktop master is the authored one, and the head is a section heading
+  rather than the artist's name. **Fetch the render before believing a layer name**, and
+  where the instances disagree about a string, the one that disagrees with the *layer
+  name* is the deliberate one. This is the gallery's fills-versus-token lesson at the
+  level of copy, and it decided the section's whole head allocation in one screenshot.
+- **A frame's two head slots can be another layout's two, in the opposite vertical
+  order.** Layout 3 sets `s.brand` as the eyebrow over `s.title` as the display line;
+  this frame draws the display line first and a small caps line under it. Giving the
+  same two fields the same two *kinds* of slot — display and small caps — rather than
+  the same positions is what kept `heading` as the display line in all four layouts and
+  left nothing unread. **Match a slot by its type register, not by its place in the
+  stack.**
+- **The frame's own copy told us which of the section's lists its column wanted.** The
+  01/02/03 rows read "Send your details / I check availability / Quote & confirm" with
+  subs, and row 02's sub is *"Reply within 24 hrs"* — `FORM_PROMISES[0]` almost
+  verbatim. That is the booking calendar's grep-the-seed-comments check arriving from
+  the other side: the *frame* quoted the seed. Layout 3 had already read the same
+  register the other way (running the promises together as one line), so the two
+  layouts read one field two ways and neither invents anything.
+- **A frame's per-row second line is a gloss, and a list of one-string rows has no seat
+  for it.** The step rows are title + sub; a promise is one string, so the sub is
+  dropped rather than filled — the video section's fabricated-metric rule reaching a
+  *line* rather than a number. What that leaves is a row whose 88 is still its disc plus
+  its padding, so nothing in the geometry had to move.
+- **An outline that has to read against the page has one derivation in this file and it
+  is not in this section.** `vm.formRule` is `vm.tierRow.card` — the pricing stack's own
+  guarded walk — aliased in the form block rather than read across sections or written
+  twice. The frame binds `sem/stroke/2`, which under Retro IS that walk's answer, and
+  the guard earns its place twice over: Grunge's index-3 tag is its black background and
+  Editorial's is a wash 0.185 off its cream page, so both would have drawn nothing.
+  **Reach for `tierRow` whenever a rule or an outline stands on the page ground** — this
+  is its second borrower after the pricing section's own 4px divider.
+- **The axis diff was a reorder, and only `get_metadata` says so.** Both narrow masters
+  put the steps column *first*; the desktop one puts the form first. The enquiry form's
+  own layout-2 lesson said "re-ask every `desk`", and here the answer is that the one
+  `desk` test carries three things at once — the grid's columns, its gap and the
+  children's order. Two consts and one ternary; the testimonials' 390 reorder at the
+  scale of a whole column.
+- **A trailing odd cell is a per-layout decision and both answers are in the file now.**
+  Layout 1 trails a half-width cell (the pricing deck's rule); this frame draws its
+  fifth box at the full 644 under two rows of 315, at all three widths, so it is a
+  design and not a residue. `vm.formRows` is untouched — the pairing is the vm's, and
+  what a row of one *does* is the branch's.
+- **The digest caught the one slip, and it was a token collision inside one style
+  object.** Every small caps line here is the display face, so the first draft gave the
+  head's sub the box labels' `size/list` — where the frame sets it in `size/title`
+  (24/19/18 against 16/12/13). A screenshot would not have shown it; `fontSize` in a
+  three-width digest did, in the same call that proved the 4px rule and the 0.82 ramp.
+  **Two tokens in one face are two style objects**, the events map's which-of-two-16s
+  lesson met at the level of a shared const.
+- **A `boxShadow` digest has to search for `inset`, not test position 0.** Computed
+  `box-shadow` serialises the colour first and the keyword *last*
+  (`rgb(200, 70, 28) 0px 0px 0px 2px inset`), so a first-character test reports every
+  refused box as unmarked and reads exactly like a broken live seam. Cost one round trip
+  here; worth knowing before the next section writes an inset ring.
+- **`&promises=A|B|C` is new in `preview.jsx`.** This section has *two* list-shaped
+  contents and `&n=` reaches only `c.fields`, so the promises — and therefore the whole
+  right-hand column, including its absence — had no switch at all. Pipes rather than
+  escaped newlines, the `&tags=` shape. The bio's add-the-switch-in-the-same-session
+  rule, for a second list on a category that already had one.
+- **`NVAR` and `CATS.n` part company again, and the check is the same one.**
+  `CATS.form.n` is 6, so no picker card appears — but cards 4, 5 and 6 now fold onto
+  v3/v0/v1 where they folded onto v0/v1/v2. Cards 1–3 are untouched by arithmetic
+  (`n % 3 === n % 4` for `n < 3`), which is why this fold change needed no nine-cell
+  digest where the video section's did.
 
 ## Open questions
 

@@ -478,6 +478,27 @@ mutated through a single `patch()` helper.
   block beside it; and the card's stated `sticky` is dropped rather than written inert,
   since the frame's own `items-center` gives it nowhere to travel where layout 2's
   `alignSelf: stretch` made it real.
+  **Layout 4 is the editorial band, and it shares the seam whole for the third time** —
+  the same `vals`, `errs`, `sent`, `<a href="mailto:">` and *Write another*, so its whole
+  live surface is four handlers and the only line outside the branch is one comment. It
+  is a display head over a 4px mustard rule, the artist's name in small caps under it,
+  and then two columns: the boxes over a mustard submit pill, and the promises numbered
+  01 / 02 / 03 beside them. Three things it does that no other layout here does. It draws
+  a **label above a box *and* a placeholder inside it**, which is layout 1's pair and
+  brings both `message` and the rows' `placeholder` column back after two layouts that
+  spend their one slot on the label; a **trailing odd field runs the full measure** where
+  layout 1 trails a half-width cell, the frame's own fifth box at all three widths
+  (`vm.formRows` is unchanged — the pairing is the vm's and what a row of one does is the
+  branch's); and it **reorders its two columns**, the form leading at 1440 and the
+  promises leading at 768 and 390. Its promises are `vm.formSteps`, the same list layout
+  3 runs together as one line, numbered in `sectionVm` because this file pads nothing —
+  and with none, the column is not drawn at all and the form takes the measure (the
+  footer's empty-second-column rule). It draws no chip row, so `showTypes` stays
+  `!!s.v0` and the mailto sends the bare `Enquiry` for the third time; `image`, `photo`
+  and `para` reach none of it. Its boxes' outline and its step rules are **`vm.formRule`,
+  which is `vm.tierRow.card`** — the pricing stack's own guarded walk, aliased in the
+  form block rather than read across sections, because an outline standing on the page
+  ground is exactly what that walk was written for.
 - **The testimonials carousel pages, in the published tab only, and the reviews are the
   artist's.** It was the last §10.2 section that was a picture on *both* sides: its two arrows
   carried a pointer cursor and no handler, and layout 1 drew `QUOTES[0]` and nothing else, so
@@ -623,7 +644,8 @@ mutated through a single `patch()` helper.
   load-bearing the way `FIELDS.form.fields`' is: `sectionVm` halves the list into the two
   columns. Every other repeated field is a
   delimited textarea (`FIELDS.audio.tracks`,
-  `FIELDS.tags.tags`). All seven follow
+  `FIELDS.tags.tags`, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
+  numbers 01 / 02 / 03). All seven follow
   `images`, not
   `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS`, an emptied array
   means none, and there is no
