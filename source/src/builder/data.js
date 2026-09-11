@@ -107,7 +107,13 @@ export const CATS = [
   { id: 'header', name: 'Header', n: 6 },   // header count is theme-dependent — see headerVariants()
   { id: 'bio', name: 'Bio', n: 6 },
   { id: 'media', name: 'Media Player', n: 7 },
-  { id: 'tags', name: 'Tags', n: 3 },
+  // 3 → 4 with NVAR: layout 4 is the first design this category has had past
+  // its Figma layout-3 row, and `pageLayout()` rests on designCount ≤
+  // layoutCount, so the picker has to offer the row the fold names. This is
+  // the first card the layout-4 pass adds to the picker (LAYOUT-4-PLAN.md,
+  // open question 4) — it appears at the end of the Tags list and moves none
+  // of the three above it.
+  { id: 'tags', name: 'Tags', n: 4 },
   { id: 'audio', name: 'Audio Player', n: 10 },
   { id: 'video', name: 'Video', n: 3 },
   { id: 'pricing', name: 'Pricing', n: 8 },
@@ -163,7 +169,7 @@ export const minimalNav = (navSections) =>
  * ------------------------------------------------------------------ */
 
 export const NVAR = {
-  header: 6, bio: 4, media: 3, tags: 3, audio: 3, video: 2, pricing: 3,
+  header: 6, bio: 4, media: 3, tags: 4, audio: 3, video: 2, pricing: 3,
   repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
 }
 
@@ -518,7 +524,8 @@ export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 // `tags` was 'Tags' and read by nothing: the category named no `heading` field
 // and neither of its two invented flat layouts drew a title. Layout 3's frame
 // heads its chip row "Genres", so the literal moves to that and `FIELDS.tags`
-// gains the field that mirrors it.
+// gains the field that mirrors it. Layout 4's frame heads it the same way, at
+// the two wider widths.
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Genres',
   audio: 'Selected Tracks', video: 'Live at Roomtone', pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
@@ -698,13 +705,14 @@ export const FIELDS = {
     { k: 'soundcloud', l: 'SoundCloud link', d: '',
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
-  // Layout 3 is the only one of the three that heads the row, so the hint says
+  // Layouts 3 and 4 head the row and layouts 1 and 2 do not, so the hint says
   // so (FIELDS.media.soundcloud's case): layout 1 writes its own "Browse by
-  // tag" and layout 2 is a bare rule-bounded strip.
+  // tag" and layout 2 is a bare rule-bounded strip. Layout 4 draws the same
+  // label, except on the phone — its 390 master hides the head frame outright.
   tags: [
     { k: 'heading', l: 'Heading', d: TITLES.tags,
-      hint: 'The label above the chips in layout 3. Layout 1 writes its own, and layout 2 '
-          + 'has no head at all.' },
+      hint: 'The label above the chips in layouts 3 and 4 — layout 4 drops it on the phone. '
+          + 'Layout 1 writes its own, and layout 2 has no head at all.' },
     { k: 'tags', l: 'Tags (comma-separated)', type: 'area', d: TAGS.join(', ') },
   ],
   audio: [

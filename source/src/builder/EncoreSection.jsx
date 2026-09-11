@@ -3683,6 +3683,96 @@ function Tags({ s }) {
     )
   }
 
+  // v3 — Tags layout 4 · Genres row on the olive band
+  // (Figma 964:72516 · 964:76443 at 768 · 971:14238 at 390. All three are
+  // called "Tags — Frame — Desktop"; match on width, this page's own rule.)
+  //
+  // ── This is layout 3's design, on a sheet, with the head dropped at 390 ──
+  // The instance is a *different component* from layout 3's (`;690:34xx`
+  // against `;516:14xx`) and it is numerically identical to it: the same
+  // `body-lg` 16/15/15 head at 1.5 in `sem/text/1`, the same 16 under it, the
+  // same `label-xs` 20/14/12 chips at 1.26 in `radius/chip` 8, the same 8 gap
+  // both ways, the same 5/11 padding. `get_variable_defs` on all three masters
+  // returns layout 3's list token for token. So the branch is v2's eight lines
+  // written again — not shared, because the media player's rule is to count
+  // what the two designs *disagree* about, and here it is exactly two things,
+  // both structural: this one stands on the page's olive band, and its 390
+  // master hides the head outright.
+  //
+  // Duplicating rather than widening `if (s.v2)` is also what keeps v2
+  // byte-identical for the brace-depth walk. The chip itself is shared, as it
+  // has been since the layout-3 header: `TagChips` with the same two overrides.
+  //
+  // ── The olive band is the bio's, inherited whole ───────────────────────
+  // The layout-4 page paints y 900–1852 in `sem/bg` #5B5E2E and puts the bio
+  // card and this chip row in *one* Section frame (964:72512 · 964:76439 ·
+  // 971:14234). Our page cannot column them, so each paints the band itself —
+  // which only reads as one band if the two agree, so this takes the bio's
+  // pair and its insets unchanged: `calc(surplus + 46/30/10)` horizontally and
+  // 116/60/30 vertically, with no root flag touched and no `s.retro`
+  // decoration at all (a stddev scan of the band is flat 0 — no grain, no
+  // torn edge, no shadow).
+  //
+  // What that costs is the band's own foot. `971:14234` is 871 tall with the
+  // bio instance ending at 811, so the 390 band's bottom inset is **60**, not
+  // the 30 the bio session inferred — the one number LAYOUT-4-PLAN.md asked
+  // this session to read. It is declined at both sections rather than fixed at
+  // one: our page splits the band in two, either half can stand alone or be
+  // reordered, and a section whose sheet is 30 at the top and 60 at the foot
+  // reads as a mistake the moment it is not followed by the other half. The
+  // seam is already not the frame's (Figma gaps the two by 40 at 390 and 24 at
+  // 768, where two symmetric sheets give 60 and 120), so the foot is the
+  // smaller of the two diffs, and it is named rather than engineered away.
+  //
+  // ── Three things the frame does that need saying ───────────────────────
+  // The head is `sem/text/1`, the rust — which is `s.ac` on every palette and
+  // needs no literal. It stands at contrast 1.41 on the olive, which is the
+  // frame's own choice and not a transcription slip; Pop's hot pink on its
+  // violet band is 1.50, so the worst of the flat four is no worse than Retro
+  // itself, and the other three clear 3. (The conventions' "the accent is not
+  // guaranteed against a sheet", from the useful end for once.)
+  //
+  // Retro's fourth tag IS #5B5E2E, the band — so the "Archive" chip draws its
+  // box invisible and only its cream label shows, in the frame as well as
+  // here. `contrast()` gives `vm.chips[].fg` the same cream by construction.
+  // Lime's third-tag-is-the-page-ground convention, with the designer doing it
+  // on purpose.
+  //
+  // And the 457-wide instance wraps six chips to two rows where our 1052 holds
+  // them on one. The wrap is the *column's*, not the design's — the row is
+  // `flex-wrap w-full` at every width and the 390 master wraps at 370 too.
+  if (s.v3) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const T = desk ? { head: 16, chip: 20 } : tab ? { head: 15, chip: 14 } : { head: 15, chip: 12 }
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        // The bio's v3 spelling verbatim — change one, change both.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: s.retro ? '#5B5E2E' : s.mapBg,
+        color: s.retro ? '#FBF6EA' : s.mapFg,
+        padding: `${u(desk ? 116 : tab ? 60 : 30)} calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'})`,
+        ...col(u(16)),
+      }}>
+        {/* The 390 master hides the whole head frame (`;690:3460`,
+            `hidden="true"` and still carrying the desktop component's 1168 ×
+            48), and its `get_variable_defs` returns neither `sem/text/1` nor
+            `size/body-lg` — so the head is genuinely one width short of the
+            page here, the gallery's unhidden-node tell read the other way up.
+            `heading` therefore edits nothing at 390, which its hint now says. */}
+        {!s.mob && (
+          <span style={{
+            fontFamily: s.body, fontSize: u(T.head), lineHeight: 1.5, color: s.ac,
+          }}>{s.title}</span>
+        )}
+        <TagChips s={s} radius={u(8)} size={u(T.chip)} />
+      </div>
+    )
+  }
+
   return (
     <div style={row('14px', {
       borderTop: `1.5px solid ${s.line}`, borderBottom: `1.5px solid ${s.line}`,
