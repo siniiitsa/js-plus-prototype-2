@@ -37,10 +37,10 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 2630 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 3520 | Presentational renderer for all 14 section types |
-| `src/builder/data.js` | 635 | `THEMES`, all static data, colour helpers |
-| `src/builder/photos.js` | 100 | Retro's seeded Figma photography + the three resolvers |
+| `src/builder/EncoreBuilder.jsx` | 3920 | All state, all chrome, both stages, publish |
+| `src/builder/EncoreSection.jsx` | 13790 | Presentational renderer for all 14 section types |
+| `src/builder/data.js` | 1145 | `THEMES`, all static data, colour helpers |
+| `src/builder/photos.js` | 130 | Retro's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
 
@@ -695,11 +695,11 @@ mutated through a single `patch()` helper.
   layouts where the others get three flat ones.
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
   designs, and eight of the fourteen offer more — Audio layouts 1, 4 and 7 render identically on
-  purpose. The layout-4 pass is what stopped that being all thirteen non-header ones: `tags`,
-  `video`, `gallery` and `map` now offer four and render four, level with the header and the
-  footer. `video` folds by *hand* as well — its Figma pages supplied layouts 1, 2 and 4 and never
-  a 3, so `Video`'s `if (s.v0 || s.v2)` is the one fold in the file that is not `arch % NVAR`.
-  The 13 non-header
+  purpose. The other six are level: the header and the footer always were, and the layout-4 pass
+  took `tags`, `video`, `gallery` and `map` there by bumping their design counts to the four
+  rows they offer. `video` folds by *hand* as well — its Figma pages supplied layouts 1, 2 and 4
+  and never a 3, so `Video`'s `if (s.v0 || s.v2)` is the one fold in the file that is not
+  `arch % NVAR`. The 13 non-header
   categories are also the ones that stay *numbered*: only the header's layouts have names
   (`headerLayout()` in `data.js`), because it is the one a first-time user is asked to choose.
 - **Accessibility is scoped to the chrome.** The rendered preview is a picture of a website,
