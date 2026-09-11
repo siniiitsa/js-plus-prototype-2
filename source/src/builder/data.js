@@ -183,7 +183,7 @@ export const minimalNav = (navSections) =>
 // arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
   header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 3,
-  repertoire: 4, gallery: 4, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
+  repertoire: 4, gallery: 4, calendar: 3, map: 4, testimonials: 3, form: 3, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four

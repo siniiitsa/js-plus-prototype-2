@@ -10072,6 +10072,385 @@ function EventsMap({ s }) {
     )
   }
 
+  // v3 — Events Map layout 4 · Dashboard split (Figma 964:72830, 1440 × 747;
+  // 964:78599, 768 × 870; 977:8322, 390 × 680): the coverage map and a 2 × 2
+  // wall of stat cards inside one cream card, with the artist's gigs reduced to
+  // a single mustard ticker under it.
+  //
+  // **The section stands on the page ground and paints nothing.** The instance's
+  // own fill is `#EAD7B8` — the page beige — at all three widths, and so is its
+  // wrapper's (Frame 319) and the page's; a bleed that paints the page colour is
+  // a no-op, which is the enquiry form's layout-3 case rather than the gallery's
+  // sheet. There is no grain, no torn edge and no checkerboard either: a stddev
+  // scan of the page, of the card's cream and of the ticker all read 0. So the
+  // whole branch's `s.retro` surface is its colour literals.
+  //
+  // **The head is the page's, allocated to this section** (LAYOUT-4-PLAN.md's
+  // head table). "Distances we'll Travel" is `size/display-lg` 96 / 60 / 40 at
+  // leading .89 in `sem/text/1`, which is `tab ? s.h1 : s.dispLg` in `s.ac`
+  // exactly — the page's own display ramp for the fourth section running. Its
+  // stated 1019.18 measure is declined for the fourth time as well: it is the
+  // same leaked number the media player and the video section both refused, and
+  // our one-word `s.title` ("Manchester" on the seed) breaks nowhere near it.
+  // The head-to-card gap is the instance's own top padding — 56 / 30 / 10, plus
+  // the 20 the 390 wrapper puts between them — and the card-to-ticker gap is the
+  // instance's stated 16 at every width.
+  //
+  // **Desktop is a row of two halves; both narrow masters stack.** The card is
+  // two `flex-[1_0_0]` children at 664 + 664 of 1328, and one of them carries
+  // 32/28 of padding and a 1px left rule — which is the enquiry form's lesson
+  // verbatim (a zero flex-basis resolves against the *content* box), so the two
+  // halves are written as `minmax(0, 1fr)` grid columns and cannot be split
+  // unequally by the panel's own inset. 768 and 390 are a single column, 768
+  // with the card's own 32 between the two blocks and 390 with none.
+  //
+  // **Nothing in the composition has an intrinsic height, so the stat card is
+  // what states one.** The frame's heights are all residues of the instance's
+  // stated 747 / 870 / 680 — the card is `flex-[1_0_0]` of it, the grid
+  // `flex-[1_0_0]` of the panel, the cells `1fr` rows of the grid — and the one
+  // number worth transcribing is the cell's, because the cells are four fixed
+  // stats rather than a list and the mobile master proves the row *hugs*: its
+  // two rows are 100 and 120, the second grown by BASE's value wrapping to two
+  // lines. So each cell takes a `minHeight` of its master's own 227.5 / 140 /
+  // 100 and grows with what it holds, and the desktop sum checks out as
+  // transcription rather than invention: 23 + 9.8 + 16.4 + (2 × 186.6 + 9.8) +
+  // 23 = 455.2, which is the frame's 555 × 0.82 to the tenth. The map viewport
+  // then stretches to that at desktop, and at narrow — where it is `FILL` in a
+  // column and its 320 / 278 is the same kind of residue — it takes each
+  // master's own aspect, the events map's layout-2 rule for a derived viewport.
+  //
+  // **The four stats are two derivations and two fields, and two frame labels
+  // had to move.** *CITIES 21* is `vm.gigCityCount`, the distinct cities the
+  // layout-3 chip row is already built from; *GIGS YTD 48* is `s.gigs.length`
+  // with the YTD dropped, because "this year" is a claim about the clock
+  // (the booking calendar's rule) and "upcoming" is this section's own word for
+  // the same list in layout 1. The other two are fields, and both of their
+  // labels stutter with their own defaults — the events map's own
+  // drop-the-label-not-the-field rule, met twice more. They are resolved
+  // **differently on purpose**: *RADIUS* over `s.mapRadius` ("12 mile radius")
+  // becomes **COVERAGE**, which is the field's own name in `FIELDS.map.radius`
+  // and layout 1's eyebrow in this very section, so the label survives; *BASE*
+  // over `s.mapBase` ("Based in Manchester") has no such synonym, so the label
+  // goes and the card is the value alone. Do not "fix" one to match the other.
+  // `s.mapTerms` takes the COVERAGE card's sub, which is where the frame's own
+  // "miles · standard" and "further on request" both come from.
+  //
+  // **Four more things the frame draws are dropped**, all of them claims or
+  // controls with nothing behind them: *LIVE · LAST 12 MONTHS* beside the head
+  // label (the clock again — and `s.mapSub`, the one field with no seat in any
+  // fitted layout, was tried in that slot and refused, because its default "12
+  // dates · 8 cities · this season" does not merely repeat the two stat cards,
+  // it *contradicts* them on the seeded page); the *30mi / 60mi / 120mi* ring
+  // labels, distances the artist never typed that argue with the coverage badge
+  // — dropped exactly as layout 3 dropped them; the *+ / −* zoom controls, a
+  // control this file has nothing to do; and the ticker's *×*, a dismiss with
+  // no state to dismiss, whose seat takes the `›` that makes the frame's own `‹`
+  // a pair.
+  //
+  // **The ticker is this section's pager reduced to one gig**, which is the
+  // 390 master of layout 3 at every width: the same `page` state over a
+  // `perPage` of 1, so one page holds one gig and the one-pin-per-gig-on-a-page
+  // invariant holds trivially — the five dots on the map are `vm.pins`' own
+  // five seats and the gig on show lights the one `sectionVm` paired it with,
+  // by identity. The frame's own five dots are absolute pixels leaked to all
+  // three masters (450 and 380 in a 370-wide viewport at 390, where two of them
+  // are off the page), so taking the section's percentages fixes the frame's
+  // bug and keeps layout 1's vocabulary. The arrows **wrap** at both ends, the
+  // media player's rule — a clamped `‹` opens the published page on a dead
+  // control — and they are **not drawn at one gig**, the pager's rule, which is
+  // derived from the list and so holds on the canvas too. The whole ticker goes
+  // when there are no gigs: it is a block of its own, and a wordless block is
+  // not one of this design's states (the footer's rule). The frame's "Next:"
+  // prefix goes with it — on page 3 the gig on show is not the next one — and
+  // the dots carry no handler, because with five seats over any number of gigs
+  // a dot does not name one.
+  if (s.v3) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    // Every box in this design is the desktop component's own number at all
+    // three widths — the 30 card corner, the 10 cell corner, the 12 grid gap,
+    // the 20 head gap, the 8 cell gap, the 14 ticker gap, the 26/12 ticker
+    // inset, the 24 marker, the 8 dots, the 480/300/140 rings — so the whole
+    // branch flows through one scale. What genuinely differs is the page inset,
+    // the panel's own inset, the cell's minimum, the viewport's aspect and the
+    // type.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // Resolved by `get_variable_defs` on all three masters rather than measured.
+    // The numeral is the one token that changes *style* rather than size at 390:
+    // `size/display-sm` 40 → 32 at leading 1, then `size/title` 18 at leading
+    // 1.1, which is what makes the phone's cards a third the height of the
+    // tablet's. `body-sm` does not move at all; `body-lg` is the two arrows and
+    // `body-md` the ticker's first line.
+    const T = desk
+      ? { chip: 12, disp: 40, dispLh: 1, bodySm: 12, bodyMd: 14, bodyLg: 16 }
+      : tab
+        ? { chip: 11, disp: 32, dispLh: 1, bodySm: 12, bodyMd: 13, bodyLg: 15 }
+        : { chip: 11, disp: 18, dispLh: 1.1, bodySm: 12, bodyMd: 13, bodyLg: 15 }
+    // `border/thin` 2 and `border/hairline` 1 are the same at all three widths,
+    // so neither runs through `u()` — the pricing deck's rule.
+    const bw = '2px'
+    const hair = '1px'
+
+    // The card and the plate under the map. Retro keeps the frame's literals;
+    // the cream is `sem/box/1` #FAECD5, which is *not* Retro's `paper` (that IS
+    // the page ground), so the flat four take `s.paper` and the outline is what
+    // keeps a palette whose lightest colour is its background from drawing the
+    // card as a hole in the page — the booking calendar's lesson.
+    const cardBg = s.retro ? '#FAECD5' : s.paper
+    const cardInk = s.retro ? '#111111' : s.paperFg
+    const cardLine = s.retro ? '#111111' : s.paperLine
+    // Layout 3's plate pair, and the same #292A1C: a column scan of this map's
+    // own ground reads (41, 42, 28) to the byte.
+    const plate = s.retro ? '#292A1C' : s.mapBg
+    const plateFg = s.retro ? '#FBF6EA' : s.mapFg
+    const pinBg = s.retro ? '#5B5E2E' : s.deep
+    const tickBg = s.retro ? '#D8A227' : s.pillBg
+    const tickFg = s.retro ? '#111111' : s.pillFg
+    const tickLine = s.retro ? '#5B5E2E' : s.deep
+
+    // The four seats. Hue belongs to the seat and not to the stat — the media
+    // player's fan rule — so the wall keeps its composition whatever the
+    // numbers say. Retro's are the frame's four fills with its own two
+    // alternating outlines; the flat four take the page tokens that pair the
+    // same way round. Three costs, all named rather than engineered away. Seat
+    // 2's #FFFEFB is a white lighter than any palette's `paper`, so outside
+    // Retro its fill *is* the card's and only its outline draws it — which is
+    // the frame's own reading of that seat anyway, an almost-blank card whose
+    // 2px rule is the design. Seat 4's `pillBg` is the lightest *tag* where
+    // `paper` is the lightest colour outright, so on Lime and Grunge it
+    // collapses onto seat 2's fill — the conventions' thrice-named collapse —
+    // and the only thing kept back from it is the **outline**, which is `s.ac`
+    // there rather than seat 2's `deep`, so the two are never the identical
+    // box. And seat 4 sets its numeral in the accent where the rest of its card
+    // is cream; `s.ac` on an arbitrary `pillBg` is the pairing the conventions
+    // warn about twice, so outside Retro that two-tone flattens to one ink.
+    const seats = s.retro
+      ? [{ bg: '#DF5B30', line: '#D8A227', fg: '#FBF6EA', hot: '#FBF6EA' },
+         { bg: '#FFFEFB', line: '#5B5E2E', fg: '#111111', hot: '#111111' },
+         { bg: '#6D7040', line: '#D8A227', fg: '#FBF6EA', hot: '#FBF6EA' },
+         { bg: '#E8B33B', line: '#5B5E2E', fg: '#FBF6EA', hot: '#C8461C' }]
+      : [{ bg: s.ac, line: s.pillBg, fg: s.acFg, hot: s.acFg },
+         { bg: s.paper, line: s.deep, fg: s.paperFg, hot: s.paperFg },
+         { bg: s.deep, line: s.pillBg, fg: s.deepFg, hot: s.deepFg },
+         { bg: s.pillBg, line: s.ac, fg: s.pillFg, hot: s.pillFg }];
+
+    // Body/Chip and Body/SM. The tracking is stated as a percentage and ramps
+    // with its own token, so it is the product rather than a frozen -0.72.
+    const chip12 = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      letterSpacing: u(-0.06 * T.chip), textTransform: 'uppercase', whiteSpace: 'nowrap',
+    }
+    const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
+
+    // The ticker's page. `perPage` is 1, so the page index *is* the gig index,
+    // and the modulo on the read is what wraps the arrows in both directions —
+    // it also survives the artist deleting gigs under an open published tab,
+    // which is the clamp every other layout here writes out.
+    const nGigs = s.gigs.length
+    const pg = s.live && nGigs ? ((page % nGigs) + nGigs) % nGigs : 0
+    const gig = s.gigs[pg]
+    const step = (dir) => (s.live && nGigs > 1 ? () => setPage((v) => v + dir) : undefined)
+
+    // RADIUS / CITIES / GIGS YTD / BASE, re-seated. See the branch header for
+    // why two labels survive and two do not, and why the label that survives is
+    // the field's own name rather than the frame's.
+    const stats = [
+      { label: 'Coverage', value: s.mapRadius, sub: s.mapTerms },
+      { label: 'Cities', value: String(s.gigCityCount), sub: 'playing in' },
+      { label: 'Gigs', value: String(nGigs), sub: 'upcoming' },
+      { label: '', value: s.mapBase, sub: '' },
+    ]
+
+    const viewport = (
+      <div style={{
+        position: 'relative', background: plate, minWidth: 0,
+        // The frame clips the viewport itself and not the card around it: a
+        // 480px ring in a 320-tall band would otherwise draw straight over the
+        // stat wall below it, which is layout 3's own lesson one level out.
+        overflow: 'hidden',
+        // Desktop stretches to the stat wall's height as a grid item; both
+        // narrow masters state a height that is itself a residue of the
+        // instance's, so the aspect is how it travels to a canvas 20 and 24
+        // narrower than the frame.
+        ...(desk ? null : { aspectRatio: tab ? '708 / 320' : '370 / 278' }),
+      }}>
+        {/* §10.2's street raster, inverted onto the dark plate so the roads read
+            as light lines — layout 3's treatment transcribed, and it lands on
+            this frame's own road value: 0.26 of a screened invert over #292A1C
+            computes to (84, 85) against the master's measured (91, 94). The
+            flat four keep layout 1's crossed grid, there being no raster
+            outside Retro. */}
+        <span aria-hidden style={{
+          position: 'absolute', inset: 0,
+          ...(s.mapSrc
+            ? {
+              backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover',
+              backgroundPosition: 'center', filter: 'invert(1) grayscale(1) contrast(1.6)',
+              opacity: 0.26, mixBlendMode: 'screen',
+            }
+            : {
+              backgroundImage:
+                `linear-gradient(${s.ac55} 1px, transparent 1px), `
+                + `linear-gradient(90deg, ${s.ac55} 1px, transparent 1px)`,
+              backgroundSize: '38px 38px',
+            }),
+        }} />
+        {/* The three coverage rings, 480 / 300 / 140 at every width and centred
+            on the viewport, so what changes is only how much of it they cover —
+            written as the share of each master's own width, which carries them
+            onto a canvas the frame's width is not. All three overrun the 390
+            viewport, where the clip is the picture. The outer one is the
+            frame's own 30% and the inner two are full strength. */}
+        {(desk ? [72.3, 45.2, 21.1] : tab ? [67.8, 42.4, 19.8] : [129.7, 81.1, 37.8]).map((w, i) => (
+          <span key={w} aria-hidden style={{
+            position: 'absolute', left: '50%', top: '50%', width: `${w}%`,
+            aspectRatio: '1', borderRadius: '999px', border: `1px solid ${plateFg}`,
+            opacity: i === 0 ? 0.3 : 1, transform: 'translate(-50%, -50%)',
+          }} />
+        ))}
+        {/* The five pin seats. They are `vm.pins` rather than the frame's own
+            five ellipses, which carry identical absolute pixels to all three
+            masters and put two of themselves off a 370-wide viewport. The gig
+            the ticker is on lights the seat `sectionVm` paired it with — an
+            identity test, because `vm.gigs[].pin` and `vm.pins` are the same
+            five objects — and with one gig to a page the section's
+            never-light-a-dot-twice rule holds by construction. No handler: five
+            seats over any number of gigs means a dot does not name one. */}
+        {s.pins.map((p, i) => {
+          const on = !!gig && gig.pin === p
+          return (
+            <span key={i} aria-hidden style={{
+              position: 'absolute', left: p.x, top: p.y,
+              width: on ? u(14) : u(8), height: on ? u(14) : u(8),
+              borderRadius: '999px', background: on ? s.ac : plateFg, opacity: on ? 1 : 0.6,
+              border: on ? `2px solid ${plateFg}` : undefined, boxSizing: 'content-box',
+              transform: 'translate(-50%, -50%)',
+            }} />
+          )
+        })}
+        {/* The artist's own position, which is what the rings are drawn around:
+            a 24px ringed head over an 8px tail, its column centred 12 above the
+            rings' own centre exactly as the master offsets it. The disc's 4
+            padding contains its 2px ring, Figma stroking inside the box it
+            states. */}
+        <span aria-hidden style={col(0, {
+          position: 'absolute', left: '50%', top: `calc(50% - ${u(12)})`,
+          alignItems: 'center', transform: 'translate(-50%, -50%)',
+        })}>
+          <span style={row(0, {
+            background: pinBg, color: plateFg, border: `2px solid ${plateFg}`,
+            borderRadius: '999px', padding: `calc(${u(4)} - 2px)`,
+          })}>
+            <User size={Math.round(16 * z)} />
+          </span>
+          <span style={{
+            width: 0, height: 0, borderLeft: `${u(5)} solid transparent`,
+            borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${plateFg}`,
+          }} />
+        </span>
+      </div>
+    )
+
+    const panel = (
+      <div style={col(u(20), {
+        minWidth: 0, alignItems: 'flex-start',
+        padding: `${u(s.mob ? 20 : 28)} ${u(s.mob ? 20 : 32)}`,
+        // The divider is the panel's own left rule and is drawn at desktop
+        // alone: both narrow masters run the map straight into the cream with
+        // no line at all, which a column scan of each render settles in one
+        // pass. Its width comes out of the padding beside it, Figma stroking
+        // inside the inset it states.
+        ...(desk ? {
+          borderLeft: `${hair} solid ${cardLine}`,
+          paddingLeft: `calc(${u(32)} - ${hair})`,
+        } : null),
+      })}>
+        {/* The frame's head row is this label, a `flex-[1_0_0]` spacer with no
+            fill — a `space-between`, not a rule (the media player's check) —
+            and "LIVE · LAST 12 MONTHS" on the right, which is dropped. With one
+            child left there is nothing to space. */}
+        <span style={chip12}>Travel &amp; reach</span>
+        <div style={{
+          display: 'grid', width: '100%', gap: u(12),
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+        }}>
+          {stats.map((st, i) => (
+            <div key={i} style={col(u(8), {
+              background: seats[i].bg, color: seats[i].fg,
+              border: `${bw} solid ${seats[i].line}`, borderRadius: u(10),
+              padding: `calc(${u(18)} - ${bw}) calc(${u(20)} - ${bw})`,
+              // The frame's own `justify-end`: the block sits on the card's
+              // floor and the air collects above it, which is what makes a
+              // two-line card and a three-line one read as one wall.
+              justifyContent: 'flex-end', alignItems: 'flex-start', minWidth: 0,
+              minHeight: u(desk ? 227.5 : tab ? 140 : 100),
+            })}>
+              {!!st.label && <span style={chip12}>{st.label}</span>}
+              {!!st.value && (
+                <span style={{
+                  fontFamily: s.display, fontSize: u(T.disp), lineHeight: T.dispLh,
+                  letterSpacing: s.dls, color: seats[i].hot, overflowWrap: 'anywhere',
+                }}>{st.value}</span>
+              )}
+              {!!st.sub && <span style={body12}>{st.sub}</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+
+    const arrow = {
+      fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, flex: 'none',
+      userSelect: 'none', cursor: s.live && nGigs > 1 ? 'pointer' : undefined,
+    }
+    const gigLink = gig ? extLink(s, gig.url) : null
+    const GigTag = gigLink ? 'a' : 'div'
+    const clipLine = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+
+    return (
+      <div style={col(desk ? u(56) : '30px')}>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg,
+          lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+
+        <div style={col(u(16))}>
+          <div style={{
+            background: cardBg, color: cardInk, border: `${hair} solid ${cardLine}`,
+            borderRadius: u(30), overflow: 'hidden', display: 'grid', alignItems: 'stretch',
+            gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+            // 32 between the two blocks at 768 and nothing at 1440 or 390 —
+            // the masters' own numbers, and the only one of the three that is
+            // not zero.
+            rowGap: tab ? '32px' : 0,
+          }}>
+            {viewport}{panel}
+          </div>
+
+          {!!gig && (
+            <div style={row(u(14), {
+              background: tickBg, color: tickFg, border: `${bw} solid ${tickLine}`,
+              borderRadius: u(30), overflow: 'hidden',
+              padding: `calc(${u(12)} - ${bw}) calc(${u(26)} - ${bw})`,
+            })}>
+              {nGigs > 1 && <span onClick={step(-1)} style={arrow}>‹</span>}
+              <GigTag {...gigLink} style={col(u(2), {
+                flex: '1 1 0', minWidth: 0, textDecoration: 'none', color: 'inherit',
+              })}>
+                <span style={{
+                  fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, ...clipLine,
+                }}>{gig.venue}</span>
+                {!!gig.meta && <span style={{ ...body12, ...clipLine }}>{gig.meta}</span>}
+              </GigTag>
+              {nGigs > 1 && <span onClick={step(1)} style={arrow}>›</span>}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{
       background: s.soft, aspectRatio: '16 / 7', borderRadius: s.radius, position: 'relative',

@@ -789,6 +789,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       month: g?.month ?? '', day: g?.day ?? '',
       url: extUrl(g?.link ?? ''),
       pin: PINS[i % PINS.length],
+      // Layout 4's ticker prints the gig on one line — "Manchester · Jul 12 ·
+      // 22:00", the frame's own second line — and every one of those three is
+      // emptiable, so it is composed here rather than joined in the section:
+      // the testimonials' `byline` rule, or an artist who leaves the time off
+      // (which `LIST.map` does every fourth row) would publish a trailing
+      // separator. The month and day stay as they were typed, like the venue
+      // and the city above them; the frame's own "JUL 12" is its styling.
+      meta: [String(g?.city ?? '').trim(),
+             `${g?.month ?? ''} ${g?.day ?? ''}`.trim(),
+             String(g?.time ?? '').trim()].filter(Boolean).join(' · '),
       // What layout 3's chip row matches a row against. Case-folded here rather
       // than in EncoreSection, and beside the label it was folded from, so a
       // theme that upper-cases the chip cannot stop it matching its own gigs —
@@ -822,6 +832,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     ? [{ label: cased(REP_ALL), city: null, n: vm.gigs.length },
        ...[...gigCities.values()].map((ch) => ({ ...ch, label: cased(ch.label) }))]
     : []
+  // Layout 4's CITIES stat: the same distinct cities the chip row above is
+  // built from, counted rather than listed, and read straight off the map that
+  // already deduped them case-insensitively. It is here and not in the section
+  // because a Set is maths — `s.gigs.length` beside it is not, which is why
+  // only one of the dashboard's two derived numerals needed a key. Unlike
+  // `gigChips` it is *not* suppressed below two cities: a stat that reads "1 /
+  // CITIES" is a fact, where a filter row of All plus one chip is a
+  // distinction that distinguishes nothing.
+  vm.gigCityCount = gigCities.size
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
