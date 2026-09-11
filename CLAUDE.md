@@ -37,10 +37,10 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 2630 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 3520 | Presentational renderer for all 14 section types |
-| `src/builder/data.js` | 635 | `THEMES`, all static data, colour helpers |
-| `src/builder/photos.js` | 100 | Retro's seeded Figma photography + the three resolvers |
+| `src/builder/EncoreBuilder.jsx` | 3920 | All state, all chrome, both stages, publish |
+| `src/builder/EncoreSection.jsx` | 13790 | Presentational renderer for all 14 section types |
+| `src/builder/data.js` | 1145 | `THEMES`, all static data, colour helpers |
+| `src/builder/photos.js` | 130 | Retro's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
 
@@ -83,10 +83,11 @@ mutated through a single `patch()` helper.
   choice is then asked for by the **setup modal** — a `Dialog` over the finished page rendering
   `HeaderChoices` — see README "Choosing a header". Its cards commit on click, not on hover;
   there is no preview state. **A card lays out the whole page, not only the header**: the layout
-  indices are aligned across categories by construction (layouts 1, 2 and 3 of every section are
-  one Figma page each), so `pickHeader` writes `arch` to *every* section, folded through
-  `pageLayout()` in `data.js` — `i % designCount(cat)`, which is the lowest `arch` rendering the
-  design asked for and is therefore always a row the layout picker can highlight. That is the
+  indices are aligned across categories by construction (layouts 1, 2, 3 and 4 of every section
+  are one Figma page each), so `pickHeader` writes `arch` to *every* section, folded through
+  `pageLayout()` in `data.js` — `i % designCount(cat)`, which is always a row the layout picker
+  can highlight, and is the lowest `arch` rendering the design asked for everywhere except
+  `video`, whose component folds `v2` onto `v0` by hand (see *Layout folding*). That is the
   setup modal alone: the sidebar's `LayoutPicker` still moves the one section it is opened on, and
   must keep doing so, or a later header swap would silently undo everything the user had tuned.
   The bulk write is only safe because the modal is a one-shot gate over a page nobody has touched
@@ -112,11 +113,17 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **fourteen things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **fifteen things read it**: `Repertoire` — its search field, its filter chips and
   its pager, and in layout 3 the set cards' *View full set* reveal, which is the one control
   in the file that is a **reveal rather than a toggle**: the frame draws four song rows and a
-  link, so the link is what reaches the fifth song and there is no way back — the **header's
-  navigation**, the **media player** (below), the **gallery's arrows
+  link, so the link is what reaches the fifth song and there is no way back, and in layout 4
+  the **A–Z index rail**, which is the one control in the file that **scrolls from inside
+  `EncoreSection`** — a `scrollIntoView` off a callback ref, on a letter some song actually
+  starts with, where the header's nav needs the published tab's own delegated listener — the
+  **header's
+  navigation**, the **bio's own Listen** (layout 4 alone, in the overlay card's meta row: the
+  header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section),
+  the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager, its pin/row pairing and — in
   layout 3 alone — its city chip row** (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
@@ -125,8 +132,8 @@ mutated through a single `patch()` helper.
   the **booking calendar's month arrows, its day picking and its foot pill** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
   the **testimonials carousel's arrows** (below — layout 2 pages the same `cur` from a rail of
-  initial tiles instead, and layout 3 reads it **not at all**: it is a wall of every review,
-  so there is nothing to page),
+  initial tiles instead, layout 4 pages it from a pair of arrow discs in its head, and layout 3
+  reads it **not at all**: it is a wall of every review, so there is nothing to page),
   the **footer's link columns and its Book pill** (below),
   and the four sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
@@ -157,8 +164,8 @@ mutated through a single `patch()` helper.
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
   **Layout 2 plays through the same hooks**, and draws the one list twice: the fan and the
   numbered list beside it are both the whole of `s.tracks`, and **layout 3 is that numbered
-  list on its own**, so `list` is `s.v0 || s.v1 || s.v2 ? s.tracks : s.tracks3` — the flat
-  design still shows three and Next must not leave the page.
+  list on its own**, so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — the
+  flat design still shows three and Next must not leave the page.
   Its fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
@@ -167,6 +174,15 @@ mutated through a single `patch()` helper.
   the canvas the seats are unrotated (the Figma frame's picture) and the bar takes the **centre
   seat's** title and artwork rather than the shared now-playing block's, which names the cued
   first track — live the two are the same track by construction.
+  **Layout 4 plays through the same hooks as well**: the sleeve is the track the player is on,
+  and the grid beside it is one photographic tile per track with the tile at `at` carrying the
+  same rust mark the sleeve's own border is. That mark is a **seat**, the fan's rule rather than
+  `chosen`'s — `at` is 0 until the visitor picks, so the canvas draws the frame's own marked
+  first tile by construction — and on the tile it is an **inset ring on the scrim**, not a
+  border: `inset: 0` resolves against the padding box, so a border (even a transparent one on
+  the unmarked tiles) would inset every photograph and widen the frame's own gutter. It is also
+  the one layout whose section paints the page's whole cream band, checkerboard strip at each
+  end, and the only one to draw those strips — the video section must not add one at its head.
 - **The gallery browses, in the published tab only, and its three social rows leave the page.**
   Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" rewinds, and the
   tile counter and viewer follow. `pick` starts at **-1** for the same reason `cur` does: nothing
@@ -192,7 +208,16 @@ mutated through a single `patch()` helper.
   window are that layout's and not the section's. Its seven slots **rotate through seven fixed
   seats**, the media player's fan rule, so the hero seat always holds the slot the visitor is on;
   the three social addresses reach layout 1 only, which is `FIELDS.media.soundcloud`'s case three
-  times over and is why their hints name a layout.
+  times over and is why their hints name a layout. **Layout 4 browses through the same `pick` for
+  the third time** — a spotlight photograph beside a rail of all seven thumbnails, with two arrow
+  discs under it that step and wrap on layout 1's own `go`. It carries **no active mark**: its
+  Figma frame rings all six of its thumbnails identically, and what names the chosen slot is the
+  spotlight, which on the canvas is `galActive()`'s slot 3 — the frame's own fourth thumbnail. Its
+  **390 master runs its strip off its own page** (six fixed 121px tiles in a 370 frame, so three
+  and a sliver show and the one its spotlight is on does not), so there the three visible tiles are
+  a **sliding window** on layout 1's formula, `from = clamp(active - 2, 0, 4)` — not live-gated, so
+  the canvas and the published first paint agree on slots 1–3. It draws no source rows either: the
+  Figma wrapper carries layout 1's four as a `hidden` frame.
 - **The events map pages and pairs, in the published tab only.** Layout 1's gig list is the
   artist's (`FIELDS.map.gigs`, above), so nothing about it can stay a fixed five. The pager is
   **derived** from the list the way the repertoire's is, `PAGES` is gone, and it is **not
@@ -233,10 +258,25 @@ mutated through a single `patch()` helper.
   is named rather than fixed. `perPage` is `gigPage` at both wide widths and **1** at 390, where
   the master draws one row over a two-arrow pager. A gig's `link` reaches all three: layout 1's
   whole row, layout 2's ↗ and Venue Link pill, layout 3's Tickets → column — and layout 3 drops
-  the frame's second `↗` beside the venue, the same address marked twice. The flat map layout
-  keeps raw `vm.pins`: it has no list to pair with, and twelve gigs would stack twelve dots on
-  five spots.
-- **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
+  the frame's second `↗` beside the venue, the same address marked twice. **Layout 4 is the
+  pager alone**: its whole gig list is one mustard ticker at a `perPage` of **1**, so `page` is
+  the only state it reads — `sel` reaches nothing there, the way the testimonials' `cur` reaches
+  nothing in their wall — and the arrows **wrap** at both ends rather than clamping, the media
+  player's rule. It is also the one layout that draws raw `vm.pins` *and* has a list to pair
+  with: all five seats are on the map and the gig on show lights the one it was paired with, by
+  identity (`vm.gigs[].pin` and `vm.pins` are the same five objects), so one gig to a page means
+  the one-pin-per-gig rule holds by construction and the filter's edge above cannot arise. The
+  dots carry no handler — five seats over any number of gigs means a dot does not name one — the
+  ticker's own text block is the gig's `link` where it has one (layout 1's empty-link rule
+  again), and the ticker is **not drawn at one gig** and gone at none. Its section stands on the
+  page ground, so the root's `darkMap` flag stays layout 1's. The flat map layout
+  keeps raw `vm.pins` with nothing lit: it has no list to pair with, and twelve gigs would stack
+  twelve dots on five spots.
+- **The header's nav scrolls, and the scroll lives outside `EncoreSection` — because it is an
+  `href`.** The repertoire's layout-4 A–Z rail scrolls from *inside* the file, and the two do not
+  contradict: the nav's target is a fragment, which cannot be followed in the popup, so it needs
+  the delegated listener below; the rail holds the node itself on a callback ref and calls
+  `scrollIntoView` on it, which needs nothing outside. `sectionVm` gives
   every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
   id), the section root applies it as `id` **only when `s.live`** — the editor document renders a
   dozen header previews and they would all claim `id="header"` — and one delegated `click`
@@ -295,6 +335,21 @@ mutated through a single `patch()` helper.
   from the frame's own index to the first hue that clears `tierHues`' 0.22 against `bg`, Grunge's
   `T.tags[3]` being its black background exactly. Its selector is the one thing in that branch
   not standing on the page ground, so its outline and idle labels take `paperFg` and not `tx`.
+  **Layout 4 filters nothing at all**: it is a stack of service rows on the page ground, the one
+  pricing design with no chip row, no state and no control but the Book pill, so `chip` is
+  untouched there. One row per package, divided by a 4px rule in **`vm.tierRow.card`** — layout
+  3's own seat, reused because a rule has that outline's job of reading against the page — and
+  that rule is the one thing in the branch that **bleeds**: the row cancels the root's padding and
+  puts the identical value straight back, so the border reaches the page edges and the content
+  keeps the column (the events map's reading of a 1440-wide instance that paints no sheet). It is
+  the first pricing layout to draw **no heading at all**, so `heading` reaches layouts 1, 2 and 3
+  alone; and the only one to read a package's **tags and its features together** — the tags as the
+  frame's small hairline chips, cased in `sectionVm` as `vm.tiers[].tagLabels` because `t.tags`
+  stays raw for the filter matching, and the features as its coloured ones, one per feature over
+  **`vm.tierFeatSeats`** (`vm.chips`' construction, a seat per index rather than a hue per
+  feature). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
+  — the unit with its leading slash dropped — stands above the numeral where the frame writes
+  SET / PROJECT, which is one section-wide word against the frame's different one per row.
 - **The booking calendar navigates and picks, in the published tab only.** It was the last §10.2
   section that was entirely a picture — arrows and day cells with a pointer cursor and no handler
   in either mode, over three constants and a sentence. The whole section is built from **one
@@ -336,6 +391,24 @@ mutated through a single `patch()` helper.
   a link column. `heading`, which headed the flat layout alone, heads it; `image` does not
   reach it at all. And the slot list is the one list-shaped content with **no** editor beside
   the video section's, so `FIELDS.calendar` still names no `slots`.
+  **Layout 4 is that same slot list a second time, stacked rather than tabled**, and it is the
+  third design to share this section's seam whole rather than grow one: the same `want` /
+  `hit` / `cur`, the same `open` cueing the same slot, the same `booked` killing a row, and
+  `mi` reaching nothing again. What it adds is a **featured** card — the events map's layout-2
+  rule, so the rows are the list *minus* the slot on show and `sel` is therefore **picked, not
+  toggled**, a featured card always holding one. That card is the composed enquiry line taken
+  apart into a 2×2 of the slot's date, its `kind`, its `price` and the section's `time` (a new
+  `vm.calTime`, since this design draws no line at all), over the artist's name, `location`
+  and `image` — which gives `image` a **second** seat, the polaroid stack having been its only
+  one. A blocked cue features nothing and the card prints `calPrompt` instead, which is also
+  the emptied-list state. Its foot is `BookPill` at layout 3's own numbers, but labelled
+  `calCta`, so `cta` is a field again where layout 3 spends the pill on the line; and it is
+  the one calendar layout that paints a **sheet** — the Figma wrapper's tan panel, which
+  carries the page's own "Book Us" head and would otherwise leave that head on a ground no
+  master draws. Its card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
+  token, and `deep` is the page ground on two palettes and collides with the panel on the same
+  two. The cost, named: on Lime and Grunge `tx` and `paper` are one value, so the card and the
+  rows share a fill and only the rows' hairline parts them.
 - **The enquiry form fills in and sends, in the published tab only.** It was the last §10.2
   section whose every control was a picture, and the one the whole page points at:
   `CTA_TARGETS.book` starts at `form`, so the header's Book Now, the pricing pills and the
@@ -406,6 +479,27 @@ mutated through a single `patch()` helper.
   block beside it; and the card's stated `sticky` is dropped rather than written inert,
   since the frame's own `items-center` gives it nowhere to travel where layout 2's
   `alignSelf: stretch` made it real.
+  **Layout 4 is the editorial band, and it shares the seam whole for the third time** —
+  the same `vals`, `errs`, `sent`, `<a href="mailto:">` and *Write another*, so its whole
+  live surface is four handlers and the only line outside the branch is one comment. It
+  is a display head over a 4px mustard rule, the artist's name in small caps under it,
+  and then two columns: the boxes over a mustard submit pill, and the promises numbered
+  01 / 02 / 03 beside them. Three things it does that no other layout here does. It draws
+  a **label above a box *and* a placeholder inside it**, which is layout 1's pair and
+  brings both `message` and the rows' `placeholder` column back after two layouts that
+  spend their one slot on the label; a **trailing odd field runs the full measure** where
+  layout 1 trails a half-width cell, the frame's own fifth box at all three widths
+  (`vm.formRows` is unchanged — the pairing is the vm's and what a row of one does is the
+  branch's); and it **reorders its two columns**, the form leading at 1440 and the
+  promises leading at 768 and 390. Its promises are `vm.formSteps`, the same list layout
+  3 runs together as one line, numbered in `sectionVm` because this file pads nothing —
+  and with none, the column is not drawn at all and the form takes the measure (the
+  footer's empty-second-column rule). It draws no chip row, so `showTypes` stays
+  `!!s.v0` and the mailto sends the bare `Enquiry` for the third time; `image`, `photo`
+  and `para` reach none of it. Its boxes' outline and its step rules are **`vm.formRule`,
+  which is `vm.tierRow.card`** — the pricing stack's own guarded walk, aliased in the
+  form block rather than read across sections, because an outline standing on the page
+  ground is exactly what that walk was written for.
 - **The testimonials carousel pages, in the published tab only, and the reviews are the
   artist's.** It was the last §10.2 section that was a picture on *both* sides: its two arrows
   carried a pointer cursor and no handler, and layout 1 drew `QUOTES[0]` and nothing else, so
@@ -463,8 +557,21 @@ mutated through a single `patch()` helper.
   the sentence under it is `sub`, the line above the disc stack is `s.brand`, and the stack is
   one `vm.quotes[].mark` per **named** review, so it never invents a face for a card the wall
   itself shows unattributed. The `★★★★★` and the `®` go with the rating. `when` and `cta` have
-  no seat there, which is the only content this section's three layouts do not between them
-  read.
+  no seat there, which is the only content this section's first three layouts do not between
+  them read. **Layout 4 is a wall that pages**: a display head with a pair of arrow discs at
+  its right over *one row* of cards — four at 1440, three at 768, one and a peek at 390 — so it
+  is the third design to share `cur` whole rather than grow a seam, reading it as the review
+  **leading the row** where layouts 1 and 2 read it as the single card on show. The row is one
+  card per review as everywhere else, so the frame's four cells against three seeded reviews
+  are its filler; the arrows are derived from the list and **not drawn at one page**, which
+  means the seeded 1440 and 768 renders carry no arrows where the frame draws them (the events
+  map's intended diff). The hue is the **seat's** and not the review's, the media player's fan
+  rule, and its cost is that the rust card is seat four: unreachable at 768 and 390 at any
+  count, and needing four reviews at 1440. It is the section's second full-bleed sheet and its
+  first mustard one — `s.pillBg` with a `pillFg` head, the enquiry form's layout-2 pair on the
+  identical ground — so the root's `cream` flag stays layout 1's for the fourth time. `when`,
+  `sub` and `cta` reach none of it, which leaves `when` a layouts-1-and-2 column and `cta`
+  layout 2 alone.
 - **The footer is the artist's sitemap, and the published one navigates.** It was the last
   §10.2 section that was a picture on *both* sides, and the only one whose links were dead by
   the **header's own rule**: `linkCol` drew `<a href="#">`, which the published tab's delegated
@@ -551,7 +658,8 @@ mutated through a single `patch()` helper.
   load-bearing the way `FIELDS.form.fields`' is: `sectionVm` halves the list into the two
   columns. Every other repeated field is a
   delimited textarea (`FIELDS.audio.tracks`,
-  `FIELDS.tags.tags`). All seven follow
+  `FIELDS.tags.tags`, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
+  numbers 01 / 02 / 03). All seven follow
   `images`, not
   `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS`, an emptied array
   means none, and there is no
@@ -585,8 +693,13 @@ mutated through a single `patch()` helper.
 - **Only Retro is designed.** Lime, Grunge, Editorial and Pop are fully functional but render
   flat. Retro's decorative language is gated on `s.retro`; it also gets six photographic header
   layouts where the others get three flat ones.
-- **Layout folding.** For the 13 non-header categories, more layout numbers are offered than
-  there are distinct designs — Audio layouts 1, 4 and 7 render identically on purpose. Those
+- **Layout folding.** Every category offers at least as many layout numbers as it has distinct
+  designs, and eight of the fourteen offer more — Audio layouts 1, 4 and 7 render identically on
+  purpose. The other six are level: the header and the footer always were, and the layout-4 pass
+  took `tags`, `video`, `gallery` and `map` there by bumping their design counts to the four
+  rows they offer. `video` folds by *hand* as well — its Figma pages supplied layouts 1, 2 and 4
+  and never a 3, so `Video`'s `if (s.v0 || s.v2)` is the one fold in the file that is not
+  `arch % NVAR`. The 13 non-header
   categories are also the ones that stay *numbered*: only the header's layouts have names
   (`headerLayout()` in `data.js`), because it is the one a first-time user is asked to choose.
 - **Accessibility is scoped to the chrome.** The rendered preview is a picture of a website,

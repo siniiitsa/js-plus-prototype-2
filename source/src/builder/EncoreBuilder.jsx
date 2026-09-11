@@ -206,15 +206,18 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
-    // become real. Fourteen things read it: Repertoire's search, chips and
-    // pager; the header's navigation — its links, its Book Now and Listen, and
-    // the burger menu the narrow frames collapse to; the media player's
+    // become real. Fifteen things read it: Repertoire's search, chips and
+    // pager, and in layout 4 the A–Z rail that jumps the page to a letter's
+    // group; the header's navigation — its links, its Book Now and Listen, and
+    // the burger menu the narrow frames collapse to; the bio's own Listen,
+    // which its layout 4 sets in the overlay card's meta row; the media player's
     // transport; the gallery's strip and arrows; the events map's pager and
     // pin/row pairing; the pricing cards' filter chips and their Book pill; the
     // booking calendar's month arrows, its day picking and its foot pill; the
     // enquiry form's boxes, its event-type chips and its submit; the
-    // testimonials carousel's arrows and layout 2's rail of tiles, which page
-    // the same review; the footer's link columns and its Book
+    // testimonials carousel's arrows, layout 2's rail of tiles and layout 4's
+    // pair of arrow discs, which all page the same review; the footer's link
+    // columns and its Book
     // pill; and the four sets of outbound links (Soundcloud, the gallery's
     // socials, the gigs' tickets, the footer's web-address rows).
     live: !!live,
@@ -422,6 +425,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
   vm.pricingSubFg = rgba(tx, 0.46)
   vm.tierUnit = cv('unit', PRICE_UNIT)
+  // §10.2 layout 4 is the one design that prints no unit *after* its price: its
+  // frame heads the price column with the kind of thing being sold instead
+  // (SET / PROJECT), which is what the unit already names. So the same field is
+  // read there, with its leading slash dropped — "/EVENT" over a numeral is a
+  // suffix that has lost its number — and the label face upper-cases the rest.
+  // One value for the whole section where the frame types a different word per
+  // row; the field's hint says so.
+  vm.tierKind = String(vm.tierUnit).replace(/^\s*\/\s*/, '')
   // §10.2 layout 3 stands a line under the title, where layout 1 heads the chip
   // row with the title alone and layout 2 puts its kicker above it. Layout 3
   // only, so an emptied field drops the line — the Soundcloud rule.
@@ -469,6 +480,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
     // orange under Retro — the reference order — and stays in-palette elsewhere.
     const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
+    const tags = songTags(t?.tags)
     return {
       // `n` is the row's place in the WHOLE list, not on the filtered page. The
       // cards animate their background, so the renderer keys on it: a positional
@@ -480,10 +492,26 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       feats: tierFeats(t?.feats),
       // Raw casing, deliberately — the repertoire's rule: a lower-case theme
       // must not stop a chip from matching the tag it was derived from.
-      tags: songTags(t?.tags),
+      tags,
+      // The same tags, cased for printing. §10.2 layout 4 is the one design
+      // that prints them *on* the package rather than deriving a filter row
+      // from them, and `vm.tierChips` — the only other place they are ever
+      // shown — is cased too. Composed here, since the renderer does no casing.
+      tagLabels: tags.map(cased),
       ...tierHues(card),
     }
   })
+  // §10.2 layout 4 draws a package's features as a wrapped row of coloured
+  // chips rather than a ticked list, walking the palette's tags the way the
+  // tags row's own chips do — `vm.chips`' construction exactly, except that a
+  // seat is indexed by the feature's position rather than built per feature:
+  // the hue belongs to the seat (the media player's fan rule), so editing one
+  // line cannot reshuffle a package's colours. Retro's first four are the
+  // frame's own four, in its own order. Two known collapses, both TagChips'
+  // and neither worth fixing: Retro's gold takes the dark ink where the frame
+  // sets cream, and on Lime, Grunge and Pop one tag IS the page ground, so a
+  // chip in that seat draws its box invisible and only its label shows.
+  vm.tierFeatSeats = T.tags.map((h) => ({ bg: h, fg: contrast(h) }))
   // §10.2 layout 2's single big plan. Its card is a fixed composition, not the
   // selected package's: the hue belongs to the seat, the media player's fan
   // rule, or the one card would recolour on every toggle — and it opens on
@@ -596,6 +624,32 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.repSets = reached.size >= vm.songs.length
     ? tagSets
     : [...tagSets, repSet(REP_ALL, vm.songs, tagSets.length)]
+  // §10.2 layout 4 reads the same songs as an *index* rather than as a filter or
+  // a grouping: one group per distinct first letter of a title, the songs sorted
+  // inside it and the groups in the order those sorted songs first appear — so
+  // the section looks a list up rather than sorting one, the calendar's
+  // one-composed-line-per-cell rule. The letter is upper-cased because the rail
+  // it lights is; a title starting with a digit or a symbol takes `#`, which
+  // heads its own group in the list and lights nothing, the frames' rail being a
+  // fixed A–Z that no content can extend. An accent is decomposed first so that
+  // "Édith Piaf" files under E rather than heading a group of its own beside it
+  // — the sort already folds the two at `sensitivity: 'base'`, and the grouping
+  // has to agree with the sort or the list reads as two Es.
+  const byLetter = new Map()
+  ;[...vm.songs]
+    .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }))
+    .forEach((sg) => {
+      const l = (sg.title.normalize('NFD').charAt(0) || '#').toUpperCase()
+      if (!byLetter.has(l)) byLetter.set(l, [])
+      byLetter.get(l).push(sg)
+    })
+  vm.repGroups = [...byLetter].map(([letter, songs]) => ({ letter, songs }))
+  // The rounded panel layout 4 stands its list on — the olive band lifted a
+  // register, which is exactly `mapBg`'s own relationship to `deep` and lands
+  // within a point of Retro's own #6D7040-on-#5B5E2E (contrast 1.31 against
+  // 1.20–1.41 across the flat four). The Figma panel's fill is bound to no
+  // token at all, so there was nothing to resolve: it is read off the node.
+  vm.repPanel = mix(vm.mapBg, vm.mapFg, 0.11)
 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
@@ -672,8 +726,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     vm.calPick = booked.has(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
+    // The bare hour, beside the composed lines that already carry it. Layout 4
+    // draws no enquiry line at all — its foot is the pill and its card is that
+    // line taken apart into four stat cells — so `time` would otherwise reach
+    // that design through nothing. Raw rather than cased: it is a clock format,
+    // vm.calSlots[].mark's rule.
+    vm.calTime = time
 
-    // §10.2 layout 2 — the bold slot list. The rows are the artist's named
+    // §10.2 layouts 2 and 4 — the named slots. Layout 2 tables them and layout
+    // 4 features one and stacks the rest; both read exactly these keys, and
+    // layout 4 adds no column. The rows are the artist's named
     // slots (CAL_SLOTS), resolved by the `songs` rule: absent means the seed,
     // an emptied array means none, and there is no null sentinel. Everything
     // the row prints is composed here, the way every cell above carries its own
@@ -761,6 +823,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       month: g?.month ?? '', day: g?.day ?? '',
       url: extUrl(g?.link ?? ''),
       pin: PINS[i % PINS.length],
+      // Layout 4's ticker prints the gig on one line — "Manchester · Jul 12 ·
+      // 22:00", the frame's own second line — and every one of those three is
+      // emptiable, so it is composed here rather than joined in the section:
+      // the testimonials' `byline` rule, or an artist who leaves the time off
+      // (which `LIST.map` does every fourth row) would publish a trailing
+      // separator. The month and day stay as they were typed, like the venue
+      // and the city above them; the frame's own "JUL 12" is its styling.
+      meta: [String(g?.city ?? '').trim(),
+             `${g?.month ?? ''} ${g?.day ?? ''}`.trim(),
+             String(g?.time ?? '').trim()].filter(Boolean).join(' · '),
       // What layout 3's chip row matches a row against. Case-folded here rather
       // than in EncoreSection, and beside the label it was folded from, so a
       // theme that upper-cases the chip cannot stop it matching its own gigs —
@@ -794,6 +866,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     ? [{ label: cased(REP_ALL), city: null, n: vm.gigs.length },
        ...[...gigCities.values()].map((ch) => ({ ...ch, label: cased(ch.label) }))]
     : []
+  // Layout 4's CITIES stat: the same distinct cities the chip row above is
+  // built from, counted rather than listed, and read straight off the map that
+  // already deduped them case-insensitively. It is here and not in the section
+  // because a Set is maths — `s.gigs.length` beside it is not, which is why
+  // only one of the dashboard's two derived numerals needed a key. Unlike
+  // `gigChips` it is *not* suppressed below two cities: a stat that reads "1 /
+  // CITIES" is a fact, where a filter row of All plus one chip is a
+  // distinction that distinguishes nothing.
+  vm.gigCityCount = gigCities.size
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
@@ -864,6 +945,27 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // renderer prints a string. An emptied `promises` composes to '' and the line
   // is not drawn at all, the Soundcloud button's rule.
   vm.formPromiseLine = vm.formPromises.join(' · ')
+  // The same promises again, numbered, which is §10.2 layout 4's right-hand
+  // column: its frame draws 01 / 02 / 03 discs beside three lines whose second
+  // row reads "Reply within 24 hrs" — FORM_PROMISES[0] almost verbatim, so the
+  // column is already in the promises' own register. The numeral is composed
+  // here for `vm.tracks[].n`'s reason: the renderer prints strings and pads
+  // nothing. The frame's second line per row has no seat — a promise is one
+  // string, and a gloss for it would be a claim the artist never typed.
+  vm.formSteps = vm.formPromises.map((p, i) => ({
+    n: String(i + 1).padStart(2, '0'), label: p,
+  }))
+  // That column's own head. A literal the view-model owns, `formTypeLabel`'s
+  // rule, upper-cased by the renderer's display face rather than here.
+  vm.formStepsLabel = 'What happens next'
+  // §10.2 layout 4 outlines every box and rules every step row in one hue, and
+  // the frame's `sem/stroke/2` #5B5E2E is `vm.tierRow.card` exactly — the
+  // pricing stack's own seat, the first palette tag that clears `tierHues`'
+  // 0.22 against the page ground. Taken rather than derived a second time
+  // because the job is the same one that walk was written for: a line or an
+  // outline that has to read against the *page*, where Grunge's T.tags[3] IS
+  // its black background and Retro's is the olive the frame binds.
+  vm.formRule = vm.tierRow.card
   // The boxes are the artist's now, on the `songs` rule — absent key means the
   // seed, emptied array means none, no null sentinel. Every row is normalised
   // here so EncoreSection can switch on `kind` without a default of its own;
@@ -2803,9 +2905,9 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
  * ~560.
  *
  * The cards share one frame so the set reads as a set and the labels sit
- * on one line. The frame has to be measured: Retro's Polaroid runs half
- * again as tall as its full-bleed hero, and a frame guessed from either
- * one would crop the tall layouts or strand the short ones. It takes the
+ * on one line. The frame has to be measured: Retro's tallest layouts run
+ * well past its full-bleed hero, and a frame guessed from either end
+ * would crop the tall layouts or strand the short ones. It takes the
  * *median* height rather than the tallest — sizing to the tallest would
  * leave the other five in a third of a card's worth of empty background —
  * and `fit` shrinks whatever overruns it instead of cropping.
@@ -3252,12 +3354,14 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   // takes the rest of the page with it: the page is one design, so a header on
   // layout 3 stands over a body on layout 3. `pageLayout` folds the index into
   // each category's own design count (§4.4), so every section lands on a layout
-  // it actually has — the seeded page's nine body sections have three designs
-  // each and the footer has one, so on Retro, whose header has six, the body
-  // repeats from the fourth card on. That is a fact about *this* page rather
-  // than about the fold: a video section has two designs, so a page carrying
-  // one has no single repeat period and the modal's cards cannot be given a
-  // page number. The modal stays open afterwards — a click is a try, not a
+  // it actually has. The cards cannot be given a page number, though, because
+  // the counts differ per category. With the layout-4 pass closed the seeded
+  // page's nine body sections have four designs each, so that page alone would
+  // now repeat from the fifth card on; but `audio` — the one category the
+  // layout-4 Figma page omitted — still has three, so a page carrying an audio
+  // section has no single index at which the whole body repeats, and the card
+  // cannot promise one it would keep only sometimes. The modal
+  // stays open afterwards — a click is a try, not a
   // verdict, and "Use this header" is what ends it.
   //
   // Safe as a page-wide write only because the modal is a one-shot gate over a
