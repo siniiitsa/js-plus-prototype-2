@@ -50,7 +50,7 @@ one session.
 | 2 | `bio` | `964:72519` | Bios — **B · Portrait + overlays** | 664 × 720 | `964:76446` | 708 × 720 | `971:14479` | 370 × 536 | done `21bfa3c` |
 | 3 | `tags` | `964:72516` | **Tags — Frame** | 457 × 118 | `964:76443` | 457 × 103 | `971:14238` | 370 × 58 | done `c583070` |
 | 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | done `62355c9` |
-| 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | todo |
+| 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | done `5999dc1` |
 | 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | todo |
 | 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | todo |
 | 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | todo |
@@ -231,10 +231,11 @@ UI.** Take each in the section's own commit, never all of them up front:
   highlight the row the fold names. **This is the first time the pass family adds a layout-picker
   card:** layout 3's plan could say "no picker card appears or moves", and this one cannot. Two
   cards appear, both at the end of their category's list, and no existing card moves.
-- **`video` needs a decision, not a bump** — `NVAR.video` is 2. See open question 2; the
-  recommendation is `NVAR.video` 2 → 4 with the `Video` component's `if (s.v0)` widened to
-  `if (s.v0 || s.v2)`.
-- **`audio` needs neither** — it has no layout-4 design. See open question 3.
+- ~~**`video` needs a decision, not a bump**~~ *Done — `5999dc1`, and it took question 2's
+  recommendation (a): `NVAR.video` 2 → 4, `CATS.video.n` 3 → 4, `if (s.v0)` widened to
+  `if (s.v0 || s.v2)`, and one sentence added to `pageLayout()`'s comment.*
+- ~~**`audio` needs neither**~~ *Settled — `5999dc1`, and `NVAR.audio` stays 3. See open
+  question 3.*
 - ~~**`header` needs neither.**~~ *Done — `e4e7b27`.* `HEADER_NAMES[3]` is **Stacked · Name
   stacked over the photo**, and all four "Polaroid" references went with it:
   `FIELDS.header.avatar`'s hint dropped its last sentence outright (Stacked *does* draw the
@@ -650,6 +651,66 @@ Learned on the media player (section 4):
   left **on** — every earlier transport in this file passes `strokeWidth={0}`, which would drop
   the bar and leave a play triangle pointing backwards.
 
+Learned on the video section (section 5):
+
+- **An instance can clip its own component, and that is a *third* kind of narrow artefact
+  beside the leaked number and the flattened raster.** The 768 instance is 708 × 402 — the
+  page's number, and the same ~1.761 aspect the other two masters state — while the component
+  inside it is `h-[567px] shrink-0`, so the instance's own `overflow-clip` cuts the head and
+  foot bands away and its render is three discs on a photograph. `get_metadata` says it in one
+  glance and it is the only place that does: **a child taller than its instance, at a negative
+  `y`**. The media player's destroys-its-own-content rule then decides it in one step, because
+  what the crop removes is the artist's name, the playhead and the running time. Check every
+  narrow instance's child height against the instance's own before reading its render.
+- **`use_figma` on the *head text node* is the cheapest call in the pass, and it answers two
+  questions the arithmetic cannot.** One read — `getNodeByIdAsync` on the three instances, then
+  each one's `parent` and `parent.children` — returned the head's `fontSize` (96/60/40 at
+  leading .89, so this page's Display/LG ramp is *read* rather than inherited from the media
+  session), its stated measure, the hidden `the`/`room.` leftovers, and the wrapper's own
+  `itemSpacing`: **60 / 60 / 30**. The gap ramps, and the band arithmetic admitted both 60-with-
+  small-insets and 40-with-large ones, so inferring it would have been wrong at 390. This is the
+  tags row's query-the-head-never-the-strip-parenting-wrapper rule with the payoff named: do it
+  for every remaining section whose head the page draws.
+- **A frame's own token can be right in one place and wrong in another *within the same
+  branch*, and the discriminator is what the element has to separate from.** `sem/text/1` is
+  `s.ac` on every palette. The head keeps it (it stands on the page, Lime's acid green being the
+  cost the conventions name twice) and so does the progress fill — but the transport **glyph**
+  takes `paperFg` on the flat four, because it is a 15px stroke *inside* the cream disc with no
+  ground of its own, which is exactly where the audio player's ▶ met this wall. The fill's half
+  of that was found by rendering, not by reasoning: `paperFg` there is a near-black bar on a
+  card whose own scrim is black, so the played portion vanished and **the bar read as filled
+  from the right** on all four flat palettes. A five-theme *digest* would not have caught it —
+  every value was legible against its stated neighbour; it took looking at Lime.
+- **`Photo`'s `backdrop` is the answer whenever overlaid type has no scrim of its own.** The
+  frame's gradient is transparent until 76.173%, so the head band's cream type sits directly on
+  the poster — and on `sem/box/3` #CEB081 when there is none, which is 1.43 under Retro and
+  invisible on Lime. `backdrop` is documented for precisely this ("a dark panel rather than a
+  giant set of initials, so the overlaid type still reads"), it makes the frame's own box/3
+  literal unnecessary, and it is what the flat four render at every width since Retro is the
+  only theme that seeds this photograph.
+- **A glyph the file cannot draw can be scaled off a *sibling frame's* answer.** The prev/next
+  mark is 13.022 × 6.819 here against the media player's layout-4 16 × 8.4 — the same aspect at
+  0.813 — so it is that branch's `un(18)` at 0.813, traceable rather than re-derived, with the
+  stroke left on for the reason written there. The pause mark needed no judgement at all: 8.372
+  wide and 11.189 tall are lucide's own 12 × 16 of 24 at **16.75 and 16.78**, two readings
+  agreeing to a hundredth, which is the strongest an icon size has been pinned in this pass.
+- **The head's stated measure was inert at all three widths, which is three noes in a row.**
+  1019.18 is the string's own ink at 1440, that same leaked number overflowing a 708 frame and
+  wrapping nothing at 768, and replaced by the full 370 column at 390. The booking calendar's
+  check-whether-the-leak-*does*-anything rule; the media player declined the identical number on
+  the identical component one section earlier.
+- **The whole branch is one `z`, one type table, one colour block and three absolutely-
+  positioned bands.** No state, no handler, no decoration, no `s.retro` gate beyond four colour
+  literals, and no width branch outside `u()`'s `z` and three insets (24/24/10, 20/20/10,
+  16/16/10). The card is an aspect box, so filling 1052 costs it nothing but height — 597
+  against the frame's ramped 618 — and there is nothing in the composition that could have given
+  anything back.
+- **`arch`-level proof beats an argument about `arch`.** The hand-fold's no-op claim is exactly
+  the kind of thing a comment usually asserts; here `git stash` + a nine-cell digest
+  (`arch=0,1,2` × three widths) returned IDENTICAL on all nine, which covers the widened test,
+  the `NVAR` bump and the `CATS` bump at once. Two navigations. Run it for any category whose
+  fold changes.
+
 ## Open questions
 
 1. **The page carries the `form` category twice, and only one of them can be the fit.** The
@@ -666,7 +727,15 @@ Learned on the media player (section 4):
    so fitting both is not available. **Consequence:** the *Book Us* head goes to the calendar, and
    the wizard joins the layout-2 page's dropped `tags` / `audio` as a design this pass does not
    reach.
-2. **`video`'s slot arithmetic.** `NVAR.video` is 2, so `arch 3 → 3 % 2 = 1 → v1`: the fitted
+2. ~~**`video`'s slot arithmetic.**~~ *Settled on the video section (section 5), and it took
+   answer (a) unchanged — `NVAR.video` 2 → 4, `CATS.video.n` 3 → 4, the fit as `v3`, and
+   `if (s.v0)` widened to `if (s.v0 || s.v2)`. The no-op argument was **proved** rather than
+   argued: a `git stash` digest of `?cat=video&arch=0,1,2` at all three widths came back
+   IDENTICAL on all nine, so the picker's first three cards render exactly what they rendered
+   before. `pageLayout()`'s comment gained the sentence the question asked for.* The original
+   text follows.
+
+   `NVAR.video` is 2, so `arch 3 → 3 % 2 = 1 → v1`: the fitted
    design would be unreachable at the page's own index. Three answers, and the **recommendation is
    the first**: (a) `NVAR.video` 2 → 4, `CATS.video.n` 3 → 4, the layout-4 fit as `v3`, and the
    `Video` component's `if (s.v0)` widened to `if (s.v0 || s.v2)` so layout 3 keeps rendering
@@ -679,20 +748,36 @@ Learned on the media player (section 4):
    a fitted design to an invented one. **(a) is the file's first hand-fold** — folding has only
    ever been `arch % NVAR` — so `pageLayout()`'s "lowest index that renders a given design"
    comment needs a sentence saying a category may now fold by hand as well.
-3. **`audio` has no layout-4 design, and its fold is worse than layout 3's.** `NVAR.audio` is 3,
+3. ~~**`audio` has no layout-4 design, and its fold is worse than layout 3's.**~~ *Settled on the
+   video section (section 5), in question 2's own commit as the plan asked: **leave it**, and the
+   thing that settles it is evidence rather than a judgement.* **There is no such thing as "a
+   layout-4 page carrying an audio section".** The setup modal's page-wide write only touches
+   sections **already on the page**, `EXAMPLE_PAGE` carries no `audio` (nor `tags`, nor `video`)
+   and `openAdd` opens the composer at **`arch: 0`** — so nothing can put an audio section at
+   index 3 except a user picking "Audio Player layout 4" in the picker by hand, where folding
+   onto layout 1 is the documented behaviour (`CLAUDE.md`: "Audio layouts 1, 4 and 7 render
+   identically on purpose"), not a regression. **Check that same arithmetic before reading any
+   remaining `NVAR` question as urgent**, and note what it does *not* undercut: `video` was
+   bumped for a different reason — without `CATS.video.n` 4 its layout-4 design would have been
+   **unreachable at any index**, which is not true of a design that does not exist. The original
+   text follows.
+
+   `NVAR.audio` is 3,
    so a layout-4 page renders `arch 3 → 3 % 3 = 0 → v0`, which is an **invented flat** design —
    where layout 3's missing `video` folded onto a *fitted* layout 1. Two options: leave it (the
    honest "no design exists" answer, and the one precedent points at), or `NVAR.audio` 3 → 4 with
    `if (s.v2 || s.v3)` so a layout-4 page shows the fitted bar-meter — question 2's hand-fold
    applied to a category with the opposite problem. Not decided here; whichever way, it is one
    line and it belongs in the same commit as whatever settles question 2.
-4. **Two layout-picker cards appear**, for `tags` and `video`. Layout 3's plan could promise the
+4. ~~**Two layout-picker cards appear**, for `tags` and `video`.~~ *Both done — `c583070` and
+   `5999dc1`.* Layout 3's plan could promise the
    picker would not change; this one cannot. Both new cards sit at the end of their category's
    list and nothing existing moves, but it is the first user-visible change this pass family has
    made outside a section's own rendering, and it is worth a line in the commit that makes it.
-   *Half settled on the tags row (`c583070`): the Tags picker now offers four cards, the fourth
-   at the end, and a trusted-click check confirmed the three above it did not move. `video`'s is
-   still to come, and it arrives with open question 2's hand-fold rather than a plain bump.*
+   *The Tags picker offers four cards, the fourth at the end, and a trusted-click check confirmed
+   the three above it did not move; the Video picker now does the same, its third card still
+   drawing layout 1's design through the hand-fold. No further card appears in this pass — every
+   remaining category already offers more rows than it has designs.*
 5. **The booking calendar's master is the wizard's output, misfiled under the calendar's name.**
    *"D · Enquiry summary stack"* is a dark card reading *Summer wedding / Lake District · Outdoor
    / GUESTS 120 / SET LENGTH 4 hrs / BUDGET £1,200 / SOUND Provided*, then *Sat, June 12 ·
