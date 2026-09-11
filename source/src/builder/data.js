@@ -163,7 +163,7 @@ export const minimalNav = (navSections) =>
  * ------------------------------------------------------------------ */
 
 export const NVAR = {
-  header: 6, bio: 3, media: 3, tags: 3, audio: 3, video: 2, pricing: 3,
+  header: 6, bio: 4, media: 3, tags: 3, audio: 3, video: 2, pricing: 3,
   repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
 }
 
@@ -674,7 +674,7 @@ export const FIELDS = {
     // default: an unfilled page would otherwise publish a fabricated one, and
     // the column is simply not drawn while it is empty.
     { k: 'since',     l: 'Performing since',
-      hint: 'The ID card’s first stat — layout 3 only. Left empty, the column is not drawn.' },
+      hint: 'The ID card’s first stat and the overlay card’s middle line — layouts 3 and 4. Left empty, neither is drawn.' },
   ],
   // The second list-shaped content type with a structured editor (see
   // `repertoire` below): `tracks` here is an array of { title, sub, image,

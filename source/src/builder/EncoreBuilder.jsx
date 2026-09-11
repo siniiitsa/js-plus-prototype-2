@@ -206,9 +206,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
-    // become real. Fourteen things read it: Repertoire's search, chips and
+    // become real. Fifteen things read it: Repertoire's search, chips and
     // pager; the header's navigation — its links, its Book Now and Listen, and
-    // the burger menu the narrow frames collapse to; the media player's
+    // the burger menu the narrow frames collapse to; the bio's own Listen,
+    // which its layout 4 sets in the overlay card's meta row; the media player's
     // transport; the gallery's strip and arrows; the events map's pager and
     // pin/row pairing; the pricing cards' filter chips and their Book pill; the
     // booking calendar's month arrows, its day picking and its foot pill; the
