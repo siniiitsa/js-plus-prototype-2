@@ -3638,7 +3638,11 @@ function Media({ s }) {
   //
   // The head's own 1019.18 measure is a leaked desktop width and is declined:
   // at 768 the same string inks 655 in a 656 frame, so it wraps nothing, and
-  // the 390 master drops it and breaks the head in two by measure alone.
+  // the 390 master drops it and breaks the head in two by measure alone. Ours
+  // breaks a line earlier than every master, the face factor a third time:
+  // "Five worth your ear." in Fraunces at 40 fits the 370 column on one line
+  // where the frame's longer string in Soulway takes two, so the 390 section
+  // stands 36px shorter than the band.
   //
   // The frame's prev/next are a 16 × 8.4 double triangle with a bar, which is
   // not a glyph lucide draws: `SkipBack`/`SkipForward` are one triangle and a
@@ -3803,18 +3807,28 @@ function Media({ s }) {
             position: 'relative', overflow: 'hidden', borderRadius: u(30),
             aspectRatio: desk ? '289.33 / 269.5' : tab ? '136 / 139' : '180 / 123.33',
             padding: u(20), cursor: s.live ? 'pointer' : undefined,
-            // The outline marks the seat the player is on, and it is drawn
-            // transparent on every other tile so that picking one moves no
-            // geometry. `at` is 0 until the visitor picks, so the canvas draws
-            // the frame's own marked first tile by construction.
-            border: `${u(3)} solid ${i === at ? rust : 'transparent'}`,
             ...col(u(4), { alignItems: 'flex-start', justifyContent: 'flex-end' }),
           }}>
             <span style={{ position: 'absolute', inset: 0 }}>
               <Photo s={s} initialsSize={un(26)} src={t.img}
                      ink={s.retro ? undefined : s.paperFg} />
             </span>
-            <span style={{ position: 'absolute', inset: 0, background: scrim }} />
+            {/* The mark is an **inset ring on the scrim**, not a border on the
+                tile — the events map's rule that a rule which does not grow its
+                box is a shadow. A `border` here would be right on the marked
+                tile and wrong on every other one: `inset: 0` resolves against
+                the padding box, so a transparent 3px border insets the
+                photograph on all of them and widens the frame's own gutter by
+                6 (10 → 16 at 390). Painted over the photograph and under the
+                label, it is Figma's inside stroke exactly. It marks the seat
+                the player is on, so `at` — 0 until the visitor picks, which
+                draws the frame's own marked first tile on the canvas by
+                construction — and never `chosen`; the radius is repeated here
+                or the parent's clip squares the ring's inner corners. */}
+            <span style={{
+              position: 'absolute', inset: 0, background: scrim, borderRadius: u(30),
+              boxShadow: i === at ? `inset 0 0 0 ${u(3)} ${rust}` : undefined,
+            }} />
             {/* The frame sets the title in white outright rather than in a
                 token: it stands on the foot of a photograph under a fade to
                 black, where every palette's own ink would be a worse answer. */}

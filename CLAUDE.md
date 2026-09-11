@@ -171,11 +171,13 @@ mutated through a single `patch()` helper.
   first track — live the two are the same track by construction.
   **Layout 4 plays through the same hooks as well**: the sleeve is the track the player is on,
   and the grid beside it is one photographic tile per track with the tile at `at` carrying the
-  same rust outline the sleeve does. That outline is a **seat**, the fan's rule rather than
+  same rust mark the sleeve's own border is. That mark is a **seat**, the fan's rule rather than
   `chosen`'s — `at` is 0 until the visitor picks, so the canvas draws the frame's own marked
-  first tile by construction — and it is drawn transparent on every other tile, so picking one
-  moves no geometry. It is also the one layout whose section paints the page's whole cream
-  band, checkerboard strip at each end.
+  first tile by construction — and on the tile it is an **inset ring on the scrim**, not a
+  border: `inset: 0` resolves against the padding box, so a border (even a transparent one on
+  the unmarked tiles) would inset every photograph and widen the frame's own gutter. It is also
+  the one layout whose section paints the page's whole cream band, checkerboard strip at each
+  end, and the only one to draw those strips — the video section must not add one at its head.
 - **The gallery browses, in the published tab only, and its three social rows leave the page.**
   Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" rewinds, and the
   tile counter and viewer follow. `pick` starts at **-1** for the same reason `cur` does: nothing
