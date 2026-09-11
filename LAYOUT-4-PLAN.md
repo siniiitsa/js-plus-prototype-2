@@ -1,0 +1,435 @@
+# Retro layout 4 — section-by-section plan
+
+Working checklist for fitting **layout 4** of every Retro section to Figma, one section per
+session, clearing context between sections. Layouts 1 (`s.v0`), 2 (`s.v1`) and 3 (`s.v2`) are
+fitted and signed off at all three widths; nothing here should touch any of them.
+
+**Read first, every session:** [`CLAUDE.md`](./CLAUDE.md), then this file, then
+[`LAYOUT-3-PLAN.md`](./LAYOUT-3-PLAN.md)'s *Conventions* (~90 bullets) and
+[`LAYOUT-2-PLAN.md`](./LAYOUT-2-PLAN.md)'s *Conventions* (~110 bullets) — every one of them still
+true, and this file does **not** repeat them — then the two memory notes `figma-frame-reading` and
+`verifying-the-published-tab`. `SPEC.md` lives in git history — `git show 8fa8ff4:SPEC.md`.
+
+Branch: **`retro-layout-4`**.
+
+## The Figma source
+
+Layout 4 is a fourth full page composed of a fourth option for each section, and — as with layout
+3 — **all three canvases were supplied up front**, so all three widths are one session.
+
+| Canvas | Frame | Node | Size |
+|---|---|---|---|
+| Desktop | Frame 225 | `964:72510` | 1440 × 10186.5 |
+| Tablet | Frame 265 | `964:76437` | 768 × 10735.4 |
+| Mobile | Frame 270 | `971:12206` | 390 × 9813.5 |
+
+- Desktop: <https://www.figma.com/design/uFoUbPaBrDicjyuSBEbtGT/SAAS-Final--Copy-?node-id=964-72510&m=dev>
+- Tablet: <https://www.figma.com/design/uFoUbPaBrDicjyuSBEbtGT/SAAS-Final--Copy-?node-id=964-76437&m=dev>
+- Mobile: <https://www.figma.com/design/uFoUbPaBrDicjyuSBEbtGT/SAAS-Final--Copy-?node-id=971-12206&m=dev>
+
+`fileKey` = `uFoUbPaBrDicjyuSBEbtGT`.
+
+**Frame names collide across pages, and the instance suffixes lie again — match on node id and
+width, never on the name.** This desktop page is called "Frame 225"; its tablet sibling is "Frame
+265", which is also the name of a *checkerboard strip* inside all three pages. The specific
+offenders found so far: the `tags` instance is called "— Desktop" at all three widths; the bio's
+tablet master is "— Desktop" (its 390 one is honestly "— Mobile"); and the **mobile** media
+player, repertoire, enquiry wizard and booking calendar are all called "— Tablet". Both narrow
+footers name components this page has not used before (*Component 3* at 768, *Component 4* at
+390) where the desktop one is layout 2 and 3's *Component 2*.
+
+## The sections
+
+**Twelve to fit.** Sizes are the frames' own; the desktop numbers land on the 1180 canvas at
+**× 0.82** as before, and the 768 / 390 frames are used **verbatim**. Each row's three masters are
+one session.
+
+| # | Cat | Desktop node | Frame name | Size | Tablet node | Size | Mobile node | Size | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | `header` | `964:72511` | Headers — **C · Stacked** | 1440 × 900 | `964:77544` | 768 × 1024 | `971:14040` | 390 × 844 | todo |
+| 2 | `bio` | `964:72519` | Bios — **B · Portrait + overlays** | 664 × 720 | `964:76446` | 708 × 720 | `971:14479` | 370 × 536 | todo |
+| 3 | `tags` | `964:72516` | **Tags — Frame** | 457 × 118 | `964:76443` | 457 × 103 | `971:14238` | 370 × 58 | todo |
+| 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | todo |
+| 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | todo |
+| 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | todo |
+| 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | todo |
+| 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | todo |
+| 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | todo |
+| 10 | `calendar` | `964:72844` | Booking Calendar — **D · Enquiry summary stack** | 478 × 491 | `964:79434` | 608 × 472 | `977:8514` | 350 × 469 | todo — read open question 5 first |
+| 11 | `form` | `964:72845` | Enquiry Forms — **F · Editorial form** | 1440 × 814 | `964:79477` | 768 × 950 | `977:8663` | 390 × 920 | todo |
+| 12 | `testimonials` | `964:72846` | Testimonials — **I · Video story wall** | 1440 × 716 | `964:79536` | 768 × 604.4 | `977:8764` | 390 × 588.4 | todo |
+| — | `audio` | *none* | — | — | *none* | — | *none* | — | **no layout-4 design on this page** |
+| — | *(form #2)* | `964:72843` | Enquiry Forms — **C · Multi-step wizard** | 680 × 491 | `964:79037` | 608 × 466 | `977:8513` | 350 × 465 | **not fitted** — see open question 1 |
+| — | `footer` | `964:72847` | Component 2 | 1440 × 479.5 | `964:79569` | 768 × 721 | `977:8806` | 390 × 721 | **out of scope** |
+
+- **`audio` has no layout-4 design.** This page omits it, the way layout 3's page omitted `video`
+  and layout 2's omitted `tags` and `audio`. What that costs is *not* the same as layout 3's
+  video, because audio's fold lands on an invented design rather than a fitted one — open
+  question 3.
+- **`video` gets its third design and its first since layout 2.** It is the one category whose
+  `NVAR` is 2, so its slot arithmetic needs a decision the other eleven do not — open question 2.
+- **The page carries the `form` category twice** — the wizard inside the *Book Us* block and the
+  editorial form as a full-width band below it. Our page can carry one `form` section, so one of
+  them is the fit and the other is not. Open question 1, and it has to be settled before section
+  10 (`calendar`), whose master is the wizard's other half.
+- **The footer stays out of scope**, for layout 2 and 3's reason: `NVAR.footer` is 1 and these are
+  the same three designs the fitted footer already is. Its narrow masters name *Component 3* and
+  *Component 4* here, which is new — worth a look if the footer is ever reopened, and nothing to
+  this pass.
+
+## The composed page, and what our page does instead
+
+Layout 3's page columned five sections; this one columns two (the bio block and the *Book Us*
+block) and wraps six more in display heads. Our page has no columns and no wrappers:
+`EncoreBuilder` stacks sections, each at the content column's full width. So **the composition is
+not reproduced — the instances are**, and the heads are allocated to sections here, once, so that
+two sessions never each claim one heading.
+
+```
+Frame 225  (1440 × 10186.5)
+├─ Headers — C · Stacked                     964:72511  1440 × 900          y 0
+├─ Section  964:72512   (1440 × 952, olive sheet)                           y 900
+│  ├─ Frame  964:72513  (664 × 720 at x 56)
+│  │  ├─ "KM BIO"           964:72514   ← page eyebrow
+│  │  ├─ "Reads the room."  964:72515   ← display head          → bio
+│  │  └─ Tags — Frame       964:72516   (457 × 118)             → tags
+│  └─ Bios — B · Portrait + overlays  964:72519  (664 × 720 at x 720)
+├─ Frame 317  964:72520  (1440 × 1012, cream sheet)                         y 1852
+│  ├─ Frame 265  964:72527   checkerboard strip  1440 × 23.6  at y 22.6
+│  ├─ "Six Worth Your Ears"  964:72523  (1328 × 85)             → media
+│  ├─ Media Player — K · Turntable + playlist  964:72526  (1440 × 671)
+│  └─ Frame 266  964:72650   checkerboard strip  1440 × 23.6  at y 1012
+├─ Frame 318  964:72773  (1440 × 1155, page ground)                         y 2864
+│  ├─ "See me in action"  964:72776                             → video
+│  └─ Video Players — B · Cinematic minimal  964:72777  (1328 × 754)
+├─ Gallery Sections — Component 1  964:72780  (1440 × 746, olive, torn top) y 4019
+│  ├─ Frame 182  964:72781  → "MEDIA" eyebrow + "Snaps from the night"  → gallery
+│  ├─ Frame 186  964:72785  hidden="true" — the four media-source rows
+│  └─ Gallery Sections — A · Spotlight + thumb rail  964:72815  (874 × 646)
+├─ Section  964:72817  (1440 × 947, olive, torn foot)                       y 4765
+│  ├─ "Repertoire"  964:72819                                   → repertoire
+│  └─ Repertoire — C · A-Z index rail  964:72822  (1208 × 452)
+├─ Frame 319  964:72824  (1440 × 1037)                                      y 5712
+│  ├─ "Distances we'll Travel"  964:72827  (1328 × 170)         → map
+│  └─ Events Map — C · Dashboard split  964:72830  (1440 × 747)
+├─ Pricing — G · Service rows  964:72831  (1440 × 522)                      y 6749
+├─ Section  964:72832  (1440 × 906, tan panel on the page ground)           y 7271
+│  ├─ "Book Us"  964:72839                                      → calendar (open question 1)
+│  └─ Frame 320  964:72842
+│     ├─ Enquiry Forms — C · Multi-step wizard          964:72843  (680 × 491)
+│     └─ Booking Calendar — D · Enquiry summary stack   964:72844  (478 × 491 at x 730)
+├─ Enquiry Forms — F · Editorial form  964:72845  (1440 × 814)              y 8177
+├─ Testimonials — I · Video story wall  964:72846  (1440 × 716, mustard)    y 8991
+└─ Component 2  964:72847  (1440 × 479.5, cream)                            y 9707
+```
+
+**Head allocation, settled here.** Each wrapper is one head over one or two instances, and the
+head belongs to a section rather than to the wrapper:
+
+| Head | Eyebrow | Goes to | Note |
+|---|---|---|---|
+| *"Reads the room."* | KM BIO | `bio` | `FIELDS.bio.heading`'s default **is** that string |
+| *"Six Worth Your Ears"* | — | `media` | keep the "Five worth your ear." default; the count is the frame's claim |
+| *"See me in action"* | — | `video` | **not** the gallery — see the trap below |
+| *"Snaps from the night"* | MEDIA | `gallery` | `TITLES.gallery` is "See us in action" |
+| *"Repertoire"* | — | `repertoire` | `vm.title` here is `"{n} Songs"`, not a word — open question 8 |
+| *"Distances we'll Travel"* | — | `map` | `TITLES.map` is "Manchester" |
+| *"Book Us"* | — | `calendar` | the layout-3 "Book Me" precedent; re-read if question 1 goes the other way |
+
+- **The trap: `TITLES.gallery` is "See *us* in action" and the *video* band's head is "See *me*
+  in action".** The near-match is a coincidence of the page's copy, not evidence. The gallery's
+  own head is "Snaps from the night" under a "MEDIA" eyebrow. Do not re-point `TITLES.gallery`.
+- **`tags` draws its own head this time**, so there is no contention of layout 3's kind: the
+  457-wide instance carries the small rust "Genres" line above its chips, which is
+  `TITLES.tags` / `FIELDS.tags.heading` as the layout-3 tags session left them.
+- **Every head frame carries the same hidden `the` / `room.` leftovers** (`hidden="true"`), which
+  is what proves each wrapper is the bio's Section duplicated — layout 3's reading, holding on a
+  second page. The "KM BIO" and "MEDIA" eyebrows are the *page's* labels; take them as a pattern
+  (initials + the category's own name, written out as a literal — `EncoreSection` imports nothing
+  from `data.js`), not as strings, exactly as the layout-3 audio session settled it.
+
+**The bands, and what each section stands on.** A single-column pixel scan of the 1440 page
+thumbnail, with the table's own heights (which stack to 10186.5 with no gaps):
+
+| y | Band | Ground |
+|---|---|---|
+| 0 – 900 | header | full-bleed photograph |
+| 900 – 1852 | bio + tags | **olive** `#5B5E2E`, hard edges |
+| 1852 – 2864 | media | **cream** `#FBF6EA`, a checkerboard strip at each end |
+| 2864 – 4019 | video | page beige `#EAD7B8` |
+| 4019 – 4765 | gallery | **olive**, torn top edge (the vector's crest is ~3484) |
+| 4765 – 5712 | repertoire | **olive**, torn foot (~5647) — one band with the gallery |
+| 5712 – 6749 | map | page beige |
+| 6749 – 7271 | pricing | page beige |
+| 7271 – 8177 | *Book Us* (wizard + calendar) | a tan rounded panel on the page beige |
+| 8177 – 8991 | form | page beige |
+| 8991 – 9707 | testimonials | **mustard** `#D8A227` |
+| 9707 – 10186.5 | footer | cream |
+
+That is the desktop page only. **Take the 768 and 390 page thumbnails in the header session and
+extend this table before anything else** — the media band's cream and the gallery/repertoire olive
+have not been checked at the narrow widths, and the layout-3 header session's rule is that one
+margin-pixel read settles a section's whole DOM shape (its own sheet, or a bleed, or the page).
+
+**The two checkerboard strips are the media band's.** Desktop parents both to Frame 317 (its own
+top and foot); the narrow pages reparent them to the bio Section's foot (`964:77903`, `971:14242`)
+and the video frame's head (`964:78027`, `971:15256`) — the same two page lines either side of
+the media band at all three widths. They are 1440 wide and 23.6 tall at every width, and they run
+off both edges of the narrow pages (x −336 at 768, x −525 at 390), so they are a bleed and their
+pitch is fixed, not fluid.
+
+**What the narrow pages do with the two columned blocks**, which is more evidence that the
+composition is the page's and not the sections':
+
+- **Tablet** keeps the bio Section but stacks it — head + tags at 708 (`964:76440`), the bio
+  instance under it at 708 (`964:76446`) — and stacks the *Book Us* pair too: wizard 608 × 466
+  then calendar 608 × 472 at y 516 (`964:76769`). The media band becomes its own frame
+  (`971:14886`).
+- **Mobile** does the same again at 370 / 350, and insets the repertoire instance to **310**
+  inside a 370 frame (`977:8162`) — a 30px inset our canvas does not have. Layout 2's rule
+  applies: the frames' own insets are not our `padX`, so verify against content edges, never
+  against frame `y`.
+
+The stacked order both narrow pages settle on — header, bio, tags, media, video, gallery,
+repertoire, map, pricing, calendar, form, testimonials, footer — is what our page renders anyway,
+and it is the table's order above.
+
+## Where layout 4 goes, and what it costs in `data.js`
+
+`sectionVm` derives the design from `d = arch % designCount(cat)` and already sets `v0`…`v5`
+(`EncoreBuilder.jsx:229`). Layout 4 is **`s.v3`** — a new `if (s.v3) { … }` block after the `v2`
+block and before the generic flat tail. `s.v3` is unused today in every component but the header,
+where `HeaderV3` exists.
+
+**This pass edits more of `data.js` than layout 3 did, and one of the edits is visible in the
+UI.** Take each in the section's own commit, never all of them up front:
+
+- **`NVAR[cat]` 3 → 4** for `bio`, `tags`, `media`, `gallery`, `repertoire`, `pricing`,
+  `calendar`, `map`, `testimonials`, `form` — ten categories, one per session. Bumping ahead of
+  the fit would point layout 4 at the never-designed generic tail.
+- **`CATS[].n` 3 → 4 for `tags` and `video`, in the same commit as their `NVAR` bump.** Those two
+  are the only categories offering fewer than four layout rows, and `pageLayout()`'s own comment
+  rests on `designCount ≤ layoutCount` — bumping `NVAR` alone would leave the picker unable to
+  highlight the row the fold names. **This is the first time the pass family adds a layout-picker
+  card:** layout 3's plan could say "no picker card appears or moves", and this one cannot. Two
+  cards appear, both at the end of their category's list, and no existing card moves.
+- **`video` needs a decision, not a bump** — `NVAR.video` is 2. See open question 2; the
+  recommendation is `NVAR.video` 2 → 4 with the `Video` component's `if (s.v0)` widened to
+  `if (s.v0 || s.v2)`.
+- **`audio` needs neither** — it has no layout-4 design. See open question 3.
+- **`header` needs neither.** `NVAR.header` is 6 under Retro and its layout-4 slot is `HeaderV3`,
+  today the invented *Polaroid · Photo card beside text*, which this pass replaces with *Stacked*.
+  That is layout 3's header (which replaced the invented *Gradient stage*) and layout 2's
+  (*Framed* → *Feature spread*), a third time. Rename `HEADER_NAMES[3]` in `data.js` **and grep
+  the repo for "Polaroid"** — it is named in `README.md:142` (the setup modal's frame height),
+  `README.md:160` (the names list), `FIELDS.header.avatar`'s hint at `data.js:646` ("The Polaroid
+  layout uses the background photo instead" — check whether *Stacked* makes that hint false), and
+  a comment at `EncoreBuilder.jsx:2806`.
+- **Three documents assert "layouts 1, 2 and 3"** and become four: `CLAUDE.md:86`,
+  `README.md:150` and `data.js:188`. `README.md:154`'s "six header cards fold onto three body
+  designs" becomes four as well. Land them with the first `NVAR` bump or at the end of the pass,
+  but do not leave the pass without them.
+- **The bump costs nothing else.** There is no persistence, so no stored page migrates; the seeded
+  page is `arch 0` throughout, so the end-of-pass two-build digest is unaffected. The one intended
+  change per category is that a section a user had set to layout 4 stops rendering layout 1's
+  design and starts rendering this one.
+- **Once `v3` lands, the generic tail is dead code for that category.** Leave it, as layout 3 did.
+
+## Per-session procedure
+
+One section per session, **all three widths together**. Clear context between sections; git and
+this file are the memory.
+
+1. Read `CLAUDE.md`, this file, then `LAYOUT-3-PLAN.md`'s and `LAYOUT-2-PLAN.md`'s *Conventions*,
+   and the two memory notes.
+2. `get_metadata` on **all three** of the row's nodes first, beside each other. It is where a
+   master that changes shape rather than shrinking shows up, and on this page it is also where a
+   master turns out to live inside a wrapper. Read the three calls as arithmetic before fetching a
+   render (the enquiry form's rule, which has held for six sections).
+3. `get_screenshot` on each node (`maxDimension` 1400–2000 for detail; the asset URL is
+   **single-use — `curl` it in the very next call**, or it 404s), then load the
+   `figma-design-to-code` skill and `get_design_context`. **`get_variable_defs` on all three
+   nodes**, not just the desktop one: it resolves each master's mode, so every `size/…`,
+   `border/…` and `radius/…` the emitted code prints as the desktop default comes back at its real
+   value. One page's mode is not another's, so re-run it even on a component an earlier layout
+   already fitted.
+4. Implement as the `s.v3` branch of the section's component in `EncoreSection.jsx`, and take the
+   category's `data.js` edit in the same change. Desktop numbers are the frame's × 0.82; the 768
+   and 390 frames are verbatim, with no ramp. Follow the `v0`/`v1`/`v2` convention exactly — one
+   branch for all five themes, decoration gated on `s.retro`, palette-derived values standing in
+   for Retro's literal hexes.
+5. Verify with the preview harness. It already takes any `arch`, so no harness change is needed —
+   but the `data.js` edit has to land first or `arch=3` renders something else.
+
+   ```
+   cd source && npm run dev
+   http://localhost:5173/preview.html?cat=bio&arch=3&w=desktop     # &w=tablet | mobile
+   ```
+
+   `arch=0…2` render the three signed-off layouts for comparison, `theme=1…4` checks the flat
+   four, `n=8` fills the section's list-shaped content, `live=1` renders it as the published page
+   does, and `&open=` / `&booked=` / `&since=` / `&tags=` / `&name=` reach the fields `n` cannot.
+   Drive it with **chrome-devtools MCP** (`--isolated --viewport 1440x900`); compare **numbers,
+   not screenshots**, via `getBoundingClientRect()`. A brace-depth walk of the diff is still the
+   whole safety net for proving `v0`–`v2` untouched.
+6. Commit, with the section named in the subject.
+7. Flip the row's Status to `done <sha>`, add anything the next section needs to *Conventions*
+   below, and commit that too.
+8. **Stop there and hand off.** Do not start the next section in the same context. Say the section
+   is closed, that this is the moment to `/clear`, and print the next section's opening prompt as
+   a fenced block filled in ready to paste:
+
+   ```
+   Continue the Retro layout-4 pass with section N, `cat`.
+
+   Read CLAUDE.md, then LAYOUT-4-PLAN.md, then LAYOUT-3-PLAN.md's and LAYOUT-2-PLAN.md's
+   Conventions sections, then the `figma-frame-reading` and `verifying-the-published-tab`
+   memory notes, and follow the per-session procedure there.
+
+   The three masters are `<desktop node>` (<W> × <H>), `<tablet node>` (768 × <H>) and
+   `<mobile node>` (390 × <H>) in Figma file uFoUbPaBrDicjyuSBEbtGT. Fit all three as a
+   new `s.v3` branch of `<Component>` in EncoreSection.jsx, and bump `NVAR.<cat>` from 3
+   to 4 in the same commit.
+
+   <the two or three conventions most likely to bite this section>
+
+   Branch: retro-layout-4. Do not refresh the root index.html.
+   ```
+
+   **Three rows swap that `NVAR` line out.** `header` keeps `NVAR.header` 6 and instead renames
+   `HEADER_NAMES[3]` and the four "Polaroid" references listed above; `tags` bumps `CATS` too;
+   `video` takes open question 2's answer rather than a plain bump.
+
+Do **not** run `npm run build:standalone` / refresh the root `index.html` per section — that is
+one deliberate step at the end of the whole pass (`cp source/dist-standalone/index.html
+index.html`), and layout 2's *Learned on the end-of-pass refresh* notes say how to check it.
+Expect the two-build digest to come back at **zero rows**, as layout 3's did, and prove the new
+work shipped by grepping the built file for a value only these branches emit.
+
+Suggested order is the table's, which is the page's. The header first is deliberate for the third
+pass running: it is the one section that is Retro-only (`HeaderV0`–`V5` never render for the flat
+four, so it needs no `theme=1…4` check), it settles the refit-an-invented-slot pattern, and it is
+the session that owes the narrow band table.
+
+## Conventions
+
+`LAYOUT-2-PLAN.md`'s and `LAYOUT-3-PLAN.md`'s bullets all still apply and are not repeated. This
+list starts with what is known about *this* page before any section has been fitted; append to it
+as the pass goes on.
+
+- **Match on node id and width.** See *The Figma source* for this page's specific liars. The
+  layout-3 pattern — "the columned instances are the ones called — Desktop at every width" — holds
+  for `tags` and half-holds for `bio`, but the mobile media player, repertoire, wizard and
+  calendar are all called "— Tablet", which is new.
+- **Five of the twelve instances are 1440-wide bleeds** (`media`, `map`, `pricing`, `form` and
+  `testimonials`, beside the header, which has always been one) where layout 3's columned five
+  were 858. Their *content* sits
+  inside the wrapper's own 56 padding — 1328 × 0.82 = 1089 against our 1052 content column — so
+  the fill rule the bio settled for layout 3 applies to the inset, not to the sheet: **the
+  section's sheet spans the canvas, the content fills 1052**, and which parts stretch is read off
+  the master's emitted flex declarations rather than decided. `get_metadata` alone cannot tell a
+  fill from a hug; run `get_design_context`.
+- **Three instances are genuinely narrower than the column they sit in** and that is the design,
+  not a crop: `tags` is 457 in a 664 column at desktop *and* 457 in a 708 one at tablet (it fills
+  only at 390), and the gallery's spotlight is 874 of the page's 1440. Read the declarations
+  before ramping either.
+- **The count in a head is the frame's claim, not the artist's.** *"Six Worth Your Ears"* over a
+  grid the seed fills with five, and the media player's own layout-3 head said five. Layout 2's
+  "a frame's own copy can be a claim" — keep `TITLES.media`, draw one tile per track.
+- **Two masters draw fewer of the artist's rows than the seed carries**, which is the audio
+  player's stranding rule with the discriminator already written down: the pricing frame draws 2
+  service rows against three seeded packages, and the testimonials wall draws 4 cards against
+  three seeded reviews. One row per package, one card per review; the frame's count is its filler.
+- **Four masters print numbers nothing in this file can know.** The video card's *"551 538 views ·
+  02:05"*, the map dashboard's *RADIUS 120* and *"LIVE · LAST 12 MONTHS"*, and the calendar
+  summary's *GUESTS / BUDGET / SOUND*. The video section's own rule (drop what the artist never
+  typed) meets the booking calendar's (nothing reads the clock). What *is* derivable is named
+  per-section in the open questions — do not invent a field to reach the rest.
+- **The gallery's four media-source rows are `hidden="true"` in the wrapper at all three widths**,
+  at identical coordinates (56 / 383, 608 × 383) — a leftover of the layout-1 composition this
+  wrapper is a copy of. So layout 4's gallery is layout 1's spotlight with the rows replaced by a
+  display head and the thumbnail rail stood **vertical**, which is a distinct design and not a
+  duplicate. `youtube` / `instagram` / `tiktok` reach nothing again (layout 3's open question 11
+  a second time), and their `FIELDS` hints already say "Layout 1 only", which stays true.
+- **The narrow footers are different components** (*Component 3*, *Component 4*) where the desktop
+  one is the familiar *Component 2*. Out of scope, recorded so nobody re-derives it.
+
+## Open questions
+
+1. **The page carries the `form` category twice, and only one of them can be the fit.** The
+   *Book Us* block's left half is *"Enquiry Forms — C · Multi-step wizard"* (a three-step card:
+   `1 Event / 2 Details / 3 Contact`, a "Step 1 of 3" line, event-type chips, an approx-date box
+   and Back / Next Step pills); the band below it is *"Enquiry Forms — F · Editorial form"* (a
+   "Contact Us" display head over five boxes and a message, a mustard *Check Availability* pill,
+   and a *WHAT HAPPENS NEXT* column of 01/02/03 rows). **Recommendation: `form` takes the
+   editorial form.** It is a standalone full-width band at all three widths, it reads every field
+   the section has — `c.fields` two to a row, `message`, the mailto submit, and `FORM_PROMISES` as
+   the numbered column — and it needs no state the file does not already carry. The wizard needs a
+   step counter, a three-way split of `c.fields` that `FormFieldsField` cannot express, and a
+   *Next Step* control with nothing behind it; and `addSection()` refuses a second `form` section,
+   so fitting both is not available. **Consequence:** the *Book Us* head goes to the calendar, and
+   the wizard joins the layout-2 page's dropped `tags` / `audio` as a design this pass does not
+   reach.
+2. **`video`'s slot arithmetic.** `NVAR.video` is 2, so `arch 3 → 3 % 2 = 1 → v1`: the fitted
+   design would be unreachable at the page's own index. Three answers, and the **recommendation is
+   the first**: (a) `NVAR.video` 2 → 4, `CATS.video.n` 3 → 4, the layout-4 fit as `v3`, and the
+   `Video` component's `if (s.v0)` widened to `if (s.v0 || s.v2)` so layout 3 keeps rendering
+   exactly what it renders today (`arch 2 → 2 % 2 = 0 → v0` before, `arch 2 → v2 → the same
+   branch` after — a provable no-op, and the layout picker's row 3 goes on showing layout 1's
+   design, which is the documented folding behaviour "Audio layouts 1, 4 and 7 render identically
+   on purpose"); (b) `NVAR.video` 2 → 3 with the fit as `v2`, which puts a layout-4 design on the
+   layout-3 card and breaks the page alignment the setup modal depends on; (c) `NVAR.video` 2 → 4
+   with `v2` left to the generic flat tail, which silently regresses anyone on video layout 3 from
+   a fitted design to an invented one. **(a) is the file's first hand-fold** — folding has only
+   ever been `arch % NVAR` — so `pageLayout()`'s "lowest index that renders a given design"
+   comment needs a sentence saying a category may now fold by hand as well.
+3. **`audio` has no layout-4 design, and its fold is worse than layout 3's.** `NVAR.audio` is 3,
+   so a layout-4 page renders `arch 3 → 3 % 3 = 0 → v0`, which is an **invented flat** design —
+   where layout 3's missing `video` folded onto a *fitted* layout 1. Two options: leave it (the
+   honest "no design exists" answer, and the one precedent points at), or `NVAR.audio` 3 → 4 with
+   `if (s.v2 || s.v3)` so a layout-4 page shows the fitted bar-meter — question 2's hand-fold
+   applied to a category with the opposite problem. Not decided here; whichever way, it is one
+   line and it belongs in the same commit as whatever settles question 2.
+4. **Two layout-picker cards appear**, for `tags` and `video`. Layout 3's plan could promise the
+   picker would not change; this one cannot. Both new cards sit at the end of their category's
+   list and nothing existing moves, but it is the first user-visible change this pass family has
+   made outside a section's own rendering, and it is worth a line in the commit that makes it.
+5. **The booking calendar's master is the wizard's output, misfiled under the calendar's name.**
+   *"D · Enquiry summary stack"* is a dark card reading *Summer wedding / Lake District · Outdoor
+   / GUESTS 120 / SET LENGTH 4 hrs / BUDGET £1,200 / SOUND Provided*, then *Sat, June 12 ·
+   Arrival 6pm · 9pm*, then *Live band — full / 5-piece + DJ / Package ›*, then a *Send Enquiry*
+   pill. Of that, the calendar can honestly draw the date row (`open` + `time`, which is
+   `vm.calMonths`' composed line already) and the pill (`vm.calBookTo`); the dark card's six stats
+   are an enquiry the visitor has not made, and the *Live band — full* row is a **pricing
+   package**, which is another section's content. So the calendar's session begins with a
+   fit-reduced-or-decline decision, not with `get_variable_defs`. If it declines, `NVAR.calendar`
+   stays 3 and a layout-4 page folds the calendar to `v0` — question 3's shape on a section that
+   *has* a frame, which would be new. Read question 1 first: if the wizard is fitted instead of
+   the editorial form, this whole block is one composed design and the question changes.
+6. **The events map's dashboard is half derivable and half invented.** *CITIES 21* is the distinct
+   cities of `c.gigs` (`vm.gigChips` already computes exactly that, for layout 3's filter);
+   *GIGS YTD 48* is `gigs.length` but its "YTD" is a claim about the clock; *BASE Manchester, UK*
+   is `TITLES.map` or the bio's `location`; *RADIUS 120 miles · standard* and *LIVE · LAST 12
+   MONTHS* are backed by nothing. The mustard foot ticker (*‹ Next: Hidden Warehouse / Manchester ·
+   JUL 12 · 22:00 ›*) is the section's pager reduced to one gig and two arrows — the same `page`
+   over a `perPage` of 1, which the 390 master of layout 3 already does. Decide the four stats as
+   one group, the way layout 3's pricing decided its FEATURED badge.
+7. **The repertoire's A–Z rail is a new control in a single layout** — layout 3's open question 14
+   (the events map's city filter) a second time, and the answer that question gave should be taken
+   now rather than re-derived: if a second layout ever wants the same derivation, it belongs beside
+   `repChips()` in `data.js` rather than in `sectionVm`. The rail itself is honest — the letters
+   are the first characters of `c.songs`' titles, the way the set cards were the tags — and the
+   frame lights one letter, which is a `s.live` seam of the map's `sel` shape.
+8. **The repertoire's head is a word where `vm.title` is a count.** `TITLES` has no `repertoire`
+   entry; `sectionVm` falls back to `"{n} Songs"` (`EncoreBuilder.jsx:542`, mirrored in
+   `EditPanel`). The frame heads the card *"Repertoire"* over a *"All songs · A–Z"* sub. Decide
+   whether the frame's word is `s.title` (which would print "7 Songs" on the seeded page, an
+   intended diff), the category's own name as a literal (the eyebrow pattern), or the sub. The
+   tags row's discriminator applies: re-pointing a default is free only where no signed-off layout
+   would newly honour it, and here three would.
+9. **The pricing rows carry a *SET* / *PROJECT* kind label no field backs**, above the price. It
+   is not `name`, not `price` and not a tag — the tags are the chip row beside it. Either it is
+   the first line of `feats` read as a label, or it is layout 3's FEATURED badge again: a claim
+   about a package that nothing the artist typed can supply. The frame's foot line is
+   `DEFS.pricingSub` verbatim, so the rest of that section is well-supplied; this is the one seat
+   to argue about.
