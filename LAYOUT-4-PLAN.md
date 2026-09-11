@@ -240,6 +240,11 @@ UI.** Take each in the section's own commit, never all of them up front:
   `FIELDS.header.avatar`'s hint dropped its last sentence outright (Stacked *does* draw the
   avatar), and `README.md:142` / `EncoreBuilder.jsx:2806` lost the ratio as well as the name —
   Stacked is 738 against the hero's 614, not "half again as tall". `NVAR.header` stays 6.
+- **`NVAR`'s own comment drifts with the `CATS` bumps, and joins the end-of-pass sweep.**
+  `data.js:160–162` says *"For everything except the header, more layout choices are offered than
+  there are designs"*; `footer` was already 1/1, `tags` is now 4/4 (`c583070`) and `video` will
+  be the third. It becomes *at least as many as*. Do not take it per section — it is one line and
+  it belongs with the four below.
 - **Three documents assert "layouts 1, 2 and 3"** and become four: `CLAUDE.md:86`,
   `README.md:150` and `data.js:188`. `README.md:154`'s "six header cards fold onto three body
   designs" becomes four as well. **Land all four at the end of the pass, not with the first
