@@ -52,7 +52,7 @@ one session.
 | 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | done `62355c9` |
 | 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | done `5999dc1` |
 | 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | done `d56fe1f` |
-| 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | todo |
+| 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | done `104530e` |
 | 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | todo |
 | 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | todo |
 | 10 | `calendar` | `964:72844` | Booking Calendar — **D · Enquiry summary stack** | 478 × 491 | `964:79434` | 608 × 472 | `977:8514` | 350 × 469 | todo — read open question 5 first |
@@ -810,6 +810,84 @@ Learned on the gallery (section 6):
   (`+ Add section`, walk it up, read every `[--ac]` root's rect) is how to see two bleeds meet,
   since `preview.html` renders one section.
 
+Learned on the repertoire (section 7):
+
+- **Walk `inst.parent` all the way to the Section and read every level's `fills` before deciding
+  what the sheet is.** This plan's page tree lists the head and the instance as children of
+  Section `964:72817`; there is a **Frame between them** (`964:72818` / `964:76745` /
+  `977:8162`) that paints its own **#6D7040 at radius 60** with 60 / 50 / 40-30 of padding, and
+  it is the block the whole design stands on. `get_metadata` on the instance cannot see it —
+  the instance's `x`/`y` are relative to it and look like a plain inset — and `get_design_context`
+  stops at the instance. The one call that says so is the same `use_figma` read the gallery
+  prescribed for fills, extended one level up; **do it for the five sections left**, because a
+  wrapper that paints is a wrapper the fit has to draw. It is also the gallery's
+  fills-versus-token lesson from the other side: `get_variable_defs` binds this fill to **no
+  token at all**, so there was never anything to resolve and the node is the only source.
+- **A Section that states its own padding costs nothing to transcribe.** Where the gallery had to
+  sum the band's inset out of two blocks' own paddings, this one answers outright — 100 / 100 /
+  30 above, 150 / 150 / 60 below (the tear lives inside that), **56 / 30 / 10 either side, which
+  is the gallery's own horizontal pair**. So the two sheets line up down the page, and the editor
+  check confirms it: gallery root 2604.6→3423.8, repertoire root 3423.8→4697.4, both sheets
+  covering their own root exactly and meeting at **gap 0**. The `+ Add section` walk was not
+  needed — the setup modal's Stacked card already puts every section at `arch 3`.
+- **The setup modal takes a synthetic click on its cards and a trusted one on its commit
+  button.** `.click()` on the Stacked card selects it (the snapshot then reads `pressed` and
+  "Stacked selected"), but `.click()` on *Use this header* does nothing; `take_snapshot` +
+  `click(uid)` closes the dialog first try. That is the tags row's Radix rule refined: the
+  gesture matters on the control that **commits**, not on the one that highlights. The template
+  stage's own card is `button[aria-label^="Open the editor"]`, and a synthetic click is enough
+  there.
+- **Two masters can bind two different *tokens* for the same rule, and that is a design.** The
+  desktop lh/row strokes are `sem/stroke/2` #D8A227; both narrow masters' are `sem/stroke/1`
+  #111111 — corroborated by `get_variable_defs` naming a different key *and* by the node's own
+  stroke hex, which is a stronger pair than a mode difference would give. Transcribed. What
+  decided the flat four against it is the tags row's run-the-five-palettes test **failing** for
+  once: Retro's ink rule reads at 3.63 on its own panel where Lime, Grunge, Editorial and Pop
+  come back at 1.43–1.90, against the mustard's own 3.75–12.27. So the ramp is Retro's alone
+  (`desk || !s.retro ? mustard : s.deep`, and `s.deep` **is** #111111 under Retro, so it costs no
+  literal). **Run that test in both directions** — it has now argued for keeping an accent the
+  conventions warn about and against keeping one they would have waved through.
+- **A panel one register off its band is `mix(band, cream, 0.11)`, which is `mapBg`'s own
+  formula applied twice.** Retro's #6D7040 on #5B5E2E is contrast **1.31**; the derivation lands
+  the flat four at 1.20–1.41, the same register by construction. It went in as `vm.repPanel`
+  rather than into the branch because `EncoreSection` does no colour maths — the one line of this
+  fit that had to leave the file.
+- **`sticky top-0` in a frame is evidence of intent, not a declaration to transcribe.** The
+  rail carries it and the frame's own `overflow-clip` parent makes it inert, so nothing in the
+  render shows it. Declined on the calendar's check-whether-the-leak-does-anything rule — and
+  then **used as the argument** for what the rail does: a sticky rail only pays off beside a list
+  that scrolls past it, which with the design's own name ("A-Z index rail") and twenty-six
+  letters over a list of three settles open question 7 as a **jump** and not a filter. A filter
+  would also have made the frame's own "All songs · A–Z" sub a lie the moment it was used.
+- **This file can scroll, and it needs neither an effect nor the published tab's listener.**
+  `scrollIntoView` off a **callback ref** (`useRef({})` keyed by letter — an `id` would collide
+  across the dozen previews `LayoutPicker` mounts, `vm.anchor`'s own rule) is the second thing in
+  `EncoreSection` to hold a ref, after the media player's `<audio>`, and for the same reason: a
+  node to command rather than describe. `behavior` is left at the instant default — the header's
+  nav reads `prefers-reduced-motion` off the popup's own `win`, which this file has no handle on.
+  React batches the `setState`, so **a harness check that clicks and reads the mark in the same
+  `evaluate_script` reads it stale**; await a tick.
+- **A mark can be a seat over a *derived* list.** `alpha` starts empty and the lit letter falls
+  back to `repGroups[0].letter`, which on the seeded page is the D the frame lights — so the
+  canvas and the published first paint are one picture, with no `-1` sentinel needed on a value
+  that is a string. Clamped against the groups (`letters.has(alpha)`) for pricing's reason: the
+  artist can delete the last song a letter had while the published tab is open.
+- **The rail's 26 cells and their wrap are the masters' own widths, not a count.** 32 × 32 at
+  gap 8 at **all three** widths (`radius/chip` 8 and `border/hairline` 1 likewise), so six fit
+  the desktop rail's stated 232 — which is exactly `6 × 32 + 5 × 8` — fifteen fit 608 and seven
+  fit 310, and a plain `flex-wrap` reproduces all three without counting anything. The gallery's
+  rail-width-is-its-own-control-row reading, one section later.
+- **A letter no song starts with gets no handler, and that is the whole of the difference.** The
+  frame draws all twenty-six alike, so nothing is dimmed; the cursor is read off the handler (the
+  calendar's rule), which is what keeps an index rail from stranding a visitor on an empty group.
+  A title starting with a digit or a symbol heads its own `#` group in the list and lights
+  nothing — the rail is a fixed A–Z that no content can extend.
+- **`s.title` again, and for layout 2's reason.** Open question 8 is settled the way layout 2
+  settled it: the display line is the heading field, the frame's "Repertoire" would leave that
+  field editing nothing, and "12 Songs" on the seed is a diff this section already carries. The
+  sub is the literal. **Three of four layouts now honour `heading` as the display line**, which
+  is the discriminator the question asked for.
+
 ## Open questions
 
 1. **The page carries the `form` category twice, and only one of them can be the fit.** The
@@ -897,13 +975,34 @@ Learned on the gallery (section 6):
    JUL 12 · 22:00 ›*) is the section's pager reduced to one gig and two arrows — the same `page`
    over a `perPage` of 1, which the 390 master of layout 3 already does. Decide the four stats as
    one group, the way layout 3's pricing decided its FEATURED badge.
-7. **The repertoire's A–Z rail is a new control in a single layout** — layout 3's open question 14
+7. ~~**The repertoire's A–Z rail is a new control in a single layout.**~~ *Settled on section 7
+   (`104530e`), and it took the question's own answer: the derivation is `vm.repGroups` in
+   `sectionVm`, not beside `repChips()` in `data.js`, because one layout wants it — move it if a
+   second ever does. What the question left open was the **verb**, and the frame answered it
+   twice over: the design is named "A-Z index rail" and its rail carries a `sticky top-0`, which
+   only pays off beside a list that scrolls past it. So the rail **jumps** (`scrollIntoView` off
+   a callback ref, live-gated, no handler on a letter no song starts with) rather than filtering,
+   which would also have made the frame's own "All songs · A–Z" sub a lie the moment it was used.
+   The lit letter is a **seat**, not the map's toggle: `alpha` starts empty and falls back to the
+   first group's letter, which is the D the frame lights.* The original text follows.
+
+   Layout 3's open question 14
    (the events map's city filter) a second time, and the answer that question gave should be taken
    now rather than re-derived: if a second layout ever wants the same derivation, it belongs beside
    `repChips()` in `data.js` rather than in `sectionVm`. The rail itself is honest — the letters
    are the first characters of `c.songs`' titles, the way the set cards were the tags — and the
    frame lights one letter, which is a `s.live` seam of the map's `sel` shape.
-8. **The repertoire's head is a word where `vm.title` is a count.** `TITLES` has no `repertoire`
+8. ~~**The repertoire's head is a word where `vm.title` is a count.**~~ *Settled on section 7
+   (`104530e`): the display line is **`s.title`** and the frame's "Repertoire" is not drawn at
+   all, which is layout 2's own call on this section — giving the display line to the literal
+   would leave `heading` editing nothing here, and three of the four layouts now honour it as
+   the display line. On the seeded page it reads "12 Songs", the diff layout 2 already carries.
+   The "All songs · A–Z" sub is a **literal**: it describes the design rather than the artist,
+   and it stays true at every state, which is half the argument that settled question 7.
+   `TITLES` gained no `repertoire` entry and no default was re-pointed.* The original text
+   follows.
+
+   `TITLES` has no `repertoire`
    entry; `sectionVm` falls back to `"{n} Songs"` (`EncoreBuilder.jsx:542`, mirrored in
    `EditPanel`). The frame heads the card *"Repertoire"* over a *"All songs · A–Z"* sub. Decide
    whether the frame's word is `s.title` (which would print "7 Songs" on the seeded page, an
