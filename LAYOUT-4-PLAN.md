@@ -936,7 +936,11 @@ Learned on the events map (section 8):
   **120**, the second grown by BASE's value wrapping to two lines. So the cell took a
   `minHeight` of each master's own number and everything else was left derived — and the
   desktop sum is the check that it was transcription: 23 + 9.8 + 16.4 + (2 × 186.6 + 9.8) + 23 =
-  **455.2**, the frame's 555 × 0.82 to the tenth, with the rendered card landing on 457.
+  **455.2**, the frame's 555 × 0.82 to the tenth, with the rendered card landing on 457. What
+  the hug then costs is that it **inverts which 390 row grows**: ours are 136 / 100 against the
+  master's 100 / 120, because our COVERAGE card's two-line sub (`mapTerms`) outgrows the frame's
+  one-line "miles · standard" while our BASE value still fits. That is the mechanism working,
+  not a slip — but it is the one place the phone's picture parts company with the master.
 - **Two `flex-[1_0_0]` halves where one carries padding *and* a rule is the enquiry form's
   lesson at its plainest.** Written as `minmax(0, 1fr)` grid columns from the start, so the
   panel's 32/28 inset and its 1px divider cannot take the map's share. The divider itself is

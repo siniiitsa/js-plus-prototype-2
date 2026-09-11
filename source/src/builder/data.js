@@ -838,13 +838,16 @@ export const FIELDS = {
   // emptied array means no gigs, and there is no null sentinel.
   map: [
     { k: 'gigs',    l: 'Upcoming gigs', type: 'gigs', max: 12,
-      // The page size is PINS.length, not a literal — see vm.gigPage. The
-      // cities are read a second time in layout 3, where they derive the split
-      // list's filter chips (vm.gigChips) the way the songs' tags derive the
-      // repertoire's — so a row's city is a control there as well as a fact.
+      // The page size is PINS.length, not a literal — see vm.gigPage — except
+      // in layout 4, whose whole list is a one-gig ticker. The cities are read
+      // a second time in layout 3, where they derive the split list's filter
+      // chips (vm.gigChips) the way the songs' tags derive the repertoire's —
+      // so a row's city is a control there as well as a fact — and a third
+      // time in layout 4, which counts them (vm.gigCityCount).
       hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
-          + `a real link on the published page; the list pages ${PINS.length} at a time. `
-          + 'Layout 3 also turns the cities into its filter chips.' },
+          + `a real link on the published page; the list pages ${PINS.length} at a time in `
+          + "layouts 1–3 and one at a time in layout 4's ticker. "
+          + 'Layout 3 also turns the cities into its filter chips, and layout 4 counts them.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
     { k: 'base',    l: 'Based in',       d: MAP_BASE },

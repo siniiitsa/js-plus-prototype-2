@@ -257,9 +257,20 @@ mutated through a single `patch()` helper.
   is named rather than fixed. `perPage` is `gigPage` at both wide widths and **1** at 390, where
   the master draws one row over a two-arrow pager. A gig's `link` reaches all three: layout 1's
   whole row, layout 2's ↗ and Venue Link pill, layout 3's Tickets → column — and layout 3 drops
-  the frame's second `↗` beside the venue, the same address marked twice. The flat map layout
-  keeps raw `vm.pins`: it has no list to pair with, and twelve gigs would stack twelve dots on
-  five spots.
+  the frame's second `↗` beside the venue, the same address marked twice. **Layout 4 is the
+  pager alone**: its whole gig list is one mustard ticker at a `perPage` of **1**, so `page` is
+  the only state it reads — `sel` reaches nothing there, the way the testimonials' `cur` reaches
+  nothing in their wall — and the arrows **wrap** at both ends rather than clamping, the media
+  player's rule. It is also the one layout that draws raw `vm.pins` *and* has a list to pair
+  with: all five seats are on the map and the gig on show lights the one it was paired with, by
+  identity (`vm.gigs[].pin` and `vm.pins` are the same five objects), so one gig to a page means
+  the one-pin-per-gig rule holds by construction and the filter's edge above cannot arise. The
+  dots carry no handler — five seats over any number of gigs means a dot does not name one — the
+  ticker's own text block is the gig's `link` where it has one (layout 1's empty-link rule
+  again), and the ticker is **not drawn at one gig** and gone at none. Its section stands on the
+  page ground, so the root's `darkMap` flag stays layout 1's. The flat map layout
+  keeps raw `vm.pins` with nothing lit: it has no list to pair with, and twelve gigs would stack
+  twelve dots on five spots.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection` — because it is an
   `href`.** The repertoire's layout-4 A–Z rail scrolls from *inside* the file, and the two do not
   contradict: the nav's target is a fragment, which cannot be followed in the popup, so it needs
