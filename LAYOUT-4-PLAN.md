@@ -49,7 +49,7 @@ one session.
 | 1 | `header` | `964:72511` | Headers — **C · Stacked** | 1440 × 900 | `964:77544` | 768 × 1024 | `971:14040` | 390 × 844 | done e4e7b27 |
 | 2 | `bio` | `964:72519` | Bios — **B · Portrait + overlays** | 664 × 720 | `964:76446` | 708 × 720 | `971:14479` | 370 × 536 | done `21bfa3c` |
 | 3 | `tags` | `964:72516` | **Tags — Frame** | 457 × 118 | `964:76443` | 457 × 103 | `971:14238` | 370 × 58 | done `c583070` |
-| 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | todo |
+| 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | done `62355c9` |
 | 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | todo |
 | 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | todo |
 | 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | todo |
@@ -575,6 +575,66 @@ Learned on the tags row (section 3):
   our 1052 holds them on one; the row is `flex-wrap w-full` at every width and the 390 master
   wraps at 370 too, so there is nothing to reproduce. The chips' own 5/11 and 8 stay the
   component's unramped literals at desktop — layout 3's named reuse cost, unchanged.
+
+Learned on the media player (section 4):
+
+- **The media band's two checkerboard strips are this section's, and the video session must not
+  draw one at its head.** The desktop band (`964:72520`) parents both, and the *render* puts them
+  flush at its first and last row where `get_metadata` reports the first at y 22.6 — one column
+  scan settles it. The narrow pages reparent them to the bio Section's foot and the video frame's
+  head, which is the same two seams either side of the band, so drawing them at the head and the
+  foot of the media sheet is the one placement that is right at all three widths whatever our page
+  stacks around it. They are `Checkerboard` at HeaderV3's own `cell` (19.36 desktop / 23.61
+  narrow — two rows of 11.8 squares, the tile being two squares wide) in the bio band's olive.
+- **Add the band's inset and the instance's own padding before deciding anything about
+  symmetry.** The bands give their head 132.4 / 50 / 60 of clear cream and their foot 76.4 / 0 /
+  60, which looks like three disagreements; the instance then pads itself 56 / 56 / 10 *inside*
+  that, so the sheet's real insets are 132.4 / 50 / 60 and 132.4 / 56 / 70 — near-symmetric at
+  every width with nothing rounded to make it so, and the desktop sum lands the section on the
+  frame's 1012 × 0.82 to the tenth. The tags row's take-the-head's-number rule was not needed
+  here, and would have been wrong: it is the *sum* that is symmetric, not either term.
+- **When nothing in a composition has an intrinsic height, the thing to state is the one whose
+  ratio is a residue *and* whose count is the artist's.** Both columns here are `h-full` of a
+  stated 671, the tiles are `1fr` rows of a `flex-[1_0_0]` grid and the sleeve is `flex-[1_0_0]`
+  of its column — so the tile takes each master's own ratio (289.33/269.5, 136/139, 180/123.33,
+  the gallery's rule) and the sleeve fills what the grid leaves, which is the masters' own
+  declaration. The reference picture then holds at all three widths *because* five tiles wrap to
+  the same rows as the frame's six.
+- **Run a fill's arithmetic at the *low* count, not just the high one.** The obvious cost was the
+  sleeve growing to 580 on a 252 column at `max: 8`; the real one was the other end — a 768 page's
+  single tile row is 139 and the left column's fixed parts (40 + 40 + 48 + 11) are 139 exactly, so
+  an artist with two singles would have published a 3px rust hairline where their artwork should
+  be. That is the media player's own destroys-its-own-content rule, and it is not the pricing
+  deck's mid-edit empty card: it is a real published page. The floor is the **390 master's own
+  stated sleeve** (370 × 302) applied to the 308 column — cross-width borrowing, which the events
+  map declined, taken here because every alternative is an invented number, and inert from four
+  tracks up so the reference picture never sees it. It also carries the emptied-list state for
+  free.
+- **A frame's stated text measure can be inert at two widths and absent at the third.** The head's
+  1019.18 is on the 1440 *and* 768 text nodes; at 768 the same string inks 655 in a 656 frame, so
+  it wraps nothing, and the 390 master states a measure that breaks it in two. Declined, where the
+  bio's 572.9 was kept — the discriminator is the booking calendar's: check whether the leak still
+  *does* something at the narrow width.
+- **A mark that must survive the canvas is a seat, not a state.** The frame outlines tile one and
+  draws tile one's photograph as the sleeve, so the outline is `i === at` — which is 0 until the
+  visitor picks and therefore the frame's own picture on the canvas — and never `chosen`. Drawn
+  `transparent` on every other tile, so picking one moves no geometry. The media player's fan rule
+  reaching a grid.
+- **The section's live seam cost nothing.** `pick`, `goTo`, `toggle`, `now` and `audio` are all
+  above the branch, so the whole of layout 4's playback is four `onClick`s; the only line outside
+  the branch is `list`, widened to `|| s.v3` — a strict no-op while `NVAR.media` was 3, because
+  `d` could never be 3. Both the comment above it and **CLAUDE.md's media paragraph quote that
+  expression verbatim**, so all three moved together.
+- **`NVAR` and `CATS.n` part company where `n` is already large.** `CATS.media.n` is 7, so no
+  picker card appears — but cards 5, 6 and 7 now fold onto v0/v1/v2 where they used to fold onto
+  v1/v2/v0. That is `arch % NVAR` working as documented (and it happened on the layout-3 bump
+  too); the tags row's "no existing card moves" check is about the *list*, not about what each
+  card renders.
+- **Two glyphs the file cannot draw.** The frame's prev/next are a 16 × 8.4 double triangle with a
+  bar; lucide's `SkipBack`/`SkipForward` are one triangle and a bar, taller than they are wide.
+  Sized off their ink rather than their box (the audio player's rule) at `un(18)`, with the stroke
+  left **on** — every earlier transport in this file passes `strokeWidth={0}`, which would drop
+  the bar and leave a play triangle pointing backwards.
 
 ## Open questions
 
