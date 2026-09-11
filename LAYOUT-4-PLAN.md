@@ -51,7 +51,7 @@ one session.
 | 3 | `tags` | `964:72516` | **Tags — Frame** | 457 × 118 | `964:76443` | 457 × 103 | `971:14238` | 370 × 58 | done `c583070` |
 | 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | done `62355c9` |
 | 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | done `5999dc1` |
-| 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | todo |
+| 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | done `d56fe1f` |
 | 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | todo |
 | 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | todo |
 | 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | todo |
@@ -720,6 +720,95 @@ Learned on the video section (section 5):
   (`arch=0,1,2` × three widths) returned IDENTICAL on all nine, which covers the widened test,
   the `NVAR` bump and the `CATS` bump at once. Two navigations. Run it for any category whose
   fold changes.
+
+Learned on the gallery (section 6):
+
+- **`get_variable_defs` can be wrong, and the node's own `fills` is what settles it.** All three
+  masters answer `sem/bg` = `#d8a227`; all three instances' `fills` is `#5B5E2E`, the olive the
+  render plainly shows. Every *other* entry in that seven-item list is right (`sem/text/1` is the
+  mustard, `sem/text/3` the #111 mount, `sem/box/3` the #C08A0F disc). The memory note's "call
+  `get_variable_defs` first and measure only to confirm" still stands — but **read the fill through
+  one `use_figma` before painting a ground with a token**, because the one entry that lied is the
+  section's whole sheet. The same call is the cheapest reading there is of a rotated card: it
+  returns `rotation` outright (2, which is CSS `-2`) beside the padding, radius and effects.
+- **An effect style resolves its variables in the *style's* mode, not the node's.** "Retro/Poster"
+  is `DROP_SHADOW … color: sem/text/1`, and the node's `sem/text/1` is the mustard while the
+  rendered shadow is the rust `#C8461C`. So the disc's ring and its offset block are two different
+  colours from one token name, and a pixel sample of the render is the only source that says so.
+- **This component carries no `size/` or `radius/` token at all**, which `get_variable_defs`
+  says by returning nothing but colours and effects at all three widths. Every box is therefore a
+  raw number and identical at all three: 121.028 rail, 67.748 thumbnail, 55.514 disc, 50 between
+  the halves, 25/30/20 radii, 12 and 10 gaps, 4 ring, 20 mount. What ramps is the type alone
+  (eyebrow 15/12/11, head 96/60/40), read off the text nodes rather than the tokens.
+- **Δbbox over a padding is one equation for a rotation angle.** Frame 183's metadata gives a
+  609.248 × 554.299 box whose 20-padded child is 567.877 × 512.928; both differences are 41.3716,
+  which is `40 (cos θ + sin θ)` and gives θ = 2° in one line — and the two simultaneous equations
+  then give the true 590.97 × 534. Worth doing before fetching anything: it is what told the
+  session the spotlight is a *rotated card* rather than an oddly-sized frame.
+- **A rail's width can be its own control row's sum, and that is why it does not ramp.** 121.028 is
+  55.514 × 2 + 10 exactly — two arrow discs and their gap — and the thumbnails take `w-full` of it.
+  So the one number the whole right column is built from is a consequence of the arrows, which is
+  also why both narrow masters keep it verbatim.
+- **A frame that rings every row of a list is not marking one.** All six thumbnails carry the
+  identical 4px mustard ring (a pixel sample of all six, not an eyeball), and the spotlight
+  photograph *is* thumbnail 4 — which is `galActive()`'s slot 3 exactly. So the composition's own
+  answer to "which one am I on" is the big picture, and adding a mark would have been inventing a
+  state (the booking calendar's rule). **Sample every row's ring before concluding a design has no
+  selected state — and then check whether the frame answers the question another way.**
+- **A plain `border` is right where the media player's layout-4 tile needed an inset ring, and the
+  discriminator is whether *every* cell carries it.** Figma strokes this frame inside its stated
+  121.028 (a 390 row scan reads 4 / 113 / 4), so `border-box` reproduces it to the pixel; the media
+  player's case only needed the ring because the *unmarked* tiles would otherwise have had to carry
+  a transparent one.
+- **Seven `flex: 1 0 0` items with a 4px border overflow their column by 56px.** The testimonials'
+  and the enquiry form's basis lesson, at a count where it is fatal rather than cosmetic: a
+  zero-basis item's border is added *after* its share. `gridTemplateRows: repeat(7, minmax(0, 1fr))
+  auto` divides the same stated height and lets `border-box` do its job. **Reach for a grid the
+  moment a divided track carries a border or a padding.**
+- **A frame's own clip can hide the slot its own spotlight is showing.** The 390 strip is six
+  `shrink-0 w-[121.028px]` tiles at gap 0 inside a 370 frame — three and a sliver — and its
+  spotlight is thumbnail 4, off-page. That is the media player's destroys-its-own-content rule with
+  the proof inside a single master, so the three visible tiles became a sliding window on layout
+  1's own formula. **It is not `s.live`-gated**, and that is the point: gating it to keep the canvas
+  on slots 0–2 would have broken "the published first paint is the canvas's picture", which is the
+  one invariant every live seam in this file is built on. The canvas opens on slots 1–3 instead —
+  an intended diff, and the better half of it.
+- **Filling 1052 costs this section its aspect, and the frame's stated height is why.** 534 is
+  stated on the row at 1440 *and* 768 (two very different content widths, so it is a design and not
+  a residue — the events map's quarter-pixel test, passed the other way), so the desktop spotlight
+  goes 590.97 × 534 → 947.8 × 437.9 and `cover` reframes the seeded photograph. Both narrow cards
+  land on their masters' numbers exactly, the bleed handing the section 708 and 370 — **so the
+  tablet render is the one to compare against Figma, and the desktop one will look wrong beside
+  it.** The bio's layout-4 card made the same trade; naming it is the rule, and the next section
+  whose frame states a height at two widths should expect the same.
+- **A dark card cannot stay dark on this band, and the inversion costs one state.** `sem/text/3`
+  #111 is a 16px mount that *is* the card, and the flat four cannot take `s.deep` — `deep` IS the
+  page ground on Lime and Grunge while the sheet is `mapBg`, `deep` lifted 11%, so the mount would
+  sit at contrast 1.4. They take the band's own ink instead (a light mount on a dark band). What
+  that costs: `mapFg` **is** `paper`, so on the flat four the mount and the photograph's own cream
+  backing are one colour and an *empty* slot draws no frame. Only ever seen mid-edit or on a theme
+  Retro does not seed; with a photograph in it the mount reads. The bio's `edge`/`under` got away
+  with `s.deep` because its card is a photograph and the edge a hairline — **re-ask `deep` whenever
+  the dark thing is a block rather than a line.**
+- **A wrapper's horizontal gutter is the vertical one once the page stops columning.** The desktop
+  wrapper puts Frame 182 beside the instance at `itemSpacing: 0`, so the only gutter it states is
+  each block's own 56 padding — 112 in all. At 768 and 390 the same sum is genuinely vertical (30 +
+  30, 0 + 24), which is what makes 112 a reading rather than an invention. The band's insets fall
+  out of the same sum: 100 + 56 / 100 + 30 / 60 + 0 above the eyebrow, and the instance's own 56 /
+  30 / 40 below the row.
+- **The torn edge is the band's, and `bleed={false}` is what a sheet that already bleeds wants.**
+  `TornEdge`'s `bleed` pulls the strip out by the *root's* padding, which this sheet has already
+  cancelled with a negative margin — so the strip wants the sheet's own edges, and the sheet needs
+  `position: relative`, which the bio's did not. Its default `colour` is `s.bg`, which is the Figma
+  vector's own fill (#EAD7B8) exactly. The vector is 1554 × 580.99 at all three widths and only its
+  parent's padding moves, so what ramps is the *visible* 46.32 / 46.32 / 36.32, taken through `u()`
+  the testimonials' way.
+- **The repertoire (section 7) inherits this band.** Olive at all three widths, the same pair, the
+  same `calc(surplus + 56/30/10)` horizontal inset — and it owns the **torn foot** (~5647 on the
+  1440 page) where this section owns the head. The seam between them is this section's 56 / 30 / 40
+  foot inset plus whatever the repertoire's head comes to; the tags row's editor check
+  (`+ Add section`, walk it up, read every `[--ac]` root's rect) is how to see two bleeds meet,
+  since `preview.html` renders one section.
 
 ## Open questions
 
