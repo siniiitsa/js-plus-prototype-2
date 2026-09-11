@@ -11901,8 +11901,9 @@ function EnquiryForm({ s }) {
   // type they delete between publishes can leave `type` past the end of it —
   // and Publish re-renders the tab that is already open.
   const ti = s.live && nTypes ? Math.min(type, nTypes - 1) : 0
-  // Only the split layout draws the chip row — the sidebar card's frame draws
-  // none, and the flat fallback never has — so this is what decides whether a
+  // Only the split layout draws the chip row — neither sidebar card's frame
+  // draws one, the editorial form gives the types a box of their own instead,
+  // and the flat fallback never has — so this is what decides whether a
   // type is offered at all, and the mailto reads it rather than `nTypes`. A
   // page whose artist emptied the list and a layout that never asks are the
   // same case: no type was chosen, so the subject is the bare "Enquiry" rather
@@ -12840,8 +12841,351 @@ function EnquiryForm({ s }) {
       </div>
     )
   }
-  // Layouts 4+ — the generic flat design. `NVAR.form` is 3, so nothing reaches
-  // this today; it is what a fourth layout would render until it is fitted.
+  // v3 — Enquiry Form layout 4 · Editorial form (Figma 964:72845, 1440 × 814):
+  // a display head over a 4px mustard rule, the artist's name under it in small
+  // caps, and then two columns — the artist's boxes over a mustard submit pill
+  // on the left, and the ticked promises numbered 01 / 02 / 03 down the right.
+  //
+  // §5.5 — the 768 (964:79477) and 390 (977:8663) masters verbatim, the 1440 one
+  // on the 1180 canvas at × 0.82. **Every box number in this design is the
+  // desktop component's own at all three widths** — the 12 inside a box, its 6
+  // above, the 14 between a row's two cells, the 16 between rows, the pill's
+  // 5/21 and its 46 × 44 disc, the step row's 56 disc and its 16s, the head's
+  // 12 and its 4px rule, the 90 message box. Three `get_metadata` calls read as
+  // arithmetic said so before a render was fetched (the enquiry form's own rule,
+  // holding for a seventh section), so what is left to write is the type table,
+  // the axis and the page inset.
+  //
+  // The axis is the one structural diff and it is a **reorder, not a stack**:
+  // 1440 sets the form beside the steps at a 40 gap, and *both* narrow masters
+  // put the steps **first** at a 32 gap. So the two columns are consts and the
+  // width picks their order — the testimonials' 390 reorder, for a whole column
+  // rather than a rail. `alignItems: start`, the frame's own `items-start`: the
+  // steps column is 283 tall against the form's 443 and stretching it would
+  // stand its last rule 160px below its last row.
+  //
+  // The section stands on the **page ground** — the instance's own fill is
+  // `sem/bg` #EAD7B8, so is its wrapper's, and a PIL scan of all three renders
+  // gives it at stddev 0 (no grain, no tear, no checkerboard: the testimonials'
+  // layout-3 case). Its `px-56 py-100` is `s.padX` / `s.padY` standing in,
+  // §5.5's usual reading, and the root's ground flags stay v0's.
+  //
+  // What the frame's own copy could not supply, and what each slot holds:
+  //
+  //  - **The head is `s.title`, not the artist's name**, even though two of the
+  //    three masters draw "KAI MERCER" there. The 1440 instance overrides it to
+  //    "Contact Us" and the narrow two do not — and the *layer name* is "KAI
+  //    MERCER" at all three, which is the component's own default rather than a
+  //    third vote (a Figma layer keeps the string it was created with). So the
+  //    desktop master is the authored one, "Contact Us" is a section heading,
+  //    and `heading` heads this layout as it heads the other three.
+  //  - **The "ENQUIRE" line under the rule is `s.brand`**, upper-cased by the
+  //    render. That is layout 3's own allocation — the artist's name in the one
+  //    small caps line the design draws — with the two lines in the opposite
+  //    vertical order, and it is what keeps the name the frame does draw from
+  //    being dropped. Every field is still allocated exactly once.
+  //  - **The 01 / 02 / 03 column is `vm.formPromises`**, numbered in sectionVm
+  //    as `vm.formSteps`. The frame's own row 02 sets "Reply within 24 hrs",
+  //    which is FORM_PROMISES[0] almost verbatim, so the column is already in
+  //    the promises' register — layout 3 read the same register the other way,
+  //    running them together as one line. The frame's second line per row (the
+  //    16.8px sub) is dropped: a promise is one string, and inventing a gloss
+  //    for it would be the video section's fabricated-metric rule.
+  //  - **"WHAT HAPPENS NEXT" is a literal**, `vm.formStepsLabel` — the frame's
+  //    own word for the column, and this section keeps its literals on the view
+  //    model (`formTypeLabel`, `formMsgLabel`, `formPrompt`) rather than in the
+  //    renderer.
+  //
+  // Two intended diffs from the frame. It draws five boxes and a message where
+  // `FIELDS.form.fields` seeds four, so the reference picture is two rows of two
+  // and no LOCATION row — the gallery's "the count is the section's when a field
+  // states it". And **a trailing odd field runs the full measure here where
+  // layout 1 trails a half-width cell**: the frame's own fifth box is a 644-wide
+  // LOCATION under two rows of 315, which is a design and not a residue, since
+  // both narrow masters draw it the same way.
+  //
+  // `image`, `photo` and `para` reach no part of this design (question 5's shape
+  // again) and neither does the chip row — `showTypes` is `!!s.v0`, so the
+  // mailto sends the bare "Enquiry", which is layouts 2 and 3's case a third
+  // time. `message` and the rows' `placeholder` column, on the other hand, come
+  // *back*: this is the only layout besides layout 1 to draw both a label above
+  // a box and a placeholder inside it.
+  if (s.v3) {
+    const desk = !s.narrow
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+
+    // `get_variable_defs` on all three masters, not measured.
+    //
+    //   size/display-lg  96 → 60 → 40      size/body-lg   16 → 15 → 15
+    //   size/title       24 → 19 → 18      size/body-md   14 → 13 → 13
+    //   size/list        16 → 12 → 13      size/body-sm   12 → 12 → 12
+    //
+    // `size/list` goes back **up** at 390 for the third time in this section —
+    // the same component, the same non-monotonic token, and the same decision to
+    // write it down rather than explain it. This master carries no `size/label-*`
+    // at all: every small caps line here is the *display* face at `size/list`,
+    // which is why none of them goes through `labelStyle`.
+    const T = desk
+      ? { disp: 96, title: 24, list: 16, bodyLg: 16, bodyMd: 14, bodySm: 12 }
+      : s.mob
+        ? { disp: 40, title: 18, list: 13, bodyLg: 15, bodyMd: 13, bodySm: 12 }
+        : { disp: 60, title: 19, list: 12, bodyLg: 15, bodyMd: 13, bodySm: 12 }
+
+    // The boxes' outline and the rule under every step row are one hue doing two
+    // jobs, and `sem/stroke/2` #5B5E2E is `vm.formRule` exactly — the pricing
+    // stack's own seat, which is the first palette tag clearing 0.22 against the
+    // page ground. Reused rather than re-derived because the job is identical:
+    // an outline the page swallows leaves the boxes as loose type, and Grunge's
+    // T.tags[3] IS its black background.
+    const rule = s.formRule
+    // Small caps in the display face — every label in this design is the
+    // *display* face, which is why none of them goes through `labelStyle`. Two
+    // sizes, and they are two different tokens rather than one ramped: the line
+    // under the head is `Display/Title` 24/19/18 at its own 1.1, and every box
+    // label and the steps' head are `Display/List` 16/12/13 at 1.2.
+    const capsType = {
+      fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2,
+      letterSpacing: s.dls, textTransform: 'uppercase',
+    }
+    const subType = {
+      ...capsType, fontSize: u(T.title), lineHeight: 1.1,
+    }
+
+    // Stated height, layout 3's spelling with this frame's numbers: Figma
+    // strokes inside the box, so a border-box box of the frame's own 45 / 44 / 44
+    // draws the pill exactly. They are one mechanism — 12px of padding over
+    // `size/body-md`'s 1.5 line box — but they are written out, because the
+    // padding that produced them is the frame's face at the frame's scale.
+    //
+    // No palette has a red, so a refused box thickens its own ring in the accent
+    // — inset, so the stated height does not grow. Layout 2's rule, which is
+    // layout 1's in the shape a 999px pill can wear. Only the five pill boxes
+    // ever draw it: `formCheck` reads `fields` alone, so the message box is
+    // always `boxShell(false)`, exactly as it is in layout 1.
+    const boxShell = (bad) => ({
+      border: `${s.bw} solid ${rule}`, borderRadius: '999px', background: 'transparent',
+      height: desk ? u(45) : '44px', padding: `0 ${u(12)}`,
+      width: '100%', margin: 0, boxSizing: 'border-box',
+      fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: s.ac,
+      boxShadow: bad ? `inset 0 0 0 ${u(2)} ${s.ac}` : undefined,
+    })
+    // The message box is the same shell at the frame's stated 90 and its own 24
+    // corner, padded on all four sides so the line starts at the top the way the
+    // frame's `items-start` puts it.
+    const msgShell = {
+      ...boxShell(false), display: 'block',
+      height: u(90), borderRadius: u(24), padding: u(12),
+    }
+
+    // The submit pill stands on the page rather than on a card, so `pillBg`
+    // cannot collapse into its ground the way it does on layouts 2 and 3: it is
+    // built as the lightest tag that is neither the page nor the accent, so the
+    // frame's mustard-on-beige holds on all five palettes by construction. Its
+    // ink is the frame's own `sem/text/1` through `s.pillFg`, which already
+    // encodes the "accent only while it separates" fallback layout 1 leans on.
+    const pill = (extra) => ({
+      ...row(u(10), { justifyContent: 'space-between' }),
+      background: s.pillBg, color: s.pillFg,
+      borderRadius: '999px', width: '100%', boxSizing: 'border-box',
+      padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`,
+      // Figma's "Retro/Poster" — a 5,5 offset in `sem/text/1` — at each master's
+      // own scale. `hard()` is Retro-only by construction.
+      textDecoration: 'none', boxShadow: hard(s, s.ac, 5 * z, 5 * z),
+      fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+      ...extra,
+    })
+    // Layout 3's disc verbatim — the same Frame 174, the same 46 × 44 oval
+    // rounded to a circle off its height, the same 0.5 arrow. Its two colours
+    // are this frame's, which are that one inverted: a rust disc carrying a
+    // mustard arrow, where layout 3 draws the pill mustard and the disc rust for
+    // the identical reason. The flat four take `acFg`, since only Retro can
+    // promise its mustard reads on its own accent.
+    const discDia = Math.round(44 * z)
+    const arrowDisc = (
+      <span style={{
+        width: discDia, height: discDia, borderRadius: '999px', flex: 'none',
+        background: s.ac, color: s.retro ? s.pillBg : s.acFg,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}><ArrowRight size={Math.round(discDia * 0.5)} /></span>
+    )
+
+    // Label above, placeholder inside — layout 1's pair, which no other layout
+    // draws: 2 and 3 have one slot each and spend it on the label. Keyed by
+    // index rather than by label, layout 1's rule, since two boxes may be called
+    // the same thing and an artist mid-rename has two called nothing.
+    const field = (f, i) => {
+      const bad = !!(errs && errs.f[i])
+      return (
+        <div key={i} style={col(u(6), { minWidth: 0 })}>
+          <span style={capsType}>{f.label}</span>
+          {s.live ? (
+            <input
+              value={at(i)} placeholder={f.placeholder}
+              onChange={(e) => setAt(i, e.target.value)}
+              // Layouts 1–3's rule: type="email" is free semantics and a phone
+              // keyboard, `number` gets inputMode only because the spinners
+              // break the stated height, and a date stays a text box carrying
+              // the artist's placeholder.
+              type={f.kind === 'email' ? 'email' : 'text'}
+              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              style={{ ...boxShell(bad), outline: 'none' }}
+            />
+          ) : (
+            <span style={{
+              ...boxShell(bad), display: 'flex', alignItems: 'center',
+            }}>{f.placeholder}</span>
+          )}
+        </div>
+      )
+    }
+
+    // `vm.formRows`' pairs again, and a grid rather than the frame's two
+    // `flex-[1_0_0]` cells — this section's own lesson: a zero basis resolves
+    // against the content box, so a pair that carries anything of its own does
+    // not split its row equally. A one-field row runs the whole measure, which
+    // is the frame's own fifth box and not layout 1's trailing half cell.
+    const fieldRow = (fs, r) => (
+      <div key={r} style={{
+        display: 'grid', gap: u(14),
+        gridTemplateColumns: fs.length > 1
+          ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      // r * 2 + j, not the row-local index: `at()` and `errs.f` are indexed
+      // against the whole field list, and a row is always a chunk of two.
+      }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+    )
+
+    const formCol = (
+      <div key="form" style={col(u(16), { minWidth: 0 })}>
+        {sent ? (
+          // The form column alone changes — the head, the rule and the steps
+          // beside it do not move. `sent` is only ever set under s.live, so the
+          // canvas never draws this.
+          <>
+            <h3 style={{
+              margin: 0, fontFamily: s.display, fontSize: u(T.title),
+              lineHeight: 1.1, letterSpacing: s.dls, color: s.ac,
+              overflowWrap: 'break-word',
+            }}>{s.formSentTitle}</h3>
+            <p style={{
+              margin: 0, fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+            }}>{s.formSentBody}</p>
+            {/* Plain text, not a second mailto: this line is the fallback for a
+                visitor whose browser opened nothing. */}
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: u(T.bodyLg),
+              overflowWrap: 'break-word',
+            }}>{s.formEmail}</span>
+            <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>
+              {s.formAgain}
+              {arrowDisc}
+            </span>
+          </>
+        ) : (
+          <>
+            {s.formRows.map(fieldRow)}
+            <div style={col(u(6))}>
+              <span style={capsType}>{s.formMsgLabel}</span>
+              {s.live ? (
+                <textarea
+                  value={msg} placeholder={s.formMessage}
+                  onChange={(e) => setMsg(e.target.value)}
+                  // The box is the frame's; it cannot be dragged out of it.
+                  style={{ ...msgShell, resize: 'none', outline: 'none' }}
+                />
+              ) : (
+                <span style={msgShell}>{s.formMessage}</span>
+              )}
+            </div>
+            <Pill {...pillLink} onClick={onSubmit} style={pill({
+              cursor: onSubmit ? 'pointer' : undefined,
+            })}>
+              {s.formBtn}
+              {arrowDisc}
+            </Pill>
+            {errs && (
+              <span style={{
+                fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
+              }}>{s.formPrompt}</span>
+            )}
+          </>
+        )}
+      </div>
+    )
+
+    // Not drawn at no promises, and the grid then gives the form the whole
+    // measure: a lone column head over nothing is the footer's empty second
+    // column, which spends a 40px gap and half the page on an empty child.
+    const stepsCol = s.formSteps.length ? (
+      <div key="steps" style={col('0px', { minWidth: 0 })}>
+        <span style={capsType}>{s.formStepsLabel}</span>
+        {s.formSteps.map((st) => (
+          <div key={st.n} style={row(u(16), {
+            // 1px, unramped — the frame states it as a raw value at all three
+            // widths, the repertoire's hairline rule.
+            borderBottom: `1px solid ${rule}`,
+            padding: `${u(16)} 0`, width: '100%',
+          })}>
+            <span style={{
+              width: u(56), height: u(56), flex: 'none', borderRadius: u(8),
+              // The frame inks the numeral in `sem/bg`, the page ground showing
+              // through the disc. Retro takes that literally; the flat four take
+              // the accent's own guaranteed ink, since no palette promises its
+              // page colour reads on its accent.
+              background: s.ac, color: s.retro ? s.bg : s.acFg,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
+            }}>{st.n}</span>
+            {/* The frame sets this `whitespace-nowrap` inside an `overflow-clip`
+                row, which is the media player's destroys-its-own-content rule on
+                a string the artist typed — a promise is prose and wraps. The row
+                then grows past its 88 and the disc stays centred in it. */}
+            <span style={{
+              flex: '1 1 auto', minWidth: 0,
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+            }}>{st.label}</span>
+            <span style={{
+              flex: 'none', fontFamily: s.body, fontSize: u(T.bodyLg),
+              lineHeight: 1.5, color: s.ac,
+            }}>↘</span>
+          </div>
+        ))}
+      </div>
+    ) : null
+
+    return (
+      <div style={col(u(24))}>
+        <div style={{
+          // 4px, unramped, the frame's own raw value at all three widths — the
+          // pricing stack's layout-4 rule written the same way. It is the one
+          // mustard in the composition besides the pill.
+          borderBottom: `4px solid ${s.pillBg}`, paddingBottom: u(12), width: '100%',
+        }}>
+          {/* The frame sets this `whitespace-nowrap`, which its own two-word
+              string never tests; ours is a sentence at `display-lg`, so the
+              measure folds it. Dropped rather than transcribed. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(T.disp),
+            lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+            overflowWrap: 'break-word',
+          }}>{s.title}</h2>
+        </div>
+        {/* No colour: `sem/text/2` is #111111, which IS Retro's `tx`, and this
+            whole design stands on the page ground — so every line but the head,
+            the pill and the discs inherits and the flat four are right by
+            construction (the media player's rule). */}
+        <span style={subType}>{s.brand}</span>
+        <div style={{
+          display: 'grid', width: '100%', gap: u(desk ? 40 : 32),
+          gridTemplateColumns: desk && stepsCol
+            ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+          alignItems: 'start',
+        }}>{desk ? [formCol, stepsCol] : [stepsCol, formCol]}</div>
+      </div>
+    )
+  }
+  // Layouts 5+ — the generic flat design. `NVAR.form` is 4, so nothing reaches
+  // this today; it is what a fifth layout would render until it is fitted.
   // Its three boxes were hardcoded literals unrelated to the field list; they
   // are the artist's now, off the same state and the same hooks as v0 and v1 —
   // there is no second state model.

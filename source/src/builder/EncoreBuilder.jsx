@@ -944,6 +944,27 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // renderer prints a string. An emptied `promises` composes to '' and the line
   // is not drawn at all, the Soundcloud button's rule.
   vm.formPromiseLine = vm.formPromises.join(' · ')
+  // The same promises again, numbered, which is §10.2 layout 4's right-hand
+  // column: its frame draws 01 / 02 / 03 discs beside three lines whose second
+  // row reads "Reply within 24 hrs" — FORM_PROMISES[0] almost verbatim, so the
+  // column is already in the promises' own register. The numeral is composed
+  // here for `vm.tracks[].n`'s reason: the renderer prints strings and pads
+  // nothing. The frame's second line per row has no seat — a promise is one
+  // string, and a gloss for it would be a claim the artist never typed.
+  vm.formSteps = vm.formPromises.map((p, i) => ({
+    n: String(i + 1).padStart(2, '0'), label: p,
+  }))
+  // That column's own head. A literal the view-model owns, `formTypeLabel`'s
+  // rule, upper-cased by the renderer's display face rather than here.
+  vm.formStepsLabel = 'What happens next'
+  // §10.2 layout 4 outlines every box and rules every step row in one hue, and
+  // the frame's `sem/stroke/2` #5B5E2E is `vm.tierRow.card` exactly — the
+  // pricing stack's own seat, the first palette tag that clears `tierHues`'
+  // 0.22 against the page ground. Taken rather than derived a second time
+  // because the job is the same one that walk was written for: a line or an
+  // outline that has to read against the *page*, where Grunge's T.tags[3] IS
+  // its black background and Retro's is the olive the frame binds.
+  vm.formRule = vm.tierRow.card
   // The boxes are the artist's now, on the `songs` rule — absent key means the
   // seed, emptied array means none, no null sentinel. Every row is normalised
   // here so EncoreSection can switch on `kind` without a default of its own;

@@ -179,6 +179,14 @@ if (q.get('since')) c.since = q.get('since')
 // array, and `&tags=` with nothing after it is also the emptied-row state.
 if (q.get('tags') !== null) c.tags = q.get('tags')
 
+// &promises=A|B|C fills FIELDS.form.promises, the enquiry form's other
+// list-shaped content — a newline-delimited *string*, like `&tags=`' commas, so
+// `&n=` (which fills `c.fields`) can never reach it. The pipes are the URL's:
+// a raw newline in a query string is not worth the escaping. `&promises=` with
+// nothing after it is the emptied state, which layout 3 renders as a card that
+// ends on its pill and layout 4 as a form with no right-hand column at all.
+if (q.get('promises') !== null) c.promises = q.get('promises').split('|').join('\n')
+
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
 // driving the editor and its popup.

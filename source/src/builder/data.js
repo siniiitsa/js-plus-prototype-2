@@ -183,7 +183,7 @@ export const minimalNav = (navSections) =>
 // arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
   header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 4,
-  repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 3, form: 3, footer: 1,
+  repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 3, form: 4, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -895,7 +895,7 @@ export const FIELDS = {
   ],
   form: [
     { k: 'image',    l: 'Portrait', type: 'image',
-      hint: 'The round photo beside your name. Layouts 1 and 2 — layout 3 draws no credit row.' },
+      hint: 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's and the video section's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
@@ -908,17 +908,19 @@ export const FIELDS = {
       hint: 'The line under the heading in layout 3; the one under the card in layout 2.' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
       hint: 'One per line — the ticked list beside the form. Layout 3 runs them together '
-          + 'as the one line under its button.' },
+          + 'as the one line under its button; layout 4 numbers them down its right-hand '
+          + 'column, and with none it draws no column at all.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
     // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
     // no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
-      hint: 'One box each — two to a row in layout 1, one to a row in layouts 2 and 3, which '
-          + 'set the label inside the box and draw no placeholder. The published form '
-          + 'emails you what the visitor types.' },
+      hint: 'One box each — two to a row in layouts 1 and 4, one to a row in layouts 2 and 3, '
+          + 'which set the label inside the box and draw no placeholder. An odd last box '
+          + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
+          + 'form emails you what the visitor types.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
-    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, hint: 'Layout 1 only.' },
+    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, hint: 'Layouts 1 and 4.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
