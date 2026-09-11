@@ -12,12 +12,14 @@ true, and this file does **not** repeat them — then the two memory notes `figm
 
 Branch: **`retro-layout-4`**.
 
-**All twelve sections are fitted** (`5bb8c9c` closed the last of them). What is left is the
-**end-of-pass sweep**, which this file has been collecting since section 1 and which is one
-session of its own: the three comment drifts under *Where layout 4 goes*, the four
-"layouts 1, 2 and 3" documents, then `npm run build:standalone`, the `cp` to the root
-`index.html`, the two-build digest and a grep of the built file for a layout-4-only value.
-Nothing below is owed a fit.
+**The pass is closed.** All twelve sections were fitted (`5bb8c9c` closed the last of them) and
+the **end-of-pass sweep** — which this file had been collecting since section 1 — ran as one
+session of its own: the three comment drifts under *Where layout 4 goes* and the four
+"layouts 1, 2 and 3" documents in `80c557c`, then `npm run build:standalone`, the `cp` to the
+root `index.html`, the two-build digest and the built-file tells in `9e0f726`. Nothing below is
+owed a fit, and the only thing left open is question 10, which is an observation rather than a
+task. See *Learned on the end-of-pass sweep* at the foot of *Conventions* for what this one cost
+that layouts 2 and 3 did not.
 
 ## The Figma source
 
@@ -248,25 +250,24 @@ UI.** Take each in the section's own commit, never all of them up front:
   `FIELDS.header.avatar`'s hint dropped its last sentence outright (Stacked *does* draw the
   avatar), and `README.md:142` / `EncoreBuilder.jsx:2806` lost the ratio as well as the name —
   Stacked is 738 against the hero's 614, not "half again as tall". `NVAR.header` stays 6.
-- **Three comments drift with the `CATS` and `NVAR` bumps, and all three join the end-of-pass
-  sweep.** Do not take any of them per section — each is one line that would otherwise be
-  rewritten seven more times.
-  - `data.js:160–162` says *"For everything except the header, more layout choices are offered
-    than there are designs"*; `footer` was already 1/1, `tags` is 4/4 (`c583070`) and `video` is
-    4/4 (`5999dc1`). It becomes *at least as many as*.
-  - **`CLAUDE.md`'s *Layout folding* bullet is the same claim in the other document** — *"For
-    the 13 non-header categories, more layout numbers are offered than there are distinct
-    designs"* — and is false for the same two. Its "Audio layouts 1, 4 and 7 render identically"
-    example is still true and should stay (open question 3 turns on it).
-  - **The setup modal's design-count example**, `EncoreBuilder.jsx:3256`. The video session had
-    to rewrite it because its old text named video outright; what it now says — *"four designs
-    each (bio, media) or three (the other seven)"* — goes stale again the moment `gallery` or
-    any other seeded category bumps. Leave it until the last section and write the count once.
-- **Three documents assert "layouts 1, 2 and 3"** and become four: `CLAUDE.md:86`,
-  `README.md:150` and `data.js:188`. `README.md:154`'s "six header cards fold onto three body
-  designs" becomes four as well. **Land all four at the end of the pass, not with the first
-  `NVAR` bump** — see *Learned on the header*: the claim is about every *body* category, so it is
-  false at index 3 until one is fitted, and the header's own refit does not make it true.
+- ~~**Three comments drift with the `CATS` and `NVAR` bumps, and all three join the end-of-pass
+  sweep.**~~ *All three done — `80c557c`, one line each, taken once rather than eleven times as
+  the plan asked.* The `data.js` §4.4 header and `CLAUDE.md`'s *Layout folding* bullet were the
+  same claim in two documents; both now state the inequality (`at least as many as`) rather than
+  the surplus, and the count they name was **counted rather than assumed** — it is six level
+  categories, not the two this bullet predicted: `gallery` and `map` already offered four rows,
+  so their `NVAR` bumps made them level without needing a `CATS` bump to show it. The setup
+  modal's example (`EncoreBuilder.jsx`) was written once, and what it now names is the fact that
+  changed rather than a list that will: the seeded page repeats from the fifth card, and `audio`
+  at three is what still denies the cards a page number. `CLAUDE.md` also gained the hand-fold,
+  since it repeated `pageLayout()`'s "lowest `arch`" promise that `video` broke.
+- ~~**Three documents assert "layouts 1, 2 and 3"** and become four.~~ *Done — `80c557c`, all
+  four in the one commit as the plan asked.* `README.md:154`'s "no single repeat period" example
+  had to move with them: it named `video` (two designs), which now has four, so it is `audio`
+  (three). Its list of one example per header layout gained Stacked's, so "four" is not asserted
+  beside examples that stop at three. **Three sentences that also read "layouts 1, 2 and 3" were
+  left alone on purpose** — `data.js:770`/`778`, `CLAUDE.md`'s pricing bullet and
+  `EncoreSection.jsx:7111` each name which layouts *read a field*, and all of them are true.
 - **The bump costs nothing else.** There is no persistence, so no stored page migrates; the seeded
   page is `arch 0` throughout, so the end-of-pass two-build digest is unaffected. The one intended
   change per category is that a section a user had set to layout 4 stops rendering layout 1's
@@ -343,6 +344,11 @@ one deliberate step at the end of the whole pass (`cp source/dist-standalone/ind
 index.html`), and layout 2's *Learned on the end-of-pass refresh* notes say how to check it.
 Expect the two-build digest to come back at **zero rows**, as layout 3's did, and prove the new
 work shipped by grepping the built file for a value only these branches emit.
+
+*That step has now run — `9e0f726`.* The digest came back at zero rows **outside the rotating
+seal**, which is a qualification layout 3's did not need; see *Learned on the end-of-pass sweep*
+for that, for the Radix tablist that quietly defeats a synthetic click, and for the click that
+proves the pass shipped better than any grep does.
 
 Suggested order is the table's, which is the page's. The header first is deliberate for the third
 pass running: it is the one section that is Retro-only (`HeaderV0`–`V5` never render for the flat
@@ -1256,6 +1262,46 @@ Learned on the testimonials (section 12 — the last):
   the master's own 225.33 and both narrow cards on its 392.4 to the tenth. The desktop
   render is the one that will look wrong beside Figma (three fill cards at 353.9 against
   four at 262), and that is the short-row-fills rule, not a slip.
+
+Learned on the end-of-pass sweep (`80c557c` and `9e0f726`):
+
+- **Count the claim before rewriting it.** This file predicted two categories would go level
+  with their design counts (`tags` and `video`, the two that needed a `CATS` bump). It is six:
+  `gallery` and `map` already offered four rows, so their `NVAR` bumps made them level without
+  anything visible happening. The bullet that named them was written from the *picker cards*
+  that appeared, which is a different set from the categories at parity. One `node -e` over
+  `CATS` and `NVAR` settles it, and it is the same reflex as the tags row's palette test.
+- **`EncoreBuilder.jsx` was not byte-identical this time**, which the layout-2 and layout-3
+  refreshes could both rely on. That is the pass family's one standing shortcut gone, and what
+  replaces it is a walk of the diff's hunks rather than a walk of the file: eleven hunks, nine
+  additive `vm.*` keys inside `sectionVm` and two comments, and the whole diff removing exactly
+  one non-comment line (`tags: songTags(t?.tags)`, hoisted to a local two lines up so
+  `tagLabels` could case it). Nothing outside `sectionVm`, so the chrome the digest is *driven
+  by* is the old build's, which is what the byte-identity used to prove. Run
+  `git diff <build commit> HEAD -- …EncoreBuilder.jsx | grep '^-' | grep -v comment` first —
+  it is one call and it is the whole argument.
+- **The rotating seal makes the digest non-zero, and the fix is a control walk rather than a
+  filter.** 16 rows differ at both wide widths and 12 at 390, every one a `g` / `text` /
+  `textPath` of `showBadge`'s stamp, whose `getBoundingClientRect` moves between any two
+  samples. Walk the *same* build twice 400ms apart and diff that first: the self-diff row
+  indices came back **identical** to the cross-build ones, and cross minus self is empty at all
+  three widths. Do not suppress the rows — the control walk proves what a suppression would
+  merely assume, and it costs one `sleep`.
+- **The canvas tablist is Radix, so a synthetic `.click()` selects nothing.** The walk then
+  silently repeats the previous width and three widths come back at 885 rows apiece. Dispatch
+  `pointerdown` + `mousedown` (Radix commits on mousedown, not on click) or use a trusted
+  click, and **assert the canvas width after every switch** — 1078 / 768 / 390 off the first
+  `--ac` root. This is layout 2's "wedged renderer that silently stopped applying the device
+  switch" arriving through a different door, and it produced the same shape of phantom: the
+  identical 16 seal rows, which for a moment read as a finding.
+- **The strongest proof the pass shipped is a click, not a grep.** `EXAMPLE_PAGE` is `arch 0`
+  throughout, so the digest can only prove an absence. Drive the built file's setup modal and
+  click the **fourth** card: the old build labels it *Polaroid* and takes all nine body sections
+  to **layout 1** (`3 % 3`), the new one labels it *Stacked* and takes them to **layout 4**
+  (`3 % 4`). One click, the whole pass, and the footer staying at layout 1 is the one-design
+  category proving the fold is real. Keep the string tells as the cheap second check — here
+  `All songs · A–Z`, `What happens next` and `Name stacked over the photo` (new only) and
+  `Polaroid` (old only, twice).
 
 ## Open questions
 
