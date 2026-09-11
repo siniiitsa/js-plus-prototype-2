@@ -183,7 +183,7 @@ export const minimalNav = (navSections) =>
 // arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
   header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 4,
-  repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 3, form: 4, footer: 1,
+  repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -884,11 +884,12 @@ export const FIELDS = {
     // add a fourth — which is the pricing packages' case, not a textarea's.
     // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
     { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
-      hint: 'Each row is one review. Layouts 1 and 2 page through them; layout 3 '
+      hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
           + 'becomes a plain quote card there. The date line is the small type '
           + 'above the quote in layout 1 and sits beside the reviewer in layout 2, '
-          + "whose selector takes the name's initials; layout 3 has no seat for it." },
+          + "whose selector takes the name's initials — layout 4 marks its card "
+          + 'with the same initials; layouts 3 and 4 have no seat for the date.' },
     { k: 'cta',     l: 'Button', d: 'Book Now',
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },

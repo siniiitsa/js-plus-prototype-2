@@ -131,8 +131,8 @@ mutated through a single `patch()` helper.
   the **booking calendar's month arrows, its day picking and its foot pill** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
   the **testimonials carousel's arrows** (below — layout 2 pages the same `cur` from a rail of
-  initial tiles instead, and layout 3 reads it **not at all**: it is a wall of every review,
-  so there is nothing to page),
+  initial tiles instead, layout 4 pages it from a pair of arrow discs in its head, and layout 3
+  reads it **not at all**: it is a wall of every review, so there is nothing to page),
   the **footer's link columns and its Book pill** (below),
   and the four sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
@@ -556,8 +556,21 @@ mutated through a single `patch()` helper.
   the sentence under it is `sub`, the line above the disc stack is `s.brand`, and the stack is
   one `vm.quotes[].mark` per **named** review, so it never invents a face for a card the wall
   itself shows unattributed. The `★★★★★` and the `®` go with the rating. `when` and `cta` have
-  no seat there, which is the only content this section's three layouts do not between them
-  read.
+  no seat there, which is the only content this section's first three layouts do not between
+  them read. **Layout 4 is a wall that pages**: a display head with a pair of arrow discs at
+  its right over *one row* of cards — four at 1440, three at 768, one and a peek at 390 — so it
+  is the third design to share `cur` whole rather than grow a seam, reading it as the review
+  **leading the row** where layouts 1 and 2 read it as the single card on show. The row is one
+  card per review as everywhere else, so the frame's four cells against three seeded reviews
+  are its filler; the arrows are derived from the list and **not drawn at one page**, which
+  means the seeded 1440 and 768 renders carry no arrows where the frame draws them (the events
+  map's intended diff). The hue is the **seat's** and not the review's, the media player's fan
+  rule, and its cost is that the rust card is seat four: unreachable at 768 and 390 at any
+  count, and needing four reviews at 1440. It is the section's second full-bleed sheet and its
+  first mustard one — `s.pillBg` with a `pillFg` head, the enquiry form's layout-2 pair on the
+  identical ground — so the root's `cream` flag stays layout 1's for the fourth time. `when`,
+  `sub` and `cta` reach none of it, which leaves `when` a layouts-1-and-2 column and `cta`
+  layout 2 alone.
 - **The footer is the artist's sitemap, and the published one navigates.** It was the last
   §10.2 section that was a picture on *both* sides, and the only one whose links were dead by
   the **header's own rule**: `linkCol` drew `<a href="#">`, which the published tab's delegated
