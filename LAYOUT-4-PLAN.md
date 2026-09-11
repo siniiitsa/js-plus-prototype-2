@@ -48,7 +48,7 @@ one session.
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:72511` | Headers — **C · Stacked** | 1440 × 900 | `964:77544` | 768 × 1024 | `971:14040` | 390 × 844 | done e4e7b27 |
 | 2 | `bio` | `964:72519` | Bios — **B · Portrait + overlays** | 664 × 720 | `964:76446` | 708 × 720 | `971:14479` | 370 × 536 | done `21bfa3c` |
-| 3 | `tags` | `964:72516` | **Tags — Frame** | 457 × 118 | `964:76443` | 457 × 103 | `971:14238` | 370 × 58 | todo |
+| 3 | `tags` | `964:72516` | **Tags — Frame** | 457 × 118 | `964:76443` | 457 × 103 | `971:14238` | 370 × 58 | done `c583070` |
 | 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | todo |
 | 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | todo |
 | 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | todo |
@@ -224,7 +224,8 @@ UI.** Take each in the section's own commit, never all of them up front:
 - **`NVAR[cat]` 3 → 4** for `bio`, `tags`, `media`, `gallery`, `repertoire`, `pricing`,
   `calendar`, `map`, `testimonials`, `form` — ten categories, one per session. Bumping ahead of
   the fit would point layout 4 at the never-designed generic tail.
-- **`CATS[].n` 3 → 4 for `tags` and `video`, in the same commit as their `NVAR` bump.** Those two
+- **`CATS[].n` 3 → 4 for `tags` and `video`, in the same commit as their `NVAR` bump.** *`tags`
+  done — `c583070`; `video` still owed.* Those two
   are the only categories offering fewer than four layout rows, and `pageLayout()`'s own comment
   rests on `designCount ≤ layoutCount` — bumping `NVAR` alone would leave the picker unable to
   highlight the row the fold names. **This is the first time the pass family adds a layout-picker
@@ -502,6 +503,74 @@ Learned on the bio (section 2):
   390 meta row **wraps** with `since` filled, where the frame's three shorter strings fit its
   identical 310.
 
+Learned on the tags row (section 3):
+
+- **Two masters can be the same design and the fit still be a new branch — count what they
+  disagree about, not what they share.** This instance is a *different* Figma component from
+  layout 3's (`;690:34xx` against `;516:14xx`, the instance-child id again) and is numerically
+  identical to it: same `body-lg` 16/15/15 head at 1.5, same 16 under it, same `label-xs`
+  20/14/12 chips at 1.26, same `radius/chip` 8, same 8 gap both ways, same 5/11 padding, and
+  `get_variable_defs` on all three masters returns layout 3's list token for token. The
+  disagreements are **two, and both structural**: this one stands on the olive band, and its 390
+  master hides the head. The media player's rule therefore said *write it again* — eight lines —
+  where the same rule said *reuse* for `TagChips`, which is still shared. Writing it again is
+  also what keeps v2 byte-identical for the brace-depth walk, which a widened `if (s.v2 ||
+  s.v3)` would have destroyed for a saving of eight lines.
+- **A narrow master can *hide* a node the wide ones draw, and `get_variable_defs` corroborates
+  it for free.** The 390 head frame is `hidden="true"` and still carries the desktop component's
+  1168 × 48; the 390 variable defs return neither `sem/text/1` nor `size/body-lg`, where both
+  wider masters return both. That is the gallery's unhidden-node tell read the other way up —
+  and the two sources agreeing is what makes it a design rather than a broken instance. A field
+  can therefore reach two of three widths, which its hint now says.
+- **The 390 band's bottom inset is 60, not the 30 the bio inferred — and it is declined at both
+  sections.** `971:14234` is 871 tall with the bio instance ending at 811 (`30 + 205 + 40 + 536
+  + 60`), and the same sum at 768 gives the band's 1161 as `60 + 297 + 24 + 720 + 60`. So the
+  frame's own seam is 40 at 390 and 24 at 768, where two symmetric sheets give 60 and 120: the
+  seam is not reproducible either way, which makes the *foot* the smaller of the two diffs and
+  symmetry the property worth keeping — a section whose sheet is 30 at the head and 60 at the
+  foot reads as a mistake the moment it is not followed by the other half, and either half can
+  stand alone or be reordered. `630d7eb`'s "inherits whole" stands; this is the reading it
+  asked for, recorded rather than applied.
+- **Do not call `get_metadata` on a wrapper that parents a checkerboard strip.** `971:14234`
+  came back with 128 tile children and cost ~200k tokens for four numbers. The narrow pages
+  reparent both strips to the bio Section's foot and the video frame's head (the plan's own
+  note, two paragraphs above the table) — so at 768 and 390 the bio/tags Section is exactly the
+  wrapper to be careful with. Sum the band table against the instance heights instead, or query
+  the *head* frame and derive the rest.
+- **The seam has to be checked in the editor, not the harness.** `preview.html` renders one
+  section, so two bleeds meeting is the one thing it cannot show. The flow is four
+  `evaluate_script` calls: open the editor, pick **Stacked** in the setup modal, add a Tags
+  section (`+ Add section` gives the first free category, which with `tags`/`audio`/`video`
+  absent *is* `tags`), walk it up with the row's Move up, then read every `[--ac]` root's rect.
+  Two facts fall out and both are page-wide: **every section root's `top` is the previous
+  root's `bottom` to the tenth**, so two sheets that each cover their own root exactly must
+  touch; and the bio's and the tags' sheets do (822→1838.1 and 1838.1→2091.7 at 1078). Worth
+  re-running for any later section that bleeds.
+- **`LayoutPicker` is a Radix `DropdownMenu` and a synthetic `pointerdown` will not open it.**
+  Neither `.click()` nor a hand-built `PointerEvent` with `button: 0` did; `take_snapshot` +
+  `click(uid)` — a **trusted** gesture — opened it first try, and the `[role=menuitem]` items
+  then take the synthetic `pointerdown`/`pointerup`/`click` triple that the published-tab note
+  already prescribes for a Radix `Select`. Add the trigger to that note's list.
+- **`s.ac` on a dark sheet, with the frame itself setting a 1.41.** The head is `sem/text/1`,
+  the rust, which is `s.ac` on every palette and needs no literal — and on the olive it is
+  contrast **1.41**, which is the designer's choice and not a transcription slip. Run the five
+  palettes before deciding whether to "fix" it: Lime 8.79, Editorial 3.85, Grunge 3.61 and Pop
+  **1.50** — so the worst of the flat four is no worse than Retro's own, which is the cleanest
+  argument this pass has had for keeping an accent the conventions twice warn about.
+- **Retro's fourth tag IS the band, so one chip draws its box invisible** and only its cream
+  label shows — in the frame as well as here, `contrast()` giving `vm.chips[].fg` the same cream
+  by construction. Lime's third-tag-is-the-page-ground convention with the designer doing it on
+  purpose, and the second reason (after the head's 1.41) this branch needs no correction it
+  looks like it needs.
+- **`TagChips`' `showTags` guard cannot fire on a tags section.** `showTags` is a
+  `FIELDS.header` key and `cv('showTags', 'show')` has nothing to read on any other category, so
+  the sheet can never render empty. Worth checking before wrapping a shared leaf in a sheet —
+  `sealGap`'s read-the-key-beside-the-component rule, answered in the negative for once.
+- **The width cost is the column's, not the design's.** 457 wraps six chips to two rows where
+  our 1052 holds them on one; the row is `flex-wrap w-full` at every width and the 390 master
+  wraps at 370 too, so there is nothing to reproduce. The chips' own 5/11 and 8 stay the
+  component's unramped literals at desktop — layout 3's named reuse cost, unchanged.
+
 ## Open questions
 
 1. **The page carries the `form` category twice, and only one of them can be the fit.** The
@@ -542,6 +611,9 @@ Learned on the bio (section 2):
    picker would not change; this one cannot. Both new cards sit at the end of their category's
    list and nothing existing moves, but it is the first user-visible change this pass family has
    made outside a section's own rendering, and it is worth a line in the commit that makes it.
+   *Half settled on the tags row (`c583070`): the Tags picker now offers four cards, the fourth
+   at the end, and a trusted-click check confirmed the three above it did not move. `video`'s is
+   still to come, and it arrives with open question 2's hand-fold rather than a plain bump.*
 5. **The booking calendar's master is the wizard's output, misfiled under the calendar's name.**
    *"D · Enquiry summary stack"* is a dark card reading *Summer wedding / Lake District · Outdoor
    / GUESTS 120 / SET LENGTH 4 hrs / BUDGET £1,200 / SOUND Provided*, then *Sat, June 12 ·
