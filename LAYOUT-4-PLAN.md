@@ -614,12 +614,26 @@ Learned on the media player (section 4):
   1019.18 is on the 1440 *and* 768 text nodes; at 768 the same string inks 655 in a 656 frame, so
   it wraps nothing, and the 390 master states a measure that breaks it in two. Declined, where the
   bio's 572.9 was kept — the discriminator is the booking calendar's: check whether the leak still
-  *does* something at the narrow width.
-- **A mark that must survive the canvas is a seat, not a state.** The frame outlines tile one and
-  draws tile one's photograph as the sleeve, so the outline is `i === at` — which is 0 until the
-  visitor picks and therefore the frame's own picture on the canvas — and never `chosen`. Drawn
-  `transparent` on every other tile, so picking one moves no geometry. The media player's fan rule
-  reaching a grid.
+  *does* something at the narrow width. What our own head then does is the face factor a third
+  time, in the opposite direction to the bio's: "Five worth your ear." in Fraunces at 40 fits the
+  370 column on one line where the frame's longer string in Soulway takes two, so the 390 section
+  stands 36px shorter than the band.
+- **A mark that must survive the canvas is a seat, not a state.** The frame marks tile one and
+  draws tile one's photograph as the sleeve, so the mark is `i === at` — which is 0 until the
+  visitor picks and therefore the frame's own picture on the canvas — and never `chosen`. The
+  media player's fan rule reaching a grid.
+- **Mark a photographic tile with an inset shadow, and measure the photograph rather than the
+  tile.** The first draft drew `border: 3px solid transparent` on the unmarked tiles so that
+  picking one moved no geometry — and `inset: 0` resolves against the **padding** box, so all of
+  them drew a 6px-smaller photograph at a 27px radius and the frame's gutter came out 6 wider
+  (10 → **16** at 390, a 60% wider phone gutter). A `getBoundingClientRect` digest of the tile
+  `div` cannot see it: it reads the frame's number and the `<img>` inside is the thing that
+  moved (the repertoire's measure-the-card-not-the-seat lesson, at the level of a photograph).
+  The events map's rule is the fix — a rule that does not grow its box is an inset `boxShadow` —
+  and hanging it on the scrim overlay, which already paints over the photograph and under the
+  label, is Figma's inside stroke exactly. Repeat the radius on that overlay, or the parent's
+  clip squares the ring's inner corners. **Assert `img` rect == tile rect at all three widths**
+  whenever a design layers type over a full-bleed photograph.
 - **The section's live seam cost nothing.** `pick`, `goTo`, `toggle`, `now` and `audio` are all
   above the branch, so the whole of layout 4's playback is four `onClick`s; the only line outside
   the branch is `list`, widened to `|| s.v3` — a strict no-op while `NVAR.media` was 3, because
