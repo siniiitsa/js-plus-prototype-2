@@ -241,11 +241,20 @@ UI.** Take each in the section's own commit, never all of them up front:
   `FIELDS.header.avatar`'s hint dropped its last sentence outright (Stacked *does* draw the
   avatar), and `README.md:142` / `EncoreBuilder.jsx:2806` lost the ratio as well as the name —
   Stacked is 738 against the hero's 614, not "half again as tall". `NVAR.header` stays 6.
-- **`NVAR`'s own comment drifts with the `CATS` bumps, and joins the end-of-pass sweep.**
-  `data.js:160–162` says *"For everything except the header, more layout choices are offered than
-  there are designs"*; `footer` was already 1/1, `tags` is now 4/4 (`c583070`) and `video` will
-  be the third. It becomes *at least as many as*. Do not take it per section — it is one line and
-  it belongs with the four below.
+- **Three comments drift with the `CATS` and `NVAR` bumps, and all three join the end-of-pass
+  sweep.** Do not take any of them per section — each is one line that would otherwise be
+  rewritten seven more times.
+  - `data.js:160–162` says *"For everything except the header, more layout choices are offered
+    than there are designs"*; `footer` was already 1/1, `tags` is 4/4 (`c583070`) and `video` is
+    4/4 (`5999dc1`). It becomes *at least as many as*.
+  - **`CLAUDE.md`'s *Layout folding* bullet is the same claim in the other document** — *"For
+    the 13 non-header categories, more layout numbers are offered than there are distinct
+    designs"* — and is false for the same two. Its "Audio layouts 1, 4 and 7 render identically"
+    example is still true and should stay (open question 3 turns on it).
+  - **The setup modal's design-count example**, `EncoreBuilder.jsx:3256`. The video session had
+    to rewrite it because its old text named video outright; what it now says — *"four designs
+    each (bio, media) or three (the other seven)"* — goes stale again the moment `gallery` or
+    any other seeded category bumps. Leave it until the last section and write the count once.
 - **Three documents assert "layouts 1, 2 and 3"** and become four: `CLAUDE.md:86`,
   `README.md:150` and `data.js:188`. `README.md:154`'s "six header cards fold onto three body
   designs" becomes four as well. **Land all four at the end of the pass, not with the first
@@ -701,8 +710,9 @@ Learned on the video section (section 5):
   the identical component one section earlier.
 - **The whole branch is one `z`, one type table, one colour block and three absolutely-
   positioned bands.** No state, no handler, no decoration, no `s.retro` gate beyond four colour
-  literals, and no width branch outside `u()`'s `z` and three insets (24/24/10, 20/20/10,
-  16/16/10). The card is an aspect box, so filling 1052 costs it nothing but height — 597
+  literals, and **five** width tests outside `u()`'s `z` — all of them `s.mob`, none `desk` or
+  `tab`: the three insets (24/24/10, 20/20/10, 16/16/10), the `aspectRatio` and the head gap.
+  The card is an aspect box, so filling 1052 costs it nothing but height — 597
   against the frame's ramped 618 — and there is nothing in the composition that could have given
   anything back.
 - **`arch`-level proof beats an argument about `arch`.** The hand-fold's no-op claim is exactly
