@@ -12,6 +12,13 @@ true, and this file does **not** repeat them — then the two memory notes `figm
 
 Branch: **`retro-layout-4`**.
 
+**All twelve sections are fitted** (`5bb8c9c` closed the last of them). What is left is the
+**end-of-pass sweep**, which this file has been collecting since section 1 and which is one
+session of its own: the three comment drifts under *Where layout 4 goes*, the four
+"layouts 1, 2 and 3" documents, then `npm run build:standalone`, the `cp` to the root
+`index.html`, the two-build digest and a grep of the built file for a layout-4-only value.
+Nothing below is owed a fit.
+
 ## The Figma source
 
 Layout 4 is a fourth full page composed of a fourth option for each section, and — as with layout
@@ -57,7 +64,7 @@ one session.
 | 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | done `0e3fba6` |
 | 10 | `calendar` | `964:72844` | Booking Calendar — **D · Enquiry summary stack** | 478 × 491 | `964:79434` | 608 × 472 | `977:8514` | 350 × 469 | done `5da1c3a` |
 | 11 | `form` | `964:72845` | Enquiry Forms — **F · Editorial form** | 1440 × 814 | `964:79477` | 768 × 950 | `977:8663` | 390 × 920 | done `67c297a` |
-| 12 | `testimonials` | `964:72846` | Testimonials — **I · Video story wall** | 1440 × 716 | `964:79536` | 768 × 604.4 | `977:8764` | 390 × 588.4 | todo |
+| 12 | `testimonials` | `964:72846` | Testimonials — **I · Video story wall** | 1440 × 716 | `964:79536` | 768 × 604.4 | `977:8764` | 390 × 588.4 | done `5bb8c9c` |
 | — | `audio` | *none* | — | — | *none* | — | *none* | — | **no layout-4 design on this page** |
 | — | *(form #2)* | `964:72843` | Enquiry Forms — **C · Multi-step wizard** | 680 × 491 | `964:79037` | 608 × 466 | `977:8513` | 350 × 465 | **not fitted** — see open question 1 |
 | — | `footer` | `964:72847` | Component 2 | 1440 × 479.5 | `964:79569` | 768 × 721 | `977:8806` | 390 × 721 | **out of scope** |
@@ -1193,6 +1200,62 @@ Learned on the enquiry form (section 11):
   v3/v0/v1 where they folded onto v0/v1/v2. Cards 1–3 are untouched by arithmetic
   (`n % 3 === n % 4` for `n < 3`), which is why this fold change needed no nine-cell
   digest where the video section's did.
+
+Learned on the testimonials (section 12 — the last):
+
+- **A frame's own name can be aspirational, and the node tree is what settles it.**
+  "Video story wall" has no video: the `sp` frame between each quote and its foot carries
+  no fill, no children and no effects at any width, and the cell's own arithmetic names it
+  outright (24 + 56 + 16 + quote + 16 + **sp** + 16 + 40 + 24 = the cell's height, twice
+  over with a different quote each time). It is the spacer that parks the attribution on
+  the floor. **Read a frame's empty frames before believing its title** — the enquiry
+  form's fetch-the-render-before-believing-a-layer-name rule, one level up.
+- **Two masters disagreeing about content while agreeing about a height is what proves the
+  height is the design.** Both narrow cells report `layoutSizingVertical: HUG` and both
+  land on **392.4** — with a 3-line quote at 768 and a 2-line one at 390, so their voids
+  are 132.4 and 155.4. A true hug cannot do that, so the number is stored and the void is
+  its residue; the desktop cell's 406 is the same box inside a stated 716. That settled
+  `minHeight` on the **card** over `flex: 1 0 <void>` on the spacer, and the two spellings
+  differ by ~60px at 390 — the events map's read-a-wrapper's-`layoutSizing`-before-
+  transcribing-it lesson, decided by arithmetic rather than by the reported flag.
+- **A fourth layout can share a third seam *and* re-read what it means.** `cur` is the
+  review on show in layouts 1 and 2; here it is the review **leading the row**, and
+  nothing else changed — no new state, no new view-model, two `onClick`s, and the modulo
+  on the read (the events map's rule) wrapping both arrows. The booking calendar's
+  share-the-seam rule with one extra degree of freedom: **a seam can be widened by
+  reinterpreting its index, not only by copying its handlers.**
+- **The seat rule and the pager rule together decide what the reference picture loses.**
+  Hue belongs to the seat (the media player's fan), so the wall's composition survives
+  paging — but the rust card is seat four, unreachable at 768 and 390 at any count. And
+  the pager is derived from the list and not drawn at one page, so the seeded 1440 and 768
+  renders carry no arrows where the frame draws them. **Two accepted diffs from one
+  frame, both of them rules this pass had already written down**; name them in the branch
+  rather than reaching for a fix.
+- **`s.edge` is the file's third light register, and `s.bg` is not.** The frame's tan
+  needed a flat-four counterpart distinct from `paper` — and `paperOf()` returns the page
+  ground itself on Editorial and Pop (and on Retro, which takes literals and so never
+  shows it), so `s.bg` collapses onto `paper` on exactly the palettes where it would
+  have had to do the work. `edge` (`mix(bg, tx, .13)`) is distinct on all
+  five: 11.80 and 16.10 against the band on Lime and Grunge, 1.22 and 1.08 on Editorial
+  and Pop where it is a tonal step rather than a hue change. **Count the distinct
+  registers per palette before choosing a token** — it is one `node -e` and it overturned
+  the obvious answer.
+- **Compute a palette test with `data.js`'s own `lum`, not WCAG's.** A first pass put
+  Lime's head at contrast 1.44 and nearly argued the branch out of `s.pillFg`; the file's
+  `lum` is the **perceived** 0.299/0.587/0.114 form, under which `pillFg` falls through to
+  `contrast()` on Lime and the head is the ink at 17.54. The tags row's five-palette test
+  is only as good as the luminance it is run with, and the render is what caught it.
+- **A 390 master that overflows its own frame is a peek, not a bug.** Its grid is a
+  380-wide strip of fixed 300px cards inside a 370 content box, so the next card shows by
+  64 — the gallery's clipped-strip case with the opposite verdict, because the clip hides
+  nothing the visitor needs. Reproduced at the content edge instead (`overflow: hidden` +
+  `minWidth: 0`, the peek 54 against the frame's 64), which needs no negative margin; the
+  full-measure card comes back at one review, where there is nothing to peek at.
+- **The bleed handed this section all three of the frames' measures at once**, for the
+  third pass running: 1052, and **708 and 370 exactly**, so the 768 render's cards land on
+  the master's own 225.33 and both narrow cards on its 392.4 to the tenth. The desktop
+  render is the one that will look wrong beside Figma (three fill cards at 353.9 against
+  four at 262), and that is the short-row-fills rule, not a slip.
 
 ## Open questions
 
