@@ -5841,6 +5841,240 @@ function Pricing({ s }) {
     )
   }
 
+  // Layout 4 — "Pricing — G · Service rows" (Figma 964:72831, 1440 × 522;
+  // 964:78656 at 768 × 774; 977:8440 at 390 × 846). One row per package on the
+  // page's own ground, divided by a 4px rule: the package's name in the display
+  // face, a middle column carrying its tags, its features and its blurb, and a
+  // price column reading `<unit> / from £450 / Book Now`. Under the last row,
+  // the small print.
+  //
+  // The section paints nothing. Its root's `sem/bg` IS the page beige (the
+  // events map's layout-4 case, and the node's own fill says so), and a stddev
+  // scan of the render's ground reads 0 top and bottom — no grain, no torn
+  // edge, no checkerboard, no tilt and no offset block anywhere but inside
+  // BookPill. There is no state either: this design has no filter row and no
+  // pager, so `chip` above is untouched here and the only live seam is the
+  // pill's own href.
+  //
+  // Three things the frame draws that this does not:
+  //
+  //   · The `nav-div`, `row-div` and `foot-div` frames, which are 1px strips
+  //     painted `sem/bg` — the page colour on the page colour, invisible at
+  //     every width. The rule that *is* visible is the row's own `border-b-4`
+  //     in `sem/stroke/2`, and only rows that have another row under them carry
+  //     it. (The 768 master's metadata piles all three divs at y 719/720/721,
+  //     after both rows; its render and the 390 master both put the rule at the
+  //     row boundary, so the pile is that instance's child order and not a
+  //     design.)
+  //   · The desktop name's stated `h-[60px]`, which the frame's own two-line
+  //     "BESPOKE PRODUCTION" overflows at its stated 409 width. A leaked box,
+  //     the bio's stated-measure rule read the other way: the width is the
+  //     design and the height is a residue.
+  //   · The pill's literal "Star Enquiry" — a star glyph typed as a word. The
+  //     label stays `s.cta1`, which is what layouts 1 and 3 leave it.
+  //
+  // And one it draws that this one places differently: the price column's
+  // SET / PROJECT eyebrow. It is not `name`, not `price` and not a tag, and no
+  // field says what *kind* of thing a package is — but this is also the one
+  // layout that prints no "/event" after its price, so the frame has simply
+  // moved the unit above the numeral. `vm.tierKind` is `s.tierUnit` with its
+  // leading slash dropped. The cost is that one section-wide value prints on
+  // every row, where the frame types a different word on each: EVENT / EVENT /
+  // EVENT on the seeded page.
+  if (s.v3) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // Resolved by `get_variable_defs` on all three masters. `size/list` goes
+    // back *up* at 390 (16 → 12 → 13) for the fifth time in the pass family,
+    // and it is the pill's label size rather than a list's.
+    const T = desk
+      ? { dispSm: 40, labelXs: 20, labelSm: 16, bodyLg: 16, bodyMd: 14, list: 16, chip: 12, eyebrow: 15 }
+      : tab
+        ? { dispSm: 32, labelXs: 14, labelSm: 13, bodyLg: 15, bodyMd: 13, list: 12, chip: 11, eyebrow: 12 }
+        : { dispSm: 26, labelXs: 12, labelSm: 12, bodyLg: 15, bodyMd: 13, list: 13, chip: 11, eyebrow: 11 }
+
+    // Every box in this design is the same number at all three widths — the 8
+    // chip gap, the 14 mid gap, the 12 price gap, the 20 price row gap, the
+    // 11/5 and 10/5 chip insets, the 8 chip corner, the 1 hairline and the 4
+    // rule — so only the 1440 canvas ramps them. What genuinely differs is the
+    // row's axis, its padding and the type.
+    const pad = desk ? u(48) : '30px'
+
+    // The rule runs to the page's edges in all three masters, where everything
+    // it divides sits inside the frame's own 56 / 30 / 10 — so the row cancels
+    // the root's padding and puts the identical value straight back as its own.
+    // Only the border bleeds; the content keeps the page's column (1052 / 688 /
+    // 346), which is the events map's reading of a 1440-wide instance that
+    // paints no sheet of its own.
+    //
+    // `sem/stroke/2` is #5B5E2E, which is `s.tierRow.card` exactly: layout 3's
+    // seat, resolved in the view-model as the first palette tag that clears
+    // 0.22 against the page ground. A rule has the same job as that stack's
+    // outline — it has to read against the page — so the seat is taken rather
+    // than a second one derived.
+    const bleedX = {
+      marginLeft: `calc(-1 * ${s.padX})`, marginRight: `calc(-1 * ${s.padX})`,
+      paddingLeft: s.padX, paddingRight: s.padX,
+    }
+    const rowBox = (last) => ({
+      ...(desk ? row(u(40), { alignItems: 'flex-start' }) : col('32px', { alignItems: 'flex-start' })),
+      ...bleedX, paddingTop: pad, paddingBottom: pad,
+      borderBottom: last ? undefined : `4px solid ${s.tierRow.card}`,
+      color: s.ac,
+    })
+
+    // `Body/Chip`, layout 2's spelling — Figma's -6% of the size, so the
+    // tracking ramps with the token rather than freezing at the desktop -0.72.
+    const chipType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      letterSpacing: u(-0.06 * T.chip),
+    }
+
+    // One package. Every value is rendered or not rather than printed blank —
+    // the testimonials' rule, which a wrapped chip row needs more than most,
+    // since an empty one still spends the column's 14 gap. `price` takes
+    // "from" down with it: the word is a preposition with nothing to govern.
+    const serviceRow = (t, i) => (
+      <div key={t.n} style={rowBox(i === s.tiers.length - 1)}>
+        {!!t.name && (
+          <span style={{
+            fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1,
+            letterSpacing: s.dls, overflowWrap: 'break-word',
+            ...(desk ? { width: u(409), flex: 'none' } : { width: '100%' }),
+          }}>{t.name}</span>
+        )}
+
+        <div style={col(u(14), {
+          alignItems: 'flex-start',
+          ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
+        })}>
+          {/* The frame draws the tags only on its second row, and the missing
+              frame is *absent from the component* rather than `hidden` — so a
+              package with no tags is a state it has already drawn. Cased here
+              (`vm.tiers[].tagLabels`) because `t.tags` is deliberately raw, for
+              the filter matching layouts 1 and 3 do with it.
+
+              The outline is the frame's `border/hairline` at `s.line` and not
+              its stated rgba(242,255,208,.15) — #F2FFD0 is *Lime's* text
+              colour, a literal leaked in from a dark ground, and over this
+              beige it measures (235,221,188) against (234,215,184): a border
+              that is not there. The tokens beside it (`radius/pill`,
+              `border/hairline`) are the design; the colour is a leftover. */}
+          {t.tagLabels.length > 0 && (
+            <div style={row(u(8), { flexWrap: 'wrap' })}>
+              {t.tagLabels.map((g, j) => (
+                <span key={j} style={{
+                  ...chipType, border: `1px solid ${s.line}`, borderRadius: s.btnR,
+                  padding: `calc(${u(5)} - 1px) calc(${u(10)} - 1px)`,
+                }}>{g}</span>
+              ))}
+            </div>
+          )}
+
+          {/* The features, as the tags row's own chip: `Label/XS` in the body
+              face at 11/5 on a `radius/chip` 8, which is the pair its layout-4
+              branch already passes TagChips (`radius={u(8)} size={u(T.chip)}`,
+              20/14/12). Written again rather than routed through TagChips,
+              which is hardwired to `s.chips` and guarded on `showTags` — a
+              header key that has no business gating a package's features.
+
+              The hue belongs to the seat and not to the feature (`s.tierFeatSeats`,
+              walked `j % len`), so a package's composition does not reshuffle
+              its colours when a line is edited. `whiteSpace` is left alone
+              where the frame sets `nowrap`: a feature is a phrase, and one
+              longer than the column should wrap inside its chip rather than
+              run off the page. */}
+          {t.feats.length > 0 && (
+            <div style={row(u(8), { flexWrap: 'wrap' })}>
+              {t.feats.map((f, j) => {
+                const seat = s.tierFeatSeats[j % s.tierFeatSeats.length]
+                return (
+                  <span key={j} style={{
+                    background: seat.bg, color: seat.fg, borderRadius: u(8),
+                    padding: `${u(5)} ${u(11)}`, minWidth: 0,
+                    fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+                  }}>{f}</span>
+                )
+              })}
+            </div>
+          )}
+
+          {!!t.blurb && (
+            <p style={{
+              margin: 0, width: '100%',
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+            }}>{t.blurb}</p>
+          )}
+        </div>
+
+        {/* The frame's price column hugs, and both its rows come out at 186
+            because each one's price is narrower than its pill. Ours are not:
+            "BOOK NOW" in the label face is a shorter pill than the frame's, and
+            a four-figure price is a wider numeral — so a hug alone would step
+            the right column left on exactly the rows with the biggest numbers.
+            The frame's own 186 goes in as the floor, which is the width it
+            drew both rows at, and a longer price still grows past it rather
+            than being clipped. */}
+        <div style={col(u(12), {
+          alignItems: 'flex-start',
+          ...(desk ? { flex: 'none', minWidth: u(186) } : { width: '100%' }),
+        })}>
+          {!!s.tierKind && <span style={labelStyle(s, u(T.labelSm))}>{s.tierKind}</span>}
+          {!!t.price && (
+            <span style={row(u(20), { alignItems: 'flex-end' })}>
+              <span style={{
+                fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, flex: 'none',
+              }}>from</span>
+              <span style={{
+                fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1,
+                letterSpacing: s.dls, overflowWrap: 'break-word', minWidth: 0,
+              }}>{t.price}</span>
+            </span>
+          )}
+          {/* Layout 3's pill in this same section, at its three scales: the
+              46 × 44 disc, the 21/5 inset and the 10 gap are the desktop
+              component's own at all three widths, so only the 1440 canvas
+              ramps them. The frame paints it `sem/text/2` #111 with both its
+              label and its disc in `sem/bg` (sampled, not assumed — the disc
+              is the beige and not the cream) and the arrow in `sem/text/1`.
+              That is `tx` on `bg` on `ac`, and `tx` rather than `deep`
+              because Retro's darkest tag IS #111 while on Lime and Grunge
+              `deep` IS the page ground — the gallery's re-ask-`deep`-for-a-
+              block rule. What BookPill adds that the 1440 master has not is
+              its rust offset block, which the 768 and 390 masters both draw
+              (`Retro/Poster`, 5/5, `sem/text/1`): an inherited cost at one
+              width of three. */}
+          <BookPill s={s} to={s.tierBookTo} glyph="arrow"
+                    full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
+                    bg={s.tx} fg={s.bg} discFg={s.ac} />
+        </div>
+      </div>
+    )
+
+    return (
+      <div style={col('0')}>
+        {s.tiers.length === 0 ? (
+          // Layout 1's and layout 3's one message. A stack of rows with nothing
+          // in it is not one of this section's states, and one message and not
+          // the repertoire's two because there is no filter here to empty a
+          // list that has something in it.
+          <div style={{
+            ...rowBox(true),
+            fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, color: s.muted,
+          }}>No packages yet.</div>
+        ) : s.tiers.map(serviceRow)}
+        {!!s.pricingSub && (
+          <span style={{
+            paddingTop: u(18), paddingBottom: u(18),
+            fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3, color: s.ac,
+          }}>{s.pricingSub}</span>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>

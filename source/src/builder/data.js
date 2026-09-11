@@ -182,7 +182,7 @@ export const minimalNav = (navSections) =>
 // audio section and addSection() opens a new one at `arch 0`, so no page can
 // arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
-  header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 3,
+  header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 4,
   repertoire: 4, gallery: 4, calendar: 3, map: 4, testimonials: 3, form: 3, footer: 1,
 }
 
@@ -766,12 +766,17 @@ export const FIELDS = {
   // sentinel. The tags are layout 1's filter row, the repertoire's rule; layout 2
   // names the packages themselves in its chip row and reads no tags at all.
   pricing: [
-    { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
+    { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night",
+      hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
+          + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Features are one to a line. Layout 2 shows one package at a '
-          + 'time and names them in its own chip row, so it reads no tags.' },
-    { k: 'unit',    l: 'Price unit', d: PRICE_UNIT },
+          + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
+          + 'filter: it prints the tags and the features on the package itself.' },
+    { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
+      hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
+          + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro',
       hint: 'A line under the heading. Layout 3 only.' },
     { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote',

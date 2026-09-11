@@ -424,6 +424,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
   vm.pricingSubFg = rgba(tx, 0.46)
   vm.tierUnit = cv('unit', PRICE_UNIT)
+  // §10.2 layout 4 is the one design that prints no unit *after* its price: its
+  // frame heads the price column with the kind of thing being sold instead
+  // (SET / PROJECT), which is what the unit already names. So the same field is
+  // read there, with its leading slash dropped — "/EVENT" over a numeral is a
+  // suffix that has lost its number — and the label face upper-cases the rest.
+  // One value for the whole section where the frame types a different word per
+  // row; the field's hint says so.
+  vm.tierKind = String(vm.tierUnit).replace(/^\s*\/\s*/, '')
   // §10.2 layout 3 stands a line under the title, where layout 1 heads the chip
   // row with the title alone and layout 2 puts its kicker above it. Layout 3
   // only, so an emptied field drops the line — the Soundcloud rule.
@@ -471,6 +479,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
     // orange under Retro — the reference order — and stays in-palette elsewhere.
     const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
+    const tags = songTags(t?.tags)
     return {
       // `n` is the row's place in the WHOLE list, not on the filtered page. The
       // cards animate their background, so the renderer keys on it: a positional
@@ -482,10 +491,26 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       feats: tierFeats(t?.feats),
       // Raw casing, deliberately — the repertoire's rule: a lower-case theme
       // must not stop a chip from matching the tag it was derived from.
-      tags: songTags(t?.tags),
+      tags,
+      // The same tags, cased for printing. §10.2 layout 4 is the one design
+      // that prints them *on* the package rather than deriving a filter row
+      // from them, and `vm.tierChips` — the only other place they are ever
+      // shown — is cased too. Composed here, since the renderer does no casing.
+      tagLabels: tags.map(cased),
       ...tierHues(card),
     }
   })
+  // §10.2 layout 4 draws a package's features as a wrapped row of coloured
+  // chips rather than a ticked list, walking the palette's tags the way the
+  // tags row's own chips do — `vm.chips`' construction exactly, except that a
+  // seat is indexed by the feature's position rather than built per feature:
+  // the hue belongs to the seat (the media player's fan rule), so editing one
+  // line cannot reshuffle a package's colours. Retro's first four are the
+  // frame's own four, in its own order. Two known collapses, both TagChips'
+  // and neither worth fixing: Retro's gold takes the dark ink where the frame
+  // sets cream, and on Lime, Grunge and Pop one tag IS the page ground, so a
+  // chip in that seat draws its box invisible and only its label shows.
+  vm.tierFeatSeats = T.tags.map((h) => ({ bg: h, fg: contrast(h) }))
   // §10.2 layout 2's single big plan. Its card is a fixed composition, not the
   // selected package's: the hue belongs to the seat, the media player's fan
   // rule, or the one card would recolour on every toggle — and it opens on
