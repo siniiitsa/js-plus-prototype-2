@@ -49,12 +49,37 @@ const navSections = [
 // fills the key the section under test actually reads — one entry per category
 // whose layout 2 draws a list — so `&n=0` is also how an emptied list is seen.
 const LIST = {
-  media: (i) => ({ title: `Track ${i + 1}`, sub: 'Single' }),
+  // Every fourth title is long enough to make layout 3's row ellipsise one at
+  // 390, where the master's own render hard-clips its shortest. No row can
+  // ever show a running time under `&n=`: `sectionVm` gives an array-shaped
+  // `c.tracks` row `dur === rel === sub`, because TracksField has no duration
+  // column, and every layout drops the time where the two are equal. The
+  // seeded five are the only duration check there is.
+  media: (i) => ({
+    title: i % 4 === 3 ? `Track number ${i + 1}, at about the length a real one runs to` : `Track ${i + 1}`,
+    sub: 'Single',
+  }),
+  // The audio player's tracks are the one list `&n=` reaches that is a
+  // newline-delimited *string* rather than an array (the `&tags=` shape, as a
+  // count), so the rows are joined below. Every fourth title is long enough to
+  // make layout 3's card clip one, and every third row omits its duration, so
+  // one render shows the meter's right-hand scale present and absent.
+  audio: (i) => (i % 4 === 3
+    ? `Track number ${i + 1}, at about the length a real one runs to`
+    : `Track ${i + 1}`) + (i % 3 === 2 ? '' : ` — ${3 + (i % 5)}:${String(i * 7 % 60).padStart(2, '0')}`),
   video: (i) => ({ title: `Video ${i + 1}`, sub: 'Live set', length: '03:50', when: 'April 2026' }),
-  // Three tags cycling, so the chip row and the filter are exercised too.
+  // Three tags cycling, so the chip row and the filter are exercised too — and
+  // two rows that only layout 3 can see the point of, since it reads the tags as
+  // a *grouping* rather than as a filter: every fifth song carries none, which
+  // is what makes `repSets` append its All card, and every seventh carries two,
+  // which is what puts one song in two set cards at once. Every fourth title and
+  // artist are long enough to show the row's ellipsis on the 290px mobile card.
   repertoire: (i) => ({
-    title: `Song number ${i + 1}`, artist: `Artist ${i + 1}`,
-    tags: ['Weddings', 'Pubs', 'Birthdays'][i % 3],
+    title: i % 4 === 3
+      ? `Song number ${i + 1}, at about the length a real title runs to`
+      : `Song number ${i + 1}`,
+    artist: i % 4 === 3 ? `Artist number ${i + 1} and the Long Band Name` : `Artist ${i + 1}`,
+    tags: i % 5 === 4 ? '' : i % 7 === 6 ? 'Weddings, Pubs' : ['Weddings', 'Pubs', 'Birthdays'][i % 3],
   }),
   // The gallery's list is its seven photograph slots, so a row is simply the
   // absence of a photograph: `&n=0` empties the array (every seat a
@@ -64,11 +89,18 @@ const LIST = {
   // Two tags cycling, so layout 1's filter row still has something to filter,
   // and a feature count that is odd on half the rows — layout 2 lays them out
   // two to a grid row and the odd one trails a half-width cell.
+  //
+  // Every third feature is long enough to wrap. Layout 3's includes panel is a
+  // single 248px column at 768 and two columns of a third of the measure at
+  // 390, and "Feature 3" never came near either edge — a grid that clipped
+  // rather than wrapped would have shipped unseen.
   pricing: (i) => ({
     name: `Package ${i + 1}`, price: `£${(i + 1) * 250}`,
     tags: ['Solo', 'Band'][i % 2],
     blurb: 'What this one covers, in a sentence that runs to about this length.',
-    feats: Array.from({ length: 3 + (i % 2) }, (_, j) => `Feature ${j + 1}`).join('\n'),
+    feats: Array.from({ length: 3 + (i % 2) }, (_, j) => (
+      j % 3 === 2 ? `Feature ${j + 1}, spelled out at the length a real one runs to` : `Feature ${j + 1}`
+    )).join('\n'),
   }),
   // The events map's gigs. Every other row carries a tickets address, so one
   // `live=1` render shows both sides of the outbound seam at once — the ↗ on
@@ -102,33 +134,58 @@ const LIST = {
   // with nothing at all; every fourth names an ampersanded couple, which is the
   // frame's own "Sarah & Tom" and the case that would mark the rail's tile
   // "S&" if `mark` split on whitespace alone; and every fifth has no name, so
-  // the tile falls back to the row's number.
+  // the tile falls back to the row's number. The fifth drops its **role** too,
+  // or the two would first empty together at row 15 — past `max: 8` — and
+  // layout 3's bare cell (a review with no attribution at all, which is what
+  // the bento wall's quote-only cards are) would never render.
   testimonials: (i) => ({
     quote: `Review number ${i + 1}. ${'They read the room and kept it moving. '.repeat(1 + (i % 3))}`,
     who: i % 5 === 4 ? '' : i % 4 === 3 ? `Sarah & Tom ${i + 1}` : `Reviewer ${i + 1}`,
-    role: i % 3 === 2 ? '' : `Venue manager ${i + 1}`,
+    role: i % 3 === 2 || i % 5 === 4 ? '' : `Venue manager ${i + 1}`,
     when: i % 3 === 2 ? '' : `Reviewed ${i + 1} weeks ago`,
   }),
 }
 const KEY = {
-  media: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images', pricing: 'tiers',
-  calendar: 'slots', map: 'gigs', form: 'fields', testimonials: 'quotes',
+  media: 'tracks', audio: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images',
+  pricing: 'tiers', calendar: 'slots', map: 'gigs', form: 'fields', testimonials: 'quotes',
 }
 const count = q.get('n') === null ? null : Number(q.get('n'))
-const c = count === null || !LIST[cat]
+const rows = count === null || !LIST[cat]
+  ? null
+  : Array.from({ length: count }, (_, i) => LIST[cat](i))
+const c = rows === null
   ? {}
-  : { [KEY[cat]]: Array.from({ length: count }, (_, i) => LIST[cat](i)) }
+  : { [KEY[cat]]: cat === 'audio' ? rows.join('\n') : rows }
 
 // &booked=2025-06-14,2025-06-20 blocks those dates. It is the one calendar
 // state neither seed shows — CAL_BOOKED is empty on purpose — and it reaches
 // both layouts: the struck cell in the month, and the dead row in the slot list.
 if (q.get('booked')) c.booked = q.get('booked').split(',')
 
+// &open=2025-03-01 sets FIELDS.calendar.open, the one date the whole section is
+// built from. CAL_OPEN's June 2025 starts on a Sunday and runs to five rows, so
+// the seed is the one month that shows neither a leading blank nor a sixth row —
+// both of which the grid has to draw, and layout 3 in particular, whose card
+// height is the row count. March 2025 (lead 6, six rows) is the far end of it.
+if (q.get('open')) c.open = q.get('open')
+
+// &since=June%202021 fills FIELDS.bio.since, which has no default on purpose —
+// so it is the only way to see the bio's layout-3 ID card at the three stat
+// columns its frame draws, which is where its head row runs out of room.
+if (q.get('since')) c.since = q.get('since')
+
+// &tags=Jazz,Funk,Soul sets FIELDS.tags.tags. It needs a switch of its own
+// because that content is a comma *string* where every list `&n=` reaches is an
+// array, and `&tags=` with nothing after it is also the emptied-row state.
+if (q.get('tags') !== null) c.tags = q.get('tags')
+
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
 // driving the editor and its popup.
 const s = sectionVm({
-  themeIdx, cat, arch, c, artistName: 'Kai Mercer',
+  // &name=Poppy%20Jaeggy is how a display slot is checked against descenders
+  // and a longer string — the seeded "Kai Mercer" has neither.
+  themeIdx, cat, arch, c, artistName: q.get('name') || 'Kai Mercer',
   Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections,
 })
 

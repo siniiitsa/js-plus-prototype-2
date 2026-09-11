@@ -163,8 +163,8 @@ export const minimalNav = (navSections) =>
  * ------------------------------------------------------------------ */
 
 export const NVAR = {
-  header: 6, bio: 2, media: 2, tags: 2, audio: 3, video: 2, pricing: 2,
-  repertoire: 2, gallery: 2, calendar: 2, map: 2, testimonials: 2, form: 2, footer: 1,
+  header: 6, bio: 3, media: 3, tags: 3, audio: 3, video: 2, pricing: 3,
+  repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -184,6 +184,24 @@ export const layoutCount = (catId, themeName) =>
 export const designCount = (catId, themeName) =>
   catId === 'header' ? headerVariants(themeName) : NVAR[catId]
 
+// §6.2 — the layout every other category takes when the header takes `i`.
+// The page is one design: layouts 1, 2 and 3 of every section are one Figma
+// page each, so the header's index *is* the page's index, and the setup modal's
+// click is a page-wide write.
+//
+// Folded by designCount rather than by layoutCount for two reasons. It is never
+// the larger of the two, so the result always names a row the layout picker can
+// highlight; and `arch` reaches EncoreSection only through sectionVm's
+// `d = arch % designCount`, so folding to the lowest index that renders a given
+// design changes nothing on the page while leaving the sidebar reading "Bio
+// layout 3" rather than "Bio layout 6" for the identical render. Negative-safe,
+// sectionVm's own spelling, and `|| 1` for a category NVAR has no entry for —
+// `layoutCount` ends the same way.
+export const pageLayout = (catId, i, themeName) => {
+  const n = designCount(catId, themeName) || 1
+  return ((i % n) + n) % n
+}
+
 /* ------------------------------------------------------------------ *
  * §4.4b Header layout names.
  *
@@ -200,7 +218,7 @@ const HEADER_NAMES = {
   photographic: [
     ['Hero', 'Full-bleed photo'],
     ['Feature spread', 'Photo beside the details'],
-    ['Gradient stage', 'Colour wash'],
+    ['Inset Hero', 'Framed photo on colour'],
     ['Polaroid', 'Photo card beside text'],
     ['Overlay card', 'Details on a card'],
     ['Stage wide', 'Centred, wide'],
@@ -497,7 +515,11 @@ export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
 // No `repertoire` entry: its heading counts the songs (see sectionVm), so a
 // literal here would never be read.
-export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Tags',
+// `tags` was 'Tags' and read by nothing: the category named no `heading` field
+// and neither of its two invented flat layouts drew a title. Layout 3's frame
+// heads its chip row "Genres", so the literal moves to that and `FIELDS.tags`
+// gains the field that mirrors it.
+export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Genres',
   audio: 'Selected Tracks', video: 'Live at Roomtone', pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
   map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make your night unforgettable.", footer: '' }
@@ -509,6 +531,17 @@ export const DEFS = {
   statement:  'Reads the room.',
   videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
+  // §10.2 layout 3 heads the stack with a line under the title, where neither
+  // earlier layout draws one — the frame's own sentence, kept as the seed so
+  // the reference picture holds. Emptying it drops the line.
+  //
+  // The frame's paragraph is two sentences and this is the tail of the second.
+  // "Four ways to book this act." is a count the artist never typed and goes
+  // the way the video section's numbers did; "Choose by the kind of night
+  // you're throwing" repeats TITLES.pricing's own words almost exactly, so
+  // stacking it under the title stutters where the frame — whose title is the
+  // single word "Pricing" — does not.
+  pricingIntro: 'The quote covers the whole booking.',
   // §10.2 layout 2 stands a line of praise beside the plan, where layout 1 has
   // nothing of the sort — the frame's own sentence, kept as the seed so the
   // reference picture holds. Emptying it drops the line.
@@ -635,6 +668,13 @@ export const FIELDS = {
     { k: 'statement', l: 'Statement (centred layout)', def: 'statement' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
+    // Layout 3's ID card draws a row of stats, and the frame's first one is
+    // "Performing since: June 2021" — a date nobody typed, so the value is
+    // dropped and the seat becomes this field instead. Deliberately without a
+    // default: an unfilled page would otherwise publish a fabricated one, and
+    // the column is simply not drawn while it is empty.
+    { k: 'since',     l: 'Performing since',
+      hint: 'The ID card’s first stat — layout 3 only. Left empty, the column is not drawn.' },
   ],
   // The second list-shaped content type with a structured editor (see
   // `repertoire` below): `tracks` here is an array of { title, sub, image,
@@ -658,7 +698,13 @@ export const FIELDS = {
     { k: 'soundcloud', l: 'SoundCloud link', d: '',
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
+  // Layout 3 is the only one of the three that heads the row, so the hint says
+  // so (FIELDS.media.soundcloud's case): layout 1 writes its own "Browse by
+  // tag" and layout 2 is a bare rule-bounded strip.
   tags: [
+    { k: 'heading', l: 'Heading', d: TITLES.tags,
+      hint: 'The label above the chips in layout 3. Layout 1 writes its own, and layout 2 '
+          + 'has no head at all.' },
     { k: 'tags', l: 'Tags (comma-separated)', type: 'area', d: TAGS.join(', ') },
   ],
   audio: [
@@ -690,10 +736,12 @@ export const FIELDS = {
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night" },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
-      hint: 'Tags become the filter chips above the cards in layout 1 — separate them with '
-          + 'commas. Features are one to a line. Layout 2 shows one package at a time and '
-          + 'names them in its own chip row, so it reads no tags.' },
+      hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
+          + 'them with commas. Features are one to a line. Layout 2 shows one package at a '
+          + 'time and names them in its own chip row, so it reads no tags.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT },
+    { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro',
+      hint: 'A line under the heading. Layout 3 only.' },
     { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote',
       hint: 'A line of praise beside the plan. Layout 2 only.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
@@ -756,37 +804,53 @@ export const FIELDS = {
   // emptied array means no gigs, and there is no null sentinel.
   map: [
     { k: 'gigs',    l: 'Upcoming gigs', type: 'gigs', max: 12,
-      // The page size is PINS.length, not a literal — see vm.gigPage.
+      // The page size is PINS.length, not a literal — see vm.gigPage. The
+      // cities are read a second time in layout 3, where they derive the split
+      // list's filter chips (vm.gigChips) the way the songs' tags derive the
+      // repertoire's — so a row's city is a control there as well as a fact.
       hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
-          + `a real link on the published page; the list pages ${PINS.length} at a time.` },
+          + `a real link on the published page; the list pages ${PINS.length} at a time. `
+          + 'Layout 3 also turns the cities into its filter chips.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
     { k: 'base',    l: 'Based in',       d: MAP_BASE },
     { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS },
+    // Layout 3's foot pill, and the only layout that draws one: the split
+    // list's frame closes with a "See all gigs" control that has nowhere on a
+    // one-page site to go, so the seat takes the page's own Book Now instead
+    // (the testimonials' layout-2 case). `map` is not in CTA_TARGETS.book, so
+    // it needs no self-exclusion; an emptied label drops the pill, the footer's
+    // rule rather than the calendar's, because here it is a block of its own.
+    { k: 'cta',     l: 'Button (layout 3)', d: 'Book Now' },
     { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [
     { k: 'heading', l: 'Heading', d: 'Word of Mouth' },
-    // Layout 2 is the first design to head this section, so both of the plain
-    // strings below reach it alone — FIELDS.media.soundcloud's case the other
-    // way up, hence the layout in each hint.
+    // Layout 2 was the first design to head this section, so both of the plain
+    // strings below reached it alone — FIELDS.media.soundcloud's case the other
+    // way up, hence the layout in each hint. Layout 3's bento wall then gave
+    // `sub` a second seat: its stat card sets the sentence the frame fills with
+    // a fabricated event count.
     { k: 'sub',     l: 'Intro line', def: 'testiSub',
-      hint: 'The line under the heading. Layout 2 only.' },
+      hint: 'The line under the heading in layout 2, and the sentence on the stat '
+          + 'card in layout 3.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
     // key set — quote/who/role reached one review of three, and nothing could
     // add a fourth — which is the pricing packages' case, not a textarea's.
     // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
     { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
-      hint: 'Each row is one review, and the card pages through them on the published '
-          + 'page. The date line is the small type above the quote in layout 1 and '
-          + "sits beside the reviewer in layout 2, whose selector takes the name's "
-          + 'initials.' },
+      hint: 'Each row is one review. Layouts 1 and 2 page through them; layout 3 '
+          + 'gives each one a card on its wall, and a row with no name or role '
+          + 'becomes a plain quote card there. The date line is the small type '
+          + 'above the quote in layout 1 and sits beside the reviewer in layout 2, '
+          + "whose selector takes the name's initials; layout 3 has no seat for it." },
     { k: 'cta',     l: 'Button', d: 'Book Now',
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],
   form: [
-    { k: 'image',    l: 'Portrait', type: 'image', hint: 'The round photo beside your name.' },
+    { k: 'image',    l: 'Portrait', type: 'image',
+      hint: 'The round photo beside your name. Layouts 1 and 2 — layout 3 draws no credit row.' },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's and the video section's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
@@ -795,15 +859,17 @@ export const FIELDS = {
     { k: 'photo',    l: 'Stage photo', type: 'image',
       hint: 'The big picture above the heading. Layout 2 only.' },
     { k: 'heading',  l: 'Heading', d: "Let's make your night unforgettable." },
-    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara' },
+    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara',
+      hint: 'The line under the heading in layout 3; the one under the card in layout 2.' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
-      hint: 'One per line — the ticked list beside the form.' },
+      hint: 'One per line — the ticked list beside the form. Layout 3 runs them together '
+          + 'as the one line under its button.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
     // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
     // no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
-      hint: 'One box each — two to a row in layout 1, one to a row in layout 2, which '
-          + 'sets the label inside the box and draws no placeholder. The published form '
+      hint: 'One box each — two to a row in layout 1, one to a row in layouts 2 and 3, which '
+          + 'set the label inside the box and draw no placeholder. The published form '
           + 'emails you what the visitor types.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },

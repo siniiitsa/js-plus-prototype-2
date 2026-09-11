@@ -36,7 +36,7 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
-  NOW_PLAYING, TRACK_AUDIO, SONGS, VIDEOS, VIDEO_MARK, clockAt,
+  NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL, VIDEOS, VIDEO_MARK, clockAt,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
@@ -45,7 +45,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount,
+  headerFamily, layoutCount, designCount, pageLayout,
   headerLayout, headerLayoutLabel,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
@@ -320,6 +320,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // bio
   vm.bioP1 = cv('para1', DEFS.bioP1)
   vm.bioP2 = cv('para2', DEFS.bioP2)
+  // Layout 3's first stat. No default on purpose (FIELDS.bio.since): the frame's
+  // own "June 2021" is a date the artist never typed, and an empty string is
+  // what tells the ID card not to draw the column.
+  vm.since = cv('since', '')
   vm.bioQuote = cased(cv('statement', DEFS.statement))
 
   // media
@@ -418,6 +422,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // §10.2 sets the small print in a warm grey well above `muted`'s 64%.
   vm.pricingSubFg = rgba(tx, 0.46)
   vm.tierUnit = cv('unit', PRICE_UNIT)
+  // §10.2 layout 3 stands a line under the title, where layout 1 heads the chip
+  // row with the title alone and layout 2 puts its kicker above it. Layout 3
+  // only, so an emptied field drops the line — the Soundcloud rule.
+  vm.pricingIntro = cv('intro', DEFS.pricingIntro)
   // §10.2 layout 2 stands a line of praise beside the plan. Layout 1 draws no
   // such line, so an emptied field simply drops it — the Soundcloud rule.
   vm.pricingQuote = cv('quote', DEFS.pricingQuote)
@@ -446,6 +454,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       // Only the light card drops its blurb and the price unit off full strength
       // in the reference; on the two dark ones they sit at the feats' cream.
       cardMut: lightCard ? rgba(ink, 0.72) : ink,
+      // §10.2 layout 3 stands a FEATURED badge on the card, and the frame
+      // paints it `sem/box/1` — which resolves to the card's own hue lifted a
+      // ninth of the way towards its ink (#6D7040 on the olive row, which is
+      // exactly #5B5E2E at 11% of #FBF6EA). An alpha rather than a mix, because
+      // it composites to the same colour and is the shape every other lifted
+      // token here already has (`soft`, `acFg12`, `deepFg25`).
+      badge: rgba(ink, 0.11),
     }
   }
   const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
@@ -479,6 +494,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // `fg`. It is also what the card falls back to with no packages at all, so
   // the empty state and the filled one are the same composition.
   vm.tierHero = tierHues(T.tags[1 % T.tags.length])
+  // §10.2 layout 3's rows are one hue doing two jobs: it outlines the plain
+  // rows and fills the featured one, whose border is then that hue's own
+  // second colour. Like `tierHero` it belongs to the seat and not to a
+  // package — the frame paints its whole stack from `sem/stroke/2`, which
+  // under Retro is T.tags[3], the olive.
+  //
+  // Unlike `tierHero` it has to read against the *page*, on both jobs: an
+  // outline the ground swallows leaves the plain rows as loose type, and
+  // Grunge's T.tags[3] IS its black background. So the walk starts at 3 and
+  // takes the first tag that clears `tierHues`' own 0.22 — olive on Retro and
+  // pale lime on Lime (both index 3), the stamp red on Grunge and the
+  // terracotta on Editorial, whose index 3 is a wash only a shade off its
+  // paper. `ac` is the last resort and no palette reaches it.
+  const rowSeat = T.tags
+    .map((_, i) => T.tags[(3 + i) % T.tags.length])
+    .find((h) => Math.abs(lum(h) - lum(bg)) > 0.22) ?? ac
+  vm.tierRow = tierHues(rowSeat)
   // The filter row above the cards, derived from the tags the artist typed the
   // way the repertoire's is — `label` cased for printing, `tag` raw for
   // comparing. It replaces TIER_MODES, which was a constant nothing could edit.
@@ -508,6 +540,62 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
   // the same fallback, or the panel and the canvas would disagree.
   if (cat === 'repertoire' && c.heading === undefined) vm.title = cased(`${vm.songs.length} Songs`)
+  // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
+  // one card per tag, holding the songs that carry it. `repChips` leads with the
+  // All chip, which is a filter reset and not a set, so the cards are the chips
+  // behind it — the seeded three tags are the frame's own three cards.
+  //
+  // A song the artist tagged with nothing would then appear in no card at all,
+  // and `repFlat`'s note above is this section's standing promise that swapping
+  // layouts never silently discards what they typed. So the All card is
+  // appended — holding the whole list, so its label stays honest — exactly when
+  // the tag cards do not already reach every song. On a fully-tagged page it is
+  // not drawn and nothing is duplicated; that is why it is the remainder at the
+  // end rather than the reset at the front.
+  const setHue = (i) => {
+    // The frame paints its three cards near-black, olive and rust and sets cream
+    // type on all three — so the pool is the tag hues dark enough to carry that
+    // cream, and walking it backwards lands on exactly those three under Retro
+    // (#111111, #5B5E2E, #C8461C). Derived rather than listed: a palette with
+    // two dark tags gets two and cycles, and one with none falls back to the
+    // whole row, where `tierHues` picks each card's ink for itself.
+    const dark = T.tags.filter((h) => contrast(h) !== '#141414')
+    const pool = dark.length ? dark : T.tags
+    return pool[((pool.length - 1 - i) % pool.length + pool.length) % pool.length]
+  }
+  const repSet = (tag, songs, i) => {
+    // `tierHues` is the pricing deck's, and it is exactly this card's pairing:
+    // `cardFg` is the cream the frame sets on all three, and `acc` is the
+    // mustard of the meta line, already guarded for a palette where the two
+    // hues do not separate.
+    const hues = tierHues(setHue(i))
+    return {
+      label: cased(tag),
+      songs,
+      // "6 SONGS", where the frame's meta reads "MELLOW · 45 MIN": the mood IS
+      // the card's own title here, and a running time is a number the artist
+      // never typed (the video section's rule). Composed here because
+      // EncoreSection composes nothing; the caps are a style, not casing.
+      meta: `${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`,
+      // The card's outline and the rule under every row. The frame draws #111
+      // on the olive and rust cards and the cream on the near-black one, which
+      // is `tierHues`' own accHue shape: the palette's darkest tag, unless the
+      // card already IS it. It is what keeps the card visible on Lime and
+      // Grunge, whose darkest tag is the page ground itself.
+      edge: hues.card === vm.deep ? vm.paper : vm.deep,
+      ...hues,
+    }
+  }
+  const tagSets = vm.repChips.slice(1).map((ch, i) => repSet(
+    ch.tag,
+    vm.songs.filter((sg) => sg.tags.some((t) => t.toLowerCase() === ch.tag.toLowerCase())),
+    i,
+  ))
+  const reached = new Set()
+  tagSets.forEach((st) => st.songs.forEach((sg) => reached.add(sg.n)))
+  vm.repSets = reached.size >= vm.songs.length
+    ? tagSets
+    : [...tagSets, repSet(REP_ALL, vm.songs, tagSets.length)]
 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
@@ -563,7 +651,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
           line: enquiryLine(y, mo, d, time),
         })
       }
-      return { label: cased(monthLabel(y, mo)), cells }
+      // `label` is the one line layouts 1 draws; layout 3's head columns the
+      // same month apart — "JUNE" in the display face over "2025" in the body
+      // one — so the two halves are resolved here rather than split out of the
+      // label in EncoreSection. A date format, not artist copy, so the name is
+      // upper-cased here rather than through cased() (vm.calSlots[].mark's
+      // rule).
+      return { label: cased(monthLabel(y, mo)), name: MONTHS[mo].toUpperCase(), year: String(y), cells }
     })
     vm.calDays = CAL_DAYS
     // The day the calendar is cued to, which is what the foot prints and the
@@ -667,9 +761,39 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       month: g?.month ?? '', day: g?.day ?? '',
       url: extUrl(g?.link ?? ''),
       pin: PINS[i % PINS.length],
+      // What layout 3's chip row matches a row against. Case-folded here rather
+      // than in EncoreSection, and beside the label it was folded from, so a
+      // theme that upper-cases the chip cannot stop it matching its own gigs —
+      // `vm.songs.tags`' rule exactly.
+      cityKey: String(g?.city ?? '').trim().toLowerCase(),
       hue: Math.abs(lum(h) - lum(gigGround)) > 0.22 ? h : gigFallback,
     }
   })
+  // §10.2 layout 3's filter row, derived from the gigs' own cities the way
+  // `repChips` derives the repertoire's from the songs' tags — one chip per
+  // distinct city with the number of shows in it, behind the same All reset.
+  // The frame's own row is All / Upcoming · 5 / Past · 3 / Filter ↓, and every
+  // one of those is a status the section cannot know (nothing here reads the
+  // clock) or a control with nothing to open; the city is what the heading
+  // "Where I'm playing." is actually about, and it is the artist's own typing.
+  //
+  // Deduped case-insensitively, keeping the casing it was first typed in, and
+  // **not built at one city**: a row of All plus one chip filters to the same
+  // list twice, which is the pager's and the pricing chip row's rule — a
+  // distinction that distinguishes nothing is not a design. A gig with no city
+  // joins no chip and is reachable under All alone, `repFlat`'s promise.
+  const gigCities = new Map()
+  gigList.forEach((g) => {
+    const label = String(g?.city ?? '').trim()
+    if (!label) return
+    const k = label.toLowerCase()
+    if (!gigCities.has(k)) gigCities.set(k, { label, city: k, n: 0 })
+    gigCities.get(k).n += 1
+  })
+  vm.gigChips = gigCities.size > 1
+    ? [{ label: cased(REP_ALL), city: null, n: vm.gigs.length },
+       ...[...gigCities.values()].map((ch) => ({ ...ch, label: cased(ch.label) }))]
+    : []
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
@@ -677,6 +801,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
+  // Layout 3's foot pill. Uncased, the footer's rule: the pill has always drawn
+  // an uncased label and casing it would shout on Grunge and Pop.
+  vm.mapCta = cv('cta', 'Book Now')
 
   // testimonials — the songs rule, the gigs' and the packages': an absent key
   // means the seeded QUOTES, an emptied array means no reviews at all, and
@@ -729,6 +856,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.formEmail = String(cv('email', 'bookings@kaimercer.co.uk')).trim()
   vm.formBtn = cv('button', 'Book Now')
   vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
+  // The same promises run together as one line, which is layout 3's card foot:
+  // its frame sets a single centred "No charge to enquire" there, a promise in
+  // FORM_PROMISES' own register, and a frame that draws one of a list is the
+  // audio player's stranding. Composed here rather than in EncoreSection — the
+  // testimonials' byline rule and the events map's composed foot line — so the
+  // renderer prints a string. An emptied `promises` composes to '' and the line
+  // is not drawn at all, the Soundcloud button's rule.
+  vm.formPromiseLine = vm.formPromises.join(' · ')
   // The boxes are the artist's now, on the `songs` rule — absent key means the
   // seed, emptied array means none, no null sentinel. Every row is normalised
   // here so EncoreSection can switch on `kind` without a default of its own;
@@ -3083,7 +3218,10 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
       // §6.2 — while the setup modal is up the header's own badge names the
-      // layout, so the click that swapped it is legible on the page itself.
+      // layout, so the click that just re-laid the whole page is legible on the
+      // page itself. It is the only badge showing, which is why the other ten
+      // sections were not given one: the dialog's overlay rules out hover, so
+      // `showOverlay` is true for the selected header alone.
       overlayLabel: isHeader && st.onboard
         ? `${cat.name} · ${headerLayout(T.name, sec.arch)[0]}`
         : cat.name + (selected ? ' · editing' : ''),
@@ -3110,13 +3248,32 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const nHeader = layoutCount('header', T.name)
   const headerArch = headerSec ? headerSec.arch : 0
 
-  // Clicking a card swaps the real header behind the modal, at full size. The
-  // modal stays open afterwards — a click is a try, not a verdict, and
-  // "Use this header" is what ends it.
-  const pickHeader = useCallback((i) => {
-    if (!headerSec) return
-    setSection(headerSec.id, { arch: i })
-  }, [headerSec, setSection])
+  // Clicking a card swaps the real header behind the modal, at full size, and
+  // takes the rest of the page with it: the page is one design, so a header on
+  // layout 3 stands over a body on layout 3. `pageLayout` folds the index into
+  // each category's own design count (§4.4), so every section lands on a layout
+  // it actually has — the seeded page's nine body sections have three designs
+  // each and the footer has one, so on Retro, whose header has six, the body
+  // repeats from the fourth card on. That is a fact about *this* page rather
+  // than about the fold: a video section has two designs, so a page carrying
+  // one has no single repeat period and the modal's cards cannot be given a
+  // page number. The modal stays open afterwards — a click is a try, not a
+  // verdict, and "Use this header" is what ends it.
+  //
+  // Safe as a page-wide write only because the modal is a one-shot gate over a
+  // page nobody has touched: `st.onboard` is armed once, by the template
+  // picker, on a page `buildPage` has just built at layout 1 throughout, and
+  // the dialog's overlay blocks the sidebar behind it. Nothing hand-picked can
+  // be clobbered — which is exactly why the sidebar's own LayoutPicker still
+  // moves the one section it is opened on, and must keep doing so.
+  //
+  // The theme comes off `s` rather than off `T`, so the updater is
+  // self-contained and the callback never has to be rebuilt; `headerSec` goes
+  // with the guard it fed, which was protecting a call that cannot happen
+  // (`onboarding` is false without a header).
+  const pickHeader = useCallback((i) => patch((s) => ({
+    sections: s.sections.map((x) => ({ ...x, arch: pageLayout(x.cat, i, THEMES[s.theme].name) })),
+  })), [patch])
 
   const endOnboard = useCallback(() => patch({ onboard: false }), [patch])
 
@@ -3214,8 +3371,8 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
               </DialogTitle>
               <DialogDescription style={{ margin: '7px 0 0', fontSize: '13px', lineHeight: 1.55, color: '#6B685E', maxWidth: '600px' }}>
                 The header is the first thing visitors see — your name, photo and menu. Choose how it is
-                arranged. Everything else on the page is already set up, and you can change this later from
-                the Header section.
+                arranged, and the rest of the page follows it: every section is laid out to match. You can
+                change any of them later, section by section.
               </DialogDescription>
             </div>
             {!isMobile && (
