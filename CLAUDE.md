@@ -115,7 +115,11 @@ mutated through a single `patch()` helper.
   real, and **fifteen things read it**: `Repertoire` — its search field, its filter chips and
   its pager, and in layout 3 the set cards' *View full set* reveal, which is the one control
   in the file that is a **reveal rather than a toggle**: the frame draws four song rows and a
-  link, so the link is what reaches the fifth song and there is no way back — the **header's
+  link, so the link is what reaches the fifth song and there is no way back, and in layout 4
+  the **A–Z index rail**, which is the one control in the file that **scrolls from inside
+  `EncoreSection`** — a `scrollIntoView` off a callback ref, on a letter some song actually
+  starts with, where the header's nav needs the published tab's own delegated listener — the
+  **header's
   navigation**, the **bio's own Listen** (layout 4 alone, in the overlay card's meta row: the
   header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section),
   the **media player** (below), the **gallery's arrows

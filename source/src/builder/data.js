@@ -183,7 +183,7 @@ export const minimalNav = (navSections) =>
 // arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
   header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 3,
-  repertoire: 3, gallery: 4, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
+  repertoire: 4, gallery: 4, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
 }
 
 // Only Retro ships the photographic header treatment. The other four
@@ -787,7 +787,7 @@ export const FIELDS = {
     // the panel alike, so it cannot claim 240 songs over a list of twelve.
     { k: 'heading', l: 'Heading' },
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
-      hint: 'Tags become the filter chips above the list — separate them with commas.' },
+      hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead.' },
   ],
   // The three social addresses follow the photos, and follow `media.soundcloud`
   // in shape: an empty default, normalised through extUrl() in sectionVm, and a

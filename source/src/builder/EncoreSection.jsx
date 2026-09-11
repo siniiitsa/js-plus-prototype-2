@@ -23,7 +23,10 @@
 // source is assigned imperatively so a re-render cannot reload it, and
 // Safari will not honour autoplay on a freshly mounted element. That is the
 // whole of this file's React surface; there is still no effect anywhere in
-// it, because every clock the player reads arrives as an event prop.
+// it, because every clock the player reads arrives as an event prop. The
+// repertoire's layout-4 index rail is the second thing to hold a ref, and it
+// holds one for the same reason: a jump to a letter's group is a node to
+// command, and a callback ref writes the map without an effect.
 
 import { useId, useRef, useState } from 'react'
 import {
@@ -5967,6 +5970,16 @@ function Repertoire({ s }) {
   // the labels are unique by construction, `repChips` deduping the tags and
   // skipping any the artist writes as `All`.
   const [open, setOpen] = useState({})
+  // Layout 4 only: the letter the A–Z rail is lit on, and the node each group
+  // heading stands at. The empty string is this branch's -1 — nothing chosen,
+  // so the mark falls back to the first group's own letter and the published
+  // first paint is the canvas's picture by construction. The ref is a map
+  // rather than an id because the editor document renders a dozen previews of
+  // this section at once and they would all claim the same id (`vm.anchor`'s
+  // own rule); it is written by a callback ref, so there is still no effect
+  // anywhere in this file.
+  const [alpha, setAlpha] = useState('')
+  const anchors = useRef({})
 
   if (s.v0) {
     const tab = isTablet(s)
@@ -6804,9 +6817,262 @@ function Repertoire({ s }) {
     )
   }
 
-  // Layouts 4+ — the generic flat design. `NVAR.repertoire` is 3, so nothing
-  // reaches this today; it is what a fourth layout would render until it is
-  // fitted, which is why the two-column list below is no longer gated on `v1`.
+  // v3 — Repertoire layout 4 · "A–Z index rail" (Figma 964:72822, 1208 × 452;
+  // 964:78509, 608 × 522; 977:8166, 310 × 596): the whole list on one page,
+  // grouped under its own initial letters, beside a rail of all twenty-six.
+  //
+  // **The section is three grounds deep, and only the innermost is the
+  // instance.** Walking `inst.parent` up: the instance sits in a Frame
+  // (964:72818 / 964:76745 / 977:8162) that paints its own **#6D7040** at
+  // radius 60, and that Frame sits in the Section (964:72817 / 964:76744 /
+  // 977:8161) that paints the gallery's olive **#5B5E2E** and hangs the
+  // band's **torn foot** off its floor. LAYOUT-4-PLAN.md's page tree lists the
+  // head and the instance as the Section's own children, so the panel is a
+  // reading rather than a transcription — and it is the sheet the whole design
+  // stands on, which is the gallery's fills-versus-token lesson from the other
+  // side: `get_variable_defs` binds this fill to **no token at all**, so there
+  // was never anything to resolve and the render is the only source.
+  //
+  // The olive pair is the bio's, taken whole for the second time — `#5B5E2E` /
+  // `#FBF6EA` under Retro, `mapBg` / `mapFg` on the flat four — and the
+  // Section states this band's inset outright where the gallery had to sum it:
+  // 100 / 100 / 30 above, 150 / 150 / 60 below (the tear lives in that), 56 /
+  // 30 / 10 either side, which is the gallery's own horizontal pair, so the two
+  // sheets line up down the page. The panel's is 60 / 50 / 40-30, and its
+  // content therefore comes to 1208 / 608 / 310 — the instance's width exactly
+  // at all three.
+  //
+  // **The head is `s.title`, not the frame's word.** The frame heads the panel
+  // "Repertoire" in the display face over a "All songs · A–Z" sub, where layout
+  // 1 sets that same word as an *eyebrow* over `s.title`. Giving the display
+  // line to the literal would leave `heading` editing nothing here, which is
+  // layout 2's call on this very section (LAYOUT-4-PLAN.md, open question 8):
+  // three signed-off layouts already honour the field, so a fourth that did not
+  // would be the odd one. On the seed it reads "12 Songs", the intended diff
+  // layout 2 already carries. The **sub is the literal**, because it describes
+  // the design rather than the artist — and it stays true at every state, which
+  // is half the reason the rail jumps rather than filters.
+  //
+  // **The rail is an index, and it jumps.** Three things say so and none of
+  // them is the mark: the design's own name, the frame's `sticky top-0` on the
+  // rail column, and the fact that it draws all twenty-six letters over a list
+  // that has three. So a lit letter scrolls the page to that group's heading —
+  // `scrollIntoView` off a callback ref, live-gated, with the handler (and
+  // therefore the cursor, the calendar's rule) only on a letter some song
+  // actually starts with. `behavior` is left at its instant default: the
+  // header's nav reads `prefers-reduced-motion` off the popup's own `win`,
+  // which this file has no handle on, and an instant jump needs no such read.
+  // The `sticky` itself is **declined** — the frame's own `overflow-clip`
+  // parent makes it inert there (the booking calendar's check-whether-the-
+  // leak-does-anything rule), so it is evidence of intent and not a
+  // declaration to transcribe. Its `pt-50` is kept, being a plain indent.
+  //
+  // The mark is a **seat, not a state**: `alpha` starts empty and the lit
+  // letter falls back to the first group's, which on the seeded page is the D
+  // the frame lights, so the canvas and the published first paint are one
+  // picture. It is clamped against the groups for pricing's reason — the artist
+  // can delete the last song a letter had while the published tab is open.
+  //
+  // Nothing else here is a control. There is no chip row (`repChips` reaches
+  // layouts 1, 2 and 3, which is why `FIELDS.repertoire.songs`' hint now names
+  // this one), no search field and **no pager**: the design shows every song,
+  // and a design that shows the whole list owes no pager — the testimonials'
+  // layout-3 wall, one section later.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 through `u()`; the 768 and 390
+  // frames are verbatim. Two readings that are not transcriptions:
+  //
+  //  · **The rules ramp by colour, not by weight.** Both wide masters draw the
+  //    heading's 2px and the row's 1px, but the desktop one binds
+  //    `sem/stroke/2` (the mustard) where both narrow ones bind
+  //    `sem/stroke/1` (#111111) — a different *token*, corroborated by the
+  //    node's own stroke hex, so it is the designer's and not a mode slip.
+  //    Retro takes it (`s.deep` IS #111111 there, so it costs no literal); the
+  //    **flat four keep the mustard at every width**, because the tags row's
+  //    run-the-five-palettes test fails the other way here — Retro's ink rule
+  //    reads at 3.63 on its own panel where the four flat ones come back at
+  //    1.43–1.90, well under the mustard's own 3.75–12.27.
+  //  · **The head's stated 1019.18 measure is declined**, for the fourth time
+  //    on this page: it is the string's own ink at 1440, the same leaked number
+  //    in a 708 frame at 768 (where it wraps nothing) and replaced by the
+  //    column at 390. The media player and the video section declined the
+  //    identical number on their own heads.
+  if (s.v3) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const T = {
+      sub: desk ? 16 : 15,                   // body-lg — the sub and the heading
+      title: desk ? 24 : tab ? 19 : 18,      // size/title
+      song: desk ? 16 : tab ? 12 : 13,       // size/list — non-monotonic at 390
+      letter: 12,                            // body-sm, the one size that does not ramp
+    }
+    const band = s.retro ? '#5B5E2E' : s.mapBg
+    const cream = s.retro ? '#FBF6EA' : s.mapFg
+    // The panel: the band lifted a register. Retro's is the node's own fill;
+    // the flat four take `sectionVm`'s derivation, which is `mapBg`'s own
+    // relationship to `deep` applied once more.
+    const panel = s.retro ? '#6D7040' : s.repPanel
+    // `sem/text/1` is the mustard on this page rather than the rust — it sets
+    // the head, every song title and the whole rail, and it is `s.pillBg` on
+    // every palette by construction (the gallery's note).
+    const mustard = s.pillBg
+    const rule = desk || !s.retro ? mustard : s.deep
+    const groups = s.repGroups
+    const letters = new Set(groups.map((g) => g.letter))
+    // Clamped on read: the artist can delete the last song the visitor's letter
+    // had, and Publish re-renders a tab that is already open.
+    const at = letters.has(alpha) ? alpha : (groups[0] ? groups[0].letter : '')
+    const jump = (l) => {
+      setAlpha(l)
+      anchors.current[l]?.scrollIntoView({ block: 'start' })
+    }
+
+    const railCell = (l) => {
+      const on = letters.has(l)
+      return (
+        <span
+          key={l}
+          onClick={s.live && on ? () => jump(l) : undefined}
+          style={{
+            width: u(32), height: u(32), flex: 'none',
+            border: `${u(1)} solid ${mustard}`, borderRadius: u(8),
+            background: l === at ? mustard : 'transparent',
+            // `sem/bg` on the filled cell, which on this page IS the band the
+            // panel stands on — so the lit letter is cut out of the mustard in
+            // the olive behind it.
+            color: l === at ? band : mustard,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: s.body, fontSize: u(T.letter), lineHeight: 1.4,
+            // Read off the handler, so a letter no song starts with does not
+            // claim to be a control — the frame draws all twenty-six alike and
+            // this is the whole of the difference.
+            cursor: s.live && on ? 'pointer' : undefined,
+          }}
+        >{l}</span>
+      )
+    }
+
+    const rail = (
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', gap: u(8), alignContent: 'flex-start',
+        // 232 is six cells and their five gaps exactly, which is why the wrap
+        // falls out of the masters' own widths rather than being counted: six
+        // to a row beside the list at 1440, fifteen across 608 and seven across
+        // 310. The 50 above it is the frame's own indent (its `sticky top-0` is
+        // declined — see the header comment), and the two narrow rails, which
+        // stand above the list rather than beside it, carry none.
+        ...(desk ? { flex: 'none', width: u(232), paddingTop: u(50) } : { width: '100%' }),
+      }}>
+        {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(railCell)}
+      </div>
+    )
+
+    // The column keeps its `flex` whether or not it has anything in it, so an
+    // emptied list leaves the rail where the frame draws it rather than pulling
+    // it in beside a sentence.
+    const list = (
+      <div style={col(u(28), desk ? { flex: '1 1 0', minWidth: 0 } : undefined)}>
+        {groups.length === 0 ? (
+          // This section's own empty state is a line, and all three fitted
+          // layouts print one. `s.muted` is an rgba of the *page's* text colour
+          // and would be all but invisible on this panel, so the message takes
+          // the same cream the headings do (the gallery's pass-a-pair-that-
+          // reads rule). There is only ever the one message: the rail cannot
+          // empty a list that has anything in it, every lit letter being a
+          // group that exists — the pricing deck's case, not layout 1's.
+          <span style={{
+            fontFamily: s.body, fontSize: u(T.sub), lineHeight: 1.5, color: cream,
+          }}>No songs yet.</span>
+        ) : groups.map((g) => (
+          <div key={g.letter} ref={(n) => { anchors.current[g.letter] = n }}>
+            <div style={{ borderBottom: `${u(2)} solid ${rule}` }}>
+              <span style={{
+                fontFamily: s.body, fontSize: u(T.sub), lineHeight: 1.5, color: cream,
+              }}>{g.letter}</span>
+            </div>
+            {g.songs.map((sg) => (
+              // The frame's `ar-row` and the `info` inside it are one row here:
+              // `info` is `flex-[1_0_0]` of a row that holds nothing else, so
+              // the two boxes are the same box.
+              <div key={sg.n} style={row(u(6), {
+                padding: `${u(10)} 0`, borderBottom: `${u(1)} solid ${rule}`,
+                justifyContent: 'space-between', alignItems: 'baseline',
+                overflow: 'hidden',
+              })}>
+                {/* The frame holds both sides `shrink-0` under an
+                    `overflow-clip`; ours cannot, so the title takes the
+                    ellipsis and the artist holds its width — layout 3's call on
+                    this same pair, the media player's destroys-its-own-content
+                    rule. */}
+                <span style={{
+                  fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+                  letterSpacing: s.dls, color: mustard, minWidth: 0,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{sg.title}</span>
+                {/* Rendered or not, rather than printed blank: an emptied
+                    artist would otherwise draw a bare separator (the
+                    testimonials' byline rule). */}
+                {sg.artist && (
+                  <span style={{
+                    fontFamily: s.display, fontSize: u(T.song), lineHeight: 1.2,
+                    color: cream, flex: 'none', whiteSpace: 'nowrap',
+                  }}>· {sg.artist}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        // Every inset is the Section's own padding, which is why this branch
+        // sums nothing — 100 / 100 / 30 above, 150 / 150 / 60 below, and the
+        // gallery's 56 / 30 / 10 either side, carrying `surplus` so a window
+        // wider than the canvas widens the band and not the panel.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: band, color: cream, position: 'relative',
+        padding: `${u(s.mob ? 30 : 100)} `
+               + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
+               + `${u(s.mob ? 60 : 150)}`,
+      }}>
+        {/* The band's other half. The gallery draws its head; this section owns
+            the foot, and `bleed={false}` for the same reason — the sheet has
+            already cancelled the root's padding, so the strip wants the sheet's
+            own edges. The vector is 581 tall at all three widths and only its
+            parent's floor moves, so what ramps is the 64 / 64 / 43 that shows. */}
+        <TornEdge s={s} side="bottom" height={u(s.mob ? 43 : 64)} bleed={false} />
+        <div style={col(u(40), {
+          background: panel, borderRadius: u(60),
+          padding: s.mob ? `${u(40)} ${u(30)}` : u(tab ? 50 : 60),
+        })}>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg,
+            lineHeight: 0.89, letterSpacing: s.dls, color: mustard,
+          }}>{s.title}</h2>
+          <div style={col(u(24))}>
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.sub), lineHeight: 1.5, color: cream,
+            }}>All songs · A–Z</span>
+            {desk ? (
+              <div style={row(u(40), { alignItems: 'flex-start' })}>{list}{rail}</div>
+            ) : (
+              <div style={col(u(32))}>{rail}{list}</div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Layouts 5+ — the generic flat design. `NVAR.repertoire` is 4 and
+  // `CATS.repertoire.n` is 7, so every offered row folds onto one of the four
+  // fitted designs and nothing reaches this today; it is left in place, as
+  // layout 3's pass left the ones it retired.
   return (
     <div>
       <h2 style={{ margin: '0 0 30px', ...h2Style(s) }}>{s.title}</h2>

@@ -207,7 +207,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // website, not a website (§12.7), so every control EncoreSection draws is
     // a static span there. This is the one flag a control may branch on to
     // become real. Fifteen things read it: Repertoire's search, chips and
-    // pager; the header's navigation — its links, its Book Now and Listen, and
+    // pager, and in layout 4 the A–Z rail that jumps the page to a letter's
+    // group; the header's navigation — its links, its Book Now and Listen, and
     // the burger menu the narrow frames collapse to; the bio's own Listen,
     // which its layout 4 sets in the overlay card's meta row; the media player's
     // transport; the gallery's strip and arrows; the events map's pager and
@@ -597,6 +598,29 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.repSets = reached.size >= vm.songs.length
     ? tagSets
     : [...tagSets, repSet(REP_ALL, vm.songs, tagSets.length)]
+  // §10.2 layout 4 reads the same songs as an *index* rather than as a filter or
+  // a grouping: one group per distinct first letter of a title, the songs sorted
+  // inside it and the groups in the order those sorted songs first appear — so
+  // the section looks a list up rather than sorting one, the calendar's
+  // one-composed-line-per-cell rule. The letter is upper-cased because the rail
+  // it lights is; a title starting with a digit or a symbol takes `#`, which
+  // heads its own group in the list and lights nothing, the frames' rail being a
+  // fixed A–Z that no content can extend.
+  const byLetter = new Map()
+  ;[...vm.songs]
+    .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }))
+    .forEach((sg) => {
+      const l = (sg.title.charAt(0) || '#').toUpperCase()
+      if (!byLetter.has(l)) byLetter.set(l, [])
+      byLetter.get(l).push(sg)
+    })
+  vm.repGroups = [...byLetter].map(([letter, songs]) => ({ letter, songs }))
+  // The rounded panel layout 4 stands its list on — the olive band lifted a
+  // register, which is exactly `mapBg`'s own relationship to `deep` and lands
+  // within a point of Retro's own #6D7040-on-#5B5E2E (contrast 1.31 against
+  // 1.20–1.41 across the flat four). The Figma panel's fill is bound to no
+  // token at all, so there was nothing to resolve: it is read off the node.
+  vm.repPanel = mix(vm.mapBg, vm.mapFg, 0.11)
 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
