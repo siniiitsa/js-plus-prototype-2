@@ -159,8 +159,8 @@ mutated through a single `patch()` helper.
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
   **Layout 2 plays through the same hooks**, and draws the one list twice: the fan and the
   numbered list beside it are both the whole of `s.tracks`, and **layout 3 is that numbered
-  list on its own**, so `list` is `s.v0 || s.v1 || s.v2 ? s.tracks : s.tracks3` — the flat
-  design still shows three and Next must not leave the page.
+  list on its own**, so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — the
+  flat design still shows three and Next must not leave the page.
   Its fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
@@ -169,6 +169,13 @@ mutated through a single `patch()` helper.
   the canvas the seats are unrotated (the Figma frame's picture) and the bar takes the **centre
   seat's** title and artwork rather than the shared now-playing block's, which names the cued
   first track — live the two are the same track by construction.
+  **Layout 4 plays through the same hooks as well**: the sleeve is the track the player is on,
+  and the grid beside it is one photographic tile per track with the tile at `at` carrying the
+  same rust outline the sleeve does. That outline is a **seat**, the fan's rule rather than
+  `chosen`'s — `at` is 0 until the visitor picks, so the canvas draws the frame's own marked
+  first tile by construction — and it is drawn transparent on every other tile, so picking one
+  moves no geometry. It is also the one layout whose section paints the page's whole cream
+  band, checkerboard strip at each end.
 - **The gallery browses, in the published tab only, and its three social rows leave the page.**
   Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" rewinds, and the
   tile counter and viewer follow. `pick` starts at **-1** for the same reason `cur` does: nothing

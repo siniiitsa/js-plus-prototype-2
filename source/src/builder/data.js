@@ -169,7 +169,7 @@ export const minimalNav = (navSections) =>
  * ------------------------------------------------------------------ */
 
 export const NVAR = {
-  header: 6, bio: 4, media: 3, tags: 4, audio: 3, video: 2, pricing: 3,
+  header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 2, pricing: 3,
   repertoire: 3, gallery: 3, calendar: 3, map: 3, testimonials: 3, form: 3, footer: 1,
 }
 

@@ -2675,12 +2675,13 @@ function Media({ s }) {
 
   // What the transport can reach is what the layout draws: the older design
   // shows three cards, and Next off the third has to return to the first
-  // rather than start a track with no card on the page. Layouts 1, 2 and 3 all
-  // draw the whole list — layout 2 draws it twice, as the fan and as the
-  // numbered list beside it, and layout 3 draws that same list on its own.
+  // rather than start a track with no card on the page. Layouts 1, 2, 3 and 4
+  // all draw the whole list — layout 2 draws it twice, as the fan and as the
+  // numbered list beside it, layout 3 draws that same list on its own, and
+  // layout 4 draws one photographic tile per track beside the sleeve.
   // `s.v0` is a prop, not state, so branching on it above the hooks would be
   // the error — branching on it here is not.
-  const list = s.v0 || s.v1 || s.v2 ? s.tracks : s.tracks3
+  const list = s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3
   const count = list.length
   // Clamped the way Repertoire clamps its chip: the list is the artist's, and
   // a track deleted under the player would otherwise strand it past the end.
@@ -3551,6 +3552,339 @@ function Media({ s }) {
         {/* This layout has no transport bar of its own — the rows are the whole
             of it — so the element rides at the foot of the column. Without it
             `el.current` is null and every row click is dead. */}
+        {audio}
+      </div>
+    )
+  }
+
+  // ── v3 — Media Player layout 4 · Turntable + playlist ──────────────────
+  // (Figma 964:72526 · 971:15190 at 768 · 971:14834 at 390. The display head
+  // above it is the composed page's own wrapper — 964:72523 · 971:14889 — and
+  // the two checkerboard strips are the *band's*, not the instance's; both are
+  // drawn here, for the reasons below.)
+  //
+  // The sleeve of the track the player is on, standing in a rust outline with
+  // the now-playing block and a transport under it, beside a grid of one
+  // photographic tile per track. The tile the player is on carries the same
+  // rust outline the sleeve does — in the frame, tile one's photograph *is* the
+  // sleeve — so the mark is the seat the player occupies, not a second control.
+  //
+  // ── The section stands on its own cream sheet, and owns both strips ────
+  // `get_variable_defs` resolves this page's `sem/bg` to **#FBF6EA**, and a
+  // column scan of the 1440 band (964:72520) reads that cream from its first
+  // row to its last — so the instance's own ground IS the band, at all three
+  // widths (LAYOUT-4-PLAN.md's two band tables agree). It gets it the
+  // repertoire's way, with no root flag touched: a block carrying the root's
+  // own padding back as a negative margin, re-inset at the frames' own 56/56/10
+  // horizontally (+ `s.surplus`, so a published window wider than the canvas
+  // widens the sheet and not the measure).
+  //
+  // The checkerboard strips are the band's two page lines, 1440 × 23.6 at every
+  // width. The desktop band parents both (flush at its head and at its foot —
+  // the render says so, where `get_metadata` puts the first at y 22.6); the
+  // narrow pages reparent them to the bio Section's foot and the video frame's
+  // head, which is the same two seams. Drawing them at the head and the foot of
+  // *this* sheet is therefore the one placement that is right at all three
+  // widths whatever our page stacks around it — **so the video section must not
+  // draw one of its own at its head.** Their pitch follows `z` (HeaderV3's
+  // 19.36/23.61, the same strip), and their dark square is the bio band's own
+  // olive, which is what the page checks this cream against.
+  //
+  // ── The vertical insets are the band's and the instance's, added up ────
+  // Measured off the renders rather than the metadata, which puts the desktop
+  // strip 22.6 down a band whose first row is already checked. The band gives
+  // its head 132.4 / 50 / 60 of clear cream below the strip and its foot 76.4 /
+  // 0 / 60 above the next one; the instance then pads itself 56 / 56 / 10 all
+  // round *inside* that. So the sheet's own insets are the two sums — 132.4 /
+  // 50 / 60 at the head, 132.4 / 56 / 70 at the foot — and the 56 / 56 / 20
+  // between the head and the player is the instance's top padding (twice over
+  // at 390, where the band's own 10 stacks on the head frame's). Nearly
+  // symmetric at every width without anything being rounded to make it so, and
+  // the desktop sum lands the section on the frame's 1012 × 0.82 exactly.
+  //
+  // ── The grid states the height and the sleeve fills it ─────────────────
+  // Nothing in this composition has an intrinsic height: both columns are
+  // `h-full` of a stated 671 (569 at 768), the tiles are `1fr` rows of a
+  // `flex-[1_0_0]` grid, and the sleeve is `flex-[1_0_0]` of the column. Our
+  // section is content-tall, so one of them has to be chosen. It is the tile,
+  // whose height travels as the ratio of a residue (the gallery's rule):
+  // 289.33/269.5, 136/139 and 180/123.33, which at our own measure reproduces
+  // every master's tile to the pixel — the bleed hands the section the frame's
+  // width back. The sleeve then fills what the grid leaves, which is the
+  // masters' own declaration, and at the seeded five the picture is the frame's
+  // at all three widths (five tiles wrap to the same two/three rows as six).
+  //
+  // What that costs, and the one floor it needs: the sleeve grows with the
+  // track count — at `max: 8` it is 580 tall on a 252 column at desktop — and,
+  // worse, *shrinks to nothing* at one or two tracks, where a 768 page's single
+  // tile row is 139 and the column's fixed parts are 139 exactly. A published
+  // page with two singles would draw a 3px rust hairline where its artwork
+  // should be, which is the media player's own destroys-its-own-content rule.
+  // So the sleeve takes a `minHeight` of the **390 master's own stated sleeve**
+  // (370 × 302) applied to the 308 column — cross-width borrowing, named here
+  // because the events map declined exactly that, and taken here because the
+  // alternative is an invented number or a broken page. It is inert from four
+  // tracks up, so the reference picture never sees it.
+  //
+  // ── The type, and the two glyphs ───────────────────────────────────────
+  // `get_variable_defs` on all three masters: display-lg 96/60/40 at leading
+  // .89 (the wrapper's head — one line at 1440 and 768, two at 390), title
+  // 24/19/19 (the now-playing track), list 16/12/12 (the tile titles), body-sm
+  // 12 flat (the artist line and the tile sublines) and chip 12/11/11 bold at
+  // −6% (the two clocks). Every *box* number is the desktop component's own —
+  // 420 column, 56/56/10 page inset, 40/40/20 column gap, 48 transport disc, 14
+  // transport gap, 3 stroke, 30 radius, 20 tile padding, 20/20/10 grid gap — so
+  // the whole branch is one `z`, one type table and the places 390 stacks.
+  //
+  // The head's own 1019.18 measure is a leaked desktop width and is declined:
+  // at 768 the same string inks 655 in a 656 frame, so it wraps nothing, and
+  // the 390 master drops it and breaks the head in two by measure alone.
+  //
+  // The frame's prev/next are a 16 × 8.4 double triangle with a bar, which is
+  // not a glyph lucide draws: `SkipBack`/`SkipForward` are one triangle and a
+  // bar, taller than they are wide. Sized off their ink rather than their box
+  // (the audio player's rule) they carry the frame's weight beside the 48 disc,
+  // and the bar is why the stroke stays on where every earlier transport in
+  // this file sets `strokeWidth={0}`.
+  if (s.v3) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The same number unsuffixed, for an icon's `size` — lucide writes it into
+    // the SVG's width/height, so it has to stay a number.
+    const un = (v) => Math.round(v * z * 10) / 10
+    const T = desk
+      ? { disp: 96, title: 24, list: 16, body: 12, chip: 12 }
+      : tab
+        ? { disp: 60, title: 19, list: 12, body: 12, chip: 11 }
+        : { disp: 40, title: 19, list: 12, body: 12, chip: 11 }
+
+    // `sem/bg` is the sheet (and the play glyph); `sem/text/2` #111111 is the
+    // artist line and the two clocks, which on a *cream* sheet is `paperFg` and
+    // not `s.tx` (layout 1 of this section already pairs them that way);
+    // `sem/text/1` is the rust — `s.ac` on every palette, and the known cost is
+    // Lime's acid green on its pale sheet, which the conventions name twice;
+    // `sem/text/3` is the mustard of the progress fill, which is `pillBg` under
+    // Retro and dies on a paper card on Lime and Grunge (the audio player's
+    // lesson), so the flat four take the accent there as layout 1 does; and
+    // `sem/box/3` #EBE0C6 is the unplayed half of the bar, `paperLine` being
+    // the token that reads on a paper panel whichever way the palette runs.
+    const cream = s.retro ? '#FBF6EA' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    const rust = s.ac
+    const mustard = s.retro ? '#D8A227' : s.ac
+    const bar = s.retro ? '#EBE0C6' : s.paperLine
+    // The checker's dark square is the olive the page's *previous* band is
+    // painted in — Retro's `T.tags[3]` exactly — so the flat four take the same
+    // pair the bio's layout 4 gives that band, `mapBg`, rather than an ink that
+    // would stand a black grid on a cream page.
+    const olive = s.retro ? '#5B5E2E' : s.mapBg
+    // The frame's foot fade, over the photograph and under the label block.
+    // Written in the branch rather than added to SCRIM: it belongs to one
+    // design, and keeping it here is what keeps the whole diff inside the
+    // branch for the brace-depth walk.
+    const scrim = 'linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 88.942%)'
+
+    const clockType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+      // Figma states −6%, which the emitted CSS freezes at the desktop
+      // −0.72px; the tracking ramps with its token (the pricing lesson).
+      letterSpacing: u(-0.06 * T.chip),
+      color: ink, whiteSpace: 'nowrap', flex: 'none',
+    }
+    const ctl = (fn) => ({
+      color: rust, flex: 'none', display: 'inline-flex',
+      alignItems: 'center', justifyContent: 'center',
+      cursor: s.live && fn ? 'pointer' : undefined,
+    })
+
+    // The sleeve. `flex: 1 0 0` is the masters' own declaration at the two wide
+    // widths; 390 stands it above the grid at its own stated 302 on a 370
+    // column, which is written as that ratio so a published window narrower
+    // than the canvas keeps the shape rather than the height. `minHeight` is
+    // the floor the branch header argues for, and it is the same ratio.
+    const sleeveBox = (
+      <div style={{
+        border: `${u(3)} solid ${rust}`, borderRadius: u(30),
+        overflow: 'hidden', position: 'relative', background: mustard,
+        ...(s.mob
+          ? { aspectRatio: '370 / 302', flex: 'none', width: '100%' }
+          : { flex: '1 0 0', minHeight: u(308 * 302 / 370), width: '100%' }),
+      }}>
+        {/* An absolute wrapper, or the <img>'s intrinsic height floors the
+            flex item and blows the column open (the gallery's lesson). The
+            placeholder size is an invented ramp — the frames are photographs
+            and Retro seeds the artwork, so it is only ever seen on the flat
+            four and mid-edit — and `ink` is owed by every section on its own
+            sheet, `s.muted` being an rgba of the *page's* text colour. */}
+        <span style={{ position: 'absolute', inset: 0 }}>
+          <Photo s={s} initialsSize={un(56)} src={sleeve}
+                 ink={s.retro ? undefined : s.paperFg} />
+        </span>
+      </div>
+    )
+
+    const nowPlaying = (
+      <div style={row('0', { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
+        {/* The frame hugs this block and lets it `break-word`, which at a
+            longer title would push the transport off the 308 column and into
+            the Left frame's `overflow-clip`. It shrinks and truncates instead,
+            which is what both of this section's other list layouts do. */}
+        <span style={col(u(4), { flex: '1 1 auto', minWidth: 0 })}>
+          <span style={{
+            fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+            letterSpacing: s.dls, color: rust,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>{now.track}</span>
+          <span style={{
+            fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.4,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>{now.by}</span>
+        </span>
+        <span style={row(u(14), { flex: 'none' })}>
+          <span style={ctl(true)} onClick={s.live ? () => goTo(at - 1) : undefined}>
+            <SkipBack size={un(18)} fill="currentColor" />
+          </span>
+          <span style={{
+            width: u(48), height: u(48), borderRadius: '999px', flex: 'none',
+            background: rust, color: s.retro ? cream : s.acFg,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            cursor: s.live ? 'pointer' : undefined,
+          }} onClick={s.live ? toggle : undefined}>
+            {playing
+              ? <Pause size={un(22)} fill="currentColor" strokeWidth={0} />
+              : <Play size={un(22)} fill="currentColor" strokeWidth={0} />}
+          </span>
+          <span style={ctl(true)} onClick={s.live ? () => goTo(at + 1) : undefined}>
+            <SkipForward size={un(18)} fill="currentColor" />
+          </span>
+        </span>
+      </div>
+    )
+
+    // The frame's own bar is a hand-set 140 of 222 at every width — 63%, 61%
+    // and 48% of three different measures against one 02:28 of 04:22 — so it
+    // is the picture and not a proportion. Ours is the element's, as layouts 1
+    // and 2 already draw it, and the dot rides the fill's end the way the
+    // frame's ellipse rides its 140.
+    const progress = (
+      <div style={row(u(10), { width: '100%', flex: 'none' })}>
+        <span style={clockType}>{now.at}</span>
+        <span style={{
+          flex: 1, minWidth: 0, height: u(3), background: bar, borderRadius: u(2),
+        }}>
+          <span style={{
+            display: 'block', position: 'relative', height: '100%',
+            width: `${now.pct}%`, background: mustard, borderRadius: u(2),
+          }}>
+            <span style={{
+              position: 'absolute', right: u(-3.15), top: `calc(50% - ${u(3.15)})`,
+              width: u(6.3), height: u(6.3), borderRadius: '999px', background: rust,
+            }} />
+          </span>
+        </span>
+        <span style={clockType}>{now.of}</span>
+      </div>
+    )
+
+    const tiles = (
+      <div style={{
+        flex: 1, minWidth: 0, display: 'grid',
+        gridTemplateColumns: `repeat(${desk ? 3 : 2}, minmax(0, 1fr))`,
+        gap: u(s.mob ? 10 : 20),
+        // The grid is stretched by the row whenever the sleeve's floor makes
+        // the left column the taller one; without this its rows would stretch
+        // with it and every tile would lose its aspect.
+        alignContent: 'start',
+      }}>
+        {s.tracks.map((t, i) => (
+          <div key={i} onClick={onPick(i)} style={{
+            position: 'relative', overflow: 'hidden', borderRadius: u(30),
+            aspectRatio: desk ? '289.33 / 269.5' : tab ? '136 / 139' : '180 / 123.33',
+            padding: u(20), cursor: s.live ? 'pointer' : undefined,
+            // The outline marks the seat the player is on, and it is drawn
+            // transparent on every other tile so that picking one moves no
+            // geometry. `at` is 0 until the visitor picks, so the canvas draws
+            // the frame's own marked first tile by construction.
+            border: `${u(3)} solid ${i === at ? rust : 'transparent'}`,
+            ...col(u(4), { alignItems: 'flex-start', justifyContent: 'flex-end' }),
+          }}>
+            <span style={{ position: 'absolute', inset: 0 }}>
+              <Photo s={s} initialsSize={un(26)} src={t.img}
+                     ink={s.retro ? undefined : s.paperFg} />
+            </span>
+            <span style={{ position: 'absolute', inset: 0, background: scrim }} />
+            {/* The frame sets the title in white outright rather than in a
+                token: it stands on the foot of a photograph under a fade to
+                black, where every palette's own ink would be a worse answer. */}
+            <span style={{
+              position: 'relative', width: '100%', fontFamily: s.display,
+              fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls, color: '#FFFFFF',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>{t.name}</span>
+            {/* Rendered or not rather than printed blank: a typed textarea row
+                has no release line, and an empty span would spend the column's
+                4px gap and its own line box (layout 3's rule). */}
+            {t.rel && (
+              <span style={{
+                position: 'relative', width: '100%', fontFamily: s.body,
+                fontSize: u(T.body), lineHeight: 1.4, color: rust,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{t.rel}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        // The bio's and the tags' v3 spelling, in this band's cream.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: cream, color: ink, ...col('0'),
+      }}>
+        <Checkerboard s={s} cell={desk ? 19.36 : 23.61} colour={olive} />
+        <div style={{
+          padding: `${u(desk ? 132.4 : tab ? 50 : 60)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 132.4 : tab ? 56 : 70)}`,
+          ...col(u(s.mob ? 20 : 56)),
+        }}>
+          {/* The wrapper's head. `FIELDS.media.heading`'s default stays "Five
+              worth your ear." — the frame's "Six Worth Your Ears" is a count of
+              its own filler, the pass's the-count-is-the-frame's-claim rule,
+              and the grid below draws one tile per track either way. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: u(T.disp),
+            lineHeight: 0.89, letterSpacing: s.dls, color: rust,
+          }}>{s.title}</h2>
+          <div style={{
+            ...(s.mob ? col(u(20)) : row(u(desk ? 112 : 56), { alignItems: 'stretch' })),
+            width: '100%',
+          }}>
+            {/* 420 less the frame's own 56 of page inset on each side, which
+                the sheet above now carries — so the column is the frame's 308
+                at both wide widths and the page's whole measure at 390. */}
+            <div style={col(u(s.mob ? 20 : 40), {
+              flex: 'none', width: s.mob ? '100%' : u(308), minWidth: 0,
+            })}>
+              {sleeveBox}
+              {nowPlaying}
+              {progress}
+            </div>
+            {/* An emptied list is a real state — the tracks are the artist's —
+                so the grid is replaced by the pricing deck's one line rather
+                than leaving a hole. Any minimum height for it would be an
+                invented number, and it is only ever seen mid-edit. */}
+            {s.tracks.length === 0
+              ? <span style={{ fontFamily: s.body, fontSize: u(T.body), flex: 1 }}>No tracks yet.</span>
+              : tiles}
+          </div>
+        </div>
+        <Checkerboard s={s} cell={desk ? 19.36 : 23.61} colour={olive} />
+        {/* This layout's transport is the only one on the page, and the element
+            rides at the foot of the sheet. Without it `el.current` is null and
+            every tile click is dead. */}
         {audio}
       </div>
     )
