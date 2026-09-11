@@ -748,12 +748,27 @@ const SCRIM = {
   v5: 'linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.3) 45%, rgba(0,0,0,.55))',
   // §10.2 hero — one full-height fade off the floor, exactly the Figma gradient.
   hero: 'linear-gradient(0deg, #111111 0%, rgba(17,17,17,0) 100%)',
+  // §10.2 stacked header (layout 4) — the same full-height fade, in the olive
+  // its Figma page's *next* band is painted in (`sem/bg`, which is Retro's
+  // `T.tags[3]` exactly). A literal rather than the palette hue, because the
+  // flat four take `hero` instead: an arbitrary tag colour is no basis for a
+  // scrim, where black is legible under any palette by construction.
+  stack: 'linear-gradient(0deg, #5B5E2E 0%, rgba(91,94,46,0) 100%)',
 }
 
-// §10.2 — the hero's top bar. (The footer builds its own columns.) Below
-// `desktop` the links collapse to a hamburger, as they do on both narrow
-// reference frames — and the hamburger now opens; see NavMenu.
-function NavBar({ s, colour, rule }) {
+// §10.2 — the top bar of layouts 1 and 4, which draw the same Figma nav: its
+// 30/20/150/23 at 1440 are this component's 24/16/123/18 × 0.82, its narrow
+// masters hand the links to a burger beside the pill at exactly the 23 and 10
+// gaps below, and both rules ramp 150/150/70. (The footer builds its own
+// columns.) Below `desktop` the links collapse to a hamburger, as they do on
+// every narrow reference frame — and the hamburger now opens; see NavMenu.
+//
+// `pill` is spread onto BookPill in both arms — `Pager`'s `idle` and
+// `BookPill`'s own `glyph` precedent, additive, so HeaderV0 (which passes
+// none) is a `...undefined` no-op. The stacked header needs it: its frame
+// stands a near-black pill under a mustard offset block where the hero's is
+// the mustard pill on rust that BookPill already defaults to.
+function NavBar({ s, colour, rule, pill }) {
   const c = colour || s.tx
   const bar = rule || c
   const tab = isTablet(s)
@@ -773,7 +788,7 @@ function NavBar({ s, colour, rule }) {
       </div>
       {s.narrow ? (
         <span style={row(tab ? '23px' : '10px')}>
-          <BookPill s={s} to={s.bookTo} />
+          <BookPill s={s} to={s.bookTo} {...pill} />
           <NavMenu s={s} color={c} />
         </span>
       ) : (
@@ -784,7 +799,7 @@ function NavBar({ s, colour, rule }) {
             <a key={l.label} href={navHref(s, l.to)}
                style={labelStyle(s, s.labelMd, { color: c, cursor: 'pointer' })}>{l.label}</a>
           ))}
-          <BookPill s={s} to={s.bookTo} />
+          <BookPill s={s} to={s.bookTo} {...pill} />
         </nav>
       )}
     </div>
@@ -1478,56 +1493,216 @@ function HeaderV2({ s }) {
   )
 }
 
-// v3 — Header layout 4 · Polaroid
+// v3 — Header layout 4 · Stacked (Figma 964:72511 / 964:77544 / 971:14040)
+//
+// The layout-4 page's header, and the second composition in the file that is a
+// full-bleed photograph: the nav rides the top edge, and everything else sits
+// on the floor — the artist's portrait in a mustard-bordered card, then the
+// kicker, the name stacked over two lines (which is what the frame's own
+// "Stacked" names) and the location, with the tag chips in the opposite
+// corner. A checker ribbon runs off the floor and the seal floats over the
+// photograph. It replaces the invented *Polaroid*, so `HEADER_NAMES[3]` and
+// the README's list are renamed with it — layout 3's refit a second time.
+//
+// Four things this frame settles that HeaderV0's, the composition it is
+// nearest to, does not:
+//
+// - **The scrim is coloured.** Both the frame and the hero fade one
+//   full-height gradient off the floor, but this one fades to `sem/bg` —
+//   #5B5E2E, the olive its Figma page's next band is painted in and Retro's
+//   `T.tags[3]` exactly — where the hero fades to black. `SCRIM.stack`; the
+//   flat four keep `SCRIM.hero`, for the reason written there.
+// - **The checker is the frame's own pitch.** HeaderV0 runs this very ribbon a
+//   third finer than the reference "so the squares read as texture"; here the
+//   reference *is* this section, so the tile is its stated 23.606 (× 0.82 at
+//   desktop), in `sem/media`, which is Retro's `paper`.
+// - **`showBadge` reaches this layout**, where it reached neither 2 nor 3 —
+//   all three masters draw the seal. What does *not* reach it is `subtitle`,
+//   `cta2` (the frame carries no Listen link, so NavBar's narrow arm is the
+//   whole bar at every width) and `align`: layouts 2 and 3 drop the last two
+//   as well, and inventing a centred variant this frame does not draw would be
+//   worse than the absence.
+// - **The nav is NavBar's own frame.** See the component: its desktop numbers
+//   are these masters' × 0.82 and its narrow arm is what they draw. It is
+//   reused whole rather than written again (the tags row's rule), which costs
+//   two known inheritances — the wordmark's globe is drawn in the bar's cream
+//   where this frame sets `sem/stroke/1` #111111 and draws nothing visible on
+//   a near-black photograph, and its rule takes `T.tags[3]` #5B5E2E against
+//   the frame's `sem/box/1` #6D7040.
+//
+// Desktop is the 1440 frame × 0.82 and both narrow masters are verbatim, so
+// the × 0.82 is one `z` inside `u()` (the media player's rule). **Nothing
+// reflows**: all three masters are the same column, `justify-end` over a
+// stated height with the nav absolute on top. What moves is the panel — a row
+// with the chips in the corner at 1440, a stack at both narrow widths — the
+// page inset, which parts company between the nav and the body at 390 alone
+// (10 against 20), and the seal, which leaves the nav for the floor at 768.
 function HeaderV3({ s }) {
+  const desk = !s.narrow
+  const tab = isTablet(s)
+  const z = desk ? 0.82 : 1
+  const u = (n) => `${+(n * z).toFixed(2)}px`
+  // `sem/text/2` — the cream the wordmark, the links, the pill's label and the
+  // display name are all set in. `sem/text/1` and `sem/stroke/2` are one
+  // mustard: the kicker, the location dot and its line, the avatar's border
+  // and the pill's offset block. `sem/text/3` is the pill's own ground, and it
+  // IS Retro's `tx` (the media player's rule), so the flat four inherit a
+  // legible pair rather than a literal.
+  const cream = s.retro ? '#FBF6EA' : s.paper
+  const mustard = s.pillBg
+  const ink = s.retro ? '#111111' : s.tx
+  // `get_variable_defs` on each master, not the emitted CSS. `size/display-xl`
+  // is a token no earlier header branch has drawn, and `size/list` goes back
+  // *up* at 390 (16 → 12 → 13) for the fourth time in the pass family.
+  const T = {
+    disp: desk ? u(128) : tab ? '77px' : '48px',    // display-xl, leading .75
+    title: desk ? u(24) : tab ? '19px' : '18px',    // the kicker, in the display face
+    list: desk ? u(16) : tab ? '12px' : '13px',     // the location
+    chip: desk ? u(20) : tab ? '14px' : '12px',     // label-xs, the chips
+    // The Book Now label. `size/label-md` at 1440 and 768, where BookPill's
+    // automatic `full` scale would draw 20px against the master's 14 — the
+    // events map's and the calendar's check, third sighting. The 390 master
+    // states a **raw** 14.238 rather than that width's own label-md 13: its
+    // whole pill is the desktop one at × 0.712, against BookPill's `small`
+    // × 0.62, so the frame's own number is what keeps the pill its drawn size.
+    pill: desk ? u(20) : tab ? '14px' : '14.24px',
+  }
+  // The frames' page inset, which stops being one number at 390: the nav is
+  // given the full 370 there and the block below it 350 (the repertoire's
+  // rule). Each child carries its own, so the root pads vertically alone —
+  // and each adds `s.surplus`, since the sheet below bleeds past the canvas.
+  const navPad = `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'})`
+  const bodyPad = `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '20px'})`
+  const avW = desk ? u(112.6) : tab ? '113px' : '116px'
+
+  // The one place `avatar` reaches this layout, and the header's own
+  // `image`/`avatar` split: the card is the artist where the sheet behind it
+  // is the scene. Figma strokes this frame inside its stated box, which is
+  // `border-box` verbatim; the ground under the photograph is `sem/box/1` and
+  // is only ever seen through a transparent upload, so it takes HeaderV0's
+  // `soft2` rather than a literal.
+  const avatar = (
+    <div style={{
+      width: avW, height: desk ? u(118.68) : '119px', flex: 'none',
+      position: 'relative', overflow: 'hidden', background: s.soft2,
+      border: `${u(3.04)} solid ${mustard}`, borderRadius: u(26.95),
+    }}>
+      {/* An invented ramp, only ever seen on the flat four or mid-edit: the
+          frame is a photograph and Retro seeds one (the gallery's rule). */}
+      <Photo s={s} avatar initialsSize={Math.round(parseFloat(avW) * 0.3)} />
+    </div>
+  )
+
+  const idBlock = (
+    <div style={col(u(18), {
+      alignItems: 'flex-start',
+      ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
+    })}>
+      {/* Display/Title, not a label token — the kicker is set in the display
+          face here where every other header sets it in Anton. The frame's own
+          string is "DJ · LIVE ACT" against our "DJ · Live Act", so the caps
+          are the CSS's (Retro's `casing` is passthrough by design). */}
+      <span style={{
+        fontFamily: s.display, fontSize: T.title, lineHeight: 1.1,
+        letterSpacing: s.dls, color: mustard, textTransform: 'uppercase',
+      }}>{s.kicker}</span>
+      {/* The 1440 master hand-breaks the name into two lines inside a column
+          twice as wide as it needs — that break IS the composition's name —
+          and both narrow masters set it `w-[min-content] min-w-full`, which is
+          one line at their own sizes. Hence `inline` at narrow only, the
+          inverse of HeaderV0's. */}
+      <Title s={s} size={T.disp} lh={0.75} color={cream} inline={s.narrow} />
+      <span style={row(u(8), { minWidth: 0 })}>
+        {/* radius/chip 8 on a 14px square — a rounded block, not the ring
+            LocationLine draws for the flat templates. HeaderV2's pair. */}
+        <span style={{
+          width: u(14), height: u(14), borderRadius: u(8), background: mustard, flex: 'none',
+        }} />
+        <span style={{
+          fontFamily: s.display, fontSize: T.list, lineHeight: 1.2,
+          letterSpacing: s.dls, color: mustard, whiteSpace: 'nowrap',
+        }}>{s.location}</span>
+      </span>
+    </div>
+  )
+
+  // The frame pins the Tags component at 344 in the desktop panel's right
+  // corner and gives it the whole measure at both narrow widths. Our six chips
+  // therefore wrap one row further than the frame's five (the bio's rule). The
+  // visibility key is read here as well as inside TagChips, because a hidden
+  // row must not leave a 282px hole beside a `flex: 1 0 0` column —
+  // `sealGap`'s precedent for reading a `show…` key outside its own component.
+  const tags = s.showTags === 'show' ? (
+    <div style={{ width: desk ? u(344) : '100%', flex: 'none' }}>
+      <TagChips s={s} radius={u(8)} size={T.chip} />
+    </div>
+  ) : null
+
   return (
-    <div style={{ position: 'relative' }}>
-      <Checkerboard s={s} style={{ marginBottom: '20px' }} />
-      <div style={row('20px', { justifyContent: 'space-between', flexWrap: 'wrap', marginBottom: s.navGap })}>
-        <NavLinks s={s} pills={false} />
-        <Wordmark s={s} />
-        <span style={row('14px')}>
-          <ListenLink s={s} to={s.listenTo} />
-          <BookPill s={s} to={s.bookTo} />
-        </span>
+    <div style={{
+      position: 'relative', overflow: 'hidden', color: cream,
+      // The repertoire's written-out bleed rather than widening the root's
+      // `bleed` flag, which stays layout 1's — HeaderV2's spelling, and it
+      // covers the root's border box exactly.
+      margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+      // The frame's own height, as a floor rather than an aspect ratio: at and
+      // past the canvas the two are the same band, and a `minHeight` lets a
+      // longer name grow the section where HeaderV0's `overflow: hidden` would
+      // crop it. 900 × 0.82 against the hero's 614, so this is the taller of
+      // the two full-bleed compositions.
+      minHeight: desk ? u(900) : tab ? '1024px' : '844px',
+      padding: `${desk ? u(28) : '30px'} 0 ${desk ? u(80) : tab ? '80px' : '40px'}`,
+      ...col(0, { justifyContent: 'space-between' }),
+    }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></div>
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, background: s.retro ? SCRIM.stack : SCRIM.hero,
+      }} />
+      {/* The frame's `image 1` — the paper sheet, lightened at 29% where the
+          hero composites the same raster at 50%. */}
+      <Grain s={s} exact blend="lighten" opacity={0.29} />
+
+      <div style={{ position: 'relative', padding: `0 ${navPad}` }}>
+        <NavBar s={s} colour={cream} rule={s.chips[3]?.bg || s.ac}
+                pill={{ size: T.pill, ...(s.retro ? { bg: ink, fg: cream, shadow: mustard } : null) }} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '44px', alignItems: 'center' }}>
-        <div style={{
-          background: s.bg, padding: '12px 12px 44px', boxShadow: '0 14px 34px rgba(0,0,0,.22)',
-          transform: 'rotate(-2.5deg)', position: 'relative',
-        }}>
-          <div style={{ aspectRatio: '4 / 4.4', overflow: 'hidden' }}>
-            <Photo s={s} initialsSize={52} />
-          </div>
-          {/* Right-aligned so the seal badge at bottom-left cannot cover it. */}
-          <span style={{
-            position: 'absolute', right: '14px', bottom: '16px',
-            fontSize: '10px', fontWeight: 600, color: s.muted,
-          }}>{s.location}</span>
-        </div>
-        <div style={col('14px', { alignItems: s.align === 'centre' ? 'center' : 'flex-start' })}>
-          <span style={{
-            border: `1px solid ${s.line2}`, borderRadius: s.btnR, padding: '4px 10px',
-            fontSize: '10px', fontWeight: 700, letterSpacing: '2px',
-            textTransform: 'uppercase', color: s.ac,
-          }}>{s.kicker}</span>
-          <Title s={s} twoTone align={s.align === 'centre' ? 'center' : 'left'} />
-          <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.6, color: s.muted }}>{s.subtitle}</p>
-          <span style={ctaPrimary(s)}>{s.cta1}</span>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
-            <div style={{ background: s.soft, borderRadius: s.radiusSm, padding: '12px' }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>The face of the act</div>
-              <div style={{ fontSize: '9px', color: s.muted, marginTop: '4px' }}>{s.kicker}</div>
-            </div>
-            <div style={{ background: s.ac, color: s.acFg, borderRadius: s.radiusSm, padding: '12px' }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{s.location}</div>
-              <div style={{ fontSize: '9px', opacity: 0.8, marginTop: '4px' }}>{s.badgeText}</div>
-            </div>
-          </div>
-        </div>
+
+      <div style={{
+        position: 'relative', padding: `0 ${bodyPad}`,
+        ...col(u(40), { alignItems: 'flex-start' }),
+      }}>
+        {avatar}
+        {desk ? (
+          <div style={row(0, { alignItems: 'flex-end', width: '100%' })}>{idBlock}{tags}</div>
+        ) : (
+          <div style={col('30px', { alignItems: 'flex-start', width: '100%' })}>{idBlock}{tags}</div>
+        )}
       </div>
-      <Checkerboard s={s} style={{ marginTop: '20px' }} />
-      <SealBadge s={s} style={{ bottom: '20px', left: '20px' }} />
+
+      {/* The seal's ground is the two verbatim masters' cream — `sem/bg`
+          resolves to #EAD7B8 at 768 and 390, which IS Retro's `paper` — rather
+          than the 1440 instance's mustard: two masters against one, and the
+          disc reads on the photograph either way. Its marks are the accent,
+          `sem/text/1` #C8461C exactly under Retro.
+
+          Every position here is read off the *renders*. A rotated group's
+          `get_metadata` x is in a rotated parent space (the memory note) and
+          is 55px out at both wide widths, where the emitted `left` lands on
+          the measured disc centre to within a pixel at all three. 768 anchors
+          from the floor, because there alone the seal sits over the identity
+          block rather than under the nav — so a name that grows the section
+          must not carry it away from the block it belongs to. */}
+      <SealBadge s={s} hue={s.paper} ink={s.retro ? s.ac : undefined} tilt={26.06}
+                 size={desk ? +(125.37 * z).toFixed(2) : tab ? 125.37 : 85}
+                 style={{
+                   ...(tab ? { bottom: '185.46px' } : { top: desk ? u(137.17) : '134.35px' }),
+                   right: `calc(${s.surplus} + ${desk ? u(68.43) : tab ? '51.17px' : '20.65px'})`,
+                 }} />
+
+      {/* Two rows of the frame's 11.803 square — `cell` is the repeating tile,
+          which is two of them — in `sem/media`, Retro's paper exactly. */}
+      <Checkerboard s={s} cell={desk ? 19.36 : 23.61} colour={s.paper}
+                    style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }} />
     </div>
   )
 }

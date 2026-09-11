@@ -219,7 +219,7 @@ const HEADER_NAMES = {
     ['Hero', 'Full-bleed photo'],
     ['Feature spread', 'Photo beside the details'],
     ['Inset Hero', 'Framed photo on colour'],
-    ['Polaroid', 'Photo card beside text'],
+    ['Stacked', 'Name stacked over the photo'],
     ['Overlay card', 'Details on a card'],
     ['Stage wide', 'Centred, wide'],
   ],
@@ -643,7 +643,7 @@ export const FIELDS = {
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
     { k: 'avatar',    l: 'Artist photo',     type: 'image',
-      hint: 'The portrait card and the small round avatar. The Polaroid layout uses the background photo instead.' },
+      hint: 'The portrait card and the small round avatar.' },
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act' },
     { k: 'title',     l: 'Title' },                       // defaults to artistName — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub' },

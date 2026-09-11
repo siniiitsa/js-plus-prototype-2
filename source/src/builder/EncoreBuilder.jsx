@@ -2803,9 +2803,9 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
  * ~560.
  *
  * The cards share one frame so the set reads as a set and the labels sit
- * on one line. The frame has to be measured: Retro's Polaroid runs half
- * again as tall as its full-bleed hero, and a frame guessed from either
- * one would crop the tall layouts or strand the short ones. It takes the
+ * on one line. The frame has to be measured: Retro's tallest layouts run
+ * well past its full-bleed hero, and a frame guessed from either end
+ * would crop the tall layouts or strand the short ones. It takes the
  * *median* height rather than the tallest — sizing to the tallest would
  * leave the other five in a third of a card's worth of empty background —
  * and `fit` shrinks whatever overruns it instead of cropping.

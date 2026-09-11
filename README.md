@@ -139,8 +139,8 @@ Four things about it are load-bearing:
 
 - **One component.** `HeaderChoices` renders the grid — the same layouts the header's edit panel
   offers afterwards in its `LayoutPicker` dropdown, under the same names. Its frame is the
-  *median* of the theme's measured layout heights, so Retro's tall Polaroid neither crops nor
-  strands the other five.
+  *median* of the theme's measured layout heights, so Retro's tallest layouts neither crop nor
+  strand the other five.
 - **Click to try, at full size.** Hovering a card lights the card and nothing else; clicking one
   sets the real page behind the modal, which stays open. A click is a try rather than a
   verdict — the layout can be swapped as often as the user likes, and *Use this header* is what
@@ -157,7 +157,7 @@ Four things about it are load-bearing:
   by hand is ever overwritten; the modal can write the whole page because it is a one-shot gate
   over a page that has just been built and not yet touched.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
-  already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Polaroid,
+  already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Stacked,
   Overlay card, Stage wide (and Centred / Split / Rule for the flat family) — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
