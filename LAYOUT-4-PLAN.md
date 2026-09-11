@@ -46,7 +46,7 @@ one session.
 
 | # | Cat | Desktop node | Frame name | Size | Tablet node | Size | Mobile node | Size | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | `header` | `964:72511` | Headers — **C · Stacked** | 1440 × 900 | `964:77544` | 768 × 1024 | `971:14040` | 390 × 844 | todo |
+| 1 | `header` | `964:72511` | Headers — **C · Stacked** | 1440 × 900 | `964:77544` | 768 × 1024 | `971:14040` | 390 × 844 | done e4e7b27 |
 | 2 | `bio` | `964:72519` | Bios — **B · Portrait + overlays** | 664 × 720 | `964:76446` | 708 × 720 | `971:14479` | 370 × 536 | todo |
 | 3 | `tags` | `964:72516` | **Tags — Frame** | 457 × 118 | `964:76443` | 457 × 103 | `971:14238` | 370 × 58 | todo |
 | 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | todo |
@@ -166,10 +166,27 @@ thumbnail, with the table's own heights (which stack to 10186.5 with no gaps):
 | 8991 – 9707 | testimonials | **mustard** `#D8A227` |
 | 9707 – 10186.5 | footer | cream |
 
-That is the desktop page only. **Take the 768 and 390 page thumbnails in the header session and
-extend this table before anything else** — the media band's cream and the gallery/repertoire olive
-have not been checked at the narrow widths, and the layout-3 header session's rule is that one
-margin-pixel read settles a section's whole DOM shape (its own sheet, or a bleed, or the page).
+**The narrow pages carry the same nine bands.** *Taken in the header session (§1), a column scan
+of the very edge of each page thumbnail — x 0, so a full-bleed sheet reads as its own ground and
+the page reads as the page.* Every band survives at both widths, in the same order and the same
+colour; only the y-ranges move, so the table is the **grounds** rather than the geometry:
+
+| Band | Ground | 768 y | 390 y |
+|---|---|---|---|
+| header | photograph (checker on its floor) | 0 – 1024 | 0 – 844 |
+| bio + tags | **olive** `#5B5E2E` | 1025 – 2186 | 848 – 1700 |
+| media | **cream** `#FBF6EA` | 2191 – 2869 | 1704 – 2748 |
+| video | page beige `#EAD7B8` | 2869 – 3528 | 2775 – 3149 |
+| gallery + repertoire | **olive** | 3533 – 5299 | 3154 – 4697 |
+| map + pricing | page beige | 5299 – 6710 | 4706 – 5942 |
+| *Book Us* + form | page beige | 6710 – 9408 | 5951 – 8502 |
+| testimonials | **mustard** `#D8A227` | 9413 – 10013 | 8507 – 9091 |
+| footer | cream | 10018 – 10735 | 9095 – 9814 |
+
+So the media band's cream and the gallery/repertoire olive **hold at all three widths**, and no
+section changes what it stands on as the page narrows. The layout-3 header session's rule still
+applies per section — one margin-pixel read of your own master settles its DOM shape — but the
+band it stands in is now settled for the whole pass.
 
 **The two checkerboard strips are the media band's.** Desktop parents both to Frame 317 (its own
 top and foot); the narrow pages reparent them to the bio Section's foot (`964:77903`, `971:14242`)
@@ -217,18 +234,16 @@ UI.** Take each in the section's own commit, never all of them up front:
   recommendation is `NVAR.video` 2 → 4 with the `Video` component's `if (s.v0)` widened to
   `if (s.v0 || s.v2)`.
 - **`audio` needs neither** — it has no layout-4 design. See open question 3.
-- **`header` needs neither.** `NVAR.header` is 6 under Retro and its layout-4 slot is `HeaderV3`,
-  today the invented *Polaroid · Photo card beside text*, which this pass replaces with *Stacked*.
-  That is layout 3's header (which replaced the invented *Gradient stage*) and layout 2's
-  (*Framed* → *Feature spread*), a third time. Rename `HEADER_NAMES[3]` in `data.js` **and grep
-  the repo for "Polaroid"** — it is named in `README.md:142` (the setup modal's frame height),
-  `README.md:160` (the names list), `FIELDS.header.avatar`'s hint at `data.js:646` ("The Polaroid
-  layout uses the background photo instead" — check whether *Stacked* makes that hint false), and
-  a comment at `EncoreBuilder.jsx:2806`.
+- ~~**`header` needs neither.**~~ *Done — `e4e7b27`.* `HEADER_NAMES[3]` is **Stacked · Name
+  stacked over the photo**, and all four "Polaroid" references went with it:
+  `FIELDS.header.avatar`'s hint dropped its last sentence outright (Stacked *does* draw the
+  avatar), and `README.md:142` / `EncoreBuilder.jsx:2806` lost the ratio as well as the name —
+  Stacked is 738 against the hero's 614, not "half again as tall". `NVAR.header` stays 6.
 - **Three documents assert "layouts 1, 2 and 3"** and become four: `CLAUDE.md:86`,
   `README.md:150` and `data.js:188`. `README.md:154`'s "six header cards fold onto three body
-  designs" becomes four as well. Land them with the first `NVAR` bump or at the end of the pass,
-  but do not leave the pass without them.
+  designs" becomes four as well. **Land all four at the end of the pass, not with the first
+  `NVAR` bump** — see *Learned on the header*: the claim is about every *body* category, so it is
+  false at index 3 until one is fitted, and the header's own refit does not make it true.
 - **The bump costs nothing else.** There is no persistence, so no stored page migrates; the seeded
   page is `arch 0` throughout, so the end-of-pass two-build digest is unaffected. The one intended
   change per category is that a section a user had set to layout 4 stops rendering layout 1's
@@ -354,6 +369,57 @@ as the pass goes on.
 - **The narrow footers are different components** (*Component 3*, *Component 4*) where the desktop
   one is the familiar *Component 2*. Out of scope, recorded so nobody re-derives it.
 
+Learned on the header (section 1):
+
+- **The three "layouts 1, 2 and 3" documents were deliberately left alone, and should stay that
+  way until the pass's last section.** `CLAUDE.md:86`, `README.md:150` and `data.js:188` all rest
+  on *"layouts 1, 2 and 3 of every section are one Figma page each"* — the claim `pageLayout()`
+  and the setup modal's page-wide write depend on. Until a **body** category is fitted at layout
+  4 that claim is false at index 3: this session gave the header its layout-4 design, and every
+  other category still folds `arch 3` onto an earlier one. Land all four edits (including
+  `README.md:154`'s "three body designs") in one change at the end of the pass.
+- **`get_metadata`'s x for a rotated group is wrong here by a constant 55px, at two widths, and
+  the emitted `left` is right at all three.** The memory note says the metadata is in a rotated
+  parent space and the emitted CSS is reliable; this page is the clearest confirmation yet — the
+  seal's metadata x is 1280.17 / 625.38 / 307.35 where the *rendered* disc centres are 1308.9 /
+  653.5 / 327 and the emitted `calc(83.33% + 25.09px)` / `calc(75% − 5.7px)` / `calc(100% −
+  120px)` reproduce all three to within a pixel. Take the emitted `left`, then confirm with a PIL
+  run-length scan over the disc's own colour — and scan for *any* non-photograph pixel, since a
+  scan for the ground colour alone measures the gap between the seal's type rings, not the disc.
+- **A section's whole nav can already be fitted by an earlier layout.** `NavBar` was written from
+  HeaderV0's frame and *is* this one: 30/20/150/23 at 1440 are its 24/16/123/18 × 0.82, both
+  narrow masters draw its burger-beside-the-pill arm at exactly its 23 and 10, and the rule ramps
+  150/150/70 as it already does. The tags row's rule — grep first, count the disagreements —
+  reaching a whole sub-component rather than a leaf. What reuse cost: the globe drawn cream where
+  the frame sets #111111 (invisible on the photograph either way), and the rule in `T.tags[3]`
+  against the frame's `sem/box/1`. Both were HeaderV0's calls, so taking them keeps one nav on
+  the page rather than two that disagree.
+- **`BookPill`'s automatic scale draws 20px type at 768 and needs `size` at every width — fourth
+  sighting.** The events map, the booking calendar and the testimonials all wrote this down; here
+  the 390 master adds a wrinkle, stating a **raw** 14.238 rather than that width's own
+  `size/label-md` 13, because its whole pill is the desktop one at × 0.712 against BookPill's
+  `small` × 0.62. Take the frame's raw number, not the token.
+- **The page's own nav is longer than the frame's and the rule pays for it.** With nine section
+  names the desktop left group shrinks its 123px rule to nothing — `NavBar`'s documented yield,
+  and HeaderV0 already does the same, so it is an inherited diff rather than a new one. Both
+  narrow arms keep the rule, because the burger frees the measure.
+- **A `show…` key can be worth reading outside the component that owns it.** `TagChips` returns
+  null when `showTags` is off, which in a `flex: 1 0 0` row would leave a 282px hole where the
+  chip block stood. `sealGap`'s precedent: read the key beside the component and render neither.
+- **`minHeight` beats `aspectRatio` + `maxHeight` for a stated-height bleed.** HeaderV0 clamps a
+  ratio because the ratio is what it transcribes; where the master states a height outright the
+  two are the same band at and past the canvas, and the floor lets a longer artist name grow the
+  section where the clamp would crop it. The bleed itself is the repertoire's written-out margin
+  (HeaderV2's spelling), so the root's `bleed` flag stays layout 1's for a third pass running.
+- **A bleed hands the section the frame's own measure, for the second time.** The gallery wrote
+  this down at layout 3; here the desktop panel comes back at 1088.2 against the frame's 1328 ×
+  0.82 = 1089, and both narrow panels land on 708 and 350 exactly. Every section on this page
+  whose frame paints its own ground gets the same for free.
+- **Two type tokens this pass has not drawn before.** `size/display-xl` (128/77/**48** — and the
+  390 value is *not* `s.dispXl`'s 77, where 1440 and 768 both are) and a kicker set in
+  `Display/Title` rather than a label token. `size/list` goes back **up** at 390 (16 → 12 → 13)
+  for the fourth time in the pass family.
+
 ## Open questions
 
 1. **The page carries the `form` category twice, and only one of them can be the fit.** The
@@ -433,3 +499,11 @@ as the pass goes on.
    about a package that nothing the artist typed can supply. The frame's foot line is
    `DEFS.pricingSub` verbatim, so the rest of that section is well-supplied; this is the one seat
    to argue about.
+10. **Three `FIELDS.header` entries have no seat in layout 4**, which is layout 3's open questions
+    5/6/8/9/11 in the header again and the mildest of them: `subtitle` (no master draws a line of
+    prose), `cta2` (no Listen link — the frame's bar is the burger arm at every width) and
+    `align` (every master is left-aligned). Layouts 2 and 3 already drop `cta2` and `align`, so
+    what is new here is only `subtitle`, and inventing a line the frame does not draw would be
+    worse than the absence. The other side is worth naming too: **`showBadge` reaches layout 4**,
+    where question 5 of the layout-3 plan recorded it reaching neither 2 nor 3 — all three masters
+    draw the seal, so the toggle is real again for the first time since layout 1.
