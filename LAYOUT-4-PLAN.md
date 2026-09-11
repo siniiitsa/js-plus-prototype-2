@@ -830,13 +830,16 @@ Learned on the repertoire (section 7):
   check confirms it: gallery root 2604.6→3423.8, repertoire root 3423.8→4697.4, both sheets
   covering their own root exactly and meeting at **gap 0**. The `+ Add section` walk was not
   needed — the setup modal's Stacked card already puts every section at `arch 3`.
-- **The setup modal takes a synthetic click on its cards and a trusted one on its commit
-  button.** `.click()` on the Stacked card selects it (the snapshot then reads `pressed` and
-  "Stacked selected"), but `.click()` on *Use this header* does nothing; `take_snapshot` +
-  `click(uid)` closes the dialog first try. That is the tags row's Radix rule refined: the
-  gesture matters on the control that **commits**, not on the one that highlights. The template
-  stage's own card is `button[aria-label^="Open the editor"]`, and a synthetic click is enough
-  there.
+- **Reaching the editor with every section at `arch 3` is two clicks, and matching the card by
+  its text is what fails.** The template stage's card is
+  `button[aria-label^="Open the editor"]` and takes a plain `.click()`; the setup modal's
+  Stacked card is `[role=dialog] button` **index 3** and takes one too (the snapshot then reads
+  `pressed` and "Stacked selected · 6 layouts for Retro"). What does not work is finding either
+  by `textContent` — every card contains a whole rendered page preview, so a search for
+  "Stacked" matches a preview's own copy first and the click lands on nothing. *Use this header*
+  was driven with `take_snapshot` + `click(uid)` here and **not** tested synthetically; the
+  `verifying-the-published-tab` note records a plain `.click()` working on it, so prefer that
+  and keep the trusted click as the fallback.
 - **Two masters can bind two different *tokens* for the same rule, and that is a design.** The
   desktop lh/row strokes are `sem/stroke/2` #D8A227; both narrow masters' are `sem/stroke/1`
   #111111 — corroborated by `get_variable_defs` naming a different key *and* by the node's own
