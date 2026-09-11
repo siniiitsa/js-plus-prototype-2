@@ -47,7 +47,7 @@ one session.
 | # | Cat | Desktop node | Frame name | Size | Tablet node | Size | Mobile node | Size | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:72511` | Headers — **C · Stacked** | 1440 × 900 | `964:77544` | 768 × 1024 | `971:14040` | 390 × 844 | done e4e7b27 |
-| 2 | `bio` | `964:72519` | Bios — **B · Portrait + overlays** | 664 × 720 | `964:76446` | 708 × 720 | `971:14479` | 370 × 536 | todo |
+| 2 | `bio` | `964:72519` | Bios — **B · Portrait + overlays** | 664 × 720 | `964:76446` | 708 × 720 | `971:14479` | 370 × 536 | done `21bfa3c` |
 | 3 | `tags` | `964:72516` | **Tags — Frame** | 457 × 118 | `964:76443` | 457 × 103 | `971:14238` | 370 × 58 | todo |
 | 4 | `media` | `964:72526` | Media Player — **K · Turntable + playlist** | 1440 × 671 | `971:15190` | 768 × 569 | `971:14834` | 390 × 831 | todo |
 | 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | todo |
@@ -419,6 +419,75 @@ Learned on the header (section 1):
   390 value is *not* `s.dispXl`'s 77, where 1440 and 768 both are) and a kicker set in
   `Display/Title` rather than a label token. `size/list` goes back **up** at 390 (16 → 12 → 13)
   for the fourth time in the pass family.
+
+Learned on the bio (section 2):
+
+- **The olive band is a bleed, and the `tags` session inherits every number of it.** The band
+  table's 900–1852 olive is the section's own sheet, painted the repertoire's way — a block
+  carrying the root's padding back as a negative margin — with **no root flag touched**. The pair
+  is `s.retro ? '#5B5E2E' : s.mapBg` for the ground and `s.retro ? '#FBF6EA' : s.mapFg` for the
+  ink: `mapBg` is `deep` lifted 11% towards `paper`, which is the one token that is a *visible*
+  dark band on all four flat palettes, where `deep` itself **is** the page ground on Lime and
+  Grunge and would paint nothing. The insets are the frames' own — `calc(surplus + 46/30/10)`
+  horizontally (56 × 0.82 at desktop) and **116/60/30** vertically, which is the one ramp on this
+  page that is not monotonic-ish: 116 is the desktop band's vertical centring of a 720-tall
+  two-column composition. **`tags` shares this band at all three widths and must take the same
+  pair and the same horizontal inset**, or a layout-4 page shows olive, then beige, then olive at
+  the seam.
+- **A stddev scan settled the whole of Retro's decoration in one call: there is none.** The sheet
+  reads `#5B5E2E` at stddev 0 top and bottom, the olive beside the card is exactly the same value
+  (so no shadow), and the frame draws no torn edge and no checkerboard. The branch has no
+  `s.retro` gate at all beyond its four colour literals — the testimonials' layout-3 case, and it
+  is worth running the scan before writing a single `Grain`.
+- **Where a master lays a block out absolutely and its 390 sibling flows it, the 390 sibling is
+  the design.** Both wide masters place the panel's head at `top-30` and its prose box at
+  `top-139` inside a stated 305; the 390 master is a **different component** (`878:12228` against
+  the wide pair's `432:244` — the metadata's instance-child id is the tell) authored as
+  `flex-col gap-20 p-20`. Transcribing the absolutes would have pinned a 139 that is only right
+  at one type size — it is 32 of gap at 1440 and 41.5 at 768, the same leak the bio's own layout-3
+  head row met. Writing the flow at 30/30/20 lands within 2px of the 1440 master and is the only
+  version that survives a second paragraph.
+- **`sem/box/1` is `sem/bg` lifted 11% by `sem/text/2`, and the arithmetic is worth doing before
+  reaching for a literal.** #6D7040 = 0.89 × #5B5E2E + 0.11 × #FBF6EA to the byte — the pricing
+  deck's `tierHues().badge` relationship met again — so the prose box is the band **again**, with
+  the lift as its own `opacity: .11` sheet. That is the file's sanctioned spelling for a
+  translucent colour (there is no `rgba()` in `EncoreSection`), it is how Figma paints the 80%
+  panel wash beside it, and it hands the flat four the same relationship with no `mix()`. **The
+  box has to keep the opaque `background` underneath**: a column scan reads #6D7040 exactly where
+  the panel next to it varies with the photograph, so the box hides the photo and the lift alone
+  would not.
+- **Display/XL's .75 leading is Retro-only, and this is the first branch outside the header to
+  find out.** `headerFamily()` keeps `HeaderV3` to Retro, so the flat four had never seen it: at
+  .75 a stacked line of caps collides outright in Titan One and Bebas Neue. They degrade to
+  **.89**, the leading every other display head in this file already sets — the page's own ramp,
+  not an invented number. A five-theme digest at `n=0` is what caught it; the colours it was run
+  for were all fine.
+- **`s.pillBg` is the mustard on every palette by construction and collapses into the cream on
+  two.** Retro's lightest tag that is neither the page nor the accent **is** #D8A227, so the
+  display head and the name need no literal (the testimonials' "reach for `pillBg` whenever a dark
+  card needs a highlight"). On Lime and Grunge the lightest tag *is* the paper, so the head's
+  two-tone flattens to one colour — legible, and the known cost the conventions already name
+  twice.
+- **A shared leaf can grow a prop for a glyph inside a link.** The frame writes the meta row's
+  third item as "Listen ↗"; `ListenLink` renders `s.cta2` alone, so the arrow would have sat
+  outside the anchor. `after` is additive (`Pager`'s `idle`, `BookPill`'s `glyph`), a
+  `{undefined}` no-op for all four callers written before it. **That makes the bio the fifteenth
+  reader of `s.live`**, so both enumerations moved in the same commit — `CLAUDE.md`'s list and
+  `sectionVm`'s comment. A per-feature fact, unlike the deferred "layouts 1, 2 and 3" claim.
+- **A stated text-node measure is worth transcribing where a stated *prose* measure is not.** The
+  heading's 572.9 is on the text node at 1440 and 768 and is what hand-breaks it; the bio's own
+  layout-3 note declined a `maxWidth` on the prose because the prose column states `flex: 1 0 0`
+  and nothing else. Kept at both wide widths, dropped at 390 where the master states the full
+  370 (the calendar's rule). What it then shows: **Fraunces is the wider face at body sizes and
+  the narrower one at display-xl**, so every break falls a line later than the frame's — two
+  lines at 1440 against its three, one at 768 and 390 against its two. The media player's
+  per-token face factor, a third time.
+- **Name the fill's costs, again.** The card goes 664 × 720 → 1088 × 590, so `object-fit: cover`
+  reframes the seeded portrait landscape and crops the head at desktop — the same thing layout 3's
+  own 1052 × 311 photograph already does, and `Photo` has no `object-position`. The panel loses
+  the frame's trailing air (305 stated against 281 content-tall at 1440, 299.5 at 768). And the
+  390 meta row **wraps** with `since` filled, where the frame's three shorter strings fit its
+  identical 310.
 
 ## Open questions
 
