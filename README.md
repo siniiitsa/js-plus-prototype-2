@@ -147,12 +147,13 @@ Four things about it are load-bearing:
   ends it. There is deliberately no hover preview: the page behind changed under the cursor
   faster than it could be read, and a layout that reverted on mouse-out read as a bug.
 - **The whole page follows, not only the header.** The layout indices are aligned across
-  categories by construction: layouts 1, 2 and 3 of every section are one Figma page each, so
-  *Feature spread* stands over the bio's split card and the testimonials' editorial feature, and
-  *Inset Hero* over the bento wall. A card therefore writes `arch` to every section, folded by
+  categories by construction: layouts 1, 2, 3 and 4 of every section are one Figma page each, so
+  *Feature spread* stands over the bio's split card and the testimonials' editorial feature,
+  *Inset Hero* over the bento wall, and *Stacked* over the bio's portrait-with-overlays and the
+  testimonials' video story wall. A card therefore writes `arch` to every section, folded by
   `pageLayout()` into that category's own design count — which is why Retro's six header cards
-  fold onto three body designs, and why the cards carry no page *number*: a page with a video
-  section in it (two designs) has no single repeat period. This is the setup modal only. The
+  fold onto four body designs, and why the cards carry no page *number*: a page with an audio
+  section in it (three designs) has no single repeat period. This is the setup modal only. The
   ordinary `LayoutPicker` in the sidebar still moves one section, so nothing the user has tuned
   by hand is ever overwritten; the modal can write the whole page because it is a one-shot gate
   over a page that has just been built and not yet touched.

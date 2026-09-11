@@ -83,10 +83,11 @@ mutated through a single `patch()` helper.
   choice is then asked for by the **setup modal** — a `Dialog` over the finished page rendering
   `HeaderChoices` — see README "Choosing a header". Its cards commit on click, not on hover;
   there is no preview state. **A card lays out the whole page, not only the header**: the layout
-  indices are aligned across categories by construction (layouts 1, 2 and 3 of every section are
-  one Figma page each), so `pickHeader` writes `arch` to *every* section, folded through
-  `pageLayout()` in `data.js` — `i % designCount(cat)`, which is the lowest `arch` rendering the
-  design asked for and is therefore always a row the layout picker can highlight. That is the
+  indices are aligned across categories by construction (layouts 1, 2, 3 and 4 of every section
+  are one Figma page each), so `pickHeader` writes `arch` to *every* section, folded through
+  `pageLayout()` in `data.js` — `i % designCount(cat)`, which is always a row the layout picker
+  can highlight, and is the lowest `arch` rendering the design asked for everywhere except
+  `video`, whose component folds `v2` onto `v0` by hand (see *Layout folding*). That is the
   setup modal alone: the sidebar's `LayoutPicker` still moves the one section it is opened on, and
   must keep doing so, or a later header swap would silently undo everything the user had tuned.
   The bulk write is only safe because the modal is a one-shot gate over a page nobody has touched
@@ -692,8 +693,13 @@ mutated through a single `patch()` helper.
 - **Only Retro is designed.** Lime, Grunge, Editorial and Pop are fully functional but render
   flat. Retro's decorative language is gated on `s.retro`; it also gets six photographic header
   layouts where the others get three flat ones.
-- **Layout folding.** For the 13 non-header categories, more layout numbers are offered than
-  there are distinct designs — Audio layouts 1, 4 and 7 render identically on purpose. Those
+- **Layout folding.** Every category offers at least as many layout numbers as it has distinct
+  designs, and eight of the fourteen offer more — Audio layouts 1, 4 and 7 render identically on
+  purpose. The layout-4 pass is what stopped that being all thirteen non-header ones: `tags`,
+  `video`, `gallery` and `map` now offer four and render four, level with the header and the
+  footer. `video` folds by *hand* as well — its Figma pages supplied layouts 1, 2 and 4 and never
+  a 3, so `Video`'s `if (s.v0 || s.v2)` is the one fold in the file that is not `arch % NVAR`.
+  The 13 non-header
   categories are also the ones that stay *numbered*: only the header's layouts have names
   (`headerLayout()` in `data.js`), because it is the one a first-time user is asked to choose.
 - **Accessibility is scoped to the chrome.** The rendered preview is a picture of a website,

@@ -169,8 +169,13 @@ export const minimalNav = (navSections) =>
 
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
- * For everything except the header, more layout choices are offered
- * than there are designs; the rendered design is `arch % NVAR[cat]`.
+ * Every category offers at least as many layout choices as it has
+ * designs; the rendered design is `arch % NVAR[cat]`. Eight of the
+ * fourteen still offer strictly more, and the layout-4 pass is what
+ * stopped that being all of them: `tags`, `video`, `gallery` and `map`
+ * now offer exactly four and render four, joining the header and the
+ * footer, which have always been level. The invariant `pageLayout()`
+ * rests on is the inequality, never the surplus.
  * ------------------------------------------------------------------ */
 
 // `video` is 4 with a hole at index 2: its Figma pages supplied layouts 1, 2
@@ -204,7 +209,7 @@ export const designCount = (catId, themeName) =>
   catId === 'header' ? headerVariants(themeName) : NVAR[catId]
 
 // §6.2 — the layout every other category takes when the header takes `i`.
-// The page is one design: layouts 1, 2 and 3 of every section are one Figma
+// The page is one design: layouts 1, 2, 3 and 4 of every section are one Figma
 // page each, so the header's index *is* the page's index, and the setup modal's
 // click is a page-wide write.
 //
