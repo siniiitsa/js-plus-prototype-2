@@ -53,7 +53,7 @@ one session.
 | 5 | `video` | `964:72777` | Video Players — **B · Cinematic minimal** | 1328 × 754 | `964:78455` | 708 × 402 | `971:15414` | 370 × 209 | done `5999dc1` |
 | 6 | `gallery` | `964:72815` | Gallery Sections — **A · Spotlight + thumb rail** | 874 × 646 | `964:78491` | 768 × 594 | `977:8142` | 390 × 605.1 | done `d56fe1f` |
 | 7 | `repertoire` | `964:72822` | Repertoire — **C · A-Z index rail** | 1208 × 452 | `964:78509` | 608 × 522 | `977:8166` | 310 × 596 | done `104530e` |
-| 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | todo |
+| 8 | `map` | `964:72830` | Events Map — **C · Dashboard split** | 1440 × 747 | `964:78599` | 768 × 870 | `977:8322` | 390 × 680 | done `0cbf413` |
 | 9 | `pricing` | `964:72831` | Pricing — **G · Service rows** | 1440 × 522 | `964:78656` | 768 × 774 | `977:8440` | 390 × 846 | todo |
 | 10 | `calendar` | `964:72844` | Booking Calendar — **D · Enquiry summary stack** | 478 × 491 | `964:79434` | 608 × 472 | `977:8514` | 350 × 469 | todo — read open question 5 first |
 | 11 | `form` | `964:72845` | Enquiry Forms — **F · Editorial form** | 1440 × 814 | `964:79477` | 768 × 950 | `977:8663` | 390 × 920 | todo |
@@ -908,6 +908,81 @@ Learned on the repertoire (section 7):
   sub is the literal. **Three of four layouts now honour `heading` as the display line**, which
   is the discriminator the question asked for.
 
+Learned on the events map (section 8):
+
+- **A bleed that paints the page colour is not a bleed, and one `use_figma` read of the fill
+  settles it before any sheet is written.** The instance's own fill is `#EAD7B8` at all three
+  widths, and so is its wrapper's (Frame 319) and the page's — so this 1440-wide instance stands
+  on the page ground *inside* the root's padding and there is nothing to paint. That is the
+  enquiry form's layout-3 case rather than the gallery's sheet, and it is the fourth reading in
+  a row where **the node's own `fills` was the only trustworthy source**: `get_variable_defs`
+  answered `sem/bg` = `#5b5e2e` here, which is the *map plate's* colour, not the section's. The
+  same call also closed the stat cell's padding question for free (`paddingTop: 18`,
+  `strokeAlign: INSIDE`), which is the repertoire's `calc(padding − border)` for the sixth time.
+- **A `bg-[var(--token, #hex)]` pair can have the *fallback* right and the token wrong, in the
+  same frame where the reverse is true one line up.** The four stat cards all emit
+  `bg-[var(--sem/box/1, …)]` with four different fallbacks (#df5b30 / #fffefb / #6d7040 /
+  #e8b33b) — the render matches all four — while the card around them emits the same token with
+  `#faecd5` and *that* is right too, against a `get_variable_defs` that resolves `sem/box/1` to
+  #df5b30. So the emitted fallback is the instance's hand-set value and the token is the
+  component default; a five-point pixel sample of the render is what decides which is which,
+  and it costs one `python3` call.
+- **Read a wrapper's `layoutSizing*`, not just its stated height, before transcribing one.**
+  Both narrow map viewports come back `layoutSizingVertical: FILL` with a stated 320 / 278 —
+  which is a *residue* of the instance's own 870 / 680, not a design. Every height in this
+  master is one (card `flex-[1_0_0]` of the section, grid `flex-[1_0_0]` of the panel, cells
+  `1fr` rows of the grid), and what decides which of them is still worth transcribing is
+  **whether the frame itself shows the box hugging**: the 390 master's two grid rows are 100 and
+  **120**, the second grown by BASE's value wrapping to two lines. So the cell took a
+  `minHeight` of each master's own number and everything else was left derived — and the
+  desktop sum is the check that it was transcription: 23 + 9.8 + 16.4 + (2 × 186.6 + 9.8) + 23 =
+  **455.2**, the frame's 555 × 0.82 to the tenth, with the rendered card landing on 457.
+- **Two `flex-[1_0_0]` halves where one carries padding *and* a rule is the enquiry form's
+  lesson at its plainest.** Written as `minmax(0, 1fr)` grid columns from the start, so the
+  panel's 32/28 inset and its 1px divider cannot take the map's share. The divider itself is
+  **desktop-only** — a column scan of both narrow renders shows the map running straight into
+  the cream with no line at all — and its width comes out of the padding beside it.
+- **A gap can be invisible and still be the design.** The 768 card puts 32 between the map and
+  the stat panel and the 390 card puts 0; both are cream-on-cream, so the render shows nothing
+  either way and only the metadata's y arithmetic (320 + 32 + 379 = 731) says so. Worth summing
+  even where the picture cannot disagree with you.
+- **The cheapest live seam in the pass, and it closed an invariant rather than opening one.**
+  The ticker is this section's pager at `perPage` 1, so `page` is the whole state, `sel` reaches
+  nothing, and the never-light-a-dot-twice rule holds by construction — where layout 3's filter
+  had to have its counter-example written into the branch. The five dots are `vm.pins`' own
+  seats and the gig on show lights the one `sectionVm` paired it with **by identity**
+  (`vm.gigs[].pin` and `vm.pins` are the same five objects), which is zero maths in the file.
+  **The frame's own five dots are absolute pixels leaked to all three masters** — 450 and 380 in
+  a 370-wide viewport at 390 — so taking the section's percentages fixes the master's bug and
+  keeps layout 1's vocabulary at the same time.
+- **Wrap the arrows with the modulo on the *read*, not the click.** `((page % n) + n) % n` wraps
+  both ways and survives the artist deleting gigs under an open published tab, which every
+  other layout here writes out as a separate clamp. One expression instead of two.
+- **When a frame's control has nothing behind it, check whether its *seat* has.** The ticker's
+  `×` is a dismiss with no state to dismiss — but it stands opposite a `‹`, so the honest move
+  was not to drop it but to make it the `›` that completes the pair. Contrast the zoom controls,
+  which stand alone and simply went.
+- **"Next:" is a claim a pager falsifies.** On page 3 the gig on show is not the next one, so
+  the prefix went and the venue stands alone. The same family as the clock claims, one step
+  subtler — it is the *control* that makes the label false, not the calendar.
+- **Two stuttering labels, two different answers, and saying so is the point.** `FIELDS.map`'s
+  own names are what broke the tie: `radius` is called "Coverage badge", so RADIUS over "12 mile
+  radius" became COVERAGE and the label survived; `base` is called "Based in", which is the
+  stutter itself, so BASE over "Based in Manchester" lost its label and the card is the value
+  alone. **Look at the field's `l` before dropping its frame label** — and write the asymmetry
+  down, or the next session evens them up.
+- **`pillBg` collapsing onto `paper` is now a *pair* of seats, not one, and the outline is what
+  parts them.** On Lime and Grunge seat 4's `pillBg` and seat 2's `paper` are the same value, so
+  two of four cards would have been the identical box. Keeping seat 4's outline back to `s.ac`
+  where seat 2's is `deep` costs one token and nothing on Retro. The conventions' thrice-named
+  collapse, met at the first count where it is fatal rather than cosmetic.
+- **Layout 3's plate, raster treatment and marker transcribe straight across, and the
+  arithmetic says why.** A column scan of this map's ground reads (41, 42, 28) — layout 3's
+  `#292A1C` to the byte — and layout 3's `invert(1) grayscale(1) contrast(1.6)` at opacity .26
+  over it computes to (84, 85) against this master's measured road value of (91, 94). So the
+  one place this branch reuses another's spelling wholesale is the one place a pixel sample
+  proves it is the same picture, not a near miss.
+
 ## Open questions
 
 1. **The page carries the `form` category twice, and only one of them can be the fit.** The
@@ -987,7 +1062,29 @@ Learned on the repertoire (section 7):
    stays 3 and a layout-4 page folds the calendar to `v0` — question 3's shape on a section that
    *has* a frame, which would be new. Read question 1 first: if the wizard is fitted instead of
    the editorial form, this whole block is one composed design and the question changes.
-6. **The events map's dashboard is half derivable and half invented.** *CITIES 21* is the distinct
+6. ~~**The events map's dashboard is half derivable and half invented.**~~ *Settled on section 8
+   (`0cbf413`), and the four stats were decided as one group as the question asked. Two are
+   derivations — **CITIES** is a new `vm.gigCityCount` (`gigCities.size`, the map layout 3's
+   filter row is already built from, read off it rather than recomputed, and **not** suppressed
+   below two cities the way `gigChips` is: a stat reading "1 / CITIES" is a fact where a filter
+   row of All plus one chip is not a distinction), and **GIGS** is `s.gigs.length` with the
+   frame's "YTD" and "played this year" dropped, since nothing here reads the clock; the section's
+   own word for that list in layout 1, "upcoming", is the sub. Two are fields, and **both of their
+   labels stutter with their own defaults** — the events map's own drop-the-label-not-the-field
+   rule met twice more — so they were resolved **differently on purpose**: RADIUS over
+   `s.mapRadius` ("12 mile radius") becomes **COVERAGE**, which is `FIELDS.map.radius`'s own name
+   and layout 1's eyebrow in this very section, while BASE over `s.mapBase` ("Based in
+   Manchester") has no such synonym and **loses its label outright**. `s.mapTerms` takes the
+   COVERAGE card's sub, which is where the frame's own "miles · standard" and "further on
+   request" both come from. *RADIUS 120* itself was never a candidate: our field is a phrase, not
+   a numeral with a unit under it. "LIVE · LAST 12 MONTHS" is dropped, and `s.mapSub` — the one
+   field with no seat in any fitted layout — **was tried in that slot and refused**, because its
+   default "12 dates · 8 cities · this season" does not merely repeat the two stat cards, it
+   contradicts them on the seeded page (5 gigs, 2 cities). The ticker took the question's own
+   reading: `page` over a `perPage` of 1, with the arrows wrapping and the `×` becoming the `›`
+   that makes the frame's `‹` a pair.* The original text follows.
+
+   *CITIES 21* is the distinct
    cities of `c.gigs` (`vm.gigChips` already computes exactly that, for layout 3's filter);
    *GIGS YTD 48* is `gigs.length` but its "YTD" is a claim about the clock; *BASE Manchester, UK*
    is `TITLES.map` or the bio's `location`; *RADIUS 120 miles · standard* and *LIVE · LAST 12
