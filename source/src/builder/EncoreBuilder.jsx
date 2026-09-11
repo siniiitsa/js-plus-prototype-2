@@ -605,12 +605,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // one-composed-line-per-cell rule. The letter is upper-cased because the rail
   // it lights is; a title starting with a digit or a symbol takes `#`, which
   // heads its own group in the list and lights nothing, the frames' rail being a
-  // fixed A–Z that no content can extend.
+  // fixed A–Z that no content can extend. An accent is decomposed first so that
+  // "Édith Piaf" files under E rather than heading a group of its own beside it
+  // — the sort already folds the two at `sensitivity: 'base'`, and the grouping
+  // has to agree with the sort or the list reads as two Es.
   const byLetter = new Map()
   ;[...vm.songs]
     .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }))
     .forEach((sg) => {
-      const l = (sg.title.charAt(0) || '#').toUpperCase()
+      const l = (sg.title.normalize('NFD').charAt(0) || '#').toUpperCase()
       if (!byLetter.has(l)) byLetter.set(l, [])
       byLetter.get(l).push(sg)
     })

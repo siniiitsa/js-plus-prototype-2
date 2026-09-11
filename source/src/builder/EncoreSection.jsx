@@ -6960,10 +6960,23 @@ function Repertoire({ s }) {
         // 232 is six cells and their five gaps exactly, which is why the wrap
         // falls out of the masters' own widths rather than being counted: six
         // to a row beside the list at 1440, fifteen across 608 and seven across
-        // 310. The 50 above it is the frame's own indent (its `sticky top-0` is
-        // declined — see the header comment), and the two narrow rails, which
-        // stand above the list rather than beside it, carry none.
-        ...(desk ? { flex: 'none', width: u(232), paddingTop: u(50) } : { width: '100%' }),
+        // 310. The 50 above it is the frame's own indent, and the two narrow
+        // rails, which stand above the list rather than beside it, carry none.
+        //
+        // `sticky` is the desktop frame's own, and it is what makes the jump
+        // usable on a long list — the rail stays put while the list it indexes
+        // runs past it. Taken at desktop **only**, where the rail is a column
+        // of its own: at 768 and 390 it is a full-width block above the list
+        // with no ground of its own (the frames give it none), so sticking it
+        // would smear twenty-six letters over the scrolling songs. That is the
+        // media player's destroys-its-own-content rule, and what it costs is
+        // named rather than fixed — at those two widths the rail leaves the
+        // viewport on the first jump and the visitor scrolls back for a second.
+        // Nothing moves on the canvas either way: at scroll 0 a sticky box is
+        // exactly where a static one is.
+        ...(desk
+          ? { flex: 'none', width: u(232), paddingTop: u(50), position: 'sticky', top: 0 }
+          : { width: '100%' }),
       }}>
         {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(railCell)}
       </div>

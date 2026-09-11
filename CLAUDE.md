@@ -260,7 +260,11 @@ mutated through a single `patch()` helper.
   the frame's second `↗` beside the venue, the same address marked twice. The flat map layout
   keeps raw `vm.pins`: it has no list to pair with, and twelve gigs would stack twelve dots on
   five spots.
-- **The header's nav scrolls, and the scroll lives outside `EncoreSection`.** `sectionVm` gives
+- **The header's nav scrolls, and the scroll lives outside `EncoreSection` — because it is an
+  `href`.** The repertoire's layout-4 A–Z rail scrolls from *inside* the file, and the two do not
+  contradict: the nav's target is a fragment, which cannot be followed in the popup, so it needs
+  the delegated listener below; the rail holds the node itself on a callback ref and calls
+  `scrollIntoView` on it, which needs nothing outside. `sectionVm` gives
   every section `vm.anchor = cat` (categories are unique per page, so `#repertoire` is a valid
   id), the section root applies it as `id` **only when `s.live`** — the editor document renders a
   dozen header previews and they would all claim `id="header"` — and one delegated `click`

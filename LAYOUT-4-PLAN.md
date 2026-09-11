@@ -852,10 +852,25 @@ Learned on the repertoire (section 7):
   the flat four at 1.20–1.41, the same register by construction. It went in as `vm.repPanel`
   rather than into the branch because `EncoreSection` does no colour maths — the one line of this
   fit that had to leave the file.
-- **`sticky top-0` in a frame is evidence of intent, not a declaration to transcribe.** The
-  rail carries it and the frame's own `overflow-clip` parent makes it inert, so nothing in the
-  render shows it. Declined on the calendar's check-whether-the-leak-does-anything rule — and
-  then **used as the argument** for what the rail does: a sticky rail only pays off beside a list
+- **A frame's `sticky` is evidence *and* a declaration, and the leak rule does not reach it.**
+  The desktop rail carries `sticky top-0`. Its being inert in Figma is the *canvas's*
+  `overflow-clip`, not a design decision — so the booking calendar's
+  check-whether-the-leak-*does*-anything rule, which was written for leaked **numbers**, is the
+  wrong test. The first draft declined it and that was a mistake caught before the hand-off: the
+  sticky is the half of the design that makes the jump usable, because a rail that scrolls away
+  on the first jump cannot take a second. Taken at **desktop only**, where the rail is a column
+  of its own; at 768 and 390 it is a full-width block above the list with **no ground of its
+  own** (the frames give it none), so sticking it would smear twenty-six letters over the
+  scrolling songs — the media player's destroys-its-own-content rule — and what that costs is
+  named rather than fixed. Nothing moves on the canvas either way: a sticky box at scroll 0 is
+  where a static one is, and the editor's canvas pane is an `overflow: hidden` ancestor, so the
+  rail is inert there by construction. The published tab is the opposite — `PublishedPage`
+  mounts sections straight into `#root`, `dressPublishedWindow`'s reset sets no `overflow` and
+  the section root sets none, so the chain is clean and `live=1` in the harness pins the rail at
+  viewport top 0 after a jump. **Read the whole ancestor chain's `overflow` before shipping a
+  `sticky`, and read it in all three documents** — canvas, harness and popup are three different
+  chains.
+- **The sticky is also what settled the rail's verb.** A sticky rail only pays off beside a list
   that scrolls past it, which with the design's own name ("A-Z index rail") and twenty-six
   letters over a list of three settles open question 7 as a **jump** and not a filter. A filter
   would also have made the frame's own "All songs · A–Z" sub a lie the moment it was used.
@@ -881,7 +896,9 @@ Learned on the repertoire (section 7):
   frame draws all twenty-six alike, so nothing is dimmed; the cursor is read off the handler (the
   calendar's rule), which is what keeps an index rail from stranding a visitor on an empty group.
   A title starting with a digit or a symbol heads its own `#` group in the list and lights
-  nothing — the rail is a fixed A–Z that no content can extend.
+  nothing — the rail is a fixed A–Z that no content can extend. An **accent is decomposed**
+  before the initial is taken, so "Édith Piaf" files under E: `'É'.toUpperCase()` is `'É'`, and
+  the grouping has to agree with the sort, which folds the two at `sensitivity: 'base'`.
 - **`s.title` again, and for layout 2's reason.** Open question 8 is settled the way layout 2
   settled it: the display line is the heading field, the frame's "Repertoire" would leave that
   field editing nothing, and "12 Songs" on the seed is a diff this section already carries. The
@@ -980,7 +997,8 @@ Learned on the repertoire (section 7):
    `sectionVm`, not beside `repChips()` in `data.js`, because one layout wants it — move it if a
    second ever does. What the question left open was the **verb**, and the frame answered it
    twice over: the design is named "A-Z index rail" and its rail carries a `sticky top-0`, which
-   only pays off beside a list that scrolls past it. So the rail **jumps** (`scrollIntoView` off
+   only pays off beside a list that scrolls past it — and which is **taken at desktop**, not just
+   read as evidence. So the rail **jumps** (`scrollIntoView` off
    a callback ref, live-gated, no handler on a letter no song starts with) rather than filtering,
    which would also have made the frame's own "All songs · A–Z" sub a lie the moment it was used.
    The lit letter is a **seat**, not the map's toggle: `alpha` starts empty and falls back to the
