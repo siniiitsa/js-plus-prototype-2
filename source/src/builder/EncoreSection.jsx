@@ -6959,6 +6959,20 @@ function pageWindow(n, active, narrow) {
 // pageWindow returning both. `active`, `onPage` and `onStep` are all optional,
 // and both callers omit the handlers on the editor canvas: a pager with none is
 // the picture of a pager, and the cursor below follows.
+// The Lime pager's arrow vector, transcribed from the repertoire frames and
+// drawn again, unchanged, in the booking calendar's month discs. `z` is the
+// caller's desktop scale; the glyph takes the ink it stands in.
+function LimeArrow({ back, z }) {
+  return (
+    <svg viewBox="22.3842 22.5454 10.2316 8.9092" width={10.2316 * z} height={8.9092 * z}
+         aria-hidden style={{ display: 'block' }}>
+      <path fill="currentColor" d={back
+        ? 'M26.8388 31.4545L22.3843 27L26.8388 22.5454L27.6044 23.3011L24.4525 26.4531H32.6158V27.5468H24.4525L27.6044 30.6889L26.8388 31.4545Z'
+        : 'M28.1612 22.5455L32.6157 27L28.1612 31.4546L27.3956 30.6989L30.5475 27.5469L22.3842 27.5469L22.3842 26.4532L30.5475 26.4532L27.3956 23.3111L28.1612 22.5455Z'} />
+    </svg>
+  )
+}
+
 function Pager({ s, colour, fill, frame = {} }) {
   // Lime's pager (the repertoire frames 964:58592 / 986:39881 / 986:39893) is
   // pills, not squares: two 55 × 54 arrows in a 1px `sem/stroke/1` ring with
@@ -6973,14 +6987,7 @@ function Pager({ s, colour, fill, frame = {} }) {
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     const t = { box: s.box2, ring: s.stroke1, ink: s.tx, idle: s.ac, glow: s.glow, ...frame.lime }
-    const arrow = (back) => (
-      <svg viewBox="22.3842 22.5454 10.2316 8.9092" width={10.2316 * z} height={8.9092 * z}
-           aria-hidden style={{ display: 'block' }}>
-        <path fill="currentColor" d={back
-          ? 'M26.8388 31.4545L22.3843 27L26.8388 22.5454L27.6044 23.3011L24.4525 26.4531H32.6158V27.5468H24.4525L27.6044 30.6889L26.8388 31.4545Z'
-          : 'M28.1612 22.5455L32.6157 27L28.1612 31.4546L27.3956 30.6989L30.5475 27.5469L22.3842 27.5469L22.3842 26.4532L30.5475 26.4532L27.3956 23.3111L28.1612 22.5455Z'} />
-      </svg>
-    )
+    const arrow = (back) => <LimeArrow back={back} z={z} />
     const btn = (key, child, on, end, onClick) => (
       <span key={key} onClick={onClick} style={{
         minWidth: u(end ? 55 : 87), height: u(54), flex: 'none', borderRadius: '999px',
@@ -9598,6 +9605,151 @@ function Calendar({ s }) {
     // handler, Pager's rule, so the canvas no longer offers a pointer over a
     // button that does nothing.
     const step = (dir) => (s.live ? () => setMi((v) => v + dir) : undefined)
+
+    // Lime — the scheduler frames 964:58595 / 986:39884 / 986:39896, as a block
+    // after the seam (the gallery's, repertoire's, map's and pricing's
+    // placement): `at`, `month`, `cur`, `line` and `step` are shared whole, so
+    // the published arrows, day picking and foot pill needed nothing new. The
+    // left half is Retro's twin's tree cell for cell; the right half is a
+    // different composition — one radius-35 photograph in a 20-padded half,
+    // where Retro fans three leaning prints under a seal — and the frame heads
+    // the panel with a Display/MD heading its twin never drew. So nothing
+    // Retro-dressed below (`nav`, `cell`, `dayName`, `print`, `stack`, the torn
+    // edge, the seal) is read: Retro's lit day is `ac` lettered in `pillBg`,
+    // and under Lime the two are one lime.
+    //
+    // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both
+    // in their page's Device mode, so every type size is the Lime ramp's `s.*`.
+    // Scheme 1: the page ground, no band and no seams.
+    if (s.lime) {
+      const z = s.narrow ? 1 : 0.82
+      const u = (v) => `${Math.round(v * z * 10) / 10}px`
+      const type = (family, size, lh, extra) => ({
+        fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      // The 390 master closes the grid's gaps to 2 and its padding to 20 / 10.
+      const cols = {
+        display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
+        columnGap: s.mob ? '2px' : u(10), rowGap: s.mob ? '2px' : u(10),
+      }
+
+      // The month arrows: `sem/tag/2/text` discs in a 1px `sem/stroke/1` ring,
+      // round Pager's own arrow vector in `sem/text/2`. The cursor is read off
+      // the handler, Pager's rule.
+      const disc = (back, dir) => {
+        const onClick = step(dir)
+        return (
+          <span onClick={onClick} style={{
+            width: u(55), height: u(54), flex: 'none', borderRadius: '999px',
+            background: s.activeFg, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, color: s.tx,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            cursor: onClick ? 'pointer' : undefined,
+          }}><LimeArrow back={back} z={z} /></span>
+        )
+      }
+
+      // A day is a `sem/box/2` cell in a 1px `sem/stroke/1` ring at
+      // `radius/card`; the picked one adds the frame's INNER_SHADOW 20 in
+      // `sem/glow` (a raw 20 at every width), ring first as pricing's card
+      // has it. A booked day is the frame's own dimmed cell — opacity .38 and
+      // no strike, where Retro's frame drew no such state and its branch
+      // invented one — and still takes no handler. Lead blanks draw nothing.
+      // Clicking the lit day again unlights it, layout 1's toggle.
+      const day = (c, i) => {
+        if (c.iso === undefined) return <span key={i} />
+        const on = c.iso === cur
+        const onClick = s.live && !c.booked
+          ? () => setSel((v) => (v === c.iso ? '' : c.iso))
+          : undefined
+        return (
+          <span key={i} onClick={onClick} style={type(s.ui, s.labelXs, 1.26, {
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            height: u(s.mob ? 50.49 : 55.89), borderRadius: u(26),
+            background: s.box2, color: s.tx, opacity: c.booked ? 0.38 : undefined,
+            boxShadow: `inset 0 0 0 1px ${s.stroke1}${on ? `, inset 0 0 20px 0 ${s.glow}` : ''}`,
+            cursor: onClick ? 'pointer' : undefined,
+          })}>{c.d}</span>
+        )
+      }
+
+      const grid = (
+        <div style={col(u(21.15), {
+          padding: s.mob ? '20px 10px' : u(40),
+          // The frame's rule between the halves; stacked, it lies under the
+          // panel's ring, so the narrow masters draw no rule there at all.
+          boxShadow: s.narrow ? undefined : `inset -1px 0 0 ${s.stroke1}`,
+        })}>
+          <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center' })}>
+            {disc(true, -1)}
+            <span style={type(s.display, s.dispSm, 1, { color: s.ac, whiteSpace: 'nowrap' })}>
+              {month.label}
+            </span>
+            {disc(false, 1)}
+          </div>
+          {/* The frames space seven fixed 57.4 name cells across the row, which
+              on the 390 master overruns the half and clips Saturday — the leak
+              Retro's branch declined too. The names stand on the grid's own
+              columns instead, over the days they head. */}
+          <div style={{ ...cols, height: u(30.22) }}>
+            {s.calDays.map((d) => (
+              <span key={d} style={type(s.body, s.bodyLg, 1.5, {
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.tx,
+              })}>{d}</span>
+            ))}
+          </div>
+          <div style={cols}>{month.cells.map(day)}</div>
+        </div>
+      )
+
+      return (
+        <div style={col(u(24))}>
+          {/* Display/MD at lh 1, held to the frame's 640 on desktop. The frame
+              types BOOK NOW; the seed's heading stays `TITLES.calendar`. */}
+          <h2 style={type(s.display, s.dispMd, 1, {
+            margin: 0, color: s.ac, maxWidth: s.narrow ? '100%' : u(640),
+          })}>{s.title}</h2>
+          <div style={{
+            position: 'relative', background: s.box1, borderRadius: u(55), overflow: 'hidden',
+          }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
+            }}>
+              {grid}
+              {/* Stretched to the month at desktop, so a six-row month takes
+                  the photograph with it; stacked, the half states the frame's
+                  526 / 308. */}
+              <div style={{
+                display: 'flex', padding: u(20),
+                height: s.narrow ? (s.mob ? '308px' : '526px') : undefined,
+              }}>
+                <div style={{ flex: 1, minWidth: 0, borderRadius: u(35), overflow: 'hidden' }}>
+                  <Photo s={s} initialsSize={Math.round(44 * z)} />
+                </div>
+              </div>
+            </div>
+            <div style={{
+              padding: u(40), boxShadow: `inset 0 1px 0 ${s.stroke1}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              flexWrap: 'wrap', gap: u(16),
+            }}>
+              <span style={type(s.body, s.bodyMd, 1.5, { color: s.tx })}>{line}</span>
+              {/* Retro's one deliberate addition to the frame, kept: a picked
+                  date has to lead somewhere. BookPill's Lime branch dresses it. */}
+              <BookPill s={s} to={s.calBookTo} label={s.calCta} />
+            </div>
+            {/* The panel's 3px `sem/stroke/2` ring, which Figma strokes inside
+                and paints over the halves. An inset shadow on the panel itself
+                would sit under the children, so it is an overlay. No glow: the
+                panel's `effects` are empty. */}
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 3px ${s.stroke2}`,
+            }} />
+          </div>
+        </div>
+      )
+    }
+
     const nav = (icon, dir) => {
       const onClick = step(dir)
       return (
