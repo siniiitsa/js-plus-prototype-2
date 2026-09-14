@@ -5772,6 +5772,176 @@ function Pricing({ s }) {
     const shown = s.live
       ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
+
+    // Lime — the same component in Lime's mode (964:58594 at 1440, 986:39883 at
+    // 768, 986:39895 at 390), placed after the seam as the gallery's,
+    // repertoire's and map's blocks are: `tab`, `active` and `shown` are
+    // computed above, so the published chip filter and the Book pills are
+    // layout 1's whole and need nothing new. The tree is Retro's (head with its
+    // chip row, a three-up deck, the small print), but every leaf changes its
+    // dress: the tilted, grained, hard-shadowed cards in three palette hues are
+    // one flat `sem/box/2` card in a 3px `sem/stroke/1` ring, the outlined chips
+    // are filled pills, and the card's inside is a content column over a pill
+    // at the card's foot. The vm's tag walk (`t.card` / `t.acc` / …) is Retro's
+    // seat system and is not read here.
+    //
+    // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both
+    // in their page's Device mode, so every *type* size is the Lime ramp's `s.*`.
+    // Every *box* is a raw number — none of the three masters binds a `radius/`
+    // or `size/` token — so the card's 55, the chip's 56 and the ico's 4 are the
+    // frame's own. Scheme 1: no band and no seams.
+    if (s.lime) {
+      const z = s.narrow ? 1 : 0.82
+      const u = (v) => `${Math.round(v * z * 10) / 10}px`
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      // Label/XS — the chips, the unit, the blurb and the features.
+      const ui = (extra) => ({
+        fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, ...extra,
+      })
+      return (
+        <div style={col(u(32))}>
+          {/* Desktop centres the chips against the heading at the row's far
+              end; both narrow masters stack them 24 under it. */}
+          <div style={s.narrow
+            ? col('24px', { alignItems: 'flex-start' })
+            : row(u(24), { justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' })}>
+            {/* Display/SM at lh 1, held to the frame's 640 on desktop. */}
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+              letterSpacing: s.dls, color: s.ac, maxWidth: s.narrow ? '100%' : u(640),
+            }}>{s.title}</h2>
+            {/* Filled pills in Label/XS, mixed case: `sem/active` for the chip
+                on show, `sem/box/1` with lime type for the rest. The frame lights
+                its second chip; ours pins chip 0 (All) on the canvas, layout 1's
+                rule. Not drawn at one chip, as Retro's is not. */}
+            {s.tierChips.length > 1 && (
+              <div style={row(u(8), { flexWrap: 'wrap' })}>
+                {s.tierChips.map((f, i) => (
+                  <span
+                    key={i}
+                    onClick={s.live ? () => setChip(i) : undefined}
+                    style={ui({
+                      padding: `${u(9)} ${u(15)}`, borderRadius: u(56), whiteSpace: 'nowrap',
+                      background: i === active ? s.pillBg : s.box1,
+                      color: i === active ? s.activeFg : s.ac,
+                      cursor: s.live ? 'pointer' : undefined,
+                    })}
+                  >{f.label}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Three equal columns at 1440 and 768 whatever the count (a fourth
+              package wraps, layout 1's rule), one at 390. The cards stretch to
+              the row's tallest, which is what stands every pill on one line. */}
+          <div style={{
+            display: 'grid', alignItems: 'stretch',
+            gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
+            columnGap: tab ? '20px' : u(44), rowGap: s.narrow ? '20px' : u(44),
+          }}>
+            {shown.map((t, i) => {
+              const money = String(t.price)
+              const symbol = /^[^\d]/.test(money) ? money[0] : ''
+              const amount = symbol ? money.slice(1) : money
+              // The frame's glowing card is its second: a *seat*, the rendered
+              // index the way Retro's tilt is, so a filter moves the glow onto
+              // whatever now stands in the middle column. The cost, named: one
+              // card on show glows nothing.
+              const featured = i % 3 === 1
+              return (
+                // Keyed on the package's place in the whole list, layout 1's
+                // rule, though nothing here cross-fades.
+                <div key={t.n} style={{
+                  background: s.box2, borderRadius: u(55), minWidth: 0,
+                  // Figma strokes the 3px ring inside the card without growing
+                  // it, and paints the INNER_SHADOW 55 under it — so both are
+                  // inset shadows, ring first, and the padding stays the frame's.
+                  boxShadow: `inset 0 0 0 3px ${s.stroke1}${featured ? `, inset 0 0 ${u(55)} 0 ${s.glow}` : ''}`,
+                  padding: tab ? '30px 20px' : u(44),
+                  // The pill stands at the card's foot at 1440 and 768, at least
+                  // 40 under the content; the 390 card hugs it 30 down.
+                  display: 'flex', flexDirection: 'column',
+                  justifyContent: s.mob ? 'flex-start' : 'space-between',
+                  gap: s.mob ? '30px' : u(40),
+                }}>
+                  <div style={col(u(14), { alignItems: 'flex-start', minWidth: 0 })}>
+                    {/* The ico beside the name at 1440 and 390, above it on the
+                        narrower 768 card, which alone sets the name in Label/MD. */}
+                    <span style={tab
+                      ? col('10px', { alignItems: 'flex-start' })
+                      : row(u(10), { alignItems: 'center' })}>
+                      <span style={body(s.eyebrow, 1.3, {
+                        fontWeight: 700, padding: `${u(4)} ${u(6)}`, borderRadius: u(4),
+                        background: s.pillBg, color: s.activeFg, whiteSpace: 'nowrap', flex: 'none',
+                      })}>[ico]</span>
+                      <span style={{
+                        fontFamily: s.label, fontSize: tab ? s.labelMd : s.labelSm, lineHeight: 1.1,
+                        letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
+                      }}>{t.name}</span>
+                    </span>
+
+                    {/* Bottom-aligned, not baselined, as the frame's row is. The
+                        two narrow masters FILL the numeral, which stands the unit
+                        at the card's right edge; desktop hugs it at 4. */}
+                    <span style={row(u(4), {
+                      alignItems: 'flex-end', alignSelf: s.narrow ? 'stretch' : 'flex-start',
+                    })}>
+                      {!!symbol && (
+                        <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{symbol}</span>
+                      )}
+                      <span style={{
+                        fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+                        letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
+                        flex: s.narrow ? '1 1 auto' : 'none',
+                      }}>{amount}</span>
+                      {!!s.tierUnit && (
+                        <span style={ui({ color: s.tx, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
+                      )}
+                    </span>
+
+                    {!!t.blurb && <p style={ui({ margin: 0, color: s.tx })}>{t.blurb}</p>}
+
+                    {/* The tick is the frame's typed ✓ in Body/SM, not Retro's
+                        lucide Check; no live state here wants another glyph. */}
+                    {t.feats.length > 0 && (
+                      <div style={col(u(8), { paddingTop: u(4), alignSelf: 'stretch' })}>
+                        {t.feats.map((f, j) => (
+                          <span key={j} style={row(u(8), { alignItems: 'center' })}>
+                            <span style={body(s.bodySm, 1.4, { color: s.ac, flex: 'none' })}>✓</span>
+                            <span style={ui({ color: s.tx })}>{f}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* The pill hugs its label. Its ink is `sem/tag/2/text`, where
+                      the branch defaults to `sem/bg`; the 390 master keeps it at
+                      full size, as Retro's does. */}
+                  <span style={{ alignSelf: 'flex-start' }}>
+                    <BookPill s={s} to={s.tierBookTo} bg={s.pillBg} fg={s.activeFg} full={s.mob} />
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+
+          {s.tiers.length === 0 && (
+            <span style={body(s.bodyMd, 1.5, { color: s.muted })}>No packages yet.</span>
+          )}
+
+          {/* Body/Eyebrow in `sem/text/2` at full strength, where Retro's small
+              print is a warm grey. An emptied field drops the line. */}
+          {!!s.pricingSub && (
+            <span style={body(s.eyebrow, 1.3, { fontWeight: 700, color: s.tx })}>{s.pricingSub}</span>
+          )}
+        </div>
+      )
+    }
+
     return (
       <div style={col(s.narrow ? '32px' : '26px')}>
         <div style={s.narrow
