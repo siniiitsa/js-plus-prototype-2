@@ -530,15 +530,21 @@ Settled in session 0 (the foundation):
   the calendar and gallery spotlight at 1200 × 800.
 - **Harness fonts.** `preview.html` now loads Bebas Neue and Chakra Petch, so a `theme=1` render
   is in its real faces. Every `theme=1` picture taken before session 0 is in fallback faces.
-- **When chrome-devtools MCP drops its connection** (it did, mid-digest, in session 0), drive the
-  harness from a Node script instead: `npm i puppeteer-core` in the scratchpad and launch
-  `~/.cache/puppeteer/chrome-headless-shell/mac_arm-*/chrome-headless-shell-mac-arm64/chrome-headless-shell`
-  with `headless: 'shell'`. Six pages over `page.goto` walked all 14 categories × every layout ×
-  3 widths × 5 themes (810 renders) in 60 s, writing one digest file per render, and a rerun
-  diffed to zero, so the digest is deterministic. The digest row is
+- **The digest is committed: `source/scripts/digest.mjs`** (and `shots.mjs` for before/after
+  JPEGs), on `puppeteer-core` (a devDependency) driving the `chrome-headless-shell` that
+  chrome-devtools-mcp already caches in `~/.cache/puppeteer`. Session 0 wrote it when
+  chrome-devtools MCP dropped its connection mid-digest and stayed down. With the dev server up:
+  `node scripts/digest.mjs before 0,2,3,4` before editing, `node scripts/digest.mjs after 0,2,3,4`
+  after, then `cmp` each file in `$OUT/after` against `$OUT/before` (`OUT` defaults to the system
+  temp dir). All 14 categories × every layout × 3 widths × 4 themes is 648 renders in about 50 s,
+  and an unchanged tree diffs to zero, so every differing file is real. `WIDTHS=` and
+  `EXTRA='&live=1'` narrow or vary a run. The row is
   `[tag, x, y, w, h, background, backgroundImage, colour, border, radius, font size / family /
   weight, line height, letter spacing, text transform, transform, box shadow, opacity, src, text]`,
   relative to `#root`, skipping `.seal-spin`.
+- **Pricing's card accent reads the *local* `pillBg`** in `sectionVm` (`tierHues`' `accHue`), not
+  `vm.pillBg`. That is deliberate under Lime: the local tag walk's olive is what reads on a lime
+  card, where `vm.pillBg`'s lime would vanish. Retro's two are one value, so nothing moved.
 
 ## Open questions
 
