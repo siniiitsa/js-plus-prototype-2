@@ -14,7 +14,8 @@ plans/
     layout-2.md
     layout-3.md
     layout-4.md
-  lime/        ← not started
+  lime/
+    layout-1.md
   grunge/      ← not started
   editorial/   ← not started
   pop/         ← not started
@@ -37,9 +38,17 @@ name that says what it fits. The template folder names match `THEMES[].name` in
 *Conventions* of every earlier plan, newest first. Each plan says it doesn't repeat its
 predecessors' bullets, so layout 4's session also reads the Conventions of layouts 3 and 2.
 
+## Lime
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`lime/layout-1.md`](./lime/layout-1.md) | `lime-layout-1` (in progress) | Retro layout 1's eleven components in Lime's Figma mode: a token foundation (session 0), then `s.lime` decoration inside the shared `s.v0` branches, and the header's four modal cards. |
+
+**Reading order in a Lime session:** `CLAUDE.md`, then the plan, then the Retro sections it names at its top.
+
 ## Other templates
 
-Lime, Grunge, Editorial and Pop work, but they render flat (see CLAUDE.md, *Only Retro is
+Grunge, Editorial and Pop work, but they render flat (see CLAUDE.md, *Only Retro is
 designed*). When one of them gets its first plan:
 
 - Start its folder here, and add a table to this file.
