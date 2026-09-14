@@ -182,6 +182,53 @@ function TornEdge({ s, side = 'top', height = 26, colour, bleed = true }) {
   )
 }
 
+// Lime's seam between two grounds (964:58590 "Vector 1" / "Vector 2"): a
+// shallow arc of the page ground reaching back into a band that stands on
+// another — flat along the section's edge, 4.99 deep at its ends and 44.24 at
+// its middle. It is `TornEdge`'s counterpart and takes its props: the band that
+// differs owns both of its seams, so the colour is the neighbour's, which is
+// the page ground on every seam Lime's layout-1 page draws but one. The 1440
+// and 390 vectors are one shape at two widths (their control points sit at
+// 14.8% and 85.2% of each), so one path stretched over the section is both,
+// and its depth stays 44.24 at every width (× 0.82 on the desktop canvas,
+// which the caller passes). The 768 master is the exception that is not
+// followed: it carries the 1440 vector unscaled, so its head seam is the
+// middle of a wider arc (34 deep at the edges) and its foot seam, turned 180°
+// about a leaked x, lands wholly off the frame — a straight edge on one side
+// of the band and a near-flat one on the other. The side offset carries the
+// vector's own −1, so the seam stands a pixel into the neighbour rather than
+// leaving a hairline.
+function ArcEdge({ s, side = 'top', height = 44.24, colour }) {
+  if (!s.lime) return null
+  return (
+    <svg viewBox="0 0 1437.84 44.24" preserveAspectRatio="none" aria-hidden style={{
+      position: 'absolute', height, display: 'block', pointerEvents: 'none', zIndex: 3,
+      left: `calc(-1 * ${s.padX})`, width: `calc(100% + ${s.padX} + ${s.padX})`,
+      [side]: `calc(-1 * ${s.padY} - 1px)`,
+      transform: side === 'bottom' ? 'scaleY(-1)' : undefined,
+    }}>
+      <path d="M1437.84 0H0V4.99C0 4.99 212.94 44.24 718.92 44.24C1224.9 44.24 1437.84 4.99 1437.84 4.99V0Z"
+            fill={colour || s.bg} />
+    </svg>
+  )
+}
+
+// Lime's skip glyph (964:58590 "Group 2"), transcribed from the frame's own
+// vector: two triangles running into a bar, 16.03 × 8.39. The frame draws the
+// back button as the same group turned 180°, hence `back`.
+function LimeSkip({ width, color, back = false }) {
+  return (
+    <svg viewBox="0 0 16.0283 8.39175" width={width} height={width * 8.39175 / 16.0283} aria-hidden
+         style={{ display: 'block', flex: 'none', transform: back ? 'rotate(180deg)' : undefined }}>
+      <g fill={color}>
+        <path d="M8.27228 4.25499L2.06801 7.83703L2.06801 0.67295L8.27228 4.25499Z" />
+        <path d="M14.1372 4.25499L7.93289 7.83703L7.93289 0.67295L14.1372 4.25499Z" />
+        <rect x="14.2047" y="0" width="1.82333" height="8.39171" />
+      </g>
+    </svg>
+  )
+}
+
 // The eight-point star that marks every Book Now pill and the seal centre.
 function Asterisk({ size = 16, color = 'currentColor' }) {
   return (
@@ -885,6 +932,11 @@ const SCRIM = {
   stack: 'linear-gradient(0deg, #5B5E2E 0%, rgba(91,94,46,0) 100%)',
   // Lime's hero (964:58588) — the same fade, in its `sem/bg`.
   lime: 'linear-gradient(0deg, #15180F 0%, rgba(21,24,15,0) 100%)',
+  // Lime's media player card (964:58590 "Left") — the sleeve's own fade to
+  // black, exactly the frame's paint: 0 → 91% black from 1.57% to 79.38%. Its
+  // 181.8° is Figma's gradient transform read through the card's aspect (the
+  // 768 card's comes out 181.36°); one angle serves all three.
+  limeSleeve: 'linear-gradient(181.8deg, rgba(0,0,0,0) 1.57%, rgba(0,0,0,.91) 79.38%)',
 }
 
 // Lime's hero draws a reticle where Retro's draws the seal (964:58588
@@ -3104,6 +3156,200 @@ function Media({ s }) {
   // which for the media player is now nothing, so it lands on the initials
   // placeholder — the card rows keep their `null` and must not do this.
   const sleeve = track?.img ?? undefined
+
+  // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's
+  // component below in Lime's mode, and like the bio it is not the same tree
+  // re-tokened. The stack is five flush rows on hairline rules — no overlap, no
+  // lean, no thrown block, no grain, checkerboard or tear — and the player is a
+  // card whose *background* is the sleeve, faded to black under an inset glow,
+  // where Retro's is a dark panel with the sleeve in a disc. Every leaf the two
+  // share changes face, size, ink, border and radius. So it is a block of its
+  // own, and what it shares with Retro's is everything above it: the one
+  // <audio>, `cur`, `goTo`, `toggle`, `pick`, the now-playing block and the
+  // sleeve, so the published player is the same seam at a different picture.
+  //
+  // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both in
+  // their page's Device mode, so every size is the Lime ramp's `s.*`. The band
+  // is Scheme 2 (the root paints it `s.box1`), and draws its two arc seams.
+  //
+  // Named departures from the frame. The progress bar's track and fill are both
+  // `sem/active/bg` there, so the playhead is invisible — a player that cannot
+  // show where it is — and here the track is the rows' own `sem/stroke/1`
+  // hairline under the lime fill. The pill says Soundcloud, not the frame's
+  // "Book Now": it is the section's Soundcloud link, and the frame's label is
+  // the shared pill component's default.
+  if (s.v0 && s.lime) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const txt = { color: s.tx, letterSpacing: s.dls }
+    // Body/Eyebrow — Inter bold, the kicker, the counter and the two clocks.
+    const eyebrow = (t, extra) => (
+      <span style={{
+        fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+        whiteSpace: 'nowrap', ...txt, ...extra,
+      }}>{t}</span>
+    )
+
+    // The frame breaks the heading after "worth" with a typed newline at all
+    // three widths. An em measure between Bebas Neue's "Five worth" (3.59em)
+    // and "Five worth your" (5.34em) reproduces it at every size; Retro's 5.8em
+    // is Soulway's and would put "your" on the first line.
+    const featured = eyebrow(`${s.tracks.length} / ${s.tracks.length} Featured`, { textTransform: 'uppercase' })
+    const titleBlock = (
+      <div style={col(u(36), desk ? { flex: 1, minWidth: 0 } : undefined)}>
+        {eyebrow(s.mediaKicker, { textTransform: 'uppercase' })}
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+          letterSpacing: s.dls, color: s.ac, maxWidth: '4.6em',
+        }}>{s.title}</h2>
+      </div>
+    )
+    const heading = desk
+      ? <div style={row('0', { alignItems: 'flex-end' })}>{titleBlock}{featured}</div>
+      : <div style={col('32px', { alignItems: 'flex-start' })}>{titleBlock}{featured}</div>
+
+    // The rows divide a stated height rather than hugging: the player's 540 on
+    // desktop (the list stretches beside it), 462 at 768 and 370 at 390. So the
+    // column carries that as a minimum and each row is `1 1 auto` over it — the
+    // frame's picture at five, a longer list at eight, and one row standing the
+    // player's height at one. With no tracks the minimum goes, or it would be a
+    // hole. At 390 the frame's 16 inset is inert (a 60px sleeve in a 74 row
+    // sits 7 from its top), so the row takes 7. The bottom inset gives back the
+    // 1px rule, which Figma strokes inside the row's height.
+    const padT = s.mob ? 7 : 16
+    const list = (
+      <div style={col('0', {
+        alignItems: 'stretch', alignSelf: 'stretch',
+        minHeight: s.tracks.length ? (desk ? u(540) : tab ? '462px' : '370px') : undefined,
+      })}>
+        {s.tracks.map((t, i) => {
+          // The playing row is marked by its button turning to Pause and by the
+          // card beside the list naming it, exactly as Retro's cards are.
+          const on = chosen && i === at
+          return (
+            <div key={i} onClick={onPick(i)} style={{
+              ...row(u(20)), flex: '1 1 auto',
+              padding: `${u(padT)} 0 calc(${u(padT)} - 1px)`,
+              borderBottom: `1px solid ${s.stroke1}`,
+              cursor: s.live ? 'pointer' : undefined,
+            }}>
+              {/* Body/LG, in `sem/text/1`. */}
+              <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none', color: s.ac, letterSpacing: s.dls }}>{t.n}</span>
+              <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch', ...txt })}>
+                {/* Label/LG over Body/SM, both clipped on one line like the frame's. */}
+                <span style={{
+                  fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1,
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                }}>{t.name}</span>
+                <span style={{
+                  fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                }}>{t.sub}</span>
+              </span>
+              <span style={{
+                width: u(35.487), height: u(35.487), borderRadius: '999px', flex: 'none',
+                border: `1px solid ${s.stroke1}`, color: s.tx,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}>{on && playing
+                ? <Pause size={parseFloat(s.bodySm)} fill="currentColor" strokeWidth={0} />
+                : <Play size={parseFloat(s.bodySm)} fill="currentColor" strokeWidth={0} />}</span>
+              <span style={{
+                width: u(60), height: u(60), flex: 'none', position: 'relative',
+                borderRadius: u(13), overflow: 'hidden',
+              }}><Photo s={s} initialsSize={14} src={t.img} ink={s.tx} /></span>
+            </div>
+          )
+        })}
+      </div>
+    )
+
+    // The card. The frame's 252 "Disc" is drawn at opacity 0, so it is a spacer
+    // here: a fixed 252 on desktop and at 768 (where the card hugs to 520), and
+    // at 390 whatever the card's stated 343 leaves (78). On desktop the card
+    // states 540 and its content comes to 525, the 15 left under the clock.
+    // Under the sleeve the ground is `sem/box/2`, the frame's own fill behind
+    // its disc artwork, so an art-less track is a card and not a hole.
+    const glyph = parseFloat(s.bodyLg)
+    // Each skip glyph is 16 × 8.4; the published tab gives it a finger-sized
+    // target by padding it out and taking the padding back in the margin, so
+    // the transport's 108 does not move.
+    const skip = (back, fn) => (
+      <span onClick={s.live ? fn : undefined} style={{
+        padding: `${u(11)} ${u(7)}`, margin: `-${u(11)} -${u(7)}`,
+        cursor: s.live ? 'pointer' : undefined, position: 'relative',
+      }}><LimeSkip width={16.028 * z} color={s.tx} back={back} /></span>
+    )
+    const player = (
+      <div style={{
+        position: 'relative', overflow: 'hidden', width: '100%',
+        background: s.box2, color: s.tx, borderRadius: u(80), padding: u(32),
+        height: desk ? u(540) : s.mob ? '343px' : undefined,
+        ...col(u(18), { alignItems: 'center' }),
+      }}>
+        <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
+          <Photo s={s} initialsSize={44} src={sleeve} ink={s.tx} />
+        </div>
+        <div aria-hidden style={{ position: 'absolute', inset: 0, background: SCRIM.limeSleeve }} />
+        <span style={{ position: 'relative', fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>{'<'}</span>
+        <span style={s.mob ? { flex: '1 1 0', minHeight: 0 } : { height: u(252), flex: 'none' }} />
+        <div style={col(u(4), { alignItems: 'stretch', position: 'relative', width: '100%', textAlign: 'center' })}>
+          <span style={{ fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls }}>{now.track}</span>
+          <span style={{ fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }}>{now.by}</span>
+        </div>
+        <div style={row(u(14), { position: 'relative' })}>
+          {skip(true, () => goTo(at - 1))}
+          <span onClick={s.live ? toggle : undefined} style={{
+            width: u(48), height: u(48), borderRadius: '999px', flex: 'none',
+            background: s.tx, color: s.bg,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            cursor: s.live ? 'pointer' : undefined,
+          }}>{playing
+            ? <Pause size={glyph} fill="currentColor" strokeWidth={0} />
+            : <Play size={glyph} fill="currentColor" strokeWidth={0} />}</span>
+          {skip(false, () => goTo(at + 1))}
+        </div>
+        <div style={row(u(10), { width: '100%', position: 'relative' })}>
+          {eyebrow(now.at)}
+          <span style={{ flex: 1, height: '3px', background: s.stroke1, borderRadius: '2px', overflow: 'hidden' }}>
+            <span style={{ display: 'block', width: `${now.pct}%`, height: '100%', background: s.pillBg, borderRadius: '2px' }} />
+          </span>
+          {eyebrow(now.of)}
+        </div>
+        {audio}
+        {/* INNER_SHADOW 64, spread 0, `sem/glow` — over the photograph, the bio's arch. */}
+        <div aria-hidden style={{
+          position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+          boxShadow: `inset 0 0 ${u(64)} ${s.glow}`,
+        }} />
+      </div>
+    )
+
+    return (
+      <div style={{ position: 'relative' }}>
+        <ArcEdge s={s} side="top" height={44.24 * z} />
+        <ArcEdge s={s} side="bottom" height={44.24 * z} />
+        <div style={col(desk ? u(33) : '40px')}>
+          {heading}
+          <div style={{
+            // Retro's `1.27fr 1fr` at 49 is this same 710 / 558 at 60, × 0.82.
+            display: 'grid',
+            gridTemplateColumns: desk ? 'minmax(0, 710fr) minmax(0, 558fr)' : 'minmax(0, 1fr)',
+            gap: desk ? u(60) : '32px', alignItems: 'center',
+          }}>
+            {list}
+            {player}
+          </div>
+          {/* The frame's pill ink is Scheme 2's `sem/bg`, the band itself; at
+              390 the master keeps it at full size on its 46 disc. */}
+          <span style={{ alignSelf: 'flex-start' }}>
+            <BookPill s={s} label="Soundcloud" ext={s.soundcloud} fg={s.box1} full={s.mob} />
+          </span>
+        </div>
+      </div>
+    )
+  }
 
   if (s.v0) {
     const desk = !s.narrow
@@ -14106,12 +14352,18 @@ export default function EncoreSection({ s }) {
   // of for its torn edge, because that tear reveals the form's cream and not
   // the page's beige. Change one, change both.
   const cream = (s.me || s.re || s.ca || s.fo || s.te || s.ft) && s.v0 && s.retro
+  // Lime's bands — its page alternates grounds, and a band that differs from
+  // the page draws both of its arc seams itself (`ArcEdge`). The media player
+  // (964:58590) stands on Scheme 2's `sem/bg`, which is Scheme 1's `box/1`
+  // exactly, so `s.box1` carries it without a literal. Kept apart from Retro's
+  // flags above, and extended one section at a time.
+  const limeBand = s.me && s.v0 && s.lime
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
     // and HeaderChoices, which would all claim id="header".
     <div id={s.live ? s.anchor : undefined} style={{
-      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : s.bg,
+      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : s.bg,
       color: darkMap ? s.mapFg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
