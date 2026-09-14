@@ -924,7 +924,9 @@ Settled in section 8 (the booking calendar):
   fans three leaning prints under a seal), and the frame heads the panel with a Display/MD heading its
   twin never drew. **None of Retro's `nav` / `cell` / `dayName` / `print` / `stack` is read**: its lit
   day is `s.ac` lettered in `s.pillBg`, lime on lime under Lime — section 6's "redraw live states" rule
-  again. The diff is additions plus one hoist (below).
+  again. The diff is additions plus one hoist (below). **Session 0's "the calendar's `T.tags` seats —
+  its session checks" is closed by not reading them**: `stampInk` and the seal's `s.chips[4 % …]` hue
+  are Retro's branch alone.
 - **`LimeArrow`** (beside `Pager`) is Pager's Lime arrow vector, hoisted so the calendar's month discs
   draw it too; `Pager` calls it. The theme=1 digest proves Pager did not move.
 - **The panel's ring is an overlay, not a `boxShadow` on the panel.** An inset shadow on a container
