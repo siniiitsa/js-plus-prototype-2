@@ -92,7 +92,7 @@ row's three masters are fitted in one session.
 | 1 | `header` | `964:58588` | Headers — hero | 1440 × 750 | `986:39876` | 768 × 1024 | `986:39889` | 390 × 844 | `964:58576` | done `f4ab4e0` |
 | 2 | `bio` | `964:58589` | Bios — A · Flanked portrait | 1440 × 769 | `986:39877` | 768 × 1144 | `986:39890` | 390 × 739 | `964:58577` | done `59cb1a3` |
 | 3 | `media` | `964:58590` | Media Player — D · Floating cards stack | 1440 × 1153 | `986:39879` *(in `986:39878`)* | 768 × 1512 | `986:39891` | 390 × 1191 | `964:58578` | done `c1e4995` |
-| 4 | `gallery` | `964:58591` | Gallery Sections — Component 1 | 1440 × 822 | `986:39880` | 768 × 1119 | `989:22110` | 390 × 776 | `964:58579` | todo |
+| 4 | `gallery` | `964:58591` | Gallery Sections — Component 1 | 1440 × 822 | `986:39880` | 768 × 1119 | `989:22110` | 390 × 776 | `964:58579` | done `0b162e1` |
 | 5 | `repertoire` | `964:58592` | Repertoire — A · Two-column dense | 1440 × 1063 | `986:39881` | 768 × 872 | `986:39893` | 390 × 838 | `964:58580` | todo |
 | 6 | `map` | `964:58593` | Events Map — D · Compact tile | 1440 × 1151 | `986:39882` | 768 × 1326 | `986:39894` | 390 × 1167.2 | `964:58581` | todo |
 | 7 | `pricing` | `964:58594` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:39883` | 768 × 769 | `986:39895` | 390 × 1520 | `964:58582` | todo |
@@ -723,6 +723,51 @@ Settled in section 3 (the media player):
   its `--ac` custom property, not `#root > div`, which is the harness wrapper. They are deleted;
   write the same two again per section if needed (geometry at three widths, and a `live=1` click
   sequence under `--autoplay-policy=no-user-gesture-required`, which lets headless actually play).
+
+Settled in section 4 (the gallery):
+
+- **The third Lime block, and the first *inside* Retro's branch: `if (s.lime)` within `Gallery`'s
+  `if (s.v0)`, after the seam.** The gallery's live state is not hoisted: `strip`, `active`, `go`, the
+  390 window (`shown` / `from`) and `srcRows` are computed *inside* the v0 branch. Placing the block
+  after them shares them whole — hide-the-empty-row rule included — with a diff that is still pure
+  additions (265 / 0). Where a section's seam lives in the branch rather than above it, put the block
+  after the seam, not ahead of the branch. The composition differs in its middle: filled capsules with
+  a disc instead of outlined boards with a square, and a bare photograph with arrow discs on its middle
+  instead of a lime card with a globe-and-wordmark rail.
+- **`get_screenshot`'s SVG assets can be in the wrong mode; `use_figma`'s `exportAsync` is not.** The
+  arrow disc's exported SVG came back in Retro's colours (`#C08A0F` fill, `#5B5E2E` arrow), while the
+  node's own `fills` and `exportAsync({ format: 'SVG_STRING' })` gave Lime's `#D5E3B2` / `#15180F`.
+  Take vector paths from either, but colours only from the node. A `use_figma` read on an instance's
+  descendants needs `await figma.setCurrentPageAsync(figma.root.children[0])` first. Without it,
+  `getNodeByIdAsync` returns null for every `I…;…` id, and it does not throw.
+- **Nested clips: the largest radius draws.** The spotlight states 30, 20 and 80 on three nested frames
+  of the same size, so the card is radius 80. The arrow row sits in a 469 box 20 in from the card's
+  corner (desktop and 768), 20 above the card's own middle; at 390 it spans the card and centres.
+- **Leaked tops are followed where they show, dropped where they don't.** The corner brackets
+  (`sem/state/inactive/border`, 18 / 2) and the desktop counter chip stand at absolute tops (388, 380)
+  from a 420 box, so they float above the card's foot in the frame, and they do here too. The 390 card
+  (346) clips both, and only the desktop master carries the counter.
+- **Bebas break arithmetic can rule a typed break out.** A measure keeps "See us" on line one only if
+  it is under "See us in" (2.81em), and line two "in action" needs 2.95em. So no cap can reproduce the
+  frame's break. `4em` gives "See us in / action" at all three widths, which keeps the two lines and
+  the height. Run `bebasEms()` on both lines before reaching for a measure.
+- **Scheme 4's `sem/box/1` (`#D5E3B2`) appears on a Scheme 1 section**, as the arrow discs' fill. It is
+  written as a named literal (`mist`). The map and form sessions will find it as their own ground tint.
+- **Transcribed glyphs share one viewBox when they share a container.** `LimeSourceGlyph` draws each
+  source glyph into the 60 disc it stands in, at the frame's own offset and stroke (3.5 / 3 / 4 / 3), so
+  the caller sizes the disc and never the glyph. `LimePlus` is the frame's heavy plus, turned 45° as the
+  open row's cross. The frame's 42.78 box for the cross is the turned glyph's bounding box, and at 390
+  it is what makes the open tile 127.8 wide.
+- **Empty thumbnails stand on the frame's own `sem/text/2` fill**, so their initials take `s.bg`.
+  `Photo`'s `ink` default (`s.muted`), or the section's `s.tx`, vanishes there.
+- **Measured against the masters' content edges**: desktop rows 75.4 (92 × 0.82) at a 4.1 gap, head to
+  rows 268.3, card 459.2 × 461.6 (the columns split 941 in the frame's 608 : 585), arrows centred 208.7
+  down it, thumbs 62.3 at 8.1 below; 768 rows 168.3 × 92, card 527, arrows 217.7 down; 390 rows at 140.4,
+  TikTok wrapped to a second row at 269.4, card 346, arrows centred. The section's content height is
+  582.2 against the frame's (822 − 112) × 0.82 on desktop, and 1057.9 against 1059 at 768.
+- **No harness parameter fills a social address**, so the `a` branch of a row (`extLink` with a URL)
+  was not driven. It is the same `{...link}` spread as Retro's rows over the same `srcRows`. The
+  `live=1` digest at `theme=0,2,3,4` proves Retro's rows did not move.
 
 ## Open questions
 
