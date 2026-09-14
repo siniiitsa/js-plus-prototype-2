@@ -89,7 +89,7 @@ row's three masters are fitted in one session.
 | # | Cat | Desktop node | Composition | Size | Tablet node | Size | Mobile node | Size | Retro twin | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:58587` *(page)* | Lime mode → `THEMES[1]`, ramp, fonts, `s.lime`, photos | — | `986:39875` | — | `986:39888` | — | — | done `dc30dec` |
-| 1 | `header` | `964:58588` | Headers — hero | 1440 × 750 | `986:39876` | 768 × 1024 | `986:39889` | 390 × 844 | `964:58576` | todo |
+| 1 | `header` | `964:58588` | Headers — hero | 1440 × 750 | `986:39876` | 768 × 1024 | `986:39889` | 390 × 844 | `964:58576` | done `f4ab4e0` |
 | 2 | `bio` | `964:58589` | Bios — A · Flanked portrait | 1440 × 769 | `986:39877` | 768 × 1144 | `986:39890` | 390 × 739 | `964:58577` | todo |
 | 3 | `media` | `964:58590` | Media Player — D · Floating cards stack | 1440 × 1153 | `986:39879` *(in `986:39878`)* | 768 × 1512 | `986:39891` | 390 × 1191 | `964:58578` | todo |
 | 4 | `gallery` | `964:58591` | Gallery Sections — Component 1 | 1440 × 822 | `986:39880` | 768 × 1119 | `989:22110` | 390 × 776 | `964:58579` | todo |
@@ -337,24 +337,29 @@ behind `s.lime`.
 
 ### The band table
 
-This is read off the desktop render. **Each seam belongs to the section *below* it**, which draws
-the arc at its own head, so that no two sessions both claim one. Confirm the 768 and 390 pages
-follow the same sequence in section 1's session (the header owes nothing, but it is the first
-session with the three renders open).
+Read off all three pages' instances in section 1's session (a `use_figma` walk of each section's
+fills and every full-width shape under 260 tall). **The ground sequence is identical at 1440, 768
+and 390.** What the first draft of this table got wrong is ownership: **a seam is not drawn by the
+section below it.** Each is a 44-tall, full-width `VECTOR` *inside* the band whose ground differs,
+at its own head (y −1) **and** its own foot, filled in the neighbouring band's colour. So media,
+map and form each own both of their seams, and gallery, pricing and testimonials own none, and no
+two sessions can claim one. The 768 media's two vectors are 1438 wide (the desktop number leaking
+into a narrow instance, so clip them to the section), and the 390 map's and form's are 384. The arc's
+depth and direction are still unmeasured; read them off the vector in the owning session.
 
-| # | Section | Ground | Head seam (owned) |
+| # | Section | Ground | Seams it draws (head · foot) |
 |---|---|---|---|
 | 1 | header | photograph, full-bleed | — |
 | 2 | bio | `sem/bg` `#15180F` | none: the hero fades into it |
-| 3 | media | `sem/box/1` `#2E3928` | **arc** from bio's `#15180F` |
-| 4 | gallery | `#15180F` | **arc** from media's `#2E3928` |
-| 5 | repertoire | `#15180F` | none: same ground as gallery |
-| 6 | map | `sem/text/2` `#F2FFD0` (light band; the map card and list panel are a darker tint of it) | **arc** from `#15180F` |
-| 7 | pricing | `#15180F` | **arc** from `#F2FFD0` |
+| 3 | media | `sem/box/1` `#2E3928` | `#15180F` · `#15180F` ("Vector 1", "Vector 2") |
+| 4 | gallery | `#15180F` | none |
+| 5 | repertoire | `#15180F` | none |
+| 6 | map | `sem/text/2` `#F2FFD0` (light band; the map card and list panel are a darker tint of it) | `#15180F` · `#15180F` |
+| 7 | pricing | `#15180F` | none |
 | 8 | calendar | `#15180F` | none |
-| 9 | form | `#F2FFD0` | **arc** from `#15180F` |
-| 10 | testimonials | `#2E3928` | **arc** from `#F2FFD0` |
-| 11 | footer | `#15180F`, hairline rules | straight edge |
+| 9 | form | `#F2FFD0` | `#15180F` · **`#2E3928`**, testimonials' ground ("Vector 3", "Vector 2") |
+| 10 | testimonials | `#2E3928` | none |
+| 11 | footer | `#15180F`, hairline rules | none: a straight edge |
 
 The root's `cream` / `darkMap` flags (`EncoreSection` default export) are Retro's, keyed on
 `s.retro`. **Do not reuse them for Lime.** Add a separate Lime ground expression beside them,
@@ -546,6 +551,59 @@ Settled in session 0 (the foundation):
   `vm.pillBg`. That is deliberate under Lime: the local tag walk's olive is what reads on a lime
   card, where `vm.pillBg`'s lime would vanish. Retro's two are one value, so nothing moved.
 
+Settled in section 1 (the header):
+
+- **Lime is its own header family, `'lime'`**, with four layouts. `HEADER_NAMES.lime` slices
+  photographic's first four, so a rename reaches both templates. `flatHeader` is false under Lime,
+  and the template card, its thumbnail and the four modal cards all render `HeaderV0`…`V3`. The
+  root's `bleed` is `(s.retro || s.lime)`.
+- **Check a narrow master's Device mode before trusting `s.*` on it.** Lime's 390 hero (`986:39889`)
+  is the one instance on its 390 page set explicitly to **Device: Tablet**, so its type is the 768
+  ramp's (title 120 on two lines, name 21, list 19, chips 14), where `s.dispXl` would give 72.
+  `HeaderV0` carries those four as a named `tk` table, and `Wordmark` takes an additive `size`.
+  Every other section on both narrow pages inherits its page's mode. Some carry an explicit mode
+  that equals the page's (the 390 gallery, calendar and testimonials say Mobile; the 768 calendar
+  says Tablet), so their `s.*` is right. One `use_figma` over the page frame's children, reading
+  `explicitVariableModes` against `getLocalVariableCollectionsAsync()`' mode names, returns every
+  section's Device and Scheme at once.
+- **`BookPill` has a Lime branch, and every Lime pill already moved to it.** It draws Display/List
+  type (lh 1.2, tracking 0) in `sem/bg` on `pillBg` (`sem/active/bg`), flush against a 46 × 44
+  disc in the type's ink with a lime arrow, and no offset block. `glyph` is ignored, because Lime
+  draws no asterisk. The scales are Retro's (768 × 1, 1180 × 0.82, a 390 caller × 0.62, and `full`
+  opts back up), and the small pill's type is the 768 type × 0.62, 11.8, since the 390 master's
+  own 9.9 renders in a fallback face. The branch moved the bio a1, calendar a0–a3, footer, map
+  a1–a2, media a0 (Soundcloud), pricing a0–a3 and testimonials a1 pills. A section whose frame
+  draws a different pill overrides through `bg` / `fg` / `size` / `disc` / `discFg` / `style`;
+  do not fork the branch.
+- **`TagChips`' designed branch is `s.retro || s.lime`** (`s.ui`, `labelXs`, 1.26), at 4.1 / 9
+  padding on Lime's desktop. The header passes `radius={s.radiusChip}`; the tags section's a2/a3
+  still pass `u(8)`, and that is its own session's call.
+- **`labelStyle` still tracks `0.02em`**, and Lime's mode states 0. The header passes
+  `letterSpacing: s.dls` at each of its sites rather than changing the helper, which would move
+  every Lime label at once. Do the same per site, or make the helper theme-aware in one deliberate
+  commit that names what moved.
+- **Under Lime `pillBg` IS the accent** (`#AFE335`, from `sem.activeBg`). Any branch that pairs
+  `s.pillBg` with `s.ac`, which is Retro's mustard beside its rust, draws lime on lime. `HeaderV1`
+  and `V2` read `mustard = s.lime ? s.box1 : s.pillBg`. Grep `pillBg` in the section you fit and
+  sample its render at `theme=1` before believing it.
+- **No glow in the header.** The portrait card is a 1px `sem/stroke/2` rule at radius 55, and the
+  frame's only effect is the nav capsule's `BACKGROUND_BLUR`, dropped here because the fill under
+  it is opaque. The plan's "glow-outlined avatar card" was a guess, and so is every entry in
+  *Glows* above until a node's `effects` confirm it.
+- **The nav capsule is `NavBar`'s, so `HeaderV3` has it too.** Its desktop corner is the one-row
+  bar's half-height (30.35), not `btnR`. The seeded eleven sections give nine links, which wrap the
+  1180 canvas and the 1440 published tab onto a second row (104 tall), and a pill radius there drew
+  a lozenge. Retro's bar wraps the same way.
+- **The reticle takes the seal's seat and its `showBadge` switch** (`Reticle`, beside `SCRIM`),
+  transcribed from the frame's vectors with strokes that scale with the box. Under Lime's header,
+  `badgeText` edits nothing. The bio and footer seals are their own sessions'.
+- **Harness scripts.** A one-off puppeteer script has to live in `source/scripts/` (it resolves
+  `puppeteer-core` from there; the scratchpad cannot) and be deleted after, and the Bash cwd resets
+  to the repo root between calls, so give it absolute paths. chrome-devtools' `take_screenshot`
+  refuses a scratchpad `filePath`; omit it and Read the temp path it reports. In the published tab
+  an emulated 768 viewport renders the **390** layout (the capsule measured 370), so prove the 768
+  burger in the harness (`w=tablet&live=1`), not there.
+
 ## Open questions
 
 1. **Five flags by template five.** `s.retro` plus `s.lime` is cheap for cold-start sessions,
@@ -556,6 +614,19 @@ Settled in session 0 (the foundation):
 2. **Header cards 2–4 under Lime** render Retro's `HeaderV1`–`V3` in Lime tokens. How rough they
    look is not known until section 1 renders them. Record what each needs so its layout pass can
    start from there.
+   *Rendered in section 1.* All three render at three widths and publish: the nav links scroll,
+   the burger opens, and Book Now reaches `#form`. None is fitted.
+   - **Card 2, Feature spread (`HeaderV1`).** Legible only once `mustard` became `s.box1`. Its
+     two-tone title's first word is box1 on `bg` (dim), and the cream face card's body copy is
+     pale lime on cream. It still carries Retro's checker ribbon, the flat starburst seal and
+     cream mounts.
+   - **Card 3, Inset Hero (`HeaderV2`).** An olive sheet in a lime rule where Retro's is mustard.
+     It keeps the checker ribbon and the cream polaroid.
+   - **Card 4, Stacked (`HeaderV3`).** It already has Lime's capsule, globe and pill through
+     `NavBar`. Its title is `paper`, not lime, and it keeps the flat starburst seal and the ribbon.
+
+   Each is Retro's layout-N component re-skinned, so its pass starts from Lime's layout-N page, the
+   same way this one did.
 3. **Track art.** Lime's frame dresses the media rows with the same real album covers Retro's
    did, and Retro ships neutral crops instead (`RETRO_TRACK_ART`). Lime inherits the crops
    through session 0. *Settled in session 0:* the covers' image hashes are identical on both
