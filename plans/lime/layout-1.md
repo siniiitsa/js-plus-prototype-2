@@ -441,6 +441,10 @@ time the digest is **expected to differ at `theme=1`** and must be zero everywhe
 
 ## The end-of-pass sweep
 
+**Done: `c7caa62` (code, CLAUDE.md, README) and `350ccd0` (the `index.html` refresh).** What each
+item came to is under *Learned on the end-of-pass sweep* at the foot of *Conventions*; the list is
+kept as it was run.
+
 The pass leaves these documents false, so correct them in one session after section 11. All eleven
 rows are done (`c1b6141` was the last). This list gathers every item the sections deferred, so a
 cold session needs nothing else. Read Retro's two end-of-pass notes first: *Learned on the end-of-pass
@@ -637,7 +641,8 @@ Settled in section 1 (the header):
 - **`labelStyle` still tracks `0.02em`**, and Lime's mode states 0. The header passes
   `letterSpacing: s.dls` at each of its sites rather than changing the helper, which would move
   every Lime label at once. Do the same per site, or make the helper theme-aware in one deliberate
-  commit that names what moved.
+  commit that names what moved. *Settled in the sweep (`c7caa62`):* the helper is theme-aware,
+  `s.lime ? s.dls : '0.02em'`, and a per-site `s.dls` is now redundant but harmless.
 - **Under Lime `pillBg` IS the accent** (`#AFE335`, from `sem.activeBg`). Any branch that pairs
   `s.pillBg` with `s.ac`, which is Retro's mustard beside its rust, draws lime on lime. `HeaderV1`
   and `V2` read `mustard = s.lime ? s.box1 : s.pillBg`. Grep `pillBg` in the section you fit and
@@ -1169,6 +1174,47 @@ Settled in section 11 (the footer):
   the pill is `<a href="#form">`. On the canvas every anchor is href-less and the pill is a span.
   Digest at themes 0–4, all 810 renders: exactly footer a0 at theme=1, three widths.
 
+Learned on the end-of-pass sweep (`c7caa62` and `350ccd0`):
+
+- **One five-theme digest is the whole proof for a shared-helper change, and its theme=1 spread is a
+  finding in itself.** `labelStyle`'s Lime tracking moved 30 files, all in ten *unfitted* cat/layouts
+  and none at `arch 0`, which proves every fitted Lime site already passed `s.dls`. A layout-1 file in
+  that list would have been a missed site. The digest writes `cat_bio_arch_1_theme_1_w_desktop.txt`,
+  so filter on `_theme_1_`, not `theme=1` (that grep silently matched nothing).
+- **A seeded page cannot show an empty slot.** Both designed themes seed every photograph, so a
+  `backdrop` change digests to zero at every theme and proves nothing. `&noimage=1` (`preview.jsx`)
+  writes Remove's `null` to `image`; read the header at `theme=0` and `theme=1` with it.
+- **The whole-page published check is one puppeteer script, not chrome-devtools calls.** The route:
+  `button[aria-label="Lime"][aria-pressed]` (the thumbnail), then
+  `button[aria-label^="Open the editor with the Lime template"]`, the modal's cards as
+  `[role=dialog] button[aria-pressed]`, *Use this header* / *Publish* / *Open* found by text, and
+  `page.once('popup')` for the tab. `ElementHandle.click()` is a trusted CDP click, so it gets past
+  the popup blocker and starts audio (launch with `--autoplay-policy=no-user-gesture-required` as
+  well); `popup.setViewport` plus a dispatched `resize` re-lays the tab out. Hook
+  `Element.prototype.scrollIntoView` in the popup to record ids, and arm a capture-phase
+  `preventDefault` on `a[href^="mailto:"]` before touching the form. A generic probe covered the
+  controls: every leaf element in a section with a computed `cursor: pointer` that is not an in-page or
+  `_blank` anchor, a handful clicked, the section's `innerHTML` compared before and after. The few
+  `false` results were idempotent clicks (the chip already lit, the gallery's current slot).
+- **Two traps in that script.** `NavMenu`'s open state survives a resize, so a burger opened at 390
+  is still open at 820 and a second click proves nothing: test each width in a fresh tab. And a
+  fixed panel left open lands inside `captureBeyondViewport` clips far down the page, which is what
+  covered the first 390 form-head seam shot. macOS has no `timeout(1)`.
+- **The seams, against real neighbours for the first time**: 180px clips centred on the top of media,
+  gallery, map, pricing, form, testimonials and footer at 1440 and 390. Every arc bulges into the
+  band that owns it in the neighbour's colour, the form's foot arc is olive onto the testimonials'
+  `box1`, and the footer meets the testimonials on a straight edge. Nothing to fix.
+- **The two-build digest walks the editor, since `digest.mjs` can only reach the dev server's
+  harness.** Serve the repo root on `127.0.0.1:8931`, digest `index.html?v=old` *before* the `cp`,
+  then `source/dist-standalone/index.html`. Per theme: thumbnail, big card, *Use this header* (the
+  header's panel, 11 `--ac` roots), then `[role=tab]` Desktop / Tablet / Mobile by trusted click, which
+  Radix accepts. Canvas widths 1088 / 768 / 390 in a 1440 × 900 headless window, identical in both
+  builds. The shipped-it tell is the modal: the old build offers Lime three flat cards, the new one
+  four. `git diff 9e0f726 HEAD` is the whole pass, so `EncoreBuilder.jsx` is not byte-identical and
+  the zero rows at four themes are the argument.
+- **Sizes after the pass**: 24 photograph files, 2.09 MB; the standalone `index.html` is 3.63 MB (was
+  2.93).
+
 ## Open questions
 
 1. **Five flags by template five.** `s.retro` plus `s.lime` is cheap for cold-start sessions,
@@ -1195,6 +1241,12 @@ Settled in section 11 (the footer):
 
    *Since section 2:* cards 2 and 4 draw Lime's seal (`SealBadge`'s Lime branch) where they drew
    the flat starburst, still at Retro's size and seat.
+
+   *Checked in the sweep, after sections 2–11 moved `SealBadge`, `BookPill` and `Pager`:* nothing
+   newly broken. All four cards publish with no page error, every header link and Book Now scrolls
+   to its section, and the burger opens at 390 and at 820 (fresh tab each). The notes above still
+   describe what cards 2–4 look like; `labelStyle`'s Lime tracking (0) moved their labels a little
+   tighter, which is the mode's own value.
 3. **Track art.** Lime's frame dresses the media rows with the same real album covers Retro's
    did, and Retro ships neutral crops instead (`RETRO_TRACK_ART`). Lime inherits the crops
    through session 0. *Settled in session 0:* the covers' image hashes are identical on both
@@ -1219,3 +1271,12 @@ Settled in section 11 (the footer):
    Retro's map v0 base line (and any other `fontSize: s.title` reader) has always fallen back to the
    inherited size. Fixing it moves Retro, so it belongs to the end-of-pass sweep with a digest, most
    likely by renaming the size key; Lime's blocks write Display/Title as the frames' own numbers meanwhile.
+
+   *Left, in the sweep.* There are **three** readers, all in Retro's code: the map v0's base line and
+   its venue line (`EventsMap`, `fontSize: s.title`), and the media v0 track title at 768
+   (`labelStyle(s, desk ? '18px' : s.mob ? s.labelMd : s.title)`, which hands the helper the heading
+   string as a size). Renaming the ramp key would make the size reachable, but no reader would take
+   it without moving Retro's fitted renders, which were approved at the inherited size. Lime's blocks
+   gain nothing from it either: they write the frames' own numbers (36 × 0.82 = 29.52 against the
+   ramp's rounded 30), so moving them onto a key is a real theme=1 diff, not a tidy-up. The fix
+   belongs to a Retro session that wants those three lines to change.

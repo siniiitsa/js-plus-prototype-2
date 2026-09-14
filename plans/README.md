@@ -42,7 +42,7 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
-| Layout 1 | [`lime/layout-1.md`](./lime/layout-1.md) | `lime-layout-1` (in progress) | Retro layout 1's eleven components in Lime's Figma mode: a token foundation (session 0), then `s.lime` decoration inside the shared `s.v0` branches, and the header's four modal cards. |
+| Layout 1 | [`lime/layout-1.md`](./lime/layout-1.md) | `lime-layout-1` (closed, unmerged) | Retro layout 1's eleven components in Lime's Figma mode: a token foundation (session 0), then `s.lime` decoration inside the shared `s.v0` branches, and the header's four modal cards, plus the end-of-pass sweep. |
 
 **Reading order in a Lime session:** `CLAUDE.md`, then the plan, then the Retro sections it names at its top.
 
