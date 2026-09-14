@@ -441,23 +441,72 @@ time the digest is **expected to differ at `theme=1`** and must be zero everywhe
 
 ## The end-of-pass sweep
 
-The pass leaves these documents false, so correct them in one session after section 11:
+The pass leaves these documents false, so correct them in one session after section 11. All eleven
+rows are done (`c1b6141` was the last). This list gathers every item the sections deferred, so a
+cold session needs nothing else. Read Retro's two end-of-pass notes first: *Learned on the end-of-pass
+refresh* (`../retro/layout-2.md`, near line 1306) and *Learned on the end-of-pass sweep*
+(`../retro/layout-4.md`, near line 1266).
 
-- **CLAUDE.md:**
-  - *Only Retro is designed* (Lime now is)
-  - *Retro seeds photography; the other four do not*
-  - the `headerFamily` / "six photographic header layouts where the others get three flat ones"
-    sentence
-  - the `photos.js` rows in the file table
-- **README.md:** "Scope boundaries", and any "flat four" wording.
-- **Code comments that say "Retro's alone"** or "the other four render flat": in `sectionVm`'s
-  `retro` comment, `headerFamily`, `photos.js`' header comment and the root's flag comments.
-  Grep for `other four` and `Retro's alone`.
-- **`Photo`'s empty `backdrop` is Retro brown** (`#2A2622` → `#14110E`), so a Lime artist who
-  removes the hero photograph gets a brown well under a lime nav. It is a shared component, so fix
-  it behind `s.lime` with a digest (found in section 1, not fixed there).
-- **`plans/README.md`:** mark the pass closed.
-- **Refresh the root `index.html`** as above.
+1. **CLAUDE.md**, where its wording is now Retro's alone:
+   - *Only Retro is designed* (around line 696): Lime now is. Its header family is `'lime'`, with
+     four layouts, not the three flat ones.
+   - *Retro seeds photography; the other four do not* (around line 675). Seeding is per theme now
+     (`SEEDS` in `photos.js`).
+   - The file table: `EncoreSection.jsx` is about 15990 lines, not 13790, and `EncoreBuilder.jsx` /
+     `data.js` / `photos.js` have all grown. Re-count them with `wc -l`.
+   - *The booking calendar* (around line 377): "a booked day is muted, struck through and
+     handlerless" is Retro's state. Lime dims it to .38 with no strike (section 8).
+   - *The enquiry form*: "a refused box is an *inset* rule in `ctlInk`" is Retro's. Lime thickens a
+     2px inset ring of full ink (section 9).
+   - Say somewhere that `s.lime` exists beside `s.retro` and that the Lime blocks are `if (s.lime)`
+     blocks inside the shared `v0` code.
+2. **README.md:** line 506 (*Only Retro is designed*), "Scope boundaries", any "flat four" wording
+   that now means Lime too, and the two Retro-only state descriptions at lines 345 (struck through)
+   and 392 (inset rule).
+3. **Code comments that call something Retro's alone when Lime now shares it.** The grep is
+   `grep -rn "other four\|Retro's alone\|flat four\|six photographic" source/src/builder`. It returns
+   about a hundred hits, and most of them are correct: "the flat four" in a Retro branch's own
+   comment is still true of Grunge / Editorial / Pop *on that branch*. Fix only the ones that make
+   a claim about the template list: `EncoreSection.jsx:85` ("the other four templates get"),
+   `EncoreBuilder.jsx:280–281` (`sectionVm`'s `retro` comment), `data.js:252` (`headerFamily`),
+   `EncoreSection.jsx:1116` (the header compositions' banner) and the root's flag comments.
+4. **`Photo`'s empty `backdrop` is Retro brown** (`#2A2622` → `#14110E`), so a Lime artist who
+   removes the hero photograph gets a brown well under a lime nav. `Photo` is a shared component
+   (`EncoreSection.jsx` around line 911), so fix it behind `s.lime`, prove the change with a digest,
+   and read the header at `theme=1` with its image removed.
+5. **Open question 7, the inert `fontSize: s.title`.** Decide whether to fix it or leave it. The only
+   route that keeps Retro at zero rows is to **rename the ramp's size key**, which leaves `vm.title`
+   as the heading string. Retro's inert readers would then keep their inherited size if they are left
+   on `s.title`. Lime's blocks wrote Display/Title as literals (map 36 × 0.82 / 28 / 26), so they can
+   move to the renamed key. If it is left, say why in the question.
+6. **`labelStyle` tracks `0.02em`, and Lime's mode states 0** (section 1). Every Lime site passes
+   `letterSpacing: s.dls`. Either make the helper theme-aware in one named commit (digest: Retro must
+   stay at zero rows) or leave it, and say which.
+7. **One whole-page published check under Lime.** Deliverable 1 has only been proved per section in
+   the harness since section 1. In chrome-devtools, open the builder, pick Lime, choose *Hero* in the
+   setup modal, then *Publish* and *Open*. In the popup:
+   - every nav link scrolls to its section
+   - the burger opens at 390, and at 768 only with a viewport of 800 or more (the `clientWidth` trap
+     in section 1's Conventions)
+   - Book Now reaches `#form`
+   - the media player plays (one trusted click)
+   - the gallery, repertoire, map, pricing, calendar, form and testimonials controls each respond
+   - the footer's links and pill scroll
+
+   Eyeball every seam against its real neighbour: media's two arcs, the map's, the form's head arc
+   and its foot arc on the testimonials' `box1`, and the footer's top hairline under the
+   testimonials. The harness has never rendered two sections together.
+8. **The four header cards** (open question 2): check they still render and publish, since sections
+   2–11 moved shared components (`SealBadge`, `BookPill`, `Pager`). Record anything newly broken for
+   the layout-2 pass; do not fit them.
+9. **`plans/README.md`:** mark the pass closed (the branch is still unmerged; merging is the user's
+   call).
+10. **Refresh the root `index.html`**: run `npm run build:standalone`, then
+    `cp source/dist-standalone/index.html index.html`. Prove it with the two-build digest from
+    Retro's notes. Both builds must come from the same origin: `python3 -m http.server 8931 --bind
+    127.0.0.1` at the repo root serves `index.html?v=old` and `source/dist-standalone/index.html`.
+    Skip `.seal-spin` in the walk. Expect **zero rows at themes 0, 2, 3, 4 and non-zero at theme 1**.
+    Take the old build's digest before the `cp`.
 
 ## Conventions
 
@@ -1103,6 +1152,10 @@ Settled in section 11 (the footer):
 - **Label/SM line boxes are not rounded here**, so the link pitch is 35.4 / 38.4 / 36.2 against the
   frames' 35.3 / 38 / 36 (Figma rounds 14 × 1.1 to 15), which puts the pill 2.5 lower at 768. Not
   corrected.
+- **The link cursor is not live-gated**, where sections 5, 8, 9 and 10 gated theirs. This follows the
+  twin's stated rule: an href-less `<a>` takes the text cursor on the canvas, so the footer's anchors
+  state the pointer themselves, as `BookPill`'s Lime branch does. The edge hairline was read
+  directly: a 1px `rgba(242, 255, 208, .15)` span over the root's whole width at all three widths.
 - **`&n=` fills `c.links`** in `preview.jsx` now: eight-row cycles of sections with an address on
   every eighth row, so `live=1&n=8` renders one `target="_blank"` link. An odd count leaves column 2
   short, and `n=0` is the pill alone.
