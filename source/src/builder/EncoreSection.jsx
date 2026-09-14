@@ -304,6 +304,19 @@ function GlobeMark({ size = 22, color = 'currentColor', strokeWidth = 1.4 }) {
   )
 }
 
+// Lime's filled globe (964:58593 "◍", the events map's coverage foot),
+// transcribed from the frame's own vector on its 35.16 box: a solid disc cut by
+// four vertical slots and two side lenses. It is a different drawing from
+// `LimeGlobeMark`'s stroked globe below, which is the header's.
+function LimeGlobeFill({ size, color }) {
+  return (
+    <svg viewBox="0 0 35.1602 35.1602" width={size} height={size} aria-hidden
+         style={{ display: 'block', flex: 'none' }}>
+      <path fill={color} d="M17.4913 35.1602C14.9756 35.1602 12.6523 34.7162 10.5214 33.8283C8.39049 32.97 6.54074 31.7566 4.97214 30.188C3.40355 28.5898 2.17531 26.7253 1.28743 24.5943C0.429143 22.4634 0 20.1401 0 17.6245C0 15.0792 0.443941 12.7411 1.33182 10.6102C2.21971 8.44968 3.44794 6.58513 5.01654 5.01654C6.61473 3.41835 8.47928 2.19011 10.6102 1.33182C12.7411 0.443941 15.0348 0 17.4913 0C20.007 0 22.3302 0.443941 24.4612 1.33182C26.6217 2.21971 28.501 3.46274 30.0992 5.06093C31.6974 6.65912 32.9404 8.53847 33.8283 10.699C34.7162 12.8299 35.1602 15.1384 35.1602 17.6245C35.1602 20.0809 34.7162 22.3746 33.8283 24.5056C32.97 26.6365 31.7418 28.501 30.1436 30.0992C28.575 31.6974 26.7105 32.9404 24.55 33.8283C22.419 34.7162 20.0661 35.1602 17.4913 35.1602ZM16.1595 31.7418V3.41835L13.5846 3.90668V31.3423L16.1595 31.7418ZM18.8675 31.7418L21.4424 31.3423V3.90668L18.8675 3.41835V31.7418ZM10.8766 30.2324V4.92775C9.95908 5.43088 9.1156 6.0228 8.3461 6.70351V28.5454C8.76044 28.8118 9.17479 29.093 9.58913 29.3889C10.0331 29.6553 10.4622 29.9364 10.8766 30.2324ZM24.106 30.2768L26.6809 28.5454V6.61472L24.106 4.92775V30.2768ZM29.4333 25.571C31.0019 23.2921 31.7862 20.6433 31.7862 17.6245C31.7862 14.7536 31.0019 12.1048 29.4333 9.67792V25.571ZM5.68245 25.571V9.72231C4.17305 12.0308 3.41835 14.6649 3.41835 17.6245C3.41835 19.0747 3.59592 20.4657 3.95108 21.7975C4.33583 23.0997 4.91295 24.3576 5.68245 25.571Z" />
+    </svg>
+  )
+}
+
 // Lime's globe (Figma 964:58588 "Group 7"), transcribed from the frame's own
 // vectors on its 35.98 box: a ring, one meridian ellipse, a hairline lens down
 // the middle and three parallels, all at a 3px stroke that scales with the box.
@@ -10478,6 +10491,220 @@ function EventsMap({ s }) {
       setSel((v) => (v === j ? -1 : j))
     } : undefined)
 
+    // Lime (964:58593 1440 × 1151, 986:39882 768 × 1326, 986:39894 390 ×
+    // 1167) — the fifth Lime block, placed after the seam as the gallery's and
+    // the repertoire's are, so `perPage`, `pg`, `shown`, the pager's labels,
+    // `lit` and `onPick` are shared whole and the published pager and pairing
+    // need nothing new. The tree is Retro's twin's (head, coverage tile, gig
+    // panel, pagination), with the two arc vectors where Retro draws its
+    // checkerboard strips; every leaf changes its dress.
+    //
+    // The section stands on **Scheme 4**, a light band, so none of the Scheme 1
+    // `sem` keys on `s` apply: the ground is `s.tx` (#F2FFD0, painted by the
+    // root's `limeLight`) and the ink is `s.bg` (#15180F), and the rest are
+    // named below. Nothing here reads `g.hue`, `mapBg` or `mapFg` — those are
+    // Retro's dark-map pairs, and under Lime `g.hue` walks the two tag seats.
+    //
+    // Two intended diffs from the frames: the map draws **one pin per gig on
+    // the page**, which no Lime or Retro frame draws but the pairing needs (a
+    // lit row has to light something), and the 390 page is Retro's five gigs
+    // where its master draws three, since `perPage` is the section's seam.
+    if (s.lime) {
+      const tab = isTablet(s)
+      const z = s.narrow ? 1 : 0.82
+      const u = (v) => `${Math.round(v * z * 10) / 10}px`
+      const ink = s.bg // sem/text/1 and /2, sem/stroke/2, sem/glow
+      const mist = '#D5E3B2' // sem/box/3 — the tile and the gig panel
+      const hair = '#15180F26' // sem/stroke/1 — the rows' hairline, 15%
+      const litInk = '#C7FF3C' // sem/active/text, on sem/active/bg (`ink`)
+      // `vm.title` is the heading string and overwrites the ramp's `title` key
+      // in sectionVm, so Display/Title is the frames' own 36 / 28 / 26.
+      const titleSize = s.mob ? '26px' : tab ? '28px' : u(36)
+      // Body/Eyebrow — Inter bold: the kicker, the panel head, the rows'
+      // city line and their month.
+      const eyebrow = (extra) => ({
+        fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+        letterSpacing: s.dls, whiteSpace: 'nowrap', ...extra,
+      })
+
+      const head = (
+        <div style={col(u(16))}>
+          <span style={eyebrow({ color: ink })}>Shows/coverage</span>
+          {/* Display/LG over Label/LG, which stands at the row's right on
+              desktop and 768 and stacks 10 under the heading at 390. */}
+          <div style={s.mob ? col('10px', { alignItems: 'flex-start' }) : row(u(10), { justifyContent: 'space-between' })}>
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+              letterSpacing: s.dls, color: ink, minWidth: 0,
+            }}>{s.title}</h2>
+            <span style={{
+              fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
+              color: ink, whiteSpace: 'nowrap', flex: 'none',
+            }}>{s.mapRadius}</span>
+          </div>
+        </div>
+      )
+
+      // The pin is lime in an ink ring on the darkened raster; the lit one
+      // swaps the two and grows, the pairing's whole vocabulary as in Retro's.
+      const pinsL = shown.map((g, i) => {
+        const on = lit(i)
+        const d = on ? 16 : 12
+        return (
+          <span key={i} onClick={onPick(i)} style={{
+            position: 'absolute', left: g.pin.x, top: g.pin.y, width: `${d}px`, height: `${d}px`,
+            borderRadius: '999px', background: on ? ink : s.ac,
+            boxShadow: `0 0 0 ${on ? 5 : 3}px ${on ? s.ac : ink}`,
+            transform: 'translate(-50%, -50%)',
+            cursor: s.live ? 'pointer' : undefined,
+          }} />
+        )
+      })
+
+      // The tile: the raster under one `tag/1/bg` multiply at .6, over a foot
+      // of the base and the terms. Desktop stretches it to the gig panel beside
+      // it and the map takes what the foot leaves (541 of 686 in the frame),
+      // floored at the 768 master's 219.84 so an emptied list still shows a
+      // map; 768 and 390 state the map's height outright. 390 pads the card by
+      // 10 and rounds the map inside it. The frame's 1px inside stroke is the
+      // ground's own colour, so it only shows where it crosses the raster, and
+      // is drawn over it.
+      const tileL = (
+        <div style={col(s.narrow ? '12px' : '0px', {
+          position: 'relative', background: mist, borderRadius: s.mob ? '30px' : u(55),
+          overflow: 'hidden', padding: s.mob ? '10px' : 0, minWidth: 0,
+        })}>
+          <div style={{
+            position: 'relative', overflow: 'hidden', borderRadius: s.mob ? '24px' : u(8), background: s.tx,
+            ...(s.mapSrc ? { backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' } : null),
+            ...(s.narrow ? { flex: 'none', height: s.mob ? '298px' : '219.84px' } : { flex: '1 1 auto', minHeight: u(219.84) }),
+          }}>
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, background: s.box1,
+              mixBlendMode: 'multiply', opacity: 0.6, pointerEvents: 'none',
+            }} />
+            {pinsL}
+          </div>
+          <div style={col(u(4), { padding: s.mob ? '10px' : `${u(38)} ${u(30)}` })}>
+            <span style={s.mob ? col('8px', { alignItems: 'flex-start' }) : row(u(8))}>
+              <LimeGlobeFill size={35.16 * z} color={ink} />
+              <span style={{
+                fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1, letterSpacing: s.dls, color: ink,
+              }}>{s.mapBase}</span>
+            </span>
+            {/* Label/XS — Chakra Petch, this section's `s.ui` site. */}
+            <span style={{
+              fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, color: ink,
+            }}>{s.mapTerms}</span>
+          </div>
+          <span aria-hidden style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+            boxShadow: `inset 0 0 0 1px ${s.tx}`,
+          }} />
+        </div>
+      )
+
+      // A gig row: a `box/2` pill in the hairline, stroked inside, round the
+      // venue and its city line, with the date in a lime `tag/1` disc at the
+      // right. 768 fixes the row at 79, so its 57 disc stands 11 from either
+      // edge where the other two pad by 20. The lit row takes `sem/active`.
+      const rowsL = shown.map((g, i) => {
+        // The anchor seam is Retro's: a row with a tickets address links out in
+        // a new tab, so one click both opens it and lights the pin.
+        const link = extLink(s, g.url)
+        const Tag = link ? 'a' : 'div'
+        const on = lit(i)
+        const fg = on ? litInk : ink
+        return (
+          <Tag key={i} {...link} onClick={onPick(i)} style={{
+            ...row(u(12), { justifyContent: 'space-between' }),
+            background: on ? ink : s.tx, boxShadow: `inset 0 0 0 1px ${hair}`, borderRadius: '999px',
+            padding: tab ? '11px 10px 11px 33px' : `${u(20)} ${u(20)} ${u(20)} ${u(33)}`,
+            textDecoration: 'none', color: fg,
+            cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={col(u(2), { minWidth: 0 })}>
+              {/* Display/List. */}
+              <span style={{
+                fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, color: fg,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{g.venue}</span>
+              <span style={eyebrow({ color: fg, overflow: 'hidden', textOverflow: 'ellipsis' })}>
+                {g.city} · {g.time}
+              </span>
+            </span>
+            <span style={col('0px', {
+              alignItems: 'center', justifyContent: 'center', flex: 'none',
+              width: u(56), height: u(57), borderRadius: u(46), padding: `${u(4)} ${u(6)}`,
+              background: s.ac, color: s.box1,
+            })}>
+              {/* The seed's month is title case and the frame's capitals, so
+                  the casing is the site's, the panel head's rule. */}
+              <span style={eyebrow({ color: s.box1, textTransform: 'uppercase' })}>{g.month}</span>
+              {/* Body/MD. */}
+              <span style={{
+                fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, color: s.box1,
+              }}>{g.day}</span>
+            </span>
+          </Tag>
+        )
+      })
+
+      // The gig panel. Its head row's 1px frame beside the count carries no
+      // fill in any master, so it is not drawn. The pager is the shared Lime
+      // one re-inked for this band through `frame.lime`: Scheme 4's page pills
+      // are the ground's `box/2`, and its ring, ink and glow are all `#15180F`
+      // (`stroke/2`, not the 15% `stroke/1` the Scheme 1 default reads).
+      //
+      // The window is the compact one at every width: at most five labels,
+      // which is the frames' own `1 2 3 … 20`, where the wide window's seven
+      // wrapped the row at desktop and 768 past five pages. Seven buttons at
+      // their stated widths come to 593, inside the 768 panel's 648, but × 0.82
+      // to 486 against this panel's 478.5 (the frame's is 497 — the 20px our
+      // content width gives up), so desktop spreads them across the measure
+      // the way the 390 master does.
+      const win = pageWindow(pages, pg, true)
+      const listL = (
+        <div style={col(u(20), {
+          background: mist, borderRadius: s.mob ? '30px' : u(55), padding: u(20), minWidth: 0,
+        })}>
+          <span style={row('0px', { padding: `0 ${u(20)}` })}>
+            <span style={eyebrow({ color: ink, textTransform: 'uppercase' })}>
+              Upcoming gigs · {s.gigs.length}
+            </span>
+          </span>
+          {rowsL.length > 0 && <div style={col(u(12))}>{rowsL}</div>}
+          {win.labels.length > 0 && (
+            <Pager s={s} frame={{
+              pages: win.labels, active: win.at, justify: 'center', grow: !tab,
+              lime: { box: s.tx, ring: ink, ink, idle: ink, glow: ink },
+              onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+              onStep: s.live
+                ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+                : undefined,
+            }} />
+          )}
+        </div>
+      )
+
+      // The seams are this band's own, at its head and its foot, in the page
+      // ground (section 3's `ArcEdge`). Desktop stands the two cards side by
+      // side at equal width, 768 stacks them 32 apart, 390 10 apart.
+      return (
+        <div style={{ position: 'relative', color: ink, ...col(s.narrow ? '30px' : u(32)) }}>
+          <ArcEdge s={s} side="top" height={44.24 * z} />
+          <ArcEdge s={s} side="bottom" height={44.24 * z} />
+          {head}
+          <div style={{
+            display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
+            gap: s.mob ? '10px' : tab ? '32px' : u(36), alignItems: 'stretch',
+          }}>
+            {tileL}{listL}
+          </div>
+        </div>
+      )
+    }
+
     // One pin per gig on this page, at the position sectionVm paired it with.
     // The lit one grows and takes a heavier halo; that and the row's fill are
     // the whole of the pairing's vocabulary.
@@ -14829,13 +15056,17 @@ export default function EncoreSection({ s }) {
   // exactly, so `s.box1` carries it without a literal. Kept apart from Retro's
   // flags above, and extended one section at a time.
   const limeBand = s.me && s.v0 && s.lime
+  // The events map (964:58593) is the page's first light band: Scheme 4's
+  // `sem/bg` is #F2FFD0, which is Scheme 1's `text/2` exactly, so `s.tx`
+  // carries it, and its ink is Scheme 4's `text/1`, which is `s.bg`.
+  const limeLight = s.mp && s.v0 && s.lime
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
     // and HeaderChoices, which would all claim id="header".
     <div id={s.live ? s.anchor : undefined} style={{
-      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : s.bg,
-      color: darkMap ? s.mapFg : s.tx,
+      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : s.bg,
+      color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
       transition: 'background-color .45s ease, color .45s ease',
