@@ -96,7 +96,7 @@ row's three masters are fitted in one session.
 | 5 | `repertoire` | `964:58592` | Repertoire — A · Two-column dense | 1440 × 1063 | `986:39881` | 768 × 872 | `986:39893` | 390 × 838 | `964:58580` | done `2606b63` |
 | 6 | `map` | `964:58593` | Events Map — D · Compact tile | 1440 × 1151 | `986:39882` | 768 × 1326 | `986:39894` | 390 × 1167.2 | `964:58581` | done `eda536f` |
 | 7 | `pricing` | `964:58594` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:39883` | 768 × 769 | `986:39895` | 390 × 1520 | `964:58582` | done `be2c4d6` |
-| 8 | `calendar` | `964:58595` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:39884` | 768 × 1376 | `986:39896` | 390 × 999 | `964:58583` | todo |
+| 8 | `calendar` | `964:58595` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:39884` | 768 × 1376 | `986:39896` | 390 × 999 | `964:58583` | done `879418a` |
 | 9 | `form` | `964:58596` | Enquiry Forms — B · Split context+form | 1440 × 862 | `986:39885` | 768 × 1114 | `986:39897` | 390 × 1168 | `964:58584` | todo |
 | 10 | `testimonials` | `964:58597` | Testimonials H — Stacked tag card | 1440 × 730 | `986:39886` | 768 × 730 | `986:39898` | 390 × 730 | `964:58585` | todo |
 | 11 | `footer` | `964:58598` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:39887` | 768 × 647.4 | `986:39899` | 390 × 619.4 | `964:58586` | todo |
@@ -324,7 +324,8 @@ behind `s.lime`.
   that meets a seam (section 3, media), mirroring `TornEdge`'s props. Measure each arc's depth
   and direction from its frame, not from this table.
 - **Glows**, in `sem/glow`: the bio portrait's outline, the media sleeve card, the featured
-  pricing card, the calendar's panel border and picked day, and the active pager pill. Each is a
+  pricing card, the calendar's picked day (*not* its panel border, which section 8 found is a plain
+  3px stroke with empty `effects`), and the active pager pill. Each is a
   `boxShadow`. Read the effect's radius and spread off the node's `effects` with one `use_figma`
   read rather than guessing from the render.
 - **Radii** of 26 on cards, 13 on controls, 6 on chips and 999 on pills, applied through the
@@ -913,6 +914,52 @@ Settled in section 7 (pricing):
   `live=1` at desktop and 390: every chip filters, the lit chip reads `#0D1F03` on lime, cursors are
   live-gated, the pills are `<a href="#form">`. `n=0` prints *No packages yet.*; the empty grid still
   spends its two gaps, as Retro's does.
+
+Settled in section 8 (the booking calendar):
+
+- **The seventh Lime block, after the seam: `if (s.lime)` within `Calendar`'s `if (s.v0)`, after
+  `step`.** `at`, `month`, `want` / `hit` / `cur`, `line` and `step` are shared whole, so the published
+  arrows, day picking and foot pill needed nothing new. The left half is the twin's tree cell for cell;
+  the right half is a different composition (one radius-35 photograph in a 20-padded half, where Retro
+  fans three leaning prints under a seal), and the frame heads the panel with a Display/MD heading its
+  twin never drew. **None of Retro's `nav` / `cell` / `dayName` / `print` / `stack` is read**: its lit
+  day is `s.ac` lettered in `s.pillBg`, lime on lime under Lime — section 6's "redraw live states" rule
+  again. The diff is additions plus one hoist (below).
+- **`LimeArrow`** (beside `Pager`) is Pager's Lime arrow vector, hoisted so the calendar's month discs
+  draw it too; `Pager` calls it. The theme=1 digest proves Pager did not move.
+- **The panel's ring is an overlay, not a `boxShadow` on the panel.** An inset shadow on a container
+  paints under its children, and Figma paints a frame's stroke *over* them. So the 3px `s.stroke2` ring
+  is a last-child `<span>` at `inset: 0`, `borderRadius: inherit`. The halves' rule and the foot's rule
+  are inset shadows on those halves, so every padding stays the frame's (Figma strokes inside without
+  growing). **No glow on the panel** — its `effects` are empty, which corrects *Glows* above. The picked
+  day's INNER_SHADOW 20 in `s.glow` is the fourth confirmed glow, a raw 20 at every width.
+- **Stacked, the frame draws no rule between the halves**: the grid half's right stroke lies under the
+  panel's ring at 768 and 390. Retro's `borderTop` between them is not followed.
+- **Booked is the frame's own state: opacity .38, no strike, no handler.** Retro's frame drew no
+  unavailable day, so its branch invented soft-fill + strike; Lime's frame dims six days
+  (2, 6, 14, 24, 27, 28). The seed blocks none, so the canvas shows none; the frame's own picture is
+  `&booked=2025-06-02,2025-06-06,2025-06-14,2025-06-24,2025-06-27,2025-06-28`. CLAUDE.md's "a booked day
+  is muted, struck through" is Retro's wording, for the end-of-pass sweep.
+- **Cells bind `radius/card`** (unlike pricing's raw boxes), written `u(26)` so desktop keeps the frame's
+  proportion. Heights 55.89 / 55.89 / 50.49, gaps 10 / 10 / 2, grid padding 40 / 40 / `20 10`. Day
+  names stand on the grid's columns at every width (the frame's fixed 57.4 cells overrun 350 and clip
+  Saturday at 390 — the leak Retro's branch declined too).
+- **The photo half stretches to the grid at desktop** (a six-row month takes the photograph with it:
+  August 2025 grows the half 431 → 485), and states 526 / 308 when stacked, where a sixth row grows only
+  the grid. No seal — which closes section 2's "the calendar a0 seal's placement is its session's".
+- **The heading is `s.title`**, so `FIELDS.calendar.heading` now reaches layout 1 under Lime (it
+  reaches Retro's layout 1 nowhere). The seed prints AVAILABILITY where the frame types BOOK NOW,
+  `TITLES.calendar`'s precedent.
+- **The foot keeps Retro's BookPill** (its one deliberate addition), in `BookPill`'s Lime defaults. It
+  makes the foot 110 / 134 / 149 where the frames' are 83 / 100 / 100; at 390 it wraps under the line.
+- **Measured against the masters' content edges**: desktop head 59 at 19.7 over the panel, grid half
+  431 (526 × 0.82), names 94.4 and days 136.5 down the half (115.15 / 166.53 × 0.82), cells 58.8 × 45.8,
+  photo 493.2 × 398.2 (486 × 0.82 tall); 768 grid 526, names 115.2, days 166.6, cells 78.3 × 55.9, photo
+  648 × 486; 390 grid 427.1, photo half 308, photo 306 × 268, cells 44.8 × 50.5 (48.29 in the frame —
+  our 346 panel against its 370). `live=1` at desktop and 390: both arrows wrap the twelve months, a pick
+  moves the glow and the line, a booked day takes no click or cursor, re-clicking the lit day falls back
+  to the cued June 12 (the shared seam's own `|| s.calPick`), the pill is `<a href="#form">`, and the
+  canvas carries no cursor.
 
 ## Open questions
 
