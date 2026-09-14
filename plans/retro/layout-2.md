@@ -4,7 +4,7 @@ Working checklist for fitting **layout 2** of every Retro section to Figma, one 
 session, clearing context between sections. Layout 1 (`s.v0`) is already fitted and signed off;
 nothing here should touch it.
 
-**Read first, every session:** [`CLAUDE.md`](./CLAUDE.md), then this file, then the two memory
+**Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then the two memory
 notes `figma-frame-reading` and `verifying-the-published-tab` in the project memory directory.
 `SPEC.md` lives in git history — `git show 8fa8ff4:SPEC.md`.
 
@@ -195,7 +195,7 @@ re-deriving the first's decisions.
    ```
    Continue the Retro layout-2 pass with section N, `cat`.
 
-   Read CLAUDE.md, then LAYOUT-2-PLAN.md, then the `figma-frame-reading` and
+   Read CLAUDE.md, then plans/retro/layout-2.md, then the `figma-frame-reading` and
    `verifying-the-published-tab` memory notes, and follow the per-session procedure there.
 
    The frame is `<node id>` — "<frame name>", <W> × <H> — in Figma file
@@ -1457,7 +1457,7 @@ Learned on the end-of-pass refresh (the `index.html` rebuild):
    signed-off design, which is a design call and not a fidelity one.
 
    *Still true, and no longer the whole picture.* Layout 3's bento wall
-   (`LAYOUT-3-PLAN.md`, section 12) reads `heading` and `sub` and not
+   (`layout-3.md`, section 12) reads `heading` and `sub` and not
    `cta`, and drops the reviews' `when` besides — so the three layouts
    now read three different subsets of the section's fields rather than
    two nested ones, and `sub` is the one field that reaches two of them.

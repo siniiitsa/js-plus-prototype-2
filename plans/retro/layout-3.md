@@ -4,8 +4,8 @@ Working checklist for fitting **layout 3** of every Retro section to Figma, one 
 session, clearing context between sections. Layouts 1 (`s.v0`) and 2 (`s.v1`) are fitted and
 signed off at all three widths; nothing here should touch either.
 
-**Read first, every session:** [`CLAUDE.md`](./CLAUDE.md), then this file, then
-[`LAYOUT-2-PLAN.md`](./LAYOUT-2-PLAN.md)'s *Conventions* section — ~110 bullets, every one of
+**Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then
+[`layout-2.md`](./layout-2.md)'s *Conventions* section — ~110 bullets, every one of
 them still true, and this file does **not** repeat them — then the two memory notes
 `figma-frame-reading` and `verifying-the-published-tab`. `SPEC.md` lives in git history —
 `git show 8fa8ff4:SPEC.md`.
@@ -45,7 +45,7 @@ one session.
 
 What is left of the pass is the **end-of-pass `index.html` refresh**, which is one deliberate
 step and not a section: `npm run build:standalone`, `cp source/dist-standalone/index.html
-index.html`, and the checks in `LAYOUT-2-PLAN.md`'s *Learned on the end-of-pass refresh*. Expect
+index.html`, and the checks in `layout-2.md`'s *Learned on the end-of-pass refresh*. Expect
 the two-build digest to come back at **zero rows** — `EXAMPLE_PAGE` is `arch 0` throughout, so it
 renders layout 1 for every section and layout 3 appears only in the sidebar's layout-picker
 thumbnails — and prove the new work shipped by grepping the built file for a value only these
@@ -193,7 +193,7 @@ set is already written down, so splitting would only make the second session re-
 first's decisions — the same argument that made layout 2's narrow pass take tablet and mobile
 together.
 
-1. Read `CLAUDE.md`, this file, `LAYOUT-2-PLAN.md`'s *Conventions*, and the two memory notes.
+1. Read `CLAUDE.md`, this file, `layout-2.md`'s *Conventions*, and the two memory notes.
 2. `get_metadata` on **all three** of the row's nodes first — beside each other, not one at a
    time. It is where a master that changes shape rather than shrinking shows up, and on this page
    it is also where a master turns out to live inside a wrapper.
@@ -229,7 +229,7 @@ together.
    ```
    Continue the Retro layout-3 pass with section N, `cat`.
 
-   Read CLAUDE.md, then LAYOUT-3-PLAN.md, then LAYOUT-2-PLAN.md's Conventions section,
+   Read CLAUDE.md, then plans/retro/layout-3.md, then plans/retro/layout-2.md's Conventions section,
    then the `figma-frame-reading` and `verifying-the-published-tab` memory notes, and
    follow the per-session procedure there.
 
@@ -259,7 +259,7 @@ then follow.
 
 ## Conventions
 
-`LAYOUT-2-PLAN.md`'s ~110 bullets all still apply and are not repeated. This list starts with what
+`layout-2.md`'s ~110 bullets all still apply and are not repeated. This list starts with what
 is known about *this* page before any section has been fitted; append to it as the pass goes on.
 
 - **Match on node id.** Frame names collide across the three pages, and the misnaming falls in a

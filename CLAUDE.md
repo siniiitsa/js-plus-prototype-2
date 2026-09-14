@@ -16,6 +16,9 @@ All source lives in **`source/`**. Two files at the repo root are *not* source:
 It has been removed from the working tree but lives on in git history — read it with
 `git show 8fa8ff4:SPEC.md`.
 
+Design-pass plans live in **`plans/<template>/`**, one file per pass — Retro's are
+`plans/retro/layout-2.md` … `layout-4.md`. Start at [`plans/README.md`](./plans/README.md).
+
 ## Commands
 
 ```bash

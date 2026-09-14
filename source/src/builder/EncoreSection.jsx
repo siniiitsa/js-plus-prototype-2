@@ -2147,11 +2147,11 @@ function Bio({ s }) {
   //
   // ── The head is borrowed, and nothing in it is invented ────────────────
   // The 1440 page wraps this instance and the tags row in a Section carrying
-  // one display head, and the bio takes it (LAYOUT-3-PLAN.md, "The composed
-  // page"): `FIELDS.bio.heading`'s default *is* the frame's "Reads the room.",
-  // and `s.initials` already spells the "KM" of its "KM BIO" eyebrow — v0
-  // draws those same two strings as its own flank labels. The head's 30px gap
-  // and the 30 between it and the card are the Section's own, at all three
+  // one display head, and the bio takes it (plans/retro/layout-3.md, "The
+  // composed page"): `FIELDS.bio.heading`'s default *is* the frame's "Reads the
+  // room.", and `s.initials` already spells the "KM" of its "KM BIO" eyebrow —
+  // v0 draws those same two strings as its own flank labels. The head's 30px
+  // gap and the 30 between it and the card are the Section's own, at all three
   // widths.
   //
   // ── What the columned five do at our width ─────────────────────────────
@@ -2407,9 +2407,9 @@ function Bio({ s }) {
   //
   // ── The section stands on its own olive sheet ──────────────────────────
   // The layout-4 page paints y 900–1852 in `sem/bg` #5B5E2E at 1440 and the
-  // same olive at both narrow widths (LAYOUT-4-PLAN.md's band tables), and a
-  // stddev scan of the render is flat 0 over it — no grain, no torn edge, no
-  // shadow under the card, so this branch carries no `s.retro` decoration at
+  // same olive at both narrow widths (plans/retro/layout-4.md's band tables),
+  // and a stddev scan of the render is flat 0 over it — no grain, no torn edge,
+  // no shadow under the card, so this branch carries no `s.retro` decoration at
   // all (the testimonials' layout-3 case). It gets its ground the repertoire's
   // way, without touching the root's flags: a block carrying the root's own
   // padding back as a negative margin, re-inset at the frames' own 56/30/10
@@ -3365,7 +3365,7 @@ function Media({ s }) {
   //
   // ── The same Figma component as layout 2's right column ────────────────
   // `432:2092` is the component layout 2 draws *inside* its cream panel beside
-  // the fan, so LAYOUT-3-PLAN.md asked whether to lift a shared inner
+  // the fan, so plans/retro/layout-3.md asked whether to lift a shared inner
   // component or write it again. **Written again**, and the tags row's
   // grep-before-you-copy rule is what settles it rather than overrides it:
   // what would be shared is a whole branch, not a leaf, and the two branches
@@ -3413,10 +3413,10 @@ function Media({ s }) {
   // its width, and the `<audio>` element rides at the foot of the column —
   // there is no transport bar here to tuck it into. Nothing new: no state, no
   // vm key, no field. What the frame does not draw, this does not either — the
-  // head (the wrapper's display head is audio's, LAYOUT-3-PLAN.md) and the
-  // Soundcloud button (layout 2's absence, for the same reason). `heading` and
-  // `kicker` therefore edit nothing while layout 3 is selected, which is open
-  // question 7's shape and named there.
+  // head (the wrapper's display head is audio's, plans/retro/layout-3.md) and
+  // the Soundcloud button (layout 2's absence, for the same reason). `heading`
+  // and `kicker` therefore edit nothing while layout 3 is selected, which is
+  // open question 7's shape and named there.
   //
   // The composed page puts this list under the audio player's now-playing bar,
   // and audio's own layout 3 now draws one card per track — so a page carrying
@@ -3576,7 +3576,7 @@ function Media({ s }) {
   // `get_variable_defs` resolves this page's `sem/bg` to **#FBF6EA**, and a
   // column scan of the 1440 band (964:72520) reads that cream from its first
   // row to its last — so the instance's own ground IS the band, at all three
-  // widths (LAYOUT-4-PLAN.md's two band tables agree). It gets it the
+  // widths (plans/retro/layout-4.md's two band tables agree). It gets it the
   // repertoire's way, with no root flag touched: a block carrying the root's
   // own padding back as a negative margin, re-inset at the frames' own 56/56/10
   // horizontally (+ `s.surplus`, so a published window wider than the canvas
@@ -3978,9 +3978,10 @@ function Tags({ s }) {
   //
   // A rust label over a wrapping row of six coloured chips, left-aligned on the
   // page ground. The section's first Figma design ever — its v0 and v1 are
-  // invented flat ones and stay that way (LAYOUT-3-PLAN.md, open question 3) —
-  // and by some distance the smallest master in the pass: three text styles,
-  // one gap and one radius, with no decoration, no rule and no sheet of its own.
+  // invented flat ones and stay that way (plans/retro/layout-3.md, open
+  // question 3) — and by some distance the smallest master in the pass: three
+  // text styles, one gap and one radius, with no decoration, no rule and no
+  // sheet of its own.
   //
   // ── The chips are already written ──────────────────────────────────────
   // `TagChips` *is* this frame's chip, fitted when the layout-3 header dropped
@@ -4066,13 +4067,13 @@ function Tags({ s }) {
   //
   // What that costs is the band's own foot. `971:14234` is 871 tall with the
   // bio instance ending at 811, so the 390 band's bottom inset is **60**, not
-  // the 30 the bio session inferred — the one number LAYOUT-4-PLAN.md asked
-  // this session to read. It is declined at both sections rather than fixed at
-  // one: our page splits the band in two, either half can stand alone or be
-  // reordered, and a section whose sheet is 30 at the top and 60 at the foot
-  // reads as a mistake the moment it is not followed by the other half. The
-  // seam is already not the frame's (Figma gaps the two by 40 at 390 and 24 at
-  // 768, where two symmetric sheets give 60 and 120), so the foot is the
+  // the 30 the bio session inferred — the one number plans/retro/layout-4.md
+  // asked this session to read. It is declined at both sections rather than
+  // fixed at one: our page splits the band in two, either half can stand alone
+  // or be reordered, and a section whose sheet is 30 at the top and 60 at the
+  // foot reads as a mistake the moment it is not followed by the other half.
+  // The seam is already not the frame's (Figma gaps the two by 40 at 390 and 24
+  // at 768, where two symmetric sheets give 60 and 120), so the foot is the
   // smaller of the two diffs, and it is named rather than engineered away.
   //
   // ── Three things the frame does that need saying ───────────────────────
@@ -4165,9 +4166,9 @@ function Audio({ s }) {
   // with a played head, and under it the track's name, a mustard play disc on
   // the page's hard offset shadow, and the artist. This is the section's first
   // Figma design ever — its v0 and v1 are invented flat ones and stay that way
-  // (LAYOUT-3-PLAN.md, open question 3) — and it *replaces* an invented flat
-  // v2 rather than taking a new slot, so `NVAR.audio` stays 3 (the header's
-  // Inset Hero, the same refit-in-place).
+  // (plans/retro/layout-3.md, open question 3) — and it *replaces* an invented
+  // flat v2 rather than taking a new slot, so `NVAR.audio` stays 3 (the
+  // header's Inset Hero, the same refit-in-place).
   //
   // ── One card per track ─────────────────────────────────────────────────
   // The frame draws a single now-playing bar and the composed page puts the
@@ -4212,10 +4213,10 @@ function Audio({ s }) {
   //
   // ── The head is borrowed, and the eyebrow is derived ───────────────────
   // The 1440 page wraps this instance and the media list in a Section carrying
-  // one display head, and audio takes it (LAYOUT-3-PLAN.md, "The composed
-  // page"): `s.title` is `FIELDS.audio.heading`, whose default stays "Selected
-  // Tracks" against the frame's "Five worth your ear" — re-pointing it would
-  // make v0 and v1 newly honour a different word (open question 7's
+  // one display head, and audio takes it (plans/retro/layout-3.md, "The
+  // composed page"): `s.title` is `FIELDS.audio.heading`, whose default stays
+  // "Selected Tracks" against the frame's "Five worth your ear" — re-pointing
+  // it would make v0 and v1 newly honour a different word (open question 7's
   // objection). The eyebrow reads "KM BIO" in the frame, over a *track* head,
   // and that same frame still carries the bio head's hidden `the` / `room.`
   // nodes: it is the bio's Section duplicated. So the eyebrow is the bio's
@@ -4942,14 +4943,15 @@ function Video({ s }) {
         {/* The wrapper's head. `TITLES.video` stays "Live at Roomtone" — the
             frame's "See me in action" is the page's copy for this band, and the
             near-match with `TITLES.gallery`'s "See us in action" is a
-            coincidence of that copy rather than evidence (LAYOUT-4-PLAN's own
-            trap). Its stated 1019.18 measure is declined at all three widths:
-            at 1440 it is the string's own ink, at 768 it is that same leaked
-            number overflowing a 708 frame and wrapping nothing, and at 390 the
-            master states the full column — the booking calendar's
-            check-whether-the-leak-does-anything rule, answered three times no.
-            `sem/text/1` on the page ground is `s.ac`, Lime's acid green on pale
-            lime being the cost the conventions already name twice. */}
+            coincidence of that copy rather than evidence
+            (plans/retro/layout-4's own trap). Its stated 1019.18 measure is
+            declined at all three widths: at 1440 it is the string's own ink, at
+            768 it is that same leaked number overflowing a 708 frame and
+            wrapping nothing, and at 390 the master states the full column — the
+            booking calendar's check-whether-the-leak-does-anything rule,
+            answered three times no. `sem/text/1` on the page ground is `s.ac`,
+            Lime's acid green on pale lime being the cost the conventions
+            already name twice. */}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.disp),
           lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
@@ -7060,12 +7062,12 @@ function Repertoire({ s }) {
   // (964:72818 / 964:76745 / 977:8162) that paints its own **#6D7040** at
   // radius 60, and that Frame sits in the Section (964:72817 / 964:76744 /
   // 977:8161) that paints the gallery's olive **#5B5E2E** and hangs the
-  // band's **torn foot** off its floor. LAYOUT-4-PLAN.md's page tree lists the
-  // head and the instance as the Section's own children, so the panel is a
-  // reading rather than a transcription — and it is the sheet the whole design
-  // stands on, which is the gallery's fills-versus-token lesson from the other
-  // side: `get_variable_defs` binds this fill to **no token at all**, so there
-  // was never anything to resolve and the render is the only source.
+  // band's **torn foot** off its floor. plans/retro/layout-4.md's page tree
+  // lists the head and the instance as the Section's own children, so the panel
+  // is a reading rather than a transcription — and it is the sheet the whole
+  // design stands on, which is the gallery's fills-versus-token lesson from the
+  // other side: `get_variable_defs` binds this fill to **no token at all**, so
+  // there was never anything to resolve and the render is the only source.
   //
   // The olive pair is the bio's, taken whole for the second time — `#5B5E2E` /
   // `#FBF6EA` under Retro, `mapBg` / `mapFg` on the flat four — and the
@@ -7080,12 +7082,12 @@ function Repertoire({ s }) {
   // "Repertoire" in the display face over a "All songs · A–Z" sub, where layout
   // 1 sets that same word as an *eyebrow* over `s.title`. Giving the display
   // line to the literal would leave `heading` editing nothing here, which is
-  // layout 2's call on this very section (LAYOUT-4-PLAN.md, open question 8):
-  // three signed-off layouts already honour the field, so a fourth that did not
-  // would be the odd one. On the seed it reads "12 Songs", the intended diff
-  // layout 2 already carries. The **sub is the literal**, because it describes
-  // the design rather than the artist — and it stays true at every state, which
-  // is half the reason the rail jumps rather than filters.
+  // layout 2's call on this very section (plans/retro/layout-4.md, open
+  // question 8): three signed-off layouts already honour the field, so a fourth
+  // that did not would be the odd one. On the seed it reads "12 Songs", the
+  // intended diff layout 2 already carries. The **sub is the literal**, because
+  // it describes the design rather than the artist — and it stays true at every
+  // state, which is half the reason the rail jumps rather than filters.
   //
   // **The rail is an index, and it jumps.** Three things say so and none of
   // them is the mark: the design's own name, the frame's `sticky top-0` on the
@@ -7671,11 +7673,11 @@ function Gallery({ s }) {
   // the frame has no room for: the heading is the caption pill's first line
   // (its own row at 768 — below) and the four media-source rows are gone, three
   // of them outbound links. That is the media player's Soundcloud call three
-  // times over — see LAYOUT-2-PLAN's open questions. The frame's own two lines,
-  // `MTV "MOOD SWING"` and `FEATURED REEL`, are named here so the call can be
-  // reversed: both are claims about the artist (an MTV feature, a reel) that no
-  // field backs, the video section's rule, so the pill takes `s.title` over
-  // `s.brand` instead — two strings the artist owns, reading as a caption
+  // times over — see plans/retro/layout-2's open questions. The frame's own two
+  // lines, `MTV "MOOD SWING"` and `FEATURED REEL`, are named here so the call
+  // can be reversed: both are claims about the artist (an MTV feature, a reel)
+  // that no field backs, the video section's rule, so the pill takes `s.title`
+  // over `s.brand` instead — two strings the artist owns, reading as a caption
   // credit on a photograph.
   //
   // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`; the two
@@ -8023,14 +8025,14 @@ function Gallery({ s }) {
   // **The section stands on the olive band, which is the bio's.** The bio's
   // layout-4 pair is taken whole — `#5B5E2E` / `#FBF6EA` under Retro, `mapBg` /
   // `mapFg` on the flat four, the sheet a block carrying the root's padding
-  // back as a negative margin — and the band scan in LAYOUT-4-PLAN.md holds at
-  // all three widths. What is new is the **torn top**: a beige vector 1554 ×
-  // 580.99 hanging off the wrapper's head at y −534.67 (−544.67 at 390), so
-  // 46.32 of it shows at both wide widths and 36.32 at 390, in the page ground
-  // the vector's own fill already is (`TornEdge`'s default `colour`). The
-  // **repertoire owns the matching torn foot** — the two sections are one olive
-  // band on the Figma page (4019 → 5712) — so this branch draws the head edge
-  // only, and the foot inset it leaves for that seam is 56 / 30 / 40.
+  // back as a negative margin — and the band scan in plans/retro/layout-4.md
+  // holds at all three widths. What is new is the **torn top**: a beige vector
+  // 1554 × 580.99 hanging off the wrapper's head at y −534.67 (−544.67 at 390),
+  // so 46.32 of it shows at both wide widths and 36.32 at 390, in the page
+  // ground the vector's own fill already is (`TornEdge`'s default `colour`).
+  // The **repertoire owns the matching torn foot** — the two sections are one
+  // olive band on the Figma page (4019 → 5712) — so this branch draws the head
+  // edge only, and the foot inset it leaves for that seam is 56 / 30 / 40.
   //
   // **The seam is layout 1's, whole.** `pick` starts at -1, `galActive()` is
   // slot 3, and the frame's own spotlight photograph *is* its fourth thumbnail
@@ -10614,16 +10616,16 @@ function EventsMap({ s }) {
   // scan of the page, of the card's cream and of the ticker all read 0. So the
   // whole branch's `s.retro` surface is its colour literals.
   //
-  // **The head is the page's, allocated to this section** (LAYOUT-4-PLAN.md's
-  // head table). "Distances we'll Travel" is `size/display-lg` 96 / 60 / 40 at
-  // leading .89 in `sem/text/1`, which is `tab ? s.h1 : s.dispLg` in `s.ac`
-  // exactly — the page's own display ramp for the fourth section running. Its
-  // stated 1019.18 measure is declined for the fourth time as well: it is the
-  // same leaked number the media player and the video section both refused, and
-  // our one-word `s.title` ("Manchester" on the seed) breaks nowhere near it.
-  // The head-to-card gap is the instance's own top padding — 56 / 30 / 10, plus
-  // the 20 the 390 wrapper puts between them — and the card-to-ticker gap is the
-  // instance's stated 16 at every width.
+  // **The head is the page's, allocated to this section**
+  // (plans/retro/layout-4.md's head table). "Distances we'll Travel" is
+  // `size/display-lg` 96 / 60 / 40 at leading .89 in `sem/text/1`, which is
+  // `tab ? s.h1 : s.dispLg` in `s.ac` exactly — the page's own display ramp for
+  // the fourth section running. Its stated 1019.18 measure is declined for the
+  // fourth time as well: it is the same leaked number the media player and the
+  // video section both refused, and our one-word `s.title` ("Manchester" on the
+  // seed) breaks nowhere near it. The head-to-card gap is the instance's own
+  // top padding — 56 / 30 / 10, plus the 20 the 390 wrapper puts between them —
+  // and the card-to-ticker gap is the instance's stated 16 at every width.
   //
   // **Desktop is a row of two halves; both narrow masters stack.** The card is
   // two `flex-[1_0_0]` children at 664 + 664 of 1328, and one of them carries

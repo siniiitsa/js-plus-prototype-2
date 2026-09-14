@@ -110,9 +110,9 @@ export const CATS = [
   // 3 → 4 with NVAR: layout 4 is the first design this category has had past
   // its Figma layout-3 row, and `pageLayout()` rests on designCount ≤
   // layoutCount, so the picker has to offer the row the fold names. This is
-  // the first card the layout-4 pass adds to the picker (LAYOUT-4-PLAN.md,
-  // open question 4) — it appears at the end of the Tags list and moves none
-  // of the three above it.
+  // the first card the layout-4 pass adds to the picker
+  // (plans/retro/layout-4.md, open question 4) — it appears at the end of the
+  // Tags list and moves none of the three above it.
   { id: 'tags', name: 'Tags', n: 4 },
   { id: 'audio', name: 'Audio Player', n: 10 },
   // 3 → 4 with NVAR, the Tags row's case again and the second (and last) card
@@ -318,8 +318,8 @@ export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct:
 // The other videos, listed in the panel beside the stage in the video
 // section's layout 2 — used whenever the section carries no `videos` key of
 // its own, which today is always: there is no structured editor for them yet
-// (see LAYOUT-2-PLAN's open questions). Written in the row shape that editor
-// will edit, GIGS-style, so adding it later changes nothing here or in
+// (see plans/retro/layout-2's open questions). Written in the row shape that
+// editor will edit, GIGS-style, so adding it later changes nothing here or in
 // sectionVm: one key, one shape, the delimiter-free strings the artist types.
 // Only the artwork needs dressing, which RETRO_VIDEO_ART does under Retro.
 //
