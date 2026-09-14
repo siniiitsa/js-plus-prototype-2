@@ -12684,6 +12684,159 @@ function Testimonials({ s }) {
       }}>{icon}</span>
     )
     const step = (d) => (s.live && paging ? () => go(at + d) : undefined)
+
+    // Lime (964:58597 · 986:39886 · 986:39898) — the ninth Lime block, after the
+    // seam as the gallery's and the repertoire's are: `n`, `at`, `q`, `go`,
+    // `paging` and `step` are shared whole, so the published arrows needed
+    // nothing new. The tree is the twin's (two backs behind a card, an arrow
+    // row), and every leaf changes its dress. The backs stand upright with no
+    // outline, in Scheme 1's lime and Scheme 2's `box/2`; the card is Scheme 4
+    // (`s.tx` ground, `s.bg` ink) with no outline either; the eyebrow is Inter
+    // Bold in the review's own case; there is no byline line, because the two
+    // pills are the attribution; and the arrows are `Pager`'s Lime ring. No torn
+    // edge and no grain: the frame's `Layer_1` is an empty hidden frame and it
+    // carries no texture. Every box is a raw number (radius 55 and 12, padding
+    // 50) and every type size the ramp's, × 0.82 on desktop.
+    if (s.lime) {
+      const z = s.narrow ? 1 : 0.82
+      const u = (v) => `${Math.round(v * z * 10) / 10}px`
+      // Scheme 2's `box/2`, which no Scheme 1 key carries (its `box2` is
+      // #394732); Scheme 4's `box/1` and `active/text`, the map's and the form's
+      // names for them.
+      const dusk = '#43523B'
+      const mist = '#D5E3B2'
+      const litInk = '#C7FF3C'
+      // DROP_SHADOW 0 / 4 / 4 at 25% black on both backs and the card. Not the
+      // bio's invisible one: a pixel scan of the 1440 render darkens the ground
+      // for 7px under the card's foot.
+      const shadow = `0 ${u(4)} ${u(4)} #00000040`
+
+      // Each back as insets off the card — [fill, top, left, right, bottom] —
+      // so a longer quote grows the backs with the card. The tops are −46 and
+      // −27 at every width; the sides are what the three masters settle. The
+      // lime one is drawn first, which is what stands it behind the dark one.
+      const backs = s.mob
+        ? [[s.ac, -46, 26, 30, 24], [dusk, -27, 13, 13, 24]]
+        : tab
+          ? [[s.ac, -46, 43, 47, 19], [dusk, -27, 14, 14, 35]]
+          : [[s.ac, -46, 46, 50, 74], [dusk, -27, 21, 21, 22]]
+      const backing = ([fill, top, left, right, bottom], i) => (
+        <div key={i} style={{
+          position: 'absolute', top: u(top), left: u(left), right: u(right), bottom: u(bottom),
+          background: fill, borderRadius: u(55), boxShadow: shadow,
+        }} />
+      )
+
+      // Label/LG in the frame's 12-radius box — neither `radiusChip` (6) nor
+      // `radiusSm` (13). The reviewer is Scheme 4's `active` pair, the role its
+      // `box/1` lettered in ink. Keyed positionally, as Retro's are.
+      const tag = (label, i, bg, fg) => (
+        <span key={i} style={{
+          background: bg, color: fg, borderRadius: u(12), padding: `${u(6)} ${u(12)}`,
+          fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
+          maxWidth: '100%', overflowWrap: 'break-word',
+        }}>{label}</span>
+      )
+
+      const body = q ? (
+        <>
+          {/* Body/Eyebrow over Display/MD at the frame's 14. Each is the
+              artist's and each can be empty, so each is rendered or not. */}
+          <div style={col(u(14))}>
+            {!!q.when && (
+              <span style={{
+                fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+                letterSpacing: s.dls,
+              }}>{q.when}</span>
+            )}
+            {!!q.quote && (
+              <p style={{
+                margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                letterSpacing: s.dls, overflowWrap: 'break-word',
+              }}>{q.quote}</p>
+            )}
+          </div>
+          {!!q.byline && (
+            <div style={row(u(8), { flexWrap: 'wrap' })}>
+              {!!q.who && tag(q.who, 0, s.bg, litInk)}
+              {!!q.role && tag(q.role, 1, mist, s.bg)}
+            </div>
+          )}
+        </>
+      ) : (
+        <span style={{
+          fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, color: s.bg,
+        }}>No reviews yet.</span>
+      )
+
+      // Desktop states the card at 720 × 420 with its pills on the floor; both
+      // narrow masters hug the content at a 50 gap. 390's 364 card stands 13 off
+      // the page edge, wider than the 346 our padX leaves, and Retro's column
+      // wraps the quote to four lines where the frame sets three. So here the
+      // card bleeds into the padding to the frame's own 13.
+      const card = (
+        <div style={{
+          position: 'relative', flex: 'none', minWidth: 0,
+          width: s.mob ? 'auto' : u(tab ? 464 : 720),
+          ...(s.mob ? { margin: `0 calc(13px - ${s.padX})` } : null),
+        }}>
+          {backs.map(backing)}
+          <div style={{
+            position: 'relative', background: s.tx, color: s.bg, borderRadius: u(55),
+            padding: u(50), boxShadow: shadow,
+            ...(s.narrow ? { gap: u(50) } : { minHeight: u(420) }),
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          }}>
+            {body}
+          </div>
+        </div>
+      )
+
+      // A 55 × 54 ring in `sem/stroke/1` round the frame's arrow in `text/2`:
+      // Pager's Lime end button, drawn here because this row is two arrows and
+      // no pages. The wide masters centre the row on the *wrap* — the card plus
+      // the backs' rise — not on the card, so the arrows stand 10 (desktop) and
+      // 23 (768) above the card's middle.
+      const ring = (back, onClick) => (
+        <span onClick={onClick} style={{
+          width: u(55), height: u(54), flex: 'none', borderRadius: '999px',
+          boxShadow: `inset 0 0 0 1px ${s.stroke1}`, color: s.tx,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          cursor: onClick ? 'pointer' : undefined,
+          ...(s.mob ? null : { marginBottom: u(tab ? 46 : 20) }),
+        }}><LimeArrow back={back} z={z} /></span>
+      )
+      const lPrev = ring(true, step(-1))
+      const lNext = ring(false, step(1))
+
+      // The card's top stands 165 / 205.5 / 205.2 down the 730 band and its foot
+      // (390: the arrows' foot) 145 / 159.5 / 108 up it; what the root's padY
+      // does not already give is the shell's padding.
+      const pad = (top, bottom) => `calc(${u(top)} - ${s.padY}) 0 calc(${u(bottom)} - ${s.padY})`
+      return s.mob ? (
+        <div style={col(u(38), { padding: pad(205.2, 108) })}>
+          {card}
+          {paging && (
+            <div style={row('0px', {
+              width: u(270), maxWidth: '100%', margin: '0 auto', justifyContent: 'space-between',
+            })}>
+              {lPrev}
+              {lNext}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div style={row('0px', {
+          justifyContent: paging ? 'space-between' : 'center',
+          padding: tab ? pad(205.5, 159.5) : pad(165, 145),
+        })}>
+          {paging && lPrev}
+          {card}
+          {paging && lNext}
+        </div>
+      )
+    }
+
     const prev = arrow(<ArrowLeft size={glyph} />, step(-1))
     const next = arrow(<ArrowRight size={glyph} />, step(1))
 
@@ -15623,8 +15776,10 @@ export default function EncoreSection({ s }) {
   // the page draws both of its arc seams itself (`ArcEdge`). The media player
   // (964:58590) stands on Scheme 2's `sem/bg`, which is Scheme 1's `box/1`
   // exactly, so `s.box1` carries it without a literal. Kept apart from Retro's
-  // flags above, and extended one section at a time.
-  const limeBand = s.me && s.v0 && s.lime
+  // flags above, and extended one section at a time. The testimonials
+  // (964:58597) stand on the same `#2E3928`, drawing no seam of their own: the
+  // form's foot arc is the one that reaches them.
+  const limeBand = (s.me || s.te) && s.v0 && s.lime
   // The events map (964:58593) is the page's first light band: Scheme 4's
   // `sem/bg` is #F2FFD0, which is Scheme 1's `text/2` exactly, so `s.tx`
   // carries it, and its ink is Scheme 4's `text/1`, which is `s.bg`. The
