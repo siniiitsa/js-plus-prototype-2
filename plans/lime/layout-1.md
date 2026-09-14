@@ -90,7 +90,7 @@ row's three masters are fitted in one session.
 |---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:58587` *(page)* | Lime mode → `THEMES[1]`, ramp, fonts, `s.lime`, photos | — | `986:39875` | — | `986:39888` | — | — | done `dc30dec` |
 | 1 | `header` | `964:58588` | Headers — hero | 1440 × 750 | `986:39876` | 768 × 1024 | `986:39889` | 390 × 844 | `964:58576` | done `f4ab4e0` |
-| 2 | `bio` | `964:58589` | Bios — A · Flanked portrait | 1440 × 769 | `986:39877` | 768 × 1144 | `986:39890` | 390 × 739 | `964:58577` | todo |
+| 2 | `bio` | `964:58589` | Bios — A · Flanked portrait | 1440 × 769 | `986:39877` | 768 × 1144 | `986:39890` | 390 × 739 | `964:58577` | done `59cb1a3` |
 | 3 | `media` | `964:58590` | Media Player — D · Floating cards stack | 1440 × 1153 | `986:39879` *(in `986:39878`)* | 768 × 1512 | `986:39891` | 390 × 1191 | `964:58578` | todo |
 | 4 | `gallery` | `964:58591` | Gallery Sections — Component 1 | 1440 × 822 | `986:39880` | 768 × 1119 | `989:22110` | 390 × 776 | `964:58579` | todo |
 | 5 | `repertoire` | `964:58592` | Repertoire — A · Two-column dense | 1440 × 1063 | `986:39881` | 768 × 872 | `986:39893` | 390 × 838 | `964:58580` | todo |
@@ -331,7 +331,8 @@ behind `s.lime`.
   session-0 keys.
 - **The bio portrait is an arch-topped rounded rectangle**, not Retro's tilted polaroid.
 - **The seal** (bio, footer) is kept, in lime on the dark ground. `SealBadge` becomes Lime's as
-  well as Retro's.
+  well as Retro's. *Done in section 2*: its Lime branch draws for every Lime caller; see that
+  section's *Conventions*.
 - **No texture at all.** A stddev scan of Lime's render should come back flat over every band.
   If one doesn't, the Figma node has a texture this list has missed.
 
@@ -616,6 +617,52 @@ Settled in section 1 (the header):
   scrollbar (about 753 here), against `w < 768`. Emulate 800 or more to reach tablet there, or prove
   the 768 burger in the harness (`w=tablet&live=1`).
 
+Settled in section 2 (the bio):
+
+- **The first Lime block of its own: `if (s.v0 && s.lime)` ahead of Retro's `if (s.v0)`.** The
+  rule above says a separate branch is for a section whose frame is a different composition. The
+  bio is half of one. Its middle column is one arch-topped photograph where Retro's is a tilted
+  polaroid with a location rail, the left flank sets one label where Retro stacks two, and every
+  leaf the two share changes face, weight, ink and size together. Ternaries through Retro's branch
+  came to about twenty on code Retro renders. As a block, the diff is **pure additions**, which is
+  its own proof that Retro is untouched. Take the same call per section: count the leaves that
+  would need a ternary, and if the middle of the composition differs, write the block and say why
+  at its head.
+- **The arch's glow is an `INNER_SHADOW`**, radius 64 and spread 0 in `sem/glow`, a raw number at
+  all three widths (×0.82 on desktop). It is painted over the photograph as an `inset` box shadow on
+  an overlay. That confirms the first entry under *Glows*. The arch is 488 × 648 at radius 151 on
+  desktop and at 768; at 390 it is the column less 60 a side, × 311. Leave the 151 there: CSS
+  clamps it to the stadium the render draws. The frame's drop shadow (4/4/9, 25% black) and a third
+  fill (a lime gradient, `visible: false`) are dropped, because neither draws anything.
+- **`SealBadge` has a Lime branch now**, so the widened seal reaches every Lime caller. It uses
+  Retro's geometry in Lime's marks: disc `sem/bg`, everything else `s.ac`, a 47.06 ring, two
+  equator *rings* (not asterisks), the frame's "Group 9" reticle in the centre, and the name in
+  Bebas Neue at 14.05 / 4.21 on the 100 viewBox. The name runs counter-clockwise with its caps
+  pointing in, which is the opposite of Retro's, so the lower name reads upright. Like `BookPill`,
+  it ignores `hue` / `ink` / `mark` / `nameInk` / `glyph`. Callers still pick `size`, `tilt`
+  (the frame's is 26.06) and `style`. Besides the bio, it moved the **calendar a0 and footer seals**
+  and **header cards 2 and 4**, which all drew the flat starburst before, and the bio a2 seal. Their
+  placement is still Retro's, and that is each section's session to fit. The frame's face is Bebas
+  Neue *Bold*, which Google Fonts does not ship. The regular cut measured the same pixel coverage at
+  rest (907 vs 896 lime pixels in the type's annulus), so no synthesised bold.
+- **Place a seal by its disc's centre, off the edges of what it hangs on.** Read the centre from the
+  emitted CSS's `left` / `top` plus half the rotated box, and confirm it on the render. Every
+  other reading of the metadata (`x` 435.75, or 616.1 at 768) put it on the wrong side of the
+  arch. The bio's centre is 11.5 outside the arch's left edge and 166.35 above its foot on desktop,
+  16.87 past the right edge and 25.15 above the foot at 768, and 5.58 inside the right edge and
+  0.65 below the foot at 390.
+- **Measure anything under `.seal-spin` with the animation stopped.** It turns at 14 s a
+  revolution, so a render captured ~400 ms after load has the name 8–10° round. That read as a
+  real offset: one angular centroid said 7°, and the correction moved nothing on the next capture.
+  `emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }])` stops it, since
+  `index.css` turns the spin off under reduced motion.
+- **The desktop flanks are 255.4 wide, not the frame's 273.9**, because our content is 1052 against
+  the frame's 1089 × 0.82. The display title still breaks where the frame breaks (three lines at
+  107px), and the arch and seal sit 18.5 left of the frame's absolute x, which is the half of that
+  difference that centring gives up. Compare against the content edges, as the memory note says.
+- **Bio layout 1 has no live control**, so its `live=1` check is only that it renders the same.
+  It does, at all three widths.
+
 ## Open questions
 
 1. **Five flags by template five.** `s.retro` plus `s.lime` is cheap for cold-start sessions,
@@ -639,6 +686,9 @@ Settled in section 1 (the header):
 
    Each is Retro's layout-N component re-skinned, so its pass starts from Lime's layout-N page, the
    same way this one did.
+
+   *Since section 2:* cards 2 and 4 draw Lime's seal (`SealBadge`'s Lime branch) where they drew
+   the flat starburst, still at Retro's size and seat.
 3. **Track art.** Lime's frame dresses the media rows with the same real album covers Retro's
    did, and Retro ships neutral crops instead (`RETRO_TRACK_ART`). Lime inherits the crops
    through session 0. *Settled in session 0:* the covers' image hashes are identical on both
