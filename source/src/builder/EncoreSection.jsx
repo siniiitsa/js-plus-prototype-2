@@ -1978,7 +1978,7 @@ function HeaderV5({ s }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §10.3 Header, flat family (Lime, Grunge, Editorial, Pop — 3 layouts)
+ * §10.3 Header, flat family (Grunge, Editorial, Pop — 3 layouts)
  * ------------------------------------------------------------------ */
 
 function FlatNav({ s }) {

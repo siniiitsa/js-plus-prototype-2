@@ -449,6 +449,9 @@ The pass leaves these documents false, so correct them in one session after sect
 - **Code comments that say "Retro's alone"** or "the other four render flat": in `sectionVm`'s
   `retro` comment, `headerFamily`, `photos.js`' header comment and the root's flag comments.
   Grep for `other four` and `Retro's alone`.
+- **`Photo`'s empty `backdrop` is Retro brown** (`#2A2622` → `#14110E`), so a Lime artist who
+  removes the hero photograph gets a brown well under a lime nav. It is a shared component, so fix
+  it behind `s.lime` with a digest (found in section 1, not fixed there).
 - **`plans/README.md`:** mark the pass closed.
 - **Refresh the root `index.html`** as above.
 
@@ -601,8 +604,10 @@ Settled in section 1 (the header):
   `puppeteer-core` from there; the scratchpad cannot) and be deleted after, and the Bash cwd resets
   to the repo root between calls, so give it absolute paths. chrome-devtools' `take_screenshot`
   refuses a scratchpad `filePath`; omit it and Read the temp path it reports. In the published tab
-  an emulated 768 viewport renders the **390** layout (the capsule measured 370), so prove the 768
-  burger in the harness (`w=tablet&live=1`), not there.
+  an emulated 768 viewport renders the **390** layout (the capsule measured 370). That is not a
+  breakpoint bug: `PublishedPage` measures `documentElement.clientWidth`, which drops the
+  scrollbar (about 753 here), against `w < 768`. Emulate 800 or more to reach tablet there, or prove
+  the 768 burger in the harness (`w=tablet&live=1`).
 
 ## Open questions
 
