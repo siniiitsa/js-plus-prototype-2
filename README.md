@@ -159,7 +159,8 @@ Four things about it are load-bearing:
   over a page that has just been built and not yet touched.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Stacked,
-  Overlay card, Stage wide (and Centred / Split / Rule for the flat family) — into every label,
+  Overlay card, Stage wide (Lime's family is the first four, and Grunge, Editorial and Pop's is
+  Centred / Split / Rule) — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
 
@@ -167,19 +168,22 @@ The `startTheme` prop skips the template picker, and skips the onboarding with i
 
 ## Seeded photography
 
-Retro — the only designed template — opens with the Figma mock photography already in place.
+Retro and Lime — the two designed templates — open with their Figma mock photography already in
+place.
 The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
 the only module that imports them.
 
-- **Retro only.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` return `undefined`
-  for Lime, Grunge, Editorial and Pop, so those four render the initials placeholder exactly as
-  before. The photography is Retro's art direction, not the user's content, so switching template
+- **Retro and Lime only.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` resolve
+  through `SEEDS` in `photos.js`, one row per seeded theme, and return `undefined` for Grunge,
+  Editorial and Pop, so those three render the initials placeholder exactly as before. Lime's row
+  is a different shoot for the artist's own pictures (the hero, its portrait card, the bio, the
+  calendar, the form avatar and the gallery spotlight) and Retro's files for the rest. The photography is Retro's art direction, not the user's content, so switching template
   drops it — with one exception: the media player's track art is materialised into `c.tracks` the
   moment the artist edits the list (it has to be, or renaming track one would delete five
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
-  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all nineteen files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~2.9 MB.
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all twenty-four files are
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~3.6 MB.
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
@@ -342,8 +346,9 @@ That distinction is the whole design, and it buys two things:
   month is on screen — and the empty string is this section's `-1`, so `vm.calPick` renders until
   a visitor picks something and the published first paint is the canvas's picture by construction.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
-  blocked it. Booked days are muted and struck through and take no handler, which is a **content**
-  state rather than a live one — it renders on the canvas too, and since the seed blocks nothing
+  blocked it. Booked days are muted and struck through and take no handler (Lime's layout 1 dims
+  them to .38 with no strike, its own frame's state), which is a **content** state rather than a
+  live one — it renders on the canvas too, and since the seed blocks nothing
   the reference picture does not move. Two intended diffs from the Figma frame: the foot row gains
   the Book pill (`vm.calBookTo`, `bookTo` minus `calendar` itself, the tier pills' rule), which is
   what turns `cta` from a field that edited nothing into a real control; and a month that needs
@@ -390,7 +395,8 @@ That distinction is the whole design, and it buys two things:
   no chip row and never has, so it sends the bare `Enquiry` rather than claiming a type the
   visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
   out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
-  box does not grow — under one prompt line. Errors are `useState`, set on a refused submit and
+  box does not grow — under one prompt line. (Lime's boxes are pills, and a rule under a pill
+  smears, so there the hairline thickens to a 2px inset ring of full ink.) Errors are `useState`, set on a refused submit and
   cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
   valid submit swaps the mustard half alone for a confirmation that prints the address in plain
   text, since a browser that opened no mail app must still show one, and *Write another* comes
@@ -503,13 +509,19 @@ These are intentional limits, not oversights — see §12 for the full list. The
   reorders by touch too, and it mirrors the arrows on ArrowUp / ArrowDown when focused.
   The header and footer are locked: they show a padlock instead of a handle, and a drag
   clamps to the slots between them.
-- **Only Retro is designed.** It ships six photographic header layouts. Lime, Grunge, Editorial
-  and Pop are fully selectable and functional but render flat-colour sections and a three-layout
-  flat header family — whose nav is still the hardcoded `Music · Shows · Book` triple in
-  `FlatNav`, ignoring the artist's sections and never collapsing to a burger. Deliberate: the
-  live navigation was scoped to Retro. The §10.2 *layouts* are shared by all five templates; its decorative
-  treatment — paper grain, torn edges, checkerboard, hard offset shadows, rotated cards — is
-  gated on `s.retro`, the same split as `headerFamily()`. One piece of that treatment is placed
+- **Retro and Lime are designed; Grunge, Editorial and Pop are not.** Retro ships six
+  photographic header layouts. Grunge, Editorial and Pop are fully selectable and functional but
+  render flat-colour sections and a three-layout flat header family — whose nav is still the
+  hardcoded `Music · Shows · Book` triple in `FlatNav`, ignoring the artist's sections and never
+  collapsing to a burger. Deliberate: the live navigation was scoped to the designed templates.
+  The §10.2 *layouts* are shared by all five templates; Retro's decorative treatment — paper
+  grain, torn edges, checkerboard, hard offset shadows, rotated cards — is gated on `s.retro`,
+  the same split as `headerFamily()`. **Lime is designed at layout 1**: its Figma page is Retro's
+  layout-1 components in another variable mode, so its own treatment — arc seams between bands,
+  glows, the arch portrait, the reticle — is gated on `s.lime` inside the same shared branches.
+  Its header family is the first four photographic layouts, of which only the Hero is fitted;
+  the other three, and every section's layouts 2–4, are Retro's designs in Lime's tokens until
+  Lime's later passes. One piece of that treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's

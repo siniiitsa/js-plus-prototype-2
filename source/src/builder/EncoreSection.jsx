@@ -82,15 +82,20 @@ const isTablet = (s) => !!s.narrow && !s.mob
  *
  * The Figma page's decoration — grain, torn paper, checkerboard, hard
  * offset shadows, rotated cards — belongs to Retro alone. Every helper
- * below no-ops when `s.retro` is false, so the other four templates get
- * the identical structure rendered flat. Same split as headerFamily().
+ * below no-ops when `s.retro` is false, so Grunge, Editorial and Pop get
+ * the identical structure rendered flat. They no-op under Lime as well:
+ * Lime's own decoration (arc seams, glows, the arch portrait) is drawn by
+ * its `if (s.lime)` blocks inside the shared `v0` branches, never by these
+ * helpers. Same split as headerFamily().
  * ------------------------------------------------------------------ */
 
 // Anton (or the theme's label face): uppercase, tight, used for nav, eyebrows,
 // buttons and every small caps-y label in the reference page.
+// The 0.02em tracking is Retro's fitted value (and the flat three's by
+// inheritance); Lime's mode states 0 on every text style, so it takes `s.dls`.
 const labelStyle = (s, size, extra) => ({
   fontFamily: s.label, fontSize: size || s.labelMd, lineHeight: 1.1,
-  textTransform: 'uppercase', letterSpacing: '0.02em', whiteSpace: 'nowrap', ...extra,
+  textTransform: 'uppercase', letterSpacing: s.lime ? s.dls : '0.02em', whiteSpace: 'nowrap', ...extra,
 })
 
 // The offset colour block behind almost every card, pill and panel.
@@ -910,7 +915,9 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 
 // `backdrop` is the empty state for a full-bleed photographic slot: a dark
 // panel rather than a giant set of initials, so the overlaid type still reads
-// the way it does over a real photograph.
+// the way it does over a real photograph. Its browns are Retro's; Lime's well
+// is the same ramp in its Scheme 1 greens (`box/1` → `bg` → `box/3`), or a
+// removed hero would leave a brown panel under a lime nav.
 // `src` lets a layout address one slot of a multi-photo section; it falls back
 // to the section's single photo, then to the initials placeholder.
 // `avatar` reads the header's second photo slot, and reads it strictly: an empty
@@ -936,7 +943,9 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
     return (
       <div style={{
         width: '100%', height: '100%',
-        background: `linear-gradient(150deg, ${s.edge}, #2A2622 55%, #14110E)`,
+        background: s.lime
+          ? `linear-gradient(150deg, ${s.box1}, ${s.bg} 55%, ${s.box3})`
+          : `linear-gradient(150deg, ${s.edge}, #2A2622 55%, #14110E)`,
         ...style,
       }} />
     )
@@ -1114,6 +1123,11 @@ function NavBar({ s, colour, rule, pill }) {
 
 /* ------------------------------------------------------------------ *
  * §10.2 The six photographic header compositions (Retro)
+ *
+ * Lime's header family is the first four of them in its own tokens
+ * (`headerFamily()`), because header card N lays out the whole page as
+ * layout N. Only HeaderV0 is fitted to Lime's frame so far; V1–V3 render
+ * Retro's compositions re-skinned until Lime's later layout passes.
  * ------------------------------------------------------------------ */
 
 // v0 — Header layout 1 · Hero (§10.2 reference design)
@@ -2960,11 +2974,11 @@ function Bio({ s }) {
             two.
 
             Display/XL's leading is .75, and this is the first branch to take
-            it outside the header — where `headerFamily()` keeps HeaderV3 to
-            Retro and the flat four never see it. At .75 a stacked line of caps
-            collides in every display face taller than Fraunces (Titan One and
-            Bebas Neue both overlap outright), so the other four degrade to
-            .89, which is the leading every other display head in this file
+            it outside the header. At .75 a stacked line of caps collides in
+            every display face taller than Fraunces (Titan One and Bebas Neue
+            both overlap outright), so every template but Retro degrades to
+            .89 — Lime included, whose layout 3 is not fitted yet — which is
+            the leading every other display head in this file
             already sets — the page's own ramp rather than an invented
             number. */}
         <h2 style={{
@@ -15918,8 +15932,9 @@ export default function EncoreSection({ s }) {
   // §10.2 — the hero is the one full-bleed composition: the photograph runs to
   // the section edges and the layout supplies its own insets.
   const bleed = s.hd && s.v0 && !s.flatHeader && (s.retro || s.lime)
-  // §10.2 — the events map is the one section painted on a dark ground rather
-  // than the page background, so its checkerboard bands and cream type read.
+  // §10.2 — Retro's events map is the one section painted on a dark ground
+  // rather than the page background, so its checkerboard bands and cream type
+  // read. Lime's map stands on a light band instead (`limeLight`, below).
   const darkMap = s.mp && s.v0 && s.retro
   // §10.2 — the media player (964:58578), repertoire (964:58580), booking
   // calendar (964:58583), enquiry form (964:58584) and testimonials

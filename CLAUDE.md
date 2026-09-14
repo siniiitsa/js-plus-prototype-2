@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~2.9 MB — most of it the inlined Retro photography) is the generated
+- **`index.html`** (~3.6 MB — most of it the inlined Retro and Lime photography) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -40,17 +40,17 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 3920 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 13790 | Presentational renderer for all 14 section types |
-| `src/builder/data.js` | 1145 | `THEMES`, all static data, colour helpers |
-| `src/builder/photos.js` | 130 | Retro's seeded Figma photography + the three resolvers |
+| `src/builder/EncoreBuilder.jsx` | 3990 | All state, all chrome, both stages, publish |
+| `src/builder/EncoreSection.jsx` | 15990 | Presentational renderer for all 14 section types |
+| `src/builder/data.js` | 1210 | `THEMES`, all static data, colour helpers |
+| `src/builder/photos.js` | 165 | Retro's and Lime's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
 
 Everything else under `src/components/ui/` is stock shadcn.
 
 `photos.js` is the only module that imports the files in `src/builder/photos/`. Keep those
-imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~1.7 MB.
+imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~2.1 MB.
 
 ## The one architectural rule
 
@@ -374,8 +374,9 @@ mutated through a single `patch()` helper.
   this section's `-1`**: nothing chosen, so `vm.calPick` renders and the published first paint is
   the canvas's picture by construction. Blocking the *cued* day cues nothing (`vm.calPick` is
   `''`) and the foot prints `vm.calPrompt`, rather than sliding the pick to the day after — the
-  artist blocked it. A booked day is muted, struck through and handlerless, which is a **content**
-  state and not a live one, so it renders on the canvas too; the seed blocks nothing, which is
+  artist blocked it. A booked day is muted, struck through and handlerless (under Lime it is
+  dimmed to .38 with no strike, its frame's own state), which is a **content** state and not a
+  live one, so it renders on the canvas too; the seed blocks nothing, which is
   what keeps the reference picture. Two **intended diffs from the frame**: the foot row gains the
   Book pill on `vm.calBookTo` — `bookTo` minus `calendar` itself, the tier pills' rule, since
   `CTA_TARGETS.book` ends here — which is what turned `cta` from a field that edited nothing into
@@ -436,7 +437,8 @@ mutated through a single `patch()` helper.
   already open. `showTypes` is `s.v0 && nTypes`, and the **mailto reads it rather than the count**:
   the flat layout draws no chip row, so it sends the bare `Enquiry` rather than claiming a type
   the visitor was never offered. **No palette has a red**, so a refused box is an *inset* rule in
-  `ctlInk` — inset, so the frame's stated 60 does not grow — under a prompt line; errors are
+  `ctlInk` — inset, so the frame's stated 60 does not grow — under a prompt line (Lime's boxes
+  are pills, so there its hairline thickens to a 2px inset ring of full ink, layout 2's rule); errors are
   `useState`, set on a refused submit and cleared per box as it is corrected, because there is
   still no effect in the file. A valid submit swaps the **mustard half only** for a confirmation
   that prints the address in **plain text**, since a browser that opened no mail app must still
@@ -672,9 +674,11 @@ mutated through a single `patch()` helper.
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES` and `FOOTER_LINKS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
-- **Retro seeds photography; the other four do not.** `defaultImage()` / `defaultImages()` /
-  `defaultTrackArt()` in `photos.js` gate on `T.name === 'Retro'`, the same name-match as
-  `headerFamily()` and the `retro` flag. **Remove** writes `null`, not `undefined` — `undefined`
+- **Retro and Lime seed photography; the flat three do not.** `defaultImage()` /
+  `defaultImages()` / `defaultTrackArt()` in `photos.js` resolve through `SEEDS`, keyed by
+  `T.name` — the same name-match as `headerFamily()` and the `retro` / `lime` flags — and a theme
+  with no row seeds nothing. Lime's row is its own shoot for the artist's pictures (`lime-*.jpg`)
+  and Retro's files for the gallery strip, the track covers and the map raster. **Remove** writes `null`, not `undefined` — `undefined`
   deletes the key, and an absent key is exactly what selects the seeded photo, so it would come
   straight back. For the same reason `Photo` treats `src={null}` (this slot has no picture) as
   distinct from no `src` prop at all (fall back to `s.image`): an empty gallery slot shows the
@@ -693,9 +697,16 @@ mutated through a single `patch()` helper.
   source of truth and the `drag` state only mirrors it for rendering, so pointerup commits
   what it can see rather than what the last render observed. Rows are a uniform height, so
   the drop index is the pointer delta in row-heights, not a hit test.
-- **Only Retro is designed.** Lime, Grunge, Editorial and Pop are fully functional but render
-  flat. Retro's decorative language is gated on `s.retro`; it also gets six photographic header
-  layouts where the others get three flat ones.
+- **Retro and Lime are designed; Grunge, Editorial and Pop are not.** The flat three are fully
+  functional but render flat. Retro's decorative language is gated on `s.retro`, and it gets six
+  photographic header layouts where the flat three get three. **Lime is designed at layout 1
+  only**: its Figma page is the same eleven components as Retro's layout 1 in another variable
+  mode, so its decoration (arc seams, glows, the arch portrait) lives in **`s.lime`** blocks —
+  `if (s.lime)` or `if (s.v0 && s.lime)` — inside the shared `v0` code, never in a branch of its
+  own, and a value both designed templates draw is gated `(s.retro || s.lime)`. Its header
+  family is `'lime'`: the first four photographic layouts, of which only `HeaderV0` is fitted.
+  Its layouts 2–4 are Retro's compositions in Lime tokens until their passes
+  (`plans/lime/layout-1.md`).
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
   designs, and eight of the fourteen offer more — Audio layouts 1, 4 and 7 render identically on
   purpose. The other six are level: the header and the footer always were, and the layout-4 pass

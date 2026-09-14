@@ -208,6 +208,11 @@ if (q.get('tags') !== null) c.tags = q.get('tags')
 // ends on its pill and layout 4 as a form with no right-hand column at all.
 if (q.get('promises') !== null) c.promises = q.get('promises').split('|').join('\n')
 
+// &noimage=1 writes `null` to FIELDS.*.image, which is what Remove writes, so a
+// full-bleed slot draws `Photo`'s `backdrop` instead of the seeded photograph.
+// Neither seeded theme shows that empty state any other way.
+if (q.get('noimage') === '1') c.image = null
+
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
 // driving the editor and its popup.

@@ -278,7 +278,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // §10.2 — the layouts are shared by every template, but the Figma page's
     // decorative treatment (grain, torn edges, checkerboard, hard offset
     // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
-    // the other four render the identical structure, flat.
+    // Grunge, Editorial and Pop render the identical structure, flat, and Lime
+    // draws a decoration of its own behind `lime` below.
     retro: T.name === 'Retro',
     // Lime's layout-1 page is the same eleven components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
