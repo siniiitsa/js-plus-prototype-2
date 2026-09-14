@@ -639,6 +639,56 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
 
+  // Lime's seal (964:58589 "Frame 178", the bio's; the footer's and the
+  // calendar's are the same component) is Retro's geometry — a 125.37 disc, a
+  // 120 ring, the name set twice round a 109.3 circle, two small marks on the
+  // equator — in Lime's own marks, so it draws them whatever the caller asks
+  // for: `hue`, `ink`, `mark`, `nameInk` and `glyph` are ignored, the way
+  // BookPill's Lime branch ignores `glyph`. The disc is `sem/bg` and every mark
+  // `sem/stroke/2`. Every number below is the frame's over 1.2537 (disc / 100).
+  // The equator marks are 14px rings (a stroke of 3 inside, the fill hidden),
+  // the centre is "Group 9" — two rings crossed by four 20px ticks, drawn off
+  // centre by 0.23 in the frame and centred here, as Reticle's is — and the
+  // name is Bebas Neue at 17.61 tracked 30%, running counter-clockwise with its
+  // caps pointing in, so the lower name reads upright and the upper one
+  // inverted. The frame's face is Bebas Neue *Bold*, which Google Fonts does
+  // not ship; the regular cut is set rather than a synthesised bold.
+  if (s.lime) {
+    const name = String(s.badgeText || '').toUpperCase()
+    return (
+      <div style={{
+        position: 'absolute', width: size, height: size,
+        transform: `rotate(${tiltDeg}deg)`, ...style,
+      }}>
+        <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true"
+             style={{ display: 'block', overflow: 'visible' }}>
+          <defs>
+            <path id={`seal-${id}`} d="M 50,50 m -43.6,0 a 43.6,43.6 0 1,0 87.2,0 a 43.6,43.6 0 1,0 -87.2,0" />
+          </defs>
+          <circle cx="50" cy="50" r="50" fill={s.bg} />
+          <g fill="none" stroke={s.ac}>
+            <circle cx="50" cy="50" r="47.06" strokeWidth="1.6" />
+            <circle cx="12.24" cy="50" r="4.39" strokeWidth="2.39" />
+            <circle cx="88.41" cy="50" r="4.39" strokeWidth="2.39" />
+            <g strokeWidth="1.72">
+              <circle cx="50" cy="50" r="15.76" />
+              <circle cx="50" cy="50" r="7.59" />
+              <path d="M26.57 50H42.52M57.46 50H73.42M50 26.36V42.31M50 57.68V73.63" />
+            </g>
+          </g>
+          <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+            <text fill={s.ac} textAnchor="middle" style={{
+              fontSize: '14.05px', letterSpacing: '4.21px', fontFamily: s.label,
+            }}>
+              <textPath href={`#seal-${id}`} startOffset="25%">{name}</textPath>
+              <textPath href={`#seal-${id}`} startOffset="75%">{name}</textPath>
+            </text>
+          </g>
+        </svg>
+      </div>
+    )
+  }
+
   if (!s.retro) {
     // The pre-§10.2 starburst seal, still used by the flat templates.
     const spikes = 24
@@ -2098,6 +2148,118 @@ function FlatHeader({ s }) {
 // section index and headline on the left, the prose and credit on the right.
 // Both flanks collapse under the card on tablet and mobile.
 function Bio({ s }) {
+  // Lime layout 1 (964:58589 · 986:39877 at 768 · 986:39890 at 390) is the same
+  // Figma component as Retro's below, in Lime's mode — but it is not the same
+  // tree re-tokened. The middle column is a different composition (one arch-
+  // topped photograph with an inset glow, where Retro's is a tilted polaroid
+  // with a location rail beside it), the left flank sets one label where Retro
+  // stacks two, the right one gains a rule, and every leaf the two share
+  // changes face, weight, ink and size at once. Written as ternaries through
+  // Retro's branch that is some twenty of them on a branch Retro renders; as a
+  // block of its own inside `v0` it is Retro's code untouched. What the two
+  // still share is the skeleton — heading, card, prose, in that order, three
+  // columns on desktop and a stack below it — and the seal.
+  //
+  // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, and
+  // both inherit their page's Device mode, so every size is the Lime ramp's
+  // `s.*`. The frame's 14 + 1px spacer + 14 between the stacked slots reads as
+  // one 29. Its drop shadow under the arch (4/4/9 at 25% black) is dropped: it
+  // draws nothing on `#15180F`.
+  if (s.v0 && s.lime) {
+    const tab = isTablet(s)
+    const z = s.narrow ? 1 : 0.82
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const ink = { color: s.tx, letterSpacing: s.dls }
+    // Body/Eyebrow — Inter bold, the frame's "About" and its credit line.
+    const eyebrow = (t, extra) => (
+      <span style={{ fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3, ...ink, ...extra }}>{t}</span>
+    )
+
+    const heading = (
+      <div style={col(s.narrow ? '29px' : '0', {
+        justifyContent: 'space-between', height: '100%', alignItems: 'flex-start',
+      })}>
+        {/* Label/XS, in `font/ui`. */}
+        <span style={{
+          fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, textTransform: 'uppercase',
+          whiteSpace: 'nowrap', ...ink,
+        }}>{s.initials} Bio</span>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+          letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+        {/* Body/SM — Inter regular, not the eyebrow. */}
+        <span style={{
+          fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, textTransform: 'uppercase',
+          whiteSpace: 'nowrap', ...ink,
+        }}>[ 001 ] Structure · Bio_01</span>
+      </div>
+    )
+
+    // The arch: a fixed 488 × 648 at radius 151 on desktop and at 768, centred
+    // in its column, and at 390 the column's width less the frame's 60 a side
+    // at 311 tall — where 151 is past half the width and CSS clamps it to the
+    // stadium the 390 render draws. The inner shadow is a raw 64 at all three
+    // widths, `sem/glow`, painted over the photograph.
+    //
+    // The seal is placed by its disc's centre off the arch's edges, read from
+    // the emitted CSS and confirmed on each render (the metadata's x for a
+    // rotated group is not where it is drawn): on desktop it straddles the
+    // arch's left edge, 11.5 outside it and 166.35 above its foot; at 768 it
+    // hangs 16.87 past the right edge, 25.15 above the foot; at 390 it sits
+    // 5.58 inside the right edge, 0.65 below the foot.
+    const disc = s.mob ? 63.94 : 125.37
+    const half = disc / 2
+    const seal = s.mob
+      ? { right: `${-(-5.58 + half).toFixed(2)}px`, bottom: `${-(0.65 + half).toFixed(2)}px` }
+      : tab
+        ? { right: `${-(16.87 + half).toFixed(2)}px`, bottom: `${(25.15 - half).toFixed(2)}px` }
+        : { left: u(-11.5 - half), bottom: u(166.35 - half) }
+    const card = (
+      <div style={row('0', {
+        justifyContent: 'center', padding: s.narrow ? '0 60px' : `${u(4.5)} 0`,
+      })}>
+        <div style={{
+          position: 'relative', flex: s.mob ? 1 : 'none', minWidth: 0,
+          width: s.mob ? undefined : u(488), height: s.mob ? '311px' : u(648),
+        }}>
+          <div style={{
+            position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: u(151), background: s.bg,
+          }}>
+            <Photo s={s} initialsSize={54} />
+            <div style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 ${u(64)} ${s.glow}`,
+            }} />
+          </div>
+          <SealBadge s={s} size={s.mob ? disc : Math.round(disc * z * 10) / 10} tilt={26.06} style={seal} />
+        </div>
+      </div>
+    )
+
+    const prose = (
+      <div style={col(u(14), { height: '100%', alignItems: 'stretch' })}>
+        {eyebrow('About')}
+        {/* Body/MD. */}
+        <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, ...ink }}>{s.bioP1}</p>
+        {/* The frame's own flexible spacer on desktop; a 1px one below it. */}
+        <span style={{ flex: 1, minHeight: '1px' }} />
+        <span style={{ height: '1px', background: s.ac, flex: 'none' }} />
+        {eyebrow(`${s.kicker} · ${s.location}`, { textTransform: 'uppercase' })}
+      </div>
+    )
+
+    if (s.narrow) return <div style={col('40px')}>{heading}{card}{prose}</div>
+    return (
+      <div style={{
+        display: 'grid', gridTemplateColumns: `1fr ${u(580)} 1fr`,
+        gap: u(40), alignItems: 'stretch',
+      }}>
+        {heading}{card}{prose}
+      </div>
+    )
+  }
+
   if (s.v0) {
     // Figma sets the flank eyebrows in the body face, bold — not Anton.
     const label = (t, extra) => (
