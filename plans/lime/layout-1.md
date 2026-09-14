@@ -91,7 +91,7 @@ row's three masters are fitted in one session.
 | 0 | *foundation* | `964:58587` *(page)* | Lime mode → `THEMES[1]`, ramp, fonts, `s.lime`, photos | — | `986:39875` | — | `986:39888` | — | — | done `dc30dec` |
 | 1 | `header` | `964:58588` | Headers — hero | 1440 × 750 | `986:39876` | 768 × 1024 | `986:39889` | 390 × 844 | `964:58576` | done `f4ab4e0` |
 | 2 | `bio` | `964:58589` | Bios — A · Flanked portrait | 1440 × 769 | `986:39877` | 768 × 1144 | `986:39890` | 390 × 739 | `964:58577` | done `59cb1a3` |
-| 3 | `media` | `964:58590` | Media Player — D · Floating cards stack | 1440 × 1153 | `986:39879` *(in `986:39878`)* | 768 × 1512 | `986:39891` | 390 × 1191 | `964:58578` | todo |
+| 3 | `media` | `964:58590` | Media Player — D · Floating cards stack | 1440 × 1153 | `986:39879` *(in `986:39878`)* | 768 × 1512 | `986:39891` | 390 × 1191 | `964:58578` | done `c1e4995` |
 | 4 | `gallery` | `964:58591` | Gallery Sections — Component 1 | 1440 × 822 | `986:39880` | 768 × 1119 | `989:22110` | 390 × 776 | `964:58579` | todo |
 | 5 | `repertoire` | `964:58592` | Repertoire — A · Two-column dense | 1440 × 1063 | `986:39881` | 768 × 872 | `986:39893` | 390 × 838 | `964:58580` | todo |
 | 6 | `map` | `964:58593` | Events Map — D · Compact tile | 1440 × 1151 | `986:39882` | 768 × 1326 | `986:39894` | 390 × 1167.2 | `964:58581` | todo |
@@ -345,8 +345,10 @@ section below it.** Each is a 44-tall, full-width `VECTOR` *inside* the band who
 at its own head (y −1) **and** its own foot, filled in the neighbouring band's colour. So media,
 map and form each own both of their seams, and gallery, pricing and testimonials own none, and no
 two sessions can claim one. The 768 media's two vectors are 1438 wide (the desktop number leaking
-into a narrow instance, so clip them to the section), and the 390 map's and form's are 384. The arc's
-depth and direction are still unmeasured; read them off the vector in the owning session.
+into a narrow instance), and the 390 map's and form's are 384. *Measured in section 3:* every arc is
+one shape, flat along the band's edge, 4.99 deep at its ends and 44.24 at its middle, bulging
+into the band; `ArcEdge` draws it stretched to the section at all three widths, and the leaked
+768 vectors are **not** clipped (see section 3's *Conventions*).
 
 | # | Section | Ground | Seams it draws (head · foot) |
 |---|---|---|---|
@@ -663,6 +665,65 @@ Settled in section 2 (the bio):
 - **Bio layout 1 has no live control**, so its `live=1` check is only that it renders the same.
   It does, at all three widths.
 
+Settled in section 3 (the media player):
+
+- **The second Lime block: `if (s.v0 && s.lime)` ahead of Retro's `if (s.v0)` in `Media`.** The
+  stack is five flush rows on hairline rules where Retro's is overlapping tilted cards, and the
+  player is a card whose *background* is the sleeve where Retro's is a dark panel with a disc.
+  The block sits *below* the hooks, so the one `<audio>`, `cur`, `goTo`, `toggle`, `pick`, `now`
+  and `sleeve` are shared whole and the published player needed nothing new. A section whose
+  live seam is hoisted above its branches can always take a block this way.
+- **Lime's bands start at the root: `limeBand`**, one arm after `cream` in the root's background
+  ternary, so Retro's arms stay byte-identical. It is `s.me && s.v0 && s.lime` and paints
+  `s.box1`, which is Scheme 2's `sem/bg` exactly. **The map and the form extend it**, with their
+  Scheme 4 ground (`#F2FFD0`, which is `s.tx`) and, since the root's `color` stays `s.tx`, a
+  foreground of their own.
+- **`ArcEdge` exists** (beside `TornEdge`, same props, `if (!s.lime) return null`). One path, the
+  frame's own, in a `preserveAspectRatio="none"` viewBox. The 1440 and 390 vectors are the same
+  shape at two widths (controls at 14.8% / 85.2%), so it stretches to the section and keeps its
+  44.24 depth. Callers pass `height={44.24 * z}`. It bleeds over the root's padding like
+  `TornEdge` and carries the vector's own −1 into the neighbour. `colour` defaults to `s.bg`,
+  and **only the form's foot seam passes one** (`s.box1`, the testimonials' ground).
+- **Open question 4's answer:** an arc is the *page ground* returning into a band, so it reads
+  `s.bg` and cannot read its own section's colour instead. A band reordered next to the map or the
+  form lands its arc against the wrong ground; that is Retro's torn-edge cost, accepted.
+- **The 768 master's seams are not followed.** It carries the 1440 vector unscaled: its head seam
+  is the middle of a wider arc (34 deep at the edges, 43 in the middle), and its foot seam, turned
+  180° about a leaked x, lands wholly off the frame, so the render has no foot seam at all. Drawn
+  here as the 1440 and 390 masters draw them. The plan's earlier "clip them to the section" was a
+  guess from the metadata; a PIL depth scan of the three renders settled it. Expect the same
+  leaked vector on the 768 map and form.
+- **A stated list height is a column minimum, and each row is `flex: 1 1 auto` over it**: 540
+  (the player's, desktop), 462 (768), 370 (390). The rows then divide it at five and grow past it
+  at eight. The minimum is dropped at zero tracks, though the grid still stretches the empty column
+  to the card beside it, and one track stands player-tall; both are named in the branch. At 390 the
+  frame's 16 row inset is inert (a 60 sleeve in a 74 row sits 7 down), so the row takes 7. The
+  bottom inset gives back the 1px rule Figma strokes inside the height.
+- **An opacity-0 node is a spacer.** The card's 252 "Disc" draws nothing, but it is what places
+  the title and transport low on the sleeve. It is a fixed `u(252)` at desktop and 768, and
+  `flex: 1` at 390, where the card states 343.
+- **Bebas needs its own em measure for a typed break.** Retro's `maxWidth: 5.8em` is Soulway's.
+  `bebasEms()` (data.js) gives "Five worth" 3.59 and "Five worth your" 5.34, so the cap is
+  **4.6em**, confirmed at two lines on all three widths.
+- **Two named departures.** (1) The frame's progress bar paints track and fill both in
+  `sem/active/bg`, so its playhead is invisible. The track here is `s.stroke1` (the rows' own
+  hairline) under an `s.pillBg` fill, so the canvas at `pct` 34 is an intended diff from the
+  all-lime frame. (2) The frame's pill says "Book Now", the shared pill component's default. It
+  stays the **Soundcloud** link, `fg={s.box1}` (the frame's ink is Scheme 2's `sem/bg`), `full` at 390.
+- **Icons the frame draws as vectors are transcribed** (`LimeSkip`, from the frame's "Group 2"),
+  the `Reticle` precedent. Glyphs the frame sets as *text* (▶) stay lucide `Play`/`Pause`, because
+  the live state needs the Pause the frame never draws. `SCRIM.limeSleeve` is the card's fade; the
+  file's `rgba` stays in `SCRIM`.
+- **Measured against the masters' content edges**: desktop rows 88.6 (108 × 0.82), card 442.8, the
+  card's title and transport within 0.3 of the frame × 0.82; 768 rows 92.4 and card 518.8 against
+  520; 390 rows 74, card 343, spacer 78.9 against 78. The section runs 9 / 2 / 1 short of each frame
+  × 0.82 / verbatim less the root's padding, which is `padY` standing in for the frames' 98 / 108,
+  60 and 60.
+- **The one-off probe scripts** (`source/scripts/lime-media-*.mjs`) walked the section root by
+  its `--ac` custom property, not `#root > div`, which is the harness wrapper. They are deleted;
+  write the same two again per section if needed (geometry at three widths, and a `live=1` click
+  sequence under `--autoplay-policy=no-user-gesture-required`, which lets headless actually play).
+
 ## Open questions
 
 1. **Five flags by template five.** `s.retro` plus `s.lime` is cheap for cold-start sessions,
@@ -697,6 +758,8 @@ Settled in section 2 (the bio):
    assumes sits above it, and a user can reorder sections. Retro accepted the same cost for its
    torn edges. Confirm in section 3 whether an arc can read `s.bg` of its own section and stay
    transparent above, which would make the problem go away.
+   *Settled in section 3:* it cannot. The arc is the page ground reaching back into the band, so
+   it reads `s.bg` (the form's foot passes `s.box1`), and the reorder cost is accepted as Retro's.
 5. **`tags`, `audio` and `video` have no Lime layout-1 frame.** They pick up session 0's tokens and
    nothing else. Check after session 0 that they still render legibly at `theme=1`, but do not
    design them. *Checked in session 0:* all three are legible at desktop — the tags row alternates
