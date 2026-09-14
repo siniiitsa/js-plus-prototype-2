@@ -94,7 +94,7 @@ row's three masters are fitted in one session.
 | 3 | `media` | `964:58590` | Media Player — D · Floating cards stack | 1440 × 1153 | `986:39879` *(in `986:39878`)* | 768 × 1512 | `986:39891` | 390 × 1191 | `964:58578` | done `c1e4995` |
 | 4 | `gallery` | `964:58591` | Gallery Sections — Component 1 | 1440 × 822 | `986:39880` | 768 × 1119 | `989:22110` | 390 × 776 | `964:58579` | done `0b162e1` |
 | 5 | `repertoire` | `964:58592` | Repertoire — A · Two-column dense | 1440 × 1063 | `986:39881` | 768 × 872 | `986:39893` | 390 × 838 | `964:58580` | done `2606b63` |
-| 6 | `map` | `964:58593` | Events Map — D · Compact tile | 1440 × 1151 | `986:39882` | 768 × 1326 | `986:39894` | 390 × 1167.2 | `964:58581` | todo |
+| 6 | `map` | `964:58593` | Events Map — D · Compact tile | 1440 × 1151 | `986:39882` | 768 × 1326 | `986:39894` | 390 × 1167.2 | `964:58581` | done `eda536f` |
 | 7 | `pricing` | `964:58594` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:39883` | 768 × 769 | `986:39895` | 390 × 1520 | `964:58582` | todo |
 | 8 | `calendar` | `964:58595` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:39884` | 768 × 1376 | `986:39896` | 390 × 999 | `964:58583` | todo |
 | 9 | `form` | `964:58596` | Enquiry Forms — B · Split context+form | 1440 × 862 | `986:39885` | 768 × 1114 | `986:39897` | 390 × 1168 | `964:58584` | todo |
@@ -814,6 +814,63 @@ Settled in section 5 (the repertoire):
   344, rows 77.1, list 462.6, the pager centred; 390 head 159.3, rows 69.4 (the frame's 69 is Label/LG 14
   × 1.1 rounded to a whole line box), buttons spread across the measure. Every gap between blocks is
   32 (26.2 on desktop), the frames' own.
+
+Settled in section 6 (the events map):
+
+- **The fifth Lime block, after the seam: `if (s.lime)` within `EventsMap`'s `if (s.v0)`, after
+  `onPick`.** `perPage`, `pages`, `pg`, `shown`, `lit` and `onPick` are shared whole, so the published
+  pager and the row/pin pairing needed nothing new. The tree is Retro's twin's (head, coverage tile, gig
+  panel, pagination); where Retro draws its two checkerboard frames Lime's has the two arc vectors.
+  Retro's `pins`, `tile` and `list` below the block are untouched, and the diff outside it is the root's
+  two lines.
+- **The first light band: `limeLight`** beside `limeBand` in the root, `s.mp && s.v0 && s.lime`,
+  painting `s.tx` (Scheme 4's `sem/bg` `#F2FFD0` is Scheme 1's `text/2` exactly) and setting the root's
+  `color` to `s.bg` (Scheme 4's `text/1`). Both are appended arms, so Retro's ternaries are byte-equal.
+  The form stands on the same Scheme 4 ground and ink, so its session widens this flag with the form's
+  category key rather than adding a third, and owes its nested Scheme 3 panel on top.
+- **A Scheme 4 section reads no Scheme 1 `sem` key.** The block names its four literals — `mist`
+  `#D5E3B2` (`box/3`, the gallery's name for it), `hair` `#15180F26` (`stroke/1`, 8-digit hex, so still
+  no `rgba()` in the file), `litInk` `#C7FF3C` (`active/text`) — and takes the rest off the palette:
+  ink `s.bg`, the date disc `s.ac` on `s.box1` (Scheme 4's `tag/1` text and bg), the raster's multiply
+  `s.box1` at .6. The form's session starts from the same table.
+- **Retro's live states vanish under Lime; redraw them, never inherit them.** Retro's lit pin is
+  `pillBg` on an `ac` halo, and under Lime `pillBg === ac`. Retro's lit row is `g.hue`, which under Lime
+  walks `#2E3928` / `#AFE335`. The Lime pin is lime in a 3px ink ring, lit ink in a 5px lime ring at 16;
+  the lit row is `sem/active` (`#15180F` / `#C7FF3C`). The frames draw **no pins** (neither does Retro's
+  twin `446:6119`); they are the pairing's, and a named diff.
+- **`vm.title` shadows the ramp's `title` size.** `sectionVm` spreads `Z` and then sets `vm.title` to
+  the heading string, so `fontSize: s.title` is the string "Manchester" and does nothing (Retro's v0
+  line has always been inert). Display/Title is written as the frames' own 36 × 0.82 / 28 / 26. Every
+  later section with a Display/Title slot meets this: grep `s.title` in its branch.
+- **The map-pager note from section 5 resolves to its own window, not its own sizes.** The map's
+  pagination children are the repertoire's 55 / 87 × 54. What broke was the count: the wide
+  `pageWindow` gives up to five numbers plus two `…`, which wrapped the row at desktop and 768 past five
+  pages. The block takes `pageWindow(pages, pg, true)` at every width (at most five labels, the frames'
+  own `1 2 3 … 20`), natural widths at 768 (593 in 648), and `grow` at desktop and 390, because seven
+  buttons × 0.82 are 486 against this panel's 478.5 (the frame's is 497 — the 20px our content width
+  gives up). `frame.lime` is `{ box: s.tx, ring, ink, idle, glow: s.bg }`: Scheme 4's ring is
+  `stroke/2`, full ink, not the 15% default.
+- **An inline eyebrow in a flex column stands on the body's line box.** The panel head's `<span>`
+  inside a plain padded `<span>` measured 24 tall, not 15.6; the wrapper is `row()` now. Any text
+  wrapped for padding wants a flex wrapper, or the frame's 1.3 is silently lost.
+- **The 390 page is five gigs** where its master draws three, since `perPage` is the section's seam and
+  Retro's fitted v0 already answered it against the same component. Seeded, that means no pager at any
+  width where the frames all draw one — the pager's own not-drawn-at-one-page rule.
+- **Desktop stretches the tile to the panel**, its map taking what the foot leaves (541 of 686 in the
+  frame), floored at the 768 master's stated 219.84 (× 0.82) so `n=0` still shows a map; 768 and 390
+  state the map's height (219.84, 298). The tile's 1px inside stroke is the ground's colour, so it only
+  reads over the raster, and is an overlay drawn over it. The panel head's 1px frame carries no fill at
+  any width and is not drawn. The month is `textTransform: 'uppercase'` (the seed is title case).
+- **`LimeGlobeFill`** is the frame's filled, slotted `◍`, transcribed beside `LimeGlobeMark` (the
+  header's stroked globe, a different drawing). At 390 it stacks 8 above the base line.
+- **Measured against the masters' content edges**: desktop head 123.9, rows 79.5 (97 × 0.82), disc
+  45.9 × 46.7, foot 118.3 (145 × 0.82), panel 501.3 (the frame's 686 less its 74 of pager, × 0.82);
+  768 head 103.7, tile 364.6 (365), map 219.8, foot 132.8, rows 79 with the disc 11 in, panel 518.6
+  (521 less the pager); 390 radius label at 88.3 (88), tile 440.9 (441.16), map 326 × 298 inside 10,
+  foot 110.9, rows 97. `live=1&n=30` at desktop and 390: rows and pins light and toggle each other, the
+  pager steps and the lit gig survives paging away and back, linked rows are `<a>`, cursors are
+  live-gated; the worst-case window `1 … 3 … 6` holds one row at all three widths. `n=0` keeps the
+  tile at 298.6 beside the panel's head.
 
 ## Open questions
 
