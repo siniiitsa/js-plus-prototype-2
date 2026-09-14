@@ -213,6 +213,28 @@ function GlobeMark({ size = 22, color = 'currentColor', strokeWidth = 1.4 }) {
   )
 }
 
+// Lime's globe (Figma 964:58588 "Group 7"), transcribed from the frame's own
+// vectors on its 35.98 box: a ring, one meridian ellipse, a hairline lens down
+// the middle and three parallels, all at a 3px stroke that scales with the box.
+// It is not Retro's GlobeMark re-inked — the meridians and the parallels are
+// different drawings. The lens is an inside-stroked 4.1px ellipse, which a 3px
+// stroke fills solid, so it is drawn filled.
+function LimeGlobeMark({ size, color }) {
+  return (
+    <svg viewBox="0 0 35.98 35.98" width={size} height={size} aria-hidden
+         style={{ display: 'block', flex: 'none', overflow: 'visible' }}>
+      <g fill="none" stroke={color} strokeWidth="3">
+        <circle cx="17.99" cy="17.99" r="16.49" />
+        <ellipse cx="17.99" cy="17.99" rx="7.41" ry="16.49" />
+        <line x1="2.4" y1="10.41" x2="33.58" y2="10.41" />
+        <line x1="0" y1="17.89" x2="35.98" y2="17.89" />
+        <line x1="2.4" y1="25.04" x2="33.58" y2="25.04" />
+      </g>
+      <ellipse cx="17.99" cy="17.99" rx="2.05" ry="17.99" fill={color} />
+    </svg>
+  )
+}
+
 /* ------------------------------------------------------------------ *
  * §10.2 Shared header primitives
  * ------------------------------------------------------------------ */
@@ -222,6 +244,7 @@ function LogoMark({ s, size = 18, color, glyph }) {
   // `glyph` sizes that globe outright: both narrow hero frames draw it at 27px,
   // where the initials disc it stands in for stays at 18.
   if (s.retro) return <GlobeMark size={glyph ?? size + 6} color={color || s.tx} />
+  if (s.lime) return <LimeGlobeMark size={glyph ?? size + 6} color={color || s.tx} />
   return (
     <span style={{
       width: size, height: size, borderRadius: '999px', background: s.ac,
@@ -231,7 +254,19 @@ function LogoMark({ s, size = 18, color, glyph }) {
   )
 }
 
-function Wordmark({ s, logo = false, color, glyph }) {
+// `size` overrides the name's type — additive, `BookPill`'s `size` precedent,
+// and read under Lime alone: its 390 hero master is set in the Tablet device
+// mode, so the name there is the 768 ramp's 21 where `s.labelLg` is 14.
+function Wordmark({ s, logo = false, color, glyph, size }) {
+  if (s.lime) {
+    // Lime's frame: Label/LG, letterSpacing 0, 13.15 from the globe (× 0.82).
+    return (
+      <span style={row(s.narrow ? '13px' : '11px')}>
+        {logo && <LogoMark s={s} color={color} glyph={glyph} />}
+        <span style={labelStyle(s, size ?? s.labelLg, { color: color || s.tx, letterSpacing: s.dls })}>{s.brand}</span>
+      </span>
+    )
+  }
   return (
     <span style={row('10px')}>
       {logo && <LogoMark s={s} color={color} glyph={glyph} />}
@@ -384,6 +419,38 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
+  if (s.lime) {
+    // Lime's pill, off the hero's Book Now (964:58588): Display/List type in
+    // `sem/bg` on `sem/active/bg`, standing flush against an arrow in a 46 × 44
+    // disc of the type's own ink, with no offset block. It is always the disc —
+    // Lime's mode draws no asterisk, so `glyph` is Retro's alone. The scales are
+    // Retro's too: the 768 frame at full size, the 1180 canvas × 0.82, and the
+    // 390 header × 0.62 (its master shrinks the instance by hand, 142 × 54 to
+    // 102.8 × 33.45), with `full` opting a mobile caller back up. The 390
+    // master's own 9.9px type is an artefact of that hand-scaling — it renders
+    // in a fallback face — so the small pill takes the 768 type × 0.62 instead.
+    const tab = isTablet(s)
+    const k = tab || full ? 1 : s.mob ? 0.62 : 0.82
+    const px = (v) => `${Math.round(v * k * 100) / 100}px`
+    const face = fg ?? s.bg
+    const dw = discSize ?? 46 * k
+    return (
+      <Tag {...link} style={{
+        ...row(px(10)), background: bg ?? s.pillBg, color: face,
+        padding: `${px(5)} ${px(5)} ${px(5)} ${px(21)}`,
+        borderRadius: s.btnR, cursor: 'pointer',
+        ...labelStyle(s, sizeProp ?? (k === 0.62 ? '11.8px' : s.list), { lineHeight: 1.2, letterSpacing: s.dls }),
+        ...style,
+      }}>
+        {text}
+        <span style={{
+          width: dw, height: dw * 44 / 46, borderRadius: '999px', flex: 'none',
+          background: face, color: discFg ?? (bg ?? s.pillBg),
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        }}><ArrowRight size={dw * 0.6} strokeWidth={1.5} /></span>
+      </Tag>
+    )
+  }
   if (s.retro) {
     // Accent-coloured type on a second palette hue, with the offset block.
     //
@@ -544,9 +611,14 @@ function LocationLine({ s, color }) {
 function TagChips({ s, justify = 'flex-start', radius, size }) {
   if (s.showTags !== 'show') return null
   // §10.2 sets the chips in the body face at label-xs, sentence case — not the
-  // tracked-out caps the flat templates use.
-  const chip = s.retro
-    ? { fontFamily: s.ui, fontSize: size || s.labelXs, lineHeight: 1.26, padding: '5px 11px' }
+  // tracked-out caps the flat templates use. Lime's mode is the same chip in
+  // Chakra Petch (`s.ui`); its 1180 canvas takes the frame's 5/11 × 0.82, where
+  // Retro's kept the 768 numbers at every width.
+  const chip = s.retro || s.lime
+    ? {
+        fontFamily: s.ui, fontSize: size || s.labelXs, lineHeight: 1.26,
+        padding: s.lime && !s.narrow ? '4.1px 9px' : '5px 11px',
+      }
     : {
         fontSize: '9px', fontWeight: 700, letterSpacing: '1px',
         textTransform: 'uppercase', padding: '5px 11px',
@@ -761,6 +833,31 @@ const SCRIM = {
   // flat four take `hero` instead: an arbitrary tag colour is no basis for a
   // scrim, where black is legible under any palette by construction.
   stack: 'linear-gradient(0deg, #5B5E2E 0%, rgba(91,94,46,0) 100%)',
+  // Lime's hero (964:58588) — the same fade, in its `sem/bg`.
+  lime: 'linear-gradient(0deg, #15180F 0%, rgba(21,24,15,0) 100%)',
+}
+
+// Lime's hero draws a reticle where Retro's draws the seal (964:58588
+// "Group 10"): four 18.84 corner brackets on a 108.18 box, and a ring of 27.54
+// and one of 13.26 crossed by four 27.88 ticks, every stroke 3 and scaling with
+// the box — the 390 master's 1.58 is 3 × 56.88 / 108.18 exactly. The frame's
+// crosshair sits 0.4px off the box centre; it is centred here. It takes the
+// seal's own switch, so "Corner badge" still hides it; `badgeText` has nothing
+// to print on it.
+function Reticle({ s, size, style }) {
+  if (s.showBadge !== 'show') return null
+  const c = 54.09
+  return (
+    <svg viewBox="0 0 108.18 108.18" width={size} height={size} aria-hidden
+         style={{ position: 'absolute', display: 'block', overflow: 'visible', ...style }}>
+      <g fill="none" stroke={s.ac} strokeWidth="3">
+        <path d="M18.84 0H0V18.84M89.34 0H108.18V18.84M0 89.34V108.18H18.84M108.18 89.34V108.18H89.34" />
+        <circle cx={c} cy={c} r="27.54" />
+        <circle cx={c} cy={c} r="13.26" />
+        <path d={`M13.2 ${c}H41.08M67.18 ${c}H95.06M${c} 12.8V40.68M${c} 67.51V95.39`} />
+      </g>
+    </svg>
+  )
 }
 
 // §10.2 — the top bar of layouts 1 and 4, which draw the same Figma nav: its
@@ -775,23 +872,41 @@ const SCRIM = {
 // none) is a `...undefined` no-op. The stacked header needs it: its frame
 // stands a near-black pill under a mustard offset block where the hero's is
 // the mustard pill on rust that BookPill already defaults to.
+//
+// Under Lime the same bar is a capsule (964:58588 "Frame 50"): `sem/bg` at a
+// pill radius, 10/10/10/20 inside it at 1440 (right 20 on both narrow masters),
+// 30 between its halves, and no rule after the wordmark. Its `BACKGROUND_BLUR`
+// is dropped — the fill under it is opaque, so the blur draws nothing. The 390
+// master is in the Tablet device mode, so its name is the 768 ramp's 21px.
 function NavBar({ s, colour, rule, pill }) {
   const c = colour || s.tx
   const bar = rule || c
   const tab = isTablet(s)
   const ruleW = s.mob ? '70px' : tab ? '150px' : '123px'
+  const lime = s.lime
   return (
-    <div style={row(s.mob ? '10px' : tab ? '30px' : '24px', { justifyContent: 'space-between', width: '100%' })}>
+    <div style={row(lime ? (s.narrow ? '30px' : '24.6px') : s.mob ? '10px' : tab ? '30px' : '24px', {
+      justifyContent: 'space-between', width: '100%',
+      // The desktop corner is the one-row bar's own half-height, 60.7 / 2,
+      // not the pill token: one row draws the frame's capsule exactly, and a
+      // page whose section names wrap the links onto a second row (the seeded
+      // eleven give nine, 104px of bar) gets a rounded bar, not a lozenge.
+      ...(lime ? {
+        background: s.bg, borderRadius: s.narrow ? s.btnR : '30.35px',
+        padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
+      } : null),
+    })}>
       <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
-        <Wordmark s={s} logo glyph={s.narrow ? 27 : undefined} color={c} />
+        <Wordmark s={s} logo glyph={lime ? (s.narrow ? 36 : 29.5) : s.narrow ? 27 : undefined}
+                  size={lime && s.mob ? '21px' : undefined} color={c} />
         {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
             123px on the 1180 canvas. It has to yield rather than push the Book
             Now pill onto a second line: the nav carries the page's own section
             names, which run longer than the reference's. */}
-        <span style={{
+        {!lime && <span style={{
           height: '2px', background: bar, flex: `0 1 ${ruleW}`,
           maxWidth: ruleW, minWidth: s.narrow ? '30px' : '0px',
-        }} />
+        }} />}
       </div>
       {s.narrow ? (
         <span style={row(tab ? '23px' : '10px')}>
@@ -799,12 +914,14 @@ function NavBar({ s, colour, rule, pill }) {
           <NavMenu s={s} color={c} />
         </span>
       ) : (
-        <nav style={row('18px', {
+        <nav style={row(lime ? '19px' : '18px', {
           flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 1 auto', minWidth: 0,
         })}>
           {s.navLinks.map((l) => (
             <a key={l.label} href={navHref(s, l.to)}
-               style={labelStyle(s, s.labelMd, { color: c, cursor: 'pointer' })}>{l.label}</a>
+               style={lime
+                 ? labelStyle(s, s.list, { color: c, cursor: 'pointer', lineHeight: 1.2, letterSpacing: s.dls })
+                 : labelStyle(s, s.labelMd, { color: c, cursor: 'pointer' })}>{l.label}</a>
           ))}
           <BookPill s={s} to={s.bookTo} {...pill} />
         </nav>
@@ -830,6 +947,11 @@ function HeaderV0({ s }) {
   // 96px card the text sits under rather than beside, same 40/24/36/30 stack.
   const tab = isTablet(s)
   const pp = s.mob ? 96 : tab ? 144 : 158               // portrait card edge
+  const lime = s.lime
+  // Lime's 390 master (986:39889) is the one instance on its 390 page set to
+  // the Tablet device mode, so its type is the 768 ramp's — a two-line 120px
+  // title where `s.dispXl` is 72. Every other key reads the page's own ramp.
+  const tk = lime && s.mob ? { labelLg: '21px', list: '19px', dispXl: '120px', labelXs: '14px' } : s
   // The Figma hero inks its labels in the fixed cream (`sem/text/2`), one step
   // brighter than `paper` — which stays the display title's first-word tone.
   const ink = s.retro ? '#FBF6EA' : s.paper
@@ -847,7 +969,10 @@ function HeaderV0({ s }) {
   // clearance rather than eating into it. The reference band is 24px; this runs
   // it a third finer, so the squares read as texture rather than as blocks.
   const CHECKER = 16
-  const padBottom = `${(s.mob ? 40 : tab ? 60 : 66) + CHECKER}px`
+  // Lime draws no ribbon, so its floor is the frame's own 50 / 60 / 40.
+  const padBottom = lime
+    ? (s.mob ? '40px' : tab ? '60px' : '41px')
+    : `${(s.mob ? 40 : tab ? 60 : 66) + CHECKER}px`
 
   return (
     <div style={{
@@ -869,7 +994,7 @@ function HeaderV0({ s }) {
       padding: `${padTop} ${padX} ${padBottom}`, color: ink,
     }}>
       <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></div>
-      <div style={{ position: 'absolute', inset: 0, background: SCRIM.hero }} />
+      <div style={{ position: 'absolute', inset: 0, background: lime ? SCRIM.lime : SCRIM.hero }} />
       <Grain s={s} exact blend="lighten" opacity={0.5} />
 
       <div style={{ position: 'relative' }}>
@@ -884,7 +1009,14 @@ function HeaderV0({ s }) {
           : row(tab ? '24px' : '33px', {
               justifyContent: centred ? 'center' : 'flex-start', flexWrap: 'wrap',
             })}>
-          <div style={{
+          {/* Lime's card is 213 × 196 at 1440 — not square — at radius 55 in a
+              1px `sem/stroke/2` rule, on `sem/bg`; both narrow masters square
+              it at 144 and 96 and keep the 55, which rounds the 96 to a disc. */}
+          <div style={lime ? {
+            position: 'relative', width: s.narrow ? pp : 174.7, height: s.narrow ? pp : 160.7, flex: 'none',
+            borderRadius: s.narrow ? 55 : 45.1,
+            border: `1px solid ${s.stroke2}`, overflow: 'hidden', background: s.bg,
+          } : {
             position: 'relative', width: pp, height: pp, flex: 'none',
             borderRadius: s.mob || tab ? 30 : 25,
             border: `${s.mob || tab ? 6 : 5}px solid ${s.pillBg}`, overflow: 'hidden', background: s.soft2,
@@ -893,26 +1025,44 @@ function HeaderV0({ s }) {
             <Grain s={s} exact blend="lighten" opacity={0.5} />
           </div>
 
-          <div style={col(s.mob || tab ? '36px' : '30px', {
+          <div style={col(s.mob || tab ? '36px' : lime ? '5px' : '30px', {
             alignItems: centred ? 'center' : 'flex-start', minWidth: 0,
             width: s.mob ? '100%' : undefined,
           })}>
-            <div style={row(s.mob || tab ? '30px' : '25px', { flexWrap: 'wrap' })}>
-              <span style={row('8px')}>
-                <span style={{
-                  width: '14px', height: '14px', borderRadius: '7px',
-                  background: s.pillBg, flex: 'none',
-                }} />
-                <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.location}</span>
-              </span>
-              <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.kicker}</span>
-            </div>
-            <Title s={s} size={s.dispXl} twoTone toneA={s.paper} toneB={s.ac} inline={!s.mob}
+            {lime ? (
+              // Lime: Display/List in `sem/text/2` and `sem/text/1`, after a
+              // 14px *ring* in `sem/stroke/2` where Retro's dot is filled.
+              <div style={row(s.narrow ? '30px' : '25px', { flexWrap: 'wrap' })}>
+                <span style={row(s.narrow ? '8px' : '6.6px')}>
+                  <span style={{
+                    width: s.narrow ? '14px' : '11.5px', height: s.narrow ? '14px' : '11.5px',
+                    borderRadius: '999px', border: `1px solid ${s.stroke2}`, flex: 'none',
+                  }} />
+                  <span style={labelStyle(s, tk.list, { color: ink, lineHeight: 1.2, letterSpacing: s.dls })}>{s.location}</span>
+                </span>
+                <span style={labelStyle(s, tk.list, { color: s.ac, lineHeight: 1.2, letterSpacing: s.dls })}>{s.kicker}</span>
+              </div>
+            ) : (
+              <div style={row(s.mob || tab ? '30px' : '25px', { flexWrap: 'wrap' })}>
+                <span style={row('8px')}>
+                  <span style={{
+                    width: '14px', height: '14px', borderRadius: '7px',
+                    background: s.pillBg, flex: 'none',
+                  }} />
+                  <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.location}</span>
+                </span>
+                <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.kicker}</span>
+              </div>
+            )}
+            {/* Lime's title is one tone, `sem/text/1`. */}
+            <Title s={s} size={tk.dispXl} twoTone={!lime} color={lime ? s.ac : undefined}
+                   toneA={s.paper} toneB={s.ac} inline={!s.mob}
                    lh={0.75} align={centred ? 'center' : 'left'} />
           </div>
         </div>
 
-        <TagChips s={s} justify={centred ? 'center' : 'flex-start'} />
+        <TagChips s={s} justify={centred ? 'center' : 'flex-start'}
+                  radius={lime ? s.radiusChip : undefined} size={lime ? tk.labelXs : undefined} />
       </div>
 
       {/* The reference seals: 125px centred on (660, 194) of the 768 frame,
@@ -921,20 +1071,30 @@ function HeaderV0({ s }) {
           out by the window edge instead of over the identity block. `top` needs
           nothing: the height is clamped to the frame's, so its percentage
           resolves against the same number it always did. */}
-      <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32.38} ink="#FBF6EA"
-                 size={s.mob ? 85 : tab ? 125 : undefined}
+      {lime ? (
+        // Lime's reticle: 108.18 at (1259.9, 172.4) of the 1440 frame, the same
+        // at (608, 179.6) of the 768 one, 56.88 at (297.1, 110) of the 390.
+        <Reticle s={s} size={s.mob ? 56.88 : tab ? 108.18 : 88.71}
                  style={{
-                   top: s.mob ? '14.9%' : tab ? '12.8%' : '14%',
-                   right: `calc(${s.surplus} + ${s.mob ? '3.3%' : tab ? '5.9%' : '3%'})`,
+                   top: s.mob ? '13.03%' : tab ? '17.53%' : '22.99%',
+                   right: `calc(${s.surplus} + ${s.mob ? '9.23%' : tab ? '6.75%' : '5%'})`,
                  }} />
+      ) : (
+        <SealBadge s={s} hue={s.chips[4]?.bg || s.ac} tilt={32.38} ink="#FBF6EA"
+                   size={s.mob ? 85 : tab ? 125 : undefined}
+                   style={{
+                     top: s.mob ? '14.9%' : tab ? '12.8%' : '14%',
+                     right: `calc(${s.surplus} + ${s.mob ? '3.3%' : tab ? '5.9%' : '3%'})`,
+                   }} />
+      )}
 
       {/* The §10.2 hero frame itself has no floor trim; this is the checker
           ribbon off the stacked header, which shares this composition's
           full-bleed photograph. Two rows of 8px squares in `paper` — the
           Figma fill is sem/media, which is Retro's paper exactly — over the
           scrim's black floor, where the default `tx` would vanish. */}
-      <Checkerboard s={s} cell={CHECKER} colour={s.paper}
-                    style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }} />
+      {!lime && <Checkerboard s={s} cell={CHECKER} colour={s.paper}
+                    style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }} />}
     </div>
   )
 }
@@ -956,7 +1116,9 @@ function HeaderV0({ s }) {
 // below desktop, and for the reason the nav's own comment gives.
 function HeaderV1({ s }) {
   const olive = (s.retro && s.chips[3]?.bg) || s.line2
-  const mustard = s.pillBg
+  // Under Lime `pillBg` IS the accent, so every mustard-on-accent pairing
+  // below drew lime on lime; its olive box stands in until Lime's layout pass.
+  const mustard = s.lime ? s.box1 : s.pillBg
   // Three creams, all literal under Retro, whose `paper` IS the page ground:
   // the mount is a shade deeper than the sub-card (Figma tag/6/text vs box/1).
   const mount = s.retro ? '#F3E3C8' : s.paper
@@ -1278,7 +1440,9 @@ function HeaderV2({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
-  const mustard = s.pillBg
+  // Under Lime `pillBg` IS the accent, so every mustard-on-accent pairing
+  // below drew lime on lime; its olive box stands in until Lime's layout pass.
+  const mustard = s.lime ? s.box1 : s.pillBg
   const olive = (s.retro && s.chips[3]?.bg) || s.line2
   // sem/text/2 — the cream every label on the photograph is set in; sem/tag/3/bg
   // is the polaroid's ink. Both literal under Retro, whose `paper` IS the page
@@ -13738,7 +13902,7 @@ function Footer({ s }) {
 export default function EncoreSection({ s }) {
   // §10.2 — the hero is the one full-bleed composition: the photograph runs to
   // the section edges and the layout supplies its own insets.
-  const bleed = s.hd && s.v0 && !s.flatHeader && s.retro
+  const bleed = s.hd && s.v0 && !s.flatHeader && (s.retro || s.lime)
   // §10.2 — the events map is the one section painted on a dark ground rather
   // than the page background, so its checkerboard bands and cream type read.
   const darkMap = s.mp && s.v0 && s.retro

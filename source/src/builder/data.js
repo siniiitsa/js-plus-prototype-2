@@ -230,14 +230,18 @@ export const NVAR = {
   repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1,
 }
 
-// Only Retro ships the photographic header treatment. The other four
-// templates offer three flat layouts (§10.3) — their photographic
-// designs do not exist yet.
+// Retro ships the six photographic header compositions (§10.2). Lime's
+// layout passes fit the first four of them in its own variable mode —
+// header card N lays out the whole page as layout N, and Lime's page N is
+// Retro's page-N components re-skinned — so its family is those four and
+// no more. Grunge, Editorial and Pop offer three flat layouts (§10.3);
+// their designs do not exist yet.
 export const headerFamily = (themeName) =>
-  themeName === 'Retro' ? 'photographic' : 'flat'
+  themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime' : 'flat'
 
-export const headerVariants = (themeName) =>
-  headerFamily(themeName) === 'photographic' ? 6 : 3
+const HEADER_COUNT = { photographic: 6, lime: 4, flat: 3 }
+
+export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
 // How many layout choices a category offers under a given theme.
 export const layoutCount = (catId, themeName) =>
@@ -285,15 +289,19 @@ export const pageLayout = (catId, i, themeName) => {
  * ------------------------------------------------------------------ */
 
 // [name, what it is] — index-aligned with HeaderV0…V5 / FlatHeader v0…v2.
+const PHOTOGRAPHIC_NAMES = [
+  ['Hero', 'Full-bleed photo'],
+  ['Feature spread', 'Photo beside the details'],
+  ['Inset Hero', 'Framed photo on colour'],
+  ['Stacked', 'Name stacked over the photo'],
+  ['Overlay card', 'Details on a card'],
+  ['Stage wide', 'Centred, wide'],
+]
 const HEADER_NAMES = {
-  photographic: [
-    ['Hero', 'Full-bleed photo'],
-    ['Feature spread', 'Photo beside the details'],
-    ['Inset Hero', 'Framed photo on colour'],
-    ['Stacked', 'Name stacked over the photo'],
-    ['Overlay card', 'Details on a card'],
-    ['Stage wide', 'Centred, wide'],
-  ],
+  photographic: PHOTOGRAPHIC_NAMES,
+  // The same HeaderV0…V3, so the same names — sliced, not copied, so a rename
+  // reaches both templates.
+  lime: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lime),
   flat: [
     ['Centred', 'Title, tags and buttons'],
     ['Split', 'Text beside an image'],
