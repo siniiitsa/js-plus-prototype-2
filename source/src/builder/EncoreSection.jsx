@@ -229,6 +229,50 @@ function LimeSkip({ width, color, back = false }) {
   )
 }
 
+// Lime's gallery source glyphs (964:58591 "Frame 187"), transcribed from the
+// frame's own vectors into the 60 disc they stand in, each at its offset there
+// and at its own stroke (3.5, 3, 4, 3): the picture frame, YouTube, Instagram
+// and TikTok, positional like `srcIcons`. One viewBox for all four, so a caller
+// sizes the disc and never the glyph.
+const LIME_SOURCES = [
+  { x: 14, y: 14, w: 3.5, round: true, d: [
+    'M6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28ZM6.66667 28L21.3333 13.3333L28 20M13.3333 11.3333C13.3333 12.4379 12.4379 13.3333 11.3333 13.3333C10.2288 13.3333 9.33333 12.4379 9.33333 11.3333C9.33333 10.2288 10.2288 9.33333 11.3333 9.33333C12.4379 9.33333 13.3333 10.2288 13.3333 11.3333Z',
+  ] },
+  { x: 14, y: 13.5, w: 3, round: true, d: [
+    'M30.0533 8.8275C29.895 8.17494 29.5724 7.57704 29.1182 7.09418C28.664 6.61133 28.0943 6.26063 27.4667 6.0775C25.1733 5.5 16 5.5 16 5.5C16 5.5 6.82667 5.5 4.53333 6.1325C3.90566 6.31563 3.33597 6.66633 2.8818 7.14918C2.42762 7.63204 2.10505 8.22994 1.94667 8.8825C1.52695 11.2826 1.32165 13.7174 1.33333 16.1563C1.31837 18.6134 1.52369 21.0668 1.94667 23.485C2.12128 24.1173 2.45108 24.6925 2.90419 25.1549C3.35731 25.6174 3.91843 25.9515 4.53333 26.125C6.82667 26.7575 16 26.7575 16 26.7575C16 26.7575 25.1733 26.7575 27.4667 26.125C28.0943 25.9419 28.664 25.5912 29.1182 25.1083C29.5724 24.6255 29.895 24.0276 30.0533 23.375C30.4698 20.9929 30.6751 18.5767 30.6667 16.1563C30.6816 13.6991 30.4763 11.2457 30.0533 8.8275Z',
+    'M13 20.6525L20.6667 16.1563L13 11.66V20.6525Z',
+  ] },
+  { x: 15.5, y: 15.5, w: 4, round: true, d: [
+    'M21.1457 7.85425H21.1578M8.45817 2.41675H20.5415C23.8782 2.41675 26.5832 5.12169 26.5832 8.45841V20.5417C26.5832 23.8785 23.8782 26.5834 20.5415 26.5834H8.45817C5.12145 26.5834 2.4165 23.8785 2.4165 20.5417V8.45841C2.4165 5.12169 5.12145 2.41675 8.45817 2.41675ZM19.3332 13.7388C19.4823 14.7445 19.3105 15.7715 18.8423 16.6739C18.3741 17.5763 17.6332 18.308 16.7251 18.7651C15.817 19.2222 14.788 19.3813 13.7842 19.2197C12.7805 19.0582 11.8533 18.5843 11.1344 17.8655C10.4156 17.1466 9.94168 16.2194 9.78017 15.2157C9.61866 14.212 9.77775 13.1829 10.2348 12.2748C10.6919 11.3667 11.4236 10.6259 12.326 10.1576C13.2284 9.68939 14.2555 9.51763 15.2611 9.66675C16.2869 9.81886 17.2365 10.2968 17.9698 11.0301C18.7031 11.7634 19.1811 12.713 19.3332 13.7388Z',
+  ] },
+  { x: 0, y: 0, w: 3, round: false, d: [
+    'M33.7502 18.541C34.4012 21.4679 36.7256 23.7413 39.673 24.3125V26.8496C38.366 26.7499 37.0953 26.1976 36.0559 25.291L33.5705 23.1231L33.5695 26.4209L33.5685 35.4864C32.9347 41.1818 25.9382 43.5078 22.0666 39.3047L21.884 39.0987C18.2959 34.8987 21.3725 28.4458 26.5656 28.1914V30.1768C25.8199 30.2314 25.0296 30.4464 24.2404 31C20.1748 33.8524 22.8287 40.2243 27.6877 39.4815L27.9211 39.4414C28.8458 39.2589 29.7676 38.7287 30.4601 38.0625C31.1409 37.4077 31.8145 36.4079 31.8146 35.1924V18.541H33.7502Z',
+  ] },
+]
+function LimeSourceGlyph({ i, size, color }) {
+  const g = LIME_SOURCES[i] || LIME_SOURCES[0]
+  return (
+    <svg viewBox="0 0 60 60" width={size} height={size} aria-hidden style={{ display: 'block', flex: 'none' }}>
+      <g transform={`translate(${g.x} ${g.y})`} fill="none" stroke={color} strokeWidth={g.w}
+         strokeLinecap={g.round ? 'round' : undefined} strokeLinejoin={g.round ? 'round' : undefined}>
+        {g.d.map((d, k) => <path key={k} d={d} />)}
+      </g>
+    </svg>
+  )
+}
+
+// Lime's heavy plus (964:58591 "+"), the frame's own 30.25 vector. The open
+// gallery row draws the same vector turned 45° as its dismiss mark, hence
+// `cross`; the caller's box is the turned glyph's bounding box.
+function LimePlus({ size, color, cross = false }) {
+  return (
+    <svg viewBox="0 0 30.248 30.248" width={size} height={size} aria-hidden
+         style={{ display: 'block', flex: 'none', transform: cross ? 'rotate(45deg)' : undefined }}>
+      <path fill={color} d="M12.5189 30.248V17.7291H0V12.5189H12.5189V0H17.7291V12.5189H30.248V17.7291H17.7291V30.248H12.5189Z" />
+    </svg>
+  )
+}
+
 // The eight-point star that marks every Book Now pill and the seal centre.
 function Asterisk({ size = 16, color = 'currentColor' }) {
   return (
@@ -8044,6 +8088,227 @@ function Gallery({ s }) {
     const srcRows = s.gallerySources
       .map((g, i) => ({ g, i }))
       .filter(({ g, i }) => !s.live || i === 0 || !!g.url)
+
+    // Lime layout 1 (964:58591 · 986:39880 at 768 · 989:22110 at 390) is the
+    // component below in Lime's mode, and like the bio and the media player it
+    // is not the same tree re-tokened. The rows are filled capsules with a disc
+    // where Retro's are outlined boards with a square; the viewer is a bare
+    // photograph at radius 80 with two pale arrow discs riding its middle, where
+    // Retro's is a lime card with a globe-and-wordmark rail and the arrows at its
+    // foot; and the strip marks its tile with an inset glow, not a border. So it
+    // is a block of its own, and it sits *below* the seam: `strip`, `active`,
+    // `go`, `pick`, the mobile window and `srcRows` (with its hide-the-empty-row
+    // rule) are layout 1's, whole, so the published gallery needs nothing new.
+    //
+    // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both in
+    // their page's Device mode, so every size is the Lime ramp's `s.*`. Scheme 1
+    // throughout, so no band and no seams.
+    //
+    // Named departures. The frame's heading breaks after "See us" with a typed
+    // newline, and no measure can: "in action" (2.95em) is wider than "See us in"
+    // (2.81em). The 4em cap gives "See us in / action" at all three widths, which
+    // keeps the frame's two lines and its height. The 390 source row wraps where
+    // the frame runs TikTok off the page — the rule this section already has.
+    // And the arrow discs' 24 background blur is dropped: their fill is opaque,
+    // the header's capsule precedent.
+    if (s.lime) {
+      const z = desk ? 0.82 : 1
+      const u = (v) => `${Math.round(v * z * 10) / 10}px`
+      // Body/Eyebrow — Inter bold, the kicker, the back link, the credit and
+      // the counter.
+      const eyebrow = (t, extra) => (
+        <span style={{
+          fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+          letterSpacing: s.dls, whiteSpace: 'nowrap', color: s.tx, textTransform: 'uppercase', ...extra,
+        }}>{t}</span>
+      )
+
+      const head = (
+        <div style={col(s.mob ? '10px' : u(36))}>
+          {eyebrow('Media')}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac, maxWidth: '4em',
+          }}>{s.title}</h2>
+        </div>
+      )
+
+      // Desktop stacks four full capsules, disc and label and a glyph; 768
+      // spreads four equal tiles of disc alone, the open one keeping its cross;
+      // 390 keeps them content-sized and wraps. The open row is `sem/active`,
+      // the closed ones `sem/box/1` under the frame's hard 7 / 9 shadow.
+      const rows = (
+        <div style={desk
+          ? col(u(5), { alignItems: 'stretch' })
+          : row('5px', { alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}) })}>
+          {srcRows.map(({ g, i }) => {
+            const link = extLink(s, g.url)
+            const Tag = link ? 'a' : 'div'
+            const ink = g.on ? s.activeFg : s.ac
+            return (
+              <Tag key={i} {...link} style={{
+                ...row(desk ? u(20) : '5px', tab ? { justifyContent: g.on ? 'space-between' : 'center' } : undefined),
+                ...(desk ? { height: u(92) } : tab ? { flex: '1 1 0', minWidth: 0, height: '92px' } : { flex: 'none' }),
+                padding: s.mob ? '10px' : `${u(16)} ${u(24)} ${u(16)} ${u(16)}`,
+                borderRadius: u(90), overflow: 'hidden', textDecoration: 'none',
+                background: g.on ? s.pillBg : s.box1,
+                boxShadow: g.on ? 'none' : `${u(7)} ${u(9)} 0 rgba(0,0,0,.25)`,
+                cursor: link ? 'pointer' : undefined,
+              }}>
+                {/* The open disc is `sem/tag/2/text` in a 2px `sem/glow` ring
+                    stroked inside; the closed ones are `sem/glow` with the
+                    glyph in `sem/box/3`. */}
+                <span style={{
+                  width: u(60), height: u(60), flex: 'none', borderRadius: '999px',
+                  background: g.on ? s.activeFg : s.glow,
+                  boxShadow: g.on ? `inset 0 0 0 ${u(2)} ${s.glow}` : 'none',
+                }}><LimeSourceGlyph i={i} size={60 * z} color={g.on ? s.ac : s.box3} /></span>
+                {desk && (
+                  // Display/List.
+                  <span style={{
+                    flex: 1, minWidth: 0, fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                    letterSpacing: s.dls, color: ink,
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  }}>{g.label}</span>
+                )}
+                {(g.on || desk) && (
+                  <span style={{
+                    width: u(g.on ? 42.777 : 30.248), height: u(g.on ? 42.777 : 30.248), flex: 'none',
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  }}><LimePlus size={30.248 * z} color={ink} cross={g.on} /></span>
+                )}
+              </Tag>
+            )
+          })}
+        </div>
+      )
+
+      const top = (
+        <div style={row('12px', { justifyContent: 'space-between' })}>
+          {/* The frame's arrow is a Body/MD character, not an icon. */}
+          <span onClick={s.live ? () => setPick(0) : undefined}
+                style={row(u(8), { color: s.tx, cursor: s.live ? 'pointer' : undefined })}>
+            <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>←</span>
+            {eyebrow('Back to beginning')}
+          </span>
+          <span style={col(u(2), { alignItems: 'flex-end' })}>
+            {eyebrow(s.brand)}
+            {eyebrow('Gallery', { color: s.ac })}
+          </span>
+        </div>
+      )
+
+      // The arrow discs: `#D5E3B2` is Scheme 4's `sem/box/1`, which the gallery's
+      // own Scheme 1 does not carry, in a 1px `sem/text/2` ring stroked inside,
+      // round the frame's own arrow vector in `sem/bg`.
+      const mist = '#D5E3B2'
+      const arrowPath = (back) => (back
+        ? 'M35.2703 27.5863L36.8853 29.1256L30.4633 35.7758L47.3912 35.4804L47.4308 37.7484L30.5029 38.0439L37.1527 44.4453L35.5928 46.0607L26.1944 36.9847L35.2703 27.5863Z'
+        : 'M38.3349 46.0127L36.7199 44.4734L43.142 37.8232L26.214 38.1187L26.1744 35.8506L43.1024 35.5551L36.4525 29.1537L38.0125 27.5384L47.4109 36.6143L38.3349 46.0127Z')
+      const arrow = (back) => (
+        <span onClick={s.live ? () => go(active + (back ? -1 : 1)) : undefined} style={{
+          width: u(73.605), height: u(73.605), flex: 'none', borderRadius: '999px',
+          background: mist, boxShadow: `inset 0 0 0 1px ${s.tx}`,
+          cursor: s.live ? 'pointer' : undefined,
+        }}>
+          <svg viewBox="0 0 73.6051 73.5989" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
+            <path fill={s.bg} d={arrowPath(back)} />
+          </svg>
+        </span>
+      )
+
+      // The spotlight. Its three nested clips state radii 30, 20 and 80; the
+      // largest is what draws. The frame's arrow row is centred in a 469 box
+      // 20 in from the card's corner on desktop and at 768 — 20 above the card's
+      // own middle — and spans the 390 card edge to edge. Its corner brackets
+      // (`sem/state/inactive/border`) and its counter stand at the leaked
+      // absolute tops of a 420 box, so they float above the foot as the frame
+      // draws them; the 390 card is too short to show either, and only the
+      // desktop master carries the counter.
+      const card = (
+        <div style={{
+          position: 'relative', overflow: 'hidden', width: '100%',
+          height: desk ? u(560) : tab ? '527px' : '346px',
+          borderRadius: u(80), background: s.bg,
+          boxShadow: `${u(4)} ${u(4)} ${u(9)} rgba(0,0,0,.25)`,
+        }}>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} initialsSize={52} src={s.images[active]} ink={s.tx} />
+          </div>
+          {!s.mob && [['left', 14, 'borderLeft'], ['right', 15, 'borderRight']].map(([side, off, edge]) => (
+            <span key={side} aria-hidden style={{
+              position: 'absolute', [side]: u(off), top: u(388), width: u(18), height: u(18),
+              [edge]: `${u(2)} solid ${s.inactiveLine}`, borderBottom: `${u(2)} solid ${s.inactiveLine}`,
+            }} />
+          ))}
+          {desk && (
+            <span style={{
+              position: 'absolute', left: u(410), top: u(380), padding: `0 ${u(10)}`,
+              background: s.bg, borderRadius: u(4),
+            }}>{eyebrow(`0${active + 1} — 0${strip.length}`, { color: s.ac, display: 'block' })}</span>
+          )}
+          <div style={{
+            position: 'absolute',
+            ...(s.mob ? { inset: 0 } : { left: u(20), right: u(20), top: u(20), height: u(469) }),
+            ...row('0', { justifyContent: 'space-between' }),
+          }}>
+            {arrow(true)}
+            {arrow(false)}
+          </div>
+        </div>
+      )
+
+      // Seven tiles across on desktop and at 768, the mobile window of four at
+      // 390, each 76 tall at radius 20 in a 1px `sem/stroke/2` ring; the tile the
+      // viewer is on trades its ring for the frame's INNER_SHADOW 18 in `sem/glow`.
+      const thumbs = (
+        <div style={row(u(10), { alignItems: 'stretch' })}>
+          {strip.slice(from, from + shown).map((i) => (
+            <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
+              flex: '1 1 0', minWidth: 0, height: u(76), position: 'relative', overflow: 'hidden',
+              borderRadius: u(20), background: s.tx, cursor: s.live ? 'pointer' : undefined,
+            }}>
+              {/* An empty tile stands on the frame's own `sem/text/2` fill, so
+                  its initials take the ground's ink. */}
+              <div style={{ position: 'absolute', inset: 0 }}>
+                <Photo s={s} initialsSize={12} src={s.images[i]} ink={s.bg} />
+              </div>
+              <span aria-hidden style={{
+                position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                boxShadow: i === active ? `inset 0 0 ${u(18)} ${s.glow}` : `inset 0 0 0 1px ${s.stroke2}`,
+              }} />
+            </span>
+          ))}
+        </div>
+      )
+
+      const viewer = (
+        <div style={col(u(24), { minWidth: 0 })}>
+          {top}
+          <div style={col(u(10))}>{card}{thumbs}</div>
+        </div>
+      )
+
+      // Desktop is the frame's two halves: 608 of content, the 56 + 79 insets
+      // between them as the gap, and 585 beside it. Both columns come to 710,
+      // so the card's stated 560 is what lines them up. The narrow masters
+      // stack the halves, 60 apart at 768 (two 30 insets) and 20 at 390.
+      return desk ? (
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'minmax(0, 608fr) minmax(0, 585fr)',
+          gap: u(135), alignItems: 'start',
+        }}>
+          <div style={col(u(40), { minWidth: 0 })}>{head}{rows}</div>
+          {viewer}
+        </div>
+      ) : (
+        <div style={col(s.mob ? '20px' : '60px')}>
+          <div style={col(s.mob ? '20px' : '40px')}>{head}{rows}</div>
+          {viewer}
+        </div>
+      )
+    }
+
     const sources = !desk ? (
       <div style={row('20px', {
         alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}),
