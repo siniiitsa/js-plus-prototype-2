@@ -155,10 +155,20 @@ const LIST = {
     role: i % 3 === 2 || i % 5 === 4 ? '' : `Venue manager ${i + 1}`,
     when: i % 3 === 2 ? '' : `Reviewed ${i + 1} weeks ago`,
   }),
+  // The footer's sitemap. The eighth of every eight rows is an address rather
+  // than a section, so `live=1` renders one `target="_blank"` link; the rest
+  // cycle through sections the harness's page carries. An odd count leaves the
+  // second column one short, and `&n=0` is the pill standing alone.
+  footer: (i) => ({
+    label: `Link ${i + 1}`,
+    to: ['bio', 'media', 'repertoire', 'map', 'pricing', 'calendar', 'form', 'link'][i % 8],
+    url: i % 8 === 7 ? 'example.com' : '',
+  }),
 }
 const KEY = {
   media: 'tracks', audio: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images',
   pricing: 'tiers', calendar: 'slots', map: 'gigs', form: 'fields', testimonials: 'quotes',
+  footer: 'links',
 }
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const rows = count === null || !LIST[cat]

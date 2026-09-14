@@ -15576,6 +15576,170 @@ function EnquiryForm({ s }) {
 function Footer({ s }) {
   const scale = s.narrow ? 1 : 0.82
   const u = (v) => `${Math.round(v * scale)}px`
+
+  // Lime's footer (964:58598 at 1440, 986:39887 at 768, 986:39899 at 390) is
+  // the twin's tree — wordmark, seal and statement beside or over the link
+  // columns, the small print under a rule — with every leaf redressed: the
+  // links and the wordmark go pale where Retro's are the accent, the small print
+  // is a 68-tall row on its own hairline rather than tight type under a stroke,
+  // and every rule is `sem/stroke/1` where Retro's is the ink. That is a
+  // ternary on nearly every node Retro renders, so it is a block, and the seam
+  // below it — `extLink` / `navHref` per row, the pill on `bookTo` and dropped
+  // with its label — is restated verbatim. Scheme 1 throughout, so no literal.
+  if (s.lime) {
+    const hair = `1px solid ${s.stroke1}`
+    const px = (v) => `${Math.round(v * scale * 100) / 100}px`
+    const face = { fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls }
+
+    // The instance's own top stroke (inside, 1px, full width at all three
+    // widths): the band table's straight edge. It bleeds over the root's
+    // padding, so it is drawn against the root rather than the column.
+    const edge = (
+      <span aria-hidden style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '1px',
+        background: s.stroke1, pointerEvents: 'none',
+      }} />
+    )
+
+    // "Group 6" is LimeGlobeMark's own drawing at 27.37, inked in the 15%
+    // hairline — it stands dim beside the name.
+    const wordmark = (
+      <span style={row(u(20))}>
+        <span style={row(u(10))}>
+          <LimeGlobeMark size={27.37 * scale} color={s.stroke1} />
+          <span style={{ ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
+        </span>
+        <span style={{ width: u(150), height: u(2), background: s.tx, flex: 'none' }} />
+      </span>
+    )
+
+    // Display/MD with the frame's typed break after "make", folding the rest in
+    // its 439.59 box. That box holds the frame's picture only at 1440, where it
+    // makes three lines: at 768 "YOUR NIGHT UNFORGETTABLE." is 8.87em in our
+    // Bebas measure, 443.5 against the box, so the cap is 9em (the seal's disc
+    // starts past 500); and at 390 the same line is 354.8 against our 346
+    // column, so the heading takes back 12 of the root's padding on its right —
+    // the frame's own 10 inset — rather than grow a third line.
+    const statement = (
+      <h2 style={{
+        margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+        letterSpacing: s.dls, color: s.ac, whiteSpace: 'pre-wrap',
+        maxWidth: s.mob ? 'none' : s.narrow ? '9em' : u(439.59),
+        marginRight: s.mob ? `calc(10px - ${s.padX})` : undefined,
+      }}>{s.footerStatement}</h2>
+    )
+
+    // "Frame 203" is the bio's seal (SealBadge's Lime branch) turned 26.06°, its
+    // 212.25 box a 158.67 disc — and a hand-scaled 78.5 at 390. Placed by the
+    // disc's centre off the edges it hangs on, taken from the emitted left/top
+    // plus half the box, against the column's top with the dropped 56 taken out:
+    // 85.18 in from the column's right and 49.62 down on desktop, 101.87 in from
+    // the content's right and 70.13 down at 768, 60.25 in and 12.73 down at 390.
+    const disc = s.mob ? 78.5 : 158.67 * scale
+    const [inX, downY] = s.mob ? [60.25, 12.73] : s.narrow ? [101.87, 70.13] : [85.18, 49.62]
+    const seal = (
+      <SealBadge s={s} size={disc} tilt={26.06} style={{
+        right: `${Math.round((inX * scale - disc / 2) * 100) / 100}px`,
+        top: `${Math.round((downY * scale - disc / 2) * 100) / 100}px`,
+        zIndex: 2,
+      }} />
+    )
+
+    // Label/SM, 23 between the line boxes and the same 23 before the pill,
+    // which is BookPill's Lime default exactly — `full` at 390, where the frame
+    // keeps it 54 tall.
+    const linkCol = (colLinks, i) => (
+      <nav key={i} style={col(px(23), { alignItems: 'flex-start' })}>
+        {colLinks.map((l, j) => {
+          const ext = extLink(s, l.url)
+          return (
+            <a key={j} {...(ext || { href: navHref(s, l.to) })}
+               style={labelStyle(s, s.labelSm, {
+                 color: s.tx, letterSpacing: s.dls, cursor: 'pointer', textDecoration: 'none',
+               })}>{l.label}</a>
+          )
+        })}
+        {i === 0 && s.footerCta && (
+          <BookPill s={s} to={s.bookTo} label={s.footerCta} full={s.mob} />
+        )}
+      </nav>
+    )
+    const links = (
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: s.mob ? u(26) : u(76) }}>
+        {s.footerCols.map(linkCol)}
+      </div>
+    )
+
+    // Display/List on a 68 row, its stroke inside the height. At 1440 the row
+    // is the frame's full width, so the rule bleeds and the type keeps the
+    // column (the pricing stack's cancel-and-restore). At 768 it holds the
+    // content width with the desktop's 56 inset leaked into it, which the render
+    // shows and is followed; at 390 the inset is gone and the two halves split
+    // the row.
+    const half = s.mob ? { flex: '1 1 0', minWidth: 0 } : {}
+    const smallPrint = (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: s.mob ? 0 : u(16), height: u(68), borderTop: hair, ...face, color: s.tx,
+        ...(s.narrow
+          ? { padding: `0 ${s.mob ? 0 : '56px'}` }
+          : { margin: `0 calc(-1 * ${s.padX})`, padding: `0 ${s.padX}` }),
+      }}>
+        <span style={half}>{s.copyright}</span>
+        <span style={{ ...half, textAlign: 'right' }}>{s.footerCredit}</span>
+      </div>
+    )
+
+    // The frame's 56 above the wordmark is the root's `padY`, as in Retro's;
+    // the 56 under each block is kept, and the root's gap of 2 stands between
+    // the upper frame and the small print at every width.
+    if (s.narrow) {
+      return (
+        <div style={col('2px')}>
+          {edge}
+          <div style={col(0)}>
+            <div style={col(u(20), { position: 'relative', paddingBottom: u(56) })}>
+              {wordmark}
+              {statement}
+              {seal}
+            </div>
+            <span style={{ height: 0, borderTop: hair }} />
+            <div style={{ padding: `${u(56)} 0` }}>{links}</div>
+          </div>
+          {smallPrint}
+        </div>
+      )
+    }
+
+    return (
+      <div style={col('2px')}>
+        {edge}
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: u(79) }}>
+          {/* 409.71 tall less the dropped 56: the wordmark and the statement
+              pushed to its ends, the seal absolute over it. */}
+          <div style={{
+            position: 'relative', width: u(743), flex: '0 1 auto',
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            minHeight: u(353.71), paddingBottom: u(56),
+          }}>
+            {wordmark}
+            {statement}
+            {seal}
+          </div>
+          {/* Line 19 runs from the instance's top edge to 2.16 short of the
+              row's foot, so it reclaims the whole of the root's top padding and
+              meets the edge hairline. */}
+          <span style={{
+            width: 0, borderLeft: hair, flex: 'none',
+            marginTop: `calc(-1 * ${s.padY})`, marginBottom: u(2.16),
+          }} />
+          <div style={{ flex: '1 1 auto', paddingBottom: u(56) }}>{links}</div>
+        </div>
+        {smallPrint}
+      </div>
+    )
+  }
+
   // Line 17 and Line 19 are a 1px #1B1714 stroke — the page ink at full
   // strength, not the tint every pre-§10.2 divider takes.
   const rule = `1px solid ${s.tx}`
