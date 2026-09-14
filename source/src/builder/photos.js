@@ -1,4 +1,5 @@
-// Retro's seeded mock photography, exported from the §10.2 Figma frames.
+// The seeded mock photography of the two designed templates, exported from their
+// Figma frames — Retro's §10.2 page and Lime's layout-1 page.
 //
 // These are *imports*, never fetched: §8.6 forbids a network request anywhere in
 // the render path, and vite-plugin-singlefile forces `assetsInlineLimit = () => true`,
@@ -9,8 +10,8 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// Retro is the only designed template (README "Scope boundaries"), so it is the only
-// one that seeds photography. The other four keep the initials placeholder.
+// Retro and Lime are the designed templates (README "Scope boundaries"), so they
+// are the ones that seed photography. The other three keep the initials placeholder.
 
 import hero from './photos/hero.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
@@ -30,6 +31,12 @@ import track4 from './photos/track-4.jpg'
 import track5 from './photos/track-5.jpg'
 import mapTile from './photos/map.jpg'
 import grain from './photos/grain.jpg'
+import limeHero from './photos/lime-hero.jpg'
+import limeHeaderAvatar from './photos/lime-header-avatar.jpg'
+import limeStage from './photos/lime-stage.jpg'
+import limeCalendar from './photos/lime-calendar.jpg'
+import limeAvatar from './photos/lime-avatar.jpg'
+import limeGallery4 from './photos/lime-gallery-4.jpg'
 
 // Keyed by section category id, matching FIELDS: a single `image` slot takes a
 // string, a multi-photo `images` slot takes an array in slot order.
@@ -56,6 +63,25 @@ export const RETRO_PHOTOS = {
   gallery: [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7],
 }
 
+// Lime's layout-1 frames (964:58588…98) are a different shoot for the artist's
+// own photographs and the same images as Retro's for everything else — an
+// image-hash walk of both pages settled which. New: the hero and its portrait
+// card, the bio's arch (exported at the frame's own CROP, a portrait slice of a
+// landscape source), the calendar's photograph — which unlike Retro's is not the
+// bio's — the form's avatar and the gallery's spotlight. Shared: the six strip
+// thumbnails, the five track covers and the map raster.
+//
+// The form's second slot and the video poster take the bio's photograph, Retro's
+// rule; Lime's layout-1 page draws neither.
+export const LIME_PHOTOS = {
+  header: limeHero,
+  bio: limeStage,
+  calendar: limeCalendar,
+  form: limeAvatar,
+  video: limeStage,
+  gallery: [gallery1, gallery2, gallery3, limeGallery4, gallery5, gallery6, gallery7],
+}
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // Figma dresses the rows with real album covers (The Who, Pink Floyd, Nirvana).
@@ -79,24 +105,34 @@ export const RETRO_VIDEO_ART = [gallery1, gallery2, gallery3, gallery5, gallery6
 // Per-row artwork by category. Both lists seed only the untouched default rows:
 // once the artist edits the list, the art travels in the row itself
 // (`c.tracks[i].image`), so a row they add past the seed has none and falls
-// back to the initials placeholder.
+// back to the initials placeholder. Lime's frames dress the rows with the same
+// covers, so both templates share it.
 const ROW_ART = { media: RETRO_TRACK_ART, video: RETRO_VIDEO_ART }
 
 // The artist avatar, cropped from the §10.2 hero frame's `pp` card (Figma node
 // 964:58576) — a tight portrait from a different shot than the backdrop behind
 // it, which is the whole reason the header's two photos are separate `image` /
 // `avatar` content keys: uploading a backdrop leaves this crop in place, and
-// vice versa. Kept at 384px, roughly 2× the card's 158px render.
+// vice versa. Kept at 384px, roughly 2× the card's 158px render. Lime's is the
+// centre square of its own `pp` card's source (964:58588), at the same size.
 export const RETRO_HEADER_AVATAR = headerAvatar
+export const LIME_HEADER_AVATAR = limeHeaderAvatar
 
-// Fixed decoration rather than user content, so these are not in FIELDS and are
-// gated on `s.retro` like every other decorative element.
+// Fixed decoration rather than user content, so these are not in FIELDS. The
+// grain is Retro's alone; the map raster is also Lime's (sectionVm decides).
 export const RETRO_TEXTURE = { grain, map: mapTile }
 
-const isRetro = (themeName) => themeName === 'Retro'
+// Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
+// nothing, which is what leaves the flat three rendering exactly as they did.
+//   photos — the section photographs above
+//   avatar — the header's and the video section's artist portrait (`avatar` key)
+//   photo  — the enquiry form's scene (`photo` key)
+const SEEDS = {
+  Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: stage },
+  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeStage },
+}
 
-// Resolvers for the two shapes. Both return undefined for the other four themes,
-// which is what leaves them rendering exactly as they did before.
+// Resolvers for the two shapes. Both return undefined for an unseeded theme.
 //
 // The header, the video section and the enquiry form are the three categories
 // with two independent single-photo slots — a scene and the artist — so this one
@@ -106,24 +142,25 @@ const isRetro = (themeName) => themeName === 'Retro'
 // The form is the odd one of the three: its `image` is the *artist* (layout 1
 // draws it as the 48px circle beside the brand), so its second slot is the
 // scene rather than the portrait, and it is keyed `photo` rather than `avatar`.
-// It takes the same live-set frame the bio, the calendar and the video section
-// stand on — layout 2's frame is a stage shot, and it is the only photograph in
-// the seeded set that is one.
+// It takes the same live-set frame the bio and the video section stand on —
+// layout 2's frame is a stage shot, and it is the only photograph in the seeded
+// set that is one.
 export const defaultImage = (cat, themeName, key = 'image') => {
-  if (!isRetro(themeName)) return undefined
-  if (key === 'avatar') return cat === 'header' || cat === 'video' ? RETRO_HEADER_AVATAR : undefined
-  if (key === 'photo') return cat === 'form' ? stage : undefined
-  const v = RETRO_PHOTOS[cat]
+  const seed = SEEDS[themeName]
+  if (!seed) return undefined
+  if (key === 'avatar') return cat === 'header' || cat === 'video' ? seed.avatar : undefined
+  if (key === 'photo') return cat === 'form' ? seed.photo : undefined
+  const v = seed.photos[cat]
   return Array.isArray(v) ? undefined : v
 }
 
 export const defaultImages = (cat, themeName) => {
-  const v = isRetro(themeName) ? RETRO_PHOTOS[cat] : undefined
+  const v = SEEDS[themeName]?.photos[cat]
   return Array.isArray(v) ? v : undefined
 }
 
 // The third shape: artwork that belongs to a row of a list rather than to the
 // section. The media player's tracks and the video section's list have some,
-// and only under Retro.
+// under both seeded themes.
 export const defaultTrackArt = (cat, themeName) =>
-  (isRetro(themeName) ? ROW_ART[cat] : undefined)
+  (SEEDS[themeName] ? ROW_ART[cat] : undefined)

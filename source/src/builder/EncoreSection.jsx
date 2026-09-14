@@ -546,7 +546,7 @@ function TagChips({ s, justify = 'flex-start', radius, size }) {
   // §10.2 sets the chips in the body face at label-xs, sentence case — not the
   // tracked-out caps the flat templates use.
   const chip = s.retro
-    ? { fontFamily: s.body, fontSize: size || s.labelXs, lineHeight: 1.26, padding: '5px 11px' }
+    ? { fontFamily: s.ui, fontSize: size || s.labelXs, lineHeight: 1.26, padding: '5px 11px' }
     : {
         fontSize: '9px', fontWeight: 700, letterSpacing: '1px',
         textTransform: 'uppercase', padding: '5px 11px',
@@ -5253,7 +5253,7 @@ function Pricing({ s }) {
                 })}>
                   {t.feats.map((f, j) => (
                     <span key={j} style={row(s.narrow ? '8px' : '7px', {
-                      fontFamily: s.body, fontSize: s.narrow ? s.labelXs : '16px', lineHeight: 1.26,
+                      fontFamily: s.ui, fontSize: s.narrow ? s.labelXs : '16px', lineHeight: 1.26,
                     })}>
                       <Check size={s.narrow ? 12 : 11} color={t.acc} style={{ flex: 'none' }} />
                       {f}
@@ -5502,7 +5502,7 @@ function Pricing({ s }) {
                     <span key={i} style={row(u(8), { minWidth: 0 })}>
                       <span style={{ ...chipType, color: h.acc, flex: 'none' }}>+</span>
                       <span style={{
-                        fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, minWidth: 0,
+                        fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26, minWidth: 0,
                       }}>{f}</span>
                     </span>
                   ))}
@@ -5744,7 +5744,7 @@ function Pricing({ s }) {
             {!!t.blurb && (
               <p style={{
                 margin: 0, width: '100%',
-                fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+                fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26,
               }}>{t.blurb}</p>
             )}
             {/* The frame's pill is layout 2's, at layout 2's three scales — the
@@ -5787,7 +5787,7 @@ function Pricing({ s }) {
                   <span key={j} style={row(u(8), { minWidth: 0 })}>
                     <span style={{ ...chipType, flex: 'none' }}>&#10003;</span>
                     <span style={{
-                      fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, minWidth: 0,
+                      fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26, minWidth: 0,
                     }}>{f}</span>
                   </span>
                 ))}
@@ -5830,7 +5830,7 @@ function Pricing({ s }) {
             <div style={{
               width: '100%', border: `1px solid ${h.card}`, borderRadius: u(30),
               padding: `calc(${u(28)} - 1px)`,
-              fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, color: s.muted,
+              fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26, color: s.muted,
             }}>No packages yet.</div>
           ) : shown.map(packRow)}
         </div>
@@ -5996,7 +5996,7 @@ function Pricing({ s }) {
                   <span key={j} style={{
                     background: seat.bg, color: seat.fg, borderRadius: u(8),
                     padding: `${u(5)} ${u(11)}`, minWidth: 0,
-                    fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+                    fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26,
                   }}>{f}</span>
                 )
               })}
@@ -6064,7 +6064,7 @@ function Pricing({ s }) {
           // list that has something in it.
           <div style={{
             ...rowBox(true),
-            fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, color: s.muted,
+            fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26, color: s.muted,
           }}>No packages yet.</div>
         ) : s.tiers.map(serviceRow)}
         {!!s.pricingSub && (
@@ -8704,7 +8704,7 @@ function Calendar({ s }) {
     const colHead = (
       <div style={row(gap, {
         padding: `${u(18)} ${padX}`, borderBottom: `1px solid ${rule}`,
-        fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26, color: hue,
+        fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26, color: hue,
         justifyContent: s.mob ? 'space-between' : undefined,
       })}>
         <span style={{ flex: 'none', minWidth: dateCol }}>Date ↓</span>
@@ -8733,7 +8733,7 @@ function Calendar({ s }) {
       const day = (
         <span style={{
           flex: s.mob ? 'none' : '1 1 0', minWidth: 0,
-          fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+          fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26,
         }}>{sl.day}</span>
       )
       return (
@@ -10291,7 +10291,7 @@ function EventsMap({ s }) {
           <span style={{
             fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
           }}>{gg.month}</span>
-          <span style={{ fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{gg.day}</span>
+          <span style={{ fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{gg.day}</span>
         </span>
       )
       const lines = (
@@ -12732,7 +12732,7 @@ function EnquiryForm({ s }) {
             <div style={col(u(10), { minWidth: 0 })}>
               {s.formPromises.map((p) => (
                 <span key={p} style={row(u(10), {
-                  fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26,
+                  fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26,
                 })}>
                   <Check size={Math.round(12 * z)} style={{ flex: 'none' }} />
                   {p}
@@ -12748,7 +12748,7 @@ function EnquiryForm({ s }) {
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
                 }}>{s.brand}</span>
-                <span style={{ fontFamily: s.body, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{s.kicker}</span>
+                <span style={{ fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{s.kicker}</span>
               </span>
             </span>
           </div>

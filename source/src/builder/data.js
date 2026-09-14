@@ -20,6 +20,12 @@ export const THEMES = [
     // without naming a weight. Do NOT add more Fraunces weights to that link — a
     // second face would let the default 400 win and the display would go thin.
     label: "'Anton', sans-serif",
+    // Figma's `font/ui` — the face `Label/XS` names (the chips, the day
+    // numbers, the feature lines). Retro's mode sets it to Inter, the same face
+    // as `body`, and spelled identically so a reader switched from `s.body` to
+    // `s.ui` computes the byte-equal font-family. Themes without the key fall
+    // back to `body` in sectionVm.
+    ui: "'Inter', sans-serif",
     body: "'Inter', sans-serif",
     // Passthrough, not title-casing. The §10.2 reference sets display copy as
     // typed ("Kai Mercer", "240 Songs") and reserves caps for the Anton labels,
@@ -37,17 +43,50 @@ export const THEMES = [
   {
     name: 'Lime',
     sub: 'Bebas Neue · dark acid',
+    // Lime is the second template with a Figma variable mode ("1 · Primitives" →
+    // Lime, "2 · Scheme" → Scheme 1), so every value below is that mode's, read
+    // off the file rather than chosen. Bebas Neue is caps-only, which is why the
+    // display and label faces need no casing of their own; Chakra Petch and
+    // Inter set mixed case ("Sold Out", "Full name") and so casing is 'title'.
     display: "'Bebas Neue', sans-serif",
-    label: "'Archivo', sans-serif",
-    body: "'Archivo', sans-serif",
-    casing: 'upper',
-    dls: '0.02em',
-    radius: '6px',
-    radiusSm: '4px',
-    btnR: '4px',
-    bw: '1.5px',
+    label: "'Bebas Neue', sans-serif",
+    ui: "'Chakra Petch', sans-serif",
+    body: "'Inter', sans-serif",
+    casing: 'title',
+    // Every Lime text style states letterSpacing 0.
+    dls: '0px',
+    // radius/card, radius/control, radius/pill, border/thin — the same four
+    // tokens Retro's 20 / 14 / 999 / 2 are.
+    radius: '26px',
+    radiusSm: '13px',
+    btnR: '999px',
+    bw: '2px',
+    // radius/chip. Retro's is 8 and has no key: its chips write the literal.
+    radiusChip: '6px',
     palette: ['#15180F', '#AFE335', '#F2FFD0'], // near-black · acid lime · pale lime
-    tags: ['#AFE335', '#2E3928', '#15180F', '#F2FFD0'],
+    // Scheme 1's tag1…tag7 backgrounds alternate between exactly these two, so
+    // the seat system every `T.tags` reader walks has two seats here. Their
+    // inks are not contrast()'s black and white, hence `sem.tagFg` beside them.
+    tags: ['#2E3928', '#AFE335'],
+    // The semantic colours the three-colour palette cannot derive — Scheme 1,
+    // the scheme eight of the eleven layout-1 sections stand on. sectionVm
+    // resolves them onto flat vm keys (`s.box1`, `s.glow`, …). Retro has no
+    // `sem` and must not grow one: its branches write these as literals.
+    sem: {
+      box1: '#2E3928',                      // sem/box/1 — the olive band, the card fill
+      box2: '#394732',                      // sem/box/2 — a raised card
+      box3: '#101309',                      // sem/box/3 — a sunk well
+      glow: '#A6E22E',                      // sem/glow
+      activeBg: '#AFE335',                  // sem/active/bg
+      activeFg: '#0D1F03',                  // sem/active/text — ink on lime, not contrast(ac)
+      inactiveBg: '#2E3928',                // sem/inactive/bg
+      inactiveFg: '#AFE335',                // sem/inactive/text
+      inactiveLine: '#2E3928',              // sem/state/inactive/border
+      stroke1: 'rgba(242, 255, 208, 0.15)', // sem/stroke/1 — hairlines
+      stroke2: '#AFE335',                   // sem/stroke/2
+      hl: '#C7FF3C',                        // sem/box/1/text — the highlight ink
+      tagFg: ['#AFE335', '#0D1F03'],        // sem/tag/1/text, sem/tag/2/text — parallel to `tags`
+    },
   },
   {
     name: 'Grunge',

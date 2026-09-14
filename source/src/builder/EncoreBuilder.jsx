@@ -54,10 +54,12 @@ import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './p
  * §5.5 Axis B — canvas device preview sizing
  * ------------------------------------------------------------------ */
 
+// `dev` names the row, so sectionVm can pick a theme's ramp for it: `canvasW` is
+// no key for that, since PublishedPage overwrites it with '100%' on a phone.
 const SIZES = {
-  mobile:  { h1: '42px', h1b: '50px',  h2: '29px', pad: '44px 22px', navGap: '36px', split: '1fr',         g3: '1fr',           g2: '1fr',       canvasW: '390px'  },
-  tablet:  { h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 40px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
-  desktop: { h1: '86px', h1b: '118px', h2: '46px', pad: '80px 64px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
+  mobile:  { dev: 'mobile',  h1: '42px', h1b: '50px',  h2: '29px', pad: '44px 22px', navGap: '36px', split: '1fr',         g3: '1fr',           g2: '1fr',       canvasW: '390px'  },
+  tablet:  { dev: 'tablet',  h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 40px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
+  desktop: { dev: 'desktop', h1: '86px', h1b: '118px', h2: '46px', pad: '80px 64px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
 }
 
 // §10.2 — the Figma type ramp, layered on top of SIZES rather than replacing it:
@@ -75,6 +77,33 @@ const RAMP = {
   desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '64px', narrow: false },
 }
 
+// The rest of the Figma file's size tokens, which RAMP never carried because
+// the branches fitted before them wrote per-width literal tables instead. Retro's
+// mode on the same rule (tablet and mobile verbatim from `size-tablet/*` and
+// `size-mobile/*`, desktop × 0.82, rounded), so a shared branch that reads one
+// gets a number under every theme. Nothing read these when they were added.
+//
+// RAMP's own seven keys are NOT Retro's tokens everywhere — mobile dispXl is 77
+// against a token of 48, tablet title 22 against 19 — because they were fitted
+// to renders before the variable file existed. They stay as they are.
+const RAMP_REST = {
+  mobile:  { dispMd: '30px', list: '13px', labelLg: '14px', labelSm: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px' },
+  tablet:  { dispMd: '38px', list: '12px', labelLg: '16px', labelSm: '13px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px' },
+  desktop: { dispMd: '39px', list: '13px', labelLg: '20px', labelSm: '13px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px' },
+}
+
+// A designed template's own ramp, laid over the Z spread in sectionVm, keyed by
+// `THEMES[].name` and then by `SIZES[].dev`. Lime's is its Figma mode on
+// RAMP_REST's rule — every key, no fitted exceptions — so `s.dispXl` under Lime
+// is `size/display-xl` at that width. A theme with no row keeps RAMP's numbers.
+const THEME_RAMP = {
+  Lime: {
+    mobile:  { dispXl: '72px',  dispLg: '54px',  dispMd: '40px', dispSm: '32px', title: '26px', list: '18px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
+    tablet:  { dispXl: '120px', dispLg: '81px',  dispMd: '50px', dispSm: '40px', title: '28px', list: '19px', labelLg: '21px', labelMd: '17px', labelSm: '14px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '13px', chip: '12px', eyebrow: '12px' },
+    desktop: { dispXl: '164px', dispLg: '107px', dispMd: '59px', dispSm: '41px', title: '30px', list: '20px', labelLg: '26px', labelMd: '20px', labelSm: '15px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '11px', chip: '11px', eyebrow: '12px' },
+  },
+}
+
 // The two keys that only matter once a window is wider than the canvas its
 // frame was drawn at — see PublishedPage, the one place that sets a surplus.
 //
@@ -90,7 +119,7 @@ const WIDE = {
   tablet:  { surplus: '0px', heroH: 1024 },
   desktop: { surplus: '0px', heroH: 614 },
 }
-for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k], WIDE[k])
+for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k], RAMP_REST[k], WIDE[k])
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis A — builder chrome breakpoint
@@ -198,10 +227,24 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
     // theme typography
     display: T.display, label: T.label, body: T.body, dls: T.dls,
+    // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
+    // carry one; the flat three fall back to their body face.
+    ui: T.ui ?? T.body,
     radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
+    // `radius/chip`. Retro's token is 8, which its branches write as a literal.
+    radiusChip: T.radiusChip ?? '8px',
 
-    // device sizing
-    ...Z, mob: !!mob,
+    // A designed template's semantic colours beyond its three-colour palette
+    // (THEMES[].sem, Lime's Scheme 1). They are undefined under every theme
+    // with no `sem` — Retro writes its equivalents as literals — so read them
+    // behind `s.lime`, never as a shared value.
+    box1: T.sem?.box1, box2: T.sem?.box2, box3: T.sem?.box3, glow: T.sem?.glow,
+    activeBg: T.sem?.activeBg, activeFg: T.sem?.activeFg,
+    inactiveBg: T.sem?.inactiveBg, inactiveFg: T.sem?.inactiveFg, inactiveLine: T.sem?.inactiveLine,
+    stroke1: T.sem?.stroke1, stroke2: T.sem?.stroke2, hl: T.sem?.hl,
+
+    // device sizing — and over it a designed template's own ramp, if it has one
+    ...Z, ...THEME_RAMP[T.name]?.[Z.dev], mob: !!mob,
 
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
@@ -237,6 +280,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
     // the other four render the identical structure, flat.
     retro: T.name === 'Retro',
+    // Lime's layout-1 page is the same eleven components in its own variable
+    // mode, so its decoration — arc seams, glows, the arch portrait — goes
+    // inside the same shared branches, behind this flag. It composes with
+    // `retro` rather than replacing it: what both designed templates draw is
+    // gated `(s.retro || s.lime)`, what Lime alone draws is `s.lime`.
+    lime: T.name === 'Lime',
   }
 
   // ---- content -----------------------------------------------------
@@ -257,8 +306,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.badgeText = cv('badgeText', artistName)
   vm.navMode = cv('navMode', 'sections')
   vm.align = cv('align', 'left')
-  // Retro seeds the §10.2 mock photography; the other four themes resolve to
-  // undefined and keep the initials placeholder. `undefined` already means "key
+  // Retro and Lime seed their Figma pages' mock photography (photos.js); the
+  // flat three resolve to undefined and keep the initials placeholder. `undefined` already means "key
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
@@ -275,9 +324,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // an empty slot falls through to the section's initials placeholder. An
   // explicitly emptied array is already distinguishable, so no sentinel is needed.
   vm.images = Array.isArray(c.images) ? c.images : (defaultImages(cat, T.name) ?? [])
-  // Fixed Retro decoration — paper grain and the events-map raster (§10.2).
+  // Fixed decoration — paper grain and the events-map raster (§10.2). The grain
+  // is Retro's alone (Lime's frames carry no texture); the raster is the same
+  // image in Lime's map frame, so both designed templates take it.
   vm.grainSrc = T.name === 'Retro' ? RETRO_TEXTURE.grain : undefined
-  vm.mapSrc = T.name === 'Retro' ? RETRO_TEXTURE.map : undefined
+  vm.mapSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.map : undefined
 
   // §4.8 — `navSections` is `{ cat, label }`, and a nav link keeps the target
   // as `to` so the published page can scroll to it (§4.3a).
@@ -305,9 +356,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   const tagSource = cat === 'tags'
     ? String(cv('tags', TAGS.join(', '))).split(',').map((t) => t.trim()).filter(Boolean)
     : TAGS
+  // A template whose Figma mode names each tag's ink (`sem.tagFg`, parallel to
+  // `tags`) takes it; contrast()'s black-or-white is the fallback, and is wrong
+  // on both of Lime's seats.
   vm.chips = tagSource.map((t, i) => {
     const cbg = T.tags[i % T.tags.length]
-    return { label: cased(t), bg: cbg, fg: contrast(cbg) }
+    return { label: cased(t), bg: cbg, fg: T.sem?.tagFg?.[i % T.tags.length] ?? contrast(cbg) }
   })
 
   // §10.2 — the Book Now pill is accent-coloured type on a second palette hue,
@@ -319,6 +373,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     .reduce((best, h) => (lum(h) > lum(best) ? h : best), T.tags.find((h) => h !== bg && h !== ac) || T.tags[0])
   vm.pillBg = pillBg
   vm.pillFg = Math.abs(lum(pillBg) - lum(ac)) > 0.22 ? ac : contrast(pillBg)
+  // A template whose Figma mode names its button pair takes it instead. Lime's
+  // two tag seats leave the walk above only its box1 olive, dark on the dark
+  // page — and its frames draw every pill in active/bg with active/text anyway.
+  if (T.sem?.activeBg) {
+    vm.pillBg = T.sem.activeBg
+    vm.pillFg = T.sem.activeFg
+  }
 
   // bio
   vm.bioP1 = cv('para1', DEFS.bioP1)
@@ -798,7 +859,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // so a row hue has to separate from that charcoal — Retro's near-black tag reads
   // fine on sand and disappears on the dark. Fall back to the cream, as §10.2 does.
   // `v0` too, matching the section root's own `darkMap`: the gig rows only render
-  // in that layout, and the flat one keeps the page's ground.
+  // in that layout, and the flat one keeps the page's ground. Retro's alone: Lime's
+  // map frame stands on a *light* band (Scheme 4), not a lifted charcoal.
   const gigDark = cat === 'map' && vm.v0 && T.name === 'Retro'
   const gigGround = gigDark ? vm.mapBg : bg
   const gigFallback = gigDark ? vm.mapFg : tx

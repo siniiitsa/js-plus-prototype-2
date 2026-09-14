@@ -126,38 +126,63 @@ Lime decoration layer can cover it (a glow or an arc edge drawn over a chip row)
 *state* can stop reading in Lime colours: a chip that is active on `#AFE335` must still be
 distinguishable from one inactive on `#2E3928`, and the form's refused-box rule draws in `ctlInk`.
 
-Under Lime, every section today shows **initials placeholders instead of photographs**, because
-`photos.js` seeds Retro only. Lime's Figma uses the same photographs Retro seeds (the hero, the
-stage shot, the gallery set, the form avatar), so session 0 widens that gate.
+Under Lime, every section showed **initials placeholders instead of photographs**, because
+`photos.js` seeded Retro only. **Session 0 corrected this plan's assumption that Lime reuses
+Retro's photographs: it does not.** An image-hash walk of both pages found a different shoot for
+the artist's own pictures — the hero (`51d68654`), the header portrait card (`e3790c2c`), the
+bio's arch (`fa453f7d`), the calendar photograph (`dc450d0a`, which is *not* the bio's, where
+Retro uses one `stage` for both), the form avatar (`f821adc2`) and the gallery spotlight
+(`3a59b4d1`). Shared with Retro: the six strip thumbnails, the five track covers and the map
+raster (`8cd103b8`). So `photos.js` now seeds by theme name (`SEEDS`) with a `LIME_PHOTOS` row,
+and `vm.mapSrc` is Retro's *and* Lime's. The frame's own oddity: its glowing thumbnail 4 is
+Retro's spotlight (`3f0c98b4`) while the viewer shows `3a59b4d1`; one image serves both here.
 
 ## Lime's Figma mode
 
-This is `get_variable_defs` on the desktop page `964:58587`. It is the desktop mode: re-run the
-call on the 768 and 390 pages before trusting any `size/…` value at those widths.
+The file's variables are four collections, and session 0 read them directly with `use_figma`
+(`figma.variables.getLocalVariablesAsync()`), which is more reliable than `get_variable_defs`:
 
-| Token | Lime | Notes |
-|---|---|---|
-| `font/display` | Bebas Neue | `THEMES[1].display` already |
-| `font/label` | Bebas Neue | `THEMES[1].label` is **Archivo** today |
-| `font/ui` | **Chakra Petch** | no `ui` key exists. Retro's is Inter, collapsed into `body` |
-| `font/body` | Inter | `THEMES[1].body` is **Archivo** today |
-| `size/display-xl` / `-lg` / `-md` / `-sm` | 200 / 130 / 72 / 50 | Retro's display-xl is 128. `RAMP.desktop.dispXl` 105 = 128 × 0.82 |
-| `size/title` / `list` | 36 / 24 | |
-| `size/label-lg` / `-sm` / `-xs` | 32 / 18 / 20 | |
-| `size/body-lg` / `-md` / `-sm`, `size/eyebrow` | 16 / 14 / 13, 15 | eyebrow is Inter Bold |
-| line heights | display-xl .75, display-lg .89, display-md/-sm 1, title/label 1.1, list 1.2, label-xs 1.26, body 1.5, body-sm 1.4, eyebrow 1.3 | |
-| `radius/card` / `control` / `chip` | 26 / 13 / 6 | pills are 999 where a frame draws one |
-| `border/default` / `thin` / `hairline` | 3 / 2 / 1 | |
-| `sem/bg` | `#15180F` | `palette[0]` |
-| `sem/text/1`, `sem/active/bg`, `sem/stroke/2`, `sem/tag/2/bg`, `sem/inactive/text`, `sem/tag/1/text` | `#AFE335` | `palette[1]` |
-| `sem/text/2` | `#F2FFD0` | `palette[2]`, and the ground of the light bands |
-| `sem/box/1`, `sem/tag/1/bg`, `sem/state/inactive/border` | `#2E3928` | the olive-dark band and card fill |
-| `sem/box/2` | `#394732` | raised card |
-| `sem/box/3` | `#101309` | sunk well |
-| `sem/active/text`, `sem/tag/2/text` | `#0D1F03` | ink on lime, **not** `contrast(ac)` |
-| `sem/inactive/bg` | `#D9FF7F` | light-band inactive fill |
-| `sem/glow` | `#A6E22E` | the glows |
-| `sem/stroke/1` | `#F2FFD0` at 15% (`#f2ffd026`) | hairlines |
+- **`1 · Primitives`** — modes Retro / **Lime** / Static Youth / Sienna Vale / Pop. Fonts, sizes,
+  radii, borders, and every `scheme/N/*` colour.
+- **`0 · Device`** — Desktop / Tablet / Mobile. Aliases `size/*` to `size-tablet/*` and
+  `size-mobile/*`, which are themselves primitives, so **the 768 and 390 ramps are in the dump**
+  and need no per-page `get_variable_defs`.
+- **`2 · Scheme`** — Scheme 1…9. Aliases `sem/*` to `scheme/N/*`. **Each section instance picks
+  its own scheme** (`node.explicitVariableModes`), so a `sem/*` value depends on the section.
+- **`3 · Tokens`** — `comp/*` aliases of `sem/*` and the radii.
+
+The table this plan first carried was a `get_variable_defs` read of the *page*, which mixed three
+schemes into one list (its `sem/inactive/bg #D9FF7F` is Scheme 3's). The corrected values:
+
+| Token | Retro | Lime | `THEMES` key |
+|---|---|---|---|
+| `font/display` / `label` / `ui` / `body` | Soulway / Anton / Inter / Inter | Bebas Neue / Bebas Neue / **Chakra Petch** / Inter | `display` / `label` / `ui` / `body` |
+| `size/display-xl` / `-lg` / `-md` / `-sm` | 128 / 96 / 48 / 40 | 200 / 130 / 72 / 50 | ramp `dispXl` / `dispLg` / `dispMd` / `dispSm` |
+| `size/title` / `list` | 24 / 16 | 36 / 24 | `title` / `list` |
+| `size/label-lg` / `-md` / `-sm` / `-xs` | 24 / 20 / 16 / 20 | 32 / 24 / 18 / 20 | `labelLg` / `labelMd` / `labelSm` / `labelXs` |
+| `size/body-lg` / `-md` / `-sm`, `chip`, `eyebrow` | 16 / 14 / 12, 12, 15 | 16 / 14 / 13, 13, 15 | `bodyLg` / `bodyMd` / `bodySm`, `chip`, `eyebrow` |
+| tablet `size-tablet/*` (xl lg md sm · title list · lLg lMd lSm lXs · bLg bMd bSm · chip eyebrow) | 77 60 38 32 · 19 12 · 16 14 13 14 · 15 13 12 · 11 12 | 120 81 50 40 · 28 19 · 21 17 14 14 · 15 13 13 · 12 12 | |
+| mobile `size-mobile/*`, same order | 48 40 30 26 · 18 13 · 14 13 12 12 · 15 13 12 · 11 11 | 72 54 40 32 · 26 18 · 14 13 12 12 · 15 13 12 · 11 11 | |
+| `radius/card` / `control` / `chip` / `pill` | 20 / 14 / 8 / 999 | 26 / 13 / 6 / 999 | `radius` / `radiusSm` / `radiusChip` / `btnR` |
+| `border/hairline` / `thin` / `default` / `heavy` | 1 / 2 / 3 / 5 | 1 / 2 / 3 / 3 | `bw` is `border/thin` |
+| letter spacing | 0 on every style | 0 on every style | `dls` |
+| line heights | display-xl .75, display-lg .89, display-md/-sm 1, label 1.1, list 1.2, label-xs 1.26, body 1.5, body-sm 1.4, eyebrow 1.3 | the same | — |
+
+**The schemes Lime's layout-1 page uses**, by instance (`explicitVariableModes` on collection
+`VariableCollectionId:187:129`; the mode id is not the scheme number — `187:1` is Scheme 1,
+`187:7` Scheme 2, `187:8` Scheme 3, `187:9` Scheme 4):
+
+| Section | Scheme | `bg` | `text1` | `text2` | `box1` | `box2` | `box3` | `active` bg/text | `inactive` bg/text/border | `stroke1` | `stroke2` | `glow` | `tag1` / `tag2` bg/text |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| header, bio, gallery, repertoire, pricing, calendar, testimonials, footer | **1** | `#15180F` | `#AFE335` | `#F2FFD0` | `#2E3928` | `#394732` | `#101309` | `#AFE335` / `#0D1F03` | `#2E3928` / `#AFE335` / `#2E3928` | `#F2FFD0` 15% | `#AFE335` | `#A6E22E` | `#2E3928`/`#AFE335`, `#AFE335`/`#0D1F03` |
+| media | **2** | `#2E3928` | `#AFE335` | `#F2FFD0` | `#394732` | `#43523B` | `#263020` | `#AFE335` / `#0D1F03` | `#43523B` / `#AFE335` / `#394732` | `#F2FFD0` 15% | `#AFE335` | `#A6E22E` | `#AFE335`/`#0D1F03`, `#394732`/`#AFE335` |
+| map, form | **4** | `#F2FFD0` | `#15180F` | `#15180F` | `#D5E3B2` | `#F2FFD0` | `#D5E3B2` | `#15180F` / `#C7FF3C` | `#D5E3B2` / `#15180F` / `#F2FFD0` | `#15180F` 15% | `#15180F` | `#15180F` | `#2E3928`/`#AFE335`, `#C7FF3C`/`#15180F` |
+| *(form's contact panel, nested)* | **3** | `#AFE335` | `#15180F` | `#15180F` | `#CCFA61` | `#D9FF7F` | `#9CCF23` | `#15180F` / `#AFE335` | `#D9FF7F` / `#15180F` / `#CCFA61` | `#15180F` 15% | `#15180F` | `#15180F` | `#15180F`/`#C7FF3C`, `#2E3928`/`#AFE335` |
+
+`THEMES[1].sem` carries Scheme 1. A section on Scheme 2, 3 or 4 writes that scheme's values as
+named literals behind `s.lime`, which is how Retro's own header (an instance on **Scheme 3**) was
+fitted. Retro's other ten layout-1 instances carry no explicit scheme and inherit its page's
+Scheme 1.
 
 ## Session 0 — the foundation
 
@@ -436,7 +461,84 @@ pass goes on.
   the same thing.
 - **Harness:** `arch` defaults to **1** in `preview.jsx`, so always pass `arch=0`. `theme` is a
   numeric index: Retro 0, Lime 1.
-- *(Session 0 adds the `THEMES` ↔ token mapping here.)*
+
+Settled in session 0 (the foundation):
+
+- **`THEMES` ↔ Figma tokens.** `display` / `label` / `ui` / `body` are `font/*`. `radius` is
+  `radius/card`, `radiusSm` `radius/control`, `btnR` `radius/pill`, `bw` `border/thin` — proved by
+  Retro's own mode, whose 20 / 14 / 999 / 2 are exactly those four. `radiusChip` is `radius/chip`
+  (Lime 6; Retro has no key and `s.radiusChip` falls back to its token, 8). `dls` is 0 for both,
+  since every text style states letterSpacing 0. `border/default` (3) and `border/hairline` (1)
+  have no key: write them as named literals.
+- **The ramp is theme-aware.** `THEME_RAMP.Lime` (`EncoreBuilder.jsx`, beside `RAMP`) is laid
+  over the `Z` spread in `sectionVm` by `SIZES[].dev`. Under Lime, **every** size key is its token
+  at that width: `s.dispXl` / `dispLg` / `dispMd` / `dispSm` / `title` / `list` / `labelLg` /
+  `labelMd` / `labelSm` / `labelXs` / `bodyLg` / `bodyMd` / `bodySm` / `chip` / `eyebrow`, with
+  desktop at × 0.82 rounded to whole px and 768 / 390 verbatim. So **a Lime branch reads `s.*`
+  rather than writing a per-width literal table** the way Retro's `v1`–`v3` branches do.
+  `RAMP_REST` gives Retro and the flat three the eight keys `RAMP` never had, from Retro's own mode,
+  so a shared read is never undefined. Retro's seven original keys are **not** all its tokens
+  (mobile `dispXl` 77 vs 48, tablet `title` 22 vs 19, tablet `dispLg` 64 vs 60, …): they were fitted
+  to renders before the variable file existed, and stay. `preview.jsx`'s `Z` is a hand copy of
+  `SIZES` + `RAMP` + `RAMP_REST` + `WIDE` and now carries `dev`; keep it in step.
+- **`s.ui` is `font/ui`, the `Label/XS` face** — Chakra Petch under Lime, and Inter under Retro,
+  spelled identically to `body` so the switch is byte-equal. Thirteen readers were switched from
+  `s.body`: every `fontFamily: s.body` at `lineHeight: 1.26` whose size is `labelXs` (TagChips'
+  Retro branch, the pricing v0 feature lines, and eleven `v1`–`v3` sites). The `u(T.eyebrow)` rows
+  at 1.26 and the bio v1 chips at a literal 13px were left on `body`. **A `v0` element the Lime frame
+  sets in Chakra Petch that is not at 1.26 in the code** (the calendar's day numbers, the form's
+  promise lines, the bio's "KM BIO") is the section session's to switch.
+- **Semantic colours are flat vm keys, undefined outside Lime**: `s.box1`, `box2`, `box3`, `glow`,
+  `activeBg`, `activeFg`, `inactiveBg`, `inactiveFg`, `inactiveLine`, `stroke1`, `stroke2`, `hl`,
+  from `THEMES[1].sem`, which is **Scheme 1**. Read them behind `s.lime` only. A section on another
+  scheme (media on 2, map and form on 4, the form's contact panel on 3) takes its values from the
+  scheme table under *Lime's Figma mode* as named literals.
+- **Casing is `'title'`** (a passthrough). Bebas Neue is caps-only, so the display and label faces
+  need nothing; the frame's Chakra Petch and Inter strings are mixed case ("Sold Out", "Full name",
+  "Replies within 24 hrs"). The frame's uppercase eyebrows ("MEDIA", "KM BIO") are typed that way
+  or want a per-site `textTransform`, never `casing`.
+- **`T.tags` is `['#2E3928', '#AFE335']`**, Scheme 1's alternating tag1 / tag2 seats, with
+  `sem.tagFg: ['#AFE335', '#0D1F03']` parallel to it. `vm.chips` reads `tagFg`; every other site
+  still uses `contrast()`. Every site is `% T.tags.length`-safe. What they yield at two seats, and
+  who overrides:
+  - `vm.chips` — alternates box1/lime with the frame's own inks. **Correct as it stands** for the
+    header chip row; TagChips itself still draws the flat 9px caps for Lime (its `s.retro` gate is
+    the header session's).
+  - `deep` `#2E3928`, `deepFg` `#FFFFFF` (the frame's ink on box1 is lime or pale lime), `mapBg`
+    `#444F3A`. Sections standing on box1 should take `s.box1` and a sem ink instead.
+  - `pillBg` / `pillFg` are **`sem.activeBg` / `sem.activeFg`** (`#AFE335` / `#0D1F03`), set in
+    `sectionVm` for any theme with a `sem`. The tag walk alone left `#2E3928`, and that dimmed
+    everything reading `pillBg` as a *colour on the page* — the footer's small print, the
+    testimonials arrows — to dark-on-dark in the first after-render. The frames draw every pill in
+    that pair, so no override is owed; a pill with `bg` as its ink (the header's Book Now) is a
+    one-key change in its session. **The enquiry form moved with it**: its v0 shell paints its
+    contact half in `pillBg`, so under Lime the whole card is now lime and the submit pill (accent
+    on that ground) has lost its fill. The frame's contact panel *is* lime — the nested Scheme 3 —
+    with a `#15180F` pill, so the form session starts closer than it looks, but owes the pill.
+  - `tierHero`, `tierRow` — card `#AFE335`, ink `#2E3928`; `tierFeatSeats` box1/white and
+    lime/`#141414`; the deck alternates lime, box1, lime. **The frame's cards are all `box1` with a
+    glow marking the featured one**: the pricing session overrides.
+  - `repHue` `#AFE335` (legible against `bg`) — probably right; the repertoire session checks.
+  - map row hues alternate `#F2FFD0` / `#AFE335` on the page ground, because `gigDark` stays
+    **Retro's alone** — Lime's map stands on Scheme 4's light band, so its session supplies ink.
+  - testimonials' and the calendar's `T.tags` seats — alternate the same two; their sessions check.
+- **Photographs are per theme** (`SEEDS` in `photos.js`). Lime's six new files are `lime-*.jpg`
+  in `src/builder/photos/`, exported from the frame's assets as JPEG (the MCP asset endpoint serves
+  every image as a ~2 MB 1536 × 1024 PNG): the hero as-is (its `imageTransform` carries a flip,
+  which Figma ignores under `FILL` — the render is unflipped), the bio at its `CROP` (x 0.183 to
+  0.685 of the width, a 771 × 1024 portrait), the two avatars as centre squares at 384 and 240, and
+  the calendar and gallery spotlight at 1200 × 800.
+- **Harness fonts.** `preview.html` now loads Bebas Neue and Chakra Petch, so a `theme=1` render
+  is in its real faces. Every `theme=1` picture taken before session 0 is in fallback faces.
+- **When chrome-devtools MCP drops its connection** (it did, mid-digest, in session 0), drive the
+  harness from a Node script instead: `npm i puppeteer-core` in the scratchpad and launch
+  `~/.cache/puppeteer/chrome-headless-shell/mac_arm-*/chrome-headless-shell-mac-arm64/chrome-headless-shell`
+  with `headless: 'shell'`. Six pages over `page.goto` walked all 14 categories × every layout ×
+  3 widths × 5 themes (810 renders) in 60 s, writing one digest file per render, and a rerun
+  diffed to zero, so the digest is deterministic. The digest row is
+  `[tag, x, y, w, h, background, backgroundImage, colour, border, radius, font size / family /
+  weight, line height, letter spacing, text transform, transform, box shadow, opacity, src, text]`,
+  relative to `#root`, skipping `.seal-spin`.
 
 ## Open questions
 
@@ -450,13 +552,18 @@ pass goes on.
    start from there.
 3. **Track art.** Lime's frame dresses the media rows with the same real album covers Retro's
    did, and Retro ships neutral crops instead (`RETRO_TRACK_ART`). Lime inherits the crops
-   through session 0.
+   through session 0. *Settled in session 0:* the covers' image hashes are identical on both
+   pages, so sharing `ROW_ART` is the faithful answer, not a stand-in.
 4. **Arc seams against a reordered page.** An arc is drawn in the colour of the band it
    assumes sits above it, and a user can reorder sections. Retro accepted the same cost for its
    torn edges. Confirm in section 3 whether an arc can read `s.bg` of its own section and stay
    transparent above, which would make the problem go away.
 5. **`tags`, `audio` and `video` have no Lime layout-1 frame.** They pick up session 0's tokens and
    nothing else. Check after session 0 that they still render legibly at `theme=1`, but do not
-   design them.
+   design them. *Checked in session 0:* all three are legible at desktop — the tags row alternates
+   box1 and lime pills with the frame's inks, the audio list sets its titles in mixed-case Inter
+   under a Bebas head, and the video card is unchanged but for its radius.
 6. **Chakra Petch versus Archivo.** Removing Archivo from Lime is session 0's call. Check whether
-   anything besides Lime loads it before dropping it from `index.html`.
+   anything besides Lime loads it before dropping it from `index.html`. *Settled in session 0:*
+   Lime no longer reads Archivo, but Pop's label and body do and so does the builder chrome
+   (five `fontFamily` literals in `EncoreBuilder.jsx`), so the link keeps it.
