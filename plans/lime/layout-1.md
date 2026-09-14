@@ -95,7 +95,7 @@ row's three masters are fitted in one session.
 | 4 | `gallery` | `964:58591` | Gallery Sections — Component 1 | 1440 × 822 | `986:39880` | 768 × 1119 | `989:22110` | 390 × 776 | `964:58579` | done `0b162e1` |
 | 5 | `repertoire` | `964:58592` | Repertoire — A · Two-column dense | 1440 × 1063 | `986:39881` | 768 × 872 | `986:39893` | 390 × 838 | `964:58580` | done `2606b63` |
 | 6 | `map` | `964:58593` | Events Map — D · Compact tile | 1440 × 1151 | `986:39882` | 768 × 1326 | `986:39894` | 390 × 1167.2 | `964:58581` | done `eda536f` |
-| 7 | `pricing` | `964:58594` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:39883` | 768 × 769 | `986:39895` | 390 × 1520 | `964:58582` | todo |
+| 7 | `pricing` | `964:58594` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:39883` | 768 × 769 | `986:39895` | 390 × 1520 | `964:58582` | done `be2c4d6` |
 | 8 | `calendar` | `964:58595` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:39884` | 768 × 1376 | `986:39896` | 390 × 999 | `964:58583` | todo |
 | 9 | `form` | `964:58596` | Enquiry Forms — B · Split context+form | 1440 × 862 | `986:39885` | 768 × 1114 | `986:39897` | 390 × 1168 | `964:58584` | todo |
 | 10 | `testimonials` | `964:58597` | Testimonials H — Stacked tag card | 1440 × 730 | `986:39886` | 768 × 730 | `986:39898` | 390 × 730 | `964:58585` | todo |
@@ -871,6 +871,48 @@ Settled in section 6 (the events map):
   pager steps and the lit gig survives paging away and back, linked rows are `<a>`, cursors are
   live-gated; the worst-case window `1 … 3 … 6` holds one row at all three widths. `n=0` keeps the
   tile at 298.6 beside the panel's head.
+
+Settled in section 7 (pricing):
+
+- **The sixth Lime block, after the seam: `if (s.lime)` within `Pricing`'s `if (s.v0)`, after
+  `shown`.** `tab`, `active`, `shown` and the hoisted `chip` are shared whole, so the published chip
+  filter and the Book pills needed nothing new. The tree is Retro's twin's (head with its chip row,
+  the deck, the small print), and the diff is pure additions (170 / 0). **Session 0's "the pricing
+  session overrides" is closed by not reading the vm's tag walk at all**: `t.card` / `t.acc` /
+  `t.cardFg` / `t.cardMut`, `TILT`, `Grain` and `hard()` are Retro's branch alone. `tierHero`,
+  `tierRow` and `tierFeatSeats` still carry their session-0 values for layouts 2–4, which are later
+  passes'.
+- **No box token in any of the three masters.** `get_variable_defs` returns `size/*` type and
+  `border/*` only, so card radius 55, chip 56, ico 4 and the 44 / 30·20 paddings are raw numbers
+  (× 0.82 on desktop), not `s.radius` (26). Every type size is the Lime ramp's `s.*`; the one width
+  split is the name, Label/SM at 1440 and 390 but **Label/MD at 768**.
+- **The card's colours are `sem/box/2`, not the plan's `box/1`.** The fill is `s.box2`, the ring 3px
+  `s.stroke1` stroked inside, and the featured card's `INNER_SHADOW` radius 55 spread 0 in `s.glow`.
+  A pixel scan of the 1440 render shows nothing outside the card's edge, so the glow is inset only
+  — the second confirmed entry under *Glows*. The ring and glow are one `boxShadow`, ring first
+  (it paints over the glow, as Figma's stroke does), so the frame's padding needs no `calc(… - 3px)`.
+- **The glow is a seat: rendered index `i % 3 === 1`.** Not `active` (the frame's lit chip is also
+  its second, but the canvas pins chip 0), and not a package property. A filter moves it onto
+  whatever stands in the middle column; `n=8` glows 1 / 4 / 7; one card on show glows nothing.
+- **The narrow price row FILLs its numeral** (122.7 at 768, 208 at 390), which stands the unit at the
+  card's right edge; desktop hugs at 4. The row is `items-end`, not baselined.
+- **`BookPill` takes `bg={s.pillBg} fg={s.activeFg}`** — the frame's pill ink is `sem/tag/2/text`
+  `#0D1F03`, where the branch defaults to `sem/bg`. `full` at 390, as Retro's is. The arrow disc
+  follows `fg`, so it is `#0D1F03` with a lime arrow, the frame's own.
+- **The tick is the frame's typed `✓`** in Inter Body/SM, not lucide `Check`: the media player's
+  "text glyphs stay lucide" rule was about a live state wanting a glyph the frame never draws, and
+  nothing here does. `[ico]` keeps the frame's brackets (Retro's branch prints `ico`).
+- **Emptied content drops its node**, where Retro's branch keeps an empty span that spends a gap:
+  the price symbol, the unit, the blurb, the feature list and the small print.
+- **Measured against the masters' content edges**: desktop head 82 (100 × 0.82), cards 417.7 tall at
+  108.2 down (132 × 0.82), padding 36.1, pill 44.3 standing 36.1 off the foot, small print 26.2 under
+  the deck; 768 head 99.6 (100), deck at 131.6 (132), cards 468.1 (469), name 10 under the ico, pill
+  30 off the foot; 390 head 121.1 (121), deck at 153.1 (153), cards 378.6 / 418.5 (379 / 419) at 20,
+  small print at 1440.7 (1442). The cards are 326.6 wide on desktop against the frame's 338.9 × 0.82,
+  and 216 at 768 against 222.7 — our content width — so "Drinks + dinner ambience" wraps at 768.
+  `live=1` at desktop and 390: every chip filters, the lit chip reads `#0D1F03` on lime, cursors are
+  live-gated, the pills are `<a href="#form">`. `n=0` prints *No packages yet.*; the empty grid still
+  spends its two gaps, as Retro's does.
 
 ## Open questions
 
