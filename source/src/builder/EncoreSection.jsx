@@ -889,8 +889,8 @@ function NavBar({ s, colour, rule, pill }) {
       justifyContent: 'space-between', width: '100%',
       // The desktop corner is the one-row bar's own half-height, 60.7 / 2,
       // not the pill token: one row draws the frame's capsule exactly, and a
-      // page whose section names wrap the links onto a second row (the seeded
-      // eleven give nine, 104px of bar) gets a rounded bar, not a lozenge.
+      // page with so many sections that the links wrap even at their 12px
+      // floor (see the row below) gets a rounded bar, not a lozenge.
       ...(lime ? {
         background: s.bg, borderRadius: s.narrow ? s.btnR : '30.35px',
         padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
@@ -913,15 +913,38 @@ function NavBar({ s, colour, rule, pill }) {
           <BookPill s={s} to={s.bookTo} {...pill} />
           <NavMenu s={s} color={c} />
         </span>
+      ) : lime ? (
+        // Lime's frame holds its links and the pill on one row, and a capsule
+        // that wraps is not one of its states — but the links are the artist's
+        // section names, and the seeded eleven give nine that run far longer
+        // than the frame's eight. So the links take the room the wordmark and
+        // the pill leave, and their type is that room divided by the row's own
+        // width in ems (`s.navEms`, Bebas Neue's advances summed in sectionVm),
+        // capped at the frame's `s.list` and floored at 12px. The gaps are ems
+        // too, so the row shrinks as one. `nav` is the query container and the
+        // row inside it takes the size: `cqi` resolves against an *ancestor*.
+        // Below the floor it wraps, which is the least bad of the options left.
+        <span style={row('19px', { flex: '1 1 0', minWidth: 0, justifyContent: 'flex-end' })}>
+          <nav style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size' }}>
+            <div style={{
+              display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end',
+              gap: `${23 / 24}em`, fontSize: `clamp(12px, calc(100cqi / ${s.navEms}), ${s.list})`,
+            }}>
+              {s.navLinks.map((l) => (
+                <a key={l.label} href={navHref(s, l.to)}
+                   style={labelStyle(s, '1em', { color: c, cursor: 'pointer', lineHeight: 1.2, letterSpacing: s.dls })}>{l.label}</a>
+              ))}
+            </div>
+          </nav>
+          <BookPill s={s} to={s.bookTo} {...pill} />
+        </span>
       ) : (
-        <nav style={row(lime ? '19px' : '18px', {
+        <nav style={row('18px', {
           flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 1 auto', minWidth: 0,
         })}>
           {s.navLinks.map((l) => (
             <a key={l.label} href={navHref(s, l.to)}
-               style={lime
-                 ? labelStyle(s, s.list, { color: c, cursor: 'pointer', lineHeight: 1.2, letterSpacing: s.dls })
-                 : labelStyle(s, s.labelMd, { color: c, cursor: 'pointer' })}>{l.label}</a>
+               style={labelStyle(s, s.labelMd, { color: c, cursor: 'pointer' })}>{l.label}</a>
           ))}
           <BookPill s={s} to={s.bookTo} {...pill} />
         </nav>

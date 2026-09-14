@@ -45,7 +45,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout,
+  headerFamily, layoutCount, designCount, pageLayout, bebasEms,
   headerLayout, headerLayoutLabel,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
@@ -340,6 +340,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.navLinks = vm.navMode === 'minimal'
     ? minimalNav(navSections)
     : navSections.map((n) => ({ label: n.label, to: n.cat }))
+  // How wide Lime's one row of nav links wants to be, in ems of its own type:
+  // every label in Bebas Neue plus the frame's 23/24 gap between each, with 1%
+  // spare. NavBar divides the room it has by this, so the links drop below
+  // `s.list` only when the artist's section names would otherwise wrap the
+  // capsule onto a second row. Floored at 1 so an empty nav divides by nothing
+  // worse than itself. Undefined off Lime, whose label faces are not Bebas.
+  vm.navEms = T.name === 'Lime'
+    ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + bebasEms(l.label), 0)
+      + Math.max(0, vm.navLinks.length - 1) * (23 / 24)) * 1.01).toFixed(3))
+    : undefined
 
   // The header's two CTAs point at a section as well: Book Now at wherever the
   // page takes a booking, Listen at wherever it plays something (§4.3a).

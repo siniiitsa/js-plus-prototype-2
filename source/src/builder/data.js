@@ -206,6 +206,25 @@ export const firstPresent = (prefs, navSections) =>
 export const minimalNav = (navSections) =>
   NAV_MINIMAL.map(([label, prefs]) => ({ label, to: firstPresent(prefs, navSections) }))
 
+// Bebas Neue's advance widths in em, capitals only — Lime's label face, which
+// sets every nav label in caps — read off the loaded face with canvas
+// measureText. Summed a character at a time they land within 1% of each
+// measured label, and over rather than under, because the face all but lacks
+// kerning. Lime's header nav sizes its one row of links from this
+// (EncoreSection's NavBar), since EncoreSection has no effect to measure with.
+const BEBAS_EM = {
+  A: 0.401, B: 0.404, C: 0.383, D: 0.406, E: 0.363, F: 0.344, G: 0.391, H: 0.42, I: 0.192,
+  J: 0.265, K: 0.414, L: 0.344, M: 0.538, N: 0.427, O: 0.4, P: 0.386, Q: 0.4, R: 0.403,
+  S: 0.372, T: 0.364, U: 0.402, V: 0.382, W: 0.557, X: 0.406, Y: 0.394, Z: 0.362,
+  ' ': 0.16, '&': 0.417, '·': 0.188, '/': 0.389, '-': 0.27, "'": 0.188, '.': 0.188,
+  ',': 0.188, '!': 0.21, '?': 0.363, ':': 0.188, '(': 0.276, ')': 0.276, '+': 0.4,
+}
+
+// A label's width in ems of Bebas Neue; digits and anything unlisted take 0.4,
+// the digits' own advance.
+export const bebasEms = (text) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (BEBAS_EM[ch] ?? 0.4), 0)
+
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has

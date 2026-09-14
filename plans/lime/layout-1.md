@@ -593,10 +593,17 @@ Settled in section 1 (the header):
   frame's only effect is the nav capsule's `BACKGROUND_BLUR`, dropped here because the fill under
   it is opaque. The plan's "glow-outlined avatar card" was a guess, and so is every entry in
   *Glows* above until a node's `effects` confirm it.
-- **The nav capsule is `NavBar`'s, so `HeaderV3` has it too.** Its desktop corner is the one-row
-  bar's half-height (30.35), not `btnR`. The seeded eleven sections give nine links, which wrap the
-  1180 canvas and the 1440 published tab onto a second row (104 tall), and a pill radius there drew
-  a lozenge. Retro's bar wraps the same way.
+- **The nav capsule is `NavBar`'s, so `HeaderV3` has it too, and its links hold one row.** The
+  frame fits eight short labels, but ours are the artist's section names. The seeded eleven give
+  nine, which wrapped the capsule to 104 tall on the 1078 editor canvas. So on desktop the links take
+  the room the wordmark and the pill leave, and their type is that room over `s.navEms` (the labels'
+  width in ems, summed from `BEBAS_EM` in `data.js`, a table of Bebas Neue advances measured with
+  canvas `measureText` that lands within 1% of each label, plus the frame's 23/24 gaps, with 1%
+  spare). It is capped at `s.list` and floored at 12px, and wraps only below the floor. The `nav` is
+  the `containerType: 'inline-size'` container and the row inside it takes the
+  `clamp(12px, 100cqi / navEms, list)` size, because `cqi` resolves against an ancestor. The seeded
+  nine set at 16.1px on the 1078 canvas; the harness's six stay at 20. The desktop corner is still
+  the bar's half-height (30.35) for the floor case. Retro's bar still wraps.
 - **The reticle takes the seal's seat and its `showBadge` switch** (`Reticle`, beside `SCRIM`),
   transcribed from the frame's vectors with strokes that scale with the box. Under Lime's header,
   `badgeText` edits nothing. The bio and footer seals are their own sessions'.
