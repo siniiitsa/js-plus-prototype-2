@@ -785,9 +785,9 @@ Settled in section 5 (the repertoire):
   **`frame.lime = { box, ring, ink, idle, glow }`** overrides the Scheme 1 defaults. What it moved, all
   unfitted, recorded rather than fixed (a theme=1 digest of repertoire and map differs in exactly
   repertoire a0 and a1 at all widths and map a2 at 390):
-  - **Map a0 and a1**: no pager at the seeded five gigs (one page), so the canvas is unchanged; at six or
-    more the pills wrap to two rows in the ~500 list panel. The map session sizes them from `964:58593`'s
-    own `pagination` children, not the repertoire's 87 × 54.
+  - **Map a1** (a0 is settled in section 6 — by the compact window, not by new sizes): no pager at the
+    seeded five gigs (one page), so the canvas is unchanged; at six or more the pills wrap to two rows in
+    the ~500 list panel.
   - **Map a2** (the lime sheet): the arrows' 15% pale ring and pale glyph all but vanish, and the caller's
     `hot` is ignored. Lime layout 3's pass passes `frame.lime`.
   - **Repertoire a1** (the pale sheet): the pills stretch to ~270 and the arrows vanish the same way.
@@ -917,3 +917,8 @@ Settled in section 6 (the events map):
    anything besides Lime loads it before dropping it from `index.html`. *Settled in session 0:*
    Lime no longer reads Archivo, but Pop's label and body do and so does the builder chrome
    (five `fontFamily` literals in `EncoreBuilder.jsx`), so the link keeps it.
+7. **`fontSize: s.title` is inert wherever it appears** (found in section 6). `sectionVm` spreads the
+   ramp and then sets `vm.title` to the heading string, so the ramp's `title` size is unreachable and
+   Retro's map v0 base line (and any other `fontSize: s.title` reader) has always fallen back to the
+   inherited size. Fixing it moves Retro, so it belongs to the end-of-pass sweep with a digest, most
+   likely by renaming the size key; Lime's blocks write Display/Title as the frames' own numbers meanwhile.
