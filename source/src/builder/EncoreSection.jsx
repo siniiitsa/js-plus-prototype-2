@@ -13845,6 +13845,253 @@ function EnquiryForm({ s }) {
   const Pill = href ? 'a' : 'span'
   const pillLink = href ? { href } : null
 
+  // Lime — the split frames 964:58596 / 986:39885 / 986:39897, as a block
+  // ahead of Retro's v0 branch (the bio's and the media player's placement):
+  // every piece of the live seam — `vals`, `msg`, `type`, `errs`, `sent`,
+  // `ti`, `showTypes`, `href`, `onSubmit`, `Pill` — is hoisted above the
+  // branches, and everything inside Retro's v0 is dress this block redraws
+  // anyway, so the published boxes, chips, submit and sent state needed nothing
+  // new. The tree is Retro's twin's (a context half beside a form half inside
+  // one clipped shell); every leaf changes face, size and ink, and the frame
+  // draws no grain and no offset block. Retro's `ctlInk` / `ac` / `acFg` live
+  // states are not read: under Lime `ac` is the contact half's own lime, so its
+  // picked chip and its *Write another* would vanish into it.
+  //
+  // The band is **Scheme 4** (`s.tx` ground, `s.bg` ink, painted by the root's
+  // `limeLight`) and the contact half nests **Scheme 3**, whose `sem/bg` is
+  // `s.ac` exactly. Neither reads a Scheme 1 `sem` key; the literals are named.
+  // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both in
+  // their page's Device mode, so every type size is the Lime ramp's `s.*`.
+  //
+  // Named diffs: the frame's submit types *Enquire*, where `vm.formBtn` seeds
+  // *Book Now*; and the context half is the frame's fixed 420 × 0.82 beside a
+  // form half that takes the rest of our 1052 content width, so the form half
+  // is 707.6 where the frame's is 908 × 0.82 = 744.6.
+  if (s.v0 && s.lime) {
+    const tab = isTablet(s)
+    const z = s.narrow ? 1 : 0.82
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const type = (family, size, lh, extra) => ({
+      fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+    })
+    const ink = s.bg // Scheme 4 and Scheme 3 `sem/text/1`, `sem/active/bg`
+    const mist = '#D5E3B2' // Scheme 4 `sem/box/1` — the shell, the context half
+    const lift = '#D9FF7F' // Scheme 3 `sem/box/2` — every box and idle chip
+    const hair = '#15180F26' // `sem/stroke/1`, 15% — their inside stroke
+    // 44/40 on the 1440 frame, 30 on the 768 one, 30/20 on the 390 one: the
+    // same insets Retro's twin states, round both halves.
+    const inset = s.mob ? `${u(30)} ${u(20)}` : s.narrow ? u(30) : `${u(44)} ${u(40)}`
+
+    // One box, drawn once for both modes: `sem/box/2` with a 1px inside
+    // `sem/stroke/1` at `radius/pill`, Body/MD in ink. No palette has a red, so
+    // a refused box thickens that ring to 2px of full ink — an inset *ring*,
+    // layout 2's rule for a fully rounded box, since a rule under a pill reads
+    // as a smear — and the stated 60 does not grow.
+    const box = (bad, extra) => type(s.body, s.bodyMd, 1.5, {
+      background: lift, color: ink, border: 'none', borderRadius: s.btnR,
+      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? ink : hair}`,
+      height: u(60), padding: `0 ${u(24)}`, margin: 0, width: '100%', ...extra,
+    })
+    // Display/List over every control — the frame's typed caps are Bebas's own.
+    const label = (t) => <span style={type(s.display, s.list, 1.2, { color: ink })}>{t}</span>
+
+    const field = (f, i) => {
+      const bad = !!(errs && errs.f[i])
+      return (
+        <div key={i} style={col(u(6), { minWidth: 0 })}>
+          {label(f.label)}
+          {s.live ? (
+            <input
+              value={at(i)} placeholder={f.placeholder}
+              onChange={(e) => setAt(i, e.target.value)}
+              // Retro's branch says why: `email` for the phone keyboard,
+              // `number` as inputMode only, a date as the artist's text.
+              type={f.kind === 'email' ? 'email' : 'text'}
+              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              style={{ ...box(bad), outline: 'none' }}
+            />
+          ) : (
+            <span style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>{f.placeholder}</span>
+          )}
+        </div>
+      )
+    }
+    // `vm.formRows`' pairs, 12 apart inside a row at every width — the 390
+    // master stacks the pair but keeps the 12, where Retro's closes it to 10 —
+    // and the rows 14 apart on the half's own gap. An odd count trails one
+    // half-width cell, Retro's rule.
+    const fieldRow = (fs, r) => (
+      <div key={r} style={{
+        display: 'grid', gap: u(12),
+        gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
+      }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+    )
+
+    // The submit and *Write another*: BookPill's Lime branch at this frame's
+    // numbers, drawn here because it has to be the seam's `Pill` on a mailto
+    // with the submit's own handler, which BookPill's `to` / `ext` cannot
+    // carry. `sem/active/bg` with Display/List in `sem/active/text`, full width,
+    // the 46 × 44 disc in the type's lime with an ink arrow. The frame's 67
+    // radius on a 54 pill is `radius/pill`.
+    const pill = (extra) => type(s.display, s.list, 1.2, {
+      ...row(u(10), { justifyContent: 'space-between' }),
+      background: ink, color: s.ac, borderRadius: s.btnR,
+      padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
+    })
+    const disc = (
+      <span style={{
+        width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
+        background: s.ac, color: ink,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
+    )
+
+    const context = (
+      <div style={col(tab ? '0px' : u(20), {
+        padding: inset, minWidth: 0,
+        // A fixed 420 beside the form at 1440, promises pinned to the foot of
+        // the stretched half. Stacked, the 768 master's head block is a fixed
+        // 210 with the promises straight under it, and the 390 one hugs at 20.
+        ...(s.narrow ? null : { width: u(420), flex: 'none', justifyContent: 'space-between' }),
+      })}>
+        <div style={col('0px', { minHeight: s.mob ? undefined : u(210) })}>
+          <span style={row(u(14))}>
+            {/* The artist's portrait, on `sem/bg` under the photograph. */}
+            <span style={{
+              width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
+              overflow: 'hidden', background: s.tx,
+            }}><Photo s={s} ink={ink} initialsSize={Math.round(15 * z)} /></span>
+            <span style={col(u(2), { minWidth: 0 })}>
+              <span style={type(s.display, s.list, 1.2, { color: ink })}>{s.brand}</span>
+              <span style={type(s.ui, s.labelXs, 1.26, { color: ink })}>{s.kicker}</span>
+            </span>
+          </span>
+          {/* Display/SM at lh 1. The heading stands 68 under the block's top at
+              every width — 12 under the 1440 credit row, 20 under the narrow
+              ones. The 1440 and 768 frames break it LET'S MAKE / YOUR NIGHT /
+              UNFORGETTABLE. with a typed break inside a 290.68 box, which in
+              our Bebas measure lets "LET'S MAKE YOUR NIGHT" share a line. The
+              frame's three lines need a cap of at least UNFORGETTABLE.'s
+              5.158em and under LET'S MAKE YOUR's 5.266em (`bebasEms()`), so it
+              is 5.2em. The 390 master fills, and its own break (after MAKE,
+              then 8.87em on one line) is out of any cap's reach. */}
+          <h2 style={type(s.display, s.dispSm, 1, {
+            margin: `${s.narrow ? '20px' : u(12)} 0 0`, color: ink, overflowWrap: 'break-word',
+            maxWidth: s.mob ? '100%' : '5.2em',
+          })}>{s.title}</h2>
+        </div>
+        {/* The ticked promises: the frame's typed ✓ in Body/SM, the line in
+            Label/XS (Chakra Petch). An emptied list drops the node. */}
+        {s.formPromises.length > 0 && (
+          <div style={col(u(10))}>
+            {s.formPromises.map((p, i) => (
+              <span key={i} style={row(u(10))}>
+                <span style={type(s.body, s.bodySm, 1.4, { color: ink, flex: 'none' })}>✓</span>
+                <span style={type(s.ui, s.labelXs, 1.26, { color: ink })}>{p}</span>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+
+    const form = (
+      <div style={col(u(14), {
+        background: s.ac, color: ink, padding: inset, minWidth: 0,
+        // Rounded on its left corners only, at every width — inside the
+        // clipped shell, so the mist shows in two notches (a stacked half's
+        // top-left, and its foot-left under the shell's own corner).
+        borderRadius: `${u(55)} 0 0 ${u(55)}`,
+        ...(s.narrow ? null : { flex: '1 1 0' }),
+      })}>
+        {sent ? (
+          // The form half alone; the shell and the context half do not move.
+          // `sent` is only ever set under s.live, so the canvas never draws it.
+          <div style={col(u(14))}>
+            <h3 style={type(s.display, s.dispSm, 1, { margin: 0, color: ink, overflowWrap: 'break-word' })}>
+              {s.formSentTitle}
+            </h3>
+            <p style={type(s.body, s.bodyMd, 1.5, { margin: 0, color: ink })}>{s.formSentBody}</p>
+            {/* Plain text, Retro's reason: the fallback for a browser that
+                opened nothing. */}
+            <span style={type(s.body, s.bodyMd, 1.5, { fontWeight: 700, color: ink, overflowWrap: 'break-word' })}>
+              {s.formEmail}
+            </span>
+            <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>{s.formAgain}{disc}</span>
+          </div>
+        ) : (
+          <>
+            {s.formRows.map(fieldRow)}
+            {showTypes && (
+              <div style={col(u(8))}>
+                {label(s.formTypeLabel)}
+                <div style={row(u(8), { flexWrap: 'wrap' })}>
+                  {s.formTypes.map((t, i) => {
+                    const on = i === ti
+                    const onClick = s.live ? () => setType(i) : undefined
+                    // Body/SM at 5/11: the picked chip is `sem/active` with no
+                    // stroke, the idle ones `sem/inactive` inside the hairline,
+                    // so both stand the frame's 28 (27 at 390) with no border.
+                    return (
+                      <span key={i} onClick={onClick} style={type(s.body, s.bodySm, 1.4, {
+                        display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
+                        padding: `${u(5)} ${u(11)}`, borderRadius: s.btnR,
+                        background: on ? ink : lift, color: on ? s.ac : ink,
+                        boxShadow: on ? undefined : `inset 0 0 0 1px ${hair}`,
+                        cursor: onClick ? 'pointer' : undefined,
+                      })}>{t}</span>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+            <div style={col(u(6))}>
+              {label(s.formMsgLabel)}
+              {/* 134 at every width — Retro's 390 master closes it to 100. */}
+              {s.live ? (
+                <textarea
+                  value={msg} placeholder={s.formMessage}
+                  onChange={(e) => setMsg(e.target.value)}
+                  style={box(false, {
+                    display: 'block', height: u(134), borderRadius: u(20),
+                    padding: `${u(20)} ${u(24)}`, resize: 'none', outline: 'none',
+                  })}
+                />
+              ) : (
+                <span style={box(false, {
+                  display: 'block', height: u(134), borderRadius: u(20), padding: `${u(20)} ${u(24)}`,
+                })}>{s.formMessage}</span>
+              )}
+            </div>
+            <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
+              {s.formBtn}{disc}
+            </Pill>
+            {errs && (
+              <span style={type(s.body, s.bodySm, 1.4, { color: ink, textAlign: 'center' })}>{s.formPrompt}</span>
+            )}
+          </>
+        )}
+      </div>
+    )
+
+    // The seams are this band's own (section 3's `ArcEdge`): the page ground
+    // at its head, and at its foot the testimonials' `#2E3928` — `s.box1`, the
+    // one caller that passes a colour.
+    return (
+      <div style={{ position: 'relative', color: ink }}>
+        <ArcEdge s={s} side="top" height={44.24 * z} />
+        <ArcEdge s={s} side="bottom" height={44.24 * z} colour={s.box1} />
+        <div style={{
+          background: mist, borderRadius: u(55), overflow: 'hidden',
+          display: 'flex', flexDirection: s.narrow ? 'column' : 'row',
+        }}>
+          {context}
+          {form}
+        </div>
+      </div>
+    )
+  }
+
   // v0 — Enquiry Form layout 1 · Split context + form (§10.2 reference
   // design): an olive context panel welded to a mustard form panel inside one
   // rounded, clipped shell.
@@ -15380,8 +15627,9 @@ export default function EncoreSection({ s }) {
   const limeBand = s.me && s.v0 && s.lime
   // The events map (964:58593) is the page's first light band: Scheme 4's
   // `sem/bg` is #F2FFD0, which is Scheme 1's `text/2` exactly, so `s.tx`
-  // carries it, and its ink is Scheme 4's `text/1`, which is `s.bg`.
-  const limeLight = s.mp && s.v0 && s.lime
+  // carries it, and its ink is Scheme 4's `text/1`, which is `s.bg`. The
+  // enquiry form (964:58596) stands on the same Scheme 4 band.
+  const limeLight = (s.mp || s.fo) && s.v0 && s.lime
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
