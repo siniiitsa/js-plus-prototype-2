@@ -98,7 +98,7 @@ row's three masters are fitted in one session.
 | 7 | `pricing` | `964:58594` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:39883` | 768 × 769 | `986:39895` | 390 × 1520 | `964:58582` | done `be2c4d6` |
 | 8 | `calendar` | `964:58595` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:39884` | 768 × 1376 | `986:39896` | 390 × 999 | `964:58583` | done `879418a` |
 | 9 | `form` | `964:58596` | Enquiry Forms — B · Split context+form | 1440 × 862 | `986:39885` | 768 × 1114 | `986:39897` | 390 × 1168 | `964:58584` | done `e958811` |
-| 10 | `testimonials` | `964:58597` | Testimonials H — Stacked tag card | 1440 × 730 | `986:39886` | 768 × 730 | `986:39898` | 390 × 730 | `964:58585` | todo |
+| 10 | `testimonials` | `964:58597` | Testimonials H — Stacked tag card | 1440 × 730 | `986:39886` | 768 × 730 | `986:39898` | 390 × 730 | `964:58585` | done `c8b8ed5` |
 | 11 | `footer` | `964:58598` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:39887` | 768 × 647.4 | `986:39899` | 390 × 619.4 | `964:58586` | todo |
 | — | `tags`, `audio`, `video` | *none* | — | — | — | — | — | — | — | **not on this page.** They take session 0's tokens and nothing else; see open question 5 |
 
@@ -1024,6 +1024,48 @@ Settled in section 9 (the enquiry form):
   another* restores the typed values and the picked chip, the pill is `<a href="mailto:…">`, and the
   canvas carries no cursor and a `<span>` pill. Digest at theme=0,2,3,4, all 648 renders: zero differing
   files. theme=1, all 162: exactly form a0 at the three widths.
+
+Settled in section 10 (the testimonials):
+
+- **The ninth Lime block, after the seam: `if (s.lime)` within `Testimonials`' `if (s.v0)`, after
+  `step`** — the gallery's placement. `n`, `at`, `q`, `go`, `paging` and `step` are shared whole, so
+  the published arrows needed nothing new. The tree is the twin's (two backs, a card, an arrow row)
+  less Retro's byline text node, its `image 1` grain and its torn-edge vector; Lime's `Layer_1` is an
+  empty hidden frame, which confirms the band table's "none" a second time. Every leaf is redressed.
+  The diff is pure additions but the root's one line.
+- **`limeBand` is `(s.me || s.te) && s.v0 && s.lime`.** The ground is `#2E3928`, `s.box1`, with the
+  root's `color` left at `s.tx`. No seam: the form's foot arc is the one that reaches this band.
+- **Four schemes on one section.** Instance Scheme 1 (ground, the arrows' `s.stroke1` ring and `s.tx`
+  glyph), the lime back `s.ac`, the dark back **Scheme 2's `box/2` `#43523B`** (new literal `dusk`;
+  Scheme 1's `box2` is `#394732`), and the card **Scheme 4**: `s.tx` fill, `s.bg` ink, the reviewer
+  pill `s.bg` lettered `litInk` `#C7FF3C`, the role pill `mist` `#D5E3B2` lettered `s.bg`.
+  `get_variable_defs` lists all of them in one flat list; the `use_figma` read of `explicitVariableModes`
+  per node is what sorted them.
+- **The first confirmed drop shadow.** Backs and card carry `DROP_SHADOW` 0 / 4 / 4 at 25% black, and
+  a pixel scan of the 1440 render darkens the ground for 7px under the card's foot, so it is drawn:
+  `0 4px 4px #00000040` (× 0.82 on desktop; 8-digit hex, still no `rgba()`). The bio's 4/4/9 was
+  dropped because it drew nothing; scan before deciding either way.
+- **The backs are insets off the card**, `[fill, top, left, right, bottom]`, so a longer quote grows
+  them with it. The tops are −46 and −27 at every width. The sides are 46/50 and 21/21 on desktop,
+  43/47 and 14/14 at 768, and 26/30 and 13/13 at 390. They stand upright (`rotation` 0), with no stroke.
+- **No box token.** Card radius 55, padding 50, pill radius 12 and pill padding 6/12 are raw numbers.
+  Type is the ramp's: `s.eyebrow` in Inter 700 at 1.3, `s.dispMd` at 1, `s.labelLg` at 1.1, all at
+  `s.dls`. The eyebrow is the review's own case, not Retro's tracked uppercase.
+- **The 390 card bleeds into the root's padding**, `margin: 0 calc(13px - padX)`, to stand at the
+  frame's own 13 inset and be 364 wide. Retro's rule, taking the 346 column, wrapped the quote to four
+  lines and grew the band to 771. With the bleed it is three lines and 730.9. The backs follow the card.
+- **The wide arrows centre on the wrap, not the card**: the card plus the backs' rise. So each takes a
+  `marginBottom` of 20 on desktop (× 0.82) and 46 at 768, which stands the arrows 10 and 23 above the
+  card's middle. They sit at our padX (64 / 40), not the frame's 60, which is Retro's same diff.
+- **Measured against the masters' content edges**: desktop band 598.6 (730 × 0.82), card 590.4 ×
+  344.4 at 135.3 down, quote 508.4 wide on three lines at 59, pills 38.4, arrows 45.1 × 44.3 centred
+  at 299.3; 768 band 729.7, card 464 × 364.7 at 205.5, backs 374 × 391.7 at 159.5 and 436 × 356.7
+  at 178.5, arrows centred at 364.8; 390 band 730.9, card 364 × 325.7 at x 13, backs 308 × 347.7 at
+  x 39 and 338 × 328.7 at x 26, arrows at 568.9. `live=1` at desktop and 390: both arrows wrap all
+  three reviews in both directions with pointer cursors. The canvas arrows show no cursor and ignore
+  clicks. `n=0` prints *No reviews yet.* in the card with no arrows, `n=1` draws no arrows, and `n=6`
+  pages. Digest at theme=0,2,3,4, all 648 renders: zero differing files. theme=1, all 162: exactly
+  testimonials a0 at the three widths.
 
 ## Open questions
 
