@@ -6777,6 +6777,53 @@ function pageWindow(n, active, narrow) {
 // and both callers omit the handlers on the editor canvas: a pager with none is
 // the picture of a pager, and the cursor below follows.
 function Pager({ s, colour, fill, frame = {} }) {
+  // Lime's pager (the repertoire frames 964:58592 / 986:39881 / 986:39893) is
+  // pills, not squares: two 55 × 54 arrows in a 1px `sem/stroke/1` ring with
+  // no fill, round the frame's own arrow vector, and 87 × 54 page pills in
+  // `sem/box/2`, the current one lit by an INNER_SHADOW 17 in `sem/glow` rather
+  // than filled, in Label/SM. Like `BookPill`'s Lime branch it ignores every
+  // Retro frame key (`colour`, `fill`, `size`, `radius`, `bw`, `activeEdge`,
+  // `activeFg`, `font`, `idle`) and reads only the row's content and layout:
+  // `pages`, `active`, `onPage`, `onStep`, `justify`, `grow`. `frame.lime`
+  // overrides the Scheme 1 colours for a caller standing on another band.
+  if (s.lime) {
+    const z = s.narrow ? 1 : 0.82
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const t = { box: s.box2, ring: s.stroke1, ink: s.tx, idle: s.ac, glow: s.glow, ...frame.lime }
+    const arrow = (back) => (
+      <svg viewBox="22.3842 22.5454 10.2316 8.9092" width={10.2316 * z} height={8.9092 * z}
+           aria-hidden style={{ display: 'block' }}>
+        <path fill="currentColor" d={back
+          ? 'M26.8388 31.4545L22.3843 27L26.8388 22.5454L27.6044 23.3011L24.4525 26.4531H32.6158V27.5468H24.4525L27.6044 30.6889L26.8388 31.4545Z'
+          : 'M28.1612 22.5455L32.6157 27L28.1612 31.4546L27.3956 30.6989L30.5475 27.5469L22.3842 27.5469L22.3842 26.4532L30.5475 26.4532L27.3956 23.3111L28.1612 22.5455Z'} />
+      </svg>
+    )
+    const btn = (key, child, on, end, onClick) => (
+      <span key={key} onClick={onClick} style={{
+        minWidth: u(end ? 55 : 87), height: u(54), flex: 'none', borderRadius: '999px',
+        background: end ? 'transparent' : t.box,
+        boxShadow: end ? `inset 0 0 0 1px ${t.ring}` : on ? `inset 0 0 ${u(17)} ${t.glow}` : 'none',
+        color: end || on ? t.ink : t.idle,
+        cursor: onClick ? 'pointer' : undefined,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: s.label, fontSize: s.labelSm, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap',
+        // The 390 master spreads every button to one width across the measure.
+        ...(frame.grow ? { flex: '1 1 0', minWidth: 0 } : null),
+      }}>{child}</span>
+    )
+    return (
+      <div style={row(u(8), {
+        flexWrap: frame.grow ? 'nowrap' : 'wrap', justifyContent: frame.justify,
+      })}>
+        {btn('prev', arrow(true), false, true, frame.onStep && (() => frame.onStep(-1)))}
+        {(frame.pages || []).map((p, i) => btn(
+          `p${i}`, p, i === (frame.active || 0), false,
+          frame.onPage && p !== '…' ? () => frame.onPage(p) : undefined,
+        ))}
+        {btn('next', arrow(false), false, true, frame.onStep && (() => frame.onStep(1)))}
+      </div>
+    )
+  }
   const c = colour || s.tx
   const w = frame.size || (s.mob ? 30 : 42)
   const btn = (key, child, on, ends, onClick) => (
@@ -6897,6 +6944,165 @@ function Repertoire({ s }) {
     const columns = (s.narrow ? [shown] : [shown.slice(0, half), shown.slice(half)])
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
     const { labels, at } = pageWindow(pages, pg, s.mob)
+
+    // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
+    // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
+    // `active`, `filtered`, `pg`, `shown`, `columns` and the pager's `labels`
+    // are computed above, so the search, the chips and the pager are layout 1's
+    // whole and the published repertoire needs nothing new. The tree is Retro's
+    // (head, chips-row, cols, pagination), but every leaf changes its dress: the
+    // outlined card closed by a checkerboard is a flush row on a hairline rule,
+    // the boxed field is a pill, the outlined chips are filled pills, the square
+    // pager is `Pager`'s Lime branch — about twenty ternaries through code Retro
+    // renders, so a block.
+    //
+    // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both in
+    // their page's Device mode, so every size is the Lime ramp's `s.*`. Scheme
+    // 1, so no band and no seams (the frame's `Layer_1` is an empty frame here,
+    // where Retro's holds the torn edge).
+    if (s.lime) {
+      const z = s.narrow ? 1 : 0.82
+      const u = (v) => `${Math.round(v * z * 10) / 10}px`
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      const bebas = (size, extra) => ({
+        fontFamily: s.label, fontSize: size, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap', ...extra,
+      })
+      const hint = 'Search songs or artists…'
+      return (
+        <div style={col(u(32))}>
+          {/* Desktop centres the field against the heading, 768 halves the row
+              and sits both on its foot, 390 stacks them 20 apart. */}
+          <div style={row(s.mob ? '20px' : tab ? '0px' : u(20), {
+            justifyContent: 'space-between', flexWrap: 'nowrap',
+            flexDirection: s.mob ? 'column' : 'row',
+            alignItems: s.mob ? 'stretch' : tab ? 'flex-end' : 'center',
+          })}>
+            {/* The 768 halves take a 50% basis, not 0: a zero basis resolves
+                against the content box, so the padded pill came out 20 wider
+                than the heading beside it. */}
+            <div style={col(u(16), tab ? { flex: '1 1 50%', minWidth: 0 } : { flex: 'none', maxWidth: '100%' })}>
+              {/* Body/Eyebrow, typed in capitals. */}
+              <span style={body(s.eyebrow, 1.3, {
+                fontWeight: 700, color: s.tx, textTransform: 'uppercase', whiteSpace: 'nowrap',
+              })}>Repertoire</span>
+              {/* Display/LG. */}
+              <h2 style={{
+                margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+                letterSpacing: s.dls, color: s.ac,
+              }}>{s.title}</h2>
+            </div>
+            {/* The pill: `sem/box/2` in a 1px `sem/stroke/1` ring stroked
+                inside, round a `sem/active` tile carrying the frame's own
+                glyph in `sem/bg`. It yields to the heading on desktop, the
+                layout-1 rule; the 768 master grows it to half the row. */}
+            <div style={row(u(10), {
+              background: s.box2, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, borderRadius: '999px',
+              padding: u(10), height: u(61), minWidth: 0, overflow: 'hidden',
+              ...(s.mob ? { width: '100%' } : tab ? { flex: '1 1 50%' } : { flex: `0 1 ${u(389)}` }),
+            })}>
+              <span style={{
+                width: u(43.562), height: '100%', flex: 'none', borderRadius: '999px',
+                background: s.pillBg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg viewBox="0 0 21.1602 21.5977" width={21.1602 * z} height={21.5977 * z}
+                     aria-hidden style={{ display: 'block' }}>
+                  <path fill={s.bg} d="M1.55122 21.5977L0 19.9272L4.85252 15.1542C4.13657 14.2791 3.59299 13.3511 3.22176 12.37C2.87704 11.3888 2.70468 10.3414 2.70468 9.22775C2.70468 7.53069 3.11569 5.99273 3.9377 4.61387C4.78623 3.2085 5.91318 2.09481 7.31856 1.27279C8.72393 0.424265 10.2619 0 11.9324 0C13.6295 0 15.1674 0.424265 16.5463 1.27279C17.9517 2.09481 19.0654 3.2085 19.8874 4.61387C20.7359 5.99273 21.1602 7.53069 21.1602 9.22775C21.1602 10.8983 20.7359 12.4362 19.8874 13.8416C19.0654 15.247 17.9517 16.3739 16.5463 17.2225C15.1674 18.0445 13.6295 18.4555 11.9324 18.4555C10.9248 18.4555 9.97021 18.3097 9.06864 18.018C8.16708 17.7263 7.31856 17.2888 6.52306 16.7054L1.55122 21.5977ZM11.9324 15.9497C13.1522 15.9497 14.2659 15.658 15.2735 15.0746C16.3077 14.4648 17.1297 13.656 17.7395 12.6484C18.3494 11.6142 18.6544 10.474 18.6544 9.22775C18.6544 7.98147 18.3494 6.85452 17.7395 5.84689C17.1297 4.81275 16.3209 4.00399 15.3133 3.42063C14.3057 2.81075 13.1787 2.50581 11.9324 2.50581C10.6862 2.50581 9.54594 2.81075 8.5118 3.42063C7.50417 4.00399 6.69542 4.81275 6.08554 5.84689C5.50218 6.85452 5.21049 7.98147 5.21049 9.22775C5.21049 10.474 5.50218 11.6142 6.08554 12.6484C6.69542 13.656 7.50417 14.4648 8.5118 15.0746C9.54594 15.658 10.6862 15.9497 11.9324 15.9497Z" />
+                </svg>
+              </span>
+              {/* Body/MD. The published field takes the same type, so it
+                  measures the same; its placeholder draws at `::placeholder`'s
+                  .45, Retro's accepted diff. */}
+              {s.live ? (
+                <input
+                  value={q} placeholder={hint}
+                  onChange={(e) => { setQ(e.target.value); setPage(0) }}
+                  style={body(s.bodyMd, 1.5, {
+                    color: s.tx, flex: 1, minWidth: 0, border: 'none', outline: 'none',
+                    background: 'transparent', padding: 0,
+                  })}
+                />
+              ) : (
+                <span style={body(s.bodyMd, 1.5, {
+                  color: s.tx, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                })}>{hint}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Filled pills in Body/SM, mixed case: `sem/active` for the chip on
+              show, `sem/box/2` with lime type for the rest. */}
+          <div style={row(u(8), { flexWrap: 'wrap' })}>
+            {s.repChips.map((f, i) => (
+              <span
+                key={i}
+                onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
+                style={body(s.bodySm, 1.4, {
+                  padding: `${u(5)} ${u(11)}`, borderRadius: '999px', whiteSpace: 'nowrap',
+                  background: i === active ? s.pillBg : s.box2, color: i === active ? s.bg : s.ac,
+                  cursor: s.live ? 'pointer' : undefined,
+                })}
+              >{f.label}</span>
+            ))}
+          </div>
+
+          {shown.length === 0 ? (
+            <span style={body(s.bodyMd, 1.5, { color: s.muted })}>
+              {s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}
+            </span>
+          ) : (
+            <div style={{
+              display: 'grid', columnGap: u(70),
+              gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
+            }}>
+              {columns.map((colSongs, ci) => (
+                <div key={ci} style={col('0px', { minWidth: 0 })}>
+                  {colSongs.map((t) => (
+                    // 27 above and below, the rule stroked inside the row's
+                    // height as Figma strokes it, so the foot gives back its 1px.
+                    <div key={t.n} style={row('0px', {
+                      padding: `${u(27)} 0 calc(${u(27)} - 1px)`,
+                      borderBottom: `1px solid ${s.stroke1}`,
+                    })}>
+                      {/* Label/XS in Chakra Petch, pinned at the frame's 24 so
+                          "10" does not shunt its own title. */}
+                      <span style={{
+                        width: u(24), flex: 'none', whiteSpace: 'nowrap',
+                        fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, color: s.ac,
+                      }}>{t.n}</span>
+                      <span style={row(u(12), {
+                        flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
+                      })}>
+                        {/* Label/LG over Label/SM. */}
+                        <span style={bebas(s.labelLg, {
+                          color: s.tx, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis',
+                        })}>{t.title}</span>
+                        <span style={bebas(s.labelSm, { color: s.ac, flex: 'none' })}>· {t.artist}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Left on desktop, centred at 768, spread across the measure at 390;
+              the frame's 8 above it is the row's own top inset. */}
+          {labels.length > 0 && (
+            <div style={{ paddingTop: u(8) }}>
+              <Pager s={s} frame={{
+                justify: tab ? 'center' : undefined, grow: s.mob, pages: labels, active: at,
+                onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+                onStep: s.live
+                  ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+                  : undefined,
+              }} />
+            </div>
+          )}
+        </div>
+      )
+    }
 
     return (
       <div style={{ position: 'relative', ...col(s.narrow ? '32px' : '26px') }}>
