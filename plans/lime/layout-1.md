@@ -97,7 +97,7 @@ row's three masters are fitted in one session.
 | 6 | `map` | `964:58593` | Events Map — D · Compact tile | 1440 × 1151 | `986:39882` | 768 × 1326 | `986:39894` | 390 × 1167.2 | `964:58581` | done `eda536f` |
 | 7 | `pricing` | `964:58594` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:39883` | 768 × 769 | `986:39895` | 390 × 1520 | `964:58582` | done `be2c4d6` |
 | 8 | `calendar` | `964:58595` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:39884` | 768 × 1376 | `986:39896` | 390 × 999 | `964:58583` | done `879418a` |
-| 9 | `form` | `964:58596` | Enquiry Forms — B · Split context+form | 1440 × 862 | `986:39885` | 768 × 1114 | `986:39897` | 390 × 1168 | `964:58584` | todo |
+| 9 | `form` | `964:58596` | Enquiry Forms — B · Split context+form | 1440 × 862 | `986:39885` | 768 × 1114 | `986:39897` | 390 × 1168 | `964:58584` | done `e958811` |
 | 10 | `testimonials` | `964:58597` | Testimonials H — Stacked tag card | 1440 × 730 | `986:39886` | 768 × 730 | `986:39898` | 390 × 730 | `964:58585` | todo |
 | 11 | `footer` | `964:58598` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:39887` | 768 × 647.4 | `986:39899` | 390 × 619.4 | `964:58586` | todo |
 | — | `tags`, `audio`, `video` | *none* | — | — | — | — | — | — | — | **not on this page.** They take session 0's tokens and nothing else; see open question 5 |
@@ -962,6 +962,68 @@ Settled in section 8 (the booking calendar):
   moves the glow and the line, a booked day takes no click or cursor, re-clicking the lit day falls back
   to the cued June 12 (the shared seam's own `|| s.calPick`), the pill is `<a href="#form">`, and the
   canvas carries no cursor.
+
+Settled in section 9 (the enquiry form):
+
+- **The eighth Lime block, ahead of Retro's branch: `if (s.v0 && s.lime)` before `EnquiryForm`'s
+  `if (s.v0)`** — the bio's and the media player's placement, not the gallery's. Every piece of the
+  live seam (`vals`, `msg`, `type`, `errs`, `sent`, `ti`, `showTypes`, `href`, `onSubmit`, `Pill`) is
+  hoisted above the branches, and everything inside Retro's v0 (`ctlInk`, `ctl`, `block`, `field`,
+  `Grain`) is dress the block redraws, so the published boxes, chips, submit and sent state needed
+  nothing new. The tree is the twin's; every leaf changes face, size and ink. The diff is pure
+  additions but the root's one line.
+- **`limeLight` is `(s.mp || s.fo) && s.v0 && s.lime`**, as section 6 foresaw. The band is Scheme 4
+  (`s.tx` ground, `s.bg` ink); the contact half nests **Scheme 3, whose `sem/bg` is `s.ac` exactly**.
+  Named literals: `mist` `#D5E3B2` (the shell and the context half), `lift` `#D9FF7F` (Scheme 3
+  `box/2`, new — every box and idle chip), `hair` `#15180F26`. `get_variable_defs` on the instance
+  mixes the two schemes in one list (`sem/bg #f2ffd0` beside `sem/box/2 #d9ff7f`); the `use_figma`
+  fills are what settle which node is on which.
+- **Session 0's "the form owes the pill" is closed by reading none of Retro's pairs**: under Lime
+  `s.ac` is the contact half's own lime, so Retro's picked chip and *Write another* (`ac` on `acFg`)
+  would vanish into it. The submit is `sem/active` — ink with Display/List in `s.ac`, the 46 × 44
+  lime disc with an ink arrow — **drawn inline at `BookPill`'s Lime numbers**, because it has to be
+  the seam's `Pill` on a mailto with the submit's own `onClick`, which `BookPill`'s `to` / `ext`
+  cannot carry. *Write another* is the same pill. The picked chip is ink lettered in `s.ac` with no
+  stroke; the idle ones `lift` inside the hairline. No glow anywhere: every node's `effects` is empty.
+- **A refused box thickens its 1px hairline to a 2px inset ring of full ink**, Retro layout 2's rule
+  for a fully rounded box (a rule under a pill smears), so the stated 60 does not grow; the prompt is
+  Body/SM in ink. CLAUDE.md's "an inset rule in `ctlInk`" is Retro's wording, for the end-of-pass
+  sweep.
+- **The contact half is rounded 55 on its left corners at every width**, inside the clipped shell,
+  so the mist shows in notches: beside it at 1440, and at its top-left when stacked. Transcribed.
+  The frame's 98 / 100 / 67 radii on the boxes, chips and pill are all `s.btnR`.
+- **The heading stands 68 under its block's top at every width** (`u(12)` under the 1440 credit
+  row, 20 under the narrow ones). The head block is a stated **210 minimum at 1440 and 768**. At 1440
+  the half is `space-between`, which pins the promises to the foot of the stretched half. At 768 the
+  column's gap is **0**, since Figma's hug + space-between resolves to none and the promises sit 240
+  down. At 390 it hugs at 20.
+- **The heading's break is a typed one in a 290.68 box**, which our Bebas measure does not
+  reproduce: "LET'S MAKE YOUR NIGHT" shared a line at 768. `bebasEms()` gives a window from
+  UNFORGETTABLE.'s 5.158em to LET'S MAKE YOUR's 5.266em, so the cap is **5.2em** at 1440 and 768,
+  confirmed at three lines on both. The 390 master fills the width and breaks after MAKE, then sets
+  8.87em on one line, which no cap can reach; it keeps two lines, broken after NIGHT.
+- **The promise lines are this section's `s.ui` site** (Label/XS at 1.26, session 0's named switch),
+  with the frame's typed `✓` in Inter Body/SM beside them (pricing's tick rule). Emptied promises drop
+  the node. The avatar passes `Photo`'s `ink` (`s.bg`), since `s.muted` is pale lime on `mist`.
+- **The narrow masters keep what Retro's close.** The 390 pair stacks but keeps its 12 gap (Retro's
+  closes it to 10), and the message box is 134 at every width (Retro's 390 is 100). The arcs: the foot
+  seam passes `s.box1`, the plan's one non-default. **The 768 vectors are 768 wide here, not the leaked
+  1438** that section 3 predicted for the map and the form; the 390 ones are 384.
+- **Named diffs.** The frame types *Enquire* where `vm.formBtn` seeds *Book Now*. The context half is
+  the frame's fixed 420 × 0.82 beside a form half taking the rest of our 1052, so the form half is 707.6
+  where the frame's is 744.6 and its boxes are 316 against 334.6. At 390 our 306 measure (the frame's
+  is 330) wraps *Other* onto a second chip row, 34.8 of height the frame does not have.
+- **Measured against the masters' content edges**: desktop shell 511.6 (622 × 0.82 = 510), context
+  344.4, credit row 45.8, heading top 55.5 below the credit's (55.8), boxes 49.2, chips 23.6, message
+  109.9, pill 44.3 with a 37.7 × 36.1 disc, the promises ending on the half's inset; 768 context 344.6
+  (344), promises 240 below the shell's top (240), form half 569.4 (570), boxes 60, chips 28.2, message
+  134, pill 54 with a 46 × 44 disc; 390 context 282.4 (283), field pairs 99.6 apart (88 + 12), form half
+  797.2 (765 plus the wrapped chip row). `live=1` at desktop and 390: a refused submit rings all four
+  boxes and prints the prompt, filling clears each ring, chip 3 moves the mailto subject to *Party
+  enquiry*, a valid submit under a capture-phase `preventDefault` swaps in the sent block, *Write
+  another* restores the typed values and the picked chip, the pill is `<a href="mailto:…">`, and the
+  canvas carries no cursor and a `<span>` pill. Digest at theme=0,2,3,4, all 648 renders: zero differing
+  files. theme=1, all 162: exactly form a0 at the three widths.
 
 ## Open questions
 
