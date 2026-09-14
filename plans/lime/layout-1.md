@@ -99,7 +99,7 @@ row's three masters are fitted in one session.
 | 8 | `calendar` | `964:58595` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:39884` | 768 × 1376 | `986:39896` | 390 × 999 | `964:58583` | done `879418a` |
 | 9 | `form` | `964:58596` | Enquiry Forms — B · Split context+form | 1440 × 862 | `986:39885` | 768 × 1114 | `986:39897` | 390 × 1168 | `964:58584` | done `e958811` |
 | 10 | `testimonials` | `964:58597` | Testimonials H — Stacked tag card | 1440 × 730 | `986:39886` | 768 × 730 | `986:39898` | 390 × 730 | `964:58585` | done `c8b8ed5` |
-| 11 | `footer` | `964:58598` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:39887` | 768 × 647.4 | `986:39899` | 390 × 619.4 | `964:58586` | todo |
+| 11 | `footer` | `964:58598` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:39887` | 768 × 647.4 | `986:39899` | 390 × 619.4 | `964:58586` | done `c1b6141` |
 | — | `tags`, `audio`, `video` | *none* | — | — | — | — | — | — | — | **not on this page.** They take session 0's tokens and nothing else; see open question 5 |
 
 The "Retro twin" is the instance Retro's `s.v0` branch was fitted from. Its fit comments in
@@ -1066,6 +1066,55 @@ Settled in section 10 (the testimonials):
   clicks. `n=0` prints *No reviews yet.* in the card with no arrows, `n=1` draws no arrows, and `n=6`
   pages. Digest at theme=0,2,3,4, all 648 renders: zero differing files. theme=1, all 162: exactly
   testimonials a0 at the three widths.
+
+Settled in section 11 (the footer):
+
+- **The tenth Lime block, at the head of `Footer`: `if (s.lime)` right after `scale` / `u`.** There is
+  no `s.v0` to sit inside (`NVAR.footer` is 1) and no state to hoist, so the seam is restated whole:
+  `extLink(s, l.url) || { href: navHref(s, l.to) }` per row, `BookPill to={s.bookTo}` dropped with an
+  empty `s.footerCta`, and `s.footerCols` read as is. The tree is the twin's (wordmark, seal and
+  statement, rule, two link columns, small print). What makes it a block is that nearly every leaf
+  changes: the links and the wordmark go `s.tx` where Retro's are the accent, the rules are
+  `sem/stroke/1` where Retro's are the ink, and the small print is its own 68-tall row. The diff is
+  pure additions and needs no root flag, because the ground is `s.bg`.
+- **Scheme 1 throughout, no literal.** `s.tx` for the name, the 150 × 2 bar, the links and the small
+  print. `s.ac` for the statement. `s.stroke1` for every rule **and the globe**: "Group 6" exported as
+  SVG is `LimeGlobeMark`'s own drawing scaled 27.37 / 35.98, inked at 15%, so it stands dim beside
+  the name. The seal is the bio's Lime `SealBadge` (disc 158.67 × 0.82 on desktop, 158.67 at 768, a
+  hand-scaled 78.5 at 390, tilt 26.06). The pill is `BookPill`'s Lime defaults exactly (`full` at 390).
+  No effects on any node.
+- **Three rules the twin does not draw.** (1) The instance carries a **1px inside top stroke at all
+  three widths**, the band table's straight edge. It is an absolute span at the root's top, so it
+  bleeds over the padding. (2) The 1440 small-print row is the frame's **full width**, so its rule
+  bleeds, with the row taking `margin: 0 -padX` and `padding: 0 padX` (pricing layout 4's
+  cancel-and-restore). The narrow rows hold the content width. (3) Desktop Line 19 takes
+  `marginTop: -padY`, so it meets that top hairline, and stops 2.16 short of the row's foot.
+- **Seal placement by the disc's centre**, off the column's right edge and its top with the dropped 56
+  removed: 85.18 / 49.62 on desktop, 101.87 / 70.13 at 768, 60.25 / 12.73 at 390. It is anchored on
+  the right at every width, because the 768 Frame 175 is a leaked 743 in a 708 frame. Measured: 69.8 /
+  40.7 on desktop, 101.9 / 70.1 at 768, 60.3 / 12.7 at 390.
+- **The statement's measure is followed only at 1440.** Its 439.59 box gives three lines there (360 ×
+  0.82). At 768, "YOUR NIGHT UNFORGETTABLE." is 8.87em in `bebasEms`, 443.5 against the box, so CSS
+  would grow a third line where Figma sets 438. The cap is **9em**, clear of the seal's disc. At 390
+  the same line is 354.8 against our 346 column, so the heading takes `marginRight: calc(10px - padX)`,
+  the frame's own 10 inset, and keeps two lines (358 wide). Its left edge stays on the wordmark's.
+- **The 768 small print's 56 inset is a leak from the desktop component, and it is followed.** It sits
+  inside a 708 column where the 390 master has 0, and the render shows the text at 86 / 682.
+- **Label/SM line boxes are not rounded here**, so the link pitch is 35.4 / 38.4 / 36.2 against the
+  frames' 35.3 / 38 / 36 (Figma rounds 14 × 1.1 to 15), which puts the pill 2.5 lower at 768. Not
+  corrected.
+- **`&n=` fills `c.links`** in `preview.jsx` now: eight-row cycles of sections with an address on
+  every eighth row, so `live=1&n=8` renders one `target="_blank"` link. An odd count leaves column 2
+  short, and `n=0` is the pill alone.
+- **Measured against the masters' content edges**: desktop wordmark at the top of the content, statement
+  ending 244 below it (297.7 × 0.82), three lines at 59, links at 804 (802.8), pitch 35.4, pill 130.5 ×
+  44.3 at 141 below the top (172 × 0.82), column 2 at 996.5 (995.9), rule 368 tall, small print 56 at
+  2 under the row. 768: statement at 103.4 (103.37) on two lines at 50, rule at 259.4 (259.41), links
+  at 316.4 (315.4 plus the rule's 1px), small print 68 at 581.9 (579.4), section 705.9 against 647.4
+  plus our `padY`. 390: statement at 91.4, rule at 227.4 (both exact), column 2 at 186.9 (187), pill
+  138.9 × 54, halves 173. `live=1`: rows are `<a href="#cat">`, the address row opens a new tab, and
+  the pill is `<a href="#form">`. On the canvas every anchor is href-less and the pill is a span.
+  Digest at themes 0–4, all 810 renders: exactly footer a0 at theme=1, three widths.
 
 ## Open questions
 
