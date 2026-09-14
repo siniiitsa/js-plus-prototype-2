@@ -889,7 +889,7 @@ Settled in section 7 (pricing):
 - **The card's colours are `sem/box/2`, not the plan's `box/1`.** The fill is `s.box2`, the ring 3px
   `s.stroke1` stroked inside, and the featured card's `INNER_SHADOW` radius 55 spread 0 in `s.glow`.
   A pixel scan of the 1440 render shows nothing outside the card's edge, so the glow is inset only
-  — the second confirmed entry under *Glows*. The ring and glow are one `boxShadow`, ring first
+  — the third confirmed entry under *Glows*, after the bio arch and the pager pill. The ring and glow are one `boxShadow`, ring first
   (it paints over the glow, as Figma's stroke does), so the frame's padding needs no `calc(… - 3px)`.
 - **The glow is a seat: rendered index `i % 3 === 1`.** Not `active` (the frame's lit chip is also
   its second, but the canvas pins chip 0), and not a package property. A filter moves it onto
