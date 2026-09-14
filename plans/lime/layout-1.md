@@ -173,13 +173,14 @@ of decoration and measurement.
 2. **Rewrite `THEMES[1]`** (`source/src/builder/data.js`):
    - display and label Bebas Neue, body Inter
    - the mapped radii and borders
-   - `tags` so that `vm.deep` and friends resolve to the mode's boxes
+   - `tags`: **not** as a free rewrite; see step 9
    - the semantic colours the three-colour palette cannot derive (`box1`–`box3`, `glow`,
      `inactiveBg`, `activeFg`, `stroke1`) as an optional **`sem` object**, resolved onto the vm
      in `sectionVm` so `EncoreSection` still does no colour maths. Retro has no `sem` key and must
      not grow one.
 3. **Add a `ui` font key.** Set `THEMES[0].ui` to Inter, which leaves Retro unchanged, set Lime's
-   to Chakra Petch, and pass `vm.ui` through. Find which v0 text is `Label/XS` from the fit
+   to Chakra Petch, and pass **`vm.ui = T.ui ?? T.body`** through. Grunge, Editorial and Pop
+   carry no `ui` key, and a reader switched to `s.ui` would otherwise render `undefined`. Find which v0 text is `Label/XS` from the fit
    comments (`grep -n "label-xs\|Label/XS\|labelXs" source/src/builder/EncoreSection.jsx`). Where
    Retro reads `s.body` for it, switch those readers to `s.ui`.
 4. **Make the type ramp theme-aware.** `RAMP` (`EncoreBuilder.jsx`, beside `SIZES`) is keyed by
@@ -195,7 +196,14 @@ of decoration and measurement.
      and Fraunces, so every `theme=1` check is wrong until this is fixed.
    - Leave Archivo in the link, since Grunge/Editorial/Pop may use it (check first).
 6. **Add `lime: T.name === 'Lime'`** beside `retro` in `sectionVm`, with a comment in the same
-   voice as the one on `retro`.
+   voice as the one on `retro`. Then take inventory of **every Retro name gate outside
+   `EncoreSection`**, and decide for each whether Lime shares it:
+   - `retro` (`EncoreBuilder.jsx`, in `sectionVm`)
+   - `vm.grainSrc` / `vm.mapSrc`
+   - **`gigDark`**, `cat === 'map' && vm.v0 && T.name === 'Retro'`, which grounds the gig
+     rows' colours. Lime's map stands on a *light* band, so it is not Retro's dark one.
+   - `headerFamily` (`data.js`), handled in section 1
+   - `isRetro` (`photos.js`)
 7. **Seed Lime's photographs.** In `photos.js`, widen `isRetro` to a set of seeded themes for
    these:
    - `defaultImage`, `defaultImages`, `defaultTrackArt`
@@ -205,12 +213,36 @@ of decoration and measurement.
    Lime's map is a light, desaturated raster on a pale card, so `get_design_context` on
    `964:58593` and compare its asset to `photos/map.jpg`. If it differs, add `lime-map.jpg`
    rather than filtering Retro's.
-8. **Casing.** `THEMES[1].casing` is `'upper'`. Bebas Neue is caps-only, so display casing is
-   moot. Confirm that `caseText` never reaches body copy the frame sets in mixed case ("DJ and
-   selector based in Manchester…").
+8. **Casing.** `THEMES[1].casing` is `'upper'`, and `caseText` (`data.js`) upper-cases the
+   string itself. That is moot wherever the face is Bebas Neue, which is caps-only. It is
+   **wrong** for the frame's Chakra Petch and Inter strings, which are mixed case in the render:
+   header chips "Sold Out" and "New Release", repertoire chips "Weddings" and "Birthdays", pricing
+   chips "Private Event", form types "Wedding" and "Party". `cased()` reaches about 30 vm keys in
+   `sectionVm`, including `repChips`, `tierChips`, `formTypes`, `vm.chips`, gig chips, quotes,
+   footer links and titles (`grep -n "cased(" source/src/builder/EncoreBuilder.jsx`). Evaluate
+   **`casing: 'title'`** (a passthrough, Retro's own) for Lime, and let the Bebas face do the
+   capitals. Check every casing site against the frame rather than assuming, and record the
+   answer under *Conventions*.
+9. **The `tags` hue list is Retro's seat system, and Lime's mode has no such system.** Seventeen
+   sites in `sectionVm` read `T.tags`:
+   - the darkest-hue minimum behind `vm.deep` / `deepFg` / `mapBg`
+   - `vm.chips`' seat per index
+   - the header pill colour
+   - pricing's `tierHues` / `tierHero` / `tierRow` / `tierFeatSeats`
+   - `vm.repHue`
+   - the testimonials and map row hues
+
+   Retro's frames paint one palette hue per card. Lime's have exactly **two tag styles**:
+   `sem/tag/1` (`#2E3928` fill, lime text) and `sem/tag/2` (lime fill, `#0D1F03` text), which
+   alternate in the header chip row. Its pricing cards are all one `sem/box/1` fill, with a glow
+   marking the featured card. So: `grep -n "T\.tags" source/src/builder/EncoreBuilder.jsx`, check
+   that each site survives a short array (`% T.tags.length`), and decide the array. Two entries is
+   the likely answer. Also decide **which sites Lime overrides in its section instead**, behind
+   `s.lime`, so that no later session has to fight a hue session 0 gave it. Record the
+   per-site answer under *Conventions*.
 
 **Verification for session 0:**
-- **Retro, Grunge, Editorial and Pop do not move.** Take a digest of all 14 categories × 3 widths
+- **Exit criterion. Retro, Grunge, Editorial and Pop do not move.** Take a digest of all 14 categories × 3 widths
   at `theme=0,2,3,4` before and after the change: zero differing rows (skip `.seal-spin`).
 - **Lime changes on purpose.** Screenshot the eleven sections at `theme=1` before and after, at
   desktop only, and keep them in the scratchpad as the pass's "before" pictures.
