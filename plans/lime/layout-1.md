@@ -93,7 +93,7 @@ row's three masters are fitted in one session.
 | 2 | `bio` | `964:58589` | Bios — A · Flanked portrait | 1440 × 769 | `986:39877` | 768 × 1144 | `986:39890` | 390 × 739 | `964:58577` | done `59cb1a3` |
 | 3 | `media` | `964:58590` | Media Player — D · Floating cards stack | 1440 × 1153 | `986:39879` *(in `986:39878`)* | 768 × 1512 | `986:39891` | 390 × 1191 | `964:58578` | done `c1e4995` |
 | 4 | `gallery` | `964:58591` | Gallery Sections — Component 1 | 1440 × 822 | `986:39880` | 768 × 1119 | `989:22110` | 390 × 776 | `964:58579` | done `0b162e1` |
-| 5 | `repertoire` | `964:58592` | Repertoire — A · Two-column dense | 1440 × 1063 | `986:39881` | 768 × 872 | `986:39893` | 390 × 838 | `964:58580` | todo |
+| 5 | `repertoire` | `964:58592` | Repertoire — A · Two-column dense | 1440 × 1063 | `986:39881` | 768 × 872 | `986:39893` | 390 × 838 | `964:58580` | done `2606b63` |
 | 6 | `map` | `964:58593` | Events Map — D · Compact tile | 1440 × 1151 | `986:39882` | 768 × 1326 | `986:39894` | 390 × 1167.2 | `964:58581` | todo |
 | 7 | `pricing` | `964:58594` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:39883` | 768 × 769 | `986:39895` | 390 × 1520 | `964:58582` | todo |
 | 8 | `calendar` | `964:58595` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:39884` | 768 × 1376 | `986:39896` | 390 × 999 | `964:58583` | todo |
@@ -768,6 +768,52 @@ Settled in section 4 (the gallery):
 - **No harness parameter fills a social address**, so the `a` branch of a row (`extLink` with a URL)
   was not driven. It is the same `{...link}` spread as Retro's rows over the same `srcRows`. The
   `live=1` digest at `theme=0,2,3,4` proves Retro's rows did not move.
+
+Settled in section 5 (the repertoire):
+
+- **The fourth Lime block, placed after the seam as the gallery's is: `if (s.lime)` within
+  `Repertoire`'s `if (s.v0)`, after `pageWindow()`.** `active`, `filtered`, `pg`, `shown`, `columns`,
+  `labels` and `at` are shared whole, so the published search, chips and pager needed nothing new. The
+  tree is Retro's (head, chips-row, cols, pagination, with `perPage` 12 split down two columns and 6 on
+  both narrow frames), but every leaf changes its dress. `repHue` is **closed**: the block reads `s.ac`
+  and `s.tx`, and `repHue` reaches Retro's branch alone.
+- **`Pager` has a Lime branch, `BookPill`'s shape.** Arrows 55 × 54 in a 1px `sem/stroke/1` ring with no
+  fill round the frame's arrow vector (transcribed); page pills `minWidth` 87 × 54 in `sem/box/2`, the
+  current one lit by `INNER_SHADOW` 17 in `sem/glow` rather than filled; Label/SM; gap 8; × 0.82 on
+  desktop. It ignores every Retro `frame` key (`colour`, `fill`, `size`, `radius`, `bw`, `activeEdge`,
+  `activeFg`, `font`, `idle`) and reads `pages` / `active` / `onPage` / `onStep` / `justify` / `grow`.
+  **`frame.lime = { box, ring, ink, idle, glow }`** overrides the Scheme 1 defaults. What it moved, all
+  unfitted, recorded rather than fixed (a theme=1 digest of repertoire and map differs in exactly
+  repertoire a0 and a1 at all widths and map a2 at 390):
+  - **Map a0 and a1**: no pager at the seeded five gigs (one page), so the canvas is unchanged; at six or
+    more the pills wrap to two rows in the ~500 list panel. The map session sizes them from `964:58593`'s
+    own `pagination` children, not the repertoire's 87 × 54.
+  - **Map a2** (the lime sheet): the arrows' 15% pale ring and pale glyph all but vanish, and the caller's
+    `hot` is ignored. Lime layout 3's pass passes `frame.lime`.
+  - **Repertoire a1** (the pale sheet): the pills stretch to ~270 and the arrows vanish the same way.
+    Lime layout 2's pass.
+- **The 768 halves take `flex: 1 1 50%`, not `1 1 0`.** The heading column and the search pill are both
+  `grow 1` in the master; a zero basis resolves against the content box, so the padded pill came out
+  20 wider than the heading (334 / 354). It is the enquiry form's layout-3 trap in Retro's plan, met again.
+- **The search pill's ring is an inset `boxShadow`, not a border**, so its 10 padding and 61 height
+  stay the frame's own. Its placeholder is Body/MD in `sem/text/2` on the canvas; the live `<input>`
+  takes the same style, and its `::placeholder` at .45 is Retro's accepted diff.
+- **The row numbers are this section's `s.ui` site** (Label/XS at 1.26, Chakra Petch). They are
+  Lime-only, so no Retro reader was switched. The rows' rule is 1px `sem/stroke/1`, stroked inside the
+  row, so the foot padding is `calc(27 - 1px)`. Chips gate `cursor` on `s.live`, where Retro's carry it
+  unconditionally, and that is intended.
+- **`Layer_1` is an empty frame under Lime**, where Retro's holds the torn-edge vector. That confirms the
+  band table's "repertoire: none" a second way.
+- **`figma.root.children[0]` is the *Components* page now, not the layout page** (the pages are
+  Components, Playground, Styleguides, Layout 1 `964:58571`, Layout 2…4, Test Batch). A
+  `getNodeByIdAsync('I…;…')` after `setCurrentPageAsync(figma.root.children[0])` returned null for every
+  id. What worked: `getNodeByIdAsync` on the **instance** id (`964:58592`), then `findOne` by child name.
+- **Measured against the masters' content edges**: desktop head 123.9 (151 × 0.82), search 319 × 50,
+  chips 23.6 (the ramp's 11px body-sm against the frame's 28 × 0.82 = 23), rows 72.8 and the six 436.7
+  (534 × 0.82), column gap 57.4, pager 45.1 / 71.3 × 44.3 with a 13.9 glow; 768 head 103.7, halves 344 +
+  344, rows 77.1, list 462.6, the pager centred; 390 head 159.3, rows 69.4 (the frame's 69 is Label/LG 14
+  × 1.1 rounded to a whole line box), buttons spread across the measure. Every gap between blocks is
+  32 (26.2 on desktop), the frames' own.
 
 ## Open questions
 
