@@ -1195,7 +1195,10 @@ Learned on the end-of-pass sweep (`c7caa62` and `350ccd0`):
   `preventDefault` on `a[href^="mailto:"]` before touching the form. A generic probe covered the
   controls: every leaf element in a section with a computed `cursor: pointer` that is not an in-page or
   `_blank` anchor, a handful clicked, the section's `innerHTML` compared before and after. The few
-  `false` results were idempotent clicks (the chip already lit, the gallery's current slot).
+  `false` results were idempotent clicks (the chip already lit, the gallery's current slot). The one
+  `unclickable` (the form's leaf 5) is the submit arrow's horizontal stroke, lucide's
+  `<path d="M5 12h14">`, whose box is 0 tall, so puppeteer has no point to click. Its sibling stroke
+  was clicked and submitted. A probe that collects leaves by cursor should skip zero-area rects.
 - **Two traps in that script.** `NavMenu`'s open state survives a resize, so a burger opened at 390
   is still open at 820 and a second click proves nothing: test each width in a fresh tab. And a
   fixed panel left open lands inside `captureBeyondViewport` clips far down the page, which is what
