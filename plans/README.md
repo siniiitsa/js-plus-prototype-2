@@ -16,6 +16,7 @@ plans/
     layout-4.md
   lime/
     layout-1.md
+    layout-2.md
   grunge/      ← not started
   editorial/   ← not started
   pop/         ← not started
@@ -43,8 +44,9 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
 | Layout 1 | [`lime/layout-1.md`](./lime/layout-1.md) | `lime-layout-1` (closed, unmerged) | Retro layout 1's eleven components in Lime's Figma mode: a token foundation (session 0), then `s.lime` decoration inside the shared `s.v0` branches, and the header's four modal cards, plus the end-of-pass sweep. |
+| Layout 2 | [`lime/layout-2.md`](./lime/layout-2.md) | `lime-layout-2`, forked from `lime-layout-1` (not started) | Retro layout 2's eleven compositions in Lime's mode: `s.lime` decoration inside the shared `s.v1` branches, all three widths per session. Card 2 of the setup modal becomes a fitted page. |
 
-**Reading order in a Lime session:** `CLAUDE.md`, then the plan, then the Retro sections it names at its top.
+**Reading order in a Lime session:** `CLAUDE.md`, then the plan, then the sections it names at its top. Layout 2 also reads layout 1's whole *Conventions*, since that pass built the foundation.
 
 ## Other templates
 
