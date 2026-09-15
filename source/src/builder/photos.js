@@ -16,6 +16,7 @@
 import hero from './photos/hero.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
 import stage from './photos/stage.jpg'
+import bioStage from './photos/bio-stage.jpg'
 import formStage from './photos/form-stage.jpg'
 import gallery1 from './photos/gallery-1.jpg'
 import gallery2 from './photos/gallery-2.jpg'
@@ -31,6 +32,7 @@ import track3 from './photos/track-3.jpg'
 import track4 from './photos/track-4.jpg'
 import track5 from './photos/track-5.jpg'
 import mapTile from './photos/map.jpg'
+import mapRadial from './photos/map-radial.jpg'
 import review1 from './photos/review-1.jpg'
 import review2 from './photos/review-2.jpg'
 import review3 from './photos/review-3.jpg'
@@ -120,7 +122,10 @@ export const LIME_HEADER_AVATAR = limeHeaderAvatar
 
 // Fixed decoration rather than user content, so these are not in FIELDS. The
 // grain is Retro's alone; the map raster is also Lime's (sectionVm decides).
-export const RETRO_TEXTURE = { grain, map: mapTile }
+// `mapRadial` is the events map's layout-3 plate, the frame's own radial street
+// raster (964:68649's Map Texture), re-encoded at 900px; it is drawn as it is,
+// where `map` is inverted onto a dark plate.
+export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 
 // The template picker's picture of each flat template: a flattened render of its
 // Figma header instance (Grunge 964:58600, Editorial 964:58612, Pop 964:58624),
@@ -136,8 +141,15 @@ export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeade
 //   photos — the section photographs above
 //   avatar — the header's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
+//   layouts — a section photograph that one layout's frame draws differently,
+//             by design index, then category; it wins over `photos` there
+//
+// Retro's bio at layout 3 is the ID card's 798 × 380 landscape slot, and its
+// frame (964:68631) fills it with the whole Velvet Note stage shot — the
+// scene `stage.jpg` is a portrait slice of, re-encoded at 1200px as
+// `bio-stage.jpg`. The portrait stays layout 1's polaroid.
 const SEEDS = {
-  Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage },
+  Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage, layouts: { 2: { bio: bioStage } } },
   Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeStage },
 }
 
@@ -154,12 +166,12 @@ const SEEDS = {
 // Retro's is its layout-2 frame's own stage shot (964:64652), the close-up
 // singer in a dark jacket, re-encoded at 1200px as `form-stage.jpg`; Lime's
 // takes the live-set frame its bio stands on.
-export const defaultImage = (cat, themeName, key = 'image') => {
+export const defaultImage = (cat, themeName, key = 'image', design) => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined
   if (key === 'avatar') return cat === 'header' ? seed.avatar : undefined
   if (key === 'photo') return cat === 'form' ? seed.photo : undefined
-  const v = seed.photos[cat]
+  const v = seed.layouts?.[design]?.[cat] ?? seed.photos[cat]
   return Array.isArray(v) ? undefined : v
 }
 

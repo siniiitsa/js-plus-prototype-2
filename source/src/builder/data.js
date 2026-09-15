@@ -406,6 +406,12 @@ export const QUOTES = [
     who: 'Amara Okafor', role: 'Venue manager, Albert Hall', when: 'Reviewed 3 weeks ago' },
   { quote: 'Booked for one night, kept for the whole season.',
     who: 'Dan Whitfield', role: 'The Warehouse Project', when: 'Reviewed last month' },
+  // The layout-3 bento wall's own two named reviews (964:68651), appended so
+  // the wall draws the frame's five cells after its stat card (QA, 2026-09-15).
+  { quote: 'Read the room perfectly. Highly professional!',
+    who: 'Imran K.', role: 'Events Manager', when: 'Reviewed 2 months ago' },
+  { quote: '"Booking again next year, no question."',
+    who: 'Olivia B.', role: 'Wedding planner', when: 'Reviewed 3 months ago' },
 ]
 
 export const CITIES = [
@@ -473,6 +479,11 @@ export const GIGS = [
 export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
+// Layout 3's map panel copy, the frame's own (964:68649), seeded and emptiable.
+export const MAP_STATUS = 'In transit'
+export const MAP_UPDATED = 'Updated 2m ago'
+export const MAP_RINGS = '30mi, 60mi, 120mi'
+export const MAP_EXPAND = 'Expand view'
 // Layout 2's stat row: the frame's Travel time and Booking fee cells, seeded
 // with its own copy. Max travel, the third cell, is MAP_RADIUS rather than a
 // field of its own, so a seeded page cannot claim two different coverages.
@@ -581,6 +592,7 @@ export const DEFS = {
   heroSub:    'DJ & selector. Clubs, weddings and festivals across the North — nights built live, never off a playlist.',
   bioP1:      'DJ and selector based in Manchester. Five years of reading rooms — house, disco, soul, 80s — chosen by the room, not the algorithm.',
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
+  since:      'June 2021',
   statement:  'Reads the room.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
   // §10.2 layout 3 heads the stack with a line under the title, where neither
@@ -653,6 +665,9 @@ export const CAL_SLOTS  = [
 // the corner. The shared `heading` default stays TITLES.testimonials for the
 // other layouts; sectionVm and EditPanel both resolve this one for layout 2.
 export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
+// The booking calendar's layout-3 heading, the composed page's "Book Me" over
+// the card (964:68644). Layouts 1, 2 and 4 keep TITLES.calendar.
+export const CAL_HEADING_3 = 'Book Me'
 export const TESTI_STARS = '★★★★★'
 
 // Enquiry form layout 2's card, seeded with its frame's own copy (964:64652):
@@ -662,6 +677,8 @@ export const FORM_PRICE_UNIT = 'from / event'
 export const FORM_BOOKINGS = '42 bookings'
 export const FORM_CTA = 'Check Availability'
 export const FORM_NOTE = 'No charge to enquire'
+// Layout 3's eyebrow, the frame's own "AVAILABLE 2025 / 2026" (964:68650).
+export const FORM_AVAILABLE = 'Available 2025 / 2026'
 
 // Booking calendar layout 2's pill. Its frame reads "Star Enquiry", taken as a
 // typo for this.
@@ -697,16 +714,62 @@ export const EXAMPLE_PAGE = [
 // `i`. `pageLayout` is half of "a card lays out the whole page"; this is the
 // other half, because each Figma page stacks its sections in an order of its
 // own. Layout 2's page (`964:58572`) reads the repertoire before the gallery
-// and the events map after the calendar. A page with no row here takes layout
-// 1's, which is EXAMPLE_PAGE's — true of layout 4's page, not yet written for
-// layout 3's.
+// and the events map after the calendar. Layout 3's row is its narrow pages'
+// order (977:21117, 982:8748), which puts the repertoire between the media
+// player and the calendar; at 1440 the calendar stands beside the bio and the
+// player instead and the repertoire follows the columns — `pageRows` does that
+// regrouping, so one order serves all three widths. A page with no row here
+// takes layout 1's, which is EXAMPLE_PAGE's — true of layout 4's page.
 const PAGE_ORDERS = [
   EXAMPLE_PAGE.map(([cat]) => cat),
   ['header', 'bio', 'media', 'repertoire', 'gallery', 'pricing', 'calendar', 'map',
     'form', 'testimonials', 'footer'],
+  ['header', 'bio', 'media', 'repertoire', 'calendar', 'gallery', 'pricing', 'map',
+    'form', 'testimonials', 'footer'],
 ]
 
 export const pageOrder = (i) => PAGE_ORDERS[i] ?? PAGE_ORDERS[0]
+
+// Layout 3's page is the one Figma page that does not stack every section. At
+// 1440, Frame 299 (`964:68623`) stands the bio and the media player in an 858
+// left column and the booking calendar, under its "Book Me", in a 405 right
+// column beside them, 55 apart; both narrow pages stack the same sections.
+//
+// `pageRows` is that composition in page terms: at desktop, a calendar on
+// layout 3 takes the right-hand column beside the run of sections above it
+// that are a bio or a media player on layout 3 — looking past one repertoire
+// on layout 3 between them, which is where the narrow pages seat it, and which
+// then follows the composed row as it does at 1440. Anything else — a calendar
+// with no such run above it, any other layout, a narrow width — is a row of
+// its own, so moving a section out of the run is how the artist undoes it.
+// The one cost: at desktop that repertoire draws below the calendar it sits
+// above in the section list. Pure and index-based, so the editor canvas and
+// the published tab group the same page the same way.
+export const COLUMN_SPLIT = { left: 858, right: 405, gap: 55 }
+const COLUMN_LEFT = ['bio', 'media']
+
+export function pageRows(sections, themeName, wide) {
+  const at3 = (x) => x.arch % designCount(x.cat, themeName) === 2
+  const rows = []
+  sections.forEach((x, i) => {
+    if (wide && x.cat === 'calendar' && at3(x)) {
+      const between = i > 0 && sections[i - 1].cat === 'repertoire' && at3(sections[i - 1])
+      const end = between ? i - 1 : i
+      let from = end
+      while (from > 0 && COLUMN_LEFT.includes(sections[from - 1].cat) && at3(sections[from - 1])) from--
+      if (from < end) {
+        // Every section from `from` to just above the calendar pushed a plain
+        // row of its own a moment ago.
+        rows.splice(rows.length - (i - from))
+        rows.push({ left: Array.from({ length: end - from }, (_, k) => from + k), right: i })
+        if (between) rows.push({ i: i - 1 })
+        return
+      }
+    }
+    rows.push({ i })
+  })
+  return rows
+}
 
 // "Blank" — only the two mandatory sections.
 export const BLANK_PAGE = [
@@ -755,11 +818,11 @@ export const FIELDS = {
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
-    // "Performing since: June 2021" — a date nobody typed, so the value is
-    // dropped and the seat becomes this field instead. Deliberately without a
-    // default: an unfilled page would otherwise publish a fabricated one, and
-    // the column is simply not drawn while it is empty.
-    { k: 'since',     l: 'Performing since',
+    // "Performing since: June 2021". Seeded with the frame's copy (QA,
+    // 2026-09-15 — layout 2's price row and bookings line were the precedent),
+    // so the seeded card draws the frame's three columns; emptied, the column
+    // is not drawn.
+    { k: 'since',     l: 'Performing since', def: 'since',
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
   ],
   // The second list-shaped content type with a structured editor (see
@@ -870,7 +933,7 @@ export const FIELDS = {
     { k: 'booked',  l: 'Booked dates', type: 'booked',
       hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME,
-      hint: "Printed in the enquiry line of layouts 1 and 3, and on its own in layout 4's "
+      hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'summary card. Leave it empty and the line stops at the date.' },
     { k: 'cta',     l: 'Button (layouts 1 and 4)', d: 'Check a date' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA },
@@ -898,13 +961,18 @@ export const FIELDS = {
     { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE },
-    // Layout 3's foot pill, and the only layout that draws one: the split
-    // list's frame closes with a "See all gigs" control that has nowhere on a
-    // one-page site to go, so the seat takes the page's own Book Now instead
-    // (the testimonials' layout-2 case). `map` is not in CTA_TARGETS.book, so
-    // it needs no self-exclusion; an emptied label drops the pill, the footer's
-    // rule rather than the calendar's, because here it is a block of its own.
-    { k: 'cta',     l: 'Button (layout 3)', d: 'Book Now' },
+    // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
+    // draws one. Live it lifts the pager and lists every gig under the current
+    // filter; where the list is already one page it stays a picture (the
+    // Soundcloud rule). An emptied label drops the pill.
+    { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs',
+      hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
+    { k: 'status',  l: 'Map tag (layout 3)', d: MAP_STATUS },
+    { k: 'updated', l: 'Map note (layout 3)', d: MAP_UPDATED },
+    { k: 'rings',   l: 'Ring labels (layout 3)', d: MAP_RINGS,
+      hint: 'Up to three, inner ring first, separated by commas.' },
+    { k: 'expand',  l: 'Map link (layout 3)', d: MAP_EXPAND,
+      hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [
@@ -952,9 +1020,8 @@ export const FIELDS = {
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara',
       hint: 'The line under the heading. Layout 3 only.' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
-      hint: 'One per line — the ticked list beside the form. Layout 3 runs them together '
-          + 'as the one line under its button; layout 4 numbers them down its right-hand '
-          + 'column, and with none it draws no column at all.' },
+      hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
+          + 'right-hand column, and with none it draws no column at all.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
     // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
     // no boxes at all, and there is no null sentinel.
@@ -969,15 +1036,18 @@ export const FIELDS = {
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
-    { k: 'button',   l: 'Button', d: 'Book Now', hint: 'Layouts 1, 3 and 4.' },
-    // Layout 2's card. Every one is emptiable and drops what it fills, except
-    // the button: it is the submit, so an emptied label falls back to `button`.
-    { k: 'price',     l: 'Price (layout 2)', d: FORM_PRICE },
-    { k: 'priceUnit', l: 'Price note (layout 2)', d: FORM_PRICE_UNIT },
-    { k: 'bookings',  l: 'Bookings line (layout 2)', d: FORM_BOOKINGS,
+    { k: 'button',   l: 'Button', d: 'Book Now', hint: 'Layouts 1 and 4.' },
+    // Layouts 2 and 3's card — the same component in both frames. Every one is
+    // emptiable and drops what it fills, except the button: it is the submit,
+    // so an emptied label falls back to `button`.
+    { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE },
+    { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT },
+    { k: 'bookings',  l: 'Bookings line (layouts 2 and 3)', d: FORM_BOOKINGS,
       hint: 'The five stars before it are drawn while this is filled.' },
-    { k: 'cta',       l: 'Button (layout 2)', d: FORM_CTA },
-    { k: 'note',      l: 'Line under the button (layout 2)', d: FORM_NOTE },
+    { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA },
+    { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE },
+    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE,
+      hint: 'The small line above the heading. Leave it empty to hide it.' },
   ],
   footer: [
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },

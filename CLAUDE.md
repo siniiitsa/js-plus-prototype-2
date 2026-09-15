@@ -80,6 +80,17 @@ the only function-valued keys on the whole view-model.
 No router, no context, no state library. One flat `useState` object `st` in `EncoreBuilder`,
 mutated through a single `patch()` helper.
 
+- **The page is rows, and nearly every row is one section.** The exception is layout 3's
+  composed page: at desktop, `pageRows()` in `data.js` stands a calendar on layout 3 in a
+  right column beside the bio / media sections on layout 3 directly above it, and
+  `arrangeRows()` in `EncoreBuilder.jsx` draws that row as a 858fr : 405fr grid inside the
+  page gutter. Both the editor canvas and `PublishedPage` go through the pair, and the
+  sections in it are built with `sectionVm({ column: true })`, which drops their horizontal
+  padding. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
+  media, repertoire, calendar — and at desktop `pageRows` looks past that one layout-3
+  repertoire, composing the columns and standing the repertoire after them; moving a section
+  out of the run undoes it.
+
 - `st.stage` is `'template' | 'editor'` — an early return dispatches to `TemplateStage`, else the
   inline editor JSX. **There is no header stage any more**: SPEC §6's full-screen picker is gone,
   and picking a template opens the editor on the built page with `st.onboard` armed. The header
@@ -129,7 +140,7 @@ mutated through a single `patch()` helper.
   header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section),
   the **media player** (below), the **gallery's arrows
   and thumbnail strip** (below), the **events map's pager, its pin/row pairing and — in
-  layout 3 alone — its city chip row** (below),
+  layout 3 alone — its city chip row, its map zoom and its See all gigs reveal** (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
   which row is featured),
@@ -166,7 +177,8 @@ mutated through a single `patch()` helper.
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
   **Layout 2 plays through the same hooks**, and draws the one list twice: the fan and the
   numbered list beside it are both the whole of `s.tracks`, and **layout 3 is that numbered
-  list on its own**, so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — the
+  list under a bar-meter now-playing card** (its disc is the play/pause, its meter counts bars off
+  `vm.contentW`), so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — the
   flat design still shows three and Next must not leave the page.
   Its fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
@@ -410,7 +422,7 @@ mutated through a single `patch()` helper.
   and `image` — which gives `image` a **second** seat, the polaroid stack having been its only
   one. A blocked cue features nothing and the card prints `calPrompt` instead, which is also
   the emptied-list state. Its foot is `BookPill` at layout 3's own numbers, but labelled
-  `calCta`, so `cta` is a field again where layout 3 spends the pill on the line; and it is
+  `calCta`, so `cta` is a field again where layout 3 spends the pill on the picked date; and it is
   the one calendar layout that paints a **sheet** — the Figma wrapper's tan panel, which
   carries the page's own "Book Us" head and would otherwise leave that head on a ground no
   master draws. Its card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
@@ -474,15 +486,12 @@ mutated through a single `patch()` helper.
   same `errs`, the same `sent`, the same `<a href="mailto:">`, the same *Write another*,
   the same label-in-the-box and the same bare `Enquiry` subject, since `showTypes` is
   still `!!s.v0`. What it does not draw is the portrait, so **`image` now reaches layouts
-  1 and 2 alone** — the frame has no credit row, and what comes back in its place is the
-  artist's *name*, which heads the left column as the eyebrow because the frame's own
-  "AVAILABLE 2025 / 2026" is a claim about the clock and nothing in this file reads one
-  (the booking calendar's rule). Its two prose slots are the section's one prose field and
-  one derivation: `para` takes the paragraph under the head, which is what its field is
-  called, and the centred line under the pill takes **`vm.formPromiseLine`** — the ticked
-  promises run together with ` · `, because the frame's "No charge to enquire" is a
-  promise in `FORM_PROMISES`' own register and a frame that draws one of a list is the
-  audio player's stranding. Emptied promises drop the line and the card ends on its pill.
+  1 and 2 alone** — the frame has no credit row. Its eyebrow is `available`, seeded with
+  the frame's "Available 2025 / 2026" and emptiable; `para` takes the paragraph under the
+  head; and the card carries **layout 2's own card fields** — the price row, the
+  `★★★★★ 42 bookings` line, the `cta` submit label and the `note` line under the pill —
+  because it is the same card component (QA, 2026-09-15). So `promises` reaches layout 4
+  alone now.
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
   two `minmax(0, 1fr)` grid columns, because a zero flex-basis resolves against the
   *content* box whatever `box-sizing` says and the padded card came out 41 wider than the
@@ -525,7 +534,8 @@ mutated through a single `patch()` helper.
   dead arrow. They are **not rendered at one review**, the pager's and the chip row's rule,
   which is derived from the list and so holds on the canvas too; the desktop row then centres
   the card, because `space-between` with one child would stand it against the gutter. The seed
-  carries three, so the reference picture does not move. Every value on the card is emptiable
+  carries five — three until layout 3's QA added the bento wall's two named reviews, appended so
+  the first card on show is unchanged. Every value on the card is emptiable
   now, so each is rendered or not rather than printed blank — a `col` gap is spent on an empty
   span the same as on a full one — and the attribution is **composed in `sectionVm` as
   `vm.quotes[].byline`**, the calendar's one-composed-line-per-cell rule, or an emptied role
@@ -572,10 +582,8 @@ mutated through a single `patch()` helper.
   its right over *one row* of cards — four at 1440, three at 768, one and a peek at 390 — so it
   is the third design to share `cur` whole rather than grow a seam, reading it as the review
   **leading the row** where layouts 1 and 2 read it as the single card on show. The row is one
-  card per review as everywhere else, so the frame's four cells against three seeded reviews
-  are its filler; the arrows are derived from the list and **not drawn at one page**, which
-  means the seeded 1440 and 768 renders carry no arrows where the frame draws them (the events
-  map's intended diff). The hue is the **seat's** and not the review's, the media player's fan
+  card per review as everywhere else; the arrows are derived from the list and **not drawn at
+  one page**, which the seeded five never are. The hue is the **seat's** and not the review's, the media player's fan
   rule, and its cost is that the rust card is seat four: unreachable at 768 and 390 at any
   count, and needing four reviews at 1440. It is the section's second full-bleed sheet and its
   first mustard one — `s.pillBg` with a `pillFg` head, the enquiry form's layout-2 pair on the
