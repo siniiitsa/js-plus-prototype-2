@@ -43,7 +43,8 @@ import {
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, CAL_HEADING_3, TESTI_STARS, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  TESTI_HEADING_2, CAL_HEADING_3, TESTI_STARS,
+  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
@@ -176,6 +177,12 @@ function canMove(sections, id, dir) {
 // Retro off-white when the palette is dark on dark.
 const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
+
+// Layout 4's heading fallbacks, per category — the composed page's own heads
+// (QA, 2026-09-15). sectionVm and EditPanel both read this.
+const HEADING_4 = {
+  calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
+}
 
 export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false }) {
   const T = THEMES[themeIdx]
@@ -381,6 +388,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // are already reading. Dropping it leaves `undefined`, and BookPill's own rule
   // — no target, no link — keeps the pill the picture it is today.
   vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
+  // Layout 4's row pill label (its frame's "Star Enquiry", read as "Start").
+  // Uncased, the footer's rule: the pill sets it in the display face with no
+  // text transform, and casing it would shout on Grunge and Pop.
+  vm.tierRowCta = cv('rowCta', PRICING_ROW_CTA)
 
   // chips — TAGS, one per palette tag hue. A template whose Figma mode names
   // each tag's ink (`sem.tagFg`, parallel to `tags`) takes it; contrast()'s
@@ -628,6 +639,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // it. The stars sit in its card's corner.
   if (cat === 'testimonials' && d === 1 && c.heading === undefined) vm.title = cased(TESTI_HEADING_2)
   if (cat === 'calendar' && d === 2 && c.heading === undefined) vm.title = cased(CAL_HEADING_3)
+  // Layout 4's heads, the composed page's own (QA, 2026-09-15). EditPanel
+  // mirrors all four.
+  if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
   vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
@@ -793,6 +807,30 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
     vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))
+    // Layout 4's enquiry wizard (QA, 2026-09-15). Step 1 is the frame's
+    // (964:72843); the frame draws no step 2 or 3, so their boxes are what the
+    // summary card beside it labels (Details) and a way to answer (Contact).
+    // Every string is resolved here, cased, so EncoreSection composes nothing.
+    vm.calTypes = songTags(cv('types', CAL_TYPES.join(', '))).map((l) => cased(l))
+    const wizSteps = [
+      ['Event', "What's the occasion?", []],
+      ['Details', 'Tell us the details', [
+        ['guests', 'Guests', 'e.g. 120'], ['length', 'Set length', 'e.g. 4 hrs'],
+        ['budget', 'Budget', 'e.g. £1,200'], ['sound', 'Sound', 'Provided or needed'],
+      ]],
+      ['Contact', 'How do we reach you?', [
+        ['name', 'Name', 'Your name'], ['email', 'Email', 'you@example.com'],
+      ]],
+    ]
+    vm.calWizard = {
+      steps: wizSteps.map(([name, title, boxes], i) => ({
+        name: cased(name), title: cased(title), line: cased(`Step ${i + 1} of ${wizSteps.length}`),
+        boxes: boxes.map(([key, label, ph]) => ({ key, label: cased(label), ph })),
+      })),
+      typesLabel: cased('Type of event'),
+      date: { key: 'date', label: cased('Approx. date'), ph: 'dd / mm / yyyy' },
+      back: cased('Back'), next: cased('Next Step'), send: cased('Send Enquiry'),
+    }
     // The bare hour, beside the composed lines that already carry it. Layout 4
     // draws no enquiry line at all — its foot is the pill and its card is that
     // line taken apart into four stat cells — so `time` would otherwise reach
@@ -970,6 +1008,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.mapUpdated = cv('updated', MAP_UPDATED)
   vm.mapRings = String(cv('rings', MAP_RINGS) ?? '').split(',').map((x) => x.trim()).filter(Boolean)
   vm.mapExpand = cv('expand', MAP_EXPAND)
+  // Layout 4's panel note beside "Travel & reach", the frame's own copy (QA,
+  // 2026-09-15). Emptiable.
+  vm.mapSpan = cv('span', MAP_SPAN)
   // Layout 3's foot pill. Uncased, the footer's rule: the pill has always drawn
   // an uncased label and casing it would shout on Grunge and Pop.
   vm.mapCta = cv('cta', 'See all gigs')
@@ -2625,6 +2666,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'heading' && sec.cat === 'calendar'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
+                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
+                      && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)

@@ -668,7 +668,25 @@ export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
 // The booking calendar's layout-3 heading, the composed page's "Book Me" over
 // the card (964:68644). Layouts 1, 2 and 4 keep TITLES.calendar.
 export const CAL_HEADING_3 = 'Book Me'
+// Layout 4's heads, each its composed page's own wrapper head over the section
+// (QA, 2026-09-15): the Book Us panel (964:72839), the gallery's column
+// (964:72784), the map band (964:72827) and the testimonials sheet. The other
+// layouts keep the shared TITLES defaults; sectionVm and EditPanel both resolve
+// these at layout 4 alone, the TESTI_HEADING_2 pattern.
+export const CAL_HEADING_4 = 'Book Us'
+export const GALLERY_HEADING_4 = 'Snaps from the night'
+export const MAP_HEADING_4 = 'Distances we’ll Travel'
+export const TESTI_HEADING_4 = 'Client success stories'
 export const TESTI_STARS = '★★★★★'
+// Booking calendar layout 4's wizard (964:72843): the event types its first
+// step offers, the frame's own four. The calendar's own list rather than the
+// enquiry form's FORM_TYPES, which is another section's content.
+export const CAL_TYPES = ['Wedding', 'Birthday', 'Corporate', 'Festival']
+// Pricing layout 4's row pill. Its frame reads "Star Enquiry", the typo
+// CAL_SLOT_CTA already reads as this.
+export const PRICING_ROW_CTA = 'Start Enquiry'
+// Events map layout 4's panel note, beside "Travel & reach" (964:72830).
+export const MAP_SPAN = 'Live · last 12 months'
 
 // Enquiry form layout 2's card, seeded with its frame's own copy (964:64652):
 // the price row, the bookings line, the submit's label and the line under it.
@@ -880,6 +898,8 @@ export const FIELDS = {
       hint: 'The five stars beside it are drawn while this is filled.' },
     { k: 'cta',     l: 'Button (layout 2)', d: PRICING_CTA },
     { k: 'note',    l: 'Line beside the button (layout 2)', d: PRICING_NOTE },
+    { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA,
+      hint: 'The pill under the price on every package row.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
   // The other list-shaped content type with a structured editor rather than a
@@ -937,6 +957,8 @@ export const FIELDS = {
           + 'summary card. Leave it empty and the line stops at the date.' },
     { k: 'cta',     l: 'Button (layouts 1 and 4)', d: 'Check a date' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA },
+    { k: 'types',   l: 'Event types (layout 4)', type: 'area', d: CAL_TYPES.join(', '),
+      hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
   // and `media`: `gigs` is an array of { venue, city, time, month, day, link }
@@ -973,6 +995,8 @@ export const FIELDS = {
       hint: 'Up to three, inner ring first, separated by commas.' },
     { k: 'expand',  l: 'Map link (layout 3)', d: MAP_EXPAND,
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
+    { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN,
+      hint: 'Beside "Travel & reach" above the four stat cards. Leave empty to hide it.' },
     { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [
