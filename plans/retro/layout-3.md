@@ -1322,9 +1322,12 @@ Reversals and fixes after QA compared the built page with the layout-3 frames. B
   gutter. Its sections are built with `sectionVm({ column: true })`, which zeroes `padX` and
   `surplus` and keeps `padY`. The editor canvas and the published tab share both helpers;
   tablet and mobile still stack. The columns come out 684 and 323 wide at 1180.
-  `PAGE_ORDERS[2]` is new — header, bio, media, **calendar**, repertoire, … — because the
-  columns are built from adjacency; the narrow pages' calendar-after-repertoire is the named
-  cost. The "columned five" of this plan are three now (`tags` and `audio` left the project
+  `PAGE_ORDERS[2]` is new, and it is the narrow pages' order — header, bio, media,
+  repertoire, **calendar**, gallery, … (corrected at QA item 10, which caught the calendar
+  above "Curated sets" at 390). At desktop `pageRows` looks past that one layout-3 repertoire
+  to compose the columns, then stands the repertoire after them, as the 1440 page draws it;
+  the cost is that at desktop the repertoire draws below a calendar it sits above in the
+  section list. The "columned five" of this plan are three now (`tags` and `audio` left the project
   in `d734992`), and the Genres chip row under the card is **not** drawn (decided at QA).
 - **Bio — photograph.** The ID card's slot is the frame's whole Velvet Note stage shot, not
   `stage.jpg`'s portrait slice of it: `photos/bio-stage.jpg` (1200 × 675), seeded for Retro
@@ -1339,3 +1342,52 @@ Reversals and fixes after QA compared the built page with the layout-3 frames. B
   under its label, and the group stands on the 96 box's floor, as all three masters draw it. A before/after digest (themes 0–4, every cat × layout ×
   width) moved bio arch 2 and bio arch 3 only — the latter being layout 4's overlay line
   now printing "Performing since June 2021", which that frame draws.
+- **Media — the wrapper head and the bar-meter card.** Section `964:68633` (977:22719 ·
+  982:9770) stacks an eyebrow and "Five worth your ear", the *Bar-meter player* instance and
+  the numbered list, 30 apart. With `audio` gone that card is the media player's now-playing
+  block, ported from the audio branch's fit (`WAVE`, 24 / 16 / 30 / 96 / 44, list 16/12/13,
+  body-sm 12) onto the section's own hooks: the track the player is on, NOW_PLAYING's clock on
+  the canvas and the element's live, the disc as play/pause, and a meter played to the frame's
+  17 of 57 on the canvas and to the playhead live. The heading is `s.title`, whose default
+  already is "Five worth your ear."; the eyebrow is `kicker` ("Top tracks") rather than the
+  frame's "KM BIO", which is the bio Section's head duplicated. The meter counts its bars off
+  a new `vm.contentW` — `canvasW − 2·padX`, or the page column's 684 / 323 — because the card
+  no longer stands in 1052 at desktop. Digest: media arch 2 only.
+- **Calendar — beside the bio, headed "Book Me".** Its placement is the bio bullet's
+  composed row. Two copy/type fixes to the card itself: the heading falls back to
+  `CAL_HEADING_3` ("Book Me") at layout 3 alone, in `sectionVm` and `EditPanel` both (the
+  testimonials' `TESTI_HEADING_2` pattern); and the pill prints the frame's short "Enquiry
+  About June 12" (`vm.calMonths[].cells[].short`) in Display/List — the display face, not
+  cased — where it printed `enquiryLine`'s whole sentence in the label face and wrapped in
+  the 323 column. `time` therefore has no seat in layout 3 now, and its hint says so. The
+  frame's four tan booked dots and its week of rust "selected" dots are filler the section
+  has no model for (one picked day; the seed blocks nothing), and are not reproduced.
+- **Events map — the panel is the frame's again.** Reversing *Learned on the events map*'s
+  declines: the tag and note are `status` / `updated` ("In transit", "Updated 2m ago"), the
+  ring labels are `rings` ("30mi, 60mi, 120mi", inner first, on each ring's right edge on
+  the midline), and the data bar is "base · n pins · radius" beside `expand` ("Expand
+  view →"), which live opens the featured gig's `directions`. All four are emptiable. The
+  plate is the frame's own radial raster, `photos/map-radial.jpg` (`RETRO_TEXTURE.mapRadial`,
+  Retro and Lime), drawn as it is. The zoom controls (30 × 40, 4 apart, 16 in) are real
+  live: they scale a layer holding the raster, rings, labels and pins by 1.25 per step
+  between −2 and +3. The foot pill is "See all gigs" in Display/List — live, where the list
+  runs past one page, it lifts the pager (`allGigs`); otherwise it is a picture — so it no
+  longer points at the booking form, and `mapTerms` has no seat in layout 3. Two hooks were
+  appended (`zoom`, `allGigs`), keeping v0/v1's hook order. The "Upcoming / Past" status
+  chips and the ↗ marks on the rows stay declined — no arrows on them at QA.
+- **Enquiry form — the card's copy is layout 2's, the eyebrow the frame's.** The card is
+  the same component as layout 2's, so it now draws layout 2's own fields: the price row
+  (`price`, `priceUnit`), `★★★★★` + `bookings`, the submit labelled `cta` ("Check
+  Availability", falling back to `button`) and `note` ("No charge to enquire") under it —
+  where it had drawn `button` and `vm.formPromiseLine`. The eyebrow is a new emptiable
+  `available` field seeded with "Available 2025 / 2026", where it had drawn `s.brand`.
+  Those five fields' labels now say "layouts 2 and 3". Not changed (no arrows): the
+  frame's three boxes against the shared four, and its "Book Kai for your event" heading.
+- **Testimonials — the seed is five reviews.** The bento wall's second row was one review
+  stretched across the measure, because `QUOTES` carried three. The frame's two named reviews
+  (Imran K., Events Manager; Olivia B., Wedding planner) are appended to `QUOTES`, so the wall
+  is the master's two rows of three, with the 275 and 276 seats both taken. Decided at QA as a
+  shared seed rather than a layout-3 one, so layouts 1, 2 and 4 start with five as well — the
+  carousel and rail page through five, and layout 4's row fills its four cells and draws its
+  arrows at every width. The cards take the frame's own register order (`SEATS`: cream,
+  white / white, mustard, cream) instead of cycling by index.

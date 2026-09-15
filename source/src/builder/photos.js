@@ -32,6 +32,7 @@ import track3 from './photos/track-3.jpg'
 import track4 from './photos/track-4.jpg'
 import track5 from './photos/track-5.jpg'
 import mapTile from './photos/map.jpg'
+import mapRadial from './photos/map-radial.jpg'
 import review1 from './photos/review-1.jpg'
 import review2 from './photos/review-2.jpg'
 import review3 from './photos/review-3.jpg'
@@ -121,7 +122,10 @@ export const LIME_HEADER_AVATAR = limeHeaderAvatar
 
 // Fixed decoration rather than user content, so these are not in FIELDS. The
 // grain is Retro's alone; the map raster is also Lime's (sectionVm decides).
-export const RETRO_TEXTURE = { grain, map: mapTile }
+// `mapRadial` is the events map's layout-3 plate, the frame's own radial street
+// raster (964:68649's Map Texture), re-encoded at 900px; it is drawn as it is,
+// where `map` is inverted onto a dark plate.
+export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 
 // The template picker's picture of each flat template: a flattened render of its
 // Figma header instance (Grunge 964:58600, Editorial 964:58612, Pop 964:58624),

@@ -3367,6 +3367,21 @@ function Bio({ s }) {
 // gated on `s.live` (§12.7), like Repertoire's filters and the header's nav:
 // the editor canvas renders no <audio> at all and keeps the still picture,
 // because a card there would both start a track and select the section.
+// Media layout 3's bar meter (Figma 964:68641): the frame's own 57 bar heights,
+// against its stated 96px band. EncoreSection imports nothing from data.js. The
+// first 17 are the ones the frame paints in the accent — the playhead — and
+// everything from the 18th on is drawn in identical pairs, which is the
+// designer's hand, not a pattern to preserve.
+const WAVE = [
+  60, 64, 70, 80, 90, 88, 74, 62, 55, 50, 48, 50, 60, 75, 88, 96, 92,
+  78, 78, 62, 62, 52, 52, 46, 46, 48, 48, 54, 54, 62, 62, 74, 74, 80, 80,
+  78, 78, 68, 68, 56, 56, 48, 48, 44, 44, 48, 48, 56, 56, 64, 64, 56, 56,
+  48, 48, 44, 44,
+]
+// The share of that row the frame paints played: 17 bars of 57. A fraction and
+// not a count, because the meter's bar count is derived from the width.
+const WAVE_PLAYED = 17 / WAVE.length
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -4296,9 +4311,24 @@ function Media({ s }) {
   // v2 — Media layout 3 · Editorial numbered list
   // (Figma 964:68642 · 977:22728 at 708 · 982:9779 at 370.)
   //
-  // A counter row over five numbered rows on the beige page: number, 64px
-  // sleeve, title over release, running time, each row a 30px pill in one of
-  // three hues. No panel, no carousel, no head.
+  // The composed page's wrapper head (eyebrow over "Five worth your ear"), a
+  // bar-meter now-playing card, then a counter row over five numbered rows on
+  // the beige page: number, 64px sleeve, title over release, running time, each
+  // row a 30px pill in one of three hues. No panel, no carousel.
+  //
+  // ── The head and the card came back at QA (2026-09-15) ──────────────────
+  // Figma's Section `964:68633` (977:22719 · 982:9770) stacks the head, the
+  // "Audio Player — H · Bar-meter player" instance and this list 30 apart. The
+  // audio section that fitted that card left the project in d734992, so it is
+  // this section's now: the card is the player's now-playing block, on the
+  // same hooks as every other layout — the track the player is on, its clock
+  // (NOW_PLAYING's on the canvas, the element's live), a disc that is the
+  // play/pause, and a meter whose played share is the frame's 17 of 57 on the
+  // canvas and the playhead live. Its box and type are the audio branch's own
+  // fit: 24 padding, 16 gap, 30 radius, the 96 band, the 44 disc, list
+  // 16/12/13 for the two names, body-sm 12 for the four small lines. The
+  // eyebrow is the section's `kicker`: the frame's "KM BIO" is the bio
+  // Section's head duplicated, hidden `the` / `room.` nodes and all.
   //
   // ── The same Figma component as layout 2's right column ────────────────
   // `432:2092` is the component layout 2 draws *inside* its cream panel beside
@@ -4350,11 +4380,7 @@ function Media({ s }) {
   // its width, and the `<audio>` element rides at the foot of the column —
   // there is no transport bar here to tuck it into. Nothing new: no state, no
   // vm key, no field. What the frame does not draw, this does not either — the
-  // head (the Figma wrapper's display head belongs to its audio player, a
-  // section this project does not carry — plans/retro/layout-3.md) and the
-  // Soundcloud button (layout 2's absence, for the same reason). `heading` and
-  // `kicker` therefore edit nothing while layout 3 is selected, which is open
-  // question 7's shape and named there.
+  // Soundcloud button (layout 2's absence, for the same reason).
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -4406,9 +4432,108 @@ function Media({ s }) {
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
     }
 
+    // The wrapper head and the bar-meter card — see the banner above.
+    const A = desk
+      ? { disp: 96, eyebrow: 20, list: 16, sm: 12 }
+      : tab
+        ? { disp: 60, eyebrow: 14, list: 12, sm: 12 }
+        : { disp: 40, eyebrow: 12, list: 13, sm: 12 }
+    const head = (
+      <div style={col(u(30), { alignItems: 'flex-start' })}>
+        <span style={{
+          fontFamily: s.body, fontSize: u(A.eyebrow), lineHeight: 1.26,
+          textTransform: 'uppercase', color: s.tx,
+        }}>{s.mediaKicker}</span>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: u(A.disp), lineHeight: 0.89,
+          letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>
+      </div>
+    )
+
+    // Figma box/1 is the off-white under Retro, whose own `paper` IS the beige
+    // page; the flat four take their paper with `paperFg` ink and an outline
+    // (the calendar's lesson). The names and the played bars are the accent
+    // under Retro and the card's ink elsewhere — `s.ac` is chosen against the
+    // page, and Lime's is acid green on pale lime. `cold` is box/2, or the
+    // pair computed against paper (the repertoire's lesson).
+    const cream = s.retro ? '#FFFEFB' : s.paper
+    const ink = s.retro ? '#111111' : s.paperFg
+    const hot = s.retro ? s.ac : ink
+    const cold = s.retro ? '#F7EED7' : s.paperLine
+    // The pitch is the design and the count is derived: 10-wide bars 4 apart
+    // fill whatever the card leaves of the content column (56 of the frame's 57
+    // in layout 3's 684 page column).
+    const pad = 24 * z
+    const nBars = Math.max(1, Math.floor((s.contentW - 2 * pad + 4 * z) / (14 * z)))
+    const played = s.live ? now.pct / 100 : WAVE_PLAYED
+    const nHot = Math.round(nBars * played)
+    const small = {
+      fontFamily: s.body, fontSize: u(A.sm), lineHeight: 1.4, color: ink,
+      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+    }
+    const name = {
+      fontFamily: s.display, fontSize: u(A.list), lineHeight: 1.2, letterSpacing: s.dls,
+      color: hot, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+    }
+    const card = track && (
+      <div style={{
+        background: cream, color: ink, borderRadius: u(30), padding: u(24),
+        overflow: 'hidden', border: s.retro ? undefined : `1px solid ${ink}`,
+        ...col(u(16), { alignItems: 'stretch' }),
+      }}>
+        <div style={row('0', { justifyContent: 'space-between' })}>
+          <span style={small}>00:00</span>
+          <span style={small}>{now.of}</span>
+        </div>
+        <div style={{ height: u(96), gap: u(4), overflow: 'hidden', display: 'flex', alignItems: 'flex-end' }}>
+          {Array.from({ length: nBars }, (_, j) => (
+            <span key={j} style={{
+              flex: 'none', width: u(10), borderRadius: u(1),
+              height: u(WAVE[j % WAVE.length]), background: j < nHot ? hot : cold,
+            }} />
+          ))}
+        </div>
+        {/* Title and clock, the disc, artist and release. A grid rather than
+            space-between, so the disc stands in the middle whatever the two
+            names measure. */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
+          alignItems: 'center', columnGap: u(16),
+        }}>
+          <span style={col('0', { minWidth: 0 })}>
+            <span style={name}>{now.track}</span>
+            <span style={small}>{now.at} / {now.of}</span>
+          </span>
+          {/* The page's hard offset shadow is Retro's alone, and `pillBg` /
+              `pillFg` disappear on a paper card under the flat four, which take
+              the pair legible on paper by construction. The ▶ is sized off its
+              ink: 15.5 draws the frame's 9 × 10 triangle in the 44 disc. */}
+          <span onClick={s.live ? toggle : undefined} style={{
+            width: u(44), height: u(44), borderRadius: '999px',
+            background: s.retro ? s.pillBg : ink, color: s.retro ? s.pillFg : cream,
+            boxShadow: s.retro ? `${u(5)} ${u(5)} 0 0 ${s.ac}` : undefined,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            cursor: s.live ? 'pointer' : undefined,
+          }}>
+            {playing
+              ? <Pause size={Math.round(15.5 * z)} fill="currentColor" strokeWidth={0} />
+              : <Play size={Math.round(15.5 * z)} fill="currentColor" />}
+          </span>
+          <span style={col('0', { minWidth: 0, alignItems: 'flex-end', textAlign: 'right' })}>
+            <span style={{ ...name, maxWidth: '100%' }}>{now.by}</span>
+            {track.rel && <span style={{ ...small, maxWidth: '100%' }}>{track.rel}</span>}
+          </span>
+        </div>
+      </div>
+    )
+
     return (
-      <div style={col(u(10), { alignItems: 'stretch' })}>
-        {/* The frame's own top line, and the whole of this section's head. Its
+      <div style={col(u(30), { alignItems: 'stretch' })}>
+        {head}
+        {card}
+        <div style={col(u(10), { alignItems: 'stretch' })}>
+        {/* The frame's own top line over the list. Its
             two labels are separated by an unfilled `flex-[1_0_0]` spacer — a
             gap, not a rule, and the render draws nothing there — so this is a
             space-between row, which is what layout 2's counter row already is.
@@ -4484,9 +4609,10 @@ function Media({ s }) {
             </div>
           )
         })}
-        {/* This layout has no transport bar of its own — the rows are the whole
-            of it — so the element rides at the foot of the column. Without it
-            `el.current` is null and every row click is dead. */}
+        </div>
+        {/* The card is a disc rather than a bar with a slot for it, so the
+            element rides at the foot of the column. Without it `el.current` is
+            null and every row click and the disc are dead. */}
         {audio}
       </div>
     )
@@ -9597,7 +9723,7 @@ function Calendar({ s }) {
     const want = (s.live && sel) || s.calPick
     const at = want ? month.cells.findIndex((c) => c.iso === want) : -1
     const hit = at >= 0 && !month.cells[at].booked ? month.cells[at] : null
-    const line = hit ? hit.line : s.calPrompt
+    const line = hit ? hit.short : s.calPrompt
 
     // The frame draws no numerals in the grid, so the head is the only place
     // the date is named — which is why it is 96px tall and why both halves of
@@ -9675,13 +9801,10 @@ function Calendar({ s }) {
 
     return (
       <div style={col(u(30))}>
-        {/* The wrapper frame's own head, which the plan allocates to this
-            section — "Book Me" over the card, at the page's left edge and on
-            the page ground rather than the card. It takes `heading`, whose
-            default stays "Availability": re-pointing TITLES.calendar at the
-            frame's words would move layout 2's signed-off head, which is
-            exactly the objection that let the tags row re-point its own dead
-            entry and stops this one. */}
+        {/* The wrapper frame's own head, "Book Me" over the card, on the page
+            ground rather than the card. It takes `heading`, which at this
+            layout alone falls back to CAL_HEADING_3 (sectionVm and EditPanel
+            both), so the other layouts keep "Availability". */}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
           letterSpacing: s.dls, color: s.tx,
@@ -9709,28 +9832,27 @@ function Calendar({ s }) {
             <span><span style={{ color: hue }}>●</span> Selected</span>
             <span>○ Free</span>
           </div>
-          {/* The frame's foot *is* the pill, and what it carries is the enquiry
-              line — so `time` reaches this layout as it reaches the other two,
-              and `cta` is the field this one has no seat for (the header's seal
-              in layout 3, and layout 2's questions 4/7/8/12). Labelling the
-              pill `calCta` instead would have dropped the composed line, which
-              is the section's own output and the only thing on the card that
-              names the hour.
-              Its box does not ramp — 54 tall on a 46 disc in all three masters,
-              layout 2's reading of the very same pill — so the 46 goes in at
-              both narrow widths and `full` opts the 390 canvas back up to it.
-              `size` is passed at all three here rather than at narrow only:
-              this branch has no signed-off half whose drift it has to match.
-              `whiteSpace` is the one override the new `style` prop is really
-              for besides the width — our line is `enquiryLine`'s whole
-              sentence where the frame's is four words, so at 390 it takes two
-              lines and the pill grows, rather than running off the card. */}
+          {/* The frame's foot *is* the pill, labelled with the picked date
+              alone — "Enquiry About June 11", `vm.calMonths[].cells[].short`
+              (QA, 2026-09-15; it printed `enquiryLine`'s whole sentence, which
+              took two lines in the 323 page column). So neither `time` nor
+              `cta` has a seat in this layout. Its label is Display/List on
+              `size/list`, so under Retro the style override resets BookPill's
+              label face and casing — layout 2's pill's treatment.
+              Its box does not ramp — 54 tall on a 46 disc in all three masters
+              — so the 46 goes in at both narrow widths and `full` opts the 390
+              canvas back up to it. `whiteSpace` stays `normal` so a long
+              prompt or month name wraps rather than running off the card. */}
           <BookPill s={s} to={s.calBookTo} label={line} glyph="arrow"
                     disc={desk ? 38 : 46} size={u(T.list)} shadow="transparent"
                     {...(s.mob ? { full: true } : null)}
                     {...(s.retro ? { bg: s.ac, fg: '#FBF6EA', discFg: s.ac } : null)}
                     style={{
                       width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
+                      ...(s.retro ? {
+                        fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
+                        letterSpacing: s.dls,
+                      } : null),
                     }} />
         </div>
       </div>
@@ -10066,6 +10188,10 @@ function EventsMap({ s }) {
   // hook order is unchanged, and it indexes `s.gigChips` — which is derived
   // from the gigs' own cities and is empty below two of them.
   const [chip, setChip] = useState(0)
+  // Layout 3's zoom step and its "See all gigs" reveal, appended for the same
+  // reason: live only, and read by no other layout.
+  const [zoom, setZoom] = useState(0)
+  const [allGigs, setAllGigs] = useState(false)
 
   // v0 — Events Map layout 1 · Compact tile (§10.2 reference design): the
   // coverage tile beside the upcoming-gigs list, banded top and bottom with
@@ -11159,7 +11285,9 @@ function EventsMap({ s }) {
     // one set of distinct dots (the gallery's "the count is the section's when
     // a field states it"). 390 draws **one** row and two arrows, which is the
     // repertoire's derived 3/3/1 in this section's numbers.
-    const perPage = s.mob ? 1 : s.gigPage
+    // "See all gigs" lifts the pager: every gig under the filter on one page.
+    // Past five that can seat two gigs on one dot — the filter's named edge.
+    const perPage = s.live && allGigs ? Math.max(1, filtered.length) : s.mob ? 1 : s.gigPage
     const pages = Math.max(1, Math.ceil(filtered.length / perPage))
     const pg = s.live ? Math.min(page, pages - 1) : 0
     const shown = filtered.slice(pg * perPage, (pg + 1) * perPage)
@@ -11376,6 +11504,17 @@ function EventsMap({ s }) {
       )
     })
 
+    // The coverage rings as a share of the viewport's width (480 / 300 / 140 in
+    // a 570, 315 and 350 viewport), outer first; the labels sit on each ring's
+    // right edge on the midline, inner label first, as the frame seats them.
+    const ringW = desk ? [84.2, 52.6, 24.6] : tab ? [152.4, 95.2, 44.4] : [137.1, 85.7, 40]
+    // Live, the zoom steps the map layer by a quarter; the canvas is the frame.
+    const zoomScale = s.live ? 1.25 ** zoom : 1
+    // "Expand view" opens directions to the gig the panel features.
+    const expand = extLink(s, feature?.directions)
+    const Expand = expand ? 'a' : 'span'
+    const canReveal = s.live && !allGigs && pages > 1
+
     const panel = (
       <div style={col(u(24), {
         background: card, color: cardFg, borderRadius: u(30), alignItems: 'flex-start',
@@ -11389,25 +11528,21 @@ function EventsMap({ s }) {
             width: '100%', justifyContent: 'space-between',
             ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
           })}>
-            {/* The frame's "● IN TRANSIT" is a claim about a booking; what the
-                tab can honestly say is what the panel is, which is layout 2's
-                own answer in this section and the media player's before it. */}
-            <span style={row(u(8), {
-              background: tabBg, color: tabFg, borderRadius: '999px', flex: 'none',
-              padding: `${u(6)} ${u(12)}`, ...chip12,
-            })}>
-              <span style={{
-                width: u(6), height: u(6), borderRadius: '999px', background: tabFg, flex: 'none',
-              }} />
-              Featured
-            </span>
-            {/* "Updated 2m ago" is a timestamp nothing here can produce. The
-                travel terms are the section's own note about how far it goes,
-                which is what a line in this seat is for; layout 2 put them
-                along the map's foot, and here the foot's two slots are already
-                spoken for by the other two fields. */}
-            {!!s.mapTerms && (
-              <span style={{ ...body12, flex: 'none', opacity: 0.6 }}>{s.mapTerms}</span>
+            {/* The frame's tag and note, seeded with its own copy and emptiable
+                (QA, 2026-09-15 — the fit had declined both as claims). */}
+            {!!s.mapStatus && (
+              <span style={row(u(8), {
+                background: tabBg, color: tabFg, borderRadius: '999px', flex: 'none',
+                padding: `${u(6)} ${u(12)}`, ...chip12,
+              })}>
+                <span style={{
+                  width: u(6), height: u(6), borderRadius: '999px', background: tabFg, flex: 'none',
+                }} />
+                {s.mapStatus}
+              </span>
+            )}
+            {!!s.mapUpdated && (
+              <span style={{ ...body12, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
             )}
           </div>
           {feature ? (
@@ -11446,16 +11581,21 @@ function EventsMap({ s }) {
             position: 'relative', width: '100%', background: plate, overflow: 'hidden',
             aspectRatio: desk ? '570 / 472' : tab ? '315 / 524' : '350 / 166',
           }}>
-            {/* §10.2's street raster, inverted onto the dark plate so the roads
-                read as light lines; the flat four keep layout 1's crossed grid,
-                there being no raster outside Retro. */}
+            {/* The zoom layer: the plate's raster, rings, labels and pins scale
+                together about the centre; the buttons below stay put. */}
+            <div style={{
+              position: 'absolute', inset: 0, transform: `scale(${zoomScale})`,
+              transformOrigin: '50% 50%', transition: 'transform .25s ease',
+            }}>
+            {/* The frame's own radial street raster, drawn as it is (QA,
+                2026-09-15 — it was layout 1's Manchester tile, inverted); the
+                flat templates keep layout 1's crossed grid. */}
             <span aria-hidden style={{
               position: 'absolute', inset: 0,
-              ...(s.mapSrc
+              ...(s.mapRadialSrc
                 ? {
-                  backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover',
-                  backgroundPosition: 'center', filter: 'invert(1) grayscale(1) contrast(1.6)',
-                  opacity: 0.26, mixBlendMode: 'screen',
+                  backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover',
+                  backgroundPosition: 'center',
                 }
                 : {
                   backgroundImage:
@@ -11474,15 +11614,21 @@ function EventsMap({ s }) {
                 `overflow-clip` there, but without it a 480px ring in a 166px
                 viewport draws straight across the travel line below it, and at
                 desktop the same clip costs four pixels of a 30% edge. Their
-                30mi / 60mi / 120mi labels are distances the artist never typed
-                and contradict the coverage badge: dropped, as layout 2 dropped
-                them. */}
-            {(desk ? [84.2, 52.6, 24.6] : tab ? [152.4, 95.2, 44.4] : [137.1, 85.7, 40]).map((w, i) => (
+                labels are `rings`, seeded with the frame's 30mi / 60mi / 120mi
+                (QA, 2026-09-15). */}
+            {ringW.map((w, i) => (
               <span key={w} aria-hidden style={{
                 position: 'absolute', left: '50%', top: '50%', width: `${w}%`,
                 aspectRatio: '1', borderRadius: '999px', border: `1px solid ${sheet}`,
                 opacity: i === 0 ? 0.3 : 0.8, transform: 'translate(-50%, -50%)',
               }} />
+            ))}
+            {s.mapRings.slice(0, ringW.length).map((label, k) => (
+              <span key={k} aria-hidden style={{
+                position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
+                transform: 'translate(-50%, -50%)', background: sheet, color: sheetFg,
+                borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip12, textTransform: 'none',
+              }}>{label}</span>
             ))}
             {pins}
             {/* The artist's own position, which is what the rings are drawn
@@ -11504,13 +11650,26 @@ function EventsMap({ s }) {
                 borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${sheet}`,
               }} />
             </span>
+            </div>
+            {/* The frame's zoom controls, 30 × 40 four apart, 16 in from the
+                viewport's corner at all three widths. Live they step the layer
+                above between 0.64× and 1.95×; on the canvas they are a picture. */}
+            <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+              {[['+', 1], ['−', -1]].map(([glyph, dir]) => (
+                <span key={glyph}
+                      onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
+                      style={{
+                        width: u(30), height: u(40), borderRadius: u(6), background: sheet, color: sheetFg,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontFamily: s.body, fontWeight: 700, fontSize: u(16), lineHeight: 1,
+                        cursor: s.live ? 'pointer' : undefined, userSelect: 'none',
+                      }}>{glyph}</span>
+              ))}
+            </div>
           </div>
-          {/* The frame's data line is "UK · 8 pins · 120 mi radius" — a region,
-              a count and a distance — and its "EXPAND VIEW ›" is a control with
-              nowhere to expand to. So the same three facts are split across the
-              bar: the artist's base with the count the frame itself carries,
-              and the coverage badge in the link's seat, where the chip face
-              reads as a map legend. 390 stacks the two halves. */}
+          {/* The frame's data line, "UK · 8 pins · 120 mi radius", composed from
+              the artist's base, the gig count and the coverage badge, and its
+              "EXPAND VIEW →" link (QA, 2026-09-15). 390 stacks the two. */}
           <div style={s.mob
             ? col(u(10), {
               width: '100%', alignItems: 'flex-start', padding: `${u(14)} ${u(10)}`,
@@ -11521,9 +11680,14 @@ function EventsMap({ s }) {
               borderTop: `1px solid ${cardLine}`,
             })}>
             <span style={body12}>
-              {s.mapBase ? `${s.mapBase} · ` : ''}{s.gigs.length} pins
+              {[s.mapBase, `${s.gigs.length} pins`, s.mapRadius].filter(Boolean).join(' · ')}
             </span>
-            {!!s.mapRadius && <span style={{ ...chip12, flex: 'none' }}>{s.mapRadius}</span>}
+            {!!s.mapExpand && (
+              <Expand {...expand} style={row(u(4), {
+                ...chip12, flex: 'none', color: 'inherit', textDecoration: 'none',
+                cursor: expand ? 'pointer' : undefined,
+              })}>{s.mapExpand}<span aria-hidden>→</span></Expand>
+            )}
           </div>
         </div>
       </div>
@@ -11544,17 +11708,26 @@ function EventsMap({ s }) {
           {head}
           {chipRow}
           {list}
-          {/* An emptied label drops the pill — the footer's rule rather than the
-              calendar's, because here it is a block of its own and a wordless
+          {/* "See all gigs" (QA, 2026-09-15 — it was the page's Book Now). Live,
+              where the list runs past one page, a click lifts the pager; the
+              pill has no click prop of its own, so the wrapper takes it.
+              Otherwise it is a picture. An emptied label drops it — a wordless
               block is not one of the column's states. Its box does not ramp
-              (54 tall on a 46 disc at all three masters) and its label does, so
-              `disc` is the frame's own 46 at narrow and `size` goes in at every
-              width: this branch is fresh, so there is no signed-off drift to
-              stay consistent with. */}
+              (54 tall on a 46 disc at all three masters); its label is
+              Display/List, so under Retro the style resets BookPill's label
+              face and casing, the calendar's layout-3 pill's treatment. */}
           {!!s.mapCta && (
-            <BookPill s={s} to={s.bookTo} label={s.mapCta} glyph="arrow"
-                      bg={sheet} fg={hot} disc={desk ? 38 : 46} full={!desk} size={u(T.list)}
-                      {...(s.mob ? { style: { width: '100%', justifyContent: 'space-between' } } : null)} />
+            <span onClick={canReveal ? () => { setAllGigs(true); setPage(0) } : undefined}
+                  style={{ display: s.mob ? 'block' : 'inline-block', width: s.mob ? '100%' : undefined, cursor: canReveal ? 'pointer' : undefined }}>
+              <BookPill s={s} label={s.mapCta} glyph="arrow"
+                        bg={sheet} fg={hot} disc={desk ? 38 : 46} full={!desk} size={u(T.list)}
+                        style={{
+                          ...(s.mob ? { width: '100%', justifyContent: 'space-between' } : null),
+                          ...(s.retro ? {
+                            fontFamily: s.display, textTransform: 'none', lineHeight: 1.2, letterSpacing: s.dls,
+                          } : null),
+                        }} />
+            </span>
           )}
         </div>
         {panel}
@@ -12753,8 +12926,8 @@ function Testimonials({ s }) {
     // light ones collapse to `s.paper` on the flat four — there is no second
     // light register in the palette — and the accent carries the third, which is
     // what keeps the wall from reading as one colour. Derived as a *pool*
-    // rather than a list, the repertoire's rule, so the cycle holds at any count
-    // and the seeded three show all three registers.
+    // rather than a list, the repertoire's rule, so the cycle holds at any count;
+    // `SEATS` below picks them in the frame's own order.
     const REG = [
       { bg: s.retro ? '#FAECD5' : s.paper, fg: s.retro ? '#111111' : s.paperFg },
       { bg: s.retro ? '#FFFEFB' : s.paper, fg: s.retro ? '#111111' : s.paperFg },
@@ -12852,8 +13025,12 @@ function Testimonials({ s }) {
       </div>
     )
 
+    // The frame's own seat order for its five quote cells — cream, white, then
+    // white, mustard, cream on the second row — repeating past five, so the
+    // seeded five draw the master's picture (QA, 2026-09-15).
+    const SEATS = [0, 1, 1, 2, 0]
     const quoteCard = (q, i) => {
-      const reg = REG[i % REG.length]
+      const reg = REG[SEATS[i % SEATS.length]]
       return (
         <div key={i} style={col(u(14), {
           background: reg.bg, color: reg.fg, border: edge(reg.fg), borderRadius: u(30),
@@ -12903,8 +13080,8 @@ function Testimonials({ s }) {
     // 276 is only taken when row 1 is full: the frame draws two rows and says
     // nothing about a third, so rows past it are three equal fills (the pricing
     // deck's a-fourth-package-wraps rule) rather than an alternation extrapolated
-    // from two samples. A row that is short fills too, which is what puts the
-    // seeded third review across the whole measure.
+    // from two samples. A row that is short fills too, so a review past a full
+    // row stands across the whole measure; the seeded five fill both rows.
     const items = n ? s.quotes.map(quoteCard) : [empty]
     items.unshift(statCard)
     const perRow = s.mob ? 1 : 3
@@ -12984,11 +13161,10 @@ function Testimonials({ s }) {
   // Three readings that are not transcriptions:
   //
   //  - **The pager is derived from the list**, the events map's rule: the
-  //    arrows are drawn only when there are more reviews than seats, so with
-  //    the seeded three the 1440 and 768 renders carry no arrows at all where
-  //    the frame draws them. That is the same intended diff as the frame's
-  //    four cells against three reviews — the count in a frame is its filler,
-  //    and one card per review is this section's own rule in every layout.
+  //    arrows are drawn only when there are more reviews than seats. The seed
+  //    carries five since layout 3's QA (2026-09-15), so every width now draws
+  //    them as the frame does and the 1440 row fills its four cells; one card
+  //    per review is still this section's own rule in every layout.
   //  - **The hue belongs to the seat, not the review** (the media player's fan
   //    rule), so the wall keeps the frame's composition whatever the visitor
   //    pages to. Its cost is named at `SEATS` below.
@@ -13229,9 +13405,8 @@ function Testimonials({ s }) {
         {/* Grid columns, not a flex row: `flex: 1 0 0` resolves its basis
             against the *content* box, so cells carrying 24 of padding and a
             hairline do not split a row equally (the gallery's layout-4 lesson,
-            where seven of them overflowed by 56). A short row fills, which is
-            what puts three seeded reviews across the whole measure where the
-            frame draws four cells. At 390 the cards are the frame's fixed 300
+            where seven of them overflowed by 56). A short row fills, so fewer
+            reviews than seats stand across the whole measure. At 390 the cards are the frame's fixed 300
             instead and the strip clips, so the next card peeks — our strip
             stops at the content edge where the frame's runs 10 further to the
             page edge, so the peek is 54 against its 64. `minWidth: 0` is what
@@ -14275,23 +14450,16 @@ function EnquiryForm({ s }) {
   // row); and the sheet. A shared leaf would have had to carry all five with a
   // signed-off branch hanging off it.
   //
-  // Three seats whose Figma copy could not be taken, and what they hold:
+  // The frame's copy, seat by seat (QA, 2026-09-15, reversing the fit's calls
+  // on the eyebrow and the card):
   //
-  //  - The eyebrow's "AVAILABLE 2025 / 2026" is a claim about the clock, and
-  //    nothing in this file reads it (the booking calendar's rule). It takes
-  //    `s.brand`: both signed-off layouts pair the artist's name with this very
-  //    heading in a credit row, and it is the frame's *composition* that drops
-  //    the row — so the name comes back in the one small caps line the design
-  //    does draw, which is a reading of the section's own content rather than a
-  //    literal invented for the slot.
-  //  - The paragraph is `s.formPara`, whose field is called "Paragraph". Layout
-  //    2 sets it in a 12px foot only because it has no paragraph slot at all.
-  //  - So the card's foot takes the promises instead, run together as one
-  //    centred line — `vm.formPromiseLine`, composed in sectionVm. The frame's
-  //    "No charge to enquire" is a promise in FORM_PROMISES' own register, and
-  //    a frame that draws one of a list is the audio player's stranding read
-  //    the same way. The seeded three come to one line inside the card at 1440
-  //    and 768 and two at 390.
+  //  - The eyebrow is `formAvailable`, seeded with the frame's "AVAILABLE 2025
+  //    / 2026" and emptiable. The fit had put the artist's name there.
+  //  - The paragraph is `s.formPara`, whose field is called "Paragraph".
+  //  - The card is layout 2's in copy as well as in boxes: its price row, its
+  //    `★★★★★ 42 bookings` line, its "Check Availability" submit (`formCta`,
+  //    which falls back to `button`) and its "No charge to enquire" note, all
+  //    layout 2's fields. The fit had run the promises together under the pill.
   //
   // Two intended diffs from the frame besides. It draws three boxes where
   // FIELDS.form.fields seeds four, so the reference picture gains one — the
@@ -14415,7 +14583,7 @@ function EnquiryForm({ s }) {
         alignItems: desk ? 'center' : 'stretch',
       }}>
         <div style={col(u(20), { wordBreak: 'break-word' })}>
-          <span style={chipType}>{s.brand}</span>
+          {!!s.formAvailable && <span style={chipType}>{s.formAvailable}</span>}
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: u(T.disp),
             // `Display/LG`'s own 0.89, which is what stacks the frame's two
@@ -14448,6 +14616,27 @@ function EnquiryForm({ s }) {
           border: `1px solid ${ink}`, borderRadius: u(30),
           padding: `${u(28)} ${u(24)}`,
         })}>
+          {/* The frame's price row and bookings line, layout 2's own fields on
+              the same card component (QA, 2026-09-15). Not controls, so they
+              stay standing when the card swaps to its confirmation. */}
+          {(!!s.formPrice || !!s.formPriceUnit) && (
+            <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
+              {!!s.formPrice && (
+                <span style={{
+                  fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1, letterSpacing: s.dls,
+                  color: cardAc,
+                }}>{s.formPrice}</span>
+              )}
+              {!!s.formPriceUnit && (
+                <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }}>{s.formPriceUnit}</span>
+              )}
+            </div>
+          )}
+          {!!s.formBookings && (
+            <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, whiteSpace: 'pre' }}>
+              <span style={{ color: cardAc }}>★★★★★</span>{'  '}{s.formBookings}
+            </span>
+          )}
           {sent ? (
             // The card alone changes, the way layout 1 swaps its mustard half
             // and layout 2 its sidebar. `sent` is only ever set under s.live,
@@ -14499,7 +14688,7 @@ function EnquiryForm({ s }) {
                 <Pill {...pillLink} onClick={onSubmit} style={pill({
                   cursor: onSubmit ? 'pointer' : undefined,
                 })}>
-                  {s.formBtn}
+                  {s.formCta}
                   {arrowDisc}
                 </Pill>
               </div>
@@ -14508,15 +14697,13 @@ function EnquiryForm({ s }) {
                   fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
                 }}>{s.formPrompt}</span>
               )}
-              {/* Emptied promises compose to '', and then the card simply ends
-                  on its pill — the Soundcloud button's rule, not the gallery's
-                  hide-the-row one, because there is no address here promising
-                  the visitor somewhere to go. */}
-              {s.formPromiseLine && (
+              {/* The frame's "No charge to enquire" — layout 2's `note`. Emptied,
+                  the card simply ends on its pill. */}
+              {!!s.formNote && (
                 <p style={{
                   margin: 0, fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
                   textAlign: 'center',
-                }}>{s.formPromiseLine}</p>
+                }}>{s.formNote}</p>
               )}
             </>
           )}

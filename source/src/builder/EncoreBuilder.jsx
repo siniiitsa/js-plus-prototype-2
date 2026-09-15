@@ -38,11 +38,12 @@ import {
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
+  MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, TESTI_STARS, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE,
+  TESTI_HEADING_2, CAL_HEADING_3, TESTI_STARS, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
@@ -254,6 +255,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // padding and drops its horizontal one — and with it the surplus, which the
     // row's gutter already holds in the published tab.
     ...(column ? { padX: '0px', surplus: '0px', pad: `${Z.padY} 0px` } : null),
+    contentW: contentWidth(Z.dev, column),
 
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
@@ -339,6 +341,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // image in Lime's map frame, so both designed templates take it.
   vm.grainSrc = T.name === 'Retro' ? RETRO_TEXTURE.grain : undefined
   vm.mapSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.map : undefined
+  vm.mapRadialSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.mapRadial : undefined
 
   // §4.8 — `navSections` is `{ cat, label }`, and a nav link keeps the target
   // as `to` so the published page can scroll to it (§4.3a).
@@ -624,6 +627,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // display head; the other layouts keep the shared default. EditPanel mirrors
   // it. The stars sit in its card's corner.
   if (cat === 'testimonials' && d === 1 && c.heading === undefined) vm.title = cased(TESTI_HEADING_2)
+  if (cat === 'calendar' && d === 2 && c.heading === undefined) vm.title = cased(CAL_HEADING_3)
   vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
@@ -760,6 +764,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
           // Composed per cell rather than on the pick, because the line is what
           // the foot prints and EncoreSection composes nothing.
           line: enquiryLine(y, mo, d, time),
+          // Layout 3's pill, which its frame labels with the date alone
+          // ("Enquiry About June 11") where the other layouts print the line.
+          short: `Enquiry About ${MONTHS[mo]} ${d}`,
         })
       }
       // `label` is the one line layouts 1 draws; layout 3's head columns the
@@ -957,9 +964,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.mapTerms = cv('terms', MAP_TERMS)
   vm.mapTravelTime = cv('travelTime', MAP_TRAVEL_TIME)
   vm.mapFee = cv('fee', MAP_FEE)
+  // Layout 3's map panel copy — the frame's own, seeded and emptiable (QA,
+  // 2026-09-15). The ring labels run inner ring first.
+  vm.mapStatus = cv('status', MAP_STATUS)
+  vm.mapUpdated = cv('updated', MAP_UPDATED)
+  vm.mapRings = String(cv('rings', MAP_RINGS) ?? '').split(',').map((x) => x.trim()).filter(Boolean)
+  vm.mapExpand = cv('expand', MAP_EXPAND)
   // Layout 3's foot pill. Uncased, the footer's rule: the pill has always drawn
   // an uncased label and casing it would shout on Grunge and Pop.
-  vm.mapCta = cv('cta', 'Book Now')
+  vm.mapCta = cv('cta', 'See all gigs')
 
   // testimonials — the songs rule, the gigs' and the packages': an absent key
   // means the seeded QUOTES, an emptied array means no reviews at all, and
@@ -1019,15 +1032,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.formBookings = cv('bookings', FORM_BOOKINGS)
   vm.formCta = cv('cta', FORM_CTA) || vm.formBtn
   vm.formNote = cv('note', FORM_NOTE)
+  // Layout 3's eyebrow, the frame's own copy, seeded and emptiable (QA, 2026-09-15).
+  vm.formAvailable = cv('available', FORM_AVAILABLE)
   vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
-  // The same promises run together as one line, which is layout 3's card foot:
-  // its frame sets a single centred "No charge to enquire" there, a promise in
-  // FORM_PROMISES' own register, and a frame that draws one of a list is the
-  // audio player's stranding. Composed here rather than in EncoreSection — the
-  // testimonials' byline rule and the events map's composed foot line — so the
-  // renderer prints a string. An emptied `promises` composes to '' and the line
-  // is not drawn at all, the Soundcloud button's rule.
-  vm.formPromiseLine = vm.formPromises.join(' · ')
   // The same promises again, numbered, which is §10.2 layout 4's right-hand
   // column: its frame draws 01 / 02 / 03 discs beside three lines whose second
   // row reads "Reply within 24 hrs" — FORM_PROMISES[0] almost verbatim, so the
@@ -2616,6 +2623,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
+                    : f.k === 'heading' && sec.cat === 'calendar'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
@@ -3170,13 +3179,13 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
 
   const T = THEMES[themeIdx]
   const rows = pageRows(sections, T.name, key === 'desktop')
-  const inColumns = new Set(rows.flatMap((r) => (r.left ? [...r.left, r.right] : [])))
+  const inColumns = columnSides(rows)
 
   return arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, Z, mob: key === 'mobile', live: true, navSections,
-      column: inColumns.has(i),
+      column: inColumns.get(i),
     })} />
   )))
 }
@@ -3188,6 +3197,27 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
 // padding and no horizontal one, and a right column shorter than the left
 // leaves the ground showing under it, as the frame does. Shared by the editor
 // canvas and the published tab, which is what keeps the two one page.
+// Which column each composed section stands in, by page index — 'left' or
+// 'right' — so `sectionVm({ column })` can say how wide it is.
+function columnSides(rows) {
+  return new Map(rows.flatMap((r) => (r.left
+    ? [...r.left.map((i) => [i, 'left']), [r.right, 'right']]
+    : [])))
+}
+
+// The content column a section's children get, in CSS px: `canvasW − 2·padX`
+// at the device's own frame — 1052 / 688 / 346, which the published tab keeps
+// too, its surplus folding into `padX` — or one of the two columns
+// `arrangeRows` cuts from it (684 / 323 at desktop). EncoreSection cannot
+// measure, so a design whose count comes off a width reads this.
+function contentWidth(dev, column) {
+  const base = SIZES[dev]
+  const full = parseInt(base.canvasW, 10) - 2 * parseInt(base.padX, 10)
+  if (!column) return full
+  const { left, right, gap } = COLUMN_SPLIT
+  return Math.round((full - Math.round(gap * 0.82)) * (column === 'left' ? left : right) / (left + right))
+}
+
 function arrangeRows(rows, { gutter, bg }, els) {
   return rows.map((row) => (row.left ? (
     <div key={`columns-${els[row.right].key}`} style={{
@@ -3441,7 +3471,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections, column: inColumns.has(i) }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections, column: inColumns.get(i) }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
@@ -3465,7 +3495,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   }
 
   const rows = pageRows(sections, T.name, !Z.narrow)
-  const inColumns = new Set(rows.flatMap((r) => (r.left ? [...r.left, r.right] : [])))
+  const inColumns = columnSides(rows)
   const vms = sections.map(makeVm)
   const selectedIdx = sections.findIndex((s) => s.id === st.selectedId)
   const selectedSec = selectedIdx >= 0 ? sections[selectedIdx] : null
