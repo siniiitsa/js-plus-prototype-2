@@ -6252,8 +6252,21 @@ function Pricing({ s }) {
                 position: 'relative', transform: tilt(s, TILT[i % TILT.length]),
                 background: t.card, color: t.cardFg,
                 border: `${s.bw} solid ${s.tx}`, borderRadius: s.radius,
-                padding: s.mob ? '24px' : tab ? '30px 20px' : '20px',
-                marginBottom: s.mob && s.retro && i < shown.length - 1 ? '-18px' : undefined,
+                // The 390 card (986:39137) is 376 tall: 24 in from its stroke,
+                // which Figma draws inside the box, where a CSS border adds to
+                // it — so the padding gives the 2px border back.
+                padding: s.mob ? '22px' : tab ? '30px 20px' : '20px',
+                // The 390 deck's -18 is between the cards' *rotated* bounding
+                // boxes — Figma lays a rotated child out by its box — while a
+                // CSS transform leaves layout alone. Each tilt adds w·sin|θ|/2 to
+                // either end of that box, and a percentage margin resolves
+                // against the column's width, which is the card's, so the gap
+                // gives both halves back: 3° over 2° overlaps the untilted cards
+                // by ~3, not 18, and the pill stands clear of the card below.
+                marginBottom: s.mob && s.retro && i < shown.length - 1
+                  ? `calc(${(((Math.abs(Math.sin(TILT[i % TILT.length] * Math.PI / 180))
+                      + Math.abs(Math.sin(TILT[(i + 1) % TILT.length] * Math.PI / 180))) / 2) * 100).toFixed(3)}% - 18px)`
+                  : undefined,
                 // The block behind the card is the card's own second hue, so the
                 // gold card throws orange and the other two throw gold.
                 boxShadow: s.narrow ? hard(s, t.acc, 8, 8) : hard(s, t.acc, 6.6, 6.6),
@@ -6293,8 +6306,12 @@ function Pricing({ s }) {
                 <span style={row(s.narrow ? '4px' : '3px', {
                   alignItems: 'baseline', position: 'relative',
                 })}>
+                  {/* The currency and the unit sit at line-height 1 on the 390
+                      card, or their line boxes stand the row past the numeral's
+                      33 and the card grows under its own pill. */}
                   <span style={{
-                    fontFamily: s.body, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
+                    fontFamily: s.mono, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
+                    lineHeight: s.mob ? 1 : undefined,
                   }}>{symbol}</span>
                   <span style={{
                     fontFamily: s.display, fontSize: s.narrow ? '40px' : s.dispSm,
@@ -6302,12 +6319,16 @@ function Pricing({ s }) {
                     letterSpacing: s.dls, color: t.acc,
                   }}>{amount}</span>
                   <span style={{
-                    fontFamily: s.body, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
+                    fontFamily: s.mono, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
+                    lineHeight: s.mob ? 1 : undefined,
                   }}>{s.tierUnit}</span>
                 </span>
 
+                {/* The £, the unit and this line are Space Mono in the 1440 frame
+                    as well as the narrow ones — Retro's own face, not the other
+                    template's that the NB above describes. */}
                 <p style={{
-                  margin: 0, position: 'relative', fontFamily: s.body,
+                  margin: 0, position: 'relative', fontFamily: s.mono,
                   fontSize: s.narrow ? '13px' : s.eyebrow,
                   lineHeight: s.narrow ? '20px' : 1.5, color: t.cardMut,
                 }}>{t.blurb}</p>
@@ -6317,7 +6338,8 @@ function Pricing({ s }) {
                 })}>
                   {t.feats.map((f, j) => (
                     <span key={j} style={row(s.narrow ? '8px' : '7px', {
-                      fontFamily: s.ui, fontSize: s.narrow ? s.labelXs : '16px', lineHeight: 1.26,
+                      // 12 at 1.26 is the 390 card's 15px feature row.
+                      fontFamily: s.ui, fontSize: s.mob ? '12px' : s.narrow ? s.labelXs : '16px', lineHeight: 1.26,
                     })}>
                       <Check size={s.narrow ? 12 : 11} color={t.acc} style={{ flex: 'none' }} />
                       {f}
@@ -7203,12 +7225,14 @@ function pageWindow(n, active, narrow) {
 // the picture of a pager, and the cursor below follows.
 // The Lime pager's arrow vector, transcribed from the repertoire frames and
 // drawn again, unchanged, in the booking calendar's month discs. `z` is the
-// caller's desktop scale; the glyph takes the ink it stands in.
-function LimeArrow({ back, z }) {
+// caller's desktop scale; the glyph takes the ink it stands in. Retro's
+// testimonial arrows (986:39733 "←") are the same vector with a 1px stroke in
+// its own fill, which is what makes them bold — hence `stroke`, additive.
+function LimeArrow({ back, z, stroke = false }) {
   return (
     <svg viewBox="22.3842 22.5454 10.2316 8.9092" width={10.2316 * z} height={8.9092 * z}
-         aria-hidden style={{ display: 'block' }}>
-      <path fill="currentColor" d={back
+         aria-hidden style={{ display: 'block', overflow: stroke ? 'visible' : undefined }}>
+      <path fill="currentColor" stroke={stroke ? 'currentColor' : undefined} strokeWidth={stroke ? 1 : undefined} d={back
         ? 'M26.8388 31.4545L22.3843 27L26.8388 22.5454L27.6044 23.3011L24.4525 26.4531H32.6158V27.5468H24.4525L27.6044 30.6889L26.8388 31.4545Z'
         : 'M28.1612 22.5455L32.6157 27L28.1612 31.4546L27.3956 30.6989L30.5475 27.5469L22.3842 27.5469L22.3842 26.4532L30.5475 26.4532L27.3956 23.3111L28.1612 22.5455Z'} />
     </svg>
@@ -9053,17 +9077,29 @@ function Gallery({ s }) {
           {/* A dead reset beside two live arrows would read as a bug, so it
               rewinds the strip on the published page and stays lettering on
               the canvas. */}
+          {/* All three masters set the link in Space Mono 10 tracked 1 after an
+              Inter 14 "←" character, not an icon. Desktop is the frame × 0.82. */}
           <span
             onClick={s.live ? () => setPick(0) : undefined}
-            style={row('8px', labelStyle(s, s.eyebrow, {
-              color: s.ac, cursor: s.live ? 'pointer' : undefined,
-            }))}
+            style={row(desk ? '6.5px' : '8px', {
+              fontFamily: s.body, lineHeight: 'normal', whiteSpace: 'nowrap',
+              cursor: s.live ? 'pointer' : undefined,
+            })}
           >
-            <ArrowLeft size={13} color={s.tx} /> Back to beginning
+            <span style={{ fontSize: desk ? '11.5px' : '14px', color: s.tx }}>←</span>
+            <span style={{
+              fontFamily: s.mono, fontSize: desk ? '8.2px' : '10px', letterSpacing: desk ? '0.8px' : '1px',
+              textTransform: 'uppercase', color: s.ac,
+            }}>Back to beginning</span>
           </span>
-          <span style={col('2px', { alignItems: 'flex-end' })}>
-            <span style={labelStyle(s, s.eyebrow, { color: s.ac })}>{s.brand}</span>
-            <span style={labelStyle(s, '10px', { color: s.ac })}>Gallery</span>
+          {/* The frame's credit is Inter Bold over Space Mono, both tracked 2,
+              not the Anton label. Desktop is the frame × 0.82. */}
+          <span style={col('2px', {
+            alignItems: 'flex-end', fontFamily: s.body, lineHeight: 'normal', color: s.ac,
+            letterSpacing: desk ? '1.6px' : '2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
+          })}>
+            <span style={{ fontWeight: 700, fontSize: desk ? '9px' : '11px' }}>{s.brand}</span>
+            <span style={{ fontFamily: s.mono, fontSize: desk ? '7.4px' : '9px' }}>Gallery</span>
           </span>
         </div>
 
@@ -9132,7 +9168,11 @@ function Gallery({ s }) {
       }}>
         <div style={col(desk ? '33px' : tab ? '40px' : '20px', { minWidth: 0 })}>
           <div style={col(desk ? '30px' : tab ? '36px' : '10px')}>
-            <span style={labelStyle(s, s.eyebrow, { color: s.ac, letterSpacing: '0.16em' })}>Media</span>
+            {/* Space Mono 11 tracked 1.5 in all three masters. */}
+            <span style={{
+              fontFamily: s.mono, fontSize: desk ? '9px' : '11px', lineHeight: 'normal',
+              letterSpacing: desk ? '1.2px' : '1.5px', textTransform: 'uppercase', whiteSpace: 'nowrap', color: s.ac,
+            }}>Media</span>
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
               letterSpacing: s.dls, color: s.ac,
@@ -11319,12 +11359,30 @@ function EventsMap({ s }) {
           {pins}
           <Grain s={s} opacity={0.25} />
         </div>
-        <div style={col('6px', { background: s.deep, color: s.deepFg, padding: s.mob ? '14px' : '18px' })}>
-          <span style={row('10px')}>
-            <GlobeMark size={16} color={s.ac} />
-            <span style={{ fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls }}>{s.mapBase}</span>
+        {/* All three masters (964:58581, 986:38401, 986:38721) give the foot no
+            fill of its own — Retro's stands on the tile's `mapBg` — and set a
+            display 24 head in `bg` over an Anton 13 line in `mapFg`, after the
+            frame's "◍", which is Lime's `LimeGlobeFill` drawing on a 20.9 box.
+            The 390 master stacks the glyph over the head, 8 apart, inside the
+            tile's 10 and the foot's own 10; the wide ones set it inline at
+            38 / 30. The flat themes keep the dark panel: their tile stands on
+            the page ground, where the light type would not read. Desktop is
+            the frame × 0.82. */}
+        <div style={col(s.narrow ? '4px' : '3.3px', {
+          background: s.retro ? 'transparent' : s.deep, color: s.retro ? s.bg : s.deepFg,
+          padding: s.mob ? '20px' : s.narrow ? '38px 30px' : '31px 24.6px',
+        })}>
+          <span style={s.mob
+            ? col('8px', { alignItems: 'flex-start' })
+            : row(s.narrow ? '8px' : '6.5px')}>
+            <LimeGlobeFill size={s.narrow ? 20.9 : 17.1} color={s.ac} />
+            <span style={{
+              fontFamily: s.display, fontSize: s.narrow ? '24px' : '19.7px', lineHeight: 'normal', letterSpacing: s.dls,
+            }}>{s.mapBase}</span>
           </span>
-          <span style={labelStyle(s, s.eyebrow, { color: s.pillBg, whiteSpace: 'normal' })}>{s.mapTerms}</span>
+          <span style={labelStyle(s, s.narrow ? '13px' : '10.7px', {
+            lineHeight: 'normal', letterSpacing: 0, color: s.retro ? s.mapFg : s.pillBg, whiteSpace: 'normal',
+          })}>{s.mapTerms}</span>
         </div>
       </div>
     )
@@ -11338,9 +11396,14 @@ function EventsMap({ s }) {
         padding: s.mob ? '14px' : '20px', ...col(s.mob ? '10px' : '14px'),
       }}>
         <Grain s={s} opacity={0.18} radius={s.radiusSm} />
-        <span style={labelStyle(s, s.eyebrow, {
-          color: onDark ? s.pillBg : s.muted, letterSpacing: '0.14em', position: 'relative',
-        })}>
+        {/* All three masters set the label, the rows' sub-lines and the date
+            chips in Space Mono: 11 tracked 1.5, 11, and a 42 square of 9 over
+            bold 14. Desktop is the frame × 0.82. */}
+        <span style={{
+          fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
+          letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
+          color: onDark ? s.pillBg : s.muted, position: 'relative',
+        }}>
           Upcoming gigs · {s.gigs.length}
         </span>
         {shown.map((g, i) => {
@@ -11372,19 +11435,26 @@ function EventsMap({ s }) {
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{g.venue}</span>
                 <span style={{
-                  fontFamily: s.body, fontSize: s.eyebrow, opacity: 0.8,
-                  color: on ? contrastInk(g.hue) : undefined,
+                  fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
+                  opacity: onDark ? 1 : 0.8,
+                  color: on ? contrastInk(g.hue) : onDark ? s.mapFg : undefined,
                 }}>
                   {g.city} · {g.time}
                 </span>
               </span>
               <span style={col('0', {
-                alignItems: 'center', flex: 'none', border: `${s.bw} solid ${on ? contrastInk(g.hue) : g.hue}`,
-                borderRadius: s.radiusSm, padding: '5px 10px', lineHeight: 1.1,
-                color: on ? contrastInk(g.hue) : undefined,
+                alignItems: 'center', justifyContent: 'center', flex: 'none', boxSizing: 'border-box',
+                width: s.narrow ? '42px' : '34.4px', height: s.narrow ? '42px' : '34.4px',
+                border: `${s.bw} solid ${on ? contrastInk(g.hue) : g.hue}`,
+                borderRadius: s.narrow ? '6px' : '5px', lineHeight: 'normal', fontFamily: s.mono,
+                background: onDark && !on ? s.mapBg : 'transparent',
+                color: on ? contrastInk(g.hue) : onDark ? s.mapFg : undefined,
               })}>
-                <span style={labelStyle(s, '10px')}>{g.month}</span>
-                <span style={labelStyle(s, s.labelXs)}>{g.day}</span>
+                <span style={{
+                  fontSize: s.narrow ? '9px' : '7.4px', letterSpacing: s.narrow ? '0.5px' : '0.4px',
+                  textTransform: 'uppercase',
+                }}>{g.month}</span>
+                <span style={{ fontSize: s.narrow ? '14px' : '11.5px', fontWeight: 700 }}>{g.day}</span>
               </span>
             </Tag>
           )
@@ -11413,17 +11483,25 @@ function EventsMap({ s }) {
         <Checkerboard s={s} cell={12} colour={s.paper}
                       style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'bottom') }} />
 
-        <div style={row('20px', { justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap' })}>
-          <div style={col('10px')}>
-            <span style={labelStyle(s, s.eyebrow, {
-              color: s.retro ? s.mapFg : s.tx, letterSpacing: '0.16em',
-            })}>Shows/coverage</span>
+        {/* All three masters (964:58581, 986:38401, 986:38721) set the kicker
+            in Inter Bold 11 tracked 1.5 and the badge in Anton 32.3 on a 37
+            line, on the heading's own row and centred against it. Desktop is
+            the frame × 0.82. */}
+        <div style={col(s.narrow ? '16px' : '13px')}>
+          <span style={{
+            fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
+            letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
+            color: s.retro ? s.mapFg : s.tx,
+          }}>Shows/coverage</span>
+          <div style={row('20px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
               letterSpacing: s.dls, color: s.retro ? s.pillBg : s.ac,
             }}>{s.title}</h2>
+            <span style={labelStyle(s, s.narrow ? '32.3px' : '26.5px', {
+              lineHeight: s.narrow ? '37px' : '30.4px', letterSpacing: s.narrow ? '-0.5px' : '-0.4px', color: s.ac,
+            })}>{s.mapRadius}</span>
           </div>
-          <span style={labelStyle(s, s.labelMd, { color: s.ac })}>{s.mapRadius}</span>
         </div>
 
         <div style={{
@@ -12910,9 +12988,6 @@ function Testimonials({ s }) {
     // desktop and reads visibly lighter, so it takes the literal the
     // repertoire's song cards take, for the same reason.
     const bw = s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw
-    // The frames' arrow is a 10.23 × 8.91 vector; lucide draws its own inside
-    // 14/24 of the size it is given, so the frame's width backs out to 17.5.
-    const glyph = Math.round(17.5 * scale)
 
     // The handler is the second argument, Gallery's signature, and the cursor is
     // read off it rather than off `s.live` — Pager's rule, and the reason the
@@ -13079,8 +13154,11 @@ function Testimonials({ s }) {
       )
     }
 
-    const prev = arrow(<ArrowLeft size={glyph} />, step(-1))
-    const next = arrow(<ArrowRight size={glyph} />, step(1))
+    // The frames' own 10.23 × 8.91 "←", filled and stroked 1px in its fill —
+    // a bold solid arrow, where lucide's is a thin line. All three masters
+    // draw it identically; desktop is the frame × 0.82.
+    const prev = arrow(<LimeArrow back z={scale} stroke />, step(-1))
+    const next = arrow(<LimeArrow z={scale} stroke />, step(1))
 
     // Each back as its frame draws it: the chip it is painted in, its rotation,
     // the offset of its centre from the card's, and the inset of its box off the
@@ -16089,8 +16167,12 @@ function Footer({ s }) {
       // 24 under the hairline on the two wide frames; the mobile one sets both
       // halves over two lines and takes 14.
       paddingTop: s.mob ? u(14) : u(24),
+      // The frame's -3.8% tracking is Soulway's. Under it Fraunces, the
+      // stand-in, set "A JustPay Product" at 176 against the frame's 203 and
+      // the words ran together; a slight positive tracking brings it to ~198.
+      // Opening the word spaces instead reached the measure but left gaps.
       fontFamily: s.display, fontSize: u(23), lineHeight: 0.86,
-      letterSpacing: '-0.038em', color: s.pillBg,
+      letterSpacing: '0.02em', color: s.pillBg,
     }}>
       <span style={{ width: s.mob ? '50%' : 'auto' }}>{s.copyright}</span>
       <span style={{ width: s.mob ? '50%' : 'auto', textAlign: 'right' }}>{s.footerCredit}</span>

@@ -230,6 +230,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
     // carry one; the flat three fall back to their body face.
     ui: T.ui ?? T.body,
+    // Space Mono, the frames' typewriter face; only Retro names it so far.
+    mono: T.mono ?? T.body,
     radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
     // `radius/chip`. Retro's token is 8, which its branches write as a literal.
     radiusChip: T.radiusChip ?? '8px',

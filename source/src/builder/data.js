@@ -26,6 +26,11 @@ export const THEMES = [
     // `s.ui` computes the byte-equal font-family. Themes without the key fall
     // back to `body` in sectionVm.
     ui: "'Inter', sans-serif",
+    // The frames' small typewriter lines — kickers, the gallery's back link,
+    // the gig list's label, sub-lines and date chips — are Space Mono, a Google
+    // Font, so they are set in it verbatim. Themes without the key fall back to
+    // `body` in sectionVm.
+    mono: "'Space Mono', monospace",
     body: "'Inter', sans-serif",
     // Passthrough, not title-casing. The §10.2 reference sets display copy as
     // typed ("Kai Mercer", "240 Songs") and reserves caps for the Anton labels,
