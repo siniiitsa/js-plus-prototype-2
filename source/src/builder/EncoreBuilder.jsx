@@ -48,7 +48,7 @@ import {
   headerFamily, layoutCount, designCount, pageLayout, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -2894,14 +2894,26 @@ const PREVIEW_NAV = EXAMPLE_PAGE
   .map(([cat]) => ({ cat, label: catName(cat) }))
 
 // Every frame in the picker uses one aspect: the desktop canvas against the
-// tallest header render (Retro's photographic layout 1). The four flat themes
-// come out shorter and are centred in it.
+// tallest header render (Retro's photographic layout 1). A render that comes
+// out shorter is centred in it.
 const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.heroH}`
 
 // …and what HeaderChoices frames its cards with until it has measured them.
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
+  // The flat three show their Figma header as a still (photos.js). It is
+  // SPOT_ASPECT already, so `cover` crops nothing — not `contain`.
+  const { name } = THEMES[themeIdx]
+  const still = TEMPLATE_STILLS[name]
+  if (still) {
+    return (
+      <img
+        src={still} alt={`${name} template`}
+        style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+    )
+  }
   return (
     <ScaledPreview
       height="100%" center
@@ -2936,7 +2948,7 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
           <TemplatePreview themeIdx={spot} artistName={artistName} />
 
           {/* The whole frame is the target. It carries no visible affordance of
-              its own, so the caption below the frame says what it does. */}
+              its own, so the caption under the filmstrip says what it does. */}
           <button
             type="button"
             onClick={() => onPick(spot)}
@@ -2948,10 +2960,6 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
           />
         </div>
 
-        <p style={{ margin: 0, textAlign: 'center', fontSize: '13px', color: '#8E8B81' }}>
-          Pick a template to open it in the editor.
-        </p>
-
         {/* Filmstrip — picking one re-spotlights it. */}
         <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
           {THEMES.map((t, i) => (
@@ -2960,7 +2968,7 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
               onClick={() => setSpot(i)}
               aria-label={t.name} aria-pressed={i === spot}
               style={{
-                flex: '0 0 auto', width: '140px', borderRadius: '10px', overflow: 'hidden',
+                flex: '0 0 auto', width: '168px', borderRadius: '10px', overflow: 'hidden',
                 padding: 0, cursor: 'pointer', background: 'none', aspectRatio: SPOT_ASPECT,
                 border: `2px solid ${i === spot ? '#F4F2EC' : 'transparent'}`,
                 opacity: i === spot ? 1 : 0.5,
@@ -2971,6 +2979,10 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
             </button>
           ))}
         </div>
+
+        <p style={{ margin: 0, textAlign: 'center', fontSize: '13px', color: '#8E8B81' }}>
+          Pick a template to open it in the editor.
+        </p>
       </div>
     </div>
   )
