@@ -2929,10 +2929,13 @@ function Bio({ s }) {
       // the frame's 144 — and wrapped they are not: a second line of 96-tall
       // columns holding our one-line values opens a 58px hole between the rows.
       <div key={label} style={col(u(15), {
-        flex: 'none', alignItems: 'flex-start',
+        flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
       })}>
         <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
-        <span style={labelStyle(s, u(T.label), { whiteSpace: 'nowrap' })}>{value}</span>
+        {/* Two lines reserved (labelStyle's 1.1 leading), because every master's
+            value is two lines: a one-line value then keeps its column the height
+            of its neighbours, so the labels still share a top. */}
+        <span style={labelStyle(s, u(T.label), { whiteSpace: 'normal', overflowWrap: 'break-word', minHeight: '2.2em' })}>{value}</span>
       </div>
     )
     const stats = [
@@ -2974,20 +2977,17 @@ function Bio({ s }) {
             letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
           }}>{s.brand}</p>
         </div>
-        {/* The row wraps, where every master states `whitespace-nowrap` inside
-            an `overflow-clip` head. The masters fit three columns because they
-            hand-break their *values* to two lines — 57 and 30 wide against our
-            one-line 70 and 92 — and our canvases are 20 (768) and 24 (390)
-            narrower than the frames besides, so with `since` filled the third
-            column ran 7px past the card and "Manchester, UK" lost its "UK".
-            The media player's rule: a frame's own squeeze is an artefact once
-            it destroys content the artist typed. `rowGap` is the columns' own
-            15, and the height belongs to each column rather than the row, or a
-            wrapped line would divide it. */}
+        {/* One row, as every master draws it: the masters seat three columns by
+            breaking their *values* to two lines ("June / 2021", "DJ & /
+            Selector"), so the columns shrink and the values break between
+            words rather than the row wrapping. A wrapped row put "Manchester,
+            UK" on a second line under the other two (QA, 2026-09-15 — the
+            composed page's 684 column). `overflowWrap` is what keeps a single
+            word longer than its column inside the card's `overflow-clip`. The
+            columns sit on the 96 box's floor, as every master's do. */}
         <div style={row(u(s.mob ? 52 : 100), {
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
-          minWidth: 0, color: ink, flexWrap: 'wrap', rowGap: u(15),
-          minHeight: u(96), alignItems: 'flex-end', alignContent: 'flex-end',
+          minWidth: 0, color: ink, minHeight: u(96), alignItems: 'flex-end',
         })}>{stats}</div>
       </div>
     )

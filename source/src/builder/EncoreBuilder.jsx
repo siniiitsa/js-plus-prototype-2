@@ -47,7 +47,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, bebasEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
@@ -176,7 +176,7 @@ function canMove(sections, id, dir) {
 const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [] }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -249,6 +249,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
     // device sizing — and over it a designed template's own ramp, if it has one
     ...Z, ...THEME_RAMP[T.name]?.[Z.dev], mob: !!mob,
+    // A section standing in one of layout 3's page columns (`pageRows`). The
+    // row around it carries the page gutter, so the section keeps its vertical
+    // padding and drops its horizontal one — and with it the surplus, which the
+    // row's gutter already holds in the published tab.
+    ...(column ? { padX: '0px', surplus: '0px', pad: `${Z.padY} 0px` } : null),
 
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
@@ -316,7 +321,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
-  vm.image = c.image !== undefined ? (c.image ?? undefined) : defaultImage(cat, T.name)
+  vm.image = c.image !== undefined ? (c.image ?? undefined) : defaultImage(cat, T.name, 'image', d)
   // The artist avatar is a slot of its own — the hero portrait card, the
   // inset-card thumb and the overlay-card circle — on the same three states as
   // vm.image, keyed on `avatar`. Retro seeds it with the §10.2 portrait, which
@@ -402,10 +407,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // bio
   vm.bioP1 = cv('para1', DEFS.bioP1)
   vm.bioP2 = cv('para2', DEFS.bioP2)
-  // Layout 3's first stat. No default on purpose (FIELDS.bio.since): the frame's
-  // own "June 2021" is a date the artist never typed, and an empty string is
-  // what tells the ID card not to draw the column.
-  vm.since = cv('since', '')
+  // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
+  // string is what tells the ID card not to draw the column.
+  vm.since = cv('since', DEFS.since)
   vm.bioQuote = cased(cv('statement', DEFS.statement))
 
   // media
@@ -2534,7 +2538,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
   // Retro section would show a photo on the canvas and an empty dropzone here.
   const themeName = THEMES[themeIdx].name
-  const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k))
+  const design = sec.arch % (designCount(sec.cat, themeName) || 1)
+  const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k, design))
   const imgsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
   // Same trap as the photos above: the panel has to resolve the seeded songs
   // exactly as sectionVm does, or the canvas would list twelve songs while the
@@ -3163,12 +3168,38 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
     .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
     .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
 
-  return sections.map((sec) => (
+  const T = THEMES[themeIdx]
+  const rows = pageRows(sections, T.name, key === 'desktop')
+  const inColumns = new Set(rows.flatMap((r) => (r.left ? [...r.left, r.right] : [])))
+
+  return arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, Z, mob: key === 'mobile', live: true, navSections,
+      column: inColumns.has(i),
     })} />
-  ))
+  )))
+}
+
+// Lays out `pageRows` (data.js): a plain row is its section's own element, and
+// a composed row is layout 3's Frame 299 — a grid of the two columns at the
+// frame's 858 : 405, 55 apart × 0.82, on the page ground, inside the page's own
+// gutter. Its sections were built with `column`, so they bring their vertical
+// padding and no horizontal one, and a right column shorter than the left
+// leaves the ground showing under it, as the frame does. Shared by the editor
+// canvas and the published tab, which is what keeps the two one page.
+function arrangeRows(rows, { gutter, bg }, els) {
+  return rows.map((row) => (row.left ? (
+    <div key={`columns-${els[row.right].key}`} style={{
+      display: 'grid', alignItems: 'start', background: bg, padding: `0 ${gutter}`,
+      gridTemplateColumns: `minmax(0, ${COLUMN_SPLIT.left}fr) minmax(0, ${COLUMN_SPLIT.right}fr)`,
+      columnGap: `${Math.round(COLUMN_SPLIT.gap * 0.82)}px`,
+      transition: 'background-color .45s ease',
+    }}>
+      <div style={{ minWidth: 0 }}>{row.left.map((i) => els[i])}</div>
+      <div style={{ minWidth: 0 }}>{els[row.right]}</div>
+    </div>
+  ) : els[row.i]))
 }
 
 // Turns a fresh popup into a page that can host a React root. Returns the
@@ -3410,7 +3441,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections, column: inColumns.has(i) }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
@@ -3433,6 +3464,8 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     }
   }
 
+  const rows = pageRows(sections, T.name, !Z.narrow)
+  const inColumns = new Set(rows.flatMap((r) => (r.left ? [...r.left, r.right] : [])))
   const vms = sections.map(makeVm)
   const selectedIdx = sections.findIndex((s) => s.id === st.selectedId)
   const selectedSec = selectedIdx >= 0 ? sections[selectedIdx] : null
@@ -3859,7 +3892,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
               maxWidth: Z.canvasW, width: '100%', boxShadow: '0 8px 40px rgba(30,26,18,.16)',
               borderRadius: '10px', overflow: 'hidden', transition: 'max-width .35s ease',
             }}>
-              {sections.map((sec, i) => {
+              {arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => {
                 const vm = vms[i]
                 return (
                   <div
@@ -3902,7 +3935,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                     )}
                   </div>
                 )
-              })}
+              }))}
             </div>
           </div>
         </div>

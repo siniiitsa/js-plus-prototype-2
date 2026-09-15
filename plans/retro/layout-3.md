@@ -1308,3 +1308,34 @@ Learned on the testimonials (section 12):
     can be wrong about nothing. Named here only because a big mustard numeral *looks* like
     the frame's rating and a later reader might take it for one — it is `s.quotes.length`,
     and the frame's own `4.9 /5` is gone.
+
+## Addendum, 2026-09-15 — QA against the frames
+
+Reversals and fixes after QA compared the built page with the layout-3 frames. Branch
+`retro-layout-3-qa-fixes`, one section at a time.
+
+- **Bio — the composed page is reproduced after all.** Open question 1's "fill 1052" is
+  reversed: QA read the full-width card (and its 3.2:1 torso crop) as not the design. At
+  desktop, `pageRows` (`data.js`) groups a calendar on layout 3 with the run of bio / media
+  sections on layout 3 directly above it, and `arrangeRows` (`EncoreBuilder.jsx`) lays that
+  row out as Frame 299: a grid at 858fr : 405fr, 45 apart (55 × 0.82), inside the page
+  gutter. Its sections are built with `sectionVm({ column: true })`, which zeroes `padX` and
+  `surplus` and keeps `padY`. The editor canvas and the published tab share both helpers;
+  tablet and mobile still stack. The columns come out 684 and 323 wide at 1180.
+  `PAGE_ORDERS[2]` is new — header, bio, media, **calendar**, repertoire, … — because the
+  columns are built from adjacency; the narrow pages' calendar-after-repertoire is the named
+  cost. The "columned five" of this plan are three now (`tags` and `audio` left the project
+  in `d734992`), and the Genres chip row under the card is **not** drawn (decided at QA).
+- **Bio — photograph.** The ID card's slot is the frame's whole Velvet Note stage shot, not
+  `stage.jpg`'s portrait slice of it: `photos/bio-stage.jpg` (1200 × 675), seeded for Retro
+  at layout 3 alone through `SEEDS.Retro.layouts` and a `design` argument to
+  `defaultImage` (`sectionVm` and `EditPanel` both pass it). Layout 1's polaroid keeps the
+  portrait.
+- **Bio — stats.** `since` is seeded with the frame's "June 2021" (`DEFS.since`, reaching
+  layout 4's overlay line too), so the seeded card draws three columns. The stat row no
+  longer wraps: columns shrink and values break between words, as the frame's two-line
+  values do, and each value reserves two lines (`minHeight: 2.2em`), so a one-line value
+  keeps its column level with its neighbours — labels share a top, each value sits straight
+  under its label, and the group stands on the 96 box's floor, as all three masters draw it. A before/after digest (themes 0–4, every cat × layout ×
+  width) moved bio arch 2 and bio arch 3 only — the latter being layout 4's overlay line
+  now printing "Performing since June 2021", which that frame draws.

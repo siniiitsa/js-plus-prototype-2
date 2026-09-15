@@ -16,6 +16,7 @@
 import hero from './photos/hero.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
 import stage from './photos/stage.jpg'
+import bioStage from './photos/bio-stage.jpg'
 import formStage from './photos/form-stage.jpg'
 import gallery1 from './photos/gallery-1.jpg'
 import gallery2 from './photos/gallery-2.jpg'
@@ -136,8 +137,15 @@ export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeade
 //   photos — the section photographs above
 //   avatar — the header's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
+//   layouts — a section photograph that one layout's frame draws differently,
+//             by design index, then category; it wins over `photos` there
+//
+// Retro's bio at layout 3 is the ID card's 798 × 380 landscape slot, and its
+// frame (964:68631) fills it with the whole Velvet Note stage shot — the
+// scene `stage.jpg` is a portrait slice of, re-encoded at 1200px as
+// `bio-stage.jpg`. The portrait stays layout 1's polaroid.
 const SEEDS = {
-  Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage },
+  Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage, layouts: { 2: { bio: bioStage } } },
   Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeStage },
 }
 
@@ -154,12 +162,12 @@ const SEEDS = {
 // Retro's is its layout-2 frame's own stage shot (964:64652), the close-up
 // singer in a dark jacket, re-encoded at 1200px as `form-stage.jpg`; Lime's
 // takes the live-set frame its bio stands on.
-export const defaultImage = (cat, themeName, key = 'image') => {
+export const defaultImage = (cat, themeName, key = 'image', design) => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined
   if (key === 'avatar') return cat === 'header' ? seed.avatar : undefined
   if (key === 'photo') return cat === 'form' ? seed.photo : undefined
-  const v = seed.photos[cat]
+  const v = seed.layouts?.[design]?.[cat] ?? seed.photos[cat]
   return Array.isArray(v) ? undefined : v
 }
 

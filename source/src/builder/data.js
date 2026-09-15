@@ -581,6 +581,7 @@ export const DEFS = {
   heroSub:    'DJ & selector. Clubs, weddings and festivals across the North — nights built live, never off a playlist.',
   bioP1:      'DJ and selector based in Manchester. Five years of reading rooms — house, disco, soul, 80s — chosen by the room, not the algorithm.',
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
+  since:      'June 2021',
   statement:  'Reads the room.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
   // §10.2 layout 3 heads the stack with a line under the title, where neither
@@ -697,16 +698,53 @@ export const EXAMPLE_PAGE = [
 // `i`. `pageLayout` is half of "a card lays out the whole page"; this is the
 // other half, because each Figma page stacks its sections in an order of its
 // own. Layout 2's page (`964:58572`) reads the repertoire before the gallery
-// and the events map after the calendar. A page with no row here takes layout
-// 1's, which is EXAMPLE_PAGE's — true of layout 4's page, not yet written for
-// layout 3's.
+// and the events map after the calendar. Layout 3's page (`964:68621`) puts the
+// calendar straight after the media player, because at 1440 it stands beside
+// the bio and the player rather than under them — see `pageRows`. Its narrow
+// pages stack the calendar after the repertoire instead; one order has to
+// serve all three widths, and adjacency is what the columns are built from. A
+// page with no row here takes layout 1's, which is EXAMPLE_PAGE's — true of
+// layout 4's page.
 const PAGE_ORDERS = [
   EXAMPLE_PAGE.map(([cat]) => cat),
   ['header', 'bio', 'media', 'repertoire', 'gallery', 'pricing', 'calendar', 'map',
     'form', 'testimonials', 'footer'],
+  ['header', 'bio', 'media', 'calendar', 'repertoire', 'gallery', 'pricing', 'map',
+    'form', 'testimonials', 'footer'],
 ]
 
 export const pageOrder = (i) => PAGE_ORDERS[i] ?? PAGE_ORDERS[0]
+
+// Layout 3's page is the one Figma page that does not stack every section. At
+// 1440, Frame 299 (`964:68623`) stands the bio and the media player in an 858
+// left column and the booking calendar, under its "Book Me", in a 405 right
+// column beside them, 55 apart; both narrow pages stack the same sections.
+//
+// `pageRows` is that composition in page terms: at desktop, a calendar on
+// layout 3 takes the right-hand column beside the run of sections directly
+// above it that are a bio or a media player on layout 3. Anything else — a
+// calendar with no such run above it, any other layout, a narrow width — is a
+// row of its own, so moving a section out of the run is how the artist undoes
+// it. Pure and index-based, so the editor canvas and the published tab group
+// the same page the same way.
+export const COLUMN_SPLIT = { left: 858, right: 405, gap: 55 }
+const COLUMN_LEFT = ['bio', 'media']
+
+export function pageRows(sections, themeName, wide) {
+  const at3 = (x) => x.arch % designCount(x.cat, themeName) === 2
+  const rows = []
+  sections.forEach((x, i) => {
+    let from = i
+    if (wide && x.cat === 'calendar' && at3(x)) {
+      while (from > 0 && COLUMN_LEFT.includes(sections[from - 1].cat) && at3(sections[from - 1])) from--
+    }
+    if (from === i) { rows.push({ i }); return }
+    // The run's own rows were pushed one per section a moment ago.
+    rows.splice(rows.length - (i - from))
+    rows.push({ left: Array.from({ length: i - from }, (_, k) => from + k), right: i })
+  })
+  return rows
+}
 
 // "Blank" — only the two mandatory sections.
 export const BLANK_PAGE = [
@@ -755,11 +793,11 @@ export const FIELDS = {
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
-    // "Performing since: June 2021" — a date nobody typed, so the value is
-    // dropped and the seat becomes this field instead. Deliberately without a
-    // default: an unfilled page would otherwise publish a fabricated one, and
-    // the column is simply not drawn while it is empty.
-    { k: 'since',     l: 'Performing since',
+    // "Performing since: June 2021". Seeded with the frame's copy (QA,
+    // 2026-09-15 — layout 2's price row and bookings line were the precedent),
+    // so the seeded card draws the frame's three columns; emptied, the column
+    // is not drawn.
+    { k: 'since',     l: 'Performing since', def: 'since',
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
   ],
   // The second list-shaped content type with a structured editor (see

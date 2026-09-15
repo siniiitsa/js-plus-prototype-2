@@ -80,6 +80,15 @@ the only function-valued keys on the whole view-model.
 No router, no context, no state library. One flat `useState` object `st` in `EncoreBuilder`,
 mutated through a single `patch()` helper.
 
+- **The page is rows, and nearly every row is one section.** The exception is layout 3's
+  composed page: at desktop, `pageRows()` in `data.js` stands a calendar on layout 3 in a
+  right column beside the bio / media sections on layout 3 directly above it, and
+  `arrangeRows()` in `EncoreBuilder.jsx` draws that row as a 858fr : 405fr grid inside the
+  page gutter. Both the editor canvas and `PublishedPage` go through the pair, and the
+  sections in it are built with `sectionVm({ column: true })`, which drops their horizontal
+  padding. Tablet and mobile never compose. `PAGE_ORDERS[2]` puts the calendar straight
+  after media so a fresh layout-3 page composes; moving a section out of the run undoes it.
+
 - `st.stage` is `'template' | 'editor'` — an early return dispatches to `TemplateStage`, else the
   inline editor JSX. **There is no header stage any more**: SPEC §6's full-screen picker is gone,
   and picking a template opens the editor on the built page with `st.onboard` armed. The header
