@@ -46,7 +46,7 @@ import {
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, bebasEms,
-  headerLayout, headerLayoutLabel,
+  headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
 
@@ -2973,7 +2973,8 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
  * §6 The header layout picker
  *
  * The grid the setup modal (§6.2) is built around: the template's header
- * designs, all of them — six for Retro, three for the four flat
+ * designs, up to four — `setupHeaderCount()`, since only layouts 1–4 are
+ * a whole page — so four for Retro and Lime and three for the flat
  * templates (§4.4). Three up on a desktop, two around 720px, one below
  * ~560.
  *
@@ -2982,13 +2983,13 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
  * well past its full-bleed hero, and a frame guessed from either end
  * would crop the tall layouts or strand the short ones. It takes the
  * *median* height rather than the tallest — sizing to the tallest would
- * leave the other five in a third of a card's worth of empty background —
+ * leave the others in a third of a card's worth of empty background —
  * and `fit` shrinks whatever overruns it instead of cropping.
  * ------------------------------------------------------------------ */
 
 function HeaderChoices({ themeIdx, artistName, sel, onSelect }) {
   const T = THEMES[themeIdx]
-  const n = layoutCount('header', T.name)
+  const n = setupHeaderCount(T.name)
 
   // Hover and keyboard focus share one index, so a focused card is lit the
   // same way a hovered one is.
@@ -3420,7 +3421,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   const headerSec = sections.find((x) => x.cat === 'header')
   const onboarding = st.onboard && !!headerSec
-  const nHeader = layoutCount('header', T.name)
+  const nHeader = setupHeaderCount(T.name)
   const headerArch = headerSec ? headerSec.arch : 0
 
   // Clicking a card swaps the real header behind the modal, at full size, and

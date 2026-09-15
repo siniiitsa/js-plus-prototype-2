@@ -262,6 +262,15 @@ const HEADER_COUNT = { photographic: 6, lime: 4, flat: 3 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
+// §6.2 — how many header cards the setup modal offers. A card lays out the
+// whole page, and only layouts 1–4 are a whole Figma page, so the modal stops
+// at four: Retro's Overlay card and Stage wide have no page behind them and
+// stay reachable from the sidebar's LayoutPicker alone, which still counts
+// `layoutCount`.
+const SETUP_HEADERS = 4
+
+export const setupHeaderCount = (themeName) => Math.min(SETUP_HEADERS, headerVariants(themeName))
+
 // How many layout choices a category offers under a given theme.
 export const layoutCount = (catId, themeName) =>
   catId === 'header' ? headerVariants(themeName) : (catById(catId)?.n ?? 1)
