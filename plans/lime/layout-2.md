@@ -121,7 +121,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Retro twin (1440 / 768 / 390) | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | `header` | `964:64580` | 1440 × 900 | `986:11848` | 768 × 1024 | `986:11867` | 390 × 890 | `964:64637` / `984:34438` / `984:34636` | — |
+| 1 | `header` | `964:64580` | 1440 × 900 | `986:11848` | 768 × 1024 | `986:11867` | 390 × 890 | `964:64637` / `984:34438` / `984:34636` | done `ab83542` |
 | 2 | `bio` | `964:64581` | 1440 × 760 | `986:11849` | 768 × 1191.8 | `986:11868` | 390 × 909.3 | `964:64638` / `984:34877` / `984:34834` | — |
 | 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | — |
 | 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | — |
@@ -171,7 +171,7 @@ already carries every value these schemes resolve to.
 
 | Section | Instance | Nested |
 |---|---|---|
-| header | Scheme 1 | nav Book pill (115 × 35) **Scheme 4**, `#F2FFD0`. **The walk missed at least one more Scheme 4 node**: the 390 render has a `#C7FF3C` block at its foot (Scheme 4's `tag/2` / `active/text`, no Scheme 1 value), probably one of the two sub-cards. Read the sub-cards' fills directly. |
+| header | Scheme 1 | nav Book pill (115 × 35) **Scheme 4**, `#F2FFD0`. ~~The walk missed at least one more Scheme 4 node~~ — *settled in section 1:* the `#C7FF3C` block is the place card, and it is **Scheme 1**'s `sem/box/1/text`, which is `s.hl`. No other nested scheme. |
 | bio | Scheme 1 | the same 115 × 35 pill, **Scheme 4** |
 | media | Section: Scheme 1 | `Frame 297`, the 1328 × 793 panel: **Scheme 2**, `#2E3928` (`s.box1`) |
 | video, repertoire, gallery, pricing, testimonials | inherit Scheme 1 | testimonials: `big-card` (1207 × 331) and `ts-photo` (the rail tiles) **Scheme 3**, `#CCFA61` |
@@ -440,6 +440,71 @@ goes on.
 - **Layout 2 is a dark page.** Every section but the repertoire's sheet and the form's band stands on
   `#15180F`, with olive panels on it. There are no seams; `ArcEdge` is layout 1's alone.
 
+Settled in section 1 (the header):
+
+- **The first layout-2 block: `if (s.lime) { … return }` at the head of `HeaderV1`**, the footer's
+  placement — the component *is* the v1 branch, and it has no state to share (`navHref`, `NavMenu`,
+  `BookPill to=`, `ListenLink to=` are the whole live seam). Count-the-leaves said block: the photo
+  card loses the mount, rail, tilt, grain and seal and gains a glow; both sub-cards change fill,
+  stroke, radius and padding; every nav leaf changes face or ink. Retro's code below it is
+  untouched but for `mustard`, which is plain `s.pillBg` again (its `s.lime ? s.box1` arm is
+  unreachable now).
+- **No Device override on any of the three instances, and no box token.** `get_variable_defs` matches
+  `THEME_RAMP.Lime` at all three widths (dispLg 130 / 81 / 54, labelLg 32 / 21 / 14, list 24 / 19 / 18,
+  bodySm 13 / 13 / 12), so every leaf reads `s.*` and there is no `tk` table. Radii 50 (photo, wide
+  cards) / 30 (narrow cards) / 20 (tiles) and every padding are raw numbers: × 0.82 on desktop through
+  a local `u()`, verbatim below. Expect the same of most sections; check each `modes` read anyway.
+- **The photo glow is confirmed off the node**: `INNER_SHADOW` radius 34, spread 0, `#AFE335` (`s.ac`,
+  not `s.glow`), on an overlay span over a `s.box3` well, × 0.82 on desktop. The desktop frame crops
+  its photograph `left −19.04%` at `w 185.61%`, which is `objectPosition: '22% 50%'`; the narrow
+  masters cover-centre.
+- **Every `sem/stroke/2` rule is an inside stroke, drawn as `inset 0 0 0 1px`** on the box (chip,
+  capsule, cards) or on an overlay where an image would paint over it (the avatar tile), so each
+  stated height stays the frame's.
+- **The Scheme 4 nav pill recipe**, which the bio's identical 115 × 35 pill inherits verbatim:
+  `bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * k}` plus
+  `style={{ padding: 4.27 / 4.27 / 4.27 / 17.92 × k, gap: 8.53 × k, lineHeight: 1.1 }}`, with `k`
+  0.82 / 1 / 0.7547 (the 390 master hand-shrinks the 768 pill; its 12.07px Anton type is a fallback
+  face, and `s.labelSm` 12 stands in). The hero's "Enquire about a date" is `BookPill`'s Lime defaults
+  exactly, `full` at 390.
+- **The capsule's links hold one row by budgeting the whole bar, and the name slides off centre only
+  when it has to.** The frame centres the wordmark between two equal cells, and a cell is far too
+  narrow for the artist's section names: sized against the cell, the seeded nine hit the 12px floor
+  and wrapped to two rows in the editor (cell 420), the setup modal's card 2 and the published 1440
+  (cell 466). So the nav row is the query container, the links' size is
+  `clamp(12px, (100cqi − reserve) / s.navEms, s.labelSm)`, and the left cell's `minWidth` is that one
+  row (`min()`'d with the room, so below the floor it stops and the capsule wraps). `reserve` is the
+  name and Listen + the pill's label in their own Bebas ems — **two new Lime-only vm keys,
+  `s.navNameEms` and `s.navCtaEms`**, beside `navEms` in `sectionVm` — plus every fixed box beside
+  the links (138.32 × z). Result: the harness's six sit at 15 with the name centred; the seeded nine
+  sit at 15 on one row everywhere, the capsule 630 wide in a 637 cell, the name to its right.
+- **`ListenLink`'s base `fontWeight: 700` synthesises a bold on Bebas Neue**; pass `fontWeight: 400`
+  with `labelStyle`. The 768 master's three nav links are the component's default again, so 768 keeps
+  the burger in the capsule, as Retro's does.
+- **Under Lime the digest's header arch 5 folds onto arch 1** (`HEADER_COUNT.lime` is 4), so a
+  layout-2 header change is six theme-1 files, not three; the arch 5 files were byte-identical to arch 1.
+- **Named diffs.** The seeded subtitle is longer than the frame's, so it runs 2 / 3 / 3 lines against
+  1 / 2 / 2: the desktop cards come out 267 tall against 287, the 768 identity block is taller (still
+  centred on the cards), and the 390 section is 945 against 890 plus our `padY`. The hero pill is 205
+  against 201.7, and the 390 nav pill 82 against 91 (Bebas against the master's Anton). The card copy
+  ("The face of the act", "Same person you'll meet…", "Available across the UK…") stays Retro's
+  literals, as in the frame.
+- **Measured against the masters' content edges**: desktop capsule top 32.4 (39.47 × 0.82) and 29.6
+  tall, spread at 128 (156 × 0.82), photo 503 × 564.2, chip 25.2, h1 107px at 167.9, nav pill 95.2 ×
+  28.6 flush right with Listen 9.9 before it, cards' tiles 87.7 and 72.2 × 73 at 21.3 / 23 in, the
+  wordmark centred at 590; 768 nav 36, spread 100, photo 688 × 511, cards 314 × 140 / 141 at 667 and
+  823 (the frame's own), pill 102.6 × 34.9; 390 nav 11, spread 90, photo 346 × 236, chip at 362, h1
+  at 408.8, cards 346 × 120 / 121.
+- **Verified in the builder** (one puppeteer script, deleted): the setup modal offers four Lime
+  cards and card 2 draws the `#C7FF3C` place card and the `#101309` well with no checker (cards 3
+  and 4 still carry the ribbon — unfitted); after *Use this header*, *Back to page list* shows every
+  section at "layout 2" and the footer at "layout 1". In the published tab at 1440 the header's
+  twelve fragment links (nine nav, Listen, Book Now, the hero pill) called `scrollIntoView` on
+  twelve matching ids, Book Now and the hero pill on `form`; at 390 the burger opens a nine-link
+  panel whose links scroll; at 820 (fresh tab) the burger stands in the capsule and opens. No page
+  errors. Digest: themes 0, 2, 3 and 4 zero files; theme 1 exactly header arch 1 and arch 5 at
+  three widths.
+
 ## Open questions
 
 1. **`tags` and `audio` have no layout-2 frame** on Lime's page, as on Retro's. They keep their
@@ -448,6 +513,16 @@ goes on.
 2. **The hard offset shadows** (header nav pill, calendar foot pill) contradict layout 1's "Lime has no
    hard offset shadows". The header session decides how `BookPill` draws them, or whether they draw
    nothing on this ground.
+
+   *Settled in section 1:* the header's draws nothing — `#15180F` on the `#15180F` page, sampled
+   flat under the pill in the 1440 render — so it is not drawn, and **`BookPill`'s Lime branch is
+   untouched**. The calendar's (`#AFE335` on `box1`) does show; that session either passes
+   `boxShadow` through `style` (no shared change) or makes the Lime branch honour `shadow`. The
+   second is only safe with the five-theme digest as its proof: Retro-era callers pass `shadow`
+   into branches Lime still renders unfitted (the other sections' v1–v3 and `HeaderV2` / `V3`),
+   and every one of them would start drawing under Lime. Find them with
+   `grep -n "shadow=" EncoreSection.jsx`, not a one-line `BookPill.*shadow=` grep, which misses
+   the multi-line props.
 3. **The form's `photo` slot seeds the wrong picture** (`limeStage` where the frame shows the full
    `f821adc2`), and the video poster seeds `limeStage` where the frame shows the hero. Both are
    `photos.js` one-liners once the files exist; the form may need a new export.
