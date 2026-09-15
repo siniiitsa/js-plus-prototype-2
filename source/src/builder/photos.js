@@ -65,8 +65,10 @@ export const RETRO_PHOTOS = {
   // with the field — the player was a picture then, and could name a record
   // that was not in the list.)
   // One per tile in the strip. galActive() highlights slot 4 and shows it in the
-  // large viewer, so that slot carries the full-size spotlight photograph and the
-  // other six are strip-sized.
+  // large viewer, so that slot carries the full-size spotlight photograph. The
+  // other six are ~1024px squares cut from the frames' own 1536 × 1024 sources
+  // (964:64647) at the framing the old 320px strip exports had: a visitor can
+  // pick any of them into the viewer, where a strip-sized file read as soft.
   gallery: [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7],
   // Pricing layout 2's reviewer faces under the quote — the frame's own three
   // `av` fills (964:64648), square-cropped to 112px, 4× the 28px avatar.
