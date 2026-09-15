@@ -351,6 +351,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + bebasEms(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * (23 / 24)) * 1.01).toFixed(3))
     : undefined
+  // What the rest of Lime's layout-2 nav spends beside those links, in the same
+  // Bebas ems: the name at Label/LG, and Listen plus the pill's label at
+  // Label/SM. That bar centres the name between two cells, so HeaderV1 sizes
+  // its links against the whole row less these rather than against one cell,
+  // which the seeded nine could only fill on two rows.
+  vm.navNameEms = T.name === 'Lime' ? +bebasEms(vm.brand).toFixed(3) : undefined
+  vm.navCtaEms = T.name === 'Lime' ? +(bebasEms(vm.cta1) + bebasEms(vm.cta2)).toFixed(3) : undefined
 
   // The header's two CTAs point at a section as well: Book Now at wherever the
   // page takes a booking, Listen at wherever it plays something (§4.3a).

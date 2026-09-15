@@ -1028,6 +1028,24 @@ function Reticle({ s, size, style }) {
   )
 }
 
+// Lime's layout-2 header (964:64580 "Frame" › "icon"): the place card's 88 × 89
+// tile — `s.ac` inside a 1px `s.bg` stroke — and its map-pin vector, which is
+// not lucide's MapPin but a pin with a ring cut out of it. Transcribed in the
+// tile's own viewBox, so the caller sizes the tile and the glyph follows it
+// (`LimeSourceGlyph`'s rule).
+function LimePin({ s, width, height, radius }) {
+  return (
+    <span style={{
+      position: 'relative', display: 'block', flex: 'none', width, height,
+      borderRadius: radius, background: s.ac, boxShadow: `inset 0 0 0 1px ${s.bg}`,
+    }}>
+      <svg viewBox="0 0 88 89" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
+        <path fill={s.bg} d="M44 44.5C44.94 44.5 45.75 44.16 46.42 43.49C47.09 42.82 47.43 42.01 47.43 41.07C47.43 40.13 47.09 39.32 46.42 38.65C45.75 37.98 44.94 37.64 44 37.64C43.06 37.64 42.25 37.98 41.58 38.65C40.91 39.32 40.57 40.13 40.57 41.07C40.57 42.01 40.91 42.82 41.58 43.49C42.25 44.16 43.06 44.5 44 44.5ZM44 57.1C47.49 53.9 50.07 50.99 51.76 48.38C53.44 45.76 54.29 43.44 54.29 41.41C54.29 38.3 53.29 35.75 51.31 33.77C49.32 31.78 46.89 30.79 44 30.79C41.11 30.79 38.68 31.78 36.69 33.77C34.71 35.75 33.72 38.3 33.72 41.41C33.72 43.44 34.56 45.76 36.24 48.38C37.93 50.99 40.51 53.9 44 57.1ZM44 61.64C39.4 57.73 35.96 54.09 33.69 50.74C31.42 47.38 30.29 44.27 30.29 41.41C30.29 37.13 31.67 33.72 34.42 31.17C37.18 28.63 40.37 27.36 44 27.36C47.63 27.36 50.82 28.63 53.58 31.17C56.33 33.72 57.71 37.13 57.71 41.41C57.71 44.27 56.58 47.38 54.31 50.74C52.04 54.09 48.6 57.73 44 61.64Z" />
+      </svg>
+    </span>
+  )
+}
+
 // §10.2 — the top bar of layouts 1 and 4, which draw the same Figma nav: its
 // 30/20/150/23 at 1440 are this component's 24/16/123/18 × 0.82, its narrow
 // masters hand the links to a burger beside the pill at exactly the 23 and 10
@@ -1126,7 +1144,7 @@ function NavBar({ s, colour, rule, pill }) {
  *
  * Lime's header family is the first four of them in its own tokens
  * (`headerFamily()`), because header card N lays out the whole page as
- * layout N. Only HeaderV0 is fitted to Lime's frame so far; V1–V3 render
+ * layout N. HeaderV0 and HeaderV1 are fitted to Lime's frames; V2–V3 render
  * Retro's compositions re-skinned until Lime's later layout passes.
  * ------------------------------------------------------------------ */
 
@@ -1311,10 +1329,220 @@ function HeaderV0({ s }) {
 // and both hand the links to NavMenu — the way every Retro header collapses
 // below desktop, and for the reason the nav's own comment gives.
 function HeaderV1({ s }) {
+  if (s.lime) {
+    // Lime's Feature spread (964:64580 at 1440, 986:11848 at 768, 986:11867 at
+    // 390). The same skeleton as Retro's frame — a nav over two columns, the
+    // identity block over two sub-cards — with every piece of Retro's dress
+    // gone: no mount, rail, tilt, grain, seal or checker ribbon. The photograph
+    // is a plain radius-50 card lit by an inset glow, and the sub-cards are an
+    // olive and a highlight card where Retro's are cream and mustard. Every
+    // leaf the two share changes face, ink or box, so this is a block (the
+    // footer's placement: no state to share, nothing to sit inside) and Retro's
+    // code below it is untouched.
+    //
+    // No Device override on any of the three instances, and every type size is
+    // its Lime token at that width, so the leaves read `s.*` with no `tk`
+    // table. No box token either: radii 50 / 30 / 20 and the paddings are raw
+    // numbers — × 0.82 on desktop, verbatim on the narrow masters.
+    const tab = isTablet(s)
+    const nar = s.narrow
+    const z = nar ? 1 : 0.82
+    const u = (v) => `${Math.round(v * z * 100) / 100}px`
+    // The nav pill is the hero pill hand-shrunk (disc 46 → 27.6, padding 5 →
+    // 4.27, gap 10 → 8.53), the same box at 1440 and 768; the 390 master
+    // shrinks the 768 one by hand again, × 0.7547.
+    const pk = s.mob ? 0.7547 : tab ? 1 : 0.82
+    const pp = (v) => `${Math.round(v * pk * 100) / 100}px`
+
+    // The frames centre the nav's content on 57.47 / 53.47 / 28 from their top
+    // and start the spread at 156 / 100 / 90. The root pads `padY` above both,
+    // so the row rises out of it by its own top, and the column's gap is what
+    // lands the spread; the row states its height as a minimum, so a capsule
+    // that has to wrap pushes the spread down rather than over it.
+    const navTop = s.mob ? 11 : tab ? 36 : 39.47
+    const navH = s.mob ? 34 : tab ? 34.93 : 36
+    const navGap = s.mob ? 45 : tab ? 29.07 : 80.53
+
+    // `sem/stroke/2` rules throughout are *inside* strokes, drawn as inset
+    // shadows so every stated box keeps the frame's own height.
+    const ring = (c) => `inset 0 0 0 1px ${c}`
+    const capsule = {
+      background: s.bg, boxShadow: ring(s.stroke2), padding: `${u(8)} ${u(18)}`,
+    }
+    // The desktop links' budget: the whole row (the query container) less the
+    // name, Listen and the pill's label (their Bebas ems at their own sizes,
+    // resolved in sectionVm beside `s.navEms`) and every fixed box beside them —
+    // the capsule's 18 + 18, the row's two 16 gaps, Listen's 12 and the pill's
+    // 17.92 + 4.27 padding, 8.53 gap and 27.6 disc.
+    const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)})`
+    const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
+    const nav = (
+      <div style={row(u(16), {
+        minHeight: u(navH), marginTop: `calc(${u(navTop)} - ${s.padY})`,
+        containerType: nar ? undefined : 'inline-size',
+      })}>
+        {/* The frame's thirds are two equal cells round the wordmark (its two
+            1px "rules" are empty frames that only spread them), so the name is
+            centred. The artist's section names rarely fit a third — the seeded
+            nine wrapped to two rows in the editor, the setup modal and the
+            published 1440 alike — and a capsule on two rows is not one of the
+            frame's states. So the links take the room the rest of the row
+            leaves (NavBar's Lime rule), capped at the frame's Label/SM and
+            floored at 12, and the left cell may not shrink below that one row:
+            the name stays centred whenever the links fit their half and slides
+            right when they do not. Only below the floor, where the one row
+            outgrows the room, does the cell stop at the room and the capsule
+            wrap, its corner the one-row half-height. Both narrow masters hand
+            the links to the burger, which stands in the same capsule at 390;
+            768 does too, Retro's reason — its three are the component's
+            default, and nine at 14px cannot fit. */}
+        <div style={{
+          flex: '1 1 0', display: 'flex',
+          minWidth: nar ? 0 : `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))`,
+        }}>
+          {nar ? (
+            <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
+              <NavMenu s={s} color={s.tx} />
+            </span>
+          ) : (
+            <nav style={{
+              ...capsule, borderRadius: u(18), maxWidth: '100%',
+              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: `${23 / 24}em`,
+              fontSize: linkSize,
+            }}>
+              {s.navLinks.map((l) => (
+                <a key={l.label} href={navHref(s, l.to)}
+                   style={labelStyle(s, '1em', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
+              ))}
+            </nav>
+          )}
+        </div>
+        <span style={labelStyle(s, s.labelLg, { color: s.tx, flex: 'none' })}>{s.brand}</span>
+        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end' })}>
+          {/* ListenLink's base weight is 700, which Bebas Neue (one cut) can
+              only synthesise. 390 drops the link, as Retro's master does. */}
+          {!s.mob && (
+            <ListenLink s={s} to={s.listenTo}
+                        style={labelStyle(s, s.labelSm, { color: s.tx, fontWeight: 400 })} />
+          )}
+          {/* Scheme 4's pale pill. Its DROP_SHADOW 5 / 5 is `#15180F` on the
+              `#15180F` page, so it draws nothing (sampled) and is not drawn. */}
+          <BookPill s={s} to={s.bookTo} bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * pk}
+                    style={{
+                      padding: `${pp(4.27)} ${pp(4.27)} ${pp(4.27)} ${pp(17.92)}`,
+                      gap: pp(8.53), lineHeight: 1.1,
+                    }} />
+        </div>
+      </div>
+    )
+
+    // A `sem/box/3` well under the photograph, and the frame's INNER_SHADOW 34
+    // in `#AFE335` — `s.ac`, not `sem/glow` — painted on an overlay, since an
+    // inset shadow on the image's own container paints under it. The desktop
+    // frame crops the photograph 22% in from its left rather than centring it.
+    const photo = (
+      <div style={{
+        position: 'relative', overflow: 'hidden', borderRadius: u(50), background: s.box3,
+        ...(nar ? { height: s.mob ? '236px' : '511px' } : { flex: '1 1 0', minWidth: 0 }),
+      }}>
+        <Photo s={s} initialsSize={72} style={nar ? undefined : { objectPosition: '22% 50%' }} />
+        <span style={{
+          position: 'absolute', inset: 0, borderRadius: 'inherit',
+          boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
+        }} />
+      </div>
+    )
+
+    const identity = (
+      <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0 })}>
+        <span style={{
+          boxShadow: ring(s.stroke2), borderRadius: s.btnR, padding: `${u(6)} ${u(12)}`,
+          fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac, whiteSpace: 'nowrap',
+        }}>● Available for bookings</span>
+        <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline />
+        <p style={{
+          margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac, width: '100%',
+        }}>{s.subtitle}</p>
+        {/* BookPill's Lime defaults exactly: 246 × 54 at 1440 is its 0.82, 212 at
+            768 its full size, and 390 keeps the full size too. */}
+        <BookPill s={s} to={s.bookTo} label="Enquire about a date" full={s.mob} />
+      </div>
+    )
+
+    // Desktop stands the two cards side by side, the tile at the top and the
+    // text on the floor; both narrow masters turn each on its side.
+    const card = (fill, line) => ({
+      background: fill, boxShadow: ring(line), overflow: 'hidden',
+      ...(nar
+        ? { width: '100%', borderRadius: '30px', padding: tab ? '26px' : '16px', ...row('20px') }
+        : {
+            flex: '1 1 0', minWidth: 0, borderRadius: u(50), padding: `${u(28)} ${u(26)}`,
+            ...col('0', { alignItems: 'flex-start', justifyContent: 'space-between' }),
+          }),
+    })
+    const tile = nar ? 88 : 107
+    const cardText = (title, body, ink, bodyInk) => (
+      <div style={col(u(8), { alignItems: 'flex-start', ...(nar ? { flex: 1, minWidth: 0 } : { width: '100%' }) })}>
+        <span style={{ fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, color: ink }}>{title}</span>
+        <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: bodyInk }}>{body}</span>
+      </div>
+    )
+    const faceCard = (
+      <div style={card(s.box1, s.stroke2)}>
+        <div style={{
+          position: 'relative', width: u(tile), height: u(tile), flex: 'none',
+          borderRadius: u(20), overflow: 'hidden', background: s.box2,
+        }}>
+          <Photo s={s} avatar initialsSize={34} />
+          <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring(s.stroke2) }} />
+        </div>
+        {cardText('The face of the act', "Same person you'll meet on the night. Performing since 2021.", s.tx, s.ac)}
+      </div>
+    )
+    // The place card is `sem/box/1/text` on Scheme 1, `#C7FF3C` — `s.hl` — in a
+    // `sem/bg` rule, and inked in `sem/bg` throughout.
+    const placeCard = (
+      <div style={card(s.hl, s.bg)}>
+        <LimePin s={s} width={u(88)} height={u(89)} radius={u(20)} />
+        {cardText(s.location, 'Available across the UK · 120 mi standard travel radius.', s.bg, s.bg)}
+      </div>
+    )
+
+    return (
+      <div style={col(u(navGap))}>
+        {nav}
+        {s.mob ? (
+          <div style={col('36px')}>
+            {photo}
+            <div style={col('30px')}>
+              {identity}
+              <div style={col('16px')}>{faceCard}{placeCard}</div>
+            </div>
+          </div>
+        ) : tab ? (
+          <div style={col('56px')}>
+            {photo}
+            <div style={row('60px')}>
+              <div style={{ flex: '1 1 0', minWidth: 0 }}>{identity}</div>
+              <div style={col('16px', { flex: '1 1 0', minWidth: 0 })}>{faceCard}{placeCard}</div>
+            </div>
+          </div>
+        ) : (
+          <div style={row(u(56), { height: u(688), alignItems: 'stretch' })}>
+            {photo}
+            <div style={col(u(60), { flex: '1 1 0', minWidth: 0 })}>
+              {identity}
+              <div style={row(u(16), { flex: 1, minHeight: 0, alignItems: 'stretch' })}>
+                {faceCard}{placeCard}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
   const olive = (s.retro && s.chips[3]?.bg) || s.line2
-  // Under Lime `pillBg` IS the accent, so every mustard-on-accent pairing
-  // below drew lime on lime; its olive box stands in until Lime's layout pass.
-  const mustard = s.lime ? s.box1 : s.pillBg
+  const mustard = s.pillBg
   // Three creams, all literal under Retro, whose `paper` IS the page ground:
   // the mount is a shade deeper than the sub-card (Figma tag/6/text vs box/1).
   const mount = s.retro ? '#F3E3C8' : s.paper
