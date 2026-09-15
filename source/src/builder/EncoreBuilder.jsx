@@ -36,7 +36,7 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
-  NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL, VIDEOS, VIDEO_MARK, clockAt,
+  NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
@@ -372,14 +372,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // — no target, no link — keeps the pill the picture it is today.
   vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
 
-  // chips — from TAGS, or from the tags field for a tags section
-  const tagSource = cat === 'tags'
-    ? String(cv('tags', TAGS.join(', '))).split(',').map((t) => t.trim()).filter(Boolean)
-    : TAGS
-  // A template whose Figma mode names each tag's ink (`sem.tagFg`, parallel to
-  // `tags`) takes it; contrast()'s black-or-white is the fallback, and is wrong
-  // on both of Lime's seats.
-  vm.chips = tagSource.map((t, i) => {
+  // chips — TAGS, one per palette tag hue. A template whose Figma mode names
+  // each tag's ink (`sem.tagFg`, parallel to `tags`) takes it; contrast()'s
+  // black-or-white is the fallback, and is wrong on both of Lime's seats.
+  vm.chips = TAGS.map((t, i) => {
     const cbg = T.tags[i % T.tags.length]
     return { label: cased(t), bg: cbg, fg: T.sem?.tagFg?.[i % T.tags.length] ?? contrast(cbg) }
   })
@@ -423,11 +419,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // builder and open it instead. An empty field leaves the pill a picture.
   vm.soundcloud = extUrl(cv('soundcloud', ''))
 
-  // tracks — one view-model, three content shapes on the same `c.tracks` key.
-  // The media player owns an *array* of { title, sub, image } (TracksField);
-  // the audio player owns the delimited *string* of a textarea; an absent key
-  // means the seeded TRACKS, dressed under Retro in RETRO_TRACK_ART. `n` is
-  // naively '0'+index in all three.
+  // tracks — the media player's *array* of { title, sub, image, audio } on
+  // `c.tracks` (TracksField); an absent key means the seeded TRACKS, dressed
+  // under Retro in RETRO_TRACK_ART. `n` is naively '0'+index in both.
   //
   // Per-row artwork is never re-seeded by index once the array exists: a row
   // inserted third would otherwise steal track three's photograph. `img` is
@@ -446,22 +440,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // `sub` is the one subline the fitted layout 1 sets; `rel` is the same line
   // with the duration taken off it, for a design that columns the release and
   // the running time apart (media layout 2). The seeded shape is the only one
-  // that knows both: a typed textarea row is "title — duration" and has no
-  // release, and TracksField has no duration field at all, so there `rel` is
-  // just the row's own subtitle and equals `dur`.
+  // that knows both: TracksField has no duration field at all, so there `rel`
+  // is just the row's own subtitle and equals `dur`.
   const seedArt = defaultTrackArt(cat, T.name) ?? []
   if (Array.isArray(c.tracks)) {
     vm.tracks = c.tracks.map((t, i) => {
       const sub = (t?.sub ?? '').trim()
       return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
                img: t?.image ?? null, src: extUrl(t?.audio ?? '') || null }
-    })
-  } else if (c.tracks !== undefined) {
-    vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
-      const parts = l.includes('—') ? l.split('—') : l.split('|')
-      const dur = (parts[1] || '').trim()
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, rel: '',
-               img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
@@ -470,33 +456,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
-
-  // video — the stage's own three values, and the list of other videos beside
-  // it that layout 2 draws.
-  vm.videoDesc = cv('description', DEFS.videoDesc)
-  vm.videoDur = cv('duration', '04:18')
-  // Where the transport bar is caught. The section has no <video> element on
-  // either surface, so there is no playhead to read: `clockAt` composes one
-  // from the running time above and `videoPct` fills the bar to the same
-  // fraction, so the two cannot disagree. An unparseable duration leaves both
-  // empty rather than inventing a position — see data.js.
-  vm.videoAt = clockAt(vm.videoDur, VIDEO_MARK)
-  vm.videoPct = vm.videoAt ? VIDEO_MARK * 100 : 0
-  // The `songs` rule once more: an absent key means the seeded VIDEOS, an
-  // emptied array means none, and there is no null sentinel. `c.videos` has no
-  // structured editor yet, so today it is always the seed — the shape is here
-  // so that adding one changes nothing on this side. Artwork follows the
-  // tracks': `null`, not undefined, wherever a row has none, because Photo
-  // falls back to the *section* photo on undefined and a video row must not
-  // inherit the poster; and it is never re-seeded by index once the array
-  // exists, or a row inserted third would steal video three's still.
-  vm.videos = (Array.isArray(c.videos)
-    ? c.videos.map((v) => ({ ...v, img: v?.image ?? null }))
-    : VIDEOS.map((v, i) => ({ ...v, img: seedArt[i] ?? null }))
-  ).map((v) => ({
-    title: cased(v.title ?? ''), sub: (v.sub ?? '').trim(),
-    length: (v.length ?? '').trim(), when: (v.when ?? '').trim(), img: v.img,
-  }))
 
   // pricing — the artist's own packages, else the seeded ones. The `songs`
   // rule again: an absent key means TIERS, an emptied array means no packages,
@@ -583,8 +542,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }
   })
   // §10.2 layout 4 draws a package's features as a wrapped row of coloured
-  // chips rather than a ticked list, walking the palette's tags the way the
-  // tags row's own chips do — `vm.chips`' construction exactly, except that a
+  // chips rather than a ticked list, walking the palette's tags the way
+  // `vm.chips` does — its construction exactly, except that a
   // seat is indexed by the feature's position rather than built per feature:
   // the hue belongs to the seat (the media player's fan rule), so editing one
   // line cannot reshuffle a package's colours. Retro's first four are the
@@ -996,8 +955,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }
   })
   // Layout 2 is the first design to head this section — layout 1 is the card
-  // alone — so both of these reach it and nothing else, the way FIELDS.video's
-  // photographs reach one layout. The line is prose and stays uncased; the pill
+  // alone — so both of these reach it and nothing else, the way FIELDS.form's
+  // stage photo reaches one layout. The line is prose and stays uncased; the pill
   // keeps the uncased label every other Book Now on the page draws.
   vm.testiSub = cv('sub', DEFS.testiSub)
   vm.testiCta = cv('cta', 'Book Now')
@@ -1006,7 +965,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.formPara = cv('para', DEFS.formPara)
   // Layout 2's stage photograph, and the third single-photo slot in the file
   // after `image` and `avatar`. It is a slot of its own for the reason the
-  // header's and the video section's two are: this section's `image` is
+  // header's two are: this section's `image` is
   // *already* the artist — RETRO_PHOTOS.form is the portrait crop, and layout 1
   // draws it as the 48px circle beside the brand — so the scene above the
   // heading cannot share the key without changing what layout 1 renders. Same
@@ -2718,7 +2677,7 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
  * runs the full width of the panel with the label underneath, because at
  * thumbnail size the layouts were indistinguishable from one another.
  *
- * For the 13 non-header categories more layouts are offered than there are
+ * For the 10 non-header categories more layouts are offered than there are
  * designs (§4.4), so some rows render identically. That is on purpose.
  * ------------------------------------------------------------------ */
 

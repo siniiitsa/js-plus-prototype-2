@@ -70,15 +70,6 @@ const LIST = {
     title: i % 4 === 3 ? `Track number ${i + 1}, at about the length a real one runs to` : `Track ${i + 1}`,
     sub: 'Single',
   }),
-  // The audio player's tracks are the one list `&n=` reaches that is a
-  // newline-delimited *string* rather than an array (the `&tags=` shape, as a
-  // count), so the rows are joined below. Every fourth title is long enough to
-  // make layout 3's card clip one, and every third row omits its duration, so
-  // one render shows the meter's right-hand scale present and absent.
-  audio: (i) => (i % 4 === 3
-    ? `Track number ${i + 1}, at about the length a real one runs to`
-    : `Track ${i + 1}`) + (i % 3 === 2 ? '' : ` — ${3 + (i % 5)}:${String(i * 7 % 60).padStart(2, '0')}`),
-  video: (i) => ({ title: `Video ${i + 1}`, sub: 'Live set', length: '03:50', when: 'April 2026' }),
   // Three tags cycling, so the chip row and the filter are exercised too — and
   // two rows that only layout 3 can see the point of, since it reads the tags as
   // a *grouping* rather than as a filter: every fifth song carries none, which
@@ -166,7 +157,7 @@ const LIST = {
   }),
 }
 const KEY = {
-  media: 'tracks', audio: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images',
+  media: 'tracks', repertoire: 'songs', gallery: 'images',
   pricing: 'tiers', calendar: 'slots', map: 'gigs', form: 'fields', testimonials: 'quotes',
   footer: 'links',
 }
@@ -176,7 +167,7 @@ const rows = count === null || !LIST[cat]
   : Array.from({ length: count }, (_, i) => LIST[cat](i))
 const c = rows === null
   ? {}
-  : { [KEY[cat]]: cat === 'audio' ? rows.join('\n') : rows }
+  : { [KEY[cat]]: rows }
 
 // &booked=2025-06-14,2025-06-20 blocks those dates. It is the one calendar
 // state neither seed shows — CAL_BOOKED is empty on purpose — and it reaches
@@ -194,11 +185,6 @@ if (q.get('open')) c.open = q.get('open')
 // so it is the only way to see the bio's layout-3 ID card at the three stat
 // columns its frame draws, which is where its head row runs out of room.
 if (q.get('since')) c.since = q.get('since')
-
-// &tags=Jazz,Funk,Soul sets FIELDS.tags.tags. It needs a switch of its own
-// because that content is a comma *string* where every list `&n=` reaches is an
-// array, and `&tags=` with nothing after it is also the emptied-row state.
-if (q.get('tags') !== null) c.tags = q.get('tags')
 
 // &promises=A|B|C fills FIELDS.form.promises, the enquiry form's other
 // list-shaped content — a newline-delimited *string*, like `&tags=`' commas, so
