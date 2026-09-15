@@ -139,12 +139,14 @@ mutated through a single `patch()` helper.
   navigation**, the **bio's own Listen** (layout 4 alone, in the overlay card's meta row: the
   header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section),
   the **media player** (below), the **gallery's arrows
-  and thumbnail strip** (below), the **events map's pager, its pin/row pairing and — in
-  layout 3 alone — its city chip row, its map zoom and its See all gigs reveal** (below),
+  and thumbnail strip** (below), the **events map's pager, its pin/row pairing, its map zoom
+  (layouts 3 and 4) and — in layout 3 alone — its city chip row and its See all gigs reveal**
+  (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
   which row is featured),
-  the **booking calendar's month arrows, its day picking and its foot pill** (below),
+  the **booking calendar's month arrows, its day picking, its foot pill and — in layout 4 — its
+  enquiry wizard** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
   the **testimonials carousel's arrows** (below — layout 2 pages the same `cur` from a rail of
   initial tiles instead, layout 4 pages it from a pair of arrow discs in its head, and layout 3
@@ -277,9 +279,10 @@ mutated through a single `patch()` helper.
   Tickets → column — and layout 3 drops
   the frame's second `↗` beside the venue, the same address marked twice. **Layout 4 is the
   pager alone**: its whole gig list is one mustard ticker at a `perPage` of **1**, so `page` is
-  the only state it reads — `sel` reaches nothing there, the way the testimonials' `cur` reaches
-  nothing in their wall — and the arrows **wrap** at both ends rather than clamping, the media
-  player's rule. It is also the one layout that draws raw `vm.pins` *and* has a list to pair
+  the only list state it reads — `sel` reaches nothing there, the way the testimonials' `cur`
+  reaches nothing in their wall; its other state is layout 3's `zoom`, on the same radial
+  raster, ring labels and zoom controls (QA, 2026-09-15) — and the arrows **wrap** at both ends
+  rather than clamping, the media player's rule. It is also the one layout that draws raw `vm.pins` *and* has a list to pair
   with: all five seats are on the map and the gig on show lights the one it was paired with, by
   identity (`vm.gigs[].pin` and `vm.pins` are the same five objects), so one gig to a page means
   the one-pin-per-gig rule holds by construction and the filter's edge above cannot arise. The
@@ -424,8 +427,15 @@ mutated through a single `patch()` helper.
   the emptied-list state. Its foot is `BookPill` at layout 3's own numbers, but labelled
   `calCta`, so `cta` is a field again where layout 3 spends the pill on the picked date; and it is
   the one calendar layout that paints a **sheet** — the Figma wrapper's tan panel, which
-  carries the page's own "Book Us" head and would otherwise leave that head on a ground no
-  master draws. Its card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
+  carries the page's own "Book Us" head (`CAL_HEADING_4`) and would otherwise leave that head on
+  a ground no master draws. That panel also holds the page's **enquiry wizard** (QA,
+  2026-09-15) — the frame's "C · Multi-step wizard", beside the stack at desktop and above it
+  narrow, since `form` took the editorial band and the wizard has no section of its own. Its
+  hooks (`wStep`, `wType`, `wVals`) are appended after `sel`; only step 1 is designed, so
+  steps 2 and 3 take the summary card's own labels and a name and email, every string resolved
+  onto `vm.calWizard`; its inputs exist only when `s.live`, there is no `<form>`, and the last
+  step's Send Enquiry is a fragment link to `calBookTo` — the section has no address to mail.
+  Its card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
   token, and `deep` is the page ground on two palettes and collides with the panel on the same
   two. The cost, named: on Lime and Grunge `tx` and `paper` are one value, so the card and the
   rows share a fill and only the rows' hairline parts them.

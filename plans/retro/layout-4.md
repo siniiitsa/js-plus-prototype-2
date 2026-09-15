@@ -1496,3 +1496,65 @@ Learned on the end-of-pass sweep (`80c557c` and `9e0f726`):
     worse than the absence. The other side is worth naming too: **`showBadge` reaches layout 4**,
     where question 5 of the layout-3 plan recorded it reaching neither 2 nor 3 — all three masters
     draw the seal, so the toggle is real again for the first time since layout 1.
+
+## Addendum, 2026-09-15 — QA against the frames
+
+Reversals and fixes after QA compared the built page with the layout-4 frames. Branch
+`retro-layout-4-qa-fixes`, forked from `retro-layout-3-qa-fixes` (it needs that branch's
+five-review seed). A before/after digest (themes 0–4, every cat × layout × width) moved
+exactly `arch 3` of bio, media, gallery, map, pricing, calendar and testimonials — 105 renders
+— and nothing else.
+
+- **Video — declined.** QA asked for the *See me in action* band. The section left the project
+  in `d734992`, and the user chose to keep it out rather than restore it on layout 4's page.
+- **Bio — the Section's columns, and the Genres row.** At 1440 the head is a 664 column beside
+  the 664 × 720 card, 56 apart: eyebrow, display line and Genres `space-between` over the card's
+  height (964:72512). Both narrow Sections stack eyebrow / head / Genres 30 apart over the card
+  at 40. The Genres row is the removed tags section's layout-4 instance, drawn inside the bio
+  (the user's call, rather than restoring `tags`): "Genres" in `body-lg` 16/15/15 in the accent
+  over `TagChips` at `label-xs` 20/14/12, at the instance's 457 measure at 1440, reading
+  `vm.chips` (TAGS). The 390 instance hides the line (58 tall against 103 at 768), and so does
+  ours. The open-question-1 reading "the card fills" is reversed for this section.
+- **Media — the foot strip.** The checkerboard under the cream band now checks it against the
+  page beige (`s.bg`), where it had repeated the head strip's olive: 971:15256 is cream squares
+  over the ground below the band.
+- **Gallery — the head column.** At 1440 Frame 182 (566) holds the head 454 wide, centred in the
+  646 band beside the 874 instance, so ours stands it 454 wide and 112 from the card and rail,
+  centred on the 534 row; the 454 measure declined in section 6 comes back with its column. The
+  spotlight lands on the master's 590.97 × 534 × 0.82. The heading falls back to "Snaps from
+  the night" (`GALLERY_HEADING_4`) at layout 4.
+- **Events map — layout 3's viewport, and the panel note.** The plate is `s.mapRadialSrc` drawn
+  as it is — the frame's raster and `map-radial.jpg` differ by 3.5 in 255 — where the fit had
+  inverted layout 1's Manchester tile. The ring labels are `rings` on each ring's right edge in
+  an olive tag, the + / − controls step layout 3's `zoom` live (1.25× a step, −2..+3), and
+  *LIVE · LAST 12 MONTHS* is a new emptiable field, `span` (`MAP_SPAN`), right of "Travel &
+  reach". `mapSub` stays refused there. The heading falls back to "Distances we’ll Travel"
+  (`MAP_HEADING_4`). The four stat cards, the "Next:" prefix and the ×, none of which QA
+  marked, are unchanged.
+- **Pricing — capitals and the frame's pill.** The package names are upper-cased, as the frame
+  types them. The row pill reads a new `rowCta` field, "Start Enquiry" (`PRICING_ROW_CTA`, the
+  frame's "Star Enquiry" read as `CAL_SLOT_CTA` reads it), in Display/List uncased under Retro,
+  and drops its offset block at 1440, which the desktop master does not draw. The tags' and
+  features' casing (upper in the frame) was not marked and is unchanged.
+- **Calendar — Book Us, with the wizard.** Open question 1's "the wizard is no longer fittable"
+  is reversed at the user's call: the calendar's layout 4 draws "Enquiry Forms — C · Multi-step
+  wizard" (964:72843 · 964:79037 · 977:8513) inside the Book Us panel, 680 : 478 and 50 apart at
+  1440, stacked 50 apart at 768 and 20 at 390. The card is `sem/box/1` on a `stroke/1` hairline,
+  radius 30, padded 40/48 (30 narrow); stepper, title, "Step n of 3", body and pills
+  `justify-between` over a minimum gap of 18.75 / 20 / 20; type 24/19/18 title, 12/11/11 chip,
+  14/13/13 body-md, 16/12/13 list. Step 1 is the frame's: an event-type chip grid off a new
+  `types` field (`CAL_TYPES`, the frame's four — not the form's `FORM_TYPES`, another section's
+  content) and an APPROX. DATE box. The frame draws no step 2 or 3, so Details takes the summary
+  card's GUESTS / SET LENGTH / BUDGET / SOUND and Contact a name and an email; every string is
+  resolved onto `vm.calWizard`. Live, the chips pick, the boxes are real inputs (spans on the
+  canvas), Back and Next Step move between steps, and the last step's pill is the frame's "Send
+  Enquiry" as an `<a href="#form">` via `calBookTo` — the calendar has no address, so nothing is
+  mailed. No `<form>`: Enter in a box does nothing, checked. The heading falls back to "Book Us"
+  (`CAL_HEADING_4`).
+- **Testimonials — the heading only.** QA's picture (three cards, no arrows) was the deployed
+  `main`, which predates the five-review seed of `19f284f`; on this branch the 1440 row already
+  draws four cards and both arrow discs. What remained was the frame's head, which falls back to
+  "Client success stories" (`TESTI_HEADING_4`) at layout 4.
+- **Heading fallbacks.** All four layout-4 heads are one `HEADING_4` map in
+  `EncoreBuilder.jsx`, read by `sectionVm` and by `EditPanel`'s fallback, so the panel and the
+  canvas agree. `TITLES` is not re-pointed. "Six Worth Your Ears" stays declined (a count).
