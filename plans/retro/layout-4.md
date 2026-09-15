@@ -4,9 +4,9 @@ Working checklist for fitting **layout 4** of every Retro section to Figma, one 
 session, clearing context between sections. Layouts 1 (`s.v0`), 2 (`s.v1`) and 3 (`s.v2`) are
 fitted and signed off at all three widths; nothing here should touch any of them.
 
-**Read first, every session:** [`CLAUDE.md`](./CLAUDE.md), then this file, then
-[`LAYOUT-3-PLAN.md`](./LAYOUT-3-PLAN.md)'s *Conventions* (~90 bullets) and
-[`LAYOUT-2-PLAN.md`](./LAYOUT-2-PLAN.md)'s *Conventions* (~110 bullets) — every one of them still
+**Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then
+[`layout-3.md`](./layout-3.md)'s *Conventions* (~90 bullets) and
+[`layout-2.md`](./layout-2.md)'s *Conventions* (~110 bullets) — every one of them still
 true, and this file does **not** repeat them — then the two memory notes `figma-frame-reading` and
 `verifying-the-published-tab`. `SPEC.md` lives in git history — `git show 8fa8ff4:SPEC.md`.
 
@@ -279,7 +279,7 @@ UI.** Take each in the section's own commit, never all of them up front:
 One section per session, **all three widths together**. Clear context between sections; git and
 this file are the memory.
 
-1. Read `CLAUDE.md`, this file, then `LAYOUT-3-PLAN.md`'s and `LAYOUT-2-PLAN.md`'s *Conventions*,
+1. Read `CLAUDE.md`, this file, then `layout-3.md`'s and `layout-2.md`'s *Conventions*,
    and the two memory notes.
 2. `get_metadata` on **all three** of the row's nodes first, beside each other. It is where a
    master that changes shape rather than shrinking shows up, and on this page it is also where a
@@ -321,7 +321,7 @@ this file are the memory.
    ```
    Continue the Retro layout-4 pass with section N, `cat`.
 
-   Read CLAUDE.md, then LAYOUT-4-PLAN.md, then LAYOUT-3-PLAN.md's and LAYOUT-2-PLAN.md's
+   Read CLAUDE.md, then plans/retro/layout-4.md, then plans/retro/layout-3.md's and plans/retro/layout-2.md's
    Conventions sections, then the `figma-frame-reading` and `verifying-the-published-tab`
    memory notes, and follow the per-session procedure there.
 
@@ -357,7 +357,7 @@ the session that owes the narrow band table.
 
 ## Conventions
 
-`LAYOUT-2-PLAN.md`'s and `LAYOUT-3-PLAN.md`'s bullets all still apply and are not repeated. This
+`layout-2.md`'s and `layout-3.md`'s bullets all still apply and are not repeated. This
 list starts with what is known about *this* page before any section has been fitted; append to it
 as the pass goes on.
 

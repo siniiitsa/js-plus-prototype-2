@@ -1,0 +1,531 @@
+# Lime layout 2 — section-by-section plan
+
+This is the working checklist for bringing **layout 2** of the Lime template up to its Figma
+designs. It runs one section per session, all three widths together, clearing context between
+sections. Layout 1 (`s.v0` under `s.lime`) is fitted and closed; nothing here should move it.
+
+**Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then:
+- the whole *Conventions* of [`layout-1.md`](./layout-1.md) — it is this pass's foundation
+  (`s.lime`, the Lime ramp, the `sem` keys, `BookPill` / `Pager` / `SealBadge`'s Lime branches, the
+  block-placement rule, the digest)
+- the *Conventions* **and the narrow-masters notes** of [`../retro/layout-2.md`](../retro/layout-2.md),
+  which built every `s.v1` branch this pass dresses, at all three widths
+- the *Per-session procedure* of [`../retro/layout-4.md`](../retro/layout-4.md)
+
+Then read the three memory notes `figma-frame-reading`, `verifying-the-published-tab` and
+`browser-tool-choice`. `SPEC.md` lives in git history: `git show 8fa8ff4:SPEC.md`.
+
+Branch: **`lime-layout-2`, forked from `lime-layout-1` (`049eace`), not from `main`.**
+`lime-layout-1` is closed but unmerged, 39 commits ahead of `main`, and everything this pass
+stands on — `s.lime`, `THEME_RAMP.Lime`, `THEMES[1].sem`, `SEEDS`, the Lime branches of the shared
+components, `digest.mjs` — exists only there. Merging layout 1 first is the user's call; if it
+lands, rebase this branch onto `main` rather than re-forking.
+
+## What the pass must deliver
+
+1. **Every layout-2 section works in the published tab under Lime**: every `s.v1` control
+   CLAUDE.md lists under *`s.live` is false everywhere except the published tab*.
+2. **Every layout-2 section looks as close to its Figma frame as possible**, at 1440 (× 0.82 onto
+   the 1180 canvas), 768 and 390.
+3. **The setup modal's card 2, "Feature spread", lays out a fitted page.** `pickHeader` writes
+   arch 1 to every section, so this pass is what turns card 2 from Retro's layout 2 in Lime tokens
+   (layout-1 plan, open question 2) into Lime's own page. The header session verifies this **in the
+   builder**, not only the harness, the way layout 1's section 1 did.
+4. **The sidebar's layout-picker thumbnails for layout 2** under Lime look like their sections.
+   They render `sectionVm` at `SIZES.desktop`, so they follow the desktop fit for free; check them
+   once, in the end-of-pass sweep.
+
+## What this pass actually is
+
+**Lime's layout-2 page is Retro's layout-2 page re-skinned, the way layout 1 was.** The evidence,
+read in the planning session with one `use_figma` walk per page:
+
+- The Lime instances are `964:64580`…`964:64597`, and Retro's are `964:64637`…`964:64654`. They
+  have the same composition names in the same order, with node ids offset by exactly −57.
+- **The main components are not shared.** Every Lime instance points at its own component id
+  (header `624:4875` against Retro's `430:477`). **That was already true of layout 1** (Lime
+  `446:453` against Retro's `446:455`, and so on for all eleven), so it is not a warning. The test
+  that matters is the tree.
+- **The trees match.** Each section's descendants to depth 6 were compared as a multiset of
+  `type:name`, and this is what came back:
+
+| Section | 1440 | 768 | 390 | What differs |
+|---|---|---|---|---|
+| header | 0.20 | 0.20 | 0.20 | **Only Retro's decoration**: the 132-cell checker ribbon (`Frame 173`), the seal (`Frame 248`: two `TEXT_PATH`s, a `Group`, its grain), the "Manchester, UK" rail text and two grain rects. Both trees are two 636-wide columns at x 56 / 748 under the same five-child `nav`. Same skeleton, every decoration gone — layout 1's bio case, not a new composition. |
+| bio | 0.95 | 0.95 | 0.95 | Retro's `image #` grain rect |
+| media (both instances) | 1.00 | 1.00 | 1.00 | — |
+| video | 1.00 | 1.00 | 1.00 | — |
+| repertoire | 1.00 | 1.00 | 1.00 | — |
+| gallery | 0.94 | 0.96 | 0.95 | Retro's `image #` grain rect |
+| pricing | 1.00 | 1.00 | 1.00 | — |
+| calendar | 1.00 | 1.00 | 1.00 | — |
+| map | 1.00 | 1.00 | 1.00 | — |
+| form | 1.00 | 1.00 | 1.00 | — |
+| testimonials | 1.00 | 1.00 | 1.00 | — |
+| footer | 0.69 | 0.69 | 0.69 | vs Retro's. **1.00 against Lime layout 1's own footer at all three widths**, so it is out of scope (below). |
+
+- **No seams.** No full-width vector under 260 tall exists on any of the 36 masters, and the three
+  renders show straight edges throughout. Layout 2 draws **no `ArcEdge`**.
+- **No Device-mode overrides** anywhere on the 768 and 390 pages. Layout 1's 390 hero trap (a
+  Mobile page carrying a Tablet section) does not recur, so `s.*` from the Lime ramp is right on
+  every narrow master. Re-check per section anyway; the walk looked at `explicitVariableModes`
+  only.
+- **The narrow shapes are Retro's.** Same trees at 768 and 390, so Retro's narrow-master notes
+  (768 keeps the columns, 390 stacks; the media and calendar wrappers; the map's 390 stack) apply
+  as written. Re-measure every number, since the sizes are not Retro's (see *Sizes*).
+
+So the work is the layout-1 pass's work one branch over: **Lime decoration and Lime tokens inside
+the existing `s.v1` branches, gated on `s.lime`**. No token foundation is owed (layout 1's session
+0 built it), and no section needs a component of its own.
+
+**Do not write Lime-only section components.** Decide per section between ternaries and a
+`s.lime` block by layout 1's count-the-leaves rule (its section 2 *Conventions*), and place a block
+by layout 1's seam rule: ahead of `if (s.v1)` as `if (s.v1 && s.lime)` when the section's live state
+is hoisted above its branches, or as `if (s.lime)` *inside* `if (s.v1)`, after the seam, when the
+state is computed inside the branch.
+
+## The Figma source
+
+| Canvas | Frame | Node | Size |
+|---|---|---|---|
+| Desktop | Frame 251 | `964:64579` | 1440 × 9801.5 |
+| Tablet | Frame 257 | `986:11847` | 768 × 11252.4 |
+| Mobile | Frame 258 | `986:11866` | 390 × 10815.5 |
+
+- Desktop: <https://www.figma.com/design/uFoUbPaBrDicjyuSBEbtGT/SAAS-Final--Copy-?node-id=964-64579&m=dev>
+- Tablet: <https://www.figma.com/design/uFoUbPaBrDicjyuSBEbtGT/SAAS-Final--Copy-?node-id=986-11847&m=dev>
+- Mobile: <https://www.figma.com/design/uFoUbPaBrDicjyuSBEbtGT/SAAS-Final--Copy-?node-id=986-11866&m=dev>
+
+`fileKey` = `uFoUbPaBrDicjyuSBEbtGT`. All three frames, and Retro's layout-2 frames, are on the
+**Layout 2** page, `964:58572`. `use_figma` reads on descendants want
+`await figma.setCurrentPageAsync(await figma.getNodeByIdAsync('964:58572'))` first.
+
+**Match on node id and width, never on the name.** The misnamed ones here are the same as on Retro's
+layout-2 page:
+- The 390 header (`986:11867`) is called "— **Tablet**".
+- Both narrow editorial list players (`986:11855`, `986:11874`) and the 768 calendar
+  (`986:11861`) are called "— **Desktop**".
+- The footer is *Component 2* at 1440 and "Footer — Component 3 / 4 — **Desktop**" at 768 and 390.
+
+**Two sections are wrapped**, as on Retro's page:
+- **media** is a `Section` (1440) or `Frame 299` (narrow) holding `Frame 297` (the Scheme 2 panel),
+  which holds `Frame 296` (the *"Five worth your ear"* heading over **Media Player — B · Fanned
+  carousel**) beside, or above, **Media Player — A · Editorial numbered list**. The insets for
+  297 / 296 / the list are 56·86 / 60·60 / x 739 at 1440, 30·60 / 30·60 / y 792 at 768, and
+  10·40 / 20·40 / y 736 at 390. Fit the whole wrapper.
+- **calendar**'s `Frame 298` only insets the instance: 56·56, 30·56 and 10·40. Fit the instance.
+
+## The sections
+
+Page order. Sizes are the frames' own. Each row's three masters are fitted in one session.
+
+| # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Retro twin (1440 / 768 / 390) | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | `header` | `964:64580` | 1440 × 900 | `986:11848` | 768 × 1024 | `986:11867` | 390 × 890 | `964:64637` / `984:34438` / `984:34636` | done `ab83542` |
+| 2 | `bio` | `964:64581` | 1440 × 760 | `986:11849` | 768 × 1191.8 | `986:11868` | 390 × 909.3 | `964:64638` / `984:34877` / `984:34834` | — |
+| 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | — |
+| 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | — |
+| 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | — |
+| 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | — |
+| 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | — |
+| 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | — |
+| 9 | `map` | `964:64594` | 1440 × 867 | `986:11862` | 768 × 823 | `986:11881` | 390 × 1286 | `964:64651` / `986:10974` / `986:11467` | — |
+| 10 | `form` | `964:64595` | 1440 × 812 | `986:11863` | 768 × 889 | `986:11882` | 390 × 933 | `964:64652` / `986:11591` / `986:11633` | — |
+| 11 | `testimonials` | `964:64596` | 1440 × 855.9 | `986:11864` | 768 × 824 | `986:11883` | 390 × 917 | `964:64653` / `986:11675` / `986:11701` | — |
+| — | `footer` | `964:64597` | 1440 × 479.5 | `986:11865` | 768 × 647.4 | `986:11884` | 390 × 619.4 | — | **out of scope** — the same tree as Lime layout 1's footer (`964:58598` / `986:39887` / `986:39899`), fitted in that pass's section 11, and `NVAR.footer` is 1 |
+| — | `tags`, `audio` | *none* | — | — | — | — | — | — | **not on this page**; see open question 1 |
+
+The Retro twin's node id is what `EncoreSection.jsx`'s fit comments cite, so grep for it to find the
+branch. **Cite branches by that id, never by line number**: the file is ~16 000 lines and every
+session moves it.
+
+### Sizes: re-measure, and expect the calendar to overflow first
+
+Lime's display ramp is larger than Retro's (`dispXl` 200 against 128, `dispLg` 130 against 96).
+The frames grow where the type is the content:
+
+| Section | Lime 1440 / 768 / 390 | Retro 1440 / 768 / 390 |
+|---|---|---|
+| header | 900 / 1024 / 890 | 888 / 1024 / 926 |
+| bio | 760 / 1191.8 / 909.3 | 760 / 1138.8 / 881.3 |
+| media | 965 / 1568 / 1452 (heading 232 tall, fan 441) | 965 / 1549 / 1428 (heading 170, fan 503) |
+| video | 782 / 1123.2 / 1125.8 | 782 / 1112.2 / 1101.8 |
+| pricing | 730 / 946 / 879 | 707 / 915.4 / 849.4 |
+| **calendar** | **1071 / 844 / 766** | 896 / 741 / 698 |
+| map | 867 / 823 / 1286 | 780 / 823 / 1286 |
+| form | 812 / 889 / 933 | 792 / 865 / 912 |
+| testimonials | 855.9 / 824 / 917 | 782 / 796 / 870.3 |
+
+**The calendar's slot marks** ("JUN 12") set in Bebas at the display ramp are the likeliest
+overflow. Retro's branch pins its date column at a width it *measured* for Fraunces (Retro layout-2
+section 8, "measure the pin, never transcribe it"). Re-measure that pin in Bebas at Lime's size, at
+all three widths, with the harness's `&open=` looping every month.
+
+## Lime's layout-2 mode
+
+The page frame is **Primitives: Lime, Scheme 1**; the 768 and 390 frames add **Device: Tablet /
+Mobile**, and no section below them overrides it. Layout 1's scheme table (its *Lime's Figma mode*)
+already carries every value these schemes resolve to.
+
+**Schemes by node**, from `explicitVariableModes` (instance, then nested):
+
+| Section | Instance | Nested |
+|---|---|---|
+| header | Scheme 1 | nav Book pill (115 × 35) **Scheme 4**, `#F2FFD0`. ~~The walk missed at least one more Scheme 4 node~~ — *settled in section 1:* the `#C7FF3C` block is the place card, and it is **Scheme 1**'s `sem/box/1/text`, which is `s.hl`. No other nested scheme. |
+| bio | Scheme 1 | the same 115 × 35 pill, **Scheme 4** |
+| media | Section: Scheme 1 | `Frame 297`, the 1328 × 793 panel: **Scheme 2**, `#2E3928` (`s.box1`) |
+| video, repertoire, gallery, pricing, testimonials | inherit Scheme 1 | testimonials: `big-card` (1207 × 331) and `ts-photo` (the rail tiles) **Scheme 3**, `#CCFA61` |
+| calendar | **Scheme 2**, `#2E3928` | — |
+| map | Scheme 1 | featured panel (652 × 363) **Scheme 3** `#CCFA61`; `radius-map` (652 × 755) **Scheme 2** `#394732`; `Map Viewport` Scheme 3 |
+| form | **Scheme 4**, `#F2FFD0` | — |
+| footer | Scheme 1 | — |
+
+Scheme 3's fill on these nodes is its `box/1`, `#CCFA61`, not its `sem/bg` (`#AFE335`, which is
+`s.ac`). Layout 1's form named `lift` `#D9FF7F` (Scheme 3 `box/2`) and `mist` `#D5E3B2` (Scheme 4
+`box/1`) as literals, and `#CCFA61` wants a name the same way. The other two colours here already
+have keys: `#394732` (Scheme 2 `box/1`, the media transport bar and the map's `radius-map` card) is
+Scheme 1's `box/2`, so it is `s.box2`, and `#101309` (the header's and the gallery's photo wells) is
+`s.box3`. **Read each node's
+`fills` before believing a token** — the `get_variable_defs` list mixes the schemes, and layout 1's
+map and form sessions both needed the fills to sort them.
+
+### Grounds
+
+Sampled from all three renders at the band edges and the middle. **The sequence is identical at
+1440, 768 and 390.**
+
+| # | Section | Ground | What stands on it |
+|---|---|---|---|
+| 1 | header | page `#15180F` | a photograph card (636 × 688, `#101309` well) beside a text column; nav on the ground |
+| 2 | bio | page | a `#2E3928` card, 865 × 648, radius 30 |
+| 3 | media | page | the Scheme 2 panel `#2E3928`, radius 50; the transport bar `#394732` |
+| 4 | video | page | the player, `#2E3928`, radius 50 |
+| 5 | repertoire | **full-bleed `#2E3928` sheet** (`phone`, 1440 × 792; `sticky-head` 210 the same) | — |
+| 6 | gallery | page | photographs |
+| 7 | pricing | page | the plan card (session reads its fill) |
+| 8 | calendar | page | the Scheme 2 instance `#2E3928`, radius 50, with a **lime `#AFE335` head band** (1328 × 318) over the slot rows (653) and the foot (100) |
+| 9 | map | page | the Scheme 3 panel `#CCFA61` and the Scheme 2 map card `#394732` |
+| 10 | form | **full-bleed Scheme 4 `#F2FFD0` band** | a photograph (838 × 437) and the sidebar card |
+| 11 | testimonials | page | pale `#F2FFD0` head type, a Scheme 3 `#CCFA61` card, radius 50 |
+| — | footer | page, layout 1's | — |
+
+**No root flag widens.** `bleed`, `darkMap`, `cream`, `limeBand` and `limeLight` all gate on `s.v0`,
+and Retro's layout 2 never widened one: its two sheets — the repertoire's box/1 cream and the form's
+mustard — are painted **in the branch** by the written-out bleed margin (Retro layout-2 repertoire
+*Conventions*, "A full-bleed layout 2 does not need the root's flags"). Lime's two sheets are those
+same two, in `s.box1` and `s.tx`. The form's light band then needs its own ink inside the branch
+(`s.bg`), since the root's `color` stays `s.tx`: layout 1's `limeLight` did that at the root, and
+here it is the branch's job.
+
+## Lime's layout-2 decorative language
+
+Everything here is behind `s.lime`, and replaces what the Retro branch gates on `s.retro`.
+
+- **No grain, no torn edges, no checkerboard, no seal, no tilt.** Every `Grain`, `Checkerboard`,
+  `SealBadge` and `tilt()` in the ten `s.v1` branches is Retro's and stays gated off. The header's
+  checker ribbon and seal are the bulk of its tree difference.
+- **Glows**, every one node-confirmed as an `INNER_SHADOW`, offset 0, spread 0. **Mind the hue:**
+  the radius-34 and radius-14 glows are `#AFE335`, which is `s.ac` (= `pillBg` = `activeBg`), **not**
+  `sem/glow` — `s.glow` is `#A6E22E` and only the pager's glow is that. Layout 1's "glows in
+  `sem/glow`" would put these one hue off. An effect *style* resolves its variables in the style's own
+  mode (`figma-frame-reading`), so confirm one of the four off the node before trusting the rest.
+  - radius 34 `#AFE335` on the **header photograph** (636 × 688), the **bio photograph**
+    (433 × 648), the **gallery hero** (784 × 583) and the **form photograph** (838 × 437)
+  - radius 14 `#AFE335` on the **media transport bar** (629 × 108, `#394732`)
+  - radius 17 `#A6E22E` on the **repertoire's current page pill** (`pg`, 183 × 54, `#394732`) — which
+    is `Pager`'s Lime branch exactly (box `sem/box/2`, the current pill lit by an inset glow). Layout
+    1's section 5 recorded that the repertoire's layout 2 owes `frame.lime`; the sheet is now olive,
+    not the pale sheet that note feared.
+  - Paint a glow over a photograph as layout 1's bio did: an `inset` box shadow on an overlay, since
+    an inset shadow on the `<img>`'s own container paints under it.
+- **One soft drop shadow**: the bio's photo card, `DROP_SHADOW` 1.25 / 1.25 blur 10.81, 16% black.
+  Scan the render before drawing it (layout 1: the bio's 4/4/9 drew nothing, the testimonials'
+  0/4/4 did).
+- **Two hard offset shadows — which layout 1's decorative language says Lime does not have.** Both
+  are `DROP_SHADOW` offset 5 / 5, blur 0, spread 0, on a pill:
+  - the **header nav's Book pill** (115 × 35, Scheme 4 `#F2FFD0`), shadow `#15180F`
+  - the **calendar's foot pill** (184 × 54, `#F2FFD0`), shadow `#AFE335`
+
+  `BookPill`'s Lime branch "draws no offset block" and ignores `glyph`; it does honour `bg` / `fg` /
+  `size` / `disc` / `discFg` / `style`. The header session decides whether `BookPill`'s Lime branch
+  honours `shadow` (additive: every layout-1 Lime caller passes none) or whether the two callers
+  pass it through `style`. Take the call once and write it under *Conventions*; the calendar session
+  inherits it. Note that the header's shadow is the page ground on the page ground, so check the
+  render for whether it shows at all before drawing it.
+- **The pale pill.** Both 115 × 35 pills are Scheme 4, pale `#F2FFD0` — not the lime `sem/active` pill
+  layout 1's `BookPill` defaults to. Pass `bg={s.tx}` and the Scheme 4 ink.
+- **Radii** are raw 50 on the big panels (media, video, calendar, testimonials) and 30 on the bio
+  card, matching Retro's layout-2 radii — so the Retro branch's numbers may already be right. Check
+  each against `get_design_context` rather than reaching for `s.radius` (26), which none of these
+  binds as far as the walk shows.
+
+## Photography
+
+Every photograph this page draws is **already in `photos.js`**, but three slots seed a different
+picture from the one the frame shows. Image hashes, read off the frames:
+
+| Section | Slot (frame box) | Hash | Seeded today | Verdict |
+|---|---|---|---|---|
+| header | scene 636 × 688 | `51d68654` | `limeHero` (`LIME_PHOTOS.header`) | ✓ |
+| header | portrait 107 × 107 | `e3790c2c` | `limeHeaderAvatar` | ✓ — check the crop at 107 |
+| bio | photo 433 × 648 | `fa453f7d` | `limeStage` | ✓ — layout 1 cropped it for a 488 × 648 arch; check this 433 × 648 box |
+| media | covers | the five shared covers | `ROW_ART.media` | ✓ |
+| video | poster 896 × 523 | **`51d68654`, the hero** | **`limeStage`** (`LIME_PHOTOS.video`) | **differs** — the video session decides; the poster (`FIELDS.video.image`) fills the player in layouts 2 **and 4**, so re-seeding it moves Lime's layout 4 too (unfitted, but say so) |
+| video | list thumbnails | Retro's gallery set | `ROW_ART.video` (`RETRO_VIDEO_ART`) | ✓ |
+| gallery | hero + six | Lime layout 1's set, spotlight `3a59b4d1` | `LIME_PHOTOS` gallery | ✓ |
+| pricing | three 28 × 28 `av` | Retro's | — | nothing: Retro's layout-2 fit dropped the credit row that carries them |
+| map | raster 588 × 519 | `e089bd11` | `vm.mapSrc` = `RETRO_TEXTURE.map` (`8cd103b8`, layout 1's) | Retro's own layout 2 carries `e089bd11` too and renders `mapSrc`; follow whatever Retro's branch settled, and record it |
+| form | stage photo 838 × 437 | **`f821adc2`, the avatar image** | **`limeStage`** (`SEEDS.Lime.photo`) | **differs** — layout 1 exported `f821adc2` only as a 240 × 240 centre square (`lime-avatar.jpg`), so a wide `lime-form-photo.jpg` is probably owed |
+| form | avatar 48 × 48 | `f821adc2` | `limeAvatar` | ✓ |
+
+A new file follows layout 1's session-0 recipe: export the frame's asset as JPEG at the box it fills,
+into `src/builder/photos/lime-*.jpg`, imported by `photos.js` alone.
+
+## What already renders, and the traps in it
+
+A code survey at the start of this pass. **Every `s.v1` branch already renders under Lime.** No
+branch condition reads `s.retro`; the `s.retro` hits are decoration ternaries inside the branch. The
+only Lime code in any of them is `HeaderV1`'s `mustard = s.lime ? s.box1 : s.pillBg`.
+
+| Branch | `s.retro` reads | Decoration calls | `pillBg` reads | `s.paper` reads | Shared controls |
+|---|---|---|---|---|---|
+| `HeaderV1` | 5 (+1 `s.lime`) | 5 | 2 | 2 | 2 `BookPill` |
+| `Bio` v1 | 6 | 1 | 0 | 3 | `BookPill` |
+| `Media` v1 | 13 | 1 | 0 | 4 | — |
+| `Video` v1 | 11 | 1 | 1 | 2 | — |
+| `Pricing` v1 | 0 | 1 | 0 | 0 | `BookPill` |
+| `Repertoire` v1 | 10 | 0 | 1 | 4 | `Pager` |
+| `Gallery` v1 | 2 | 1 | 0 | 0 | — |
+| `Calendar` v1 | 9 | 0 | 0 | 5 | `BookPill` |
+| `EventsMap` v1 | 15 | 0 | 0 | 5 | `BookPill`, `Pager` |
+| `Testimonials` v1 | 8 | 0 | 0 | 2 | `BookPill` |
+| `EnquiryForm` v1 | 6 | 1 | 2 | 3 | — |
+
+The traps these counts point at:
+
+- **Under Lime, `pillBg` *is* the accent** (`#AFE335`, layout 1's session 0). Every `pillBg` read above
+  is a candidate lime-on-lime pairing. The worst case is **`EnquiryForm` v1, whose sheet is
+  `ground = s.pillBg`**: the form's band is lime today, where the frame's is Scheme 4 `#F2FFD0`, and
+  everything inked against it moved with it.
+- **Under Lime, `s.paper` is `s.tx`** (`paperOf` returns the lightest of `bg` / `tx`), so every flat-
+  theme "cream panel" fallback is pale lime. Where the Lime frame draws an olive panel instead
+  (bio, media, video, calendar), the branch wants `s.box1` behind `s.lime`, with its own inks.
+- **Retro's `v1` branches carry per-width literal type tables** (`T` objects of Retro's tokens behind
+  `z = desk ? 0.82 : 1`). Under Lime every size is its token at that width already (`s.dispLg`,
+  `s.labelSm`, …; layout 1 *Conventions*, "The ramp is theme-aware"), so a Lime leaf reads `s.*`
+  rather than growing a second literal table. `u()`'s `z` switch stays right for boxes.
+- **`vm.title` shadows the ramp's `title` size** (layout 1, open question 7). Write Display/Title as
+  the frame's own numbers.
+- **Card 2's known state** (layout 1, open question 2): legible only since `mustard` became `s.box1`;
+  its two-tone title's first word is box1 on `bg` (dim); the face card's body copy is pale lime on
+  cream; it still draws Retro's checker ribbon, the Lime seal at Retro's seat, and cream mounts.
+  The Lime frame draws none of the ribbon, seal or mounts.
+- **Retro layout-2 open question 15**: the media bar's `<Photo>` falls to the initials placeholder
+  with `s.muted` ink on a track with no art. Lime seeds every cover, so it is only seen with `&n=8`;
+  pass `ink` in the Lime leaf.
+- **`HeaderV1` renders under Retro and Lime only** (`headerFamily`), so the header needs the theme=0
+  digest and not the flat three's. Every other section needs both.
+
+## Per-session procedure
+
+One section per session, **all three widths together**. Clear context between sections; git and
+this file are the memory.
+
+1. Read `CLAUDE.md`, this file, and the reading list at the top.
+2. **Section 1 only, first:** `git switch -c lime-layout-2 lime-layout-1` (if the branch does not
+   exist yet) and commit this plan there. Then, with the dev server up, take the pass's "before"
+   pictures at `theme=1&arch=1` for all eleven categories at desktop (`node scripts/shots.mjs`, see
+   layout 1 *Conventions*) and keep them in the scratchpad.
+3. `get_metadata` on **all three** of the row's nodes and on its Retro twin's 1440 node, side by
+   side. Read them as arithmetic first (Retro layout-4 procedure, step 2). Compare against the twin
+   to confirm the tree table above; a child that exists on one side only is decoration to gate or a
+   node to add.
+4. `get_screenshot` on each node (`maxDimension` 1400–2000). The asset URL is short-lived, so `curl`
+   it in the very next call. Load the `figma-design-to-code` skill and run `get_design_context`.
+   **Run `get_variable_defs` on all three nodes**, and read fills, strokes, effects and radii off the
+   nodes with one `use_figma` read wherever a token or colour looks wrong (layout 1's gallery trap:
+   `get_screenshot`'s SVG assets can be in Retro's mode; `exportAsync` is not).
+5. **Implement inside the section's existing `s.v1` branch, gated on `s.lime`.** Ternaries or a block
+   by layout 1's rule; every Lime-only value behind `s.lime`; desktop numbers × 0.82, 768 and 390
+   verbatim. Prefer session-0 tokens (`s.ui`, `s.box1`, `s.glow`, the Lime ramp) over literals, and
+   name every literal the mode doesn't carry.
+6. **Verify** with the preview harness (`preview.jsx`'s `arch` defaults to 1, but pass it):
+
+   ```
+   cd source && npm run dev
+   http://localhost:5173/preview.html?cat=bio&arch=1&theme=1&w=desktop     # &w=tablet | mobile
+   ```
+
+   - **Look:** compare the Lime frame's render with `theme=1`, reading geometry with
+     `getBoundingClientRect()`. Check against **content** edges, not frame `y` (the `padX` / `padY`
+     trap in `figma-frame-reading`).
+   - **Function:** `theme=1&live=1`, plus `&n=` / `&booked=` / `&open=` where the section reads them.
+     Drive every control, and confirm its active, idle and refused states read on Lime's colours.
+   - **Nothing else moves:** `node scripts/digest.mjs before 0,2,3,4` before editing and `after`
+     after, then `cmp` — **zero differing files** across all 14 categories × every layout × 3 widths.
+     Then the same at theme 1: the differing files must all be `_arch_1_` (filter on `_theme_1_`),
+     and all this section's category. A theme-1 diff in any `arch_0` file is a layout-1 regression.
+7. Commit with the section named in the subject.
+8. Set the row's Status to `done <sha>`, add anything the next section needs to *Conventions*, and
+   commit that too.
+9. **Stop and hand off.** Say the section is closed and that this is the moment to `/clear`, then
+   print the next section's opening prompt as a filled-in fenced block:
+
+   ```
+   Continue the Lime layout-2 pass with section N, `cat`.
+
+   Read CLAUDE.md, then plans/lime/layout-2.md, then the Conventions of plans/lime/layout-1.md,
+   then the Conventions and narrow-masters notes of plans/retro/layout-2.md, then the
+   `figma-frame-reading`, `verifying-the-published-tab` and `browser-tool-choice` memory notes,
+   and follow the per-session procedure there.
+
+   The three Lime masters are `<desktop node>` (<W> × <H>), `<tablet node>` (768 × <H>) and
+   `<mobile node>` (390 × <H>) in Figma file uFoUbPaBrDicjyuSBEbtGT; the Retro twin is
+   `<retro node>`. Fit them inside the existing `s.v1` branch of `<Component>` in
+   EncoreSection.jsx, gated on `s.lime`. Themes 0, 2, 3 and 4 must digest to zero rows, and
+   theme 1 may differ only in `<cat>` arch 1.
+
+   <the two or three conventions most likely to bite this section>
+
+   Branch: lime-layout-2. Do not refresh the root index.html.
+   ```
+
+Do **not** refresh the root `index.html` per section. That is one deliberate step at the end of the
+pass, with the two-build digest in layout 1's *Learned on the end-of-pass sweep*. Expect zero rows at
+themes 0, 2, 3 and 4. The seeded `EXAMPLE_PAGE` is arch 0 throughout, so at theme 1 as well the page
+walk will show **no** difference: prove this pass shipped by choosing card 2 in the setup modal of
+both builds (Retro layout-2's *Learned on the end-of-pass refresh*: "a two-build diff of the seeded
+page proves the absence of a regression, not the presence of the new work").
+
+### The first session: the header
+
+`HeaderV1` is where deliverable 3 is met, so its verification is the builder's, not only the
+harness's. With chrome-devtools MCP or a puppeteer script (layout 1's sweep notes give the route and
+the selectors):
+- the setup modal still shows **four** Lime cards, and card 2 renders the fitted header
+- choosing card 2 opens the editor on a page whose every section is arch 1
+- publish, then in the popup: every nav link scrolls, the burger opens at 390 (and at 768 only with a
+  viewport of 800 or more — layout 1's `clientWidth` trap), Book Now reaches `#form`
+- the Retro header at theme 0 digests to zero rows
+
+The header also settles the **hard offset shadow** call for `BookPill`, above.
+
+## The end-of-pass sweep
+
+Written when section 11 closes, from what the sections defer. What it will contain at least:
+
+1. **CLAUDE.md and README.md**, wherever they describe a layout-2 state as Retro's alone.
+2. **`plans/README.md`:** mark the pass closed.
+3. **One whole-page published check under Lime at layout 2**: builder → Lime → card 2 → Publish →
+   Open, then every `s.v1` control on the page, and the band edges against their real neighbours
+   (the repertoire's olive sheet and the form's pale band are the two full-bleed ones).
+4. **The layout-picker thumbnails** for arch 1 under Lime (deliverable 4).
+5. **The other three header cards** still render and publish, since this pass will move shared
+   components (`BookPill` at least).
+6. **Refresh the root `index.html`** with the two-build digest.
+
+## Conventions
+
+Everything a fresh session would otherwise have to work out again. Append to this list as the pass
+goes on.
+
+- **Layout 1's conventions all hold.** The gate is `s.lime` and composes with `s.retro`; Lime reads
+  the fitted structure and widens a Retro gate rather than redrawing what the frame shares; never edit
+  a Retro literal to make Lime look right; the harness's `theme` is a numeric index (Retro 0, Lime 1).
+- **The page walk is cheap, and it answered the pass's first question.** One `use_figma` read per
+  page — main component, `explicitVariableModes`, fills, full-width vectors — plus one depth-6
+  `type:name` multiset comparison per section pair. Similarity near 1 means "same tree, dress it";
+  a low score has to be read for *what* is missing before it means anything (the header's 0.20 is
+  132 checker cells). Re-run it rather than re-deriving a section by eye.
+- **Layout 2 is a dark page.** Every section but the repertoire's sheet and the form's band stands on
+  `#15180F`, with olive panels on it. There are no seams; `ArcEdge` is layout 1's alone.
+
+Settled in section 1 (the header):
+
+- **The first layout-2 block: `if (s.lime) { … return }` at the head of `HeaderV1`**, the footer's
+  placement — the component *is* the v1 branch, and it has no state to share (`navHref`, `NavMenu`,
+  `BookPill to=`, `ListenLink to=` are the whole live seam). Count-the-leaves said block: the photo
+  card loses the mount, rail, tilt, grain and seal and gains a glow; both sub-cards change fill,
+  stroke, radius and padding; every nav leaf changes face or ink. Retro's code below it is
+  untouched but for `mustard`, which is plain `s.pillBg` again (its `s.lime ? s.box1` arm is
+  unreachable now).
+- **No Device override on any of the three instances, and no box token.** `get_variable_defs` matches
+  `THEME_RAMP.Lime` at all three widths (dispLg 130 / 81 / 54, labelLg 32 / 21 / 14, list 24 / 19 / 18,
+  bodySm 13 / 13 / 12), so every leaf reads `s.*` and there is no `tk` table. Radii 50 (photo, wide
+  cards) / 30 (narrow cards) / 20 (tiles) and every padding are raw numbers: × 0.82 on desktop through
+  a local `u()`, verbatim below. Expect the same of most sections; check each `modes` read anyway.
+- **The photo glow is confirmed off the node**: `INNER_SHADOW` radius 34, spread 0, `#AFE335` (`s.ac`,
+  not `s.glow`), on an overlay span over a `s.box3` well, × 0.82 on desktop. The desktop frame crops
+  its photograph `left −19.04%` at `w 185.61%`, which is `objectPosition: '22% 50%'`; the narrow
+  masters cover-centre.
+- **Every `sem/stroke/2` rule is an inside stroke, drawn as `inset 0 0 0 1px`** on the box (chip,
+  capsule, cards) or on an overlay where an image would paint over it (the avatar tile), so each
+  stated height stays the frame's.
+- **The Scheme 4 nav pill recipe**, which the bio's identical 115 × 35 pill inherits verbatim:
+  `bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * k}` plus
+  `style={{ padding: 4.27 / 4.27 / 4.27 / 17.92 × k, gap: 8.53 × k, lineHeight: 1.1 }}`, with `k`
+  0.82 / 1 / 0.7547 (the 390 master hand-shrinks the 768 pill; its 12.07px Anton type is a fallback
+  face, and `s.labelSm` 12 stands in). The hero's "Enquire about a date" is `BookPill`'s Lime defaults
+  exactly, `full` at 390.
+- **The capsule's links hold one row by budgeting the whole bar, and the name slides off centre only
+  when it has to.** The frame centres the wordmark between two equal cells, and a cell is far too
+  narrow for the artist's section names: sized against the cell, the seeded nine hit the 12px floor
+  and wrapped to two rows in the editor (cell 420), the setup modal's card 2 and the published 1440
+  (cell 466). So the nav row is the query container, the links' size is
+  `clamp(12px, (100cqi − reserve) / s.navEms, s.labelSm)`, and the left cell's `minWidth` is that one
+  row (`min()`'d with the room, so below the floor it stops and the capsule wraps). `reserve` is the
+  name and Listen + the pill's label in their own Bebas ems — **two new Lime-only vm keys,
+  `s.navNameEms` and `s.navCtaEms`**, beside `navEms` in `sectionVm` — plus every fixed box beside
+  the links (138.32 × z). Result: the harness's six sit at 15 with the name centred; the seeded nine
+  sit at 15 on one row everywhere, the capsule 630 wide in a 637 cell, the name to its right.
+- **`ListenLink`'s base `fontWeight: 700` synthesises a bold on Bebas Neue**; pass `fontWeight: 400`
+  with `labelStyle`. The 768 master's three nav links are the component's default again, so 768 keeps
+  the burger in the capsule, as Retro's does.
+- **Under Lime the digest's header arch 5 folds onto arch 1** (`HEADER_COUNT.lime` is 4), so a
+  layout-2 header change is six theme-1 files, not three; the arch 5 files were byte-identical to arch 1.
+- **Named diffs.** The seeded subtitle is longer than the frame's, so it runs 2 / 3 / 3 lines against
+  1 / 2 / 2: the desktop cards come out 267 tall against 287, the 768 identity block is taller (still
+  centred on the cards), and the 390 section is 945 against 890 plus our `padY`. The hero pill is 205
+  against 201.7, and the 390 nav pill 82 against 91 (Bebas against the master's Anton). The card copy
+  ("The face of the act", "Same person you'll meet…", "Available across the UK…") stays Retro's
+  literals, as in the frame.
+- **Measured against the masters' content edges**: desktop capsule top 32.4 (39.47 × 0.82) and 29.6
+  tall, spread at 128 (156 × 0.82), photo 503 × 564.2, chip 25.2, h1 107px at 167.9, nav pill 95.2 ×
+  28.6 flush right with Listen 9.9 before it, cards' tiles 87.7 and 72.2 × 73 at 21.3 / 23 in, the
+  wordmark centred at 590; 768 nav 36, spread 100, photo 688 × 511, cards 314 × 140 / 141 at 667 and
+  823 (the frame's own), pill 102.6 × 34.9; 390 nav 11, spread 90, photo 346 × 236, chip at 362, h1
+  at 408.8, cards 346 × 120 / 121.
+- **Verified in the builder** (one puppeteer script, deleted): the setup modal offers four Lime
+  cards and card 2 draws the `#C7FF3C` place card and the `#101309` well with no checker (cards 3
+  and 4 still carry the ribbon — unfitted); after *Use this header*, *Back to page list* shows every
+  section at "layout 2" and the footer at "layout 1". In the published tab at 1440 the header's
+  twelve fragment links (nine nav, Listen, Book Now, the hero pill) called `scrollIntoView` on
+  twelve matching ids, Book Now and the hero pill on `form`; at 390 the burger opens a nine-link
+  panel whose links scroll; at 820 (fresh tab) the burger stands in the capsule and opens. No page
+  errors. Digest: themes 0, 2, 3 and 4 zero files; theme 1 exactly header arch 1 and arch 5 at
+  three widths.
+
+## Open questions
+
+1. **`tags` and `audio` have no layout-2 frame** on Lime's page, as on Retro's. They keep their
+   generic `v1` in Lime tokens. Check once, in the sweep, that they are legible at `theme=1&arch=1`,
+   the way layout 1's session 0 checked their `v0`; do not design them.
+2. **The hard offset shadows** (header nav pill, calendar foot pill) contradict layout 1's "Lime has no
+   hard offset shadows". The header session decides how `BookPill` draws them, or whether they draw
+   nothing on this ground.
+
+   *Settled in section 1:* the header's draws nothing — `#15180F` on the `#15180F` page, sampled
+   flat under the pill in the 1440 render — so it is not drawn, and **`BookPill`'s Lime branch is
+   untouched**. The calendar's (`#AFE335` on `box1`) does show; that session either passes
+   `boxShadow` through `style` (no shared change) or makes the Lime branch honour `shadow`. The
+   second is only safe with the five-theme digest as its proof: Retro-era callers pass `shadow`
+   into branches Lime still renders unfitted (the other sections' v1–v3 and `HeaderV2` / `V3`),
+   and every one of them would start drawing under Lime. Find them with
+   `grep -n "shadow=" EncoreSection.jsx`, not a one-line `BookPill.*shadow=` grep, which misses
+   the multi-line props.
+3. **The form's `photo` slot seeds the wrong picture** (`limeStage` where the frame shows the full
+   `f821adc2`), and the video poster seeds `limeStage` where the frame shows the hero. Both are
+   `photos.js` one-liners once the files exist; the form may need a new export.
+4. **The footer is shared with layout 1**, and that is structural rather than a Lime decision
+   (`NVAR.footer` is 1). If a later Lime page draws a different footer, it will need an `NVAR` bump
+   first.

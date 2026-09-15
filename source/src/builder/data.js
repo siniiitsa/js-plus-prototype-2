@@ -20,6 +20,12 @@ export const THEMES = [
     // without naming a weight. Do NOT add more Fraunces weights to that link — a
     // second face would let the default 400 win and the display would go thin.
     label: "'Anton', sans-serif",
+    // Figma's `font/ui` — the face `Label/XS` names (the chips, the day
+    // numbers, the feature lines). Retro's mode sets it to Inter, the same face
+    // as `body`, and spelled identically so a reader switched from `s.body` to
+    // `s.ui` computes the byte-equal font-family. Themes without the key fall
+    // back to `body` in sectionVm.
+    ui: "'Inter', sans-serif",
     body: "'Inter', sans-serif",
     // Passthrough, not title-casing. The §10.2 reference sets display copy as
     // typed ("Kai Mercer", "240 Songs") and reserves caps for the Anton labels,
@@ -37,17 +43,50 @@ export const THEMES = [
   {
     name: 'Lime',
     sub: 'Bebas Neue · dark acid',
+    // Lime is the second template with a Figma variable mode ("1 · Primitives" →
+    // Lime, "2 · Scheme" → Scheme 1), so every value below is that mode's, read
+    // off the file rather than chosen. Bebas Neue is caps-only, which is why the
+    // display and label faces need no casing of their own; Chakra Petch and
+    // Inter set mixed case ("Sold Out", "Full name") and so casing is 'title'.
     display: "'Bebas Neue', sans-serif",
-    label: "'Archivo', sans-serif",
-    body: "'Archivo', sans-serif",
-    casing: 'upper',
-    dls: '0.02em',
-    radius: '6px',
-    radiusSm: '4px',
-    btnR: '4px',
-    bw: '1.5px',
+    label: "'Bebas Neue', sans-serif",
+    ui: "'Chakra Petch', sans-serif",
+    body: "'Inter', sans-serif",
+    casing: 'title',
+    // Every Lime text style states letterSpacing 0.
+    dls: '0px',
+    // radius/card, radius/control, radius/pill, border/thin — the same four
+    // tokens Retro's 20 / 14 / 999 / 2 are.
+    radius: '26px',
+    radiusSm: '13px',
+    btnR: '999px',
+    bw: '2px',
+    // radius/chip. Retro's is 8 and has no key: its chips write the literal.
+    radiusChip: '6px',
     palette: ['#15180F', '#AFE335', '#F2FFD0'], // near-black · acid lime · pale lime
-    tags: ['#AFE335', '#2E3928', '#15180F', '#F2FFD0'],
+    // Scheme 1's tag1…tag7 backgrounds alternate between exactly these two, so
+    // the seat system every `T.tags` reader walks has two seats here. Their
+    // inks are not contrast()'s black and white, hence `sem.tagFg` beside them.
+    tags: ['#2E3928', '#AFE335'],
+    // The semantic colours the three-colour palette cannot derive — Scheme 1,
+    // the scheme eight of the eleven layout-1 sections stand on. sectionVm
+    // resolves them onto flat vm keys (`s.box1`, `s.glow`, …). Retro has no
+    // `sem` and must not grow one: its branches write these as literals.
+    sem: {
+      box1: '#2E3928',                      // sem/box/1 — the olive band, the card fill
+      box2: '#394732',                      // sem/box/2 — a raised card
+      box3: '#101309',                      // sem/box/3 — a sunk well
+      glow: '#A6E22E',                      // sem/glow
+      activeBg: '#AFE335',                  // sem/active/bg
+      activeFg: '#0D1F03',                  // sem/active/text — ink on lime, not contrast(ac)
+      inactiveBg: '#2E3928',                // sem/inactive/bg
+      inactiveFg: '#AFE335',                // sem/inactive/text
+      inactiveLine: '#2E3928',              // sem/state/inactive/border
+      stroke1: 'rgba(242, 255, 208, 0.15)', // sem/stroke/1 — hairlines
+      stroke2: '#AFE335',                   // sem/stroke/2
+      hl: '#C7FF3C',                        // sem/box/1/text — the highlight ink
+      tagFg: ['#AFE335', '#0D1F03'],        // sem/tag/1/text, sem/tag/2/text — parallel to `tags`
+    },
   },
   {
     name: 'Grunge',
@@ -110,9 +149,9 @@ export const CATS = [
   // 3 → 4 with NVAR: layout 4 is the first design this category has had past
   // its Figma layout-3 row, and `pageLayout()` rests on designCount ≤
   // layoutCount, so the picker has to offer the row the fold names. This is
-  // the first card the layout-4 pass adds to the picker (LAYOUT-4-PLAN.md,
-  // open question 4) — it appears at the end of the Tags list and moves none
-  // of the three above it.
+  // the first card the layout-4 pass adds to the picker
+  // (plans/retro/layout-4.md, open question 4) — it appears at the end of the
+  // Tags list and moves none of the three above it.
   { id: 'tags', name: 'Tags', n: 4 },
   { id: 'audio', name: 'Audio Player', n: 10 },
   // 3 → 4 with NVAR, the Tags row's case again and the second (and last) card
@@ -167,6 +206,25 @@ export const firstPresent = (prefs, navSections) =>
 export const minimalNav = (navSections) =>
   NAV_MINIMAL.map(([label, prefs]) => ({ label, to: firstPresent(prefs, navSections) }))
 
+// Bebas Neue's advance widths in em, capitals only — Lime's label face, which
+// sets every nav label in caps — read off the loaded face with canvas
+// measureText. Summed a character at a time they land within 1% of each
+// measured label, and over rather than under, because the face all but lacks
+// kerning. Lime's header nav sizes its one row of links from this
+// (EncoreSection's NavBar), since EncoreSection has no effect to measure with.
+const BEBAS_EM = {
+  A: 0.401, B: 0.404, C: 0.383, D: 0.406, E: 0.363, F: 0.344, G: 0.391, H: 0.42, I: 0.192,
+  J: 0.265, K: 0.414, L: 0.344, M: 0.538, N: 0.427, O: 0.4, P: 0.386, Q: 0.4, R: 0.403,
+  S: 0.372, T: 0.364, U: 0.402, V: 0.382, W: 0.557, X: 0.406, Y: 0.394, Z: 0.362,
+  ' ': 0.16, '&': 0.417, '·': 0.188, '/': 0.389, '-': 0.27, "'": 0.188, '.': 0.188,
+  ',': 0.188, '!': 0.21, '?': 0.363, ':': 0.188, '(': 0.276, ')': 0.276, '+': 0.4,
+}
+
+// A label's width in ems of Bebas Neue; digits and anything unlisted take 0.4,
+// the digits' own advance.
+export const bebasEms = (text) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (BEBAS_EM[ch] ?? 0.4), 0)
+
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has
@@ -191,14 +249,27 @@ export const NVAR = {
   repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1,
 }
 
-// Only Retro ships the photographic header treatment. The other four
-// templates offer three flat layouts (§10.3) — their photographic
-// designs do not exist yet.
+// Retro ships the six photographic header compositions (§10.2). Lime's
+// layout passes fit the first four of them in its own variable mode —
+// header card N lays out the whole page as layout N, and Lime's page N is
+// Retro's page-N components re-skinned — so its family is those four and
+// no more. Grunge, Editorial and Pop offer three flat layouts (§10.3);
+// their designs do not exist yet.
 export const headerFamily = (themeName) =>
-  themeName === 'Retro' ? 'photographic' : 'flat'
+  themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime' : 'flat'
 
-export const headerVariants = (themeName) =>
-  headerFamily(themeName) === 'photographic' ? 6 : 3
+const HEADER_COUNT = { photographic: 6, lime: 4, flat: 3 }
+
+export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
+
+// §6.2 — how many header cards the setup modal offers. A card lays out the
+// whole page, and only layouts 1–4 are a whole Figma page, so the modal stops
+// at four: Retro's Overlay card and Stage wide have no page behind them and
+// stay reachable from the sidebar's LayoutPicker alone, which still counts
+// `layoutCount`.
+const SETUP_HEADERS = 4
+
+export const setupHeaderCount = (themeName) => Math.min(SETUP_HEADERS, headerVariants(themeName))
 
 // How many layout choices a category offers under a given theme.
 export const layoutCount = (catId, themeName) =>
@@ -246,15 +317,19 @@ export const pageLayout = (catId, i, themeName) => {
  * ------------------------------------------------------------------ */
 
 // [name, what it is] — index-aligned with HeaderV0…V5 / FlatHeader v0…v2.
+const PHOTOGRAPHIC_NAMES = [
+  ['Hero', 'Full-bleed photo'],
+  ['Feature spread', 'Photo beside the details'],
+  ['Inset Hero', 'Framed photo on colour'],
+  ['Stacked', 'Name stacked over the photo'],
+  ['Overlay card', 'Details on a card'],
+  ['Stage wide', 'Centred, wide'],
+]
 const HEADER_NAMES = {
-  photographic: [
-    ['Hero', 'Full-bleed photo'],
-    ['Feature spread', 'Photo beside the details'],
-    ['Inset Hero', 'Framed photo on colour'],
-    ['Stacked', 'Name stacked over the photo'],
-    ['Overlay card', 'Details on a card'],
-    ['Stage wide', 'Centred, wide'],
-  ],
+  photographic: PHOTOGRAPHIC_NAMES,
+  // The same HeaderV0…V3, so the same names — sliced, not copied, so a rename
+  // reaches both templates.
+  lime: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lime),
   flat: [
     ['Centred', 'Title, tags and buttons'],
     ['Split', 'Text beside an image'],
@@ -318,8 +393,8 @@ export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct:
 // The other videos, listed in the panel beside the stage in the video
 // section's layout 2 — used whenever the section carries no `videos` key of
 // its own, which today is always: there is no structured editor for them yet
-// (see LAYOUT-2-PLAN's open questions). Written in the row shape that editor
-// will edit, GIGS-style, so adding it later changes nothing here or in
+// (see plans/retro/layout-2's open questions). Written in the row shape that
+// editor will edit, GIGS-style, so adding it later changes nothing here or in
 // sectionVm: one key, one shape, the delimiter-free strings the artist types.
 // Only the artwork needs dressing, which RETRO_VIDEO_ART does under Retro.
 //

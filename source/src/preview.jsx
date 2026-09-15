@@ -8,27 +8,38 @@ import './index.css'
 import { sectionVm } from './builder/EncoreBuilder.jsx'
 import EncoreSection from './builder/EncoreSection.jsx'
 
+// A hand copy of EncoreBuilder's SIZES + RAMP + RAMP_REST + WIDE. Theme ramps
+// (THEME_RAMP) are not copied: sectionVm lays them over this by `dev`.
 const Z = {
   desktop: {
+    dev: 'desktop',
     h1: '86px', h1b: '118px', h2: '46px', pad: '80px 64px', navGap: '64px',
     split: '1.05fr 1fr', g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '1180px',
     dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px',
     labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px',
-    padY: '80px', padX: '64px', narrow: false, surplus: '0px', heroH: 614,
+    padY: '80px', padX: '64px', narrow: false,
+    dispMd: '39px', list: '13px', labelLg: '20px', labelSm: '13px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px',
+    surplus: '0px', heroH: 614,
   },
   tablet: {
+    dev: 'tablet',
     h1: '60px', h1b: '78px', h2: '36px', pad: '56px 40px', navGap: '48px',
     split: '1fr 1fr', g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '768px',
     dispXl: '77px', dispLg: '64px', dispSm: '34px', title: '22px',
     labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px',
-    padY: '56px', padX: '40px', narrow: true, surplus: '0px', heroH: 1024,
+    padY: '56px', padX: '40px', narrow: true,
+    dispMd: '38px', list: '12px', labelLg: '16px', labelSm: '13px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px',
+    surplus: '0px', heroH: 1024,
   },
   mobile: {
+    dev: 'mobile',
     h1: '42px', h1b: '50px', h2: '29px', pad: '44px 22px', navGap: '36px',
     split: '1fr', g3: '1fr', g2: '1fr', canvasW: '390px',
     dispXl: '77px', dispLg: '40px', dispSm: '26px', title: '18px',
     labelMd: '14px', labelXs: '14px', eyebrow: '11px', gPad: '20px', gGap: '18px',
-    padY: '44px', padX: '22px', narrow: true, surplus: '0px', heroH: 844,
+    padY: '44px', padX: '22px', narrow: true,
+    dispMd: '30px', list: '13px', labelLg: '14px', labelSm: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px',
+    surplus: '0px', heroH: 844,
   },
 }
 
@@ -144,10 +155,20 @@ const LIST = {
     role: i % 3 === 2 || i % 5 === 4 ? '' : `Venue manager ${i + 1}`,
     when: i % 3 === 2 ? '' : `Reviewed ${i + 1} weeks ago`,
   }),
+  // The footer's sitemap. The eighth of every eight rows is an address rather
+  // than a section, so `live=1` renders one `target="_blank"` link; the rest
+  // cycle through sections the harness's page carries. An odd count leaves the
+  // second column one short, and `&n=0` is the pill standing alone.
+  footer: (i) => ({
+    label: `Link ${i + 1}`,
+    to: ['bio', 'media', 'repertoire', 'map', 'pricing', 'calendar', 'form', 'link'][i % 8],
+    url: i % 8 === 7 ? 'example.com' : '',
+  }),
 }
 const KEY = {
   media: 'tracks', audio: 'tracks', video: 'videos', repertoire: 'songs', gallery: 'images',
   pricing: 'tiers', calendar: 'slots', map: 'gigs', form: 'fields', testimonials: 'quotes',
+  footer: 'links',
 }
 const count = q.get('n') === null ? null : Number(q.get('n'))
 const rows = count === null || !LIST[cat]
@@ -186,6 +207,11 @@ if (q.get('tags') !== null) c.tags = q.get('tags')
 // nothing after it is the emptied state, which layout 3 renders as a card that
 // ends on its pill and layout 4 as a form with no right-hand column at all.
 if (q.get('promises') !== null) c.promises = q.get('promises').split('|').join('\n')
+
+// &noimage=1 writes `null` to FIELDS.*.image, which is what Remove writes, so a
+// full-bleed slot draws `Photo`'s `backdrop` instead of the seeded photograph.
+// Neither seeded theme shows that empty state any other way.
+if (q.get('noimage') === '1') c.image = null
 
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
