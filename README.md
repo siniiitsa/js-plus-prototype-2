@@ -152,8 +152,8 @@ Four things about it are load-bearing:
   *Feature spread* stands over the bio's split card and the testimonials' editorial feature,
   *Inset Hero* over the bento wall, and *Stacked* over the bio's portrait-with-overlays and the
   testimonials' video story wall. A card therefore writes `arch` to every section, folded by
-  `pageLayout()` into that category's own design count — which is why the cards carry no page
-  *number*: a page with an audio section in it (three designs) has no single repeat period. This is the setup modal only. The
+  `pageLayout()` into that category's own design count. The cards are named rather than
+  numbered because the header is the one category whose layouts carry names (§4.4b). This is the setup modal only. The
   ordinary `LayoutPicker` in the sidebar still moves one section, so nothing the user has tuned
   by hand is ever overwritten; the modal can write the whole page because it is a one-shot gate
   over a page that has just been built and not yet touched.
@@ -484,9 +484,6 @@ That distinction is the whole design, and it buys two things:
   whose href is `navHref()` or `extLink()`, so it needs none of the `useState` the sections above
   it take.
 
-  Everything else the page draws — the audio and video sections — is
-  still a static span, and neither needs new data to change that.
-
 Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
 domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the
 builder's own URL and reload into the builder. That is also why a nav link is never *followed*:
@@ -526,8 +523,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
   24px so the squares read as texture: 16px tall, 8px squares.
-- **Layout folding.** For the 13 non-header categories, more layout numbers are offered than
-  there are distinct designs, so e.g. `Audio layout 1`, `4` and `7` render identically while
+- **Layout folding.** For the 10 non-header categories, more layout numbers are offered than
+  there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
   keeping their own labels. The header is exempt.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a

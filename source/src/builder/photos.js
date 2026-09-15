@@ -50,10 +50,6 @@ export const RETRO_PHOTOS = {
   bio: stage,
   calendar: stage,
   form: avatar,
-  // The poster the video section's layout 2 stands its player on. The same
-  // live-set frame the bio and the calendar use, which is the shot the
-  // section's own seeded heading names ("Live at Roomtone").
-  video: stage,
   // `media` is deliberately absent: the player shows the artwork of the track it
   // is on, so the section has no photo of its own to seed. Its five track
   // thumbnails belong to the tracks themselves and are seeded through
@@ -74,14 +70,13 @@ export const RETRO_PHOTOS = {
 // bio's — the form's avatar and the gallery's spotlight. Shared: the six strip
 // thumbnails, the five track covers and the map raster.
 //
-// The form's second slot and the video poster take the bio's photograph, Retro's
-// rule; Lime's layout-1 page draws neither.
+// The form's second slot takes the bio's photograph, Retro's rule; Lime's
+// layout-1 page does not draw it.
 export const LIME_PHOTOS = {
   header: limeHero,
   bio: limeStage,
   calendar: limeCalendar,
   form: limeAvatar,
-  video: limeStage,
   gallery: [gallery1, gallery2, gallery3, limeGallery4, gallery5, gallery6, gallery7],
 }
 
@@ -97,20 +92,12 @@ export const LIME_PHOTOS = {
 // back to the initials placeholder.
 export const RETRO_TRACK_ART = [track1, track2, track3, track4, track5]
 
-// The same shape one category along: the thumbnails for the video section's
-// seeded VIDEOS, in list order. Figma dresses these rows with stock stills we
-// have no more right to ship than it had album covers, so they are the gallery
-// photography re-used in the 140×80 crop the panel draws — everything but
-// gallery slot 4, which is the gallery's own spotlight shot and should not be
-// the first thing two sections of one page both open with.
-export const RETRO_VIDEO_ART = [gallery1, gallery2, gallery3, gallery5, gallery6, gallery7]
-
-// Per-row artwork by category. Both lists seed only the untouched default rows:
+// Per-row artwork by category. The list seeds only the untouched default rows:
 // once the artist edits the list, the art travels in the row itself
 // (`c.tracks[i].image`), so a row they add past the seed has none and falls
 // back to the initials placeholder. Lime's frames dress the rows with the same
 // covers, so both templates share it.
-const ROW_ART = { media: RETRO_TRACK_ART, video: RETRO_VIDEO_ART }
+const ROW_ART = { media: RETRO_TRACK_ART }
 
 // The artist avatar, cropped from the §10.2 hero frame's `pp` card (Figma node
 // 964:58576) — a tight portrait from a different shot than the backdrop behind
@@ -137,7 +124,7 @@ export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeade
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
 // nothing, which is what leaves the flat three rendering exactly as they did.
 //   photos — the section photographs above
-//   avatar — the header's and the video section's artist portrait (`avatar` key)
+//   avatar — the header's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
 const SEEDS = {
   Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: stage },
@@ -146,21 +133,20 @@ const SEEDS = {
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
 //
-// The header, the video section and the enquiry form are the three categories
-// with two independent single-photo slots — a scene and the artist — so this one
-// takes the field key as well as the category. Every other caller wants the
-// category's own photo and can leave `key` alone.
+// The header and the enquiry form are the two categories with two independent
+// single-photo slots — a scene and the artist — so this one takes the field key
+// as well as the category. Every other caller wants the category's own photo
+// and can leave `key` alone.
 //
-// The form is the odd one of the three: its `image` is the *artist* (layout 1
+// The form is the odd one of the two: its `image` is the *artist* (layout 1
 // draws it as the 48px circle beside the brand), so its second slot is the
 // scene rather than the portrait, and it is keyed `photo` rather than `avatar`.
-// It takes the same live-set frame the bio and the video section stand on —
-// layout 2's frame is a stage shot, and it is the only photograph in the seeded
-// set that is one.
+// It takes the same live-set frame the bio stands on — layout 2's frame is a
+// stage shot, and it is the only photograph in the seeded set that is one.
 export const defaultImage = (cat, themeName, key = 'image') => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined
-  if (key === 'avatar') return cat === 'header' || cat === 'video' ? seed.avatar : undefined
+  if (key === 'avatar') return cat === 'header' ? seed.avatar : undefined
   if (key === 'photo') return cat === 'form' ? seed.photo : undefined
   const v = seed.photos[cat]
   return Array.isArray(v) ? undefined : v
@@ -172,7 +158,6 @@ export const defaultImages = (cat, themeName) => {
 }
 
 // The third shape: artwork that belongs to a row of a list rather than to the
-// section. The media player's tracks and the video section's list have some,
-// under both seeded themes.
+// section. The media player's tracks have some, under both seeded themes.
 export const defaultTrackArt = (cat, themeName) =>
   (SEEDS[themeName] ? ROW_ART[cat] : undefined)

@@ -13,7 +13,7 @@ import { headlessShell } from './headless-shell.mjs'
 
 const [label, theme = '1', arch = '0', w = 'desktop'] = process.argv.slice(2)
 if (!label) { console.error('usage: node scripts/shots.mjs <label> [theme] [arch] [width]'); process.exit(1) }
-const cats = ['header', 'bio', 'media', 'gallery', 'repertoire', 'map', 'pricing', 'calendar', 'form', 'testimonials', 'footer', 'tags', 'audio', 'video']
+const cats = ['header', 'bio', 'media', 'gallery', 'repertoire', 'map', 'pricing', 'calendar', 'form', 'testimonials', 'footer']
 const base = process.env.BASE || 'http://localhost:5173'
 const dir = path.join(process.env.OUT || path.join(os.tmpdir(), 'encore-shots'), label)
 fs.mkdirSync(dir, { recursive: true })

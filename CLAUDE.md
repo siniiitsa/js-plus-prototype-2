@@ -41,7 +41,7 @@ cp source/dist-standalone/index.html index.html
 | File | ~Lines | Role |
 |---|---|---|
 | `src/builder/EncoreBuilder.jsx` | 3990 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 15990 | Presentational renderer for all 14 section types |
+| `src/builder/EncoreSection.jsx` | 15990 | Presentational renderer for all 11 section types |
 | `src/builder/data.js` | 1210 | `THEMES`, all static data, colour helpers |
 | `src/builder/photos.js` | 165 | Retro's and Lime's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
@@ -89,8 +89,7 @@ mutated through a single `patch()` helper.
   indices are aligned across categories by construction (layouts 1, 2, 3 and 4 of every section
   are one Figma page each), so `pickHeader` writes `arch` to *every* section, folded through
   `pageLayout()` in `data.js` — `i % designCount(cat)`, which is always a row the layout picker
-  can highlight, and is the lowest `arch` rendering the design asked for everywhere except
-  `video`, whose component folds `v2` onto `v0` by hand (see *Layout folding*). That is the
+  can highlight, and is the lowest `arch` rendering the design asked for. That is the
   setup modal alone: the sidebar's `LayoutPicker` still moves the one section it is opened on, and
   must keep doing so, or a later header swap would silently undo everything the user had tuned.
   The bulk write is only safe because the modal is a one-shot gate over a page nobody has touched
@@ -143,9 +142,7 @@ mutated through a single `patch()` helper.
   **events map's per-gig tickets link** and the **footer's web-address rows**
   (`extLink()` in `EncoreSection`, `extUrl()` in
   `data.js`: they open in a new tab, and a schemeless address is given `https://`, or
-  `<base href>` would resolve it against the builder). Everything else —
-  the audio and video sections — is
-  still a picture. Do **not** make `EncoreSection` interactive
+  `<base href>` would resolve it against the builder). Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
   would both filter and select the section. `EncoreSection` therefore imports `useState` and
   `useRef` as well as `useId`; that is the whole of its React surface and it stays that way —
@@ -185,7 +182,7 @@ mutated through a single `patch()` helper.
   border: `inset: 0` resolves against the padding box, so a border (even a transparent one on
   the unmarked tiles) would inset every photograph and widen the frame's own gutter. It is also
   the one layout whose section paints the page's whole cream band, checkerboard strip at each
-  end, and the only one to draw those strips — the video section must not add one at its head.
+  end, and the only one to draw those strips.
 - **The gallery browses, in the published tab only, and its three social rows leave the page.**
   Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" rewinds, and the
   tile counter and viewer follow. `pick` starts at **-1** for the same reason `cur` does: nothing
@@ -385,16 +382,16 @@ mutated through a single `patch()` helper.
   The flat layout (arch 1, 3) still draws the hardcoded `CITIES` and reads none of this.
   **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**: layout 2 is a
   bold list of named slots — `CAL_SLOTS`, seeded in `data.js` in the row shape a repeater
-  would edit and resolved by the `songs` rule onto `vm.calSlots`, `VIDEOS`' case rather than
-  `TIERS`' — and it has no month, so no arrows and no `mi`. Everything else it shares whole:
+  would edit and resolved by the `songs` rule onto `vm.calSlots`, with no editor beside it
+  where `TIERS` has one — and it has no month, so no arrows and no `mi`. Everything else it shares whole:
   `sel` is the same ISO date, `open` cues the same day (slot one *is* `CAL_OPEN`, so the
   seeded page opens on the frame's picture), `booked` kills a row there as it strikes a cell
   here, the foot prints the same composed line or the same `calPrompt`, and the pill takes the
   same `calBookTo`. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which headed the flat layout alone, heads it; `image` does not
-  reach it at all. And the slot list is the one list-shaped content with **no** editor beside
-  the video section's, so `FIELDS.calendar` still names no `slots`.
+  reach it at all. And the slot list is the one list-shaped content with **no** editor, so
+  `FIELDS.calendar` still names no `slots`.
   **Layout 4 is that same slot list a second time, stacked rather than tabled**, and it is the
   third design to share this section's seam whole rather than grow one: the same `want` /
   `hit` / `cur`, the same `open` cueing the same slot, the same `booked` killing a row, and
@@ -462,7 +459,7 @@ mutated through a single `patch()` helper.
   frame's price and its `★★★★★ 42 bookings` are numbers the artist never typed and are
   **dropped**, the video section's rule. The stage photograph above the heading is
   `FIELDS.form.photo`, a **third single-photo slot** beside `image` and `avatar`, because this
-  section's `image` **is** the artist: the header's and the video section's pair the other way up,
+  section's `image` **is** the artist: the header's pair is the other way up,
   and layout 1 has drawn `image` as the 48px circle since it was fitted.
   **Layout 3 is layout 2's card again, beside a display head instead of under a
   photograph**, and it shares the seam whole for the second time — the same `vals`, the
@@ -621,11 +618,8 @@ mutated through a single `patch()` helper.
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
   (`RowThumb`, the 46px cousin of `ImageField`) and a sound file. `audio` is an address, not an
   upload — an image is inlined as a data URI and a track is two orders of magnitude larger —
-  and `sectionVm` normalises it through `extUrl()` onto `vm.tracks[].src`. `c.tracks` is
-  deliberately one key with two
-  shapes — `audio` keeps the delimited *string* of its textarea, `media` owns the *array* — and
-  `sectionVm` reads both, plus the seeded `TRACKS` (dressed in `TRACK_AUDIO`) when the key is
-  absent. Per-row art and audio are never
+  and `sectionVm` normalises it through `extUrl()` onto `vm.tracks[].src`. `sectionVm` falls back to
+  the seeded `TRACKS` (dressed in `TRACK_AUDIO`) when the key is absent. Per-row art and audio are never
   re-seeded by index once the array exists, or a row inserted third would steal track three's
   photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, link }`,
   maintained by `GigsField` and the plainest of them: one key, one shape, no assets, and
@@ -661,10 +655,9 @@ mutated through a single `patch()` helper.
   category the page *can* carry rather than the ones it does, because a Radix value naming no
   item blanks the trigger; `sectionVm` is what resolves it against the page. Its order is
   load-bearing the way `FIELDS.form.fields`' is: `sectionVm` halves the list into the two
-  columns. Every other repeated field is a
-  delimited textarea (`FIELDS.audio.tracks`,
-  `FIELDS.tags.tags`, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
-  numbers 01 / 02 / 03). All seven follow
+  columns. The one other repeated field is a
+  delimited textarea, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
+  numbers 01 / 02 / 03. All seven follow
   `images`, not
   `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS`, an emptied array
   means none, and there is no
@@ -685,8 +678,8 @@ mutated through a single `patch()` helper.
   section photo and an emptied one does not, and the media player passes `null` for an art-less
   track row so it cannot inherit anything. **`media` has no section photo at all** — no `image`
   field, no `RETRO_PHOTOS.media` — because the player shows the artwork of the track it is on.
-  Three categories carry **two** independent single-photo slots, and `defaultImage` takes the
-  field key for them: the header's and the video section's are `image` (the scene) and `avatar`
+  Two categories carry **two** independent single-photo slots, and `defaultImage` takes the
+  field key for them: the header's are `image` (the scene) and `avatar`
   (the artist), and the enquiry form's are the other way up — its `image` **is** the artist,
   which layout 1 draws as a 48px circle, so layout 2's stage shot is a third key, `photo`.
   `Photo` also takes `ink`, the initials placeholder's colour, defaulting to `s.muted`: `muted`
@@ -708,12 +701,12 @@ mutated through a single `patch()` helper.
   Its layouts 2–4 are Retro's compositions in Lime tokens until their passes
   (`plans/lime/layout-1.md`).
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
-  designs, and eight of the fourteen offer more — Audio layouts 1, 4 and 7 render identically on
-  purpose. The other six are level: the header and the footer always were, and the layout-4 pass
-  took `tags`, `video`, `gallery` and `map` there by bumping their design counts to the four
-  rows they offer. `video` folds by *hand* as well — its Figma pages supplied layouts 1, 2 and 4
-  and never a 3, so `Video`'s `if (s.v0 || s.v2)` is the one fold in the file that is not
-  `arch % NVAR`. The 13 non-header
+  designs, and seven of the eleven offer more — Pricing layouts 1 and 5 render identically on
+  purpose. The other four are level: the header and the footer always were, and the layout-4 pass
+  took `gallery` and `map` there by bumping their design counts to the four rows they offer.
+  **The categories are exactly the sections on Retro layout 1's Figma page** (`964:58575`):
+  `video`, `tags` and `audio` were removed from the project, every layout, because that page
+  draws none of them. The 10 non-header
   categories are also the ones that stay *numbered*: only the header's layouts have names
   (`headerLayout()` in `data.js`), because it is the one a first-time user is asked to choose.
 - **Accessibility is scoped to the chrome.** The rendered preview is a picture of a website,

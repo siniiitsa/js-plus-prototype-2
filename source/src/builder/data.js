@@ -141,7 +141,7 @@ export const THEMES = [
 ]
 
 /* ------------------------------------------------------------------ *
- * §4.3 CATS — 14 section categories.
+ * §4.3 CATS — 11 section categories.
  * `n` is how many layout choices are offered to the user. Layouts are
  * always shown as "{name} layout {i+1}"; the internal identifiers in
  * the comments are never surfaced in the UI.
@@ -151,20 +151,6 @@ export const CATS = [
   { id: 'header', name: 'Header', n: 6 },   // header count is theme-dependent — see headerVariants()
   { id: 'bio', name: 'Bio', n: 6 },
   { id: 'media', name: 'Media Player', n: 7 },
-  // 3 → 4 with NVAR: layout 4 is the first design this category has had past
-  // its Figma layout-3 row, and `pageLayout()` rests on designCount ≤
-  // layoutCount, so the picker has to offer the row the fold names. This is
-  // the first card the layout-4 pass adds to the picker
-  // (plans/retro/layout-4.md, open question 4) — it appears at the end of the
-  // Tags list and moves none of the three above it.
-  { id: 'tags', name: 'Tags', n: 4 },
-  { id: 'audio', name: 'Audio Player', n: 10 },
-  // 3 → 4 with NVAR, the Tags row's case again and the second (and last) card
-  // this pass adds to the picker. Video is the one category whose NVAR went up
-  // by two — 2 → 4 — so that `arch 3` names layout 4's design rather than
-  // folding onto layout 2's; the Video list now offers four cards, the fourth
-  // at the end, and none of the three above it moves.
-  { id: 'video', name: 'Video', n: 4 },
   { id: 'pricing', name: 'Pricing', n: 8 },
   { id: 'repertoire', name: 'Repertoire', n: 7 },
   { id: 'gallery', name: 'Gallery', n: 4 },
@@ -195,14 +181,14 @@ export const catName = (id) => catById(id)?.name ?? id
  * ------------------------------------------------------------------ */
 
 export const NAV_MINIMAL = [
-  ['Music', ['media', 'audio', 'video', 'repertoire']],
+  ['Music', ['media', 'repertoire']],
   ['Shows', ['map', 'calendar']],
   ['Book', ['form', 'calendar', 'pricing']],
 ]
 
 export const CTA_TARGETS = {
   book: ['form', 'calendar', 'pricing'],
-  listen: ['media', 'audio', 'video'],
+  listen: ['media'],
 }
 
 export const firstPresent = (prefs, navSections) =>
@@ -233,24 +219,16 @@ export const bebasEms = (text) =>
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has
- * designs; the rendered design is `arch % NVAR[cat]`. Eight of the
- * fourteen still offer strictly more, and the layout-4 pass is what
- * stopped that being all of them: `tags`, `video`, `gallery` and `map`
- * now offer exactly four and render four, joining the header and the
- * footer, which have always been level. The invariant `pageLayout()`
- * rests on is the inequality, never the surplus.
+ * designs; the rendered design is `arch % NVAR[cat]`. Seven of the
+ * eleven still offer strictly more, and the layout-4 pass is what
+ * stopped that being all of them: `gallery` and `map` now offer exactly
+ * four and render four, joining the header and the footer, which have
+ * always been level. The invariant `pageLayout()` rests on is the
+ * inequality, never the surplus.
  * ------------------------------------------------------------------ */
 
-// `video` is 4 with a hole at index 2: its Figma pages supplied layouts 1, 2
-// and 4 and never a 3, so `Video` folds `v2` onto its `v0` branch by hand
-// (EncoreSection, "the one hand-fold in the file"). `audio` is the same gap
-// read the other way — it has no layout-4 design at all — and stays 3, so its
-// fourth picker card goes on folding onto layout 1 exactly as §4.4's comment
-// on this file describes. Nothing forces that: the seeded page carries no
-// audio section and addSection() opens a new one at `arch 0`, so no page can
-// arrive at audio's index 3 except by the user picking that card.
 export const NVAR = {
-  header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 4,
+  header: 6, bio: 4, media: 4, pricing: 4,
   repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1,
 }
 
@@ -297,14 +275,6 @@ export const designCount = (catId, themeName) =>
 // layout 3" rather than "Bio layout 6" for the identical render. Negative-safe,
 // sectionVm's own spelling, and `|| 1` for a category NVAR has no entry for —
 // `layoutCount` ends the same way.
-//
-// "The lowest index that renders a given design" is `arch % NVAR` for thirteen
-// of the fourteen categories and no longer for all of them: `video`'s Figma
-// pages skipped layout 3, so its component folds `v2` onto `v0` by hand and
-// two of its four indices render the same design. That costs this function
-// nothing — the result still names a row the picker can highlight, which is
-// the only property it promises — but it does mean the index this returns is
-// not always the *lowest* one rendering that design.
 export const pageLayout = (catId, i, themeName) => {
   const n = designCount(catId, themeName) || 1
   return ((i % n) + n) % n
@@ -355,7 +325,7 @@ export const headerLayoutLabel = (themeName, i) =>
  * ------------------------------------------------------------------ */
 
 export const FLAG = {
-  header: 'hd', bio: 'bi', media: 'me', tags: 'tg', audio: 'au', video: 'vi', pricing: 'pr',
+  header: 'hd', bio: 'bi', media: 'me', pricing: 'pr',
   repertoire: 're', gallery: 'ga', calendar: 'ca', map: 'mp', testimonials: 'te',
   form: 'fo', footer: 'ft',
 }
@@ -394,42 +364,6 @@ export const TRACK_AUDIO = [
 // the *track* named on the card is track one at both sizes, not `track` here,
 // which survives only as the label for a section with no tracks left in it.
 export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
-
-// The other videos, listed in the panel beside the stage in the video
-// section's layout 2 — used whenever the section carries no `videos` key of
-// its own, which today is always: there is no structured editor for them yet
-// (see plans/retro/layout-2's open questions). Written in the row shape that
-// editor will edit, GIGS-style, so adding it later changes nothing here or in
-// sectionVm: one key, one shape, the delimiter-free strings the artist types.
-// Only the artwork needs dressing, which RETRO_VIDEO_ART does under Retro.
-//
-// `sub` is the frame's channel line — where the video came from, not who made
-// it — and `when` is the date the frame spends on a view count. Neither is a
-// number about how many people watched: nothing on this page claims that.
-export const VIDEOS = [
-  { title: 'Manchester at 3am',  sub: 'Hidden Sessions', length: '03:50', when: 'April 2026' },
-  { title: 'Disco Maghreb (edit)', sub: 'Single',        length: '04:12', when: 'March 2026' },
-  { title: 'Slow Burn',          sub: 'Single',          length: '03:28', when: 'February 2026' },
-  { title: 'Echo & The Floor',   sub: 'Live set',        length: '05:04', when: 'November 2025' },
-  { title: 'Roomtone',           sub: 'Hidden Sessions', length: '02:57', when: 'October 2025' },
-  { title: 'Field Day (live)',   sub: 'Festival',        length: '06:41', when: 'August 2025' },
-]
-
-// Where the video section's transport bar is caught. The section has no
-// <video> element on either surface — it is still a picture (§12.7) — so the
-// playhead is composed from the running time the artist typed rather than read
-// off anything: VIDEO_MARK of it, formatted back. The fill under it takes the
-// same fraction, so the two agree; the Figma frame's own 02:05 against a bar
-// filled to 93% of 03:57 does not, and that disagreement is the one thing here
-// not worth reproducing. A duration that will not parse gives '', and the bar
-// renders empty rather than inventing a position for it.
-export const VIDEO_MARK = 0.48
-export const clockAt = (dur, frac) => {
-  const m = /^\s*(\d{1,3}):([0-5]\d)\s*$/.exec(String(dur ?? ''))
-  if (!m) return ''
-  const at = Math.round((Number(m[1]) * 60 + Number(m[2])) * frac)
-  return `${String(Math.floor(at / 60)).padStart(2, '0')}:${String(at % 60).padStart(2, '0')}`
-}
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
 
@@ -627,13 +561,8 @@ export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
 // No `repertoire` entry: its heading counts the songs (see sectionVm), so a
 // literal here would never be read.
-// `tags` was 'Tags' and read by nothing: the category named no `heading` field
-// and neither of its two invented flat layouts drew a title. Layout 3's frame
-// heads its chip row "Genres", so the literal moves to that and `FIELDS.tags`
-// gains the field that mirrors it. Layout 4's frame heads it the same way, at
-// the two wider widths.
-export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.', tags: 'Genres',
-  audio: 'Selected Tracks', video: 'Live at Roomtone', pricing: "Choose the set that's right for your night",
+export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.',
+  pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
   map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make your night unforgettable.", footer: '' }
 
@@ -642,7 +571,6 @@ export const DEFS = {
   bioP1:      'DJ and selector based in Manchester. Five years of reading rooms — house, disco, soul, 80s — chosen by the room, not the algorithm.',
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
   statement:  'Reads the room.',
-  videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
   // §10.2 layout 3 heads the stack with a line under the title, where neither
   // earlier layout draws one — the frame's own sentence, kept as the seed so
@@ -693,8 +621,8 @@ export const CAL_SPAN   = 12
 // named slots: a date, what the artist plays that night, and what it starts
 // from. None of that is derivable — `booked` is the days the artist is *not*
 // free, and inverting it would print every remaining day of June — so the list
-// is seeded here in the row shape a repeater would edit, exactly as VIDEOS,
-// GIGS and TIERS were seeded before their editors existed. The price is a row
+// is seeded here in the row shape a repeater would edit, exactly as GIGS and
+// TIERS were seeded before their editors existed. The price is a row
 // value like TIERS' `price`, not the video section's dropped view count: it is
 // the thing the row is for, and the whole phrase is the artist's, so an emptied
 // one drops its line rather than printing a bare "From".
@@ -811,38 +739,6 @@ export const FIELDS = {
     { k: 'soundcloud', l: 'SoundCloud link', d: '',
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
-  // Layouts 3 and 4 head the row and layouts 1 and 2 do not, so the hint says
-  // so (FIELDS.media.soundcloud's case): layout 1 writes its own "Browse by
-  // tag" and layout 2 is a bare rule-bounded strip. Layout 4 draws the same
-  // label, except on the phone — its 390 master hides the head frame outright.
-  tags: [
-    { k: 'heading', l: 'Heading', d: TITLES.tags,
-      hint: 'The label above the chips in layouts 3 and 4 — layout 4 drops it on the phone. '
-          + 'Layout 1 writes its own, and layout 2 has no head at all.' },
-    { k: 'tags', l: 'Tags (comma-separated)', type: 'area', d: TAGS.join(', ') },
-  ],
-  audio: [
-    { k: 'heading', l: 'Heading', d: 'Selected Tracks' },
-    { k: 'tracks',  l: 'Tracks (one per line: Name — 3:42)', type: 'area',
-      d: TRACKS.map(([n, dur]) => `${n} — ${dur}`).join('\n') },
-  ],
-  // The two photo slots reach the photographic layouts only — layout 1 and the
-  // flat tail draw a play disc on a soft panel and no photograph at all — which
-  // is the media player's Soundcloud case the other way round, and why both
-  // hints say where they land. They no longer land in the same place: layout 4
-  // is a full-bleed poster with no artist circle on it, so `image` reaches 2
-  // and 4 and `avatar` is layout 2's alone. `avatar` is the header's own key,
-  // on the header's own three states, so `defaultImage` seeds it with the same
-  // §10.2 portrait.
-  video: [
-    { k: 'heading',     l: 'Heading', d: 'Live at Roomtone' },
-    { k: 'description', l: 'Description', type: 'area', def: 'videoDesc' },
-    { k: 'duration',    l: 'Duration', d: '04:18' },
-    { k: 'image',       l: 'Poster', type: 'image',
-      hint: 'Fills the player in layouts 2 and 4.' },
-    { k: 'avatar',      l: 'Artist photo', type: 'image',
-      hint: 'The circle beside your name, and beside every video in the list. Layout 2 only.' },
-  ],
   // The fourth list-shaped content with a structured editor, and the one that
   // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
   // an array of { name, price, tags, blurb, feats } maintained by TiersField.
@@ -888,8 +784,7 @@ export const FIELDS = {
   // are layout 1's, and none of the other three designs draws a row for them —
   // layout 2 has no room, layout 3 is a bare grid, and layout 4's Figma wrapper
   // carries layout 1's four rows as a `hidden` frame — so each hint says which
-  // layout it edits, the video section's `image` and `avatar` rule the other
-  // way round.
+  // layout it edits.
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
@@ -983,7 +878,7 @@ export const FIELDS = {
     { k: 'image',    l: 'Portrait', type: 'image',
       hint: 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' },
     // Layout 2's stage shot. The section's two photographs are the artist and
-    // the scene — the header's and the video section's pair the other way up,
+    // the scene — the header's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
     // avatar. FIELDS.media.soundcloud's case: it reaches one layout, so the
     // hint says which.
