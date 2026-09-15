@@ -139,7 +139,7 @@ mutated through a single `patch()` helper.
   navigation**, the **bio's own Listen** (layout 4 alone, in the overlay card's meta row: the
   header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section),
   the **media player** (below), the **gallery's arrows
-  and thumbnail strip** (below), the **events map's pager, its pin/row pairing, its map zoom
+  and thumbnail strip, and layout 3's fullscreen viewer** (below), the **events map's pager, its pin/row pairing, its map zoom
   (layouts 3 and 4) and — in layout 3 alone — its city chip row and its See all gigs reveal**
   (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
@@ -162,7 +162,10 @@ mutated through a single `patch()` helper.
   would both filter and select the section. `EncoreSection` therefore imports `useState` and
   `useRef` as well as `useId`; that is the whole of its React surface and it stays that way —
   there is **no effect anywhere in the file**, which is why `NavMenu`'s panel has no Escape key,
-  no scroll lock and no focus trap. Each of those wants one.
+  no scroll lock and no focus trap. Each of those wants one — except the Escape key and the scroll
+  lock, which the gallery's layout-3 viewer gets without one: it focuses itself off a callback
+  ref and reads its own `onKeyDown`, and the same ref locks the page's overflow and returns a
+  React 19 ref cleanup that restores it. `NavMenu` could take the same route.
 - **The media player plays, in the published tab only.** One `<audio>` element per section,
   rendered only when `s.live`; a click anywhere on a track card loads that track, and the
   transport is a real play/pause, previous and next, wrapping at both ends, with `ended`
@@ -221,12 +224,25 @@ mutated through a single `patch()` helper.
   its drawn size. **Everything in this paragraph from "Mobile draws four" on is layout 1's**:
   layout 2 browses through the same `pick`, but it is a hero photograph beside a masonry of six
   and it draws **no source rows at all**, so the hide-the-empty-row rule and the four-tile mobile
-  window are that layout's and not the section's. Its seven slots **rotate through its fixed
-  seats** — seven at 1440 and 768, and ten at 390, where the thumbnail rail loops the six
-  non-hero slots — the media player's fan rule, so the hero seat always holds the slot the visitor is on;
+  window are that layout's and not the section's. Its **tiles are fixed** (user call, 2026-09-15;
+  they used to rotate through the seats, the media player's fan rule, and read as the thumbnails
+  shuffling under the click): the rail is the six slots other than `galActive()`'s, counting on
+  from the one after it and wrapping — the old rotation's order at rest, so the canvas is
+  unchanged — six tiles at 1440 and 768, and ten at 390, where they loop — and a pick moves only
+  the hero.
+  The picked tile carries an inset accent ring, and clicking it again resets `pick` to -1, which
+  is the only way back to the `galActive()` slot, since that one has no tile. No ring on the
+  canvas or the published first paint, which therefore stay the Figma picture;
   the three social addresses reach layout 1 only, which is `FIELDS.media.soundcloud`'s case three
-  times over and is why their hints name a layout. **Layout 4 browses through the same `pick` for
-  the third time** — a spotlight photograph beside a rail of all seven thumbnails, with two arrow
+  times over and is why their hints name a layout. **Layout 3 opens a fullscreen viewer on the
+  same `pick`** (user call, 2026-09-15 — its frame draws a plain grid and nothing to open): -1 is
+  closed and a slot index is open on it, so the canvas draws no overlay; only filled slots open
+  and the arrows step through only those; the overlay is `position: fixed` inside the section,
+  takes focus off a callback ref so Escape and ← / → reach its own `onKeyDown`, closes on any
+  click that is not a control, and locks the popup's scroll while open — `overflow: hidden` on
+  its `<html>` and `<body>` with the scrollbar gutter kept, set in that same ref and undone by
+  the ref's React 19 cleanup. **Layout 4 browses through the same `pick` for
+  the fourth time** — a spotlight photograph beside a rail of all seven thumbnails, with two arrow
   discs under it that step and wrap on layout 1's own `go`. It carries **no active mark**: its
   Figma frame rings all six of its thumbnails identically, and what names the chosen slot is the
   spotlight, which on the canvas is `galActive()`'s slot 3 — the frame's own fourth thumbnail. Its

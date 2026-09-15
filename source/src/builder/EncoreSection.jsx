@@ -1205,7 +1205,15 @@ function HeaderV0({ s }) {
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       padding: `${padTop} ${padX} ${padBottom}`, color: ink,
     }}>
-      <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></div>
+      {/* Anchored to the top, not centred: past 1180 the `maxHeight` clamp
+          makes the box wider than the photograph, so cover crops its height,
+          and a centred crop takes the singer's head off under the nav. The
+          narrow boxes are taller than the photograph and crop its sides, where
+          the vertical anchor does nothing. At the canvas Retro's box is the
+          photograph's own 1.92, so the anchor is inert there; Lime's is a 1.5
+          photograph already cropped at 1180, so it keeps the centred crop its
+          fitted frame was matched against. */}
+      <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop style={lime ? undefined : { objectPosition: '50% 0%' }} /></div>
       <div style={{ position: 'absolute', inset: 0, background: lime ? SCRIM.lime : SCRIM.hero }} />
       <Grain s={s} exact blend="lighten" opacity={0.5} />
 
@@ -2075,8 +2083,13 @@ function HeaderV2({ s }) {
         paddingRight: `calc(${u(padX)} + ${s.surplus})`,
         ...col(0, { justifyContent: 'space-between' }),
       }}>
+        {/* Top-anchored, HeaderV0's rule: the card has a floor and no ceiling
+            on its height, so past ~1350 it is wider than hero.jpg's 1.92 and a
+            centred cover crop took the singer's head off. At the canvas it is
+            1147 × 705 — taller than the photograph, so the sides crop and the
+            anchor is inert. */}
         <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} backdrop />
+          <Photo s={s} backdrop style={{ objectPosition: '50% 0%' }} />
         </div>
         <div aria-hidden style={{ position: 'absolute', inset: 0, background: SCRIM.hero }} />
         {nav}
@@ -2247,7 +2260,11 @@ function HeaderV3({ s }) {
       padding: `${desk ? u(28) : '30px'} 0 ${desk ? u(80) : tab ? '80px' : '40px'}`,
       ...col(0, { justifyContent: 'space-between' }),
     }}>
-      <div aria-hidden style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></div>
+      {/* Top-anchored, HeaderV2's rule: the band has a floor and no ceiling, so
+          past ~1420 it is wider than hero.jpg's 1.92 and a centred cover crop
+          took the singer's head off. At the canvas it is 1180 × 738 — taller
+          than the photograph, so the sides crop and the anchor is inert. */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop style={{ objectPosition: '50% 0%' }} /></div>
       <div aria-hidden style={{
         position: 'absolute', inset: 0, background: s.retro ? SCRIM.stack : SCRIM.hero,
       }} />
@@ -2745,7 +2762,11 @@ function Bio({ s }) {
           borderRadius: nar ? '21.44px' : '18px',
           ...col('0', { justifyContent: 'flex-end' }),
         }}>
-          <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={54} /></div>
+          {/* Top-anchored: both narrow boxes are wider than stage.jpg's 4 : 5
+              (≈ 326 × 342 at 390, 668 × 628 at 768), so cover crops its height
+              and a centred crop clipped the singer's hair. The desktop box is
+              taller than the photograph and crops the sides, where it is inert. */}
+          <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={54} style={{ objectPosition: '50% 0%' }} /></div>
           <div style={{ position: 'relative', padding: nar ? '20px' : '16px' }}>
             <div style={{
               ...row(nar ? '12px' : '10px'), background: cream, color: ink,
@@ -3308,8 +3329,12 @@ function Bio({ s }) {
             {/* An invented ramp, only ever seen on the flat four or mid-edit:
                 the masters are photographs and Retro seeds one (the gallery's
                 rule). `ink` because the card is its own ground and `s.muted`
-                is rgba of the *page's* text colour. */}
-            <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={cream} />
+                is rgba of the *page's* text colour.
+                Top-anchored: the card is wider than stage.jpg's 4 : 5 at 1180
+                (≈ 521 × 590) and at 768 (≈ 708 × 720), so cover crops its height
+                and a centred crop clipped the singer's hair. At 390 it is taller
+                than the photograph and crops the sides, where it is inert. */}
+            <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={cream} style={{ objectPosition: '50% 0%' }} />
           </div>
           <div style={{
             position: 'relative', width: '100%', overflow: 'hidden',
@@ -8337,14 +8362,14 @@ function Gallery({ s }) {
   // a closed block.
   //
   // Seven photographs for the section's seven slots, which is what makes this
-  // frame fit the gallery without inventing anything: the hero is a **seat**,
-  // not slot 0. The slots rotate through the seven seats, wrapping, so the
-  // hero seat always holds the one the visitor is on and the other six follow
-  // it in order — the media player's fanned carousel rule verbatim (CLAUDE.md,
-  // "Layout 2 plays through the same hooks"). Geometry belongs to the seat,
-  // so the composition never reshuffles its shapes; only which photograph
-  // stands in each. On the canvas that puts `galActive()` — slot 3 — in the
-  // hero, which is deliberately the same photograph layout 1's viewer opens on.
+  // frame fit the gallery without inventing anything: the hero shows
+  // `galActive()` — slot 3, deliberately the photograph layout 1's viewer
+  // opens on — and the rail the other six, counting on from slot 4. The tiles are
+  // **fixed**: a pick changes the hero and rings the tile, and nothing else
+  // moves. (They used to rotate through the seats, the media player's fan
+  // rule, which read as the thumbnails shuffling under the click.) Clicking
+  // the ringed tile again resets the pick, which is how the visitor gets back
+  // to slot 3, the one photograph with no tile of its own.
   //
   // Clicking a tile is `pick`, the state layout 1 already owns, so the two
   // layouts share one seam and the published tab's first paint is the canvas's
@@ -8401,9 +8426,9 @@ function Gallery({ s }) {
   //    this branch draws the ten: the count is what shapes the tiles there, and
   //    six would stand at 88 — tall slivers where the frame draws near-squares.
   //    Ten tiles over six rail slots means four repeat, which the frame does
-  //    too (its ten tiles carry five fills). The rail loops the six slots the
-  //    hero is not on, so a repeat never duplicates the hero and a repeated
-  //    tile picks the same slot as its twin — every slot stays reachable.
+  //    too (its ten tiles carry five fills). The rail loops the six non-home
+  //    slots, so a repeated tile picks the same slot as its twin and both
+  //    ring together — every slot stays reachable.
   if (s.v1) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -8417,8 +8442,8 @@ function Gallery({ s }) {
     const bw = s.retro ? '1px' : s.bw
     const r = u(s.mob ? 10 : 30)
     const seats = 7
-    const active = s.live && pick >= 0 ? pick : galActive(s)
-    const slot = (k) => (active + k) % seats
+    const home = galActive(s)
+    const active = s.live && pick >= 0 ? pick : home
 
     // The masonry, column by column, in the heights the frame draws. Their
     // sums are equal by construction (563 + two 10px gaps = 583), which is what
@@ -8428,9 +8453,12 @@ function Gallery({ s }) {
     const COLUMNS = s.mob
       ? [[48.8, 48.8, 48.8, 48.8, 48.8], [48.8, 48.8, 48.8, 48.8, 48.8]]
       : [[123, 215, 225], [194, 242, 127]]
-    // Seat 1..n of the rail → one of the six slots the hero is not on. At six
-    // tiles this is the identity; at 390's ten it wraps after the sixth.
-    const railSlot = (seat) => slot(1 + ((seat - 1) % (seats - 1)))
+    // Seat 1..n of the rail → one of the six slots other than `home`, counting
+    // on from the slot after it and wrapping — the order the old rotation drew
+    // at rest, so the canvas keeps its picture — but fixed: picking moves the
+    // hero, never the tiles. At six tiles each slot appears once; at 390's ten
+    // the six wrap after the sixth.
+    const railSlot = (seat) => (home + 1 + ((seat - 1) % (seats - 1))) % seats
     const edge = `${bw} solid ${s.ac}`
     const grid = (
       <div style={{
@@ -8445,10 +8473,16 @@ function Gallery({ s }) {
               const seat = 1 + ci * hs.length + i
               const first = i === 0
               const last = i === hs.length - 1
+              const at = railSlot(seat)
+              // Only a visitor's pick is ringed: `home` has no tile, so the
+              // canvas and the published first paint draw no ring at all.
+              const on = s.live && pick === at
               return (
                 <div
                   key={i}
-                  onClick={s.live ? () => setPick(railSlot(seat)) : undefined}
+                  // Clicking the ringed tile again hands the hero back to
+                  // `home`, which is the only way to reach the slot with no tile.
+                  onClick={s.live ? () => setPick(on ? -1 : at) : undefined}
                   style={{
                     // The frame's own height is the basis, so on the canvas the
                     // three are exactly it and the column's free space is nil;
@@ -8480,8 +8514,20 @@ function Gallery({ s }) {
                     {/* Placeholder initials only — the frames are photographs
                         throughout, and Retro seeds them. The three sizes are
                         the tile's own width read off each master. */}
-                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[railSlot(seat)]} />
+                    {/* The hero's top anchor, for the wide short tiles (the
+                        first in the left column is 208 × 123 over a square
+                        photograph); a tall tile crops the sides, where it is
+                        inert. */}
+                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[at]} style={{ objectPosition: '50% 0%' }} />
                   </span>
+                  {/* An inset ring over the photograph rather than a thicker
+                      border, which would inset the photo and move the masonry. */}
+                  {on && (
+                    <span style={{
+                      position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                      boxShadow: `inset 0 0 0 ${u(s.mob ? 2 : 3)} ${s.ac}`,
+                    }} />
+                  )}
                 </div>
               )
             })}
@@ -8554,7 +8600,11 @@ function Gallery({ s }) {
           flex: '1 1 0', height: '100%',
         }}>
           <span style={{ position: 'absolute', inset: 0 }}>
-            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} />
+            {/* Top-anchored: the hero is wider than gallery-4 (596 × 478 at
+                1180 against 1200 × 1320), so cover crops its height, and a
+                centred crop took the singer's head off. Every seeded slot that
+                rotates into this seat frames its face in the top half. */}
+            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} style={{ objectPosition: '50% 0%' }} />
           </span>
           {caption}
           {/* Last, the way the frame paints it: the sheet crosses the caption
@@ -8621,14 +8671,19 @@ function Gallery({ s }) {
   // the height — the events map's derived-viewport rule ("three shapes, none
   // of them designed, all of them what the stated panel height left over").
   //
-  // **There is no live seam here at all.** The frame draws no viewer, no
-  // arrows, no thumbnail strip and no source rows, so `pick` — the state
-  // layouts 1 and 2 share — reaches nothing while layout 3 is selected, and
-  // the three social addresses have no row to go in (layout 2's Soundcloud
-  // call, made again). Nothing is clickable and nothing carries a pointer
-  // cursor: a handler-less control with a pointer cursor is the booking
-  // calendar's own rule, and inventing a lightbox the frame does not draw
-  // would be worse than the absence.
+  // **The published grid opens a fullscreen viewer** (user call, 2026-09-15:
+  // the frame draws no viewer, and a wall of seven thumbnails with nothing to
+  // open read as broken). It shares `pick` whole with layouts 1 and 2 rather
+  // than growing a seam: -1 is closed, a slot index is open on that slot, so
+  // the canvas and the published first paint draw no overlay by construction.
+  // Only filled slots open and the arrows step through only those, so the
+  // viewer never shows an empty slot's placeholder at full screen, and a slot
+  // emptied under an open viewer (Publish re-renders the tab) simply closes it.
+  // With no effect in the file, the overlay does its two side effects off a
+  // callback ref and React 19's ref cleanup: it takes focus, so that Escape and
+  // ← / → reach its own `onKeyDown`, and it locks the page's scroll while open
+  // (user call, 2026-09-15). The three social addresses still have no row
+  // to go in (layout 2's Soundcloud call, made again).
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -8649,6 +8704,88 @@ function Gallery({ s }) {
     const ratio = desk ? 326 / 181.3333 : tab ? 230.6667 / 150 : 111.3333 / 107.5
     const padH = `calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 20)})`
     const padV = u(desk ? 56 : 60)
+
+    // The viewer. The scrim is a literal near-black and its controls a literal
+    // cream, the header scrim's reasoning: a photograph at full screen wants a
+    // dark surround whatever the palette, and cream reads on it by construction.
+    const filled = slots.filter((i) => s.images[i])
+    const open = s.live && pick >= 0 && !!s.images[pick]
+    const at = filled.indexOf(pick)
+    const step = (d) => setPick(filled[(at + d + filled.length) % filled.length])
+    const cream = '#FBF6EA'
+    const ctl = (label, act, Icon, pos) => (
+      <button
+        type="button" aria-label={label}
+        onClick={(e) => { e.stopPropagation(); act() }}
+        style={{
+          position: 'absolute', ...pos, width: s.mob ? 44 : 52, height: s.mob ? 44 : 52,
+          borderRadius: '999px', border: 0, padding: 0, cursor: 'pointer',
+          background: 'rgba(251,246,234,.14)', color: cream,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <Icon size={s.mob ? 20 : 24} />
+      </button>
+    )
+    const viewer = open && (
+      <div
+        role="dialog" aria-modal="true" aria-label={s.title || 'Gallery'} tabIndex={-1}
+        // Focus and scroll lock without an effect, off React 19's ref cleanup.
+        // Focus is taken on mount and left alone while a control holds it, or a
+        // click on an arrow would be undone. The lock is the popup's own <html>
+        // and <body> (`ownerDocument`, never the builder's), with the scrollbar's
+        // gutter kept so the page under the scrim does not shift sideways; the
+        // cleanup puts back whatever was there. The ref is a new function every
+        // render, so React cleans up and re-locks on each one — which is
+        // idempotent, and is what hands the page back the moment it closes.
+        ref={(el) => {
+          if (!el) return
+          if (!el.contains(el.ownerDocument.activeElement)) el.focus()
+          const html = el.ownerDocument.documentElement
+          const body = el.ownerDocument.body
+          const was = [html.style.overflow, html.style.scrollbarGutter, body.style.overflow]
+          html.style.overflow = 'hidden'
+          html.style.scrollbarGutter = 'stable'
+          body.style.overflow = 'hidden'
+          return () => {
+            html.style.overflow = was[0]
+            html.style.scrollbarGutter = was[1]
+            body.style.overflow = was[2]
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') setPick(-1)
+          else if (e.key === 'ArrowLeft' && filled.length > 1) step(-1)
+          else if (e.key === 'ArrowRight' && filled.length > 1) step(1)
+        }}
+        // Any click that is not on a control closes, the photograph included:
+        // a contained image's letterbox is the <img> too, so "click outside the
+        // picture" has no edge a visitor could find.
+        onClick={() => setPick(-1)}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(17,17,17,.94)', outline: 'none',
+          // A touch overscroll on the scrim must not chain to the page.
+          overscrollBehavior: 'contain',
+        }}
+      >
+        <div style={{ position: 'absolute', inset: s.mob ? '68px 12px 80px' : '76px 104px' }}>
+          <img src={s.images[pick]} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+        </div>
+        {ctl('Close', () => setPick(-1), X, { top: s.mob ? 12 : 16, right: s.mob ? 12 : 16 })}
+        {filled.length > 1 && ctl('Previous photo', () => step(-1), ArrowLeft,
+          s.mob ? { left: 16, bottom: 18 } : { left: 28, top: 'calc(50% - 26px)' })}
+        {filled.length > 1 && ctl('Next photo', () => step(1), ArrowRight,
+          s.mob ? { right: 16, bottom: 18 } : { right: 28, top: 'calc(50% - 26px)' })}
+        {filled.length > 1 && (
+          <span style={{
+            position: 'absolute', left: '50%', bottom: s.mob ? 30 : 28, transform: 'translateX(-50%)',
+            fontFamily: s.body, fontSize: '14px', fontWeight: 600, letterSpacing: '0.04em', color: cream,
+            pointerEvents: 'none',
+          }}>{at + 1} / {filled.length}</span>
+        )}
+      </div>
+    )
+
     return (
       <div style={{
         // The sheet: out to the section's own edges, past the root's padding.
@@ -8674,10 +8811,15 @@ function Gallery({ s }) {
           columnGap: u(8), rowGap: u(desk ? 8 : 20),
         }}>
           {slots.map((i) => (
-            <div key={i} style={{
-              aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
-              border: `${bw} solid ${ink}`, borderRadius: u(30),
-            }}>
+            <div key={i}
+              // An empty slot has nothing to open, so it takes no handler and
+              // no pointer — the booking calendar's handler-less cell rule.
+              onClick={s.live && s.images[i] ? () => setPick(i) : undefined}
+              style={{
+                aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
+                border: `${bw} solid ${ink}`, borderRadius: u(30),
+                cursor: s.live && s.images[i] ? 'zoom-in' : undefined,
+              }}>
               <span style={{ position: 'absolute', inset: 0 }}>
                 {/* Placeholder initials only — the masters are photographs
                     throughout and Retro seeds them, so the three sizes are
@@ -8694,6 +8836,7 @@ function Gallery({ s }) {
             </div>
           ))}
         </div>
+        {viewer}
       </div>
     )
   }
@@ -8848,9 +8991,12 @@ function Gallery({ s }) {
           {/* An invented ramp, only ever seen on the flat four or mid-edit:
               the masters are photographs and Retro seeds them (the gallery's
               placeholder rule). `ink` is `pillFg` because the tile's ground is
-              `pillBg` and `s.muted` is an rgba of the *page's* text colour. */}
+              `pillBg` and `s.muted` is an rgba of the *page's* text colour.
+              Top-anchored: the pill is far wider than the square photographs,
+              so cover keeps a thin horizontal slice, and a centred slice was a
+              torso with no head. Every seeded slot frames its face high. */}
           <Photo s={s} src={s.images[i]} initialsSize={T.tile}
-                 ink={s.retro ? undefined : s.pillFg} />
+                 ink={s.retro ? undefined : s.pillFg} style={{ objectPosition: '50% 0%' }} />
         </span>
       </span>
     )
@@ -8922,8 +9068,11 @@ function Gallery({ s }) {
           width: '100%', height: '100%', position: 'relative', overflow: 'hidden',
           borderRadius: u(20), background: cream,
         }}>
+          {/* Top-anchored, the rail's rule: the spotlight is wider than
+              gallery-4's 1200 × 1320 at every width, so cover crops its height
+              and a centred crop clipped the singer's hair. */}
           <Photo s={s} src={s.images[active]} initialsSize={T.mark}
-                 ink={s.retro ? undefined : s.paperFg} />
+                 ink={s.retro ? undefined : s.paperFg} style={{ objectPosition: '50% 0%' }} />
         </div>
         {/* Last and over everything, the way the frame paints its 635px sheet:
             `mix-blend-screen` at .52, which is layout 1's viewer card verbatim. */}
