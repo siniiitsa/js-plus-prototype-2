@@ -16,6 +16,7 @@
 import hero from './photos/hero.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
 import stage from './photos/stage.jpg'
+import formStage from './photos/form-stage.jpg'
 import gallery1 from './photos/gallery-1.jpg'
 import gallery2 from './photos/gallery-2.jpg'
 import gallery3 from './photos/gallery-3.jpg'
@@ -30,6 +31,9 @@ import track3 from './photos/track-3.jpg'
 import track4 from './photos/track-4.jpg'
 import track5 from './photos/track-5.jpg'
 import mapTile from './photos/map.jpg'
+import review1 from './photos/review-1.jpg'
+import review2 from './photos/review-2.jpg'
+import review3 from './photos/review-3.jpg'
 import grain from './photos/grain.jpg'
 import limeHero from './photos/lime-hero.jpg'
 import limeHeaderAvatar from './photos/lime-header-avatar.jpg'
@@ -40,6 +44,8 @@ import limeGallery4 from './photos/lime-gallery-4.jpg'
 import grungeHeader from './photos/grunge-header.jpg'
 import editorialHeader from './photos/editorial-header.jpg'
 import popHeader from './photos/pop-header.jpg'
+
+const REVIEWERS = [review1, review2, review3]
 
 // Keyed by section category id, matching FIELDS: a single `image` slot takes a
 // string, a multi-photo `images` slot takes an array in slot order.
@@ -60,6 +66,9 @@ export const RETRO_PHOTOS = {
   // large viewer, so that slot carries the full-size spotlight photograph and the
   // other six are strip-sized.
   gallery: [gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7],
+  // Pricing layout 2's reviewer faces under the quote — the frame's own three
+  // `av` fills (964:64648), square-cropped to 112px, 4× the 28px avatar.
+  pricing: REVIEWERS,
 }
 
 // Lime's layout-1 frames (964:58588…98) are a different shoot for the artist's
@@ -78,6 +87,7 @@ export const LIME_PHOTOS = {
   calendar: limeCalendar,
   form: limeAvatar,
   gallery: [gallery1, gallery2, gallery3, limeGallery4, gallery5, gallery6, gallery7],
+  pricing: REVIEWERS,
 }
 
 // The seeded artwork for the media player's five track rows, in track order.
@@ -127,7 +137,7 @@ export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeade
 //   avatar — the header's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
 const SEEDS = {
-  Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: stage },
+  Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage },
   Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeStage },
 }
 
@@ -141,8 +151,9 @@ const SEEDS = {
 // The form is the odd one of the two: its `image` is the *artist* (layout 1
 // draws it as the 48px circle beside the brand), so its second slot is the
 // scene rather than the portrait, and it is keyed `photo` rather than `avatar`.
-// It takes the same live-set frame the bio stands on — layout 2's frame is a
-// stage shot, and it is the only photograph in the seeded set that is one.
+// Retro's is its layout-2 frame's own stage shot (964:64652), the close-up
+// singer in a dark jacket, re-encoded at 1200px as `form-stage.jpg`; Lime's
+// takes the live-set frame its bio stands on.
 export const defaultImage = (cat, themeName, key = 'image') => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined

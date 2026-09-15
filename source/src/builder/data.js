@@ -473,6 +473,17 @@ export const GIGS = [
 export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
+// Layout 2's stat row: the frame's Travel time and Booking fee cells, seeded
+// with its own copy. Max travel, the third cell, is MAP_RADIUS rather than a
+// field of its own, so a seeded page cannot claim two different coverages.
+// Pricing layout 2's credit row and the line beside its pill, seeded with the
+// frame's own copy (964:64648).
+export const PRICING_REVIEWS = '32 reviews'
+export const PRICING_RATING = '4.9'
+export const PRICING_CTA = 'Enquire about a date'
+export const PRICING_NOTE = "3 dates open for Sept '26"
+export const MAP_TRAVEL_TIME = '~2 hrs'
+export const MAP_FEE = '£1,200'
 
 // Gallery — the media-source selector down the left of the section. The first
 // row is the page's own strip of photographs and has no address; the other
@@ -564,7 +575,7 @@ export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.',
   pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
-  map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make your night unforgettable.", footer: '' }
+  map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make\nyour night unforgettable.", footer: '' }
 
 export const DEFS = {
   heroSub:    'DJ & selector. Clubs, weddings and festivals across the North — nights built live, never off a playlist.',
@@ -637,6 +648,25 @@ export const CAL_SLOTS  = [
   { date: '2025-07-05', kind: 'Wedding',  price: 'From £2,800' },
 ]
 
+// Testimonials layout 2's own heading fallback — its frame's two-line display
+// head, broken where the frame breaks it — and the stars its card prints in
+// the corner. The shared `heading` default stays TITLES.testimonials for the
+// other layouts; sectionVm and EditPanel both resolve this one for layout 2.
+export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
+export const TESTI_STARS = '★★★★★'
+
+// Enquiry form layout 2's card, seeded with its frame's own copy (964:64652):
+// the price row, the bookings line, the submit's label and the line under it.
+export const FORM_PRICE = '£1,200'
+export const FORM_PRICE_UNIT = 'from / event'
+export const FORM_BOOKINGS = '42 bookings'
+export const FORM_CTA = 'Check Availability'
+export const FORM_NOTE = 'No charge to enquire'
+
+// Booking calendar layout 2's pill. Its frame reads "Star Enquiry", taken as a
+// typo for this.
+export const CAL_SLOT_CTA = 'Start Enquiry'
+
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
 // The enquiry line names the weekday in full; CAL_DAYS heads the grid's columns.
@@ -662,6 +692,21 @@ export const EXAMPLE_PAGE = [
   ['testimonials', 0],
   ['footer',       0],
 ]
+
+// §6.2 — the order the page takes when the setup modal's header takes layout
+// `i`. `pageLayout` is half of "a card lays out the whole page"; this is the
+// other half, because each Figma page stacks its sections in an order of its
+// own. Layout 2's page (`964:58572`) reads the repertoire before the gallery
+// and the events map after the calendar. A page with no row here takes layout
+// 1's, which is EXAMPLE_PAGE's — true of layout 4's page, not yet written for
+// layout 3's.
+const PAGE_ORDERS = [
+  EXAMPLE_PAGE.map(([cat]) => cat),
+  ['header', 'bio', 'media', 'repertoire', 'gallery', 'pricing', 'calendar', 'map',
+    'form', 'testimonials', 'footer'],
+]
+
+export const pageOrder = (i) => PAGE_ORDERS[i] ?? PAGE_ORDERS[0]
 
 // "Blank" — only the two mandatory sections.
 export const BLANK_PAGE = [
@@ -762,6 +807,16 @@ export const FIELDS = {
       hint: 'A line under the heading. Layout 3 only.' },
     { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote',
       hint: 'A line of praise beside the plan. Layout 2 only.' },
+    // Layout 2's credit row under the quote and the line beside its pill, all
+    // seeded with the frame's own copy. Every one is emptiable and drops what
+    // it fills; the row goes when all three of its fields are empty.
+    { k: 'images',  l: 'Reviewer photos (layout 2)', type: 'images', max: 3,
+      hint: 'Small faces under the quote.' },
+    { k: 'reviews', l: 'Review count (layout 2)', d: PRICING_REVIEWS },
+    { k: 'rating',  l: 'Rating (layout 2)', d: PRICING_RATING,
+      hint: 'The five stars beside it are drawn while this is filled.' },
+    { k: 'cta',     l: 'Button (layout 2)', d: PRICING_CTA },
+    { k: 'note',    l: 'Line beside the button (layout 2)', d: PRICING_NOTE },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
   // The other list-shaped content type with a structured editor rather than a
@@ -815,9 +870,10 @@ export const FIELDS = {
     { k: 'booked',  l: 'Booked dates', type: 'booked',
       hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME,
-      hint: 'Printed in the line along the foot of the panel, and on its own in '
-          + "layout 4's summary card. Leave it empty and the line stops at the date." },
-    { k: 'cta',     l: 'Button', d: 'Check a date' },
+      hint: "Printed in the enquiry line of layouts 1 and 3, and on its own in layout 4's "
+          + 'summary card. Leave it empty and the line stops at the date.' },
+    { k: 'cta',     l: 'Button (layouts 1 and 4)', d: 'Check a date' },
+    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
   // and `media`: `gigs` is an array of { venue, city, time, month, day, link }
@@ -840,6 +896,8 @@ export const FIELDS = {
     { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
     { k: 'base',    l: 'Based in',       d: MAP_BASE },
     { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS },
+    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME },
+    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE },
     // Layout 3's foot pill, and the only layout that draws one: the split
     // list's frame closes with a "See all gigs" control that has nowhere on a
     // one-page site to go, so the seat takes the page's own Book Now instead
@@ -850,7 +908,9 @@ export const FIELDS = {
     { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [
-    { k: 'heading', l: 'Heading', d: 'Word of Mouth' },
+    // A textarea, because layout 2's default breaks onto a second line.
+    { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth',
+      hint: 'Layout 2 starts from its own two-line heading; a line break you type is kept there.' },
     // Layout 2 was the first design to head this section, so both of the plain
     // strings below reached it alone — FIELDS.media.soundcloud's case the other
     // way up, hence the layout in each hint. Layout 3's bento wall then gave
@@ -867,9 +927,11 @@ export const FIELDS = {
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
           + 'becomes a plain quote card there. The date line is the small type '
-          + 'above the quote in layout 1 and sits beside the reviewer in layout 2, '
-          + "whose selector takes the name's initials — layout 4 marks its card "
-          + 'with the same initials; layouts 3 and 4 have no seat for the date.' },
+          + "above the quote in layout 1. Layout 2's selector takes the name's "
+          + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
+          + 'and 4 have no seat for the date.' },
+    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS,
+      hint: 'Printed in the corner of the card, beside the reviewer. Empty it to drop them.' },
     { k: 'cta',     l: 'Button', d: 'Book Now',
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
@@ -884,9 +946,11 @@ export const FIELDS = {
     // hint says which.
     { k: 'photo',    l: 'Stage photo', type: 'image',
       hint: 'The big picture above the heading. Layout 2 only.' },
-    { k: 'heading',  l: 'Heading', d: "Let's make your night unforgettable." },
+    // A textarea, because the default breaks after "Let's make" — layout 2
+    // keeps the break, the others read it as a space.
+    { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable." },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara',
-      hint: 'The line under the heading in layout 3; the one under the card in layout 2.' },
+      hint: 'The line under the heading. Layout 3 only.' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
       hint: 'One per line — the ticked list beside the form. Layout 3 runs them together '
           + 'as the one line under its button; layout 4 numbers them down its right-hand '
@@ -905,7 +969,15 @@ export const FIELDS = {
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
-    { k: 'button',   l: 'Button', d: 'Book Now' },
+    { k: 'button',   l: 'Button', d: 'Book Now', hint: 'Layouts 1, 3 and 4.' },
+    // Layout 2's card. Every one is emptiable and drops what it fills, except
+    // the button: it is the submit, so an emptied label falls back to `button`.
+    { k: 'price',     l: 'Price (layout 2)', d: FORM_PRICE },
+    { k: 'priceUnit', l: 'Price note (layout 2)', d: FORM_PRICE_UNIT },
+    { k: 'bookings',  l: 'Bookings line (layout 2)', d: FORM_BOOKINGS,
+      hint: 'The five stars before it are drawn while this is filled.' },
+    { k: 'cta',       l: 'Button (layout 2)', d: FORM_CTA },
+    { k: 'note',      l: 'Line under the button (layout 2)', d: FORM_NOTE },
   ],
   footer: [
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },
@@ -979,6 +1051,14 @@ export function extUrl(v) {
   const t = String(v ?? '').trim()
   if (!t) return ''
   return /^[a-z][a-z0-9+.-]*:/i.test(t) || t.startsWith('//') ? t : `https://${t}`
+}
+
+// The events map's layout-2 Get Directions pill: a Google Maps route to the
+// gig, from nothing the artist has to type beyond the venue and the city it
+// already carries. Empty when both are, so the pill stays a picture.
+export function directionsUrl(...parts) {
+  const q = parts.map((p) => String(p ?? '').trim()).filter(Boolean).join(', ')
+  return q ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(q)}` : ''
 }
 
 // The enquiry form's submit, composed here for the reason enquiryLine() is:

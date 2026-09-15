@@ -89,7 +89,9 @@ mutated through a single `patch()` helper.
   indices are aligned across categories by construction (layouts 1, 2, 3 and 4 of every section
   are one Figma page each), so `pickHeader` writes `arch` to *every* section, folded through
   `pageLayout()` in `data.js` — `i % designCount(cat)`, which is always a row the layout picker
-  can highlight, and is the lowest `arch` rendering the design asked for. That is the
+  can highlight, and is the lowest `arch` rendering the design asked for. It also **reorders**
+  the page into `pageOrder(i)` (`data.js`), because each Figma page stacks its sections in its
+  own order — layout 2's reads repertoire before gallery and map after calendar. That is the
   setup modal alone: the sidebar's `LayoutPicker` still moves the one section it is opened on, and
   must keep doing so, or a later header swap would silently undo everything the user had tuned.
   The bulk write is only safe because the modal is a one-shot gate over a page nobody has touched
@@ -205,8 +207,9 @@ mutated through a single `patch()` helper.
   its drawn size. **Everything in this paragraph from "Mobile draws four" on is layout 1's**:
   layout 2 browses through the same `pick`, but it is a hero photograph beside a masonry of six
   and it draws **no source rows at all**, so the hide-the-empty-row rule and the four-tile mobile
-  window are that layout's and not the section's. Its seven slots **rotate through seven fixed
-  seats**, the media player's fan rule, so the hero seat always holds the slot the visitor is on;
+  window are that layout's and not the section's. Its seven slots **rotate through its fixed
+  seats** — seven at 1440 and 768, and ten at 390, where the thumbnail rail loops the six
+  non-hero slots — the media player's fan rule, so the hero seat always holds the slot the visitor is on;
   the three social addresses reach layout 1 only, which is `FIELDS.media.soundcloud`'s case three
   times over and is why their hints name a layout. **Layout 4 browses through the same `pick` for
   the third time** — a spotlight photograph beside a rail of all seven thumbnails, with two arrow
@@ -257,7 +260,9 @@ mutated through a single `patch()` helper.
   *page* would close it and pin every gig to dot 0 at 390, where a page is one gig, so the edge
   is named rather than fixed. `perPage` is `gigPage` at both wide widths and **1** at 390, where
   the master draws one row over a two-arrow pager. A gig's `link` reaches all three: layout 1's
-  whole row, layout 2's ↗ and Venue Link pill, layout 3's Tickets → column — and layout 3 drops
+  whole row, layout 2's ↗ and Venue Link pill (beside which its Get Directions pill takes
+  `vm.gigs[].directions`, a Google Maps route composed from the venue and city), layout 3's
+  Tickets → column — and layout 3 drops
   the frame's second `↗` beside the venue, the same address marked twice. **Layout 4 is the
   pager alone**: its whole gig list is one mustard ticker at a `perPage` of **1**, so `page` is
   the only state it reads — `sel` reaches nothing there, the way the testimonials' `cur` reaches
@@ -386,8 +391,10 @@ mutated through a single `patch()` helper.
   where `TIERS` has one — and it has no month, so no arrows and no `mi`. Everything else it shares whole:
   `sel` is the same ISO date, `open` cues the same day (slot one *is* `CAL_OPEN`, so the
   seeded page opens on the frame's picture), `booked` kills a row there as it strikes a cell
-  here, the foot prints the same composed line or the same `calPrompt`, and the pill takes the
-  same `calBookTo`. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
+  here, the foot prints the slot's own short line — `vm.calSlots[].line`, "Thursday evening
+  selected", composed from the weekday and the slot's `kind` — or the same `calPrompt`, and the
+  pill takes the same `calBookTo` under its own label, `slotCta` ("Start Enquiry"; the frame's
+  "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which headed the flat layout alone, heads it; `image` does not
   reach it at all. And the slot list is the one list-shaped content with **no** editor, so
@@ -455,9 +462,10 @@ mutated through a single `patch()` helper.
   the live input can carry it as a placeholder without also shouting whatever the visitor types,
   which is what keeps the published first paint the canvas's picture. Its refused box thickens an
   inset **ring** where layout 1 draws an inset rule — a rule under a 999px pill reads as a smear
-  — and its card's one line of prose is `s.formPara`, which until then no §10.2 layout drew. The
-  frame's price and its `★★★★★ 42 bookings` are numbers the artist never typed and are
-  **dropped**, the video section's rule. The stage photograph above the heading is
+  — and its card carries the frame's price row, `★★★★★ 42 bookings` line, "Check Availability"
+  label and "No charge to enquire" line as fields seeded with the frame's copy (`price`,
+  `priceUnit`, `bookings`, `cta`, `note`), each dropping when emptied except the label, which is
+  the submit and falls back to `button`. The stage photograph above the heading is
   `FIELDS.form.photo`, a **third single-photo slot** beside `image` and `avatar`, because this
   section's `image` **is** the artist: the header's pair is the other way up,
   and layout 1 has drawn `image` as the 48px circle since it was fitted.
@@ -536,10 +544,10 @@ mutated through a single `patch()` helper.
   card simply takes the whole width. The tile's mark is **`vm.quotes[].mark`**, composed in
   `sectionVm` beside `byline` — the reviewer's initials, or the row's number when the name is
   empty, punctuation spaced out first so "Sarah &amp; Tom" marks the tile `ST` and not `S&`.
-  The frame's `★★★★★` is a rating the artist never typed and is **dropped** (the enquiry
-  form's layout 2 dropped this very row), and the slot it frees prints the review's own
-  `when`, so layout 2 reads every column of `c.quotes` where layout 1 puts the date above the
-  quote. It also draws the section's **head**, which no earlier layout did: `heading` had
+  The frame's `★★★★★` is a section field, `stars`, seeded with the frame's copy and printed in
+  the card's corner, so `when` has no seat in layout 2; its heading falls back to the frame's
+  own two-line "Honest feedback / from people who booked" (`TESTI_HEADING_2`, resolved in
+  `sectionVm` and `EditPanel` alike) where the other layouts keep the shared default. It also draws the section's **head**, which no earlier layout did: `heading` had
   reached the flat tail alone, and `FIELDS.testimonials` gained `sub` and `cta` — a line of
   prose and the centred Book Now pill on `vm.bookTo`, which needs no self-exclusion because
   `testimonials` is not in `CTA_TARGETS.book` (the footer's rule); `sub` since reaches layout
@@ -572,7 +580,7 @@ mutated through a single `patch()` helper.
   count, and needing four reviews at 1440. It is the section's second full-bleed sheet and its
   first mustard one — `s.pillBg` with a `pillFg` head, the enquiry form's layout-2 pair on the
   identical ground — so the root's `cream` flag stays layout 1's for the fourth time. `when`,
-  `sub` and `cta` reach none of it, which leaves `when` a layouts-1-and-2 column and `cta`
+  `sub` and `cta` reach none of it, which leaves `when` a layout-1 column and `cta`
   layout 2 alone.
 - **The footer is the artist's sitemap, and the published one navigates.** It was the last
   §10.2 section that was a picture on *both* sides, and the only one whose links were dead by
@@ -677,7 +685,8 @@ mutated through a single `patch()` helper.
   distinct from no `src` prop at all (fall back to `s.image`): an empty gallery slot shows the
   section photo and an emptied one does not, and the media player passes `null` for an art-less
   track row so it cannot inherit anything. **`media` has no section photo at all** — no `image`
-  field, no `RETRO_PHOTOS.media` — because the player shows the artwork of the track it is on.
+  field, no `RETRO_PHOTOS.media` — because the player shows the artwork of the track it is on. `pricing` seeds an `images`
+  array of three and no single photo: layout 2's reviewer faces under its quote.
   Two categories carry **two** independent single-photo slots, and `defaultImage` takes the
   field key for them: the header's are `image` (the scene) and `avatar`
   (the artist), and the enquiry form's are the other way up — its `image` **is** the artist,
