@@ -37,15 +37,17 @@ import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
-  GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
+  GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
+  PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
+  TESTI_HEADING_2, TESTI_STARS, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, bebasEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
@@ -480,6 +482,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // §10.2 layout 2 stands a line of praise beside the plan. Layout 1 draws no
   // such line, so an emptied field simply drops it — the Soundcloud rule.
   vm.pricingQuote = cv('quote', DEFS.pricingQuote)
+  // Layout 2's credit row and the pill beside the plan. Uncased, the footer's
+  // rule: the pill has always drawn an uncased label.
+  vm.pricingReviews = cv('reviews', PRICING_REVIEWS)
+  vm.pricingRating = cv('rating', PRICING_RATING)
+  vm.pricingCta = cv('cta', PRICING_CTA)
+  vm.pricingNote = cv('note', PRICING_NOTE)
   // A card's four colours, given the ground it stands on. Layout 1 walks that
   // ground round T.tags, one hue per card; layout 2 has a single card and pins
   // it, so both go through here and the pairing rule is written once.
@@ -608,6 +616,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
   // the same fallback, or the panel and the canvas would disagree.
   if (cat === 'repertoire' && c.heading === undefined) vm.title = cased(`${vm.songs.length} Songs`)
+  // Testimonials layout 2 heads the section with its frame's own two-line
+  // display head; the other layouts keep the shared default. EditPanel mirrors
+  // it. The stars sit in its card's corner.
+  if (cat === 'testimonials' && d === 1 && c.heading === undefined) vm.title = cased(TESTI_HEADING_2)
+  vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips
@@ -766,6 +779,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     vm.calPick = booked.has(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
+    // Layout 2's pill, which its frame labels differently from the other two
+    // calendar pills (its "Star Enquiry" read as the intended "Start").
+    vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))
     // The bare hour, beside the composed lines that already carry it. Layout 4
     // draws no enquiry line at all — its foot is the pill and its card is that
     // line taken apart into four stat cells — so `time` would otherwise reach
@@ -799,7 +815,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
         kind: cased(sl.kind ?? ''),
         price: sl.price ?? '',
         booked: iso ? booked.has(iso) : false,
-        line: at ? enquiryLine(at.y, at.m, at.d, time) : '',
+        // Layout 2's foot line when this slot is picked — the frame's own
+        // "Thursday evening selected", the weekday and the slot's kind. The raw
+        // kind, since `kind` above is already cased and cased() runs once here.
+        line: at
+          ? cased(`${[DAY_FULL[weekdayOf(at.y, at.m, at.d)], String(sl.kind ?? '').trim().toLowerCase()]
+            .filter(Boolean).join(' ')} selected`)
+          : '',
       }
     })
     // The head's link list. The frame draws three — the section itself, marked
@@ -863,6 +885,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       venue: g?.venue ?? '', city: g?.city ?? '', time: g?.time ?? '',
       month: g?.month ?? '', day: g?.day ?? '',
       url: extUrl(g?.link ?? ''),
+      // Layout 2's Get Directions pill, a route to the venue.
+      directions: directionsUrl(g?.venue, g?.city),
+      // Layout 2's card chip: when the featured gig is, which the frame's stat
+      // row printed until it took the frame's own three cells back.
+      when: [`${g?.month ?? ''} ${g?.day ?? ''}`.trim(), String(g?.time ?? '').trim()]
+        .filter(Boolean).join(' · '),
       pin: PINS[i % PINS.length],
       // Layout 4's ticker prints the gig on one line — "Manchester · Jul 12 ·
       // 22:00", the frame's own second line — and every one of those three is
@@ -923,6 +951,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
+  vm.mapTravelTime = cv('travelTime', MAP_TRAVEL_TIME)
+  vm.mapFee = cv('fee', MAP_FEE)
   // Layout 3's foot pill. Uncased, the footer's rule: the pill has always drawn
   // an uncased label and casing it would shout on Grunge and Pop.
   vm.mapCta = cv('cta', 'Book Now')
@@ -977,6 +1007,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // real — cta's and para's state on the booking calendar before it.
   vm.formEmail = String(cv('email', 'bookings@kaimercer.co.uk')).trim()
   vm.formBtn = cv('button', 'Book Now')
+  // Layout 2's card: its price row, bookings line, submit label and the line
+  // under it, each seeded with the frame's copy. The label is the submit, so an
+  // emptied one falls back to `button` rather than leaving a wordless pill.
+  vm.formPrice = cv('price', FORM_PRICE)
+  vm.formPriceUnit = cv('priceUnit', FORM_PRICE_UNIT)
+  vm.formBookings = cv('bookings', FORM_BOOKINGS)
+  vm.formCta = cv('cta', FORM_CTA) || vm.formBtn
+  vm.formNote = cv('note', FORM_NOTE)
   vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
   // The same promises run together as one line, which is layout 3's card foot:
   // its frame sets a single centred "No charge to enquire" there, a promise in
@@ -2571,6 +2609,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                   // sectionVm resolves, so panel and canvas never disagree.
                   const fallback = f.k === 'title' && sec.cat === 'header' ? artistName
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
+                    : f.k === 'heading' && sec.cat === 'testimonials'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
@@ -2849,10 +2889,11 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
  * ------------------------------------------------------------------ */
 
 // The nav links a header preview shows: the same derivation the editor uses,
-// applied to the page the picker is about to build (§4.8).
-const PREVIEW_NAV = EXAMPLE_PAGE
-  .filter(([cat]) => cat !== 'header' && cat !== 'footer')
-  .map(([cat]) => ({ cat, label: catName(cat) }))
+// applied to the page the picker is about to build (§4.8), in the order that
+// page takes when its header takes layout `i`.
+const previewNav = (i) => pageOrder(i)
+  .filter((cat) => cat !== 'header' && cat !== 'footer')
+  .map((cat) => ({ cat, label: catName(cat) }))
 
 // Every frame in the picker uses one aspect: the desktop canvas against the
 // tallest header render (Retro's photographic layout 1). A render that comes
@@ -2880,7 +2921,7 @@ function TemplatePreview({ themeIdx, artistName }) {
       height="100%" center
       vm={sectionVm({
         themeIdx, cat: 'header', arch: 0, c: {}, artistName,
-        Z: SIZES.desktop, mob: false, navSections: PREVIEW_NAV,
+        Z: SIZES.desktop, mob: false, navSections: previewNav(0),
       })}
     />
   )
@@ -3020,7 +3061,7 @@ function HeaderChoices({ themeIdx, artistName, sel, onSelect }) {
                 onNatural={(h) => noteNat(i, h)}
                 vm={sectionVm({
                   themeIdx, cat: 'header', arch: i, c: {}, artistName,
-                  Z: SIZES.desktop, mob: false, navSections: PREVIEW_NAV,
+                  Z: SIZES.desktop, mob: false, navSections: previewNav(i),
                 })}
               />
             </span>
@@ -3429,9 +3470,20 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   // self-contained and the callback never has to be rebuilt; `headerSec` goes
   // with the guard it fed, which was protecting a call that cannot happen
   // (`onboarding` is false without a header).
-  const pickHeader = useCallback((i) => patch((s) => ({
-    sections: s.sections.map((x) => ({ ...x, arch: pageLayout(x.cat, i, THEMES[s.theme].name) })),
-  })), [patch])
+  //
+  // The page is reordered as well as re-laid-out, into `pageOrder(i)`: each
+  // Figma page stacks its sections differently, and picking card 1 again
+  // restores layout 1's order. The sort is stable and a category the order does
+  // not name sinks to the end, though the page built here carries none.
+  const pickHeader = useCallback((i) => patch((s) => {
+    const order = pageOrder(i)
+    const rank = (cat) => { const r = order.indexOf(cat); return r < 0 ? order.length : r }
+    return {
+      sections: s.sections
+        .map((x) => ({ ...x, arch: pageLayout(x.cat, i, THEMES[s.theme].name) }))
+        .sort((a, b) => rank(a.cat) - rank(b.cat)),
+    }
+  }), [patch])
 
   const endOnboard = useCallback(() => patch({ onboard: false }), [patch])
 
