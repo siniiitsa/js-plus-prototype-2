@@ -48,7 +48,7 @@ import {
   headerFamily, layoutCount, designCount, pageLayout, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -2894,14 +2894,26 @@ const PREVIEW_NAV = EXAMPLE_PAGE
   .map(([cat]) => ({ cat, label: catName(cat) }))
 
 // Every frame in the picker uses one aspect: the desktop canvas against the
-// tallest header render (Retro's photographic layout 1). The four flat themes
-// come out shorter and are centred in it.
+// tallest header render (Retro's photographic layout 1). A render that comes
+// out shorter is centred in it.
 const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.heroH}`
 
 // …and what HeaderChoices frames its cards with until it has measured them.
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
+  // The flat three show their Figma header as a still (photos.js). It is
+  // SPOT_ASPECT already, so `cover` crops nothing — not `contain`.
+  const { name } = THEMES[themeIdx]
+  const still = TEMPLATE_STILLS[name]
+  if (still) {
+    return (
+      <img
+        src={still} alt={`${name} template`}
+        style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+    )
+  }
   return (
     <ScaledPreview
       height="100%" center

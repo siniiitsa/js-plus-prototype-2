@@ -37,6 +37,9 @@ import limeStage from './photos/lime-stage.jpg'
 import limeCalendar from './photos/lime-calendar.jpg'
 import limeAvatar from './photos/lime-avatar.jpg'
 import limeGallery4 from './photos/lime-gallery-4.jpg'
+import grungeHeader from './photos/grunge-header.jpg'
+import editorialHeader from './photos/editorial-header.jpg'
+import popHeader from './photos/pop-header.jpg'
 
 // Keyed by section category id, matching FIELDS: a single `image` slot takes a
 // string, a multi-photo `images` slot takes an array in slot order.
@@ -121,6 +124,15 @@ export const LIME_HEADER_AVATAR = limeHeaderAvatar
 // Fixed decoration rather than user content, so these are not in FIELDS. The
 // grain is Retro's alone; the map raster is also Lime's (sectionVm decides).
 export const RETRO_TEXTURE = { grain, map: mapTile }
+
+// The template picker's picture of each flat template: a flattened render of its
+// Figma header instance (Grunge 964:58600, Editorial 964:58612, Pop 964:58624),
+// shown in place of the flat header until the template is designed. A still
+// because the frames set their type in demo faces this app cannot load, so it
+// carries Figma's mock copy rather than the artist's name. 1440×750 is the
+// picker frame's own 1180×614 aspect to within a pixel. Picker only — nothing
+// the editor renders reads this.
+export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeader, Pop: popHeader }
 
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
 // nothing, which is what leaves the flat three rendering exactly as they did.
