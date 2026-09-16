@@ -16169,6 +16169,194 @@ function Testimonials({ s }) {
       )
     }
 
+    // The wall: the stat card, then the reviews, three to a row and one at 390.
+    // Two seats are stated rather than filling — the stat card's 275 leading row
+    // 0 and the 276 trailing row 1 — and both are the frame's own numbers at
+    // 1440 *and* 768, where they are in fact the *widest* cells on the row. The
+    // 276 is only taken when row 1 is full: the frame draws two rows and says
+    // nothing about a third, so rows past it are three equal fills (the pricing
+    // deck's a-fourth-package-wraps rule) rather than an alternation extrapolated
+    // from two samples. A row that is short fills too, so a review past a full
+    // row stands across the whole measure; the seeded five fill both rows.
+    const perRow = s.mob ? 1 : 3
+    // Grid columns, not a flex row: `flex: 1 0 0` resolves its basis against the
+    // *content* box, so two cells carrying 30 of padding and a hairline do not
+    // split a row equally (the enquiry form's lesson). `minmax(0, 1fr)` is also
+    // what keeps a long unbroken word out of a neighbour's column.
+    const fill = 'minmax(0, 1fr)'
+    const template = (r, k) =>
+      s.mob ? fill
+        : r === 0 ? [u(275), ...Array(k - 1).fill(fill)].join(' ')
+        : r === 1 && k === perRow ? [fill, fill, u(276)].join(' ')
+        : Array(k).fill(fill).join(' ')
+
+    // Lime (964:68683 · 984:10768 · 984:10799) — `if (s.lime)` after the
+    // wall's arithmetic, this pass's seat inside a branch. The tree is Retro's
+    // twin's box for box (the 30 padding, the 14 / 16 / 24 gaps, the 56 and 24
+    // discs at −8, the 275 / 276 seats, the foot's 10), so `u()`, `n`,
+    // `marked`, `perRow` and `template` are shared and the one box that moves
+    // is the corner, **50** where Retro's is 30. Every size is the ramp's at
+    // all three widths (display-md, label-lg, list, body-lg / md / sm), so no
+    // `T` table. Retro's `REG`, `SEATS`, `cardBg`, `edge` and cards are
+    // `paper` / `deep` derivations and are not read. No node carries an effect.
+    if (s.lime) {
+      const mist = '#D5E3B2'  // Scheme 4 `sem/box/1` — the small quote
+      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the stat card
+      const lift = '#D9FF7F'  // Scheme 3 `sem/box/2` — the face stack's rings
+      const hair = '#15180F26' // `sem/stroke/1` on a light scheme, 15% ink
+      const ring = (c, w = 1) => `inset 0 0 0 ${w}px ${c}`
+      // The frame's five quote cells by scheme, read off the nodes' fills: a
+      // Scheme 1 olive, two Scheme 2 `box/1`s (`#394732`, which is Scheme 1's
+      // `box2`), Scheme 4's mist and Scheme 1's olive again. `disc` is the
+      // initials' ink, the cell's own `sem/bg` — which is why the second row's
+      // disc is lettered in `#2E3928` and the first row's in `s.bg`. The mist
+      // cell carries no disc in the frame, so its `s.bg` is the scheme's
+      // legible reading. Seat 1's `quote-cell` is the frame's one unstroked
+      // cell; it is ringed like its neighbours, Retro's normalisation of the
+      // same bare cell.
+      const REG = [
+        { bg: s.box1, fg: s.tx, edge: s.stroke1, disc: s.bg },
+        { bg: s.box2, fg: s.tx, edge: s.stroke1, disc: s.box1 },
+        { bg: mist, fg: s.bg, edge: hair, disc: s.bg },
+      ]
+      const SEATS = [0, 1, 1, 2, 0]
+      const cell = (reg, extra) => col(u(14), {
+        background: reg.bg, color: reg.fg, boxShadow: ring(reg.edge),
+        borderRadius: u(50), padding: u(30), justifyContent: 'center',
+        alignItems: 'flex-start', overflow: 'hidden', ...extra,
+      })
+      const small = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4 }
+
+      // The frame's four stack faces are photographs in a 2px `lift` ring;
+      // the marks stand in for them (Retro's reading), so their disc is this
+      // block's own: an ink disc lettered in the accent, which reads on the
+      // lime card where an accent disc would vanish into it. The `lift` ring
+      // is faint on `lime3` by the frame's own hand. 11 is Retro's invented
+      // size for two marks in the ring.
+      const face = (mark, last, key) => (
+        <span key={key} style={{
+          width: u(24), height: u(24), flex: 'none', borderRadius: '999px',
+          background: s.bg, color: s.ac, boxShadow: ring(lift, 2),
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden', fontFamily: s.label, fontSize: u(11), lineHeight: 1.1,
+          ...(last ? null : { marginRight: u(-8) }),
+        }}>{mark}</span>
+      )
+
+      // Scheme 3: a `lime3` card in a 15% ink hairline, every ink `s.bg` — the
+      // numeral included, where Retro's is `pillBg` on its dark card. The
+      // numeral, the unit, `sub`, `brand` and the stack are Retro's
+      // re-seatings of the frame's rating, and the stars stay dropped.
+      const statCard = (
+        <div key="stat" style={col(u(16), {
+          background: lime3, color: s.bg, boxShadow: ring(hair),
+          borderRadius: u(50), padding: u(30), justifyContent: 'space-between',
+          overflow: 'hidden',
+        })}>
+          <div style={col(u(16), { width: '100%' })}>
+            <div style={row(u(8), {
+              alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
+            })}>
+              <span style={{
+                fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                letterSpacing: s.dls, flex: desk ? 'none' : '1 0 0',
+              }}>{n}</span>
+              <span style={{
+                fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
+              }}>{n === 1 ? 'review' : 'reviews'}</span>
+            </div>
+            {!!s.testiSub && (
+              <p style={{
+                margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5,
+              }}>{s.testiSub}</p>
+            )}
+          </div>
+          <div style={col(u(10), { width: '100%', paddingTop: u(10) })}>
+            {!!s.brand && <span style={small}>{s.brand}</span>}
+            {!!marked.length && (
+              <div style={row('0px')}>
+                {marked.map((r, i) => face(r.mark, i === marked.length - 1, i))}
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+      // Label/LG in the label face (Bebas, caps by its own glyphs), the name
+      // at Display/List and the role at Body/SM, in the cell's ink. The disc is
+      // the accent in the cell's own ring colour, lettered in `reg.disc`.
+      const quoteCard = (q, i) => {
+        const reg = REG[SEATS[i % SEATS.length]]
+        return (
+          <div key={i} style={cell(reg)}>
+            {!!q.who && (
+              <span style={{
+                width: u(56), height: u(56), flex: 'none', borderRadius: '999px',
+                background: s.ac, color: reg.disc, boxShadow: ring(reg.edge),
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden', fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1,
+              }}>{q.mark}</span>
+            )}
+            {!!q.quote && (
+              <p style={{
+                margin: 0, width: '100%', fontFamily: s.label, fontSize: s.labelLg,
+                lineHeight: 1.1, overflowWrap: 'break-word',
+              }}>{q.quote}</p>
+            )}
+            {!!q.byline && (
+              <div style={col(u(4), { width: '100%' })}>
+                {!!q.who && (
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                    letterSpacing: s.dls,
+                  }}>{q.who}</span>
+                )}
+                {!!q.role && <span style={small}>{q.role}</span>}
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      const items = n ? s.quotes.map(quoteCard) : [(
+        <div key="empty" style={cell(REG[0])}>
+          <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>
+            No reviews yet.
+          </span>
+        </div>
+      )]
+      items.unshift(statCard)
+      const rows = []
+      for (let i = 0; i < items.length; i += perRow) rows.push(items.slice(i, i + perRow))
+
+      // The head is `s.tx` for both lines (Retro's display line is ink on
+      // beige); Display/MD is 72 / 50 / 40. The 1440 column's 306 cap is
+      // dropped, Retro's call.
+      return (
+        <div style={col(u(24))}>
+          <div style={col('0px', { width: '100%', color: s.tx })}>
+            <span style={small}>&#9679; Testimonials</span>
+            {!!s.title && (
+              <h2 style={{
+                margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                letterSpacing: s.dls,
+              }}>{s.title}</h2>
+            )}
+          </div>
+          <div style={col(u(16), { width: '100%' })}>
+            {rows.map((cells, r) => (
+              <div key={r} style={{
+                display: 'grid', gap: u(16), width: '100%',
+                gridTemplateColumns: template(r, cells.length),
+              }}>
+                {cells}
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
     // An emptied list keeps the stat card and prints pricing's one message in a
     // cell beside it — layouts 1 and 2 both keep their card and put the message
     // inside it, and a stat card alone in a 275 seat is not one of this
@@ -16184,30 +16372,10 @@ function Testimonials({ s }) {
       </div>
     )
 
-    // The wall: the stat card, then the reviews, three to a row and one at 390.
-    // Two seats are stated rather than filling — the stat card's 275 leading row
-    // 0 and the 276 trailing row 1 — and both are the frame's own numbers at
-    // 1440 *and* 768, where they are in fact the *widest* cells on the row. The
-    // 276 is only taken when row 1 is full: the frame draws two rows and says
-    // nothing about a third, so rows past it are three equal fills (the pricing
-    // deck's a-fourth-package-wraps rule) rather than an alternation extrapolated
-    // from two samples. A row that is short fills too, so a review past a full
-    // row stands across the whole measure; the seeded five fill both rows.
     const items = n ? s.quotes.map(quoteCard) : [empty]
     items.unshift(statCard)
-    const perRow = s.mob ? 1 : 3
     const rows = []
     for (let i = 0; i < items.length; i += perRow) rows.push(items.slice(i, i + perRow))
-    // Grid columns, not a flex row: `flex: 1 0 0` resolves its basis against the
-    // *content* box, so two cells carrying 30 of padding and a hairline do not
-    // split a row equally (the enquiry form's lesson). `minmax(0, 1fr)` is also
-    // what keeps a long unbroken word out of a neighbour's column.
-    const fill = 'minmax(0, 1fr)'
-    const template = (r, k) =>
-      s.mob ? fill
-        : r === 0 ? [u(275), ...Array(k - 1).fill(fill)].join(' ')
-        : r === 1 && k === perRow ? [fill, fill, u(276)].join(' ')
-        : Array(k).fill(fill).join(' ')
 
     return (
       <div style={col(u(24))}>
