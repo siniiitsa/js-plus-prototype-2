@@ -3976,8 +3976,9 @@ function Bio({ s }) {
   // the panel is content-tall (the 390 master's flow, Retro's mechanism), so
   // the frame's trailing air inside its stated 305 is dropped and the wide
   // masters' leaked 22 / 33 between the head and the prose box is the 30
-  // padding, landing the box ~8 low at 1440; and the desktop card is 526 ×
-  // 590 against 664 × 720 × 0.82, our content width.
+  // padding, landing the box ~6 low at 1440. The desktop card itself lands on
+  // the frame's own half: 544.1 × 590.4 against 664 × 720 × 0.82, since the
+  // sheet bleeds and hands the section the frame's 1328 measure.
   if (s.v3 && s.lime) {
     const desk = !s.narrow
     const tab = isTablet(s)
