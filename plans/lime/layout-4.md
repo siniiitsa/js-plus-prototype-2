@@ -172,7 +172,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 7 | `pricing` | `964:72926` | 1440 × 546 | `971:5613` | 768 × 809 | `977:9187` | 390 × 837 | `964:72831` / `964:78656` / `977:8440` | done `8546dbb` |
 | 8 | `calendar` | `964:72939` + wizard `964:72938` *(Section `964:72927`, Frame 324 `964:72928`)* | 478 × 536 + 680 × 536 | `971:5626` + `971:5625` *(Section `971:5614`, Frame 324 `971:5615`)* | 608 × 505 + 608 × 479 | `977:9200` + `977:9199` *(Section `977:9188`, Frame 324 `977:9189`)* | 350 × 496 + 350 × 474 | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | done `8163fcd` |
 | 9 | `form` | `964:72940` | 1440 × 795 | `971:5627` | 768 × 1024 | `977:9201` | 390 × 971 | `964:72845` / `964:79477` / `977:8663` | done `ff6b4e1` |
-| 10 | `testimonials` | `964:72941` | 1440 × 716 | `971:5628` | 768 × 642.4 | `977:9202` | 390 × 624.4 | `964:72846` / `964:79536` / `977:8764` | — |
+| 10 | `testimonials` | `964:72941` | 1440 × 716 | `971:5628` | 768 × 642.4 | `977:9202` | 390 × 624.4 | `964:72846` / `964:79536` / `977:8764` | done `ebbf007` |
 | — | `footer` | `964:72942` | 1440 × 479.5 | `971:5629` | 768 × 647.4 | `977:9203` | 390 × 619.4 | — | **out of scope** — Lime layout 1's own component family at layout 1's sizes, fitted in that pass's section 11; `NVAR.footer` is 1 |
 | — | `video` | `964:72871` | 1328 × 754 | `971:5436` | 708 × 402 | `977:9010` | 370 × 209 | — | **not in the project** (`d734992`); Retro's QA declined restoring it on layout 4, and this pass does the same |
 
@@ -511,7 +511,10 @@ this file are the memory.
 8. Set the row's Status to `done <sha>`, add anything the next section needs to *Conventions*,
    and commit that too.
 9. **Stop and hand off.** Say the section is closed and that this is the moment to `/clear`,
-   then print the next section's opening prompt as a filled-in fenced block:
+   then print the next section's opening prompt as a filled-in fenced block. **After section
+   10 there is no next section** — the footer is out of scope — so that handoff opens *The
+   end-of-pass sweep* below instead, with the same reading list and the sweep's six items
+   in place of a node table:
 
    ```
    Continue the Lime layout-4 pass with section N, `cat`.
@@ -581,6 +584,11 @@ Written now from what the plan expects; refine as the sections defer things. One
    a 4px **mustard** rule" and "Its boxes' outline and its step rules are **`vm.formRule`**,
    which is `vm.tierRow.card`" are Retro's — under Lime the head rule and the step rules are
    1px of `s.stroke1`, the box ring is `s.ac`, and a refused box rings in 2px of `s.tx`.
+   An eighth, from section 10: the testimonials paragraph's "**Layout 4** … the section's
+   second full-bleed sheet and its first **mustard** one — `s.pillBg` with a `pillFg` head"
+   and "its cost is that the **rust** card is seat four" are Retro's — under Lime the sheet
+   is Scheme 4's pale `s.tx` with `s.bg` ink, the head `s.dispLg` at every width, and the
+   fourth seat is the page ink in a pale-disc register.
 2. **One whole-page published check under Lime at layout 4**, one puppeteer script: builder →
    Lime → card 4 → *Use this header* → Publish → Open, then every `s.v3` control on the page —
    header nav and burger (fresh tab per width), the media tiles and transport with audio, the
@@ -1397,6 +1405,83 @@ Settled in section 9 (the enquiry form):
   `promises=`: one column and no rows; `n=5`: three rows with the lone fifth box full-measure.
   No page errors. Digest at themes 0, 2, 3 and 4: zero differing files; theme 1: exactly form
   arch 3 at three widths (form has no fold partner).
+
+Settled in section 10 (the testimonials — the last body section):
+
+- **The tenth layout-4 block, inside its branch after the seam: `if (s.lime)` within
+  `Testimonials`' `if (s.v3)`, after `step` and the three insets** — the gallery's,
+  repertoire's, map's, pricing's and calendar's seat. `cur` is hoisted, but `desk` / `tab` /
+  `z` / `u`, `n`, `seats`, `paging`, `shown`, `at` and `step` are the branch's, so the block
+  sits after them and shares the pager whole: the published discs, the modulo-on-the-read
+  wrap and the handler-read cursor needed nothing new. `padH` / `padTop` / `padBot` and their
+  comment **moved up** from under Retro's `cards` to just after `step`, values unchanged
+  (layout 3's moved-consts precedent), so the block reads them too — Lime's three masters
+  pad Retro's exact 56 / 30·30·48·30 / 30·10. The tree is Retro's twin's node for node
+  (head over a row of cells; disc, quote, void, foot in each; the same 24 / 16 / 56 / 73.6 /
+  5 / 30 boxes and 4 / 3 / 1-and-a-peek seats) and nearly every leaf changes dress, so a
+  block. Diff 198 / 11 in `EncoreSection.jsx`, one hunk; the 11 are the moved lines. Retro's
+  `T`, `ground` / `groundFg`, `REG`, `SEATS`, `edge`, `glyph`, `arrow` and `card` are not read.
+- **Scheme 4 by node, and `get_variable_defs` agreed for once.** The instance nests Scheme 4:
+  its fill is `sem/bg` = `#F2FFD0` = **`s.tx`** (the plan's "whole ground is `pillBg`" trap),
+  the head `sem/text/1` = `s.bg`. The four cells over a three-entry register on Retro's own
+  `SEATS = [0, 1, 0, 2]`, read off every node's fills and strokes at all three widths:
+  - seat 0 (and 2): Scheme 4 `sem/box/1` **mist** `#D5E3B2` (block-local, layout 1's
+    literal) in a 1px `sem/stroke/1` hairline of ink at .15 (`hair` `#15180F26`), ink
+    `s.bg`; disc `sem/text/1` = `s.bg` lettered `sem/bg` = `s.tx`, ringed `hair`.
+  - seat 1: nested **Scheme 1**, `sem/box/3` = `s.box3` in `s.stroke1` (pale at .15), ink
+    `s.tx`; disc `s.ac` lettered `s.bg`, ringed `s.stroke1`.
+  - seat 3: Scheme 4 `sem/text/1` = **`s.bg`** — the page ink, the frame's one **bare**
+    cell (no stroke) — ink `s.tx`; disc `s.tx` lettered `s.bg`, ringed `hair`.
+  The bare cell is ringed like its neighbours in `s.stroke1`, all but invisible on ink —
+  layout 3's Lime call and Retro's normalisation of the same cell, named in the block. Every
+  ring is an inset shadow, so the stated heights hold without a border's pixel. No node
+  carries an effect but the two discs' `BACKGROUND_BLUR` 24, behind an opaque fill (dropped,
+  the header capsule's reading); each disc's 1px `sem/bg` stroke is the ground's own colour
+  on a disc standing on the ground (Retro's not-drawn reading, one scheme over).
+- **The desktop cell is 344, not Retro's 406.** 716 = 56 + 232 + 28 + 344 + 56: the 1440
+  head is two lines of Display/LG at .89 (231.4) where Retro's is 170. The narrow cells keep
+  the stated **392.4** with the same 3-line / 2-line residue (voids 131.4 / 155.4 in the
+  `sp` frame). `minHeight`, Retro's reading. The head is **`s.dispLg` at every width**
+  (130 / 81 / 54 at .89) where Retro's 768 arm is `s.h1`; the 390 master's head is 187.79
+  wide and three lines, ours 187.8 and three lines.
+- **The glyph is the frame's own → path**, 21.22 × 18.48, `exportAsync` off the vector
+  (found from the instance with `findAll`, the memory note's route), inlined in the block
+  as two paths (the back arrow is the frame's other path, not a transform) at viewBox
+  `0 0 21.2365 18.4747`, in `currentColor`. `LimeArrow` is the pager's 10.23 × 8.91
+  vector, a different glyph, and the gallery's 16.02 × 13.94 is inline in its own block.
+  The vectors' 1° / −179° rotation is the gallery's leak again, dropped.
+- **No `T` table, no Device override, no box token but `radius/pill` and `border/hairline`.**
+  `get_variable_defs` is the ramp at all three widths: display-lg 130 / 81 / 54, label-lg
+  32 / 21 / 14 at 1.1 on the disc, body-lg 16 / 15 / 15 at 1.5 on the quote, body-md 14 /
+  13 / 13 at 1.5 and body-sm 13 / 13 / 12 at 1.4 on the foot. The ramp's desktop rounding
+  puts `who` and `role` both at 11px (11.48 and 10.66). Every box is Retro's twin's through
+  `u()`; head gap 32 / 30 (SPACE_BETWEEN at 1440, taken as 32), grid gap 16, the 768 grid's
+  row gap 20 unreached at three seats.
+- **Named diffs, inherited.** The desktop head fills and holds the seeded heading on **one**
+  line at 107px (936.9 wide in 1088) where the frame authors two, so the section is 492.3
+  against 716 × 0.82 = 587.1 — exactly the second line's 95.2 (Retro's call: a hug here
+  would be a line that never wraps). The fourth seat, the ink card, is unreachable at 768
+  and 390 at any count (the fan rule). The 390 peek is 54 against the frame's 64 (the
+  strip stops at the content edge). The canvas draws seats 0–3 at 1440 in the frame's own
+  mist / box3 / mist / ink because `at` is 0.
+- **Measured against the masters' content edges** (seeded five): desktop sheet padded 46,
+  h2 107px at 46 and 95.2 tall, discs 60.4 (73.6 × 0.82) at y 80.8 with a 17.4 × 15.2 glyph,
+  bottom-aligned on the head, grid at 164.2 with four cells 262.2 × 282.1 (320 × 344 × 0.82)
+  at radius 24.6 and pad 19.7, disc 45.9 at 26px, quote 13px at 19.5, foot at 393.1 with
+  16.5 + 15.4 rows; 768 sheet 30 / 30 / 48, h2 81px at 30 and 144.2 tall (144), discs 73.6
+  at 100.6 (100.4), grid at 202.2 (202) with three cells 225.3 × 392.4, disc 56 at 21px,
+  quote 15px on three lines (67.5 against the frame's 69), foot at 530.9 (530.4); 390 sheet
+  30 / 10, h2 54px three lines 187.8 wide and 144.1 tall (187.79 / 144), discs at 100.5, grid
+  at 202.1 with two 300 × 392.4 cells and the second peeking 54, disc 14px, role 12px.
+  The canvas has zero pointer cursors and `scrollWidth` holds at every width. `live=1` at
+  desktop and 390 (puppeteer, probe deleted): the two discs carry a pointer (six with their
+  inherited svg and path), → steps the leading review 1 → 2 → 3, ← steps 3 → 2 → 1 → 5
+  (wraps), and the seat colours are unchanged after paging. `n=0` prints *No reviews yet.*
+  in one mist card with no discs; `n=1` draws one full-measure card and no discs at desktop
+  and 390; `n=2` at 390 draws two 300 cards and the discs; `n=8` draws four / three cells
+  with the discs. No page errors. Digest at themes 0, 2, 3 and 4: zero differing files;
+  theme 1: exactly testimonials arch 3 at three widths (no `_arch_7_` file exists — the
+  convention above).
 
 ## Open questions
 
