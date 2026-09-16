@@ -179,7 +179,7 @@ masters are fitted in one session.
 | 4 | `repertoire` | `964:68678` | 1440 × 621 | `984:10760` *(in `984:10757`)* | 708 × 655 | `984:10791` | 390 × 709 | `964:68646` / `977:23041` / `982:10193` | done `2c4e0e1` |
 | 5 | `calendar` | `964:68677` *(in `964:68675`)* | 405 × 538.6 | `984:10763` *(in `984:10761`)* | 708 × 483.6 | `984:10794` *(in `984:10792`)* | 370 × 450.6 | `964:68645` / `984:10605` / `984:10673` | done `46d28f5` |
 | 6 | `gallery` | `964:68679` | 1440 × 789 | `984:10764` | 768 × 884 | `984:10795` | 390 × 591 | `964:68647` / `977:23131` / `982:10257` | done `01d5665` |
-| 7 | `pricing` | `964:68680` | 1440 × 1199 | `984:10765` | 768 × 1072 | `984:10796` | 390 × 1474 | `964:68648` / `977:23149` / `982:10274` | — |
+| 7 | `pricing` | `964:68680` | 1440 × 1199 | `984:10765` | 768 × 1072 | `984:10796` | 390 × 1474 | `964:68648` / `977:23149` / `982:10274` | done `0695e22` |
 | 8 | `map` | `964:68681` | 1440 × 819 | `984:10766` | 768 × 831 | `984:10797` | 390 × 887 | `964:68649` / `977:23264` / `982:10389` | — |
 | 9 | `form` | `964:68682` | 1440 × 570 | `984:10767` | 768 × 734 | `984:10798` | 390 × 755 | `964:68650` / `977:23406` / `982:10472` | — |
 | 10 | `testimonials` | `964:68683` | 1440 × 790 | `984:10768` | 768 × 790 | `984:10799` | 390 × 1108 | `964:68651` / `982:8584` / `982:10499` | — |
@@ -845,6 +845,58 @@ Settled in section 6 (the gallery):
   at themes 0–4, all 645 renders: exactly gallery arch 2 at theme 1, three widths. The viewer is
   not in the first paint, so the digest does not cover its Retro arm; that arm's values are
   unchanged by construction.
+
+Settled in section 7 (pricing):
+
+- **`if (s.lime)` within `Pricing`'s `if (s.v2)`, after `shown`.** The block reads `desk`, `tab`, `u`,
+  `active`, `shown` and the hoisted `chip`, so the published filter, the moving FEATURED seat and the
+  Book pills needed nothing new. It does not read Retro's `T`, `chipType`, `h` (`vm.tierRow`),
+  `panelFg` or `selector`. That closes the plan's "`vm.tierRow` reaches pale lime" trap by not
+  reading it. Pure additions (186 / 0).
+- **The tree is Retro's twin's; three boxes move**: the row padding is **38** (Retro 28), the corner
+  **50** (30), and the tablet includes panel **240** (248, which is what the wider padding leaves). Every
+  ring is an inside stroke drawn as an inset shadow, so the 38 stands with no `calc(… - 1px)`. The
+  frame sums exactly: 38 + 210 + 38 = 286.
+- **Schemes by node.** The instance is Scheme 1. A plain row is the page ground in a 1px `sem/stroke/2`
+  (`s.ac`) ring with a lime numeral. The featured row nests **Scheme 3**: an `s.ac` fill, an `s.bg`
+  ring and every ink `s.bg`, and its badge Scheme 3's `box/1` `#CCFA61` (`lime3`, block-local). The
+  capsule is `s.box1` in a `stroke1` ring, its lit option `s.ac` lettered `s.bg`. No node carries an
+  effect. **Declined:** the instance's own 1px `stroke1` ring on four sides, layout 2's pricing reason.
+- **No `T` table.** `get_variable_defs` is the ramp at all three widths: bodyMd 14 / 13 / 13, bodySm
+  13 / 13 / 12, list 24 / 19 / 18, bodyLg 16 / 15 / 15, dispMd 72 / 50 / 40, labelXs 20 / 14 / 12, chip
+  13 / 12 / 11, eyebrow 15 / 12 / 11. Display/Title is the frames' `u(36)` / 28 / 26, and Body/Chip
+  tracks `-0.06em`. Both the ✓ and WHAT'S INCLUDED are Body/Chip here, not layout 1's Body/SM tick.
+- **Pills.** A plain row's pill is `BookPill`'s Lime defaults exactly. The featured row's is the pair
+  turned round, `bg={s.bg} fg={s.ac}`: a lime disc round an ink arrow, which is what the frame's two
+  disc SVGs draw. `full` at 390.
+- **Named diffs.** Two are Retro's, inherited. The seeded intro is one line (`DEFS.pricingIntro`), so the
+  head is 58.7 / 62.3 / 88.7 against 94 × 0.82 / 83 / 81, and the seeded title wraps to two lines at
+  390. The pill reads *Book Now* (`cta1`) where the frame types *Book*, so it is 130.5 / 142.1 / 138.9
+  wide against 121 × 0.82 / 113 / 111. The rest are this pass's:
+  - The desktop left column is 478.4 against 606 × 0.82, because of our 1052 content width.
+  - The 768 pairs are normalised to one grid at 8, where the frame spaces a pair's two items 9 apart.
+  - "Save 15% on bundles" stays dropped.
+  - **The 390 third row is 391.3 against 376**: "Visual sync available" wraps in our 123 cell, while
+    the frame's 113 text box overflows its 125 item without wrapping. Rows 1 and 2 land exactly.
+- **Measured against the masters' content edges.**
+  - Desktop: h2 32.4 (40 × 0.82 = 32.8); intro 42.2 down (52 × 0.82); capsule 30.2 (36 × 0.82 =
+    29.5), 19.7 under the head; rows **234.4** (286 × 0.82 = 234.5) at a 13.1 gap; name 24 (29 × 0.82);
+    price 32.2 under it and 59 tall (39 / 72 × 0.82); blurb 20.2; pill 44.3; includes 32.8 right of
+    the left column, its grid 20.8 under the label (25 × 0.82).
+  - 768: h2 30.8 (31); intro at 42.8 (43); capsule 36.2 (36); rows **250.4 / 250.4 / 268** (251 / 251
+    / 269); price 50 at 32.8 (33); blurb at 60 (60); includes 240 at x 410 (the frame's 430 less our
+    20); grid 24 under the label (24); items 17.6 (18).
+  - 390: capsule 34.8 (35); rows **337.9 / 406.4** (338 / 406); includes 238.7 down the row (239);
+    items 123 × 15.1 (125 × 15).
+- **`live=1` at desktop and 390** (puppeteer, probes deleted):
+  - Every chip filters and moves the lit fill (ink on lime); the idle labels are `s.tx`.
+  - The FEATURED seat follows the last row on show: Solo fills the Wedding Set; Trio and Band fill the
+    Festival Set.
+  - The pills are `<a href="#form">`. On the canvas, cursors are `auto` and the pills are `<span>`s.
+  - `n=0` prints *No packages yet.* in a lime-ringed row with no capsule; `n=1` seats nothing; `n=8`
+    seats row 8.
+  - No page errors.
+- **Digest** at themes 0–4, all 645 renders: exactly pricing arch 2 at theme 1, at three widths.
 
 ## Open questions
 
