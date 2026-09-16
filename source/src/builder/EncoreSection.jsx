@@ -770,7 +770,7 @@ function TagChips({ s, justify = 'flex-start', radius, size }) {
   )
 }
 
-function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk', classic = false }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk', classic = false, scheme = 1 }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
@@ -796,8 +796,16 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // asterisks in Lime's inks, a `s.ac` disc with `s.bg` marks — where every
   // other Lime frame draws the dark disc above. Every earlier caller leaves it
   // off.
+  //
+  // `scheme` is the same disc in another Scheme's inks, for the layout-4
+  // header (964:72849's "Frame 247" / 977:8867's "Frame 248"), whose masters
+  // nest the seal in Scheme 4 at 1440 and 768 — a pale `sem/bg` disc with
+  // `sem/text/1` marks in ink — and draw it lime with ink marks at 390, the
+  // pair Scheme 3 resolves to. Additive: 1 is the default above, and every
+  // caller written before it passes nothing.
   if (s.lime && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
+    const [disc, mk] = scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : [s.bg, s.ac]
     return (
       <div style={{
         position: 'absolute', width: size, height: size,
@@ -808,8 +816,8 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           <defs>
             <path id={`seal-${id}`} d="M 50,50 m -43.6,0 a 43.6,43.6 0 1,0 87.2,0 a 43.6,43.6 0 1,0 -87.2,0" />
           </defs>
-          <circle cx="50" cy="50" r="50" fill={s.bg} />
-          <g fill="none" stroke={s.ac}>
+          <circle cx="50" cy="50" r="50" fill={disc} />
+          <g fill="none" stroke={mk}>
             <circle cx="50" cy="50" r="47.06" strokeWidth="1.6" />
             <circle cx="12.24" cy="50" r="4.39" strokeWidth="2.39" />
             <circle cx="88.41" cy="50" r="4.39" strokeWidth="2.39" />
@@ -820,7 +828,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
             </g>
           </g>
           <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
-            <text fill={s.ac} textAnchor="middle" style={{
+            <text fill={mk} textAnchor="middle" style={{
               fontSize: '14.05px', letterSpacing: '4.21px', fontFamily: s.label,
             }}>
               <textPath href={`#seal-${id}`} startOffset="25%">{name}</textPath>
@@ -1098,7 +1106,10 @@ function LimePin({ s, width, height, radius }) {
 // 30 between its halves, and no rule after the wordmark. Its `BACKGROUND_BLUR`
 // is dropped — the fill under it is opaque, so the blur draws nothing. The 390
 // master is in the Tablet device mode, so its name is the 768 ramp's 21px.
-function NavBar({ s, colour, rule, pill }) {
+// `nameSize` overrides that one number — additive, `pill`'s precedent — for
+// the stacked header, whose 390 master (977:8867) draws the same capsule in
+// the page's own Mobile mode and so sets the name at `s.labelLg`.
+function NavBar({ s, colour, rule, pill, nameSize }) {
   const c = colour || s.tx
   const bar = rule || c
   const tab = isTablet(s)
@@ -1118,7 +1129,7 @@ function NavBar({ s, colour, rule, pill }) {
     })}>
       <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
         <Wordmark s={s} logo glyph={lime ? (s.narrow ? 36 : 29.5) : s.narrow ? 27 : undefined}
-                  size={lime && s.mob ? '21px' : undefined} color={c} />
+                  size={lime && s.mob ? (nameSize ?? '21px') : undefined} color={c} />
         {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
             123px on the 1180 canvas. It has to yield rather than push the Book
             Now pill onto a second line: the nav carries the page's own section
@@ -1178,8 +1189,7 @@ function NavBar({ s, colour, rule, pill }) {
  *
  * Lime's header family is the first four of them in its own tokens
  * (`headerFamily()`), because header card N lays out the whole page as
- * layout N. HeaderV0–V2 are fitted to Lime's frames; V3 renders Retro's
- * composition re-skinned until Lime's layout-4 pass.
+ * layout N. All four, HeaderV0–V3, are fitted to Lime's frames.
  * ------------------------------------------------------------------ */
 
 // v0 — Header layout 1 · Hero (§10.2 reference design)
@@ -2384,6 +2394,195 @@ function HeaderV3({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
+  if (s.lime) {
+    // Lime's Stacked header (964:72849 at 1440, 971:5299 at 768, 977:8867 at
+    // 390). Retro's skeleton node for node — the nav on the top edge, the
+    // avatar tile over the identity panel on the floor, the chips at the
+    // panel's right at 1440 and under it narrow, the seal in the upper right —
+    // with Retro's dress gone: no grain, no checker floor, no mustard. The
+    // scrim is a fade from lime at the floor rather than the next band's
+    // olive, every label is pale, the location reads in ink on the lime, and
+    // the seal is the Lime disc in Scheme 4's inks. Every leaf changes face,
+    // ink or box, and there is no state to share, so this is a block at the
+    // head of the component (HeaderV1's and HeaderV2's placement) and Retro's
+    // code below is untouched.
+    //
+    // The instance is Scheme 3 and carries no Device override at any width,
+    // so every type size is its Lime token at that width: `s.dispXl` for the
+    // name (200 / 120 / 72, at the frame's own .75 leading), `s.list` for the
+    // location, `s.labelXs` for the chips. Display/Title — the kicker — is the
+    // frames' `u(36)` / 28 / 26, since `s.title` is the heading string. Every
+    // box is a raw number, × 0.82 on desktop through `u()`.
+    //
+    // Scheme 3 literals the vm does not carry, named: `lime3` is `sem/box/1`
+    // (the avatar's well and its ring, `sem/state/inactive/border`), `lift`
+    // is `sem/box/2` (the location's square). Its `sem/bg` is `s.ac` and its
+    // `sem/text/1` is `s.bg`, which is why the location and the seal's marks
+    // are ink on this header where every other Lime header inks them pale.
+    const lime3 = '#CCFA61'
+    const lift = '#D9FF7F'
+    const kicker = desk ? u(36) : tab ? '28px' : '26px'
+    // The frames' page inset — 56 / 30 / 10 round the nav, 56 / 30 / 20 round
+    // the block below it — plus `s.surplus`, Retro's reading of the same
+    // masters; the sheet bleeds past the canvas, so each child pads itself.
+    const navPad = `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'})`
+    const bodyPad = `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '20px'})`
+    const avW = desk ? u(112.6) : tab ? '113px' : '116px'
+
+    // The tile: `sem/box/1` under the photograph in a 3.04 inside stroke of
+    // `sem/state/inactive/border` — both `lime3` at 1440 and 768 — and at 390
+    // a stroke of `sem/stroke/2`, which is ink (read off the node; the 390
+    // master's own tell). `border-box`, so the stated 112.6 × 118.68 holds.
+    const avatar = (
+      <div style={{
+        width: avW, height: desk ? u(118.68) : '119px', flex: 'none',
+        position: 'relative', overflow: 'hidden', background: lime3,
+        border: `${u(3.04)} solid ${s.mob ? s.bg : lime3}`, borderRadius: u(26.95),
+      }}>
+        <Photo s={s} avatar initialsSize={Math.round(parseFloat(avW) * 0.3)} ink={s.bg} />
+      </div>
+    )
+
+    const idBlock = (
+      <div style={col(u(18), {
+        alignItems: 'flex-start',
+        ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
+      })}>
+        {/* Display/Title in `scheme/1/text2`, pale — the frame types
+            "DJ · LIVE ACT", so the caps are the CSS's (Retro's reading). */}
+        <span style={{
+          fontFamily: s.display, fontSize: kicker, lineHeight: 1.1,
+          letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
+        }}>{s.kicker}</span>
+        {/* The 1440 master hand-breaks the name after its first word; both
+            narrow masters set it `w-[min-content] min-w-full`, one line at
+            their own sizes. `inline` at narrow only, Retro's reading. The .75
+            leading is the frame's own at all three widths (read off the text
+            nodes), not Retro's alone. */}
+        <Title s={s} size={s.dispXl} lh={0.75} color={s.tx} inline={s.narrow} />
+        <span style={row(u(8), { minWidth: 0 })}>
+          {/* A 14 square at `radius/chip` in Scheme 3's `sem/box/2`, and the
+              location in Display/List inked `sem/text/1` — ink on the lime. */}
+          <span style={{
+            width: u(14), height: u(14), borderRadius: s.radiusChip, background: lift, flex: 'none',
+          }} />
+          <span style={{
+            fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+            letterSpacing: s.dls, color: s.bg, whiteSpace: 'nowrap',
+          }}>{s.location}</span>
+        </span>
+      </div>
+    )
+
+    // The Tags instance is Scheme 1 at every width, but its light seat is
+    // `scheme/1/text3` — pale `s.tx`, sampled `#F2FFD0` on all three renders —
+    // not the lime `vm.chips` alternates with on layout 1's header: a lime
+    // chip on this lime floor would vanish. So the row is inlined (HeaderV2's
+    // idiom) over the frame's own pair, dark `s.box1` lettered `s.ac` and pale
+    // `s.tx` lettered `sem/active/text`, at Label/XS in `s.ui`, 5 / 11 padding,
+    // `radius/chip` and an 8 gap. The frame pins it at 344 in the panel's right
+    // corner at 1440 and gives it the measure at both narrow widths; our six
+    // wrap one row further than the frame's five there (the bio's rule). The
+    // visibility key is read here because a hidden row must not leave a hole
+    // beside a `flex: 1 0 0` column — `sealGap`'s precedent.
+    const tags = s.showTags === 'show' ? (
+      <div style={{
+        width: desk ? u(344) : '100%', flex: 'none',
+        display: 'flex', flexWrap: 'wrap', gap: u(8),
+      }}>
+        {s.chips.map((c, i) => (
+          <span key={i} style={{
+            background: i % 2 ? s.tx : s.box1, color: i % 2 ? s.activeFg : s.ac,
+            borderRadius: s.radiusChip, padding: `${u(5)} ${u(11)}`,
+            fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
+            letterSpacing: s.dls, whiteSpace: 'nowrap',
+          }}>{c.label}</span>
+        ))}
+      </div>
+    ) : null
+
+    return (
+      <div style={{
+        position: 'relative', overflow: 'hidden', color: s.tx,
+        // Retro's written-out bleed, HeaderV2's spelling; the root's `bleed`
+        // flag stays layout 1's.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        // The frames' own heights as a floor (Retro's rule: a longer name grows
+        // the band), over their 28 / 30 / 30 top and 50 / 60 / 40 bottom.
+        minHeight: desk ? u(900) : tab ? '1024px' : '844px',
+        padding: `${desk ? u(28) : '30px'} 0 ${desk ? u(50) : tab ? '60px' : '40px'}`,
+        ...col(0, { justifyContent: 'space-between' }),
+      }}>
+        {/* The fill stack: `sem/box/3` (#9CCF23, seen by nothing — the
+            photograph covers it at every width, and an emptied slot takes
+            `Photo`'s dark well so the pale type still reads), then the
+            photograph, then the fade. The 1440 fill is CROP with a transform
+            that mirrors it and crops 3.1% off each end of its height — a
+            centred cover, flipped — where 768 and 390 are FILL and unflipped
+            (read off `scaleMode`: the layout-3 header's lesson the other way
+            round). The flip is the composition's: it stands the subject at
+            the right, clear of the name. Its cost is a mirrored upload at
+            desktop alone, named here rather than declined. */}
+        <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
+          <Photo s={s} backdrop style={desk ? { transform: 'scaleX(-1)' } : undefined} />
+        </div>
+        {/* Scheme 3's `sem/bg` — `s.ac` — off the floor to a transparent stop
+            in Scheme 1's `sem/bg` at the top, the frame's own two stops. */}
+        <div aria-hidden style={{
+          position: 'absolute', inset: 0,
+          background: `linear-gradient(0deg, ${s.ac} 0%, #15180F00 100%)`,
+        }} />
+
+        {/* NavBar's Lime capsule is this frame's `Frame 49` — the same Figma
+            component as the hero's, 10 / 10 / 10 / 20 inside a radius-85
+            `sem/bg` bar with its `BACKGROUND_BLUR` 44 dropped over an opaque
+            fill — so it is reused whole (Retro layout 4's "a section's whole
+            nav can already be fitted", one template over). Two things this
+            master states that HeaderV0's did not: its 390 name is the Mobile
+            ramp's `s.labelLg` (14), where the hero's 390 master sat in the
+            Tablet device mode and NavBar carries its 21; and its 390 pill is
+            the desktop pill at × 0.712 — 94.37 × 38.44, type a raw 11.39 in
+            Bebas Neue, disc 32.75, padding 3.56 / 14.95, gap 7.12 — where
+            BookPill's `small` is × 0.62. Both go through additive props. */}
+        <div style={{ position: 'relative', padding: `0 ${navPad}` }}>
+          <NavBar s={s} colour={s.tx} nameSize={s.mob ? s.labelLg : undefined}
+                  pill={s.mob ? {
+                    size: '11.39px', disc: 32.75,
+                    style: { padding: '3.56px 3.56px 3.56px 14.95px', gap: '7.12px' },
+                  } : undefined} />
+        </div>
+
+        <div style={{
+          position: 'relative', padding: `0 ${bodyPad}`,
+          ...col(u(40), { alignItems: 'flex-start' }),
+        }}>
+          {avatar}
+          {desk ? (
+            <div style={row(0, { alignItems: 'flex-end', width: '100%' })}>{idBlock}{tags}</div>
+          ) : (
+            <div style={col('30px', { alignItems: 'flex-start', width: '100%' })}>{idBlock}{tags}</div>
+          )}
+        </div>
+
+        {/* The seal is SealBadge's Lime disc — the bio's, the footer's and
+            the calendar's component, 125.37 with the 120 ring, Group 9 and
+            the two equator rings — in Scheme 4's inks at 1440 and 768 (a pale
+            `sem/bg` disc, `sem/text/1` marks in ink) and in Scheme 3's at 390
+            (a lime disc, ink marks): the first Lime seal to change colour
+            between widths, read off each master's fill. Positions are the
+            emitted `left` plus half the rotated box, confirmed by a pale-pixel
+            scan of the renders (1316.5 / 230.5 at 1440): 768 and 390 land on
+            Retro's own numbers, and 1440 sits 8 further right and 31 lower.
+            768 anchors from the floor for Retro's reason. */}
+        <SealBadge s={s} scheme={s.mob ? 3 : 4} tilt={26.06}
+                   size={desk ? +(125.37 * z).toFixed(2) : tab ? 125.37 : 85}
+                   style={{
+                     ...(tab ? { bottom: '185.46px' } : { top: desk ? u(168.46) : '134.35px' }),
+                     right: `calc(${s.surplus} + ${desk ? u(60.11) : tab ? '51.17px' : '20.65px'})`,
+                   }} />
+      </div>
+    )
+  }
   // `sem/text/2` — the cream the wordmark, the links, the pill's label and the
   // display name are all set in. `sem/text/1` and `sem/stroke/2` are one
   // mustard: the kicker, the location dot and its line, the avatar's border
