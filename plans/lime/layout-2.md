@@ -129,7 +129,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | done `3c0abaa` |
 | 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | done `d50a23c` |
 | 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | done `206c596` |
-| 9 | `map` | `964:64594` | 1440 × 867 | `986:11862` | 768 × 823 | `986:11881` | 390 × 1286 | `964:64651` / `986:10974` / `986:11467` | — |
+| 9 | `map` | `964:64594` | 1440 × 867 | `986:11862` | 768 × 823 | `986:11881` | 390 × 1286 | `964:64651` / `986:10974` / `986:11467` | done `be2e675` |
 | 10 | `form` | `964:64595` | 1440 × 812 | `986:11863` | 768 × 889 | `986:11882` | 390 × 933 | `964:64652` / `986:11591` / `986:11633` | — |
 | 11 | `testimonials` | `964:64596` | 1440 × 855.9 | `986:11864` | 768 × 824 | `986:11883` | 390 × 917 | `964:64653` / `986:11675` / `986:11701` | — |
 | — | `footer` | `964:64597` | 1440 × 479.5 | `986:11865` | 768 × 647.4 | `986:11884` | 390 × 619.4 | — | **out of scope** — the same tree as Lime layout 1's footer (`964:58598` / `986:39887` / `986:39899`), fitted in that pass's section 11, and `NVAR.footer` is 1 |
@@ -795,6 +795,63 @@ Settled in section 8 (the booking calendar):
   state change, the chip is gone and the foot prints the prompt. `n=0` at 390 and 768 and `n=8` at
   390 all hold. No page errors. Digest at themes 0–4, all 810 renders: exactly calendar arch 1 at
   theme 1, three widths.
+
+Settled in section 9 (the events map):
+
+- **The seventh layout-2 block, after the seam: `if (s.lime)` within `EventsMap`'s `if (s.v1)`,
+  after `stats`.** `pg`, `shown`, `first`, `feat`, `g`, `onPick`, `rest`, `pad` and the field
+  allocation in `stats` are shared whole, so the published featuring, paging and Venue Link needed
+  nothing new, and every one of Retro's drops and re-seatings (Get Directions, the fabricated
+  metrics, the ring labels, the zoom controls, "Updated 2m ago", the terms and the pin count in the
+  bar) holds as written. **The boxes are Retro's twin's** (card insets 18 / 20, rows 10 / 14, panel
+  32 / 12 / 12, the 24 gap); only type-driven heights differ. Retro's `T`, `card` … `tabBg`,
+  `travel`, `gigRow`, `list`, `pins` and `featured` are not read. Pure additions (305 / 0).
+- **Three schemes, by node.** The scheme table's "featured panel (652 × 363)" is the **travel
+  card**, not the panel that features the gig — that one is `radius-map`. The travel card is Scheme 3 — `#CCFA61` (local `lime3`), ink `s.bg`, a 15% ink hairline
+  (`#15180F26`) on the card, its chip and the stats rules. The **map panel** (`radius-map`) is
+  Scheme 2's `box/1`, `s.box2`, with the map container in the same fill under an `s.stroke1` ring.
+  The rows stand on the page in Scheme 1 (`s.box1`, `s.stroke1`, `s.tx`). No node carries an effect.
+- **The radii are raw and they move**: panel **50 / 50 / 30**, map container **13 / 42 / 25**
+  (Retro's twin: 30 at every width and 14 / 20 / 20). Card and rows are 50 everywhere; the day
+  tile is `s.radiusChip`.
+- **No `T` table**: every size is the Lime ramp (`s.bodySm`, `s.bodyMd`, `s.bodyLg`, `s.list`,
+  `s.labelXs`, `s.chip`), and Display/Title — which sets the heading, *every venue name in the
+  rows* and the panel's venue — is the frames' `u(36)` / 28 / 26. The day tile is this section's
+  `s.ui` site at 1.26, normalised to row one as Retro's is.
+- **The pill is `BookPill`'s Lime branch with the pair turned round**: `bg={s.bg} fg={s.ac}
+  full={s.mob}` — ink box, lime label, lime disc with an ink arrow (the disc's arrow defaults to
+  `bg`). The branch's own `k` gives the frames' 54 box and `s.list` label at every width (44.3 /
+  54 / 54). It hugs where the frame's is half the row, since Get Directions is gone.
+- **The raster (`e089bd11`, open since the photography table): Retro's call is followed.** The
+  frame's texture is a dark line-art street map; ours stays `mapSrc` under Retro's screened invert,
+  on **Retro's own `#292A1C` plate**, which is the frame's sampled ground between the roads exactly.
+  At `opacity: 0.2` a ring-free corner of the render means (42, 43, 29) / (43, 44, 30) against the
+  frame's (43, 44, 29) / (43, 45, 30). No `photos.js` change.
+- **The rings are one `<svg>` each** in the ring's own pixels (viewBox 480 / 300 / 140, width as a
+  share of each master's viewport), so the 1 / 1.5 / 2 weights, the .3 / .5 / .8 opacities and the
+  outer ring's **4 / 4 dash** are the frame's, × 0.82 through the viewBox on desktop. CSS borders
+  draw neither the fractional weight nor the dash. The centre pin is a `u(24)` `s.ac` disc in a 2px
+  ink ring round lucide `User` (its 9.3 × 12 bounds are the frame's `user` vector), standing
+  `u(16)` above the rings' centre, over a lime stroked tail at `u(8)` below it.
+- **Pins: the frame's five dots are ink at 60%, which vanishes on the plate** — the idle pin is
+  `s.tx` at 8 and the lit one `s.ac` at 16 in a 2px ink ring (the centre pin's pair). Named diff.
+- **The pager layout 1's section 5 left owing is paid here**: `pageWindow(pages, pg, true)` and
+  `grow`, Pager's Lime defaults (the list stands on Scheme 1's ground). `n=30` holds one row at
+  516 / 332 / 346, 44.3 / 54 / 54 tall, through `1 … 3 … 6`. Retro's own `labels` stay Retro's.
+- **Named diffs.** The seeded base ("Based in Manchester") wraps to two lines at 768 and 390, where
+  the frame's "Manchester, UK" sits on one; the 768 terms line wraps in the 308 bar. The frame's 703
+  column division residue is declined again (Retro's rule), so the 390 rows are 68.4 against 74.
+  Our columns are narrower than the frame's, so each viewport keeps its aspect at a smaller size.
+- **Measured against the masters' content edges**: desktop card head row 51.1 (62 × 0.82 = 50.8),
+  stats 57.8 (57.4), pill 44.3, rows 66.7 (66.4) at a 6.6 gap, panel head 82.8 (83.6), 19.7 to the
+  map, bar 38.4 (37.7), radii 41 / 10.7, heading 29.5; 768 card head 53 (53), stats 68.7 (69), rows
+  72 (72), panel head 90.3 (91), radii 50 / 42; 390 card 339.7 (340), head 49.4 (50), panel head 87.1
+  (88), radii 30 / 25. `live=1` at all three widths with `n=8`: a row click and a pin click each
+  feature their gig, relight the pin and rebuild the list as the page minus it; the pill flips
+  span ↔ `<a target="_blank">`; a pick survives paging away and back; cursors are live-gated.
+  `n=30` pages through the compact window; `n=0` prints *No dates yet.* over an empty map; `n=1`
+  draws no list and no pager. No page errors. Digest at themes 0–4, all 810 renders: exactly map
+  arch 1 at theme 1, three widths.
 
 ## Open questions
 
