@@ -124,7 +124,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 1 | `header` | `964:64580` | 1440 × 900 | `986:11848` | 768 × 1024 | `986:11867` | 390 × 890 | `964:64637` / `984:34438` / `984:34636` | done `ab83542` |
 | 2 | `bio` | `964:64581` | 1440 × 760 | `986:11849` | 768 × 1191.8 | `986:11868` | 390 × 909.3 | `964:64638` / `984:34877` / `984:34834` | done `bbc6904` |
 | 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | done `5a9cf76` |
-| 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | — |
+| 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | **dropped** — the section is being removed from the project, so it is not fitted (its code still exists) |
 | 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | — |
 | 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | — |
 | 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | — |
@@ -648,7 +648,8 @@ Settled in section 3 (the media player):
    *Section 2:* the bio's 768 and 390 pills carry the same `#15180F` 5/5 shadow on the olive card,
    where it shows, and took the first route (`boxShadow` in `style`). The calendar should follow.
 3. **The form's `photo` slot seeds the wrong picture** (`limeStage` where the frame shows the full
-   `f821adc2`), and the video poster seeds `limeStage` where the frame shows the hero. Both are
+   `f821adc2`), and the video poster seeds `limeStage` where the frame shows the hero. *The video
+   half is moot: the section is being removed from the project (row 4, dropped).* Both are
    `photos.js` one-liners once the files exist; the form may need a new export.
 4. **The footer is shared with layout 1**, and that is structural rather than a Lime decision
    (`NVAR.footer` is 1). If a later Lime page draws a different footer, it will need an `NVAR` bump
