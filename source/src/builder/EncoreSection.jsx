@@ -5306,6 +5306,180 @@ function Media({ s }) {
     const nBars = Math.max(1, Math.floor((s.contentW - 2 * pad + 4 * z) / (14 * z)))
     const played = s.live ? now.pct / 100 : WAVE_PLAYED
     const nHot = Math.round(nBars * played)
+
+    // Lime layout 3 (964:68674 list + 964:68673 card, head 964:68666 · 984:10759
+    // + 984:10758 at 708 · 984:10790 + 984:10789 at 370) is Retro's tree node
+    // for node — the same head, the same bar-meter card at the same 24 / 16 /
+    // 18 / 96 / 44 boxes, the same counter row over five numbered rows — so it
+    // reads the meter derivation above (`pad`, `nBars`, `played`, `nHot`) and
+    // everything above the branches: the one <audio>, `cur`, `goTo`, `toggle`,
+    // `pick`, `now`. What changes is every leaf's dress, and the rows' shape.
+    //
+    // The card is Scheme 2: its `box/3` `#263020` (no `THEMES` key, so a
+    // literal), radius 50, no ring and no effect; the disc is its `box/1`,
+    // which is Scheme 1's `s.box2`; the idle bars its `box/2`, layout 2's
+    // `dusk`; the played bars `s.ac`; and every ink, both names included, is
+    // `s.tx` — only the meter is lime. The rows are Retro's pills taken apart:
+    // no fill, no side padding, a 1px `sem/stroke/1` along each row's *top*
+    // (the first too, so a rule stands under the counter), and no gap between
+    // the counter and the first row.
+    //
+    // ── The rows are content-tall, as Retro's are ────────────────────────
+    // The masters state the list at 424 / 647 / 647 and divide it: (424 − 45)
+    // / 5 = 75.8, (647 − 44) / 5 = 120.6, (647 − 43) / 5 = 120.8 — the
+    // quarter-pixel difference of a division, not a design. And the 1440 row
+    // is *smaller* than its own content (64 + 2 × 14 = 92 > 75.8), which
+    // Figma lets overflow the padding and CSS cannot. So a row is 14 + 64 + 14
+    // at every width: 75.4 on desktop against the frame's 62.2, 92 below it
+    // against 120.6.
+    //
+    // Every size is the Lime ramp's token at its width; Display/Title is the
+    // frames' 36 × 0.82 / 28 / 26, since `s.title` is the heading string. The
+    // heading sets two lines at 1440 in the frame's own 632 box ("Five worth"
+    // is 3.59em, "Five worth your" 5.34em, the box 4.86em) and one at 768; at
+    // 390 the seeded "Five worth your ear." is 6.86em, 370 at 54 in our 346
+    // column, so it wraps where the frame's 370 holds it. 390 keeps Retro's
+    // 14 row gap for Retro's reason: the master's 20 hard-clips its own
+    // titles mid-word. And the narrow meters paint the playhead from the left
+    // where the masters centre a leaked 57-bar row and clip it — the lime head
+    // is half gone at 708 and wholly gone at 370 — the derived-count rule
+    // above.
+    if (s.lime) {
+      const card = '#263020' // Scheme 2 `sem/box/3`
+      const dusk = '#43523B' // Scheme 2 `sem/box/2` — the idle bars
+      const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+      const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls, ...clip }
+      const listName = { fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, ...clip }
+      // Body/Chip — Inter bold, tracked in by its own −6%.
+      const chipType = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+      }
+      const titleType = {
+        fontFamily: s.display, fontSize: desk ? u(36) : tab ? '28px' : '26px',
+        lineHeight: 1.1, letterSpacing: s.dls, ...clip,
+      }
+
+      // The wrapper's head: Label/XS in `font/ui` (Chakra Petch) over
+      // Display/LG, the bio's own recipe.
+      const limeHead = (
+        <div style={col(u(30), { alignItems: 'flex-start' })}>
+          <span style={{
+            fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
+            letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
+          }}>{s.mediaKicker}</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac, maxWidth: desk ? u(632.156) : undefined,
+          }}>{s.title}</h2>
+        </div>
+      )
+
+      const limeCard = track && (
+        <div style={{
+          background: card, color: s.tx, borderRadius: u(50), padding: u(24),
+          overflow: 'hidden', ...col(u(16), { alignItems: 'stretch' }),
+        }}>
+          <div style={row('0', { justifyContent: 'space-between' })}>
+            <span style={bodySm}>00:00</span>
+            <span style={bodySm}>{now.of}</span>
+          </div>
+          <div style={{ height: u(96), gap: u(4), overflow: 'hidden', display: 'flex', alignItems: 'flex-end' }}>
+            {Array.from({ length: nBars }, (_, j) => (
+              <span key={j} style={{
+                flex: 'none', width: u(10), borderRadius: u(1),
+                height: u(WAVE[j % WAVE.length]), background: j < nHot ? s.ac : dusk,
+              }} />
+            ))}
+          </div>
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
+            alignItems: 'center', columnGap: u(16),
+          }}>
+            <span style={col(u(2), { minWidth: 0 })}>
+              <span style={listName}>{now.track}</span>
+              <span style={bodySm}>{now.at} / {now.of}</span>
+            </span>
+            {/* The frame types ▶ as text; the live paused state needs Pause,
+                so both are lucide's, sized off their ink as Retro's are. */}
+            <span onClick={s.live ? toggle : undefined} style={{
+              width: u(44), height: u(44), borderRadius: '999px',
+              background: s.box2, color: s.tx,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              cursor: s.live ? 'pointer' : undefined,
+            }}>
+              {playing
+                ? <Pause size={Math.round(15.5 * z)} fill="currentColor" strokeWidth={0} />
+                : <Play size={Math.round(15.5 * z)} fill="currentColor" />}
+            </span>
+            <span style={col(u(2), { minWidth: 0, alignItems: 'flex-end', textAlign: 'right' })}>
+              <span style={{ ...listName, maxWidth: '100%' }}>{now.by}</span>
+              {track.rel && <span style={{ ...bodySm, maxWidth: '100%' }}>{track.rel}</span>}
+            </span>
+          </div>
+        </div>
+      )
+
+      const gap = s.mob ? '14px' : u(20)
+      return (
+        <div style={col(u(30), { alignItems: 'stretch' })}>
+          {limeHead}
+          {limeCard}
+          <div style={col('0', { alignItems: 'stretch' })}>
+            <div style={row('0', {
+              flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: s.tx,
+            })}>
+              <span style={chipType}>● Popular</span>
+              <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+            </div>
+            {s.tracks.length === 0 && (
+              <span style={{ ...bodySm, fontSize: s.bodyMd, color: s.muted }}>No tracks yet.</span>
+            )}
+            {s.tracks.map((t, i) => {
+              const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+              const on = chosen && i === at
+              return (
+                <div key={i} onClick={onPick(i)} style={{
+                  flex: 'none', overflow: 'hidden', color: s.tx,
+                  boxShadow: `inset 0 1px 0 ${s.stroke1}`,
+                  padding: `${u(14)} 0`, cursor: s.live ? 'pointer' : undefined,
+                  ...row(gap),
+                }}>
+                  {/* A 21 slot, the widest of the frame's hugging numbers, so
+                      the live glyph swap moves nothing. */}
+                  <span style={{
+                    width: u(21), flex: 'none', display: 'flex', alignItems: 'center',
+                    fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls,
+                  }}>{on
+                    ? (playing
+                      ? <Pause size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />
+                      : <Play size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />)
+                    : t.n}</span>
+                  <span style={{
+                    width: u(64), height: u(64), flex: 'none', display: 'block', position: 'relative',
+                    borderRadius: u(4), overflow: 'hidden', background: s.box2,
+                  }}><Photo s={s} initialsSize={16} src={t.img} ink={s.tx} /></span>
+                  {/* Display/Title over Body/SM. */}
+                  <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
+                    <span style={titleType}>{t.name}</span>
+                    {t.rel && <span style={bodySm}>{t.rel}</span>}
+                  </span>
+                  {dur && (
+                    <span style={{
+                      flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
+                    }}>{dur}</span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          {/* The element rides at the foot, as Retro's does: without it every
+              row click and the disc are dead. */}
+          {audio}
+        </div>
+      )
+    }
+
     const small = {
       fontFamily: s.body, fontSize: u(A.sm), lineHeight: 1.4, color: ink,
       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
