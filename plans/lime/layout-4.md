@@ -168,7 +168,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 3 | `media` | `964:72864` *(band `964:72858`, head `964:72860`)* | 1440 × 671 | `971:5431` *(band `971:6533`, head `977:10286`)* | 768 × 569 | `977:9005` *(band `977:8999`, head `977:9001`)* | 390 × 836 | `964:72526` / `971:15190` / `971:14834` | done `2b9c847` |
 | 4 | `gallery` | `964:72909` *(wrapper `964:72874`, head `964:72875`)* | 874 × 646 | `971:5597` *(wrapper `971:5562`, head `971:5563`)* | 768 × 594 | `977:9171` *(wrapper `977:9136`, head `977:9137`)* | 390 × 586.3 | `964:72815` / `964:78491` / `977:8142` | done `9716713` |
 | 5 | `repertoire` | `964:72916` *(Section `964:72911`, panel `964:72912`)* | 1208 × 536 | `971:5604` *(Section `971:5599`, panel `971:5600`)* | 608 × 582 | `977:9178` *(Section `977:9173`, panel `977:9174`)* | 310 × 650 | `964:72822` / `964:78509` / `977:8166` | done `5d7d7a4` |
-| 6 | `map` | `964:72924` *(Frame 319 `964:72918`, head `964:72920`)* | 1440 × 747 | `971:5612` *(Frame 319 `971:5606`, head `971:5608`)* | 768 × 871 | `977:9186` *(Frame 319 `977:9180`, head `977:9182`)* | 390 × 680 | `964:72830` / `964:78599` / `977:8322` | — |
+| 6 | `map` | `964:72924` *(Frame 319 `964:72918`, head `964:72920`)* | 1440 × 747 | `971:5612` *(Frame 319 `971:5606`, head `971:5608`)* | 768 × 871 | `977:9186` *(Frame 319 `977:9180`, head `977:9182`)* | 390 × 680 | `964:72830` / `964:78599` / `977:8322` | done `1bffd9c` |
 | 7 | `pricing` | `964:72926` | 1440 × 546 | `971:5613` | 768 × 809 | `977:9187` | 390 × 837 | `964:72831` / `964:78656` / `977:8440` | — |
 | 8 | `calendar` | `964:72939` + wizard `964:72938` *(Section `964:72927`, Frame 324 `964:72928`)* | 478 × 536 + 680 × 536 | `971:5626` + `971:5625` *(Section `971:5614`, Frame 324 `971:5615`)* | 608 × 505 + 608 × 479 | `977:9200` + `977:9199` *(Section `977:9188`, Frame 324 `977:9189`)* | 350 × 496 + 350 × 474 | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | — |
 | 9 | `form` | `964:72940` | 1440 × 795 | `971:5627` | 768 × 1024 | `977:9201` | 390 × 971 | `964:72845` / `964:79477` / `977:8663` | — |
@@ -224,7 +224,7 @@ off the nodes in the planning walk:
 | media | band **Scheme 2**: `sem/bg` = `#2E3928` (`s.box1`); the instance is Primitives only at 1440, **Scheme 2 + `Device: Tablet` at 768**, and **`Device: Tablet` at 390** | the sleeve (308 × 404 / 308 × 312 / 370 × 302, radius 50) and **tile 0** carry `INNER_SHADOW` 34 `#AFE335`; every tile (289 × 270 / 136 × 139 / 180 × 123, radius 50) carries a `#D4D4D4` stroke of mixed weight — read it before drawing a ring |
 | gallery | wrapper **Scheme 3**: `sem/bg` = `#AFE335`; the instance fills `#AFE335` too | the two arrow discs **Scheme 4** `#D5E3B2`: 55.5 square, radius 10, `BACKGROUND_BLUR` 18.1, a 0.75 `#F2FFD0` stroke at 1440 and 768; at 390 two **180 × 55.5 pills**, radius 60, `DROP_SHADOW` offset 5 / 5, blur 0, `#15180F` |
 | repertoire | Section **Scheme 3**: `sem/bg` = `#AFE335`; panel `sem/box/1` = `#CCFA61` (`lime3`) | the instance inherits; "Repertoire" is `#15180F` |
-| map | `Frame 319` Scheme 1 (page); the instance fills `#15180F` | `Map Viewport` **Scheme 3**; the raster is `e089bd11` at `FILL` |
+| map | `Frame 319` Scheme 1 (page); the instance fills `#15180F` | `Map Viewport` **Scheme 3**; the raster is `e089bd11` at `FILL`. *Section 6 read the panel: the numerals and every other text on it are `sem/text/2` **pale**, not lime; only the cells' rings are* |
 | pricing | Primitives only; fills the page | — |
 | calendar (Book Us) | Section on the page; `Frame 324` `sem/box/2` = `#394732` | the wizard is **Scheme 1** with a **Scheme 3** Next Step pill (121 × 54, `#15180F`); the calendar's Send Enquiry pill is **Scheme 2** (478 × 54, `#AFE335`); the summary card's 48 × 48 avatar is `dc450d0a` |
 | form | Primitives only; fills the page | the submit pill is **Scheme 1** `#F2FFD0` (644 × 54 / 708 × 54 / 370 × 54) — pale, not lime |
@@ -384,8 +384,9 @@ is `s.tx`** (pale lime), **`s.pillBg` is the accent**, **`s.deep` is the page gr
   the step squares in lime. Read each seat.
 - **The map's `deep` plate is the page ground on Lime**, and its four stat seats (`pillBg`,
   `paper`, `mapBg`, `deep` derivations) collapse; the frame's four are **one olive register**
-  with lime rings and lime numerals, its ticker an olive capsule (not `pillBg`), its plate dark
-  with lime rings and lime zoom squares. Layout 3's map recipe is the nearest fitted thing.
+  with lime rings and pale numerals (section 6: `sem/text/2`, not lime), its ticker an olive
+  capsule (not `pillBg`), its plate dark with lime rings and lime zoom squares. Layout 3's map
+  recipe is the nearest fitted thing.
 - **The Book Us panel is `edge`** where the frame's is `s.box2`; the calendar's slot rows are
   `paper` (pale, and one colour with the `tx` card — Retro layout 4's named cost on Lime) where
   the frame's rows are **dark `s.box1` under a pale card**, so the tonal stack the Retro note
@@ -570,7 +571,9 @@ Written now from what the plan expects; refine as the sections defer things. One
    A fourth, from section 4: the gallery paragraph's "**Layout 4** … carries **no active
    mark**: its Figma frame rings all six of its thumbnails identically" is Retro's reading;
    Lime's wide masters ring the active thumb at 3px (below), so the sentence wants a Lime
-   clause.
+   clause. A fifth, from section 6: the events map paragraph's "**Layout 4** is the pager
+   alone: its whole gig list is one **mustard** ticker" is Retro's wording — under Lime the
+   ticker is an olive `box1` capsule.
 2. **One whole-page published check under Lime at layout 4**, one puppeteer script: builder →
    Lime → card 4 → *Use this header* → Publish → Open, then every `s.v3` control on the page —
    header nav and burger (fresh tab per width), the media tiles and transport with audio, the
@@ -1054,6 +1057,96 @@ Settled in section 5 (the repertoire):
   prints *No songs yet.* in ink beside the full rail; `n=1` holds. No page errors. Digest at
   themes 0, 2, 3 and 4: zero differing files; theme 1: exactly repertoire arch 3 at three
   widths (repertoire stops at arch 6, so no fold partner).
+
+Settled in section 6 (the events map):
+
+- **The sixth layout-4 block, inside its branch after the seam: `if (s.lime)` within
+  `EventsMap`'s `if (s.v3)`, after `zoomScale`** — the gallery's and the repertoire's
+  layout-4 seat. `page` / `setPage` and `zoom` / `setZoom` are hoisted, but `nGigs`, `pg`,
+  `gig`, `step`, `stats`, `ringW` and `zoomScale` are the branch's, so the block sits after
+  them and shares the ticker's whole seam: the wrapping arrows, the by-identity lit pin, the
+  zoom clamp and the `extLink` on the gig needed nothing new. The tree is Retro's twin's node
+  for node (card of viewport + panel, head row, 2 × 2 grid, ticker; the same 56 / 30 / 10
+  instance inset, 16 card-to-ticker gap, 32 / 28 panel inset and 20 at 390, 12 grid gap,
+  18 / 20 cells at gap 8, 30 × 40 zoom buttons 16 in, 12 / 16 ticker at gap 14), and every
+  leaf changes dress, so a block. Diff 233 / 0 in `EncoreSection.jsx`, one hunk, plus the
+  overlay fix below. Retro's `T`, `bw`, `hair`, `cardBg` … `tickLine`, `seats`, `chip12` and
+  `body12` are not read — under Lime they are the collapsed `paper` / `deep` / `pillBg`
+  derivations the plan named.
+- **One olive register, read off the nodes at all three widths.** The card, all four stat
+  cells and the ticker fill `sem/box/1` (`s.box1`); the card and the ticker sit in a 1px
+  `sem/stroke/1` ring (`s.stroke1`, `#F2FFD0` at 15%) at radius **50** (Retro's 30), the
+  cells in a 1px `sem/stroke/2` ring (`s.ac`) at radius **25** (Retro's 10). Every text on
+  the panel and the ticker — the two head labels, the cell labels, **the numerals**, the subs,
+  the arrows — is `sem/text/2` = **`s.tx`**, pale: the plan's "lime numerals" was a guess
+  from the mode table, and the frame's only lime on the panel is the cells' rings. The
+  viewport nests **Scheme 3**: rings, labels, marker head and tail `s.ac`, label and marker
+  ink `s.bg`, the marker's `user` glyph stroked `#15180F` on the node itself (so layout 3's
+  "the glyph is ink" named diff is this frame's own), the zoom buttons `sem/box/2` `#D9FF7F`
+  (`lift`) in a 15% ink hairline (`#15180F26`, block-local `inkHair` — Retro's branch already
+  has a `hair` const, `'1px'`). No node carries an effect; `get_variable_defs` and the nodes
+  agreed on every entry.
+- **The card's ring is a last-child overlay, not an inset shadow on the card — the third time
+  the rule bites.** The viewport fills the card's left half (its top, stacked) at `inset: 0`
+  with the raster, so an inset shadow on the card's own background vanished along every edge
+  the raster reached; a pixel scan of the desktop render's card top row read the plate
+  (41, 42, 28) where the frame draws the hairline. The overlay (`position: absolute; inset: 0;
+  borderRadius: inherit; pointerEvents: none`, so the zoom buttons stay clickable and it takes
+  no grid cell) reads at (70, 72, 55). Layout 1's calendar panel and layout 3's map container
+  are the two earlier sightings; the ticker and the cells keep plain inset rings, their
+  children staying inside the padding. **Check whether a child reaches the edge before
+  drawing any ring as an inset shadow on a container.**
+- **The viewport is layout 3's recipe verbatim**: one `<svg>` per ring in its own pixels
+  (viewBox 480 / 300 / 140 at Retro's own `ringW` shares) so the 1 / 1.5 / 2 inside weights,
+  the .3 / .5 / .8 opacities and the outer ring's 4 / 4 `dashPattern` (all three masters)
+  travel × 0.82 through the viewBox; `s.mapRadialSrc` at cover over an `s.box1` fallback, no
+  multiply. The pins are layout 2's and 3's pair — `s.tx` at 8, the lit one `s.ac` at 14 in
+  a 2px ink ring — because the frame's five dots are ink at 60% and vanish on the raster at
+  every width (named diff). **The canvas lights gig 0's pin** where the frame shows none:
+  `pg` is 0 on the canvas and the ticker always holds a gig, which is Retro's branch's own
+  reading, inherited and not to be "fixed".
+- **The type is the ramp; two boxes move from Retro's.** Body/Chip 13 / 12 / 11 (`s.chip`,
+  `-0.06em`), Display/SM 50 / 40 (`s.dispSm`, lh 1) for the numeral at 1440 and 768 and
+  **Display/Title 26 at 1.1** at 390 (a literal, `s.title` being the heading string), Body/SM
+  13 / 13 / 12, Body/MD 14 / 13 / 13, Body/LG 16 / 15 / 15; the zoom glyph a raw 20 in Inter
+  Bold; the head `s.dispLg` at .89 in `s.ac` at **every** width (the Section's text node:
+  130 / 81 / 54, one line at 1440 and 768, two at 390), where Retro's 768 arm is `s.h1`.
+  What moves: the 390 viewport is 370 × **251** (Retro's 278), and the 390 cells **hug** with
+  `space-between` — the master's rows are 109 and 138, the second grown by BASE's two-line
+  numeral with GIGS YTD's label pinned to its top and its sub to its floor — where the wide
+  masters state 226.5 / 139.5 minimums with `justify-end` (Retro's 227.5 / 140 / 100 with
+  `justify-end` throughout). The panel's left rule stays desktop-only, Retro's reading: both
+  narrow masters carry the same 1px left stroke under the card's own ring, where it paints
+  nothing. The frame's 1440 foot `Vector 2` fills `sem/bg` on the page-coloured band and is
+  not drawn (the plan's no-op).
+- **Measured against the masters' content edges** (seeded page): desktop h2 107px at 80 and
+  95.2 tall, card at 221.1 (80 + 95.2 + 56 × 0.82) and 454.6 tall (554 × 0.82 = 454.3) at
+  radius 41, panel padded 23 / 26.2, head 11px at 244.1, grid at 271.5 (20 × 0.82 under the
+  head), cells 231.9 × 185.7 (226.5 × 0.82; the frame's 294 wide is our 1052 against 1328)
+  at radius 20.5 and pad 14.8 / 16.4, numeral 41px, subs 11px at lh 15.4, outer ring 380.3
+  dashed (72.3% of our 526 viewport; the frame's 480 × 0.82 = 393.6 is Retro's named column
+  cost), labels 14.2 tall, pins 11.5 / 6.6, zoom 24.6 × 32.8 with a 16.4px glyph, ticker at
+  688.8 (16 × 0.82 under the card), 53.1 tall (65 × 0.82) at radius 41 and pad 9.8 / 13.1,
+  arrows 13px; 768 h2 81px at 56, card 688 × 722 at 158.1 (the frame's 708 × 731, our 20
+  narrower and the viewport 311 for 320 by aspect), panel 379 (379 exactly) at 501, head 12px
+  at 529 (28 in), grid at 561 (60 down the panel), cells 306 × 139.5, numeral 40, ticker
+  63.7 (64) at 896, zoom 30 × 40 at 16 / 16; 390 h2 54px on two lines, 96.1 tall (96), card
+  346 × 579.9 at 170.1, viewport 234.7 (251 × 346 / 370), panel 345.2 against the frame's
+  330 — the seeded "12 mile radius" wraps in our 107 measure and its sub with it, so row 1
+  hugs at 153.8 and row 2 at 108.4 against the master's 109 / 138 (Retro's own named cost,
+  by the frame's own hug), head 11px at 20 in, grid 20 under it, cells at radius 25 with
+  `space-between` (CITIES' numeral centred in the taller row, the master's GIGS YTD case),
+  ticker 62.3 (63) at 766, zoom at 16 / 16, "120mi" off the viewport's right edge as the
+  master's own Label 120 is at 403.5 in 370. The canvas has zero pointer cursors and
+  `scrollWidth` holds at every width. `live=1&n=8` at desktop and 390 (puppeteer, probe
+  deleted): `›` steps the ticker from gig 1 to gig 2 and moves the lit pin from its seat to
+  the next gig's, `‹` twice wraps 2 → 1 → 8, `+` twice scales the layer to 1.5625, both
+  arrows carry a pointer, a linked gig's text block is `<a href="https://example.com/tickets">`
+  and an unlinked one a `div`. `n=0` drops the ticker and keeps the map (794 tall at 390,
+  the zoom's two pointers alone); `n=1` draws the ticker with no arrows. No page errors.
+  Digest at themes 0, 2, 3 and 4: zero differing files; theme 1: exactly map arch 3 at three
+  widths (map has no fold partner), re-run map-only at all five themes after the overlay fix
+  with the same answer.
 
 ## Open questions
 
