@@ -2718,6 +2718,143 @@ function Bio({ s }) {
   // measured off the three renders' own set widths and the caption card's
   // height, because `var(--size/label-lg, 24)` is the *component's* default and
   // both narrow masters emit it unchanged.
+  //
+  // Lime layout 2 (964:64581 · 986:11849 at 768 · 986:11868 at 390) is the same
+  // tree in Lime's mode less Retro's grain, and a block of its own rather than
+  // ternaries: both cards change fill, rule and radius, the portrait card loses
+  // its mount and gains a glow, the caption and its disc change fill, the chips
+  // change face and seat colours, and the pill is Scheme 4's pale one with a
+  // hard shadow — some twenty leaves on a branch Retro renders. `Bio` has no
+  // state, so the block sits ahead of Retro's `v1` (layout 1's seat); its whole
+  // live seam is `BookPill to=`.
+  //
+  // No Device override on any master and no box token, so type is the Lime
+  // ramp's `s.*` and every box is a raw number, × 0.82 on desktop and verbatim
+  // below — except the chips, which belong to a Tags instance the frame
+  // hand-scales to a fixed 264.4 (× 0.7686), so their sizes are that scale's own
+  // per-width numbers rather than `s.labelXs`.
+  if (s.v1 && s.lime) {
+    const tab = isTablet(s)
+    const nar = s.narrow
+    const z = nar ? 1 : 0.82
+    const u = (v) => `${Math.round(v * z * 100) / 100}px`
+    const ring = (w, c) => `inset 0 0 0 ${w} ${c}`
+    const text = { fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.tx }
+
+    // The card is `sem/box/1`, so the Tags instance's dark seat is `sem/box/2`
+    // — `vm.chips`' own dark seat is box/1, which would vanish into it. The
+    // lime seat and both inks are `vm.chips`' (`sem/tag/1|2`); the frame's
+    // #C7FF3C and #15180F on its third and fourth chips are other schemes'
+    // tokens leaking through the component, and are not a third seat.
+    const chipK = s.mob ? 9.22 : tab ? 10.76 : 15.37
+    const chips = (
+      <div style={{ padding: `${u(22.19)} 0` }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.15), maxWidth: u(264.4) }}>
+          {s.chips.map((c, i) => (
+            <span key={i} style={{
+              background: i % 2 ? c.bg : s.box2, color: c.fg,
+              borderRadius: u(4.61), padding: `${u(3.84)} ${u(8.45)}`,
+              fontFamily: s.ui, fontSize: u(chipK), lineHeight: 1.26, letterSpacing: s.dls,
+              whiteSpace: 'nowrap',
+            }}>{c.label}</span>
+          ))}
+        </div>
+      </div>
+    )
+
+    // Scheme 4's pale pill — the header's recipe, but here the instance is not
+    // hand-shrunk at 390: the disc and paddings are the same box at all three
+    // widths and only Label/SM ramps. Both narrow masters give it a hard
+    // DROP_SHADOW 5 / 5 in `#15180F`, which reads on the olive card; the desktop
+    // pill carries none. It goes through `style`, so `BookPill` is untouched.
+    const pill = (
+      <BookPill s={s} to={s.bookTo} bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * z}
+                style={{
+                  padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
+                  gap: u(8.53), lineHeight: 1.1,
+                  boxShadow: nar ? `5px 5px 0 ${s.bg}` : undefined,
+                }} />
+    )
+
+    const textCard = (
+      <div style={{
+        flex: nar ? 'none' : '1 1 0', minWidth: 0, background: s.box1,
+        boxShadow: ring('1px', s.stroke1), borderRadius: u(30),
+        padding: u(s.mob ? 20 : 30),
+        ...col(u(18), { justifyContent: nar ? 'flex-start' : 'space-between' }),
+      }}>
+        <div style={col(u(25.51), { alignItems: 'flex-start' })}>
+          <span style={labelStyle(s, s.labelSm, {
+            color: s.tx, lineHeight: 1.1, boxShadow: ring(u(1.42), s.stroke2),
+            borderRadius: s.btnR, padding: `${u(5.67)} ${u(14.17)}`,
+          })}>/Featured</span>
+          <p style={{ margin: 0, ...text }}>{s.bioP1}</p>
+        </div>
+        <div style={col(u(10), { padding: s.mob ? '10px 0' : undefined })}>
+          {chips}
+          {/* 390 stands the pill under the line, Retro's reading of the same
+              leaked 637.5 row. That box's leaked 39 height is kept, as a
+              minimum: it is what sets the row's height and stands the line
+              high beside the centred pill, at all three widths. */}
+          <div style={s.mob
+            ? col('9.64px', { alignItems: 'flex-start' })
+            : row(u(9.64), { justifyContent: 'space-between', flexWrap: 'wrap' })}>
+            <span style={{ ...text, display: 'block', minHeight: u(39) }}>
+              <span style={{ color: s.ac }}>Five years of </span>
+              rooms read &amp; floors moved
+            </span>
+            {pill}
+          </div>
+        </div>
+      </div>
+    )
+
+    // Two nested clips of one size, 55 outside and 47 inside: the larger radius
+    // is the one that draws. The frame's fill crops the photograph to exactly
+    // the slice `limeStage` was exported at, so a centred cover is its own
+    // picture at every width. The INNER_SHADOW 34 in `s.ac` paints on the
+    // frame, under the caption. Its soft DROP_SHADOW (1.25 / 1.25 / 10.81 at 16%
+    // black) darkens the ground by a level or two for ~6px in the 1440 render,
+    // so it is drawn.
+    const photoCard = (
+      <div style={{
+        position: 'relative', flex: 'none', overflow: 'hidden',
+        width: nar ? '100%' : u(433), height: s.mob ? '390px' : tab ? '700px' : undefined,
+        background: s.box1, borderRadius: u(55),
+        boxShadow: `${u(1.25)} ${u(1.25)} ${u(10.81)} #00000029`,
+        ...col('0', { justifyContent: 'flex-end' }),
+      }}>
+        <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={54} /></div>
+        <span style={{
+          position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+          boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
+        }} />
+        <div style={{ position: 'relative', padding: u(20) }}>
+          <div style={{
+            ...row(u(12)), background: s.box2, color: s.tx,
+            borderRadius: u(29), padding: `${u(18)} ${u(20)}`,
+          }}>
+            <div style={col(u(4), { flex: 1, minWidth: 0 })}>
+              <span style={labelStyle(s, s.labelLg, { lineHeight: 1.1, whiteSpace: 'normal' })}>{s.brand}</span>
+              <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4 }}>{s.kicker} · {s.location}</span>
+            </div>
+            {/* A 36 disc on desktop; both narrow masters let it hug its one
+                Body/SM line, Retro's 36 × 18 pill. The glyph is the frame's
+                typed ⏵⏵ (pricing's typed-tick rule). */}
+            <span style={{
+              width: u(36), height: nar ? undefined : u(36), borderRadius: u(18), flex: 'none',
+              background: s.box1, fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+              ...row('0', { justifyContent: 'center' }),
+            }}>⏵⏵</span>
+          </div>
+        </div>
+      </div>
+    )
+
+    if (nar) return <div style={col(tab ? '30px' : '10px')}>{textCard}{photoCard}</div>
+    return <div style={row(u(30), { alignItems: 'stretch', height: u(648) })}>{textCard}{photoCard}</div>
+  }
+
   if (s.v1) {
     const nar = s.narrow
     const tab = isTablet(s)
