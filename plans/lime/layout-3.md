@@ -756,8 +756,8 @@ Settled in section 4 (the repertoire):
   left, centre and right slots. A set takes the colour of the slot it stands in, and the colours
   stay put as the sets rotate (driven live: next, then prev ×2 wrapping). A lone card on the grid
   is column one's olive (the All card on page 2 at `n=20`), and the carousel's lone card takes the
-  centre colour. Both literals are block-local, the earlier blocks' idiom. No node carries an
-  effect.
+  centre colour. Both literals are block-local, the earlier blocks' idiom. The emitted code shows no
+  effect; no `use_figma` read was taken.
 - **Diffs carried over from Retro's branch, unchanged:** the meta line is the set's count ("6 SONGS")
   where the frame has a mood and a running time. The right-hand column is the artist, not a
   duration. At 390, page 0 centres set 0 where the master centres its second card. At 768 the
