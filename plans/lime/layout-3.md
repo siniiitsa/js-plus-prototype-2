@@ -175,7 +175,7 @@ masters are fitted in one session.
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:68654` | 1440 × 900 | `984:10740` | 768 × 1024 | `984:10771` | 390 × 606.5 | `964:68622` / `977:22532` / `982:9583` | done `8855dd2` |
 | 2 | `bio` | `964:68663` *(head `964:68658`)* | 858 × 882 | `984:10748` *(head `984:10743`)* | 708 × 912 | `984:10779` *(head `984:10774`)* | 370 × 878 | `964:68631` / `977:22717` / `982:10013` | done `466aff9` |
-| 3 | `media` | `964:68674` list + `964:68673` card *(head `964:68666`)* | 858 × 424 + 858 × 243 | `984:10759` + `984:10758` *(head `984:10751`)* | 708 × 647 + 708 × 243 | `984:10790` + `984:10789` *(head `984:10782`)* | 370 × 647 + 370 × 243 | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | — |
+| 3 | `media` | `964:68674` list + `964:68673` card *(head `964:68666`)* | 858 × 424 + 858 × 243 | `984:10759` + `984:10758` *(head `984:10751`)* | 708 × 647 + 708 × 243 | `984:10790` + `984:10789` *(head `984:10782`)* | 370 × 647 + 370 × 243 | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | done `593133e` |
 | 4 | `repertoire` | `964:68678` | 1440 × 621 | `984:10760` *(in `984:10757`)* | 708 × 655 | `984:10791` | 390 × 709 | `964:68646` / `977:23041` / `982:10193` | — |
 | 5 | `calendar` | `964:68677` *(in `964:68675`)* | 405 × 538.6 | `984:10763` *(in `984:10761`)* | 708 × 483.6 | `984:10794` *(in `984:10792`)* | 370 × 450.6 | `964:68645` / `984:10605` / `984:10673` | — |
 | 6 | `gallery` | `964:68679` | 1440 × 789 | `984:10764` | 768 × 884 | `984:10795` | 390 × 591 | `964:68647` / `977:23131` / `982:10257` | — |
@@ -675,6 +675,61 @@ Settled in section 2 (the bio):
   lit seal and `lime-bio-stage.jpg`. The calendar beside it is still Retro's composition in Lime tokens
   (its session's), with the pale card that brings.
 
+Settled in section 3 (the media player):
+
+- **The first layout-3 block inside a branch: `if (s.lime)` within `Media`'s `if (s.v2)`, after
+  `nHot`** — layout 2's media seat. The block reads the branch's `desk` / `tab` / `z` / `u` and the
+  meter derivation (`pad`, `nBars`, `played`, `nHot` off `s.contentW`), and the hooks above every
+  branch (`<audio>`, `cur`, `at`, `track`, `chosen`, `goTo`, `toggle`, `pick`, `onPick`, `now`), so
+  the published player needed nothing new. Retro's `T`, `ROWS`, `A`, `cream` / `ink` / `hot` /
+  `cold`, `head` and `card` are not read. **`{audio}` rides at the block's foot**, as Retro's does:
+  there is no bar to tuck it into. Pure additions (174 / 0).
+- **The tree is Retro's twin's, box for box**: the card's 24 padding, 16 gap, 96 meter, 44 disc and
+  2-gap name columns, the counter's 16 padding, the rows' 14 padding, 20 gap and 64 sleeve. What
+  moves: the card's radius is **50** (Retro 30), the rows have **no fill and no side padding**,
+  and there is **no gap between the counter and the first row** (Retro's `col(u(10))`).
+- **Open question 3's answer: the rows are content-tall, Retro's rule.** Each master's rows are
+  exactly (stated − head) / 5: (424 − 45) / 5 = 75.8, (647 − 44) / 5 = 120.6, (647 − 43) / 5 =
+  120.8. The 1440 row is also *smaller* than its content (14 + 64 + 14 = 92), which Figma lets
+  overflow and CSS cannot. So a row is 92 (75.4 on desktop) at every width, against 62.2 / 120.6
+  / 120.8. The Lime-only 424 is the composed page's allocation, not the component's.
+- **Open question 5's answer: a literal.** `card` `#263020` (Scheme 2 `box/3`) and `dusk` `#43523B`
+  (its `box/2`, the idle bars) are block-local. The disc is Scheme 2's `box/1`, which is `s.box2`.
+  The played bars are `s.ac`, and **every ink is `s.tx`**, both names included: only the meter is
+  lime, where Retro's names are the accent. No node carries a stroke or an effect, the card
+  included.
+- **No `T` or `A` table.** All three `get_variable_defs` are the ramp: label-xs 20 / 14 / 12, display-lg
+  130 / 81 / 54, list 24 / 19 / 18, body-sm 13 / 13 / 12, body-md 14 / 13 / 13, body-lg 16 / 15 / 15,
+  chip 13 / 12 / 11. Display/Title is the frames' `u(36)` / 28 / 26. The head is the bio's recipe:
+  `s.ui` at `s.labelXs` over `s.dispLg` in `s.ac`. The list's sleeve well is Scheme 1's `s.box2`,
+  the rows' hairline `s.stroke1` as `inset 0 1px 0`, with the first row's giving the rule under
+  the counter.
+- **The heading's measure is the frame's own 632 box on desktop only.** "Five worth" is 3.59em,
+  "Five worth your" 5.34em and the box 4.86em, so the break falls after WORTH as in the frame.
+  768 sets one line. At 390 the seeded "Five worth your ear." is 6.86em, 370 at 54 against our
+  346, so it wraps to two lines where the frame's 370 holds one. That is a named diff.
+- **Named diffs.** The narrow meters paint the playhead from the left. The masters centre a leaked
+  57-bar row and clip it, so the lime head is half gone at 708 and gone at 370 (Retro's
+  derived-count rule). The card's clock row reads 00:00 / the track's length, and its right-hand
+  line is `track.rel`, where the frame types 1:00 / 2:00 and "Mix 028": Retro's readings. The
+  390 rows keep Retro's 14 gap, since the master's 20 hard-clips "LATE LIGHTS (ORIGINAL MI". The
+  narrow card is 238 against the leaked 243.
+- **Measured against the masters' content edges** (`column=left` at desktop): eyebrow 20.2, h2 two
+  lines at 107 standing 44.6 under the eyebrow's top (55 × 0.82 = 45.1), card 24.6 under the h2 and
+  200.6 tall (243 × 0.82 = 199.3) at radius 41, meter 78.7, disc 36.1, list 24.6 under the card,
+  counter 37.2 (36.9), rows 75.5, sleeve 52.5 at x 33.6; 768 h2 one line at 72.1 standing 47.6
+  under the eyebrow (48), card 238.2, counter 44 (44), rows 92; 390 eyebrow 15.1, h2 two lines,
+  card 236.8, counter 43 (43), rows 92 with the 14 gap. The canvas has zero pointer cursors.
+- **`live=1` at desktop and 390** (puppeteer, `--autoplay-policy=no-user-gesture-required`, probes
+  deleted): a row click plays that track, and its number becomes Pause, the card names it and
+  the disc shows Pause. A second click pauses (Play glyph), the disc toggles play and pause, and
+  another row moves the mark. The meter stayed at 0 played across the 1.2 s probe: the remote
+  file's metadata had not loaded, which is the shared `now.pct` path and not this block's.
+  `n=0` prints the counter and *No tracks yet.* with no card (Retro's `track &&`); `n=1` and `n=8`
+  hold, 8 growing the 390 section to 1305. No page errors. Digest at themes 0–4, all 645 renders:
+  exactly media arch 2 at theme 1, three widths. Not checked in the builder; the bio session's
+  composed-row check covers the column, and `column=left` is the same `sectionVm({ column })`.
+
 ## Open questions
 
 1. *Settled in section 2 — a landscape seed, `lime-bio-stage.jpg`; see its Conventions.* **The bio photograph's cover.** The frame's transform is `limeStage`'s own slice, filling a
@@ -686,7 +741,7 @@ Settled in section 2 (the bio):
 2. *Settled in section 2 — it paints faintly and is not drawn.* **The seal's grain rect.** Lime's bio seal carries Retro's `b74be8bc` grain inside it at
    447 × 447. It is almost certainly a leftover of the duplicated Retro component; the render
    decides whether it paints, and `SealBadge`'s Lime branch draws no grain either way.
-3. **The media list's narrow rows.** 121 tall at 768 and 390 against 76 at 1440, on a
+3. *Settled in section 3 — divisions of the stated height, and the rows are content-tall; see its Conventions.* **The media list's narrow rows.** 121 tall at 768 and 390 against 76 at 1440, on a
    component whose Retro instance states 647 at every width. Whether 121 is a design (a taller
    row for a narrower measure) or the 647 constant divided five ways (647 − 45 = 602; 602 / 5 =
    120.4) is the media session's first reading — the quarter-pixel test Retro's plan used.
@@ -694,6 +749,6 @@ Settled in section 2 (the bio):
    the first Lime master to be. Whether `HeaderV2`'s narrow constants can be reused at all, or
    the Lime block writes its own 390 out, is the header session's call; write it under
    *Conventions* since layout 4 may meet the same shape.
-5. **The now-playing card's `#263020`** (Scheme 2 `box/3`) has no key on `THEMES[1].sem`. A
+5. *Settled in section 3 — the literal.* **The now-playing card's `#263020`** (Scheme 2 `box/3`) has no key on `THEMES[1].sem`. A
    local literal in the media block is layout 2's `lime3` precedent; a `sem` key would be
    session 0's shape and reaches nothing else on this page. Default is the literal.
