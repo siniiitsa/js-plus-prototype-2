@@ -784,7 +784,8 @@ Settled in section 5 (the booking calendar):
   (`get_metadata` on the three `Frame 300`s). Retro's one-grid normalisation of the frame's two row
   mechanisms is kept.
 - **What the dress changes.** The card is `s.box1` at radius **50** (Retro 30), with a **2px
-  `stroke1` ring stroked inside**, drawn as an inset shadow. Its padding is wider than the ring, so
+  `stroke1` ring stroked inside**, drawn as an inset shadow at `s.bw` (`border/thin`), unscaled at
+  desktop like every Lime ring. Its padding is wider than the ring, so
   no child paints over it and no overlay is owed; this is unlike layout 1's calendar panel. The
   numeral is **`s.tx`**, where Retro's is the accent. The dots are read off the exported SVGs:
   booked `s.box2`, picked `s.ac`, free `s.box1` inside a raw 2.559 `stroke1` ring (inset). The

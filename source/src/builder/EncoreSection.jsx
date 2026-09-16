@@ -11536,7 +11536,7 @@ function Calendar({ s }) {
           }}>{s.title}</h2>
           <div style={col(lu(18), {
             background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(50),
-            boxShadow: `inset 0 0 0 ${lu(2)} ${s.stroke1}`, overflow: 'hidden',
+            boxShadow: `inset 0 0 0 ${s.bw} ${s.stroke1}`, overflow: 'hidden',
           })}>
             <div style={col('0')}>
               {!!hit && (
