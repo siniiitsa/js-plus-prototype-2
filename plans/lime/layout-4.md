@@ -167,7 +167,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 2 | `bio` | `964:72857` *(Section `964:72850`, head `964:72851`, tags `964:72854`)* | 664 × 720 | `971:5307` *(Section `971:5300`, head `971:5301`, tags `971:5304`)* | 708 × 720 | `977:8875` *(Section `977:8868`, head `977:8869`, tags `977:8872`)* | 370 × 536 | `964:72519` / `964:76446` / `971:14479` | done `55ac9b5` (comment fix `e260703`) |
 | 3 | `media` | `964:72864` *(band `964:72858`, head `964:72860`)* | 1440 × 671 | `971:5431` *(band `971:6533`, head `977:10286`)* | 768 × 569 | `977:9005` *(band `977:8999`, head `977:9001`)* | 390 × 836 | `964:72526` / `971:15190` / `971:14834` | done `2b9c847` |
 | 4 | `gallery` | `964:72909` *(wrapper `964:72874`, head `964:72875`)* | 874 × 646 | `971:5597` *(wrapper `971:5562`, head `971:5563`)* | 768 × 594 | `977:9171` *(wrapper `977:9136`, head `977:9137`)* | 390 × 586.3 | `964:72815` / `964:78491` / `977:8142` | done `9716713` |
-| 5 | `repertoire` | `964:72916` *(Section `964:72911`, panel `964:72912`)* | 1208 × 536 | `971:5604` *(Section `971:5599`, panel `971:5600`)* | 608 × 582 | `977:9178` *(Section `977:9173`, panel `977:9174`)* | 310 × 650 | `964:72822` / `964:78509` / `977:8166` | — |
+| 5 | `repertoire` | `964:72916` *(Section `964:72911`, panel `964:72912`)* | 1208 × 536 | `971:5604` *(Section `971:5599`, panel `971:5600`)* | 608 × 582 | `977:9178` *(Section `977:9173`, panel `977:9174`)* | 310 × 650 | `964:72822` / `964:78509` / `977:8166` | done `5d7d7a4` |
 | 6 | `map` | `964:72924` *(Frame 319 `964:72918`, head `964:72920`)* | 1440 × 747 | `971:5612` *(Frame 319 `971:5606`, head `971:5608`)* | 768 × 871 | `977:9186` *(Frame 319 `977:9180`, head `977:9182`)* | 390 × 680 | `964:72830` / `964:78599` / `977:8322` | — |
 | 7 | `pricing` | `964:72926` | 1440 × 546 | `971:5613` | 768 × 809 | `977:9187` | 390 × 837 | `964:72831` / `964:78656` / `977:8440` | — |
 | 8 | `calendar` | `964:72939` + wizard `964:72938` *(Section `964:72927`, Frame 324 `964:72928`)* | 478 × 536 + 680 × 536 | `971:5626` + `971:5625` *(Section `971:5614`, Frame 324 `971:5615`)* | 608 × 505 + 608 × 479 | `977:9200` + `977:9199` *(Section `977:9188`, Frame 324 `977:9189`)* | 350 × 496 + 350 × 474 | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | — |
@@ -987,6 +987,73 @@ Settled in section 4 (the gallery):
   a pick of slot 1. `n=0`: the `#9CCF23` well with `KM` in ink at 72 / 88, dark thumb wells
   with pale `KM` at 21 / 26. No page errors. Digest at themes 0, 2, 3 and 4: zero differing
   files; theme 1: exactly gallery arch 3 at three widths (gallery has no fold partner).
+
+Settled in section 5 (the repertoire):
+
+- **The fifth layout-4 block, inside its branch after the seam: `if (s.lime)` within
+  `Repertoire`'s `if (s.v3)`, after `jump`** — the gallery's layout-4 seat. `alpha` and the
+  `anchors` map are hoisted, but `groups`, `letters`, the clamped `at` and `jump` are the
+  branch's, so the block sits after them and shares the rail's whole seam: the published jump,
+  the clamp, the callback ref and the handler-only-on-a-lit-letter rule needed nothing new.
+  The tree is Retro's twin's node for node (Section → panel → head / sub / grid, the list of
+  groups beside or under the 232 rail of 32 cells), and every leaf changes ink or box, so a
+  block. Diff 143 / 0 in `EncoreSection.jsx`. Retro's `T`, `band` / `cream` / `panel` /
+  `mustard` / `rule`, its `railCell` / `rail` / `list` and `TornEdge` are not read.
+- **Scheme 3 by node, and `sem/text/1` and `sem/text/2` are one ink there.** The Section's
+  fill is `sem/bg` = `#AFE335` (`s.ac`), the panel's `sem/box/1` = `#CCFA61` (`lime3`, a
+  block-local literal, layout 2's idiom), and every text node — the head, the sub, the group
+  letters, both halves of a row, all twenty-six rail letters — is `#15180F` = `s.bg`,
+  whichever of the two text tokens it binds. The lit cell fills that ink and letters itself in
+  Scheme 3's `sem/bg`, which is the band: **`s.ac` on `s.bg`**, Retro's "cut out in the
+  ground behind it" rule one scheme over. `get_variable_defs` and the nodes agreed at all
+  three widths (no fills-versus-token lie on this component).
+- **The rules do not ramp, and they are not `s.stroke1`.** `sem/stroke/1` is `#15180F` at
+  .15 on all three masters (`${s.bg}26`), where Retro's desktop binds the mustard and its
+  narrow masters `#111111`; `s.stroke1` under Lime is Scheme 1's pale `#F2FFD0` and would
+  vanish here. Both strokes are `INSIDE` — 2 on the group heading, 1 on the row — so they are
+  inset shadows, not Retro's `borderBottom`, which made the heading 26 and the row 61 against
+  the frame's 24 and 60. And the heading's type is on the heading box itself: a bare `div`
+  round a `span` carried the root font's strut and came out 24 at every width where the
+  frame's `lh` is the letter's own line (24 / 23 / 23 — the narrow 23 is 15 × 1.5 rounded).
+- **The type is the ramp, and it is why the instance is taller.** The song title is
+  Display/Title (36 / 28 / 26, a literal since `s.title` is the heading string) where Retro's
+  is `size/list`, and the artist is `s.list` (24 / 19 / 18) where Retro's is 16 / 12 / 13:
+  that is Lime's 536 / 582 / 650 instance against Retro's 452 / 522 / 596 on the same rows.
+  The head is `s.dispLg` at every width (130 / 81 / 54 at .89; Retro's 768 arm is its
+  fitted `h1`), the sub and the group letters `s.bodyLg` at 1.5, the rail `s.bodySm` at 1.4,
+  Inter and Bebas as the frames set them. No `T` table, no Device override, no box token
+  (`radius/chip` 6 and `border/hairline` 1 are the only two, both raw).
+- **The boxes are Retro's twin's but for one.** 100 / 100 / 30 over and 56 / 30 / 10 either
+  side on the Section, 60 / 50 / 40·30 on the panel at radius 60, gaps 40 · 24 · 40-32 · 28,
+  rows padded 10 / 0, the rail's 232 with its 50 indent at desktop and its `sticky` there
+  alone (Retro's reason, Retro's cost at 768 and 390 — the rail leaves the viewport on the
+  first jump, measured at −384 on the 390 harness). What moves: **the 390 Section pads 100
+  below**, not Retro's 60 (948 = 30 + 818 + 100), so the foot inset is 150 / 150 / 100.
+- **The foot seam is `s.bg` at every width** — `sem/bg` on the 1440 and 768 vectors (nested
+  Scheme 5, whose `sem/bg` is the same `#15180F`) and on the 390 one (Scheme 1) — drawn by
+  `ArcEdge` in its default colour with `bleed={false}` on the `position: relative` sheet,
+  section 3's route. The 390 vector is the leaked 576.56 (x −93 as a box; the node reports
+  483.28, its 180°-turned origin), the 768 one 768 wide; `ArcEdge` stretches to the sheet and `scrollWidth` does not move.
+- **Measured against the masters' content edges** (the seeded twelve songs in eight groups,
+  so the panel runs taller than the frames' six in three — at six the desktop section sums to
+  870.8 against 1062 × 0.82 = 870.8): desktop sheet padded 82 / 45.9 / 123, panel 1088.2 wide
+  (1328 × 0.82 = 1089) at radius 49.2 and pad 49.2, h2 107px at 131.2 (160 × 0.82) and 95.2
+  tall, sub 13px at 259.2 (316 × 0.82 = 259.1), grid at 298.4 (364 × 0.82 = 298.5), rail
+  190.2 wide at x 894.7 (1092 × 0.82 = 895.4) padded 41, cells 26.2 six to a row at gap 6.6,
+  rings 0.8 inset, heading 19.5, rows 48.8 (60 × 0.82 = 49.2) with the title 29.5px and the
+  artist 20px on one baseline, arc 36.3 deep at −1 spanning 1180; 768 sheet 100 / 30 / 150,
+  panel 708 at 30 / 100, h2 81px at 150, sub 15px at 262.1 (262), grid at 308.6 (309), rail
+  608 × 72 fifteen to a row, list at 412.6 (413), heading 22.5 (23), rows 50.8 (51) at 28px /
+  19px, arc 44.2 at 768 wide; 390 sheet 30 / 10 / 100, panel 370 at 10 / 30 with pad 40 / 30,
+  h2 54px at 70, sub at 158 (158), grid at 204.5 (205), rail 310 × 152 seven to a row, list at
+  388.5 (389), heading 22.5 (23), rows 48.6 (49) at 26px / 18px, arc 44.2 at 390. The canvas
+  has zero pointer cursors and `scrollWidth` holds at every width. `live=1` at desktop and
+  390 (puppeteer, probe deleted): the eight lit letters alone carry a pointer, a click on S
+  lights S and calls `scrollIntoView` on the S group, the desktop rail pins at viewport top
+  0 after the jump (sticky), a click on Q (no song) changes nothing, and D lights D. `n=0`
+  prints *No songs yet.* in ink beside the full rail; `n=1` holds. No page errors. Digest at
+  themes 0, 2, 3 and 4: zero differing files; theme 1: exactly repertoire arch 3 at three
+  widths (repertoire stops at arch 6, so no fold partner).
 
 ## Open questions
 
