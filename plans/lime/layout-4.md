@@ -558,6 +558,10 @@ and the selectors; Retro layout 4's repertoire note gives the Stacked card as
 
 ## The end-of-pass sweep
 
+**Done: `<docs sha>` (docs, comments, this plan, `plans/README.md`) and `<refresh sha>` (the
+`index.html` refresh).** What each item came to is under *Learned on the end-of-pass sweep* at
+the foot of *Conventions*; the list is kept as it was run.
+
 Written now from what the plan expects; refine as the sections defer things. One session:
 
 1. **CLAUDE.md and README.md**, wherever they describe a layout-4 state as Retro's alone, and
@@ -1482,6 +1486,99 @@ Settled in section 10 (the testimonials — the last body section):
   with the discs. No page errors. Digest at themes 0, 2, 3 and 4: zero differing files;
   theme 1: exactly testimonials arch 3 at three widths (no `_arch_7_` file exists — the
   convention above).
+
+Learned on the end-of-pass sweep (`<docs sha>` and `<refresh sha>`):
+
+- **The claim sites were layout 3's, one layout on.** CLAUDE.md and README said "designed at
+  layouts 1, 2 and 3" with `HeaderV0`–`V2` fitted and "Layout 4 is Retro's compositions in
+  Lime tokens until its pass". They now say all four, the family closed, and the CLAUDE.md
+  placement sentence gained the `s.v3` shapes, `HeaderV3` (with the mirrored desktop
+  photograph, open question 6, named as a reversible product call) and the two additive
+  helper props this pass grew — `ArcEdge`'s `bleed` and `SealBadge`'s `scheme`. Two comment
+  sites made the same claim: `photos.js`'s header and `sectionVm`'s `lime` flag;
+  `headerFamily`'s comment and the §10.2 header banner were already true (section 1 wrote
+  the banner). The eight layout-4 paragraphs in CLAUDE.md gained a Lime clause each: the
+  media's tile mark (a lime glow, still a shadow on the scrim) and its olive band with arcs;
+  the gallery's active thumb (3px on the wide rail, 4px on every 390 tile, not live-gated);
+  the map's olive `box1` ticker; pricing's rule read as `s.ac` and its box1 / lime feature
+  seats; the calendar's three-level stack ("on Lime and Grunge" is Grunge's alone now); the
+  form's 1px `s.stroke1` rules, `s.ac` box ring, pale submit and 2px `s.tx` refusal; the
+  testimonials' pale `s.tx` sheet with the page-ink fourth seat. The file table was
+  re-counted (`EncoreSection.jsx` 21310). `git diff main --stat` before any browser: exactly
+  the sections' files — `EncoreSection.jsx`, `photos.js`, this plan and `plans/README.md`.
+- **One puppeteer route, three scripts (deleted): the published page at 1440, 390 and 820,
+  the thumbnails and the other three cards in one; viewport seam shots in a second; the
+  two-build digest in a third.** Layout 1's route unchanged: thumbnail → big card → card 4
+  (`[role=dialog] button[aria-pressed]` index 3) → *Use this header* → *Publish* → *Open* →
+  `page.once('popup')`, `--autoplay-policy=no-user-gesture-required`, a `scrollIntoView` hook
+  and a capture-phase `preventDefault` on the mailto. Every section under Lime at layout 4:
+  - **Page.** Eleven roots in the seeded order with every root's top on the previous root's
+    bottom (no composed row), the four layout-4 tells, no `repeating-conic-gradient`,
+    `scrollWidth` 390 at 390, no page errors anywhere.
+  - **Header.** All ten fragment anchors (nine nav, Book Now → `form`) scrolled to their
+    ids. At 390 and 820 (a fresh tab each) the burger stands in the 370 / 708 capsule and
+    opens a ten-link panel; a link scrolls and the panel closes.
+  - **Media.** A tile click loaded its track and played it (`paused` false); Prev, the disc
+    (pause, resume), Next and every one of the five tiles moved the `<audio>` source as
+    they should.
+  - **Gallery.** All nine pointer leaves (seven thumbs, two discs) changed the section; at
+    390 the three window tiles and the two pills did, the one "same" being the current slot.
+  - **Repertoire.** Each of the eight lit letters called `scrollIntoView` on its group (C,
+    already lit, scrolled without changing the rail); the rail is `sticky` at 1440.
+  - **Map.** `+` `−` `‹` `›` each changed the section. **Pricing.** Three pills on `#form`.
+  - **Calendar.** The four chips (Wedding already lit), the three slot rows and Next Step
+    changed the section; the wizard reads 1 input on step 1, 4 on step 2, 2 on step 3 where
+    Send Enquiry is `<a href="#form">`, Back twice returns to step 1, and there is no
+    `<form>`.
+  - **Form.** A refused submit rings every box in `inset 0 0 0 2px rgb(242, 255, 208)` at an
+    unchanged 37px and prints the prompt; typing composes the mailto (subject *Enquiry*,
+    four values and the message); the valid submit swaps in the sent block; *Write another*
+    restores the typed values.
+  - **Testimonials.** Both discs changed the row. **Footer.** Nine anchors on their sections.
+  - **Seams, against real neighbours at 1440 and 390**: the header meets the bio band on a
+    straight edge; the media's lime head arc bulges into the olive; its dark foot arc and
+    the gallery's dark head arc make the named lens; the gallery and repertoire are one lime
+    band; the repertoire's dark foot arc bulges into the page; the testimonials' pale band
+    and the footer meet on straight edges. Nothing to fix.
+- **Thumbnails (deliverable 4).** Selecting each canvas root put the sidebar on *<Section>
+  layout 4* for all ten body categories (the header on *Header layout 4 · Stacked*) and the
+  footer on *Footer layout 1*; the fourth `[role=menuitem]` of every picker is marked current
+  and renders the fitted section on the page ground, the header's with no checker.
+- **Cards 1, 2 and 3** publish with eleven roots in their own orders (card 3 composed at 1440
+  and `PAGE_ORDERS[2]` at 390), every header anchor scrolling, and the burger opening a
+  ten-link panel that scrolls at 390. Cards 2 and 3 keep the glass glow; **no Lime card draws
+  the checker any more.**
+- **Six script traps, all met on this sweep.**
+  - A top-left offset click on a canvas root taller than the viewport, after
+    `scrollIntoView({ block: 'center' })`, lands in the **top bar's theme dots** — thumbnails
+    5–10 came back in Editorial's palette before it was caught. Scroll `block: 'start'` and
+    click 30 / 30 in.
+  - The canvas card's shadow serialises as `0px 8px 40px`, not the source's `0 8px 40px`;
+    filter canvas roots on the serialised string, or the sidebar's own `--ac` previews count.
+  - The burger is a `span` of three bars with no label, not a button: find it by three
+    children, a pointer cursor and a 26px width.
+  - A text matcher must take the **deepest exact** match: `startsWith` matched the pills'
+    parent ("BackSend Enquiry") and clicked between them, so "Back ×2" left the wizard on
+    step 2.
+  - `clip` with `captureBeyondViewport: false` on the popup throws *Cannot take screenshot
+    with 0 height* for every clip, and beyond-viewport clips of the 390 page came back with
+    the media's foot seam missing (a straight olive-to-lime edge — the garbling layout 3
+    named). Viewport screenshots after scrolling the seam into view are what showed the arcs.
+  - The two-build digest's noise is the seal's spin: 3–12 `<text>` / `<textPath>` rows per
+    width between two walks of the *same* build. `emulateMediaFeatures` reduced-motion (the
+    memory note's recipe; `index.css` stops the spin under it) takes it to zero.
+- **Two-build digest** (repo root on `127.0.0.1:8931`, the old build digested before the
+  `cp`, one fresh page per theme, the seal stopped). Eleven roots at 1088 / 768 / 390 in
+  both builds and **zero differing rows at all five themes and three widths** on the seeded
+  page; **zero at Retro's card 4 as well** (Retro's layout 4 is untouched in the built
+  artefact, which the harness digest never checked); 645 / 629 / 622 at Lime's card 4.
+  - The shipped-it tell is the modal: the old build's Lime card 4 draws the checker
+    (`repeating-conic-gradient`) and nothing pale; the new one's draws the pale
+    `rgb(242, 255, 208)` seal disc and the mirrored photograph (`matrix(-1, …)`) and no
+    checker. Cards 1–3 read the same in both.
+  - The string tell is `3:{bio:` (the `layouts[3]` seed): one hit in the new file, none in
+    the old; `bleed` appears 9 times against 4.
+  - Sizes: 35 photographs, 4.0 MB, unchanged. The standalone file is 6.48 MB (was 6.44).
 
 ## Open questions
 

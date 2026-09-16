@@ -184,7 +184,7 @@ the only module that imports them.
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
   `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all thirty-five files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~6.4 MB.
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~6.5 MB.
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
@@ -514,15 +514,15 @@ These are intentional limits, not oversights — see §12 for the full list. The
   collapsing to a burger. Deliberate: the live navigation was scoped to the designed templates.
   The §10.2 *layouts* are shared by all five templates; Retro's decorative treatment — paper
   grain, torn edges, checkerboard, hard offset shadows, rotated cards — is gated on `s.retro`,
-  the same split as `headerFamily()`. **Lime is designed at layouts 1, 2 and 3**: each of its Figma
-  pages is Retro's page of the same number in another variable mode, so its own treatment — arc
-  seams between bands at layout 1, glows at all three, the arch portrait, the reticle — is gated on
-  `s.lime` inside the same shared branches. Its header family is the first four photographic
-  layouts, of which the Hero, the Feature spread and the Inset Hero are fitted (Lime's Inset Hero
-  is a different composition from Retro's: an upright glass card where Retro tilts a polaroid), so
-  the setup modal's first three cards lay out whole Lime pages. At layouts 2 and 3 the footer is
-  layout 1's. The fourth header card, and every section's layout 4, are Retro's designs in Lime's
-  tokens until Lime's layout-4 pass. One piece of that treatment is placed
+  the same split as `headerFamily()`. **Lime is designed at all four of its layouts**: each of its
+  Figma pages is Retro's page of the same number in another variable mode, so its own treatment —
+  arc seams between bands at layouts 1 and 4, glows at every layout, the arch portrait, the
+  reticle — is gated on `s.lime` inside the same shared branches. Its header family is the first
+  four photographic layouts, all four fitted (Lime's Inset Hero and its Stacked header are
+  different compositions from Retro's: an upright glass card where Retro tilts a polaroid, and a
+  glass nav capsule over an identity panel where Retro stands on a checker floor), so every card
+  in the setup modal lays out a whole Lime page and the Lime family is closed. At layouts 2, 3
+  and 4 the footer is layout 1's. One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
