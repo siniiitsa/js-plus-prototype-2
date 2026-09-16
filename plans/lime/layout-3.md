@@ -180,7 +180,7 @@ masters are fitted in one session.
 | 5 | `calendar` | `964:68677` *(in `964:68675`)* | 405 × 538.6 | `984:10763` *(in `984:10761`)* | 708 × 483.6 | `984:10794` *(in `984:10792`)* | 370 × 450.6 | `964:68645` / `984:10605` / `984:10673` | done `46d28f5` |
 | 6 | `gallery` | `964:68679` | 1440 × 789 | `984:10764` | 768 × 884 | `984:10795` | 390 × 591 | `964:68647` / `977:23131` / `982:10257` | done `01d5665` |
 | 7 | `pricing` | `964:68680` | 1440 × 1199 | `984:10765` | 768 × 1072 | `984:10796` | 390 × 1474 | `964:68648` / `977:23149` / `982:10274` | done `0695e22` |
-| 8 | `map` | `964:68681` | 1440 × 819 | `984:10766` | 768 × 831 | `984:10797` | 390 × 887 | `964:68649` / `977:23264` / `982:10389` | — |
+| 8 | `map` | `964:68681` | 1440 × 819 | `984:10766` | 768 × 831 | `984:10797` | 390 × 887 | `964:68649` / `977:23264` / `982:10389` | done `1b5d080` |
 | 9 | `form` | `964:68682` | 1440 × 570 | `984:10767` | 768 × 734 | `984:10798` | 390 × 755 | `964:68650` / `977:23406` / `982:10472` | — |
 | 10 | `testimonials` | `964:68683` | 1440 × 790 | `984:10768` | 768 × 790 | `984:10799` | 390 × 1108 | `964:68651` / `982:8584` / `982:10499` | — |
 | — | `footer` | `964:68684` | 1440 × 479.5 | `984:10769` | 768 × 647.4 | `984:10800` | 390 × 619.4 | — | **out of scope** — the same tree as Lime layout 1's footer, fitted in that pass's section 11, and `NVAR.footer` is 1 |
@@ -897,6 +897,68 @@ Settled in section 7 (pricing):
     seats row 8.
   - No page errors.
 - **Digest** at themes 0–4, all 645 renders: exactly pricing arch 2 at theme 1, at three widths.
+
+Settled in section 8 (the events map):
+
+- **`if (s.lime)` within `EventsMap`'s `if (s.v2)`, after `litRow`.** The block reads `desk`, `tab`,
+  `z`, `u`, `chips`, `active`, `shown`, `pages`, `pg`, `feat`, `feature`, `onPick`, `litRow` and the
+  hoisted `chip` / `page` / `sel` / `zoom` / `allGigs`, so the filter, the featuring, the 390 pager,
+  zoom and *See all gigs* needed nothing new. Five derived consts moved up above the block, with
+  their values unchanged: `ringW`, `zoomScale`, `expand`, `Expand` and `canReveal`. Retro's `T`, `sheet` … `tabFg`, `body12`,
+  `chip12`, `head`, `chipRow`, `gigRow`, `list`, `pins` and `panel` are not read. Diff 353 / 11. The
+  11 removed lines are those moved consts.
+- **The tree is Retro's twin's, box for box.** One `use_figma` walk of the three instances gave the
+  same sheet insets (56 / 56·30 / 60·10), column gaps (60 / 30), the 18 column stack, the 14-padded
+  rows round the 56 disc, the lit pill's 14 / 29 / 14 / 10, and the 32 / 12 / 12·10 panel at a 24 gap.
+  The 30 × 40 zoom buttons sit 16 in. What moves: the panel corner is **50** / 30 / 30 (Retro 30),
+  and the map container's is **25 / 42 / 24** (Retro 14 / 20 / 20). The viewport residues are
+  570 × 471, 315 × **512** and 350 × **157** (Retro 472 / 524 / 166).
+- **Schemes by node.** The instance is Scheme 4: an `s.tx` sheet with `s.bg` ink. Every outline is
+  the 15% `hair` (`#15180F26`) stroked inside, drawn as an inset shadow: the chips, the date discs,
+  the hour chips, the list's top rule and the rows' **1px** bottom rules (Retro draws 2px olive), the
+  zoom buttons, the container and the data bar. The discs are `mist` in **both** states; Retro inverts
+  the lit one. The lit row is an ink pill with `s.tx` type and no border, and its hour chip fills
+  `s.tx`. `radius-map` is **Scheme 2 at all three widths**, not only at 390 as the plan's table read:
+  `#CCFA61` (`lime3`) for the panel and the container. Its status tab, ring labels, rings, pin head
+  and tail are `s.ac`, and the zoom buttons are `#D9FF7F` (`lift`) with a 20px Inter Bold glyph at
+  radius 8. No node carries an effect.
+- **Rings are the frame's weights and opacities**: 1 / 1.5 / 2 at .3 / .5 / .8, in `s.ac`, drawn
+  as inset shadows at `u()` weights. Retro's are 1px sheet at .3 / .8 / .8.
+- **The raster is drawn as it is**: `s.mapRadialSrc` over an `s.box1` fallback, with no multiply.
+  The frame's fill is `e089bd11` at `FILL`.
+- **Named diffs.**
+  - The pins are layout 2's pair: `s.tx` at 8, and the featured one `s.ac` at 14 in a 2px ink ring.
+    The frame's five dots are ink at 60%, which vanishes on the raster.
+  - The centre pin's glyph is ink. The frame strokes it `#AFE335` on the `#AFE335` head, but the
+    render shows it dark.
+  - The *Expand view* arrow is `s.ac` on `lime3`, faint, as the frame strokes it.
+  - The 390 pager's two pills sit Pager's 8 apart, where the frame's sit flush (185 + 185).
+  - The 768 data bar wraps, since the seeded "Based in Manchester · 5 pins · 12 mile radius" is
+    longer than the frame's. This is Retro's named diff, and it makes the 768 panel 714.7 against 697.
+  - Retro's drops hold: the weekday, the status chips and the ↗.
+- **No `T` table.** `get_variable_defs` is the ramp at all three widths: bodySm 13 / 13 / 12, bodyMd
+  14 / 13 / 13, list 24 / 19 / 18, labelXs 20 / 14 / 12, chip 13 / 12 / 11, eyebrow 15 / 12. Display/Title
+  is `u(36)` / 28 / 26, and it sets both the head and the panel's venue. The head is **ink**
+  (Retro's is rust).
+- **The pill is `BookPill`'s Lime branch as `bg={s.bg} fg={s.tx} full={s.mob}`**: an ink box with
+  pale type, and a pale disc round an ink arrow. That is what the frame's Scheme 4 pill draws. Its
+  boxes are 44.3 / 54 / 54, and it runs full-measure at 390.
+- **Measured against the masters** (seeded page):
+  - Desktop: section 671 (819 × 0.82 = 671.6), head 52.7 (64 × 0.82), rows 68.9 (84 × 0.82), panel
+    579.3 (707 × 0.82 = 579.7), panel head 82.8 (102 × 0.82 = 83.6), map viewport 386 (471 × 0.82).
+  - 768: head 55 (55), rows 92.2 / 84 (95 / 84; the frame's venue wraps in 97), viewport 512 (512).
+  - 390: head 51.4 (52), the list 186.8 (187: row 122.8, pager 54), pill 370 × 54, panel 357.9
+    (360), viewport 157 (157).
+- **`live=1` at desktop and 390** (puppeteer, probes deleted):
+  - A row click features its gig, moves the lit row and grows its pin.
+  - The Lake District chip filters to one row with no lit row, and All brings the pick back.
+  - Zoom steps to 1.5625 after two clicks.
+  - The 390 arrow pages to the next gig.
+  - *Expand view* is `<a>` live and a span on the canvas.
+  - At `n=30`, *See all gigs* turns 5 rows and a pager into 30 rows.
+  - `n=0` prints *No dates yet.* with no pins. `n=1` draws no chip row and no lit row.
+  - The canvas's only pointer cursors are `BookPill`'s own (shared). No page errors.
+- **Digest** at themes 0–4, all 645 renders: exactly map arch 2 at theme 1, at three widths.
 
 ## Open questions
 
