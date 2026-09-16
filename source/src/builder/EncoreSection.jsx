@@ -1918,8 +1918,8 @@ function HeaderV2({ s }) {
 
     // The frame's nav is five cells — the capsule, a spacer, the name, a
     // spacer, and Listen with the pill — four equal flex cells round the name.
-    // Drawn as HeaderV1's two halves instead: a spacer shares its half with the
-    // capsule's cell, so a capsule wider than a quarter of the bar (six links
+    // Drawn as HeaderV1's two halves instead, the frame's two spacers folded
+    // into them, so a capsule wider than a quarter of the bar (six links
     // already are) no longer pushes the name off centre. The links take
     // HeaderV1's budget whole: the row is the query container, and the links'
     // size is what the row leaves once the name, Listen, the pill's label and
