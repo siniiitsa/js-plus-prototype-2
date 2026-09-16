@@ -10110,6 +10110,21 @@ function Gallery({ s }) {
   // ← / → reach its own `onKeyDown`, and it locks the page's scroll while open
   // (user call, 2026-09-15). The three social addresses still have no row
   // to go in (layout 2's Soundcloud call, made again).
+  //
+  // **Lime (964:68679 · 984:10764 · 984:10795) is this tree node for node**,
+  // so it takes ternaries rather than a block — layout 2's gallery call. The
+  // insets, the 32 head gap and the 8 / 20 gaps are Retro's; what moves is
+  // the paint, the head's size and the tiles' shape. The sheet is Scheme 2's
+  // `sem/bg`, `s.box1` (not `paper`, which is pale lime under Lime); the head
+  // is `size/display-lg` in `s.ac`, which on the Lime ramp is `s.dispLg` at
+  // every width (130 / 81 / 54); each tile is a `#263020` well (Scheme 2's
+  // `box/3`, the media card's literal) under a 1px `stroke1` ring stroked
+  // inside, drawn as an inset shadow on a last-child overlay so the
+  // photograph cannot paint over it. The desktop tile is **326 / 171** and the
+  // 390 one **111.333 / 82.75**, where Retro's are 326 / 181.333 and
+  // 111.333 / 107.5: the same residue rule, over Lime's taller Bebas head
+  // (116 / 48 against 85 / 36) and its shorter 591 page. 768 states the same
+  // 660 grid, so its tile is Retro's.
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -10119,15 +10134,17 @@ function Gallery({ s }) {
     // beige page ground, so the cream is a literal, and the flat four have a
     // real second paper and take it with `paperFg` for the ink — `s.tx` is
     // chosen against the page and need not read on the sheet.
-    const sheet = s.retro ? '#FBF6EA' : s.paper
-    const ink = s.retro ? '#111111' : s.paperFg
+    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : s.paper
+    const ink = s.retro ? '#111111' : s.lime ? s.tx : s.paperFg
     const bw = s.retro ? '1px' : s.bw
+    const well = '#263020'
     const slots = [0, 1, 2, 3, 4, 5, 6]
     const cols = desk ? 4 : 3
     // Each master's own tile, as a ratio: 326 / 181.333, 230.667 / 150 and
     // 111.333 / 107.5. See the note above — these are what each page's stated
     // height left over, so they travel as a shape rather than as a number.
-    const ratio = desk ? 326 / 181.3333 : tab ? 230.6667 / 150 : 111.3333 / 107.5
+    const ratio = desk ? 326 / (s.lime ? 171 : 181.3333)
+      : tab ? 230.6667 / 150 : 111.3333 / (s.lime ? 82.75 : 107.5)
     const padH = `calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 20)})`
     const padV = u(desk ? 56 : 60)
 
@@ -10138,7 +10155,11 @@ function Gallery({ s }) {
     const open = s.live && pick >= 0 && !!s.images[pick]
     const at = filled.indexOf(pick)
     const step = (d) => setPick(filled[(at + d + filled.length) % filled.length])
-    const cream = '#FBF6EA'
+    // Under Lime the same dark surround is the page ground and the controls
+    // its pale ink, so the viewer reads as the page's own and not Retro's.
+    const cream = s.lime ? s.tx : '#FBF6EA'
+    const ctlBg = s.lime ? 'rgba(242,255,208,.14)' : 'rgba(251,246,234,.14)'
+    const scrim = s.lime ? 'rgba(21,24,15,.94)' : 'rgba(17,17,17,.94)'
     const ctl = (label, act, Icon, pos) => (
       <button
         type="button" aria-label={label}
@@ -10146,7 +10167,7 @@ function Gallery({ s }) {
         style={{
           position: 'absolute', ...pos, width: s.mob ? 44 : 52, height: s.mob ? 44 : 52,
           borderRadius: '999px', border: 0, padding: 0, cursor: 'pointer',
-          background: 'rgba(251,246,234,.14)', color: cream,
+          background: ctlBg, color: cream,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
@@ -10189,7 +10210,7 @@ function Gallery({ s }) {
         // picture" has no edge a visitor could find.
         onClick={() => setPick(-1)}
         style={{
-          position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(17,17,17,.94)', outline: 'none',
+          position: 'fixed', inset: 0, zIndex: 100, background: scrim, outline: 'none',
           // A touch overscroll on the scrim must not chain to the page.
           overscrollBehavior: 'contain',
         }}
@@ -10229,7 +10250,7 @@ function Gallery({ s }) {
             and nothing in any master's layout depends on the leak, so it wraps
             here (the testimonials' rule). */}
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg,
+          margin: 0, fontFamily: s.display, fontSize: tab && !s.lime ? s.h1 : s.dispLg,
           lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>
         <div style={{
@@ -10243,7 +10264,7 @@ function Gallery({ s }) {
               onClick={s.live && s.images[i] ? () => setPick(i) : undefined}
               style={{
                 aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
-                border: `${bw} solid ${ink}`, borderRadius: u(30),
+                border: s.lime ? undefined : `${bw} solid ${ink}`, borderRadius: u(30),
                 cursor: s.live && s.images[i] ? 'zoom-in' : undefined,
               }}>
               <span style={{ position: 'absolute', inset: 0 }}>
@@ -10256,9 +10277,16 @@ function Gallery({ s }) {
                 <Photo
                   s={s} src={s.images[i]}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
-                  ink={s.retro ? undefined : s.paperFg}
+                  ink={s.retro ? undefined : s.lime ? s.tx : s.paperFg}
+                  style={s.lime ? { background: well } : undefined}
                 />
               </span>
+              {s.lime && (
+                <span style={{
+                  position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                  boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+                }} />
+              )}
             </div>
           ))}
         </div>
