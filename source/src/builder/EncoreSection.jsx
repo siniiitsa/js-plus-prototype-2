@@ -11490,6 +11490,103 @@ function Calendar({ s }) {
     const hit = at >= 0 && !month.cells[at].booked ? month.cells[at] : null
     const line = hit ? hit.short : s.calPrompt
 
+    // Lime — the frames 964:68677 / 984:10763 / 984:10794, as a block after
+    // the seam: `month`, `at`, `hit` and `line` are shared whole, so the
+    // published day picking and the foot pill needed nothing new. Every box is
+    // Retro's twin's (the 20 padding, 18 stack gap, 8 grid gap, 30.713 dot,
+    // 21 legend gap, the pill's 54 on a 46 disc), and the grid is Retro's
+    // one seven-column normalisation of the frame's two mechanisms. What
+    // changes reaches nearly every leaf: the card is Scheme 1's `box/1` at
+    // radius 50 inside a 2px `sem/stroke/1` ring, every ink is `sem/text/2`
+    // (the numeral included, where Retro's is the accent), the dots are
+    // `box/2` booked, `text/1` picked and a `stroke/1` ring on the card free,
+    // and every size is the Lime ramp's `s.*` rather than Retro's `T`. None of
+    // Retro's `panel` / `ink` / `hue` / `taken` is read: under Lime they are
+    // `paper`-derived, a pale card. No node carries an effect.
+    if (s.lime) {
+      const lz = desk ? 0.82 : 1
+      const lu = (v) => `${Math.round(v * lz * 10) / 10}px`
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      const dot = (c, i) => {
+        if (c.iso === undefined) return <span key={i} />
+        const on = hit ? c.iso === hit.iso : false
+        const onClick = s.live && !c.booked
+          ? () => setSel((v) => (v === c.iso ? '' : c.iso))
+          : undefined
+        // The free dot's ring is the frame's raw 2.559, stroked inside, so it
+        // is an inset shadow and the 30.713 stands.
+        return (
+          <span key={i} onClick={onClick} style={{
+            width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
+            background: on ? s.ac : c.booked ? s.box2 : s.box1,
+            boxShadow: on || c.booked ? undefined : `inset 0 0 0 ${lu(2.559)} ${s.stroke1}`,
+            cursor: onClick ? 'pointer' : undefined,
+          }} />
+        )
+      }
+      return (
+        <div style={col(lu(30))}>
+          {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 —
+              `s.title` is the heading string, not the ramp's size. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: lu(desk ? 36 : s.mob ? 26 : 28),
+            lineHeight: 1.1, letterSpacing: s.dls, color: s.tx,
+          }}>{s.title}</h2>
+          <div style={col(lu(18), {
+            background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(50),
+            boxShadow: `inset 0 0 0 ${lu(2)} ${s.stroke1}`, overflow: 'hidden',
+          })}>
+            <div style={col('0')}>
+              {!!hit && (
+                <span style={{
+                  fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89, letterSpacing: s.dls,
+                }}>{hit.d}</span>
+              )}
+              <div style={row(lu(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
+                <div style={col(lu(2.745), { alignItems: 'flex-start' })}>
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1, letterSpacing: s.dls,
+                  }}>{month.name}</span>
+                  <span style={body(s.bodyMd, 1.5)}>{month.year}</span>
+                </div>
+                {!!hit && (
+                  <span style={body(s.bodyLg, 1.5, { whiteSpace: 'nowrap' })}>{s.calDays[at % 7]}</span>
+                )}
+              </div>
+            </div>
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', rowGap: lu(8),
+            }}>
+              {s.calDays.map((d, i) => (
+                <span key={i} style={body(s.bodySm, 1.4, {
+                  height: lu(20), display: 'flex', alignItems: 'center', justifyContent: 'center',
+                })}>{d.charAt(0)}</span>
+              ))}
+              {month.cells.map(dot)}
+            </div>
+            {/* The key's three labels are the frame's own, drawn whole — Retro's
+                vocabulary rule — with its two marks in the dots' own fills. */}
+            <div style={row(lu(21), {
+              padding: `${lu(4)} 0`, flexWrap: 'wrap', ...body(s.bodySm, 1.4),
+            })}>
+              <span><span style={{ color: s.box2 }}>●</span> Booked</span>
+              <span><span style={{ color: s.ac }}>●</span> Selected</span>
+              <span>○ Free</span>
+            </div>
+            {/* The foot pill is Scheme 2: `text/1` lime lettered and disced in
+                its `sem/bg`, which is Scheme 1's `box/1` — so `fg` is the one
+                override, and the disc's arrow follows the lime `bg`.
+                BookPill's own scale gives the 54 box and `s.list` label, with
+                `full` opting the 390 canvas back up. */}
+            <BookPill s={s} to={s.calBookTo} label={line} fg={s.box1} full={s.mob}
+                      style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal' }} />
+          </div>
+        </div>
+      )
+    }
+
     // The frame draws no numerals in the grid, so the head is the only place
     // the date is named — which is why it is 96px tall and why both halves of
     // it are rendered or not rather than printed blank. With nothing picked
