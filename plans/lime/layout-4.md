@@ -165,7 +165,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:72849` | 1440 × 900 | `971:5299` | 768 × 1024 | `977:8867` | 390 × 844 | `964:72511` / `964:77544` / `971:14040` | done `ce07286` |
 | 2 | `bio` | `964:72857` *(Section `964:72850`, head `964:72851`, tags `964:72854`)* | 664 × 720 | `971:5307` *(Section `971:5300`, head `971:5301`, tags `971:5304`)* | 708 × 720 | `977:8875` *(Section `977:8868`, head `977:8869`, tags `977:8872`)* | 370 × 536 | `964:72519` / `964:76446` / `971:14479` | done `55ac9b5` (comment fix `e260703`) |
-| 3 | `media` | `964:72864` *(band `964:72858`, head `964:72860`)* | 1440 × 671 | `971:5431` *(band `971:6533`, head `977:10286`)* | 768 × 569 | `977:9005` *(band `977:8999`, head `977:9001`)* | 390 × 836 | `964:72526` / `971:15190` / `971:14834` | — |
+| 3 | `media` | `964:72864` *(band `964:72858`, head `964:72860`)* | 1440 × 671 | `971:5431` *(band `971:6533`, head `977:10286`)* | 768 × 569 | `977:9005` *(band `977:8999`, head `977:9001`)* | 390 × 836 | `964:72526` / `971:15190` / `971:14834` | done `2b9c847` |
 | 4 | `gallery` | `964:72909` *(wrapper `964:72874`, head `964:72875`)* | 874 × 646 | `971:5597` *(wrapper `971:5562`, head `971:5563`)* | 768 × 594 | `977:9171` *(wrapper `977:9136`, head `977:9137`)* | 390 × 586.3 | `964:72815` / `964:78491` / `977:8142` | — |
 | 5 | `repertoire` | `964:72916` *(Section `964:72911`, panel `964:72912`)* | 1208 × 536 | `971:5604` *(Section `971:5599`, panel `971:5600`)* | 608 × 582 | `977:9178` *(Section `977:9173`, panel `977:9174`)* | 310 × 650 | `964:72822` / `964:78509` / `977:8166` | — |
 | 6 | `map` | `964:72924` *(Frame 319 `964:72918`, head `964:72920`)* | 1440 × 747 | `971:5612` *(Frame 319 `971:5606`, head `971:5608`)* | 768 × 871 | `977:9186` *(Frame 319 `977:9180`, head `977:9182`)* | 390 × 680 | `964:72830` / `964:78599` / `977:8322` | — |
@@ -796,15 +796,108 @@ Settled in section 2 (the bio):
   theme 1: exactly bio arch 3 at three widths (bio has no fold partner, and the new seed is
   read at `d` 3 alone).
 
+Settled in section 3 (the media player):
+
+- **The third layout-4 block: `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)`**, layout
+  1's seat for this section. Every piece of the seam is hoisted (`<audio>`, `at`, `now`,
+  `sleeve`, `goTo`, `toggle`, `onPick`, `playing`), so the published player needed nothing
+  new, and `{audio}` rides at the sheet's foot as Retro's does. The tree is Retro's twin's node
+  for node (band, head, sleeve column with the now-playing block and transport, tile grid) and
+  nearly every leaf changes dress, so a block. Diff 264 / 5 in `EncoreSection.jsx`: the five
+  removed lines are three of `ArcEdge`'s (its signature and two style lines, below) and two
+  Retro comment lines that named Lime's acid green on the cream sheet, a claim the block
+  retires. Retro's `T`,
+  `cream` / `ink` / `rust` / `mustard` / `bar` / `olive`, `Checkerboard` and lucide's
+  `SkipBack` / `SkipForward` are not read.
+- **Open question 2's answer: `ArcEdge` took `TornEdge`'s `bleed` prop, additive, default
+  `true`.** `bleed={false}` is `left: 0, width: 100%, [side]: -1px` — the sheet's own edges,
+  keeping the helper's documented pixel into the neighbour — and the sheet takes
+  `position: relative`. No root flag widens: the band is painted in the branch, Retro's `v3`
+  way. The theme-1 digest is the proof that layout 1's three callers did not move (media,
+  map and form `arch_0` byte-identical). Every later `v3` band with a seam (the gallery's
+  head, the repertoire's foot) takes the same prop.
+- **Open question 1's answer: each seam keeps its frame's own colour, and the lens is named.**
+  The band parents both vectors: the head one fills Scheme 1's `sem/text/1` (`s.ac`, the bio
+  band's lime) at y −1, the foot one `sem/bg` (`s.bg`, the page) turned 180°, read off the
+  nodes at all three widths (the 1440 foot vector nests Scheme 5, whose `sem/bg` is the same
+  `#15180F`). So our page, which carries no video band, shows the media's dark foot arc meeting
+  the gallery's dark head arc directly — a 44 + 44 dark lens between the olive and the lime,
+  which is what the frame would show with its video frame deleted. Named in the block; the
+  gallery session checks the meeting in the editor with the `[--ac]` rect walk. The 390
+  vectors are the leaked 576.56 at x −93 and the 768 ones are 768 wide; `ArcEdge` stretches
+  to the sheet and `scrollWidth` does not move at any width (checked).
+- **The insets are the band's and the instance's, added up — Retro's media rule with Lime's
+  numbers.** The band pads 156 / 100 / 100 over the head and 100 / 50 / 100 under the
+  instance; the instance pads 56 / 56 / 10 inside that. So the sheet's insets are 156 / 100 /
+  100 at the head and 156 / 106 / 110 at the foot, head-to-player is 56 / 56 / 20 (at 390
+  the band's own 10 gap on the instance's 10), and the sums land on 1043 / 791 / 1094. The
+  horizontal `calc(surplus + 56 / 56 / 10)`, the 308 column, the 112 / 56 column gap, the
+  tile ratios and the sleeve's `flex: 1 0 0` over the 302 / 370 floor are Retro's to the
+  pixel: the desktop column sums 56 + 404 + 40 + 62 + 40 + 13 + 56 = 671, so the sleeve
+  fills as it does there, 15 shorter for the taller now-playing block (Display/Title 40 over
+  Body/SM 18 against Retro's 26 / 17).
+- **The second width trap, met: the 390 instance is in `Device: Tablet` (770:1).** The head
+  stands outside the instance in the page's own mode, so it is `s.dispLg` (130 / 81 / 54 at
+  .89, `get_variable_defs` on the three head frames) in `s.ac`; the instance's four sizes are
+  the ramp at 1440 and 768 but the 768 ramp's at 390 — Display/Title 28, list 19, body-sm 13,
+  chip 12, where `s.list` / `s.bodySm` / `s.chip` give 18 / 12 / 11. So the block carries a
+  small `tk` table, the layout-1 hero's `tk` precedent, and Display/Title is a literal either
+  way (`s.title` is the heading string). The head's 1019.18 measure is the leak Retro
+  declined; **the seeded head holds one line at 390 here**, unlike layout 3's media — the
+  bled sheet's own 10 inset gives it the frame's 370, not the root's 346.
+- **Scheme 2 by node, and three of its tokens are other keys.** The play glyph is Scheme 2's
+  `sem/bg` = **`s.box1`** (not `s.bg` or `s.acFg`); the bar's track is Scheme 2's `sem/box/1`
+  `#394732` = Scheme 1's **`s.box2`** (layout 2's media reading); the sleeve's well is
+  `sem/text/3` = `s.tx` and the tiles' is `sem/bg` = `s.box1`. Everything else: head,
+  now-playing title, transport glyphs, play disc, the bar's dot and the tile sublines `s.ac`;
+  the artist line, the two clocks (Body/Chip at `-0.06em`) and the bar's fill `s.tx`; the
+  tile titles raw `#FFFFFF`, as Retro's are. The frame's playhead therefore reads here — pale
+  on a `box2` track with a lime dot — so layouts 1 and 2's named departure on the bar is not
+  owed. The instance carries a hidden `#141414` fill on `Left` and a hidden `#D4D4D4` stroke
+  on every tile (the plan's "mixed weight" — 1 / 0 / 0 / 0, `visible: false`); neither is
+  drawn.
+- **Two glows, one hue, both confirmed off `effects`**: `INNER_SHADOW` 34, spread 0,
+  `#AFE335` = `s.ac`, on the sleeve (an overlay at radius inherit, no border where Retro's is
+  3px rust) and on tile one — drawn on the scrim overlay at `i === at`, Retro's seat rule with
+  a glow in place of the 3px ring, still a shadow so no photograph is inset (`img` rect ==
+  tile rect at all three widths, asserted). Radius 50 on both, tile padding 30 (Retro's 20),
+  48 disc, 14 transport gap, 3 bar, 4 text gaps — all raw, the twin's. The transport's
+  prev / next are the same 16.03 × 8.39 group layout 1 transcribed as `LimeSkip`, with layout
+  1's finger-target `skip()` recipe; Play / Pause stay lucide at Retro's 22 (the frame types
+  ▶ and the live state needs the Pause it never draws).
+- **Measured against the masters' content edges**: desktop section 854.8 (1043 × 0.82 =
+  855.3), head at 127.9 (156 × 0.82) and 95.2 tall (116 × 0.82), column at 269 (328 × 0.82),
+  sleeve 252.6 × 330.9 (308 × 404 × 0.82 = 252.6 × 331.3), now-playing 50.7 (62 × 0.82),
+  disc 39.4, clock row at 716.2 (874 × 0.82 = 716.7), grid at 390.3 (476 × 0.82) with tiles
+  237 × 220.8 (289.33 × 269.5 × 0.82), arcs 36.3 deep at −1 and 819.5 spanning 1180; 768
+  section 791.1 (791), head at 100 and 72.1, column at 228.1 (228), sleeve 308 × 312, now-
+  playing 53 at 580.1 (580), clocks at 673.1 (673), grid 292 × 457 at 420 with tiles 136 ×
+  139; 390 section 1095 (1094 — the 123.33 tile ratio, Retro's reading of the frame's 123),
+  head one line at 100, sleeve 370 × 302 at 168, now-playing at 490 (490), clocks at 563
+  (563), grid 370 × 390 at 595 (595) with tiles 180 × 123.3. The canvas has zero pointer
+  cursors and no `<audio>`. `live=1` at desktop and 390 (puppeteer,
+  `--autoplay-policy=no-user-gesture-required`, probe deleted): a tile click plays its track
+  and moves the glow, the disc pauses and resumes (polygon ↔ rect glyph), Next wraps 5 → 1,
+  Prev wraps 1 → 5, a second click on the loaded tile pauses. `n=0` prints *No tracks yet.*
+  beside the sleeve at its floor (253 × 206 at desktop, 308 × 251 at 768, 370 × 302 at 390);
+  `n=1` and `n=2` hold the floor; `n=8` grows the sleeve to 568 / 471 (Retro's named cost)
+  and the 390 section to 1228. No page errors. Digest at themes 0, 2, 3 and 4: zero
+  differing files; theme 1: exactly media arch 3 at three widths (media stops at arch 6, so
+  no fold partner).
+
 ## Open questions
 
-1. **The lens where the video was.** Media's foot arc and the gallery's head arc are both dark
+1. *Settled in section 3 — each seam keeps its frame's own colour (media's foot `s.bg`), the
+   lens is named in the block, and the gallery session checks the meeting in the editor; see
+   its Conventions.* **The lens where the video was.** Media's foot arc and the gallery's head arc are both dark
    and meet directly on our page, giving a 44 + 44 dark lens between the olive and lime bands —
    what the frame would show with its video frame deleted. Default: keep each seam in its
    frame's own colour and name the diff; the media session decides, and the gallery session
    checks the meeting in the editor with the `[--ac]` rect walk. Drawing the media's foot in
    the gallery's lime is the alternative, and no master draws it.
-2. **`ArcEdge` inside a bled sheet.** Layout 1's three arc callers (media, map, form) draw no
+2. *Settled in section 3 — the second answer: `ArcEdge` gained an additive `bleed` prop
+   mirroring `TornEdge`'s, the sheet stays in the branch, and the theme-1 digest proved
+   layout 1's three callers unmoved; see its Conventions.* **`ArcEdge` inside a bled sheet.** Layout 1's three arc callers (media, map, form) draw no
    sheet of their own: the **root** paints their bands through its `limeBand` / `limeLight`
    flags (`(s.me || s.te) && s.v0 && s.lime` and `(s.mp || s.fo) && s.v0 && s.lime`), the root
    keeps its padding, and `ArcEdge` reaches its edge by offsetting itself `-padX` / `-padY`.
