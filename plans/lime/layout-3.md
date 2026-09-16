@@ -619,7 +619,7 @@ Settled in section 2 (the bio):
   node for node (the same 440 photo row, 24/32 head and about bands, Frame 9, the 179 name cap, the
   100 / 52 stat gaps), so the block restates Retro's QA'd structure whole — the stat row's `2.2em`
   values, the 390 stack, the seal's band floor — and changes the dress, which reaches nearly every
-  leaf. Diff 172 / 5 in `EncoreSection.jsx`; the five removed lines are `SealBadge`'s (below).
+  leaf. Diff 169 / 3 in `EncoreSection.jsx`; the three removed lines are `SealBadge`'s (below).
 - **The plan's "`SealBadge`'s Lime branch" was wrong for this frame.** Frame 248 is Retro's §10.2
   seal (a 120 ring, 19.07 equator asterisks, an 86.5 centre asterisk) in **inverted** Lime inks: a
   `s.ac` disc with `s.bg` marks, where every earlier Lime frame draws the dark disc with rings and a
@@ -627,7 +627,8 @@ Settled in section 2 (the bio):
   starburst, so the §10.2 path runs with `hue={s.ac} ink={s.bg}` (pass `ink`: `contrastInk` would
   give `#141414`). Every earlier caller is untouched, which the digest proves. The name keeps the
   §10.2 path's placement and clockwise run, so at rest it crosses the equator marks and the lower
-  name is not upright as in the Lime render; it spins. The seal's `image 1` grain **paints faintly**
+  name is not upright as in the Lime render; it spins. The frame's name is **Anton** 16.6 tracked
+  30%, Retro's label face leaking through the duplicated component; `s.label` (Bebas) is set. The seal's `image 1` grain **paints faintly**
   (between the arms the disc samples `(182, 229, 70)` against `#AFE335`, σ 7 in blue) and is not
   drawn (open question 2).
 - **Placement is Retro's at 1440 and 390, and 4 lower at 768.** The disc centre is 105.6 in and
