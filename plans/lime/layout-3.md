@@ -176,7 +176,7 @@ masters are fitted in one session.
 | 1 | `header` | `964:68654` | 1440 × 900 | `984:10740` | 768 × 1024 | `984:10771` | 390 × 606.5 | `964:68622` / `977:22532` / `982:9583` | done `8855dd2` |
 | 2 | `bio` | `964:68663` *(head `964:68658`)* | 858 × 882 | `984:10748` *(head `984:10743`)* | 708 × 912 | `984:10779` *(head `984:10774`)* | 370 × 878 | `964:68631` / `977:22717` / `982:10013` | done `466aff9` |
 | 3 | `media` | `964:68674` list + `964:68673` card *(head `964:68666`)* | 858 × 424 + 858 × 243 | `984:10759` + `984:10758` *(head `984:10751`)* | 708 × 647 + 708 × 243 | `984:10790` + `984:10789` *(head `984:10782`)* | 370 × 647 + 370 × 243 | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | done `593133e` |
-| 4 | `repertoire` | `964:68678` | 1440 × 621 | `984:10760` *(in `984:10757`)* | 708 × 655 | `984:10791` | 390 × 709 | `964:68646` / `977:23041` / `982:10193` | — |
+| 4 | `repertoire` | `964:68678` | 1440 × 621 | `984:10760` *(in `984:10757`)* | 708 × 655 | `984:10791` | 390 × 709 | `964:68646` / `977:23041` / `982:10193` | done `2c4e0e1` |
 | 5 | `calendar` | `964:68677` *(in `964:68675`)* | 405 × 538.6 | `984:10763` *(in `984:10761`)* | 708 × 483.6 | `984:10794` *(in `984:10792`)* | 370 × 450.6 | `964:68645` / `984:10605` / `984:10673` | — |
 | 6 | `gallery` | `964:68679` | 1440 × 789 | `984:10764` | 768 × 884 | `984:10795` | 390 × 591 | `964:68647` / `977:23131` / `982:10257` | — |
 | 7 | `pricing` | `964:68680` | 1440 × 1199 | `984:10765` | 768 × 1072 | `984:10796` | 390 × 1474 | `964:68648` / `977:23149` / `982:10274` | — |
@@ -729,6 +729,47 @@ Settled in section 3 (the media player):
   hold, 8 growing the 390 section to 1305. No page errors. Digest at themes 0–4, all 645 renders:
   exactly media arch 2 at theme 1, three widths. Not checked in the builder; the bio session's
   composed-row check covers the column, and `column=left` is the same `sectionVm({ column })`.
+
+Settled in section 4 (the repertoire):
+
+- **`if (s.lime)` within `Repertoire`'s `if (s.v2)`, after `arrow`** — the seat layouts 1 and 2 used
+  for this section. The block reads `desk` / `tab` / `z` / `u`, `cap`, `sets`, `perPage`, `pages`,
+  `pg` and `seats`, plus the hoisted `open` / `page` state, so the reveal and the 390 pager needed
+  nothing new. It does **not** read Retro's `T`, `rowH`, `card` or `hair` (`hair` is `s.bw` away
+  from Retro, so even the pager is redrawn, with the ring as an inset `s.ac` shadow). Pure
+  additions (136 / 0).
+- **The tree is Retro's twin's; the boxes that move** are the card's padding **34** (Retro 24), its
+  corner **50** (30) and the rows. Each master's rows are `flex-1` divisions of the stated card,
+  exact to the quarter pixel: (369 − 68 − 24 − 13 − 48 − 60) / 4 = **39**, (439 − …) / 4 = **57**
+  and **57.5**. They are pinned at those heights, Retro's rule, so `py-6` is inert. The desktop row
+  (39 × 0.82 = 32) is shorter than its 23.6 title plus padding, which is why the padding cannot be
+  written out.
+- **Every size is a ramp token.** `get_variable_defs` at all three widths gives display-lg
+  130 / 81 / 54, body-lg 16 / 15 / 15, chip 13 / 12 / 11, list 24 / 19 / 18 and body-sm 13 / 13 / 12,
+  so `s.dispLg`, `s.bodyLg`, `s.chip`, `s.list` and `s.bodySm` are used and there is no `T` table.
+  **The head is `s.tx`** (`sem/text/2`), where Retro's head is the accent.
+- **The plan's "seat the schemes by index" became: by rendered place.** Seat 0 is `s.box1` with pale
+  ink, a `s.ac` meta line and a `stroke1` ring. Seats 1 and 2 are `mist` and `lime3`, with `s.bg`
+  ink and meta and a `#15180F26` ring. The discriminator was the 390 master, which **centres the
+  mist card**. Retro's carousel puts set 0 in the centre at page 0, so seating by set index would
+  have put the olive card there. So the grid colours its columns and the carousel colours its
+  left, centre and right slots. A set takes the colour of the slot it stands in, and the colours
+  stay put as the sets rotate (driven live: next, then prev ×2 wrapping). A lone card on the grid
+  is column one's olive (the All card on page 2 at `n=20`), and the carousel's lone card takes the
+  centre colour. Both literals are block-local, the earlier blocks' idiom. No node carries an
+  effect.
+- **Diffs carried over from Retro's branch, unchanged:** the meta line is the set's count ("6 SONGS")
+  where the frame has a mood and a running time. The right-hand column is the artist, not a
+  duration. At 390, page 0 centres set 0 where the master centres its second card. At 768 the
+  cards are 216 wide against the frame's 222.7, because our column is 688 and the frame's is 708.
+- **Measured against the masters** (seeded page): desktop head 95.2 (116 × 0.82), grid 19.7 under it
+  (24 × 0.82), cards **303.4** tall (369 × 0.82 = 302.6) at radius 41, title line 19.5, meta 11,
+  rows 32, view block 40; 768 head 72.1 (72), cards **438.7** (439), rows 57, view 48.2 (48); 390
+  head 48 (48), cards 290 × **438.3** (439) at −260 / 50 / 360, the master's own x, rows 57.5, view
+  46.8 (47), pager 168 × 54. `live=1`: the carousel wraps both ways; at `n=20` *View full set*
+  reveals one card (three links become two), the untagged rows bring the All card, and the wide
+  pager turns to it. `n=0` prints *No songs yet.* No page errors. Digest at themes 0–4, all 645
+  renders: exactly repertoire arch 2 at theme 1, at three widths.
 
 ## Open questions
 
