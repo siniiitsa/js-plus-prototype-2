@@ -501,7 +501,7 @@ trigger):
 
 ## The end-of-pass sweep
 
-**Done: DOCS_SHA (docs, comments, this plan) and INDEX_SHA (the `index.html` refresh).** What each
+**Done: `ddca596` (docs, comments, this plan) and `abd85c8` (the `index.html` refresh).** What each
 item came to is under *Learned on the end-of-pass sweep* at the foot of *Conventions*; the list is
 kept as it was run.
 
@@ -1088,7 +1088,7 @@ Settled in section 10 (the testimonials):
 - **Digest** at themes 0–4, all 645 renders: exactly testimonials arch 2 at theme 1, at three
   widths.
 
-Learned on the end-of-pass sweep (DOCS_SHA and INDEX_SHA):
+Learned on the end-of-pass sweep (`ddca596` and `abd85c8`):
 
 - **The claim sites were layout 2's, one layout on.** CLAUDE.md and README said "designed at
   layouts 1 and 2" with `HeaderV0` / `V1` fitted. They now say 1, 2 and 3, with `HeaderV0`–`V2`
@@ -1106,7 +1106,7 @@ Learned on the end-of-pass sweep (DOCS_SHA and INDEX_SHA):
 - **One puppeteer route, four small scripts (deleted).** It is layout 1's route unchanged:
   thumbnail → big card → card 3 → *Use this header* → *Publish* → *Open* → `page.once('popup')`.
   - **Header.** At 1440 all 24 fragment anchors (header, pills, footer) scrolled to their ids. At
-    390 all 14 visible ones did. The published order is the composed one at 1440 and
+    390 every visible one of the 14 did. The published order is the composed one at 1440 and
     `PAGE_ORDERS[2]` at 390.
   - **Media.** A card or row click set `paused` false with the clock running.
   - **Calendar.** All 30 dots changed the section.
