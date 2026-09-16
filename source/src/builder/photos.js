@@ -1,5 +1,5 @@
 // The seeded mock photography of the two designed templates, exported from their
-// Figma frames — Retro's §10.2 page and Lime's layout-1 page.
+// Figma frames — Retro's §10.2 page and Lime's layout-1 and layout-2 pages.
 //
 // These are *imports*, never fetched: §8.6 forbids a network request anywhere in
 // the render path, and vite-plugin-singlefile forces `assetsInlineLimit = () => true`,
@@ -43,6 +43,7 @@ import limeStage from './photos/lime-stage.jpg'
 import limeCalendar from './photos/lime-calendar.jpg'
 import limeAvatar from './photos/lime-avatar.jpg'
 import limeGallery4 from './photos/lime-gallery-4.jpg'
+import limeFormPhoto from './photos/lime-form-photo.jpg'
 import grungeHeader from './photos/grunge-header.jpg'
 import editorialHeader from './photos/editorial-header.jpg'
 import popHeader from './photos/pop-header.jpg'
@@ -83,8 +84,8 @@ export const RETRO_PHOTOS = {
 // bio's — the form's avatar and the gallery's spotlight. Shared: the six strip
 // thumbnails, the five track covers and the map raster.
 //
-// The form's second slot takes the bio's photograph, Retro's rule; Lime's
-// layout-1 page does not draw it.
+// The form's second slot is Lime's own, from its layout-2 frames (SEEDS, below);
+// Lime's layout-1 page does not draw it.
 export const LIME_PHOTOS = {
   header: limeHero,
   bio: limeStage,
@@ -150,9 +151,15 @@ export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeade
 // frame (964:68631) fills it with the whole Velvet Note stage shot — the
 // scene `stage.jpg` is a portrait slice of, re-encoded at 1200px as
 // `bio-stage.jpg`. The portrait stays layout 1's polaroid.
+//
+// Lime's scene is the whole source of its layout-2 frames' stage shot (Figma
+// 964:64595, hash f821adc2 — the same image its form avatar is the centre square
+// of), exported at 1200 × 800 with no crop: every master fills it untransformed,
+// so a centred cover is the frame's own picture at 838 × 437, 334 × 437 and
+// 370 × 262. Only the form's layout 2 reads `photo`.
 const SEEDS = {
   Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage, layouts: { 2: { bio: bioStage } } },
-  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeStage },
+  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto },
 }
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
@@ -167,7 +174,7 @@ const SEEDS = {
 // scene rather than the portrait, and it is keyed `photo` rather than `avatar`.
 // Retro's is its layout-2 frame's own stage shot (964:64652), the close-up
 // singer in a dark jacket, re-encoded at 1200px as `form-stage.jpg`; Lime's
-// takes the live-set frame its bio stands on.
+// frame has its own (SEEDS, above).
 export const defaultImage = (cat, themeName, key = 'image', design) => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined

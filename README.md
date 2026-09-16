@@ -177,13 +177,14 @@ the only module that imports them.
   through `SEEDS` in `photos.js`, one row per seeded theme, and return `undefined` for Grunge,
   Editorial and Pop, so those three render the initials placeholder exactly as before. Lime's row
   is a different shoot for the artist's own pictures (the hero, its portrait card, the bio, the
-  calendar, the form avatar and the gallery spotlight) and Retro's files for the rest. The photography is Retro's art direction, not the user's content, so switching template
+  calendar, the form avatar, the form's layout-2 stage photograph and the gallery spotlight) and
+  Retro's files for the rest. The photography is Retro's art direction, not the user's content, so switching template
   drops it — with one exception: the media player's track art is materialised into `c.tracks` the
   moment the artist edits the list (it has to be, or renaming track one would delete five
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
-  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all twenty-four files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~3.6 MB.
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all thirty-four files are
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~6.3 MB.
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
@@ -346,8 +347,8 @@ That distinction is the whole design, and it buys two things:
   month is on screen — and the empty string is this section's `-1`, so `vm.calPick` renders until
   a visitor picks something and the published first paint is the canvas's picture by construction.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
-  blocked it. Booked days are muted and struck through and take no handler (Lime's layout 1 dims
-  them to .38 with no strike, its own frame's state), which is a **content** state rather than a
+  blocked it. Booked days are muted and struck through and take no handler (Lime dims them to .38
+  with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid), which is a **content** state rather than a
   live one — it renders on the canvas too, and since the seed blocks nothing
   the reference picture does not move. Two intended diffs from the Figma frame: the foot row gains
   the Book pill (`vm.calBookTo`, `bookTo` minus `calendar` itself, the tier pills' rule), which is
@@ -513,12 +514,14 @@ These are intentional limits, not oversights — see §12 for the full list. The
   collapsing to a burger. Deliberate: the live navigation was scoped to the designed templates.
   The §10.2 *layouts* are shared by all five templates; Retro's decorative treatment — paper
   grain, torn edges, checkerboard, hard offset shadows, rotated cards — is gated on `s.retro`,
-  the same split as `headerFamily()`. **Lime is designed at layout 1**: its Figma page is Retro's
-  layout-1 components in another variable mode, so its own treatment — arc seams between bands,
-  glows, the arch portrait, the reticle — is gated on `s.lime` inside the same shared branches.
-  Its header family is the first four photographic layouts, of which only the Hero is fitted;
-  the other three, and every section's layouts 2–4, are Retro's designs in Lime's tokens until
-  Lime's later passes. One piece of that treatment is placed
+  the same split as `headerFamily()`. **Lime is designed at layouts 1 and 2**: each of its Figma
+  pages is Retro's page of the same number in another variable mode, so its own treatment — arc
+  seams between bands at layout 1, glows at both, the arch portrait, the reticle — is gated on
+  `s.lime` inside the same shared branches. Its header family is the first four photographic
+  layouts, of which the Hero and the Feature spread are fitted, so the setup modal's first two
+  cards lay out whole Lime pages. At layout 2 the footer is layout 1's. The
+  other two header cards, and every section's layouts 3 and 4, are Retro's designs in Lime's
+  tokens until Lime's later passes. One piece of that treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
