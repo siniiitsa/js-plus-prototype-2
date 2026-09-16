@@ -1899,9 +1899,209 @@ function HeaderV2({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
-  // Under Lime `pillBg` IS the accent, so every mustard-on-accent pairing
-  // below drew lime on lime; its olive box stands in until Lime's layout pass.
-  const mustard = s.lime ? s.box1 : s.pillBg
+  if (s.lime) {
+    // Lime's Inset Hero (964:68654 at 1440, 984:10740 at 768, 984:10771 at
+    // 390). Retro's shell — a photographic card inset in the page, the nav on
+    // its top edge and the identity on its floor — with the rest redrawn: no
+    // mustard sheet, checker ribbon, grain or tilted polaroid. The card is an
+    // olive well in a hairline, faded to olive off its floor; the name stands
+    // over the location where Retro's stands under it; and the polaroid is an
+    // upright glass card lit by an inset glow. Every leaf changes face, ink or
+    // box, and there is no state to share, so this is a block at the head of
+    // the component (HeaderV1's placement) and Retro's code below is untouched.
+    //
+    // No Device override and no box token: every type size is its Lime token
+    // at that width, and radii and paddings are raw numbers, × 0.82 on desktop
+    // through `u()`, verbatim on the narrow masters.
+    const ring = (w, c) => `inset 0 0 0 ${w} ${c}`
+    const inset = desk ? 20 : 10
+
+    // The frame's nav is five cells — the capsule, a spacer, the name, a
+    // spacer, and Listen with the pill — four equal flex cells round the name.
+    // Drawn as HeaderV1's two halves instead: a spacer shares its half with the
+    // capsule's cell, so a capsule wider than a quarter of the bar (six links
+    // already are) no longer pushes the name off centre. The links take
+    // HeaderV1's budget whole: the row is the query container, and the links'
+    // size is what the row leaves once the name, Listen, the pill's label and
+    // every fixed box beside them are paid for — the capsule's 18 + 18, two 16
+    // gaps, Listen's 12 and the pill's 17.92 + 4.27 padding, 8.53 gap and 27.6
+    // disc. The gap is HeaderV1's 23/24em, which `navEms`
+    // is summed with, rather than the frame's 1em. Both narrow masters hand
+    // the links to the burger (768's three are the component's default, the
+    // layout-2 reading), which stands in the same capsule.
+    const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)})`
+    const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
+    const capsule = { background: s.bg, boxShadow: ring('1px', s.stroke1), padding: `${u(8)} ${u(18)}` }
+    const nav = (
+      <div style={row(u(16), {
+        width: '100%', padding: `${s.mob ? '10px' : u(16)} 0`,
+        containerType: desk ? 'inline-size' : undefined,
+      })}>
+        <div style={{
+          flex: '1 1 0', display: 'flex',
+          minWidth: desk ? `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))` : 0,
+        }}>
+          {desk ? (
+            // Corner at the one-row half-height, so a capsule that has to wrap
+            // below the 12px floor keeps its ends rather than turning stadium.
+            <nav style={{
+              ...capsule, borderRadius: u(18), maxWidth: '100%',
+              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: `${23 / 24}em`,
+              fontSize: linkSize,
+            }}>
+              {s.navLinks.map((l) => (
+                <a key={l.label} href={navHref(s, l.to)}
+                   style={labelStyle(s, '1em', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
+              ))}
+            </nav>
+          ) : (
+            <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
+              <NavMenu s={s} color={s.tx} />
+            </span>
+          )}
+        </div>
+        <span style={labelStyle(s, s.labelLg, { color: s.tx, flex: 'none' })}>{s.brand}</span>
+        {/* At 390 the pill is wider than its half; the master lets it overrun
+            into the spacer, which keeps the name centred, and so does this. */}
+        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end', minWidth: s.mob ? 0 : undefined })}>
+          {!s.mob && (
+            <ListenLink s={s} to={s.listenTo}
+                        style={labelStyle(s, s.labelSm, { color: s.tx, fontWeight: 400 })} />
+          )}
+          {/* Scheme 3's pill is BookPill's Lime defaults — lime, lettered and
+              disced in `sem/bg` round a lime arrow — at the frame's small box,
+              which is the same 34.93 at all three widths (only Label/SM ramps),
+              so the bio's layout-2 recipe and not HeaderV1's hand-shrunk one. */}
+          <BookPill s={s} to={s.bookTo} size={s.labelSm} disc={27.6 * z}
+                    style={{
+                      padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
+                      gap: u(8.53), lineHeight: 1.1,
+                    }} />
+        </div>
+      </div>
+    )
+
+    // The Tags instance is hand-scaled (the bio's layout-2 case at another
+    // factor): Label/XS × 0.752, and padding, radius and gap fixed at every
+    // width. It stands on the photograph, so `vm.chips`' own dark seat reads
+    // and nothing is swapped. The leaked 700.74 measure is dropped, Retro's call.
+    const chips = s.showTags === 'show' && (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.01) }}>
+        {s.chips.map((c, i) => (
+          <span key={i} style={{
+            background: c.bg, color: c.fg,
+            borderRadius: u(4.51), padding: `${u(3.76)} ${u(8.27)}`,
+            fontFamily: s.ui, fontSize: u(s.mob ? 9.02 : tab ? 10.53 : 15.04),
+            lineHeight: 1.26, letterSpacing: s.dls, whiteSpace: 'nowrap',
+          }}>{c.label}</span>
+        ))}
+      </div>
+    )
+    const identity = (
+      <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
+        <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline />
+        <span style={row(u(8))}>
+          <span style={{
+            width: u(14), height: u(14), borderRadius: s.radiusChip, background: s.ac, flex: 'none',
+          }} />
+          <span style={{
+            fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, color: s.tx,
+          }}>{s.location}</span>
+        </span>
+      </div>
+    )
+    // The 390 band states 370.52 and stands its content on the floor: the
+    // photograph showing above the name. A minimum, Retro's 568 rule.
+    const stack = (
+      <div style={col(u(30), {
+        alignItems: 'flex-start', justifyContent: 'flex-end', minWidth: 0,
+        ...(s.mob ? { minHeight: '370.52px' } : { flex: '1 1 0', alignSelf: 'stretch' }),
+      })}>
+        {identity}
+        {chips}
+      </div>
+    )
+
+    // The glass card: `sem/box/1` at 1%, which paints nothing, inside a 1px
+    // `sem/stroke/2` ring and an INNER_SHADOW 19 in `sem/glow` (#A6E22E, not
+    // the accent) — ring first, as Figma strokes over the effect. Its padding
+    // clears the glow, so both sit on the card itself. The portrait's ring is
+    // an overlay, since the photograph would paint over a shadow on its box.
+    // Its two lines are `brand` and `kicker`, Retro's reading of this slot;
+    // the brand is Display/Title at the frames' 36 / 28 / 26 (`s.title` is the
+    // heading string). 390 turns the card on its side.
+    const card = (
+      <div style={{
+        boxShadow: `${ring('1px', s.ac)}, inset 0 0 ${u(19)} ${s.glow}`,
+        borderRadius: s.mob ? '12px' : u(45),
+        padding: s.mob ? '20px' : u(40), flex: 'none',
+        ...(s.mob ? row('21px', { width: '100%' }) : col(u(21), { width: u(220) })),
+      }}>
+        <div style={{
+          position: 'relative', width: u(87), height: u(87), flex: 'none',
+          borderRadius: u(21), overflow: 'hidden', background: s.box1,
+        }}>
+          <Photo s={s} avatar initialsSize={Math.round(34 * z)} ink={s.tx} />
+          <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring('1px', s.ac) }} />
+        </div>
+        <div style={col(u(4), {
+          alignItems: s.mob ? 'flex-start' : 'center', minWidth: 0, whiteSpace: 'nowrap',
+        })}>
+          <span style={{
+            fontFamily: s.display, fontSize: desk ? u(36) : tab ? '28px' : '26px',
+            lineHeight: 1.1, letterSpacing: s.dls, color: s.tx,
+          }}>{s.brand}</span>
+          {s.kicker && (
+            <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac }}>{s.kicker}</span>
+          )}
+        </div>
+      </div>
+    )
+
+    const body = s.mob
+      ? <div style={col('24px', { width: '100%' })}>{stack}{card}</div>
+      : <div style={row(u(24), { alignItems: 'flex-end', width: '100%' })}>{stack}{card}</div>
+
+    // The page ground shows round the card, 20 / 10 / 10 of it. The card's
+    // height is the frame's own at 1440 and 768 and content-tall at 390,
+    // stated as a minimum for Retro's reason. Its ring is an inset shadow,
+    // so the padding is the frame's own 16 / 32 / 32 / 32 (0 / 10 / 10 / 10).
+    const padX = s.mob ? 10 : 32
+    return (
+      <div style={{
+        background: s.bg, padding: u(inset),
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+      }}>
+        <div style={{
+          position: 'relative', overflow: 'hidden', background: s.box2,
+          borderRadius: desk ? u(50) : tab ? '50px' : '20px',
+          minHeight: desk ? u(860) : tab ? '1004px' : undefined,
+          padding: `${u(s.mob ? 0 : 16)} 0 ${u(s.mob ? 10 : 32)}`,
+          paddingLeft: `calc(${u(padX)} + ${s.surplus})`,
+          paddingRight: `calc(${u(padX)} + ${s.surplus})`,
+          ...col(0, { justifyContent: 'space-between' }),
+        }}>
+          {/* A centred cover. The frame's imageTransform carries a flip, but
+              the fill is FILL, which ignores it: the render is unflipped. */}
+          <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} backdrop />
+          </div>
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0, // `sem/media` off the floor to `sem/bg` at 0 — a transparent stop in the
+            // page's own hue, so the fade does not grey on its way out.
+            background: `linear-gradient(to top, ${s.box1}, #15180F00)`,
+          }} />
+          <span aria-hidden style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring('1px', s.stroke1),
+            pointerEvents: 'none',
+          }} />
+          <div style={{ position: 'relative', width: '100%' }}>{nav}</div>
+          <div style={{ position: 'relative', width: '100%' }}>{body}</div>
+        </div>
+      </div>
+    )
+  }
+  const mustard = s.pillBg
   const olive = (s.retro && s.chips[3]?.bg) || s.line2
   // sem/text/2 — the cream every label on the photograph is set in; sem/tag/3/bg
   // is the polaroid's ink. Both literal under Retro, whose `paper` IS the page
