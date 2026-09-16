@@ -12447,6 +12447,311 @@ function EventsMap({ s }) {
       g && g.time && { l: 'Set time', v: g.time },
     ].filter(Boolean)
 
+    // Lime (964:64594 1440 × 867, 986:11862 768 × 823, 986:11881 390 × 1286)
+    // — the seventh layout-2 block, after the seam as the pricing and calendar
+    // blocks are: `pg`, `shown`, `first`, `feat`, `g`, `onPick`, `rest` and the
+    // field allocation in `stats` are shared whole, so the published paging,
+    // featuring and Venue Link need nothing new. The tree is Retro's twin's box
+    // for box (insets 18 / 20, rows 10 / 14, the panel's 32 / 12 / 12, the 24
+    // gap), so every one of Retro's drops and re-seatings holds as written
+    // above; what changes is every leaf's dress, and the three things Retro's
+    // numbers get wrong under Lime's larger type (the pill, the viewport's
+    // derived shape, and the pager, which layout 1's section 5 left owing).
+    //
+    // Three schemes, by node. The travel card is **Scheme 3** (`box/1`
+    // #CCFA61, ink `s.bg`, a 15% ink hairline); the rows stand on the page in
+    // Scheme 1 (`s.box1`, `s.stroke1`); the map panel is **Scheme 2**, whose
+    // `box/1` is Scheme 1's `s.box2`. No node carries an effect.
+    if (s.lime) {
+      const lime3 = '#CCFA61' // Scheme 3 sem/box/1 — the travel card
+      const hair = '#15180F26' // Scheme 3 sem/stroke/1, 15% ink
+      const ink = s.bg // Scheme 3 sem/text/1 and /2
+      // The raster's own ground. The frame's texture (`e089bd11`) is a dark
+      // street map; ours is `mapSrc`, the light Manchester raster layout 1 and
+      // Retro's layout 2 share, so Retro's screened invert stands in for it.
+      // The frame's viewport samples (40, 42, 28) between the roads, which is
+      // Retro's plate exactly, and its roads peak at (84, 88, 63), which is
+      // what the .2 screen lands on.
+      const plate = '#292A1C'
+      // `vm.title` is the heading string and overwrites the ramp's `title`, so
+      // Display/Title is the frames' own 36 / 28 / 26.
+      const titleSize = desk ? u(36) : tab ? '28px' : '26px'
+      const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
+      const display = (size, lh) => ({
+        margin: 0, fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls,
+      })
+      const chip = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+      }
+      // Every stroke here is Figma's inside hairline, drawn as an inset shadow
+      // so each stated padding stays the frame's.
+      const ring = (c) => `inset 0 0 0 1px ${c}`
+
+      const lcard = (
+        <div style={col(u(18), {
+          background: lime3, color: ink, boxShadow: ring(hair),
+          borderRadius: u(50), padding: `${u(18)} ${u(20)}`,
+          // Left-aligned, Retro's rule: the one pill at the foot hugs its label.
+          alignItems: 'flex-start',
+        })}>
+          <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
+            <div style={col(u(4), { minWidth: 0 })}>
+              <span style={bodySm}>Travel radius</span>
+              <h2 style={display(titleSize, 1.1)}>{s.title}</h2>
+            </div>
+            <span style={{
+              ...bodySm, flex: 'none', boxShadow: ring(hair), borderRadius: '999px',
+              padding: `${u(5)} ${u(12)}`, whiteSpace: 'nowrap',
+            }}>● {s.mapRadius}</span>
+          </div>
+
+          {/* Both names in Display/List, Retro's normalisation of the frame's
+              hand-set Body/MD venue location. */}
+          <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
+            <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+              <span style={display(s.list, 1.2)}>{s.mapBase}</span>
+              <span style={bodySm}>Home location</span>
+            </div>
+            {!!g && (
+              <>
+                {/* The frame's typed ──●── is 60 / 56 wide: drawn, as Retro's
+                    is, at the typed glyph's own proportions. */}
+                <span aria-hidden style={row(0, { flex: 'none' })}>
+                  <span style={{ width: u(24), height: '1px', background: ink }} />
+                  <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: ink }} />
+                  <span style={{ width: u(24), height: '1px', background: ink }} />
+                </span>
+                <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+                  <span style={display(s.list, 1.2)}>{g.city}</span>
+                  <span style={bodySm}>Venue location</span>
+                </div>
+              </>
+            )}
+          </div>
+
+          {stats.length > 0 && (
+            <div style={row(0, {
+              width: '100%', padding: `${u(12)} 0`, alignItems: 'flex-start',
+              boxShadow: `inset 0 1px 0 ${hair}, inset 0 -1px 0 ${hair}`,
+            })}>
+              {stats.map((st) => (
+                <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+                  <span style={bodySm}>{st.l}</span>
+                  <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>{st.v}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* The frame's pill is `sem/text/1` lettered in `sem/bg` (Scheme 3's
+              `s.ac`), with a lime disc and an ink arrow — BookPill's Lime
+              branch with the pair turned round, whose own `k` gives the 54 box
+              and `s.list` label at every width. It hugs where the frame's is
+              half the row: "Get Directions" went with Retro's fit. */}
+          {!!g && (
+            <BookPill s={s} ext={g.url} label="Venue Link" bg={ink} fg={s.ac} full={s.mob} />
+          )}
+        </div>
+      )
+
+      const lrow = ({ gg, i }) => {
+        const tix = extLink(s, gg.url)
+        const Tix = tix ? 'a' : 'span'
+        return (
+          <div key={i} onClick={onPick(i)} style={row(u(12), {
+            width: '100%', background: s.box1, color: s.tx, boxShadow: ring(s.stroke1),
+            borderRadius: u(50), padding: `${u(10)} ${u(14)}`,
+            cursor: s.live ? 'pointer' : undefined,
+          })}>
+            {/* Label/XS in the frame's first row and hand-set Body/MD in the
+                rest — normalised to the first, Retro's call. */}
+            <span style={{
+              width: u(36), height: u(36), flex: 'none', borderRadius: s.radiusChip,
+              background: s.box1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls,
+            }}>{gg.day}</span>
+            <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
+              <div style={row(u(5), { minWidth: 0 })}>
+                <span style={{
+                  ...display(titleSize, 1.1),
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{gg.venue}</span>
+                {(tix || !s.live) && (
+                  <Tix {...tix} style={{
+                    ...bodySm, flex: 'none', color: 'inherit', textDecoration: 'none',
+                    cursor: tix ? 'pointer' : undefined,
+                  }}>↗</Tix>
+                )}
+              </div>
+              <span style={{ ...bodySm, whiteSpace: 'nowrap' }}>
+                {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
+              </span>
+            </div>
+            {!!gg.time && (
+              <span style={{
+                ...bodySm, flex: 'none', boxShadow: ring(s.stroke1), borderRadius: '999px',
+                padding: `${u(4)} ${u(10)}`, whiteSpace: 'nowrap',
+              }}>{gg.time}</span>
+            )}
+          </div>
+        )
+      }
+
+      // Layout 1's map recipe for the pager, which layout 1's section 5 left
+      // owing here: the compact window (five labels at most) and `grow`, since
+      // the wide window's nine buttons wrap every column this design has
+      // (516 / 332 / 346). The list stands on Scheme 1's ground, so Pager's
+      // Lime defaults are the frame's own.
+      const lwin = pageWindow(pages, pg, true)
+      const llist = (
+        <div style={col(u(8), { width: '100%' })}>
+          {rest.length > 0 && (
+            <span style={{ ...bodySm, color: s.tx }}>Other upcoming · {rest.length}</span>
+          )}
+          {rest.map(lrow)}
+          {lwin.labels.length > 0 && (
+            <Pager s={s} frame={{
+              pages: lwin.labels, active: lwin.at, grow: true,
+              onPage: s.live ? (n) => setPage(Number(n) - 1) : undefined,
+              onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+            }} />
+          )}
+        </div>
+      )
+
+      // The rings, drawn in the ring's own pixels so the weights and the outer
+      // ring's 4 / 4 dash are the frame's (× 0.82 on desktop through the
+      // viewBox). Inside strokes, so the radius gives back half the weight.
+      // The widths are each master's 480 / 300 / 140 as a share of its own
+      // viewport, which is Retro's 588 / 318 / 346 at every width.
+      const rings = [
+        { d: 480, w: 1, o: 0.3, dash: '4 4' },
+        { d: 300, w: 1.5, o: 0.5 },
+        { d: 140, w: 2, o: 0.8 },
+      ]
+      const vw = desk ? 588 : tab ? 318 : 346
+      const lpins = shown.map((gg, i) => {
+        const on = first + i === feat
+        const d = u(on ? 16 : 8)
+        return (
+          // The frame's five dots are ink at 60%, which vanishes on the plate;
+          // the idle pin is the panel's pale ink instead, and the lit one is the
+          // centre marker's own pair. Neither frame pairs a dot with a gig.
+          <span key={i} onClick={onPick(first + i)} style={{
+            position: 'absolute', left: gg.pin.x, top: gg.pin.y, width: d, height: d,
+            borderRadius: '999px', background: on ? s.ac : s.tx,
+            boxShadow: on ? `0 0 0 2px ${ink}` : undefined,
+            transform: 'translate(-50%, -50%)',
+            cursor: s.live ? 'pointer' : undefined,
+          }} />
+        )
+      })
+
+      const lpanel = (
+        <div style={col(u(24), {
+          background: s.box2, color: s.tx, padding: pad,
+          borderRadius: u(s.mob ? 30 : 50),
+        })}>
+          <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
+            {/* Retro's Featured tab in the frame's Scheme 2 status pill. The
+                frame's "Updated 2m ago" stays dropped. */}
+            <span style={row(u(8), {
+              background: s.box1, color: s.ac, borderRadius: '999px',
+              padding: `${u(6)} ${u(12)}`, ...chip,
+            })}>
+              <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: s.ac }} />
+              Featured
+            </span>
+            <div style={col(u(4), { width: '100%', minWidth: 0 })}>
+              {g ? (
+                <>
+                  <h3 style={display(titleSize, 1.1)}>{g.venue}</h3>
+                  <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7 }}>{g.city}</span>
+                </>
+              ) : (
+                <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7 }}>No dates yet.</span>
+              )}
+            </div>
+          </div>
+
+          {/* `radius/control` is 13 at 1440 and a raw 42 / 25 on the narrow
+              masters. The ring is an overlay, since the raster would paint
+              over an inset shadow on the container. */}
+          <div style={col(0, {
+            position: 'relative', width: '100%', background: s.box2,
+            borderRadius: desk ? u(13) : tab ? '42px' : '25px', overflow: 'hidden',
+          })}>
+            {/* The viewport is `flex: 1 0 0` under a stated panel height, so its
+                shape is derived: 588 × 519, 318 × 518 and 346 × 298. */}
+            <div style={{
+              position: 'relative', width: '100%', background: plate, overflow: 'hidden',
+              aspectRatio: desk ? '588 / 519' : tab ? '318 / 518' : '346 / 298',
+            }}>
+              {s.mapSrc && (
+                <span aria-hidden style={{
+                  position: 'absolute', inset: 0, backgroundImage: `url(${s.mapSrc})`,
+                  backgroundSize: 'cover', backgroundPosition: 'center',
+                  filter: 'invert(1) grayscale(1) contrast(1.6)', opacity: 0.2, mixBlendMode: 'screen',
+                }} />
+              )}
+              {rings.map((r) => (
+                <svg key={r.d} aria-hidden viewBox={`0 0 ${r.d} ${r.d}`} style={{
+                  position: 'absolute', left: '50%', top: '50%', width: `${r.d / vw * 100}%`,
+                  aspectRatio: '1', transform: 'translate(-50%, -50%)', overflow: 'visible',
+                }}>
+                  <circle cx={r.d / 2} cy={r.d / 2} r={(r.d - r.w) / 2} fill="none"
+                          stroke={s.ac} strokeWidth={r.w} strokeDasharray={r.dash} opacity={r.o} />
+                </svg>
+              ))}
+              {lpins}
+              {/* The centre pin: a lime disc in a 2px ink ring round the frame's
+                  `user` glyph (lucide's, at its bounds), over a small lime tail.
+                  The disc stands 16 above the rings' centre, as the frame's 24 ×
+                  32 box centred 12 high puts it. */}
+              <span aria-hidden style={{
+                position: 'absolute', left: '50%', top: `calc(50% - ${u(16)})`,
+                transform: 'translate(-50%, -50%)', width: u(24), height: u(24),
+                borderRadius: '999px', background: s.ac, boxShadow: `inset 0 0 0 ${u(2)} ${ink}`,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: ink,
+              }}>
+                <User size={Math.round(16 * z * 10) / 10} strokeWidth={2 * z} absoluteStrokeWidth />
+              </span>
+              <svg aria-hidden viewBox="0 0 10 8" style={{
+                position: 'absolute', left: '50%', top: `calc(50% + ${u(8)})`,
+                width: u(10), height: u(8), transform: 'translate(-50%, -50%)', overflow: 'visible',
+              }}>
+                <path d="M1 1 H9 L5 7 Z" fill="none" stroke={s.ac} strokeWidth="2" strokeLinejoin="round" />
+              </svg>
+            </div>
+            {/* Retro's allocation: the travel terms, and the count where the
+                frame's dead "EXPAND VIEW" stood. */}
+            <div style={row(u(12), {
+              justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
+              boxShadow: `inset 0 1px 0 ${s.stroke1}`,
+            })}>
+              <span style={bodySm}>{s.mapTerms}</span>
+              <span style={{ ...chip, flex: 'none' }}>{s.gigs.length} pins</span>
+            </div>
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit',
+              boxShadow: ring(s.stroke1), pointerEvents: 'none',
+            }} />
+          </div>
+        </div>
+      )
+
+      return (
+        <div style={{
+          display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+          gap: u(24), alignItems: 'start',
+        }}>
+          <div style={col(u(18))}>{lcard}{llist}</div>
+          {lpanel}
+        </div>
+      )
+    }
+
     const travel = (
       <div style={col(u(18), {
         background: card, color: cardFg, border: `1px solid ${hair}`,
