@@ -643,7 +643,9 @@ Settled in section 5 (the repertoire):
   field's rings. Nothing closes the sheet under the pager, where Retro draws a hairline.
 - **Rows pin at each master's division result**: 83.2 (× 0.82 = 68.2) / 82 / 59, Retro's 84.2 / 82.6
   / 58 being its own frames'. The number hugs in the frame (7–9 wide); it is a `minWidth` of 9 (8 at
-  390), so single digits land the title within 1px of the frame and "10" pushes its own by ~4.
+  390), so the title lands at 64.9 / 53 / 32 against the frame's 63.1 / 51–53 / 30–32 (the
+  desktop "1" hugs at 7 × 0.82) and "10" pushes its own by ~4. The toggle wraps with Retro's
+  `rowGap` 6, a state no frame draws.
 - **The pager is `Pager`'s Lime branch with `grow` and no `frame.lime`**: the sheet is Scheme 1's
   `box/1`, which is what the defaults were written for, and the frame's pills (`box/2`, the glow-lit
   current one, the ringed arrows, radius 60 at 54 tall) are that branch exactly. This **closes the
@@ -658,7 +660,8 @@ Settled in section 5 (the repertoire):
   pager 54 at 60 down its 174 band; 390 section 593.8 (594), head 204.8 (205), field 370 × 36 at 128.8
   (129), rows 59, title at x 32, pager band 94. `live=1`: the pager steps and lights, a page-number
   click past the end does nothing, chips filter and relight (Weddings leaves one page, so no pager),
-  search and chip combine, a no-match search shows the message; `n=30` pages 1 → 2 → 3 → 2 at 390;
+  search and chip combine, a no-match search shows the message (the live `::placeholder` at .45 is
+  Retro's accepted diff, as in layout 1); `n=30` pages 1 → 2 → 3 → 2 at 390;
   `n=0` shows *No songs yet.* at 768. No page errors. Digest at themes 0–4, all 810 renders:
   exactly repertoire arch 1 at theme 1, three widths.
 

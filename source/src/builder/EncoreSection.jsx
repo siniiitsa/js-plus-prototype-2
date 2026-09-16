@@ -8355,7 +8355,7 @@ function Repertoire({ s }) {
                   the chip on show in `sem/text/1` with page-ground type. */}
               <div style={row('0', {
                 background: s.box1, boxShadow: ring, borderRadius: '999px',
-                padding: u(3), flexWrap: 'wrap', minWidth: 0,
+                padding: u(3), flexWrap: 'wrap', rowGap: u(6), minWidth: 0,
               })}>
                 {s.repChips.map((f, i) => (
                   <span
