@@ -37,6 +37,7 @@ import limeStage from './photos/lime-stage.jpg'
 import limeCalendar from './photos/lime-calendar.jpg'
 import limeAvatar from './photos/lime-avatar.jpg'
 import limeGallery4 from './photos/lime-gallery-4.jpg'
+import limeFormPhoto from './photos/lime-form-photo.jpg'
 
 // Keyed by section category id, matching FIELDS: a single `image` slot takes a
 // string, a multi-photo `images` slot takes an array in slot order.
@@ -71,8 +72,8 @@ export const RETRO_PHOTOS = {
 // bio's — the form's avatar and the gallery's spotlight. Shared: the six strip
 // thumbnails, the five track covers and the map raster.
 //
-// The form's second slot and the video poster take the bio's photograph, Retro's
-// rule; Lime's layout-1 page draws neither.
+// The video poster takes the bio's photograph, Retro's rule; Lime's layout-1
+// page draws none. The form's second slot is its own, below.
 export const LIME_PHOTOS = {
   header: limeHero,
   bio: limeStage,
@@ -127,9 +128,15 @@ export const RETRO_TEXTURE = { grain, map: mapTile }
 //   photos — the section photographs above
 //   avatar — the header's and the video section's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
+//
+// Lime's scene is the whole source of its layout-2 frames' stage shot (Figma
+// 964:64595, hash f821adc2 — the same image its form avatar is the centre square
+// of), exported at 1200 × 800 with no crop: every master fills it untransformed,
+// so a centred cover is the frame's own picture at 838 × 437, 334 × 437 and
+// 370 × 262. Only the form's layout 2 reads `photo`.
 const SEEDS = {
   Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: stage },
-  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeStage },
+  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto },
 }
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
@@ -142,9 +149,9 @@ const SEEDS = {
 // The form is the odd one of the three: its `image` is the *artist* (layout 1
 // draws it as the 48px circle beside the brand), so its second slot is the
 // scene rather than the portrait, and it is keyed `photo` rather than `avatar`.
-// It takes the same live-set frame the bio and the video section stand on —
-// layout 2's frame is a stage shot, and it is the only photograph in the seeded
-// set that is one.
+// Retro's takes the same live-set frame the bio and the video section stand on —
+// layout 2's frame is a stage shot, and it is the only photograph in Retro's
+// seeded set that is one. Lime's frame has its own (SEEDS, above).
 export const defaultImage = (cat, themeName, key = 'image') => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined

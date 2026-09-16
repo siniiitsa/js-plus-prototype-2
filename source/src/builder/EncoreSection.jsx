@@ -15947,6 +15947,234 @@ function EnquiryForm({ s }) {
       </div>
     )
   }
+  // Lime — layout 2's Sticky sidebar card frames 964:64595 / 986:11863 /
+  // 986:11882, as a block ahead of Retro's v1 branch below: layout 1's
+  // placement, since the whole live seam — `vals`, `errs`, `sent`, `href`,
+  // `onSubmit`, `Pill` — is hoisted above the branches, so the published boxes,
+  // submit and sent card needed nothing new. The tree is Retro's twin's to the
+  // node (photo, heading, promises beside the credit row, and a card of boxes
+  // over a pill and a line), and its boxes are the twin's too: the insets
+  // 60/56 · 60/30 · 40/10, the 40 between the columns, the 30 down the left one,
+  // the card's 28/24 and 14, the 10 between the boxes, the pill's 5/21 and its
+  // 46 × 44 disc. What moves is every leaf's dress, so it is a block: nothing of
+  // Retro's `T`, `ground`, `card*`, `boxShell`, `pill` or `arrowDisc` is read —
+  // they are `pillBg` / `paper` / `deep` derivations, and under Lime the first
+  // two are the accent and the pale sheet.
+  //
+  // **Scheme 4 throughout**, read off every node's fills: the sheet is its
+  // `sem/bg`, `s.tx`, and every ink is `s.bg`; the card and every box are
+  // `sem/box/1` `mist` inside a 1px `sem/stroke/1` hairline, drawn as an inset
+  // shadow so the stated paddings and heights hold; the pill is ink with a
+  // `s.tx` label and a `s.tx` disc round an ink arrow, and carries **no offset
+  // block** (Retro's does). The one effect is the photograph's INNER_SHADOW 34 in
+  // `s.ac`, over a 1px ink stroke. Radii are raw: 50 on the photograph and the
+  // card (Retro's twin: 30), `radius/pill` on the boxes and the pill. Every type
+  // size is the Lime ramp's `s.*` at all three widths (`get_variable_defs`), so
+  // there is no `T` table; the boxes state 44 / 39 / 37, which is 12 of padding
+  // over Label/SM's own line box.
+  //
+  // Retro's readings all hold: the price and the `★★★★★ 42 bookings` line are
+  // dropped, the box carries the uppercased label, `s.formPara` takes the
+  // centred foot line, 768 keeps the columns and only 390 stacks, and the
+  // promises/credit block is a row at 1440 and 390 and a column at 768. Named
+  // diffs: the seed has four boxes to the frame's three, and types *Book Now*
+  // and *DJ · Live Act* where the frame types *Check Availability* and *DJ · Live
+  // band*; the credit row is narrower for the shorter role, and the card runs
+  // shorter than the frames' by the dropped price and stars. The sheet's own
+  // `s.gPad` inset makes the desktop photo column 686.2, the frame's 687.2.
+  if (s.v1 && s.lime) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const type = (family, size, lh, extra) => ({
+      fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+    })
+    const ink = s.bg // Scheme 4 `sem/text/1` and `/2`
+    const mist = '#D5E3B2' // Scheme 4 `sem/box/1` — the card and every box
+    const hair = '#15180F26' // Scheme 4 `sem/stroke/1`, 15%
+    // Retro's twin's page inset, for Retro's reasons (the repertoire's bleed).
+    const padV = desk ? s.gPad : s.mob ? '40px' : '60px'
+    const padH = `calc(${s.surplus} + ${desk ? s.gPad : s.mob ? '10px' : '30px'})`
+    // Retro's rule: the label is uppercased as a string so the live input can
+    // carry it as its placeholder without shouting what the visitor types.
+    const up = (t) => String(t).toUpperCase()
+
+    // Label/SM in ink on `mist` inside the hairline, at `radius/pill`. A refused
+    // box thickens that ring to 2px of full ink — layout 1's Lime rule — so the
+    // stated height does not grow.
+    const box = (bad) => type(s.label, s.labelSm, 1.1, {
+      background: mist, color: ink, border: 'none', borderRadius: s.btnR,
+      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? ink : hair}`,
+      height: desk ? u(44) : s.mob ? '37px' : '39px',
+      padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
+    })
+
+    // The submit and *Write another*: layout 1's Lime pill with the pair turned
+    // round — `sem/text/1` with Display/List in `s.tx`, and the 46 × 44 disc in
+    // `s.tx` round an ink arrow. 5 + 44 + 5 is the frames' 54.
+    const pill = (extra) => type(s.display, s.list, 1.2, {
+      ...row(u(10), { justifyContent: 'space-between' }),
+      background: ink, color: s.tx, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
+      padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
+    })
+    const disc = (
+      <span style={{
+        width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
+        background: s.tx, color: ink,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
+    )
+
+    return (
+      <div style={{
+        // The sheet, out to the section's edges past the root's padding — the
+        // root's `limeLight` is layout 1's, so the band paints its own ground
+        // and its own ink.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: s.tx, color: ink,
+        padding: `${padV} ${padH}`,
+        display: 'flex', gap: u(40), alignItems: 'flex-start',
+        flexDirection: s.mob ? 'column' : 'row',
+      }}>
+        <div style={col(u(30), {
+          flex: desk ? 1 : tab ? '1 1 0' : 'none',
+          minWidth: 0, width: s.mob ? '100%' : undefined,
+        })}>
+          {/* 437 at 1440 and 768, 262 at 390. The ring and the glow are one
+              last-child overlay, so they paint over the photograph as Figma's
+              stroke and inner shadow do; the well is Scheme 4's `sem/box/2`. */}
+          <div style={{
+            position: 'relative', height: u(s.mob ? 262 : 437),
+            borderRadius: u(50), overflow: 'hidden', background: s.tx,
+          }}>
+            {/* `null`, Retro's reason: an emptied stage photo must not fall
+                through to `s.image`, which is the credit row's portrait. */}
+            <Photo s={s} src={s.formPhoto ?? null} ink={ink} initialsSize={desk ? 56 : 40} />
+            <span style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 1px ${ink}, inset 0 0 ${u(34)} ${s.ac}`,
+            }} />
+          </div>
+          {/* Display/SM at lh 1. The frames break it LET'S MAKE / YOUR NIGHT
+              UNFORGETTABLE. with a typed break, and 768 wraps the second line
+              in its 334 box. In `bebasEms()` a cap between UNFORGETTABLE.'s
+              5.158em and LET'S MAKE YOUR's 5.266em gives 768's three lines at
+              its own breaks, so 768 is 5.2em (layout 1's value for this string).
+              1440 wants two, and any cap over the second line's 8.87em gives two
+              with the break after NIGHT instead — 9em, the footer's. 390 needs
+              none: our 346 column is 10.8em at 32. */}
+          <h2 style={type(s.display, s.dispSm, 1, {
+            margin: 0, color: ink, overflowWrap: 'break-word',
+            maxWidth: desk ? '9em' : tab ? '5.2em' : undefined,
+          })}>{s.title}</h2>
+          {/* Frame 284: Retro's axis flip — a space-between row at 1440 and
+              390, a column at 768. An emptied promise list drops its node. */}
+          <div style={tab
+            ? col(u(30), { alignItems: 'flex-start' })
+            : row(u(20), {
+              justifyContent: 'space-between', alignItems: 'flex-end',
+              ...(desk ? { flexWrap: 'wrap', rowGap: u(20) } : null),
+            })}>
+            {s.formPromises.length > 0 && (
+              <div style={col(u(10), { minWidth: 0 })}>
+                {/* The frame's typed ✓ in Body/SM, the line in Label/XS. */}
+                {s.formPromises.map((p, i) => (
+                  <span key={i} style={row(u(10))}>
+                    <span style={type(s.body, s.bodySm, 1.4, { flex: 'none' })}>✓</span>
+                    <span style={type(s.ui, s.labelXs, 1.26)}>{p}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+            {/* With no promises the row keeps the credit at its end. */}
+            <span style={row(u(14), {
+              flex: 'none', marginLeft: tab || s.formPromises.length ? undefined : 'auto',
+            })}>
+              {/* The portrait on `sem/bg`, radius 24 of 48 — a circle. */}
+              <span style={{
+                width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
+                overflow: 'hidden', background: s.tx,
+              }}><Photo s={s} ink={ink} initialsSize={Math.round(15 * z)} /></span>
+              <span style={col(u(2), { minWidth: 0 })}>
+                <span style={type(s.display, s.list, 1.2)}>{s.brand}</span>
+                <span style={type(s.ui, s.labelXs, 1.26)}>{s.kicker}</span>
+              </span>
+            </span>
+          </div>
+        </div>
+
+        {/* Retro's column: 450 at 1440, an equal half at 768, the measure at
+            390, stretched wherever the columns stand side by side so the
+            sticky card has somewhere to travel. */}
+        <div style={{
+          width: s.mob ? '100%' : desk ? u(450) : undefined,
+          flex: tab ? '1 1 0' : 'none', minWidth: 0,
+          alignSelf: s.mob ? undefined : 'stretch',
+        }}>
+          <div style={col(u(14), {
+            background: mist, color: ink, borderRadius: u(50),
+            boxShadow: `inset 0 0 0 1px ${hair}`,
+            padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
+            position: 'sticky', top: 0,
+          })}>
+            {sent ? (
+              // The card alone changes. No frame draws this state: the title is
+              // Display/Title at the frames' own 36 / 28 / 26 (the dropped
+              // price's style, since `s.title` is the heading string), and the
+              // address is Body/MD — both invented, Retro's same two.
+              <>
+                <h3 style={type(s.display, desk ? u(36) : s.mob ? '26px' : '28px', 1.1, {
+                  margin: 0, overflowWrap: 'break-word',
+                })}>{s.formSentTitle}</h3>
+                <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
+                {/* Plain text, Retro's reason: the fallback for a browser that
+                    opened nothing. */}
+                <span style={type(s.body, s.bodyMd, 1.5, { fontWeight: 700, overflowWrap: 'break-word' })}>
+                  {s.formEmail}
+                </span>
+                <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>{s.formAgain}{disc}</span>
+              </>
+            ) : (
+              <>
+                <div style={col(u(10))}>
+                  {s.formFields.map((f, i) => {
+                    const bad = !!(errs && errs.f[i])
+                    return s.live ? (
+                      <input
+                        key={i} value={at(i)} placeholder={up(f.label)}
+                        onChange={(e) => setAt(i, e.target.value)}
+                        // Retro's rule: `email` for the phone keyboard,
+                        // `number` as inputMode only, a date as the artist's text.
+                        type={f.kind === 'email' ? 'email' : 'text'}
+                        inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                        style={{ ...box(bad), outline: 'none' }}
+                      />
+                    ) : (
+                      <span key={i} style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>
+                        {up(f.label)}
+                      </span>
+                    )
+                  })}
+                  <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
+                    {s.formBtn}{disc}
+                  </Pill>
+                </div>
+                {errs && (
+                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{s.formPrompt}</span>
+                )}
+                {/* Body/SM, centred, where the frame types "No charge to
+                    enquire". An emptied paragraph drops the line. */}
+                {s.formPara && (
+                  <p style={type(s.body, s.bodySm, 1.4, { margin: 0, textAlign: 'center' })}>{s.formPara}</p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
   // v1 — Enquiry Form layout 2 · Sticky sidebar card (Figma 964:64652,
   // 1440 × 792). A mustard page: a big rounded stage photograph over the
   // display heading and the ticked promises, the artist's own credit row set
