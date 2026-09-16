@@ -173,7 +173,7 @@ masters are fitted in one session.
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Retro twin (1440 / 768 / 390) | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | `header` | `964:68654` | 1440 × 900 | `984:10740` | 768 × 1024 | `984:10771` | 390 × 606.5 | `964:68622` / `977:22532` / `982:9583` | — |
+| 1 | `header` | `964:68654` | 1440 × 900 | `984:10740` | 768 × 1024 | `984:10771` | 390 × 606.5 | `964:68622` / `977:22532` / `982:9583` | done `8855dd2` |
 | 2 | `bio` | `964:68663` *(head `964:68658`)* | 858 × 882 | `984:10748` *(head `984:10743`)* | 708 × 912 | `984:10779` *(head `984:10774`)* | 370 × 878 | `964:68631` / `977:22717` / `982:10013` | — |
 | 3 | `media` | `964:68674` list + `964:68673` card *(head `964:68666`)* | 858 × 424 + 858 × 243 | `984:10759` + `984:10758` *(head `984:10751`)* | 708 × 647 + 708 × 243 | `984:10790` + `984:10789` *(head `984:10782`)* | 370 × 647 + 370 × 243 | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | — |
 | 4 | `repertoire` | `964:68678` | 1440 × 621 | `984:10760` *(in `984:10757`)* | 708 × 655 | `984:10791` | 390 × 709 | `964:68646` / `977:23041` / `982:10193` | — |
@@ -306,7 +306,7 @@ Everything here is behind `s.lime`, and replaces what the Retro branch gates on 
 
 | Section | Slot (frame box) | Hash | Seeded today | Verdict |
 |---|---|---|---|---|
-| header | `hero-card` 1400 × 860 / 748 × 1004 / 370 × 586 | `51d68654` | `limeHero` | ✓ — but the frame draws it **mirrored**: `imageTransform [[-1, 0, 1], [0, 0.781, 0.109]]` at every width, a horizontal flip plus a vertical crop. `transform: scaleX(-1)` on the `<img>` and an `objectPosition` for the crop; the header session measures it |
+| header | `hero-card` 1400 × 860 / 748 × 1004 / 370 × 586 | `51d68654` | `limeHero` | ✓ — a plain centred cover. *Corrected in section 1:* the fill's `imageTransform` carries a flip and a crop, but its `scaleMode` is `FILL`, which ignores the transform, and the render is unflipped (layout 1's session-0 note). No `scaleX(-1)` |
 | header | portrait 87 × 87 | `e3790c2c` | `limeHeaderAvatar` | ✓ |
 | bio | photo 798 × 380 / 648 × 380 / 350 × 259 | `fa453f7d` | `limeStage` | ✓ *expected*: the transform is `[[0.502, 0, 0.183], [0, 1, 0]]`, the exact slice `limeStage` was exported as, now filling a landscape box — so a centred cover of the file should be the frame's picture, and Retro's `SEEDS.Retro.layouts[2].bio` mechanism is **not owed**. The bio session verifies against the render rather than asserting it |
 | media | five 64 × 64 sleeves | `8c7fa7d8` `4e7cc529` `b737c3e0` `40041573` `21e9622c` | `ROW_ART.media` | ✓ the shared covers |
@@ -547,6 +547,71 @@ pass goes on.
   the bio photograph. Confirm each off the node's `effects`; an effect style resolves in its own
   mode.
 
+
+Settled in section 1 (the header):
+
+- **The first layout-3 block: `if (s.lime) { … return }` at the head of `HeaderV2`**, HeaderV1's
+  seat — no state to share, and every leaf changes face, ink or box. Retro's code below it is
+  untouched but for `mustard`, which is plain `s.pillBg` again (its `s.lime ? s.box1` arm is
+  unreachable now). Diff 203 / 3.
+- **The plan's guesses that the frames corrected.** (1) The hero is **not mirrored**: the fill
+  is `FILL`, which ignores its `imageTransform`, and the render faces the file's way — a centred
+  cover. (2) The portrait is an **87 × 87 rounded square** (radius 21) in a `s.box1` well with a
+  1px `s.ac` ring, not a round disc. (3) The name stands **over** the location (Retro's stands
+  under it), and the "148 × 29 chip frame" is the location row: a 14 square in `s.ac` at
+  `radius/chip` (`s.radiusChip`) beside `s.location` at Display/List. (4) The scrim is a
+  full-height linear fade from `sem/media` (`#2E3928`, `s.box1`) at the floor to `sem/bg` at 0
+  at the top, over a `s.box2` well; the card's ring is `stroke1`, drawn as an overlay.
+- **No Device override, no box token, no `T` table.** `get_variable_defs` is the ramp at all
+  three widths (dispLg 130 / 81 / 54, labelLg 32 / 21 / 14, labelSm 18 / 14 / 12, list
+  24 / 19 / 18, bodySm 13 / 13 / 12). Display/Title — the card's name — is the frames'
+  `u(36)` / 28 / 26. Radii 50 / 50 / 20 (well), 45 / 45 / 12 (card), 21 (portrait) and every
+  padding are raw.
+- **The Tags instance is hand-scaled, so `TagChips` is not used**: Label/XS × 0.752 (15.04 /
+  10.53 / 9.02) with padding 3.76 / 8.27, radius 4.51 and gap 6.01 fixed at every width,
+  inlined from `s.chips` as the bio's layout-2 block does, but with `vm.chips`' own dark seat —
+  the chips stand on the photograph, not on `box1`. The leaked 700.74 measure is dropped.
+- **The pill is `BookPill`'s Lime defaults at the frame's small box** — Scheme 3 is exactly
+  `pillBg` lettered and disced in `s.bg` — so no `bg` / `fg`, only `size={s.labelSm}
+  disc={27.6 * z}` and the 4.27 / 17.92 / 8.53 style, with `z` 0.82 / 1 / 1 (the bio's layout-2
+  recipe: the box is 34.93 at all three widths).
+- **The glass card's glow is `s.glow`, confirmed off the node** (INNER_SHADOW 19, spread 0,
+  `#A6E22E`), one `boxShadow` with the 1px `s.ac` ring on the card itself (ring first; the 40
+  padding clears it). The 1% `box1` fill paints nothing and is not drawn. Its two lines are
+  `brand` and `kicker`, Retro's reading, so the seed prints *DJ · Live Act* where the frame
+  types *Performing since 2021*.
+- **The nav is HeaderV1's two halves, not the frame's five cells.** The frame spreads four equal
+  flex cells round the name; any capsule wider than a quarter of the bar (the harness's six
+  links already are) pushed the name 105 right of centre. With the spacers folded into the
+  halves, the harness's six sit centred at 15px, and the budget's fixed part is HeaderV1's
+  138.32. The seeded nine hold one row at 15px on the 1088 editor canvas and the published
+  1440, with the name slid right (196 on the canvas), layout 2's accepted behaviour. At 390 the
+  right half takes `minWidth: 0`, so the 96 pill overruns into the spacer as the master's does
+  and the name stays centred at 195. The capsule's corner is `u(18)` on desktop (the one-row
+  half-height, for the wrap case), `s.btnR` round the burger at 768 and 390.
+- **Open question 4's answer: the 390 master is written out, not derived.** None of Retro's
+  narrow constants is read. The body is a 24-gap column: a band with a stated **370.52
+  minimum**, standing the name and chips on its floor (Retro's 568 rule), then the card turned
+  on its side (`row(21)`, padding 20, radius 12, text left-aligned). The well has no top
+  padding at 390; the nav's own 10 is its inset.
+- **Measured against the masters**: desktop section 738 (900 × 0.82), nav content top 42.6
+  (52 × 0.82), pill 95.2 × 28.6, name at 520 (634.48 × 0.82), card 180.4 × 205.3 at x 957
+  (1168 × 0.82), its name at 611.4 (611.7); 768 section 1024, name at 824.4 (824.48), card
+  220 × 241 at 506 / 741 (both exact), pill at 623.4 / 42; 390 section 606.4 (606.45), name at
+  304.9 (304.93), card 350 × 127 at 20 / 459.4 (459.45), pill at 273.8 / 20. `live=1`: the
+  links, Listen and the pill are `<a href="#…">`, the burger opens a six-link panel at 768 and
+  390; the canvas anchors carry no href. `noimage=1` draws the backdrop's empty state under the
+  fade. No page errors. Digest at themes 0–4, all 645 renders: exactly header arch 2 at theme 1,
+  three widths.
+- **Verified in the builder** (one puppeteer script, deleted): the setup modal offers four Lime
+  cards and only card 3 draws the `#A6E22E` glass glow. *Use this header* opens an 11-section
+  canvas with one composed row at 621 : 293 (858 : 405), and the published page stacks header,
+  bio, media, calendar, repertoire, gallery, pricing, map, form, testimonials, footer — the
+  composed order at desktop. In the published 1440 tab all eleven header anchors (nine nav,
+  Listen, Book Now) scrolled to existing ids, Book Now on `form`; at 390 and 820 (fresh tab each)
+  the burger stands in the capsule and opens a nine-link panel whose links scroll. The sidebar's
+  per-row layout labels were not read; the composed row and the order are the arch-2 proof.
+
 ## Open questions
 
 1. **The bio photograph's cover.** The frame's transform is `limeStage`'s own slice, filling a
@@ -562,7 +627,7 @@ pass goes on.
    component whose Retro instance states 647 at every width. Whether 121 is a design (a taller
    row for a narrower measure) or the 647 constant divided five ways (647 − 45 = 602; 602 / 5 =
    120.4) is the media session's first reading — the quarter-pixel test Retro's plan used.
-4. **The header's 390 master** is a different composition from Retro's at that width, and it is
+4. *Settled in section 1 — written out; see its Conventions.* **The header's 390 master** is a different composition from Retro's at that width, and it is
    the first Lime master to be. Whether `HeaderV2`'s narrow constants can be reused at all, or
    the Lime block writes its own 390 out, is the header session's call; write it under
    *Conventions* since layout 4 may meet the same shape.
