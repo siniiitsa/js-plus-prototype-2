@@ -170,7 +170,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 5 | `repertoire` | `964:72916` *(Section `964:72911`, panel `964:72912`)* | 1208 × 536 | `971:5604` *(Section `971:5599`, panel `971:5600`)* | 608 × 582 | `977:9178` *(Section `977:9173`, panel `977:9174`)* | 310 × 650 | `964:72822` / `964:78509` / `977:8166` | done `5d7d7a4` |
 | 6 | `map` | `964:72924` *(Frame 319 `964:72918`, head `964:72920`)* | 1440 × 747 | `971:5612` *(Frame 319 `971:5606`, head `971:5608`)* | 768 × 871 | `977:9186` *(Frame 319 `977:9180`, head `977:9182`)* | 390 × 680 | `964:72830` / `964:78599` / `977:8322` | done `1bffd9c` |
 | 7 | `pricing` | `964:72926` | 1440 × 546 | `971:5613` | 768 × 809 | `977:9187` | 390 × 837 | `964:72831` / `964:78656` / `977:8440` | done `8546dbb` |
-| 8 | `calendar` | `964:72939` + wizard `964:72938` *(Section `964:72927`, Frame 324 `964:72928`)* | 478 × 536 + 680 × 536 | `971:5626` + `971:5625` *(Section `971:5614`, Frame 324 `971:5615`)* | 608 × 505 + 608 × 479 | `977:9200` + `977:9199` *(Section `977:9188`, Frame 324 `977:9189`)* | 350 × 496 + 350 × 474 | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | — |
+| 8 | `calendar` | `964:72939` + wizard `964:72938` *(Section `964:72927`, Frame 324 `964:72928`)* | 478 × 536 + 680 × 536 | `971:5626` + `971:5625` *(Section `971:5614`, Frame 324 `971:5615`)* | 608 × 505 + 608 × 479 | `977:9200` + `977:9199` *(Section `977:9188`, Frame 324 `977:9189`)* | 350 × 496 + 350 × 474 | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | done `8163fcd` |
 | 9 | `form` | `964:72940` | 1440 × 795 | `971:5627` | 768 × 1024 | `977:9201` | 390 × 971 | `964:72845` / `964:79477` / `977:8663` | — |
 | 10 | `testimonials` | `964:72941` | 1440 × 716 | `971:5628` | 768 × 642.4 | `977:9202` | 390 × 624.4 | `964:72846` / `964:79536` / `977:8764` | — |
 | — | `footer` | `964:72942` | 1440 × 479.5 | `971:5629` | 768 × 647.4 | `977:9203` | 390 × 619.4 | — | **out of scope** — Lime layout 1's own component family at layout 1's sizes, fitted in that pass's section 11; `NVAR.footer` is 1 |
@@ -1233,6 +1233,90 @@ Settled in section 7 (pricing):
   `n=1` draws one row with no rule; `n=8` draws seven rules. No page errors. Digest at themes
   0, 2, 3 and 4: zero differing files; theme 1: exactly pricing arch 3 at three widths (no
   `_arch_7_` file exists — the convention above).
+
+Settled in section 8 (the calendar):
+
+- **The eighth layout-4 block, inside its branch after the seam: `if (s.lime)` within
+  `Calendar`'s `if (s.v3)`, after `NextTag`** — the deepest seam of the pass. `sel`, `mi` and
+  the wizard's three hooks are hoisted, but `want` / `hit` / `cur` / `feat`, `stats`, and the
+  wizard's `W` / `wAt` / `wCur` / `nTypes` / `typeAt` / `last` / `onBack` / `onNext` /
+  `sendLink` / `NextTag` are the branch's, so the block sits after the last of them and shares
+  the whole seam: the published row pick (picked, not toggled — the featured slot leaves the
+  list), the chip pick, the real inputs, Back / Next Step and the last step's Send Enquiry
+  `<a href="#form">` needed nothing new. `panelPad`, the 60 / 30 corner and the 50 / 20 gaps are
+  read too — Lime's Frame 324 is Retro's to the number (60 / 60 · 60 / 50 · 30 / 10). The tree is
+  Retro's twin's node for node and nearly every leaf changes fill, ink, box or size, so a block:
+  one hunk, **281 / 0**. Retro's `T`, `panel` / `sheet` / `sheetInk` / `gone` / `card` /
+  `cardInk` / `cardHi` / `hair` / `chipType` / `bodyMd` / `smallCaps` and its `backBg` / `backFg`
+  are not read.
+- **Primitives: Lime on the page's Scheme 1, and every fill is a `sem` key.** The panel is
+  `sem/box/2` (`s.box2`); the wizard card and the slot rows `sem/box/1` (`s.box1`) in a 1px
+  `sem/stroke/1` inside hairline (an inset shadow; nothing reaches an edge, so no overlay); the
+  summary card is `sem/text/2` (`s.tx`) — the text token, Retro's own reading — lettered
+  `sem/box/2` with the big stat in `sem/bg`, which is Retro's `cardInk = panel` binding exactly.
+  So **Lime's frame restores the three-level stack Retro's note said Lime flattens**: `box1`
+  rows under a `tx` card on a `box2` panel. CLAUDE.md's "on Lime and Grunge the card and the
+  rows share a fill" is Grunge's alone now — for the sweep (the plan's list already names it).
+  The card's own `stroke/1` (pale at .15 on pale) is not drawn, Retro's reading of the same
+  stroke. `get_variable_defs` and the nodes agreed on every entry at all three widths; no node
+  carries an effect.
+- **Two pills in other schemes, read off `explicitVariableModes`.** The Back pill nests
+  **Scheme 3**, where `sem/text/1` is `#15180F` = `s.bg` and `sem/bg` is `#AFE335` = `s.ac`: an
+  ink pill with a lime disc, lime label, ink arrow. Next Step is Scheme 1's `text/1` lime with
+  an ink disc. Both are hand-written at the frame's numbers (radius 67, 5 / 21 round a 46 × 44
+  disc, Display/List at 1.2), Retro's route since BookPill has no left-disc form, with the
+  glyph BookPill's own lucide arrow at `46 × z × 0.6` and `strokeWidth 1.5` so the block's three
+  discs match; no offset block (`hard()` is Retro's). Measured 99.2 × 44.3 / 131.3 × 44.3 at
+  desktop (121 × 54 / 160 × 54 × 0.82), 112.4 / 142.9 at 768 (113 / 144), 110.8 / 139.7 at
+  390 (112 / 140). The Send Enquiry pill nests **Scheme 2**, whose `sem/bg` is `s.box1`, so it
+  is `<BookPill s={s} to={s.calBookTo} label={s.calCta} fg={s.box1} full={s.mob}
+  style={{ width: '100%', justifyContent: 'space-between' }} />` — layout 3's calendar recipe
+  verbatim, none of Retro's `disc` / `size` / `glyph` / `shadow`; the branch's own `k` gives
+  54 / 44.3 and the `s.list` label.
+- **The wizard's title is `s.tx`** (Retro's is the accent), its step line `s.tx`, its step discs
+  `s.box1` in a `stroke2` ring lit and a `stroke1` ring idle with numeral and label in `s.ac` /
+  `s.tx`, its rules 40 × 1 in `s.box2`. Chips: on is `s.ac` with an `s.bg` dot and label, off is
+  `s.box2` in the hairline with an `s.ac` dot and `s.tx` label; the dot is 10 at `radius/chip`
+  (`s.radiusChip`, a px string, unscaled). The date box is `s.box2` in the hairline at 12 / 14.
+  The stepper keeps Retro's clip-about-the-centre mechanism at 390, where the frame's own row
+  is wider than its card (its first group stands at x −32 and the render shows "Event … 3 Co").
+- **The type is the ramp, read bare.** body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm
+  13 / 13 / 12, chip 13 / 12 / 11 at `-0.06em`, list 24 / 19 / 18, display-lg 130 / 81 / 54 at
+  .89 for the head (`s.dispLg` — Retro's `T.disp` 96 / 60 / 40 is Retro's ramp). Display/Title
+  36 / 28 / 26 is a literal through `u()` (`s.title` is the heading string). No `T` table, no
+  Device override — the 390 instances are called "— Tablet" and are not.
+- **Boxes are Retro's twin's but for four.** The summary card pads **24 / 34** (Retro's 24) and
+  the rows **18 / 34** (Retro's 18 / 24), both at radius **50** (Retro's 30); the wizard card is
+  radius **50 at 1440 and 16 at 768 / 390** — the narrow masters are a second component
+  (`859:13517`), so the 16 is designed, not a leak — padded 40 / 48 and 30, gap 20 with the
+  desktop's `space-between` (Retro's 18.75 minimum is its own). The stats' row gap and cell gap
+  are both 12, so one grid holds them (Retro's reading). A blocked slot takes Lime's layouts
+  1–3 state: the row's two parts at .38, no strike, no handler, the hairline at full strength.
+- **Measured against the masters' content edges** (seeded page, four slots so three rows
+  against the frame's two): desktop panel 1052 wide at x 124, radius 49.2, pad 49.2, 765.5
+  tall against 822 × 0.82 = 674 — the surplus is exactly one row plus its gap (79 + 13.1); h2
+  107px, 95.2 tall (116 × 0.82) at 129.2; wizard 535.9 wide (Retro's 680fr column rule), radius
+  41, pad 32.8 / 39.4, gap 16.4, stretched to the column; step discs 23 at 298.2; title 29.5px
+  pale; line 11px; chips 224.5 × 39.5 (287 × 49 × 0.82 = 235 × 40.2 — the frame's 14px body at
+  our 11); date box 36.1 (45 × 0.82); card 376.7 × 197.2 (242 × 0.82 = 198.4), radius 41, pad
+  19.7 / 27.9, brand 13px in `box2`, disc 39.4, big stat 29.5px in ink, small 11px at −0.66;
+  rows 79 (96 × 0.82 = 78.7) at 14.8 / 27.9, mark 29.5, sub 11, price 13; pill 44.3 at 20px
+  with a 37.7 × 36.1 `box1` disc. 768: panel 688 at 60 / 50 radius 60, h2 81px 72.1 tall,
+  wizard radius 16 pad 30, discs 28, title 28, chips 259 × 47.5 (269 × 48), date box 43.5
+  (44), card 227.8 (229) at 24 / 34, rows 87 (87), pill 54 at 19px with the 46 × 44 disc. 390:
+  panel 346 at 30 / 10 radius 30, h2 54px 48 tall, wizard 471.9 (474), chips 128 × 47.5 (140 ×
+  48), card 224.6 (226), rows 83.4 (84), pill 54 at 18px. The canvas has five pointer cursors
+  (BookPill's own, inherited by its disc and glyph), no `<input>`, no `<form>`, and
+  `scrollWidth` holds at every width. `live=1` at desktop and 390 (puppeteer, probe deleted):
+  a row click features JUN 14 and returns JUN 12 to the list, a chip click moves the lime to
+  Birthday and Wedding goes `box2` / pale, the date box takes typing, Back is dead on step 1,
+  Next Step opens *Tell us the details* (four inputs, disc 2 lit) then *How do we reach you?*
+  (two inputs) where Send Enquiry is `<a href="#form">` and Next Step is gone, and Back twice
+  returns to step 1 with the typed date and the chip pick intact. `&booked=2025-06-12`: the
+  card prints *Pick a date to enquire* with no big stat, the JUN 12 row is dimmed to .38 with
+  no cursor and the hairline whole. `n=0`: the prompt and no rows; `n=1`: featured, no rows;
+  `n=8`: seven rows. No page errors. Digest at themes 0, 2, 3 and 4: zero differing files;
+  theme 1: exactly calendar arch 3 at three widths (calendar has no fold partner).
 
 ## Open questions
 
