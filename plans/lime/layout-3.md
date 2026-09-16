@@ -174,7 +174,7 @@ masters are fitted in one session.
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Retro twin (1440 / 768 / 390) | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:68654` | 1440 × 900 | `984:10740` | 768 × 1024 | `984:10771` | 390 × 606.5 | `964:68622` / `977:22532` / `982:9583` | done `8855dd2` |
-| 2 | `bio` | `964:68663` *(head `964:68658`)* | 858 × 882 | `984:10748` *(head `984:10743`)* | 708 × 912 | `984:10779` *(head `984:10774`)* | 370 × 878 | `964:68631` / `977:22717` / `982:10013` | — |
+| 2 | `bio` | `964:68663` *(head `964:68658`)* | 858 × 882 | `984:10748` *(head `984:10743`)* | 708 × 912 | `984:10779` *(head `984:10774`)* | 370 × 878 | `964:68631` / `977:22717` / `982:10013` | done `466aff9` |
 | 3 | `media` | `964:68674` list + `964:68673` card *(head `964:68666`)* | 858 × 424 + 858 × 243 | `984:10759` + `984:10758` *(head `984:10751`)* | 708 × 647 + 708 × 243 | `984:10790` + `984:10789` *(head `984:10782`)* | 370 × 647 + 370 × 243 | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | — |
 | 4 | `repertoire` | `964:68678` | 1440 × 621 | `984:10760` *(in `984:10757`)* | 708 × 655 | `984:10791` | 390 × 709 | `964:68646` / `977:23041` / `982:10193` | — |
 | 5 | `calendar` | `964:68677` *(in `964:68675`)* | 405 × 538.6 | `984:10763` *(in `984:10761`)* | 708 × 483.6 | `984:10794` *(in `984:10792`)* | 370 × 450.6 | `964:68645` / `984:10605` / `984:10673` | — |
@@ -612,15 +612,77 @@ Settled in section 1 (the header):
   the burger stands in the capsule and opens a nine-link panel whose links scroll. The sidebar's
   per-row layout labels were not read; the composed row and the order are the arch-2 proof.
 
+Settled in section 2 (the bio):
+
+- **The first layout-3 block inside a section: `if (s.v2 && s.lime)` ahead of `Bio`'s `if (s.v2)`**,
+  layout 1's and layout 2's seat for the same section. `Bio` has no state. The tree is Retro's twin's
+  node for node (the same 440 photo row, 24/32 head and about bands, Frame 9, the 179 name cap, the
+  100 / 52 stat gaps), so the block restates Retro's QA'd structure whole — the stat row's `2.2em`
+  values, the 390 stack, the seal's band floor — and changes the dress, which reaches nearly every
+  leaf. Diff 172 / 5 in `EncoreSection.jsx`; the five removed lines are `SealBadge`'s (below).
+- **The plan's "`SealBadge`'s Lime branch" was wrong for this frame.** Frame 248 is Retro's §10.2
+  seal (a 120 ring, 19.07 equator asterisks, an 86.5 centre asterisk) in **inverted** Lime inks: a
+  `s.ac` disc with `s.bg` marks, where every earlier Lime frame draws the dark disc with rings and a
+  reticle. `SealBadge` takes an additive **`classic`** prop that skips the Lime branch and the flat
+  starburst, so the §10.2 path runs with `hue={s.ac} ink={s.bg}` (pass `ink`: `contrastInk` would
+  give `#141414`). Every earlier caller is untouched, which the digest proves. The name keeps the
+  §10.2 path's placement and clockwise run, so at rest it crosses the equator marks and the lower
+  name is not upright as in the Lime render; it spins. The seal's `image 1` grain **paints faintly**
+  (between the arms the disc samples `(182, 229, 70)` against `#AFE335`, σ 7 in blue) and is not
+  drawn (open question 2).
+- **Placement is Retro's at 1440 and 390, and 4 lower at 768.** The disc centre is 105.6 in and
+  150.4 down the about band at 1440, since Lime's 148 head plus a 1px rule comes to Retro's 144 + 5.
+  At 768 the head is 144 over the same 1px rule and the seal keeps its leaked absolute y, so the
+  centre is **154.4** down (`sealTop` 91.69). The 390 seal is a sibling of the card in Lime's
+  instance, but it falls inside the card, so it stays in the photo row at Retro's `right` / `top`.
+- **No `T` table, no box token.** `get_variable_defs` is the ramp at all three widths: display-sm
+  50 / 40 / 32 (`s.dispSm`, the name), label-lg 32 / 21 / 14 (`s.labelLg`, the values), chip
+  13 / 12 / 11 (`s.chip`), body-md 14 / 13 / 13 (`s.bodyMd`). The wrapper head is `s.dispLg` in
+  `s.ac` over **`s.ui`** at `s.labelXs` in `s.tx` — the "KM BIO" `font/ui` switch layout 1 named.
+  Radii 50 (card; **60 at 390**), 55 (photo) and every padding are raw.
+- **Read off the nodes:** the card is `s.box1` with a 1px inside `stroke1` ring at 1440 and 768 and
+  **no stroke at 390**, drawn as a last-child overlay. The two rules are `sem/text/2` at **node
+  opacity .32** (`${s.tx}52`), not `stroke1`, and both stand in the 390 column's 20 gaps (Frame 258's
+  children at 0 / 206 / 227 / 558), where Retro's foot rule stands outside it. The photo's
+  INNER_SHADOW 34 is `s.ac`, on an overlay over a `s.box3` well; no grain, no drop shadow.
+- **Open question 1's answer: a landscape seed was owed.** The fill's transform is `limeStage`'s
+  slice, but its scale mode is `FILL`, which ignores it, so the render is the **whole** `fa453f7d`
+  source cover-cropped. `lime-bio-stage.jpg` is that source at 1200 × 800 (the MCP asset's
+  1536 × 1024 PNG, q82, 112 KB), seeded through `SEEDS.Lime.layouts[2].bio`. A centred cover of it
+  diffs **0.9** from the 1440 render over the photo's middle; `limeStage` diffs 39. The section 1
+  lesson again: read `scaleMode` before believing an `imageTransform`.
+- **The desktop stat column clips its own label in the frame.** Two Label/LG lines at 32 plus the
+  label and the 15 gap come to 111 in a clipped 96 column, so the 1440 render shows only "SINCE:" and
+  "ROLE:". The label is drawn whole here and the row grows past its floor: the desktop head band is
+  **130.9 against the frame's 121.4** (148 × 0.82), a named diff. 768 and 390 fit their 96.
+- **`preview.jsx` takes `&column=left|right`** (desktop only): `sectionVm({ column })` in a wrapper
+  `s.contentW` wide (684 / 323). Pass the side string — `contentWidth` reads anything but `'left'`
+  as the right column. Media and the calendar use the same switch.
+- **Measured against the masters' content edges**: desktop eyebrow 20.2, h2 95.2 (107px, one line
+  at 571.5 in the 684 column), card 24.6 under it, photo 311.6 tall at 24.6 in, name two lines at
+  41px (82), seal centre 86.6 / 123.3 (105.6 / 150.4 × 0.82); 768 head band 144, name at 80 in it,
+  labels at 34.8 and values at 74 (35 / 74), seal centre 105.6 / 154.4, photo 628 × 380 (the frame's
+  648 less our 20); 390 head 186, name at 24, labels at 94.2 (95), values at 131.2 (132), rules at
+  206 and after the about band at 227, seal box at 40.5 (40.6) and 18.9 from the card's right (18.87).
+  The cards run 720.8 / 867.1 / 767 against 882 × 0.82 / 912 / 878, short by the seeded prose. `live=1`
+  renders identically (the branch has no control); `&name=Poppy%20Jaeggy&since=…` and `noimage=1`
+  hold. No page errors. Digest at themes 0–4, all 645 renders: exactly bio arch 2 at theme 1, three
+  widths — the new seed reaches layout 3 alone.
+- **Verified in the builder** (one puppeteer script, deleted): Lime → card 3 → *Use this header* puts
+  the bio and the calendar in one grid row at 621.6 : 293.4 on the canvas and 684.1 : 322.9 in the
+  published 1440 tab, with media stacked under the bio in the left column. The bio there carries the
+  lit seal and `lime-bio-stage.jpg`. The calendar beside it is still Retro's composition in Lime tokens
+  (its session's), with the pale card that brings.
+
 ## Open questions
 
-1. **The bio photograph's cover.** The frame's transform is `limeStage`'s own slice, filling a
+1. *Settled in section 2 — a landscape seed, `lime-bio-stage.jpg`; see its Conventions.* **The bio photograph's cover.** The frame's transform is `limeStage`'s own slice, filling a
    landscape 798 × 380 box, so a centred cover of the existing file should be the frame's
    picture — but that is an inference from the transform, not a render comparison. If the bio
    session finds the cover cropping the wrong band of the slice, the answer is a landscape
    export seeded through `SEEDS.Lime.layouts[2].bio`, Retro's own mechanism, and nothing else
    in `photos.js` moves.
-2. **The seal's grain rect.** Lime's bio seal carries Retro's `b74be8bc` grain inside it at
+2. *Settled in section 2 — it paints faintly and is not drawn.* **The seal's grain rect.** Lime's bio seal carries Retro's `b74be8bc` grain inside it at
    447 × 447. It is almost certainly a leftover of the duplicated Retro component; the render
    decides whether it paints, and `SealBadge`'s Lime branch draws no grain either way.
 3. **The media list's narrow rows.** 121 tall at 768 and 390 against 76 at 1440, on a
