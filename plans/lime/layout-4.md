@@ -1546,7 +1546,8 @@ Learned on the end-of-pass sweep (`047d915` and `2cd0e41`):
   and renders the fitted section on the page ground, the header's with no checker.
 - **Cards 1, 2 and 3** publish with eleven roots in their own orders (card 3 composed at 1440
   and `PAGE_ORDERS[2]` at 390), every header anchor scrolling, and the burger opening a
-  ten-link panel that scrolls at 390. Cards 2 and 3 keep the glass glow; **no Lime card draws
+  ten-link panel that scrolls at 390. Card 2 keeps its `#C7FF3C` place card and card 3 its glass
+  glow; **no Lime card draws
   the checker any more.**
 - **Six script traps, all met on this sweep.**
   - A top-left offset click on a canvas root taller than the viewport, after
