@@ -166,7 +166,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 1 | `header` | `964:72849` | 1440 × 900 | `971:5299` | 768 × 1024 | `977:8867` | 390 × 844 | `964:72511` / `964:77544` / `971:14040` | done `ce07286` |
 | 2 | `bio` | `964:72857` *(Section `964:72850`, head `964:72851`, tags `964:72854`)* | 664 × 720 | `971:5307` *(Section `971:5300`, head `971:5301`, tags `971:5304`)* | 708 × 720 | `977:8875` *(Section `977:8868`, head `977:8869`, tags `977:8872`)* | 370 × 536 | `964:72519` / `964:76446` / `971:14479` | done `55ac9b5` (comment fix `e260703`) |
 | 3 | `media` | `964:72864` *(band `964:72858`, head `964:72860`)* | 1440 × 671 | `971:5431` *(band `971:6533`, head `977:10286`)* | 768 × 569 | `977:9005` *(band `977:8999`, head `977:9001`)* | 390 × 836 | `964:72526` / `971:15190` / `971:14834` | done `2b9c847` |
-| 4 | `gallery` | `964:72909` *(wrapper `964:72874`, head `964:72875`)* | 874 × 646 | `971:5597` *(wrapper `971:5562`, head `971:5563`)* | 768 × 594 | `977:9171` *(wrapper `977:9136`, head `977:9137`)* | 390 × 586.3 | `964:72815` / `964:78491` / `977:8142` | — |
+| 4 | `gallery` | `964:72909` *(wrapper `964:72874`, head `964:72875`)* | 874 × 646 | `971:5597` *(wrapper `971:5562`, head `971:5563`)* | 768 × 594 | `977:9171` *(wrapper `977:9136`, head `977:9137`)* | 390 × 586.3 | `964:72815` / `964:78491` / `977:8142` | done `9716713` |
 | 5 | `repertoire` | `964:72916` *(Section `964:72911`, panel `964:72912`)* | 1208 × 536 | `971:5604` *(Section `971:5599`, panel `971:5600`)* | 608 × 582 | `977:9178` *(Section `977:9173`, panel `977:9174`)* | 310 × 650 | `964:72822` / `964:78509` / `977:8166` | — |
 | 6 | `map` | `964:72924` *(Frame 319 `964:72918`, head `964:72920`)* | 1440 × 747 | `971:5612` *(Frame 319 `971:5606`, head `971:5608`)* | 768 × 871 | `977:9186` *(Frame 319 `977:9180`, head `977:9182`)* | 390 × 680 | `964:72830` / `964:78599` / `977:8322` | — |
 | 7 | `pricing` | `964:72926` | 1440 × 546 | `971:5613` | 768 × 809 | `977:9187` | 390 × 837 | `964:72831` / `964:78656` / `977:8440` | — |
@@ -567,6 +567,10 @@ Written now from what the plan expects; refine as the sections defer things. One
    The three layout-4 paragraphs in CLAUDE.md that will need a Lime clause: the media
    player's tile mark, the gallery's 390 window, the calendar's wizard card (`tx`, "on Lime
    and Grunge the card and the rows share a fill" — which this pass's calendar may reverse).
+   A fourth, from section 4: the gallery paragraph's "**Layout 4** … carries **no active
+   mark**: its Figma frame rings all six of its thumbnails identically" is Retro's reading;
+   Lime's wide masters ring the active thumb at 3px (below), so the sentence wants a Lime
+   clause.
 2. **One whole-page published check under Lime at layout 4**, one puppeteer script: builder →
    Lime → card 4 → *Use this header* → Publish → Open, then every `s.v3` control on the page —
    header nav and burger (fresh tab per width), the media tiles and transport with audio, the
@@ -885,6 +889,105 @@ Settled in section 3 (the media player):
   differing files; theme 1: exactly media arch 3 at three widths (media stops at arch 6, so
   no fold partner).
 
+Settled in section 4 (the gallery):
+
+- **The fourth layout-4 block, and the first *inside* its branch: `if (s.lime)` within
+  `Gallery`'s `if (s.v3)`, after `from`** — layout 1's gallery seat. `pick` is hoisted but
+  `slots`, `active`, `go`, `shown` and `from` are the branch's, so the block sits after them
+  and shares the seam whole; the published thumbs, discs and 390 window needed nothing new.
+  The tree is Retro's twin's node for node (the wrapper's head column beside or over the
+  instance, the 20-padded card, the 121.028 rail of 67.748 thumbs 12 apart, the two 55.514
+  discs 10 apart, the 390 strip over two 180 pills), and nearly every leaf changes dress, so
+  a block. Diff 198 / 0 in `EncoreSection.jsx`. Retro's `T`, `band` / `cream` / `mustard` /
+  `mount` / `disc` / `glyph`, `hard`, `soft`, `tilt`, `Grain` and `TornEdge` are not read.
+- **The one `use_figma` walk per master answered every box, and only two move from Retro's
+  twin.** Insets 56 / 30 / 24·10·40 on the instance, 100 over the head on the wrapper and 56 /
+  30 / 0 round the head frame, so the sheet pads 156 / 130 / **100** over (Retro's 390 is 60)
+  and 56 / 30 / 40 under, with the head-to-row gutter 112 / 60 / 24 as Retro read it. The 390
+  card is **337** tall (Retro's 343.14). The 534 row, the 50 gutter, the 454 head column, the
+  36 / 36 / 10 head gap, the 20 card padding and every rail number are the twin's, through
+  `u()`. No `T` table: `get_variable_defs` returns colours and `border/default` only (the
+  same seven-entry list Retro's component gave), so the type is read off the text nodes and
+  is the ramp — `s.eyebrow` 15 / 12 / 11 in Inter Bold at 1.3, `s.dispLg` 130 / 81 / 54 at
+  .89 — at **every** width, where Retro's 768 arm is `s.h1`.
+- **Scheme 3 by node, and `get_variable_defs` lied about the ground for the second time on
+  this component.** All three masters answer `sem/bg` = `#f2ffd0`; every wrapper's and
+  instance's own `fills` is `#AFE335` (Scheme 3's `sem/bg`, `s.ac`), the lime the render shows
+  — Retro layout 4's `#d8a227` / `#5B5E2E` case again, on the same node, in the other mode.
+  Both head texts are `#15180F` (`text/2` and `text/1` are one ink under Scheme 3). The card
+  frame has **no fill and `rotation` 0** — Retro's ink mount and −2° become four 18 × 18
+  corner brackets, 4px of `sem/text/1` on two sides, `strokeAlign INSIDE`, flush in the
+  card's corners — and the photograph is radius **50 / 50 / 4** on a `sem/box/3` `#9CCF23`
+  well (block-local `well3`; the header's fill under its photograph, seen here through an
+  empty slot). Thumb wells are `sem/tag/1/bg` = `s.bg`; the discs are Scheme 4's `box/3`
+  `mist` `#D5E3B2` (layout 1's literal) in a 0.754 `sem/bg` `#F2FFD0` = `s.tx` inside stroke,
+  radius **10** at the wide widths and **60** on the 390 pills; the glyph is `sem/text/1`.
+- **Lime's wide masters mark the active thumb, where Retro's did not.** Every thumb is
+  stroked inside in `sem/text/1` at 1px except the **fourth at 3px** (`border/default`) on
+  the 1440 and 768 masters — and the fourth is `galActive()`'s slot 3, the spotlight. The
+  390 master strokes all six at 4px (its spotlight's thumb is off-page, so it has nothing
+  to mark). So the ring follows `active` at 3 / 1 on the wide rail and is 4 on every 390
+  tile: **not `s.live`-gated**, the sliding window's own reason — the canvas draws the
+  frame's ringed fourth thumb, and the published first paint is that picture. It is an
+  inset-shadow **overlay** (`inset 0 0 0 Npx`, unscaled at desktop), not Retro's
+  border-box `border`, because a weight that differs per tile would inset one photograph
+  2px more than its neighbours. `img` rect equals the tile rect on all seven, asserted.
+  Retro layout 4's "sample every row's ring before concluding a design has no selected
+  state" is what found it; its own verdict stands for Retro's frame. CLAUDE.md's "carries
+  no active mark" is for the sweep.
+- **Open question 5's answer: `s.bg`, `ArcEdge`'s default.** The wrapper's `Vector 1` binds
+  `sem/box/3` **#101309** at 1440 (it nests Scheme 1) and `sem/bg` **#15180F** at 768 and
+  390 — two masters and layout 1's neighbour's-ground rule against one, and a 5-in-255
+  difference on a 44px arc. Named in the block, not drawn. `bleed={false}` on a `position:
+  relative` sheet, section 3's route. The 390 vector is the leaked 576.56 at x −81.87; the
+  768 one is 768 wide; `ArcEdge` stretches to the sheet and `scrollWidth` does not move.
+- **The lens, checked in the editor at all three widths** (one puppeteer script, deleted:
+  Lime thumbnail → big card → `[role=dialog] button[aria-pressed]` index 3 → *Use this
+  header* → the `[role=tab]`s): eleven `--ac` roots, every body one at layout 4 by its text
+  (*Five worth your ear.*, *Snaps from the night*, *All songs · A–Z*, *Distances we'll
+  Travel*, *Book Us*, *Client success stories*), and **the media root's bottom is the
+  gallery root's top to the pixel** at the 1088 / 768 / 390 canvases. The clips read olive,
+  the media's dark foot arc, the gallery's dark head arc, lime — the 44 + 44 lens section 3
+  named, in one colour since both arcs are `s.bg`. Two clip traps: `page.screenshot` with
+  `captureBeyondViewport` (the default) resets the canvas's inner scroll container, so
+  the clip lands a section low — pass `captureBeyondViewport: false`; and the editor
+  scrolls a container, not the window, so after `scrollIntoView({ block: 'start' })` walk
+  up to the ancestor whose `scrollHeight` exceeds its `clientHeight` and pull its
+  `scrollTop` back to bring the seam under the device tabs.
+- **The glyph is the frame's own arrow, transcribed from the 390 master's "→"** (16.02 ×
+  13.94, `exportAsync` off the vector reached by `findOne` from the instance — the
+  `I…;…` id returned null to `getNodeByIdAsync`, the memory note's trap again) and turned
+  −90 / 90 / 180 for ↑ ↓ ←. The vectors' own 1° / −179° rotation is a leak the render does
+  not show and is dropped; the discs' `BACKGROUND_BLUR` 18.1 stands behind an opaque fill
+  and is dropped (the header's capsule). The 0.754 ring through `u()` is 0.62px at desktop
+  and renders as a blended 1px edge (sampled `(230, 244, 196)` between the lime and the
+  mist), so layout 1's 1px fallback was not needed.
+- **The thumbs and the spotlight stay top-anchored, Retro's call on the same seven files.**
+  The frame's tiles are `FILL` centred, but its sources are landscape crops where ours are
+  the tall strip photographs, and the first render's centred cover of those into a 121 × 68
+  pill cut every face at the chin. `objectPosition: '50% 0%'` on both, named in the block;
+  on the seeded slot 3 (`limeGallery4`, 1200 × 800, cropped sideways) it is a no-op, so the
+  canvas is the frame's own picture. No `photos.js` change: slot 3 is `3a59b4d1` and the six
+  thumbs are the shared strip, as the plan's photography table expected.
+- **Measured against the masters' content edges**: desktop eyebrow 12px at 181.5 (221.5 ×
+  0.82 = 181.6), h2 107px on three lines, 285.7 tall (348 × 0.82 = 285.4) at 226.5, card
+  483.9 × 437.9 at x 510 (590.97 × 534 × 0.82 = 484.6 × 437.9; 622 × 0.82 = 510), spotlight
+  451.2 × 405.1 (550.97 × 494 × 0.82 = 451.8 × 405.1) at radius 41, brackets 14.8 with 3px
+  arms (the 4 × 0.82 = 3.3 rounds down), thumbs 99.2 × 46.3 (seven dividing 534 against the
+  frame's six at 67.75 × 0.82 = 55.6, Retro's named cost), rings 1 / 1 / 1 / 3 / 1 / 1 / 1,
+  discs 45.5 at radius 8.2, arc 36.3 deep at −1, section 611.7 (746 × 0.82); 768 eyebrow at
+  130, h2 81px one line at 181.6 (182), card 537 × 534 at 313.7 (314), spotlight 497 × 494
+  at radius 50, thumbs 121 × 56.3, discs 55.5 at 792.2 (792.5), section 877.7 (878); 390
+  eyebrow 11px at 100, h2 54px two lines, 96 tall at 124.3 (124), card 370 × 337 at 244.4
+  (244), spotlight 330 × 297 at radius 4, strip 123.3 × 67.7 at 631.4 (631), pills 180 ×
+  55.5 at 711.1 (710.75) under the 5 / 5 block, section 806.6 (806.26). The canvas has
+  zero pointer cursors and `scrollWidth` holds. `live=1` at desktop and 390 (puppeteer,
+  probe deleted): a thumb click moves the spotlight *and* the 3px ring, back from slot 0
+  wraps to 6, forward from 6 wraps to 0, and the 390 window slides from slots 1–3 to 0–2 on
+  a pick of slot 1. `n=0`: the `#9CCF23` well with `KM` in ink at 72 / 88, dark thumb wells
+  with pale `KM` at 21 / 26. No page errors. Digest at themes 0, 2, 3 and 4: zero differing
+  files; theme 1: exactly gallery arch 3 at three widths (gallery has no fold partner).
+
 ## Open questions
 
 1. *Settled in section 3 — each seam keeps its frame's own colour (media's foot `s.bg`), the
@@ -931,7 +1034,10 @@ Settled in section 3 (the media player):
    Shipped because the composition stands its subject at the right, clear of the name;
    reversible in one line if the user would rather keep every upload the right way round,
    at the cost of the seeded page's subject standing under the name at desktop.
-5. **The gallery's head seam is `sem/box/3` `#101309`, not `sem/bg`.** A hair off the page
+5. *Settled in section 4 — `s.bg`, `ArcEdge`'s default: the 1440 vector alone binds
+   `sem/box/3`, the 768 and 390 vectors bind `sem/bg`, and layout 1's rule says a seam is
+   the neighbour's ground; the 5-in-255 difference is named in the block and not drawn. The
+   lens was checked in the editor at all three widths; see its Conventions.* **The gallery's head seam is `sem/box/3` `#101309`, not `sem/bg`.** A hair off the page
    ground it meets, and the only seam on the page not bound to a neighbour's `sem/bg`. Whether
    it is drawn in `s.box3` (the frame's binding) or `s.bg` (the neighbour's ground, layout 1's
    rule) is the gallery session's call after reading the render's edge; a 5-in-255 difference
