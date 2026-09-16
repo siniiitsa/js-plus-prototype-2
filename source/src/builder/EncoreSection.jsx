@@ -11248,6 +11248,204 @@ function Gallery({ s }) {
     // 390 windows the strip; the two wide rails show every slot.
     const shown = s.mob ? 3 : slots.length
     const from = Math.min(Math.max(active - (shown - 1), 0), slots.length - shown)
+
+    // Lime layout 4 (964:72909 · 971:5597 at 768 · 977:9171 at 390, in the
+    // 964:72874 / 971:5562 / 977:9136 wrappers) is the component above in
+    // Lime's mode: every box is the twin's (56 / 30 / 24·10·40 insets, the 534
+    // row, the 50 gutter, the 20-padded card, the 121.028 rail, 67.748 thumbs
+    // 12 apart, 55.514 discs 10 apart, the 180 pills at 390), and the seam —
+    // `pick`, `active`, `go`, the 390 window — is shared whole, so the block
+    // sits after it, layout 1's gallery seat. What changes is the dress, at
+    // nearly every leaf, so a block rather than ternaries. Retro's `T`, `band`
+    // / `cream` / `mustard` / `mount` / `disc` / `glyph`, `hard`, `soft`,
+    // `tilt`, `Grain` and `TornEdge` are not read.
+    //
+    // ── By node ────────────────────────────────────────────────────────────
+    // The wrapper and the instance are Scheme 3: the band is `sem/bg` = `s.ac`
+    // and both head texts (`text/2` eyebrow, `text/1` display) are `s.bg`. The
+    // card frame has **no fill and no rotation** — Retro's ink mount and −2°
+    // become four 18 × 18 corner brackets, 4px of `sem/text/1` on two sides,
+    // flush in the card's corners — and the photograph inside it is radius
+    // 50 / 50 / **4** on a `sem/box/3` #9CCF23 well (Scheme 3's; seen only
+    // through an empty slot). The thumbs are radius 10 / 10 / 25 on a
+    // `sem/tag/1/bg` = `s.bg` well, stroked inside in `sem/text/1`: **1px, and
+    // 3px (`border/default`) on the fourth** at 1440 and 768 — which is
+    // `galActive()`'s slot 3, the spotlight — and 4px on all six at 390. So
+    // where Retro's frame ringed every thumb alike and its branch declined a
+    // mark, Lime's frame draws one: the ring follows `active`, not `s.live`,
+    // so the canvas draws the frame's own ringed fourth thumb and the
+    // published first paint is that picture. It is an inset-shadow overlay,
+    // not Retro's border, because a weight that differs per tile must not
+    // inset one photograph more than its neighbours. The discs are Scheme 4's
+    // `box/3` #D5E3B2 (layout 1's `mist`) in a 0.754 `sem/bg` #F2FFD0 = `s.tx`
+    // inside stroke: 55.514 squares at radius 10 at the wide widths, and at
+    // 390 two 180 × 55.514 pills at radius 60 under the frame's one hard
+    // shadow, `DROP_SHADOW` 5 / 5 / 0 in `sem/text/1`. Their `BACKGROUND_BLUR`
+    // 18.1 stands behind an opaque fill and is dropped (the header's capsule).
+    // The glyph is the frame's own 16.02 × 13.94 arrow, transcribed from the
+    // 390 master's "→" and turned for the other three; the vectors' own 1° /
+    // −179° is a leak the render does not show.
+    //
+    // ── The seam ───────────────────────────────────────────────────────────
+    // The wrapper parents a head arc, `Vector 1`, at y −1 (1437.84 / 768 /
+    // the leaked 576.56 wide). Its fill binds `sem/box/3` **#101309** at 1440
+    // and `sem/bg` **#15180F** at 768 and 390 — the plan's open question 5 —
+    // so it is drawn in `s.bg`, ArcEdge's default: two masters and layout 1's
+    // rule (a seam is the neighbour's ground) say so, and the 1440 binding is
+    // 5 in 255 off, not drawn. With no video band on our page this arc meets
+    // the media's foot arc directly, a 44 + 44 dark lens between the olive and
+    // the lime, which section 3 named. `bleed={false}`: the sheet already
+    // covers the root, so the arc wants its own edges.
+    //
+    // ── Sizes ──────────────────────────────────────────────────────────────
+    // Type is the Lime ramp's: `s.eyebrow` (15 / 12 / 11) in Inter Bold at
+    // 1.3, `s.dispLg` (130 / 81 / 54) at .89 — at every width, where Retro's
+    // 768 arm is `s.h1`. The 390 wrapper pads **100** over the head (Retro's
+    // 60), so the insets are 156 / 130 / 100 over and 56 / 30 / 40 under; the
+    // 390 card is **337** tall (Retro's 343.14). Every other number is the
+    // twin's, through `u()`.
+    if (s.lime) {
+      const un = (v) => Math.round(v * z * 10) / 10
+      const well3 = '#9CCF23'
+      const mist = '#D5E3B2'
+      const ringW = (i) => (s.mob ? 4 : i === active ? 3 : 1)
+
+      const glyph = (turn) => (
+        <svg viewBox="0 0 16.02 13.94" width={un(16.02)} height={un(13.94)} aria-hidden
+             style={{ display: 'block', flex: 'none', transform: turn ? `rotate(${turn}deg)` : undefined }}>
+          <path fill={s.bg} d="M9.17262 13.9348L7.95447 12.7737L12.7985 7.7576L0.0301014 7.98047L0.000240302 6.26973L12.7686 6.04686L7.75277 1.21842L8.92939 -6.17033e-06L16.0184 6.84576L9.17262 13.9348Z" />
+        </svg>
+      )
+
+      const thumb = (i) => (
+        <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
+          position: 'relative', overflow: 'hidden', minWidth: 0, minHeight: 0,
+          borderRadius: u(s.mob ? 25 : 10), background: s.bg,
+          cursor: s.live ? 'pointer' : undefined,
+        }}>
+          <span style={{ position: 'absolute', inset: 0 }}>
+            {/* Top-anchored, Retro's call on the same seven files: the frame's
+                own tiles are `FILL` centred, but its sources are landscape
+                crops where ours are the tall strip photographs, and a centred
+                cover of those into a 121 × 68 pill is a torso with no head. */}
+            <Photo s={s} src={s.images[i]} initialsSize={un(26)} ink={s.tx}
+                   style={{ background: s.bg, objectPosition: '50% 0%' }} />
+          </span>
+          {/* The ring, over the photograph as Figma strokes it: 1px, the
+              active slot's 3px, or the 390 master's 4px on every tile.
+              Unscaled at desktop, every Lime ring's rule. */}
+          <span aria-hidden style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+            boxShadow: `inset 0 0 0 ${ringW(i)}px ${s.bg}`,
+          }} />
+        </span>
+      )
+
+      const arrowBtn = (key, turn, step) => (
+        <span key={key} onClick={s.live ? () => go(active + step) : undefined} style={{
+          height: u(55.514), borderRadius: u(s.mob ? 60 : 10), background: mist,
+          boxShadow: `inset 0 0 0 ${u(0.754)} ${s.tx}${s.mob ? `, 5px 5px 0 ${s.bg}` : ''}`,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          cursor: s.live ? 'pointer' : undefined,
+          ...(s.mob ? { flex: '1 1 0', minWidth: 0 } : { width: u(55.514), flex: 'none' }),
+        }}>{glyph(turn)}</span>
+      )
+      // The rail's own direction, as Retro's: ↓ then ↑ down the side, ← then
+      // → across the 390 foot.
+      const back = arrowBtn('b', s.mob ? 180 : -90, -1)
+      const fwd = arrowBtn('f', s.mob ? 0 : 90, 1)
+      const arrows = (
+        <div style={row(u(10), { justifyContent: 'center' })}>
+          {s.mob ? back : fwd}
+          {s.mob ? fwd : back}
+        </div>
+      )
+
+      const rail = s.mob ? (
+        <div style={col(u(12))}>
+          <div style={{
+            display: 'grid', gridTemplateColumns: `repeat(${shown}, minmax(0, 1fr))`,
+            height: u(67.748),
+          }}>
+            {slots.slice(from, from + shown).map(thumb)}
+          </div>
+          {arrows}
+        </div>
+      ) : (
+        <div style={{
+          flex: 'none', width: u(121.028), height: '100%',
+          display: 'grid', rowGap: u(12),
+          gridTemplateRows: `repeat(${slots.length}, minmax(0, 1fr)) auto`,
+        }}>
+          {slots.map(thumb)}
+          {arrows}
+        </div>
+      )
+
+      const edge = `${u(4)} solid ${s.bg}`
+      const bracket = (key, at) => (
+        <span key={key} aria-hidden style={{ position: 'absolute', width: u(18), height: u(18), ...at }} />
+      )
+      const card = (
+        <div style={{
+          ...(s.mob
+            ? { width: '100%', height: u(337) }
+            : { flex: '1 1 0', minWidth: 0, height: '100%' }),
+          position: 'relative', padding: u(20),
+        }}>
+          <div style={{
+            width: '100%', height: '100%', position: 'relative', overflow: 'hidden',
+            borderRadius: u(s.mob ? 4 : 50), background: well3,
+          }}>
+            {/* Top-anchored as well: the seeded slot 3 is a 1200 × 800 the
+                cover crops sideways, so this is a no-op on the frame's own
+                picture and keeps the heads of the six portrait slots. */}
+            <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={s.bg}
+                   style={{ background: well3, objectPosition: '50% 0%' }} />
+          </div>
+          {bracket('tl', { top: 0, left: 0, borderTop: edge, borderLeft: edge })}
+          {bracket('tr', { top: 0, right: 0, borderTop: edge, borderRight: edge })}
+          {bracket('br', { bottom: 0, right: 0, borderBottom: edge, borderRight: edge })}
+          {bracket('bl', { bottom: 0, left: 0, borderBottom: edge, borderLeft: edge })}
+        </div>
+      )
+
+      return (
+        <div style={{
+          // The sheet, Retro's spelling: out to the section's own edges, past
+          // the root's padding, in Scheme 3's `sem/bg`. `position: relative`
+          // seats the arc.
+          margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+          background: s.ac, color: s.bg, position: 'relative',
+          padding: `${u(desk ? 156 : tab ? 130 : 100)} `
+                 + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
+                 + `${u(desk ? 56 : tab ? 30 : 40)}`,
+          ...col(u(desk ? 112 : tab ? 60 : 24)),
+        }}>
+          <ArcEdge s={s} side="top" height={44.24 * z} bleed={false} />
+          <div style={desk ? row(u(112), { alignItems: 'center' }) : col(u(tab ? 60 : 24))}>
+            <div style={col(u(s.mob ? 10 : 36), {
+              alignItems: 'flex-start', ...(desk ? { width: u(454), flex: 'none' } : null),
+            })}>
+              <span style={{
+                fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+                letterSpacing: s.dls, textTransform: 'uppercase', color: s.bg,
+              }}>Media</span>
+              <h2 style={{
+                margin: 0, fontFamily: s.display, fontSize: s.dispLg,
+                lineHeight: 0.89, letterSpacing: s.dls, color: s.bg,
+              }}>{s.title}</h2>
+            </div>
+            {s.mob
+              ? <div style={col(u(50))}>{card}{rail}</div>
+              : <div style={row(u(50), {
+                alignItems: 'stretch', height: u(534), ...(desk ? { flex: '1 1 0', minWidth: 0 } : null),
+              })}>{card}{rail}</div>}
+          </div>
+        </div>
+      )
+    }
+
     // lucide's arrow inks 14/24 of its `size`; the frame's is 16.25 along by
     // 14.2 across, measured off the render and agreeing with the vector node.
     // 26 lands the mean — the audio player's size-an-icon-off-its-ink rule.
