@@ -130,7 +130,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | done `d50a23c` |
 | 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | done `206c596` |
 | 9 | `map` | `964:64594` | 1440 × 867 | `986:11862` | 768 × 823 | `986:11881` | 390 × 1286 | `964:64651` / `986:10974` / `986:11467` | done `be2e675` |
-| 10 | `form` | `964:64595` | 1440 × 812 | `986:11863` | 768 × 889 | `986:11882` | 390 × 933 | `964:64652` / `986:11591` / `986:11633` | — |
+| 10 | `form` | `964:64595` | 1440 × 812 | `986:11863` | 768 × 889 | `986:11882` | 390 × 933 | `964:64652` / `986:11591` / `986:11633` | done `2275fdd` |
 | 11 | `testimonials` | `964:64596` | 1440 × 855.9 | `986:11864` | 768 × 824 | `986:11883` | 390 × 917 | `964:64653` / `986:11675` / `986:11701` | — |
 | — | `footer` | `964:64597` | 1440 × 479.5 | `986:11865` | 768 × 647.4 | `986:11884` | 390 × 619.4 | — | **out of scope** — the same tree as Lime layout 1's footer (`964:58598` / `986:39887` / `986:39899`), fitted in that pass's section 11, and `NVAR.footer` is 1 |
 | — | `tags`, `audio` | *none* | — | — | — | — | — | — | **not on this page**; see open question 1 |
@@ -275,7 +275,7 @@ picture from the one the frame shows. Image hashes, read off the frames:
 | gallery | hero + six | Lime layout 1's set, spotlight `3a59b4d1` | `LIME_PHOTOS` gallery | ✓ |
 | pricing | three 28 × 28 `av` | Retro's | — | nothing: Retro's layout-2 fit dropped the credit row that carries them |
 | map | raster 588 × 519 | `e089bd11` | `vm.mapSrc` = `RETRO_TEXTURE.map` (`8cd103b8`, layout 1's) | Retro's own layout 2 carries `e089bd11` too and renders `mapSrc`; follow whatever Retro's branch settled, and record it |
-| form | stage photo 838 × 437 | **`f821adc2`, the avatar image** | **`limeStage`** (`SEEDS.Lime.photo`) | **differs** — layout 1 exported `f821adc2` only as a 240 × 240 centre square (`lime-avatar.jpg`), so a wide `lime-form-photo.jpg` is probably owed |
+| form | stage photo 838 × 437 | **`f821adc2`, the avatar image** | ~~`limeStage`~~ **`lime-form-photo.jpg`** (`SEEDS.Lime.photo`) | ✓ *since section 10*: the whole source at 1200 × 800 (layout 1 had exported it only as a 240 × 240 centre square) |
 | form | avatar 48 × 48 | `f821adc2` | `limeAvatar` | ✓ |
 
 A new file follows layout 1's session-0 recipe: export the frame's asset as JPEG at the box it fills,
@@ -853,6 +853,63 @@ Settled in section 9 (the events map):
   draws no list and no pager. No page errors. Digest at themes 0–4, all 810 renders: exactly map
   arch 1 at theme 1, three widths.
 
+Settled in section 10 (the enquiry form):
+
+- **The eighth layout-2 block, and the second ahead of its branch: `if (s.v1 && s.lime)` before
+  `EnquiryForm`'s `if (s.v1)`** — layout 1's form placement, since `vals`, `errs`, `sent`, `href`,
+  `onSubmit`, `Pill` and `pillLink` are hoisted above every branch. `at`, `setAt` and `setSent` are
+  the whole of what the block calls; the published boxes, submit, sent card and *Write another*
+  needed nothing new. **The boxes are Retro's twin's** (`get_metadata`: insets 60/56 · 60/30 ·
+  40/10, gap 40, column gap 30, card 28/24 and 14, boxes 10 apart, the pill's 5/21 round a 46 × 44
+  disc), so `padV` / `padH` and the three-way column split (450 · equal halves · stacked) are
+  restated from Retro's branch. Its `T`, `ground`, `card` / `cardInk` / `cardLine` / `cardAc`,
+  `boxShell`, `pill`, `arrowDisc` and `foot` are not read: they are `pillBg` / `paper` / `deep`
+  derivations. Pure additions (228 / 0).
+- **Scheme 4 by node, and it is simpler than layout 1's form**: no nested scheme. The sheet is
+  `s.tx` with `s.bg` ink, painted by the branch (the root's `limeLight` stays `s.v0`'s). The card and
+  every box are `mist` `#D5E3B2` inside `hair` `#15180F26`, drawn as `inset 0 0 0 1px`. The pill is
+  **ink with an `s.tx` label and an `s.tx` disc round an ink arrow** — layout 1's Lime pill with the
+  pair turned round — and carries no offset block, where Retro's twin throws one. The photograph is
+  radius 50 over an `s.tx` well, with a 1px ink stroke and the INNER_SHADOW 34 `s.ac` on one
+  last-child overlay (ring first). The card is radius **50** where Retro's is 30. No other node carries
+  an effect.
+- **No `T` table**: `dispSm`, `labelXs`, `list`, `labelSm`, `bodySm` are the ramp at all three widths.
+  `title` reached only the dropped price, so the sent card's title, which no frame draws, is
+  Display/Title at the frames' own `u(36)` / 28 / 26. That and its Body/MD address are the block's
+  invented numbers. The boxes **state 44 / 39 / 37**, which is 12 of padding over Label/SM's line
+  box (Retro's twin: 41.6 / 38 / 37).
+- **The heading's measure is per width, with three arms.** The frames set 2 / 3 / 2 lines: a typed
+  break after MAKE, and 768 wrapping the rest in its 334 box. `bebasEms()` decides each arm: 768 is
+  **5.2em** (layout 1's value for this string, which reproduces the frame's own breaks); 1440 is
+  **9em** (two lines, broken after NIGHT, not after MAKE); 390 takes **no cap**, since our 346 column
+  is 10.8em at 32 and already sets two. Measured: 82 / 120 / 64 tall, the frames' 100 × 0.82 / 120 / 64.
+- **Retro's readings hold under Lime unchanged**: price and stars dropped, the uppercased label in
+  the box and as the live placeholder, `s.formPara` as the centred foot, 768 keeping the columns, and
+  the promises/credit block a row at 1440 and 390 and a column at 768. Lime-only additions, both
+  Lime-rule ones: an emptied promise list or paragraph **drops its node**, and a credit row with no
+  promises beside it takes `marginLeft: auto` (not at 768), so it stays at the row's end.
+- **The photograph is the frame's own now** (open question 3): `f821adc2` at 1200 × 800, untransformed
+  `FILL` on every master (read off `imageTransform`), so a centred cover is the frame's picture at
+  all three boxes. The source is the `get_design_context` asset (a 1536 × 1024 PNG), exported with
+  PIL at q82 (131 KB).
+- **Named diffs.** The seed has four boxes to the frame's three, and types *Book Now* and *DJ · Live
+  Act* where the frame types *Check Availability* and *DJ · Live band*. The card is shorter than the
+  frames' by the dropped price and stars (345.6 at 390 against 356, so the section is 922 against
+  933). The frame's ✓ renders lighter than ours.
+- **Measured against the masters**: desktop sheet 1180 × 658.3, photo 686.2 × 358.3 (687.2 × 358.3) at
+  46, heading at 428.9 (the frame's 467 × 0.82 + 46), block 76.8 at 535.5 (597 × 0.82 + 46), card 369
+  at x 765, boxes 36.1 on a 44.3 pitch, pill 44.3, disc 37.7 × 36.1; 768 section 889.6 (889), photo
+  334 × 437 at 60, heading 120 at 527, block 152.6 at 677, card at x 404, boxes 39 on 49, pill 54, disc
+  46 × 44; 390 photo 370 × 262 at (10, 40), heading 64 at 332, block 70.4 at 426, card at 536.4 (537),
+  boxes 37 on 47. `live=1` at desktop and 390, in puppeteer: a refused submit rings all four boxes in
+  2px of ink with the heights unchanged and prints the prompt; typing clears each ring; the mailto's
+  subject is the bare *Enquiry* and its body carries the four values; a submit behind a capture-phase
+  intercept swaps in the sent card; *Write another* restores the typed values. The canvas has no
+  inputs, no anchors and no pointer cursors. `&n=0&promises=`: the card is the pill and the line,
+  and the credit sits at the row's end. `n=8` grows the card. No page errors. Digest at themes 0–4,
+  all 810 renders: exactly form arch 1 at theme 1, three widths — no `arch_0` file, so the new photo
+  seed reaches layout 2 alone.
+
 ## Open questions
 
 1. **`tags` and `audio` have no layout-2 frame** on Lime's page, as on Retro's. They keep their
@@ -881,6 +938,9 @@ Settled in section 9 (the events map):
    `f821adc2`), and the video poster seeds `limeStage` where the frame shows the hero. *The video
    half is moot: the section is being removed from the project (row 4, dropped).* Both are
    `photos.js` one-liners once the files exist; the form may need a new export.
+
+   *Section 10:* the form half is **closed** — `lime-form-photo.jpg` (the frame's `f821adc2`, whole,
+   1200 × 800) is `SEEDS.Lime.photo`, and the digest moved form arch 1 alone.
 4. **The footer is shared with layout 1**, and that is structural rather than a Lime decision
    (`NVAR.footer` is 1). If a later Lime page draws a different footer, it will need an `NVAR` bump
    first.
