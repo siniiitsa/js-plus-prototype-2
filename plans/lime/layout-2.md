@@ -128,7 +128,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | done `405efb0` |
 | 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | done `3c0abaa` |
 | 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | done `d50a23c` |
-| 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | — |
+| 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | done `206c596` |
 | 9 | `map` | `964:64594` | 1440 × 867 | `986:11862` | 768 × 823 | `986:11881` | 390 × 1286 | `964:64651` / `986:10974` / `986:11467` | — |
 | 10 | `form` | `964:64595` | 1440 × 812 | `986:11863` | 768 × 889 | `986:11882` | 390 × 933 | `964:64652` / `986:11591` / `986:11633` | — |
 | 11 | `testimonials` | `964:64596` | 1440 × 855.9 | `986:11864` | 768 × 824 | `986:11883` | 390 × 917 | `964:64653` / `986:11675` / `986:11701` | — |
@@ -746,6 +746,56 @@ Settled in section 7 (pricing):
   to three rows at 390. No page errors. Digest at themes 0–4, all 810 renders: exactly pricing
   arch 1 at theme 1, three widths.
 
+Settled in section 8 (the booking calendar):
+
+- **The sixth layout-2 block, after the seam: `if (s.lime)` within `Calendar`'s `if (s.v1)`, after
+  `want` / `hit` / `cur` / `line`.** Those and `desk` / `z` / `u` are shared whole, so the published
+  row picking, the head's links and the foot pill needed nothing new. **Every box is Retro's twin's**
+  (`get_metadata` arithmetic: head `28 + 62 + 28 + (text + 20) + 36`, column head `18 + line + 18`,
+  rows `16 + line + 16`, foot 100 / 100 / 84, insets 40 / 40 / 10, the rows' 66), so `padX` and
+  `gap` are read too. Retro's `T`, `dateCol`, `panel` … `hue`, `flow`, `head`, `colHead` and
+  `slotRow` are not. Pure additions (143 / 0).
+- **No `T` table**: all 24 sizes on the three masters are `THEME_RAMP.Lime` (dispMd 72 / 50 / 40,
+  dispLg 130 / 81 / 54, labelXs 20 / 14 / 12, bodyLg 16 / 15 / 15, bodyMd 14 / 13 / 13, bodySm
+  13 / 13 / 12, chip 13 / 12 / 11, list 24 / 19 / 18). The mark is `s.dispLg` at lh 0.89; the chip
+  tracks `-0.06em`.
+- **Scheme 2 by node, and its inks are not the obvious keys.** The panel is `sem/bg`, `s.box1`, at
+  radius **50** (Retro's twin is 30) with no ring and no effect. The head band is `s.ac` and
+  **every ink on it is `s.box1`** (Scheme 2's `sem/bg`, not `s.bg`). The foot chip is `s.ac`
+  with a `s.box1` label, not `pillFg`. Column heads are `s.ac`, rows `s.tx`, hairlines `s.stroke1`
+  as bottom inset shadows, so every stated height holds.
+- **The heading's `sem/stroke/2` rule is declined**: it is `#AFE335` on the `#AFE335` band and
+  paints nothing (the header's nav-pill shadow case). Its 20 of padding stays.
+- **The pin is re-measured for Bebas Neue, and the frame's 350 is not followed.** The widest mark
+  is `MAR 01`: 299.3 at 130, 246.3 at 107, 186.5 at 81, and `JUN 12` at 54 is 110.9, the 390
+  frame's own hug, which proves the face. The frames state 350 at 1440 *and* 768. At 1440 that
+  clears Bebas; at 768 it is the desktop number leaked (the row is 350 + 66 + 69 + 66 + 77, the
+  whole inner width), and our 608 column would leave the weekday 46. So the pin is
+  `u(desk ? 301 : 187)`, Retro's measure-don't-transcribe rule. The cost is that the desktop
+  weekday stands at 333.7 against the frame's 374. The Lime frames' column head lines up with the
+  weekday by construction (418 = 350 + 66 + 2), which the shared pin reproduces exactly.
+- **The pill is `BookPill`'s Lime branch with Scheme 2's pale recipe**: `bg={s.tx} fg={s.box1}
+  discFg={s.ac} full={s.mob}` plus the hard block through `style`. The branch's own `k` gives
+  the frames' 54-tall box and `s.list` label at all three widths: 150.6 × 44.3 / 161.2 × 54 /
+  157.1 × 54, the last being the 390 frame's exact 157. None of Retro's `disc` / `size` / `glyph`.
+- **A blocked slot takes layout 1's Lime state**: opacity .38 on the row's three children, no
+  strike, no handler (Lime's layout-2 frame draws none; Retro's branch strikes and mutes). The
+  row's hairline stays at full strength. The emptied list prints *No dates yet.* at the same .38.
+- **The 390 foot stacks, Retro's departure**: the master leaves the composed line 63px beside the
+  157 pill (346 − 40 − 157 − 16 − 58 − 12), which would break inside "Thursday,". The foot is 129
+  against the frame's 84.
+- **Measured against the masters' content edges**: desktop column head 49.8 (61 × 0.82), rows
+  121.4 (148 × 0.82), foot 82, h2 59 at 98.8 in; 768 column head 53.6 (54), rows 104.1 (104),
+  foot 100, h2 at 571 wide; 390 column head 51.1 (51), rows 95.2 (95), marks 48 tall. Every head is
+  one heading line shorter than its frame (203.7 / 224.6 / 210.4 against 260.8 / 274 / 251), since
+  the seed prints AVAILABILITY where the frame sets a two-line sentence. `live=1` at desktop and
+  390: a row click moves the chip and the line to JUN 14, a second click falls back to the cued
+  JUN 12, the pill is `<a href="#form">`, and the flow is `span` (this section) plus `#pricing` and
+  `#form` links. `&booked=2025-06-14,2025-06-12`: both rows dimmed with `cursor: auto` and no
+  state change, the chip is gone and the foot prints the prompt. `n=0` at 390 and 768 and `n=8` at
+  390 all hold. No page errors. Digest at themes 0–4, all 810 renders: exactly calendar arch 1 at
+  theme 1, three widths.
+
 ## Open questions
 
 1. **`tags` and `audio` have no layout-2 frame** on Lime's page, as on Retro's. They keep their
@@ -767,6 +817,9 @@ Settled in section 7 (pricing):
 
    *Section 2:* the bio's 768 and 390 pills carry the same `#15180F` 5/5 shadow on the olive card,
    where it shows, and took the first route (`boxShadow` in `style`). The calendar should follow.
+
+   *Section 8:* it did — `boxShadow: ${u(5)} ${u(5)} 0 ${s.ac}` in `style`, at all three widths.
+   **Closed**: `BookPill` never learned `shadow` under Lime.
 3. **The form's `photo` slot seeds the wrong picture** (`limeStage` where the frame shows the full
    `f821adc2`), and the video poster seeds `limeStage` where the frame shows the hero. *The video
    half is moot: the section is being removed from the project (row 4, dropped).* Both are
