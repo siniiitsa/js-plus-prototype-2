@@ -500,10 +500,10 @@ this file are the memory.
    - **Nothing else moves:** `node scripts/digest.mjs before 0,2,3,4` before editing and
      `after` after, then `cmp` — **zero differing files** across every category × layout ×
      width. Then the same at theme 1: the differing files must all be this section's category,
-     and all `_arch_3_` — **or `_arch_7_` for `pricing` and `testimonials`**, whose eighth
-     picker row (`CATS[].n` 8, so arch 7 exists) folds onto layout 4 (`7 % 4`). No other
-     category has a fold partner at 3: `digest.mjs` enumerates `arch < CATS[c]`, so `media`
-     and `repertoire` (n 7) stop at arch 6, which folds onto layout 3. A theme-1 diff in any `arch_0`,
+     and all `_arch_3_` — three files. (`pricing` and `testimonials` offer an eighth picker
+     row in `data.js` that folds onto layout 4, but `digest.mjs`'s own `CATS` table caps
+     every body category at 4, so no `_arch_7_` file is ever rendered — the *Conventions*
+     bullet below, corrected in section 7.) A theme-1 diff in any `arch_0`,
      `arch_1` or `arch_2` file is a regression of a merged pass. Expect the rotating seal's
      `<text>` / `<textPath>` rows to differ between any two walks of the same build (Retro
      layout 4's sweep note): diff line by line before reading a mismatch as a regression.
@@ -526,7 +526,7 @@ this file are the memory.
    `<mobile node>` (390 × <H>) in Figma file uFoUbPaBrDicjyuSBEbtGT, on page 964:58574; the
    Retro twin is `<retro node>`. Fit them inside the existing `s.v3` branch of `<Component>`
    in EncoreSection.jsx, gated on `s.lime`. Themes 0, 2, 3 and 4 must digest to zero rows,
-   and theme 1 may differ only in `<cat>` arch 3 (and arch 7 where the category folds).
+   and theme 1 may differ only in `<cat>` arch 3, at three widths.
 
    <the two or three conventions most likely to bite this section>
 
