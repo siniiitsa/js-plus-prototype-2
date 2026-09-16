@@ -123,7 +123,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:64580` | 1440 × 900 | `986:11848` | 768 × 1024 | `986:11867` | 390 × 890 | `964:64637` / `984:34438` / `984:34636` | done `ab83542` |
 | 2 | `bio` | `964:64581` | 1440 × 760 | `986:11849` | 768 × 1191.8 | `986:11868` | 390 × 909.3 | `964:64638` / `984:34877` / `984:34834` | done `bbc6904` |
-| 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | — |
+| 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | done `5a9cf76` |
 | 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | — |
 | 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | — |
 | 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | — |
@@ -549,6 +549,82 @@ Settled in section 2 (the bio):
   which is a line or two shorter than the frame's. `live=1`: the pill is `<a href="#form">` (a
   span on the canvas) and carries the shadow at 390 only. No page errors. Digest at themes 0–4, all
   810 renders: exactly bio arch 1 at theme 1, three widths.
+
+Settled in section 3 (the media player):
+
+- **The third layout-2 block, and the first *inside* a v1 branch: `if (s.lime)` within `Media`'s
+  `if (s.v1)`, after `nowArt`** — the gallery's layout-1 placement. `CARD`, `step`, `seat`,
+  `anchor`, `centre` / `nowTitle` / `nowArt` and `u` / `off` / `pad` are computed in the branch, and
+  the player hooks above it, so all of them are shared whole and the published fan, bar and list
+  needed nothing new. That was only safe because **Lime's five fan cards stand at Retro's exact
+  offsets, sizes, angles and opacities at all three widths**: one `use_figma` over both pages'
+  carousel instances (card centres against the band's centre, `rotation`, `opacity`) returned
+  identical numbers, including Retro's 390 step. Retro's `FAN`, `ROWS`, `panel` and `ink` are not
+  read. The diff is pure additions (288 / 0).
+- **`tilt()` is Retro's alone, so a Lime fan writes its angle out**: `rotate(${k * 5.33}deg)`,
+  the emitted (CSS-clockwise) sign. The plan's "no tilt" is about Retro's decorative lean. The
+  fan's rotation is the composition's, and the Lime frame draws it.
+- **Scheme 2 by node**: the panel is its `sem/bg`, `s.box1`; the cards, the bar and the bar's
+  inner pill are its `box/1` `#394732`, which is Scheme 1's `s.box2`; every artwork well is its
+  `box/2` `#43523B`, the testimonials' `dusk`, still a local literal. The stroke is `s.stroke1`.
+  Every artwork passes `ink={s.tx}` on the `dusk` well, which **closes Retro layout-2 open
+  question 15** under Lime: `n=8` draws "KM" tiles that read.
+- **The heading's ink flips by width**: `sem/text/2` (`s.tx`) at 1440, `sem/text/1` (`s.ac`) at 768
+  and 390. `get_variable_defs` lists both tokens at the narrow widths, and the text node's fills
+  settle which one applies. The 4.6em measure (layout 1's) breaks it after "worth" at 1440 and 390, and 768 sets it on
+  one line with no cap. The 390 master's own box is 251 wide at 54 (4.65em).
+- **The 1440 `Section` carries a 5px `#AFE335` top stroke that renders nothing** (the render samples
+  flat `#15180F` in the top rows), so it is a hidden paint and is not drawn. Sample before
+  believing a node's `strokes`.
+- **The bar's glow is confirmed off the node**: INNER_SHADOW 14, spread 0, `#AFE335` = `s.ac`, not
+  `s.glow`. It is one `boxShadow` with the 1px ring, on a last-child overlay, so it paints over
+  the children as Figma does and the stated 108 stands. The inner pill shares the bar's fill, so
+  it reads only as spacing.
+- **`LimeTransportGlyph`** (beside `LimeSkip`, which is layout 1's smaller, different skip) is
+  "Group 4" transcribed: skip 27.81 × 14.56, pause 12.88 × 14.56, 24.28 apart, back = skip turned
+  180°. The frame never draws Play, and the live paused state needs one. It is a single
+  triangle in the pause's own 12.88 box, so the swap moves nothing. The canvas keeps Pause, the
+  frame's mid-song picture, as Retro's does.
+- **Body/Chip tracking is `-0.06em`** at `s.chip`, so it ramps with the token (Retro froze
+  `u(-0.72)`). Every list/fan type is the Lime ramp's `s.*` except Display/Title, which is the
+  frames' 36 × 0.82 / 28 / 26 (`s.title` is the heading string).
+- **The featured tag sits at the frame's 26.5 / 26 off the card's edge.** Retro's `u(25.5)` /
+  `u(25)` stand inside its 1px border, and a card whose ring is an inset shadow has none to
+  stand inside. Any Lime redress of a Retro bordered box meets this.
+- **Two named departures, both for the bar's title.** (1) Desktop does not split the columns
+  `629fr / 529fr` as Retro does. Our columns come to 953.6 against the frame's 990.6 (1208 × 0.82),
+  and the split left the bar's title box 86 wide where the seeded "Slow Burn" needs 102 at 29.52.
+  So the left column is the frame's `u(629)` and **the list takes all 37**: 396.8 against 433.8,
+  its title column still 254 for "Late Lights". (2) At 390, on top of Retro's override (clock and
+  icons dropped, transport gap 14, inner right padding 0), the bar's side padding closes 20 → 16
+  and the inner pill's left 10 goes. Those 18px take the title box from 74 to 92, and "Slow Burn"
+  is 90 wide at 26. The list rows' 390 gap is Retro's 14 as well; the master keeps 20 and
+  hard-clips its titles.
+- **The number keeps a 21 slot**, the widest of the frame's hugging numbers ("03", "04"), so the
+  art lands within 3px of the frame's x and the live Play/Pause swap moves nothing.
+- **Row rules are top-only**, `inset 0 1px 0 s.stroke1`, so the 14 padding stays the frame's and
+  the last row has nothing under it, as in the render. The counter row's middle "Frame" is an
+  empty spacer, not a rule.
+- **Measured against the masters' content edges**: desktop panel 650.3 (793 × 0.82), heading 190.4
+  (232 × 0.82) at 107, fan band from 239.6, 253.2 tall (309 × 0.82 less the 24 gap's rounding), bar
+  at 512.5 (625 × 0.82) and 88.6 tall, left column 515.8, list at x 606 with rows 102.9 (125.6 ×
+  0.82) under a 37.2 counter; 768 panel 1448.1 (1448), heading 72.1 at 81, fan at 142.1 (142),
+  bar at 634.1 (634), list at 792.1 (792), rows 110.4, counter 44; 390 panel 1372.1 (1372),
+  heading 96.1 at 54 on two lines, fan at 86.1 (86, the −50 leaving 61 clear of the centre card),
+  bar at 578.1 (578), list at 736.1 (736), rows 110.6. The bar's title box is 106 / 114 / 92 for
+  "Slow Burn" at 102 / 114 / 90.
+- **`live=1` at desktop and 390** (puppeteer with `--autoplay-policy=no-user-gesture-required`,
+  probe scripts deleted): the outermost card, clicked on its visible edge (the rotated bounding
+  box's `x + 12` misses the card, `x + 45` does not), deals Echo & The Floor to the centre and
+  plays it. A list row plays, and clicking it again pauses (the toggle glyph goes pause `rect`s →
+  play `path`). Next and back step, back wraps from track 1 to Roomtone, and the centre card, the
+  bar and the row's glyph follow together. The clock runs from the element at desktop, and cursors
+  are live-gated: the canvas section has zero pointer cursors. `n=0`: the counter alone, and the
+  390 section drops to 907. `n=1`: one card, no clip. `n=8`: the fan clips at the column (Retro's
+  rule), the desktop rows share the stretched column at 64.5, and 390 grows to 1643. No page
+  errors. Digest at themes 0–4, all 810 renders: exactly media arch 1 at theme 1, three widths.
+- **The track art in the harness is the neutral crops** (`ROW_ART.media` = `RETRO_TRACK_ART`, layout 1's open question
+  3), not the frame's album covers, so the look check compares composition and not pictures.
 
 ## Open questions
 
