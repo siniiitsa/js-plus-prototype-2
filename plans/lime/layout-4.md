@@ -171,7 +171,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 6 | `map` | `964:72924` *(Frame 319 `964:72918`, head `964:72920`)* | 1440 × 747 | `971:5612` *(Frame 319 `971:5606`, head `971:5608`)* | 768 × 871 | `977:9186` *(Frame 319 `977:9180`, head `977:9182`)* | 390 × 680 | `964:72830` / `964:78599` / `977:8322` | done `1bffd9c` |
 | 7 | `pricing` | `964:72926` | 1440 × 546 | `971:5613` | 768 × 809 | `977:9187` | 390 × 837 | `964:72831` / `964:78656` / `977:8440` | done `8546dbb` |
 | 8 | `calendar` | `964:72939` + wizard `964:72938` *(Section `964:72927`, Frame 324 `964:72928`)* | 478 × 536 + 680 × 536 | `971:5626` + `971:5625` *(Section `971:5614`, Frame 324 `971:5615`)* | 608 × 505 + 608 × 479 | `977:9200` + `977:9199` *(Section `977:9188`, Frame 324 `977:9189`)* | 350 × 496 + 350 × 474 | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | done `8163fcd` |
-| 9 | `form` | `964:72940` | 1440 × 795 | `971:5627` | 768 × 1024 | `977:9201` | 390 × 971 | `964:72845` / `964:79477` / `977:8663` | — |
+| 9 | `form` | `964:72940` | 1440 × 795 | `971:5627` | 768 × 1024 | `977:9201` | 390 × 971 | `964:72845` / `964:79477` / `977:8663` | done `ff6b4e1` |
 | 10 | `testimonials` | `964:72941` | 1440 × 716 | `971:5628` | 768 × 642.4 | `977:9202` | 390 × 624.4 | `964:72846` / `964:79536` / `977:8764` | — |
 | — | `footer` | `964:72942` | 1440 × 479.5 | `971:5629` | 768 × 647.4 | `977:9203` | 390 × 619.4 | — | **out of scope** — Lime layout 1's own component family at layout 1's sizes, fitted in that pass's section 11; `NVAR.footer` is 1 |
 | — | `video` | `964:72871` | 1328 × 754 | `971:5436` | 708 × 402 | `977:9010` | 370 × 209 | — | **not in the project** (`d734992`); Retro's QA declined restoring it on layout 4, and this pass does the same |
@@ -577,6 +577,10 @@ Written now from what the plan expects; refine as the sections defer things. One
    "**Layout 4** … divided by a 4px rule in **`vm.tierRow.card`**" and "one per feature over
    **`vm.tierFeatSeats`**" are Retro's — under Lime the rule is `s.ac` read directly (layout
    3's `tierRow`-not-read rule) and the feature seats are the block's own box1 / lime pair.
+   A seventh, from section 9: the enquiry form paragraph's "**Layout 4** … a display head over
+   a 4px **mustard** rule" and "Its boxes' outline and its step rules are **`vm.formRule`**,
+   which is `vm.tierRow.card`" are Retro's — under Lime the head rule and the step rules are
+   1px of `s.stroke1`, the box ring is `s.ac`, and a refused box rings in 2px of `s.tx`.
 2. **One whole-page published check under Lime at layout 4**, one puppeteer script: builder →
    Lime → card 4 → *Use this header* → Publish → Open, then every `s.v3` control on the page —
    header nav and burger (fresh tab per width), the media tiles and transport with audio, the
@@ -1317,6 +1321,82 @@ Settled in section 8 (the calendar):
   no cursor and the hairline whole. `n=0`: the prompt and no rows; `n=1`: featured, no rows;
   `n=8`: seven rows. No page errors. Digest at themes 0, 2, 3 and 4: zero differing files;
   theme 1: exactly calendar arch 3 at three widths (calendar has no fold partner).
+
+Settled in section 9 (the enquiry form):
+
+- **The ninth layout-4 block, ahead of its branch: `if (s.v3 && s.lime)` before `EnquiryForm`'s
+  `if (s.v3)`** — layouts 1's and 2's form seat, the bio's and the media's on this pass. Every
+  piece of the live seam (`vals`, `msg`, `errs`, `sent`, `at`, `setAt`, `href`, `onSubmit`,
+  `Pill`, `pillLink`) is hoisted above the branches and `desk` / `z` / `u` are one-liners, so
+  the published boxes, the refused state, the submit, the sent block and *Write another* needed
+  nothing new. The tree is Retro's twin's node for node (head over a rule, the brand line, the
+  form column of paired boxes over a message box and a pill beside the 01 / 02 / 03 column, the
+  form first at 1440 and the steps first narrow) and every leaf changes face, ink or box, so a
+  block: one hunk, **230 / 0**, placed before Retro's v3 comment so that comment stays on its
+  `if`. Retro's `T`, `rule` (`vm.formRule`), `capsType` / `subType`, `boxShell` / `msgShell`,
+  `pill`, `arrowDisc` and `hard()` are not read.
+- **Primitives: Lime on the page's Scheme 1, one nested pill, and every fill is a `sem` key.**
+  The instance fills `sem/bg` and paints nothing (Retro's reading). The head is `sem/text/1`
+  (`s.ac`); ENQUIRE, the box labels, the steps' head and the step lines are `sem/text/2`
+  (`s.tx`); the boxes fill `sem/bg` in a 1px INSIDE `sem/stroke/2` (`s.ac`) ring at radius 214
+  — `s.btnR` — with `s.ac` placeholders, the message box at radius 24; the head's rule and the
+  step rows' rules are 1px INSIDE `sem/stroke/1` = **`s.stroke1`** (pale at .15, `data.js`'s
+  own rgba) where Retro's head rule is 4px of `pillBg` — a lime bar under Lime; the step discs
+  are `s.ac` at radius 8 lettered `sem/bg` (Retro's literal reading, which the flat four take as
+  `acFg`); the ↘ is `s.ac`. **The submit nests Scheme 1 and fills `sem/text/2`: a pale pill
+  lettered `s.bg` round an `s.bg` 46 × 44 disc with an `s.tx` arrow** — the pricing row's pair
+  with the disc's glyph pale rather than lime — drawn inline at BookPill's Lime numbers for
+  layout 1's reason (the seam's `Pill` on a mailto with its own `onClick`). `get_variable_defs`
+  and the nodes agreed on every entry at all three widths; no node carries an effect.
+- **Both rules are inset shadows, not borders — the third `v3` section to meet it.** The head
+  frame is 128 = 116 + 12 with the stroke inside, a step row 88 = 16 + 56 + 16 the same way;
+  Retro's `borderBottom` adds a pixel to each. `inset 0 -1px 0 ${s.stroke1}` holds the frame's
+  128 / 84 / 60 and 88 exactly (desktop rows 72.1 against 88 × 0.82 = 72.2). Nothing reaches
+  either edge, so no overlay (the map's rule checked, not needed).
+- **A refused box changes colour, not only weight: 2px of `s.tx`.** The idle ring is already
+  lime, so Retro's "thicken in the accent" would not read as a refusal; layout 3's Lime rule
+  for a box on the dark ground is the pale ring, in the single-shadow spelling
+  `${bad ? '2px' : '1px'} ${bad ? s.tx : s.ac}`, and the stated 45 / 44 / 44 does not grow.
+  CLAUDE.md's form paragraph ("its boxes' outline and its step rules are `vm.formRule`, which
+  is `vm.tierRow.card`", and "a 4px mustard rule") is Retro's wording, for the sweep.
+- **No `T` table, no Device override.** The ramp at all three widths: display-lg 130 / 81 / 54
+  at .89 (`s.dispLg`; Retro's 96 / 60 / 40 is its own), list 24 / 19 / 18 at 1.2 (`s.list`,
+  every label and the pill — Retro's 16 / 12 / 13), body-lg 16 / 15 / 15, body-md 14 / 13 /
+  13, body-sm 13 / 13 / 12; Display/Title 36 / 28 / 26 at 1.1 a literal through `u()`. No
+  `titleWordEms`: the seed's widest word fits the full measure at every width (552 in 1052).
+  Every box is Retro's twin's — 24 / 12 / 16 / 14 / 6 / 12 / 90 / 5 · 21 / 46 × 44 / 16 · 56 ·
+  16 / 40 · 32 — so Retro's grid, the reorder and the lone-box-runs-full-measure rule are
+  restated whole.
+- **The vertical inset is the root's, named.** The instance pads 40 / 30 / 24 over and 56 / 56
+  / 40 under where `padY` gives 80 / 56 / 44 — the map's, pricing's and calendar's page-ground
+  reading on this page — so the section is 749.9 / 1032.1 / 1001.1 against the frames' 651.9 /
+  1024 / 971, the rest being the seeded heading's two lines (190.4 at desktop against "Contact
+  Us"'s 95.1) and three at 390. Retro's readings hold: `heading` heads the design, `s.brand` is
+  the ENQUIRE line, the steps are `vm.formSteps` with the frame's sub-line dropped, the frame's
+  five boxes are the seed's four, and the pill prints `vm.formBtn`'s *Book Now* against the
+  frame's "Check Availability".
+- **Measured against the masters' content edges**: desktop h2 107px at 80 in lime, head rule
+  inset at 9.8 under it, brand 29.5px at 299.9, grid at 352 with two 509.6 columns at gap 32.8
+  (the frame's 644 × 0.82 = 528, Retro's column cost), labels 20px pale, boxes 249 × 36.9 (45 ×
+  0.82) ringed 1px `rgb(175, 227, 53)` at 999 with 11px placeholders and 9.8 padding, message
+  509.6 × 73.8 at radius 19.7, pill 509.6 × 44.3 `rgb(242, 255, 208)` at 20px with a 37.7 × 36.1
+  ink disc and a 22.6 glyph, step discs 45.9 at radius 6.6 with 13px numerals in ink, rows 72.1
+  with the inset hairline at 13.1 padding, arrows 13px lime; 768 h2 81px two lines at 56, brand
+  28 at 236.2, one column at gap 32 with the steps first (rows 88 at 313.8, discs 56 at radius
+  8, numerals 15), boxes 337 × 44 at 13px (the frame's 347 in 708 against our 688), message
+  688 × 90 at 24, pill 688 × 54 at 19px with the 46 × 44 disc; 390 h2 54px three lines at 44,
+  brand 26 at 224.1, rows 88 at 298.3, boxes 166 × 44 (178 in 370 against our 346), message
+  346 × 90, pill 346 × 54 at 18px. The canvas has no `<input>`, no `<textarea>`, no `<form>`,
+  no anchor and zero pointer cursors; `scrollWidth` holds at every width. `live=1` at desktop
+  and 390 (puppeteer, capture-phase `preventDefault` on the mailto, probe deleted): five
+  pointers (the `<a>` and its disc, svg and two paths), a refused submit rings all four boxes
+  in 2px `rgb(242, 255, 208)` with the heights unchanged and prints the prompt in pale, filling
+  box 0 clears its ring alone, the mailto's subject is the bare *Enquiry* and its body carries
+  the four values, a valid submit swaps in the sent block with its lime h3, *Write another*
+  restores the typed values. `n=0`: the message box alone over the pill, steps intact;
+  `promises=`: one column and no rows; `n=5`: three rows with the lone fifth box full-measure.
+  No page errors. Digest at themes 0, 2, 3 and 4: zero differing files; theme 1: exactly form
+  arch 3 at three widths (form has no fold partner).
 
 ## Open questions
 
