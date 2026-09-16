@@ -202,13 +202,20 @@ function TornEdge({ s, side = 'top', height = 26, colour, bleed = true }) {
 // of the band and a near-flat one on the other. The side offset carries the
 // vector's own −1, so the seam stands a pixel into the neighbour rather than
 // leaving a hairline.
-function ArcEdge({ s, side = 'top', height = 44.24, colour }) {
+// `bleed` is `TornEdge`'s prop, additive: layout 1's three callers stand on a
+// band the root paints and reach its edge by offsetting themselves out over
+// the root's padding; a layout-4 band is a sheet painted in the branch that
+// has already cancelled that padding with a negative margin, so an arc inside
+// it wants the sheet's own edges (and the sheet `position: relative`), or the
+// offset would land twice.
+function ArcEdge({ s, side = 'top', height = 44.24, colour, bleed = true }) {
   if (!s.lime) return null
   return (
     <svg viewBox="0 0 1437.84 44.24" preserveAspectRatio="none" aria-hidden style={{
       position: 'absolute', height, display: 'block', pointerEvents: 'none', zIndex: 3,
-      left: `calc(-1 * ${s.padX})`, width: `calc(100% + ${s.padX} + ${s.padX})`,
-      [side]: `calc(-1 * ${s.padY} - 1px)`,
+      ...(bleed
+        ? { left: `calc(-1 * ${s.padX})`, width: `calc(100% + ${s.padX} + ${s.padX})`, [side]: `calc(-1 * ${s.padY} - 1px)` }
+        : { left: 0, width: '100%', [side]: '-1px' }),
       transform: side === 'bottom' ? 'scaleY(-1)' : undefined,
     }}>
       <path d="M1437.84 0H0V4.99C0 4.99 212.94 44.24 718.92 44.24C1224.9 44.24 1437.84 4.99 1437.84 4.99V0Z"
@@ -6009,6 +6016,258 @@ function Media({ s }) {
     )
   }
 
+  // Lime layout 4 (964:72864 · 971:5431 at 768 · 977:9005 at 390, in the band
+  // 964:72858 · 971:6533 · 977:8999) is Retro's twin below in Lime's mode,
+  // node for node: the band with its display head, the sleeve column with the
+  // now-playing block and the transport, the tile grid. What changes is the
+  // dress at nearly every leaf — the sheet is olive, the two checkerboard
+  // strips are two arc seams, the sleeve's rust border is a lime glow, the
+  // tile's rust ring is the same glow, and every ink moves — so it is a block
+  // ahead of Retro's `if (s.v3)`, layout 1's seat for this section, sharing
+  // the hoisted seam whole: the one <audio>, `at`, `now`, `sleeve`, `goTo`,
+  // `toggle`, `onPick` and `playing`.
+  //
+  // ── The band is Scheme 2, and it owns both arcs ────────────────────────
+  // The band frame fills `sem/bg` in Scheme 2 (`s.box1`, #2E3928) and parents
+  // the head, the instance and two 44.24-deep vectors: the head one in
+  // Scheme 1's `sem/text/1` (#AFE335, the bio band's lime — `s.ac`) at y −1,
+  // the foot one turned 180° in `sem/bg` (#15180F, the page — `s.bg`), read
+  // off the nodes at all three widths. Both are `ArcEdge` with `bleed={false}`:
+  // this sheet has already cancelled the root's padding, so the helper's own
+  // −padX / −padY offset would land twice (plans/lime/layout-4.md, open
+  // question 2). On the frame the foot arc bulges into the video band; our
+  // page carries no video, so this dark foot arc meets the gallery's dark head
+  // arc directly — a 44 + 44 dark lens between the olive and the lime, which
+  // is exactly what the frame would show with its video frame deleted (open
+  // question 1: each seam kept in its frame's own colour, and the lens named).
+  //
+  // ── The insets are the band's and the instance's, added up ─────────────
+  // Retro's rule with Lime's numbers: the band pads 156 / 100 / 100 over the
+  // head and 100 / 50 / 100 under the instance, and the instance pads itself
+  // 56 / 56 / 10 all round inside that. So the sheet's insets are 156 / 100 /
+  // 100 at the head and 156 / 106 / 110 at the foot, and head-to-player is
+  // 56 / 56 / 20 (at 390 the band's own 10 gap on the instance's 10). The sums
+  // land on the bands' 1043 / 791 / 1094 exactly. The horizontal inset, the
+  // 308 column, the 112 / 56 column gap, the tile ratios and the sleeve's
+  // `flex: 1 0 0` over the 390 master's 302 / 370 floor are Retro's twin's to
+  // the pixel: the desktop column sums 56 + 404 + 40 + 62 + 40 + 13 + 56 =
+  // 671, so the sleeve fills here as it does there, 15 shorter than Retro's
+  // for the taller now-playing block.
+  //
+  // ── Type: the 390 instance is in Device: Tablet ────────────────────────
+  // The head stands outside the instance in the page's own mode, so it is
+  // `s.dispLg` (130 / 81 / 54 at .89) in `s.ac`, with no measure — the
+  // 1019.18 on the text nodes is the leak Retro's branch declined. The
+  // instance's four sizes are the ramp at 1440 and 768, but the 390 instance
+  // carries an explicit `Device: Tablet` (770:1), the layout-1 hero's case,
+  // so at 390 they are the 768 ramp's — title 28, list 19, body-sm 13, chip
+  // 12 — where `s.list` / `s.bodySm` / `s.chip` would give 18 / 12 / 11. Hence
+  // the small `tk` table below; Display/Title is a literal either way, since
+  // `s.title` is the heading string. Every box is the twin's: radius 50 on
+  // the sleeve and the tiles, 30 tile padding (Retro's 20), 48 disc, 14
+  // transport gap, 3 bar, 4 text gaps.
+  //
+  // ── Colours, by node ───────────────────────────────────────────────────
+  // Head, now-playing title, transport glyphs, play disc, the bar's dot and
+  // the tile sublines are `sem/text/1` = `s.ac`; the artist line, the two
+  // clocks and the bar's fill are `sem/text/2` / `text/3` = `s.tx`; the play
+  // glyph is Scheme 2's `sem/bg` = `s.box1`; the bar's track is Scheme 2's
+  // `sem/box/1` #394732, which is Scheme 1's `s.box2` (layout 2's media
+  // reading); the sleeve's well is `sem/text/3` = `s.tx` and the tiles' is
+  // `sem/bg` = `s.box1`; the tile titles are raw #FFFFFF, as Retro's are. So
+  // the frame's playhead reads here — pale on a box2 track with a lime dot —
+  // and layouts 1 and 2's named departure on the bar is not owed. The two
+  // INNER_SHADOWs (34, spread 0, #AFE335 = `s.ac`) are on the sleeve and on
+  // tile one, both confirmed off `effects`: the sleeve's is an overlay, the
+  // tile's rides the scrim overlay at `i === at` — Retro's seat rule, with a
+  // glow where Retro's is a 3px ring, and still a shadow so no photograph is
+  // inset. The tiles' #D4D4D4 stroke is `visible: false` on every master and
+  // is not drawn. The frame's prev / next are the same 16.03 × 8.39 group
+  // layout 1 transcribed as `LimeSkip`; Play / Pause stay lucide, since the
+  // frame types ▶ and the live state needs the Pause it never draws.
+  //
+  // The seeded "Five worth your ear." holds one line at every width, the 390
+  // one included: the sheet's own 10 inset gives the head the frame's 370,
+  // not the root's 346 that wrapped it in layout 3. The one named diff is
+  // Retro's: the frame's bar is a hand-set 140 of 218 where ours is the
+  // element's.
+  if (s.v3 && s.lime) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const un = (v) => Math.round(v * z * 10) / 10
+    const tk = desk
+      ? { title: 36, list: 24, body: 13, chip: 13 }
+      : { title: 28, list: 19, body: 13, chip: 12 }
+    // The tiles' foot fade, the twin's own gradient (0 → black at 88.942%).
+    const scrim = 'linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 88.942%)'
+    const glow = `inset 0 0 ${u(34)} ${s.ac}`
+    const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+
+    // Body/Chip: Inter Bold at lh 1, tracked −6% of its own size.
+    const clockType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: u(tk.chip), lineHeight: 1,
+      letterSpacing: '-0.06em', color: s.tx, whiteSpace: 'nowrap', flex: 'none',
+    }
+    // Each skip glyph is 16 × 8.4; layout 1's recipe gives the published tab a
+    // finger-sized target by padding it out and taking the padding back in the
+    // margin, so the transport's row does not move.
+    const skip = (back, fn) => (
+      <span onClick={s.live ? fn : undefined} style={{
+        padding: `${u(11)} ${u(7)}`, margin: `-${u(11)} -${u(7)}`, flex: 'none',
+        cursor: s.live && fn ? 'pointer' : undefined, position: 'relative', display: 'inline-flex',
+      }}><LimeSkip width={16.028 * z} color={s.ac} back={back} /></span>
+    )
+
+    // The sleeve: the twin's declaration (`flex: 1 0 0` at the two wide widths
+    // over the 390 master's own stated 302 on 370 as a floor; that ratio
+    // outright at 390), on a pale `sem/text/3` well under the lime glow.
+    const sleeveBox = (
+      <div style={{
+        borderRadius: u(50), overflow: 'hidden', position: 'relative', background: s.tx,
+        ...(s.mob
+          ? { aspectRatio: '370 / 302', flex: 'none', width: '100%' }
+          : { flex: '1 0 0', minHeight: u(308 * 302 / 370), width: '100%' }),
+      }}>
+        <span style={{ position: 'absolute', inset: 0 }}>
+          <Photo s={s} initialsSize={un(56)} src={sleeve} ink={s.bg} style={{ background: s.tx }} />
+        </span>
+        <span aria-hidden style={{
+          position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none', boxShadow: glow,
+        }} />
+      </div>
+    )
+
+    const nowPlaying = (
+      <div style={row('0', { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
+        <span style={col(u(4), { flex: '1 1 auto', minWidth: 0 })}>
+          <span style={{
+            fontFamily: s.display, fontSize: u(tk.title), lineHeight: 1.1,
+            letterSpacing: s.dls, color: s.ac, ...clip,
+          }}>{now.track}</span>
+          <span style={{
+            fontFamily: s.body, fontSize: u(tk.body), lineHeight: 1.4,
+            letterSpacing: s.dls, color: s.tx, ...clip,
+          }}>{now.by}</span>
+        </span>
+        <span style={row(u(14), { flex: 'none' })}>
+          {skip(true, () => goTo(at - 1))}
+          <span style={{
+            width: u(48), height: u(48), borderRadius: '999px', flex: 'none',
+            background: s.ac, color: s.box1,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            cursor: s.live ? 'pointer' : undefined,
+          }} onClick={s.live ? toggle : undefined}>
+            {playing
+              ? <Pause size={un(22)} fill="currentColor" strokeWidth={0} />
+              : <Play size={un(22)} fill="currentColor" strokeWidth={0} />}
+          </span>
+          {skip(false, () => goTo(at + 1))}
+        </span>
+      </div>
+    )
+
+    const progress = (
+      <div style={row(u(10), { width: '100%', flex: 'none' })}>
+        <span style={clockType}>{now.at}</span>
+        <span style={{ flex: 1, minWidth: 0, height: u(3), background: s.box2, borderRadius: u(2) }}>
+          <span style={{
+            display: 'block', position: 'relative', height: '100%',
+            width: `${now.pct}%`, background: s.tx, borderRadius: u(2),
+          }}>
+            {/* The 6.3 dot rides the fill's end, as the frame's ellipse rides
+                its 140 (x 137, y −1.65: centred on the 3px bar). */}
+            <span style={{
+              position: 'absolute', right: u(-3.15), top: `calc(50% - ${u(3.15)})`,
+              width: u(6.3), height: u(6.3), borderRadius: '999px', background: s.ac,
+            }} />
+          </span>
+        </span>
+        <span style={clockType}>{now.of}</span>
+      </div>
+    )
+
+    const tiles = (
+      <div style={{
+        flex: 1, minWidth: 0, display: 'grid',
+        gridTemplateColumns: `repeat(${desk ? 3 : 2}, minmax(0, 1fr))`,
+        gap: u(s.mob ? 10 : 20),
+        alignContent: 'start',
+      }}>
+        {s.tracks.map((t, i) => (
+          <div key={i} onClick={onPick(i)} style={{
+            position: 'relative', overflow: 'hidden', borderRadius: u(50), background: s.box1,
+            aspectRatio: desk ? '289.33 / 269.5' : tab ? '136 / 139' : '180 / 123.33',
+            padding: u(30), cursor: s.live ? 'pointer' : undefined,
+            ...col(u(4), { alignItems: 'flex-start', justifyContent: 'flex-end' }),
+          }}>
+            <span style={{ position: 'absolute', inset: 0 }}>
+              <Photo s={s} initialsSize={un(26)} src={t.img} ink={s.tx} style={{ background: s.box1 }} />
+            </span>
+            {/* The scrim, carrying the seat's glow: `at` is 0 until the visitor
+                picks, so the canvas draws the frame's own glowing first tile.
+                The radius is repeated here, or the parent's clip squares the
+                glow's inner corners (Retro's ring note). */}
+            <span style={{
+              position: 'absolute', inset: 0, background: scrim, borderRadius: u(50),
+              boxShadow: i === at ? glow : undefined,
+            }} />
+            <span style={{
+              position: 'relative', width: '100%', fontFamily: s.display,
+              fontSize: u(tk.list), lineHeight: 1.2, letterSpacing: s.dls, color: '#FFFFFF', ...clip,
+            }}>{t.name}</span>
+            {t.rel && (
+              <span style={{
+                position: 'relative', width: '100%', fontFamily: s.body,
+                fontSize: u(tk.body), lineHeight: 1.4, letterSpacing: s.dls, color: s.ac, ...clip,
+              }}>{t.rel}</span>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding,
+        // in Scheme 2's `sem/bg`. `position: relative` seats the two arcs.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: s.box1, color: s.tx, position: 'relative', ...col('0'),
+      }}>
+        <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />
+        <div style={{
+          padding: `${u(desk ? 156 : 100)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 156 : tab ? 106 : 110)}`,
+          ...col(u(s.mob ? 20 : 56)),
+        }}>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg,
+            lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+          <div style={{
+            ...(s.mob ? col(u(20)) : row(u(desk ? 112 : 56), { alignItems: 'stretch' })),
+            width: '100%',
+          }}>
+            <div style={col(u(s.mob ? 20 : 40), {
+              flex: 'none', width: s.mob ? '100%' : u(308), minWidth: 0,
+            })}>
+              {sleeveBox}
+              {nowPlaying}
+              {progress}
+            </div>
+            {s.tracks.length === 0
+              ? <span style={{ fontFamily: s.body, fontSize: u(tk.body), flex: 1 }}>No tracks yet.</span>
+              : tiles}
+          </div>
+        </div>
+        <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />
+        {/* The one transport on the page rides at the foot of the sheet, as
+            Retro's does; without it every tile click is dead. */}
+        {audio}
+      </div>
+    )
+  }
+
   // ── v3 — Media Player layout 4 · Turntable + playlist ──────────────────
   // (Figma 964:72526 · 971:15190 at 768 · 971:14834 at 390. The display head
   // above it is the composed page's own wrapper — 964:72523 · 971:14889 — and
@@ -6121,8 +6380,8 @@ function Media({ s }) {
     // `sem/bg` is the sheet (and the play glyph); `sem/text/2` #111111 is the
     // artist line and the two clocks, which on a *cream* sheet is `paperFg` and
     // not `s.tx` (layout 1 of this section already pairs them that way);
-    // `sem/text/1` is the rust — `s.ac` on every palette, and the known cost is
-    // Lime's acid green on its pale sheet, which the conventions name twice;
+    // `sem/text/1` is the rust — `s.ac` on every palette (Lime no longer
+    // reaches this branch: its layout 4 is the block above, on its own olive);
     // `sem/text/3` is the mustard of the progress fill, which is `pillBg` under
     // Retro and dies on a paper card on Lime and Grunge (the audio player's
     // lesson), so the flat four take the accent there as layout 1 does; and
