@@ -177,7 +177,7 @@ masters are fitted in one session.
 | 2 | `bio` | `964:68663` *(head `964:68658`)* | 858 × 882 | `984:10748` *(head `984:10743`)* | 708 × 912 | `984:10779` *(head `984:10774`)* | 370 × 878 | `964:68631` / `977:22717` / `982:10013` | done `466aff9` |
 | 3 | `media` | `964:68674` list + `964:68673` card *(head `964:68666`)* | 858 × 424 + 858 × 243 | `984:10759` + `984:10758` *(head `984:10751`)* | 708 × 647 + 708 × 243 | `984:10790` + `984:10789` *(head `984:10782`)* | 370 × 647 + 370 × 243 | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | done `593133e` |
 | 4 | `repertoire` | `964:68678` | 1440 × 621 | `984:10760` *(in `984:10757`)* | 708 × 655 | `984:10791` | 390 × 709 | `964:68646` / `977:23041` / `982:10193` | done `2c4e0e1` |
-| 5 | `calendar` | `964:68677` *(in `964:68675`)* | 405 × 538.6 | `984:10763` *(in `984:10761`)* | 708 × 483.6 | `984:10794` *(in `984:10792`)* | 370 × 450.6 | `964:68645` / `984:10605` / `984:10673` | — |
+| 5 | `calendar` | `964:68677` *(in `964:68675`)* | 405 × 538.6 | `984:10763` *(in `984:10761`)* | 708 × 483.6 | `984:10794` *(in `984:10792`)* | 370 × 450.6 | `964:68645` / `984:10605` / `984:10673` | done `46d28f5` |
 | 6 | `gallery` | `964:68679` | 1440 × 789 | `984:10764` | 768 × 884 | `984:10795` | 390 × 591 | `964:68647` / `977:23131` / `982:10257` | — |
 | 7 | `pricing` | `964:68680` | 1440 × 1199 | `984:10765` | 768 × 1072 | `984:10796` | 390 × 1474 | `964:68648` / `977:23149` / `982:10274` | — |
 | 8 | `map` | `964:68681` | 1440 × 819 | `984:10766` | 768 × 831 | `984:10797` | 390 × 887 | `964:68649` / `977:23264` / `982:10389` | — |
@@ -770,6 +770,50 @@ Settled in section 4 (the repertoire):
   reveals one card (three links become two), the untagged rows bring the All card, and the wide
   pager turns to it. `n=0` prints *No songs yet.* No page errors. Digest at themes 0–4, all 645
   renders: exactly repertoire arch 2 at theme 1, at three widths.
+
+Settled in section 5 (the booking calendar):
+
+- **`if (s.lime)` within `Calendar`'s `if (s.v2)`, after `line`.** The block reads `desk`, `month`,
+  `at`, `hit`, `line` and the hoisted `sel`, so the published day picking and the foot pill needed
+  nothing new. It does not read Retro's `T`, `panel`, `ink`, `hue`, `taken`, `head`, `grid` or
+  `dot`. Under Lime those are `paper`-derived and would draw a pale card. Pure additions (97 / 0).
+- **The cheapest section so far: the tree is Retro's twin's to the pixel.** One `use_figma` read of
+  all three instances gave the 20 padding, 18 gap, `Frame 282` head (0 gap), 12 / 2.745 month row,
+  8-gap dot rows of 30.713, the 21-gap key at 4 padding and the pill's 5 / 5 / 5 / 21 round a
+  46 × 44 disc, all identical at 405, 708 and 370. The head-to-card gap is 30 at every width
+  (`get_metadata` on the three `Frame 300`s). Retro's one-grid normalisation of the frame's two row
+  mechanisms is kept.
+- **What the dress changes.** The card is `s.box1` at radius **50** (Retro 30), with a **2px
+  `stroke1` ring stroked inside**, drawn as an inset shadow. Its padding is wider than the ring, so
+  no child paints over it and no overlay is owed; this is unlike layout 1's calendar panel. The
+  numeral is **`s.tx`**, where Retro's is the accent. The dots are read off the exported SVGs:
+  booked `s.box2`, picked `s.ac`, free `s.box1` inside a raw 2.559 `stroke1` ring (inset). The
+  key's marks take the same two fills, so the Booked mark is nearly invisible on the card, as it
+  is in the frame. No node carries an effect. "Book Me" is Bebas 36 / 28 / 26 at lh 1.1 in `s.tx`
+  (read off the text nodes; `s.title` is the string).
+- **No `T` table.** `get_variable_defs` is the ramp at all three widths: display-lg 130 / 81 / 54,
+  display-sm 50 / 40 / 32, body-md 14 / 13 / 13, body-lg 16 / 15 / 15, body-sm 13 / 13 / 12, list
+  24 / 19 / 18. Retro's non-monotonic `list` is Retro's alone.
+- **The pill is Scheme 2: `BookPill`'s Lime branch with `fg={s.box1}` and `full` at 390.** Its
+  `bg` defaults to the lime `pillBg`. The disc follows `fg`, and the arrow follows `bg`, so the
+  pill is the frame's `#2E3928` disc with a lime arrow. The branch's own `k` gives the 54 box and
+  the `s.list` label. None of Retro's `disc` / `size` / `shadow` is passed. The frame's arrow is
+  a hand-drawn path; lucide `ArrowRight` stands in, as it does on every Lime pill.
+- **Measured against the masters** (`column=right` at desktop): "Book Me" 32.4 / 30.8 / 28.6 tall
+  (40 × 0.82 / 31 / 29), and the card stands 24.6 / 30 / 30 under it. The head is 155 / 134.3 /
+  102.2 (189.74 × 0.82 / 134.74 / 102.74), and the numeral is 95.2 / 72.1 / 48. The key is 22 /
+  26.2 / 24.8 (26 × 0.82 / 26 / 25), and the pill 44.3 / 54 / 54, with the desktop disc 37.7 ×
+  36.1. The cards are 473.7 / 521.9 / 488.5. Each is the frame (441.7 / 483.6 / 450.6) plus one dot
+  row, because the seeded June runs five weeks where the frame draws four; that is Retro's named
+  diff.
+- **`live=1` at desktop and 390** (puppeteer, probes deleted): 30 dots take a pointer, and the
+  canvas has none. A click on June 21 moves the numeral, the weekday (Sat) and the pill to
+  *Enquiry About June 21*. A second click falls back to the cued June 12. The pill is
+  `<a href="#form">` live and a span on the canvas. `&booked=2025-06-12` drops the numeral and the
+  weekday, lights nothing and prints *Pick a date to enquire*. Booked days take the `box2` fill.
+  No page errors. The composed row was not re-checked in the builder; the bio session's check
+  covers the column, and `column=right` is the same `sectionVm({ column })`. Digest at themes 0–4,
+  all 645 renders: exactly calendar arch 2 at theme 1, three widths.
 
 ## Open questions
 
