@@ -122,7 +122,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Retro twin (1440 / 768 / 390) | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:64580` | 1440 × 900 | `986:11848` | 768 × 1024 | `986:11867` | 390 × 890 | `964:64637` / `984:34438` / `984:34636` | done `ab83542` |
-| 2 | `bio` | `964:64581` | 1440 × 760 | `986:11849` | 768 × 1191.8 | `986:11868` | 390 × 909.3 | `964:64638` / `984:34877` / `984:34834` | — |
+| 2 | `bio` | `964:64581` | 1440 × 760 | `986:11849` | 768 × 1191.8 | `986:11868` | 390 × 909.3 | `964:64638` / `984:34877` / `984:34834` | done `bbc6904` |
 | 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | — |
 | 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | — |
 | 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | — |
@@ -505,6 +505,51 @@ Settled in section 1 (the header):
   errors. Digest: themes 0, 2, 3 and 4 zero files; theme 1 exactly header arch 1 and arch 5 at
   three widths.
 
+Settled in section 2 (the bio):
+
+- **The second layout-2 block: `if (s.v1 && s.lime)` ahead of Retro's `if (s.v1)` in `Bio`**, layout
+  1's seat for the same section. `Bio` has no state, so the whole live seam is `BookPill to=`. Retro's
+  tree less its `image #` grain; roughly twenty leaves change, so a block, and the diff is pure
+  additions (137 / 0).
+- **A chip standing on `s.box1` takes `s.box2` as its dark seat.** `vm.chips`' dark seat is
+  `T.tags[0]`, `#2E3928`, which is the olive card itself. The Tags instance's own fill is
+  `sem/box/2`. The lime seat and both inks stay `vm.chips`' (`c.bg` / `c.fg`); the frame's `#C7FF3C`
+  and `#15180F` on its third and fourth chips are other schemes' tokens leaking through the
+  component, not a third seat. Any later section that drops `vm.chips` onto an olive panel meets this.
+- **A hand-scaled instance is not the ramp.** The Tags instance is fixed at 264.4 (× 0.7686), so its
+  type is 15.37 / 10.76 / 9.22 (Chakra Petch, 1.26), padding 3.84 / 8.45, radius 4.61, gap 6.15 —
+  raw per-width numbers, `u()`'d on desktop, not `s.labelXs`. `get_variable_defs` does not say
+  this; the node walk's `fontSize` does.
+- **The 115 × 35 pale pill is not always hand-shrunk at 390.** The header's 390 pill was (`pk`
+  0.7547); the bio's is the same 27.6 disc and 4.27 / 17.92 padding at all three widths, and only
+  Label/SM ramps (18 / 14 / 12). So `k` is 0.82 / 1 / 1 here. Read `Frame 174`'s size per master
+  before reusing either recipe.
+- **Open question 2's route 1 is taken: the hard shadow goes through `style`.** The 768 and 390
+  pills carry `DROP_SHADOW 5/5 r0 #15180F`, which reads on the olive card; the desktop pill carries
+  none (read off each node's `effects`, and the fig-t render shows the block). `boxShadow:
+  5px 5px 0 ${s.bg}` on `nar` only; `BookPill` is untouched. The calendar's `#AFE335` shadow should
+  do the same.
+- **The frame's photo crop is `limeStage`'s crop.** Every master's `imageTransform` is
+  `[[0.502, 0, 0.183], [0, 1, 0]]`, the exact slice layout 1 exported, so a centred cover is the
+  frame's own picture at 433 × 648, 708 × 700 and 370 × 390. No `photos.js` change. The frame's two
+  nested clips (55 outside, 47 inside, one size) draw the 55.
+- **The soft drop shadow is drawn** (`1.25 / 1.25 / 10.81` at 16% black, × 0.82): a PIL scan of the
+  1440 render darkens the ground from 21 to 19–20 for ~6px beside and under the card.
+- **The leaked 637.5 × 39 credit box is followed as a `minHeight`** at all three widths. It sets the
+  foot row's height and stands the line high beside the centred pill; without it the desktop chips
+  sat 2.8 low.
+- **The caption's `⏵⏵` is typed** (pricing's typed-tick rule) and renders in a fallback face in
+  the harness. The disc is 36 × 36 on desktop and hugs its line at 36 × 18 below it (Retro's note).
+- **Measured against the masters' content edges**: desktop text card 672.4 × 531.4 (648 × 0.82;
+  37 narrower, our content width), /Featured 25.8 tall at 24.6 in, paragraph at 71.3 (71.2), chips
+  at 399.1 (399.6) on a 26.9 pitch, pill 95.2 × 28.6 flush right, photo card 355 × 531.4, caption
+  322.3 × 76.8 at 16.4 from the foot; 768 pill 102.6 × 34.9, photo 688 × 700, caption 81.3, stack
+  gap 30; 390 /Featured 69 × 24.5, pill 96.2 × 34.9 standing 125.5 under the chips (126.4), photo
+  346 × 390, caption 72.2. The text cards run shorter than the frames' by the seeded paragraph,
+  which is a line or two shorter than the frame's. `live=1`: the pill is `<a href="#form">` (a
+  span on the canvas) and carries the shadow at 390 only. No page errors. Digest at themes 0–4, all
+  810 renders: exactly bio arch 1 at theme 1, three widths.
+
 ## Open questions
 
 1. **`tags` and `audio` have no layout-2 frame** on Lime's page, as on Retro's. They keep their
@@ -523,6 +568,9 @@ Settled in section 1 (the header):
    and every one of them would start drawing under Lime. Find them with
    `grep -n "shadow=" EncoreSection.jsx`, not a one-line `BookPill.*shadow=` grep, which misses
    the multi-line props.
+
+   *Section 2:* the bio's 768 and 390 pills carry the same `#15180F` 5/5 shadow on the olive card,
+   where it shows, and took the first route (`boxShadow` in `style`). The calendar should follow.
 3. **The form's `photo` slot seeds the wrong picture** (`limeStage` where the frame shows the full
    `f821adc2`), and the video poster seeds `limeStage` where the frame shows the hero. Both are
    `photos.js` one-liners once the files exist; the form may need a new export.
