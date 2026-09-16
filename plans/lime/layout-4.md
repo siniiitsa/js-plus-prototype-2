@@ -164,7 +164,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Retro twin (1440 / 768 / 390) | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:72849` | 1440 × 900 | `971:5299` | 768 × 1024 | `977:8867` | 390 × 844 | `964:72511` / `964:77544` / `971:14040` | done `ce07286` |
-| 2 | `bio` | `964:72857` *(Section `964:72850`, head `964:72851`, tags `964:72854`)* | 664 × 720 | `971:5307` *(Section `971:5300`, head `971:5301`, tags `971:5304`)* | 708 × 720 | `977:8875` *(Section `977:8868`, head `977:8869`, tags `977:8872`)* | 370 × 536 | `964:72519` / `964:76446` / `971:14479` | — |
+| 2 | `bio` | `964:72857` *(Section `964:72850`, head `964:72851`, tags `964:72854`)* | 664 × 720 | `971:5307` *(Section `971:5300`, head `971:5301`, tags `971:5304`)* | 708 × 720 | `977:8875` *(Section `977:8868`, head `977:8869`, tags `977:8872`)* | 370 × 536 | `964:72519` / `964:76446` / `971:14479` | done `55ac9b5` |
 | 3 | `media` | `964:72864` *(band `964:72858`, head `964:72860`)* | 1440 × 671 | `971:5431` *(band `971:6533`, head `977:10286`)* | 768 × 569 | `977:9005` *(band `977:8999`, head `977:9001`)* | 390 × 836 | `964:72526` / `971:15190` / `971:14834` | — |
 | 4 | `gallery` | `964:72909` *(wrapper `964:72874`, head `964:72875`)* | 874 × 646 | `971:5597` *(wrapper `971:5562`, head `971:5563`)* | 768 × 594 | `977:9171` *(wrapper `977:9136`, head `977:9137`)* | 390 × 586.3 | `964:72815` / `964:78491` / `977:8142` | — |
 | 5 | `repertoire` | `964:72916` *(Section `964:72911`, panel `964:72912`)* | 1208 × 536 | `971:5604` *(Section `971:5599`, panel `971:5600`)* | 608 × 582 | `977:9178` *(Section `977:9173`, panel `977:9174`)* | 310 × 650 | `964:72822` / `964:78509` / `977:8166` | — |
@@ -717,6 +717,85 @@ Settled in section 1 (the header):
   matching ids, Book Now on `form`; at 390 and 820 (a fresh tab each) the burger stands in
   the capsule (370 / 708 wide) and opens a nine-link panel whose links scroll.
 
+Settled in section 2 (the bio):
+
+- **The second layout-4 block: `if (s.v3 && s.lime)` ahead of `Bio`'s `if (s.v3)`**, layouts
+  1–3's seat for this section. `Bio` has no state; the whole live seam is `ListenLink to=`.
+  The tree is Retro's twin's node for node (the wrapper's eyebrow / display head / Genres
+  chips beside or over the card, the photograph filling the card, the frosted panel on its
+  floor with the name, the meta row and the prose box), so the block restates that structure
+  and changes the dress, which reaches nearly every leaf. Diff 179 / 0 in `EncoreSection.jsx`
+  plus a comment-only hunk (Retro's `.89` note, which named Lime's layout 4 as unfitted);
+  `photos.js` is one seed and four comment lines. Retro's `T`, `band` / `cream` / `mustard` /
+  `edge` / `under` are not read.
+- **The instance changes scheme between widths, and the wells move with it** — the plan's
+  first width trap, met on its first section. Scheme 1 at 1440 (`use_figma`
+  `explicitVariableModes` 187:1), Scheme 2 at 768 and 390 (187:7): the ground under the
+  photograph is `sem/box/3`, **`s.box3` at 1440 and `#263020` narrow**, and the prose box
+  `sem/box/2`, **`s.box2` at 1440 and `#43523B` narrow** (the media card's and the
+  testimonials' literals, block-local). `get_variable_defs` on each master says so too
+  (`sem/box/2` `#394732` / `#43523b`), so this time the two sources agreed; the node's fill is
+  still what was transcribed. The panel is `#2E3928` (`s.box1`) at **.71** — written
+  `${s.box1}B5` on the panel itself, no overlay — under a `BACKGROUND_BLUR` 54 at every
+  width (CSS `blur(27)`, Retro's own spelling; it survives `ScaledPreview`, Retro layout 4's
+  note). The Section is Scheme 3 (187:8): the band is `s.ac`, the head, eyebrow and chip
+  labels `s.bg`.
+- **No `T` table, no box token.** `get_variable_defs` is the ramp at all three widths
+  (display-sm 50 / 40 / 32, body-md 14 / 13 / 13, body-lg 16 / 15 / 15), and the head frame's
+  text nodes give display-xl 200 / 120 / 72 at **.75** — the header session's reading holds
+  for a second Bebas display head, three tight lines at 1440 with no collision — and
+  label-xs 20 / 14 / 12 in Chakra Petch. Radii are raw: 55 card, 27 panel, 13.5 prose box,
+  `radius/chip` on the chips (passed as `s.radiusChip`, the layout-1 header's spelling — it is
+  already a px string, so `u()` on it prints 0).
+- **The boxes are Retro's twin's but for three.** 116 / 60 / 30 over the sheet and 56 / 30 /
+  10 either side (the Section's own padding), the stage's 30 / 30 / 10, the panel's flow at
+  30 / 30 / 20 (the 390 master's mechanism, Retro's call), the prose box's 20. What moves:
+  the narrow Sections stack the head and card at **40 and 15** (`itemSpacing`, Retro's 40 /
+  40) and the 390 head's own gap is **15** (Retro's 30); the prose box's paragraph gap is the
+  node's **10** (Retro's 12 was a guess); and **the desktop columns meet at the midline** —
+  the Section's `itemSpacing` is 0 and the head's 664 ends where the card's begins
+  (56 + 664 = 720), so the air beside the head is its unfilled 572.9 measure, not a gutter,
+  and Retro's "56 apart" was Retro's reading. Written as two `minmax(0, 1fr)` grid columns:
+  as `flex: 1 1 0` halves the padded card came out 24.6 wider than the head (the enquiry
+  form's layout-3 trap, and Retro's branch still carries it).
+- **The Genres label is not drawn, and the light chips' box vanishes.** The Tags instance is
+  Scheme 1 at every width, so "Genres" is `sem/text/1` — `#AFE335` — on the `#AFE335` band
+  and invisible in all three renders (the 390 instance carries no label frame at all, 58
+  tall), and the light chips fill the same lime, so only their ink label shows — the tags
+  row's "one chip draws its box invisible", which `TagChips` over `vm.chips` reproduces
+  as it is (box1 / lime seats, lime / `#0D1F03` inks, 5 / 11 × 0.82). The cost is the 768
+  head at 322 against the frame's 361 (the frame spends 24 + 16 on the invisible line; 1440
+  is `space-between` over the card, so nothing moves there). Inking the label `s.bg` is the
+  one-line reversal if a legible label is wanted. This is the opposite call from the
+  header's chips, whose light seat the render showed **pale** on the photograph.
+- **Open question 3's answer: `SEEDS.Lime.layouts[3].bio = limeBioStage`, no new file.**
+  The fill is `fa453f7d` at `FILL` with `limeStage`'s slice transform, which FILL ignores
+  (layout 3's lesson), so the render is the whole source cover-cropped into the portrait
+  box: a centred PIL cover of `lime-bio-stage.jpg` into 664 × 720 diffs **2.7** in 255 from
+  the 1440 render over the card's top 385 (above the panel) where `limeStage` diffs 27.
+  Centred, no `objectPosition` (Retro's top anchor was for `stage.jpg`'s 4 : 5). `d` in
+  `sectionVm`'s `defaultImage` call is the 0-based design index, so `layouts[3]` is layout 4.
+- **The 1px `#000000` ring is a last-child overlay** (`inset 0 0 0 1px`) at 1440 and 768 and
+  none at 390 — read off `strokes` / `strokeAlign: INSIDE` per master; `Photo` fills the
+  card at `inset: 0`, so an inset shadow on the card itself would paint under it.
+- **Measured against the masters' content edges**: desktop eyebrow at 95.1 (116 × 0.82), h2
+  at 183.5 and 369 tall (450 × 0.82) at 164px on three lines, chips 64.7 on two rows ending on
+  the card's foot at 685.5, card 544.1 × 590.4 at x 590 (664 × 720 × 0.82 = 544.5 × 590.4),
+  panel 494.9 wide (604 × 0.82 = 495.3) and 282.8 tall against 305 × 0.82 = 250 (the seeded
+  second paragraph), name 24.6 in, meta 78.7 down the panel (96 × 0.82), prose box at 119.8
+  (139 × 0.82 = 114, the named ~6); 768 eyebrow 60, h2 at 107.6 (108) and 180 tall (180),
+  chips at 317.6 (the frame's 358 less the 40 of label), card 708 × 720 at 420.9 (461), panel
+  648 × 305.5 (305), name 30, meta 86 (86), prose 135.5 (139); 390 eyebrow 30, h2 at 60.1
+  (60) and 108 tall (108), chips at 183.1 (183), card 370 × 536 at 256.3 (256), panel 350
+  wide, 385 tall against 306 (the seeded meta wraps to two lines with `since` filled and the
+  seed has two paragraphs — Retro's named diffs), name 20, meta 68 (68), prose 135. `img`
+  rect equals the card rect at all three widths. `live=1`: Listen is `<a href="#media">`, a
+  span on the canvas; the one canvas pointer is `ListenLink`'s own unconditional cursor,
+  shared with Retro. `noimage=1`: the `box3` well under the panel with `KM` in `s.tx`.
+  `since=` holds. No page errors. Digest at themes 0, 2, 3 and 4: zero differing files;
+  theme 1: exactly bio arch 3 at three widths (bio has no fold partner, and the new seed is
+  read at `d` 3 alone).
+
 ## Open questions
 
 1. **The lens where the video was.** Media's foot arc and the gallery's head arc are both dark
@@ -740,7 +819,8 @@ Settled in section 1 (the header):
    default is the second. The media session settles it and verifies with a rect read that the
    arc spans the sheet at all three widths and `document.documentElement.scrollWidth` does
    not move.
-3. **The bio's `layouts[3]` seed.** The frame fills the whole `fa453f7d` source into a portrait
+3. *Settled in section 2 — `SEEDS.Lime.layouts[3].bio = limeBioStage`, a 2.7 against 27 render
+   diff; see its Conventions.* **The bio's `layouts[3]` seed.** The frame fills the whole `fa453f7d` source into a portrait
    box at `FILL`, which `limeBioStage` (the whole source, layout 3's landscape seed) should
    reproduce as a centred cover where `limeStage` (the layout-1 arch's portrait slice) may
    crop a different band. Expected answer: `SEEDS.Lime.layouts[3].bio = limeBioStage`, one line
