@@ -875,8 +875,9 @@ Settled in section 10 (the enquiry form):
   an effect.
 - **No `T` table**: `dispSm`, `labelXs`, `list`, `labelSm`, `bodySm` are the ramp at all three widths.
   `title` reached only the dropped price, so the sent card's title, which no frame draws, is
-  Display/Title at the frames' own `u(36)` / 28 / 26. That and its Body/MD address are the block's
-  invented numbers. The boxes **state 44 / 39 / 37**, which is 12 of padding over Label/SM's line
+  Display/Title at the frames' own `u(36)` / 28 / 26. That, its Body/MD address and the two
+  `initialsSize`s (56 / 40 on the photo, 15 × z on the avatar — seen only on an emptied slot) are the
+  block's invented numbers. The boxes **state 44 / 39 / 37**, which is 12 of padding over Label/SM's line
   box (Retro's twin: 41.6 / 38 / 37).
 - **The heading's measure is per width, with three arms.** The frames set 2 / 3 / 2 lines: a typed
   break after MAKE, and 768 wrapping the rest in its 334 box. `bebasEms()` decides each arm: 768 is
