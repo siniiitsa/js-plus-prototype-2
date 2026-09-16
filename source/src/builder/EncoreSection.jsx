@@ -9867,6 +9867,154 @@ function Repertoire({ s }) {
       anchors.current[l]?.scrollIntoView({ block: 'start' })
     }
 
+    // Lime (964:72916 · 971:5604 · 977:9178) — `if (s.lime)` after `jump`, the
+    // gallery's layout-4 seat: `groups`, `letters`, `at`, `jump` and the
+    // `anchors` map are the branch's, so the block sits after them and shares
+    // the rail's whole seam — the published jump, the clamp and the callback
+    // ref needed nothing new. Retro's `T`, `band` / `cream` / `panel` /
+    // `mustard` / `rule` and `TornEdge` are not read.
+    //
+    // The tree is Retro's twin's node for node: the same three-deep Section →
+    // Frame → instance, the same 100 / 100 / 30 over and 56 / 30 / 10 either
+    // side on the Section, the same 60 / 50 / 40-30 panel at radius 60, the
+    // same 24 / 40-32 / 28 gaps, the same 232 rail of 32 cells 8 apart with
+    // its 50 indent at desktop. Three things move, all read off the nodes:
+    //
+    //  · **The band is Scheme 3**: `sem/bg` is `s.ac`, the panel `sem/box/1`
+    //    is `lime3` (a block-local literal, layout 2's idiom), and `sem/text/1`
+    //    and `sem/text/2` are **one ink** there — `s.bg` — so the head, the
+    //    sub, the group letters, both halves of a row and the whole rail are
+    //    ink on lime. The lit cell is that ink filled, lettered in Scheme 3's
+    //    `sem/bg`, which is the band itself: Retro's "cut out in the ground
+    //    behind it" rule, one scheme over. The foot seam is `sem/bg` at every
+    //    width — the page returning into the band — drawn by `ArcEdge` in its
+    //    default colour, `bleed={false}` on a `position: relative` sheet
+    //    (section 3's route).
+    //  · **The rules do not ramp**: `sem/stroke/1` is the ink at .15 on all
+    //    three masters, where Retro's desktop binds the mustard and its narrow
+    //    masters `#111111`. It is NOT `s.stroke1`, which under Lime is Scheme
+    //    1's pale `#F2FFD0`. Both strokes are `INSIDE` (2 on the group
+    //    heading, 1 on the row), so they are inset shadows rather than
+    //    Retro's `borderBottom`: with a border the heading is 26 and the row
+    //    61 against the frame's 24 and 60.
+    //  · **The type is the ramp, and it is why the section is taller**: the
+    //    song title is Display/Title (36 / 28 / 26, a literal since `s.title`
+    //    is the heading string) where Retro's is `size/list`, and the artist
+    //    is `s.list` (24 / 19 / 18) where Retro's is 16 / 12 / 13 — Lime's
+    //    536 / 582 / 650 instance against Retro's 452 / 522 / 596 on the same
+    //    rows. The head is `s.dispLg` at every width (Retro's 768 arm is its
+    //    fitted `h1`), the sub and the group letters `s.bodyLg`, the rail
+    //    `s.bodySm`, all in the frames' own `Inter` / Bebas. No `T` table.
+    //
+    // And one box: the 390 Section pads **100** below, not Retro's 60 — 948 =
+    // 30 + 818 + 100 — so the foot inset is 150 / 150 / 100.
+    if (s.lime) {
+      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the panel
+      const ink = s.bg        // Scheme 3 `sem/text/1` = `sem/text/2`
+      const rule = `${ink}26` // `sem/stroke/1` — the ink at .15
+      const titleSize = desk ? u(36) : tab ? '28px' : '26px' // Display/Title
+      const bodyLg = { fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls, color: ink }
+
+      const railCell = (l) => {
+        const on = letters.has(l)
+        return (
+          <span
+            key={l}
+            onClick={s.live && on ? () => jump(l) : undefined}
+            style={{
+              width: u(32), height: u(32), flex: 'none',
+              // `radius/chip` is already a px string (the bio's note), so it
+              // is passed whole rather than through `u()`.
+              borderRadius: s.radiusChip,
+              boxShadow: `inset 0 0 0 ${u(1)} ${ink}`,
+              background: l === at ? ink : 'transparent',
+              color: l === at ? s.ac : ink,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls,
+              cursor: s.live && on ? 'pointer' : undefined,
+            }}
+          >{l}</span>
+        )
+      }
+
+      const rail = (
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', gap: u(8), alignContent: 'flex-start',
+          // Retro's rail whole: six to a row in the desktop column, fifteen
+          // across 608 and seven across 310 fall out of the widths, and the
+          // `sticky` is desktop's alone for Retro's reason.
+          ...(desk
+            ? { flex: 'none', width: u(232), paddingTop: u(50), position: 'sticky', top: 0 }
+            : { width: '100%' }),
+        }}>
+          {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(railCell)}
+        </div>
+      )
+
+      const list = (
+        <div style={col(u(28), desk ? { flex: '1 1 0', minWidth: 0 } : undefined)}>
+          {groups.length === 0 ? (
+            <span style={bodyLg}>No songs yet.</span>
+          ) : groups.map((g) => (
+            <div key={g.letter} ref={(n) => { anchors.current[g.letter] = n }}>
+              {/* The type on the box itself: a bare div round a span carries
+                  the root font's strut and comes out 24 at every width where
+                  the frame's `lh` is the letter's own line, 24 / 23 / 23. */}
+              <div style={{ ...bodyLg, boxShadow: `inset 0 -${u(2)} 0 ${rule}` }}>{g.letter}</div>
+              {g.songs.map((sg) => (
+                <div key={sg.n} style={row(u(6), {
+                  padding: `${u(10)} 0`, boxShadow: `inset 0 -${u(1)} 0 ${rule}`,
+                  justifyContent: 'space-between', alignItems: 'baseline',
+                  overflow: 'hidden',
+                })}>
+                  <span style={{
+                    fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1,
+                    letterSpacing: s.dls, color: ink, minWidth: 0,
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>{sg.title}</span>
+                  {sg.artist && (
+                    <span style={{
+                      fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                      letterSpacing: s.dls, color: ink, flex: 'none', whiteSpace: 'nowrap',
+                    }}>· {sg.artist}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )
+
+      return (
+        <div style={{
+          margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+          background: s.ac, color: ink, position: 'relative',
+          padding: `${u(s.mob ? 30 : 100)} `
+                 + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
+                 + `${u(s.mob ? 100 : 150)}`,
+        }}>
+          <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />
+          <div style={col(u(40), {
+            background: lime3, borderRadius: u(60),
+            padding: s.mob ? `${u(40)} ${u(30)}` : u(tab ? 50 : 60),
+          })}>
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: s.dispLg,
+              lineHeight: 0.89, letterSpacing: s.dls, color: ink,
+            }}>{s.title}</h2>
+            <div style={col(u(24))}>
+              <span style={bodyLg}>All songs · A–Z</span>
+              {desk ? (
+                <div style={row(u(40), { alignItems: 'flex-start' })}>{list}{rail}</div>
+              ) : (
+                <div style={col(u(32))}>{rail}{list}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     const railCell = (l) => {
       const on = letters.has(l)
       return (
