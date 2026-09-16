@@ -507,6 +507,17 @@ Learned on the pricing section (section 7):
   That is accepted rather than floored: nothing else in the file pins a
   height for an empty state, and any minimum would be a made-up number.
   It is only ever seen mid-edit.
+- **Addendum, 2026-09-15 (QA against the frame) — the credit row came back.**
+  The faces, the stars and `32 reviews · 4.9 ★` are fields seeded with the
+  frame's copy — `images` (three faces, the frame's own `av` fills cropped to
+  `photos/review-*.jpg` and seeded under Retro and Lime), `reviews`, `rating` —
+  and so are the pill's label (`cta`, "Enquire about a date", in Display/List
+  rather than BookPill's label face) and `3 dates open for Sept '26` beside it
+  (`note`). Each drops when emptied. The section also paints the frame's own
+  edge: a 1px ink border and the frame's inset (56/56/32, 60/30, 30/10) in
+  place of the root's padding. Retro's selected chip is the frame's pink tag,
+  and its card rule is ink. Still dropped: the chips' `↻` / `⚡` glyphs, and
+  the second price, which stays `s.tierUnit`.
 
 Learned on the booking calendar (section 8):
 
@@ -609,6 +620,18 @@ Learned on the events map (section 9):
   absent, the pill flipping span↔anchor as a linked and an unlinked gig
   is featured, and the chip that drops. The seeded five carry no links
   at all and prove none of it.
+- **Addendum, 2026-09-15 (QA against the frame) — three of the calls above
+  were reversed.** The stat row is the frame's own three cells again: Max
+  travel is `mapRadius` (one coverage on the page, not two), Travel time and
+  Booking fee are fields (`travelTime`, `fee`) seeded with the frame's copy.
+  The featured gig's date · time moved into the head chip, in place of the
+  frame's "● Confirmed". Get Directions is back as a real Google Maps route
+  (`directionsUrl()` → `vm.gigs[].directions`), both pills halving the card
+  in Display/List. And the panel **stretches** to the left column at 1440
+  and 768, its viewport taking the slack over a `minHeight` floor — an
+  aspect floor outgrew the 768 column — with the aspect kept at 390, which
+  stacks. Still dropped, as claims: IN TRANSIT, Updated 2m ago, the rows'
+  In transit, the ring labels, the zoom controls and EXPAND VIEW.
 
 Learned on the header (section 1):
 
@@ -1475,3 +1498,23 @@ Learned on the end-of-pass refresh (the `index.html` rebuild):
    fixing it moves a signed-off design and shows up in the desktop
    digest. It is one `ink` prop on the bar's `<Photo>`, and the fan
    cards' and the rows' want checking at the same time.
+
+## Addendum, 2026-09-15 — QA against the frames, second batch
+
+Reversals and fixes after QA compared the built page with the layout-2 frames:
+
+- **Enquiry form:** the card's price row, `★★★★★ 42 bookings`, "Check Availability" and
+  "No charge to enquire" are fields seeded with the frame's copy (`price`, `priceUnit`,
+  `bookings`, `cta`, `note`); the label falls back to `button` since it is the submit. The
+  boxes stay the artist's shared `c.fields` (four, where the frame draws three) — a per-layout
+  seed would double the event type in layout 1's mailto. The heading default carries the
+  frame's hand break (`"Let's make\nyour night unforgettable."`, `pre-wrap` in layout 2 only).
+  Retro's stage photo is the frame's own shot, `photos/form-stage.jpg`.
+- **Testimonials:** layout 2's heading falls back to `TESTI_HEADING_2`; the card's corner prints a
+  `stars` field where it printed `when`; the Book Now pill is Display/List.
+- **Booking calendar:** the foot is one row at every width, the line is "<Weekday> <kind>
+  selected", and the pill has its own label field `slotCta` ("Start Enquiry").
+- **Gallery:** the 390 rail draws the frame's ten tiles, looping the six non-hero slots.
+- **Media player:** the transport is span-drawn at the frame's vector geometry; the bar title
+  ramps 24/19/18.
+- **Bio:** the name card's pill glyph is the frame's text `⏵⏵`; the name is not uppercased.

@@ -22,7 +22,7 @@ if (!label) { console.error('usage: node scripts/digest.mjs <label> [themes] [ca
 
 // The layout count per category — sidebar layouts, not designs, so folded
 // indices are digested too.
-const CATS = { header: 6, bio: 4, media: 4, tags: 4, audio: 3, video: 4, pricing: 4, repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1 }
+const CATS = { header: 6, bio: 4, media: 4, pricing: 4, repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1 }
 const cats = catsArg ? catsArg.split(',') : Object.keys(CATS)
 const themes = themesArg.split(',').map(Number)
 const widths = (process.env.WIDTHS || 'desktop,tablet,mobile').split(',')

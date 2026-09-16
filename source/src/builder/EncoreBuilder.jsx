@@ -36,19 +36,23 @@ import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
-  NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL, VIDEOS, VIDEO_MARK, clockAt,
-  GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, GALLERY_SOURCES,
+  NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
+  GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
+  MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
+  PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE,
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
+  TESTI_HEADING_2, CAL_HEADING_3, TESTI_STARS,
+  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, bebasEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -174,7 +178,13 @@ function canMove(sections, id, dir) {
 const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [] }) {
+// Layout 4's heading fallbacks, per category — the composed page's own heads
+// (QA, 2026-09-15). sectionVm and EditPanel both read this.
+const HEADING_4 = {
+  calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
+}
+
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -230,6 +240,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
     // carry one; the flat three fall back to their body face.
     ui: T.ui ?? T.body,
+    // Space Mono, the frames' typewriter face; only Retro names it so far.
+    mono: T.mono ?? T.body,
     radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
     // `radius/chip`. Retro's token is 8, which its branches write as a literal.
     radiusChip: T.radiusChip ?? '8px',
@@ -245,6 +257,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
     // device sizing — and over it a designed template's own ramp, if it has one
     ...Z, ...THEME_RAMP[T.name]?.[Z.dev], mob: !!mob,
+    // A section standing in one of layout 3's page columns (`pageRows`). The
+    // row around it carries the page gutter, so the section keeps its vertical
+    // padding and drops its horizontal one — and with it the surplus, which the
+    // row's gutter already holds in the published tab.
+    ...(column ? { padX: '0px', surplus: '0px', pad: `${Z.padY} 0px` } : null),
+    contentW: contentWidth(Z.dev, column),
 
     // True only in the published tab. The editor canvas is a picture of a
     // website, not a website (§12.7), so every control EncoreSection draws is
@@ -312,7 +330,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
-  vm.image = c.image !== undefined ? (c.image ?? undefined) : defaultImage(cat, T.name)
+  vm.image = c.image !== undefined ? (c.image ?? undefined) : defaultImage(cat, T.name, 'image', d)
   // The artist avatar is a slot of its own — the hero portrait card, the
   // inset-card thumb and the overlay-card circle — on the same three states as
   // vm.image, keyed on `avatar`. Retro seeds it with the §10.2 portrait, which
@@ -330,6 +348,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // image in Lime's map frame, so both designed templates take it.
   vm.grainSrc = T.name === 'Retro' ? RETRO_TEXTURE.grain : undefined
   vm.mapSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.map : undefined
+  vm.mapRadialSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.mapRadial : undefined
 
   // §4.8 — `navSections` is `{ cat, label }`, and a nav link keeps the target
   // as `to` so the published page can scroll to it (§4.3a).
@@ -369,15 +388,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // are already reading. Dropping it leaves `undefined`, and BookPill's own rule
   // — no target, no link — keeps the pill the picture it is today.
   vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
+  // Layout 4's row pill label (its frame's "Star Enquiry", read as "Start").
+  // Uncased, the footer's rule: the pill sets it in the display face with no
+  // text transform, and casing it would shout on Grunge and Pop.
+  vm.tierRowCta = cv('rowCta', PRICING_ROW_CTA)
 
-  // chips — from TAGS, or from the tags field for a tags section
-  const tagSource = cat === 'tags'
-    ? String(cv('tags', TAGS.join(', '))).split(',').map((t) => t.trim()).filter(Boolean)
-    : TAGS
-  // A template whose Figma mode names each tag's ink (`sem.tagFg`, parallel to
-  // `tags`) takes it; contrast()'s black-or-white is the fallback, and is wrong
-  // on both of Lime's seats.
-  vm.chips = tagSource.map((t, i) => {
+  // chips — TAGS, one per palette tag hue. A template whose Figma mode names
+  // each tag's ink (`sem.tagFg`, parallel to `tags`) takes it; contrast()'s
+  // black-or-white is the fallback, and is wrong on both of Lime's seats.
+  vm.chips = TAGS.map((t, i) => {
     const cbg = T.tags[i % T.tags.length]
     return { label: cased(t), bg: cbg, fg: T.sem?.tagFg?.[i % T.tags.length] ?? contrast(cbg) }
   })
@@ -402,10 +421,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // bio
   vm.bioP1 = cv('para1', DEFS.bioP1)
   vm.bioP2 = cv('para2', DEFS.bioP2)
-  // Layout 3's first stat. No default on purpose (FIELDS.bio.since): the frame's
-  // own "June 2021" is a date the artist never typed, and an empty string is
-  // what tells the ID card not to draw the column.
-  vm.since = cv('since', '')
+  // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
+  // string is what tells the ID card not to draw the column.
+  vm.since = cv('since', DEFS.since)
   vm.bioQuote = cased(cv('statement', DEFS.statement))
 
   // media
@@ -421,11 +439,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // builder and open it instead. An empty field leaves the pill a picture.
   vm.soundcloud = extUrl(cv('soundcloud', ''))
 
-  // tracks — one view-model, three content shapes on the same `c.tracks` key.
-  // The media player owns an *array* of { title, sub, image } (TracksField);
-  // the audio player owns the delimited *string* of a textarea; an absent key
-  // means the seeded TRACKS, dressed under Retro in RETRO_TRACK_ART. `n` is
-  // naively '0'+index in all three.
+  // tracks — the media player's *array* of { title, sub, image, audio } on
+  // `c.tracks` (TracksField); an absent key means the seeded TRACKS, dressed
+  // under Retro in RETRO_TRACK_ART. `n` is naively '0'+index in both.
   //
   // Per-row artwork is never re-seeded by index once the array exists: a row
   // inserted third would otherwise steal track three's photograph. `img` is
@@ -444,22 +460,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // `sub` is the one subline the fitted layout 1 sets; `rel` is the same line
   // with the duration taken off it, for a design that columns the release and
   // the running time apart (media layout 2). The seeded shape is the only one
-  // that knows both: a typed textarea row is "title — duration" and has no
-  // release, and TracksField has no duration field at all, so there `rel` is
-  // just the row's own subtitle and equals `dur`.
+  // that knows both: TracksField has no duration field at all, so there `rel`
+  // is just the row's own subtitle and equals `dur`.
   const seedArt = defaultTrackArt(cat, T.name) ?? []
   if (Array.isArray(c.tracks)) {
     vm.tracks = c.tracks.map((t, i) => {
       const sub = (t?.sub ?? '').trim()
       return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
                img: t?.image ?? null, src: extUrl(t?.audio ?? '') || null }
-    })
-  } else if (c.tracks !== undefined) {
-    vm.tracks = String(c.tracks).split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
-      const parts = l.includes('—') ? l.split('—') : l.split('|')
-      const dur = (parts[1] || '').trim()
-      return { n: '0' + (i + 1), name: cased((parts[0] || '').trim()), dur, sub: dur, rel: '',
-               img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
@@ -468,33 +476,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
-
-  // video — the stage's own three values, and the list of other videos beside
-  // it that layout 2 draws.
-  vm.videoDesc = cv('description', DEFS.videoDesc)
-  vm.videoDur = cv('duration', '04:18')
-  // Where the transport bar is caught. The section has no <video> element on
-  // either surface, so there is no playhead to read: `clockAt` composes one
-  // from the running time above and `videoPct` fills the bar to the same
-  // fraction, so the two cannot disagree. An unparseable duration leaves both
-  // empty rather than inventing a position — see data.js.
-  vm.videoAt = clockAt(vm.videoDur, VIDEO_MARK)
-  vm.videoPct = vm.videoAt ? VIDEO_MARK * 100 : 0
-  // The `songs` rule once more: an absent key means the seeded VIDEOS, an
-  // emptied array means none, and there is no null sentinel. `c.videos` has no
-  // structured editor yet, so today it is always the seed — the shape is here
-  // so that adding one changes nothing on this side. Artwork follows the
-  // tracks': `null`, not undefined, wherever a row has none, because Photo
-  // falls back to the *section* photo on undefined and a video row must not
-  // inherit the poster; and it is never re-seeded by index once the array
-  // exists, or a row inserted third would steal video three's still.
-  vm.videos = (Array.isArray(c.videos)
-    ? c.videos.map((v) => ({ ...v, img: v?.image ?? null }))
-    : VIDEOS.map((v, i) => ({ ...v, img: seedArt[i] ?? null }))
-  ).map((v) => ({
-    title: cased(v.title ?? ''), sub: (v.sub ?? '').trim(),
-    length: (v.length ?? '').trim(), when: (v.when ?? '').trim(), img: v.img,
-  }))
 
   // pricing — the artist's own packages, else the seeded ones. The `songs`
   // rule again: an absent key means TIERS, an emptied array means no packages,
@@ -519,6 +500,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // §10.2 layout 2 stands a line of praise beside the plan. Layout 1 draws no
   // such line, so an emptied field simply drops it — the Soundcloud rule.
   vm.pricingQuote = cv('quote', DEFS.pricingQuote)
+  // Layout 2's credit row and the pill beside the plan. Uncased, the footer's
+  // rule: the pill has always drawn an uncased label.
+  vm.pricingReviews = cv('reviews', PRICING_REVIEWS)
+  vm.pricingRating = cv('rating', PRICING_RATING)
+  vm.pricingCta = cv('cta', PRICING_CTA)
+  vm.pricingNote = cv('note', PRICING_NOTE)
   // A card's four colours, given the ground it stands on. Layout 1 walks that
   // ground round T.tags, one hue per card; layout 2 has a single card and pins
   // it, so both go through here and the pairing rule is written once.
@@ -581,8 +568,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }
   })
   // §10.2 layout 4 draws a package's features as a wrapped row of coloured
-  // chips rather than a ticked list, walking the palette's tags the way the
-  // tags row's own chips do — `vm.chips`' construction exactly, except that a
+  // chips rather than a ticked list, walking the palette's tags the way
+  // `vm.chips` does — its construction exactly, except that a
   // seat is indexed by the feature's position rather than built per feature:
   // the hue belongs to the seat (the media player's fan rule), so editing one
   // line cannot reshuffle a package's colours. Retro's first four are the
@@ -647,6 +634,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
   // the same fallback, or the panel and the canvas would disagree.
   if (cat === 'repertoire' && c.heading === undefined) vm.title = cased(`${vm.songs.length} Songs`)
+  // Testimonials layout 2 heads the section with its frame's own two-line
+  // display head; the other layouts keep the shared default. EditPanel mirrors
+  // it. The stars sit in its card's corner.
+  if (cat === 'testimonials' && d === 1 && c.heading === undefined) vm.title = cased(TESTI_HEADING_2)
+  if (cat === 'calendar' && d === 2 && c.heading === undefined) vm.title = cased(CAL_HEADING_3)
+  // Layout 4's heads, the composed page's own (QA, 2026-09-15). EditPanel
+  // mirrors all four.
+  if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
+  vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips
@@ -782,6 +778,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
           // Composed per cell rather than on the pick, because the line is what
           // the foot prints and EncoreSection composes nothing.
           line: enquiryLine(y, mo, d, time),
+          // Layout 3's pill, which its frame labels with the date alone
+          // ("Enquiry About June 11") where the other layouts print the line.
+          short: `Enquiry About ${MONTHS[mo]} ${d}`,
         })
       }
       // `label` is the one line layouts 1 draws; layout 3's head columns the
@@ -805,6 +804,33 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     vm.calPick = booked.has(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
+    // Layout 2's pill, which its frame labels differently from the other two
+    // calendar pills (its "Star Enquiry" read as the intended "Start").
+    vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))
+    // Layout 4's enquiry wizard (QA, 2026-09-15). Step 1 is the frame's
+    // (964:72843); the frame draws no step 2 or 3, so their boxes are what the
+    // summary card beside it labels (Details) and a way to answer (Contact).
+    // Every string is resolved here, cased, so EncoreSection composes nothing.
+    vm.calTypes = songTags(cv('types', CAL_TYPES.join(', '))).map((l) => cased(l))
+    const wizSteps = [
+      ['Event', "What's the occasion?", []],
+      ['Details', 'Tell us the details', [
+        ['guests', 'Guests', 'e.g. 120'], ['length', 'Set length', 'e.g. 4 hrs'],
+        ['budget', 'Budget', 'e.g. £1,200'], ['sound', 'Sound', 'Provided or needed'],
+      ]],
+      ['Contact', 'How do we reach you?', [
+        ['name', 'Name', 'Your name'], ['email', 'Email', 'you@example.com'],
+      ]],
+    ]
+    vm.calWizard = {
+      steps: wizSteps.map(([name, title, boxes], i) => ({
+        name: cased(name), title: cased(title), line: cased(`Step ${i + 1} of ${wizSteps.length}`),
+        boxes: boxes.map(([key, label, ph]) => ({ key, label: cased(label), ph })),
+      })),
+      typesLabel: cased('Type of event'),
+      date: { key: 'date', label: cased('Approx. date'), ph: 'dd / mm / yyyy' },
+      back: cased('Back'), next: cased('Next Step'), send: cased('Send Enquiry'),
+    }
     // The bare hour, beside the composed lines that already carry it. Layout 4
     // draws no enquiry line at all — its foot is the pill and its card is that
     // line taken apart into four stat cells — so `time` would otherwise reach
@@ -838,7 +864,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
         kind: cased(sl.kind ?? ''),
         price: sl.price ?? '',
         booked: iso ? booked.has(iso) : false,
-        line: at ? enquiryLine(at.y, at.m, at.d, time) : '',
+        // Layout 2's foot line when this slot is picked — the frame's own
+        // "Thursday evening selected", the weekday and the slot's kind. The raw
+        // kind, since `kind` above is already cased and cased() runs once here.
+        line: at
+          ? cased(`${[DAY_FULL[weekdayOf(at.y, at.m, at.d)], String(sl.kind ?? '').trim().toLowerCase()]
+            .filter(Boolean).join(' ')} selected`)
+          : '',
       }
     })
     // The head's link list. The frame draws three — the section itself, marked
@@ -902,6 +934,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       venue: g?.venue ?? '', city: g?.city ?? '', time: g?.time ?? '',
       month: g?.month ?? '', day: g?.day ?? '',
       url: extUrl(g?.link ?? ''),
+      // Layout 2's Get Directions pill, a route to the venue.
+      directions: directionsUrl(g?.venue, g?.city),
+      // Layout 2's card chip: when the featured gig is, which the frame's stat
+      // row printed until it took the frame's own three cells back.
+      when: [`${g?.month ?? ''} ${g?.day ?? ''}`.trim(), String(g?.time ?? '').trim()]
+        .filter(Boolean).join(' · '),
       pin: PINS[i % PINS.length],
       // Layout 4's ticker prints the gig on one line — "Manchester · Jul 12 ·
       // 22:00", the frame's own second line — and every one of those three is
@@ -962,9 +1000,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
+  vm.mapTravelTime = cv('travelTime', MAP_TRAVEL_TIME)
+  vm.mapFee = cv('fee', MAP_FEE)
+  // Layout 3's map panel copy — the frame's own, seeded and emptiable (QA,
+  // 2026-09-15). The ring labels run inner ring first.
+  vm.mapStatus = cv('status', MAP_STATUS)
+  vm.mapUpdated = cv('updated', MAP_UPDATED)
+  vm.mapRings = String(cv('rings', MAP_RINGS) ?? '').split(',').map((x) => x.trim()).filter(Boolean)
+  vm.mapExpand = cv('expand', MAP_EXPAND)
+  // Layout 4's panel note beside "Travel & reach", the frame's own copy (QA,
+  // 2026-09-15). Emptiable.
+  vm.mapSpan = cv('span', MAP_SPAN)
   // Layout 3's foot pill. Uncased, the footer's rule: the pill has always drawn
   // an uncased label and casing it would shout on Grunge and Pop.
-  vm.mapCta = cv('cta', 'Book Now')
+  vm.mapCta = cv('cta', 'See all gigs')
 
   // testimonials — the songs rule, the gigs' and the packages': an absent key
   // means the seeded QUOTES, an emptied array means no reviews at all, and
@@ -994,8 +1043,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }
   })
   // Layout 2 is the first design to head this section — layout 1 is the card
-  // alone — so both of these reach it and nothing else, the way FIELDS.video's
-  // photographs reach one layout. The line is prose and stays uncased; the pill
+  // alone — so both of these reach it and nothing else, the way FIELDS.form's
+  // stage photo reaches one layout. The line is prose and stays uncased; the pill
   // keeps the uncased label every other Book Now on the page draws.
   vm.testiSub = cv('sub', DEFS.testiSub)
   vm.testiCta = cv('cta', 'Book Now')
@@ -1004,7 +1053,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.formPara = cv('para', DEFS.formPara)
   // Layout 2's stage photograph, and the third single-photo slot in the file
   // after `image` and `avatar`. It is a slot of its own for the reason the
-  // header's and the video section's two are: this section's `image` is
+  // header's two are: this section's `image` is
   // *already* the artist — RETRO_PHOTOS.form is the portrait crop, and layout 1
   // draws it as the 48px circle beside the brand — so the scene above the
   // heading cannot share the key without changing what layout 1 renders. Same
@@ -1016,15 +1065,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // real — cta's and para's state on the booking calendar before it.
   vm.formEmail = String(cv('email', 'bookings@kaimercer.co.uk')).trim()
   vm.formBtn = cv('button', 'Book Now')
+  // Layout 2's card: its price row, bookings line, submit label and the line
+  // under it, each seeded with the frame's copy. The label is the submit, so an
+  // emptied one falls back to `button` rather than leaving a wordless pill.
+  vm.formPrice = cv('price', FORM_PRICE)
+  vm.formPriceUnit = cv('priceUnit', FORM_PRICE_UNIT)
+  vm.formBookings = cv('bookings', FORM_BOOKINGS)
+  vm.formCta = cv('cta', FORM_CTA) || vm.formBtn
+  vm.formNote = cv('note', FORM_NOTE)
+  // Layout 3's eyebrow, the frame's own copy, seeded and emptiable (QA, 2026-09-15).
+  vm.formAvailable = cv('available', FORM_AVAILABLE)
   vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
-  // The same promises run together as one line, which is layout 3's card foot:
-  // its frame sets a single centred "No charge to enquire" there, a promise in
-  // FORM_PROMISES' own register, and a frame that draws one of a list is the
-  // audio player's stranding. Composed here rather than in EncoreSection — the
-  // testimonials' byline rule and the events map's composed foot line — so the
-  // renderer prints a string. An emptied `promises` composes to '' and the line
-  // is not drawn at all, the Soundcloud button's rule.
-  vm.formPromiseLine = vm.formPromises.join(' · ')
   // The same promises again, numbered, which is §10.2 layout 4's right-hand
   // column: its frame draws 01 / 02 / 03 discs beside three lines whose second
   // row reads "Reply within 24 hrs" — FORM_PROMISES[0] almost verbatim, so the
@@ -2535,7 +2586,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
   // Retro section would show a photo on the canvas and an empty dropzone here.
   const themeName = THEMES[themeIdx].name
-  const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k))
+  const design = sec.arch % (designCount(sec.cat, themeName) || 1)
+  const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k, design))
   const imgsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
   // Same trap as the photos above: the panel has to resolve the seeded songs
   // exactly as sectionVm does, or the canvas would list twelve songs while the
@@ -2610,6 +2662,12 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                   // sectionVm resolves, so panel and canvas never disagree.
                   const fallback = f.k === 'title' && sec.cat === 'header' ? artistName
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
+                    : f.k === 'heading' && sec.cat === 'testimonials'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
+                    : f.k === 'heading' && sec.cat === 'calendar'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
+                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
+                      && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
@@ -2716,7 +2774,7 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
  * runs the full width of the panel with the label underneath, because at
  * thumbnail size the layouts were indistinguishable from one another.
  *
- * For the 13 non-header categories more layouts are offered than there are
+ * For the 10 non-header categories more layouts are offered than there are
  * designs (§4.4), so some rows render identically. That is on purpose.
  * ------------------------------------------------------------------ */
 
@@ -2888,26 +2946,39 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
  * ------------------------------------------------------------------ */
 
 // The nav links a header preview shows: the same derivation the editor uses,
-// applied to the page the picker is about to build (§4.8).
-const PREVIEW_NAV = EXAMPLE_PAGE
-  .filter(([cat]) => cat !== 'header' && cat !== 'footer')
-  .map(([cat]) => ({ cat, label: catName(cat) }))
+// applied to the page the picker is about to build (§4.8), in the order that
+// page takes when its header takes layout `i`.
+const previewNav = (i) => pageOrder(i)
+  .filter((cat) => cat !== 'header' && cat !== 'footer')
+  .map((cat) => ({ cat, label: catName(cat) }))
 
 // Every frame in the picker uses one aspect: the desktop canvas against the
-// tallest header render (Retro's photographic layout 1). The four flat themes
-// come out shorter and are centred in it.
+// tallest header render (Retro's photographic layout 1). A render that comes
+// out shorter is centred in it.
 const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.heroH}`
 
 // …and what HeaderChoices frames its cards with until it has measured them.
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
+  // The flat three show their Figma header as a still (photos.js). It is
+  // SPOT_ASPECT already, so `cover` crops nothing — not `contain`.
+  const { name } = THEMES[themeIdx]
+  const still = TEMPLATE_STILLS[name]
+  if (still) {
+    return (
+      <img
+        src={still} alt={`${name} template`}
+        style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+    )
+  }
   return (
     <ScaledPreview
       height="100%" center
       vm={sectionVm({
         themeIdx, cat: 'header', arch: 0, c: {}, artistName,
-        Z: SIZES.desktop, mob: false, navSections: PREVIEW_NAV,
+        Z: SIZES.desktop, mob: false, navSections: previewNav(0),
       })}
     />
   )
@@ -2936,7 +3007,7 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
           <TemplatePreview themeIdx={spot} artistName={artistName} />
 
           {/* The whole frame is the target. It carries no visible affordance of
-              its own, so the caption below the frame says what it does. */}
+              its own, so the caption under the filmstrip says what it does. */}
           <button
             type="button"
             onClick={() => onPick(spot)}
@@ -2948,10 +3019,6 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
           />
         </div>
 
-        <p style={{ margin: 0, textAlign: 'center', fontSize: '13px', color: '#8E8B81' }}>
-          Pick a template to open it in the editor.
-        </p>
-
         {/* Filmstrip — picking one re-spotlights it. */}
         <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px' }}>
           {THEMES.map((t, i) => (
@@ -2960,7 +3027,7 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
               onClick={() => setSpot(i)}
               aria-label={t.name} aria-pressed={i === spot}
               style={{
-                flex: '0 0 auto', width: '140px', borderRadius: '10px', overflow: 'hidden',
+                flex: '0 0 auto', width: '168px', borderRadius: '10px', overflow: 'hidden',
                 padding: 0, cursor: 'pointer', background: 'none', aspectRatio: SPOT_ASPECT,
                 border: `2px solid ${i === spot ? '#F4F2EC' : 'transparent'}`,
                 opacity: i === spot ? 1 : 0.5,
@@ -2971,6 +3038,10 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
             </button>
           ))}
         </div>
+
+        <p style={{ margin: 0, textAlign: 'center', fontSize: '13px', color: '#8E8B81' }}>
+          Pick a template to open it in the editor.
+        </p>
       </div>
     </div>
   )
@@ -3047,7 +3118,7 @@ function HeaderChoices({ themeIdx, artistName, sel, onSelect }) {
                 onNatural={(h) => noteNat(i, h)}
                 vm={sectionVm({
                   themeIdx, cat: 'header', arch: i, c: {}, artistName,
-                  Z: SIZES.desktop, mob: false, navSections: PREVIEW_NAV,
+                  Z: SIZES.desktop, mob: false, navSections: previewNav(i),
                 })}
               />
             </span>
@@ -3149,12 +3220,59 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
     .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
     .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
 
-  return sections.map((sec) => (
+  const T = THEMES[themeIdx]
+  const rows = pageRows(sections, T.name, key === 'desktop')
+  const inColumns = columnSides(rows)
+
+  return arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, Z, mob: key === 'mobile', live: true, navSections,
+      column: inColumns.get(i),
     })} />
-  ))
+  )))
+}
+
+// Lays out `pageRows` (data.js): a plain row is its section's own element, and
+// a composed row is layout 3's Frame 299 — a grid of the two columns at the
+// frame's 858 : 405, 55 apart × 0.82, on the page ground, inside the page's own
+// gutter. Its sections were built with `column`, so they bring their vertical
+// padding and no horizontal one, and a right column shorter than the left
+// leaves the ground showing under it, as the frame does. Shared by the editor
+// canvas and the published tab, which is what keeps the two one page.
+// Which column each composed section stands in, by page index — 'left' or
+// 'right' — so `sectionVm({ column })` can say how wide it is.
+function columnSides(rows) {
+  return new Map(rows.flatMap((r) => (r.left
+    ? [...r.left.map((i) => [i, 'left']), [r.right, 'right']]
+    : [])))
+}
+
+// The content column a section's children get, in CSS px: `canvasW − 2·padX`
+// at the device's own frame — 1052 / 688 / 346, which the published tab keeps
+// too, its surplus folding into `padX` — or one of the two columns
+// `arrangeRows` cuts from it (684 / 323 at desktop). EncoreSection cannot
+// measure, so a design whose count comes off a width reads this.
+function contentWidth(dev, column) {
+  const base = SIZES[dev]
+  const full = parseInt(base.canvasW, 10) - 2 * parseInt(base.padX, 10)
+  if (!column) return full
+  const { left, right, gap } = COLUMN_SPLIT
+  return Math.round((full - Math.round(gap * 0.82)) * (column === 'left' ? left : right) / (left + right))
+}
+
+function arrangeRows(rows, { gutter, bg }, els) {
+  return rows.map((row) => (row.left ? (
+    <div key={`columns-${els[row.right].key}`} style={{
+      display: 'grid', alignItems: 'start', background: bg, padding: `0 ${gutter}`,
+      gridTemplateColumns: `minmax(0, ${COLUMN_SPLIT.left}fr) minmax(0, ${COLUMN_SPLIT.right}fr)`,
+      columnGap: `${Math.round(COLUMN_SPLIT.gap * 0.82)}px`,
+      transition: 'background-color .45s ease',
+    }}>
+      <div style={{ minWidth: 0 }}>{row.left.map((i) => els[i])}</div>
+      <div style={{ minWidth: 0 }}>{els[row.right]}</div>
+    </div>
+  ) : els[row.i]))
 }
 
 // Turns a fresh popup into a page that can host a React root. Returns the
@@ -3396,7 +3514,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections, column: inColumns.get(i) }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
@@ -3419,6 +3537,8 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     }
   }
 
+  const rows = pageRows(sections, T.name, !Z.narrow)
+  const inColumns = columnSides(rows)
   const vms = sections.map(makeVm)
   const selectedIdx = sections.findIndex((s) => s.id === st.selectedId)
   const selectedSec = selectedIdx >= 0 ? sections[selectedIdx] : null
@@ -3456,9 +3576,20 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   // self-contained and the callback never has to be rebuilt; `headerSec` goes
   // with the guard it fed, which was protecting a call that cannot happen
   // (`onboarding` is false without a header).
-  const pickHeader = useCallback((i) => patch((s) => ({
-    sections: s.sections.map((x) => ({ ...x, arch: pageLayout(x.cat, i, THEMES[s.theme].name) })),
-  })), [patch])
+  //
+  // The page is reordered as well as re-laid-out, into `pageOrder(i)`: each
+  // Figma page stacks its sections differently, and picking card 1 again
+  // restores layout 1's order. The sort is stable and a category the order does
+  // not name sinks to the end, though the page built here carries none.
+  const pickHeader = useCallback((i) => patch((s) => {
+    const order = pageOrder(i)
+    const rank = (cat) => { const r = order.indexOf(cat); return r < 0 ? order.length : r }
+    return {
+      sections: s.sections
+        .map((x) => ({ ...x, arch: pageLayout(x.cat, i, THEMES[s.theme].name) }))
+        .sort((a, b) => rank(a.cat) - rank(b.cat)),
+    }
+  }), [patch])
 
   const endOnboard = useCallback(() => patch({ onboard: false }), [patch])
 
@@ -3834,7 +3965,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
               maxWidth: Z.canvasW, width: '100%', boxShadow: '0 8px 40px rgba(30,26,18,.16)',
               borderRadius: '10px', overflow: 'hidden', transition: 'max-width .35s ease',
             }}>
-              {sections.map((sec, i) => {
+              {arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => {
                 const vm = vms[i]
                 return (
                   <div
@@ -3877,7 +4008,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                     )}
                   </div>
                 )
-              })}
+              }))}
             </div>
           </div>
         </div>
