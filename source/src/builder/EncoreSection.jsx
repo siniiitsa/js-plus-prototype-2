@@ -8719,6 +8719,142 @@ function Repertoire({ s }) {
     // its `size`, the audio player's size-an-icon-off-its-ink rule.
     const arrow = 17.5 * z
 
+    // Lime — the same component in Lime's mode (964:68678 at 1440, 984:10760
+    // at 768, 984:10791 at 390), placed after the seam as layouts 1's and 2's
+    // blocks are: `sets`, `pg`, `pages` and `seats` are computed above and the
+    // reveal and the pager are the hoisted state, so the published cards need
+    // nothing new. The tree is Retro's twin's; what changes is every leaf's
+    // dress, and three boxes — the card's 34 padding and 50 corner, and the
+    // rows' pinned heights.
+    //
+    // Every size is a ramp token (`get_variable_defs`: display-lg
+    // 130 / 81 / 54, body-lg 16 / 15 / 15, chip 13 / 12 / 11, list
+    // 24 / 19 / 18, body-sm 13 / 13 / 12), so Retro's `T` is not read. Nor is
+    // `hair`, which is `s.bw` away from Retro: every rule is a 1px inside
+    // stroke, drawn as an inset shadow so the card's 34 stands.
+    //
+    // **The three cards are three schemes, and the scheme is the seat's.**
+    // Scheme 1 (`s.box1`, pale ink, a lime meta line), Scheme 4 (`mist`) and
+    // Scheme 3 (`lime3`), the last two inked and hairlined in the page ground.
+    // Seated by rendered place rather than by set — the media fan's rule —
+    // because the 390 master centres the *mist* card between the other two:
+    // seated by set, the canvas's centre card would be the olive one. So the
+    // grid colours its columns and the carousel its left, centre and right,
+    // and a set takes the colour of wherever it stands. A lone card on the
+    // grid is column one's olive; the carousel's lone card is the centre's.
+    if (s.lime) {
+      const mist = '#D5E3B2'  // Scheme 4 `sem/box/1`
+      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1`
+      const dark = { bg: mist, ink: s.bg, acc: s.bg, edge: '#15180F26' }
+      const SEATS = [
+        { bg: s.box1, ink: s.tx, acc: s.ac, edge: s.stroke1 },
+        dark,
+        { ...dark, bg: lime3 },
+      ]
+      // Each master's `flex-1` division of its card (369 / 439 / 439 less
+      // the head, the view block and the padding, over four), pinned for
+      // Retro's reason: our card has no height to divide. The rows' own
+      // `py-6` is therefore inert.
+      const limeRowH = u(desk ? 39 : tab ? 57 : 57.5)
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, ...extra,
+      })
+      const limeCard = (st, seat) => {
+        const k = SEATS[seat % SEATS.length]
+        const opened = !!open[st.label]
+        const rows = opened ? st.songs : st.songs.slice(0, cap)
+        const more = st.songs.length > rows.length
+        return (
+          <div key={st.label} style={col(u(10), {
+            background: k.bg, color: k.ink, boxShadow: `inset 0 0 0 1px ${k.edge}`,
+            borderRadius: u(50), padding: u(34), overflow: 'hidden', minWidth: 0,
+          })}>
+            <span style={body(s.bodyLg, 1.5)}>{st.label}</span>
+            {/* Body/Chip, letter-spaced −6 percent; the caps are a style. */}
+            <span style={body(s.chip, 1, {
+              fontWeight: 700, letterSpacing: '-0.06em', textTransform: 'uppercase',
+              color: k.acc, whiteSpace: 'nowrap', overflow: 'hidden',
+            })}>{st.meta}</span>
+            {rows.map((sg) => (
+              <div key={sg.n} style={row(u(10), {
+                flex: 'none', height: limeRowH, justifyContent: 'space-between',
+                boxShadow: `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
+              })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                  letterSpacing: s.dls, minWidth: 0,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{sg.title}</span>
+                <span style={body(s.bodySm, 1.4, { flex: 'none', whiteSpace: 'nowrap' })}>{sg.artist}</span>
+              </div>
+            ))}
+            {more && (
+              <div style={{
+                marginTop: 'auto', paddingTop: u(30), display: 'flex', alignItems: 'flex-start',
+              }}>
+                <span
+                  onClick={s.live ? () => setOpen((o) => ({ ...o, [st.label]: true })) : undefined}
+                  style={body(s.bodySm, 1.4, {
+                    cursor: s.live ? 'pointer' : undefined, whiteSpace: 'nowrap',
+                  })}
+                >View full set →</span>
+              </div>
+            )}
+          </div>
+        )
+      }
+      return (
+        <div style={col(u(24))}>
+          {/* Display/LG in `sem/text/2`: pale, where Retro's head is the accent. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.tx,
+          }}>{s.title}</h2>
+
+          {sets.length === 0 ? (
+            <span style={body(s.bodySm, 1.4, { color: s.muted })}>No songs yet.</span>
+          ) : s.mob ? (
+            <div style={{ margin: `0 calc(-1 * ${s.padX})`, overflow: 'hidden' }}>
+              <div style={row(u(20), { justifyContent: 'center', alignItems: 'stretch' })}>
+                {seats.map((i, at) => (
+                  <div key={sets[i].label} style={{
+                    width: u(290), flex: 'none', display: 'grid',
+                    pointerEvents: sets.length >= 3 && i !== pg ? 'none' : undefined,
+                  }}>{limeCard(sets[i], seats.length === 3 ? at : 1)}</div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: u(20),
+            }}>
+              {sets.slice(pg * perPage, (pg + 1) * perPage).map((st, at) => limeCard(st, at))}
+            </div>
+          )}
+
+          {/* The 390 master's two pills: a 1px `s.ac` ring round an `s.ac`
+              arrow, radius 60 — Retro's pager in Lime's accent, redrawn only
+              because its ring reads `hair`. */}
+          {pages > 1 && (
+            <div style={row(u(10), { justifyContent: 'center' })}>
+              {[-1, 1].map((dir) => (
+                <span
+                  key={dir}
+                  onClick={s.live ? () => setPage(((pg + dir) % pages + pages) % pages) : undefined}
+                  style={{
+                    flex: `1 1 ${u(180)}`, maxWidth: u(180), height: u(54),
+                    borderRadius: u(60), boxShadow: `inset 0 0 0 1px ${s.ac}`, color: s.ac,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: s.live ? 'pointer' : undefined,
+                  }}
+                >{dir < 0 ? <ArrowLeft size={arrow} /> : <ArrowRight size={arrow} />}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
+
     return (
       <div style={col(u(24))}>
         <h2 style={{
