@@ -234,6 +234,35 @@ function LimeSkip({ width, color, back = false }) {
   )
 }
 
+// Lime layout 2's transport (964:64586 "Group 4"), transcribed from the frame's
+// own vectors, each glyph at its box's 14.56 height: the skip is two triangles
+// into a bar, 27.81 wide, and the back button is the same group turned 180°;
+// the pause is two 3.16 bars 9.72 apart. The frame draws a player caught
+// mid-song, so it never draws Play — the live paused state needs one, and it is
+// a single triangle filling the pause's own 12.88 box, so the swap does not
+// move the row.
+const LIME_TRANSPORT = {
+  skip: { w: 27.8085, body: <>
+    <path d="M14.3525 7.3837L3.5876 13.5987V1.1687L14.3525 7.3837Z" />
+    <path d="M24.5255 7.3837L13.7615 13.5987V1.1687L24.5255 7.3837Z" />
+    <rect x="24.6445" y="0" width="3.16354" height="14.5599" />
+  </> },
+  pause: { w: 12.8835, body: <>
+    <rect x="0" y="0" width="3.16354" height="14.5599" />
+    <rect x="9.72" y="0" width="3.16354" height="14.5599" />
+  </> },
+  play: { w: 12.8835, body: <path d="M12.8835 7.28L0 14.5599V0L12.8835 7.28Z" /> },
+}
+function LimeTransportGlyph({ kind, height, color }) {
+  const g = LIME_TRANSPORT[kind === 'back' ? 'skip' : kind]
+  return (
+    <svg viewBox={`0 0 ${g.w} 14.5599`} width={height * g.w / 14.5599} height={height} aria-hidden
+         style={{ display: 'block', flex: 'none', transform: kind === 'back' ? 'rotate(180deg)' : undefined }}>
+      <g fill={color}>{g.body}</g>
+    </svg>
+  )
+}
+
 // Lime's gallery source glyphs (964:58591 "Frame 187"), transcribed from the
 // frame's own vectors into the 60 disc they stand in, each at its offset there
 // and at its own stroke (3.5, 3, 4, 3): the picture frame, YouTube, Instagram
@@ -4100,6 +4129,265 @@ function Media({ s }) {
     const centre = s.tracks[anchor]
     const nowTitle = s.live || !centre ? now.track : centre.name
     const nowArt = s.live || !centre ? sleeve : (centre.img ?? undefined)
+
+    // Lime layout 2 (964:64582 · 986:11850 at 768 · 986:11869 at 390) is the
+    // same Section as Retro's below — the same two instances in the same
+    // wrapper, and a fan whose five cards stand at Retro's exact offsets, sizes,
+    // angles and opacities at all three widths (read off both pages' nodes). So
+    // it sits *after* the seam: the seats, `CARD`, `step`, `anchor`, the centre
+    // seat's title and art, `u` / `off` / `pad`, and the hooks above the
+    // branches are shared whole, and the published fan, bar and list needed
+    // nothing new. What makes it a block is that every leaf is redressed: the
+    // fan's four hues become one glassy olive card in a hairline, the pill
+    // transport becomes a glowing olive bar with the frame's own glyphs, and the
+    // list's hue-filled pills become flush rows on hairline rules — Retro's
+    // `FAN`, `ROWS`, `panel` and `ink` are not read.
+    //
+    // Scheme 2 throughout, so the panel is its `sem/bg`, `s.box1`; its `box/1`
+    // is Scheme 1's `box/2` (the cards and the bar) and its `box/2` is the
+    // testimonials' `dusk` (every artwork's well). Every ink is `sem/text/2`,
+    // `s.tx`, except the narrow heading, which the 768 and 390 masters set in
+    // `sem/text/1`, `s.ac`, where 1440 sets it pale. The fan tilts here too —
+    // `tilt()` is Retro's alone, so the angle is written out. Sizes are the Lime
+    // ramp's at every width; Display/Title is the frames' own 36 × 0.82 / 28 /
+    // 26, since `s.title` is the heading string.
+    //
+    // 390 keeps Retro's two overrides of a master that destroys its own
+    // content, for Retro's reasons: its bar emits the desktop 40 / 24 into a
+    // 330 pill and leaves the playing track a 23px sliver (the clock and the
+    // icons go, the padding and the transport's gap close), and its rows keep
+    // the 20 gaps and hard-clip their titles mid-word (the gaps close to 14 and
+    // the title ellipsises). The frame's 5px lime top stroke on the 1440
+    // Section is a hidden paint — the render has none — and is not drawn.
+    if (s.lime) {
+      const dusk = '#43523B'
+      const tk = { title: desk ? u(36) : tab ? '28px' : '26px' }
+      const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+      // Body/Chip — Inter bold, tracked in by its own −6%.
+      const chipType = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', whiteSpace: 'nowrap',
+      }
+      const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
+      const titleType = { fontFamily: s.display, fontSize: tk.title, lineHeight: 1.1, letterSpacing: s.dls, ...clip }
+      // A photograph on the frame's `box/2` well, so an art-less track is a
+      // tile and not a hole, with initials that read on it.
+      const art = (src, size, radius, initials) => (
+        <span style={{
+          width: size, height: size, flex: 'none', display: 'block', position: 'relative',
+          borderRadius: radius, overflow: 'hidden', background: dusk,
+        }}><Photo s={s} initialsSize={initials} src={src} ink={s.tx} /></span>
+      )
+
+      // The heading breaks after "worth" at 1440 and 390 and sets one line at
+      // 768, so the measure is layout 1's 4.6em (`bebasEms`: "Five worth" 3.59,
+      // "Five worth your" 5.34) everywhere but the tablet. The 390 master's own
+      // box is 251 wide at 54, which is 4.65em.
+      const heading = (
+        <h2 style={{
+          margin: 0, flex: 'none', fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+          letterSpacing: s.dls, color: desk ? s.tx : s.ac, maxWidth: tab ? undefined : '4.6em',
+        }}>{s.title}</h2>
+      )
+
+      const fan = (
+        <div style={{
+          position: 'relative', flex: 1, minHeight: desk ? 0 : '468px',
+          overflow: desk && s.tracks.length <= CARD.length + 2 ? 'visible' : 'hidden',
+          ...(desk ? null : { margin: `0 -${pad}px`, width: `calc(100% + ${pad * 2}px)` }),
+        }}>
+          {s.tracks.map((_, j) => {
+            const k = j - seat
+            const i = (anchor + k + s.tracks.length) % s.tracks.length
+            const t = s.tracks[i]
+            const g = CARD[Math.min(Math.abs(k), 2)]
+            return (
+              <div key={j} onClick={onPick(i)} style={{
+                position: 'absolute',
+                left: off(k * step - g.w / 2), top: off(g.y - g.h / 2),
+                width: u(g.w), height: u(g.h),
+                transform: `rotate(${k * 5.33}deg)`, opacity: g.op, zIndex: 10 - Math.abs(k),
+                // `sem/stroke/1`, stroked inside: an inset ring, so the 16
+                // padding stays the frame's.
+                background: s.box2, color: s.tx, boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+                borderRadius: u(13), padding: u(16), overflow: 'hidden',
+                cursor: s.live ? 'pointer' : undefined,
+                ...col(u(12), { alignItems: 'stretch' }),
+              }}>
+                <span style={{
+                  position: 'relative', height: u(g.art), flex: 'none', display: 'block',
+                  borderRadius: u(4), overflow: 'hidden', background: dusk,
+                }}><Photo s={s} initialsSize={20} src={t.img} ink={s.tx} /></span>
+                <div style={col(u(4), { minWidth: 0, alignItems: 'stretch' })}>
+                  {/* Display/List over Body/SM. */}
+                  <span style={{ fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, ...clip }}>{t.name}</span>
+                  <span style={{ ...bodySm, ...clip }}>{t.rel || t.sub}</span>
+                </div>
+                {/* `sem/tag/1/bg` lettered in `sem/text/2`: the frame's own
+                    pale-on-lime pair, low as its contrast is. At the frame's
+                    26.5 / 26 off the card's edge — Retro's 25.5 / 25 stand
+                    inside its 1px border, and this card's ring is a shadow. */}
+                {k === 0 && (
+                  <span style={{
+                    ...chipType, position: 'absolute', left: u(26.5), top: u(26),
+                    background: s.ac, color: s.tx, borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
+                  }}>● Featured</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )
+
+      // The transport is three bare glyphs in the frame, 24.28 apart. Live they
+      // are buttons, each padded out to a finger-sized target and given the
+      // padding back in its margin, so the row keeps the frame's measure. The
+      // canvas keeps Pause, the frame's own mid-song picture.
+      const gh = 14.56 * z
+      const ctl = (kind, fn) => (
+        <span onClick={s.live ? fn : undefined} style={{
+          padding: `${u(10)} ${u(6)}`, margin: `-${u(10)} -${u(6)}`, display: 'block',
+          cursor: s.live ? 'pointer' : undefined,
+        }}><LimeTransportGlyph kind={kind} height={gh} color={s.tx} /></span>
+      )
+      const bar = (
+        <div style={{
+          flex: 'none', position: 'relative', overflow: 'hidden',
+          height: u(108), background: s.box2, color: s.tx, borderRadius: '999px',
+          padding: `0 ${s.mob ? '16px' : u(40)}`,
+          ...row(s.mob ? '14px' : u(24)),
+        }}>
+          <span style={row(s.mob ? '14px' : u(24.28), { flex: 'none' })}>
+            {ctl('back', () => goTo(at - 1))}
+            {ctl(s.live && !playing ? 'play' : 'pause', toggle)}
+            {ctl('skip', () => goTo(at + 1))}
+          </span>
+          {/* The inner pill is the bar's own fill, so it reads only as the
+              spacing it carries, and that spacing is what pays for the title.
+              Its 30 right padding is 12 on desktop (Retro's call) and none at
+              390, and at 390 its 10 left padding goes too and the bar's own 20
+              closes to 16 — Lime's display title is two sizes up on Retro's,
+              and those 18px are what keep the seeded "Slow Burn" (90 wide at
+              26) whole instead of "Slow B…". 768 is the frame's own. */}
+          <span style={row(u(12), {
+            flex: 1, minWidth: 0, background: s.box2, borderRadius: u(80),
+            padding: `${u(10)} ${desk ? u(12) : tab ? '30px' : 0} ${u(10)} ${s.mob ? 0 : u(10)}`,
+          })}>
+            {art(nowArt, u(60), '999px', 16)}
+            <span style={col(u(2), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
+              <span style={titleType}>{nowTitle}</span>
+              <span style={{ ...bodySm, ...clip }}>{now.by}</span>
+            </span>
+            {!s.mob && <span style={{ ...bodySm, flex: 'none', whiteSpace: 'nowrap' }}>{now.at} / {now.of}</span>}
+          </span>
+          {!s.mob && (
+            <span style={row(u(12), {
+              flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
+            })}><span>♡</span><span>↓</span><span>⋯</span></span>
+          )}
+          {audio}
+          {/* The 1px `sem/stroke/1` rule and the INNER_SHADOW 14 in `s.ac`
+              (not `s.glow`), over the children as Figma paints a frame's
+              stroke and effects. */}
+          <span aria-hidden style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+            boxShadow: `inset 0 0 0 1px ${s.stroke1}, inset 0 0 ${u(14)} 0 ${s.ac}`,
+          }} />
+        </div>
+      )
+
+      // Desktop: the heading, then the fan taking what the bar leaves, as
+      // Retro's column does — the heading's 232 × 0.82 is what leaves the band
+      // its 309. 768 stands the carousel 10 under the heading; 390 runs it 50
+      // *into* the fan band's empty top (Frame 296's stated −50 gap), which
+      // leaves 61 clear of the centre card.
+      const left = (
+        <div style={col('0', { minWidth: 0, minHeight: desk ? u(673) : undefined })}>
+          {heading}
+          <div style={col(u(24), {
+            flex: 1, minHeight: 0,
+            marginTop: desk ? undefined : tab ? '10px' : '-50px',
+          })}>{fan}{bar}</div>
+        </div>
+      )
+
+      // The rows divide the column: the grid's stretched height on desktop,
+      // and the masters' stated 596 below it (`1 1 auto` over a minimum, so a
+      // longer list grows the column and an emptied one drops the minimum).
+      // Each row's rule is `sem/stroke/1` along its *top*, stroked inside, so
+      // it is an inset shadow and the 14 padding stays the frame's; the last
+      // row has none under it. The number keeps a 21 slot — the widest the
+      // frame's hugging numbers get — so the live glyph swap moves nothing.
+      const gap = s.mob ? '14px' : u(20)
+      const list = (
+        <div style={col('0', {
+          minWidth: 0, alignItems: 'stretch',
+          minHeight: desk || !s.tracks.length ? undefined : '596px',
+        })}>
+          <div style={row('0', {
+            flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`,
+            color: s.tx, textTransform: 'uppercase',
+          })}>
+            <span style={chipType}>● Popular</span>
+            <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+          </div>
+          {s.tracks.map((t, i) => {
+            const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+            const on = chosen && i === at
+            return (
+              <div key={i} onClick={onPick(i)} style={{
+                flex: desk ? '1 1 0' : '1 1 auto', minHeight: 0, overflow: 'hidden',
+                boxShadow: `inset 0 1px 0 ${s.stroke1}`, color: s.tx,
+                padding: `${u(14)} 0`, cursor: s.live ? 'pointer' : undefined,
+                ...row(gap),
+              }}>
+                <span style={{
+                  width: u(21), flex: 'none', display: 'flex', alignItems: 'center',
+                  fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls,
+                }}>{on
+                  ? (playing
+                    ? <Pause size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />
+                    : <Play size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />)
+                  : t.n}</span>
+                {art(t.img, u(64), u(4), 16)}
+                {/* Display/Title over Body/SM. */}
+                <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
+                  <span style={titleType}>{t.name}</span>
+                  <span style={{ ...bodySm, ...clip }}>{t.rel}</span>
+                </span>
+                {dur && (
+                  <span style={{
+                    flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
+                  }}>{dur}</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )
+
+      // The panel: Scheme 2's ground, radius 50 on desktop and 30 below, and
+      // the frame's 60 / 60·30 / 40·20 insets; the 50 between the columns is
+      // the same stood on end. Our two columns come to 953.6 where the frame's
+      // are 990.6 (1208 × 0.82), and here it is the *list* that gives up all
+      // 37, not Retro's `fr` split of them: the left column keeps the frame's
+      // 629 × 0.82, because its bar has no slack (the seeded "Slow Burn" needs
+      // 102 of a title box that the split left 86), while the list's title
+      // column still has 254 for "Late Lights".
+      return (
+        <div style={{
+          background: s.box1, color: s.tx,
+          borderRadius: desk ? u(50) : '30px',
+          padding: desk ? u(60) : tab ? '60px 30px' : '40px 20px',
+          ...(desk ? {
+            display: 'grid', alignItems: 'stretch',
+            gridTemplateColumns: `${u(629)} minmax(0, 1fr)`, gap: u(50),
+          } : col('50px', { alignItems: 'stretch' })),
+        }}>
+          {left}{list}
+        </div>
+      )
+    }
 
     // Inter Bold at the frame's chip size, tracked in by its own −6%. Both
     // ends of the list's counter row are set in it, and so is the Featured
