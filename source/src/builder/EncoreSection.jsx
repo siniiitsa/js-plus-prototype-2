@@ -17883,6 +17883,156 @@ function EnquiryForm({ s }) {
     // a CSS transform would shout whatever the visitor types into it as well.
     // The canvas span and the placeholder are then the same glyphs.
     const up = (t) => String(t).toUpperCase()
+
+    // Lime — the frames 964:68682 / 984:10767 / 984:10798, as a block after
+    // `up` (the media player's seat on this pass): `desk`, `z`, `u` and `up` are
+    // the branch's, and `vals`, `errs`, `sent`, `href`, `onSubmit`, `Pill` and
+    // `pillLink` are hoisted above every branch, so the published boxes,
+    // submit, sent card and *Write another* needed nothing new. Retro's `T`,
+    // `cream`, `ink`, `cardAc` and the pill quartet are not read: under Lime
+    // they are `paper` derivations and would draw a pale card.
+    //
+    // The tree is Retro's twin's box for box (`get_metadata`: 90/56 · 60/30 ·
+    // 30/10 insets, the 60 / 32 gaps, the card's 28/24 and 14, the boxes 10
+    // apart, the pill's 5/21 round a 46 × 44 disc), so the grid, the centring
+    // and the dropped `sticky` are restated. What moves is the dress: Scheme 1
+    // throughout, no nested scheme and no effect on any node. The card is
+    // `sem/box/1` at radius **50** (Retro 30) inside a 1px `sem/stroke/1` ring;
+    // every box is the same `box/1` pill inside the same ring, in Label/SM; the
+    // submit is `sem/text/1` — the accent — lettered `sem/bg`, round an ink disc
+    // with a lime arrow (the frame's own SVG). The head stands on the page in
+    // `s.tx` with a lime display line. Every size is the Lime ramp's; only
+    // Display/Title is the frames' 36 / 28 / 26.
+    if (s.lime) {
+      const type = (family, size, lh, extra) => ({
+        fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      const title = desk ? u(36) : s.mob ? '26px' : '28px'
+      // Half of the content width less the 60 gap, floored to the pixel so the
+      // word fits with room rather than to the rounding.
+      const headSize = desk && s.titleWordEms
+        ? `${Math.min(parseFloat(s.dispLg), Math.floor((s.contentW - 60 * z) / 2 / s.titleWordEms))}px`
+        : s.dispLg
+      // The ring is inset, so the 24 padding clears it and nothing needs an
+      // overlay. A refused box thickens it to 2px of full ink — layout 1's and
+      // layout 2's Lime rule for a pill — and the stated 44 / 39 / 37 (12 over
+      // Label/SM's line box) does not grow.
+      const box = (bad) => type(s.label, s.labelSm, 1.1, {
+        background: s.box1, color: s.tx, border: 'none', borderRadius: s.btnR,
+        boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.stroke1}`,
+        height: desk ? u(44) : s.mob ? '37px' : '39px',
+        padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
+      })
+      // The frame's 67 radius on a 54 pill is `radius/pill`.
+      const pill = (extra) => type(s.display, s.list, 1.2, {
+        ...row(u(10), { justifyContent: 'space-between' }),
+        background: s.ac, color: s.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
+        padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
+      })
+      const disc = (
+        <span style={{
+          width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
+          background: s.bg, color: s.ac,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
+      )
+
+      return (
+        <div style={{
+          display: 'grid', gap: u(desk ? 60 : 32),
+          gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+          alignItems: desk ? 'center' : 'stretch',
+        }}>
+          <div style={col(u(20), { wordBreak: 'break-word', color: s.tx })}>
+            {/* Body/Chip: Inter Bold, tracked -6%, typed in caps. */}
+            {!!s.formAvailable && (
+              <span style={type(s.body, s.chip, 1, {
+                fontWeight: 700, letterSpacing: '-0.06em', textTransform: 'uppercase',
+              })}>{s.formAvailable}</span>
+            )}
+            {/* Display/LG at lh .89 in the accent. At desktop the token's 107
+                is wider than the half column allows for the seed's
+                UNFORGETTABLE. (5.158em against 4.69), which broke the word, so
+                the size gives way to the column only when the widest word
+                (`s.titleWordEms`) would not fit. 768 and 390 never bite. */}
+            <h2 style={type(s.display, headSize, 0.89, {
+              margin: 0, color: s.ac, overflowWrap: 'break-word',
+            })}>{s.title}</h2>
+            <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formPara}</p>
+          </div>
+
+          <div style={col(u(14), {
+            background: s.box1, color: s.tx, borderRadius: u(50),
+            boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+            padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
+          })}>
+            {/* The price in Display/Title and the stars in the accent, the unit
+                and the count in `sem/text/2`. Not controls, so they stand
+                through the confirmation swap; each drops when emptied. */}
+            {(!!s.formPrice || !!s.formPriceUnit) && (
+              <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
+                {!!s.formPrice && <span style={type(s.display, title, 1.1, { color: s.ac })}>{s.formPrice}</span>}
+                {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
+              </div>
+            )}
+            {!!s.formBookings && (
+              <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>
+                <span style={{ color: s.ac }}>★★★★★</span>{'  '}{s.formBookings}
+              </span>
+            )}
+            {sent ? (
+              // The card alone changes. No frame draws this state: the title is
+              // Display/Title and the address Body/MD, layout 2's inventions.
+              <>
+                <h3 style={type(s.display, title, 1.1, {
+                  margin: 0, color: s.ac, overflowWrap: 'break-word',
+                })}>{s.formSentTitle}</h3>
+                <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
+                {/* Plain text, Retro's reason: the fallback for a browser that
+                    opened nothing. */}
+                <span style={type(s.body, s.bodyMd, 1.5, { fontWeight: 700, overflowWrap: 'break-word' })}>
+                  {s.formEmail}
+                </span>
+                <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>{s.formAgain}{disc}</span>
+              </>
+            ) : (
+              <>
+                <div style={col(u(10))}>
+                  {s.formFields.map((f, i) => {
+                    const bad = !!(errs && errs.f[i])
+                    return s.live ? (
+                      <input
+                        key={i} value={at(i)} placeholder={up(f.label)}
+                        onChange={(e) => setAt(i, e.target.value)}
+                        // Retro's rule: `email` for the phone keyboard,
+                        // `number` as inputMode only, a date as the artist's text.
+                        type={f.kind === 'email' ? 'email' : 'text'}
+                        inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                        style={{ ...box(bad), outline: 'none' }}
+                      />
+                    ) : (
+                      <span key={i} style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>
+                        {up(f.label)}
+                      </span>
+                    )
+                  })}
+                  <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
+                    {s.formCta}{disc}
+                  </Pill>
+                </div>
+                {errs && (
+                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{s.formPrompt}</span>
+                )}
+                {!!s.formNote && (
+                  <p style={type(s.body, s.bodySm, 1.4, { margin: 0, textAlign: 'center' })}>{s.formNote}</p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )
+    }
+
     const boxShell = (bad) => ({
       border: `1px solid ${ink}`, borderRadius: '999px', background: 'transparent',
       // Stated height, layout 2's spelling with this frame's numbers: Figma
