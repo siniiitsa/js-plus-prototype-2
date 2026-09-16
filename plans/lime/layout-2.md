@@ -127,7 +127,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | **dropped** — the section is being removed from the project, so it is not fitted (its code still exists) |
 | 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | done `405efb0` |
 | 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | done `3c0abaa` |
-| 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | — |
+| 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | done `d50a23c` |
 | 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | — |
 | 9 | `map` | `964:64594` | 1440 × 867 | `986:11862` | 768 × 823 | `986:11881` | 390 × 1286 | `964:64651` / `986:10974` / `986:11467` | — |
 | 10 | `form` | `964:64595` | 1440 × 812 | `986:11863` | 768 × 889 | `986:11882` | 390 × 933 | `964:64652` / `986:11591` / `986:11633` | — |
@@ -697,6 +697,54 @@ Settled in section 6 (the gallery):
   (the glow's `pointerEvents: none`), no page errors. `n=0` at desktop and 390: dark wells, `KM`
   in `s.muted` reads on them, the glow and caption stand. Digest at themes 0–4, all 810 renders:
   exactly gallery arch 1 at theme 1, three widths.
+
+Settled in section 7 (pricing):
+
+- **The fifth layout-2 block, after the seam: `if (s.lime)` within `Pricing`'s `if (s.v1)`, after
+  `sel` / `t`.** Those two and `desk` / `u` are shared whole, so the published package toggle and the
+  pill needed nothing new. Retro's `T`, `h` (`vm.tierHero`), `chipType`, `left` and `card` are not
+  read, which closes session 0's "the pricing session overrides" for layout 2 the way layout 1
+  closed it. Pure additions (154 / 0).
+- **No `T` table and no literal.** All 24 type numbers from the three `get_variable_defs` are
+  `THEME_RAMP.Lime` exactly (desktop chip 11 / dispMd 59 / dispSm 41 / bodyLg 13 / bodyMd 11 /
+  labelXs 16 / eyebrow 12 / list 20). Scheme 1 throughout: card `s.box1`, ring `s.stroke1`, heading
+  and numeral `s.ac`, everything else `s.tx`. The one bound box token is the chips' `radius/chip`
+  (`s.radiusChip`); card radius 50, padding 42 (`30px 20px` at 390), gaps 30 / 14 / 48 / 32 / 24 are
+  raw. **No tilt** — Lime's `right` has no rotation on any master, where Retro's turns −3° / −1°.
+- **The frame's selected chip is invisible, so it is redrawn.** `toggle-a`'s fill is
+  `sem/tag/1/bg`, `#2E3928`, the card's own colour; both chips are outlined lime and read the same.
+  The picked chip is `sem/active` (`s.pillBg` / `s.activeFg`, layout 1's Lime chip pair), the idle
+  ones the frame's 1px `s.ac` inset ring. The canvas pins chip 0, so its picture shows one filled
+  chip where the frame shows two outlines: the intended diff. Section 6's "redraw live states" rule
+  of layout 1, met again in a frame that never drew the state at all.
+- **The instance carries a 1px `sem/stroke/1` inside ring on all four sides** — the only one of the
+  ten layout-2 sections that does, and it renders (row 0 and column 0 of all three renders sample
+  `(54, 58, 44)`). **Declined**: Retro's twin carries the same ring in `#111` at all three widths,
+  and Retro's branch never drew it; it is the component frame's stroke, and stacked bands would
+  double it. The footer's layout-1 top hairline is a different case (one side, the band table's
+  edge).
+- **The pill is `BookPill`'s Lime defaults exactly** — `<BookPill s={s} to={s.tierBookTo}
+  full={s.mob} />`. Retro's `bg` / `fg` / `disc` / `size` would all be honoured by the Lime branch
+  and repaint it wrong. "3 dates open…" stays dropped (Retro's claim rule), so the 390 master's
+  stacked cta-row has nothing to stack.
+- **The narrow price row FILLs its numeral**, standing the unit at the card's right edge (layout 1's
+  Lime pricing rule again); 1440 hugs. Emptied content drops its node (symbol, unit, blurb, quote,
+  small print; the rule and the includes block go with an empty feature list), where Retro's branch
+  keeps empty spans. The frame's last three features in Body/MD are normalised to Label/XS.
+- **Named diffs.** The credit row is dropped (Retro's), so the 768 card stands at 218.5 against the
+  frame's 263 and the 390 one at 220 against 265. The desktop card is 540.7 wide against 640 × 0.82
+  = 525 (our content width split by the same `flex: 1 1 0`). At 390 our 306 measure wraps the
+  seeded third chip onto a second row. The seeded heading wraps on its column, where the frame's
+  break after "Personalised" is typed.
+- **Measured against the masters' content edges**: desktop chips 24.2 tall (23.8) at 34.4 in (42 ×
+  0.82), heading at 27.4 (27.1), pill 130.5 × 44.3, card 419.2 tall for the seeded content; 768
+  chips 28 at 42 in, pill 142.1 × 54, name 40, numeral 50 with the unit flush right; 390 chips 27 at
+  20 in, pill 138.9 × 54 (`full`), numeral 40, features 12. `live=1` at desktop and 390: each chip
+  swaps name and price (450 / 650 / 1,200) and moves the lime fill, the lit chip reads `#0D1F03`,
+  cursors are live-gated (the canvas chips are `auto`), the pill is `<a href="#form">`. `n=0` keeps
+  the card with *No packages yet.* and drops the rule; `n=1` draws no chips; `n=8` wraps the chips
+  to three rows at 390. No page errors. Digest at themes 0–4, all 810 renders: exactly pricing
+  arch 1 at theme 1, three widths.
 
 ## Open questions
 
