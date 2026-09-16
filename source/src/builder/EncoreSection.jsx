@@ -14075,8 +14075,11 @@ function EventsMap({ s }) {
         )
       })
 
-      // The rings are stroked inside at 1 / 1.5 / 2 and .3 / .5 / .8.
-      const ringLine = [[1, 0.3], [1.5, 0.5], [2, 0.8]]
+      // The rings, outer first, in their own pixels — diameter, inside stroke,
+      // opacity — so the viewBox carries the 1 / 1.5 / 2 weights and the outer
+      // ring's 4 / 4 dash (`dashPattern`, all three masters) × 0.82 on desktop,
+      // which neither a border nor an inset shadow can draw.
+      const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
 
       const panelL = (
         <div style={col(u(24), {
@@ -14144,13 +14147,18 @@ function EventsMap({ s }) {
                     ? { backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                     : null),
                 }} />
-                {ringW.map((w, i) => (
-                  <span key={w} aria-hidden style={{
-                    position: 'absolute', left: '50%', top: '50%', width: `${w}%`, aspectRatio: '1',
-                    borderRadius: '999px', boxShadow: `inset 0 0 0 ${u(ringLine[i][0])} ${s.ac}`,
-                    opacity: ringLine[i][1], transform: 'translate(-50%, -50%)',
-                  }} />
-                ))}
+                {ringW.map((w, i) => {
+                  const [d, wt, op] = ringLine[i]
+                  return (
+                    <svg key={w} aria-hidden viewBox={`0 0 ${d} ${d}`} style={{
+                      position: 'absolute', left: '50%', top: '50%', width: `${w}%`, height: 'auto',
+                      opacity: op, transform: 'translate(-50%, -50%)', overflow: 'visible',
+                    }}>
+                      <circle cx={d / 2} cy={d / 2} r={(d - wt) / 2} fill="none" stroke={s.ac}
+                              strokeWidth={wt} strokeDasharray={i === 0 ? '4 4' : undefined} />
+                    </svg>
+                  )
+                })}
                 {s.mapRings.slice(0, ringW.length).map((label, k) => (
                   <span key={k} aria-hidden style={{
                     position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',

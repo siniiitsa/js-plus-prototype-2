@@ -228,7 +228,7 @@ off the nodes:
 | repertoire | inherits | the three `set` cards are **Scheme 1 / Scheme 4 / Scheme 3** in that order: `s.box1` with pale ink and `stroke1`; `mist` `#D5E3B2` and `lime3` `#CCFA61`, both with `#15180F` (`s.bg`) ink and a 15% ink hairline |
 | gallery | **Scheme 2** | — (the sheet is Scheme 2's `sem/bg`, `#2E3928` = `s.box1`) |
 | pricing | inherits | the featured `row` **Scheme 3**: `#AFE335` (`s.ac`) fill, `#15180F` ring and ink |
-| map | **Scheme 4** | `radius-map` **Scheme 3**: `#CCFA61` (`lime3`) at 390, where it is the whole map panel |
+| map | **Scheme 4** | `radius-map` **Scheme 2** (*corrected in section 8*): `#CCFA61` (`lime3`) at every width |
 | form | Scheme 1 (768 / 390 inherit) | — (card `#2E3928`, boxes `#2E3928` pills, submit `#AFE335`) |
 | testimonials | inherits | `rating` **Scheme 3** (`#CCFA61`); `quote-cell` and `name-cell` **Scheme 2** (`#394732` and `#2E3928`); `small-quote` **Scheme 4** (`#D5E3B2`); `feat-quote` inherits (`#2E3928`) |
 | footer | Scheme 2 (layout 1's) | — |
@@ -251,7 +251,7 @@ identical at 1440, 768 and 390.**
 | 5 | calendar | page | the `#2E3928` panel, radius 50, a **2px** `stroke1` ring |
 | 6 | gallery | **full-bleed `#2E3928` sheet** (Scheme 2) | tiles, radius 30, `stroke1` rings |
 | 7 | pricing | page | rows: page-ground with a 1px `s.ac` ring, the featured one `s.ac` with a `#15180F` ring; a `stroke1` ring round the whole instance (Retro declined its twin's; check) |
-| 8 | map | **full-bleed `#F2FFD0` sheet** (Scheme 4, `s.tx`) | the map panel (`lime3` at 390), rows and chips inked `#15180F` |
+| 8 | map | **full-bleed `#F2FFD0` sheet** (Scheme 4, `s.tx`) | the map panel (`lime3` at every width — *corrected in section 8*), rows and chips inked `#15180F` |
 | 9 | form | page | a `#2E3928` card, radius 50 (a full-height `#15180F` child bleeds under it at 768 / 390 — the page colour, a no-op, Retro's reading) |
 | 10 | testimonials | page | the cells above |
 | — | footer | `#2E3928`, layout 1's | — |
@@ -922,8 +922,11 @@ Settled in section 8 (the events map):
   `#CCFA61` (`lime3`) for the panel and the container. Its status tab, ring labels, rings, pin head
   and tail are `s.ac`, and the zoom buttons are `#D9FF7F` (`lift`) with a 20px Inter Bold glyph at
   radius 8. No node carries an effect.
-- **Rings are the frame's weights and opacities**: 1 / 1.5 / 2 at .3 / .5 / .8, in `s.ac`, drawn
-  as inset shadows at `u()` weights. Retro's are 1px sheet at .3 / .8 / .8.
+- **Rings are the frame's weights, opacities and dash**: 1 / 1.5 / 2 at .3 / .5 / .8 in `s.ac`, and
+  the outer ring is `dashPattern` **4 / 4** at all three widths. So each ring is one `<svg>` in its
+  own pixels (viewBox 480 / 300 / 140), which is layout 2's recipe; the first walk missed the dash
+  because it did not read `dashPattern`. The tell was `get_design_context` exporting the 120mi ring
+  as a PNG and the other two as SVGs. Retro's are 1px sheet at .3 / .8 / .8, undashed.
 - **The raster is drawn as it is**: `s.mapRadialSrc` over an `s.box1` fallback, with no multiply.
   The frame's fill is `e089bd11` at `FILL`.
 - **Named diffs.**
