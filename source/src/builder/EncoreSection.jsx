@@ -14515,6 +14515,141 @@ function Testimonials({ s }) {
     // canvas too. At one review the card simply takes the whole width.
     const rail = n > 1
 
+    // Lime (964:64596 · 986:11864 · 986:11883) — the ninth layout-2 block, after
+    // the seam: `n`, `at`, `q`, `rail`, `desk` / `tab` / `wide` / `u` and `gap`
+    // are shared whole, so the published rail and pill needed nothing new. The
+    // tree is the twin's to the node (head, a rail of initial tiles beside or
+    // under one wide card, the centred pill); only type-driven heights differ.
+    // What changes is every leaf's dress: the head is pale where Retro's display
+    // line is the accent, the card and the picked tile are Scheme 3 where the
+    // idle tiles are Scheme 1's olive, and every size is the Lime ramp (no `T`
+    // table: `get_variable_defs` returns `THEME_RAMP.Lime` at all three widths).
+    // No node carries an effect, so there is no glow and no shadow.
+    if (s.lime) {
+      // Scheme 3's `box/1` and `stroke/1`, the map block's names for them.
+      const lime3 = '#CCFA61'
+      const hair = '#15180F26'
+      // Every stroke is inside, so each is an inset ring: the frame's heights
+      // hold, and the picked tile's 2px needs no border arithmetic against its
+      // `flex-basis: 0` share (Retro's note below, dodged rather than paid).
+      const ring = (w, c) => `inset 0 0 0 ${w}px ${c}`
+      const bodyType = (size, lh) => ({ fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls })
+      const dispType = (size, lh) => ({ fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls })
+
+      // Body/SM, Display/LG and Body/MD, all `sem/text/2`. No measure: the
+      // frame's break after FEEDBACK is typed, and the seeded heading is one
+      // line at every width.
+      const limeHead = (
+        <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
+          <span style={bodyType(s.bodySm, 1.4)}>&#9998; What clients say</span>
+          {!!s.title && (
+            <h2 style={{ margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%' }}>
+              {s.title}
+            </h2>
+          )}
+          {!!s.testiSub && <p style={{ margin: 0, ...bodyType(s.bodyMd, 1.5) }}>{s.testiSub}</p>}
+        </div>
+      )
+
+      // The frame's own mechanism, at every width: the picked tile fills the
+      // rail's cross axis and the idle ones hug their 30 of padding (the
+      // frame's second tile pads 35, a hand, normalised as Retro's is). So the
+      // column is pinned at the frame's 89 / 85 — its widest tile — and centres
+      // the idle ones in it; the 390 row keeps Retro's wrap and `1 0 auto`. At
+      // 390 the 36 of vertical padding is real, since that master states no
+      // height (36 + 21.6 + 36 = the frame's 94); in the column it is inert,
+      // Retro's division rule.
+      const limeTiles = (
+        <div style={{
+          display: 'flex', flexDirection: wide ? 'column' : 'row', gap: u(12), flex: 'none',
+          ...(wide
+            ? { width: u(desk ? 89 : 85), alignSelf: 'stretch', alignItems: 'center' }
+            : { flexWrap: 'wrap', justifyContent: 'center' }),
+        }}>
+          {s.quotes.map((r, i) => {
+            const on = i === at
+            return (
+              <div key={i} onClick={s.live ? () => setCur(i) : undefined} style={{
+                ...(wide
+                  ? { flex: '1 1 0', minHeight: 0, padding: `0 ${u(30)}`, ...(on ? { alignSelf: 'stretch' } : null) }
+                  : { flex: on ? '1 0 auto' : 'none', padding: `${u(36)} ${u(30)}`, minWidth: 0 }),
+                background: on ? lime3 : s.box1, color: on ? s.bg : s.tx,
+                boxShadow: on ? ring(2, hair) : ring(1, s.ac), borderRadius: u(30),
+                overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: s.live ? 'pointer' : undefined,
+              }}>
+                <span style={{ ...dispType(s.list, 1.2), whiteSpace: 'nowrap' }}>{r.mark}</span>
+              </div>
+            )
+          })}
+        </div>
+      )
+
+      // Scheme 3, radius 50 at all three widths (Retro's twin is 30). Its foot
+      // is `items-center` where Retro's aligns to the end, and `when` takes the
+      // stars' seat as it does there.
+      const limeBig = (
+        <div style={col(u(40), {
+          ...(wide ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+          background: lime3, color: s.bg, boxShadow: ring(1, hair), borderRadius: u(50),
+          padding: u(40), alignItems: 'flex-start',
+        })}>
+          {q ? (
+            <>
+              {/* Display/XL at 0.75. The 1440 master hand-sets the box to 55.9
+                  under a 150 line (the glyph has no descender); the narrow two
+                  let the line be the box, 90 and 54. Retro's reading. */}
+              <span aria-hidden style={{
+                ...dispType(s.dispXl, 0.75), flex: 'none', ...(desk ? { height: u(56) } : null),
+              }}>&rdquo;</span>
+              {!!q.quote && (
+                <p style={{ margin: 0, width: '100%', ...bodyType(s.bodyLg, 1.5), overflowWrap: 'break-word' }}>
+                  {q.quote}
+                </p>
+              )}
+              {(!!q.byline || !!q.when) && (
+                <div style={row(u(12), {
+                  width: '100%', paddingTop: u(16), flexWrap: 'wrap',
+                  justifyContent: 'space-between', alignItems: 'center',
+                })}>
+                  <div style={col(u(4), { minWidth: 0 })}>
+                    {!!q.who && <span style={dispType(s.list, 1.2)}>{q.who}</span>}
+                    {!!q.role && <span style={bodyType(s.bodySm, 1.4)}>{q.role}</span>}
+                  </div>
+                  {!!q.when && <span style={{ ...bodyType(s.bodyMd, 1.5), flex: 'none' }}>{q.when}</span>}
+                </div>
+              )}
+            </>
+          ) : (
+            <span style={bodyType(s.bodyLg, 1.5)}>No reviews yet.</span>
+          )}
+        </div>
+      )
+
+      return (
+        <div style={col(gap)}>
+          {limeHead}
+          <div style={{
+            display: 'flex', flexDirection: wide ? 'row' : 'column', gap,
+            alignItems: wide ? 'flex-start' : 'stretch', width: '100%',
+          }}>
+            {!s.mob && rail && limeTiles}
+            {limeBig}
+            {s.mob && rail && limeTiles}
+          </div>
+          {/* `sem/active` with `sem/tag/2/text` ink — pricing layout 1's Lime
+              pill, whose disc follows `fg` round a lime arrow. The branch's own
+              `k` gives the frames' 54 box and `s.list` label; `full` at 390. */}
+          {!!s.testiCta && (
+            <div style={row('0px', { width: '100%', justifyContent: 'center' })}>
+              <BookPill s={s} to={s.bookTo} label={s.testiCta}
+                        bg={s.pillBg} fg={s.activeFg} full={s.mob} />
+            </div>
+          )}
+        </div>
+      )
+    }
+
     // The frame's orange card, its purple selected tile and its two creams are
     // literals under Retro, whose `paper` IS the page ground (the calendar's
     // rule). The purple is a register lighter than the palette's own #7A58A7,
