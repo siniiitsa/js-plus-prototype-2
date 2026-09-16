@@ -163,7 +163,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Retro twin (1440 / 768 / 390) | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | `header` | `964:72849` | 1440 × 900 | `971:5299` | 768 × 1024 | `977:8867` | 390 × 844 | `964:72511` / `964:77544` / `971:14040` | — |
+| 1 | `header` | `964:72849` | 1440 × 900 | `971:5299` | 768 × 1024 | `977:8867` | 390 × 844 | `964:72511` / `964:77544` / `971:14040` | done `ce07286` |
 | 2 | `bio` | `964:72857` *(Section `964:72850`, head `964:72851`, tags `964:72854`)* | 664 × 720 | `971:5307` *(Section `971:5300`, head `971:5301`, tags `971:5304`)* | 708 × 720 | `977:8875` *(Section `977:8868`, head `977:8869`, tags `977:8872`)* | 370 × 536 | `964:72519` / `964:76446` / `971:14479` | — |
 | 3 | `media` | `964:72864` *(band `964:72858`, head `964:72860`)* | 1440 × 671 | `971:5431` *(band `971:6533`, head `977:10286`)* | 768 × 569 | `977:9005` *(band `977:8999`, head `977:9001`)* | 390 × 836 | `964:72526` / `971:15190` / `971:14834` | — |
 | 4 | `gallery` | `964:72909` *(wrapper `964:72874`, head `964:72875`)* | 874 × 646 | `971:5597` *(wrapper `971:5562`, head `971:5563`)* | 768 × 594 | `977:9171` *(wrapper `977:9136`, head `977:9137`)* | 390 × 586.3 | `964:72815` / `964:78491` / `977:8142` | — |
@@ -615,6 +615,107 @@ pass goes on.
   digest runs `arch < CATS[c]`), so a theme-1 digest of those two categories differs in
   `_arch_7_` files as well as `_arch_3_`. `media` and `repertoire` (n 7) stop at arch 6, and
   the other five body categories and the header have no fold partner at 3.
+- **Do not give `shots.mjs` and `digest.mjs` the same `OUT` label.** Both write to
+  `$OUT/<label>/`, so the eleven before-pictures showed up as eleven phantom `cmp` diffs in
+  the themes-0,2,3,4 run (all `.jpg`, none a digest row). Keep the shots under their own
+  `OUT`, or a label the digest never uses.
+
+Settled in section 1 (the header):
+
+- **The first layout-4 block: `if (s.lime) { … return }` at the head of `HeaderV3`, after
+  `desk` / `tab` / `z` / `u`** — HeaderV1's and HeaderV2's seat. The tree is Retro's twin's
+  node for node (nav, avatar tile, identity panel with the chips at its right at 1440 and
+  under it narrow, the seal), and every leaf changes face, ink or box, so a block; the diff
+  is 206 / 6, and the six removed lines are the two additive prop sites below. Retro's
+  `cream` / `mustard` / `ink`, its `T` table, `Grain`, `Checkerboard` and `SCRIM.stack` are
+  not read.
+- **No Device override on any of the three instances, and no box token.** `get_variable_defs`
+  is the ramp at all three widths (display-xl 200 / 120 / 72 = `s.dispXl`, list 24 / 19 / 18,
+  label-lg 32 / 21 / 14, label-xs 20 / 14 / 12, label-md 24 for the links); Display/Title —
+  the kicker — is the frames' `u(36)` / 28 / 26. **The .75 leading on Display/XL is the
+  frame's own here** (read off the text nodes at all three widths), so Retro layout 4's
+  "Display/XL's .75 is Retro-only" is about the *flat four*, not Lime. Every box is raw:
+  radius 26.95 on the tile, 85 on the capsule, `radius/chip` 6 on the location square and
+  the chips, insets 56 / 30 / 10 round the nav and 56 / 30 / 20 round the block, 28 / 30 /
+  30 over and 50 / 60 / 40 under, gaps 40 and 30 and 18.
+- **The nav is `NavBar`'s Lime capsule, reused whole** — this frame's `Frame 49` is the
+  hero's Figma component (10 / 10 / 10 / 20 in a radius-85 `sem/bg` bar, gap 30, the
+  wordmark filling and the links + pill hugging right; `BACKGROUND_BLUR` 44 over an opaque
+  fill, dropped), so HeaderV3 passes nothing but two things this master states that
+  HeaderV0's did not. (1) **The 390 name is `s.labelLg`, 14** — this instance is in the
+  page's own Mobile mode where the hero's 390 master sat in Tablet, and NavBar carried
+  that 21 as a literal; it now takes an additive **`nameSize`** (`pill`'s precedent). (2)
+  **The 390 pill is the desktop pill at × 0.712**, 94.37 × 38.44 — type a raw 11.39 in
+  Bebas Neue, disc 32.75, padding 3.56 / 14.95, gap 7.12 — where `BookPill`'s `small` is
+  × 0.62; it goes through `pill={{ size, disc, style }}`. At 1440 and 768 the pill is
+  BookPill's Lime defaults exactly (130.5 × 44.3 and 142.1 × 54 against 158 × 0.82 and
+  142 × 54). The desktop links take NavBar's `clamp(12px, 100cqi / navEms, s.list)`, whose
+  cap is the frame's Label/MD 24 × 0.82; 768 keeps the burger beside the pill at 23, 390
+  at 10, both the frames' own.
+- **The seal is `SealBadge`'s Lime disc in another scheme's inks, and it changes colour
+  between widths (open question 4).** `Frame 247` nests **Scheme 4** at 1440 and 768 — a
+  pale `sem/bg` `#F2FFD0` disc with `sem/text/1` marks in ink — and `Frame 248` at 390
+  is a **lime disc with ink marks**, Scheme 3's pair, read off each master's fill. Its
+  tree is the bio's / footer's / calendar's component exactly (Group 9, the 120 ring, the
+  name twice, two 14 equator rings), so the Lime branch gained an additive **`scheme`**
+  prop (1 default, 3 = `s.ac` / `s.bg`, 4 = `s.tx` / `s.bg`) rather than a third
+  drawing; `classic` stays the layout-3 bio's route. Positions are the emitted `left`
+  plus half the rotated box, confirmed by a pale-pixel scan of the renders (centre
+  1316.5 / 230.5 at 1440, 653.5 / 775.5 at 768, 326.5 / 176.5 at 390): **768 and 390 land
+  on Retro's own numbers** (bottom 185.46 / right 51.17; top 134.35 / right 20.65), and
+  1440 sits 8 further right and 31 lower (top 168.46, right 60.11, × 0.82).
+- **The chips' light seat is pale, not lime.** The Tags instance is Scheme 1 at every
+  width, but its light chips fill `scheme/1/text3` — `#F2FFD0` sampled on all three renders
+  — lettered `sem/active/text` `#0D1F03`, and the dark ones `s.box1` lettered `s.ac` (the
+  third chip's `#C7FF3C` is a leaked token, layout 2's bio reading). So the row is inlined
+  over `[s.box1, s.tx]` / `[s.ac, s.activeFg]` by seat parity rather than through
+  `TagChips`, whose `vm.chips` light seat is lime — a lime chip on this lime floor would
+  vanish. Label/XS in `s.ui` at 5 / 11 (× 0.82), `radius/chip`, gap 8; 344 wide at the
+  panel's right corner at 1440, the measure narrow.
+- **Scheme 3 by node, two literals.** The instance's `sem/bg` is `s.ac` and its `sem/text/1`
+  is `s.bg`, which is why the location reads in **ink** on the lime and the seal's marks
+  are ink. `lime3` `#CCFA61` is the avatar's well and its 3.04 inside ring at 1440 and
+  768 (`sem/state/inactive/border`); **at 390 the ring is `sem/stroke/2`, ink**. `lift`
+  `#D9FF7F` (Scheme 3 `sem/box/2`, layout 1's form literal) is the location's 14 square.
+  The fade is the frame's two stops verbatim: `s.ac` at the floor to `#15180F00` at the
+  top. The fill under the photograph is `sem/box/3` `#9CCF23` and is seen by nothing; an
+  emptied slot takes `Photo`'s dark well so the pale type reads (`noimage=1` checked).
+- **The 1440 photograph is mirrored, and that is a reversible product call.** The fill is
+  `CROP` at 1440 with `[[-1, 0, 1], [0, 0.9375, 0.03125]]` — a centred cover, flipped —
+  where 768 and 390 are `FILL` and unflipped (read off `scaleMode`; the layout-3 header's
+  lesson the other way round). It is drawn as `scaleX(-1)` on the desktop `Photo` alone,
+  because the composition depends on it: the subject stands at the right, clear of the
+  name. **The cost is an artist's upload mirrored at desktop and not at the narrow widths**
+  (a logo on a T-shirt reads backwards at 1180 and forwards at 768). Named in the block;
+  one line to remove if the user prefers the upload the right way round. Open question 6.
+- **Measured against the masters' content edges**: desktop capsule 60.6 tall at 23
+  (74 / 28 × 0.82), 1088.2 wide, brand 26px, pill 130.5 × 44.3, avatar 92.3 × 97.3 at 234.9
+  (286.32 × 0.82), kicker 29.52px at 365 (445 × 0.82), name 164px on two lines at 412.3
+  (503 × 0.82) and 246 tall (300 × 0.82), location at 673 (821 × 0.82), chips 16px on two
+  rows at 852 / 633.8 (1040 / 772 × 0.82), seal box 137.5 at 1010.6 / 120.8 (1233.4 / 147.3
+  × 0.82), section 738; 768 capsule 708 × 74 at 30 / 30, pill 142.1 × 54, burger at 692,
+  avatar 113 × 119 at 567.8 (567), kicker 28px at 726.8 (726), name 120px one line at 775.6
+  (775) and 90 tall, location at 883.6 (883), chips 14px one row at 936.4 (936), seal box
+  at 570.3 / 692 (exact); 390 capsule 370 × 58.4 at 10 / 30, pill 94.4 × 38.4 at 229.6
+  (229.6), burger at 334 (334), avatar 116 × 119 at 416.6 (416), kicker 26px at 575.6
+  (575), name 72px one line at 622.2 (622) and 54 tall, location at 694.2 (694), chips 12px
+  on two rows at 745.8 (746), seal box 113.7 at 270 / 120 (exact). `live=1`: the links,
+  Listen and the pill are `<a href="#…">` (the canvas anchors carry no href, the pill a
+  span), and the burger opens a six-link panel at 768 and 390. No page errors. Digest at
+  themes 0, 2, 3 and 4: zero differing files; theme 1: exactly header arch 3 at three
+  widths.
+- **Verified in the builder** (one puppeteer script, deleted): the setup modal offers four
+  Lime cards; card 4 alone draws the pale `#F2FFD0` seal disc and the mirrored photograph
+  and no `repeating-conic-gradient`, while card 1 keeps its reticle, card 2 its `#C7FF3C`
+  place card and card 3 its `#A6E22E` glow. After *Use this header*, *Back to page list*
+  (`button[aria-label="Back to page list"]`) reads every body row at "layout 4" and the
+  footer at "layout 1"; the published page stacks header, bio, media, gallery, repertoire,
+  map, pricing, calendar, form, testimonials, footer at 1440 with each root's top on the
+  previous root's bottom (no composed row), and its text carries the layout-4 tells
+  *All songs · A–Z*, *Book Us*, *Snaps from the night* and *Client success stories*. In
+  the popup all ten header anchors (nine nav, Book Now) called `scrollIntoView` on
+  matching ids, Book Now on `form`; at 390 and 820 (a fresh tab each) the burger stands in
+  the capsule (370 / 708 wide) and opens a nine-link panel whose links scroll.
 
 ## Open questions
 
@@ -645,11 +746,18 @@ pass goes on.
    crop a different band. Expected answer: `SEEDS.Lime.layouts[3].bio = limeBioStage`, one line
    and no new file; the bio session decides by the render diff layout 3's section 2 used, and
    `photos.js`'s comment gains a sentence either way.
-4. **The 390 header seal.** A lime disc in the 390 render where the two wide masters draw a pale
+4. *Settled in section 1 — `SealBadge`'s Lime branch with an additive `scheme` prop (4 at
+   1440 and 768, 3 at 390); see its Conventions.* **The 390 header seal.** A lime disc in the 390 render where the two wide masters draw a pale
    Scheme 4 disc, and no explicit scheme node on it. Whether it is `SealBadge`'s Lime branch
    (the dark disc with rings) or the §10.2 `classic` seal in a third ink pair is the header
    session's read of the node's children and fills; write the answer under *Conventions*,
    since it is the first Lime seal to change colour between widths.
+6. **The desktop header photograph is mirrored.** The 1440 master's `CROP` transform flips
+   the photograph and the fit follows it (`scaleX(-1)` on the desktop `Photo` in HeaderV3's
+   Lime block), so an artist's upload reads backwards at 1180 and forwards at 768 and 390.
+   Shipped because the composition stands its subject at the right, clear of the name;
+   reversible in one line if the user would rather keep every upload the right way round,
+   at the cost of the seeded page's subject standing under the name at desktop.
 5. **The gallery's head seam is `sem/box/3` `#101309`, not `sem/bg`.** A hair off the page
    ground it meets, and the only seam on the page not bound to a neighbour's `sem/bg`. Whether
    it is drawn in `s.box3` (the frame's binding) or `s.bg` (the neighbour's ground, layout 1's
