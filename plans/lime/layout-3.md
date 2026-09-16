@@ -181,7 +181,7 @@ masters are fitted in one session.
 | 6 | `gallery` | `964:68679` | 1440 × 789 | `984:10764` | 768 × 884 | `984:10795` | 390 × 591 | `964:68647` / `977:23131` / `982:10257` | done `01d5665` |
 | 7 | `pricing` | `964:68680` | 1440 × 1199 | `984:10765` | 768 × 1072 | `984:10796` | 390 × 1474 | `964:68648` / `977:23149` / `982:10274` | done `0695e22` |
 | 8 | `map` | `964:68681` | 1440 × 819 | `984:10766` | 768 × 831 | `984:10797` | 390 × 887 | `964:68649` / `977:23264` / `982:10389` | done `1b5d080` |
-| 9 | `form` | `964:68682` | 1440 × 570 | `984:10767` | 768 × 734 | `984:10798` | 390 × 755 | `964:68650` / `977:23406` / `982:10472` | — |
+| 9 | `form` | `964:68682` | 1440 × 570 | `984:10767` | 768 × 734 | `984:10798` | 390 × 755 | `964:68650` / `977:23406` / `982:10472` | done `6d9b95d` |
 | 10 | `testimonials` | `964:68683` | 1440 × 790 | `984:10768` | 768 × 790 | `984:10799` | 390 × 1108 | `964:68651` / `982:8584` / `982:10499` | — |
 | — | `footer` | `964:68684` | 1440 × 479.5 | `984:10769` | 768 × 647.4 | `984:10800` | 390 × 619.4 | — | **out of scope** — the same tree as Lime layout 1's footer, fitted in that pass's section 11, and `NVAR.footer` is 1 |
 | — | `tags` | `964:68664` | 858 × 75 | `984:10749` | 708 × 67 | `984:10780` | 370 × 97 | — | **not in the project** (`d734992`); not drawn under the bio card either |
@@ -962,6 +962,73 @@ Settled in section 8 (the events map):
   - `n=0` prints *No dates yet.* with no pins. `n=1` draws no chip row and no lit row.
   - The canvas's only pointer cursors are `BookPill`'s own (shared). No page errors.
 - **Digest** at themes 0–4, all 645 renders: exactly map arch 2 at theme 1, at three widths.
+
+Settled in section 9 (the enquiry form):
+
+- **`if (s.lime)` within `EnquiryForm`'s `if (s.v2)`, after `up`**, which is this pass's seat inside a branch.
+  The block reads `desk`, `z`, `u` and `up`, plus the hoisted `vals` / `errs` / `sent` / `href` /
+  `onSubmit` / `Pill` / `pillLink`. So the published boxes, the submit, the sent card and *Write
+  another* needed nothing new. It does not read Retro's `T`, `cream`, `ink`, `cardAc`, `pillBg` …
+  `discInk`, `chipType`, `boxShell` or `pill`. Those are `paper` derivations and would draw a pale
+  card. Diff 150 / 0 in `EncoreSection.jsx`, plus 7 / 0 in `EncoreBuilder.jsx` (below).
+- **The tree is Retro's twin's, box for box.** One `use_figma` walk of the three instances gave
+  insets of 90/56, 60/30 and 30/10, gaps of 60 / 32, the card's 28/24 padding with a 14 gap, boxes
+  10 apart at 12/14 padding, and the pill's 5/5/5/21 round a 46 × 44 disc. So the two-column grid,
+  the centring and the dropped `sticky` are restated. What moves: the card radius is **50** (Retro 30),
+  and the boxes are **44 / 39 / 37** (Label/SM 18 / 14 / 12 plus 24). The price row is 40 / 31 / 29
+  (Display/Title), so the card is 390 / 366 / 356 against Retro's 368.
+- **Scheme 1 throughout: no nested scheme, and no effect on any node.**
+  - The card is `s.box1` inside a 1px `stroke1` ring, drawn inset. Its 24 padding clears the ring, so
+    no overlay is owed.
+  - Every box is the same `box1` pill in the same ring, in Label/SM `s.tx`.
+  - The submit is `s.ac` lettered `s.bg`, round an **`s.bg` disc with a lime arrow**. That is the
+    frame's own SVG, and the reverse of layout 1's Lime pill.
+  - The price and the stars are `s.ac`; the unit, the count, the note and the head's eyebrow and
+    paragraph are `s.tx`; the display line is `s.ac`.
+  - A refused box thickens its ring to **2px of `s.tx`**, the Lime rule on a dark card, and the
+    height does not grow.
+- **No `T` table.** `get_variable_defs` is the ramp at all three widths: chip 13 / 12 / 11, dispLg
+  130 / 81 / 54, bodyMd 14 / 13 / 13, bodySm 13 / 13 / 12, labelSm 18 / 14 / 12, list 24 / 19 / 18.
+  Display/Title is `u(36)` / 28 / 26. The eyebrow is Body/Chip: Inter Bold, tracked -0.06em.
+- **The desktop head shrinks to fit its widest word: the first Lime size that gives way to its
+  column.** The seed's heading is the shared "Let's make / your night unforgettable." (Retro's QA
+  kept it over the frame's "Book Kai for your event"). At Lime's 107 px, UNFORGETTABLE. (5.158em) is
+  552 px, and the half column is 501. The inherited `overflowWrap` therefore broke it as
+  UNFORGETTABL / E.; Retro's 78.7 px fits. The fix is **`vm.titleWordEms`**, a Lime-only key in
+  `sectionVm` set after every heading fallback: the widest word of `vm.title`, in `bebasEms`, by
+  the nav's `navEms` rule. The block sets `min(dispLg, floor((contentW − 60z) / 2 / ems))` at
+  desktop only, which is **97 px** for the seed, on three lines. 768 (418 < 688) and 390 (279 < 346)
+  never bite. A hand-derived em cap could not have helped: the fix has to shrink, not narrow, and a
+  literal would break on the artist's next long word. Any later Lime display head in a column
+  should take the same key.
+- **Named diffs.**
+  - The frame's copy (Retro's, inherited): three boxes against the seed's four, and a two-line
+    "Book Kai for your event" against the seed's three lines at desktop and 390 (two at 768). So the
+    heads are 259 / 144.2 / 144.1 tall against 232 × 0.82 / 144 / 96.
+  - With the taller card the desktop head centres against it, as the frame's does.
+  - The seed's typed `\n` folds as whitespace, Retro's reading.
+  - The prompt line stays after the boxes are corrected, until the next submit. That is the shared
+    seam's behaviour.
+- **Measured against the masters.**
+  - Desktop: section 525.1 (570 × 0.82 = 467.4, plus the fourth box and the third head line);
+    eyebrow 11, with the h2 16.4 under it (20 × 0.82) and the paragraph 16.4 under that; card
+    501.4 × 365.1 (319.8 + one 44.3 box pitch); price row 32.4, bookings 15.4, boxes 36.1, pill 44.3.
+  - 768: h2 at 32 (32), paragraph at 196.2 (196), card 32 under the head (32); inside the card,
+    price at 28, bookings at 72.8 (73), boxes at 104.9 (105), 39 tall; pill 54; card 415.2
+    (366 + 49).
+  - 390: card 402.2 (356 + 47), boxes 37, pill 54.
+  - The canvas has no inputs, no anchors and no pointer cursors. `n=0` is the card with its pill
+    alone; `n=8` grows it.
+- **`live=1` at desktop and 390** (puppeteer, with a capture-phase `preventDefault` on the mailto;
+  probes deleted):
+  - A refused submit rings all four boxes in 2px `s.tx`, the heights unchanged, and prints the
+    prompt.
+  - Typing clears each ring.
+  - The mailto subject is the bare *Enquiry*, and the body carries the four values.
+  - A valid submit swaps in the sent card, and *Write another* restores the typed values.
+  - No page errors.
+- **Digest** at themes 0–4, all 645 renders: exactly form arch 2 at theme 1, at three widths. The
+  new vm key is read nowhere else.
 
 ## Open questions
 
