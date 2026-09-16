@@ -558,7 +558,7 @@ and the selectors; Retro layout 4's repertoire note gives the Stacked card as
 
 ## The end-of-pass sweep
 
-**Done: `<docs sha>` (docs, comments, this plan, `plans/README.md`) and `<refresh sha>` (the
+**Done: `047d915` (docs, comments, this plan, `plans/README.md`) and `2cd0e41` (the
 `index.html` refresh).** What each item came to is under *Learned on the end-of-pass sweep* at
 the foot of *Conventions*; the list is kept as it was run.
 
@@ -1487,7 +1487,7 @@ Settled in section 10 (the testimonials — the last body section):
   theme 1: exactly testimonials arch 3 at three widths (no `_arch_7_` file exists — the
   convention above).
 
-Learned on the end-of-pass sweep (`<docs sha>` and `<refresh sha>`):
+Learned on the end-of-pass sweep (`047d915` and `2cd0e41`):
 
 - **The claim sites were layout 3's, one layout on.** CLAUDE.md and README said "designed at
   layouts 1, 2 and 3" with `HeaderV0`–`V2` fitted and "Layout 4 is Retro's compositions in
