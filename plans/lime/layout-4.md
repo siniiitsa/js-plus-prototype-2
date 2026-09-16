@@ -169,7 +169,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 4 | `gallery` | `964:72909` *(wrapper `964:72874`, head `964:72875`)* | 874 × 646 | `971:5597` *(wrapper `971:5562`, head `971:5563`)* | 768 × 594 | `977:9171` *(wrapper `977:9136`, head `977:9137`)* | 390 × 586.3 | `964:72815` / `964:78491` / `977:8142` | done `9716713` |
 | 5 | `repertoire` | `964:72916` *(Section `964:72911`, panel `964:72912`)* | 1208 × 536 | `971:5604` *(Section `971:5599`, panel `971:5600`)* | 608 × 582 | `977:9178` *(Section `977:9173`, panel `977:9174`)* | 310 × 650 | `964:72822` / `964:78509` / `977:8166` | done `5d7d7a4` |
 | 6 | `map` | `964:72924` *(Frame 319 `964:72918`, head `964:72920`)* | 1440 × 747 | `971:5612` *(Frame 319 `971:5606`, head `971:5608`)* | 768 × 871 | `977:9186` *(Frame 319 `977:9180`, head `977:9182`)* | 390 × 680 | `964:72830` / `964:78599` / `977:8322` | done `1bffd9c` |
-| 7 | `pricing` | `964:72926` | 1440 × 546 | `971:5613` | 768 × 809 | `977:9187` | 390 × 837 | `964:72831` / `964:78656` / `977:8440` | — |
+| 7 | `pricing` | `964:72926` | 1440 × 546 | `971:5613` | 768 × 809 | `977:9187` | 390 × 837 | `964:72831` / `964:78656` / `977:8440` | done `8546dbb` |
 | 8 | `calendar` | `964:72939` + wizard `964:72938` *(Section `964:72927`, Frame 324 `964:72928`)* | 478 × 536 + 680 × 536 | `971:5626` + `971:5625` *(Section `971:5614`, Frame 324 `971:5615`)* | 608 × 505 + 608 × 479 | `977:9200` + `977:9199` *(Section `977:9188`, Frame 324 `977:9189`)* | 350 × 496 + 350 × 474 | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | — |
 | 9 | `form` | `964:72940` | 1440 × 795 | `971:5627` | 768 × 1024 | `977:9201` | 390 × 971 | `964:72845` / `964:79477` / `977:8663` | — |
 | 10 | `testimonials` | `964:72941` | 1440 × 716 | `971:5628` | 768 × 642.4 | `977:9202` | 390 × 624.4 | `964:72846` / `964:79536` / `977:8764` | — |
@@ -573,7 +573,10 @@ Written now from what the plan expects; refine as the sections defer things. One
    Lime's wide masters ring the active thumb at 3px (below), so the sentence wants a Lime
    clause. A fifth, from section 6: the events map paragraph's "**Layout 4** is the pager
    alone: its whole gig list is one **mustard** ticker" is Retro's wording — under Lime the
-   ticker is an olive `box1` capsule.
+   ticker is an olive `box1` capsule. A sixth, from section 7: the pricing paragraph's
+   "**Layout 4** … divided by a 4px rule in **`vm.tierRow.card`**" and "one per feature over
+   **`vm.tierFeatSeats`**" are Retro's — under Lime the rule is `s.ac` read directly (layout
+   3's `tierRow`-not-read rule) and the feature seats are the block's own box1 / lime pair.
 2. **One whole-page published check under Lime at layout 4**, one puppeteer script: builder →
    Lime → card 4 → *Use this header* → Publish → Open, then every `s.v3` control on the page —
    header nav and burger (fresh tab per width), the media tiles and transport with audio, the
@@ -618,10 +621,13 @@ pass goes on.
   layout 4, and `preview.jsx`'s `&column=` is not read.
 - **Two glows, one hue**: `s.ac` at 34 on the media's sleeve and its marked tile. Four backdrop
   blurs; read each fill's opacity before transcribing a blur.
-- **`arch 7` folds onto layout 4 for `pricing` and `testimonials` alone** (`CATS[].n` 8; the
-  digest runs `arch < CATS[c]`), so a theme-1 digest of those two categories differs in
-  `_arch_7_` files as well as `_arch_3_`. `media` and `repertoire` (n 7) stop at arch 6, and
-  the other five body categories and the header have no fold partner at 3.
+- **`arch 7` folds onto layout 4 for `pricing` and `testimonials` alone** (`data.js`'s
+  `CATS[].n` is 8 there) — **but `digest.mjs` never renders it**: the script carries its own
+  `CATS` table with `pricing: 4` and `testimonials: 4`, so no `_arch_7_` file exists on either
+  side of a `cmp` and a theme-1 digest of those two categories differs in exactly three
+  `_arch_3_` files, like every other body category (section 7 read the script; the sentence
+  this replaces was written from `data.js`). `media` and `repertoire` (n 7) stop at arch 6 in
+  `data.js` and at 4 in the script for the same reason.
 - **Do not give `shots.mjs` and `digest.mjs` the same `OUT` label.** Both write to
   `$OUT/<label>/`, so the eleven before-pictures showed up as eleven phantom `cmp` diffs in
   the themes-0,2,3,4 run (all `.jpg`, none a digest row). Keep the shots under their own
@@ -1147,6 +1153,86 @@ Settled in section 6 (the events map):
   Digest at themes 0, 2, 3 and 4: zero differing files; theme 1: exactly map arch 3 at three
   widths (map has no fold partner), re-run map-only at all five themes after the overlay fix
   with the same answer.
+
+Settled in section 7 (pricing):
+
+- **The seventh layout-4 block, inside its branch after the seam: `if (s.lime)` within
+  `Pricing`'s `if (s.v3)`, after `bleedX`** — layout 3's pricing seat one branch over. The
+  branch has no state (the pill's `to` is its whole live seam), but `desk`, `u`, `pad` and
+  `bleedX` are the branch's, so the block sits after them and ahead of `rowBox`, which reads
+  `tierRow`. The tree is Retro's twin's node for node (row of name / mid / price column at
+  1440, the three stacked narrow; tag chips over feature pills over the blurb; kind / price
+  row / pill; the foot's small print) and nearly every leaf changes size or paint, so a block.
+  Diff 162 / 0 in `EncoreSection.jsx`, one hunk. Retro's `T`, `chipType`, `rowBox`,
+  `serviceRow`, `s.tierRow` (pale lime under Lime) and `s.tierFeatSeats` (box1 / white under
+  Lime) are not read.
+- **Primitives: Lime alone, on the page's Scheme 1, and every text is one ink.** The instance
+  fills `sem/bg` and paints nothing (Retro's reading holds; the three `-div` frames are the
+  page colour on the page colour). The name, blurb, SET / PROJECT, "from", the numeral, the
+  tag chip labels and the small print all bind `sem/text/1` = `s.ac`. `get_variable_defs`
+  and the nodes agreed on every entry at all three widths; no node carries an effect at any
+  width, so Retro's 768 / 390 offset block under the pill is not drawn.
+- **The rule is an inset shadow, not Retro's border.** `sem/stroke/2` = `s.ac`, 4px INSIDE the
+  row's foot on every row but the last: the frame's 244 is 48 + 148 + 48 with the stroke
+  inside the padding, a `borderBottom` would add 4 × 0.82 to each row, and nothing reaches
+  the row's foot edge for the shadow to hide under (the map's overlay rule checked, not
+  needed). Bled through Retro's own `bleedX` — the rule spans the root at every width and
+  `scrollWidth` holds.
+- **The tag chips' hairline is the design here, not the leak.** rgba(242, 255, 208, .15) is
+  Scheme 1's `sem/stroke/1` = **`s.stroke1`** on this ground — Retro's comment on the same
+  node, which names the literal a Lime leak over its beige, is right for Retro's frame and
+  reversed for Lime's. `radius/pill`, `border/hairline` 1 INSIDE as a shadow (so the 5 / 10
+  stands with no `calc(… - 1px)`), Body/Chip at `s.chip` and `-0.06em`.
+- **The feature pills are the header's chip pair, inlined by parity.** `scheme/1/tag1/bg`
+  `s.box1` lettered `tag1/text` `s.ac`, then `tag2/bg` `s.ac` lettered `tag2/text`
+  `s.activeFg`, seat `j % 2` — the layout-4 header session inlined the same pair over the
+  same Tags component. The frame's seats 3 and 4 ink `scheme/3/tag1/text` #C7FF3C and
+  `scheme/4/tag1/text` #15180F on a Scheme 1 component: leaked tokens (the header's and the
+  bio's reading), not drawn. `radius/chip` 6 is passed as `s.radiusChip`, a px string
+  (unscaled at desktop, the bio session's spelling), 5 / 11, Label/XS in `s.ui` at 1.26.
+- **The pill is BookPill's Lime branch with the pair turned round.** `bg={s.tx} fg={s.bg}
+  discFg={s.ac} full={s.mob}` and nothing else — not Retro's `disc`, `size`, `glyph`, `shadow`
+  or `style` — because the branch's 5 / 5 / 5 / 21 × k, gap 10, 46 × 44 disc and Display/List
+  at 1.2 are this frame's pill exactly (184 × 54 / 163 × 54 / 159 × 54), and `full` at 390 is
+  the master's own k = 1 (an 18px label). It hugs at every width where Retro's `full={!desk}`
+  fills the narrow row; the 15 pointer cursors on the canvas are BookPill's own unconditional
+  cursor inherited by its disc and glyph, shared with every Lime caller.
+- **No `T` table, no Device override.** `get_variable_defs` is the ramp at all three widths:
+  display-sm 50 / 40 / 32 (`s.dispSm`, lh 1 — the name and the numeral), label-sm 18 / 14 / 12
+  (`s.labelSm` through `labelStyle`, the kind), list 24 / 19 / 18 (the pill's label, BookPill's
+  own read), chip 13 / 12 / 11, label-xs 20 / 14 / 12, body-md 14 / 13 / 13, body-lg 16 / 15 /
+  15, eyebrow 15 / 12 / 11 at 1.3 (the foot). Every box is Retro's twin's: 48 / 56, 30 / 30 and
+  30 / 10 on the row, its gap 40 / 32 / 32, mid 14, chips 8, the price column's 12 over a 20
+  price row, the name's 409 at desktop and FILL narrow, the foot's 18. What moves is the price
+  column's floor: the frame hugs both rows at **184** (Retro's 186), taken as the `minWidth`
+  for Retro's reason.
+- **Named diffs.** Every seeded row carries a tag row where the frame draws one on its second
+  row alone, and the tags and features print the artist's casing where the frame types
+  capitals (both Retro's inherited readings); `tierKind` prints one word on every row; the
+  pill reads "Start Enquiry" against the frame's "Star Enquiry", so it is 158.8 / 169 / 164.5
+  wide against 150.9 / 163 / 159; the 390 content column is the root's 346 (`padX` 22) against
+  the frame's 370 (`bleedX` puts the identical value back, Retro's mechanism), so the seeded
+  feature rows wrap to three lines there; and the seeded rows run taller than the frame's two
+  (chips, four or five features and a blurb in every mid) — 200.8 / 394.5 / 405.9 for the
+  first row against 200.1 / 359 / 358, with the desktop row exactly the price column's 121.4
+  plus twice 39.4.
+- **Measured against the masters' content edges** (seeded page): desktop row padded 39.4 / 64
+  with the rule 3.3px inset in rgb(175, 227, 53) spanning 1180, name 41px at 124 / 119.4 and
+  335.4 wide (409 × 0.82), tag chips 19.2 tall (23 × 0.82) at 11px / 4.1 / 8.2 ringed
+  rgba(242, 255, 208, .15), feature pills 28.3 tall (35 × 0.82) at 16px / 4.1 / 9 on radius 6
+  alternating rgb(46, 57, 40) / rgb(175, 227, 53) with inks lime / rgb(13, 31, 3), blurb 11px,
+  kind 15px at lh 16.5, "from" 13px on the numeral's baseline, numeral 41px, pill 158.8 × 44.3
+  at 20px with a 37.7 × 36.1 disc, price column at x 1017.2 with `minWidth` 150.9 (184 ×
+  0.82), foot 12px at lh 15.6 padded 14.8; 768 row 30 / 40 (`padX`) with a 4px rule, name 40,
+  chips 22 at 12px, pills 27.6 at 14px / 5 / 11, blurb 13, kind 14 at 15.4, numeral 40, "from"
+  15, pill 169 × 54 at 19px with the 46 × 44 disc, foot 12 at 15.6 padded 18; 390 row 30 / 22
+  with a 4px rule, name 32, chips 21 at 11px, pills 25.1 at 12px, kind 12 at 13.2, numeral 32,
+  pill 164.5 × 54 at 18px, foot 11 at 14.3. `scrollWidth` holds at every width. `live=1` at
+  desktop and 390 (puppeteer, probe deleted): every pill is `<a href="#form">`, a span on the
+  canvas. `n=0` prints *No packages yet.* in `s.tx` in one unruled row (layout 3's Lime ink);
+  `n=1` draws one row with no rule; `n=8` draws seven rules. No page errors. Digest at themes
+  0, 2, 3 and 4: zero differing files; theme 1: exactly pricing arch 3 at three widths (no
+  `_arch_7_` file exists — the convention above).
 
 ## Open questions
 
