@@ -13894,6 +13894,359 @@ function EventsMap({ s }) {
     // 1440 frame lights its third; that is the -1 start showing, the same
     // intended diff layout 2 ships.
     const litRow = (i) => shown.length > 1 && i === feat
+    // The coverage rings as a share of the viewport's width (480 / 300 / 140 in
+    // a 570, 315 and 350 viewport), outer first; the labels sit on each ring's
+    // right edge on the midline, inner label first, as the frame seats them.
+    const ringW = desk ? [84.2, 52.6, 24.6] : tab ? [152.4, 95.2, 44.4] : [137.1, 85.7, 40]
+    // Live, the zoom steps the map layer by a quarter; the canvas is the frame.
+    // "Expand view" opens directions to the gig the panel features.
+    const zoomScale = s.live ? 1.25 ** zoom : 1
+    const expand = extLink(s, feature?.directions)
+    const Expand = expand ? 'a' : 'span'
+    const canReveal = s.live && !allGigs && pages > 1
+
+    // Lime (964:68681 / 984:10766 / 984:10797). The tree is Retro's twin's box
+    // for box — the 56 / 56·30 / 60·10 sheet insets, the 60 / 30 column gap,
+    // the 18 column gap, the 14 rows round a 56 disc, the 32 / 12 / 12·10 panel
+    // and its 24 gap, the 30 × 40 zoom buttons 16 in — so the block reads the
+    // filter, the page, `feat` and the zoom and reveal state above, and changes
+    // the dress, which reaches every leaf.
+    //
+    // The section is **Scheme 4**: a pale `s.tx` sheet inked `s.bg`, with every
+    // outline the 15% ink hairline stroked inside, where Retro's are full-ink
+    // borders and a 2px olive rule. The panel nests **Scheme 2**, whose `box/1`
+    // is `#CCFA61` (`lime3`) at all three widths, and its status tab, ring
+    // labels, rings and pin are the accent. No node carries an effect. Every
+    // size is the Lime ramp; Display/Title is the frames' 36 / 28 / 26, since
+    // `vm.title` is the heading string.
+    if (s.lime) {
+      const ink = s.bg // sem/text/1 and /2
+      const mist = '#D5E3B2' // Scheme 4 sem/box/1 — the date discs
+      const hair = '#15180F26' // Scheme 4 sem/stroke/1, 15%
+      const lime3 = '#CCFA61' // Scheme 2 sem/box/1 — the panel and the map container
+      const lift = '#D9FF7F' // Scheme 2 sem/box/2 — the zoom buttons
+      const titleSize = s.mob ? '26px' : tab ? '28px' : u(36)
+      const ring = (c) => `inset 0 0 0 1px ${c}`
+      const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
+      const chipL = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+      }
+
+      const headL = (
+        <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
+          <span style={bodySm}>Gigs &amp; travel</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1, letterSpacing: s.dls,
+          }}>{s.title}</h2>
+        </div>
+      )
+
+      // The lit chip is ink lettered in the sheet's colour; every chip keeps
+      // the hairline, which on the lit one is ink on ink.
+      const chipRowL = chips.length > 0 && (
+        <div style={row(u(desk || tab ? 8 : 5), { flexWrap: 'wrap', maxWidth: '100%' })}>
+          {chips.map((ch, k) => {
+            const on = k === active
+            return (
+              <span
+                key={`${ch.city || 'all'}-${k}`}
+                onClick={s.live ? () => { setChip(k); setPage(0) } : undefined}
+                style={{
+                  ...bodySm, flex: 'none', whiteSpace: 'nowrap',
+                  boxShadow: ring(hair), borderRadius: '999px', padding: `${u(5)} ${u(12)}`,
+                  background: on ? ink : 'transparent', color: on ? s.tx : ink,
+                  cursor: s.live ? 'pointer' : undefined,
+                }}
+              >{ch.city ? `${ch.label} · ${ch.n}` : ch.label}</span>
+            )
+          })}
+        </div>
+      )
+
+      // The lit row is an ink pill with pale type; its disc stays `mist` with
+      // ink type, and its hour chip fills with the sheet. The rule under each
+      // row is the hairline, dropped on the lit pill and the row above it.
+      const gigRowL = ({ g: gg, i }, k) => {
+        const on = litRow(i)
+        const next = shown[k + 1]
+        const fg = on ? s.tx : ink
+        const tix = extLink(s, gg.url)
+        const Tix = tix ? 'a' : 'span'
+        const showTix = !!tix || !s.live
+        const mark = (
+          <span style={col(0, {
+            width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
+            borderRadius: '999px', background: mist, boxShadow: ring(hair), color: ink,
+          })}>
+            {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation. */}
+            <span style={{
+              fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
+            }}>{gg.month}</span>
+            <span style={{ fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26 }}>{gg.day}</span>
+          </span>
+        )
+        const lines = (
+          <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
+            <span style={{
+              fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls,
+              overflowWrap: 'anywhere',
+            }}>{gg.venue}</span>
+            {!!gg.city && (
+              <span style={on
+                ? { fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3, letterSpacing: s.dls }
+                : bodySm}>{gg.city}</span>
+            )}
+          </div>
+        )
+        const when = !!gg.time && (
+          <span style={{
+            ...bodySm, flex: 'none', whiteSpace: 'nowrap', color: ink,
+            boxShadow: ring(hair), borderRadius: '999px', padding: `${u(4)} ${u(10)}`,
+            background: on ? s.tx : undefined,
+          }}>{gg.time}</span>
+        )
+        const tickets = showTix && (
+          <Tix {...tix} style={{
+            ...bodySm, flex: 'none', whiteSpace: 'nowrap',
+            color: 'inherit', textDecoration: 'none', cursor: tix ? 'pointer' : undefined,
+          }}>Tickets →</Tix>
+        )
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            width: '100%', boxSizing: 'border-box', color: fg,
+            cursor: s.live ? 'pointer' : undefined,
+            ...(on
+              ? { background: ink, borderRadius: '999px', padding: `${u(14)} ${u(29)} ${u(14)} ${u(10)}` }
+              : {
+                padding: `${u(14)} 0`,
+                ...(next && litRow(next.i) ? null : { boxShadow: `inset 0 -1px 0 ${hair}` }),
+              }),
+            ...(s.mob ? col(u(14), { alignItems: 'flex-start' }) : row(u(14))),
+          }}>
+            {s.mob ? (
+              <>
+                <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
+                {(showTix || !!gg.time) && (
+                  <div style={row(u(10), {
+                    width: '100%', justifyContent: showTix ? 'space-between' : 'flex-end',
+                  })}>{tickets}{when}</div>
+                )}
+              </>
+            ) : <>{mark}{lines}{when}{tickets}</>}
+          </div>
+        )
+      }
+
+      // The 390 pager is two full-ink-ringed pills with no fill: the shared
+      // Lime pager re-inked for this sheet.
+      const listL = (
+        <div style={col(0, { width: '100%', boxShadow: `inset 0 1px 0 ${hair}`, color: ink })}>
+          {shown.map((r, k) => gigRowL(r, k))}
+          {shown.length === 0 && (
+            <span style={{ ...bodySm, padding: `${u(14)} 0` }}>No dates yet.</span>
+          )}
+          {pages > 1 && (
+            <div style={{ marginTop: u(10) }}>
+              <Pager s={s} frame={{
+                pages: [], grow: true, lime: { ring: ink, ink },
+                onStep: s.live
+                  ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+                  : undefined,
+              }} />
+            </div>
+          )}
+        </div>
+      )
+
+      // The frame's five dots are ink at 60%, which vanishes on the dark
+      // raster, so the pins are layout 2's pair: pale at 8, the featured one
+      // the accent at 14 in a 2px ink ring.
+      const pinsL = shown.map(({ g: gg, i }) => {
+        const on = i === feat
+        return (
+          <span key={i} onClick={onPick(i)} style={{
+            position: 'absolute', left: gg.pin.x, top: gg.pin.y,
+            width: on ? u(14) : u(8), height: on ? u(14) : u(8),
+            borderRadius: '999px', background: on ? s.ac : s.tx,
+            boxShadow: on ? `0 0 0 2px ${ink}` : undefined,
+            transform: 'translate(-50%, -50%)', cursor: s.live ? 'pointer' : undefined,
+          }} />
+        )
+      })
+
+      // The rings are stroked inside at 1 / 1.5 / 2 and .3 / .5 / .8.
+      const ringLine = [[1, 0.3], [1.5, 0.5], [2, 0.8]]
+
+      const panelL = (
+        <div style={col(u(24), {
+          background: lime3, color: ink, borderRadius: desk ? u(50) : '30px', alignItems: 'flex-start',
+          padding: desk ? u(32) : tab ? u(12) : `${u(12)} ${u(10)}`,
+        })}>
+          <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
+            <div style={row(u(12), {
+              width: '100%', justifyContent: 'space-between',
+              ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+            })}>
+              {!!s.mapStatus && (
+                <span style={row(u(8), {
+                  background: s.ac, color: ink, borderRadius: '999px', flex: 'none',
+                  padding: `${u(6)} ${u(12)}`, ...chipL,
+                })}>
+                  <span style={{
+                    width: u(6), height: u(6), borderRadius: '999px', background: ink, flex: 'none',
+                  }} />
+                  {s.mapStatus}
+                </span>
+              )}
+              {!!s.mapUpdated && (
+                <span style={{ ...bodySm, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
+              )}
+            </div>
+            {feature ? (
+              <div style={col(u(4), { width: '100%', minWidth: 0 })}>
+                <h3 style={{
+                  margin: 0, fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1,
+                  letterSpacing: s.dls, overflowWrap: 'anywhere',
+                }}>{feature.venue}</h3>
+                {!!feature.city && (
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, opacity: 0.7,
+                  }}>{feature.city}</span>
+                )}
+              </div>
+            ) : (
+              <span style={{
+                fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7,
+              }}>No dates yet.</span>
+            )}
+          </div>
+
+          {/* The container's corner is 25 / 42 / 24, its hairline an overlay
+              over the raster it clips. */}
+          <div style={col(0, {
+            position: 'relative', width: '100%', background: lime3, overflow: 'hidden',
+            borderRadius: desk ? u(25) : tab ? '42px' : '24px',
+          })}>
+            {/* The viewport's aspect is each master's own residue: 570 × 471,
+                315 × 512 and 350 × 157. */}
+            <div style={{
+              position: 'relative', width: '100%', overflow: 'hidden',
+              aspectRatio: desk ? '570 / 471' : tab ? '315 / 512' : '350 / 157',
+            }}>
+              <div style={{
+                position: 'absolute', inset: 0, transform: `scale(${zoomScale})`,
+                transformOrigin: '50% 50%', transition: 'transform .25s ease',
+              }}>
+                <span aria-hidden style={{
+                  position: 'absolute', inset: 0, background: s.box1,
+                  ...(s.mapRadialSrc
+                    ? { backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : null),
+                }} />
+                {ringW.map((w, i) => (
+                  <span key={w} aria-hidden style={{
+                    position: 'absolute', left: '50%', top: '50%', width: `${w}%`, aspectRatio: '1',
+                    borderRadius: '999px', boxShadow: `inset 0 0 0 ${u(ringLine[i][0])} ${s.ac}`,
+                    opacity: ringLine[i][1], transform: 'translate(-50%, -50%)',
+                  }} />
+                ))}
+                {s.mapRings.slice(0, ringW.length).map((label, k) => (
+                  <span key={k} aria-hidden style={{
+                    position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
+                    transform: 'translate(-50%, -50%)', background: s.ac, color: ink,
+                    borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
+                  }}>{label}</span>
+                ))}
+                {pinsL}
+                {/* The artist's marker: an accent head in a 2px ink ring round
+                    an ink glyph, over an accent tail whose tip is the rings'
+                    centre. */}
+                <span aria-hidden style={col(0, {
+                  position: 'absolute', left: '50%', top: '50%', alignItems: 'center',
+                  transform: 'translate(-50%, -100%)',
+                })}>
+                  <span style={row(0, {
+                    background: s.ac, color: ink, padding: u(4),
+                    boxShadow: `inset 0 0 0 2px ${ink}`, borderRadius: '999px',
+                  })}>
+                    <User size={Math.round(16 * z)} />
+                  </span>
+                  <span style={{
+                    width: 0, height: 0, borderLeft: `${u(5)} solid transparent`,
+                    borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${s.ac}`,
+                  }} />
+                </span>
+              </div>
+              <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+                {[['+', 1], ['−', -1]].map(([glyph, dir]) => (
+                  <span key={glyph}
+                        onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
+                        style={{
+                          width: u(30), height: u(40), borderRadius: u(8), background: lift, color: ink,
+                          boxShadow: ring(hair), boxSizing: 'border-box',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
+                          cursor: s.live ? 'pointer' : undefined, userSelect: 'none',
+                        }}>{glyph}</span>
+                ))}
+              </div>
+            </div>
+            <div style={s.mob
+              ? col(u(10), {
+                width: '100%', alignItems: 'flex-start', padding: `${u(14)} ${u(10)}`,
+                boxShadow: `inset 0 1px 0 ${hair}`,
+              })
+              : row(u(12), {
+                width: '100%', justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
+                boxShadow: `inset 0 1px 0 ${hair}`,
+              })}>
+              <span style={bodySm}>
+                {[s.mapBase, `${s.gigs.length} pins`, s.mapRadius].filter(Boolean).join(' · ')}
+              </span>
+              {/* The frame strokes the arrow in the accent, faint on `lime3`. */}
+              {!!s.mapExpand && (
+                <Expand {...expand} style={row(u(4), {
+                  ...chipL, flex: 'none', color: 'inherit', textDecoration: 'none',
+                  cursor: expand ? 'pointer' : undefined,
+                })}>{s.mapExpand}<span aria-hidden style={{ color: s.ac }}>→</span></Expand>
+              )}
+            </div>
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: ring(hair),
+            }} />
+          </div>
+        </div>
+      )
+
+      return (
+        <div style={{
+          margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+          background: s.tx, color: ink,
+          padding: `${u(desk ? 56 : tab ? 56 : 60)} calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 10)})`,
+          display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+          gap: u(desk ? 60 : 30), alignItems: 'start',
+        }}>
+          <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0 })}>
+            {headL}
+            {chipRowL}
+            {listL}
+            {/* "See all gigs": Scheme 4's ink pill, pale type round a pale disc
+                with an ink arrow — `BookPill`'s Lime branch with the pair
+                turned round. Live it lifts the pager, as Retro's does. */}
+            {!!s.mapCta && (
+              <span onClick={canReveal ? () => { setAllGigs(true); setPage(0) } : undefined}
+                    style={{ display: s.mob ? 'block' : 'inline-block', width: s.mob ? '100%' : undefined, cursor: canReveal ? 'pointer' : undefined }}>
+                <BookPill s={s} label={s.mapCta} bg={ink} fg={s.tx} full={s.mob}
+                          style={s.mob ? { width: '100%', justifyContent: 'space-between' } : undefined} />
+              </span>
+            )}
+          </div>
+          {panelL}
+        </div>
+      )
+    }
 
     const head = (
       <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%' })}>
@@ -14090,17 +14443,6 @@ function EventsMap({ s }) {
         }} />
       )
     })
-
-    // The coverage rings as a share of the viewport's width (480 / 300 / 140 in
-    // a 570, 315 and 350 viewport), outer first; the labels sit on each ring's
-    // right edge on the midline, inner label first, as the frame seats them.
-    const ringW = desk ? [84.2, 52.6, 24.6] : tab ? [152.4, 95.2, 44.4] : [137.1, 85.7, 40]
-    // Live, the zoom steps the map layer by a quarter; the canvas is the frame.
-    const zoomScale = s.live ? 1.25 ** zoom : 1
-    // "Expand view" opens directions to the gig the panel features.
-    const expand = extLink(s, feature?.directions)
-    const Expand = expand ? 'a' : 'span'
-    const canReveal = s.live && !allGigs && pages > 1
 
     const panel = (
       <div style={col(u(24), {
