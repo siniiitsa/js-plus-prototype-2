@@ -202,15 +202,21 @@ if (q.get('noimage') === '1') c.image = null
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
 // driving the editor and its popup.
+// &column=left | right renders the section as layout 3's composed desktop row
+// stands it (`pageRows` / `arrangeRows`): built with `sectionVm({ column })`,
+// which drops its horizontal padding, in a wrapper the column's own width
+// (684 / 323). Desktop only — the narrow frames never compose.
+const column = device === 'desktop' ? q.get('column') || undefined : undefined
 const s = sectionVm({
   // &name=Poppy%20Jaeggy is how a display slot is checked against descenders
   // and a longer string — the seeded "Kai Mercer" has neither.
   themeIdx, cat, arch, c, artistName: q.get('name') || 'Kai Mercer',
   Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections,
+  ...(column ? { column } : null),
 })
 
 createRoot(document.getElementById('root')).render(
-  <div style={{ width: Z[device].canvasW, margin: '0 auto' }}>
+  <div style={{ width: column ? s.contentW : Z[device].canvasW, margin: '0 auto' }}>
     <EncoreSection s={s} />
   </div>,
 )

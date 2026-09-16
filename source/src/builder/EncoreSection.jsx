@@ -770,7 +770,7 @@ function TagChips({ s, justify = 'flex-start', radius, size }) {
   )
 }
 
-function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk' }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk', classic = false }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
@@ -789,7 +789,14 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // caps pointing in, so the lower name reads upright and the upper one
   // inverted. The frame's face is Bebas Neue *Bold*, which Google Fonts does
   // not ship; the regular cut is set rather than a synthesised bold.
-  if (s.lime) {
+  //
+  // `classic` opts a caller out of this branch (and the flat starburst below)
+  // and into the §10.2 seal, which then honours `hue` and `ink`. Lime's
+  // layout-3 bio (964:68663's "Frame 248") is that seal exactly — Retro's
+  // asterisks in Lime's inks, a `s.ac` disc with `s.bg` marks — where every
+  // other Lime frame draws the dark disc above. Every earlier caller leaves it
+  // off.
+  if (s.lime && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
     return (
       <div style={{
@@ -825,7 +832,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
     )
   }
 
-  if (!s.retro) {
+  if (!s.retro && !classic) {
     // The pre-§10.2 starburst seal, still used by the flat templates.
     const spikes = 24
     const pts = []
@@ -3283,6 +3290,165 @@ function Bio({ s }) {
   // takes `location`. Both surviving values — `kicker` and `location` — are
   // the same pair v0 sets in its credit line and v1 in its caption, so layout
   // 3 reads nothing the section did not already print.
+  //
+  // Lime layout 3 (964:68663 · 984:10748 at 768 · 984:10779 at 390; the head
+  // 964:68658 · 984:10743 · 984:10774) is Retro's tree node for node, so the
+  // block below restates Retro's structure whole — the stat row and its 2.2em
+  // values, the 390 stack, Frame 9, the seal's band floor — and changes only
+  // the dress. That dress reaches nearly every leaf: an olive card in a
+  // `stroke1` ring (none at 390, radius 60 there), a radius-55 photograph on a
+  // `box3` well under the INNER_SHADOW 34 in `s.ac` with no grain, two 1px
+  // rules in `sem/text/2` at the node's .32 opacity where Retro draws 5px
+  // bands, the lit seal (below), and every size the Lime ramp's token at its
+  // width, so no `T` table. `Bio` holds no state, so nothing is shared.
+  //
+  // Two things the frames do not settle the way their numbers suggest. The
+  // desktop stat column states 96, but its Label/LG values run two lines at 32
+  // and push the label out of the top of the clipped column ("SINCE:" is all
+  // the 1440 render shows); the label is the artist's fact, so the row grows
+  // past the 96 floor instead, the head band 9 taller than the frame's. And at
+  // 390 the foot rule stands inside the 20-gap column with the head rule
+  // (Frame 258's children at 0 / 206 / 227 / 558), where Retro's stands
+  // outside it.
+  if (s.v2 && s.lime) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const pad = u(s.mob ? 10 : 32)
+    // Body/Chip, Inter bold at -6%: the stat labels and "[ About ]".
+    const chipType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+      letterSpacing: '-0.06em', textTransform: 'uppercase',
+    }
+    // `#F2FFD0` at .32 as an 8-digit hex (no `rgba()` in the file). A hairline
+    // does not ramp.
+    const rule = <div style={{ height: '1px', background: `${s.tx}52`, flex: 'none' }} />
+
+    const stat = (label, value) => (
+      <div key={label} style={col(u(15), {
+        flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
+      })}>
+        <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
+        <span style={labelStyle(s, s.labelLg, { whiteSpace: 'normal', overflowWrap: 'break-word', minHeight: '2.2em' })}>{value}</span>
+      </div>
+    )
+    const stats = [
+      s.since ? stat('Performing\nsince:', s.since) : null,
+      stat('Current\nrole:', s.kicker),
+      stat('Based\nin:', s.location),
+    ].filter(Boolean)
+
+    const head = (
+      <div style={{
+        display: 'flex', flexDirection: s.mob ? 'column' : 'row',
+        alignItems: s.mob ? 'flex-start' : 'flex-end',
+        gap: u(s.mob ? 10 : 40), overflow: 'hidden',
+        padding: `${u(24)} ${pad}`,
+      }}>
+        {/* Display/SM at 50 wraps "Kai Mercer" in the 179 cap at 1440, as the
+            frame does; 40 and 32 hold it on one line. */}
+        <div style={{
+          flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
+          minWidth: 0, maxWidth: u(179),
+        }}>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+            letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
+          }}>{s.brand}</p>
+        </div>
+        <div style={row(u(s.mob ? 52 : 100), {
+          flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
+          minWidth: 0, color: s.tx, minHeight: u(96), alignItems: 'flex-end',
+        })}>{stats}</div>
+      </div>
+    )
+
+    // The seal's disc centre is 150.4 down and 105.6 in from the about band's
+    // top-left at 1440, Retro's number, since the head band (148) and the rule
+    // (1) come to Retro's 144 + 5. At 768 the head is 144 over the same 1px
+    // rule and the seal keeps its leaked desktop y, so the centre is 154.4
+    // down. The 390 seal stands on the photograph at Retro's offsets.
+    const sealBox = 125.37
+    const sealTop = tab ? 91.69 : 87.7
+    const seal = (
+      <SealBadge s={s} classic hue={s.ac} ink={s.bg} size={(s.mob ? 62.68 : sealBox) * z} tilt={32.38}
+                 style={s.mob
+                   ? { right: u(30.76), top: u(52.51) }
+                   : { left: u(42.9), top: u(sealTop) }} />
+    )
+
+    const about = (
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', gap: u(40), overflow: 'hidden',
+        padding: `${u(24)} ${pad}`, position: 'relative',
+        ...(s.mob ? null : { minHeight: u(sealTop + sealBox + 24) }),
+      }}>
+        {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
+        <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
+          <span style={chipType}>[ About ]</span>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP1}</p>
+          {s.bioP2 && (
+            <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP2}</p>
+          )}
+        </div>
+        {!s.mob && seal}
+      </div>
+    )
+
+    return (
+      <div style={col(u(30), { alignItems: 'stretch' })}>
+        {/* The wrapper's head: Label/XS in `font/ui` (Chakra Petch) and
+            Display/LG, both on the page ground. */}
+        <div style={col(u(30), { alignItems: 'flex-start' })}>
+          <span style={{
+            fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
+            letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
+          }}>{s.initials} Bio</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+        </div>
+        <div style={{
+          position: 'relative', background: s.box1, color: s.tx, overflow: 'hidden',
+          borderRadius: u(s.mob ? 60 : 50), paddingBottom: u(40),
+          ...col('0', { alignItems: 'stretch' }),
+        }}>
+          <div style={{ position: 'relative', padding: u(s.mob ? 10 : 30), ...row('0') }}>
+            <div style={{
+              position: 'relative', flex: '1 0 0', minWidth: 0, overflow: 'hidden',
+              height: u(s.mob ? 259 : 380), borderRadius: u(55), background: s.box3,
+            }}>
+              <div style={{ position: 'absolute', inset: 0 }}>
+                <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={s.tx} />
+              </div>
+              <span style={{
+                position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
+              }} />
+            </div>
+            {s.mob && seal}
+          </div>
+          <div style={col(u(s.mob ? 20 : 0), { alignItems: 'stretch' })}>
+            {head}
+            {rule}
+            {about}
+            {rule}
+          </div>
+          {/* The ring is Figma's inside stroke, so an overlay painted over the
+              children rather than a border that would grow the card. */}
+          {!s.mob && (
+            <span style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+            }} />
+          )}
+        </div>
+      </div>
+    )
+  }
+
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)

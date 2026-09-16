@@ -40,6 +40,7 @@ import grain from './photos/grain.jpg'
 import limeHero from './photos/lime-hero.jpg'
 import limeHeaderAvatar from './photos/lime-header-avatar.jpg'
 import limeStage from './photos/lime-stage.jpg'
+import limeBioStage from './photos/lime-bio-stage.jpg'
 import limeCalendar from './photos/lime-calendar.jpg'
 import limeAvatar from './photos/lime-avatar.jpg'
 import limeGallery4 from './photos/lime-gallery-4.jpg'
@@ -157,9 +158,15 @@ export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeade
 // of), exported at 1200 × 800 with no crop: every master fills it untransformed,
 // so a centred cover is the frame's own picture at 838 × 437, 334 × 437 and
 // 370 × 262. Only the form's layout 2 reads `photo`.
+//
+// Lime's bio at layout 3 is Retro's case again (964:68663): the ID card's
+// landscape slot fills with the whole source `limeStage` is the portrait slice
+// of (hash fa453f7d). Its fill carries that slice's transform, but its scale
+// mode is FILL, which ignores it, so the render is the whole shot — exported
+// at 1200 × 800 as `lime-bio-stage.jpg`.
 const SEEDS = {
   Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage, layouts: { 2: { bio: bioStage } } },
-  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto },
+  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto, layouts: { 2: { bio: limeBioStage } } },
 }
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
