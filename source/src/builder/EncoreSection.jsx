@@ -6852,6 +6852,160 @@ function Pricing({ s }) {
     const sel = s.live ? Math.max(0, Math.min(chip, s.tiers.length - 1)) : 0
     const t = s.tiers[sel]
 
+    // Lime — the same composition in Lime's mode (964:64591 at 1440, 986:11859
+    // at 768, 986:11878 at 390), placed after the seam as the gallery's and
+    // repertoire's layout-2 blocks are: `sel` and `t` are computed above, so the
+    // published package toggle and the Book pill are Retro's whole and need
+    // nothing new. The tree is Retro's twin's (kicker, heading and quote beside
+    // one plan card; chips, name, blurb, price, pill, a rule, the includes
+    // grid; the small print), but every leaf changes its dress: the tilted card
+    // in the seat's hues is an upright `sem/box/1` card in a 1px `sem/stroke/1`
+    // ring, the pill is `BookPill`'s Lime defaults exactly, and every type size
+    // is the Lime ramp's `s.*` (all three masters are in their page's Device
+    // mode). `T`, `h` (`vm.tierHero`), `chipType`, `left` and `card` below are
+    // Retro's and are not read. Scheme 1 throughout, so no literal; the only
+    // bound box token is the chips' `radius/chip`, and every other box is a raw
+    // number, × 0.82 on desktop through `u()`.
+    //
+    // Two things not followed. The instance's own 1px inside ring (all four
+    // sides, all three widths) is declined, as Retro's branch declines its
+    // twin's `#111` one: it is the component frame's stroke, not a design, and
+    // stacked sections would double it. And the frame's two chips are
+    // indistinguishable — the picked one's fill is `sem/tag/1/bg`, the card's
+    // own colour — so the picked chip is redrawn in `sem/active`, layout 1's
+    // Lime chip pair, since a live toggle has to show which package is on show.
+    // The canvas pins chip 0, so its picture has one filled chip where the
+    // frame has two outlines: the intended diff.
+    if (s.lime) {
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      // Body/Chip: Inter Bold at lh 1, Figma's -6% as an em so it ramps.
+      const chipFace = (extra) => body(s.chip, 1, {
+        fontWeight: 700, letterSpacing: '-0.06em', whiteSpace: 'nowrap', ...extra,
+      })
+      const money = String(t ? t.price : '')
+      const symbol = /^[^\d]/.test(money) ? money[0] : ''
+      const amount = symbol ? money.slice(1) : money
+
+      const head = (
+        <div style={col(u(20), {
+          ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+          alignItems: 'flex-start',
+        })}>
+          <span style={chipFace({ color: s.tx })}>[ PRICING ]</span>
+          {/* Display/MD at lh 1. The frame's break after "Personalised" is a
+              typed one; the heading is the artist's, so it wraps on the
+              column. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+            letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+          {!!s.pricingQuote && (
+            <p style={body(s.bodyLg, 1.5, { margin: 0, paddingTop: u(12), color: s.tx })}>
+              {s.pricingQuote}
+            </p>
+          )}
+        </div>
+      )
+
+      const plan = t ? (
+        <>
+          <div style={col(u(14), { alignItems: 'flex-start', alignSelf: 'stretch' })}>
+            {/* One chip per package, Retro's selector. Not drawn at one. */}
+            {s.tiers.length > 1 && (
+              <div style={row(u(8), { flexWrap: 'wrap' })}>
+                {s.tiers.map((p, i) => (
+                  <span
+                    key={p.n}
+                    onClick={s.live ? () => setChip(i) : undefined}
+                    style={chipFace({
+                      padding: `${u(8)} ${u(14)}`, borderRadius: s.radiusChip,
+                      background: i === sel ? s.pillBg : 'transparent',
+                      color: i === sel ? s.activeFg : s.ac,
+                      // The 1px `sem/stroke/2` rule, stroked inside.
+                      boxShadow: i === sel ? 'none' : `inset 0 0 0 1px ${s.ac}`,
+                      cursor: s.live ? 'pointer' : undefined,
+                    })}
+                  >{p.name}</span>
+                ))}
+              </div>
+            )}
+            <span style={{
+              fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+              letterSpacing: s.dls, color: s.tx,
+            }}>{t.name}</span>
+            {!!t.blurb && <p style={body(s.bodyMd, 1.5, { margin: 0, color: s.tx })}>{t.blurb}</p>}
+            {/* Bottom-aligned at 6. The narrow masters FILL the numeral, which
+                stands the unit at the card's right edge; 1440 hugs it. */}
+            <span style={row(u(6), { alignItems: 'flex-end', alignSelf: 'stretch' })}>
+              {!!symbol && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{symbol}</span>}
+              <span style={{
+                fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
+                flex: desk ? 'none' : '1 1 auto',
+              }}>{amount}</span>
+              {!!s.tierUnit && (
+                <span style={body(s.bodyMd, 1.5, { color: s.tx, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
+              )}
+            </span>
+            {/* The frame's pill is BookPill's Lime defaults exactly; the 390
+                master keeps it at full size. "3 dates open…" beside it stays
+                dropped, Retro's rule. */}
+            <BookPill s={s} to={s.tierBookTo} full={s.mob} />
+          </div>
+
+          {t.feats.length > 0 && (
+            <>
+              <span style={{ alignSelf: 'stretch', height: '1px', background: s.stroke1, flex: 'none' }} />
+              <div style={col(u(12), { alignItems: 'flex-start', alignSelf: 'stretch' })}>
+                <span style={chipFace({ color: s.tx })}>WHAT&rsquo;S INCLUDED</span>
+                {/* Two columns at every width, Retro's grid. The frame's last
+                    three features in Body/MD are normalised to Label/XS. */}
+                <div style={{
+                  display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+                  columnGap: u(24), rowGap: u(10), alignItems: 'start', width: '100%',
+                }}>
+                  {t.feats.map((f, i) => (
+                    <span key={i} style={row(u(8), { alignItems: 'center', minWidth: 0 })}>
+                      <span style={chipFace({ color: s.ac, flex: 'none' })}>+</span>
+                      <span style={{
+                        fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
+                        letterSpacing: s.dls, color: s.tx, minWidth: 0,
+                      }}>{f}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </>
+      ) : (
+        // The card is the composition, so an emptied list keeps it.
+        <span style={body(s.bodyMd, 1.5, { color: s.muted })}>No packages yet.</span>
+      )
+
+      return (
+        <div style={col(u(24))}>
+          <div style={desk
+            ? row(u(48), { alignItems: 'flex-start', width: '100%' })
+            : col('32px', { width: '100%' })}>
+            {head}
+            <div style={{
+              ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
+              ...col(u(30), { alignItems: 'flex-start' }),
+              background: s.box1, borderRadius: u(50),
+              boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+              padding: s.mob ? '30px 20px' : u(42),
+            }}>{plan}</div>
+          </div>
+          {!!s.pricingSub && (
+            <span style={body(s.eyebrow, 1.3, { fontWeight: 700, color: s.tx })}>{s.pricingSub}</span>
+          )}
+        </div>
+      )
+    }
+
     // Figma strokes an auto-layout frame without growing it, so the frame's
     // 8/14 padding on a 1px border is 1px less each side here (the
     // repertoire's rule) and the chip keeps the height it is drawn at — 28 at
