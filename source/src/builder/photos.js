@@ -163,10 +163,13 @@ export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeade
 // landscape slot fills with the whole source `limeStage` is the portrait slice
 // of (hash fa453f7d). Its fill carries that slice's transform, but its scale
 // mode is FILL, which ignores it, so the render is the whole shot — exported
-// at 1200 × 800 as `lime-bio-stage.jpg`.
+// at 1200 × 800 as `lime-bio-stage.jpg`. Its layout-4 card (964:72857) fills
+// the same source the same way into a 664 × 720 portrait box, so it takes the
+// same file: a centred cover of it diffs 2.7 in 255 from the render over the
+// card's top, where `limeStage`'s slice diffs 27.
 const SEEDS = {
   Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage, layouts: { 2: { bio: bioStage } } },
-  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto, layouts: { 2: { bio: limeBioStage } } },
+  Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto, layouts: { 2: { bio: limeBioStage }, 3: { bio: limeBioStage } } },
 }
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.

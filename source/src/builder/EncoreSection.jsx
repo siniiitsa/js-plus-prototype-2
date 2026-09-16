@@ -3920,6 +3920,185 @@ function Bio({ s }) {
   // desktop component's `var(--size/…, N)` unchanged, and every *box* number
   // in all three is the desktop component's own — so the whole branch is one
   // `z`, one type table and the handful of places 390 genuinely differs.
+  //
+  // ── Lime ───────────────────────────────────────────────────────────────
+  // Lime's layout-4 bio (Figma 964:72857 · 971:5307 at 768 · 977:8875 at
+  // 390; the Section wrappers 964:72850 · 971:5300 · 977:8868 hold the head)
+  // is Retro's twin's tree node for node — the photograph filling the card,
+  // the frosted panel on its floor holding the name, the meta row and the
+  // prose box, and the wrapper's eyebrow, display head and Genres chips
+  // beside (1440) or over (768 / 390) it — so the block below restates that
+  // structure and changes the dress, which reaches nearly every leaf: a
+  // block, layouts 1–3's seat for this section, ahead of Retro's branch.
+  // `Bio` has no state; the whole live seam is `ListenLink to=`.
+  //
+  // Schemes by node. The Section is Scheme 3 — `sem/bg` is `s.ac`, its inks
+  // `s.bg` — so the band is lime with the head in ink. The instance is
+  // **Scheme 1 at 1440 and Scheme 2 at 768 and 390** on one component, which
+  // moves two wells a step: the ground under the photograph is `sem/box/3`,
+  // `s.box3` at 1440 and #263020 narrow, and the prose box `sem/box/2`,
+  // `s.box2` at 1440 and #43523B narrow — read off the nodes, since a token
+  // right at one width is wrong at the next. The panel is #2E3928 (`s.box1`)
+  // at .71 under a BACKGROUND_BLUR 54 at every width; the name is `sem/text/1`
+  // (`s.ac`) and every other line `sem/text/2` (`s.tx`). Radii are raw: 55
+  // on the card, 27 on the panel, 13.5 on the prose box, `radius/chip` on the
+  // chips. The 1px #000000 stroke is inside the card at 1440 and 768 and
+  // absent at 390, drawn as a last-child overlay since `Photo` fills the card.
+  //
+  // No `T` table: every size is the ramp at its width — display-xl 200 / 120
+  // / 72 at the frames' own .75 (the header session's reading: Lime's Bebas
+  // caps stack at .75, and Retro's note above is about the flat three),
+  // label-xs 20 / 14 / 12 in `font/ui`, display-sm 50 / 40 / 32, body-md
+  // 14 / 13 / 13, body-lg 16 / 15 / 15. The boxes are Retro's twin's (116 /
+  // 60 / 30 over the sheet, 56 / 30 / 10 either side, the stage's 30 / 30 /
+  // 10, the panel's 30 / 30 / 20, the prose box's 20) but for three: the
+  // narrow Sections stack at **40 and 15** and the 390 head's own gap is 15
+  // where Retro's are 40 and 30; the prose box's gap is the node's 10; and
+  // the desktop columns meet at the midline — the Section's `itemSpacing` is
+  // 0 and the head's 664 ends where the card's begins (56 + 664 = 720), so
+  // the air beside the head is its own unfilled measure, not a gutter.
+  //
+  // The Genres label is not drawn. The Tags instance is Scheme 1 at every
+  // width, so its "Genres" is `sem/text/1` — lime — on the lime band and
+  // invisible in all three renders (the 390 instance carries no label frame
+  // at all); the light chips' #AFE335 box vanishes the same way and their
+  // label stands in ink, the tags row's "one chip draws its box invisible",
+  // which `vm.chips` reproduces as it is. What that costs is the 768 head:
+  // 322 against the frame's 361, since the frame spends 24 + 16 on a line
+  // nobody can see (1440 is `space-between` over the card, so nothing moves
+  // there). Inking it `s.bg` is the one-line reversal.
+  //
+  // The photograph is the whole `fa453f7d` source cover-cropped — the fill's
+  // `imageTransform` is `limeStage`'s slice but its scale mode is FILL, which
+  // ignores it (layout 3's lesson) — so `SEEDS.Lime.layouts[3].bio` seeds
+  // `lime-bio-stage.jpg`: a centred cover of it diffs 2.7 in 255 from the
+  // 1440 render over the card's top where the slice diffs 27. Named costs:
+  // the panel is content-tall (the 390 master's flow, Retro's mechanism), so
+  // the frame's trailing air inside its stated 305 is dropped and the wide
+  // masters' leaked 22 / 33 between the head and the prose box is the 30
+  // padding, landing the box ~8 low at 1440; and the desktop card is 526 ×
+  // 590 against 664 × 720 × 0.82, our content width.
+  if (s.v3 && s.lime) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // Scheme 2's `box/3` and `box/2` — the media card's and the testimonials'
+    // literals — on the two narrow instances alone; Scheme 1's keys at 1440.
+    const well = desk ? s.box3 : '#263020'
+    const dusk = desk ? s.box2 : '#43523B'
+    const panelPad = u(s.mob ? 20 : 30)
+    const body = { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }
+
+    const head = (
+      <div style={desk
+        ? col('0', { alignItems: 'flex-start', justifyContent: 'space-between', minWidth: 0 })
+        : col(u(s.mob ? 15 : 30), { alignItems: 'flex-start' })}>
+        <span style={{
+          fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
+          letterSpacing: s.dls, textTransform: 'uppercase', color: s.bg,
+        }}>{s.initials} Bio</span>
+        {/* The 572.9 measure is on the text node at 1440 and 768 and is what
+            breaks the head — three lines at 1440, two at 768; the 390 master
+            states the full 370. */}
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: s.dispXl, lineHeight: 0.75,
+          letterSpacing: s.dls, color: s.bg,
+          maxWidth: s.mob ? undefined : u(572.9), wordBreak: 'break-word',
+        }}>{s.title}</h2>
+        {/* The Tags instance's own 457 at 1440 and 768 (six chips wrap to two
+            rows in it, as the frames show), the full measure at 390. */}
+        {s.showTags === 'show' && (
+          <div style={{ alignSelf: 'stretch', maxWidth: s.mob ? undefined : u(457) }}>
+            <TagChips s={s} radius={s.radiusChip} />
+          </div>
+        )}
+      </div>
+    )
+
+    const meta = (
+      <div style={{
+        ...row(u(18), {
+          width: '100%', color: s.tx, flexWrap: 'wrap', rowGap: u(8),
+          // The 390 master spreads the three items across the panel; the wide
+          // ones gap them 18. Wrapping rather than clipping is Retro's call.
+          ...(s.mob ? { justifyContent: 'space-between' } : null),
+        }),
+        ...body,
+      }}>
+        <span>{s.kicker}</span>
+        {s.since && <span>Performing since {s.since}</span>}
+        <ListenLink s={s} to={s.listenTo} color={s.tx} after=" ↗"
+                    style={{ ...body, fontWeight: 400, letterSpacing: s.dls, textTransform: 'none' }} />
+      </div>
+    )
+
+    return (
+      <div style={{
+        // The sheet: out to the section's own edges, past the root's padding.
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+        background: s.ac, color: s.bg,
+        padding: `${u(desk ? 116 : tab ? 60 : 30)} calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'})`,
+        // Two `minmax(0, 1fr)` columns rather than two `flex: 1 1 0` halves:
+        // a zero basis resolves against the content box, so the padded card
+        // came out 24.6 wider than the head (the enquiry form's layout-3 trap).
+        ...(desk
+          ? { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'stretch' }
+          : col(u(tab ? 40 : 15))),
+      }}>
+        {head}
+        <div style={{
+          ...(desk ? { minWidth: 0 } : null),
+          position: 'relative', overflow: 'hidden', background: well,
+          borderRadius: u(55),
+          // The frame's own height as a floor, HeaderV3's rule: the panel is
+          // content-tall, so a second paragraph grows the card.
+          minHeight: u(s.mob ? 536 : 720),
+          padding: u(s.mob ? 10 : 30),
+          ...col('0', { justifyContent: 'flex-end', alignItems: 'center' }),
+        }}>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={s.tx} />
+          </div>
+          <div style={{
+            position: 'relative', width: '100%', overflow: 'hidden',
+            borderRadius: u(27), padding: panelPad,
+            // `s.box1` at .71 as an 8-digit hex (no `rgba()` in the file),
+            // over the frame's 54 backdrop blur, emitted as CSS 27.
+            background: `${s.box1}B5`,
+            backdropFilter: `blur(${u(27)})`, WebkitBackdropFilter: `blur(${u(27)})`,
+            ...col(panelPad, { alignItems: 'stretch' }),
+          }}>
+            <div style={col(u(16), { alignItems: 'flex-start' })}>
+              {/* Wraps, the layout-3 card's call: at leading 1 a clip would cut
+                  the descenders off at the baseline. */}
+              <p style={{
+                margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+                letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
+              }}>{s.brand}</p>
+              {meta}
+            </div>
+            <div style={{
+              background: dusk, color: s.tx, borderRadius: u(13.5), padding: u(20),
+              ...col(u(10), { alignItems: 'stretch' }),
+            }}>
+              <p style={{ margin: 0, ...body, fontSize: s.bodyLg }}>{s.bioP1}</p>
+              {s.bioP2 && (
+                <p style={{ margin: 0, ...body, fontSize: s.bodyLg }}>{s.bioP2}</p>
+              )}
+            </div>
+          </div>
+          {!s.mob && (
+            <span style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: 'inset 0 0 0 1px #000000',
+            }} />
+          )}
+        </div>
+      </div>
+    )
+  }
+
   if (s.v3) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -3975,10 +4154,10 @@ function Bio({ s }) {
             it outside the header. At .75 a stacked line of caps collides in
             every display face taller than Fraunces (Titan One and Bebas Neue
             both overlap outright), so every template but Retro degrades to
-            .89 — Lime included, whose layout 4 is not fitted yet — which is
-            the leading every other display head in this file
-            already sets — the page's own ramp rather than an invented
-            number. */}
+            .89 — the flat three, since Lime's own block above takes its
+            frames' .75 in Bebas Neue — which is the leading every other
+            display head in this file already sets — the page's own ramp
+            rather than an invented number. */}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.disp),
           lineHeight: s.retro ? 0.75 : 0.89,
