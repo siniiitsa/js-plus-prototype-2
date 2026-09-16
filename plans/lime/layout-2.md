@@ -126,7 +126,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | done `5a9cf76` |
 | 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | **dropped** — the section is being removed from the project, so it is not fitted (its code still exists) |
 | 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | done `405efb0` |
-| 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | — |
+| 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | done `3c0abaa` |
 | 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | — |
 | 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | — |
 | 9 | `map` | `964:64594` | 1440 × 867 | `986:11862` | 768 × 823 | `986:11881` | 390 × 1286 | `964:64651` / `986:10974` / `986:11467` | — |
@@ -664,6 +664,39 @@ Settled in section 5 (the repertoire):
   Retro's accepted diff, as in layout 1); `n=30` pages 1 → 2 → 3 → 2 at 390;
   `n=0` shows *No songs yet.* at 768. No page errors. Digest at themes 0–4, all 810 renders:
   exactly repertoire arch 1 at theme 1, three widths.
+
+Settled in section 6 (the gallery):
+
+- **The first layout-2 section with no block: `s.lime` ternaries through `Gallery`'s `if (s.v1)`.**
+  One `use_figma` walk of all three instances (fills, strokes and their per-side weights, effects,
+  radii, paddings, gaps, text) returned Retro's twin's numbers at every node: gaps 24 / 14, radii
+  30 and the 390 rail's 10, the pill's 4 / 10·14 / gap 4 at 40 in, the 768 head's 20, the 390 rail's
+  ten tiles. Only paint and type differ, and `Grain` already returns null outside Retro. So
+  count-the-leaves said ternaries, seven of them: `bw` widened to `(s.retro || s.lime)` (Lime's
+  `s.bw` is 2; the frame strokes 1 inside); the hero ring `s.ac` where Retro's is ink; a `well`
+  (`s.box3`) passed as `Photo`'s `style`, which only an empty slot shows; the caption's fill
+  `s.box1` and its ink gate widened to `s.tx`; and the caption's and the 768 head's type,
+  `s.chip` at `-0.06em`. The glow is one new `s.lime &&` overlay. The diff is 27 / 10, and the
+  five-theme digest is its proof.
+- **`size/chip` is 13 / 12 / 11 on these masters, which is `s.chip` exactly** (13 × 0.82 rounds to
+  11), so Body/Chip needs no per-width table. Retro's `u(desk ? 12 : 11)` stays Retro's.
+- **The hero glow is confirmed off the node**: INNER_SHADOW 34, spread 0, `#AFE335` (`s.ac`), on the
+  image frame that *contains* the caption. It is a last-child overlay after the caption, the media
+  bar's reading of Figma's paint order, × 0.82 on desktop. The frame's 4 and 3 radii on the inner
+  image frames are clipped by the 30 outside (nested clips: the largest draws).
+- **The 768 head's 204 × 1 spacer carries no paint**, so dropping it with Retro's *View list* and
+  `✕` loses nothing. *Gallery* is title case in Inter Bold at Body/Chip, `s.tx`.
+- **Photography needs nothing**: the hero's hash is `3a59b4d1`, `limeGallery4`, which is slot 3 and
+  `galActive()`, so the canvas opens on the frame's own hero. The six tiles are Retro's shared
+  strip in the frame too; their order is the seat rotation's, Retro's accepted diff.
+- **Measured against the masters' content edges**: desktop row 478.1 (583 × 0.82), hero 605.9 (the
+  37 out of the hero, Retro's rule), caption 33.8 in from the hero's outer edge (40 × 0.82 plus the
+  1px ring) at 11px, glow 27.9; 768 hero 333 × 392, caption and head 12px, the head's text 4 down
+  its 20 row (the frame's own), grid 358 under it; 390 hero 249 × 284, tiles 36.5 × 88 at 10. `live=1`
+  at desktop: three tile clicks rotate the hero through three slots, a hero click changes nothing
+  (the glow's `pointerEvents: none`), no page errors. `n=0` at desktop and 390: dark wells, `KM`
+  in `s.muted` reads on them, the glow and caption stand. Digest at themes 0–4, all 810 renders:
+  exactly gallery arch 1 at theme 1, three widths.
 
 ## Open questions
 
