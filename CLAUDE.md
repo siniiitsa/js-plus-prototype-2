@@ -505,8 +505,8 @@ mutated through a single `patch()` helper.
   (under Lime the ring is 2px of full ink, Lime's layout-1 rule) — and its card carries the frame's price row, `★★★★★ 42 bookings` line, "Check Availability"
   label and "No charge to enquire" line as fields seeded with the frame's copy (`price`,
   `priceUnit`, `bookings`, `cta`, `note`), each dropping when emptied except the label, which is
-  the submit and falls back to `button` (Lime's card reads `cta` and `note` but does not draw
-  the price row or the bookings line yet). The stage photograph above the heading is
+  the submit and falls back to `button` (Lime's card draws all five, the stars in ink, since
+  Scheme 4 binds both of the line's colours to it). The stage photograph above the heading is
   `FIELDS.form.photo`, a **third single-photo slot** beside `image` and `avatar`, because this
   section's `image` **is** the artist: the header's pair is the other way up,
   and layout 1 has drawn `image` as the 48px circle since it was fitted.

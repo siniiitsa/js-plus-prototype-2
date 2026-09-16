@@ -985,6 +985,25 @@ Settled in section 11 (the testimonials):
   shrinks the desktop column's tiles to 23 (Retro's small-pills-at-eight). No page errors. Digest
   at themes 0–4, all 810 renders: exactly testimonials arch 1 at theme 1, three widths.
 
+Settled after merging `main` (whose Retro layout-2 QA fixes gave the form and the calendar new
+fields):
+
+- **The form card now draws the price row and the bookings line**, which section 10 had dropped
+  under Retro's old reading. `main` made them fields (`price`, `priceUnit`, `bookings`), so a
+  Lime card that skipped them left three fields editing nothing. Read off the three masters: the
+  price is Bebas 36 / 28 / 26 at lh 1.1 beside a Body/SM unit, 8 apart on the baseline, over the
+  Body/SM line, all at the head of the card's 14-gap column. Scheme 4 binds the stars to
+  `sem/text/1` and the count to `sem/text/2`, and both are ink, so the line is one colour. They
+  stand through the sent card, Retro's rule. The same merge moved the submit onto `cta` ("Check
+  Availability") and the foot line onto `note` ("No charge to enquire"), which are the frame's
+  own words. That closes section 10's *Book Now* named diff. The calendar pill moved onto
+  `slotCta` ("Start Enquiry").
+- **Measured against the masters**, relative to the card: price 32.4 / 30.8 / 28.6 tall (the
+  frames' 40 × 0.82 / 31 / 29), 43.9 / 44.8 / 42.6 from the price's top to the line's (54 × 0.82
+  / 45 / 43), and the boxes 77 under the price at 768 (77). The unit stands 71.1 / 69.3 / 64.9 in
+  from the price (87 × 0.82 / 66 / 65; Bebas renders the 768 numeral 3px wider). Digest: only
+  form arch 1 at theme 1 moved, at three widths.
+
 Learned on the end-of-pass sweep (`ebc7f87` and `82612bd`):
 
 - **The docs' biggest falsehood was not on the list.** The four named sites each took one clause,

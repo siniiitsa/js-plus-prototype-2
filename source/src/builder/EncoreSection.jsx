@@ -15884,6 +15884,23 @@ function EnquiryForm({ s }) {
       }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
     )
 
+    // The card's head, read off the three frames: the price in Display/Title
+    // (Bebas 36 / 28 / 26 at lh 1.1) beside its Body/SM unit, 8 apart on the
+    // baseline, over Body/SM's `★★★★★  42 bookings`. Scheme 4 binds the stars
+    // to `sem/text/1` and the count to `sem/text/2`, and both are ink, so the
+    // line is one colour. Not controls, so they stand through the confirmation
+    // swap, Retro's rule; each drops when emptied.
+    const title = desk ? u(36) : s.mob ? '26px' : '28px'
+    const priceRow = (!!s.formPrice || !!s.formPriceUnit) && (
+      <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
+        {!!s.formPrice && <span style={type(s.display, title, 1.1)}>{s.formPrice}</span>}
+        {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
+      </div>
+    )
+    const bookingsLine = !!s.formBookings && (
+      <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>★★★★★{'  '}{s.formBookings}</span>
+    )
+
     return (
       <div style={{
         // The sheet, out to the section's edges past the root's padding — the
@@ -15976,13 +15993,15 @@ function EnquiryForm({ s }) {
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
             position: 'sticky', top: 0,
           })}>
+            {priceRow}
+            {bookingsLine}
             {sent ? (
               // The card alone changes. No frame draws this state: the title is
-              // Display/Title at the frames' own 36 / 28 / 26 (the dropped
-              // price's style, since `s.title` is the heading string), and the
-              // address is Body/MD — both invented, Retro's same two.
+              // Display/Title at the frames' own 36 / 28 / 26 (the price's style,
+              // since `s.title` is the heading string), and the address is
+              // Body/MD — both invented, Retro's same two.
               <>
-                <h3 style={type(s.display, desk ? u(36) : s.mob ? '26px' : '28px', 1.1, {
+                <h3 style={type(s.display, title, 1.1, {
                   margin: 0, overflowWrap: 'break-word',
                 })}>{s.formSentTitle}</h3>
                 <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
