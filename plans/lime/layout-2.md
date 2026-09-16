@@ -412,8 +412,7 @@ The header also settles the **hard offset shadow** call for `BookPill`, above.
 
 ## The end-of-pass sweep
 
-**Done** — see the commit log for `Run the Lime layout-2 end-of-pass sweep` (docs, comments, this
-plan) and `Refresh the committed standalone build for the Lime layout-2 pass`. What each item came
+**Done: `ebc7f87` (docs, comments, this plan) and `82612bd` (the `index.html` refresh).** What each item came
 to is under *Learned on the end-of-pass sweep* at the foot of *Conventions*; the list is kept as it
 was run.
 
@@ -986,7 +985,7 @@ Settled in section 11 (the testimonials):
   shrinks the desktop column's tiles to 23 (Retro's small-pills-at-eight). No page errors. Digest
   at themes 0–4, all 810 renders: exactly testimonials arch 1 at theme 1, three widths.
 
-Learned on the end-of-pass sweep:
+Learned on the end-of-pass sweep (`ebc7f87` and `82612bd`):
 
 - **The docs' biggest falsehood was not on the list.** The four named sites each took one clause,
   but CLAUDE.md and README still said "Lime is designed at layout 1 only" and "only `HeaderV0` is
@@ -1022,7 +1021,9 @@ Learned on the end-of-pass sweep:
 - **Thumbnails (deliverable 4):** all ten arch-1 rows render their fitted sections at
   `SIZES.desktop`: header, bio, media, gallery, repertoire, map, pricing, calendar, form and
   testimonials. **Cards 1, 3 and 4** publish with every header anchor scrolling and the burger
-  opening at 390 and 820. Card 3's panel has ten links, since `HeaderV2` carries one more. Cards 3
+  opening at 390 and 820. Card 3's probe counted ten `nav a` in the fixed panel where the other three count nine. The
+  panel itself maps only `s.navLinks`, so the probe probably matched a nav inside `HeaderV2`; not
+  chased. Cards 3
   and 4 still draw Retro's checker ribbon (unfitted).
 - **Two-build digest** (repo root on `127.0.0.1:8931`, old build digested before the `cp`):
   11 `--ac` roots, canvas 1088 / 768 / 390 asserted, **zero differing rows at all five themes and
