@@ -182,7 +182,7 @@ masters are fitted in one session.
 | 7 | `pricing` | `964:68680` | 1440 × 1199 | `984:10765` | 768 × 1072 | `984:10796` | 390 × 1474 | `964:68648` / `977:23149` / `982:10274` | done `0695e22` |
 | 8 | `map` | `964:68681` | 1440 × 819 | `984:10766` | 768 × 831 | `984:10797` | 390 × 887 | `964:68649` / `977:23264` / `982:10389` | done `1b5d080` |
 | 9 | `form` | `964:68682` | 1440 × 570 | `984:10767` | 768 × 734 | `984:10798` | 390 × 755 | `964:68650` / `977:23406` / `982:10472` | done `6d9b95d` |
-| 10 | `testimonials` | `964:68683` | 1440 × 790 | `984:10768` | 768 × 790 | `984:10799` | 390 × 1108 | `964:68651` / `982:8584` / `982:10499` | — |
+| 10 | `testimonials` | `964:68683` | 1440 × 790 | `984:10768` | 768 × 790 | `984:10799` | 390 × 1108 | `964:68651` / `982:8584` / `982:10499` | done `f17ea37` |
 | — | `footer` | `964:68684` | 1440 × 479.5 | `984:10769` | 768 × 647.4 | `984:10800` | 390 × 619.4 | — | **out of scope** — the same tree as Lime layout 1's footer, fitted in that pass's section 11, and `NVAR.footer` is 1 |
 | — | `tags` | `964:68664` | 858 × 75 | `984:10749` | 708 × 67 | `984:10780` | 370 × 97 | — | **not in the project** (`d734992`); not drawn under the bio card either |
 
@@ -1029,6 +1029,59 @@ Settled in section 9 (the enquiry form):
   - No page errors.
 - **Digest** at themes 0–4, all 645 renders: exactly form arch 2 at theme 1, at three widths. The
   new vm key is read nowhere else.
+
+Settled in section 10 (the testimonials):
+
+- **`if (s.lime)` within `Testimonials`' `if (s.v2)`, after `template`.** The block reads `desk`,
+  `u`, `n`, `marked`, `perRow` and `template`. The last three moved up above Retro's `empty`, with
+  their values unchanged, so the Lime path never builds Retro's rows. It does not read Retro's `T`,
+  `cardBg` … `cardLine`, `REG`, `SEATS`, `edge`, `body12`, `quoteType`, `disc`, `statCard`,
+  `quoteCard` or `empty`. Those are `paper` / `deep` derivations. The section has no control, so
+  `live=1` renders byte-identical to the canvas (digested). Diff 187 / 19; the 19 are the moved
+  consts and their comment.
+- **The tree is Retro's twin's, box for box**: the same 56 / 30·30·56 / 30·10·60 insets, 30 cell
+  padding, 14 / 16 / 24 gaps, 56 and 24 discs at −8, 275 / 276 seats and the foot's 10. The one box
+  that moves is the corner, **50** (Retro 30). The frame's rows (274 / 298) are residues of the
+  stated height; ours are content-tall, Retro's reading.
+- **Schemes by node, a four-seat register over Retro's `SEATS` order.**
+  - The stat card is Scheme 3: `lime3` in a `hair` ring, every ink `s.bg`, the numeral included.
+  - The cells in seat order are a Scheme 1 `box1`, then two Scheme 2 `#394732`s (`s.box2`), then
+    Scheme 4 `mist`, then `box1` again.
+  - Ink is `s.tx` on the dark seats and `s.bg` on mist. Rings are `stroke1` on the dark seats and
+    `hair` on mist, all 1px inset.
+  - The 56 disc is `s.ac` in the cell's ring colour, **lettered in the cell's own `sem/bg`**: `s.bg`
+    in Scheme 1 but `#2E3928` (`s.box1`) in the Scheme 2 seat. That is the one thing a token read
+    would miss.
+  - No node carries an effect.
+- **Two readings that are not the frame's.**
+  - The frame's `quote-cell` (seat 1) is its one **unstroked** cell. It is ringed like its
+    neighbours, as Retro normalised the same bare cell.
+  - The stack's faces are photographs in a 2px `lift` ring. The marks that stand in for them are an
+    **invented** pair, an `s.bg` disc lettered `s.ac`, because an accent disc vanishes on `lime3`.
+    The `lift` ring is faint there by the frame's own hand.
+  - Retro's drops hold: the stars, the `®` and the 306 head cap. The numeral is the review count.
+- **No `T` table.** `get_variable_defs` is the ramp at all three widths: dispMd 72 / 50 / 40 (the
+  head *and* the numeral), labelLg 32 / 21 / 14 (quote and initials), list 24 / 19 / 18, bodyLg
+  16 / 15 / 15, bodyMd 14 / 13 / 13, bodySm 13 / 13 / 12. The head is `s.tx` on both lines (Retro's
+  display line is ink on beige). An emptied quote drops its `<p>`, layout 2's Lime call.
+- **Measured against the masters' content edges** (seeded five):
+  - Desktop: head 74.4 (90 × 0.82 = 73.8), h2 59, wall 19.7 under it (24 × 0.82). Row 0 is
+    225.5 / 400.2 / 400.2 and row 1 399.8 / 399.8 / 226.3, discs 45.9 (56 × 0.82). The rows are
+    235.3 / 218, against 274 × 0.82 = 224.7.
+  - 768: row 0 is 275 / 190.5 / 190.5 (the frame's 200.5 less our 20), rows 299.5 / 276.5 (298),
+    discs 56.
+  - 390: the name cells are 201.8 (202). The stat card is 231.8 against 213, because the seeded
+    `sub` wraps to two lines in our 286 where the frame's copy holds one in 310. The root padding
+    is ours at 768 / 390 (Retro's diff).
+- **Edge states** (puppeteer, probe deleted):
+  - `n=0` keeps the stat card at *0 reviews* with no stack, beside a `box1` *No reviews yet.* cell.
+  - At `n=1` the one review fills row 0.
+  - At `n=8`, row 1 takes the 276 seat and row 2 is three fills. The fifth review (no `who`, no
+    `role`) collapses to the frame's bare quote cell in the 276 seat, and the stack marks only
+    the named seven.
+  - No pointer cursors, no anchors, no page errors.
+- **Digest** at themes 0–4, all 645 renders: exactly testimonials arch 2 at theme 1, at three
+  widths.
 
 ## Open questions
 
