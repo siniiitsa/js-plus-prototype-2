@@ -13489,6 +13489,287 @@ function Calendar({ s }) {
     const onNext = s.live && !last ? () => setWStep(wAt + 1) : undefined
     const sendLink = s.live && last && s.calBookTo ? { href: `#${s.calBookTo}` } : null
     const NextTag = sendLink ? 'a' : 'span'
+
+    // ── Lime ─────────────────────────────────────────────────────────────
+    // Lime's layout-4 Book Us block (calendar 964:72939 · 971:5626 · 977:9200,
+    // wizard 964:72938 · 971:5625 · 977:9199, in Frame 324 964:72928 ·
+    // 971:5615 · 977:9189): Retro's twin's tree node for node, in Lime's
+    // dress. It sits here, after the whole seam — `want` / `hit` / `cur` /
+    // `feat`, `stats`, and the wizard's `wAt` / `wCur` / `typeAt` / `last` /
+    // `onBack` / `onNext` / `sendLink` / `NextTag` — because every one of
+    // those is content, not paint, and is shared whole; `panelPad`, the 60 / 30
+    // corner and the 50 / 20 gaps are Lime's Frame 324 to the number, so they
+    // are read too. Retro's `T`, `panel` / `sheet` / `sheetInk` / `gone` /
+    // `card` / `cardInk` / `cardHi` / `hair` and the type consts are not: under
+    // Lime they are the `edge` / `paper` derivations the plan named, and the
+    // frame binds every fill to a `sem` key.
+    //
+    // **Primitives: Lime on the page's Scheme 1, two pills in other schemes.**
+    // The panel is `sem/box/2` (`s.box2`); the wizard card and the slot rows
+    // `sem/box/1` (`s.box1`) in a 1px `sem/stroke/1` inside hairline; the
+    // summary card `sem/text/2` (`s.tx`) — the frame binds the card to the
+    // *text* token, Retro's own reading — lettered `sem/box/2` with the big
+    // stat in `sem/bg`, so Retro's `cardInk = panel` is this frame's binding
+    // exactly. **That restores the three-level stack Retro's note said Lime
+    // flattens**: `box1` rows under a `tx` card on a `box2` panel, where the
+    // Retro path's `paper` rows and `tx` card are one colour on Lime.
+    // CLAUDE.md's "on Lime and Grunge the card and the rows share a fill" is
+    // now Grunge's alone — for the sweep. The card's own `stroke/1` (pale at
+    // .15 on pale) is not drawn, Retro's reading of the same stroke; no child
+    // reaches a card's edge, so the rings are plain inset shadows. The Back
+    // pill nests **Scheme 3** — `sem/text/1` there is `#15180F` = `s.bg`, its
+    // `sem/bg` is `#AFE335` = `s.ac` — and the Send Enquiry pill **Scheme 2**,
+    // whose `sem/bg` is `s.box1`: BookPill's Lime branch with `fg={s.box1}`,
+    // layout 3's calendar recipe verbatim. The wizard's title is `s.tx` where
+    // Retro's is the accent; `radius/chip` 6 is the dots' corner.
+    //
+    // **The type is the ramp** (`get_variable_defs` at all three widths:
+    // body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 13 / 13 / 12, chip
+    // 13 / 12 / 11, list 24 / 19 / 18, display-lg 130 / 81 / 54), read bare —
+    // it is already × 0.82 at desktop — and Display/Title 36 / 28 / 26 is a
+    // literal through `u()`, `s.title` being the heading string. Boxes are
+    // Retro's twin's but for four: the summary card pads **24 / 34** and the
+    // rows **18 / 34** (Retro's 24 and 18 / 24), both at radius **50** (Retro's
+    // 30), and the wizard card is radius **50 at 1440 and 16 at 768 / 390** —
+    // the narrow masters are a second component (`859:13517`), so the 16 is
+    // designed, not a leak — padded 40 / 48 and 30, gap 20 with the desktop's
+    // `space-between`. The stats' row gap and cell gap are both 12, so one grid
+    // holds them (Retro's reading). A blocked slot takes Lime's layouts 1–3
+    // state — the row's parts at .38, no strike, no handler, the hairline at
+    // full strength. The 390 stepper row is wider than its card in the frame
+    // too (its first group stands at x −32), so Retro's clip-about-the-centre
+    // mechanism is kept. No node carries an effect at any width.
+    if (s.lime) {
+      const hair = `inset 0 0 0 1px ${s.stroke1}`
+      const titleSize = u(desk ? 36 : s.mob ? 26 : 28)
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      const disp = (size, lh, extra) => ({
+        fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      const chipType = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', whiteSpace: 'nowrap',
+      }
+      const smallCaps = { ...chipType, textTransform: 'uppercase' }
+
+      const summary = (
+        <div style={col(u(20), {
+          background: s.tx, color: s.box2, borderRadius: u(50), padding: `${u(24)} ${u(34)}`,
+        })}>
+          <div style={row(u(14), { justifyContent: 'space-between' })}>
+            <div style={col(u(4))}>
+              <span style={body(s.bodyLg, 1.5)}>{s.brand}</span>
+              <span style={body(s.bodyMd, 1.5)}>{s.location}</span>
+            </div>
+            <div style={{
+              width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
+              overflow: 'hidden', background: s.box2,
+            }}>
+              <Photo s={s} initialsSize={Math.round(18 * z)} ink={s.tx} />
+            </div>
+          </div>
+          {stats.length ? (
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: u(12),
+            }}>
+              {stats.map((st, i) => {
+                const right = i % 2 === 1
+                return (
+                  <div key={st.label} style={col(u(6), {
+                    alignItems: right ? 'flex-end' : 'flex-start',
+                    textAlign: right ? 'right' : 'left',
+                  })}>
+                    <span style={st.big ? disp(titleSize, 1.1, { color: s.bg }) : chipType}>{st.label}</span>
+                    <span style={body(s.bodyLg, 1.5)}>{st.value}</span>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <span style={body(s.bodyLg, 1.5)}>{s.calPrompt}</span>
+          )}
+        </div>
+      )
+
+      const slotRow = (sl, i) => {
+        const onClick = s.live && sl.iso && !sl.booked ? () => setSel(sl.iso) : undefined
+        const dim = sl.booked ? { opacity: 0.38 } : null
+        return (
+          <div key={sl.iso || `row${i}`} onClick={onClick} style={row(u(14), {
+            background: s.box1, color: s.tx, borderRadius: u(50), boxShadow: hair,
+            padding: `${u(18)} ${u(34)}`, justifyContent: 'space-between',
+            cursor: onClick ? 'pointer' : undefined,
+          })}>
+            <span style={col(u(2), dim)}>
+              <span style={disp(titleSize, 1.1)}>{sl.mark}</span>
+              {sl.kind && <span style={body(s.bodySm, 1.4)}>{sl.kind}</span>}
+            </span>
+            {sl.price && (
+              <span style={body(s.bodyLg, 1.5, { flex: 'none', textAlign: 'right', ...dim })}>{sl.price}</span>
+            )}
+          </div>
+        )
+      }
+
+      const field = ({ key, label, ph }) => (
+        <div key={key} style={col(u(6), { alignItems: 'stretch', minWidth: 0 })}>
+          <span style={smallCaps}>{label}</span>
+          <div style={row(0, {
+            background: s.box2, color: s.tx, boxShadow: hair, borderRadius: '999px',
+            padding: `${u(12)} ${u(14)}`, ...body(s.bodyMd, 1.5),
+          })}>
+            {s.live ? (
+              <input value={wVals[key] ?? ''} placeholder={ph}
+                     type={key === 'email' ? 'email' : 'text'}
+                     inputMode={key === 'guests' ? 'numeric' : undefined}
+                     onChange={(e) => { const v = e.target.value; setWVals((o) => ({ ...o, [key]: v })) }}
+                     style={{
+                       flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
+                       padding: 0, margin: 0, font: 'inherit', color: 'inherit',
+                     }} />
+            ) : (
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ph}</span>
+            )}
+          </div>
+        </div>
+      )
+
+      const typeChips = nTypes > 0 && (
+        <div style={col(u(8), { alignItems: 'stretch' })}>
+          <span style={smallCaps}>{W.typesLabel}</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: u(10) }}>
+            {s.calTypes.map((t, i) => {
+              const on = i === typeAt
+              const onClick = s.live ? () => setWType(i) : undefined
+              return (
+                <span key={i} onClick={onClick} style={row(u(10), {
+                  minWidth: 0, borderRadius: '999px', padding: `${u(14)} ${u(16)}`,
+                  background: on ? s.ac : s.box2, color: on ? s.bg : s.tx,
+                  boxShadow: on ? undefined : hair, cursor: onClick ? 'pointer' : undefined,
+                  ...body(s.bodyMd, 1.5),
+                })}>
+                  <span style={{
+                    width: u(10), height: u(10), borderRadius: s.radiusChip, flex: 'none',
+                    background: on ? s.bg : s.ac,
+                  }} />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t}</span>
+                </span>
+              )
+            })}
+          </div>
+        </div>
+      )
+
+      const stepBody = wAt === 0 ? (
+        <div style={col(u(20), { alignItems: 'stretch' })}>
+          {typeChips}
+          {field(W.date)}
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid', gap: `${u(20)} ${u(10)}`,
+          gridTemplateColumns: wCur.boxes.length > 2 ? 'repeat(2, minmax(0, 1fr))' : 'minmax(0, 1fr)',
+        }}>
+          {wCur.boxes.map(field)}
+        </div>
+      )
+
+      const stepper = (
+        <div style={row(u(10), { justifyContent: 'center', width: '100%', overflow: 'hidden' })}>
+          {W.steps.map((x, i) => {
+            const on = i === wAt
+            return [
+              i > 0 && (
+                <span key={`rule${i}`} style={{
+                  flex: `0 1 ${u(40)}`, minWidth: u(4), height: '1px', background: s.box2,
+                }} />
+              ),
+              <span key={i} style={row(u(8), { flex: 'none', color: on ? s.ac : s.tx })}>
+                <span style={{
+                  width: u(28), height: u(28), flex: 'none', borderRadius: '999px', background: s.box1,
+                  boxShadow: `inset 0 0 0 1px ${on ? s.stroke2 : s.stroke1}`,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...chipType,
+                }}>{i + 1}</span>
+                <span style={body(s.bodyMd, 1.5, { whiteSpace: 'nowrap' })}>{x.name}</span>
+              </span>,
+            ]
+          })}
+        </div>
+      )
+
+      // Back and Next Step at the frame's own numbers — radius 67, a 46 × 44
+      // disc inset 5 with 21 on the label's side, Display/List — written here
+      // because BookPill has no left-disc form; the glyph is BookPill's own
+      // lucide arrow at its own scale, so the three discs on the block match.
+      const arrow = Math.round(46 * z * 0.6)
+      const pill = (discRight) => ({
+        ...row(u(10), { flex: 'none' }),
+        borderRadius: u(67), textDecoration: 'none', whiteSpace: 'nowrap',
+        padding: discRight ? `${u(5)} ${u(5)} ${u(5)} ${u(21)}` : `${u(5)} ${u(21)} ${u(5)} ${u(5)}`,
+        ...disp(s.list, 1.2),
+      })
+      const disc = (bg, fg, Glyph) => (
+        <span style={{
+          width: u(46), height: u(44), borderRadius: '999px', flex: 'none', background: bg, color: fg,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        }}><Glyph size={arrow} strokeWidth={1.5} /></span>
+      )
+      const buttons = (
+        <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' })}>
+          <span onClick={onBack} style={{
+            ...pill(false), background: s.bg, color: s.ac, cursor: onBack ? 'pointer' : undefined,
+          }}>
+            {disc(s.ac, s.bg, ArrowLeft)}
+            {W.back}
+          </span>
+          <NextTag {...sendLink} onClick={onNext} style={{
+            ...pill(true), background: s.ac, color: s.bg, cursor: onNext || sendLink ? 'pointer' : undefined,
+          }}>
+            {last ? W.send : W.next}
+            {disc(s.bg, s.ac, ArrowRight)}
+          </NextTag>
+        </div>
+      )
+
+      const wizard = (
+        <div style={col(u(20), {
+          background: s.box1, color: s.tx, boxShadow: hair, borderRadius: u(desk ? 50 : 16),
+          padding: desk ? `${u(40)} ${u(48)}` : '30px',
+          justifyContent: 'space-between', alignItems: 'stretch', minWidth: 0,
+        })}>
+          {stepper}
+          <p style={{ margin: 0, textAlign: 'center', ...disp(titleSize, 1.1) }}>{wCur.title}</p>
+          <p style={{ margin: 0, textAlign: 'center', ...body(s.bodySm, 1.4) }}>{wCur.line}</p>
+          {stepBody}
+          {buttons}
+        </div>
+      )
+
+      return (
+        <div style={col(u(s.mob ? 20 : 50), {
+          background: s.box2, borderRadius: u(s.mob ? 30 : 60), padding: panelPad,
+        })}>
+          <h2 style={{ margin: 0, ...disp(s.dispLg, 0.89, { color: s.ac }) }}>{s.title}</h2>
+          <div style={desk
+            ? {
+              display: 'grid', gridTemplateColumns: 'minmax(0, 680fr) minmax(0, 478fr)',
+              columnGap: u(50), alignItems: 'stretch',
+            }
+            : col(u(s.mob ? 20 : 50), { alignItems: 'stretch' })}>
+            {wizard}
+            <div style={col(u(16))}>
+              {summary}
+              {s.calSlots.filter((sl) => !cur || sl.iso !== cur).map(slotRow)}
+              <BookPill s={s} to={s.calBookTo} label={s.calCta} fg={s.box1} full={s.mob}
+                        style={{ width: '100%', justifyContent: 'space-between' }} />
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     const backBg = s.retro ? '#FBF6EA' : s.bg
     const backFg = s.retro ? '#5B5E2E' : s.tx
     const buttons = (
