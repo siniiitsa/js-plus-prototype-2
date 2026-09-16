@@ -8301,6 +8301,160 @@ function Repertoire({ s }) {
     // measure and simply land at 46 where 768 lands at 94.
     const { labels, at } = pageWindow(pages, pg, false)
 
+    // Lime — the same component in Lime's mode (964:64589 at 1440, 986:11857 at
+    // 768, 986:11876 at 390), placed after the seam as layout 1's block is:
+    // `active`, `filtered`, `pg`, `shown`, `columns` and the pager's `labels`
+    // are computed above, so the search, the chips and the pager are Retro's
+    // whole and the published repertoire needs nothing new. The frames' insets
+    // are Retro's to the pixel (56 / 30 / 10 across, 56 / 60 / 40 over the
+    // head, 56 / 60 / 20 round the pager), so `padH`, `headPadY` and
+    // `footPadY` are shared too. Every leaf changes its dress — the ink rules
+    // are hairlines in `sem/stroke/1`, the chips and the field stand on the
+    // sheet in a ring, the heading is pale, the pager is `Pager`'s Lime
+    // branch — so a block, and Retro's `sheet`, `ink`, `hue` and chip row
+    // below are not read.
+    //
+    // The sheet is `s.box1` (the frame's `phone`, Scheme 1's `sem/box/1`) on
+    // the same written-out bleed. Every size is the Lime ramp's `s.*` at its
+    // width (`get_variable_defs`: display-sm 50 / 40 / 32, list 24 / 19 / 18,
+    // label-sm 18 / 14 / 12, body-md 14 / 13 / 13, body-sm 13 / 13 / 12).
+    // Every rule is stroked inside its box, as Figma strokes it, so each is an
+    // inset shadow and every stated height stands: the head's ring on all four
+    // sides (sampled at both page edges and under the head), each row's foot,
+    // and the divider down the inside of the left column. The frame closes on
+    // the pager band with no rule of its own, where Retro's closes on a
+    // hairline.
+    if (s.lime) {
+      const ring = `inset 0 0 0 1px ${s.stroke1}`
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      const hint = 'Search songs or artists…'
+      // Each master's `flex-1` division of its list (416 / 410 / 295 over
+      // five), pinned for Retro's reason: our list has no height to divide.
+      const limeRowH = u(desk ? 83.2 : tab ? 82 : 59)
+      return (
+        <div style={{
+          margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+          background: s.box1, color: s.tx,
+        }}>
+          <div style={col(u(12), {
+            padding: `${headPadY} ${padH}`, boxShadow: ring,
+          })}>
+            {/* Display/SM in `sem/text/2`, line height 1. */}
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+              letterSpacing: s.dls, color: s.tx,
+            }}>{s.title}</h2>
+            <div style={row(u(16), {
+              justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(s.mob ? 10 : 12),
+              flexDirection: s.mob ? 'column' : 'row',
+              alignItems: s.mob ? 'flex-start' : 'center',
+            })}>
+              {/* The toggle: a ringed capsule on the sheet's own fill, 3 in,
+                  the chip on show in `sem/text/1` with page-ground type. */}
+              <div style={row('0', {
+                background: s.box1, boxShadow: ring, borderRadius: '999px',
+                padding: u(3), flexWrap: 'wrap', minWidth: 0,
+              })}>
+                {s.repChips.map((f, i) => (
+                  <span
+                    key={i}
+                    onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
+                    style={body(s.bodySm, 1.4, {
+                      padding: `${u(6)} ${u(14)}`, borderRadius: '999px', whiteSpace: 'nowrap',
+                      background: i === active ? s.ac : 'transparent',
+                      color: i === active ? s.bg : s.tx,
+                      cursor: s.live ? 'pointer' : undefined,
+                    })}
+                  >{f.label}</span>
+                ))}
+              </div>
+              {/* The field: 36 tall with a 21 line, so the frame's 10 above
+                  and below would overflow it — centred instead, Retro's
+                  reading. The glyph is typed in the frame, and typed here. */}
+              <div style={row(u(8), {
+                ...body(s.bodyMd, 1.5, { color: s.tx }),
+                background: s.box1, boxShadow: ring, borderRadius: '999px',
+                padding: `0 ${u(20)}`, height: u(36),
+                width: s.mob ? '100%' : u(380),
+                flex: s.mob ? undefined : `0 1 ${u(380)}`,
+                minWidth: 0, overflow: 'hidden', whiteSpace: 'nowrap',
+              })}>
+                <span style={{ flex: 'none' }}>⌕</span>
+                {s.live ? (
+                  <input
+                    value={q} placeholder={hint}
+                    onChange={(e) => { setQ(e.target.value); setPage(0) }}
+                    style={body(s.bodyMd, 1.5, {
+                      color: s.tx, flex: 1, minWidth: 0, border: 'none', outline: 'none',
+                      background: 'transparent', padding: 0,
+                    })}
+                  />
+                ) : (
+                  <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{hint}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {shown.length === 0 ? (
+            <div style={body(s.bodySm, 1.4, {
+              height: limeRowH, padding: `0 ${padH}`, boxShadow: `inset 0 -1px 0 ${s.stroke1}`,
+              display: 'flex', alignItems: 'center', color: s.muted,
+            })}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}</div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+              {columns.map((colSongs, ci) => (
+                <div key={ci} style={{
+                  minWidth: 0,
+                  boxShadow: ci === 0 && columns[1].length ? `inset -1px 0 0 ${s.stroke1}` : undefined,
+                }}>
+                  {colSongs.map((t) => (
+                    <div key={t.n} style={row(u(14), {
+                      height: limeRowH, overflow: 'hidden',
+                      boxShadow: `inset 0 -1px 0 ${s.stroke1}`,
+                      paddingLeft: ci === 0 || !desk ? padH : u(20),
+                      paddingRight: ci === 0 && desk ? u(20) : padH,
+                    })}>
+                      {/* Body/SM. The frame lets the number hug; it is pinned
+                          at the widest single digit (9, or 8 at 390) so "10" is the only
+                          one that moves its title, by a few px. */}
+                      <span style={body(s.bodySm, 1.4, { minWidth: u(s.mob ? 8 : 9), flex: 'none' })}>{t.n}</span>
+                      <span style={col(u(2), { flex: 1, minWidth: 0 })}>
+                        {/* Display/List over Body/SM. */}
+                        <span style={{
+                          fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>{t.title}</span>
+                        <span style={body(s.bodySm, 1.4, {
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        })}>{t.artist}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Seven buttons dividing the measure at every width (182.9 / 94.3
+              / 46), Retro's `grow`; gone at one page, the foot inset kept. */}
+          <div style={{ padding: labels.length > 0 ? `${footPadY} ${padH}` : `0 0 ${footPadY}` }}>
+            {labels.length > 0 && (
+              <Pager s={s} frame={{
+                grow: true, pages: labels, active: at,
+                onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+                onStep: s.live
+                  ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+                  : undefined,
+              }} />
+            )}
+          </div>
+        </div>
+      )
+    }
+
     const chipRow = (
       <div style={row('0', {
         // The frame's own padding less the border it draws inside it, layout
