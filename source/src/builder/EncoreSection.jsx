@@ -11040,6 +11040,149 @@ function Calendar({ s }) {
     const cur = hit && !hit.booked ? hit.iso : ''
     const line = cur ? hit.line : s.calPrompt
 
+    // Lime — the slot list frames 964:64593 / 986:11861 / 986:11880, as a block
+    // after the seam (pricing's placement): `want` / `hit` / `cur` / `line` and
+    // `desk` / `z` / `u` are shared whole, so the published row picking, the
+    // head's links and the foot pill needed nothing new. Every box is Retro's
+    // twin's (the 28 / 36 head, the 18 column head, the 16 rows, the 100 / 84
+    // foot, the 40 / 10 insets and the rows' 66, which is why `padX` and `gap`
+    // are read); only paint and type differ. Retro's `T` is not read — all 24
+    // sizes on the three masters are the Lime ramp's `s.*` — and neither is
+    // `dateCol`, which was measured for Fraunces.
+    //
+    // Scheme 2 throughout: the panel is its `sem/bg`, `s.box1`, at radius 50
+    // with no ring; the head band is `s.ac` and every ink on it is `s.box1`;
+    // the column heads are `s.ac`, the rows `s.tx`, and every hairline is
+    // `s.stroke1` drawn as an inset shadow, so each stated height is the
+    // frame's. The frame rules the heading in `sem/stroke/2`, which is `s.ac`
+    // on the `s.ac` band — it paints nothing, and is not drawn (the header's
+    // nav-pill shadow); its 20 of padding stays.
+    if (s.lime) {
+      // The pin is the widest mark Bebas Neue draws at each master's
+      // `display-lg` (`MAR 01`: 246.3 at 107, 186.5 at 81). The frames state
+      // 350, which clears Bebas's 299 at 130, but the 768 master leaks it
+      // unscaled: its row is 350 + 66 + 69 + 66 + 77, its whole inner width,
+      // and our 608 column would leave the weekday 46. The 390 master stacks
+      // the two, so there is no second column and no pin.
+      const pin = s.mob ? undefined : u(desk ? 301 : 187)
+      const rule = `inset 0 -1px 0 ${s.stroke1}`
+      const type = (family, size, lh, extra) => ({
+        fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
+      // its own — opacity .38, no strike — and the row takes it, handlerless.
+      const dim = (booked) => (booked ? { opacity: 0.38 } : null)
+
+      const flow = (
+        <div style={col(u(4), { alignItems: 'flex-start', flex: 'none' })}>
+          {s.calFlow.map((n) => {
+            const href = navHref(s, n.to)
+            const Tag = href ? 'a' : 'span'
+            return (
+              <Tag key={n.label} {...(href ? { href } : null)} style={type(s.body, s.bodySm, 1.4, {
+                color: s.box1, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
+              })}>{n.on ? `● ${n.label}` : n.label}</Tag>
+            )
+          })}
+        </div>
+      )
+
+      const slotRow = (sl, i) => {
+        const onClick = s.live && sl.iso && !sl.booked
+          ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
+          : undefined
+        const mark = (
+          <span style={type(s.display, s.dispLg, 0.89, {
+            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(sl.booked),
+          })}>{sl.mark}</span>
+        )
+        const day = (
+          <span style={type(s.ui, s.labelXs, 1.26, {
+            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(sl.booked),
+          })}>{sl.day}</span>
+        )
+        return (
+          <div key={i} onClick={onClick} style={row(gap, {
+            padding: `${u(16)} ${padX}`, boxShadow: rule,
+            cursor: onClick ? 'pointer' : undefined,
+          })}>
+            {/* The 390 master stacks the mark over its weekday at no gap. */}
+            {s.mob
+              ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
+              : <>{mark}{day}</>}
+            <div style={col(u(2), {
+              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(sl.booked),
+            })}>
+              {!!sl.kind && (
+                <span style={type(s.body, s.bodyMd, 1.5, { whiteSpace: 'nowrap' })}>{sl.kind}</span>
+              )}
+              {!!sl.price && (
+                <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'nowrap' })}>{sl.price}</span>
+              )}
+            </div>
+          </div>
+        )
+      }
+
+      return (
+        <div style={{ background: s.box1, color: s.tx, borderRadius: u(50), overflow: 'hidden' }}>
+          <div style={col(u(28), {
+            background: s.ac, color: s.box1, padding: `${u(28)} ${padX} ${u(36)}`,
+          })}>
+            <div style={row(u(24), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
+              <span style={type(s.body, s.bodyLg, 1.5)}>{s.brand}</span>
+              {flow}
+            </div>
+            {/* Display/MD at lh 1, held to the 571.1 both wider masters state
+                (it binds inside the 768 column too); 390 states the full width. */}
+            <div style={{ paddingBottom: u(20) }}>
+              <h2 style={type(s.display, s.dispMd, 1, {
+                margin: 0, maxWidth: s.mob ? undefined : u(571),
+              })}>{s.title}</h2>
+            </div>
+          </div>
+          <div style={row(gap, type(s.ui, s.labelXs, 1.26, {
+            padding: `${u(18)} ${padX}`, boxShadow: rule, color: s.ac,
+            justifyContent: s.mob ? 'space-between' : undefined,
+          }))}>
+            <span style={{ flex: 'none', minWidth: pin }}>Date ↓</span>
+            <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
+          </div>
+          {s.calSlots.length === 0 ? (
+            <div style={type(s.body, s.bodyMd, 1.5, {
+              padding: `${u(16)} ${padX}`, boxShadow: rule, opacity: 0.38,
+            })}>No dates yet.</div>
+          ) : s.calSlots.map(slotRow)}
+          {/* The 390 master keeps the pill beside the line and leaves the line
+              63px — a break inside "Thursday," for our composed sentence — so
+              the pill takes its own row, Retro's departure for the same reason. */}
+          <div style={(s.mob ? col : row)(u(s.mob ? 12 : 24), {
+            minHeight: u(s.mob ? 84 : 100),
+            padding: `${u(12)} ${u(s.mob ? 20 : 40)}`,
+            ...(s.mob ? { alignItems: 'flex-start', justifyContent: 'center' } : { flexWrap: 'wrap' }),
+          })}>
+            <div style={row(u(12), s.mob ? { width: '100%' } : { flex: '1 1 0', minWidth: u(200) })}>
+              {!!cur && (
+                <span style={type(s.body, s.chip, 1, {
+                  flex: 'none', background: s.ac, color: s.box1, borderRadius: '999px',
+                  padding: `${u(6)} ${u(12)}`, fontWeight: 700,
+                  letterSpacing: '-0.06em', whiteSpace: 'nowrap',
+                })}>{hit.mark}</span>
+              )}
+              <span style={type(s.body, s.bodyMd, 1.5)}>{line}</span>
+            </div>
+            {/* Scheme 2's pale pill: `sem/text/2` ground, `sem/bg` label and
+                disc, a lime arrow, and the frame's hard 5 / 5 block in
+                `sem/text/1` on all three masters — through `style`, open
+                question 2's route. 54 tall at every width, so `full` at 390. */}
+            <BookPill s={s} to={s.calBookTo} label={s.calCta}
+                      bg={s.tx} fg={s.box1} discFg={s.ac} full={s.mob}
+                      style={{ boxShadow: `${u(5)} ${u(5)} 0 ${s.ac}` }} />
+          </div>
+        </div>
+      )
+    }
+
     // The head's link list. `s.calFlow` is CTA_TARGETS.book resolved against
     // the page, this section first and dotted; a link is keyed on its label,
     // the header's rule, and the current one is a span because it would only
