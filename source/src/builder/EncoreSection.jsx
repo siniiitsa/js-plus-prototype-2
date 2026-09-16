@@ -9806,7 +9806,16 @@ function Gallery({ s }) {
     // (`sem/text/1`). Both tokens are palette values on Retro — #111 is `s.tx`
     // and #C8461C is `s.ac` — so this branch needs no literal hex at all, and
     // the flat four take their own two colours without a fallback pair.
-    const bw = s.retro ? '1px' : s.bw
+    //
+    // Lime (964:64590, 986:11858, 986:11877) is this tree to the node, less
+    // Retro's grain, at every one of these numbers, so it dresses the branch
+    // with `s.lime` ternaries rather than a block: its 1px strokes (`s.bw` is
+    // 2), a lime ring on the hero where Retro's is ink, the hero's inset glow,
+    // `s.box3` wells, and the caption and 768 head in Body/Chip — `s.chip`
+    // (13 / 12 / 11 in the frames) at -6%, pale on `s.box1`. The tiles' edge is
+    // already `s.ac`, which is the frame's `sem/text/1`.
+    const bw = (s.retro || s.lime) ? '1px' : s.bw
+    const well = s.lime ? { background: s.box3 } : undefined
     const r = u(s.mob ? 10 : 30)
     const seats = 7
     const active = s.live && pick >= 0 ? pick : galActive(s)
@@ -9867,7 +9876,7 @@ function Gallery({ s }) {
                     {/* Placeholder initials only — the frames are photographs
                         throughout, and Retro seeds them. The three sizes are
                         the tile's own width read off each master. */}
-                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[slot(seat)]} />
+                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[slot(seat)]} style={well} />
                   </span>
                 </div>
               )
@@ -9884,8 +9893,8 @@ function Gallery({ s }) {
     const head = tab && s.title ? (
       <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <span style={{
-          fontFamily: s.body, fontWeight: 700, fontSize: u(11), lineHeight: 1,
-          letterSpacing: u(-0.66), color: s.tx,
+          fontFamily: s.body, fontWeight: 700, fontSize: s.lime ? s.chip : u(11), lineHeight: 1,
+          letterSpacing: s.lime ? '-0.06em' : u(-0.66), color: s.tx,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{s.title}</span>
       </div>
@@ -9904,12 +9913,12 @@ function Gallery({ s }) {
         // line, so a long heading ends in an ellipsis inside the hero rather
         // than running out under its own clip.
         maxWidth: `calc(100% - ${u(80)})`,
-        background: s.chips[0].bg,
+        background: s.lime ? s.box1 : s.chips[0].bg,
         // Ink on the purple, which is what the frame sets and what the bio's
         // "Retro's chips are cream on every hue" note does not cover — the
         // repertoire's frame already contradicted it once. The flat four take
         // the chip's own computed foreground, which is guaranteed against it.
-        color: s.retro ? s.tx : s.chips[0].fg,
+        color: (s.retro || s.lime) ? s.tx : s.chips[0].fg,
         borderRadius: u(4), padding: `${u(10)} ${u(14)}`,
         ...col(u(4), { alignItems: 'flex-start' }),
       }}>
@@ -9921,8 +9930,8 @@ function Gallery({ s }) {
             // `size/chip` is 12 on the 1440 master and 11 on both narrow ones —
             // the one token here that is not the desktop number verbatim, so it
             // is read off `get_variable_defs` rather than left to `z`.
-            fontFamily: s.body, fontWeight: 700, fontSize: u(desk ? 12 : 11), lineHeight: 1,
-            textTransform: 'uppercase', letterSpacing: u(desk ? -0.72 : -0.66),
+            fontFamily: s.body, fontWeight: 700, fontSize: s.lime ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
+            textTransform: 'uppercase', letterSpacing: s.lime ? '-0.06em' : u(desk ? -0.72 : -0.66),
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>{t}</span>
         ))}
@@ -9937,13 +9946,21 @@ function Gallery({ s }) {
           position: 'relative', overflow: 'hidden', minWidth: 0,
           // The hero rounds at 30 on all three masters; only the 390 rail's
           // tiles drop to 10, so this is not `r`.
-          border: `${bw} solid ${s.tx}`, borderRadius: u(30),
+          border: `${bw} solid ${s.lime ? s.ac : s.tx}`, borderRadius: u(30),
           flex: '1 1 0', height: '100%',
         }}>
           <span style={{ position: 'absolute', inset: 0 }}>
-            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} />
+            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} style={well} />
           </span>
           {caption}
+          {/* Lime's INNER_SHADOW 34 in `s.ac` (not `s.glow`), read off the
+              node. Last, over the caption, as the media bar's is. */}
+          {s.lime && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
+            }} />
+          )}
           {/* Last, the way the frame paints it: the sheet crosses the caption
               too, and lifts its ink off #111 by a few points. */}
           <Grain s={s} exact blend="lighten" opacity={0.29} />
