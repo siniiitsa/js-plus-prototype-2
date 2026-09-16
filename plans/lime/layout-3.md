@@ -501,6 +501,10 @@ trigger):
 
 ## The end-of-pass sweep
 
+**Done: DOCS_SHA (docs, comments, this plan) and INDEX_SHA (the `index.html` refresh).** What each
+item came to is under *Learned on the end-of-pass sweep* at the foot of *Conventions*; the list is
+kept as it was run.
+
 Written now from what the plan expects; refine as the sections defer things. One session:
 
 1. **CLAUDE.md and README.md**, wherever they describe a layout-3 state as Retro's alone, and
@@ -1083,6 +1087,70 @@ Settled in section 10 (the testimonials):
   - No pointer cursors, no anchors, no page errors.
 - **Digest** at themes 0–4, all 645 renders: exactly testimonials arch 2 at theme 1, at three
   widths.
+
+Learned on the end-of-pass sweep (DOCS_SHA and INDEX_SHA):
+
+- **The claim sites were layout 2's, one layout on.** CLAUDE.md and README said "designed at
+  layouts 1 and 2" with `HeaderV0` / `V1` fitted. They now say 1, 2 and 3, with `HeaderV0`–`V2`
+  and the first three cards. The CLAUDE.md sentence on block placement gained the `s.v2` shapes
+  and the header's `if (s.lime) { … return }` seat. Three comment sites made the same claim:
+  `photos.js`'s header, `sectionVm`'s `lime` flag and the §10.2 header banner. A fourth is Bio's
+  `s.v3` lh-.89 note, whose "layout 3 is not fitted yet" meant the branch it sits in, so it now
+  says layout 4. Three layout-3 paragraphs in CLAUDE.md gained a Lime clause each:
+  - the gallery viewer's re-inked scrim;
+  - pricing's "Lime reads no `vm.tierRow`";
+  - the form's 2px refused ring and `vm.titleWordEms`.
+
+  README also gained the thirty-fifth photograph and the new sizes. `git diff main --stat` before
+  any browser: exactly the seven files the sections named.
+- **One puppeteer route, four small scripts (deleted).** It is layout 1's route unchanged:
+  thumbnail → big card → card 3 → *Use this header* → *Publish* → *Open* → `page.once('popup')`.
+  - **Header.** At 1440 all 24 fragment anchors (header, pills, footer) scrolled to their ids. At
+    390 all 14 visible ones did. The published order is the composed one at 1440 and
+    `PAGE_ORDERS[2]` at 390.
+  - **Media.** A card or row click set `paused` false with the clock running.
+  - **Calendar.** All 30 dots changed the section.
+  - **Repertoire.** Its three controls changed it at 1440, and the carousel's did at 390.
+  - **Gallery.** Its viewer opened at 1 / 7 with focus inside, over the `rgba(21,24,15,.94)`
+    scrim, and set `<html>` to `overflow: hidden`. → stepped to 2 / 7, and Escape closed it and
+    restored `visible`.
+  - **Pricing.** The chips changed the stack. The one "same" click was the already-lit All.
+  - **Map.** The city chips filtered, a row click moved the lit row to its gig, and + / − zoomed.
+  - **Form.** A refused submit put `inset 0 0 0 2px #F2FFD0` on the boxes and printed the
+    prompt. Typing composed the mailto (subject *Enquiry*, four values), and the valid submit
+    swapped in the sent card.
+  - **Burger.** At 390 and 820 (a fresh tab each) it opened the nine-link panel, and a link
+    scrolled.
+  - No page errors anywhere.
+- **Two probe readings that are not faults.**
+  - The map's *See all gigs* carries a pointer cursor while inert at one page. The cursor is
+    `BookPill`'s own, which section 8 already named. The wrapper's `cursor` does follow
+    `canReveal`.
+  - The generic pointer probe loses map rows ("gone") because a chip click re-renders the list.
+    Drive the rows separately, as layout 2's sweep said, and **filter by the element's own
+    pointer against its parent's** or every descendant of a row counts.
+- **The seeded page reaches no reveal.** *See all gigs* is live only at 390, where a page is one
+  gig. Section 8's `n=30` run is the 1440 proof.
+- **`captureBeyondViewport` clips of a scrolled popup come out garbled** (fragments of the
+  wrong band pasted in). They still showed what was needed: the gallery's olive sheet and the
+  map's pale sheet run full-bleed with straight edges at 1440 and 390, and every other band is
+  the page ground. Scroll to 0 before clipping next time, or clip with `fullPage` off after
+  `scrollIntoView`.
+- **Thumbnails (deliverable 4).** Selecting each canvas root put the sidebar on *<Section>
+  layout 3* for all ten categories, and the footer on *Footer layout 1*. The third
+  `[role=menuitem]` of each picker renders its fitted section. The calendar and the media player
+  render at the full `SIZES.desktop` width there, not their 323 / 684 columns, and still read.
+- **Cards 1, 2 and 4** publish with every header anchor scrolling and Book Now on `#form`. The
+  burger opens and scrolls at 390 and 820. Card 4 alone still draws the checker
+  (`repeating-conic-gradient`).
+- **Two-build digest** (repo root on `127.0.0.1:8931`, the old build digested before the `cp`,
+  one fresh page per theme). The canvas is 1088 / 768 / 390 with 11 `--ac` roots in both
+  builds, and there are **zero differing rows at all five themes and three widths**.
+  - The shipped-it tell is the modal. In the old build, Lime's glass glow (`rgb(166, 226, 46)`)
+    is on no card and card 3 draws the checker. In the new build, card 3 alone has the glow and
+    only card 4 draws the checker.
+  - The string tell is `titleWordEms`: two hits in the new file, none in the old.
+  - Sizes: 35 photographs, 4.0 MB. The standalone file is 6.44 MB (was 6.25).
 
 ## Open questions
 

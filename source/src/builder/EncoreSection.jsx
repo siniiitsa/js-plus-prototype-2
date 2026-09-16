@@ -1178,8 +1178,8 @@ function NavBar({ s, colour, rule, pill }) {
  *
  * Lime's header family is the first four of them in its own tokens
  * (`headerFamily()`), because header card N lays out the whole page as
- * layout N. HeaderV0 and HeaderV1 are fitted to Lime's frames; V2–V3 render
- * Retro's compositions re-skinned until Lime's later layout passes.
+ * layout N. HeaderV0–V2 are fitted to Lime's frames; V3 renders Retro's
+ * composition re-skinned until Lime's layout-4 pass.
  * ------------------------------------------------------------------ */
 
 // v0 — Header layout 1 · Hero (§10.2 reference design)
@@ -3776,7 +3776,7 @@ function Bio({ s }) {
             it outside the header. At .75 a stacked line of caps collides in
             every display face taller than Fraunces (Titan One and Bebas Neue
             both overlap outright), so every template but Retro degrades to
-            .89 — Lime included, whose layout 3 is not fitted yet — which is
+            .89 — Lime included, whose layout 4 is not fitted yet — which is
             the leading every other display head in this file
             already sets — the page's own ramp rather than an invented
             number. */}

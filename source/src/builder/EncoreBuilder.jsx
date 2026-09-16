@@ -299,7 +299,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // Grunge, Editorial and Pop render the identical structure, flat, and Lime
     // draws a decoration of its own behind `lime` below.
     retro: T.name === 'Retro',
-    // Lime's layout-1 and layout-2 pages are Retro's components in its own
+    // Lime's layout-1, -2 and -3 pages are Retro's components in its own
     // variable mode, so its decoration — arc seams, glows, the arch portrait — goes
     // inside the same shared branches, behind this flag. It composes with
     // `retro` rather than replacing it: what both designed templates draw is
