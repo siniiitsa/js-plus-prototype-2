@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~6.3 MB — most of it the inlined Retro and Lime photography) is the generated
+- **`index.html`** (~6.4 MB — most of it the inlined Retro and Lime photography) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -41,7 +41,7 @@ cp source/dist-standalone/index.html index.html
 | File | ~Lines | Role |
 |---|---|---|
 | `src/builder/EncoreBuilder.jsx` | 4130 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 17550 | Presentational renderer for all 11 section types |
+| `src/builder/EncoreSection.jsx` | 19230 | Presentational renderer for all 11 section types |
 | `src/builder/data.js` | 1290 | `THEMES`, all static data, colour helpers |
 | `src/builder/photos.js` | 200 | Retro's and Lime's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
@@ -241,7 +241,8 @@ mutated through a single `patch()` helper.
   takes focus off a callback ref so Escape and ← / → reach its own `onKeyDown`, closes on any
   click that is not a control, and locks the popup's scroll while open — `overflow: hidden` on
   its `<html>` and `<body>` with the scrollbar gutter kept, set in that same ref and undone by
-  the ref's React 19 cleanup. **Layout 4 browses through the same `pick` for
+  the ref's React 19 cleanup (under Lime its scrim is the page ink at .94 and its controls
+  pale, the only thing about the viewer that moves). **Layout 4 browses through the same `pick` for
   the fourth time** — a spotlight photograph beside a rail of all seven thumbnails, with two arrow
   discs under it that step and wrap on layout 1's own `go`. It carries **no active mark**: its
   Figma frame rings all six of its thumbnails identically, and what names the chosen slot is the
@@ -373,6 +374,9 @@ mutated through a single `patch()` helper.
   from the frame's own index to the first hue that clears `tierHues`' 0.22 against `bg`, Grunge's
   `T.tags[3]` being its black background exactly. Its selector is the one thing in that branch
   not standing on the page ground, so its outline and idle labels take `paperFg` and not `tx`.
+  **Lime's stack reads no `vm.tierRow`**: its frame outlines the rows in the accent and fills
+  the moving seat with it, ringed and lettered in the page ink, so the walk (which reaches pale
+  lime there) is Retro's and the flat three's; the seat still moves exactly as above.
   **Layout 4 filters nothing at all**: it is a stack of service rows on the page ground, the one
   pricing design with no chip row, no state and no control but the Book pill, so `chip` is
   untouched there. One row per package, divided by a 4px rule in **`vm.tierRow.card`** — layout
@@ -520,7 +524,9 @@ mutated through a single `patch()` helper.
   head; and the card carries **layout 2's own card fields** — the price row, the
   `★★★★★ 42 bookings` line, the `cta` submit label and the `note` line under the pill —
   because it is the same card component (QA, 2026-09-15). So `promises` reaches layout 4
-  alone now.
+  alone now. Under Lime a refused box takes layout 2's 2px ring of full ink, and the desktop
+  head shrinks to fit its widest word in the half column (`vm.titleWordEms`, a Lime-only key
+  beside `navNameEms`) rather than breaking inside it.
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
   two `minmax(0, 1fr)` grid columns, because a zero flex-basis resolves against the
   *content* box whatever `box-sizing` says and the padded card came out 41 wider than the
@@ -741,17 +747,20 @@ mutated through a single `patch()` helper.
   the drop index is the pointer delta in row-heights, not a hit test.
 - **Retro and Lime are designed; Grunge, Editorial and Pop are not.** The flat three are fully
   functional but render flat. Retro's decorative language is gated on `s.retro`, and it gets six
-  photographic header layouts where the flat three get three. **Lime is designed at layouts 1
-  and 2**: each of its Figma pages is the same components as Retro's page of that number in
-  another variable mode, so its decoration (arc seams at layout 1, glows at both, the arch
+  photographic header layouts where the flat three get three. **Lime is designed at layouts 1,
+  2 and 3**: each of its Figma pages is the same components as Retro's page of that number in
+  another variable mode, so its decoration (arc seams at layout 1, glows at all three, the arch
   portrait) lives in **`s.lime`** blocks inside the shared branches, never in a branch of its
-  own — `if (s.lime)` or `if (s.v0 && s.lime)` in the `v0` code, and `if (s.v1 && s.lime)` ahead
-  of an `if (s.v1)` whose state is hoisted or `if (s.lime)` inside it after the seam — and a
-  value both designed templates draw is gated `(s.retro || s.lime)`. Its header family is
-  `'lime'`: the first four photographic layouts, of which `HeaderV0` and `HeaderV1` are fitted,
-  so the setup modal's first two cards are whole Lime pages. At layout 2 the footer is layout
-  1's (`NVAR.footer` is 1). Layouts 3 and 4 are Retro's compositions in Lime tokens until their passes
-  (`plans/lime/`).
+  own — `if (s.lime)` or `if (s.v0 && s.lime)` in the `v0` code, and `if (s.v1 && s.lime)` /
+  `if (s.v2 && s.lime)` ahead of an `if (s.v1)` / `if (s.v2)` whose state is hoisted or
+  `if (s.lime)` inside it after the seam — and a value both designed templates draw is gated
+  `(s.retro || s.lime)`. The header components are the exception: each is its own branch, so
+  its Lime block is `if (s.lime) { … return }` at the head (`HeaderV1`, and `HeaderV2`, whose
+  Lime frame is a different composition — an upright glass card where Retro tilts a polaroid).
+  Its header family is `'lime'`: the first four photographic layouts, of which `HeaderV0`–`V2`
+  are fitted, so the setup modal's first three cards are whole Lime pages. At layouts 2 and 3
+  the footer is layout 1's (`NVAR.footer` is 1). Layout 4 is Retro's compositions in Lime
+  tokens until its pass (`plans/lime/`).
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
   designs, and seven of the eleven offer more — Pricing layouts 1 and 5 render identically on
   purpose. The other four are level: the header and the footer always were, and the layout-4 pass

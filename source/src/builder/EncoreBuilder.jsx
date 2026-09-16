@@ -299,7 +299,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // Grunge, Editorial and Pop render the identical structure, flat, and Lime
     // draws a decoration of its own behind `lime` below.
     retro: T.name === 'Retro',
-    // Lime's layout-1 and layout-2 pages are Retro's components in its own
+    // Lime's layout-1, -2 and -3 pages are Retro's components in its own
     // variable mode, so its decoration — arc seams, glows, the arch portrait — goes
     // inside the same shared branches, behind this flag. It composes with
     // `retro` rather than replacing it: what both designed templates draw is
@@ -642,6 +642,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // Layout 4's heads, the composed page's own (QA, 2026-09-15). EditPanel
   // mirrors all four.
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
+  // The widest word of the heading, in Bebas ems, after every fallback above.
+  // Lime's layout-3 form sets Display/LG in a half column its longest word can
+  // outrun at desktop, so it shrinks the head until that word fits rather than
+  // break it (the nav's `navEms` rule). Undefined off Lime.
+  vm.titleWordEms = T.name === 'Lime'
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(bebasEms)).toFixed(3)
+    : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the

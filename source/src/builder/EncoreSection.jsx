@@ -770,7 +770,7 @@ function TagChips({ s, justify = 'flex-start', radius, size }) {
   )
 }
 
-function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk' }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk', classic = false }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
@@ -789,7 +789,14 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // caps pointing in, so the lower name reads upright and the upper one
   // inverted. The frame's face is Bebas Neue *Bold*, which Google Fonts does
   // not ship; the regular cut is set rather than a synthesised bold.
-  if (s.lime) {
+  //
+  // `classic` opts a caller out of this branch (and the flat starburst below)
+  // and into the §10.2 seal, which then honours `hue` and `ink`. Lime's
+  // layout-3 bio (964:68663's "Frame 248") is that seal exactly — Retro's
+  // asterisks in Lime's inks, a `s.ac` disc with `s.bg` marks — where every
+  // other Lime frame draws the dark disc above. Every earlier caller leaves it
+  // off.
+  if (s.lime && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
     return (
       <div style={{
@@ -825,7 +832,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
     )
   }
 
-  if (!s.retro) {
+  if (!s.retro && !classic) {
     // The pre-§10.2 starburst seal, still used by the flat templates.
     const spikes = 24
     const pts = []
@@ -1171,8 +1178,8 @@ function NavBar({ s, colour, rule, pill }) {
  *
  * Lime's header family is the first four of them in its own tokens
  * (`headerFamily()`), because header card N lays out the whole page as
- * layout N. HeaderV0 and HeaderV1 are fitted to Lime's frames; V2–V3 render
- * Retro's compositions re-skinned until Lime's later layout passes.
+ * layout N. HeaderV0–V2 are fitted to Lime's frames; V3 renders Retro's
+ * composition re-skinned until Lime's layout-4 pass.
  * ------------------------------------------------------------------ */
 
 // v0 — Header layout 1 · Hero (§10.2 reference design)
@@ -1899,9 +1906,209 @@ function HeaderV2({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
-  // Under Lime `pillBg` IS the accent, so every mustard-on-accent pairing
-  // below drew lime on lime; its olive box stands in until Lime's layout pass.
-  const mustard = s.lime ? s.box1 : s.pillBg
+  if (s.lime) {
+    // Lime's Inset Hero (964:68654 at 1440, 984:10740 at 768, 984:10771 at
+    // 390). Retro's shell — a photographic card inset in the page, the nav on
+    // its top edge and the identity on its floor — with the rest redrawn: no
+    // mustard sheet, checker ribbon, grain or tilted polaroid. The card is an
+    // olive well in a hairline, faded to olive off its floor; the name stands
+    // over the location where Retro's stands under it; and the polaroid is an
+    // upright glass card lit by an inset glow. Every leaf changes face, ink or
+    // box, and there is no state to share, so this is a block at the head of
+    // the component (HeaderV1's placement) and Retro's code below is untouched.
+    //
+    // No Device override and no box token: every type size is its Lime token
+    // at that width, and radii and paddings are raw numbers, × 0.82 on desktop
+    // through `u()`, verbatim on the narrow masters.
+    const ring = (w, c) => `inset 0 0 0 ${w} ${c}`
+    const inset = desk ? 20 : 10
+
+    // The frame's nav is five cells — the capsule, a spacer, the name, a
+    // spacer, and Listen with the pill — four equal flex cells round the name.
+    // Drawn as HeaderV1's two halves instead, the frame's two spacers folded
+    // into them, so a capsule wider than a quarter of the bar (six links
+    // already are) no longer pushes the name off centre. The links take
+    // HeaderV1's budget whole: the row is the query container, and the links'
+    // size is what the row leaves once the name, Listen, the pill's label and
+    // every fixed box beside them are paid for — the capsule's 18 + 18, two 16
+    // gaps, Listen's 12 and the pill's 17.92 + 4.27 padding, 8.53 gap and 27.6
+    // disc. The gap is HeaderV1's 23/24em, which `navEms`
+    // is summed with, rather than the frame's 1em. Both narrow masters hand
+    // the links to the burger (768's three are the component's default, the
+    // layout-2 reading), which stands in the same capsule.
+    const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)})`
+    const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
+    const capsule = { background: s.bg, boxShadow: ring('1px', s.stroke1), padding: `${u(8)} ${u(18)}` }
+    const nav = (
+      <div style={row(u(16), {
+        width: '100%', padding: `${s.mob ? '10px' : u(16)} 0`,
+        containerType: desk ? 'inline-size' : undefined,
+      })}>
+        <div style={{
+          flex: '1 1 0', display: 'flex',
+          minWidth: desk ? `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))` : 0,
+        }}>
+          {desk ? (
+            // Corner at the one-row half-height, so a capsule that has to wrap
+            // below the 12px floor keeps its ends rather than turning stadium.
+            <nav style={{
+              ...capsule, borderRadius: u(18), maxWidth: '100%',
+              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: `${23 / 24}em`,
+              fontSize: linkSize,
+            }}>
+              {s.navLinks.map((l) => (
+                <a key={l.label} href={navHref(s, l.to)}
+                   style={labelStyle(s, '1em', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
+              ))}
+            </nav>
+          ) : (
+            <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
+              <NavMenu s={s} color={s.tx} />
+            </span>
+          )}
+        </div>
+        <span style={labelStyle(s, s.labelLg, { color: s.tx, flex: 'none' })}>{s.brand}</span>
+        {/* At 390 the pill is wider than its half; the master lets it overrun
+            into the spacer, which keeps the name centred, and so does this. */}
+        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end', minWidth: s.mob ? 0 : undefined })}>
+          {!s.mob && (
+            <ListenLink s={s} to={s.listenTo}
+                        style={labelStyle(s, s.labelSm, { color: s.tx, fontWeight: 400 })} />
+          )}
+          {/* Scheme 3's pill is BookPill's Lime defaults — lime, lettered and
+              disced in `sem/bg` round a lime arrow — at the frame's small box,
+              which is the same 34.93 at all three widths (only Label/SM ramps),
+              so the bio's layout-2 recipe and not HeaderV1's hand-shrunk one. */}
+          <BookPill s={s} to={s.bookTo} size={s.labelSm} disc={27.6 * z}
+                    style={{
+                      padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
+                      gap: u(8.53), lineHeight: 1.1,
+                    }} />
+        </div>
+      </div>
+    )
+
+    // The Tags instance is hand-scaled (the bio's layout-2 case at another
+    // factor): Label/XS × 0.752, and padding, radius and gap fixed at every
+    // width. It stands on the photograph, so `vm.chips`' own dark seat reads
+    // and nothing is swapped. The leaked 700.74 measure is dropped, Retro's call.
+    const chips = s.showTags === 'show' && (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.01) }}>
+        {s.chips.map((c, i) => (
+          <span key={i} style={{
+            background: c.bg, color: c.fg,
+            borderRadius: u(4.51), padding: `${u(3.76)} ${u(8.27)}`,
+            fontFamily: s.ui, fontSize: u(s.mob ? 9.02 : tab ? 10.53 : 15.04),
+            lineHeight: 1.26, letterSpacing: s.dls, whiteSpace: 'nowrap',
+          }}>{c.label}</span>
+        ))}
+      </div>
+    )
+    const identity = (
+      <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
+        <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline />
+        <span style={row(u(8))}>
+          <span style={{
+            width: u(14), height: u(14), borderRadius: s.radiusChip, background: s.ac, flex: 'none',
+          }} />
+          <span style={{
+            fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, color: s.tx,
+          }}>{s.location}</span>
+        </span>
+      </div>
+    )
+    // The 390 band states 370.52 and stands its content on the floor: the
+    // photograph showing above the name. A minimum, Retro's 568 rule.
+    const stack = (
+      <div style={col(u(30), {
+        alignItems: 'flex-start', justifyContent: 'flex-end', minWidth: 0,
+        ...(s.mob ? { minHeight: '370.52px' } : { flex: '1 1 0', alignSelf: 'stretch' }),
+      })}>
+        {identity}
+        {chips}
+      </div>
+    )
+
+    // The glass card: `sem/box/1` at 1%, which paints nothing, inside a 1px
+    // `sem/stroke/2` ring and an INNER_SHADOW 19 in `sem/glow` (#A6E22E, not
+    // the accent) — ring first, as Figma strokes over the effect. Its padding
+    // clears the glow, so both sit on the card itself. The portrait's ring is
+    // an overlay, since the photograph would paint over a shadow on its box.
+    // Its two lines are `brand` and `kicker`, Retro's reading of this slot;
+    // the brand is Display/Title at the frames' 36 / 28 / 26 (`s.title` is the
+    // heading string). 390 turns the card on its side.
+    const card = (
+      <div style={{
+        boxShadow: `${ring('1px', s.ac)}, inset 0 0 ${u(19)} ${s.glow}`,
+        borderRadius: s.mob ? '12px' : u(45),
+        padding: s.mob ? '20px' : u(40), flex: 'none',
+        ...(s.mob ? row('21px', { width: '100%' }) : col(u(21), { width: u(220) })),
+      }}>
+        <div style={{
+          position: 'relative', width: u(87), height: u(87), flex: 'none',
+          borderRadius: u(21), overflow: 'hidden', background: s.box1,
+        }}>
+          <Photo s={s} avatar initialsSize={Math.round(34 * z)} ink={s.tx} />
+          <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring('1px', s.ac) }} />
+        </div>
+        <div style={col(u(4), {
+          alignItems: s.mob ? 'flex-start' : 'center', minWidth: 0, whiteSpace: 'nowrap',
+        })}>
+          <span style={{
+            fontFamily: s.display, fontSize: desk ? u(36) : tab ? '28px' : '26px',
+            lineHeight: 1.1, letterSpacing: s.dls, color: s.tx,
+          }}>{s.brand}</span>
+          {s.kicker && (
+            <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac }}>{s.kicker}</span>
+          )}
+        </div>
+      </div>
+    )
+
+    const body = s.mob
+      ? <div style={col('24px', { width: '100%' })}>{stack}{card}</div>
+      : <div style={row(u(24), { alignItems: 'flex-end', width: '100%' })}>{stack}{card}</div>
+
+    // The page ground shows round the card, 20 / 10 / 10 of it. The card's
+    // height is the frame's own at 1440 and 768 and content-tall at 390,
+    // stated as a minimum for Retro's reason. Its ring is an inset shadow,
+    // so the padding is the frame's own 16 / 32 / 32 / 32 (0 / 10 / 10 / 10).
+    const padX = s.mob ? 10 : 32
+    return (
+      <div style={{
+        background: s.bg, padding: u(inset),
+        margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+      }}>
+        <div style={{
+          position: 'relative', overflow: 'hidden', background: s.box2,
+          borderRadius: desk ? u(50) : tab ? '50px' : '20px',
+          minHeight: desk ? u(860) : tab ? '1004px' : undefined,
+          padding: `${u(s.mob ? 0 : 16)} 0 ${u(s.mob ? 10 : 32)}`,
+          paddingLeft: `calc(${u(padX)} + ${s.surplus})`,
+          paddingRight: `calc(${u(padX)} + ${s.surplus})`,
+          ...col(0, { justifyContent: 'space-between' }),
+        }}>
+          {/* A centred cover. The frame's imageTransform carries a flip, but
+              the fill is FILL, which ignores it: the render is unflipped. */}
+          <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} backdrop />
+          </div>
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0, // `sem/media` off the floor to `sem/bg` at 0 — a transparent stop in the
+            // page's own hue, so the fade does not grey on its way out.
+            background: `linear-gradient(to top, ${s.box1}, #15180F00)`,
+          }} />
+          <span aria-hidden style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring('1px', s.stroke1),
+            pointerEvents: 'none',
+          }} />
+          <div style={{ position: 'relative', width: '100%' }}>{nav}</div>
+          <div style={{ position: 'relative', width: '100%' }}>{body}</div>
+        </div>
+      </div>
+    )
+  }
+  const mustard = s.pillBg
   const olive = (s.retro && s.chips[3]?.bg) || s.line2
   // sem/text/2 — the cream every label on the photograph is set in; sem/tag/3/bg
   // is the polaroid's ink. Both literal under Retro, whose `paper` IS the page
@@ -3083,6 +3290,165 @@ function Bio({ s }) {
   // takes `location`. Both surviving values — `kicker` and `location` — are
   // the same pair v0 sets in its credit line and v1 in its caption, so layout
   // 3 reads nothing the section did not already print.
+  //
+  // Lime layout 3 (964:68663 · 984:10748 at 768 · 984:10779 at 390; the head
+  // 964:68658 · 984:10743 · 984:10774) is Retro's tree node for node, so the
+  // block below restates Retro's structure whole — the stat row and its 2.2em
+  // values, the 390 stack, Frame 9, the seal's band floor — and changes only
+  // the dress. That dress reaches nearly every leaf: an olive card in a
+  // `stroke1` ring (none at 390, radius 60 there), a radius-55 photograph on a
+  // `box3` well under the INNER_SHADOW 34 in `s.ac` with no grain, two 1px
+  // rules in `sem/text/2` at the node's .32 opacity where Retro draws 5px
+  // bands, the lit seal (below), and every size the Lime ramp's token at its
+  // width, so no `T` table. `Bio` holds no state, so nothing is shared.
+  //
+  // Two things the frames do not settle the way their numbers suggest. The
+  // desktop stat column states 96, but its Label/LG values run two lines at 32
+  // and push the label out of the top of the clipped column ("SINCE:" is all
+  // the 1440 render shows); the label is the artist's fact, so the row grows
+  // past the 96 floor instead, the head band 9 taller than the frame's. And at
+  // 390 the foot rule stands inside the 20-gap column with the head rule
+  // (Frame 258's children at 0 / 206 / 227 / 558), where Retro's stands
+  // outside it.
+  if (s.v2 && s.lime) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const pad = u(s.mob ? 10 : 32)
+    // Body/Chip, Inter bold at -6%: the stat labels and "[ About ]".
+    const chipType = {
+      fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+      letterSpacing: '-0.06em', textTransform: 'uppercase',
+    }
+    // `#F2FFD0` at .32 as an 8-digit hex (no `rgba()` in the file). A hairline
+    // does not ramp.
+    const rule = <div style={{ height: '1px', background: `${s.tx}52`, flex: 'none' }} />
+
+    const stat = (label, value) => (
+      <div key={label} style={col(u(15), {
+        flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
+      })}>
+        <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
+        <span style={labelStyle(s, s.labelLg, { whiteSpace: 'normal', overflowWrap: 'break-word', minHeight: '2.2em' })}>{value}</span>
+      </div>
+    )
+    const stats = [
+      s.since ? stat('Performing\nsince:', s.since) : null,
+      stat('Current\nrole:', s.kicker),
+      stat('Based\nin:', s.location),
+    ].filter(Boolean)
+
+    const head = (
+      <div style={{
+        display: 'flex', flexDirection: s.mob ? 'column' : 'row',
+        alignItems: s.mob ? 'flex-start' : 'flex-end',
+        gap: u(s.mob ? 10 : 40), overflow: 'hidden',
+        padding: `${u(24)} ${pad}`,
+      }}>
+        {/* Display/SM at 50 wraps "Kai Mercer" in the 179 cap at 1440, as the
+            frame does; 40 and 32 hold it on one line. */}
+        <div style={{
+          flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
+          minWidth: 0, maxWidth: u(179),
+        }}>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+            letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
+          }}>{s.brand}</p>
+        </div>
+        <div style={row(u(s.mob ? 52 : 100), {
+          flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
+          minWidth: 0, color: s.tx, minHeight: u(96), alignItems: 'flex-end',
+        })}>{stats}</div>
+      </div>
+    )
+
+    // The seal's disc centre is 150.4 down and 105.6 in from the about band's
+    // top-left at 1440, Retro's number, since the head band (148) and the rule
+    // (1) come to Retro's 144 + 5. At 768 the head is 144 over the same 1px
+    // rule and the seal keeps its leaked desktop y, so the centre is 154.4
+    // down. The 390 seal stands on the photograph at Retro's offsets.
+    const sealBox = 125.37
+    const sealTop = tab ? 91.69 : 87.7
+    const seal = (
+      <SealBadge s={s} classic hue={s.ac} ink={s.bg} size={(s.mob ? 62.68 : sealBox) * z} tilt={32.38}
+                 style={s.mob
+                   ? { right: u(30.76), top: u(52.51) }
+                   : { left: u(42.9), top: u(sealTop) }} />
+    )
+
+    const about = (
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', gap: u(40), overflow: 'hidden',
+        padding: `${u(24)} ${pad}`, position: 'relative',
+        ...(s.mob ? null : { minHeight: u(sealTop + sealBox + 24) }),
+      }}>
+        {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
+        <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
+          <span style={chipType}>[ About ]</span>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP1}</p>
+          {s.bioP2 && (
+            <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP2}</p>
+          )}
+        </div>
+        {!s.mob && seal}
+      </div>
+    )
+
+    return (
+      <div style={col(u(30), { alignItems: 'stretch' })}>
+        {/* The wrapper's head: Label/XS in `font/ui` (Chakra Petch) and
+            Display/LG, both on the page ground. */}
+        <div style={col(u(30), { alignItems: 'flex-start' })}>
+          <span style={{
+            fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
+            letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
+          }}>{s.initials} Bio</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+        </div>
+        <div style={{
+          position: 'relative', background: s.box1, color: s.tx, overflow: 'hidden',
+          borderRadius: u(s.mob ? 60 : 50), paddingBottom: u(40),
+          ...col('0', { alignItems: 'stretch' }),
+        }}>
+          <div style={{ position: 'relative', padding: u(s.mob ? 10 : 30), ...row('0') }}>
+            <div style={{
+              position: 'relative', flex: '1 0 0', minWidth: 0, overflow: 'hidden',
+              height: u(s.mob ? 259 : 380), borderRadius: u(55), background: s.box3,
+            }}>
+              <div style={{ position: 'absolute', inset: 0 }}>
+                <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={s.tx} />
+              </div>
+              <span style={{
+                position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
+              }} />
+            </div>
+            {s.mob && seal}
+          </div>
+          <div style={col(u(s.mob ? 20 : 0), { alignItems: 'stretch' })}>
+            {head}
+            {rule}
+            {about}
+            {rule}
+          </div>
+          {/* The ring is Figma's inside stroke, so an overlay painted over the
+              children rather than a border that would grow the card. */}
+          {!s.mob && (
+            <span style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+            }} />
+          )}
+        </div>
+      </div>
+    )
+  }
+
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -3410,7 +3776,7 @@ function Bio({ s }) {
             it outside the header. At .75 a stacked line of caps collides in
             every display face taller than Fraunces (Titan One and Bebas Neue
             both overlap outright), so every template but Retro degrades to
-            .89 — Lime included, whose layout 3 is not fitted yet — which is
+            .89 — Lime included, whose layout 4 is not fitted yet — which is
             the leading every other display head in this file
             already sets — the page's own ramp rather than an invented
             number. */}
@@ -4940,6 +5306,180 @@ function Media({ s }) {
     const nBars = Math.max(1, Math.floor((s.contentW - 2 * pad + 4 * z) / (14 * z)))
     const played = s.live ? now.pct / 100 : WAVE_PLAYED
     const nHot = Math.round(nBars * played)
+
+    // Lime layout 3 (964:68674 list + 964:68673 card, head 964:68666 · 984:10759
+    // + 984:10758 at 708 · 984:10790 + 984:10789 at 370) is Retro's tree node
+    // for node — the same head, the same bar-meter card at the same 24 / 16 /
+    // 18 / 96 / 44 boxes, the same counter row over five numbered rows — so it
+    // reads the meter derivation above (`pad`, `nBars`, `played`, `nHot`) and
+    // everything above the branches: the one <audio>, `cur`, `goTo`, `toggle`,
+    // `pick`, `now`. What changes is every leaf's dress, and the rows' shape.
+    //
+    // The card is Scheme 2: its `box/3` `#263020` (no `THEMES` key, so a
+    // literal), radius 50, no ring and no effect; the disc is its `box/1`,
+    // which is Scheme 1's `s.box2`; the idle bars its `box/2`, layout 2's
+    // `dusk`; the played bars `s.ac`; and every ink, both names included, is
+    // `s.tx` — only the meter is lime. The rows are Retro's pills taken apart:
+    // no fill, no side padding, a 1px `sem/stroke/1` along each row's *top*
+    // (the first too, so a rule stands under the counter), and no gap between
+    // the counter and the first row.
+    //
+    // ── The rows are content-tall, as Retro's are ────────────────────────
+    // The masters state the list at 424 / 647 / 647 and divide it: (424 − 45)
+    // / 5 = 75.8, (647 − 44) / 5 = 120.6, (647 − 43) / 5 = 120.8 — the
+    // quarter-pixel difference of a division, not a design. And the 1440 row
+    // is *smaller* than its own content (64 + 2 × 14 = 92 > 75.8), which
+    // Figma lets overflow the padding and CSS cannot. So a row is 14 + 64 + 14
+    // at every width: 75.4 on desktop against the frame's 62.2, 92 below it
+    // against 120.6.
+    //
+    // Every size is the Lime ramp's token at its width; Display/Title is the
+    // frames' 36 × 0.82 / 28 / 26, since `s.title` is the heading string. The
+    // heading sets two lines at 1440 in the frame's own 632 box ("Five worth"
+    // is 3.59em, "Five worth your" 5.34em, the box 4.86em) and one at 768; at
+    // 390 the seeded "Five worth your ear." is 6.86em, 370 at 54 in our 346
+    // column, so it wraps where the frame's 370 holds it. 390 keeps Retro's
+    // 14 row gap for Retro's reason: the master's 20 hard-clips its own
+    // titles mid-word. And the narrow meters paint the playhead from the left
+    // where the masters centre a leaked 57-bar row and clip it — the lime head
+    // is half gone at 708 and wholly gone at 370 — the derived-count rule
+    // above.
+    if (s.lime) {
+      const card = '#263020' // Scheme 2 `sem/box/3`
+      const dusk = '#43523B' // Scheme 2 `sem/box/2` — the idle bars
+      const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+      const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls, ...clip }
+      const listName = { fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, ...clip }
+      // Body/Chip — Inter bold, tracked in by its own −6%.
+      const chipType = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+      }
+      const titleType = {
+        fontFamily: s.display, fontSize: desk ? u(36) : tab ? '28px' : '26px',
+        lineHeight: 1.1, letterSpacing: s.dls, ...clip,
+      }
+
+      // The wrapper's head: Label/XS in `font/ui` (Chakra Petch) over
+      // Display/LG, the bio's own recipe.
+      const limeHead = (
+        <div style={col(u(30), { alignItems: 'flex-start' })}>
+          <span style={{
+            fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
+            letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
+          }}>{s.mediaKicker}</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac, maxWidth: desk ? u(632.156) : undefined,
+          }}>{s.title}</h2>
+        </div>
+      )
+
+      const limeCard = track && (
+        <div style={{
+          background: card, color: s.tx, borderRadius: u(50), padding: u(24),
+          overflow: 'hidden', ...col(u(16), { alignItems: 'stretch' }),
+        }}>
+          <div style={row('0', { justifyContent: 'space-between' })}>
+            <span style={bodySm}>00:00</span>
+            <span style={bodySm}>{now.of}</span>
+          </div>
+          <div style={{ height: u(96), gap: u(4), overflow: 'hidden', display: 'flex', alignItems: 'flex-end' }}>
+            {Array.from({ length: nBars }, (_, j) => (
+              <span key={j} style={{
+                flex: 'none', width: u(10), borderRadius: u(1),
+                height: u(WAVE[j % WAVE.length]), background: j < nHot ? s.ac : dusk,
+              }} />
+            ))}
+          </div>
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
+            alignItems: 'center', columnGap: u(16),
+          }}>
+            <span style={col(u(2), { minWidth: 0 })}>
+              <span style={listName}>{now.track}</span>
+              <span style={bodySm}>{now.at} / {now.of}</span>
+            </span>
+            {/* The frame types ▶ as text; the live paused state needs Pause,
+                so both are lucide's, sized off their ink as Retro's are. */}
+            <span onClick={s.live ? toggle : undefined} style={{
+              width: u(44), height: u(44), borderRadius: '999px',
+              background: s.box2, color: s.tx,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              cursor: s.live ? 'pointer' : undefined,
+            }}>
+              {playing
+                ? <Pause size={Math.round(15.5 * z)} fill="currentColor" strokeWidth={0} />
+                : <Play size={Math.round(15.5 * z)} fill="currentColor" />}
+            </span>
+            <span style={col(u(2), { minWidth: 0, alignItems: 'flex-end', textAlign: 'right' })}>
+              <span style={{ ...listName, maxWidth: '100%' }}>{now.by}</span>
+              {track.rel && <span style={{ ...bodySm, maxWidth: '100%' }}>{track.rel}</span>}
+            </span>
+          </div>
+        </div>
+      )
+
+      const gap = s.mob ? '14px' : u(20)
+      return (
+        <div style={col(u(30), { alignItems: 'stretch' })}>
+          {limeHead}
+          {limeCard}
+          <div style={col('0', { alignItems: 'stretch' })}>
+            <div style={row('0', {
+              flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: s.tx,
+            })}>
+              <span style={chipType}>● Popular</span>
+              <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+            </div>
+            {s.tracks.length === 0 && (
+              <span style={{ ...bodySm, fontSize: s.bodyMd, color: s.muted }}>No tracks yet.</span>
+            )}
+            {s.tracks.map((t, i) => {
+              const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+              const on = chosen && i === at
+              return (
+                <div key={i} onClick={onPick(i)} style={{
+                  flex: 'none', overflow: 'hidden', color: s.tx,
+                  boxShadow: `inset 0 1px 0 ${s.stroke1}`,
+                  padding: `${u(14)} 0`, cursor: s.live ? 'pointer' : undefined,
+                  ...row(gap),
+                }}>
+                  {/* A 21 slot, the widest of the frame's hugging numbers, so
+                      the live glyph swap moves nothing. */}
+                  <span style={{
+                    width: u(21), flex: 'none', display: 'flex', alignItems: 'center',
+                    fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls,
+                  }}>{on
+                    ? (playing
+                      ? <Pause size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />
+                      : <Play size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />)
+                    : t.n}</span>
+                  <span style={{
+                    width: u(64), height: u(64), flex: 'none', display: 'block', position: 'relative',
+                    borderRadius: u(4), overflow: 'hidden', background: s.box2,
+                  }}><Photo s={s} initialsSize={16} src={t.img} ink={s.tx} /></span>
+                  {/* Display/Title over Body/SM. */}
+                  <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
+                    <span style={titleType}>{t.name}</span>
+                    {t.rel && <span style={bodySm}>{t.rel}</span>}
+                  </span>
+                  {dur && (
+                    <span style={{
+                      flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
+                    }}>{dur}</span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          {/* The element rides at the foot, as Retro's does: without it every
+              row click and the disc are dead. */}
+          {audio}
+        </div>
+      )
+    }
+
     const small = {
       fontFamily: s.body, fontSize: u(A.sm), lineHeight: 1.4, color: ink,
       whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -6452,6 +6992,192 @@ function Pricing({ s }) {
     const shown = s.live
       ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
+
+    // Lime — the same component in Lime's mode (964:68680 at 1440, 984:10765 at
+    // 768, 984:10796 at 390), placed after the seam as layout 1's and layout 2's
+    // pricing blocks are: `desk`, `tab`, `u`, `active` and `shown` are computed
+    // above, so the published filter, the moving FEATURED seat and the Book
+    // pills are Retro's whole and need nothing new. The tree is Retro's twin's
+    // node for node — the 24 between blocks, the 12 head, the 16 between rows,
+    // the 40 column gap, the 10 left column, the 6 price row, the 12/8/24
+    // includes grid, the badge's 3/8 on a 4 corner — and what moves is the
+    // row's padding (38, Retro 28), its corner (50, Retro 30), the tablet
+    // includes panel (240, Retro 248, what the wider padding leaves) and the
+    // dress. Retro's `T`, `chipType`, `h` (`vm.tierRow`, pale lime on Lime),
+    // `panelFg` and `selector` are not read.
+    //
+    // Scheme 1, with the featured row nested Scheme 3, read off the nodes: a
+    // plain row is the page ground in a 1px `sem/stroke/2` (`s.ac`) ring with a
+    // lime numeral; the featured one is `s.ac` in a 1px `s.bg` ring, every ink
+    // `s.bg`, and its badge Scheme 3's `box/1` #CCFA61 (`lime3`, the map's and
+    // testimonials' name). The capsule is `s.box1` in a `stroke1` ring, its lit
+    // option `s.ac` lettered `s.bg`. Every ring is an inside stroke drawn as an
+    // inset shadow, so the stated paddings stand (the rows sum exactly: 38 +
+    // 210 + 38 = 286). No node carries an effect. Every type size is the Lime
+    // ramp's `s.*` at all three widths but Display/Title, which is the frames'
+    // own 36 × 0.82 / 28 / 26 (`s.title` is the heading string).
+    //
+    // Declined: the instance's own 1px `stroke1` ring on all four sides — the
+    // component frame's stroke, which layout 2's pricing declined for the same
+    // reason (stacked bands would double it). The 390 master's 60 top and
+    // bottom inset is the root's `padY`'s, as everywhere.
+    if (s.lime) {
+      const ring = (c) => `inset 0 0 0 1px ${c}`
+      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the badge
+      const chip = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', whiteSpace: 'nowrap',
+      }
+      // Label/XS — the blurb and the features.
+      const ui = { fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls }
+      const rowBox = { width: '100%', borderRadius: u(50), padding: u(38) }
+
+      const packRow = (t, i) => {
+        // The seat, Retro's rule whole: the last row on show, not at one row.
+        const feat = shown.length > 1 && i === shown.length - 1
+        const ink = feat ? s.bg : s.tx
+        const money = t.price
+        const symbol = /^[^\d]/.test(money) ? money[0] : ''
+        const amount = symbol ? money.slice(1) : money
+        return (
+          <div key={t.n} style={{
+            ...(s.mob
+              ? col(u(40), { alignItems: 'flex-start' })
+              : row(u(40), { alignItems: 'flex-start' })),
+            ...rowBox, color: ink,
+            background: feat ? s.ac : 'transparent',
+            boxShadow: ring(feat ? s.bg : s.ac),
+          }}>
+            <div style={col(u(10), {
+              alignItems: 'flex-start',
+              ...(s.mob ? { width: '100%' } : { flex: '1 1 0', minWidth: 0 }),
+            })}>
+              <div style={row(u(8), { flexWrap: 'wrap' })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls,
+                }}>{t.name}</span>
+                {feat && (
+                  <span style={{
+                    ...chip, background: lime3, color: s.bg,
+                    borderRadius: u(4), padding: `${u(3)} ${u(8)}`,
+                  }}>FEATURED</span>
+                )}
+              </div>
+              {/* Desktop hugs; both narrow masters FILL the numeral, which
+                  stands the unit at the column's right edge. */}
+              {!!money && (
+                <div style={row(u(6), {
+                  alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
+                })}>
+                  {!!symbol && (
+                    <span style={{
+                      fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
+                    }}>{symbol}</span>
+                  )}
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                    letterSpacing: s.dls, color: feat ? s.bg : s.ac, whiteSpace: 'nowrap',
+                    ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
+                  }}>{amount}</span>
+                  {!!s.tierUnit && (
+                    <span style={{
+                      fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5,
+                      whiteSpace: 'nowrap', flex: 'none',
+                    }}>{s.tierUnit}</span>
+                  )}
+                </div>
+              )}
+              {!!t.blurb && <p style={{ ...ui, margin: 0, width: '100%' }}>{t.blurb}</p>}
+              {/* Plain: `BookPill`'s Lime defaults exactly (lime box, ink label
+                  and disc, lime arrow). Featured: the pair turned round, a
+                  lime disc round an ink arrow — the frame's two disc SVGs. */}
+              <BookPill s={s} to={s.tierBookTo} full={s.mob}
+                        {...(feat ? { bg: s.bg, fg: s.ac } : {})} />
+            </div>
+
+            {t.feats.length > 0 && (
+              <div style={col(u(12), {
+                alignItems: 'flex-start',
+                ...(desk ? { flex: '1 1 0', minWidth: 0 }
+                  : tab ? { width: u(240), flex: 'none' } : { width: '100%' }),
+              })}>
+                <span style={chip}>WHAT&rsquo;S INCLUDED</span>
+                {/* One grid, Retro's normalisation: the 768 master spaces a
+                    pair's two items 9 apart and the pairs 8, a hand-set 1px. */}
+                <div style={{
+                  display: 'grid', width: '100%', alignItems: 'start',
+                  gridTemplateColumns: tab ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
+                  columnGap: u(24), rowGap: u(8),
+                }}>
+                  {t.feats.map((f, j) => (
+                    <span key={j} style={row(u(8), { minWidth: 0 })}>
+                      <span style={{ ...chip, flex: 'none' }}>&#10003;</span>
+                      <span style={{ ...ui, minWidth: 0 }}>{f}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      return (
+        <div style={col(u(24), { alignItems: 'flex-start' })}>
+          <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
+            {!!s.title && (
+              <h2 style={{
+                margin: 0, fontFamily: s.display, fontSize: desk ? u(36) : tab ? '28px' : '26px',
+                lineHeight: 1.1, letterSpacing: s.dls, color: s.tx,
+              }}>{s.title}</h2>
+            )}
+            {!!s.pricingIntro && (
+              <p style={{
+                margin: 0, maxWidth: u(560), fontFamily: s.body, fontSize: s.bodyMd,
+                lineHeight: 1.5, letterSpacing: s.dls, color: s.tx,
+              }}>{s.pricingIntro}</p>
+            )}
+          </div>
+          {/* The capsule, Retro's filter in Lime's dress; not drawn at one chip.
+              "Save 15% on bundles" stays dropped (Retro's reading). */}
+          {s.tierChips.length > 1 && (
+            <div style={{
+              ...row('0', { flexWrap: 'wrap' }),
+              background: s.box1, boxShadow: ring(s.stroke1),
+              borderRadius: s.btnR, padding: u(3),
+            }}>
+              {s.tierChips.map((f, i) => (
+                <span
+                  key={i}
+                  onClick={s.live ? () => setChip(i) : undefined}
+                  style={{
+                    padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
+                    background: i === active ? s.ac : 'transparent',
+                    color: i === active ? s.bg : s.tx,
+                    cursor: s.live ? 'pointer' : undefined,
+                    fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+                    letterSpacing: s.dls, whiteSpace: 'nowrap',
+                  }}
+                >{f.label}</span>
+              ))}
+            </div>
+          )}
+          <div style={col(u(16), { width: '100%' })}>
+            {shown.length === 0 ? (
+              <div style={{ ...rowBox, ...ui, boxShadow: ring(s.ac), color: s.tx }}>
+                No packages yet.
+              </div>
+            ) : shown.map(packRow)}
+          </div>
+          {!!s.pricingSub && (
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+              letterSpacing: s.dls, color: s.tx,
+            }}>{s.pricingSub}</span>
+          )}
+        </div>
+      )
+    }
 
     // The stack's one hue, resolved in the view-model against the page ground:
     // `card` outlines the plain rows and fills the featured one, `acc` is that
@@ -8179,6 +8905,142 @@ function Repertoire({ s }) {
     // its `size`, the audio player's size-an-icon-off-its-ink rule.
     const arrow = 17.5 * z
 
+    // Lime — the same component in Lime's mode (964:68678 at 1440, 984:10760
+    // at 768, 984:10791 at 390), placed after the seam as layouts 1's and 2's
+    // blocks are: `sets`, `pg`, `pages` and `seats` are computed above and the
+    // reveal and the pager are the hoisted state, so the published cards need
+    // nothing new. The tree is Retro's twin's; what changes is every leaf's
+    // dress, and three boxes — the card's 34 padding and 50 corner, and the
+    // rows' pinned heights.
+    //
+    // Every size is a ramp token (`get_variable_defs`: display-lg
+    // 130 / 81 / 54, body-lg 16 / 15 / 15, chip 13 / 12 / 11, list
+    // 24 / 19 / 18, body-sm 13 / 13 / 12), so Retro's `T` is not read. Nor is
+    // `hair`, which is `s.bw` away from Retro: every rule is a 1px inside
+    // stroke, drawn as an inset shadow so the card's 34 stands.
+    //
+    // **The three cards are three schemes, and the scheme is the seat's.**
+    // Scheme 1 (`s.box1`, pale ink, a lime meta line), Scheme 4 (`mist`) and
+    // Scheme 3 (`lime3`), the last two inked and hairlined in the page ground.
+    // Seated by rendered place rather than by set — the media fan's rule —
+    // because the 390 master centres the *mist* card between the other two:
+    // seated by set, the canvas's centre card would be the olive one. So the
+    // grid colours its columns and the carousel its left, centre and right,
+    // and a set takes the colour of wherever it stands. A lone card on the
+    // grid is column one's olive; the carousel's lone card is the centre's.
+    if (s.lime) {
+      const mist = '#D5E3B2'  // Scheme 4 `sem/box/1`
+      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1`
+      const dark = { bg: mist, ink: s.bg, acc: s.bg, edge: '#15180F26' }
+      const SEATS = [
+        { bg: s.box1, ink: s.tx, acc: s.ac, edge: s.stroke1 },
+        dark,
+        { ...dark, bg: lime3 },
+      ]
+      // Each master's `flex-1` division of its card (369 / 439 / 439 less
+      // the head, the view block and the padding, over four), pinned for
+      // Retro's reason: our card has no height to divide. The rows' own
+      // `py-6` is therefore inert.
+      const limeRowH = u(desk ? 39 : tab ? 57 : 57.5)
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, ...extra,
+      })
+      const limeCard = (st, seat) => {
+        const k = SEATS[seat % SEATS.length]
+        const opened = !!open[st.label]
+        const rows = opened ? st.songs : st.songs.slice(0, cap)
+        const more = st.songs.length > rows.length
+        return (
+          <div key={st.label} style={col(u(10), {
+            background: k.bg, color: k.ink, boxShadow: `inset 0 0 0 1px ${k.edge}`,
+            borderRadius: u(50), padding: u(34), overflow: 'hidden', minWidth: 0,
+          })}>
+            <span style={body(s.bodyLg, 1.5)}>{st.label}</span>
+            {/* Body/Chip, letter-spaced −6 percent; the caps are a style. */}
+            <span style={body(s.chip, 1, {
+              fontWeight: 700, letterSpacing: '-0.06em', textTransform: 'uppercase',
+              color: k.acc, whiteSpace: 'nowrap', overflow: 'hidden',
+            })}>{st.meta}</span>
+            {rows.map((sg) => (
+              <div key={sg.n} style={row(u(10), {
+                flex: 'none', height: limeRowH, justifyContent: 'space-between',
+                boxShadow: `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
+              })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                  letterSpacing: s.dls, minWidth: 0,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{sg.title}</span>
+                <span style={body(s.bodySm, 1.4, { flex: 'none', whiteSpace: 'nowrap' })}>{sg.artist}</span>
+              </div>
+            ))}
+            {more && (
+              <div style={{
+                marginTop: 'auto', paddingTop: u(30), display: 'flex', alignItems: 'flex-start',
+              }}>
+                <span
+                  onClick={s.live ? () => setOpen((o) => ({ ...o, [st.label]: true })) : undefined}
+                  style={body(s.bodySm, 1.4, {
+                    cursor: s.live ? 'pointer' : undefined, whiteSpace: 'nowrap',
+                  })}
+                >View full set →</span>
+              </div>
+            )}
+          </div>
+        )
+      }
+      return (
+        <div style={col(u(24))}>
+          {/* Display/LG in `sem/text/2`: pale, where Retro's head is the accent. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.tx,
+          }}>{s.title}</h2>
+
+          {sets.length === 0 ? (
+            <span style={body(s.bodySm, 1.4, { color: s.muted })}>No songs yet.</span>
+          ) : s.mob ? (
+            <div style={{ margin: `0 calc(-1 * ${s.padX})`, overflow: 'hidden' }}>
+              <div style={row(u(20), { justifyContent: 'center', alignItems: 'stretch' })}>
+                {seats.map((i, at) => (
+                  <div key={sets[i].label} style={{
+                    width: u(290), flex: 'none', display: 'grid',
+                    pointerEvents: sets.length >= 3 && i !== pg ? 'none' : undefined,
+                  }}>{limeCard(sets[i], seats.length === 3 ? at : 1)}</div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: u(20),
+            }}>
+              {sets.slice(pg * perPage, (pg + 1) * perPage).map((st, at) => limeCard(st, at))}
+            </div>
+          )}
+
+          {/* The 390 master's two pills: a 1px `s.ac` ring round an `s.ac`
+              arrow, radius 60 — Retro's pager in Lime's accent, redrawn only
+              because its ring reads `hair`. */}
+          {pages > 1 && (
+            <div style={row(u(10), { justifyContent: 'center' })}>
+              {[-1, 1].map((dir) => (
+                <span
+                  key={dir}
+                  onClick={s.live ? () => setPage(((pg + dir) % pages + pages) % pages) : undefined}
+                  style={{
+                    flex: `1 1 ${u(180)}`, maxWidth: u(180), height: u(54),
+                    borderRadius: u(60), boxShadow: `inset 0 0 0 1px ${s.ac}`, color: s.ac,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: s.live ? 'pointer' : undefined,
+                  }}
+                >{dir < 0 ? <ArrowLeft size={arrow} /> : <ArrowRight size={arrow} />}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
+
     return (
       <div style={col(u(24))}>
         <h2 style={{
@@ -9434,6 +10296,21 @@ function Gallery({ s }) {
   // ← / → reach its own `onKeyDown`, and it locks the page's scroll while open
   // (user call, 2026-09-15). The three social addresses still have no row
   // to go in (layout 2's Soundcloud call, made again).
+  //
+  // **Lime (964:68679 · 984:10764 · 984:10795) is this tree node for node**,
+  // so it takes ternaries rather than a block — layout 2's gallery call. The
+  // insets, the 32 head gap and the 8 / 20 gaps are Retro's; what moves is
+  // the paint, the head's size and the tiles' shape. The sheet is Scheme 2's
+  // `sem/bg`, `s.box1` (not `paper`, which is pale lime under Lime); the head
+  // is `size/display-lg` in `s.ac`, which on the Lime ramp is `s.dispLg` at
+  // every width (130 / 81 / 54); each tile is a `#263020` well (Scheme 2's
+  // `box/3`, the media card's literal) under a 1px `stroke1` ring stroked
+  // inside, drawn as an inset shadow on a last-child overlay so the
+  // photograph cannot paint over it. The desktop tile is **326 / 171** and the
+  // 390 one **111.333 / 82.75**, where Retro's are 326 / 181.333 and
+  // 111.333 / 107.5: the same residue rule, over Lime's taller Bebas head
+  // (116 / 48 against 85 / 36) and its shorter 591 page. 768 states the same
+  // 660 grid, so its tile is Retro's.
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -9443,15 +10320,17 @@ function Gallery({ s }) {
     // beige page ground, so the cream is a literal, and the flat four have a
     // real second paper and take it with `paperFg` for the ink — `s.tx` is
     // chosen against the page and need not read on the sheet.
-    const sheet = s.retro ? '#FBF6EA' : s.paper
-    const ink = s.retro ? '#111111' : s.paperFg
+    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : s.paper
+    const ink = s.retro ? '#111111' : s.lime ? s.tx : s.paperFg
     const bw = s.retro ? '1px' : s.bw
+    const well = '#263020'
     const slots = [0, 1, 2, 3, 4, 5, 6]
     const cols = desk ? 4 : 3
     // Each master's own tile, as a ratio: 326 / 181.333, 230.667 / 150 and
     // 111.333 / 107.5. See the note above — these are what each page's stated
     // height left over, so they travel as a shape rather than as a number.
-    const ratio = desk ? 326 / 181.3333 : tab ? 230.6667 / 150 : 111.3333 / 107.5
+    const ratio = desk ? 326 / (s.lime ? 171 : 181.3333)
+      : tab ? 230.6667 / 150 : 111.3333 / (s.lime ? 82.75 : 107.5)
     const padH = `calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 20)})`
     const padV = u(desk ? 56 : 60)
 
@@ -9462,7 +10341,11 @@ function Gallery({ s }) {
     const open = s.live && pick >= 0 && !!s.images[pick]
     const at = filled.indexOf(pick)
     const step = (d) => setPick(filled[(at + d + filled.length) % filled.length])
-    const cream = '#FBF6EA'
+    // Under Lime the same dark surround is the page ground and the controls
+    // its pale ink, so the viewer reads as the page's own and not Retro's.
+    const cream = s.lime ? s.tx : '#FBF6EA'
+    const ctlBg = s.lime ? 'rgba(242,255,208,.14)' : 'rgba(251,246,234,.14)'
+    const scrim = s.lime ? 'rgba(21,24,15,.94)' : 'rgba(17,17,17,.94)'
     const ctl = (label, act, Icon, pos) => (
       <button
         type="button" aria-label={label}
@@ -9470,7 +10353,7 @@ function Gallery({ s }) {
         style={{
           position: 'absolute', ...pos, width: s.mob ? 44 : 52, height: s.mob ? 44 : 52,
           borderRadius: '999px', border: 0, padding: 0, cursor: 'pointer',
-          background: 'rgba(251,246,234,.14)', color: cream,
+          background: ctlBg, color: cream,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
@@ -9513,7 +10396,7 @@ function Gallery({ s }) {
         // picture" has no edge a visitor could find.
         onClick={() => setPick(-1)}
         style={{
-          position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(17,17,17,.94)', outline: 'none',
+          position: 'fixed', inset: 0, zIndex: 100, background: scrim, outline: 'none',
           // A touch overscroll on the scrim must not chain to the page.
           overscrollBehavior: 'contain',
         }}
@@ -9553,7 +10436,7 @@ function Gallery({ s }) {
             and nothing in any master's layout depends on the leak, so it wraps
             here (the testimonials' rule). */}
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg,
+          margin: 0, fontFamily: s.display, fontSize: tab && !s.lime ? s.h1 : s.dispLg,
           lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>
         <div style={{
@@ -9567,7 +10450,7 @@ function Gallery({ s }) {
               onClick={s.live && s.images[i] ? () => setPick(i) : undefined}
               style={{
                 aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
-                border: `${bw} solid ${ink}`, borderRadius: u(30),
+                border: s.lime ? undefined : `${bw} solid ${ink}`, borderRadius: u(30),
                 cursor: s.live && s.images[i] ? 'zoom-in' : undefined,
               }}>
               <span style={{ position: 'absolute', inset: 0 }}>
@@ -9580,9 +10463,16 @@ function Gallery({ s }) {
                 <Photo
                   s={s} src={s.images[i]}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
-                  ink={s.retro ? undefined : s.paperFg}
+                  ink={s.retro ? undefined : s.lime ? s.tx : s.paperFg}
+                  style={s.lime ? { background: well } : undefined}
                 />
               </span>
+              {s.lime && (
+                <span style={{
+                  position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                  boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+                }} />
+              )}
             </div>
           ))}
         </div>
@@ -10813,6 +11703,103 @@ function Calendar({ s }) {
     const at = want ? month.cells.findIndex((c) => c.iso === want) : -1
     const hit = at >= 0 && !month.cells[at].booked ? month.cells[at] : null
     const line = hit ? hit.short : s.calPrompt
+
+    // Lime — the frames 964:68677 / 984:10763 / 984:10794, as a block after
+    // the seam: `month`, `at`, `hit` and `line` are shared whole, so the
+    // published day picking and the foot pill needed nothing new. Every box is
+    // Retro's twin's (the 20 padding, 18 stack gap, 8 grid gap, 30.713 dot,
+    // 21 legend gap, the pill's 54 on a 46 disc), and the grid is Retro's
+    // one seven-column normalisation of the frame's two mechanisms. What
+    // changes reaches nearly every leaf: the card is Scheme 1's `box/1` at
+    // radius 50 inside a 2px `sem/stroke/1` ring, every ink is `sem/text/2`
+    // (the numeral included, where Retro's is the accent), the dots are
+    // `box/2` booked, `text/1` picked and a `stroke/1` ring on the card free,
+    // and every size is the Lime ramp's `s.*` rather than Retro's `T`. None of
+    // Retro's `panel` / `ink` / `hue` / `taken` is read: under Lime they are
+    // `paper`-derived, a pale card. No node carries an effect.
+    if (s.lime) {
+      const lz = desk ? 0.82 : 1
+      const lu = (v) => `${Math.round(v * lz * 10) / 10}px`
+      const body = (size, lh, extra) => ({
+        fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      const dot = (c, i) => {
+        if (c.iso === undefined) return <span key={i} />
+        const on = hit ? c.iso === hit.iso : false
+        const onClick = s.live && !c.booked
+          ? () => setSel((v) => (v === c.iso ? '' : c.iso))
+          : undefined
+        // The free dot's ring is the frame's raw 2.559, stroked inside, so it
+        // is an inset shadow and the 30.713 stands.
+        return (
+          <span key={i} onClick={onClick} style={{
+            width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
+            background: on ? s.ac : c.booked ? s.box2 : s.box1,
+            boxShadow: on || c.booked ? undefined : `inset 0 0 0 ${lu(2.559)} ${s.stroke1}`,
+            cursor: onClick ? 'pointer' : undefined,
+          }} />
+        )
+      }
+      return (
+        <div style={col(lu(30))}>
+          {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 —
+              `s.title` is the heading string, not the ramp's size. */}
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: lu(desk ? 36 : s.mob ? 26 : 28),
+            lineHeight: 1.1, letterSpacing: s.dls, color: s.tx,
+          }}>{s.title}</h2>
+          <div style={col(lu(18), {
+            background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(50),
+            boxShadow: `inset 0 0 0 ${s.bw} ${s.stroke1}`, overflow: 'hidden',
+          })}>
+            <div style={col('0')}>
+              {!!hit && (
+                <span style={{
+                  fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89, letterSpacing: s.dls,
+                }}>{hit.d}</span>
+              )}
+              <div style={row(lu(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
+                <div style={col(lu(2.745), { alignItems: 'flex-start' })}>
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1, letterSpacing: s.dls,
+                  }}>{month.name}</span>
+                  <span style={body(s.bodyMd, 1.5)}>{month.year}</span>
+                </div>
+                {!!hit && (
+                  <span style={body(s.bodyLg, 1.5, { whiteSpace: 'nowrap' })}>{s.calDays[at % 7]}</span>
+                )}
+              </div>
+            </div>
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', rowGap: lu(8),
+            }}>
+              {s.calDays.map((d, i) => (
+                <span key={i} style={body(s.bodySm, 1.4, {
+                  height: lu(20), display: 'flex', alignItems: 'center', justifyContent: 'center',
+                })}>{d.charAt(0)}</span>
+              ))}
+              {month.cells.map(dot)}
+            </div>
+            {/* The key's three labels are the frame's own, drawn whole — Retro's
+                vocabulary rule — with its two marks in the dots' own fills. */}
+            <div style={row(lu(21), {
+              padding: `${lu(4)} 0`, flexWrap: 'wrap', ...body(s.bodySm, 1.4),
+            })}>
+              <span><span style={{ color: s.box2 }}>●</span> Booked</span>
+              <span><span style={{ color: s.ac }}>●</span> Selected</span>
+              <span>○ Free</span>
+            </div>
+            {/* The foot pill is Scheme 2: `text/1` lime lettered and disced in
+                its `sem/bg`, which is Scheme 1's `box/1` — so `fg` is the one
+                override, and the disc's arrow follows the lime `bg`.
+                BookPill's own scale gives the 54 box and `s.list` label, with
+                `full` opting the 390 canvas back up. */}
+            <BookPill s={s} to={s.calBookTo} label={line} fg={s.box1} full={s.mob}
+                      style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal' }} />
+          </div>
+        </div>
+      )
+    }
 
     // The frame draws no numerals in the grid, so the head is the only place
     // the date is named — which is why it is 96px tall and why both halves of
@@ -12907,6 +13894,367 @@ function EventsMap({ s }) {
     // 1440 frame lights its third; that is the -1 start showing, the same
     // intended diff layout 2 ships.
     const litRow = (i) => shown.length > 1 && i === feat
+    // The coverage rings as a share of the viewport's width (480 / 300 / 140 in
+    // a 570, 315 and 350 viewport), outer first; the labels sit on each ring's
+    // right edge on the midline, inner label first, as the frame seats them.
+    const ringW = desk ? [84.2, 52.6, 24.6] : tab ? [152.4, 95.2, 44.4] : [137.1, 85.7, 40]
+    // Live, the zoom steps the map layer by a quarter; the canvas is the frame.
+    // "Expand view" opens directions to the gig the panel features.
+    const zoomScale = s.live ? 1.25 ** zoom : 1
+    const expand = extLink(s, feature?.directions)
+    const Expand = expand ? 'a' : 'span'
+    const canReveal = s.live && !allGigs && pages > 1
+
+    // Lime (964:68681 / 984:10766 / 984:10797). The tree is Retro's twin's box
+    // for box — the 56 / 56·30 / 60·10 sheet insets, the 60 / 30 column gap,
+    // the 18 column gap, the 14 rows round a 56 disc, the 32 / 12 / 12·10 panel
+    // and its 24 gap, the 30 × 40 zoom buttons 16 in — so the block reads the
+    // filter, the page, `feat` and the zoom and reveal state above, and changes
+    // the dress, which reaches every leaf.
+    //
+    // The section is **Scheme 4**: a pale `s.tx` sheet inked `s.bg`, with every
+    // outline the 15% ink hairline stroked inside, where Retro's are full-ink
+    // borders and a 2px olive rule. The panel nests **Scheme 2**, whose `box/1`
+    // is `#CCFA61` (`lime3`) at all three widths, and its status tab, ring
+    // labels, rings and pin are the accent. No node carries an effect. Every
+    // size is the Lime ramp; Display/Title is the frames' 36 / 28 / 26, since
+    // `vm.title` is the heading string.
+    if (s.lime) {
+      const ink = s.bg // sem/text/1 and /2
+      const mist = '#D5E3B2' // Scheme 4 sem/box/1 — the date discs
+      const hair = '#15180F26' // Scheme 4 sem/stroke/1, 15%
+      const lime3 = '#CCFA61' // Scheme 2 sem/box/1 — the panel and the map container
+      const lift = '#D9FF7F' // Scheme 2 sem/box/2 — the zoom buttons
+      const titleSize = s.mob ? '26px' : tab ? '28px' : u(36)
+      const ring = (c) => `inset 0 0 0 1px ${c}`
+      const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
+      const chipL = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+      }
+
+      const headL = (
+        <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
+          <span style={bodySm}>Gigs &amp; travel</span>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1, letterSpacing: s.dls,
+          }}>{s.title}</h2>
+        </div>
+      )
+
+      // The lit chip is ink lettered in the sheet's colour; every chip keeps
+      // the hairline, which on the lit one is ink on ink.
+      const chipRowL = chips.length > 0 && (
+        <div style={row(u(desk || tab ? 8 : 5), { flexWrap: 'wrap', maxWidth: '100%' })}>
+          {chips.map((ch, k) => {
+            const on = k === active
+            return (
+              <span
+                key={`${ch.city || 'all'}-${k}`}
+                onClick={s.live ? () => { setChip(k); setPage(0) } : undefined}
+                style={{
+                  ...bodySm, flex: 'none', whiteSpace: 'nowrap',
+                  boxShadow: ring(hair), borderRadius: '999px', padding: `${u(5)} ${u(12)}`,
+                  background: on ? ink : 'transparent', color: on ? s.tx : ink,
+                  cursor: s.live ? 'pointer' : undefined,
+                }}
+              >{ch.city ? `${ch.label} · ${ch.n}` : ch.label}</span>
+            )
+          })}
+        </div>
+      )
+
+      // The lit row is an ink pill with pale type; its disc stays `mist` with
+      // ink type, and its hour chip fills with the sheet. The rule under each
+      // row is the hairline, dropped on the lit pill and the row above it.
+      const gigRowL = ({ g: gg, i }, k) => {
+        const on = litRow(i)
+        const next = shown[k + 1]
+        const fg = on ? s.tx : ink
+        const tix = extLink(s, gg.url)
+        const Tix = tix ? 'a' : 'span'
+        const showTix = !!tix || !s.live
+        const mark = (
+          <span style={col(0, {
+            width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
+            borderRadius: '999px', background: mist, boxShadow: ring(hair), color: ink,
+          })}>
+            {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation. */}
+            <span style={{
+              fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
+            }}>{gg.month}</span>
+            <span style={{ fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26 }}>{gg.day}</span>
+          </span>
+        )
+        const lines = (
+          <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
+            <span style={{
+              fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls,
+              overflowWrap: 'anywhere',
+            }}>{gg.venue}</span>
+            {!!gg.city && (
+              <span style={on
+                ? { fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3, letterSpacing: s.dls }
+                : bodySm}>{gg.city}</span>
+            )}
+          </div>
+        )
+        const when = !!gg.time && (
+          <span style={{
+            ...bodySm, flex: 'none', whiteSpace: 'nowrap', color: ink,
+            boxShadow: ring(hair), borderRadius: '999px', padding: `${u(4)} ${u(10)}`,
+            background: on ? s.tx : undefined,
+          }}>{gg.time}</span>
+        )
+        const tickets = showTix && (
+          <Tix {...tix} style={{
+            ...bodySm, flex: 'none', whiteSpace: 'nowrap',
+            color: 'inherit', textDecoration: 'none', cursor: tix ? 'pointer' : undefined,
+          }}>Tickets →</Tix>
+        )
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            width: '100%', boxSizing: 'border-box', color: fg,
+            cursor: s.live ? 'pointer' : undefined,
+            ...(on
+              ? { background: ink, borderRadius: '999px', padding: `${u(14)} ${u(29)} ${u(14)} ${u(10)}` }
+              : {
+                padding: `${u(14)} 0`,
+                ...(next && litRow(next.i) ? null : { boxShadow: `inset 0 -1px 0 ${hair}` }),
+              }),
+            ...(s.mob ? col(u(14), { alignItems: 'flex-start' }) : row(u(14))),
+          }}>
+            {s.mob ? (
+              <>
+                <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
+                {(showTix || !!gg.time) && (
+                  <div style={row(u(10), {
+                    width: '100%', justifyContent: showTix ? 'space-between' : 'flex-end',
+                  })}>{tickets}{when}</div>
+                )}
+              </>
+            ) : <>{mark}{lines}{when}{tickets}</>}
+          </div>
+        )
+      }
+
+      // The 390 pager is two full-ink-ringed pills with no fill: the shared
+      // Lime pager re-inked for this sheet.
+      const listL = (
+        <div style={col(0, { width: '100%', boxShadow: `inset 0 1px 0 ${hair}`, color: ink })}>
+          {shown.map((r, k) => gigRowL(r, k))}
+          {shown.length === 0 && (
+            <span style={{ ...bodySm, padding: `${u(14)} 0` }}>No dates yet.</span>
+          )}
+          {pages > 1 && (
+            <div style={{ marginTop: u(10) }}>
+              <Pager s={s} frame={{
+                pages: [], grow: true, lime: { ring: ink, ink },
+                onStep: s.live
+                  ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
+                  : undefined,
+              }} />
+            </div>
+          )}
+        </div>
+      )
+
+      // The frame's five dots are ink at 60%, which vanishes on the dark
+      // raster, so the pins are layout 2's pair: pale at 8, the featured one
+      // the accent at 14 in a 2px ink ring.
+      const pinsL = shown.map(({ g: gg, i }) => {
+        const on = i === feat
+        return (
+          <span key={i} onClick={onPick(i)} style={{
+            position: 'absolute', left: gg.pin.x, top: gg.pin.y,
+            width: on ? u(14) : u(8), height: on ? u(14) : u(8),
+            borderRadius: '999px', background: on ? s.ac : s.tx,
+            boxShadow: on ? `0 0 0 2px ${ink}` : undefined,
+            transform: 'translate(-50%, -50%)', cursor: s.live ? 'pointer' : undefined,
+          }} />
+        )
+      })
+
+      // The rings, outer first, in their own pixels — diameter, inside stroke,
+      // opacity — so the viewBox carries the 1 / 1.5 / 2 weights and the outer
+      // ring's 4 / 4 dash (`dashPattern`, all three masters) × 0.82 on desktop,
+      // which neither a border nor an inset shadow can draw.
+      const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
+
+      const panelL = (
+        <div style={col(u(24), {
+          background: lime3, color: ink, borderRadius: desk ? u(50) : '30px', alignItems: 'flex-start',
+          padding: desk ? u(32) : tab ? u(12) : `${u(12)} ${u(10)}`,
+        })}>
+          <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
+            <div style={row(u(12), {
+              width: '100%', justifyContent: 'space-between',
+              ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+            })}>
+              {!!s.mapStatus && (
+                <span style={row(u(8), {
+                  background: s.ac, color: ink, borderRadius: '999px', flex: 'none',
+                  padding: `${u(6)} ${u(12)}`, ...chipL,
+                })}>
+                  <span style={{
+                    width: u(6), height: u(6), borderRadius: '999px', background: ink, flex: 'none',
+                  }} />
+                  {s.mapStatus}
+                </span>
+              )}
+              {!!s.mapUpdated && (
+                <span style={{ ...bodySm, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
+              )}
+            </div>
+            {feature ? (
+              <div style={col(u(4), { width: '100%', minWidth: 0 })}>
+                <h3 style={{
+                  margin: 0, fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1,
+                  letterSpacing: s.dls, overflowWrap: 'anywhere',
+                }}>{feature.venue}</h3>
+                {!!feature.city && (
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, opacity: 0.7,
+                  }}>{feature.city}</span>
+                )}
+              </div>
+            ) : (
+              <span style={{
+                fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7,
+              }}>No dates yet.</span>
+            )}
+          </div>
+
+          {/* The container's corner is 25 / 42 / 24, its hairline an overlay
+              over the raster it clips. */}
+          <div style={col(0, {
+            position: 'relative', width: '100%', background: lime3, overflow: 'hidden',
+            borderRadius: desk ? u(25) : tab ? '42px' : '24px',
+          })}>
+            {/* The viewport's aspect is each master's own residue: 570 × 471,
+                315 × 512 and 350 × 157. */}
+            <div style={{
+              position: 'relative', width: '100%', overflow: 'hidden',
+              aspectRatio: desk ? '570 / 471' : tab ? '315 / 512' : '350 / 157',
+            }}>
+              <div style={{
+                position: 'absolute', inset: 0, transform: `scale(${zoomScale})`,
+                transformOrigin: '50% 50%', transition: 'transform .25s ease',
+              }}>
+                <span aria-hidden style={{
+                  position: 'absolute', inset: 0, background: s.box1,
+                  ...(s.mapRadialSrc
+                    ? { backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : null),
+                }} />
+                {ringW.map((w, i) => {
+                  const [d, wt, op] = ringLine[i]
+                  return (
+                    <svg key={w} aria-hidden viewBox={`0 0 ${d} ${d}`} style={{
+                      position: 'absolute', left: '50%', top: '50%', width: `${w}%`, height: 'auto',
+                      opacity: op, transform: 'translate(-50%, -50%)', overflow: 'visible',
+                    }}>
+                      <circle cx={d / 2} cy={d / 2} r={(d - wt) / 2} fill="none" stroke={s.ac}
+                              strokeWidth={wt} strokeDasharray={i === 0 ? '4 4' : undefined} />
+                    </svg>
+                  )
+                })}
+                {s.mapRings.slice(0, ringW.length).map((label, k) => (
+                  <span key={k} aria-hidden style={{
+                    position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
+                    transform: 'translate(-50%, -50%)', background: s.ac, color: ink,
+                    borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
+                  }}>{label}</span>
+                ))}
+                {pinsL}
+                {/* The artist's marker: an accent head in a 2px ink ring round
+                    an ink glyph, over an accent tail whose tip is the rings'
+                    centre. */}
+                <span aria-hidden style={col(0, {
+                  position: 'absolute', left: '50%', top: '50%', alignItems: 'center',
+                  transform: 'translate(-50%, -100%)',
+                })}>
+                  <span style={row(0, {
+                    background: s.ac, color: ink, padding: u(4),
+                    boxShadow: `inset 0 0 0 2px ${ink}`, borderRadius: '999px',
+                  })}>
+                    <User size={Math.round(16 * z)} />
+                  </span>
+                  <span style={{
+                    width: 0, height: 0, borderLeft: `${u(5)} solid transparent`,
+                    borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${s.ac}`,
+                  }} />
+                </span>
+              </div>
+              <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+                {[['+', 1], ['−', -1]].map(([glyph, dir]) => (
+                  <span key={glyph}
+                        onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
+                        style={{
+                          width: u(30), height: u(40), borderRadius: u(8), background: lift, color: ink,
+                          boxShadow: ring(hair), boxSizing: 'border-box',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
+                          cursor: s.live ? 'pointer' : undefined, userSelect: 'none',
+                        }}>{glyph}</span>
+                ))}
+              </div>
+            </div>
+            <div style={s.mob
+              ? col(u(10), {
+                width: '100%', alignItems: 'flex-start', padding: `${u(14)} ${u(10)}`,
+                boxShadow: `inset 0 1px 0 ${hair}`,
+              })
+              : row(u(12), {
+                width: '100%', justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
+                boxShadow: `inset 0 1px 0 ${hair}`,
+              })}>
+              <span style={bodySm}>
+                {[s.mapBase, `${s.gigs.length} pins`, s.mapRadius].filter(Boolean).join(' · ')}
+              </span>
+              {/* The frame strokes the arrow in the accent, faint on `lime3`. */}
+              {!!s.mapExpand && (
+                <Expand {...expand} style={row(u(4), {
+                  ...chipL, flex: 'none', color: 'inherit', textDecoration: 'none',
+                  cursor: expand ? 'pointer' : undefined,
+                })}>{s.mapExpand}<span aria-hidden style={{ color: s.ac }}>→</span></Expand>
+              )}
+            </div>
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: ring(hair),
+            }} />
+          </div>
+        </div>
+      )
+
+      return (
+        <div style={{
+          margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+          background: s.tx, color: ink,
+          padding: `${u(desk ? 56 : tab ? 56 : 60)} calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 10)})`,
+          display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+          gap: u(desk ? 60 : 30), alignItems: 'start',
+        }}>
+          <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0 })}>
+            {headL}
+            {chipRowL}
+            {listL}
+            {/* "See all gigs": Scheme 4's ink pill, pale type round a pale disc
+                with an ink arrow — `BookPill`'s Lime branch with the pair
+                turned round. Live it lifts the pager, as Retro's does. */}
+            {!!s.mapCta && (
+              <span onClick={canReveal ? () => { setAllGigs(true); setPage(0) } : undefined}
+                    style={{ display: s.mob ? 'block' : 'inline-block', width: s.mob ? '100%' : undefined, cursor: canReveal ? 'pointer' : undefined }}>
+                <BookPill s={s} label={s.mapCta} bg={ink} fg={s.tx} full={s.mob}
+                          style={s.mob ? { width: '100%', justifyContent: 'space-between' } : undefined} />
+              </span>
+            )}
+          </div>
+          {panelL}
+        </div>
+      )
+    }
 
     const head = (
       <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%' })}>
@@ -13103,17 +14451,6 @@ function EventsMap({ s }) {
         }} />
       )
     })
-
-    // The coverage rings as a share of the viewport's width (480 / 300 / 140 in
-    // a 570, 315 and 350 viewport), outer first; the labels sit on each ring's
-    // right edge on the midline, inner label first, as the frame seats them.
-    const ringW = desk ? [84.2, 52.6, 24.6] : tab ? [152.4, 95.2, 44.4] : [137.1, 85.7, 40]
-    // Live, the zoom steps the map layer by a quarter; the canvas is the frame.
-    const zoomScale = s.live ? 1.25 ** zoom : 1
-    // "Expand view" opens directions to the gig the panel features.
-    const expand = extLink(s, feature?.directions)
-    const Expand = expand ? 'a' : 'span'
-    const canReveal = s.live && !allGigs && pages > 1
 
     const panel = (
       <div style={col(u(24), {
@@ -14832,6 +16169,194 @@ function Testimonials({ s }) {
       )
     }
 
+    // The wall: the stat card, then the reviews, three to a row and one at 390.
+    // Two seats are stated rather than filling — the stat card's 275 leading row
+    // 0 and the 276 trailing row 1 — and both are the frame's own numbers at
+    // 1440 *and* 768, where they are in fact the *widest* cells on the row. The
+    // 276 is only taken when row 1 is full: the frame draws two rows and says
+    // nothing about a third, so rows past it are three equal fills (the pricing
+    // deck's a-fourth-package-wraps rule) rather than an alternation extrapolated
+    // from two samples. A row that is short fills too, so a review past a full
+    // row stands across the whole measure; the seeded five fill both rows.
+    const perRow = s.mob ? 1 : 3
+    // Grid columns, not a flex row: `flex: 1 0 0` resolves its basis against the
+    // *content* box, so two cells carrying 30 of padding and a hairline do not
+    // split a row equally (the enquiry form's lesson). `minmax(0, 1fr)` is also
+    // what keeps a long unbroken word out of a neighbour's column.
+    const fill = 'minmax(0, 1fr)'
+    const template = (r, k) =>
+      s.mob ? fill
+        : r === 0 ? [u(275), ...Array(k - 1).fill(fill)].join(' ')
+        : r === 1 && k === perRow ? [fill, fill, u(276)].join(' ')
+        : Array(k).fill(fill).join(' ')
+
+    // Lime (964:68683 · 984:10768 · 984:10799) — `if (s.lime)` after the
+    // wall's arithmetic, this pass's seat inside a branch. The tree is Retro's
+    // twin's box for box (the 30 padding, the 14 / 16 / 24 gaps, the 56 and 24
+    // discs at −8, the 275 / 276 seats, the foot's 10), so `u()`, `n`,
+    // `marked`, `perRow` and `template` are shared and the one box that moves
+    // is the corner, **50** where Retro's is 30. Every size is the ramp's at
+    // all three widths (display-md, label-lg, list, body-lg / md / sm), so no
+    // `T` table. Retro's `REG`, `SEATS`, `cardBg`, `edge` and cards are
+    // `paper` / `deep` derivations and are not read. No node carries an effect.
+    if (s.lime) {
+      const mist = '#D5E3B2'  // Scheme 4 `sem/box/1` — the small quote
+      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the stat card
+      const lift = '#D9FF7F'  // Scheme 3 `sem/box/2` — the face stack's rings
+      const hair = '#15180F26' // `sem/stroke/1` on a light scheme, 15% ink
+      const ring = (c, w = 1) => `inset 0 0 0 ${w}px ${c}`
+      // The frame's five quote cells by scheme, read off the nodes' fills: a
+      // Scheme 1 olive, two Scheme 2 `box/1`s (`#394732`, which is Scheme 1's
+      // `box2`), Scheme 4's mist and Scheme 1's olive again. `disc` is the
+      // initials' ink, the cell's own `sem/bg` — which is why the second row's
+      // disc is lettered in `#2E3928` and the first row's in `s.bg`. The mist
+      // cell carries no disc in the frame, so its `s.bg` is the scheme's
+      // legible reading. Seat 1's `quote-cell` is the frame's one unstroked
+      // cell; it is ringed like its neighbours, Retro's normalisation of the
+      // same bare cell.
+      const REG = [
+        { bg: s.box1, fg: s.tx, edge: s.stroke1, disc: s.bg },
+        { bg: s.box2, fg: s.tx, edge: s.stroke1, disc: s.box1 },
+        { bg: mist, fg: s.bg, edge: hair, disc: s.bg },
+      ]
+      const SEATS = [0, 1, 1, 2, 0]
+      const cell = (reg, extra) => col(u(14), {
+        background: reg.bg, color: reg.fg, boxShadow: ring(reg.edge),
+        borderRadius: u(50), padding: u(30), justifyContent: 'center',
+        alignItems: 'flex-start', overflow: 'hidden', ...extra,
+      })
+      const small = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4 }
+
+      // The frame's four stack faces are photographs in a 2px `lift` ring;
+      // the marks stand in for them (Retro's reading), so their disc is this
+      // block's own: an ink disc lettered in the accent, which reads on the
+      // lime card where an accent disc would vanish into it. The `lift` ring
+      // is faint on `lime3` by the frame's own hand. 11 is Retro's invented
+      // size for two marks in the ring.
+      const face = (mark, last, key) => (
+        <span key={key} style={{
+          width: u(24), height: u(24), flex: 'none', borderRadius: '999px',
+          background: s.bg, color: s.ac, boxShadow: ring(lift, 2),
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden', fontFamily: s.label, fontSize: u(11), lineHeight: 1.1,
+          ...(last ? null : { marginRight: u(-8) }),
+        }}>{mark}</span>
+      )
+
+      // Scheme 3: a `lime3` card in a 15% ink hairline, every ink `s.bg` — the
+      // numeral included, where Retro's is `pillBg` on its dark card. The
+      // numeral, the unit, `sub`, `brand` and the stack are Retro's
+      // re-seatings of the frame's rating, and the stars stay dropped.
+      const statCard = (
+        <div key="stat" style={col(u(16), {
+          background: lime3, color: s.bg, boxShadow: ring(hair),
+          borderRadius: u(50), padding: u(30), justifyContent: 'space-between',
+          overflow: 'hidden',
+        })}>
+          <div style={col(u(16), { width: '100%' })}>
+            <div style={row(u(8), {
+              alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
+            })}>
+              <span style={{
+                fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                letterSpacing: s.dls, flex: desk ? 'none' : '1 0 0',
+              }}>{n}</span>
+              <span style={{
+                fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
+              }}>{n === 1 ? 'review' : 'reviews'}</span>
+            </div>
+            {!!s.testiSub && (
+              <p style={{
+                margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5,
+              }}>{s.testiSub}</p>
+            )}
+          </div>
+          <div style={col(u(10), { width: '100%', paddingTop: u(10) })}>
+            {!!s.brand && <span style={small}>{s.brand}</span>}
+            {!!marked.length && (
+              <div style={row('0px')}>
+                {marked.map((r, i) => face(r.mark, i === marked.length - 1, i))}
+              </div>
+            )}
+          </div>
+        </div>
+      )
+
+      // Label/LG in the label face (Bebas, caps by its own glyphs), the name
+      // at Display/List and the role at Body/SM, in the cell's ink. The disc is
+      // the accent in the cell's own ring colour, lettered in `reg.disc`.
+      const quoteCard = (q, i) => {
+        const reg = REG[SEATS[i % SEATS.length]]
+        return (
+          <div key={i} style={cell(reg)}>
+            {!!q.who && (
+              <span style={{
+                width: u(56), height: u(56), flex: 'none', borderRadius: '999px',
+                background: s.ac, color: reg.disc, boxShadow: ring(reg.edge),
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden', fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1,
+              }}>{q.mark}</span>
+            )}
+            {!!q.quote && (
+              <p style={{
+                margin: 0, width: '100%', fontFamily: s.label, fontSize: s.labelLg,
+                lineHeight: 1.1, overflowWrap: 'break-word',
+              }}>{q.quote}</p>
+            )}
+            {!!q.byline && (
+              <div style={col(u(4), { width: '100%' })}>
+                {!!q.who && (
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                    letterSpacing: s.dls,
+                  }}>{q.who}</span>
+                )}
+                {!!q.role && <span style={small}>{q.role}</span>}
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      const items = n ? s.quotes.map(quoteCard) : [(
+        <div key="empty" style={cell(REG[0])}>
+          <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>
+            No reviews yet.
+          </span>
+        </div>
+      )]
+      items.unshift(statCard)
+      const rows = []
+      for (let i = 0; i < items.length; i += perRow) rows.push(items.slice(i, i + perRow))
+
+      // The head is `s.tx` for both lines (Retro's display line is ink on
+      // beige); Display/MD is 72 / 50 / 40. The 1440 column's 306 cap is
+      // dropped, Retro's call.
+      return (
+        <div style={col(u(24))}>
+          <div style={col('0px', { width: '100%', color: s.tx })}>
+            <span style={small}>&#9679; Testimonials</span>
+            {!!s.title && (
+              <h2 style={{
+                margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                letterSpacing: s.dls,
+              }}>{s.title}</h2>
+            )}
+          </div>
+          <div style={col(u(16), { width: '100%' })}>
+            {rows.map((cells, r) => (
+              <div key={r} style={{
+                display: 'grid', gap: u(16), width: '100%',
+                gridTemplateColumns: template(r, cells.length),
+              }}>
+                {cells}
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
     // An emptied list keeps the stat card and prints pricing's one message in a
     // cell beside it — layouts 1 and 2 both keep their card and put the message
     // inside it, and a stat card alone in a 275 seat is not one of this
@@ -14847,30 +16372,10 @@ function Testimonials({ s }) {
       </div>
     )
 
-    // The wall: the stat card, then the reviews, three to a row and one at 390.
-    // Two seats are stated rather than filling — the stat card's 275 leading row
-    // 0 and the 276 trailing row 1 — and both are the frame's own numbers at
-    // 1440 *and* 768, where they are in fact the *widest* cells on the row. The
-    // 276 is only taken when row 1 is full: the frame draws two rows and says
-    // nothing about a third, so rows past it are three equal fills (the pricing
-    // deck's a-fourth-package-wraps rule) rather than an alternation extrapolated
-    // from two samples. A row that is short fills too, so a review past a full
-    // row stands across the whole measure; the seeded five fill both rows.
     const items = n ? s.quotes.map(quoteCard) : [empty]
     items.unshift(statCard)
-    const perRow = s.mob ? 1 : 3
     const rows = []
     for (let i = 0; i < items.length; i += perRow) rows.push(items.slice(i, i + perRow))
-    // Grid columns, not a flex row: `flex: 1 0 0` resolves its basis against the
-    // *content* box, so two cells carrying 30 of padding and a hairline do not
-    // split a row equally (the enquiry form's lesson). `minmax(0, 1fr)` is also
-    // what keeps a long unbroken word out of a neighbour's column.
-    const fill = 'minmax(0, 1fr)'
-    const template = (r, k) =>
-      s.mob ? fill
-        : r === 0 ? [u(275), ...Array(k - 1).fill(fill)].join(' ')
-        : r === 1 && k === perRow ? [fill, fill, u(276)].join(' ')
-        : Array(k).fill(fill).join(' ')
 
     return (
       <div style={col(u(24))}>
@@ -16546,6 +18051,156 @@ function EnquiryForm({ s }) {
     // a CSS transform would shout whatever the visitor types into it as well.
     // The canvas span and the placeholder are then the same glyphs.
     const up = (t) => String(t).toUpperCase()
+
+    // Lime — the frames 964:68682 / 984:10767 / 984:10798, as a block after
+    // `up` (the media player's seat on this pass): `desk`, `z`, `u` and `up` are
+    // the branch's, and `vals`, `errs`, `sent`, `href`, `onSubmit`, `Pill` and
+    // `pillLink` are hoisted above every branch, so the published boxes,
+    // submit, sent card and *Write another* needed nothing new. Retro's `T`,
+    // `cream`, `ink`, `cardAc` and the pill quartet are not read: under Lime
+    // they are `paper` derivations and would draw a pale card.
+    //
+    // The tree is Retro's twin's box for box (`get_metadata`: 90/56 · 60/30 ·
+    // 30/10 insets, the 60 / 32 gaps, the card's 28/24 and 14, the boxes 10
+    // apart, the pill's 5/21 round a 46 × 44 disc), so the grid, the centring
+    // and the dropped `sticky` are restated. What moves is the dress: Scheme 1
+    // throughout, no nested scheme and no effect on any node. The card is
+    // `sem/box/1` at radius **50** (Retro 30) inside a 1px `sem/stroke/1` ring;
+    // every box is the same `box/1` pill inside the same ring, in Label/SM; the
+    // submit is `sem/text/1` — the accent — lettered `sem/bg`, round an ink disc
+    // with a lime arrow (the frame's own SVG). The head stands on the page in
+    // `s.tx` with a lime display line. Every size is the Lime ramp's; only
+    // Display/Title is the frames' 36 / 28 / 26.
+    if (s.lime) {
+      const type = (family, size, lh, extra) => ({
+        fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      const title = desk ? u(36) : s.mob ? '26px' : '28px'
+      // Half of the content width less the 60 gap, floored to the pixel so the
+      // word fits with room rather than to the rounding.
+      const headSize = desk && s.titleWordEms
+        ? `${Math.min(parseFloat(s.dispLg), Math.floor((s.contentW - 60 * z) / 2 / s.titleWordEms))}px`
+        : s.dispLg
+      // The ring is inset, so the 24 padding clears it and nothing needs an
+      // overlay. A refused box thickens it to 2px of full ink — layout 1's and
+      // layout 2's Lime rule for a pill — and the stated 44 / 39 / 37 (12 over
+      // Label/SM's line box) does not grow.
+      const box = (bad) => type(s.label, s.labelSm, 1.1, {
+        background: s.box1, color: s.tx, border: 'none', borderRadius: s.btnR,
+        boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.stroke1}`,
+        height: desk ? u(44) : s.mob ? '37px' : '39px',
+        padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
+      })
+      // The frame's 67 radius on a 54 pill is `radius/pill`.
+      const pill = (extra) => type(s.display, s.list, 1.2, {
+        ...row(u(10), { justifyContent: 'space-between' }),
+        background: s.ac, color: s.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
+        padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
+      })
+      const disc = (
+        <span style={{
+          width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
+          background: s.bg, color: s.ac,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
+      )
+
+      return (
+        <div style={{
+          display: 'grid', gap: u(desk ? 60 : 32),
+          gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+          alignItems: desk ? 'center' : 'stretch',
+        }}>
+          <div style={col(u(20), { wordBreak: 'break-word', color: s.tx })}>
+            {/* Body/Chip: Inter Bold, tracked -6%, typed in caps. */}
+            {!!s.formAvailable && (
+              <span style={type(s.body, s.chip, 1, {
+                fontWeight: 700, letterSpacing: '-0.06em', textTransform: 'uppercase',
+              })}>{s.formAvailable}</span>
+            )}
+            {/* Display/LG at lh .89 in the accent. At desktop the token's 107
+                is wider than the half column allows for the seed's
+                UNFORGETTABLE. (5.158em against 4.69), which broke the word, so
+                the size gives way to the column only when the widest word
+                (`s.titleWordEms`) would not fit. 768 and 390 never bite. */}
+            <h2 style={type(s.display, headSize, 0.89, {
+              margin: 0, color: s.ac, overflowWrap: 'break-word',
+            })}>{s.title}</h2>
+            <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formPara}</p>
+          </div>
+
+          <div style={col(u(14), {
+            background: s.box1, color: s.tx, borderRadius: u(50),
+            boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+            padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
+          })}>
+            {/* The price in Display/Title and the stars in the accent, the unit
+                and the count in `sem/text/2`. Not controls, so they stand
+                through the confirmation swap; each drops when emptied. */}
+            {(!!s.formPrice || !!s.formPriceUnit) && (
+              <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
+                {!!s.formPrice && <span style={type(s.display, title, 1.1, { color: s.ac })}>{s.formPrice}</span>}
+                {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
+              </div>
+            )}
+            {!!s.formBookings && (
+              <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>
+                <span style={{ color: s.ac }}>★★★★★</span>{'  '}{s.formBookings}
+              </span>
+            )}
+            {sent ? (
+              // The card alone changes. No frame draws this state: the title is
+              // Display/Title and the address Body/MD, layout 2's inventions.
+              <>
+                <h3 style={type(s.display, title, 1.1, {
+                  margin: 0, color: s.ac, overflowWrap: 'break-word',
+                })}>{s.formSentTitle}</h3>
+                <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
+                {/* Plain text, Retro's reason: the fallback for a browser that
+                    opened nothing. */}
+                <span style={type(s.body, s.bodyMd, 1.5, { fontWeight: 700, overflowWrap: 'break-word' })}>
+                  {s.formEmail}
+                </span>
+                <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>{s.formAgain}{disc}</span>
+              </>
+            ) : (
+              <>
+                <div style={col(u(10))}>
+                  {s.formFields.map((f, i) => {
+                    const bad = !!(errs && errs.f[i])
+                    return s.live ? (
+                      <input
+                        key={i} value={at(i)} placeholder={up(f.label)}
+                        onChange={(e) => setAt(i, e.target.value)}
+                        // Retro's rule: `email` for the phone keyboard,
+                        // `number` as inputMode only, a date as the artist's text.
+                        type={f.kind === 'email' ? 'email' : 'text'}
+                        inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                        style={{ ...box(bad), outline: 'none' }}
+                      />
+                    ) : (
+                      <span key={i} style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>
+                        {up(f.label)}
+                      </span>
+                    )
+                  })}
+                  <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
+                    {s.formCta}{disc}
+                  </Pill>
+                </div>
+                {errs && (
+                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{s.formPrompt}</span>
+                )}
+                {!!s.formNote && (
+                  <p style={type(s.body, s.bodySm, 1.4, { margin: 0, textAlign: 'center' })}>{s.formNote}</p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )
+    }
+
     const boxShell = (bad) => ({
       border: `1px solid ${ink}`, borderRadius: '999px', background: 'transparent',
       // Stated height, layout 2's spelling with this frame's numbers: Figma
