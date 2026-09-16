@@ -131,7 +131,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | done `206c596` |
 | 9 | `map` | `964:64594` | 1440 × 867 | `986:11862` | 768 × 823 | `986:11881` | 390 × 1286 | `964:64651` / `986:10974` / `986:11467` | done `be2e675` |
 | 10 | `form` | `964:64595` | 1440 × 812 | `986:11863` | 768 × 889 | `986:11882` | 390 × 933 | `964:64652` / `986:11591` / `986:11633` | done `2275fdd` |
-| 11 | `testimonials` | `964:64596` | 1440 × 855.9 | `986:11864` | 768 × 824 | `986:11883` | 390 × 917 | `964:64653` / `986:11675` / `986:11701` | — |
+| 11 | `testimonials` | `964:64596` | 1440 × 855.9 | `986:11864` | 768 × 824 | `986:11883` | 390 × 917 | `964:64653` / `986:11675` / `986:11701` | done `59a07dd` |
 | — | `footer` | `964:64597` | 1440 × 479.5 | `986:11865` | 768 × 647.4 | `986:11884` | 390 × 619.4 | — | **out of scope** — the same tree as Lime layout 1's footer (`964:58598` / `986:39887` / `986:39899`), fitted in that pass's section 11, and `NVAR.footer` is 1 |
 | — | `tags`, `audio` | *none* | — | — | — | — | — | — | **not on this page**; see open question 1 |
 
@@ -412,17 +412,42 @@ The header also settles the **hard offset shadow** call for `BookPill`, above.
 
 ## The end-of-pass sweep
 
-Written when section 11 closes, from what the sections defer. What it will contain at least:
+Written as section 11 closed, from what the sections deferred. One session, in this order:
 
-1. **CLAUDE.md and README.md**, wherever they describe a layout-2 state as Retro's alone.
-2. **`plans/README.md`:** mark the pass closed.
-3. **One whole-page published check under Lime at layout 2**: builder → Lime → card 2 → Publish →
-   Open, then every `s.v1` control on the page, and the band edges against their real neighbours
-   (the repertoire's olive sheet and the form's pale band are the two full-bleed ones).
+1. **CLAUDE.md and README.md**, wherever they describe a layout-2 state as Retro's alone. The
+   known sites:
+   - the booking calendar's layout 2: "`booked` kills a row" is right, but the Lime row is dimmed
+     to .38 with no strike (section 8), the same state layout 1's Lime cells take and CLAUDE.md
+     already names for Lime at layout 1;
+   - the enquiry form's layout 2: "Its refused box thickens an inset **ring**" holds under Lime,
+     but at 2px of full ink (section 10);
+   - the testimonials' layout 2: "the root's `cream` flag stays layout 1's" still holds; nothing
+     else in that paragraph is Retro-only. Say that the Lime rail widens its picked tile in the
+     column as well as the 390 row (section 11);
+   - the events map's layout 2: the Lime raster sits on Retro's own plate (section 9), and the pager
+     takes the compact `pageWindow` — worth one clause beside layout 1's.
+   Grep both files for "layout 2" and read each hit against this plan's *Settled* notes; do not
+   restate the plan.
+2. **Open question 1**: `tags` and `audio` at `theme=1&arch=1`, all three widths — legible, not
+   designed.
+3. **One whole-page published check under Lime at layout 2**, one puppeteer script (layout 1's
+   *Learned on the end-of-pass sweep* has the route and selectors): builder → Lime → card 2 → *Use
+   this header* → Publish → Open, then every `s.v1` control on the page — header nav and burger
+   (fresh tab per width), bio pill, media fan / bar / list with audio, repertoire search, chips and
+   pager (`n` is not reachable here, so the seeded 12 songs), gallery tiles, pricing chips and
+   pill, calendar rows and pill, map rows / pins / Venue Link, form refused and valid submits
+   (capture-phase `preventDefault` on the mailto), testimonials tiles and pill, footer links. Then
+   180px seam clips at the band edges: the repertoire's olive sheet and the form's pale band are
+   the two full-bleed ones, and **the testimonials now follow the form's pale band directly** —
+   check that edge.
 4. **The layout-picker thumbnails** for arch 1 under Lime (deliverable 4).
-5. **The other three header cards** still render and publish, since this pass will move shared
-   components (`BookPill` at least).
-6. **Refresh the root `index.html`** with the two-build digest.
+5. **The other three header cards** still render and publish. This pass moved no shared
+   component (`BookPill` and `Pager` are untouched, open question 2), so expect no change; card 2
+   should show the fitted header and cards 3 and 4 Retro's checker ribbon as before.
+6. **`plans/README.md`:** mark the pass closed.
+7. **Refresh the root `index.html`** with the two-build digest (layout 1's sweep notes). Expect
+   zero rows at every theme on the seeded page, since `EXAMPLE_PAGE` is arch 0; the proof that the
+   pass shipped is card 2 in both builds' setup modals.
 
 ## Conventions
 
@@ -910,6 +935,51 @@ Settled in section 10 (the enquiry form):
   and the credit sits at the row's end. `n=8` grows the card. No page errors. Digest at themes 0–4,
   all 810 renders: exactly form arch 1 at theme 1, three widths — no `arch_0` file, so the new photo
   seed reaches layout 2 alone.
+
+Settled in section 11 (the testimonials):
+
+- **The ninth layout-2 block, after the seam: `if (s.lime)` within `Testimonials`' `if (s.v1)`,
+  after `rail`.** `n`, `at`, `q`, `rail`, `desk` / `tab` / `wide` / `u` and `gap` are shared whole,
+  so the published rail and pill needed nothing new. **The boxes are Retro's twin's** (head gap 12,
+  grid 32, card 40 / 40, foot 16 / 4, tiles 12 apart at radius 30, the 89-wide column), and the one
+  box that moves is the card's radius, **50** where Retro's is 30. Retro's `T`, `card` … `onTileFg`,
+  `head`, `tiles` and `big` are not read. Pure additions (135 / 0).
+- **No `T` table**: `get_variable_defs` is `THEME_RAMP.Lime` at all three widths (dispLg 130 / 81 /
+  54, dispXl 200 / 120 / 72, list 24 / 19 / 18, bodyLg 16 / 15 / 15, bodyMd 14 / 13 / 13, bodySm
+  13 / 13 / 12). Retro's non-monotonic `list` and its `tab ? s.h1 : s.dispLg` are Retro's alone.
+- **Two schemes, by node, and no effects anywhere.** The head is `s.tx` (`sem/text/2`: pale, where
+  Retro's display line is the accent). The idle tiles are Scheme 1 (`s.box1` inside a 1px `s.ac`
+  ring, `s.tx` ink). The card and the picked tile are **Scheme 3**: `lime3` `#CCFA61` with a `hair`
+  `#15180F26` ring (1px on the card, 2px on the tile) and `s.bg` ink — the map block's two names.
+  Every ring is an inset shadow, which also dodges Retro's `flex-basis: 0` border note.
+- **The rail's mechanism is the frame's at every width: the picked tile fills the cross axis, the
+  idle ones hug their 30 of padding.** The column is pinned at the frame's widest tile (89 × 0.82 /
+  85) and centres the idle tiles, so they come out 64–68 / 75–78 against the frame's 84 / 79 (its
+  35-padded third tile normalised to 30, Retro's call). The **390 row states no height**, unlike
+  Retro's 107.3: 36 + 21.6 + 36 is the frame's 94, so the vertical padding is real there and inert
+  in the column. Retro's wrap and `1 0 auto` basis carry over.
+- **The foot is `items-center`** where Retro aligns it to the end, and `when` takes the stars' seat
+  as it does there. An emptied quote drops its `<p>` (Retro's branch prints it blank).
+- **The pill is pricing layout 1's `sem/active` recipe**: `bg={s.pillBg} fg={s.activeFg}
+  full={s.mob}`, whose disc follows `fg` round a lime arrow — the frame's `#0D1F03` disc exactly.
+  None of Retro's `glyph` / `disc` / `size` / `shadow`. 130.5 × 44.3 / 142.1 × 54 / 138.9 × 54
+  against the frames' 158 × 0.82 / 142 / 139 (the desktop frame's type is 24, ours the ramp's 20).
+- **Named diffs.** The seeded quote is one line at 1440 and 768 and two at 390 where the frame's
+  runs 2 / 3 / 5, so the cards are 252.4 / 333.5 / 317.4 against 271.3 / 380 / 388, each short by
+  exactly those lines. The seeded heading ("Word of Mouth") is one line where the frame types two.
+  The 390 sub wraps (Retro's rule for its desktop-measure leak). Canvas tile 0 is lit where the
+  frame lights the middle one (`cur`'s pinned 0).
+- **Measured against the masters' content edges**: desktop head gap 9.8, grid at 26.2 under the
+  sub, column 73, card at 26.2 beside it, glyph box 45.9 (55.9 × 0.82), foot 55.8 (54.9), pill 26.2
+  under the grid; 768 column 85, tiles 103.2 (the rail divided three ways), glyph 90, foot 61,
+  quote 170 under the card's top (the frame's 40 + 90 + 40); 390 card over the rail at 32, tiles 93.6 (94),
+  eyebrow 16.8, heading 28.8 below it (29). `live=1` (puppeteer, probes deleted): at desktop and
+  390 each tile click moves the lime fill and the card, the 390 picked tile is always the wide one
+  (170–174 beside 74–77), a repeat click is idempotent, cursors are live-gated (canvas `auto`), the pill
+  is `<a href="#form">` live and a span on the canvas. `n=0` prints *No reviews yet.* with no rail;
+  `n=1` draws no rail and the card takes the width; `n=8` wraps the 390 row to three lines and
+  shrinks the desktop column's tiles to 23 (Retro's small-pills-at-eight). No page errors. Digest
+  at themes 0–4, all 810 renders: exactly testimonials arch 1 at theme 1, three widths.
 
 ## Open questions
 
