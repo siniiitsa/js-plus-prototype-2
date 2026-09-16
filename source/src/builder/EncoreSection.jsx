@@ -20057,6 +20057,236 @@ function EnquiryForm({ s }) {
       </div>
     )
   }
+  // Lime — the editorial frames 964:72940 / 971:5627 / 977:9201, as a block
+  // ahead of Retro's `if (s.v3)`: layouts 1's and 2's form seat, since every
+  // piece of the live seam — `vals`, `msg`, `errs`, `sent`, `at`, `setAt`,
+  // `href`, `onSubmit`, `Pill`, `pillLink` — is hoisted above the branches
+  // and everything inside Retro's v3 is dress this block redraws, so the
+  // published boxes, submit, sent state and *Write another* needed nothing
+  // new. The tree is Retro's twin's node for node (a display head over a
+  // rule, the small-caps line, then the form column — paired boxes over a
+  // message box and a submit pill — beside the 01 / 02 / 03 column, the form
+  // first at 1440 and the steps first at 768 and 390); every leaf changes
+  // face, ink or box, so a block. Retro's `T`, `rule` (`vm.formRule`, which
+  // is pale lime under Lime — layout 3's `tierRow`-not-read rule), `capsType`,
+  // `subType`, `boxShell`, `msgShell`, `pill`, `arrowDisc` and `hard()` are
+  // not read.
+  //
+  // ── Primitives: Lime on the page's Scheme 1, one nested pill ───────────
+  // The instance fills `sem/bg` and paints nothing (Retro's reading holds).
+  // The head is `sem/text/1` = `s.ac` at Display/LG; ENQUIRE, every box
+  // label, the steps' head and the step lines are `sem/text/2` = `s.tx`; the
+  // boxes fill `sem/bg` inside a 1px INSIDE `sem/stroke/2` = `s.ac` ring at
+  // radius 214 (the message box at 24) with their placeholders in `s.ac`; the
+  // head's rule and the step rows' rules are 1px INSIDE `sem/stroke/1` =
+  // `s.stroke1` (pale at .15), where Retro's head rule is 4px of `pillBg`,
+  // which under Lime would be a lime bar; the step discs are `s.ac` at radius
+  // 8 with the numeral in `sem/bg` — the frame's own ink, which Retro takes
+  // literally and the flat four cannot — and the ↘ is `s.ac`. The submit
+  // nests Scheme 1 and fills `sem/text/2`: a **pale** pill lettered `sem/bg`,
+  // round a `sem/bg` 46 × 44 disc carrying a `sem/text/2` arrow — the pricing
+  // row's pair (`s.tx` on `s.bg`) with the disc's glyph pale rather than lime.
+  // It is drawn inline at BookPill's Lime numbers, layout 1's reason: it has
+  // to be the seam's `Pill` on a mailto with the submit's own `onClick`, which
+  // BookPill's `to` / `ext` cannot carry. `get_variable_defs` and the nodes
+  // agreed on every entry at all three widths; no node carries an effect.
+  //
+  // ── Type is the ramp; the boxes are Retro's twin's ──────────────────────
+  // display-lg 130 / 81 / 54 at .89, list 24 / 19 / 18 at 1.2 (Retro's 16 /
+  // 12 / 13 — every label here is the display face, Retro's reading, so none
+  // goes through `labelStyle`), body-lg 16 / 15 / 15, body-md 14 / 13 / 13,
+  // body-sm 13 / 13 / 12; Display/Title 36 / 28 / 26 at 1.1 is a literal
+  // through `u()`, `s.title` being the heading string. Every box is the
+  // twin's: 24 between the head's three blocks, 12 under the head over its
+  // rule, 16 between rows, 14 between a row's cells, 6 under a label, 12
+  // inside a box, the 90 message, the pill's 5 / 21 round the 46 × 44 disc,
+  // the steps' 16 / 56 / 16 rows, 40 / 32 between the columns. Two of them
+  // are strokes drawn *inside* the frame (the head's 128 is 116 + 12 with the
+  // rule inside it, a step row's 88 is 16 + 56 + 16), so both rules are inset
+  // shadows rather than Retro's `borderBottom`, which adds a pixel to each —
+  // the repertoire's and the pricing stack's layout-4 rule. The boxes hug
+  // 45 / 44 / 44 (12 over Body/MD's line box) and the stated height keeps
+  // them so under a 13px live input.
+  //
+  // ── What stands where Retro's did ──────────────────────────────────────
+  // The instance pads 40 / 30 / 24 over and 56 / 56 / 40 under, where the
+  // root's `padY` gives 80 / 56 / 44; the root's stands in, as it does for the
+  // map's, the pricing's and the calendar's page-ground bands on this page,
+  // and the diff is named rather than bled. A refused box thickens its ring
+  // to 2px of `s.tx` — layout 3's Lime rule for a box on the dark ground; the
+  // idle ring is already lime, so a heavier lime would not read as a refusal
+  // — and the stated height does not grow. Retro's readings hold: `heading`
+  // heads the design (the narrow masters' "KAI MERCER" is the component's
+  // default and the 1440 master types "Contact Us"), `s.brand` is the ENQUIRE
+  // line, the steps are `vm.formSteps` with the frame's second line per row
+  // dropped, the frame's five boxes are the seed's four, a lone trailing box
+  // runs the full measure, and the head's `whitespace-nowrap` is dropped for
+  // a sentence at 130. Named diff: the frame's pill types "Check Availability"
+  // where `vm.formBtn` seeds *Book Now*, Retro's own allocation.
+  if (s.v3 && s.lime) {
+    const desk = !s.narrow
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    const type = (family, size, lh, extra) => ({
+      fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+    })
+    const title = desk ? u(36) : s.mob ? '26px' : '28px'
+    // Display/List in `s.tx`, typed in caps.
+    const caps = type(s.display, s.list, 1.2, { color: s.tx, textTransform: 'uppercase' })
+    // 1px, unramped, drawn inside the frame on all three masters.
+    const hairline = `inset 0 -1px 0 ${s.stroke1}`
+
+    const box = (bad) => type(s.body, s.bodyMd, 1.5, {
+      background: s.bg, color: s.ac, border: 'none', borderRadius: s.btnR,
+      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.ac}`,
+      height: desk ? u(45) : '44px', padding: `0 ${u(12)}`,
+      width: '100%', margin: 0, boxSizing: 'border-box',
+    })
+    // The same shell at the frame's stated 90 and its own 24 corner, padded
+    // on all four sides so the line starts at the top (`items-start`).
+    // `formCheck` reads `fields` alone, so it is always the idle ring.
+    const msgBox = {
+      ...box(false), display: 'block', height: u(90), borderRadius: u(24), padding: u(12),
+    }
+    // The frame's 67 radius on a 54 pill is `radius/pill`.
+    const pill = (extra) => type(s.display, s.list, 1.2, {
+      ...row(u(10), { justifyContent: 'space-between' }),
+      background: s.tx, color: s.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
+      padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
+    })
+    const disc = (
+      <span style={{
+        width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
+        background: s.bg, color: s.tx,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
+    )
+
+    // Label above, placeholder inside — layout 1's pair, keyed by index
+    // (Retro's rule: two boxes may share a label).
+    const field = (f, i) => {
+      const bad = !!(errs && errs.f[i])
+      return (
+        <div key={i} style={col(u(6), { minWidth: 0 })}>
+          <span style={caps}>{f.label}</span>
+          {s.live ? (
+            <input
+              value={at(i)} placeholder={f.placeholder}
+              onChange={(e) => setAt(i, e.target.value)}
+              // Layouts 1–3's rule: `email` for the phone keyboard, `number`
+              // as inputMode only, a date as the artist's text.
+              type={f.kind === 'email' ? 'email' : 'text'}
+              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              style={{ ...box(bad), outline: 'none' }}
+            />
+          ) : (
+            <span style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>
+              {f.placeholder}
+            </span>
+          )}
+        </div>
+      )
+    }
+    // `vm.formRows`' pairs as two `minmax(0, 1fr)` grid columns, Retro's
+    // reading of the frame's `flex-[1_0_0]` cells; a one-field row runs the
+    // whole measure, the frame's own fifth box.
+    const fieldRow = (fs, r) => (
+      <div key={r} style={{
+        display: 'grid', gap: u(14),
+        gridTemplateColumns: fs.length > 1
+          ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+    )
+
+    const formCol = (
+      <div key="form" style={col(u(16), { minWidth: 0 })}>
+        {sent ? (
+          // The form column alone changes; `sent` is only ever set under
+          // s.live. No frame draws this state: the title is Display/Title in
+          // the accent and the address Body/LG, Retro's inventions.
+          <>
+            <h3 style={type(s.display, title, 1.1, {
+              margin: 0, color: s.ac, overflowWrap: 'break-word',
+            })}>{s.formSentTitle}</h3>
+            <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formSentBody}</p>
+            {/* Plain text, not a second mailto: the fallback for a browser
+                that opened nothing. */}
+            <span style={type(s.body, s.bodyLg, 1.5, { fontWeight: 700, overflowWrap: 'break-word' })}>
+              {s.formEmail}
+            </span>
+            <span onClick={() => setSent(false)} style={pill({ cursor: 'pointer' })}>
+              {s.formAgain}{disc}
+            </span>
+          </>
+        ) : (
+          <>
+            {s.formRows.map(fieldRow)}
+            <div style={col(u(6))}>
+              <span style={caps}>{s.formMsgLabel}</span>
+              {s.live ? (
+                <textarea
+                  value={msg} placeholder={s.formMessage}
+                  onChange={(e) => setMsg(e.target.value)}
+                  style={{ ...msgBox, resize: 'none', outline: 'none' }}
+                />
+              ) : (
+                <span style={msgBox}>{s.formMessage}</span>
+              )}
+            </div>
+            <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
+              {s.formBtn}{disc}
+            </Pill>
+            {errs && (
+              <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{s.formPrompt}</span>
+            )}
+          </>
+        )}
+      </div>
+    )
+
+    // Not drawn at no promises, and the grid then gives the form the whole
+    // measure — Retro's reading (the footer's empty-second-column rule).
+    const stepsCol = s.formSteps.length ? (
+      <div key="steps" style={col('0px', { minWidth: 0 })}>
+        <span style={caps}>{s.formStepsLabel}</span>
+        {s.formSteps.map((st) => (
+          <div key={st.n} style={row(u(16), {
+            boxShadow: hairline, padding: `${u(16)} 0`, width: '100%',
+          })}>
+            <span style={type(s.body, s.bodyLg, 1.5, {
+              width: u(56), height: u(56), flex: 'none', borderRadius: u(8),
+              background: s.ac, color: s.bg,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            })}>{st.n}</span>
+            {/* A promise is prose and wraps; the row grows past its 88 and
+                the disc stays centred in it (Retro's reading of the frame's
+                `whitespace-nowrap`). */}
+            <span style={type(s.body, s.bodyMd, 1.5, { flex: '1 1 auto', minWidth: 0 })}>
+              {st.label}
+            </span>
+            <span style={type(s.body, s.bodyLg, 1.5, { flex: 'none', color: s.ac })}>↘</span>
+          </div>
+        ))}
+      </div>
+    ) : null
+
+    return (
+      <div style={col(u(24), { color: s.tx })}>
+        <div style={{ boxShadow: hairline, paddingBottom: u(12), width: '100%' }}>
+          <h2 style={type(s.display, s.dispLg, 0.89, {
+            margin: 0, color: s.ac, overflowWrap: 'break-word',
+          })}>{s.title}</h2>
+        </div>
+        <span style={type(s.display, title, 1.1, { textTransform: 'uppercase' })}>{s.brand}</span>
+        <div style={{
+          display: 'grid', width: '100%', gap: u(desk ? 40 : 32),
+          gridTemplateColumns: desk && stepsCol
+            ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+          alignItems: 'start',
+        }}>{desk ? [formCol, stepsCol] : [stepsCol, formCol]}</div>
+      </div>
+    )
+  }
   // v3 — Enquiry Form layout 4 · Editorial form (Figma 964:72845, 1440 × 814):
   // a display head over a 4px mustard rule, the artist's name under it in small
   // caps, and then two columns — the artist's boxes over a mustard submit pill
