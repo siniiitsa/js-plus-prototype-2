@@ -1043,7 +1043,8 @@ Settled in section 10 (the testimonials):
   padding, 14 / 16 / 24 gaps, 56 and 24 discs at −8, 275 / 276 seats and the foot's 10. The one box
   that moves is the corner, **50** (Retro 30). The frame's rows (274 / 298) are residues of the
   stated height; ours are content-tall, Retro's reading.
-- **Schemes by node, a four-seat register over Retro's `SEATS` order.**
+- **Schemes by node: a three-entry `REG` over Retro's own `SEATS` order** (`[0, 1, 1, 2, 0]`). The
+  frame's two `#394732` seats share one entry once its bare cell is ringed (below).
   - The stat card is Scheme 3: `lime3` in a `hair` ring, every ink `s.bg`, the numeral included.
   - The cells in seat order are a Scheme 1 `box1`, then two Scheme 2 `#394732`s (`s.box2`), then
     Scheme 4 `mist`, then `box1` again.
@@ -1053,7 +1054,7 @@ Settled in section 10 (the testimonials):
     in Scheme 1 but `#2E3928` (`s.box1`) in the Scheme 2 seat. That is the one thing a token read
     would miss.
   - No node carries an effect.
-- **Two readings that are not the frame's.**
+- **Two readings that are not the frame's, and Retro's drops.**
   - The frame's `quote-cell` (seat 1) is its one **unstroked** cell. It is ringed like its
     neighbours, as Retro normalised the same bare cell.
   - The stack's faces are photographs in a 2px `lift` ring. The marks that stand in for them are an
