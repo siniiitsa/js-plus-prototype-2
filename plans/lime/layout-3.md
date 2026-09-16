@@ -178,7 +178,7 @@ masters are fitted in one session.
 | 3 | `media` | `964:68674` list + `964:68673` card *(head `964:68666`)* | 858 × 424 + 858 × 243 | `984:10759` + `984:10758` *(head `984:10751`)* | 708 × 647 + 708 × 243 | `984:10790` + `984:10789` *(head `984:10782`)* | 370 × 647 + 370 × 243 | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | done `593133e` |
 | 4 | `repertoire` | `964:68678` | 1440 × 621 | `984:10760` *(in `984:10757`)* | 708 × 655 | `984:10791` | 390 × 709 | `964:68646` / `977:23041` / `982:10193` | done `2c4e0e1` |
 | 5 | `calendar` | `964:68677` *(in `964:68675`)* | 405 × 538.6 | `984:10763` *(in `984:10761`)* | 708 × 483.6 | `984:10794` *(in `984:10792`)* | 370 × 450.6 | `964:68645` / `984:10605` / `984:10673` | done `46d28f5` |
-| 6 | `gallery` | `964:68679` | 1440 × 789 | `984:10764` | 768 × 884 | `984:10795` | 390 × 591 | `964:68647` / `977:23131` / `982:10257` | — |
+| 6 | `gallery` | `964:68679` | 1440 × 789 | `984:10764` | 768 × 884 | `984:10795` | 390 × 591 | `964:68647` / `977:23131` / `982:10257` | done `01d5665` |
 | 7 | `pricing` | `964:68680` | 1440 × 1199 | `984:10765` | 768 × 1072 | `984:10796` | 390 × 1474 | `964:68648` / `977:23149` / `982:10274` | — |
 | 8 | `map` | `964:68681` | 1440 × 819 | `984:10766` | 768 × 831 | `984:10797` | 390 × 887 | `964:68649` / `977:23264` / `982:10389` | — |
 | 9 | `form` | `964:68682` | 1440 × 570 | `984:10767` | 768 × 734 | `984:10798` | 390 × 755 | `964:68650` / `977:23406` / `982:10472` | — |
@@ -815,6 +815,36 @@ Settled in section 5 (the booking calendar):
   No page errors. The composed row was not re-checked in the builder; the bio session's check
   covers the column, and `column=right` is the same `sectionVm({ column })`. Digest at themes 0–4,
   all 645 renders: exactly calendar arch 2 at theme 1, three widths.
+
+Settled in section 6 (the gallery):
+
+- **No block: `s.lime` ternaries through `Gallery`'s `if (s.v2)`**, layout 2's gallery call. One
+  `use_figma` walk of the three instances returned Retro's twin's boxes at every node (insets
+  56 / 60·30 / 60·20, the 32 head gap, gaps 8 / 8·20 / 8·20, radius 30, a 1px inside ring), so
+  only paint, the head's size and the tile shape move. Diff 37 / 9. The sheet is `s.box1`
+  (Scheme 2's `sem/bg`, where the Retro path's non-Retro arm read `paper`, pale lime); the head is
+  `s.dispLg` at **every** width (Retro's `tab ? s.h1` arm is Retro's); each tile is a `#263020`
+  well (Scheme 2's `box/3`, the media card's literal, passed as `Photo`'s `style`) under an
+  `inset 0 0 0 1px stroke1` last-child overlay, and no border. An empty slot's `KM` is `s.tx`.
+  The frame's seventh tile has an `s.ac` well under its photograph; it paints nothing and is not
+  drawn.
+- **The tile ratio is re-derived, not inherited.** Same residue rule as Retro's, over Lime's own
+  page: (789 − 112 − 116 − 32 − 16) / 3 = **171** at 1440 and (591 − 120 − 48 − 32 − 60) / 4 =
+  **82.75** at 390, so the ratios are 326 / 171 and 111.333 / 82.75 (Retro 181.333 and 107.5).
+  768 states the same 660 grid and keeps Retro's 230.667 / 150.
+- **The viewer is re-inked, not restructured**: scrim `#15180F` at .94 and controls `s.tx` on its
+  own 14% (`rgba(242,255,208,.14)`), behind `s.lime`; Retro's near-black and cream stay. The
+  frame draws no viewer, so this is the palette's reading of a QA-added control.
+- **Measured against the masters**: desktop inset 45.9 (56 × 0.82), head 95.2 (116 × 0.82), grid
+  top 167.3 (204 × 0.82), tiles 267.1 × 140.1 (267.3 × 140.2) on an 8.1 / 8.1 pitch; 768 grid top
+  164, tiles 230.7 × 150 at a 20 row gap; 390 grid top 140, tiles 111.3 × 82.7. The sections are
+  500 / 714 / 488 against 647 / 884 / 591, short by the frame's twelve tiles against our seven
+  (Retro's named diff). `live=1` at desktop: a tile click opens the viewer at 3 / 7 with focus and
+  `overflow: hidden` on `<html>`, → steps to 4 / 7, Escape closes and restores `visible`; canvas
+  cursors are `auto`. `n=0` keeps the wells and rings with pale initials. No page errors. Digest
+  at themes 0–4, all 645 renders: exactly gallery arch 2 at theme 1, three widths. The viewer is
+  not in the first paint, so the digest does not cover its Retro arm; that arm's values are
+  unchanged by construction.
 
 ## Open questions
 
