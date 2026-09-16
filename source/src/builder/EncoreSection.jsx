@@ -18218,6 +18218,204 @@ function Testimonials({ s }) {
     const at = s.live && n ? ((cur % n) + n) % n : 0
     const step = (d) => (s.live && paging ? () => setCur(at + d) : undefined)
 
+    // A bleed supplies its own inset (the repertoire's rule), and these are the
+    // frames' own: 56 × 0.82 is `s.gPad`'s 46 exactly at desktop, and 30 and 10
+    // at 768 and 390 — which hands the section each master's own measure, 1052
+    // / 708 / 370. The 768 master's foot is 48 against its own 30 head, the one
+    // asymmetry on this instance and the only number here that is not shared
+    // with a sibling master; transcribed, since it is stated rather than
+    // inferred (the tags row's symmetry rule is about a number nothing states).
+    // Lime's three masters pad the same numbers, so the Lime block below reads
+    // these three as it reads `at` and `step`.
+    const padH = `calc(${s.surplus} + ${desk ? s.gPad : tab ? '30px' : '10px'})`
+    const padTop = desk ? s.gPad : '30px'
+    const padBot = desk ? s.gPad : tab ? '48px' : '30px'
+
+    // Lime (964:72941 · 971:5628 · 977:9202) — `if (s.lime)` after the seam,
+    // this pass's seat inside a branch: `n`, `seats`, `paging`, `shown`, `at`,
+    // `step` and the three insets are shared whole, so the published arrows
+    // needed nothing new. The tree is Retro's twin's node for node (head over
+    // a row of cells; disc, quote, void, foot in each; the same 24 / 16 / 56 /
+    // 73.6 / 5 / 30 boxes, the same 4 / 3 / 1-and-a-peek seats) and nearly
+    // every leaf changes dress, so a block. Retro's `T`, `ground` / `groundFg`,
+    // `REG`, `SEATS`, `edge`, `glyph`, `arrow` and `card` are not read: under
+    // Lime they are the `pillBg` / `paper` / `edge` derivations the plan named.
+    //
+    // **The instance nests Scheme 4, and the sheet is `sem/bg` = `s.tx`** —
+    // pale, with `sem/text/1` = `s.bg` ink on the head. Read off the node's
+    // fills at all three widths, and `get_variable_defs` agrees for once. No
+    // node carries an effect but the two discs' BACKGROUND_BLUR 24, which
+    // stands behind an opaque fill and paints nothing (the header capsule's
+    // reading). The 1px `sem/bg` stroke on each disc is the ground's own colour
+    // on a disc standing on the ground — Retro's not-drawn reading, one scheme
+    // over.
+    //
+    // **Three readings that are Lime's own.** The desktop cell is **344**, not
+    // Retro's 406: 716 = 56 + 232 + 28 + 344 + 56, the head being two lines of
+    // Display/LG at .89 (231.4) where Retro's is 170; the narrow cells keep the
+    // stated 392.4 (the same 3-line / 2-line residue test as Retro's). The head
+    // is `s.dispLg` at every width (130 / 81 / 54), where Retro's 768 arm is its
+    // fitted `s.h1`. And the frame's one **bare** cell — the ink seat, seat four,
+    // stroked by nothing — is ringed like its neighbours, in `stroke1` (pale at
+    // .15, all but invisible on ink), which is layout 3's Lime call and Retro's
+    // own normalisation of the same cell one frame family over.
+    if (s.lime) {
+      const mist = '#D5E3B2'   // Scheme 4 `sem/box/1` — the two light cells
+      const hair = '#15180F26' // `sem/stroke/1` on a light scheme, 15% ink
+      const ring = (c) => `inset 0 0 0 1px ${c}`
+      // The frame's four cells by scheme, read off the nodes' fills: Scheme 4's
+      // mist in a 15% ink hairline with an ink disc lettered pale; Scheme 1's
+      // `box/3` in `stroke1` with a lime disc lettered ink; mist again; and
+      // Scheme 4's `text/1` — the page ink — with a pale disc lettered ink in
+      // the same 15% hairline. The disc's ring follows the *cell's* stroke on
+      // the first two seats and stays `hair` on the pale disc of the third,
+      // which is what the nodes state.
+      const REG = [
+        { bg: mist, fg: s.bg, edge: hair, av: s.bg, avFg: s.tx, avEdge: hair },
+        { bg: s.box3, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
+        { bg: s.bg, fg: s.tx, edge: s.stroke1, av: s.tx, avFg: s.bg, avEdge: hair },
+      ]
+      // Retro's own seat order, and Retro's own cost: the fourth seat (the ink
+      // card here, the rust one there) is unreachable at 768 and 390 at any
+      // count, because the hue belongs to the seat and not the review.
+      const SEATS = [0, 1, 0, 2]
+
+      // The frame's own → vector (21.22 × 18.48, `exportAsync` off the node),
+      // drawn in the disc's `currentColor`; the back arrow is the frame's
+      // other path, not a transform of this one. The vectors' own 1° / −179°
+      // rotation is a leak the render does not show, and is dropped — the
+      // layout-4 gallery's reading of the same family of arrow.
+      const glyph = (back) => (
+        <svg viewBox="0 0 21.2365 18.4747" width={u(21.22)} height={u(18.48)} aria-hidden style={{ display: 'block' }}>
+          <path fill="currentColor" d={back
+            ? 'M9.076 0.000376803L10.691 1.53969L4.26895 8.1899L21.1969 7.89442L21.2365 10.1625L4.30854 10.458L10.9584 16.8594L9.39847 18.4747L5.88684e-05 9.39879L9.076 0.000376803Z'
+            : 'M12.1606 18.4742L10.5456 16.9349L16.9676 10.2847L0.0396726 10.5802L8.35003e-05 8.31213L16.928 8.01665L10.2782 1.61523L11.8381 -0.000117907L21.2365 9.07582L12.1606 18.4742Z'} />
+        </svg>
+      )
+      // Scheme 4's `text/1` disc with a `sem/bg` glyph: ink on the pale sheet
+      // with a pale arrow. 73.6 at `radius/pill`, 5 apart, read off the handler
+      // for the cursor — Pager's rule.
+      const disc = (back, onClick, key) => (
+        <span key={key} onClick={onClick} style={{
+          width: u(73.6), height: u(73.6), flex: 'none', borderRadius: '999px',
+          background: s.bg, color: s.tx,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          cursor: onClick ? 'pointer' : undefined,
+        }}>{glyph(back)}</span>
+      )
+
+      // One card, Retro's own template with the ramp's sizes: Label/LG on the
+      // disc at 1.1, Body/LG on the quote at 1.5, Body/MD and Body/SM on the
+      // foot at 1.5 and 1.4 — `get_variable_defs` on each master is the ramp
+      // (32 / 21 / 14, 16 / 15 / 15, 14 / 13 / 13, 13 / 13 / 12), so no `T`
+      // table. Every ring is an inset shadow, this pass's spelling, so the
+      // stated 344 / 392.4 holds without a border's extra pixel. Each value is
+      // rendered or not, Retro's rule on this content.
+      const cell = (q, k) => {
+        const r = REG[SEATS[k % SEATS.length]]
+        return (
+          <div key={k} style={col(u(16), {
+            background: r.bg, color: r.fg, boxShadow: ring(r.edge), borderRadius: u(30),
+            padding: u(24), overflow: 'hidden',
+            // The stated box, Retro's `minHeight` reading: 344 at desktop (the
+            // 716 less its two-line head), 392.4 on both narrow masters.
+            minHeight: u(desk ? 344 : 392.4),
+          })}>
+            {!!q.who && (
+              <span style={{
+                width: u(56), height: u(56), flex: 'none', borderRadius: '999px',
+                background: r.av, color: r.avFg, boxShadow: ring(r.avEdge),
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden',
+                fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
+              }}>{q.mark}</span>
+            )}
+            {!!q.quote && (
+              <p style={{
+                margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5,
+                overflowWrap: 'break-word',
+              }}>{q.quote}</p>
+            )}
+            {!!q.byline && (
+              <div style={col(u(2), { marginTop: 'auto', width: '100%' })}>
+                {!!q.who && (
+                  <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>
+                    {q.who}
+                  </span>
+                )}
+                {!!q.role && (
+                  <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4 }}>
+                    {q.role}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      // The emptied list keeps the row and prints pricing's message in the
+      // first seat's card, Retro's reading.
+      const cells = n
+        ? Array.from({ length: shown }, (_, k) => cell(s.quotes[(at + k) % n], k))
+        : [(
+          <div key="empty" style={col('0px', {
+            background: REG[0].bg, color: REG[0].fg, boxShadow: ring(REG[0].edge),
+            borderRadius: u(30), padding: u(24), justifyContent: 'center',
+            minHeight: u(desk ? 344 : 392.4),
+          })}>
+            <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>
+              No reviews yet.
+            </span>
+          </div>
+        )]
+
+      return (
+        <div style={{
+          // The sheet: Scheme 4's pale `sem/bg`, out to the section's own
+          // edges past the root's padding, with the frames' own insets back.
+          margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
+          background: s.tx, color: s.bg,
+          padding: `${padTop} ${padH} ${padBot}`,
+          ...col(u(28)),
+        }}>
+          {/* The head fills at every width, Retro's call: the 1440 master hugs
+              a two-line authored break this heading does not carry, so ours
+              may hold one line there and the section run shorter than 716 ×
+              0.82 — named, not fixed. The gap is the narrow masters' 32 / 30,
+              taken at desktop too, where SPACE_BETWEEN states none. */}
+          <div style={row(u(s.mob ? 30 : 32), { alignItems: 'flex-end' })}>
+            {!!s.title && (
+              <h2 style={{
+                margin: 0, flex: '1 1 0', minWidth: 0,
+                fontFamily: s.display, fontSize: s.dispLg,
+                lineHeight: 0.89, letterSpacing: s.dls, color: s.bg,
+                overflowWrap: 'break-word',
+              }}>{s.title}</h2>
+            )}
+            {paging && (
+              <div style={row(u(5), { flex: 'none', marginLeft: 'auto' })}>
+                {disc(true, step(-1), 'p')}
+                {disc(false, step(1), 'n')}
+              </div>
+            )}
+          </div>
+          {/* Retro's grid, restated: `minmax(0, 1fr)` columns so the padded,
+              ringed cells split the row equally, and at 390 the frame's fixed
+              300s with the strip clipped at the content edge so the next card
+              peeks (54 against the frame's 64). */}
+          <div style={{
+            display: 'grid', gap: u(16), width: '100%', minWidth: 0, overflow: 'hidden',
+            gridTemplateColumns: s.mob && cells.length > 1
+              ? `repeat(${cells.length}, ${u(300)})`
+              : `repeat(${cells.length}, minmax(0, 1fr))`,
+          }}>
+            {cells}
+          </div>
+        </div>
+      )
+    }
+
     // The arrow discs. `sem/text/1` filled with the band's own mustard as the
     // glyph — `pillBg` on the accent, the inverse of the head's pair, which
     // needs a literal on none of the five. Their 1px `sem/bg` stroke is the
@@ -18307,17 +18505,6 @@ function Testimonials({ s }) {
           </span>
         </div>
       )]
-
-    // A bleed supplies its own inset (the repertoire's rule), and these are the
-    // frames' own: 56 × 0.82 is `s.gPad`'s 46 exactly at desktop, and 30 and 10
-    // at 768 and 390 — which hands the section each master's own measure, 1052
-    // / 708 / 370. The 768 master's foot is 48 against its own 30 head, the one
-    // asymmetry on this instance and the only number here that is not shared
-    // with a sibling master; transcribed, since it is stated rather than
-    // inferred (the tags row's symmetry rule is about a number nothing states).
-    const padH = `calc(${s.surplus} + ${desk ? s.gPad : tab ? '30px' : '10px'})`
-    const padTop = desk ? s.gPad : '30px'
-    const padBot = desk ? s.gPad : tab ? '48px' : '30px'
 
     return (
       <div style={{
