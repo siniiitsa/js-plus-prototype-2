@@ -412,6 +412,11 @@ The header also settles the **hard offset shadow** call for `BookPill`, above.
 
 ## The end-of-pass sweep
 
+**Done** — see the commit log for `Run the Lime layout-2 end-of-pass sweep` (docs, comments, this
+plan) and `Refresh the committed standalone build for the Lime layout-2 pass`. What each item came
+to is under *Learned on the end-of-pass sweep* at the foot of *Conventions*; the list is kept as it
+was run.
+
 Written as section 11 closed, from what the sections deferred. One session, in this order:
 
 1. **CLAUDE.md and README.md**, wherever they describe a layout-2 state as Retro's alone. The
@@ -981,11 +986,62 @@ Settled in section 11 (the testimonials):
   shrinks the desktop column's tiles to 23 (Retro's small-pills-at-eight). No page errors. Digest
   at themes 0–4, all 810 renders: exactly testimonials arch 1 at theme 1, three widths.
 
+Learned on the end-of-pass sweep:
+
+- **The docs' biggest falsehood was not on the list.** The four named sites each took one clause,
+  but CLAUDE.md and README still said "Lime is designed at layout 1 only" and "only `HeaderV0` is
+  fitted". Grep both files for `lime` as well as `layout 2`. Two code comments (`photos.js`'s
+  header and `sectionVm`'s `lime` flag) made the same claim; comment-only, so the build is
+  unaffected. File sizes moved too: 25 photographs, 2.2 MB; the standalone file 3.85 MB (was 3.63).
+- **`EncoreBuilder.jsx` was not byte-identical**, and its one behavioural hunk is not this pass's:
+  `setupHeaderCount()` (`049eace`, the fork point) caps the setup modal at four cards, which the
+  committed `index.html` (`350ccd0`) predated. So the old build offers Retro six cards and the new
+  one four. That is expected, and README already describes it. The rest of the file's diff is
+  the two additive Lime-only `vm.navNameEms` / `navCtaEms` keys and comments.
+- **One puppeteer script ran items 3–5**, with layout 1's route unchanged. The sidebar rows read
+  *Booking Calendar* and *Events Map*, not *Calendar* / *Map*. The layout picker's trigger is the
+  one visible `button[aria-haspopup="menu"]`, and `[role=menuitem]`'s second item is the arch-1
+  thumbnail. In the published tab at 1440, all 27 fragment anchors (the header's, the pills',
+  the calendar's flow, the footer's) scrolled to their ids. The media player played from a card
+  click (`paused` false, the clock running). The repertoire's search printed its empty state and
+  restored, and its pager stepped to page 2. The gallery, pricing, calendar, map and testimonials
+  controls each changed their section. A refused form submit put the 2px ink ring on all four
+  boxes, and the valid one composed the mailto with all four values, swapped in the sent card,
+  and *Write another* gave the values back. The burger opened a nine-link panel and scrolled at
+  390 and 820 (a fresh tab each). No page errors anywhere.
+- **A cursor probe can detach its own targets.** The repertoire's four "unclickable" leaves were
+  the pager: the probe had clicked the Weddings chip first, which leaves one page and so removes
+  the pager (section 5's rule). Take every element handle again after a click that can re-render
+  the section, or drive the pager separately, as the sweep did.
+- **The seeded page has no outbound link.** `GIGS[].link` is empty, `FOOTER_LINKS` holds no `link`
+  row, and the three social rows are layout 1's. So the published check exercises no `_blank`
+  anchor. Section 9's harness run (`n=8`) is the Venue Link's proof.
+- **The seams are all straight**, as the page walk said. At 1440 and 390: gallery → repertoire's
+  olive sheet, sheet → map, calendar → the form's pale band, band → testimonials. The
+  repertoire head's `stroke1` ring shows at the page edges, which is section 5's reading.
+- **Thumbnails (deliverable 4):** all ten arch-1 rows render their fitted sections at
+  `SIZES.desktop`: header, bio, media, gallery, repertoire, map, pricing, calendar, form and
+  testimonials. **Cards 1, 3 and 4** publish with every header anchor scrolling and the burger
+  opening at 390 and 820. Card 3's panel has ten links, since `HeaderV2` carries one more. Cards 3
+  and 4 still draw Retro's checker ribbon (unfitted).
+- **Two-build digest** (repo root on `127.0.0.1:8931`, old build digested before the `cp`):
+  11 `--ac` roots, canvas 1088 / 768 / 390 asserted, **zero differing rows at all five themes and
+  three widths** on the seeded page. The shipped-it tell is card 2. In the old build, Lime's
+  card carries the checker and neither the `#C7FF3C` place card nor the `#101309` well. In the
+  new build it has both and no checker. After *Use this header* on card 2, Retro's whole
+  layout-2 page is byte-identical across builds and Lime's differs. String tell: `navNameEms`
+  (new only).
+
 ## Open questions
 
 1. **`tags` and `audio` have no layout-2 frame** on Lime's page, as on Retro's. They keep their
    generic `v1` in Lime tokens. Check once, in the sweep, that they are legible at `theme=1&arch=1`,
    the way layout 1's session 0 checked their `v0`; do not design them.
+
+   *Checked in the sweep:* both are legible at all three widths. The audio list is layout 1's
+   finding again (olive-ringed rows, Bebas numbers, Inter titles). The tags row is the generic
+   tail's `nowrap` / `overflow: hidden` ticker, so at 390 it runs off the right edge — at every
+   theme, by design, not a Lime fault.
 2. **The hard offset shadows** (header nav pill, calendar foot pill) contradict layout 1's "Lime has no
    hard offset shadows". The header session decides how `BookPill` draws them, or whether they draw
    nothing on this ground.

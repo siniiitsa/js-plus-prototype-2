@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~3.6 MB — most of it the inlined Retro and Lime photography) is the generated
+- **`index.html`** (~3.8 MB — most of it the inlined Retro and Lime photography) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -40,17 +40,17 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 3990 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 15990 | Presentational renderer for all 14 section types |
-| `src/builder/data.js` | 1210 | `THEMES`, all static data, colour helpers |
-| `src/builder/photos.js` | 165 | Retro's and Lime's seeded Figma photography + the three resolvers |
+| `src/builder/EncoreBuilder.jsx` | 4000 | All state, all chrome, both stages, publish |
+| `src/builder/EncoreSection.jsx` | 17790 | Presentational renderer for all 14 section types |
+| `src/builder/data.js` | 1220 | `THEMES`, all static data, colour helpers |
+| `src/builder/photos.js` | 175 | Retro's and Lime's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
 
 Everything else under `src/components/ui/` is stock shadcn.
 
 `photos.js` is the only module that imports the files in `src/builder/photos/`. Keep those
-imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~2.1 MB.
+imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~2.2 MB.
 
 ## The one architectural rule
 
@@ -247,7 +247,9 @@ mutated through a single `patch()` helper.
   holds one, and there is nothing to toggle back to). Its list is the page **minus** that gig,
   which is where the frame's own "Other upcoming · 4" comes from, and `feat` falls back to the
   page's first gig whenever `sel` is off-page — the canvas, the -1 start and a gig deleted under
-  the visitor, all in one test. **Layout 3 is layout 1's lit row and layout 2's featured panel
+  the visitor, all in one test. Its pager takes the wide `pageWindow` except at 390; under Lime
+  it takes the compact one at every width, layout 1's map recipe, and the Lime map draws the
+  same screened raster on Retro's own dark plate. **Layout 3 is layout 1's lit row and layout 2's featured panel
   in one control**: its rows light *and* the panel beside them features, on the same `sel`, so
   nothing is removed from the page the way layout 2 removes the featured gig from its list — and
   the lit row is **not drawn at one row**, which is exactly the 390 canvas, where a page is one
@@ -389,7 +391,7 @@ mutated through a single `patch()` helper.
   `TIERS`' — and it has no month, so no arrows and no `mi`. Everything else it shares whole:
   `sel` is the same ISO date, `open` cues the same day (slot one *is* `CAL_OPEN`, so the
   seeded page opens on the frame's picture), `booked` kills a row there as it strikes a cell
-  here, the foot prints the same composed line or the same `calPrompt`, and the pill takes the
+  here (under Lime the row is dimmed to .38 with no strike, the same state its cells take), the foot prints the same composed line or the same `calPrompt`, and the pill takes the
   same `calBookTo`. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which headed the flat layout alone, heads it; `image` does not
@@ -458,7 +460,7 @@ mutated through a single `patch()` helper.
   the live input can carry it as a placeholder without also shouting whatever the visitor types,
   which is what keeps the published first paint the canvas's picture. Its refused box thickens an
   inset **ring** where layout 1 draws an inset rule — a rule under a 999px pill reads as a smear
-  — and its card's one line of prose is `s.formPara`, which until then no §10.2 layout drew. The
+  (under Lime the ring is 2px of full ink, Lime's layout-1 rule) — and its card's one line of prose is `s.formPara`, which until then no §10.2 layout drew. The
   frame's price and its `★★★★★ 42 bookings` are numbers the artist never typed and are
   **dropped**, the video section's rule. The stage photograph above the heading is
   `FIELDS.form.photo`, a **third single-photo slot** beside `image` and `avatar`, because this
@@ -536,7 +538,10 @@ mutated through a single `patch()` helper.
   wide orange card — and it pages through a **rail of initial tiles** down the card's left,
   one per review, sharing the seam whole rather than growing one: the same `cur`, the same
   clamp, the same pinned 0 on the canvas and the same not-drawn-at-one, which there means the
-  card simply takes the whole width. The tile's mark is **`vm.quotes[].mark`**, composed in
+  card simply takes the whole width. The picked tile is also the **wide** one in the 390 row;
+  under Lime it widens in the desktop and 768 column as well, where the idle tiles hug their
+  padding inside a column pinned at the frame's widest tile, while Retro's column gives every
+  tile one fixed width. The tile's mark is **`vm.quotes[].mark`**, composed in
   `sectionVm` beside `byline` — the reviewer's initials, or the row's number when the name is
   empty, punctuation spaced out first so "Sarah &amp; Tom" marks the tile `ST` and not `S&`.
   The frame's `★★★★★` is a rating the artist never typed and is **dropped** (the enquiry
@@ -699,14 +704,19 @@ mutated through a single `patch()` helper.
   the drop index is the pointer delta in row-heights, not a hit test.
 - **Retro and Lime are designed; Grunge, Editorial and Pop are not.** The flat three are fully
   functional but render flat. Retro's decorative language is gated on `s.retro`, and it gets six
-  photographic header layouts where the flat three get three. **Lime is designed at layout 1
-  only**: its Figma page is the same eleven components as Retro's layout 1 in another variable
-  mode, so its decoration (arc seams, glows, the arch portrait) lives in **`s.lime`** blocks —
-  `if (s.lime)` or `if (s.v0 && s.lime)` — inside the shared `v0` code, never in a branch of its
-  own, and a value both designed templates draw is gated `(s.retro || s.lime)`. Its header
-  family is `'lime'`: the first four photographic layouts, of which only `HeaderV0` is fitted.
-  Its layouts 2–4 are Retro's compositions in Lime tokens until their passes
-  (`plans/lime/layout-1.md`).
+  photographic header layouts where the flat three get three. **Lime is designed at layouts 1
+  and 2**: each of its Figma pages is the same components as Retro's page of that number in
+  another variable mode, so its decoration (arc seams at layout 1, glows at both, the arch
+  portrait) lives in **`s.lime`** blocks inside the shared branches, never in a branch of its
+  own — `if (s.lime)` or `if (s.v0 && s.lime)` in the `v0` code, and `if (s.v1 && s.lime)` ahead
+  of an `if (s.v1)` whose state is hoisted or `if (s.lime)` inside it after the seam — and a
+  value both designed templates draw is gated `(s.retro || s.lime)`. Its header family is
+  `'lime'`: the first four photographic layouts, of which `HeaderV0` and `HeaderV1` are fitted,
+  so the setup modal's first two cards are whole Lime pages. Three carve-outs at layout 2: the
+  video section is not fitted (it is being removed), `tags` and `audio` have no layout-2 frame
+  and render their generic `v1` in Lime tokens, and the footer is layout 1's (`NVAR.footer` is
+  1). Layouts 3 and 4 are Retro's compositions in Lime tokens until their passes
+  (`plans/lime/`).
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
   designs, and eight of the fourteen offer more — Audio layouts 1, 4 and 7 render identically on
   purpose. The other six are level: the header and the footer always were, and the layout-4 pass

@@ -1,5 +1,5 @@
 // The seeded mock photography of the two designed templates, exported from their
-// Figma frames — Retro's §10.2 page and Lime's layout-1 page.
+// Figma frames — Retro's §10.2 page and Lime's layout-1 and layout-2 pages.
 //
 // These are *imports*, never fetched: §8.6 forbids a network request anywhere in
 // the render path, and vite-plugin-singlefile forces `assetsInlineLimit = () => true`,
