@@ -8108,6 +8108,168 @@ function Pricing({ s }) {
       marginLeft: `calc(-1 * ${s.padX})`, marginRight: `calc(-1 * ${s.padX})`,
       paddingLeft: s.padX, paddingRight: s.padX,
     }
+
+    // Lime (964:72926 at 1440 × 546; 971:5613 at 768 × 809; 977:9187 at 390 ×
+    // 837). The same tree as Retro's twin, node for node — the instance is
+    // Primitives: Lime alone on the page's own Scheme 1, fills `sem/bg` and
+    // paints nothing of its own — so the block restates that structure and
+    // changes the dress, which reaches nearly every leaf. It reads `desk`, `u`,
+    // `pad` and `bleedX` from the branch and nothing else: not `T` (every size
+    // is the ramp's `s.*` at all three widths — display-sm 50 / 40 / 32,
+    // label-sm 18 / 14 / 12, list 24 / 19 / 18, chip 13 / 12 / 11, label-xs
+    // 20 / 14 / 12, body-md 14 / 13 / 13, body-lg 16 / 15 / 15, eyebrow 15 /
+    // 12 / 11, `get_variable_defs` on all three masters, no Device override),
+    // not `chipType`, `rowBox` or `serviceRow`, and neither `s.tierRow` (pale
+    // lime under Lime — layout 3's rule, so the rule below reads `s.ac`
+    // directly) nor `s.tierFeatSeats` (box1 / white under Lime, where the
+    // frame inks its box1 seat in lime). There is still no state: the pill's
+    // `to` is the whole live seam.
+    //
+    // Read off the nodes at all three widths:
+    //   · The rule is `sem/stroke/2` = `s.ac`, 4px INSIDE the row's foot, on
+    //     every row but the last. It is an inset shadow, not Retro's border:
+    //     the frame's 244 is 48 + 148 + 48 with the stroke inside the padding,
+    //     a border would add the 4 to each row, and nothing reaches the row's
+    //     foot edge for the shadow to hide under.
+    //   · The tag chips' hairline is rgba(242, 255, 208, .15) — on this ground
+    //     that IS Scheme 1's `sem/stroke/1`, `s.stroke1`: the design, and not
+    //     the leak Retro's comment below names it on the beige. `radius/pill`,
+    //     `border/hairline` 1 INSIDE (a shadow, so the 5 / 10 stands with no
+    //     `calc(… - 1px)`), Body/Chip in `s.ac`.
+    //   · The feature pills alternate `scheme/1/tag1/bg` `s.box1` lettered
+    //     `tag1/text` `s.ac` and `tag2/bg` `s.ac` lettered `tag2/text`
+    //     `s.activeFg`, the seat by parity — the layout-4 header inlined the
+    //     same pair for its chip row. The frame's seats 3 and 4 ink
+    //     `scheme/3/tag1/text` #C7FF3C and `scheme/4/tag1/text` #15180F on a
+    //     Scheme 1 component: leaked tokens (the header's and the bio's reading
+    //     of the same Tags component), not drawn. `radius/chip` 6 — `s.radiusChip`,
+    //     already a px string, so it is not passed through `u()` — 5 / 11,
+    //     Label/XS in `s.ui`.
+    //   · The pill is `sem/text/2` `s.tx` with its label and its 46 × 44 disc
+    //     in `sem/bg` and the arrow in `sem/text/1`: BookPill's Lime branch
+    //     with the pair turned round and `discFg` lime. Its 5 / 5 / 5 / 21,
+    //     gap 10, Display/List at 1.2 and the disc are this frame's own, so
+    //     nothing else is passed — not Retro's `disc`, `size`, `glyph` or
+    //     `shadow`. No node carries an effect at any width, so Retro's 768 /
+    //     390 offset block is not drawn; `full` at 390 is the master's own
+    //     k = 1 (159 × 54, an 18px label), and the pill hugs at every width
+    //     where Retro's fills the narrow row.
+    //   · Every other text — the name, the blurb, SET / PROJECT, "from", the
+    //     numeral, the small print — is `sem/text/1` = `s.ac`.
+    // The boxes are Retro's twin's to the number: 48 / 56, 30 / 30 and 30 / 10
+    // on the row, its gap 40 / 32 / 32, mid 14, chips 8, the price column's 12
+    // over a 20 price row, the name's 409 at desktop and FILL narrow, the
+    // foot's 18. What moves is the price column's floor: the frame hugs both
+    // rows at **184** (Retro's 186), taken as the `minWidth` for Retro's reason.
+    //
+    // Named, not fixed: every seeded row carries a tag row where the frame
+    // draws one on its second row alone (Retro's reading, inherited);
+    // `tierKind` prints one word on every row; the pill reads "Start Enquiry"
+    // against the frame's "Star Enquiry", so it is a few px wider.
+    if (s.lime) {
+      const featSeats = [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
+      const chip = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em',
+      }
+      const limeRow = (last) => ({
+        ...(desk ? row(u(40), { alignItems: 'flex-start' }) : col('32px', { alignItems: 'flex-start' })),
+        ...bleedX, paddingTop: pad, paddingBottom: pad,
+        boxShadow: last ? undefined : `inset 0 ${u(-4)} 0 0 ${s.ac}`,
+        color: s.ac,
+      })
+
+      const limeServiceRow = (t, i) => (
+        <div key={t.n} style={limeRow(i === s.tiers.length - 1)}>
+          {!!t.name && (
+            <span style={{
+              fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+              letterSpacing: s.dls, overflowWrap: 'break-word', textTransform: 'uppercase',
+              ...(desk ? { width: u(409), flex: 'none' } : { width: '100%' }),
+            }}>{t.name}</span>
+          )}
+
+          <div style={col(u(14), {
+            alignItems: 'flex-start',
+            ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
+          })}>
+            {t.tagLabels.length > 0 && (
+              <div style={row(u(8), { flexWrap: 'wrap' })}>
+                {t.tagLabels.map((g, j) => (
+                  <span key={j} style={{
+                    ...chip, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, borderRadius: s.btnR,
+                    padding: `${u(5)} ${u(10)}`,
+                  }}>{g}</span>
+                ))}
+              </div>
+            )}
+
+            {t.feats.length > 0 && (
+              <div style={row(u(8), { flexWrap: 'wrap' })}>
+                {t.feats.map((f, j) => {
+                  const seat = featSeats[j % featSeats.length]
+                  return (
+                    <span key={j} style={{
+                      background: seat.bg, color: seat.fg, borderRadius: s.radiusChip,
+                      padding: `${u(5)} ${u(11)}`, minWidth: 0,
+                      fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
+                    }}>{f}</span>
+                  )
+                })}
+              </div>
+            )}
+
+            {!!t.blurb && (
+              <p style={{
+                margin: 0, width: '100%',
+                fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5,
+              }}>{t.blurb}</p>
+            )}
+          </div>
+
+          <div style={col(u(12), {
+            alignItems: 'flex-start',
+            ...(desk ? { flex: 'none', minWidth: u(184) } : { width: '100%' }),
+          })}>
+            {!!s.tierKind && <span style={labelStyle(s, s.labelSm)}>{s.tierKind}</span>}
+            {!!t.price && (
+              <span style={row(u(20), { alignItems: 'flex-end' })}>
+                <span style={{
+                  fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
+                }}>from</span>
+                <span style={{
+                  fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+                  letterSpacing: s.dls, overflowWrap: 'break-word', minWidth: 0,
+                }}>{t.price}</span>
+              </span>
+            )}
+            <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta}
+                      bg={s.tx} fg={s.bg} discFg={s.ac} full={s.mob} />
+          </div>
+        </div>
+      )
+
+      return (
+        <div style={col('0')}>
+          {s.tiers.length === 0 ? (
+            // Retro's one message, in the pale ink layout 3's Lime stack prints
+            // it in; the frame draws no such state.
+            <div style={{
+              ...limeRow(true),
+              fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, color: s.tx,
+            }}>No packages yet.</div>
+          ) : s.tiers.map(limeServiceRow)}
+          {!!s.pricingSub && (
+            <span style={{
+              paddingTop: u(18), paddingBottom: u(18),
+              fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+              letterSpacing: s.dls, color: s.ac,
+            }}>{s.pricingSub}</span>
+          )}
+        </div>
+      )
+    }
+
     const rowBox = (last) => ({
       ...(desk ? row(u(40), { alignItems: 'flex-start' }) : col('32px', { alignItems: 'flex-start' })),
       ...bleedX, paddingTop: pad, paddingBottom: pad,
