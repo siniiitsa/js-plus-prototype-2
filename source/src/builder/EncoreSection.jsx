@@ -15852,6 +15852,249 @@ function EventsMap({ s }) {
     const ringW = desk ? [72.3, 45.2, 21.1] : tab ? [67.8, 42.4, 19.8] : [129.7, 81.1, 37.8]
     const zoomScale = s.live ? 1.25 ** zoom : 1
 
+    // Lime (964:72924 / 971:5612 / 977:9186). The tree is Retro's twin's node
+    // for node — the 56 / 30 / 10 instance inset, the 16 card-to-ticker gap, the
+    // two 664 halves at 1440 and the stacked card at 768 (32 between) and 390
+    // (0), the 32 / 28 panel inset (20 at 390), its 20 gap, the 12 grid gap,
+    // the 18 / 20 cells at gap 8, the 24 marker, the 480 / 300 / 140 rings, the
+    // 30 × 40 zoom buttons 16 in, the 12 / 16 ticker at gap 14 — so the block
+    // reads the ticker's page, the stats, the ring shares and the zoom above
+    // and changes the dress, which reaches every leaf. Retro's `T`, `bw`,
+    // `hair`, `cardBg` … `tickLine`, `seats`, `chip12` and `body12` are not
+    // read: under Lime `paper` is pale lime, `deep` is the page and `pillBg`
+    // the accent, so the four seats collapse — the plan's named trap.
+    //
+    // **One olive register.** The card, all four stat cells and the ticker are
+    // `sem/box/1` (`s.box1`); the card and the ticker in a 1px `sem/stroke/1`
+    // ring (`s.stroke1`, pale at 15%), the cells in a 1px `sem/stroke/2` ring
+    // (`s.ac`, full strength) at radius **25**; the card and the ticker are
+    // radius **50** (Retro's 30). Every ring is stroked inside and is drawn as
+    // an inset shadow, so the frame's paddings stand as stated. Every text on
+    // the panel and the ticker — labels, numerals, subs, arrows — is
+    // `sem/text/2` = **`s.tx`**, read off the nodes at all three widths: the
+    // numerals are pale, not lime (the plan's "lime numerals" was a guess).
+    // The viewport nests **Scheme 3**: rings, labels, the marker's head and its
+    // tail are `s.ac`, the labels' and the marker's ink `s.bg`, the marker's
+    // glyph stroked `#15180F` on the node itself (layout 3's named diff is the
+    // frame's own here), the zoom buttons `sem/box/2` `#D9FF7F` (`lift`) in a
+    // 15% ink hairline. The raster is `e089bd11` at `FILL`, drawn as it is over
+    // an `s.box1` fallback — layout 3's plate, no multiply. No node carries an
+    // effect.
+    //
+    // **The rings are layout 3's recipe**: one `<svg>` each in its own pixels,
+    // so the 1 / 1.5 / 2 inside weights, the .3 / .5 / .8 opacities and the
+    // outer ring's 4 / 4 `dashPattern` (all three masters) travel × 0.82 through
+    // the viewBox, which a CSS border cannot draw. The pins are layout 2's and
+    // 3's pair — `s.tx` at 8, the lit one `s.ac` at 14 in a 2px ink ring —
+    // because the frame's five dots are ink at 60% and vanish on the raster,
+    // at every width (named diff). No handler on them, Retro's reason.
+    //
+    // **The type is the ramp**, `get_variable_defs` at all three widths: Body/Chip
+    // 13 / 12 / 11 (`s.chip`, tracked -0.06em), Display/SM 50 / 40 (`s.dispSm`,
+    // lh 1) for the numeral at 1440 and 768 and **Display/Title 26 at 1.1** at
+    // 390 (a literal; `s.title` is the heading string), Body/SM 13 / 13 / 12,
+    // Body/MD 14 / 13 / 13, Body/LG 16 / 15 / 15. The zoom glyph is a raw 20 in
+    // Inter Bold. The head is `s.dispLg` at .89 in `s.ac` at every width (the
+    // Section's own text node: 130 / 81 / 54), where Retro's 768 arm is `s.h1`.
+    //
+    // **Two boxes move from Retro's.** The 390 viewport is 370 × **251** (Retro
+    // 278), and the 390 cells **hug** with `space-between` — 109 and 138 on the
+    // master, the second row grown by BASE's two-line numeral with GIGS YTD's
+    // label pinned to its top and its sub to its floor — where the wide masters
+    // state 226.5 / 139.5 minimums with `justify-end` (Retro's 227.5 / 140 /
+    // 100 with `justify-end` at every width). The panel's left rule is desktop
+    // only, Retro's reading: the narrow masters carry the same 1px left stroke
+    // under the card's own ring, where it paints nothing.
+    if (s.lime) {
+      const ink = s.tx // sem/text/2 on the card, the cells and the ticker
+      const lift = '#D9FF7F' // Scheme 3 sem/box/2 — the zoom buttons
+      const inkHair = '#15180F26' // Scheme 3 sem/stroke/1, 15% — the zoom buttons' ring
+      const ring = (c) => `inset 0 0 0 1px ${c}`
+      const chipL = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+      }
+      const bodySmL = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
+      const numeral = s.mob
+        ? { fontSize: '26px', lineHeight: 1.1 }
+        : { fontSize: s.dispSm, lineHeight: 1 }
+      // Outer first: diameter, inside stroke, opacity.
+      const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
+
+      const viewportL = (
+        <div style={{
+          position: 'relative', background: s.box1, minWidth: 0, overflow: 'hidden',
+          ...(desk ? null : { aspectRatio: tab ? '708 / 320' : '370 / 251' }),
+        }}>
+          <div style={{
+            position: 'absolute', inset: 0, transform: `scale(${zoomScale})`,
+            transformOrigin: '50% 50%', transition: 'transform .25s ease',
+          }}>
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, background: s.box1,
+              ...(s.mapRadialSrc
+                ? { backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                : null),
+            }} />
+            {ringW.map((w, i) => {
+              const [d, wt, op] = ringLine[i]
+              return (
+                <svg key={w} aria-hidden viewBox={`0 0 ${d} ${d}`} style={{
+                  position: 'absolute', left: '50%', top: '50%', width: `${w}%`, height: 'auto',
+                  opacity: op, transform: 'translate(-50%, -50%)', overflow: 'visible',
+                }}>
+                  <circle cx={d / 2} cy={d / 2} r={(d - wt) / 2} fill="none" stroke={s.ac}
+                          strokeWidth={wt} strokeDasharray={i === 0 ? '4 4' : undefined} />
+                </svg>
+              )
+            })}
+            {s.mapRings.slice(0, ringW.length).map((label, k) => (
+              <span key={k} aria-hidden style={{
+                position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
+                transform: 'translate(-50%, -50%)', background: s.ac, color: s.bg,
+                borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
+              }}>{label}</span>
+            ))}
+            {s.pins.map((p, i) => {
+              const on = !!gig && gig.pin === p
+              return (
+                <span key={i} aria-hidden style={{
+                  position: 'absolute', left: p.x, top: p.y,
+                  width: on ? u(14) : u(8), height: on ? u(14) : u(8),
+                  borderRadius: '999px', background: on ? s.ac : s.tx,
+                  boxShadow: on ? `0 0 0 2px ${s.bg}` : undefined,
+                  transform: 'translate(-50%, -50%)',
+                }} />
+              )
+            })}
+            {/* The artist's marker: an accent head in a 2px ink ring round an
+                ink glyph, over an accent tail, its column centred 12 above the
+                rings' centre as the master offsets it. */}
+            <span aria-hidden style={col(0, {
+              position: 'absolute', left: '50%', top: `calc(50% - ${u(12)})`,
+              alignItems: 'center', transform: 'translate(-50%, -50%)',
+            })}>
+              <span style={row(0, {
+                background: s.ac, color: s.bg, padding: u(4),
+                boxShadow: `inset 0 0 0 2px ${s.bg}`, borderRadius: '999px',
+              })}>
+                <User size={Math.round(16 * z)} />
+              </span>
+              <span style={{
+                width: 0, height: 0, borderLeft: `${u(5)} solid transparent`,
+                borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${s.ac}`,
+              }} />
+            </span>
+          </div>
+          <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+            {[['+', 1], ['−', -1]].map(([glyph, dir]) => {
+              const onClick = s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined
+              return (
+                <span key={glyph} onClick={onClick} style={{
+                  width: u(30), height: u(40), borderRadius: u(8), background: lift, color: s.bg,
+                  boxShadow: ring(inkHair), boxSizing: 'border-box',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
+                  cursor: onClick ? 'pointer' : undefined, userSelect: 'none',
+                }}>{glyph}</span>
+              )
+            })}
+          </div>
+        </div>
+      )
+
+      const panelL = (
+        <div style={col(u(20), {
+          minWidth: 0, alignItems: 'flex-start', color: ink,
+          padding: `${u(s.mob ? 20 : 28)} ${u(s.mob ? 20 : 32)}`,
+          ...(desk ? { boxShadow: `inset 1px 0 0 ${s.stroke1}` } : null),
+        })}>
+          <div style={row(u(12), { width: '100%', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(6) })}>
+            <span style={chipL}>Travel &amp; reach</span>
+            {!!s.mapSpan && <span style={chipL}>{s.mapSpan}</span>}
+          </div>
+          <div style={{
+            display: 'grid', width: '100%', gap: u(12),
+            gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+          }}>
+            {stats.map((st, i) => (
+              <div key={i} style={col(u(8), {
+                background: s.box1, boxShadow: ring(s.ac), borderRadius: u(25),
+                padding: `${u(18)} ${u(20)}`, alignItems: 'flex-start', minWidth: 0,
+                ...(s.mob
+                  ? { justifyContent: 'space-between' }
+                  : { justifyContent: 'flex-end', minHeight: u(desk ? 226.5 : 139.5) }),
+              })}>
+                {!!st.label && <span style={chipL}>{st.label}</span>}
+                {!!st.value && (
+                  <span style={{
+                    fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
+                  }}>{st.value}</span>
+                )}
+                {!!st.sub && <span style={bodySmL}>{st.sub}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )
+
+      const arrowL = {
+        fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
+        userSelect: 'none', cursor: s.live && nGigs > 1 ? 'pointer' : undefined,
+      }
+      const gigLinkL = gig ? extLink(s, gig.url) : null
+      const GigTagL = gigLinkL ? 'a' : 'div'
+      const clipL = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+
+      return (
+        <div style={col(desk ? u(56) : '30px')}>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg,
+            lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+          }}>{s.title}</h2>
+
+          <div style={col(u(16))}>
+            <div style={{
+              background: s.box1, color: ink, position: 'relative',
+              borderRadius: u(50), overflow: 'hidden', display: 'grid', alignItems: 'stretch',
+              gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+              rowGap: tab ? '32px' : 0,
+            }}>
+              {viewportL}{panelL}
+              {/* The card's hairline is a last-child overlay, not an inset
+                  shadow on the card: the raster fills its left half (its top,
+                  stacked) at `inset: 0` and would paint over a shadow the card
+                  drew on its own background — layout 1's calendar panel and
+                  layout 3's map container, the third time the rule bites. It
+                  takes no grid cell and passes clicks through to the zoom. */}
+              <span aria-hidden style={{
+                position: 'absolute', inset: 0, borderRadius: 'inherit',
+                boxShadow: ring(s.stroke1), pointerEvents: 'none',
+              }} />
+            </div>
+
+            {!!gig && (
+              <div style={row(u(14), {
+                background: s.box1, color: ink, boxShadow: ring(s.stroke1),
+                borderRadius: u(50), overflow: 'hidden', padding: `${u(12)} ${u(16)}`,
+              })}>
+                {nGigs > 1 && <span onClick={step(-1)} style={arrowL}>‹</span>}
+                <GigTagL {...gigLinkL} style={col(u(2), {
+                  flex: '1 1 0', minWidth: 0, textDecoration: 'none', color: 'inherit',
+                })}>
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, ...clipL,
+                  }}>{gig.venue}</span>
+                  {!!gig.meta && <span style={{ ...bodySmL, ...clipL }}>{gig.meta}</span>}
+                </GigTagL>
+                {nGigs > 1 && <span onClick={step(1)} style={arrowL}>›</span>}
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    }
+
     const viewport = (
       <div style={{
         position: 'relative', background: plate, minWidth: 0,
