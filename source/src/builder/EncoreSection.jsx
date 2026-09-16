@@ -6993,6 +6993,192 @@ function Pricing({ s }) {
       ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
 
+    // Lime — the same component in Lime's mode (964:68680 at 1440, 984:10765 at
+    // 768, 984:10796 at 390), placed after the seam as layout 1's and layout 2's
+    // pricing blocks are: `desk`, `tab`, `u`, `active` and `shown` are computed
+    // above, so the published filter, the moving FEATURED seat and the Book
+    // pills are Retro's whole and need nothing new. The tree is Retro's twin's
+    // node for node — the 24 between blocks, the 12 head, the 16 between rows,
+    // the 40 column gap, the 10 left column, the 6 price row, the 12/8/24
+    // includes grid, the badge's 3/8 on a 4 corner — and what moves is the
+    // row's padding (38, Retro 28), its corner (50, Retro 30), the tablet
+    // includes panel (240, Retro 248, what the wider padding leaves) and the
+    // dress. Retro's `T`, `chipType`, `h` (`vm.tierRow`, pale lime on Lime),
+    // `panelFg` and `selector` are not read.
+    //
+    // Scheme 1, with the featured row nested Scheme 3, read off the nodes: a
+    // plain row is the page ground in a 1px `sem/stroke/2` (`s.ac`) ring with a
+    // lime numeral; the featured one is `s.ac` in a 1px `s.bg` ring, every ink
+    // `s.bg`, and its badge Scheme 3's `box/1` #CCFA61 (`lime3`, the map's and
+    // testimonials' name). The capsule is `s.box1` in a `stroke1` ring, its lit
+    // option `s.ac` lettered `s.bg`. Every ring is an inside stroke drawn as an
+    // inset shadow, so the stated paddings stand (the rows sum exactly: 38 +
+    // 210 + 38 = 286). No node carries an effect. Every type size is the Lime
+    // ramp's `s.*` at all three widths but Display/Title, which is the frames'
+    // own 36 × 0.82 / 28 / 26 (`s.title` is the heading string).
+    //
+    // Declined: the instance's own 1px `stroke1` ring on all four sides — the
+    // component frame's stroke, which layout 2's pricing declined for the same
+    // reason (stacked bands would double it). The 390 master's 60 top and
+    // bottom inset is the root's `padY`'s, as everywhere.
+    if (s.lime) {
+      const ring = (c) => `inset 0 0 0 1px ${c}`
+      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the badge
+      const chip = {
+        fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
+        letterSpacing: '-0.06em', whiteSpace: 'nowrap',
+      }
+      // Label/XS — the blurb and the features.
+      const ui = { fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls }
+      const rowBox = { width: '100%', borderRadius: u(50), padding: u(38) }
+
+      const packRow = (t, i) => {
+        // The seat, Retro's rule whole: the last row on show, not at one row.
+        const feat = shown.length > 1 && i === shown.length - 1
+        const ink = feat ? s.bg : s.tx
+        const money = t.price
+        const symbol = /^[^\d]/.test(money) ? money[0] : ''
+        const amount = symbol ? money.slice(1) : money
+        return (
+          <div key={t.n} style={{
+            ...(s.mob
+              ? col(u(40), { alignItems: 'flex-start' })
+              : row(u(40), { alignItems: 'flex-start' })),
+            ...rowBox, color: ink,
+            background: feat ? s.ac : 'transparent',
+            boxShadow: ring(feat ? s.bg : s.ac),
+          }}>
+            <div style={col(u(10), {
+              alignItems: 'flex-start',
+              ...(s.mob ? { width: '100%' } : { flex: '1 1 0', minWidth: 0 }),
+            })}>
+              <div style={row(u(8), { flexWrap: 'wrap' })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls,
+                }}>{t.name}</span>
+                {feat && (
+                  <span style={{
+                    ...chip, background: lime3, color: s.bg,
+                    borderRadius: u(4), padding: `${u(3)} ${u(8)}`,
+                  }}>FEATURED</span>
+                )}
+              </div>
+              {/* Desktop hugs; both narrow masters FILL the numeral, which
+                  stands the unit at the column's right edge. */}
+              {!!money && (
+                <div style={row(u(6), {
+                  alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
+                })}>
+                  {!!symbol && (
+                    <span style={{
+                      fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
+                    }}>{symbol}</span>
+                  )}
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                    letterSpacing: s.dls, color: feat ? s.bg : s.ac, whiteSpace: 'nowrap',
+                    ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
+                  }}>{amount}</span>
+                  {!!s.tierUnit && (
+                    <span style={{
+                      fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5,
+                      whiteSpace: 'nowrap', flex: 'none',
+                    }}>{s.tierUnit}</span>
+                  )}
+                </div>
+              )}
+              {!!t.blurb && <p style={{ ...ui, margin: 0, width: '100%' }}>{t.blurb}</p>}
+              {/* Plain: `BookPill`'s Lime defaults exactly (lime box, ink label
+                  and disc, lime arrow). Featured: the pair turned round, a
+                  lime disc round an ink arrow — the frame's two disc SVGs. */}
+              <BookPill s={s} to={s.tierBookTo} full={s.mob}
+                        {...(feat ? { bg: s.bg, fg: s.ac } : {})} />
+            </div>
+
+            {t.feats.length > 0 && (
+              <div style={col(u(12), {
+                alignItems: 'flex-start',
+                ...(desk ? { flex: '1 1 0', minWidth: 0 }
+                  : tab ? { width: u(240), flex: 'none' } : { width: '100%' }),
+              })}>
+                <span style={chip}>WHAT&rsquo;S INCLUDED</span>
+                {/* One grid, Retro's normalisation: the 768 master spaces a
+                    pair's two items 9 apart and the pairs 8, a hand-set 1px. */}
+                <div style={{
+                  display: 'grid', width: '100%', alignItems: 'start',
+                  gridTemplateColumns: tab ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
+                  columnGap: u(24), rowGap: u(8),
+                }}>
+                  {t.feats.map((f, j) => (
+                    <span key={j} style={row(u(8), { minWidth: 0 })}>
+                      <span style={{ ...chip, flex: 'none' }}>&#10003;</span>
+                      <span style={{ ...ui, minWidth: 0 }}>{f}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      return (
+        <div style={col(u(24), { alignItems: 'flex-start' })}>
+          <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
+            {!!s.title && (
+              <h2 style={{
+                margin: 0, fontFamily: s.display, fontSize: desk ? u(36) : tab ? '28px' : '26px',
+                lineHeight: 1.1, letterSpacing: s.dls, color: s.tx,
+              }}>{s.title}</h2>
+            )}
+            {!!s.pricingIntro && (
+              <p style={{
+                margin: 0, maxWidth: u(560), fontFamily: s.body, fontSize: s.bodyMd,
+                lineHeight: 1.5, letterSpacing: s.dls, color: s.tx,
+              }}>{s.pricingIntro}</p>
+            )}
+          </div>
+          {/* The capsule, Retro's filter in Lime's dress; not drawn at one chip.
+              "Save 15% on bundles" stays dropped (Retro's reading). */}
+          {s.tierChips.length > 1 && (
+            <div style={{
+              ...row('0', { flexWrap: 'wrap' }),
+              background: s.box1, boxShadow: ring(s.stroke1),
+              borderRadius: s.btnR, padding: u(3),
+            }}>
+              {s.tierChips.map((f, i) => (
+                <span
+                  key={i}
+                  onClick={s.live ? () => setChip(i) : undefined}
+                  style={{
+                    padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
+                    background: i === active ? s.ac : 'transparent',
+                    color: i === active ? s.bg : s.tx,
+                    cursor: s.live ? 'pointer' : undefined,
+                    fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+                    letterSpacing: s.dls, whiteSpace: 'nowrap',
+                  }}
+                >{f.label}</span>
+              ))}
+            </div>
+          )}
+          <div style={col(u(16), { width: '100%' })}>
+            {shown.length === 0 ? (
+              <div style={{ ...rowBox, ...ui, boxShadow: ring(s.ac), color: s.tx }}>
+                No packages yet.
+              </div>
+            ) : shown.map(packRow)}
+          </div>
+          {!!s.pricingSub && (
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+              letterSpacing: s.dls, color: s.tx,
+            }}>{s.pricingSub}</span>
+          )}
+        </div>
+      )
+    }
+
     // The stack's one hue, resolved in the view-model against the page ground:
     // `card` outlines the plain rows and fills the featured one, `acc` is that
     // row's border and its numeral, `cardFg` its ink and `badge` the lift the
