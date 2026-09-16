@@ -125,7 +125,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 2 | `bio` | `964:64581` | 1440 × 760 | `986:11849` | 768 × 1191.8 | `986:11868` | 390 × 909.3 | `964:64638` / `984:34877` / `984:34834` | done `bbc6904` |
 | 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | done `5a9cf76` |
 | 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | **dropped** — the section is being removed from the project, so it is not fitted (its code still exists) |
-| 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | — |
+| 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | done `405efb0` |
 | 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | — |
 | 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | — |
 | 8 | `calendar` | `964:64593` *(in `964:64592`)* | 1328 × 1071 | `986:11861` *(in `986:11860`)* | 708 × 844 | `986:11880` *(in `986:11879`)* | 370 × 766 | `964:64650` / `986:10607` / `986:10800` | — |
@@ -625,6 +625,42 @@ Settled in section 3 (the media player):
   errors. Digest at themes 0–4, all 810 renders: exactly media arch 1 at theme 1, three widths.
 - **The track art in the harness is the neutral crops** (`ROW_ART.media` = `RETRO_TRACK_ART`, layout 1's open question
   3), not the frame's album covers, so the look check compares composition and not pictures.
+
+Settled in section 5 (the repertoire):
+
+- **The fourth layout-2 block, after the seam: `if (s.lime)` within `Repertoire`'s `if (s.v1)`,
+  after `pageWindow()`.** `active`, `filtered`, `pg`, `shown`, `columns`, `labels` / `at` and Retro's
+  `u` / `desk` / `tab` are shared whole, so the published search, chips and pager needed nothing new.
+  **The Lime frames' insets are Retro's to the pixel** (56 / 30 / 10 across, 56 / 60 / 40 over the
+  head, 56 / 60 / 20 round the pager), so `padH`, `headPadY` and `footPadY` are read too. Retro's
+  `sheet`, `ink`, `hue`, `chipRow` and `searchBox` are not. Pure additions (154 / 0).
+- **Every size is a ramp token** (`get_variable_defs`: display-sm 50 / 40 / 32 = `s.dispSm`, list
+  24 / 19 / 18 = `s.list`, label-sm = `s.labelSm`, body-md 14 / 13 / 13, body-sm 13 / 13 / 12). The
+  heading is Display/SM in `sem/text/2` (`s.tx`), lh 1: **pale, not lime**, where layout 1's is lime.
+- **Every hairline is `sem/stroke/1` drawn as an inset shadow**, sampled off the 1440 render: the
+  head's ring on **all four sides** (it shows at both page edges and under the head), each row's
+  foot, the divider down the inside of the left column (`inset -1px 0 0`), and the toggle's and
+  field's rings. Nothing closes the sheet under the pager, where Retro draws a hairline.
+- **Rows pin at each master's division result**: 83.2 (× 0.82 = 68.2) / 82 / 59, Retro's 84.2 / 82.6
+  / 58 being its own frames'. The number hugs in the frame (7–9 wide); it is a `minWidth` of 9 (8 at
+  390), so single digits land the title within 1px of the frame and "10" pushes its own by ~4.
+- **The pager is `Pager`'s Lime branch with `grow` and no `frame.lime`**: the sheet is Scheme 1's
+  `box/1`, which is what the defaults were written for, and the frame's pills (`box/2`, the glow-lit
+  current one, the ringed arrows, radius 60 at 54 tall) are that branch exactly. This **closes the
+  layout-1 note that repertoire a1's pills stretched and its arrows vanished** on Retro's pale
+  sheet under Lime.
+- **The field's glyph is the typed `⌕`**, as the frame types it (the bio's typed-tick rule), not
+  layout 1's transcribed search vector, and its 10 vertical padding is dropped for Retro's reason
+  (a 36 box round a 21 line).
+- **Measured against the masters**: desktop section 650.2 (792 × 0.82 = 649.4), head 173 (172.2),
+  field 311.6 × 29.5, toggle 30.2 tall (29.5; the ramp's 11px body-sm), rows 68.2, pager 44.3 tall at
+  46 in; 768 section 792.2, head 208.2, toggle 36.2, field 380 × 36 at x 358, rows 82, title at x 53,
+  pager 54 at 60 down its 174 band; 390 section 593.8 (594), head 204.8 (205), field 370 × 36 at 128.8
+  (129), rows 59, title at x 32, pager band 94. `live=1`: the pager steps and lights, a page-number
+  click past the end does nothing, chips filter and relight (Weddings leaves one page, so no pager),
+  search and chip combine, a no-match search shows the message; `n=30` pages 1 → 2 → 3 → 2 at 390;
+  `n=0` shows *No songs yet.* at 768. No page errors. Digest at themes 0–4, all 810 renders:
+  exactly repertoire arch 1 at theme 1, three widths.
 
 ## Open questions
 
