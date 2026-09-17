@@ -25,7 +25,7 @@ over, so do not renumber.
 | 2 | F10 | An empty media player shows the hardcoded "Night Rain" | **Confirmed** | S | no | **done** |
 | 3 | F2 | Four fields edit nothing in layout 1 | **Confirmed**, and it is one case of a wider class | M | **yes** | **done** (A) |
 | 4 | F9 | Enquiry form can lose every box, Email included | **Confirmed** | S | small | **done** (block and explain) |
-| 5 | F18 | Link fields don't validate (`not a url`, `javascript:`) | **Confirmed** | M | small | open |
+| 5 | F18 | Link fields don't validate (`not a url`, `javascript:`) | **Confirmed** | M | small | **done** (drop `//host` and `localhost`) |
 | 6 | F25 | Footer link to a deleted section stays as a dead label | **Confirmed**: currently *documented as intended* | S | **yes** | open |
 | 7 | F24 | Delete has no confirm or Undo, and re-adding resets the content | **Confirmed** | M | **yes** | open |
 | 8 | F20 | Published calendar lets a visitor pick a past date | **Confirmed**: collides with a documented rule | M | **yes** | open |
@@ -402,8 +402,55 @@ link that does nothing and logs an error. It reaches every outbound seam: `sound
 **Docs.** The `extUrl` comment and CLAUDE.md's `extLink()`/`extUrl()` sentence in the `s.live`
 paragraph.
 
-**Decision.** Whether to keep `//host` (protocol-relative) and bare `localhost`. The
-recommendation is to drop both.  **Settled.** —
+**Decision.** 2026-09-17: **drop both** — `//host` (protocol-relative) and bare `localhost` are
+refused like any other address `extUrl` cannot make real.
+
+**Settled.** 2026-09-17.
+- **`urlProblem(v, web = false)`** sits above `extUrl` in `data.js` and returns `null` or one
+  sentence. Empty is `null`: it is the no-link state, not a mistake. It refuses, in order:
+  whitespace or a control character anywhere; a leading `//`; a scheme outside `http`, `https`,
+  `mailto`, `tel`; a `mailto:` without `x@y.z`; a `tel:` without a digit; `http(s):` not followed
+  by `//`; and a host (schemeless, or after `http(s)://`) that is not dot-separated labels, which
+  is what refuses `localhost` and `https://localhost`. Last comes a `new URL()` parse. **A
+  `host:port` is not a scheme**: `example.com:8080/x` matched the old scheme regex and passed
+  through relative. It is now schemeless and gets `https://`. `extUrl(v, web)` returns `''`
+  whenever `urlProblem` objects. Otherwise it passes the four schemes through as typed
+  (`HTTPS://A.B` stays uppercase) and prefixes `https://` to the rest.
+- **`web` mode is an addition to the plan.** The live check found `mailto:` and `tel:` in a
+  track's audio reaching `<audio>` (`ERR_UNKNOWN_URL_SCHEME`). `sectionVm` now calls
+  `extUrl(t.audio, true)`, and `TracksField`'s input passes `web`, so both refuse anything but
+  http(s) with "This needs a web address — https://…". In that mode the `host:port` exemption
+  applies only to unknown schemes. Without that, `tel:441234` (a digit right after the colon) got
+  through.
+- **Editor.** `UrlInput` (beside `FIELD_BOX`) wraps the shadcn `Input`. It validates on blur, and
+  a keystroke clears the line as soon as the value is fixed. It never raises one while typing.
+  The message stores the value it was computed for and shows only while the box still holds that
+  value, so a repeater row deleted above it (rows key on index) cannot pass its line to the row
+  that moves up. The box border turns `#B3261E` and the line is a `role="alert"` `<p>` in the
+  hint's 10px. It is used by `FIELDS` entries with the new **`type: 'url'`** (media
+  `soundcloud`, gallery `youtube` / `instagram` / `tiktok`) and by the audio column in
+  `TracksField`, the link column in `GigsField` and the url column in `LinksField`. The stored
+  value is kept as typed: the view-model refuses it, and the editor does not rewrite it.
+- **Verified.** In node, the plan's table plus 20 more cases (ports, `a..b`, `ftp:`, tab inside
+  `java\tscript:`, the web-mode five): all pass. **Live** (`&live=1&cj=`, media / gallery /
+  map / footer × layouts 1–4 × themes 0, 1, 2 × three widths, with every pointer control clicked
+  to page the lists): seven bad addresses in every slot give 0 external hrefs outside
+  `https?:`/`mailto:`/`tel:`, no `<audio>` source and no console error. Seven good ones all come
+  through (`HTTPS://A.B` as typed, `www.x.io` → `https://www.x.io`, and so on). **Editor**
+  (puppeteer, 1600, Retro): all six inputs show the right sentence after blur, show nothing while
+  typing, and clear on a fixing keystroke. No page errors.
+- **Harness trap:** `page.screenshot({ clip })` resizes the viewport and remounts `EditPanel`,
+  which drops `UrlInput`'s local state, so the shot showed no message. Pass
+  `captureBeyondViewport: false`. A real resize across the sidebar/sheet breakpoint drops the
+  line the same way. That is accepted, and the next blur brings it back.
+- **Digest** (all categories, themes 0, 1, 2, three widths, canvas and `live=1`):
+  **byte-identical**. No seed carries an address that the new rule refuses.
+- **Named edges.** A `tel:` with spaces (`tel:+44 20 …`) is refused by the whitespace rule. So
+  is a `user:pw@host` URL, and so is an IPv6 literal. The generic "e.g. soundcloud.com/you"
+  example also appears under the audio box.
+- **Docs:** the `extUrl` / `urlProblem` comments, the §4.8 `FIELDS` comment (`type: 'url'`), the
+  `vm.tracks` comment in `sectionVm`, CLAUDE.md's `extLink()` / `extUrl()` sentence, and README's
+  outbound-links paragraph.
 
 ---
 
@@ -599,3 +646,6 @@ drop. Check that the error sits next to the control, and that a following valid 
 - **A guarded choice in a Radix `Select` disables items and keeps them** (F9). An item that
   disappears can leave the value naming nothing, and the trigger then renders blank. To drive
   the editor, click *Back to page list* first, because the editor opens on the header's panel.
+- **An address field is a `UrlInput`** (F18): `type: 'url'` in `FIELDS`, or the component
+  itself in a repeater. Its rule is `urlProblem()`, and `extUrl()` returns `''` for anything that
+  rule refuses. A new outbound seam reads `extUrl()`, and its editor input uses `UrlInput`.

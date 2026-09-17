@@ -47,7 +47,7 @@ import {
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
-  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, songTags, repChips,
+  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, urlProblem, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -455,7 +455,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // seam (§10.2a): the published player loads it into its one <audio> element,
   // and a row without one is unplayable rather than silent-but-selected. A
   // typed address is normalised through extUrl for the same <base href> reason
-  // as the Soundcloud button; the seeds are already absolute. It follows the
+  // as the Soundcloud button, in its web-only mode — a mailto: or tel: cannot
+  // play, and an address extUrl refuses is the no-audio row, not a broken one;
+  // the seeds are already absolute. It follows the
   // artwork's rule about re-seeding by index, for the same reason.
   //
   // `sub` is the one subline the fitted layout 1 sets; `rel` is the same line
@@ -468,7 +470,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     vm.tracks = c.tracks.map((t, i) => {
       const sub = (t?.sub ?? '').trim()
       return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
-               img: t?.image ?? null, src: extUrl(t?.audio ?? '') || null }
+               img: t?.image ?? null, src: extUrl(t?.audio ?? '', true) || null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
@@ -1673,6 +1675,41 @@ const FIELD_BOX = {
   background: '#FFFFFF', outline: 'none',
 }
 
+// Every input that takes an outbound address: the Soundcloud link, the
+// gallery's three social links, a track's audio, a gig's tickets and a footer
+// link's url. The value is stored as typed — extUrl() in sectionVm is what
+// refuses it — and this only says why, under the box, once the artist leaves
+// it: on blur, never per keystroke, since every address is invalid until it is
+// finished. Correcting it clears the line at once. The message remembers the
+// value it was worked out for, so a repeater row deleted above this one (rows
+// key on index) cannot hand its line to the row that moves up.
+function UrlInput({ value, onChange, style, className, placeholder, web = false }) {
+  const [err, setErr] = useState(null)
+  const msg = err && err.v === value ? err.msg : null
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
+      <Input
+        value={value} placeholder={placeholder} onClick={stopE}
+        aria-invalid={msg ? true : undefined}
+        onChange={(e) => {
+          const v = e.target.value
+          if (msg && !urlProblem(v, web)) setErr(null)
+          onChange(v)
+        }}
+        onBlur={() => {
+          const p = urlProblem(value, web)
+          setErr(p ? { v: value, msg: p } : null)
+        }}
+        className={className}
+        style={{ ...style, ...(msg ? { borderColor: '#B3261E' } : null) }}
+      />
+      {msg && (
+        <p role="alert" style={{ margin: 0, fontSize: '10px', color: '#B3261E', lineHeight: 1.45 }}>{msg}</p>
+      )}
+    </div>
+  )
+}
+
 /* ------------------------------------------------------------------ *
  * §8.6b SongsField — the repertoire's song list. The first of the five
  * list-shaped fields with a structured editor rather than a delimited
@@ -1895,11 +1932,13 @@ function TracksField({ value, max, onChange, onToast }) {
           onChange={(e) => setAt(i, 'sub', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
         />
-        <Input
-          value={t.audio ?? ''} placeholder="Audio file URL (MP3)" onClick={stopE}
-          onChange={(e) => setAt(i, 'audio', e.target.value)}
-          className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
-        />
+        <div style={{ marginRight: '28px' }}>
+          <UrlInput
+            value={t.audio ?? ''} placeholder="Audio file URL (MP3)" web
+            onChange={(v) => setAt(i, 'audio', v)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+        </div>
       </div>
     </div>
   )
@@ -2017,9 +2056,9 @@ function GigsField({ value, max, onChange }) {
             className="h-auto" style={SONG_ROW_INPUT}
           />,
         )}
-        <Input
-          value={g.link ?? ''} placeholder="Tickets link" onClick={stopE}
-          onChange={(e) => setAt(i, 'link', e.target.value)}
+        <UrlInput
+          value={g.link ?? ''} placeholder="Tickets link"
+          onChange={(v) => setAt(i, 'link', v)}
           className="h-auto" style={SONG_ROW_INPUT}
         />
       </div>
@@ -2580,9 +2619,9 @@ function LinksField({ value, max, onChange }) {
           </SelectContent>
         </Select>
         {r.to === 'link' && (
-          <Input
-            value={r.url ?? ''} placeholder="instagram.com/kaimercer" onClick={stopE}
-            onChange={(e) => setAt(i, 'url', e.target.value)}
+          <UrlInput
+            value={r.url ?? ''} placeholder="instagram.com/kaimercer"
+            onChange={(v) => setAt(i, 'url', v)}
             className="h-auto" style={SONG_ROW_INPUT}
           />
         )}
@@ -2763,6 +2802,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                             {f.opts.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
                           </SelectContent>
                         </Select>
+                      ) : f.type === 'url' ? (
+                        <UrlInput value={val} onChange={set} style={FIELD_BOX} />
                       ) : f.type === 'area' ? (
                         <Textarea
                           rows={3} value={val} onClick={stopE}

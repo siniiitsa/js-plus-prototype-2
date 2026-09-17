@@ -805,6 +805,9 @@ export const BLANK_PAGE = [
  * `'*'` standing for any template the object does not name. A field with no
  * `in` is read by every design. EditPanel says so beside a field the section's
  * current design does not read; see fieldReach() below.
+ *
+ * `type: 'url'` is a plain text box that also says, on blur, why urlProblem()
+ * refuses what was typed. The repeaters' address columns use the same input.
  * ------------------------------------------------------------------ */
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
@@ -887,7 +890,7 @@ export const FIELDS = {
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
-    { k: 'soundcloud', l: 'SoundCloud link', d: '', in: [0],
+    { k: 'soundcloud', l: 'SoundCloud link', type: 'url', d: '', in: [0],
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
@@ -953,11 +956,11 @@ export const FIELDS = {
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
-    { k: 'youtube',   l: 'YouTube link', d: '', in: [0],
+    { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
       hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
-    { k: 'instagram', l: 'Instagram link', d: '', in: [0],
+    { k: 'instagram', l: 'Instagram link', type: 'url', d: '', in: [0],
       hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
-    { k: 'tiktok',    l: 'TikTok link', d: '', in: [0],
+    { k: 'tiktok',    l: 'TikTok link', type: 'url', d: '', in: [0],
       hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
   ],
   // `heading` heads layout 2's slot list, layout 3's scheduler and layout 4's
@@ -1177,17 +1180,70 @@ export function fieldReach(f, themeName, design) {
   return !r || r.includes(design)
 }
 
-// A user-typed outbound URL → an absolute one, or '' if the field is empty.
+// Why a user-typed outbound address cannot be linked, or null if it can (an
+// empty one included — empty is every seam's "no link", not a mistake).
 //
-// Everything the artist types is meant to leave the page, so a schemeless
-// "soundcloud.com/kai" gets https://. It cannot be left relative: the published
-// tab carries a <base href> to the opener (§ Publish), so a relative href would
-// resolve against the builder and load it over the page. mailto:/tel: and an
-// explicit scheme are passed through untouched.
-export function extUrl(v) {
+// The rule is extUrl's, below, and lives here so the editor can say *why* under
+// the input rather than the published page quietly dropping the link. Four
+// schemes are real addresses — http, https, mailto, tel — and everything else
+// (javascript:, data:, vbscript:, …) is refused: React 19 swaps a javascript:
+// href for one that throws, so passing it through published a dead link.
+// Whitespace or a control character anywhere inside is refused rather than
+// %-encoded, since "not a url" is a sentence and not an address. A schemeless
+// address needs a host with a dot in it, which is what refuses bare
+// `localhost`; and `//host` is refused outright (F18: the published page is the
+// artist's public site, and neither is an address a visitor can reach). A
+// `host:port` is not a scheme — `example.com:8080/x` is schemeless. `web` drops
+// mailto: and tel: from the four, for a track's audio: an <audio> cannot play
+// either, and the no-audio row is the honest state.
+const URL_SCHEMES = ['http', 'https', 'mailto', 'tel']
+const URL_HOST = /^[^./:?#@\s]+(\.[^./:?#@\s]+)+$/
+export function urlProblem(v, web = false) {
   const t = String(v ?? '').trim()
-  if (!t) return ''
-  return /^[a-z][a-z0-9+.-]*:/i.test(t) || t.startsWith('//') ? t : `https://${t}`
+  if (!t) return null
+  if (/[\s\x00-\x1f\x7f]/.test(t)) return 'An address can’t contain spaces.'
+  if (t.startsWith('//')) return 'Start the address with https:// or the site’s name.'
+  const m = /^([a-z][a-z0-9+.-]*):(.*)$/is.exec(t)
+  const scheme = m?.[1].toLowerCase()
+  if (web && m && scheme !== 'http' && scheme !== 'https'
+      && (URL_SCHEMES.includes(scheme) || !/^\d/.test(m[2]))) {
+    return 'This needs a web address — https://…'
+  }
+  if (m && !URL_SCHEMES.includes(scheme) && !/^\d/.test(m[2])) {
+    return 'Only web, mailto: and tel: addresses can be linked.'
+  }
+  if (scheme === 'mailto') {
+    return /^[^@]+@[^@]+\.[^@]+/.test(m[2]) ? null : 'That email address looks incomplete.'
+  }
+  if (scheme === 'tel') return /\d/.test(m[2]) ? null : 'That phone number has no digits.'
+  const http = scheme === 'http' || scheme === 'https'
+  if (http && !m[2].startsWith('//')) return 'Write the address as https://…'
+  const rest = http ? m[2].slice(2) : t
+  const host = rest.split(/[/?#]/)[0].replace(/:\d*$/, '')
+  if (!URL_HOST.test(host)) return 'That doesn’t look like a web address — e.g. soundcloud.com/you'
+  try {
+    new URL(http ? t : `https://${t}`)
+  } catch {
+    return 'That doesn’t look like a web address — e.g. soundcloud.com/you'
+  }
+  return null
+}
+
+// A user-typed outbound URL → an absolute one, or '' if the field is empty or
+// holds nothing urlProblem() above will link.
+//
+// '' is already every seam's "no link" state — the Soundcloud button stays a
+// picture, the gallery hides the row, a gig row stays unlinked, an audio row is
+// unplayable — so a refused address needs nothing downstream. Everything the
+// artist types is meant to leave the page, so a schemeless "soundcloud.com/kai"
+// gets https://. It cannot be left relative: the published tab carries a
+// <base href> to the opener (§ Publish), so a relative href would resolve
+// against the builder and load it over the page. An address with one of the
+// four schemes is passed through as typed; `web` is urlProblem's.
+export function extUrl(v, web = false) {
+  const t = String(v ?? '').trim()
+  if (!t || urlProblem(t, web)) return ''
+  return /^(https?|mailto|tel):/i.test(t) ? t : `https://${t}`
 }
 
 // The events map's layout-2 Get Directions pill: a Google Maps route to the

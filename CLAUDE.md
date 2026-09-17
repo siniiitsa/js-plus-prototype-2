@@ -173,7 +173,11 @@ mutated through a single `patch()` helper.
   **events map's per-gig tickets link** and the **footer's web-address rows**
   (`extLink()` in `EncoreSection`, `extUrl()` in
   `data.js`: they open in a new tab, and a schemeless address is given `https://`, or
-  `<base href>` would resolve it against the builder). Do **not** make `EncoreSection` interactive
+  `<base href>` would resolve it against the builder; anything `urlProblem()` refuses — a scheme
+  outside http / https / mailto / tel, whitespace inside, a schemeless host with no dot, `//host`
+  — comes out `''`, which is each seam's existing no-link state, and a track's audio also refuses
+  mailto / tel. Every address input in `EditPanel` is a `UrlInput`, which prints that reason under
+  the box on blur). Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
   would both filter and select the section. `EncoreSection` therefore imports `useState` and
   `useRef` as well as `useId`; that is the whole of its React surface and it stays that way —
