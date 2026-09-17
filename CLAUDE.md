@@ -110,6 +110,10 @@ mutated through a single `patch()` helper.
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
+- **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
+  (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
+  the desktop composition squeezed beside the sidebar breaks; at most 820 the phone chrome
+  forces mobile, as before. Read `device`, never `st.device`, for anything drawn.
 - **`st.removed` is `{ [cat]: { arch, c } }`, the last deleted section of each category**, so
   re-adding a category restores its content (data-URI uploads and all) and the add composer
   opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts out. Its keys
@@ -172,7 +176,7 @@ mutated through a single `patch()` helper.
   header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section),
   the **media player** (below), the **gallery's arrows
   and thumbnail strip, and layout 3's fullscreen viewer** (below), the **events map's pager, its pin/row pairing, its map zoom
-  (layouts 3 and 4) and — in layout 3 alone — its city chip row and its See all gigs reveal**
+  (layouts 3 and 4, and Lime's layout 2) and — in layout 3 alone — its city chip row and its See all gigs reveal**
   (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
@@ -462,7 +466,8 @@ mutated through a single `patch()` helper.
   which is honoured only when `live`. With it, a day or slot before today carries **`dead`**
   beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
-  strike** — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
+  strike** (except Lime's layout 2, whose past rows keep full ink and only lose the handler —
+  its seeded slots have no editor and are all past; user call, 2026-09-17) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
   past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
   (`max(open, today)`, `calStart()` in `data.js`, which `BookedField` shares so the artist
   can block every day a visitor can pick; it fades the days before today and takes no click on

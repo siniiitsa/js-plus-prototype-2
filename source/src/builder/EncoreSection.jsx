@@ -7195,10 +7195,42 @@ function Pricing({ s }) {
             margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
             letterSpacing: s.dls, color: s.ac,
           }}>{s.title}</h2>
-          {!!s.pricingQuote && (
-            <p style={body(s.bodyLg, 1.5, { margin: 0, paddingTop: u(12), color: s.tx })}>
-              {s.pricingQuote}
-            </p>
+          {/* The quote over its credit row, Retro's block and its drop rules.
+              All three masters draw the row at the same 28px faces, 12 gap
+              and Body/SM. Each face is a 2px `border/thin` ring in
+              `sem/text/2` on a `sem/box/1` ground at `radius/control`. */}
+          {(!!s.pricingQuote || hasCredit) && (
+            <div style={col(u(16), { paddingTop: u(12), width: '100%', alignItems: 'flex-start' })}>
+              {!!s.pricingQuote && (
+                <p style={body(s.bodyLg, 1.5, { margin: 0, color: s.tx })}>{s.pricingQuote}</p>
+              )}
+              {hasCredit && (
+                <div style={row(u(12), { flexWrap: 'wrap' })}>
+                  {faces.length > 0 && (
+                    <span style={row(0, { flex: 'none' })}>
+                      {faces.map((src, i) => (
+                        <span key={i} style={{
+                          width: u(28), height: u(28), flex: 'none', overflow: 'hidden',
+                          border: `2px solid ${s.tx}`, borderRadius: u(13),
+                          background: s.box1,
+                          marginRight: i < faces.length - 1 ? u(-8) : 0,
+                        }}><Photo s={s} src={src} /></span>
+                      ))}
+                    </span>
+                  )}
+                  {!!s.pricingRating && (
+                    <span style={body(s.bodySm, 1.4, { color: s.ac, whiteSpace: 'nowrap' })}>★ ★ ★ ★ ★</span>
+                  )}
+                  {(!!s.pricingReviews || !!s.pricingRating) && (
+                    <span style={body(s.bodySm, 1.4, { color: s.tx, whiteSpace: 'nowrap' })}>
+                      {s.pricingReviews}
+                      {!!s.pricingReviews && !!s.pricingRating && ' · '}
+                      {!!s.pricingRating && <span style={{ color: s.ac }}>{s.pricingRating} ★</span>}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
       )
@@ -7295,6 +7327,18 @@ function Pricing({ s }) {
           </div>
           {!!s.pricingSub && (
             <span style={body(s.eyebrow, 1.3, { fontWeight: 700, color: s.tx })}>{s.pricingSub}</span>
+          )}
+          {/* Desktop only (user call, 2026-09-17): the 1440 instance's own
+              1px `sem/stroke/1` edge, kept at its foot alone as the rule
+              between this section and the next, 32 under the small print
+              (the column's 24 plus 8). It bleeds to the page edges and stands
+              in for the root's bottom `padY`, so the gap below it is the next
+              section's own top inset. */}
+          {desk && (
+            <span style={{
+              display: 'block', height: '1px', background: s.stroke1, flex: 'none',
+              margin: `${u(8)} calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`,
+            }} />
           )}
         </div>
       )
@@ -12472,6 +12516,9 @@ function Calendar({ s }) {
       })
       // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
       // its own — opacity .38, no strike — and the row takes it, handlerless.
+      // Only a *booked* row dims (user call, 2026-09-17): a past (`dead`) one
+      // stays handlerless but at full ink, the frame's own row, since the
+      // seeded slots have no editor and are all past on a published page.
       const dim = (off) => (off ? { opacity: 0.38 } : null)
 
       const flow = (
@@ -12494,12 +12541,12 @@ function Calendar({ s }) {
           : undefined
         const mark = (
           <span style={type(s.display, s.dispLg, 0.89, {
-            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(blocked(sl)),
+            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(sl.booked),
           })}>{sl.mark}</span>
         )
         const day = (
           <span style={type(s.ui, s.labelXs, 1.26, {
-            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(blocked(sl)),
+            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(sl.booked),
           })}>{sl.day}</span>
         )
         return (
@@ -12512,7 +12559,7 @@ function Calendar({ s }) {
               ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
               : <>{mark}{day}</>}
             <div style={col(u(2), {
-              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(blocked(sl)),
+              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(sl.booked),
             })}>
               {!!sl.kind && (
                 <span style={type(s.body, s.bodyMd, 1.5, { whiteSpace: 'nowrap' })}>{sl.kind}</span>
@@ -12526,7 +12573,12 @@ function Calendar({ s }) {
       }
 
       return (
-        <div style={{ background: s.box1, color: s.tx, borderRadius: u(50), overflow: 'hidden' }}>
+        // At desktop the panel stands inside Frame 298's own 56, not the
+        // root's `padY` (user call, 2026-09-17).
+        <div style={{
+          background: s.box1, color: s.tx, borderRadius: u(50), overflow: 'hidden',
+          ...(desk ? { margin: `calc(${u(56)} - ${s.padY}) 0` } : null),
+        }}>
           <div style={col(u(28), {
             background: s.ac, color: s.box1, padding: `${u(28)} ${padX} ${u(36)}`,
           })}>
@@ -14590,10 +14642,22 @@ function EventsMap({ s }) {
           {/* The frame's pill is `sem/text/1` lettered in `sem/bg` (Scheme 3's
               `s.ac`), with a lime disc and an ink arrow — BookPill's Lime
               branch with the pair turned round, whose own `k` gives the 54 box
-              and `s.list` label at every width. It hugs where the frame's is
-              half the row: "Get Directions" went with Retro's fit. */}
+              and `s.list` label at every width. Beside it, halving the row
+              at a 10 gap, is the frame's outlined Get Directions (user call,
+              2026-09-17): a 1px `sem/text/1` ring lettered in it, Display/List,
+              on Retro's `dir` — stretched to the pill's height, Retro's rule,
+              and a picture where the route is empty. */}
           {!!g && (
-            <BookPill s={s} ext={g.url} label="Venue Link" bg={ink} fg={s.ac} full={s.mob} />
+            <div style={row(u(10), { width: '100%', alignItems: 'stretch' })}>
+              <BookPill s={s} ext={g.url} label="Venue Link" bg={ink} fg={s.ac} full={s.mob}
+                        style={{ flex: '1 1 0', minWidth: 0, justifyContent: 'space-between' }} />
+              <Dir {...dir} style={row(0, {
+                flex: '1 1 0', minWidth: 0, justifyContent: 'center',
+                boxShadow: ring(ink), borderRadius: '999px', color: ink,
+                padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'nowrap',
+                textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
+              })}>Get Directions</Dir>
+            </div>
           )}
         </div>
       )
@@ -14733,41 +14797,65 @@ function EventsMap({ s }) {
               position: 'relative', width: '100%', background: plate, overflow: 'hidden',
               aspectRatio: desk ? '588 / 519' : tab ? '318 / 518' : '346 / 298',
             }}>
-              {s.mapSrc && (
+              {/* The zoom layer (user call, 2026-09-17): the raster, rings and
+                  pins scale together on layout 3's `zoom` hook, a quarter a
+                  step, live only; the canvas is the frame. */}
+              <div style={{
+                position: 'absolute', inset: 0, transform: `scale(${s.live ? 1.25 ** zoom : 1})`,
+                transformOrigin: '50% 50%', transition: 'transform .25s ease',
+              }}>
+                {s.mapSrc && (
+                  <span aria-hidden style={{
+                    position: 'absolute', inset: 0, backgroundImage: `url(${s.mapSrc})`,
+                    backgroundSize: 'cover', backgroundPosition: 'center',
+                    filter: 'invert(1) grayscale(1) contrast(1.6)', opacity: 0.2, mixBlendMode: 'screen',
+                  }} />
+                )}
+                {rings.map((r) => (
+                  <svg key={r.d} aria-hidden viewBox={`0 0 ${r.d} ${r.d}`} style={{
+                    position: 'absolute', left: '50%', top: '50%', width: `${r.d / vw * 100}%`,
+                    aspectRatio: '1', transform: 'translate(-50%, -50%)', overflow: 'visible',
+                  }}>
+                    <circle cx={r.d / 2} cy={r.d / 2} r={(r.d - r.w) / 2} fill="none"
+                            stroke={s.ac} strokeWidth={r.w} strokeDasharray={r.dash} opacity={r.o} />
+                  </svg>
+                ))}
+                {lpins}
+                {/* The centre pin: a lime disc in a 2px ink ring round the frame's
+                    `user` glyph (lucide's, at its bounds), over a small lime tail.
+                    The disc stands 16 above the rings' centre, as the frame's 24 ×
+                    32 box centred 12 high puts it. */}
                 <span aria-hidden style={{
-                  position: 'absolute', inset: 0, backgroundImage: `url(${s.mapSrc})`,
-                  backgroundSize: 'cover', backgroundPosition: 'center',
-                  filter: 'invert(1) grayscale(1) contrast(1.6)', opacity: 0.2, mixBlendMode: 'screen',
-                }} />
-              )}
-              {rings.map((r) => (
-                <svg key={r.d} aria-hidden viewBox={`0 0 ${r.d} ${r.d}`} style={{
-                  position: 'absolute', left: '50%', top: '50%', width: `${r.d / vw * 100}%`,
-                  aspectRatio: '1', transform: 'translate(-50%, -50%)', overflow: 'visible',
+                  position: 'absolute', left: '50%', top: `calc(50% - ${u(16)})`,
+                  transform: 'translate(-50%, -50%)', width: u(24), height: u(24),
+                  borderRadius: '999px', background: s.ac, boxShadow: `inset 0 0 0 ${u(2)} ${ink}`,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: ink,
                 }}>
-                  <circle cx={r.d / 2} cy={r.d / 2} r={(r.d - r.w) / 2} fill="none"
-                          stroke={s.ac} strokeWidth={r.w} strokeDasharray={r.dash} opacity={r.o} />
+                  <User size={Math.round(16 * z * 10) / 10} strokeWidth={2 * z} absoluteStrokeWidth />
+                </span>
+                <svg aria-hidden viewBox="0 0 10 8" style={{
+                  position: 'absolute', left: '50%', top: `calc(50% + ${u(8)})`,
+                  width: u(10), height: u(8), transform: 'translate(-50%, -50%)', overflow: 'visible',
+                }}>
+                  <path d="M1 1 H9 L5 7 Z" fill="none" stroke={s.ac} strokeWidth="2" strokeLinejoin="round" />
                 </svg>
-              ))}
-              {lpins}
-              {/* The centre pin: a lime disc in a 2px ink ring round the frame's
-                  `user` glyph (lucide's, at its bounds), over a small lime tail.
-                  The disc stands 16 above the rings' centre, as the frame's 24 ×
-                  32 box centred 12 high puts it. */}
-              <span aria-hidden style={{
-                position: 'absolute', left: '50%', top: `calc(50% - ${u(16)})`,
-                transform: 'translate(-50%, -50%)', width: u(24), height: u(24),
-                borderRadius: '999px', background: s.ac, boxShadow: `inset 0 0 0 ${u(2)} ${ink}`,
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: ink,
-              }}>
-                <User size={Math.round(16 * z * 10) / 10} strokeWidth={2 * z} absoluteStrokeWidth />
-              </span>
-              <svg aria-hidden viewBox="0 0 10 8" style={{
-                position: 'absolute', left: '50%', top: `calc(50% + ${u(8)})`,
-                width: u(10), height: u(8), transform: 'translate(-50%, -50%)', overflow: 'visible',
-              }}>
-                <path d="M1 1 H9 L5 7 Z" fill="none" stroke={s.ac} strokeWidth="2" strokeLinejoin="round" />
-              </svg>
+              </div>
+              {/* The frame's Zoom In / Zoom Out, 4 apart and 16 in from the
+                  viewport's corner: `sem/box/2` in a 1px `sem/stroke/1` ring,
+                  an Inter Bold 20 glyph — layout 3's Lime pair exactly. */}
+              <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+                {[['+', 1], ['−', -1]].map(([glyph, dir]) => (
+                  <span key={glyph}
+                        onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
+                        style={{
+                          width: u(30), height: u(40), borderRadius: u(8), background: '#D9FF7F', color: ink,
+                          boxShadow: ring(hair), boxSizing: 'border-box',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
+                          cursor: s.live ? 'pointer' : undefined, userSelect: 'none',
+                        }}>{glyph}</span>
+                ))}
+              </div>
             </div>
             {/* Retro's allocation: the travel terms, and the count where the
                 frame's dead "EXPAND VIEW" stood. */}
@@ -14790,6 +14878,9 @@ function EventsMap({ s }) {
         <div style={{
           display: 'grid', gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
           gap: u(24), alignItems: 'start',
+          // At desktop the instance's own 56 top inset, not the root's `padY`
+          // (user call, 2026-09-17).
+          ...(desk ? { marginTop: `calc(${u(56)} - ${s.padY})` } : null),
         }}>
           <div style={col(u(18))}>{lcard}{llist}</div>
           {lpanel}
@@ -17322,8 +17413,9 @@ function Testimonials({ s }) {
       )
 
       // Scheme 3, radius 50 at all three widths (Retro's twin is 30). Its foot
-      // is `items-center` where Retro's aligns to the end, and `when` takes the
-      // stars' seat as it does there.
+      // is `items-center` where Retro's aligns to the end, and the corner is
+      // the section's `stars` in Body/MD ink, as all three masters draw it
+      // (user call, 2026-09-17) — so `when` has no seat here, Retro's rule.
       const limeBig = (
         <div style={col(u(40), {
           ...(wide ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
@@ -17343,7 +17435,7 @@ function Testimonials({ s }) {
                   {q.quote}
                 </p>
               )}
-              {(!!q.byline || !!q.when) && (
+              {(!!q.byline || !!s.testiStars) && (
                 <div style={row(u(12), {
                   width: '100%', paddingTop: u(16), flexWrap: 'wrap',
                   justifyContent: 'space-between', alignItems: 'center',
@@ -17352,7 +17444,9 @@ function Testimonials({ s }) {
                     {!!q.who && <span style={dispType(s.list, 1.2)}>{q.who}</span>}
                     {!!q.role && <span style={bodyType(s.bodySm, 1.4)}>{q.role}</span>}
                   </div>
-                  {!!q.when && <span style={{ ...bodyType(s.bodyMd, 1.5), flex: 'none' }}>{q.when}</span>}
+                  {!!s.testiStars && (
+                    <span style={{ ...bodyType(s.bodyMd, 1.5), flex: 'none', whiteSpace: 'nowrap' }}>{s.testiStars}</span>
+                  )}
                 </div>
               )}
             </>
