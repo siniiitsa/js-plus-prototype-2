@@ -98,9 +98,12 @@ export const LIME_PHOTOS = {
 
 // The seeded artwork for the media player's five track rows, in track order.
 //
-// Figma dresses the rows with real album covers (The Who, Pink Floyd, Nirvana).
-// Those are not ours to ship, so these are neutral crops of the same live-set
-// photography, in the square framing the design uses.
+// These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
+// hashes 8c7fa7d8 4e7cc529 b737c3e0 40041573 21e9622c, in row order). They are
+// real album covers, which are not ours to redistribute: seeding them in the demo
+// was a user call (2026-09-17), and they must be replaced before anything public.
+// Each keeps its source's aspect — track 1's is a 752 × 360 letterbox — because
+// every seat draws them `cover`, which is the frames' own FILL.
 //
 // Track art is per-track content, not a section-level photo array: it travels in
 // `c.tracks[i].image` once the artist edits the list, so this seeds only the
@@ -112,7 +115,7 @@ export const RETRO_TRACK_ART = [track1, track2, track3, track4, track5]
 // once the artist edits the list, the art travels in the row itself
 // (`c.tracks[i].image`), so a row they add past the seed has none and falls
 // back to the initials placeholder. Lime's frames dress the rows with the same
-// covers, so both templates share it.
+// covers (identical hashes), so both templates share it.
 const ROW_ART = { media: RETRO_TRACK_ART }
 
 // The artist avatar, cropped from the §10.2 hero frame's `pp` card (Figma node
