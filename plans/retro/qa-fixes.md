@@ -29,7 +29,7 @@ over, so do not renumber.
 | 6 | F25 | Footer link to a deleted section stays as a dead label | **Confirmed**: currently *documented as intended* | S | **yes** | **done** (A) |
 | 7 | F24 | Delete has no confirm or Undo, and re-adding resets the content | **Confirmed** | M | **yes** | **done** (A) |
 | 8 | F20 | Published calendar lets a visitor pick a past date | **Confirmed**: collides with a documented rule | M | **yes** | **done** (A, opens on max(open, today)) |
-| 9 | F15 | Photo over ~4 MB is ignored silently | **Not reproduced as stated**: see entry | S | **yes** | open |
+| 9 | F15 | Photo over ~4 MB is ignored silently | **Not reproduced as stated**: see entry | S | **yes** | **done** (three changes, 4 000 000 bytes) |
 | 10 | — | End-of-pass sweep | — | S | no | open |
 
 **Why this order:** the self-contained render fixes come first (F4, F10), then the editor-side
@@ -762,7 +762,7 @@ published grid opens on `max(open, today)`'s month, and the `CAL_SPAN` window co
 
 > A photo larger than ~4 MB is silently ignored, with no message.
 
-**Verdict: not reproduced as stated.** `readImage` (`EncoreBuilder.jsx:~1507`) rejects over
+**Verdict: not reproduced as stated.** `readImage` (`EncoreBuilder.jsx:~1507`; `:~1576` after the fix) rejected over
 4 MiB with the toast "That image is too large — 4 MB maximum", and the toast renders. It was
 checked in headless Chrome by uploading 5 MB `.png` and `.jpg` files to the header's Background
 photo, on the dev build and on the committed root `index.html`, at 1600 (toast bottom-centre over
@@ -793,7 +793,82 @@ click, which browser, which build). Then, recommended regardless:
 **Verify.** Upload 3.9 MB, 4.1 MB (decimal) and 5 MB files through every control, by click and by
 drop. Check that the error sits next to the control, and that a following valid pick clears it.
 
-**Decision.** —  **Settled.** —
+**Decision.** 2026-09-17. The tester's exact steps are **unknown**, so the three recommended
+changes all go in: an inline line beside the refusing control (with the toast), drop handlers on
+a filled `ImageField`, and the limit and wording below. **"4 MB" means 4 000 000 bytes**, the
+decimal megabyte Finder prints, so a file Finder calls 4.1 MB is refused and one it calls 3.9 MB
+is not.
+
+**Settled.** 2026-09-17.
+- **`imageProblem(file)`** (beside `readImage`, `EncoreBuilder.jsx:~1567`) returns `null` or one
+  sentence, the `urlProblem` shape: "Please choose a PNG or JPG", or "That image is 4.1 MB — the
+  limit is 4 MB" against **`IMAGE_MAX = 4_000_000`**. The size is rounded **up** to one decimal,
+  so 4 000 001 bytes prints 4.1 and never a "4.0 MB" that reads as under the limit. `readImage`
+  now only reads. **`vetImages(files, onToast)`** vets one pick: it toasts the line and returns
+  `{ ok, msg }`, or `null` for a pick that carries no file (a text drag), which leaves the line
+  up. Two or more refusals in one batch give one line, "2 photos were not added — each must be
+  a PNG or JPG of 4 MB or less", instead of toasts that replace each other.
+- **The line is decided at pick time, never as the reads land.** A `FileReader` finishes later,
+  so clearing the line in `onload` would let the good files in a mixed batch wipe a refusal. A
+  pick sets the line to its own verdict: a refusal replaces the line, and a clean pick clears it.
+  **Remove does not clear it**, since it is not a pick. The line is a `role="alert"` `<p>` in
+  `ERR_LINE` (now shared with `UrlInput`), and the control's border turns `#B3261E` while it is
+  up (the dashed zone, the filled photo, the `Add` tile, the row thumb).
+- **Where it sits.** `ImageField`: under the dropzone, or under Replace / Remove. `ImagesField`:
+  under the "n of 7" line, kept when the grid is full, because the good files in the refused
+  batch can fill the last slot. **The room is counted in files that pass**: the pick is vetted
+  first and `ok` is then cut to the room, so a refused file takes no slot (before this, with
+  three slots left, `[5 MB, a, b, c, d]` landed only `a, b`). The room toast fires only when
+  more *good* files arrive than there is room for, and it fires before the refusal toast, so
+  the refusal is the toast left standing. **`RowThumb` holds no line**, because its 46px column has no
+  room for one. It takes `onFail(msg | null)` and `failed`, and `TracksField` keeps one
+  `refused = { i, msg }` and prints it under row `i` (the row wraps; the line is indented to the
+  thumb). `removeAt` shifts or drops it, so the line moves with its track rather than passing to
+  the row that moves up (rows key on index). A clean pick on another row leaves it.
+- **A filled `ImageField` is a dropzone.** The wrapper round the photo and its buttons takes the
+  same `dragover` / `drop` handlers, so a drop replaces the photo, and a refused drop keeps the
+  old one and prints the line. A multi-file drop takes the first file, as the empty zone always
+  did. The filled `RowThumb` already took drops.
+- **`EditPanel` is keyed on `selectedSec.id`** (sidebar and edit drawer). The fields key on
+  `f.k`, and header and bio both have `image`, so clicking Bio on the canvas while the header
+  panel was open would have handed the header's line to Bio's photo. `EditPanel` holds no state
+  of its own, so the key only remounts the fields. This also fixes the same latent case for
+  `UrlInput`.
+- **The limit is stated up front**: the captions read "PNG or JPG up to 4 MB · from your device".
+- **Verified** (`scratchpad/f15.mjs`, dev build, Retro, 1600 and 390 with touch, 64 checks
+  each, all pass, no page errors). Zero-filled `.png` / `.jpg` files by click
+  (`ElementHandle.uploadFile`) and synthetic `DataTransfer` drops:
+  - **`ImageField`** (header *Background photo*, filled): 5 MB, 4.1 MB, 4 000 001 bytes and a
+    `.txt` are each refused with the right line and toast, and the photo is kept. 3.9 MB and a
+    JPG replace the photo, and exactly 4 000 000 bytes is accepted. This holds by click and by
+    drop. After Remove, a drop and a click on the empty zone are refused, and a small PNG fills
+    it and clears the line. A two-file drop is decided by its first file, and a file-less drop
+    leaves the line.
+  - **Section switch:** Bio's *Photo* shows no line after a canvas click.
+  - **`ImagesField`** (gallery, emptied): single refusals and accepts by click and drop, the
+    mixed batches (the two-refusal line and one photo added; a click batch), and the overflow
+    cases: a refused file takes no slot and its line stays on the full grid, Remove keeps the
+    line, two good files into one slot give the room toast and clear the line, and a refused
+    file plus a good one into one slot land the good one with no room toast. A final clean pick
+    fills the grid and clears the line. (A dismissed toast stays in the DOM, still marked
+    visible, for about a second while it animates out, so a toast check has to wait that out.)
+  - **`RowThumb`** (media tracks): the line appears under the refusing row, moves between rows,
+    survives a clean pick on another row, clears on a clean pick on its own row, follows its
+    track when row 1 is deleted and goes when its row is deleted. An added empty row is refused
+    by drop and then filled by click.
+  - **Everywhere:** each line sits 3–6px under its control (or inside its row, left-aligned with
+    the thumb), is on screen once scrolled to, is the topmost element at its point, and
+    `scrollWidth` does not grow. Screenshots at 1600 and 390 were taken with
+    `captureBeyondViewport: false`.
+- **Digest** (all categories, themes 0, 1, 2, three widths): canvas **387** and `live=1`
+  **387**, all **byte-identical** against HEAD. The change is chrome-only, like F24.
+- **Named, not fixed.** A drop that lands off the zone (the gap under it, the line itself, a
+  thumb's round Remove) is still the browser's to handle. Windows Explorer prints MiB as "MB",
+  so a Windows user's "3.9 MB" file (4 089 446 bytes) is refused with "That image is 4.1 MB".
+  The message prints the decimal size, so it names the file's actual size.
+- **Docs:** the `IMAGE_MAX`, `imageProblem`, `readImage` and `vetImages` comments, `RowThumb`'s,
+  `TracksField`'s `refused`, the filled-zone comment in `ImageField`, `ImagesField`'s line, and
+  the `EditPanel` key. README and CLAUDE.md name no upload limit, so neither changed.
 
 ---
 
@@ -850,3 +925,8 @@ drop. Check that the error sits next to the control, and that a following valid 
   ignores `today` unless `live`, and the harness's `&today=` is opt-in, so neither the canvas
   nor the `live=1` digest moves from day to day. A past day is `dead`, not `booked`, and the
   section tests both through one `blocked()`.
+- **An upload refusal is printed beside the control as well as toasted** (F15). It is decided
+  at pick time (`vetImages`) and never when a read lands. A control too small for a sentence
+  hands the line to its repeater (`RowThumb`'s `onFail`), and the repeater moves the line with
+  its row. A field's local line survives only within its own section, because `EditPanel` is
+  keyed on the section id.

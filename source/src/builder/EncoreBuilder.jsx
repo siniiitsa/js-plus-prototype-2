@@ -1554,20 +1554,48 @@ const MENU_ITEM = { fontSize: '13px', fontWeight: 500, padding: '8px 10px', bord
  * Nothing here may originate a network request.
  * ------------------------------------------------------------------ */
 
-// Shared by the single- and multi-photo controls. Rejects anything that is not
-// a PNG/JPG under 4 MB and hands back a data URL — never a network request.
-function readImage(file, onOk, onToast) {
-  if (!file) return
-  if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-    onToast('Please choose a PNG or JPG'); return
-  }
-  if (file.size > 4 * 1024 * 1024) {
-    onToast('That image is too large — 4 MB maximum'); return
-  }
+// The upload limit, in decimal megabytes — the unit macOS's Finder prints, so
+// a file Finder calls "4.1 MB" is refused by a message that says 4 MB, and one
+// it calls "3.9 MB" is not. The message prints the size in the same unit.
+const IMAGE_MAX = 4_000_000
+
+// Why a picked file cannot be a photo here: null, or one sentence. Every
+// upload control (ImageField, ImagesField, RowThumb) asks this at pick time
+// and prints the answer twice — as a toast, and under the control itself
+// until the next pick that refuses nothing, since a toast is far from the
+// field, short-lived and replaced by the next one.
+function imageProblem(file) {
+  if (file.type !== 'image/png' && file.type !== 'image/jpeg') return 'Please choose a PNG or JPG'
+  // Rounded up, so a file a byte over the limit never prints as "4.0 MB".
+  if (file.size > IMAGE_MAX) return `That image is ${(Math.ceil(file.size / 1e5) / 10).toFixed(1)} MB — the limit is 4 MB`
+  return null
+}
+
+// Hands back a file that imageProblem() passed as a data URL — never a
+// network request.
+function readImage(file, onOk) {
   const r = new FileReader()
   r.onload = () => onOk(r.result)
   r.readAsDataURL(file)
 }
+
+// Vets one pick (a file input's change or a drop): returns the files that
+// pass and the line to print, toasting that line too. A pick that carries no
+// file at all returns null, and leaves whatever line is up where it is.
+function vetImages(files, onToast) {
+  const list = [...(files || [])]
+  if (!list.length) return null
+  const bad = list.map(imageProblem).filter(Boolean)
+  const msg = bad.length > 1
+    ? `${bad.length} photos were not added — each must be a PNG or JPG of 4 MB or less`
+    : bad[0] || null
+  if (msg) onToast(msg)
+  return { ok: list.filter((f) => !imageProblem(f)), msg }
+}
+
+// The refusal line under an upload control, in UrlInput's type.
+const ERR_LINE = { margin: 0, fontSize: '10px', color: '#B3261E', lineHeight: 1.45 }
+const ERR_RED = '#B3261E'
 
 const FILE_INPUT = {
   position: 'absolute', width: 1, height: 1, padding: 0, margin: -1,
@@ -1577,19 +1605,36 @@ const FILE_INPUT = {
 function ImageField({ value, onChange, onToast }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
+  const [err, setErr] = useState(null)
 
-  const take = (file) => readImage(file, onChange, onToast)
+  // One file per pick: a multi-file drop takes the first, as it always has.
+  const take = (files) => {
+    const v = vetImages(files ? [...files].slice(0, 1) : [], onToast)
+    if (!v) return
+    setErr(v.msg)
+    v.ok.forEach((f) => readImage(f, onChange))
+  }
+  // The filled photo is a dropzone too, and a drop there replaces it — without
+  // these the browser takes the drop itself and opens the file in the tab.
+  const dropZone = {
+    onDragOver: (e) => { e.preventDefault(); setOver(true) },
+    onDragLeave: () => setOver(false),
+    onDrop: (e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) },
+  }
 
   return (
-    <div onClick={stopE}>
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <input
         ref={inputRef} type="file" accept="image/png,image/jpeg"
-        onChange={(e) => { take(e.target.files?.[0]); e.target.value = '' }}
+        onChange={(e) => { take(e.target.files); e.target.value = '' }}
         style={FILE_INPUT}
       />
       {value ? (
-        <div>
-          <img src={value} alt="" style={{ height: '108px', width: '100%', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E2DFD7', display: 'block' }} />
+        <div {...dropZone}>
+          <img src={value} alt="" style={{
+            height: '108px', width: '100%', objectFit: 'cover', borderRadius: '10px', display: 'block',
+            border: `1px solid ${over ? '#1B1A17' : err ? ERR_RED : '#E2DFD7'}`,
+          }} />
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
             <button
               type="button" onClick={() => inputRef.current?.click()}
@@ -1606,21 +1651,20 @@ function ImageField({ value, onChange, onToast }) {
       ) : (
         <div
           onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setOver(true) }}
-          onDragLeave={() => setOver(false)}
-          onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files?.[0]) }}
+          {...dropZone}
           className="hover:border-foreground"
           style={{
-            border: `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`, borderRadius: '10px', height: '108px',
+            border: `1.5px dashed ${over ? '#1B1A17' : err ? ERR_RED : '#C9C6BB'}`, borderRadius: '10px', height: '108px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             gap: '4px', cursor: 'pointer',
           }}
         >
           <Upload size={18} style={{ color: '#B9B6AA' }} />
           <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Upload a photo</span>
-          <span style={{ fontSize: '10px', color: '#98958A' }}>PNG or JPG · from your device</span>
+          <span style={{ fontSize: '10px', color: '#98958A' }}>PNG or JPG up to 4 MB · from your device</span>
         </div>
       )}
+      {err && <p role="alert" style={ERR_LINE}>{err}</p>}
     </div>
   )
 }
@@ -1636,15 +1680,22 @@ function ImagesField({ value, max, onChange, onToast }) {
   const [over, setOver] = useState(false)
   const list = Array.isArray(value) ? value : []
   const room = max - list.length
+  const [err, setErr] = useState(null)
 
   const take = (files) => {
-    const chosen = [...(files || [])].slice(0, room)
-    if (!chosen.length) return
-    if ([...(files || [])].length > room) onToast(`Room for ${max} photos here`)
+    const all = [...(files || [])]
+    if (!all.length || room <= 0) return
+    // The room is counted in files that pass, so a refused one takes no slot.
+    if (all.filter((f) => !imageProblem(f)).length > room) onToast(`Room for ${max} photos here`)
+    // Vetted after the room toast, so a refusal is the toast left standing.
+    // The line is decided here, at pick time, not as the reads land: in a
+    // batch with one refused file the good reads must not wipe it.
+    const v = vetImages(all, onToast)
+    setErr(v.msg)
     // Each read is async, so accumulate against the latest list rather than a
     // stale copy — otherwise a multi-select drops all but the last file.
     let next = list
-    chosen.forEach((f) => readImage(f, (url) => { next = [...next, url]; onChange(next) }, onToast))
+    v.ok.slice(0, room).forEach((f) => readImage(f, (url) => { next = [...next, url]; onChange(next) }))
   }
 
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
@@ -1689,7 +1740,7 @@ function ImagesField({ value, max, onChange, onToast }) {
             onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
             className="hover:border-foreground"
             style={{
-              border: `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`, borderRadius: '9px', height: '62px',
+              border: `1.5px dashed ${over ? '#1B1A17' : err ? ERR_RED : '#C9C6BB'}`, borderRadius: '9px', height: '62px',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               gap: '2px', cursor: 'pointer',
             }}
@@ -1700,8 +1751,11 @@ function ImagesField({ value, max, onChange, onToast }) {
         )}
       </div>
       <p style={{ margin: '6px 0 0', fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · PNG or JPG · from your device
+        {list.length} of {max} · PNG or JPG up to 4 MB · from your device
       </p>
+      {/* Kept while the grid is full as well: a refused file is still news
+          when the good ones in its batch filled the last slot. */}
+      {err && <p role="alert" style={{ ...ERR_LINE, marginTop: '3px' }}>{err}</p>}
     </div>
   )
 }
@@ -1746,7 +1800,7 @@ function UrlInput({ value, onChange, style, className, placeholder, web = false 
         style={{ ...style, ...(msg ? { borderColor: '#B3261E' } : null) }}
       />
       {msg && (
-        <p role="alert" style={{ margin: 0, fontSize: '10px', color: '#B3261E', lineHeight: 1.45 }}>{msg}</p>
+        <p role="alert" style={ERR_LINE}>{msg}</p>
       )}
     </div>
   )
@@ -1874,15 +1928,26 @@ function SongsField({ value, max, onChange }) {
 // The compact artwork control: a 46px square that is the dropzone, the
 // preview and the file trigger at once. ImageField's 108px panel is the
 // right size for a section photo and far too tall for a repeater row.
-function RowThumb({ value, label, onChange, onToast }) {
+//
+// It has no room for a sentence, so it holds no refusal line of its own:
+// `onFail` hands the line (or null, on a clean pick) to the repeater, which
+// prints it under the whole row and says whether it is up, via `failed`.
+function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
+
+  const take = (files) => {
+    const v = vetImages(files ? [...files].slice(0, 1) : [], onToast)
+    if (!v) return
+    onFail(v.msg)
+    v.ok.forEach((f) => readImage(f, onChange))
+  }
 
   return (
     <div style={{ position: 'relative', flex: 'none' }}>
       <input
         ref={inputRef} type="file" accept="image/png,image/jpeg"
-        onChange={(e) => { readImage(e.target.files?.[0], onChange, onToast); e.target.value = '' }}
+        onChange={(e) => { take(e.target.files); e.target.value = '' }}
         style={FILE_INPUT}
       />
       <button
@@ -1890,14 +1955,13 @@ function RowThumb({ value, label, onChange, onToast }) {
         onClick={(e) => { stopE(e); inputRef.current?.click() }}
         onDragOver={(e) => { e.preventDefault(); setOver(true) }}
         onDragLeave={() => setOver(false)}
-        onDrop={(e) => {
-          e.preventDefault(); setOver(false)
-          readImage(e.dataTransfer.files?.[0], onChange, onToast)
-        }}
+        onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
         className="hover:border-foreground"
         style={{
           width: '46px', height: '46px', padding: 0, borderRadius: '9px', overflow: 'hidden',
-          border: value ? '1px solid #E2DFD7' : `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`,
+          border: value
+            ? `1px solid ${failed ? ERR_RED : '#E2DFD7'}`
+            : `1.5px dashed ${over ? '#1B1A17' : failed ? ERR_RED : '#C9C6BB'}`,
           background: '#FFFFFF', cursor: 'pointer', display: 'flex',
           alignItems: 'center', justifyContent: 'center',
         }}
@@ -1931,13 +1995,20 @@ function TracksField({ value, max, onChange, onToast }) {
   // Same shape as SongsField: every keystroke rewrites the whole array, which
   // keeps `c.tracks` a plain value rather than something patched in place.
   const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
-  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  // The artwork refusal line, held here rather than in RowThumb (see there).
+  // Rows key on index, so a line held by the row would pass to the row that
+  // moves up when one above it is deleted; this one moves with its track.
+  const [refused, setRefused] = useState(null) // { i, msg } | null
+  const removeAt = (i) => {
+    if (refused) setRefused(refused.i === i ? null : refused.i > i ? { ...refused, i: refused.i - 1 } : refused)
+    onChange(list.filter((_, j) => j !== i))
+  }
   const add = () => onChange([...list, { title: '', sub: '', image: null, audio: '' }])
 
   const row = (i, t) => (
     <div key={i} style={{
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
-      display: 'flex', alignItems: 'flex-start', gap: '8px', background: '#FCFBF8',
+      display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: '8px', background: '#FCFBF8',
     }}>
       <span style={{
         width: '12px', flex: 'none', fontSize: '10px', fontWeight: 700,
@@ -1946,6 +2017,8 @@ function TracksField({ value, max, onChange, onToast }) {
       <RowThumb
         value={t.image ?? null} label={`artwork for track ${i + 1}`}
         onChange={(v) => setAt(i, 'image', v)} onToast={onToast}
+        onFail={(msg) => setRefused(msg ? { i, msg } : refused?.i === i ? null : refused)}
+        failed={refused?.i === i}
       />
       {/* Stacked rather than side by side: this panel is also the mobile edit
           sheet, and a thumbnail plus two inputs across does not fit at its width. */}
@@ -1982,6 +2055,10 @@ function TracksField({ value, max, onChange, onToast }) {
           />
         </div>
       </div>
+      {/* The row wraps, so this takes a line of its own, indented to the thumb. */}
+      {refused?.i === i && (
+        <p role="alert" style={{ ...ERR_LINE, flexBasis: '100%', paddingLeft: '20px', marginTop: '-2px' }}>{refused.msg}</p>
+      )}
     </div>
   )
 
@@ -4179,8 +4256,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                       <span style={{ display: 'block', fontSize: '11px', color: '#98958A' }}>{selectedVm.layoutLabel}</span>
                     </span>
                   </div>
+                  {/* Keyed on the section, here and in the edit drawer, so a
+                      field's own line (a refused photo or address) is not
+                      inherited by the same field of the next section opened. */}
                   <EditPanel
-                    sec={selectedSec} vm={selectedVm} api={api}
+                    key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
                     artistName={artistName} themeIdx={st.theme} navSections={navSections}
                   />
                 </>
@@ -4355,7 +4435,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             )}
             {selectedSec && (
               <EditPanel
-                sec={selectedSec} vm={selectedVm} api={api}
+                key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
                 artistName={artistName} themeIdx={st.theme} navSections={navSections}
               />
             )}
