@@ -22,7 +22,7 @@ over, so do not renumber.
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
 | 1 | F4 | Long venue name widens the gig cards on mobile | **Confirmed**: layout 1 (spaced name) and layout 2 (one long word) | S | no | **done** |
-| 2 | F10 | An empty media player shows the hardcoded "Night Rain" | **Confirmed** | S | no | open |
+| 2 | F10 | An empty media player shows the hardcoded "Night Rain" | **Confirmed** | S | no | **done** |
 | 3 | F2 | Four fields edit nothing in layout 1 | **Confirmed**, and it is one case of a wider class | M | **yes** | open |
 | 4 | F9 | Enquiry form can lose every box, Email included | **Confirmed** | S | small | open |
 | 5 | F18 | Link fields don't validate (`not a url`, `javascript:`) | **Confirmed** | M | small | open |
@@ -173,7 +173,31 @@ likely breakages. `preview.html?cat=media&n=0` is the existing empty harness.
 **Docs.** CLAUDE.md's media paragraph ("the card still names and shows track one") and the
 comment on `vm.nowPlaying` in `sectionVm`.
 
-**Settled.** —
+**Settled.** 2026-09-17.
+- **`NOW_PLAYING` is `{ at, of, pct }`** now. `vm.nowPlaying` moved below the `tracks` block in
+  `sectionVm` (it has to read them): with tracks it is the mid-song clock as before, and with none
+  it is `00:00 / 00:00 / 0` on both surfaces. `Media`'s fallback title is `vm.mediaEmpty`
+  (`'No tracks yet.'`, **uncased**, like pricing's and the repertoire's messages). The four
+  hardcoded `No tracks yet.` in layouts 3 and 4 read the same key, so the message has one home.
+  One test covers every design, because `tracks3` is a prefix of `tracks`.
+- **`goTo` was already guarded.** `if (!a || !count) return` comes before the modulo, and
+  `toggle`, `pick` and `onEnded` all go through it. Verified live with `&n=0&live=1`: every
+  `cursor: pointer` element in layouts 1–4 × themes 0, 1, 2 × three widths was clicked, with no
+  page error, no `NaN` in the text and no `src` on the `<audio>`. **Named edge:** those dead
+  controls still show a pointer cursor when the list is empty, because roughly 20 sites gate on
+  `s.live` alone. Not chased.
+- **Layouts 2 and 4 did not break** at 0 tracks at any width, before or after. Layout 2's fan and
+  list are simply blank (the design's empty state), and its bar ellipsises "No tracks yet." at the
+  same width "Night Rain" had. Layout 4 now prints the message twice, as the sleeve's title and
+  in the tile grid's place. That is accepted: it is one string saying the same thing in two
+  seats. Layout 3 already drew no now-playing card when empty, and it did not move. Lime layout 1
+  at 390 draws the title over the sleeve's `KM` placeholder, as it did with "Night Rain".
+- **Digest** (media, themes 0, 1, 2, three widths): the seed is **byte-identical** on the canvas
+  and with `live=1`. With `&n=0` (canvas and live) only layouts 1, 2 and 4 (`arch` 0, 1, 3) move,
+  and only in the title text, the two clock strings and the bar fill (34 % → 0, plus the Grunge
+  layout-4 playhead dot that rides it).
+- **Docs:** the CLAUDE.md media paragraph, README's player paragraph, the `NOW_PLAYING` comment,
+  the `vm.nowPlaying` comment and `Media`'s now-playing comment.
 
 ---
 

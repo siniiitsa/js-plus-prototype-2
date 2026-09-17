@@ -263,7 +263,8 @@ That distinction is the whole design, and it buys two things:
   only contradict the list it sits beside, and the section is now the one with no photo slot at
   all. Nothing is *marked* as playing, and the clock stays at 00:00, until the first pick; the
   canvas keeps `NOW_PLAYING`'s decorative clock, because the Figma frame draws a player caught
-  mid-song.
+  mid-song — unless the list is empty, where the card says "No tracks yet." and the clock reads
+  00:00 on both surfaces.
 
   **The gallery, which browses.** The seven-tile strip is a real filmstrip on the published page:
   every thumbnail is clickable, the rail's two arrows step through the slots and wrap at both

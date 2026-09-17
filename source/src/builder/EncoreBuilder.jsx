@@ -433,11 +433,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
-  // The now-playing card is no longer content of its own: it names and shows
-  // the track the player is on, which `Media` resolves from `vm.tracks`. What
-  // is left here is the canvas's decorative clock — the frame draws a player
-  // mid-song — and the fallback label for a section with no tracks at all.
-  vm.nowPlaying = { ...NOW_PLAYING, by: cased(artistName) }
+  // vm.nowPlaying is resolved under `tracks` below, because it reads them.
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
   // the opener, so a schemeless "soundcloud.com/kai" would resolve against the
@@ -481,6 +477,18 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
+
+  // The now-playing card is no longer content of its own: it names and shows
+  // the track the player is on, which `Media` resolves from `vm.tracks`. What
+  // is left here is the canvas's decorative clock — the frame draws a player
+  // mid-song — and only while there is a song to be in the middle of. With no
+  // tracks the clock stands at 00:00 under an empty bar on both surfaces, and
+  // the card names `mediaEmpty`, the one message the empty list prints too.
+  // `tracks3` is a prefix of `tracks`, so one test covers every design.
+  vm.mediaEmpty = 'No tracks yet.'
+  vm.nowPlaying = vm.tracks.length
+    ? { ...NOW_PLAYING, by: cased(artistName) }
+    : { at: '00:00', of: '00:00', pct: 0, by: cased(artistName) }
 
   // pricing — the artist's own packages, else the seeded ones. The `songs`
   // rule again: an absent key means TIERS, an emptied array means no packages,

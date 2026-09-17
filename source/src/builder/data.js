@@ -361,9 +361,10 @@ export const TRACK_AUDIO = [
 // The clock on the "now playing" card beside the track stack — a player caught
 // mid-song, which is what the Figma frame draws. Only the editor canvas shows
 // it: the published player's clock is its <audio> element's own (§10.2a), and
-// the *track* named on the card is track one at both sizes, not `track` here,
-// which survives only as the label for a section with no tracks left in it.
-export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
+// the *track* named on the card is always one of the artist's, so there is no
+// track here. A section with no tracks left draws neither: `sectionVm` stops
+// the clock at 00:00 under an empty bar and names `vm.mediaEmpty` instead.
+export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
 

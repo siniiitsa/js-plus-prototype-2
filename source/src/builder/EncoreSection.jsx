@@ -4422,15 +4422,18 @@ function Media({ s }) {
 
   // The now-playing block. The card always names the track the player is on —
   // track one until the visitor picks another — because the section no longer
-  // carries a now-playing track or sleeve of its own to name instead.
+  // carries a now-playing track or sleeve of its own to name instead. With no
+  // tracks at all it names `mediaEmpty`, and there is nothing to play: `goTo`
+  // returns before its modulo, and `toggle` and `pick` both go through it.
   //
   // The clock is the one thing that still differs by side. Live it is the
   // element's, from 00:00: before the metadata lands both ends read 00:00, and
   // a track's `sub` is a release line, not a duration, so it cannot stand in.
   // On the canvas it stays NOW_PLAYING's, because the frame draws a player
-  // caught mid-song and a dead 00:00 under an empty bar is not that picture.
+  // caught mid-song and a dead 00:00 under an empty bar is not that picture —
+  // unless the list is empty, where `sectionVm` has already stopped it.
   const np = s.nowPlaying
-  const title = track ? track.name : np.track
+  const title = track ? track.name : s.mediaEmpty
   const now = s.live
     ? {
         track: title, by: np.by, at: clock(pos), of: clock(len),
@@ -5819,7 +5822,7 @@ function Media({ s }) {
               <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
             </div>
             {s.tracks.length === 0 && (
-              <span style={{ ...bodySm, fontSize: s.bodyMd, color: s.muted }}>No tracks yet.</span>
+              <span style={{ ...bodySm, fontSize: s.bodyMd, color: s.muted }}>{s.mediaEmpty}</span>
             )}
             {s.tracks.map((t, i) => {
               const dur = t.dur && t.dur !== t.rel ? t.dur : ''
@@ -5951,7 +5954,7 @@ function Media({ s }) {
             is only ever seen mid-edit. */}
         {s.tracks.length === 0 && (
           <span style={{ fontFamily: s.body, fontSize: u(T.dur), color: s.muted }}>
-            No tracks yet.
+            {s.mediaEmpty}
           </span>
         )}
 
@@ -6256,7 +6259,7 @@ function Media({ s }) {
               {progress}
             </div>
             {s.tracks.length === 0
-              ? <span style={{ fontFamily: s.body, fontSize: u(tk.body), flex: 1 }}>No tracks yet.</span>
+              ? <span style={{ fontFamily: s.body, fontSize: u(tk.body), flex: 1 }}>{s.mediaEmpty}</span>
               : tiles}
           </div>
         </div>
@@ -6604,7 +6607,7 @@ function Media({ s }) {
                 than leaving a hole. Any minimum height for it would be an
                 invented number, and it is only ever seen mid-edit. */}
             {s.tracks.length === 0
-              ? <span style={{ fontFamily: s.body, fontSize: u(T.body), flex: 1 }}>No tracks yet.</span>
+              ? <span style={{ fontFamily: s.body, fontSize: u(T.body), flex: 1 }}>{s.mediaEmpty}</span>
               : tiles}
           </div>
         </div>

@@ -183,7 +183,11 @@ mutated through a single `patch()` helper.
   marked as playing and the clock does not start — the card still names and shows track one,
   which is what the player is cued to. `FIELDS.media` therefore has **no now-playing track or
   sleeve field**: a second, separately editable copy of what the card shows could only
-  contradict the list. Do not mark the
+  contradict the list. Nor does `NOW_PLAYING`, which is only the canvas's mid-song clock: with
+  **no tracks at all** the card names `vm.mediaEmpty` (the one "No tracks yet." the empty lists
+  print too) and `sectionVm` stops the clock at 00:00 under an empty bar on both surfaces, since
+  a mid-song clock with nothing cued is a lie. The transport stays wired but inert there —
+  `goTo` returns on an empty list before its modulo. Do not mark the
   playing card by raising it out of the stack — the cards overlap by 18px at the foot and a raised
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
   **Layout 2 plays through the same hooks**, and draws the one list twice: the fan and the
