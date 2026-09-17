@@ -14268,6 +14268,9 @@ function EventsMap({ s }) {
                   fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
                   opacity: onDark ? 1 : 0.8,
                   color: on ? contrastInk(g.hue) : onDark ? s.mapFg : undefined,
+                  // The city is the artist's, and one long word has no break
+                  // opportunity of its own.
+                  overflowWrap: 'anywhere',
                 }}>
                   {g.city} · {g.time}
                 </span>
@@ -14334,8 +14337,12 @@ function EventsMap({ s }) {
           </div>
         </div>
 
+        {/* `minmax(0, …)`, Lime's block's columns: a bare `1fr` floors each
+            track at its content's min-content, which is the venue's whole
+            nowrap string, so a long one widened both cards past the page and
+            the row's ellipsis never engaged. */}
         <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1.15fr',
+          display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1.15fr)',
           gap: s.gGap, alignItems: 'start',
         }}>
           {tile}{list}
@@ -14544,7 +14551,7 @@ function EventsMap({ s }) {
                   <span style={{ width: u(24), height: '1px', background: ink }} />
                 </span>
                 <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
-                  <span style={display(s.list, 1.2)}>{g.city}</span>
+                  <span style={{ ...display(s.list, 1.2), overflowWrap: 'anywhere' }}>{g.city}</span>
                   <span style={bodySm}>Venue location</span>
                 </div>
               </>
@@ -14605,7 +14612,7 @@ function EventsMap({ s }) {
                   }}>↗</Tix>
                 )}
               </div>
-              <span style={{ ...bodySm, whiteSpace: 'nowrap' }}>
+              <span style={{ ...bodySm, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
               </span>
             </div>
@@ -14687,8 +14694,10 @@ function EventsMap({ s }) {
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {g ? (
                 <>
-                  <h3 style={display(titleSize, 1.1)}>{g.venue}</h3>
-                  <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7 }}>{g.city}</span>
+                  <h3 style={{ ...display(titleSize, 1.1), overflowWrap: 'anywhere' }}>{g.venue}</h3>
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7, overflowWrap: 'anywhere',
+                  }}>{g.city}</span>
                 </>
               ) : (
                 <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7 }}>No dates yet.</span>
@@ -14764,7 +14773,7 @@ function EventsMap({ s }) {
 
       return (
         <div style={{
-          display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+          display: 'grid', gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
           gap: u(24), alignItems: 'start',
         }}>
           <div style={col(u(18))}>{lcard}{llist}</div>
@@ -14839,6 +14848,7 @@ function EventsMap({ s }) {
               <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+                  overflowWrap: 'anywhere',
                 }}>{g.city}</span>
                 <span style={label12}>Venue location</span>
               </div>
@@ -14956,7 +14966,7 @@ function EventsMap({ s }) {
                 }}>↗</Tix>
               )}
             </div>
-            <span style={label12}>
+            <span style={{ ...label12, overflowWrap: 'anywhere' }}>
               {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
             </span>
           </div>
@@ -15036,12 +15046,16 @@ function EventsMap({ s }) {
           </span>
           {g ? (
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
+              {/* A display head wraps rather than ellipsising, so a venue or
+                  city that is one long word breaks anywhere instead of setting
+                  the panel's width. */}
               <h3 style={{
                 margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
-                letterSpacing: s.dls,
+                letterSpacing: s.dls, overflowWrap: 'anywhere',
               }}>{g.venue}</h3>
               <span style={{
                 fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, opacity: 0.7,
+                overflowWrap: 'anywhere',
               }}>{g.city}</span>
             </div>
           ) : (
@@ -15134,8 +15148,10 @@ function EventsMap({ s }) {
       <div style={{
         display: 'grid',
         // 768 keeps the desktop's two columns at 342 + 342; only 390 stacks.
-        // The 24 gap is the frames' own at all three widths.
-        gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+        // The 24 gap is the frames' own at all three widths. `minmax(0, …)`,
+        // or a track floors at its content's min-content and one long venue
+        // widens both columns past the page.
+        gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
         gap: u(24), alignItems: s.mob ? 'start' : 'stretch',
       }}>
         {/* The panel stretches to the left column, the frame's `self-stretch`,

@@ -21,7 +21,7 @@ over, so do not renumber.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | F4 | Long venue name widens the gig cards on mobile | **Confirmed**: layout 1 (spaced name) and layout 2 (one long word) | S | no | open |
+| 1 | F4 | Long venue name widens the gig cards on mobile | **Confirmed**: layout 1 (spaced name) and layout 2 (one long word) | S | no | **done** |
 | 2 | F10 | An empty media player shows the hardcoded "Night Rain" | **Confirmed** | S | no | open |
 | 3 | F2 | Four fields edit nothing in layout 1 | **Confirmed**, and it is one case of a wider class | M | **yes** | open |
 | 4 | F9 | Enquiry form can lose every box, Email included | **Confirmed** | S | small | open |
@@ -112,7 +112,36 @@ width everywhere. The seeded picture must not move: diff with `scripts/digest.mj
 
 **Docs.** None expected, unless the L1 cause turns out to be a shared helper.
 
-**Settled.** —
+**Settled.** 2026-09-17.
+- **Harness.** `preview.jsx` takes `&cj=<url-encoded JSON>`, applied *last* with
+  `Object.assign(c, …)`, so it overrides `&n=` and the other named keys. Rows it supplies are whole
+  rows.
+- **The re-run was wider than the triage table.** With the long venue on gigs 1 and 2 (one
+  featured, one in the list), layout 2 overflowed with *spaced* names too (462 / 517 at 390), and
+  also at 768 (981 with the one word; Lime 783 with 41 spaced characters). A one-word **city**
+  (`Llanfairpwll…`, 39 characters) broke both layouts as well. Lime's layout 1 was already
+  clean.
+- **L1 cause: the grid, not a flex cell.** The tile/list grid was `1fr` / `1fr 1.15fr`, which is
+  `minmax(auto, …)`, so each track floored at its content's min-content, and that was the
+  venue's whole nowrap string. It is now `minmax(0, 1fr)` / `minmax(0, 1fr) minmax(0, 1.15fr)`,
+  the same columns Lime's layout-1 block already had. The row's own ellipsis now engages. The
+  city · time line gained `overflowWrap: 'anywhere'`.
+- **L2, Retro/flat and Lime alike:** the same grid cause (`1fr` / `1fr 1fr`, now `minmax(0, …)`),
+  plus `overflowWrap: 'anywhere'` on the featured `<h3>` venue, its city line and the travel card's
+  Venue-location city. Retro's row city line wraps (`anywhere`). Lime's is `nowrap` by design, so
+  it took `overflow: hidden` + ellipsis instead, matching the venue above it.
+- **L3 / L4** needed nothing: 390 / 768 held for every case in Retro, Lime and Grunge.
+- **Verified:** `scrollWidth` equals the width for seed, 35 and 41 spaced characters, a 39-character
+  word and a 39-character city × layouts 1–4 × themes 0, 1, 2 × 390, 768, on the canvas and with
+  `live=1`. The `map` digest for themes 0 and 1 (canvas and `live=1`, all three widths) is
+  **byte-identical**. Theme 2 (Grunge) moves in **layout 2 at 768 and 390 only**, and that is the
+  fix taking effect on the seed. Courier Prime is wide enough that the seeded rows already overflowed
+  (a 364px left column in a 346px measure at 390, and 376 + 376 columns at 768 instead of equal
+  halves). Now "The Deaf Institute" ellipsises and the columns are equal. The end-of-pass sweep
+  should expect that diff.
+- **Trap:** an `Edit` whose `old_string` ended in `· ` came back with the trailing space
+  dropped (`{gg.city} ·<span…`). The digest caught it as a 4px shift. Diff the digest before
+  trusting an edit to a JSX text run.
 
 ---
 
@@ -444,9 +473,17 @@ drop. Check that the error sits next to the control, and that a following valid 
 - `npm run build` and `npm run build:standalone`, then `cp source/dist-standalone/index.html
   index.html` and commit it separately ("Refresh index.html for the Retro QA fixes").
 - Digest themes `0,1,2` before and after the whole branch. The only moved files should be the
-  ones entries F4 (overflow cases only, not seeds), F10 (not seeds) and F2 (option C only) name.
+  ones entries F4 (overflow cases, plus Grunge's seeded `map` layout 2 at 768 / 390, see its
+  *Settled*), F10 (not seeds) and F2 (option C only) name.
 - Update `plans/README.md`'s Retro table row for this plan.
 
 ## Conventions learned on this pass
 
 *(Filled in as sessions settle things.)*
+
+- **A grid track that holds user text is `minmax(0, 1fr)`, not `1fr`** (F4). A bare `fr` floors at
+  min-content, so a descendant's `nowrap` + ellipsis never engages and the page widens instead.
+  Lime's blocks mostly write it already; Retro's older `v0` / `v1` branches do not.
+- **Seed a harness case with `&cj=`** (F4): `encodeURIComponent(JSON.stringify({ gigs: [...] }))`.
+  Keep the case script in the scratchpad, drive it with puppeteer-core plus
+  `scripts/headless-shell.mjs`, and measure `document.documentElement.scrollWidth`.

@@ -199,6 +199,13 @@ if (q.get('promises') !== null) c.promises = q.get('promises').split('|').join('
 // Neither seeded theme shows that empty state any other way.
 if (q.get('noimage') === '1') c.image = null
 
+// &cj=<url-encoded JSON> merges an object into `c`, last, so it wins over every
+// key above. It is how arbitrary content is seen without a named parameter for
+// each — a 40-character venue is `&cj=` + encodeURIComponent(JSON.stringify(
+// { gigs: [{ venue: '…', city: 'Leeds' }] })). Rows it supplies are whole rows:
+// nothing is merged into the seeded ones.
+if (q.get('cj')) Object.assign(c, JSON.parse(q.get('cj')))
+
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
 // driving the editor and its popup.
