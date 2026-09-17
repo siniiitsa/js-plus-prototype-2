@@ -112,7 +112,8 @@ const THEME_RAMP = {
 // frame was drawn at — see PublishedPage, the one place that sets a surplus.
 //
 // `surplus` is half the width past `canvasW`, and it is zero everywhere else:
-// the editor caps its canvas at canvasW and the preview thumbnails render at a
+// the editor caps its canvas at canvasW (and draws tablet in a window no wider
+// than 1180 — see useTabletCap) and the preview thumbnails render at a
 // hard 1180, so both are already exactly at their frame.
 // `heroH` is the height HeaderV0's aspectRatio yields *at* canvasW — 390×844/390,
 // 768×4/3, 1180×8.33/16. It is the one section outside the root's padding, so a
@@ -129,19 +130,26 @@ for (const k of Object.keys(SIZES)) Object.assign(SIZES[k], RAMP[k], RAMP_REST[k
  * §5.5 Axis A — builder chrome breakpoint
  * ------------------------------------------------------------------ */
 
-function useIsMobile() {
+function useMedia(query) {
   const [m, setM] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 820px)').matches,
+    () => typeof window !== 'undefined' && window.matchMedia(query).matches,
   )
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 820px)')
+    const mq = window.matchMedia(query)
     const on = (e) => setM(e.matches)
     mq.addEventListener('change', on)
     setM(mq.matches)
     return () => mq.removeEventListener('change', on)
-  }, [])
+  }, [query])
   return m
 }
+
+const useIsMobile = () => useMedia('(max-width: 820px)')
+// A window no wider than iPad Air landscape leaves the canvas well short of the
+// desktop frame's 1180 once the sidebar takes its share, and the desktop
+// composition squeezed that far breaks. Such a window previews tablet at most,
+// as the published tab already does below 1180 (user call, 2026-09-17).
+const useTabletCap = () => useMedia('(max-width: 1180px)')
 
 /* ------------------------------------------------------------------ *
  * Helpers
@@ -3600,6 +3608,7 @@ function dressPublishedWindow(win, artistName, pageBg) {
 export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', startTheme = 'Picker' }) {
   const uidRef = useRef(100)
   const isMobile = useIsMobile()
+  const tabletCap = useTabletCap()
 
   const buildPage = useCallback((defs) =>
     defs.map(([cat, arch]) => ({ id: ++uidRef.current, cat, arch, c: {} })), [])
@@ -3684,7 +3693,10 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const present = sections.map((s) => s.cat)
 
   // §5.5 — a real phone forces mobile canvas sizing at full width.
-  const Z = isMobile ? { ...SIZES.mobile, canvasW: '100%' } : SIZES[st.device]
+  // The device the canvas actually draws: the toggle, capped at tablet in a
+  // window too narrow for the desktop frame.
+  const device = tabletCap && st.device === 'desktop' ? 'tablet' : st.device
+  const Z = isMobile ? { ...SIZES.mobile, canvasW: '100%' } : SIZES[device]
 
   // §4.8 — nav links follow the optional sections currently on the page, and
   // carry the category as the anchor the published page scrolls to (§4.3a).
@@ -3847,7 +3859,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || st.device === 'mobile', navSections, column: inColumns.get(i) }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i) }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
@@ -4222,7 +4234,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
             <span style={{ flex: 1 }} />
 
-            <Tabs value={st.device} onValueChange={(v) => patch({ device: v })}>
+            <Tabs value={device} onValueChange={(v) => patch({ device: v })}>
               <TabsList
                 className="h-auto p-[3px] gap-[2px] rounded-[9px]"
                 style={{ background: '#F1EFEA' }}
@@ -4230,9 +4242,10 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               >
                 {[['desktop', 'Desktop'], ['tablet', 'Tablet'], ['mobile', 'Mobile']].map(([v, l]) => (
                   <TabsTrigger
-                    key={v} value={v}
+                    key={v} value={v} disabled={tabletCap && v === 'desktop'}
+                    title={tabletCap && v === 'desktop' ? 'Widen the window past 1180px to preview desktop' : undefined}
                     className="rounded-[7px] border-0 data-[state=active]:bg-[#1B1A17] data-[state=active]:text-white data-[state=active]:shadow-none"
-                    style={{ fontSize: '12px', fontWeight: 600, padding: '5px 12px', color: st.device === v ? '#FFFFFF' : '#5B5850', transition: 'background .15s' }}
+                    style={{ fontSize: '12px', fontWeight: 600, padding: '5px 12px', color: device === v ? '#FFFFFF' : '#5B5850', transition: 'background .15s' }}
                   >{l}</TabsTrigger>
                 ))}
               </TabsList>

@@ -110,6 +110,10 @@ mutated through a single `patch()` helper.
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
+- **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
+  (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
+  the desktop composition squeezed beside the sidebar breaks; at most 820 the phone chrome
+  forces mobile, as before. Read `device`, never `st.device`, for anything drawn.
 - **`st.removed` is `{ [cat]: { arch, c } }`, the last deleted section of each category**, so
   re-adding a category restores its content (data-URI uploads and all) and the add composer
   opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts out. Its keys
