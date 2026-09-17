@@ -240,6 +240,8 @@ That distinction is the whole design, and it buys two things:
   **The header's navigation.** Every section is given a DOM id — its category, which is unique per
   page — so the nav links, *Book Now* and *Listen* all scroll to the section they name, and the
   *Minimal* triple resolves Music / Shows / Book to the nearest section the page actually carries.
+  A label with no such section stays on the canvas, is named in a hint above the Navigation links select,
+  and is left out of the published nav, the footer's rule.
   Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
   before, layout 1's glyph opened nothing and layouts 2–6 dropped their links outright, so a
   published phone had no navigation at all. The panel is deliberately thin — no Escape key, no
@@ -469,10 +471,13 @@ That distinction is the whole design, and it buys two things:
   are `FOOTER_TARGETS`, every category a page *can* carry rather than the ones this one does: a
   Radix `Select` whose value names no item blanks its trigger, so a link to a section since
   deleted must still read as what it points at, and a link can be aimed at a section not yet
-  added. Resolving the target against the actual page is `sectionVm`'s job, and §4.3a had already
-  written down what happens when it fails — the label keeps its place in the design and simply
-  does not link. That is also the whole of the footer on a blank page, exactly as the header's
-  nav is empty there.
+  added. Resolving the target against the actual page is `sectionVm`'s job. When a row's section
+  is not on the page, the canvas keeps the label and the editor marks the row "Section not on the
+  page", while the published footer leaves the row out, because a visitor gains nothing from a
+  word that goes nowhere. A plain-label row (target *Nothing*) and a web-address row with a
+  refused address still render. On a blank page the published footer is the Book pill alone,
+  just as the header's nav is empty there. The columns are halved from the list that actually
+  renders.
 
   The two columns are derived rather than stored. The frames draw four and four, so the list is
   halved with the remainder in column one — the pricing deck's odd-count rule, and column one is

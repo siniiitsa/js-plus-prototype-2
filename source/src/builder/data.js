@@ -176,8 +176,10 @@ export const catName = (id) => catById(id)?.name ?? id
  * The header's other two controls point at a section too, and so does
  * the fixed Music / Shows / Book triple, which names no category at
  * all. Each is a preference list resolved against the page: the first
- * candidate actually on it wins, and a label whose every candidate is
- * missing keeps its place in the design and simply does not link.
+ * candidate actually on it wins. A pill whose every candidate is missing
+ * keeps its place in the design and simply does not link. A *label* with
+ * nothing to point at — a Minimal nav word, a footer row — is kept on the
+ * canvas and left off the published page, where it would be a dead word.
  * ------------------------------------------------------------------ */
 
 export const NAV_MINIMAL = [
@@ -541,9 +543,10 @@ export const FORM_MESSAGE = 'Tell me about your event…'
 // QUOTES rule, so its seed resolver is a one-liner and needs no dressing. `to`
 // is a section id (§4.3a), 'link' for a web address in the row's own `url`, or
 // 'none'. The eight targets are the categories EXAMPLE_PAGE carries, so the
-// seeded page publishes fully linked; on BLANK_PAGE every one of them resolves
-// to nothing and the column is the picture it has always been, exactly as the
-// header's nav is empty there.
+// seeded page publishes fully linked. On BLANK_PAGE every one of them resolves
+// to nothing: the canvas still draws the eight labels, and the published footer
+// drops all of them and keeps the Book pill alone, just as the header's nav is
+// empty there.
 //
 // A flat list, not two columns: sectionVm does the halving, or a repeater row
 // would have to carry which column it stands in.
@@ -565,8 +568,8 @@ export const FOOTER_LINKS = [
 // Select whose value names no item blanks its trigger, so a row pointing at a
 // section the artist has since deleted must still read as what it points at,
 // and a link can be aimed at a section that has not been added yet. Resolving
-// it against the actual page is sectionVm's job — §4.3a, "a label whose every
-// candidate is missing keeps its place in the design and simply does not link".
+// it against the actual page is sectionVm's job (§4.3a): the canvas keeps such
+// a row, and the published footer leaves it out.
 //
 // 'none' and 'link' are non-empty sentinels because Radix refuses a SelectItem
 // with an empty value; no category is named either of them.

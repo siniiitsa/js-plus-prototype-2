@@ -362,8 +362,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // rule was about a horizontal bar, which cannot carry "Booking Calendar" and
   // "Enquiry Form" at 390px — the burger panel is a column and has the room, so
   // mobile now shows the artist's own sections like every other width.
+  //
+  // Minimal's Music / Shows / Book name no category, so one can resolve to
+  // nothing. The footer's rule applies (§4.3a): the canvas keeps the label and
+  // the published page leaves it out, before navEms below measures the row.
   vm.navLinks = vm.navMode === 'minimal'
-    ? minimalNav(navSections)
+    ? minimalNav(navSections).filter((l) => !live || l.to)
     : navSections.map((n) => ({ label: n.label, to: n.cat }))
   // How wide Lime's one row of nav links wants to be, in ems of its own type:
   // every label in Bebas Neue plus the frame's 23/24 gap between each, with 1%
@@ -1180,21 +1184,32 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // renderer (the gigs' rule); anything else is a section id, resolved against
   // the page the way firstPresent resolves the header's. A target the page does
   // not carry — a section deleted after the link was written, or the whole of
-  // BLANK_PAGE — resolves to undefined rather than to a dead fragment, and §4.3a
-  // has already said what happens then: the label keeps its place in the design
-  // and simply does not link.
+  // BLANK_PAGE — resolves to undefined rather than to a dead fragment.
+  //
+  // What happens then depends on the surface (§4.3a). The canvas keeps the row,
+  // so the artist still sees the label they wrote and LinksField can say why it
+  // goes nowhere. The published page leaves it out: a visitor gains nothing
+  // from a word that does not link, which is the gallery's hide-the-empty-row
+  // rule. Only a *missing section* is dropped. A 'none' row is a plain label the
+  // artist chose, and a 'link' row whose address extUrl refuses stays a
+  // picture, the Soundcloud rule, with UrlInput already saying why.
   const linkRows = Array.isArray(c.links) ? c.links : FOOTER_LINKS
-  vm.footerLinks = linkRows.map((r) => {
-    const to = String(r?.to ?? '').trim()
-    return {
+  vm.footerLinks = linkRows.flatMap((r) => {
+    // No target reads as 'none', which is what LinksField's select shows for it.
+    const to = String(r?.to ?? '').trim() || 'none'
+    const onPage = navSections.some((n) => n.cat === to)
+    if (live && !onPage && to !== 'link' && to !== 'none') return []
+    return [{
       label: cased(String(r?.label ?? '').trim()),
-      to: to !== 'link' && navSections.some((n) => n.cat === to) ? to : undefined,
+      to: to !== 'link' && onPage ? to : undefined,
       url: to === 'link' ? extUrl(r?.url) : '',
-    }
+    }]
   })
-  // The frames draw four and four, so the columns are the list halved with the
-  // remainder in the first — the pricing deck's odd-count rule, and the first is
-  // the column the Book pill stands in, so it is the one that should run long.
+  // The frames draw four and four, so the columns are the rendered list halved
+  // with the remainder in the first. It runs after the drop above, or a deleted
+  // section would leave the published columns lopsided. That is the pricing
+  // deck's odd-count rule, and the first is the column the Book pill stands in,
+  // so it is the one that should run long.
   // An empty second column is dropped rather than rendered as a nav with no
   // children: `links` is a flex row and an empty child still spends its gap. The
   // first is kept at any count, the pill being what it is there for.
@@ -2568,8 +2583,17 @@ function QuotesField({ value, max, onChange }) {
  * form's is, because sectionVm halves this list into the two columns.
  * ------------------------------------------------------------------- */
 
-function LinksField({ value, max, onChange }) {
+// Under a footer row's select, and above the header's nav select in Minimal,
+// when the target is not on the page. The canvas still draws the label; the published page does not.
+const LINK_GONE_HINT = 'Section not on the page — left off the published footer.'
+const navGoneHint = (labels) =>
+  `${labels.join(', ')}: section not on the page — left off the published nav.`
+
+function LinksField({ value, max, navSections = [], onChange }) {
   const list = Array.isArray(value) ? value : []
+  // A section target the page does not carry. sectionVm resolves the same test,
+  // and the published footer leaves the row out, so the editor says so here.
+  const gone = (to) => !!to && to !== 'none' && to !== 'link' && !navSections.some((n) => n.cat === to)
 
   const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
@@ -2608,7 +2632,9 @@ function LinksField({ value, max, onChange }) {
         {/* FOOTER_TARGETS is every category the page *can* carry, not the ones
             it does: a value naming no item blanks a Radix trigger, so a link to
             a section since deleted must still read as what it points at. The
-            canvas resolves it against the page instead (§4.3a). */}
+            view-model resolves it against the page instead (§4.3a): the canvas
+            keeps such a row, the published footer drops it, and the line under
+            the select is how the artist finds out. */}
         <Select value={r.to ?? 'none'} onValueChange={(v) => setAt(i, 'to', v)}>
           <SelectTrigger
             onClick={stopE} className="w-full h-auto"
@@ -2618,6 +2644,11 @@ function LinksField({ value, max, onChange }) {
             {FOOTER_TARGETS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
           </SelectContent>
         </Select>
+        {gone(r.to) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+            {LINK_GONE_HINT}
+          </p>
+        )}
         {r.to === 'link' && (
           <UrlInput
             value={r.url ?? ''} placeholder="instagram.com/kaimercer"
@@ -2710,6 +2741,12 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   const bookedVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : CAL_BOOKED)
   const openVal = (k) => parseDate(sec.c[k] ?? CAL_OPEN) ?? parseDate(CAL_OPEN)
 
+  // Minimal's labels that resolve to nothing on this page (§4.3a), for the hint
+  // above the header's navigation select. Only a header reads it.
+  const deadNav = sec.cat === 'header'
+    ? minimalNav(navSections).filter((l) => !l.to).map((l) => l.label)
+    : []
+
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
   return (
@@ -2762,6 +2799,9 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                       {f.hint && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{f.hint}</p>
                       )}
+                      {deadNav.length > 0 && f.k === 'navMode' && val === 'minimal' && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{navGoneHint(deadNav)}</p>
+                      )}
                       {f.type === 'image' ? (
                         <ImageField value={imgVal(f.k)} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'images' ? (
@@ -2779,7 +2819,7 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                       ) : f.type === 'quotes' ? (
                         <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'links' ? (
-                        <LinksField value={linksVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <LinksField value={linksVal(f.k)} max={f.max} navSections={navSections} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month
@@ -3392,11 +3432,10 @@ function dressPublishedWindow(win, artistName, pageBg) {
   // the click would be a cross-document navigation and the published tab would
   // load the builder. Every fragment is therefore swallowed, exactly as before,
   // and the scroll is done by hand against this document's own ids. Sections
-  // carry theirs from `vm.anchor` (§4.3a), gated on `live`, so a link that names
-  // nothing on the page — a footer link, or a Minimal label, whose target
-  // section has been deleted — simply does nothing. It carries no href at all
-  // by then, sectionVm having resolved the target against the page, so it never
-  // even reaches this listener; the swallow is what catches the rest.
+  // carry theirs from `vm.anchor` (§4.3a), gated on `live`. A footer link or a
+  // Minimal label whose target section has been deleted is not rendered here at
+  // all, sectionVm having dropped it, and a pill with no target carries no href,
+  // so neither reaches this listener; the swallow is what catches the rest.
   doc.addEventListener('click', (e) => {
     const a = e.target.closest?.('a')
     const href = a ? a.getAttribute('href') || '' : ''

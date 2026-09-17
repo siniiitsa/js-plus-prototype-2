@@ -684,10 +684,18 @@ mutated through a single `patch()` helper.
   `FOOTER_TARGETS` lists **every category the page can carry, not the ones it does**: a Radix
   `Select` whose value names no item blanks its trigger, so a link to a section since deleted
   must still read as what it points at, and one can be aimed at a section not added yet.
-  Resolving it against the page is `sectionVm`'s job, and §4.3a already says what happens when
-  it fails — the label keeps its place in the design and simply does not link, which is also
-  the whole of `BLANK_PAGE`'s footer. The two columns are **derived**, not stored: the frames
-  draw four and four, so the list is halved with the remainder in **column one** — the pricing
+  Resolving it against the page is `sectionVm`'s job. When a section target fails (§4.3a, F25),
+  the **canvas keeps the row** and `LinksField` prints "Section not on the page" under its
+  select, but the **published footer drops it** — the gallery's hide-the-empty-row rule, since a
+  visitor gains nothing from a dead word. Only a missing section is dropped: a `none` row is a
+  label the artist chose, and a `link` row whose address `extUrl()` refuses stays a picture (the
+  Soundcloud rule, with `UrlInput` saying why). `BLANK_PAGE`'s published footer is therefore the
+  Book pill alone, a span with nothing to book at, where its canvas still draws all eight labels.
+  The header's **Minimal** nav follows the same rule: a Music / Shows / Book label with no
+  candidate on the page is kept on the canvas, named in a hint above the Navigation links
+  select, and left out of the published nav (`vm.navLinks`, filtered before `navEms` measures
+  it). The two columns are **derived**, not stored, and derived from the **rendered** list, after
+  that drop, or the published columns would go lopsided. The frames draw four and four, so the list is halved with the remainder in **column one** — the pricing
   deck's odd-count rule, and column one is the one the pill stands in, so it is the one that
   should run long — and an empty second column is dropped rather than rendered as a `nav` with
   no children, because `links` is a flex row and an empty child still spends its gap. The pill

@@ -26,7 +26,7 @@ over, so do not renumber.
 | 3 | F2 | Four fields edit nothing in layout 1 | **Confirmed**, and it is one case of a wider class | M | **yes** | **done** (A) |
 | 4 | F9 | Enquiry form can lose every box, Email included | **Confirmed** | S | small | **done** (block and explain) |
 | 5 | F18 | Link fields don't validate (`not a url`, `javascript:`) | **Confirmed** | M | small | **done** (drop `//host` and `localhost`) |
-| 6 | F25 | Footer link to a deleted section stays as a dead label | **Confirmed**: currently *documented as intended* | S | **yes** | open |
+| 6 | F25 | Footer link to a deleted section stays as a dead label | **Confirmed**: currently *documented as intended* | S | **yes** | **done** (A) |
 | 7 | F24 | Delete has no confirm or Undo, and re-adding resets the content | **Confirmed** | M | **yes** | open |
 | 8 | F20 | Published calendar lets a visitor pick a past date | **Confirmed**: collides with a documented rule | M | **yes** | open |
 | 9 | F15 | Photo over ~4 MB is ignored silently | **Not reproduced as stated**: see entry | S | **yes** | open |
@@ -487,7 +487,59 @@ empties.
 `BLANK_PAGE`'s footer"). Decide what `BLANK_PAGE` shows once dead rows are dropped: probably the
 pill alone.
 
-**Decision.** —  **Settled.** —
+**Decision.** 2026-09-17: **A**. The published footer drops a row whose section is not on the
+page. The canvas keeps the row, and `LinksField` marks it "Section not on the page". The columns
+are halved from the rendered list.
+
+**Settled.** 2026-09-17.
+- **`sectionVm`** builds `vm.footerLinks` with `flatMap`. When `live`, a row whose `to` is a
+  section id not in `navSections` is dropped. The canvas keeps it (its `to` is `undefined`, as
+  before). `footHalf` runs on the result, so the published columns are halved from what renders,
+  and the existing "drop an empty column two" rule then applies to the rendered list.
+- **Only a missing section is dropped.** A `none` row is a plain label the artist chose, and it
+  stays. So does a `link` row whose address `extUrl` refuses, which is F18's no-link state and
+  already has `UrlInput`'s message. An empty or absent `to` now reads as `none`, which is what
+  the select shows for it.
+- **Minimal nav: handled the same way.** `vm.navLinks` drops a Music / Shows / Book label with
+  no candidate when `live`. The filter runs before `navEms` measures the row. A Lime page with a
+  dropped label was not rendered, since the run was Retro and the harness cannot shrink
+  `navSections`. The canvas keeps the label. `EditPanel` prints
+  "Music, Shows: section not on the page — left off the published nav." above the header's
+  Navigation links select, and only while Minimal is selected. The header's *Book Now* /
+  *Listen* pills are unchanged: a pill with no target stays a span. §4.3a in `data.js` now
+  says that pills keep their place and labels are dropped.
+- **Editor mark.** `LinksField` takes `navSections` and prints `LINK_GONE_HINT` ("Section not on
+  the page — left off the published footer.") under a row's select, in the panel's hint style.
+  The mark lives in the editor, not in `EncoreSection`: the canvas is a picture of the site, so
+  it draws the label unmarked.
+- **`BLANK_PAGE`'s published footer is the Book pill alone**, and the pill is a span because
+  nothing on the page takes a booking. Column two is dropped, and the header's nav is empty.
+  The canvas still draws all eight labels.
+- **Harness.** `preview.jsx`'s `navSections` is now `EXAMPLE_PAGE` minus the header and footer.
+  It used to be a hand list of six, which left `gallery`, `repertoire`, `map` and
+  `testimonials` off the page. Four of the eight `FOOTER_LINKS` rows point at those four, so the
+  harness's `live=1` footer would have lost half its rows, a footer no seeded page publishes.
+  **The harness header now draws nine nav links, not five**, on both surfaces. The before and
+  after digests were both taken with the new list.
+- **Digest** (all categories, themes 0, 1, 2, three widths): the canvas, `live=1`, and `live=1`
+  with `navMode: minimal` on the header are all **byte-identical**. The seed deletes nothing:
+  `FOOTER_LINKS` points at `bio`, `media`, `gallery`, `repertoire`, `map`, `pricing`, `form`
+  and `testimonials`, which are all on `EXAMPLE_PAGE`.
+- **Verified in the editor** (puppeteer, 1600, Retro, published tab at 1440 / 768 / 390). On the
+  seed the published columns are 4 | 4, and all links go to their sections. **After deleting
+  `media`**, the canvas is still 4 | 4 and the *Top Tracks* row carries the mark. The published
+  footer is 4 | 3 (*About, Media, Repertoire, Shows/Coverage* | *Pricing, Enquiries, Reviews*),
+  and the header nav loses Media Player. **With `testimonials` the only target left**, the
+  published footer is one column (*Reviews* plus *Book Now* → `#calendar`). Minimal at 1440
+  reads *Shows, Book, Book Now*, and the panel names Music. **With `calendar` and
+  `testimonials` gone too**, the published footer has no links (the pill is a span), the
+  header nav is empty, and the hint names all three labels. No page errors, and `scrollWidth`
+  equals the width throughout. **Harness** (`&cj=` with gone, `none`, bad-`link`, good-`link`
+  and target-less rows; themes 0, 1, 2 × three widths × both surfaces): 54/54 fit, and there
+  are no page errors.
+- **Docs:** the `sectionVm` footer and nav comments, `data.js` §4.3a, `FOOTER_LINKS` and
+  `FOOTER_TARGETS`, `LinksField`'s select comment, the published-tab listener comment,
+  CLAUDE.md's footer paragraph, and README's footer and header-nav paragraphs.
 
 ---
 
@@ -649,3 +701,7 @@ drop. Check that the error sits next to the control, and that a following valid 
 - **An address field is a `UrlInput`** (F18): `type: 'url'` in `FIELDS`, or the component
   itself in a repeater. Its rule is `urlProblem()`, and `extUrl()` returns `''` for anything that
   rule refuses. A new outbound seam reads `extUrl()`, and its editor input uses `UrlInput`.
+- **A label with nothing to point at is dropped from the published page and kept on the canvas**
+  (F25). The editor names it: the canvas stays unmarked, because it is a picture of the site.
+  Pills are different: one with no target stays a span. The drop happens in `sectionVm` under
+  `live`, before anything is measured or halved from the list.
