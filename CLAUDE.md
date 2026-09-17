@@ -110,6 +110,12 @@ mutated through a single `patch()` helper.
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
+- **The artist's name is the header's `c.title`.** The `artistName` prop only seeds it: the
+  builder derives `artistName` from the header section (trimmed, falling back to the prop when
+  empty) and passes *that* everywhere — nav brand, initials placeholders, bylines, badge,
+  `copyrightOf()`, the published tab's `<title>` (reset on every republish, not only when the tab
+  is first opened) and the dialog's site address. Header `badgeText` and footer `copyright` have
+  no static default for that reason; `EditPanel` special-cases them beside `title`.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when

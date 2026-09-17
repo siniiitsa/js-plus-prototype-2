@@ -47,7 +47,7 @@ import {
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
-  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
+  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, copyrightOf, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -150,6 +150,11 @@ function useIsMobile() {
 // The editor root closes menus on any bubbled click, so virtually every
 // interactive handler and every modal panel isolates its events (§5.6).
 const stopE = (e) => e.stopPropagation()
+
+// The site address the publish dialog shows, off the artist's name. Letters in
+// any script survive (an IDN host is legal); an unnamed page gets a stand-in.
+const siteSlug = (name) =>
+  String(name).normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '') || 'my-page'
 
 const initialsOf = (name) =>
   String(name).trim().split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase()
@@ -1151,7 +1156,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.formCheck = ({ vals }) => formErrors(vm.formFields, vals)
 
   // footer
-  vm.copyright = cv('copyright', DEFS.copyright)
+  vm.copyright = cv('copyright', copyrightOf(artistName))
   // The §10.2 footer frames break this line by hand after "make" and let the
   // measure fold the rest — that is what sets the three-line block the left
   // column is built round, and it does not fall out of the measure alone in a
@@ -2667,7 +2672,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                   // down: the header's title is the artist's name, and the
                   // repertoire's heading counts the songs — both mirroring what
                   // sectionVm resolves, so panel and canvas never disagree.
-                  const fallback = f.k === 'title' && sec.cat === 'header' ? artistName
+                  const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
+                    : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
@@ -3338,7 +3344,7 @@ function dressPublishedWindow(win, artistName, pageBg) {
  * §5–§9 The builder
  * ------------------------------------------------------------------ */
 
-export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 'Picker' }) {
+export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', startTheme = 'Picker' }) {
   const uidRef = useRef(100)
   const isMobile = useIsMobile()
 
@@ -3381,6 +3387,13 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   const T = THEMES[st.theme]
   const sections = st.sections
+
+  // The artist's name is the header's Title: the prop only seeds it. Every
+  // other reading — the nav brand, the initials placeholders, the bio and
+  // player bylines, the badge, the small print, the published tab's <title>
+  // and the site address — follows what the artist typed there. An emptied
+  // Title blanks the hero alone; everything else falls back to the seed.
+  const artistName = String(sections.find((s) => s.cat === 'header')?.c.title ?? '').trim() || profileName
   const present = sections.map((s) => s.cat)
 
   // §5.5 — a real phone forces mobile canvas sizing at full width.
@@ -3421,6 +3434,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       win.addEventListener('pagehide', closePublished)
     } else {
       win.document.documentElement.style.background = THEMES[st.theme].palette[0]
+      win.document.title = artistName
     }
 
     // Publishing again re-renders the tab that is already open rather than
@@ -3779,7 +3793,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             background: '#F4F2ED', border: '1px solid #E7E4DC',
             fontSize: '13px', fontWeight: 600, color: '#3A382F',
             fontFamily: "'Courier Prime', monospace", overflowWrap: 'anywhere',
-          }}>kaimercer.encore.site</div>
+          }}>{siteSlug(artistName)}.encore.site</div>
         </div>
 
         <div style={{

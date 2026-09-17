@@ -616,7 +616,6 @@ export const DEFS = {
   // as the seed so the reference picture holds. Emptying it drops the line.
   testiSub:   'Real words from couples, planners and venues across the North West.',
   formPara:   'Tell me about the night — date, venue, crowd. Replies within 24 hours.',
-  copyright:  'C 2026 Kai Mercer',
 }
 
 // §10.2 scheduler — the date the calendar is cued to, and the time its enquiry
@@ -812,14 +811,14 @@ export const FIELDS = {
     { k: 'avatar',    l: 'Artist photo',     type: 'image',
       hint: 'The portrait card and the small round avatar.' },
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act' },
-    { k: 'title',     l: 'Title' },                       // defaults to artistName — special-cased
+    { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub' },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     { k: 'cta2',      l: 'Secondary button', d: 'Listen' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE },
-    { k: 'badgeText', l: 'Badge text',       d: 'Kai Mercer' },
+    { k: 'badgeText', l: 'Badge text' },                  // defaults to the artist's name — special-cased
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Shows · Book)' },
@@ -1089,7 +1088,7 @@ export const FIELDS = {
     // section's own content, so the footer's seal was hidable by nothing only
     // because no field here named it.
     { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
-    { k: 'copyright', l: 'Small print', def: 'copyright' },
+    { k: 'copyright', l: 'Small print' },                 // defaults to copyrightOf(name) — special-cased
   ],
 }
 
@@ -1131,6 +1130,9 @@ export function caseText(t, casing) {
   if (casing === 'upper') return String(t).toUpperCase()
   return t
 }
+
+// The footer's small print, off the artist's name. sectionVm and EditPanel both read it.
+export const copyrightOf = (name) => `C 2026 ${name}`
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
 
