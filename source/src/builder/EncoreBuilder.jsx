@@ -2183,10 +2183,22 @@ function TiersField({ value, max, onChange }) {
  * Modelled on GigsField above, the plainest of them. Deliberately not
  * reorderable, like the rest — but order matters more here than anywhere else,
  * because it is the order the boxes appear in, two to a row.
+ *
+ * One row is guarded: the **last `email` row** can be neither removed nor
+ * retyped, since it is the only box a reply can be addressed to. Its trash
+ * button is disabled and its select disables the other kinds rather than
+ * dropping them (a Radix value naming no item blanks the trigger), and a hint
+ * under the row says why. Nothing else is guarded — an emptied list renders in
+ * every layout — but the seed carries an email row and a new row is `text`, so
+ * the editor never reaches a list without one.
  * ------------------------------------------------------------------- */
+
+const FORM_EMAIL_HINT = 'Visitors need somewhere to leave an address.'
 
 function FormFieldsField({ value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
+  const emails = list.filter((f) => f?.kind === 'email').length
+  const lastEmail = (f) => f.kind === 'email' && emails === 1
 
   const setAt = (i, k, v) => onChange(list.map((f, j) => (j === i ? { ...f, [k]: v } : f)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
@@ -2209,12 +2221,14 @@ function FormFieldsField({ value, max, onChange }) {
         />
         <button
           type="button" aria-label={`Remove field ${i + 1}`}
+          disabled={lastEmail(f)} title={lastEmail(f) ? FORM_EMAIL_HINT : undefined}
           onClick={(e) => { stopE(e); removeAt(i) }}
-          className="hover:bg-destructive/10"
+          className="hover:bg-destructive/10 disabled:bg-transparent"
           style={{
             width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
-            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            cursor: lastEmail(f) ? 'not-allowed' : 'pointer', opacity: lastEmail(f) ? 0.35 : 1,
+            display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
           }}
         ><X size={11} /></button>
@@ -2235,9 +2249,14 @@ function FormFieldsField({ value, max, onChange }) {
             style={{ ...SONG_ROW_INPUT, paddingRight: '28px' }}
           ><SelectValue /></SelectTrigger>
           <SelectContent onClick={stopE}>
-            {FORM_KINDS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+            {FORM_KINDS.map((o) => (
+              <SelectItem key={o.v} value={o.v} disabled={lastEmail(f) && o.v !== 'email'}>{o.l}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
+        {lastEmail(f) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{FORM_EMAIL_HINT}</p>
+        )}
       </div>
     </div>
   )

@@ -372,7 +372,9 @@ That distinction is the whole design, and it buys two things:
   of `{ label, placeholder, kind }`, the fifth repeater and the sixth structured editor, and the
   only one with a per-row select. `kind` is `text | email | number`, and it is what makes
   validation derivable rather than guessed: with a label and a placeholder alone there is no way
-  to know which box holds the address a reply goes to.
+  to know which box holds the address a reply goes to. For the same reason the last `email` row
+  cannot be removed or retyped in the editor: its trash button and its other kinds are disabled,
+  with a hint that says why.
 
   **The submit is a `mailto:`**, and `email` is what it is addressed to. There is no backend and
   never will be, so handing the enquiry to the visitor's own mail app is the one delivery that is

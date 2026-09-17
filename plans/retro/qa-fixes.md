@@ -24,7 +24,7 @@ over, so do not renumber.
 | 1 | F4 | Long venue name widens the gig cards on mobile | **Confirmed**: layout 1 (spaced name) and layout 2 (one long word) | S | no | **done** |
 | 2 | F10 | An empty media player shows the hardcoded "Night Rain" | **Confirmed** | S | no | **done** |
 | 3 | F2 | Four fields edit nothing in layout 1 | **Confirmed**, and it is one case of a wider class | M | **yes** | **done** (A) |
-| 4 | F9 | Enquiry form can lose every box, Email included | **Confirmed** | S | small | open |
+| 4 | F9 | Enquiry form can lose every box, Email included | **Confirmed** | S | small | **done** (block and explain) |
 | 5 | F18 | Link fields don't validate (`not a url`, `javascript:`) | **Confirmed** | M | small | open |
 | 6 | F25 | Footer link to a deleted section stays as a dead label | **Confirmed**: currently *documented as intended* | S | **yes** | open |
 | 7 | F24 | Delete has no confirm or Undo, and re-adding resets the content | **Confirmed** | M | **yes** | open |
@@ -337,7 +337,35 @@ form still submits (`getAttribute('href')` on the pill).
 **Docs.** CLAUDE.md's `FIELDS.form.fields` paragraph (the "load-bearing order" block) gets the
 invariant.
 
-**Decision.** —  **Settled.** —
+**Decision.** 2026-09-17: **block and explain** (the last `email` row cannot be deleted or
+retyped; the persistent warning was declined).
+
+**Settled.** 2026-09-17.
+- **The empty list is fine, so it stays allowed.** `&n=0` renders at layouts 1–4 × themes 0, 1,
+  2 × three widths, canvas and `live=1`, with no page error and `scrollWidth` equal to the
+  width. Layouts 1 and 4 keep the message box. Layouts 2 and 3 fall back to the price card and
+  its pill. Live, the pill is still a `mailto:` with an empty body. In practice the editor
+  cannot reach an empty list anyway: the seed has an email row and a new row is `text`.
+- **Guard.** `FormFieldsField` counts the `email` rows. A row is locked when it is `email` and
+  that count is 1 (`lastEmail(f)`). Its trash button is `disabled`, drawn at `.35` opacity with a
+  `not-allowed` cursor, and carries the reason as a `title`. Its `SelectItem`s for Text and Number
+  are `disabled`, so they stay in the list. Under the select, a hint line in the panel's hint
+  style reads `FORM_EMAIL_HINT` ("Visitors need somewhere to leave an address."). Because the
+  seed's Email row is locked, that hint is always visible on a fresh page. A second email row
+  unlocks both, and the lock moves to whichever one remains.
+- **Verified in the editor** (puppeteer, 1600 wide, Retro): repeated delete-all left only the
+  Email row, and a forced click on its disabled button did nothing. Its options read
+  `Text(disabled) · Email · Number(disabled)`, and picking Text kept Email. After *Add field*
+  and switching the new row to Email, both rows unlocked. Switching the original to Number
+  locked the new row, and the original could then be removed. No page errors. **Published tab:**
+  the form draws one `email` input plus the message, and the pill's `href` is
+  `mailto:bookings@kaimercer.co.uk?subject=Wedding%20enquiry&body=`. Once the boxes are filled,
+  the body carries `Detail: fan@example.com` (an empty label falls back to "Detail") and the
+  message. Submitting shows the "Check your mail app" confirmation.
+- **Digest** (`form`, themes 0, 1, 2, three widths; seed and `&n=0`, each on the canvas and
+  with `live=1`): **byte-identical**, as expected for a chrome-only change.
+- **Docs:** the `FormFieldsField` comment, CLAUDE.md's `c.fields` sentence (the invariant), and
+  README's form paragraph.
 
 ---
 
@@ -568,3 +596,6 @@ drop. Check that the error sits next to the control, and that a following valid 
 - **A field's reach is measured** (F2): render with and without a sentinel in `&cj=` and compare
   `#root.innerHTML` at three widths, on the canvas and with `live=1`. A field no design reads
   still keeps its copy, and its `in` says so.
+- **A guarded choice in a Radix `Select` disables items and keeps them** (F9). An item that
+  disappears can leave the value naming nothing, and the trigger then renders blank. To drive
+  the editor, click *Back to page list* first, because the editor opens on the header's panel.

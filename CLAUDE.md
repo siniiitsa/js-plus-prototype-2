@@ -726,7 +726,13 @@ mutated through a single `patch()` helper.
   spinners break the frame's 60px box, so it takes `inputMode` only — and a date stays a text box
   with the artist's placeholder, the native picker being unstylable onto mustard. Its order is
   load-bearing where the other repeaters' is merely entry order: it is the order the boxes appear
-  in, two to a row. `pricing`'s `c.tiers` is an array of
+  in, two to a row. It also carries the only **guarded row**: the last `email` row can be neither
+  removed nor retyped — its trash button is disabled and its select disables Text and Number
+  rather than dropping them (a Radix value naming no item blanks the trigger), under the hint
+  "Visitors need somewhere to leave an address." — so the editor never reaches a list without an
+  email row, since the seed carries one and a new row is `text`. Nothing else is guarded: an
+  emptied list renders in all four layouts, the published form still sending the bare body.
+  `pricing`'s `c.tiers` is an array of
   `{ name, price, tags, blurb, feats }`, maintained by `TiersField`, and it replaced a **flattened
   key set** (`t1n`/`t1p`/…, which reached two of the five things a card prints and could not add a
   fourth card) rather than a textarea. It carries the only rows with *two* delimited strings, and
