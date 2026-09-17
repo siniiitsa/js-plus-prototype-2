@@ -30,7 +30,7 @@ over, so do not renumber.
 | 7 | F24 | Delete has no confirm or Undo, and re-adding resets the content | **Confirmed** | M | **yes** | **done** (A) |
 | 8 | F20 | Published calendar lets a visitor pick a past date | **Confirmed**: collides with a documented rule | M | **yes** | **done** (A, opens on max(open, today)) |
 | 9 | F15 | Photo over ~4 MB is ignored silently | **Not reproduced as stated**: see entry | S | **yes** | **done** (three changes, 4 000 000 bytes) |
-| 10 | — | End-of-pass sweep | — | S | no | open |
+| 10 | — | End-of-pass sweep | — | S | yes (three) | **done** |
 
 **Why this order:** the self-contained render fixes come first (F4, F10), then the editor-side
 fixes. F18 goes before F25 because both touch how a footer row's target resolves. F24 goes before
@@ -312,7 +312,7 @@ key simply ignores it" gains "and the panel says so").
 
 > Every field can be deleted from the Enquiry Form, Email included, with no warning.
 
-**Verdict: confirmed.** `FormFieldsField.removeAt` (`EncoreBuilder.jsx:~2184`) filters with no
+**Verdict: confirmed.** `FormFieldsField.removeAt` (`EncoreBuilder.jsx:~2184`; `:~2360` at the sweep) filters with no
 guard, and the `kind` select can also turn the last `email` row into `text`. The published form
 then still sends (`enquiryMailto` needs only the artist's address), with an empty body or none,
 and the artist has no field that asks for a reply address. The mail client does supply the
@@ -374,7 +374,7 @@ retyped; the persistent warning was declined).
 > Link fields don't check the address: "not a url" publishes as `https://not a url`, and a
 > `javascript:` link publishes as a link that doesn't work.
 
-**Verdict: confirmed.** `extUrl()` (`data.js:~1146`) prefixes `https://` onto anything with no
+**Verdict: confirmed.** `extUrl()` (`data.js:~1146`; `:~1250` at the sweep) prefixes `https://` onto anything with no
 scheme, spaces included. Anything that looks like it *has* a scheme passes through untouched, and
 that includes `javascript:`, which React 19 then replaces with a throwing URL. The result is a
 link that does nothing and logs an error. It reaches every outbound seam: `soundcloud`,
@@ -551,7 +551,8 @@ are halved from the rendered list.
 **Verdict: confirmed.** `del` (`EncoreBuilder.jsx:~3490`) filters the section out of `st.sections`,
 and the content goes with it. `addSection` (`:~3500`) builds `{ c: {} }`. There are three call
 sites: the section's dropdown menu (`:~1488`), the edit panel's delete (`:~2763`) and the mobile
-list's trash icon (`:~4025`).
+list's trash icon (`:~4025`). At the sweep these sit at `:~3783`, `:~3809`, `:~1538`, `:~2989` and
+`:~4338`.
 
 **Decision needed.** Options:
 - **A. Undo toast + remembered content (recommended).** Delete stays one click. The toast
@@ -892,6 +893,72 @@ is not.
   can pick. Decide whether the picker should follow the same rule, or whether the `open` hint
   is enough.
 
+**Decision.** 2026-09-17:
+- **(a) Delete** `bio.statement` and `map.sub`, together with the unreachable fallthrough
+  branches that read them.
+- **(b) Drop the "(layout 2)" suffix** from the five Lime-contradicted pricing labels. The hint
+  names the layout, and the note under Lime tells the truth.
+- **(c) `BookedField` pages from `max(open, today)`**, the published window, so the artist can
+  block any date a visitor can pick. The canvas still reads no clock.
+- The user asked for the result to be **checked in a real browser** as well as in the headless
+  harness.
+
+**Settled.** 2026-09-17.
+- **(a) Deleted:** the `bio.statement` and `map.sub` fields, `DEFS.statement`, `DEFS.mapSub`,
+  `vm.bioQuote`, `vm.mapSub`, the bio and map fallthrough branches in `EncoreSection` (each
+  function now ends in a commented `return null`), and `kickerStyle`, whose only caller was the
+  bio fallthrough. **Named, not done:** the other seven NVAR-4 sections (media, pricing,
+  repertoire, gallery, calendar, testimonials, form) still end in an unreachable fallthrough.
+  The decision covered the two that read dead fields. Deleting the rest would also take
+  `vm.cities`, `s.tracks3` and the flat pricing and form bodies, so it is a follow-up of its own.
+  CLAUDE.md now says so: a field no design reads is deleted, not kept at `in: []`.
+- **(b)** The five labels read *Reviewer photos*, *Review count*, *Rating*, *Plan card button* and
+  *Line beside the plan card button*. Their hints name a place on the card, not a layout
+  number. `cta` is named for its card so that it still reads apart from `rowCta`'s
+  "Button (layout 4)", following F2's rule for same-named pairs. **In the browser:** under Retro
+  layout 2 the five show no note. Under Lime layout 2 all five carry "Not shown in this layout",
+  and no label contradicts it any more.
+- **(c)** `calStart(open, today)` (`data.js`, beside `isoDate`) is the one statement of
+  `max(open, today)`. `sectionVm` calls it with `live ? today : null`, and `BookedField` reads
+  today once per mount (`useState`, UTC, `PublishedPage`'s recipe) and pages from it. A day
+  before today is faded (.4), `disabled` and has no hover, unless it is already blocked: a
+  blocked past day can still be unblocked. With a past `open`, the panel now pages months the
+  canvas does not draw (the canvas stays on `open`'s June 2025). That is named in the hint and in
+  CLAUDE.md, and is the price of letting the artist block what a visitor can pick.
+  **In the browser** (chrome-devtools, 1600, Retro, the real app):
+  - The panel opens on September 2026 with 1–16 disabled. A trusted click on the 6th does
+    nothing, and a trusted click on the 22nd blocks it ("1 blocked · 1 in September 2026").
+  - The left arrow wraps to August 2027, which has no disabled days, and the right arrow returns.
+  - After *Publish* → *Open* (trusted), the published calendar shows September 2026 with the 22nd
+    struck, and 17–30 minus the 22nd are pickable. There is no overflow and the popup console is
+    clean.
+  - **At 390** (headless, touch, in the edit drawer): the same month, 16 disabled days, a tap on
+    the 22nd blocks it, the 3rd ignores a click, and `scrollWidth` is 390.
+- **F15 in the browser** (chrome-devtools `upload_file`, header *Background photo*): a 4.1 MB
+  file prints "That image is 4.1 MB — the limit is 4 MB" under Replace / Remove with the same
+  toast, and the photo is kept. A 248 KB JPG replaces the photo and clears the line.
+- **Console, named:** the editor logs one 404 and six React "Updating a style property during
+  rerender … background / backgroundImage / backgroundPosition / backgroundSize" errors on a
+  Lime → Retro switch. The **branch base (61fd5ff) logs the identical seven**, so they predate
+  this pass. Left for a later session.
+- **Docs audit** (every entry's Docs line, by a read-only agent, then fixed): three "the published
+  tab alone knows the date" comments (data.js §4.10, the `sectionVm` calendar comment,
+  `PublishedPage`); "flat layout" wording for code that is now named unreachable (`vm.cities`,
+  calendar layout 3's `heading` comment, CLAUDE.md's calendar and form sentences, and the
+  `tracks3` sentence in the media paragraph); README's layout-folding bullet (seven of ten
+  non-header categories offer more numbers than designs, not all ten); and the triage-era line
+  references in F9, F18 and F24, which are now annotated with their sweep positions.
+- **No field was added after F2** (`git diff 4fbc829 HEAD -- data.js`). F18 only gave four
+  existing fields `type: 'url'` and left their measured `in` as it was, so there is nothing to
+  re-measure.
+- **Digest, branch base → HEAD** (all categories, themes 0, 1, 2, three widths, canvas and
+  `live=1`, 387 + 387; the base at 61fd5ff served from a worktree on :5190 with HEAD's
+  `preview.jsx`, because F25 changed the harness's `navSections`). Normalising the port and
+  Vite's `?t=` HMR stamps (the probe cuts `src` at 40 characters, so a stamp can survive as a bare
+  `?t` or `?`) leaves **exactly 2 + 2 moved files**: `map` layout 2 under Grunge at 768 and 390,
+  on both surfaces. That is F4's named diff. F10 and F2 moved no seed, and F20 moves only with
+  `&today=`.
+
 ## Conventions learned on this pass
 
 *(Filled in as sessions settle things.)*
@@ -930,3 +997,9 @@ is not.
   hands the line to its repeater (`RowThumb`'s `onFail`), and the repeater moves the line with
   its row. A field's local line survives only within its own section, because `EditPanel` is
   keyed on the section id.
+- **Digest across a branch needs the same harness on both sides** (sweep). Serve the base from
+  a worktree with HEAD's `preview.jsx` copied in and a cloned (`cp -Rc`), not symlinked,
+  `node_modules`, because a symlink shares `.vite` with the live server and re-optimises it.
+  Normalise the port and `?t=` stamps before `cmp`.
+- **A field no design reads is deleted** (sweep), together with the branch that read it. `in: []`
+  is a way station, not a state.

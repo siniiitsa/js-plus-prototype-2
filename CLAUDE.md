@@ -141,8 +141,9 @@ mutated through a single `patch()` helper.
   never discards copy. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
   `in` names Retro and Lime only, so the flat three's undesigned header family carries no
-  note. `bio.statement` and `map.sub` are `in: []` — only the fallthrough after the four
-  designs reads them, and `arch % designCount` never reaches it.
+  note. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
+  `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
+  sections still end in one after `v3`, which `arch % designCount` never reaches).
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
   it names a real theme (`"Picker"` deliberately matches nothing, giving the full flow).
 
@@ -222,8 +223,9 @@ mutated through a single `patch()` helper.
   **Layout 2 plays through the same hooks**, and draws the one list twice: the fan and the
   numbered list beside it are both the whole of `s.tracks`, and **layout 3 is that numbered
   list under a bar-meter now-playing card** (its disc is the play/pause, its meter counts bars off
-  `vm.contentW`), so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — the
-  flat design still shows three and Next must not leave the page.
+  `vm.contentW`), so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — every
+  design plays the whole list, and `s.tracks3` (three) serves only the unreachable fallthrough,
+  whose Next must not leave the page.
   Its fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
@@ -355,9 +357,7 @@ mutated through a single `patch()` helper.
   dots carry no handler — five seats over any number of gigs means a dot does not name one — the
   ticker's own text block is the gig's `link` where it has one (layout 1's empty-link rule
   again), and the ticker is **not drawn at one gig** and gone at none. Its section stands on the
-  page ground, so the root's `darkMap` flag stays layout 1's. The flat map layout
-  keeps raw `vm.pins` with nothing lit: it has no list to pair with, and twelve gigs would stack
-  twelve dots on five spots.
+  page ground, so the root's `darkMap` flag stays layout 1's.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection` — because it is an
   `href`.** The repertoire's layout-4 A–Z rail scrolls from *inside* the file, and the two do not
   contradict: the nav's target is a fragment, which cannot be followed in the popup, so it needs
@@ -456,14 +456,17 @@ mutated through a single `patch()` helper.
   composed enquiry line per cell** — so the section looks a line up rather than working a date
   out, the way it draws the pin `sectionVm` paired with a gig. Nothing on the canvas reads the
   clock: the canvas opens on the artist's date, not on today, or its picture would drift off the
-  reference frame's June overnight. **The published tab alone knows what day it is** (F20):
+  reference frame's June overnight. **The published tab knows what day it is** (F20), and so
+  does `BookedField` (below), which pages the published window and nothing else:
   `PublishedPage` reads today once, in UTC, and passes it to `sectionVm` as the ISO `today`,
   which is honoured only when `live`. With it, a day or slot before today carries **`dead`**
   beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
   strike** — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
   past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
-  (`max(open, today)`). So the published first paint is the canvas's picture only while `open`
+  (`max(open, today)`, `calStart()` in `data.js`, which `BookedField` shares so the artist
+  can block every day a visitor can pick; it fades the days before today and takes no click on
+  them unless they are already blocked). So the published first paint is the canvas's picture only while `open`
   is today or later: a named, accepted diff. The harness takes `&today=` (opt-in, so a `live=1`
   digest never moves with the date). The arrows **wrap** at both ends rather than clamping, the
   media player's rule — a clamped first month opens the published page on a dead-looking arrow,
@@ -480,7 +483,8 @@ mutated through a single `patch()` helper.
   `CTA_TARGETS.book` ends here — which is what turned `cta` from a field that edited nothing into
   a control, and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
   month needing six rows grows one where June needs five, the grid never being padded to 35.
-  The flat layout (arch 1, 3) still draws the hardcoded `CITIES` and reads none of this.
+  The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
+  none of this.
   **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**: layout 2 is a
   bold list of named slots — `CAL_SLOTS`, seeded in `data.js` in the row shape a repeater
   would edit and resolved by the `songs` rule onto `vm.calSlots`, with no editor beside it
@@ -492,7 +496,7 @@ mutated through a single `patch()` helper.
   pill takes the same `calBookTo` under its own label, `slotCta` ("Start Enquiry"; the frame's
   "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
-  a link column. `heading`, which headed the flat layout alone, heads it; `image` does not
+  a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
   reach it at all. And the slot list is the one list-shaped content with **no** editor, so
   `FIELDS.calendar` still names no `slots`.
   **Layout 4 is that same slot list a second time, stacked rather than tabled**, and it is the
@@ -544,7 +548,7 @@ mutated through a single `patch()` helper.
   picture *is* a choice, and pricing's `active` pins 0 on the canvas for the same reason; do not
   "fix" it to -1. It is clamped for pricing's reason too, since Publish re-renders the tab that is
   already open. `showTypes` is `s.v0 && nTypes`, and the **mailto reads it rather than the count**:
-  the flat layout draws no chip row, so it sends the bare `Enquiry` rather than claiming a type
+  a layout that draws no chip row sends the bare `Enquiry` rather than claiming a type
   the visitor was never offered. **No palette has a red**, so a refused box is an *inset* rule in
   `ctlInk` — inset, so the frame's stated 60 does not grow — under a prompt line (Lime's boxes
   are pills, so there its hairline thickens to a 2px inset ring of full ink, layout 2's rule); errors are

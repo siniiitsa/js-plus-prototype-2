@@ -45,7 +45,7 @@ import {
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, TESTI_STARS,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
-  parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
+  parseDate, isoDate, calStart, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, urlProblem, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
@@ -440,7 +440,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
   // string is what tells the ID card not to draw the column.
   vm.since = cv('since', DEFS.since)
-  vm.bioQuote = cased(cv('statement', DEFS.statement))
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
@@ -788,7 +787,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // or impossible (31 June) parses to null and falls back to the seed, so the
   // calendar can never open on a month the artist did not choose.
   //
-  // The published tab alone also knows what day it is (F20). `today` is an ISO
+  // The published tab also knows what day it is (F20), and so does BookedField,
+  // which pages the window this computes. `today` is an ISO
   // date PublishedPage reads off the clock once, and it is honoured only when
   // `live`, so the canvas never reads the clock and stays the reference frame's
   // June. With it, every day before today is **dead** — a flag beside `booked`
@@ -807,7 +807,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     const dead = (iso) => !!nowIso && !!iso && iso < nowIso
     const openIso = isoDate(open.y, open.m, open.d)
     // max(open, today), by month: CAL_SPAN counts from whichever is later.
-    const start = dead(openIso) ? now : open
+    const start = calStart(open, live ? today : null)
 
     vm.calMonths = Array.from({ length: CAL_SPAN }, (_, i) => {
       const m = start.m + i
@@ -947,17 +947,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // stays a span.
     vm.calBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'calendar'), navSections)
   }
-  // The tour-date rows of the calendar's flat layout. It sat under `map` for
+  // The tour-date rows of the calendar's unreachable fallthrough after layout 4. It sat under `map` for
   // years on the strength of its name; nothing in the events map reads it.
   vm.cities = CITIES
 
   // map
   //
-  // `pins` stays the raw five positions for the *flat* map layout, which draws
-  // them as decoration over a banner and has no list to pair them with. The
-  // compact tile pairs instead: every gig below carries the pin it lights.
+  // `pins` is the raw five positions, which layout 4 draws whole — five seats
+  // over any number of gigs, the one on show lit by identity. The other
+  // layouts pair instead: every gig below carries the pin it lights.
   vm.pins = PINS
-  vm.mapSub = cv('sub', DEFS.mapSub)
   // The events map renders on `mapBg` for Retro rather than the page background,
   // so a row hue has to separate from that charcoal — Retro's near-black tag reads
   // fine on sand and disappears on the dark. Fall back to the cream, as §10.2 does.
@@ -2452,9 +2451,14 @@ function FormFieldsField({ value, max, onChange }) {
  * cannot be read against the month it falls in — which is the whole
  * question being asked here.
  *
- * It pages the same CAL_SPAN window from the same opening date the
- * section does, and wraps at both ends the way the published arrows do,
- * so there is no date it can block that the published grid cannot show.
+ * It pages the same CAL_SPAN window the *published* section does —
+ * calStart(), so from today's month once `open` has passed (F20) — and
+ * wraps at both ends the way the published arrows do, so every date a
+ * visitor can pick is one it can block. That makes it the editor's one
+ * reader of the clock, once per mount, as PublishedPage reads it; the
+ * canvas still never does, so with a past `open` the panel pages months
+ * the canvas's picture does not show. A day before today is drawn faded
+ * and takes no click unless it is already blocked, which stays undoable.
  *
  * `value` is the array of ISO dates, rewritten whole and sorted — the
  * repeaters' rule — and an empty array is a real answer: absent and
@@ -2472,11 +2476,13 @@ const CAL_NAV_BTN = {
 
 function BookedField({ value, open, onChange }) {
   const [mi, setMi] = useState(0)
+  const [today] = useState(() => new Date().toISOString().slice(0, 10))
   const list = Array.isArray(value) ? value : []
+  const start = calStart(open, today)
 
   const at = ((mi % CAL_SPAN) + CAL_SPAN) % CAL_SPAN
-  const abs = open.m + at
-  const y = open.y + Math.floor(abs / 12)
+  const abs = start.m + at
+  const y = start.y + Math.floor(abs / 12)
   const mo = ((abs % 12) + 12) % 12
   const { lead, length } = monthSpan(y, mo)
 
@@ -2498,14 +2504,17 @@ function BookedField({ value, open, onChange }) {
       const d = i + 1
       const iso = isoDate(y, mo, d)
       const off = list.includes(iso)
+      // ISO dates compare as strings, sectionVm's `dead` test.
+      const past = iso < today && !off
       return (
         <button
-          key={iso} type="button"
+          key={iso} type="button" disabled={past}
           aria-pressed={off} aria-label={`${d} ${monthLabel(y, mo)}`}
           onClick={(e) => { stopE(e); toggle(iso) }}
-          className={off ? undefined : 'hover:border-foreground'}
+          className={off || past ? undefined : 'hover:border-foreground'}
           style={{
-            height: '25px', borderRadius: '7px', padding: 0, cursor: 'pointer',
+            height: '25px', borderRadius: '7px', padding: 0,
+            cursor: past ? 'default' : 'pointer', opacity: past ? 0.4 : 1,
             fontFamily: 'inherit', fontSize: '11px',
             fontWeight: off ? 700 : 500,
             border: `1px solid ${off ? '#1B1A17' : '#E9E7E0'}`,
@@ -3431,7 +3440,8 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const measure = () => win.document.documentElement.clientWidth
   const [w, setW] = useState(measure)
   // Today, in UTC like every other date sum here, read once when the tab's
-  // root mounts — the only clock read in the builder. A republish re-renders
+  // root mounts — one of the builder's two clock reads, BookedField's being the
+  // other; the canvas makes none. A republish re-renders
   // the same root, so a tab left open past midnight keeps the day it opened on.
   const [today] = useState(() => new Date().toISOString().slice(0, 10))
 

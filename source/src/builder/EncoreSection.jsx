@@ -39,11 +39,6 @@ import {
  * §10.1 Shared style factories
  * ------------------------------------------------------------------ */
 
-const kickerStyle = (s) => ({
-  fontSize: '12px', fontWeight: 700, letterSpacing: '2px',
-  textTransform: 'uppercase', color: s.ac,
-})
-
 const h2Style = (s) => ({
   fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1.02,
 })
@@ -4306,13 +4301,9 @@ function Bio({ s }) {
     )
   }
 
-  return (
-    <div style={col('20px', { alignItems: 'center', textAlign: 'center', maxWidth: '760px', margin: '0 auto' })}>
-      <span style={kickerStyle(s)}>About</span>
-      <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.1 }}>{s.bioQuote}</h2>
-      <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.65, color: s.muted, maxWidth: '560px' }}>{s.bioP1}</p>
-    </div>
-  )
+  // `arch % designCount` is 0–3, so the four branches above are the whole
+  // section: the centred fallthrough that used to stand here was unreachable.
+  return null
 }
 
 // v0 — Media Player layout 1 · Floating cards stack (§10.2 reference design)
@@ -12615,7 +12606,7 @@ function Calendar({ s }) {
         </div>
         <div style={{ width: '100%', paddingBottom: u(20), borderBottom: `1px solid ${headRule}` }}>
           {/* The one thing the section already had that this frame left room
-              for: `heading` headed the flat layout alone, the scheduler frame
+              for: `heading` once headed only the unreachable fallthrough, the scheduler frame
               drawing no title at all. The frame's own sentence goes with it —
               which is also why the head is shorter than the master's here: two
               lines of "Find a date that works for your event" against our one
@@ -16194,8 +16185,8 @@ function EventsMap({ s }) {
   // `rings`, on each ring's right edge at the midline, and the *+ / −* zoom
   // controls step layer 3's `zoom` hook live. *LIVE · LAST 12 MONTHS* beside
   // the head label is a field of its own, `span`, seeded with the frame's copy
-  // and emptiable — `s.mapSub` stays refused there, its default "12 dates · 8
-  // cities · this season" contradicting the two stat cards on the seeded page.
+  // and emptiable, rather than a count the two stat cards beside it could
+  // contradict.
   // The ticker's *×* is still declined, a dismiss with no state to dismiss,
   // and its seat takes the `›` that makes the frame's own `‹` a pair.
   //
@@ -16785,27 +16776,9 @@ function EventsMap({ s }) {
     )
   }
 
-  return (
-    <div style={{
-      background: s.soft, aspectRatio: '16 / 7', borderRadius: s.radius, position: 'relative',
-      overflow: 'hidden', display: 'flex', alignItems: 'flex-end', padding: '26px',
-    }}>
-      {/* The flat layout has no gig list to pair with, so its dots stay the raw
-          five positions rather than one per gig — twelve gigs would otherwise
-          stack twelve dots on five spots. */}
-      {s.pins.map((p, i) => (
-        <span key={i} style={{
-          position: 'absolute', left: p.x, top: p.y, width: '12px', height: '12px',
-          borderRadius: '999px', background: s.ac, boxShadow: `0 0 0 5px ${s.soft2}`,
-          transform: 'translate(-50%, -50%)',
-        }} />
-      ))}
-      <div style={{ position: 'relative' }}>
-        <h2 style={{ margin: 0, fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1 }}>{s.title}</h2>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: s.muted, marginTop: '8px' }}>{s.mapSub}</div>
-      </div>
-    </div>
-  )
+  // `arch % designCount` is 0–3, so the four branches above are the whole
+  // section: the full-map fallthrough that used to stand here was unreachable.
+  return null
 }
 
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one

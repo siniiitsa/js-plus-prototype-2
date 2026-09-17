@@ -371,8 +371,10 @@ That distinction is the whole design, and it buys two things:
   six rows simply grows one, where June needs five.
 
   Its editor is the fifth structured field and the first that is not a repeater: `BookedField` is
-  a month of the artist's own to click, paging the same twelve-month window the section does,
-  because one row per blocked date is the wrong shape for a June with eight of them. `para` went
+  a month of the artist's own to click, because one row per blocked date is the wrong shape for a
+  June with eight of them. It pages the same twelve-month window the *published* section does —
+  from today's month once `open` has passed, with the days before today faded and unclickable
+  unless already blocked — which makes it the editor's one reader of the clock. `para` went
   with `DEFS.calPara` — it rendered in neither calendar layout.
 
   **The enquiry form, which fills in and sends.** It was the last §10.2 section whose every
@@ -554,9 +556,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
   24px so the squares read as texture: 16px tall, 8px squares.
-- **Layout folding.** For the 10 non-header categories, more layout numbers are offered than
+- **Layout folding.** Seven of the 10 non-header categories offer more layout numbers than
   there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
-  keeping their own labels. The header is exempt.
+  keeping their own labels. The header, the footer, the gallery and the map are level.
 - **Fields a layout does not read stay editable.** Each section's panel lists every field any
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and

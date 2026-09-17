@@ -37,7 +37,7 @@ name that says what it fits. The template folder names match `THEMES[].name` in
 | Layout 2 | [`retro/layout-2.md`](./retro/layout-2.md) | `retro-layout-2` (merged) | `s.v1`, desktop first, then the 768 and 390 masters. |
 | Layout 3 | [`retro/layout-3.md`](./retro/layout-3.md) | `retro-layout-3` (merged) | `s.v2`, all three widths per session. |
 | Layout 4 | [`retro/layout-4.md`](./retro/layout-4.md) | `retro-layout-4` (merged) | `s.v3`, all three widths per session, plus the end-of-pass sweep. |
-| QA fixes | [`retro/qa-fixes.md`](./retro/qa-fixes.md) | `artist-name-from-title` | Not a fit: a batch of tester-reported defects (F2 … F25), one bug per session, plus a sweep. |
+| QA fixes | [`retro/qa-fixes.md`](./retro/qa-fixes.md) | `artist-name-from-title` (done, not yet merged) | Not a fit: a batch of tester-reported defects (F2 … F25), one bug per session, plus the end-of-pass sweep. All nine fixed; the sweep deleted two dead fields and their fallthroughs, and made `BookedField` page the published window. |
 
 **Reading order in a Retro session:** read `CLAUDE.md` first, then the current plan, then the
 *Conventions* of every earlier plan, newest first. Each plan says it doesn't repeat its

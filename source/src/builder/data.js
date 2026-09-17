@@ -597,7 +597,6 @@ export const DEFS = {
   bioP1:      'DJ and selector based in Manchester. Five years of reading rooms — house, disco, soul, 80s — chosen by the room, not the algorithm.',
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
   since:      'June 2021',
-  statement:  'Reads the room.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
   // §10.2 layout 3 heads the stack with a line under the title, where neither
   // earlier layout draws one — the frame's own sentence, kept as the seed so
@@ -614,7 +613,6 @@ export const DEFS = {
   // nothing of the sort — the frame's own sentence, kept as the seed so the
   // reference picture holds. Emptying it drops the line.
   pricingQuote: "“Kai read the room better than any DJ we'd worked with. We had him back twice that year.”",
-  mapSub:     '12 dates · 8 cities · this season',
   // §10.2 layout 2 heads the testimonials with a line about who the reviews are
   // from, where layout 1 draws no head at all — the frame's own sentence, kept
   // as the seed so the reference picture holds. Emptying it drops the line.
@@ -639,7 +637,8 @@ export const CAL_DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 // emptied both mean none, because there is nothing here to seed.
 export const CAL_BOOKED = []
 // How far ahead the calendar reaches, in months from the opening month — the
-// `open` field's, or on the published page today's when that is later. The
+// `open` field's, or on the published page and in the editor's BookedField
+// today's when that is later (calStart). The
 // arrows wrap at both ends of it rather than clamping — see EncoreSection's
 // Calendar.
 export const CAL_SPAN   = 12
@@ -863,9 +862,6 @@ export const FIELDS = {
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
-    // Read only by the centred fallthrough after the four designs, which
-    // `arch % designCount` never reaches — so no design reads it at all.
-    { k: 'statement', l: 'Statement', def: 'statement', in: [] },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3] },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
@@ -924,14 +920,20 @@ export const FIELDS = {
     // Layout 2's credit row under the quote and the line beside its pill, all
     // seeded with the frame's own copy. Every one is emptiable and drops what
     // it fills; the row goes when all three of its fields are empty. Lime's
-    // layout 2 is its own composition and draws none of the five.
-    { k: 'images',  l: 'Reviewer photos (layout 2)', type: 'images', max: 3, in: PRICING_CARD,
-      hint: 'Small faces under the quote.' },
-    { k: 'reviews', l: 'Review count (layout 2)', d: PRICING_REVIEWS, in: PRICING_CARD },
-    { k: 'rating',  l: 'Rating (layout 2)', d: PRICING_RATING, in: PRICING_CARD,
+    // layout 2 is its own composition and draws none of the five — which is
+    // why none of the five names a layout: a "(layout 2)" label sat over the
+    // "Not shown in this layout" note on Lime's layout 2, and the note is the
+    // one that knows the template. The hints say where on the card instead.
+    { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CARD,
+      hint: 'Small faces under the plan card’s quote.' },
+    { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CARD,
+      hint: 'In the credit row under the quote, after the stars.' },
+    { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CARD,
       hint: 'The five stars beside it are drawn while this is filled.' },
-    { k: 'cta',     l: 'Button (layout 2)', d: PRICING_CTA, in: PRICING_CARD },
-    { k: 'note',    l: 'Line beside the button (layout 2)', d: PRICING_NOTE, in: PRICING_CARD },
+    // Named for its card rather than numbered, so it still reads apart from
+    // the row button below.
+    { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD },
+    { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD },
     { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA, in: [3],
       hint: 'The pill under the price on every package row.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
@@ -986,7 +988,9 @@ export const FIELDS = {
           + `It reaches ${CAL_SPAN} months from there. On the published page, days `
           + "before today can't be picked, and a past date opens it on today's month." },
     { k: 'booked',  l: 'Booked dates', type: 'booked',
-      hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
+      hint: 'Click a day to block it. A blocked day cannot be picked on the published page. '
+          + 'The months here are the published ones, so they start at today when the opening '
+          + 'date has passed.' },
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'summary card. Leave it empty and the line stops at the date.' },
@@ -1032,9 +1036,6 @@ export const FIELDS = {
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
       hint: 'Beside "Travel & reach" above the four stat cards. Leave empty to hide it.' },
-    // Read only by the full-map fallthrough after the four designs, which
-    // `arch % designCount` never reaches — so no design reads it at all.
-    { k: 'sub',     l: 'Subline', def: 'mapSub', in: [] },
   ],
   testimonials: [
     // A textarea, because layout 2's default breaks onto a second line.
@@ -1347,9 +1348,10 @@ export function repChips(songs) {
  *
  * Nothing here reads the clock. The canvas opens on the date the artist set,
  * not on today, so its picture cannot drift off the reference frame's June
- * overnight. The published tab alone knows the date: PublishedPage reads it
- * once and hands `sectionVm` a `today` it honours only when live, which kills
- * the days before it and opens a past `open` on today's month instead.
+ * overnight. The published tab knows the date: PublishedPage reads it once
+ * and hands `sectionVm` a `today` it honours only when live, which kills the
+ * days before it and opens a past `open` on today's month instead. The
+ * editor's BookedField reads it too, to page that same window (calStart).
  * ------------------------------------------------------------------ */
 
 // The shape of one month's grid: the blank cells that lead it, and the days
@@ -1375,6 +1377,16 @@ export function parseDate(v) {
 
 export function isoDate(y, m, d) {
   return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
+// The day the calendar's CAL_SPAN window counts from (F20): `open`, or today
+// once `open` has passed — max(open, today), read by month. `open` is parsed,
+// `today` an ISO string or nothing, and with nothing it is `open`, which is
+// how the canvas stays off the clock. The published section and BookedField
+// both ask this, so the editor pages exactly the months a visitor can pick in.
+export function calStart(open, today) {
+  const now = parseDate(today)
+  return now && isoDate(open.y, open.m, open.d) < isoDate(now.y, now.m, now.d) ? now : open
 }
 
 export function weekdayOf(y, m, d) {
