@@ -27,7 +27,7 @@ over, so do not renumber.
 | 4 | F9 | Enquiry form can lose every box, Email included | **Confirmed** | S | small | **done** (block and explain) |
 | 5 | F18 | Link fields don't validate (`not a url`, `javascript:`) | **Confirmed** | M | small | **done** (drop `//host` and `localhost`) |
 | 6 | F25 | Footer link to a deleted section stays as a dead label | **Confirmed**: currently *documented as intended* | S | **yes** | **done** (A) |
-| 7 | F24 | Delete has no confirm or Undo, and re-adding resets the content | **Confirmed** | M | **yes** | open |
+| 7 | F24 | Delete has no confirm or Undo, and re-adding resets the content | **Confirmed** | M | **yes** | **done** (A) |
 | 8 | F20 | Published calendar lets a visitor pick a past date | **Confirmed**: collides with a documented rule | M | **yes** | open |
 | 9 | F15 | Photo over ~4 MB is ignored silently | **Not reproduced as stated**: see entry | S | **yes** | open |
 | 10 | — | End-of-pass sweep | — | S | no | open |
@@ -580,7 +580,73 @@ after an Undo.
 
 **Docs.** CLAUDE.md's *Navigation and state* (a new `st` key), and README if it lists `st`.
 
-**Decision.** —  **Settled.** —
+**Decision.** 2026-09-17: **A**, an Undo toast plus remembered content. There is no confirm
+dialog. Sub-decisions made in the session:
+- **Toast lifetime: longer, still replaceable.** The Undo toast lives 6 s, not 2.4, and the next
+  toast replaces it like any other. It is not pinned against other toasts, because `st.removed`
+  keeps the content either way. A toast that gets bumped early loses the shortcut, not the content.
+- **Layout on re-add: the composer's pick wins.** The composer *opens* on the remembered
+  `arch` (`openAdd` and the category select both seed it), and the content comes back whatever
+  layout is picked. Switching layouts never discards copy.
+- **Start fresh is a checkbox** (`st.add.fresh`), not a button that discards at once. Nothing
+  is thrown away until *Add section* is pressed.
+
+**Settled.** 2026-09-17.
+- **State.** `st.removed = { [cat]: { arch, c } }` holds `c` whole, data URIs included. Its keys
+  are only ever categories *not* on the page: `addSection` consumes the entry whether it
+  restores or starts fresh, Undo consumes it, and `TemplateStage`'s `onPick` resets it to `{}`.
+  `st.add` gains `fresh`.
+- **The three call sites are unchanged**, because `del` owns the toast. They are the list row's
+  `…` menu (`SectionList`, used by the sidebar and the mobile Sections sheet), `EditPanel`'s
+  Delete (sidebar and mobile edit drawer), and the **canvas toolbar's trash**. The plan
+  called that last one "the mobile list's trash icon". It is the overlay toolbar
+  (`vm.showOverlay`), shown on hover on desktop and after a tap on mobile.
+- **Undo** reinserts the same section object (same id) at `min(i, sections.length - 1)` and
+  touches neither `selectedId` nor `editSheet`. If the category is already back on the page, it
+  does nothing. In practice that guard is unreachable, because re-adding toasts "… added",
+  which replaces the Undo toast. It stays as a guard anyway.
+- **Trap: don't set a flag inside the `patch` updater.** The first cut used `addSection`'s
+  own pattern and captured `{ sec, i }` inside the updater, which is `let added` in the old code.
+  The first delete toasted. The second did not: React computes an updater eagerly only when
+  the fiber has no pending work, and otherwise runs it at render, after the handler has
+  returned. `del` and `addSection` now read the rendered `st.sections` and keep the updater
+  pure. The old `addSection` had the same latent bug, so its "added" toast could go missing.
+- **Mobile, found in verification.** (1) The Undo toast sat over the add-composer drawer's
+  *Add section* button. While any drawer is open (`st.add || st.sheet || st.editSheet`), the
+  toaster now drops from the top at `12px + safe-area`, since every drawer leaves the top
+  16–40 % free. (2) **A pre-existing bug:** below 600 px sonner reads `mobileOffset`, not
+  `offset`, so the 72 px bottom-nav clearance never applied on a phone and the toast sat 16 px
+  from the bottom, over the nav. Both props now get the value. (3) The four `DrawerContent`s
+  take `onPointerDownOutside={keepOnToast}`, which is **defensive only**. With the prop removed,
+  a trusted tap or click on Undo still left the Sections sheet open (measured), and the sheet
+  closing in the first mobile run was the harness trap below. (4) **Named, not a bug:** the
+  toaster keys its list by position, so closing a drawer while the Undo toast is up remounts
+  the toast at the bottom. It replays its fade-in and restarts its 6 s.
+- **Verified** with puppeteer (`scratchpad/f24.mjs`, 1600 and 390 with touch emulation, Retro;
+  all Undo clicks are trusted `ElementHandle.click()`). Desktop passed 42 checks and mobile 43,
+  with no app errors. The checks: delete → Undo at all three call sites (content back, same
+  index, toast gone, no panel or edit drawer opened, and on mobile the Sections sheet stays
+  open); delete → re-add (the composer opens on Media Player with the *Start fresh* line, and
+  the content is back); delete → edit Bio → re-add (both edits kept); Start fresh (default
+  heading, entry spent); layout 3 → delete → the composer shows layout 3 → re-added on layout
+  3 with its content; delete → move a section → Undo (back at its index, footer last); and on
+  mobile, the composer's *Add section* is not covered. **F25 crossover:** with media deleted,
+  the Footer panel shows one "Section not on the page" hint and the published footer drops a
+  row (9 → 8 anchors, pill included). After Undo the hint is gone with the panel still open,
+  and a republish brings the row back (9, identical list). The sentinel heading is published
+  after Undo. The only page errors in the mobile run are vaul's `setPointerCapture`, raised
+  when the script opens the layout picker inside the edit drawer with a synthetic
+  `pointerdown`. A trusted click or tap on the toast raises none (checked separately).
+- **Harness trap:** opening the list row's `…` menu with the synthetic
+  `pointerdown`+`mousedown` recipe **closes the mobile Sections sheet** on the next trusted click
+  in the menu. That looked like an app bug and was not one: open the trigger with a trusted
+  `ElementHandle.click()` and the sheet stays open.
+- **Digest** (all categories, themes 0, 1, 2, three widths, canvas and `live=1`): **387 + 387
+  byte-identical** against HEAD, as expected for a chrome-only change.
+- **Docs:** comments on `st.removed`, `toast`, `del` and `addSection`, `openAdd`, `AddComposer`,
+  `keepOnToast` (whose comment calls it a guard) and the `Toaster`; CLAUDE.md's *Navigation and state*; README deviation 6
+  (toast positions) and a new *Scope boundaries* bullet. README lists no `st` keys beyond
+  `stage` and `onboard`, so it gets prose, not a key list.
 
 ---
 
@@ -705,3 +771,9 @@ drop. Check that the error sits next to the control, and that a following valid 
   (F25). The editor names it: the canvas stays unmarked, because it is a picture of the site.
   Pills are different: one with no target stays a span. The drop happens in `sectionVm` under
   `live`, before anything is measured or halved from the list.
+- **A `patch` updater stays pure** (F24). Read what a handler needs off the rendered `st`.
+  React may run the updater after the handler returns, so a flag set inside it can still be
+  unset when the next line reads it.
+- **Open a Radix trigger inside a vaul drawer with a trusted click** (F24). The synthetic
+  `pointerdown` recipe (F9) is fine on desktop, but inside a mobile drawer it leaves the drawer
+  closing on the next trusted press.

@@ -117,9 +117,13 @@ Six, all deliberate:
    the tab is simply a second React root in the same session.
 6. **Toast positioning.** §3.5 maps the toast to shadcn's `sonner`, and §9.2 also specifies a
    hand-positioned `toastUp` entry animation. Sonner owns the positioning and the mount
-   transition (bottom-centre, 28px desktop / `calc(72px + env(safe-area-inset-bottom))` mobile),
+   transition (bottom-centre, 28px desktop / `calc(72px + env(safe-area-inset-bottom))` mobile,
+   passed as both `offset` and `mobileOffset` because sonner reads the latter below 600px),
    which produces the same slide-up; the pill itself is styled to §9.2's exact values. The
-   `toastUp` keyframe is still defined in `index.css` per §3.2.
+   `toastUp` keyframe is still defined in `index.css` per §3.2. Two additions: while a mobile
+   drawer is open the toast drops from the **top** instead, since the drawer covers the bottom
+   nav and its own foot would sit under the pill; and the delete toast carries an **Undo**
+   button and lives 6 s instead of 2.4 (see *Scope boundaries*).
 
 ## Choosing a header
 
@@ -519,6 +523,13 @@ These are intentional limits, not oversights — see §12 for the full list. The
   reorders by touch too, and it mirrors the arrows on ArrowUp / ArrowDown when focused.
   The header and footer are locked: they show a padlock instead of a handle, and a drag
   clamps to the slots between them.
+- **Delete is one click, with Undo instead of a confirm.** Every delete — the page list's
+  menu, the edit panel's button and the canvas toolbar's trash — toasts "*Section* removed ·
+  Undo", which puts the same section back where it was (clamped so the footer stays last) and
+  opens no editor. The next toast replaces it as any toast does. Separately, `st.removed` keeps
+  each category's last deleted `{ arch, c }`, uploads included, so adding that category again
+  brings its content back and the add composer opens on its old layout; a *Start fresh* tick
+  in the composer opts out. It lives only as long as the session, like everything else.
 - **Retro and Lime are designed; Grunge, Editorial and Pop are not.** Retro ships six
   photographic header layouts. Grunge, Editorial and Pop are fully selectable and functional but
   render flat-colour sections and a three-layout flat header family — whose nav is still the

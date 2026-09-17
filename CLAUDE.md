@@ -110,6 +110,21 @@ mutated through a single `patch()` helper.
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
+- **`st.removed` is `{ [cat]: { arch, c } }`, the last deleted section of each category**, so
+  re-adding a category restores its content (data-URI uploads and all) and the add composer
+  opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts out. Its keys
+  are only ever categories **not** on the page — `addSection`, Undo and Start fresh all consume
+  the entry, and picking a template resets it. `del` is still one click from all three call
+  sites (the list row's menu, `EditPanel`'s Delete, the canvas toolbar's trash) and toasts an
+  **Undo** that reinserts the very same section object at `min(oldIndex, sections.length - 1)`
+  (the footer stays last) without selecting it. The toast helper takes an optional
+  `{ label, run }` action; such a toast lives 6 s but is still replaced by the next toast, since
+  `st.removed` holds the content either way. `del` and `addSection` read the section off the
+  **rendered** `st.sections`, not from inside the `patch` updater — React may run an updater
+  after the handler returns, so a flag set in there is not there yet. On a phone the toaster
+  moves to the top while any drawer is open (closing the drawer remounts a live toast at the
+  bottom, fade and timer restarting). The drawers also carry `keepOnToast`, a guard against a
+  press on a toast counting as outside, though vaul was measured not to close on one anyway.
 - **The artist's name is the header's `c.title`.** The `artistName` prop only seeds it: the
   builder derives `artistName` from the header section (trimmed, falling back to the prop when
   empty) and passes *that* everywhere — nav brand, initials placeholders, bylines, badge,

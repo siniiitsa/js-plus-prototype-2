@@ -151,6 +151,13 @@ function useIsMobile() {
 // interactive handler and every modal panel isolates its events (§5.6).
 const stopE = (e) => e.stopPropagation()
 
+// A tap on a toast (the delete toast's Undo) is not a tap outside a drawer.
+// A guard: vaul was measured not to close on one without it, but the mobile
+// sheets pass this as `onPointerDownOutside` so that stays true.
+const keepOnToast = (e) => {
+  if (e.target?.closest?.('[data-sonner-toaster]')) e.preventDefault()
+}
+
 // The site address the publish dialog shows, off the artist's name. Letters in
 // any script survive (an IDN host is legal); an unnamed page gets a stand-in.
 const siteSlug = (name) =>
@@ -2999,15 +3006,19 @@ const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
 const firstFreeCat = (present) =>
   (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
 
-function AddComposer({ add, present, themeIdx, artistName, navSections, onChange, onAdd, onCancel }) {
+function AddComposer({ add, present, removed, themeIdx, artistName, navSections, onChange, onAdd, onCancel }) {
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
   const taken = present.includes(add.cat)
+  // A category deleted earlier restores its content on add; Start fresh opts
+  // out. A flag rather than a button that discards, so nothing is lost until
+  // Add section is pressed.
+  const restorable = !taken && !!removed[add.cat]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
         <Label style={groupLabel}>Section</Label>
-        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: 0 })}>
+        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: removed[cat]?.arch ?? 0, fresh: false })}>
           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
             <SelectValue />
           </SelectTrigger>
@@ -3029,7 +3040,7 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
         <LayoutPicker
           cat={add.cat} arch={add.arch}
           themeIdx={themeIdx} artistName={artistName} navSections={navSections}
-          onPick={(i) => onChange({ cat: add.cat, arch: i })}
+          onPick={(i) => onChange({ ...add, arch: i })}
         />
       </div>
 
@@ -3037,6 +3048,24 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
         <p style={{ margin: 0, fontSize: '11px', color: '#98958A', lineHeight: 1.45 }}>
           This section is already on the page. Pick another to add.
         </p>
+      )}
+
+      {restorable && (
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '11px', color: '#5B5850', lineHeight: 1.45, cursor: 'pointer' }}>
+          <input
+            type="checkbox" checked={!!add.fresh} onClick={stopE}
+            onChange={(e) => onChange({ ...add, fresh: e.target.checked })}
+            style={{ margin: '2px 0 0', accentColor: '#1B1A17', cursor: 'pointer' }}
+          />
+          <span>
+            <span style={{ fontWeight: 700 }}>Start fresh</span>
+            <span style={{ display: 'block', color: '#98958A' }}>
+              {add.fresh
+                ? 'The content you removed is discarded when you add.'
+                : 'Unticked, this section comes back with the content you removed.'}
+            </span>
+          </span>
+        </label>
       )}
 
       <div style={{ display: 'flex', gap: '8px' }}>
@@ -3050,7 +3079,7 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
         >Cancel</button>
         <button
           type="button" aria-disabled={taken || undefined}
-          onClick={(e) => { stopE(e); if (!taken) onAdd(add.cat, add.arch) }}
+          onClick={(e) => { stopE(e); if (!taken) onAdd(add.cat, add.arch, add.fresh) }}
           className={taken ? '' : 'hover:bg-primary/90'}
           style={{
             flex: 1, border: 0, background: '#1B1A17', color: '#FFFFFF', opacity: taken ? 0.45 : 1,
@@ -3475,6 +3504,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       // The publish success dialog. The tab it opens is held in a ref, not
       // in state: nothing renders from it.
       published: false,
+      // The last deleted section of each category, as `{ arch, c }`, so adding
+      // that category again brings its content back (uploads included, as the
+      // data URIs they are). Keys are only ever categories *not* on the page:
+      // re-adding, Undo and Start fresh all consume the entry.
+      removed: {},
     }
     return ti >= 0
       ? { ...base, stage: 'editor', theme: ti, sections: buildPage(EXAMPLE_PAGE) }
@@ -3484,22 +3518,51 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const patch = useCallback((p) => setSt((s) => ({ ...s, ...(typeof p === 'function' ? p(s) : p) })), [])
 
   // §9.2 — one toast at a time; the timer resets on each new one.
+  //
+  // `action` ({ label, run }) adds a button to the pill — the delete toast's
+  // Undo. Such a toast lives longer, since it asks for a decision rather than
+  // reporting one, but it is still replaced by the next toast like any other:
+  // what it would undo is kept in `st.removed` either way, so a toast bumped
+  // early costs the shortcut, not the content.
   const toastRef = useRef(null)
-  const toast = useCallback((msg) => {
+  const toast = useCallback((msg, action) => {
     if (toastRef.current !== null) sonnerToast.dismiss(toastRef.current)
-    toastRef.current = sonnerToast.custom(() => (
+    toastRef.current = sonnerToast.custom((id) => (
       <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <span style={{
           background: '#1B1A17', color: '#FFFFFF', fontSize: '13px', fontWeight: 700,
-          padding: '12px 22px', borderRadius: '99px', boxShadow: '0 12px 30px rgba(20,18,12,.3)',
+          padding: action ? '6px 6px 6px 22px' : '12px 22px', borderRadius: '99px', boxShadow: '0 12px 30px rgba(20,18,12,.3)',
           maxWidth: '92vw', textAlign: 'center', animation: 'fadeIn .25s ease',
-        }}>{msg}</span>
+          display: 'flex', alignItems: 'center', gap: '14px', pointerEvents: 'auto',
+        }}>
+          {msg}
+          {action && (
+            <button
+              type="button"
+              onClick={(e) => {
+                stopE(e)
+                action.run()
+                sonnerToast.dismiss(id)
+                if (toastRef.current === id) toastRef.current = null
+              }}
+              className="hover:bg-white/25"
+              style={{
+                flex: 'none', border: 0, borderRadius: '99px', background: 'rgba(255,255,255,.14)',
+                color: '#FFFFFF', fontSize: '13px', fontWeight: 700, padding: '6px 14px', cursor: 'pointer',
+              }}
+            >{action.label}</button>
+          )}
+        </span>
       </div>
-    ), { duration: 2400, unstyled: true })
+    ), { duration: action ? 6000 : 2400, unstyled: true })
   }, [])
 
   const T = THEMES[st.theme]
   const sections = st.sections
+  const toastTop = isMobile && !!(st.add || st.sheet || st.editSheet)
+  const toastOffset = !isMobile ? '28px'
+    : toastTop ? 'calc(12px + env(safe-area-inset-top))'
+    : 'calc(72px + env(safe-area-inset-bottom))'
 
   // The artist's name is the header's Title: the prop only seeds it. Every
   // other reading — the nav brand, the initials placeholders, the bio and
@@ -3600,39 +3663,64 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     sections: s.sections.map((x) => (x.id === id ? { ...x, ...p } : x)),
   })), [patch])
 
-  const del = useCallback((id) => patch((s) => {
-    const sec = s.sections.find((x) => x.id === id)
-    if (!sec || sec.cat === 'header' || sec.cat === 'footer') return {}
-    return {
+  // Delete stays one click; what makes it safe is the toast's Undo and
+  // `st.removed`. Undo puts the very same section object back where it was,
+  // clamped so the footer stays last (canMove's invariant), and leaves the
+  // selection alone — it restores the page, it does not open an editor.
+  //
+  // The section and its index are read off the rendered page, not captured
+  // from inside the updater: React may run an updater lazily, after this
+  // handler has returned, so a flag set in there is not there to read yet.
+  const del = useCallback((id) => {
+    const i = st.sections.findIndex((x) => x.id === id)
+    const sec = st.sections[i]
+    if (!sec || sec.cat === 'header' || sec.cat === 'footer') return
+    patch((s) => ({
       sections: s.sections.filter((x) => x.id !== id),
+      removed: { ...s.removed, [sec.cat]: { arch: sec.arch, c: sec.c } },
       menuFor: null,
       ...(s.selectedId === id ? { selectedId: null, editSheet: false } : {}),
-    }
-  }), [patch])
+    }))
+    toast(`${catName(sec.cat)} removed`, {
+      label: 'Undo',
+      run: () => patch((s) => {
+        // Already back — re-added from the composer while the toast was up.
+        if (s.sections.some((x) => x.cat === sec.cat)) return {}
+        const next = s.sections.slice()
+        next.splice(Math.min(i, next.length - 1), 0, sec)
+        const { [sec.cat]: _, ...removed } = s.removed
+        return { sections: next, removed }
+      }),
+    })
+  }, [patch, toast, st.sections])
 
-  const addSection = useCallback((cat, arch) => {
-    let added = false
+  // A category deleted earlier comes back with its content unless the
+  // composer's Start fresh is on; either way its `removed` entry is spent.
+  // The layout is the composer's pick, which opens on the remembered one.
+  const addSection = useCallback((cat, arch, fresh) => {
+    if (st.sections.some((x) => x.cat === cat)) return
     patch((s) => {
       if (s.sections.some((x) => x.cat === cat)) return {}
-      added = true
-      const sec = { id: ++uidRef.current, cat, arch, c: {} }
+      const { [cat]: kept, ...removed } = s.removed
+      const sec = { id: ++uidRef.current, cat, arch, c: kept && !fresh ? kept.c : {} }
       const next = s.sections.slice()
       next.splice(next.length - 1, 0, sec)   // immediately before the footer
-      return { sections: next, add: null }
+      return { sections: next, add: null, removed }
     })
-    if (added) toast(`${catName(cat)} added`)
-  }, [patch, toast])
+    toast(`${catName(cat)} added`)
+  }, [patch, toast, st.sections])
 
   const openEdit = useCallback((id) => patch(
     isMobile ? { selectedId: id, editSheet: true, sheet: null, menuFor: null }
              : { selectedId: id, menuFor: null },
   ), [patch, isMobile])
 
-  // §9.1 — the add composer opens on the first category not already used.
-  const openAdd = useCallback(() => patch((s) => ({
-    add: { cat: firstFreeCat(s.sections.map((x) => x.cat)), arch: 0 },
-    sheet: null, menuFor: null,
-  })), [patch])
+  // §9.1 — the add composer opens on the first category not already used,
+  // at the layout that category had when it was deleted, if it was.
+  const openAdd = useCallback(() => patch((s) => {
+    const cat = firstFreeCat(s.sections.map((x) => x.cat))
+    return { add: { cat, arch: s.removed[cat]?.arch ?? 0, fresh: false }, sheet: null, menuFor: null }
+  }), [patch])
 
   const closeAdd = useCallback(() => patch({ add: null, sheet: null }), [patch])
 
@@ -3745,7 +3833,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
           const next = buildPage(EXAMPLE_PAGE)
           const header = next.find((x) => x.cat === 'header')
           return {
-            stage: 'editor', theme: i, sections: next, onboard: true,
+            stage: 'editor', theme: i, sections: next, onboard: true, removed: {},
             // The editor opens on the header's edit panel: the modal does not
             // need it, but it is where the user goes next and it leaves the
             // right state behind once the modal is dismissed. The mobile edit
@@ -3777,7 +3865,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   const addComposer = st.add && (
     <AddComposer
-      add={st.add} present={present}
+      add={st.add} present={present} removed={st.removed}
       themeIdx={st.theme} artistName={artistName} navSections={navSections}
       onChange={(next) => patch({ add: next })}
       onAdd={addSection}
@@ -4175,7 +4263,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             a bottom drawer on mobile. There is no right-hand panel. */}
         {isMobile && (
           <Drawer open={!!st.add} onOpenChange={(v) => { if (!v) closeAdd() }}>
-            <DrawerContent onClick={stopE} className={`${PILL} !max-h-[82vh]`} style={{ ...sheetShell, maxHeight: '82vh' }}>
+            <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[82vh]`} style={{ ...sheetShell, maxHeight: '82vh' }}>
               <DrawerTitle className="sr-only">Add a section</DrawerTitle>
               <DrawerDescription className="sr-only">Choose a section and its layout</DrawerDescription>
               {addHeader(closeAdd)}
@@ -4188,7 +4276,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
         {/* §8.9 Sections sheet */}
         <Drawer open={isMobile && st.sheet === 'sections'} onOpenChange={(v) => { if (!v) patch({ sheet: null }) }}>
-          <DrawerContent onClick={stopE} className={`${PILL} !max-h-[78vh]`} style={{ ...sheetShell, maxHeight: '78vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[78vh]`} style={{ ...sheetShell, maxHeight: '78vh' }}>
             <DrawerDescription className="sr-only">The sections on this page</DrawerDescription>
             {sheetHead(`Page · ${sections.length} sections`, () => patch({ sheet: null }))}
             <ScrollArea className="flex-1 min-h-0">
@@ -4200,7 +4288,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
         {/* §8.9 Theme sheet */}
         <Drawer open={isMobile && st.sheet === 'theme'} onOpenChange={(v) => { if (!v) patch({ sheet: null }) }}>
-          <DrawerContent onClick={stopE} className={`${PILL} !max-h-[60vh]`} style={{ ...sheetShell, height: '60vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[60vh]`} style={{ ...sheetShell, height: '60vh' }}>
             <DrawerDescription className="sr-only">Choose a template</DrawerDescription>
             {sheetHead('Theme', () => patch({ sheet: null }))}
             <ScrollArea className="flex-1 min-h-0">
@@ -4235,7 +4323,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
           open={isMobile && st.editSheet && !!selectedSec}
           onOpenChange={(v) => { if (!v) patch({ editSheet: false, selectedId: null }) }}
         >
-          <DrawerContent onClick={stopE} className={`${PILL} !max-h-[84vh]`} style={{ ...sheetShell, height: '84vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[84vh]`} style={{ ...sheetShell, height: '84vh' }}>
             <DrawerDescription className="sr-only">Edit this section</DrawerDescription>
             {selectedSec && sheetHead(
               `${catName(selectedSec.cat)} — ${selectedVm.layoutLabel}`,
@@ -4253,9 +4341,15 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
         {headerModal}
         {publishModal}
 
+        {/* On a phone the toast clears the bottom nav — but a drawer covers
+            that nav and would lose its own foot (the composer's Add section)
+            under the toast, so while one is up the toast drops from the top,
+            which every drawer leaves free. Sonner reads `mobileOffset`, not
+            `offset`, below 600px, so the phone value goes to both. */}
         <Toaster
-          position="bottom-center"
-          offset={isMobile ? 'calc(72px + env(safe-area-inset-bottom))' : '28px'}
+          position={toastTop ? 'top-center' : 'bottom-center'}
+          offset={toastOffset}
+          mobileOffset={toastOffset}
           toastOptions={{ unstyled: true, style: { zIndex: 100 } }}
         />
       </div>
