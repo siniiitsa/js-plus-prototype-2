@@ -117,9 +117,13 @@ Six, all deliberate:
    the tab is simply a second React root in the same session.
 6. **Toast positioning.** §3.5 maps the toast to shadcn's `sonner`, and §9.2 also specifies a
    hand-positioned `toastUp` entry animation. Sonner owns the positioning and the mount
-   transition (bottom-centre, 28px desktop / `calc(72px + env(safe-area-inset-bottom))` mobile),
+   transition (bottom-centre, 28px desktop / `calc(72px + env(safe-area-inset-bottom))` mobile,
+   passed as both `offset` and `mobileOffset` because sonner reads the latter below 600px),
    which produces the same slide-up; the pill itself is styled to §9.2's exact values. The
-   `toastUp` keyframe is still defined in `index.css` per §3.2.
+   `toastUp` keyframe is still defined in `index.css` per §3.2. Two additions: while a mobile
+   drawer is open the toast drops from the **top** instead, since the drawer covers the bottom
+   nav and its own foot would sit under the pill; and the delete toast carries an **Undo**
+   button and lives 6 s instead of 2.4 (see *Scope boundaries*).
 
 ## Choosing a header
 
@@ -240,6 +244,8 @@ That distinction is the whole design, and it buys two things:
   **The header's navigation.** Every section is given a DOM id — its category, which is unique per
   page — so the nav links, *Book Now* and *Listen* all scroll to the section they name, and the
   *Minimal* triple resolves Music / Shows / Book to the nearest section the page actually carries.
+  A label with no such section stays on the canvas, is named in a hint above the Navigation links select,
+  and is left out of the published nav, the footer's rule.
   Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
   before, layout 1's glyph opened nothing and layouts 2–6 dropped their links outright, so a
   published phone had no navigation at all. The panel is deliberately thin — no Escape key, no
@@ -263,7 +269,8 @@ That distinction is the whole design, and it buys two things:
   only contradict the list it sits beside, and the section is now the one with no photo slot at
   all. Nothing is *marked* as playing, and the clock stays at 00:00, until the first pick; the
   canvas keeps `NOW_PLAYING`'s decorative clock, because the Figma frame draws a player caught
-  mid-song.
+  mid-song — unless the list is empty, where the card says "No tracks yet." and the clock reads
+  00:00 on both surfaces.
 
   **The gallery, which browses.** The seven-tile strip is a real filmstrip on the published page:
   every thumbnail is clickable, the rail's two arrows step through the slots and wrap at both
@@ -281,7 +288,11 @@ That distinction is the whole design, and it buys two things:
   row — the page's own strip, which the arrows already drive — has none. `extUrl()` normalises
   each to an absolute URL, since a schemeless one would resolve against `<base href>`, i.e. the
   builder, and `extLink()` turns the row or the pill into an `<a>` with `target="_blank"`, since
-  the delegated listener below swallows fragments and nothing else. An empty field leaves the
+  the delegated listener below swallows fragments and nothing else. An address that is not one
+  — "not a url", `javascript:`, `//cdn.x`, a bare `localhost` — normalises to `''`, the same as an
+  empty field, and the editor says why under the input once the artist leaves it
+  (`urlProblem()`, shared with every other address field: a track's audio, a gig's tickets link,
+  a footer link's url). An empty field leaves the
   Soundcloud pill the picture it always was — but an empty *gallery* row is not published at all.
   A tile that promises a destination it cannot go to is worse than no tile, and unlike the pill,
   which sits alone, these sit in a row that reads as a list of where to follow the artist. The
@@ -345,7 +356,11 @@ That distinction is the whole design, and it buys two things:
   dead-looking arrow, which is a diff from the canvas. `sel` is an ISO date rather than a cell
   index, because it has to survive the month turning — it names a day, not a square of whatever
   month is on screen — and the empty string is this section's `-1`, so `vm.calPick` renders until
-  a visitor picks something and the published first paint is the canvas's picture by construction.
+  a visitor picks something and the published first paint is the canvas's picture by construction
+  — up to the clock. The canvas never reads it, so it stays the frame's June; the published tab
+  reads today once (in UTC) and, from it, kills every day and slot before today exactly as a
+  booked one is killed but without the strike, drops a cued date that has passed, and opens on
+  today's month when `open` is earlier.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
   blocked it. Booked days are muted and struck through and take no handler (Lime dims them to .38
   with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid), which is a **content** state rather than a
@@ -356,8 +371,10 @@ That distinction is the whole design, and it buys two things:
   six rows simply grows one, where June needs five.
 
   Its editor is the fifth structured field and the first that is not a repeater: `BookedField` is
-  a month of the artist's own to click, paging the same twelve-month window the section does,
-  because one row per blocked date is the wrong shape for a June with eight of them. `para` went
+  a month of the artist's own to click, because one row per blocked date is the wrong shape for a
+  June with eight of them. It pages the same twelve-month window the *published* section does —
+  from today's month once `open` has passed, with the days before today faded and unclickable
+  unless already blocked — which makes it the editor's one reader of the clock. `para` went
   with `DEFS.calPara` — it rendered in neither calendar layout.
 
   **The enquiry form, which fills in and sends.** It was the last §10.2 section whose every
@@ -371,7 +388,9 @@ That distinction is the whole design, and it buys two things:
   of `{ label, placeholder, kind }`, the fifth repeater and the sixth structured editor, and the
   only one with a per-row select. `kind` is `text | email | number`, and it is what makes
   validation derivable rather than guessed: with a label and a placeholder alone there is no way
-  to know which box holds the address a reply goes to.
+  to know which box holds the address a reply goes to. For the same reason the last `email` row
+  cannot be removed or retyped in the editor: its trash button and its other kinds are disabled,
+  with a hint that says why.
 
   **The submit is a `mailto:`**, and `email` is what it is addressed to. There is no backend and
   never will be, so handing the enquiry to the visitor's own mail app is the one delivery that is
@@ -462,10 +481,13 @@ That distinction is the whole design, and it buys two things:
   are `FOOTER_TARGETS`, every category a page *can* carry rather than the ones this one does: a
   Radix `Select` whose value names no item blanks its trigger, so a link to a section since
   deleted must still read as what it points at, and a link can be aimed at a section not yet
-  added. Resolving the target against the actual page is `sectionVm`'s job, and §4.3a had already
-  written down what happens when it fails — the label keeps its place in the design and simply
-  does not link. That is also the whole of the footer on a blank page, exactly as the header's
-  nav is empty there.
+  added. Resolving the target against the actual page is `sectionVm`'s job. When a row's section
+  is not on the page, the canvas keeps the label and the editor marks the row "Section not on the
+  page", while the published footer leaves the row out, because a visitor gains nothing from a
+  word that goes nowhere. A plain-label row (target *Nothing*) and a web-address row with a
+  refused address still render. On a blank page the published footer is the Book pill alone,
+  just as the header's nav is empty there. The columns are halved from the list that actually
+  renders.
 
   The two columns are derived rather than stored. The frames draw four and four, so the list is
   halved with the remainder in column one — the pricing deck's odd-count rule, and column one is
@@ -507,6 +529,13 @@ These are intentional limits, not oversights — see §12 for the full list. The
   reorders by touch too, and it mirrors the arrows on ArrowUp / ArrowDown when focused.
   The header and footer are locked: they show a padlock instead of a handle, and a drag
   clamps to the slots between them.
+- **Delete is one click, with Undo instead of a confirm.** Every delete — the page list's
+  menu, the edit panel's button and the canvas toolbar's trash — toasts "*Section* removed ·
+  Undo", which puts the same section back where it was (clamped so the footer stays last) and
+  opens no editor. The next toast replaces it as any toast does. Separately, `st.removed` keeps
+  each category's last deleted `{ arch, c }`, uploads included, so adding that category again
+  brings its content back and the add composer opens on its old layout; a *Start fresh* tick
+  in the composer opts out. It lives only as long as the session, like everything else.
 - **Retro and Lime are designed; Grunge, Editorial and Pop are not.** Retro ships six
   photographic header layouts. Grunge, Editorial and Pop are fully selectable and functional but
   render flat-colour sections and a three-layout flat header family — whose nav is still the
@@ -527,9 +556,14 @@ These are intentional limits, not oversights — see §12 for the full list. The
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
   24px so the squares read as texture: 16px tall, 8px squares.
-- **Layout folding.** For the 10 non-header categories, more layout numbers are offered than
+- **Layout folding.** Seven of the 10 non-header categories offer more layout numbers than
   there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
-  keeping their own labels. The header is exempt.
+  keeping their own labels. The header, the footer, the gallery and the map are level.
+- **Fields a layout does not read stay editable.** Each section's panel lists every field any
+  of its layouts reads, so switching layouts never discards copy. A field the current layout
+  ignores says "Not shown in this layout" under its label, off the field's `in` list and
+  `fieldReach()` in `data.js`. The flat three's header carries no such note: its family is not
+  designed, and `in` names Retro's and Lime's header layouts only.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

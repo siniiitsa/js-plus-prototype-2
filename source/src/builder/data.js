@@ -176,8 +176,10 @@ export const catName = (id) => catById(id)?.name ?? id
  * The header's other two controls point at a section too, and so does
  * the fixed Music / Shows / Book triple, which names no category at
  * all. Each is a preference list resolved against the page: the first
- * candidate actually on it wins, and a label whose every candidate is
- * missing keeps its place in the design and simply does not link.
+ * candidate actually on it wins. A pill whose every candidate is missing
+ * keeps its place in the design and simply does not link. A *label* with
+ * nothing to point at — a Minimal nav word, a footer row — is kept on the
+ * canvas and left off the published page, where it would be a dead word.
  * ------------------------------------------------------------------ */
 
 export const NAV_MINIMAL = [
@@ -361,9 +363,10 @@ export const TRACK_AUDIO = [
 // The clock on the "now playing" card beside the track stack — a player caught
 // mid-song, which is what the Figma frame draws. Only the editor canvas shows
 // it: the published player's clock is its <audio> element's own (§10.2a), and
-// the *track* named on the card is track one at both sizes, not `track` here,
-// which survives only as the label for a section with no tracks left in it.
-export const NOW_PLAYING = { track: 'Night Rain', at: '02:28', of: '04:22', pct: 34 }
+// the *track* named on the card is always one of the artist's, so there is no
+// track here. A section with no tracks left draws neither: `sectionVm` stops
+// the clock at 00:00 under an empty bar and names `vm.mediaEmpty` instead.
+export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
 
@@ -540,9 +543,10 @@ export const FORM_MESSAGE = 'Tell me about your event…'
 // QUOTES rule, so its seed resolver is a one-liner and needs no dressing. `to`
 // is a section id (§4.3a), 'link' for a web address in the row's own `url`, or
 // 'none'. The eight targets are the categories EXAMPLE_PAGE carries, so the
-// seeded page publishes fully linked; on BLANK_PAGE every one of them resolves
-// to nothing and the column is the picture it has always been, exactly as the
-// header's nav is empty there.
+// seeded page publishes fully linked. On BLANK_PAGE every one of them resolves
+// to nothing: the canvas still draws the eight labels, and the published footer
+// drops all of them and keeps the Book pill alone, just as the header's nav is
+// empty there.
 //
 // A flat list, not two columns: sectionVm does the halving, or a repeater row
 // would have to carry which column it stands in.
@@ -564,8 +568,8 @@ export const FOOTER_LINKS = [
 // Select whose value names no item blanks its trigger, so a row pointing at a
 // section the artist has since deleted must still read as what it points at,
 // and a link can be aimed at a section that has not been added yet. Resolving
-// it against the actual page is sectionVm's job — §4.3a, "a label whose every
-// candidate is missing keeps its place in the design and simply does not link".
+// it against the actual page is sectionVm's job (§4.3a): the canvas keeps such
+// a row, and the published footer leaves it out.
 //
 // 'none' and 'link' are non-empty sentinels because Radix refuses a SelectItem
 // with an empty value; no category is named either of them.
@@ -593,7 +597,6 @@ export const DEFS = {
   bioP1:      'DJ and selector based in Manchester. Five years of reading rooms — house, disco, soul, 80s — chosen by the room, not the algorithm.',
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
   since:      'June 2021',
-  statement:  'Reads the room.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
   // §10.2 layout 3 heads the stack with a line under the title, where neither
   // earlier layout draws one — the frame's own sentence, kept as the seed so
@@ -610,13 +613,11 @@ export const DEFS = {
   // nothing of the sort — the frame's own sentence, kept as the seed so the
   // reference picture holds. Emptying it drops the line.
   pricingQuote: "“Kai read the room better than any DJ we'd worked with. We had him back twice that year.”",
-  mapSub:     '12 dates · 8 cities · this season',
   // §10.2 layout 2 heads the testimonials with a line about who the reviews are
   // from, where layout 1 draws no head at all — the frame's own sentence, kept
   // as the seed so the reference picture holds. Emptying it drops the line.
   testiSub:   'Real words from couples, planners and venues across the North West.',
   formPara:   'Tell me about the night — date, venue, crowd. Replies within 24 hours.',
-  copyright:  'C 2026 Kai Mercer',
 }
 
 // §10.2 scheduler — the date the calendar is cued to, and the time its enquiry
@@ -635,8 +636,11 @@ export const CAL_DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 // gallery's three social addresses rather than GIGS and TIERS — absent and
 // emptied both mean none, because there is nothing here to seed.
 export const CAL_BOOKED = []
-// How far ahead the calendar reaches, in months from CAL_OPEN's. The arrows
-// wrap at both ends of it rather than clamping — see EncoreSection's Calendar.
+// How far ahead the calendar reaches, in months from the opening month — the
+// `open` field's, or on the published page and in the editor's BookedField
+// today's when that is later (calStart). The
+// arrows wrap at both ends of it rather than clamping — see EncoreSection's
+// Calendar.
 export const CAL_SPAN   = 12
 
 // §10.2 layouts 2 and 4 — the named slots. Where layout 1 draws a month and lets
@@ -797,50 +801,75 @@ export const BLANK_PAGE = [
 
 /* ------------------------------------------------------------------ *
  * §4.8 FIELDS — editable content per category
- * { k, l, type?, opts?, d?, def? }
+ * { k, l, type?, opts?, d?, def?, in? }
+ *
+ * `in` is the designs that read the key, 0-based like `arch % designCount`
+ * (so layout 1 is 0). It is an array when every template reads the key in
+ * the same designs, or an object keyed by template name when one differs —
+ * `'*'` standing for any template the object does not name. A field with no
+ * `in` is read by every design. EditPanel says so beside a field the section's
+ * current design does not read; see fieldReach() below.
+ *
+ * `type: 'url'` is a plain text box that also says, on blur, why urlProblem()
+ * refuses what was typed. The repeaters' address columns use the same input.
  * ------------------------------------------------------------------ */
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
 
+// Pricing layout 2's card fields, which Lime's own layout 2 does not draw.
+const PRICING_CARD = { Lime: [], '*': [1] }
+
 export const FIELDS = {
   // Every element appearing in any header layout is exposed. A layout that
   // does not consume a key simply ignores it, so swapping layouts never
-  // silently discards copy the user typed.
+  // silently discards copy the user typed — and the panel says so, off `in`.
+  //
+  // The header's `in` is always an object naming Retro and Lime alone: the
+  // two have different header families (six designs against four), and the
+  // flat three have a third family of their own that is not designed, so
+  // they are left unmarked rather than folded onto either list.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
     { k: 'avatar',    l: 'Artist photo',     type: 'image',
       hint: 'The portrait card and the small round avatar.' },
-    { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act' },
-    { k: 'title',     l: 'Title' },                       // defaults to artistName — special-cased
-    { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub' },
-    { k: 'location',  l: 'Location',         d: 'Manchester, UK' },
+    { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3] } },
+    { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
+    { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
+      in: { Retro: [1, 4], Lime: [1] } },
+    { k: 'location',  l: 'Location',         d: 'Manchester, UK',
+      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3] } },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
-    { k: 'cta2',      l: 'Secondary button', d: 'Listen' },
-    { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE },
-    { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE },
-    { k: 'badgeText', l: 'Badge text',       d: 'Kai Mercer' },
+    // Bio layout 4's Listen reads this key too; `in` speaks for the header.
+    { k: 'cta2',      l: 'Secondary button', d: 'Listen',
+      in: { Retro: [1, 2, 4], Lime: [1, 2] } },
+    { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] } },
+    { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3] } },
+    { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Shows · Book)' },
     ] },
-    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', opts: [
+    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
   ],
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
-    { k: 'heading',   l: 'Heading', d: 'Reads the room.' },
-    { k: 'statement', l: 'Statement (centred layout)', def: 'statement' },
+    { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
-    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
+    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3] },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
     // so the seeded card draws the frame's three columns; emptied, the column
     // is not drawn.
-    { k: 'since',     l: 'Performing since', def: 'since',
+    { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
   ],
   // The second list-shaped content type with a structured editor (see
@@ -860,9 +889,9 @@ export const FIELDS = {
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
       hint: 'Each row is one card in the stack, with its own artwork and audio file. '
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
-    { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },
+    { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
-    { k: 'soundcloud', l: 'SoundCloud link', d: '',
+    { k: 'soundcloud', l: 'SoundCloud link', type: 'url', d: '', in: [0],
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
@@ -873,7 +902,7 @@ export const FIELDS = {
   // sentinel. The tags are layout 1's filter row, the repertoire's rule; layout 2
   // names the packages themselves in its chip row and reads no tags at all.
   pricing: [
-    { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night",
+    { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night", in: [0, 1, 2],
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
@@ -884,21 +913,28 @@ export const FIELDS = {
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
-    { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro',
+    { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro', in: [2],
       hint: 'A line under the heading. Layout 3 only.' },
-    { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote',
+    { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote', in: [1],
       hint: 'A line of praise beside the plan. Layout 2 only.' },
     // Layout 2's credit row under the quote and the line beside its pill, all
     // seeded with the frame's own copy. Every one is emptiable and drops what
-    // it fills; the row goes when all three of its fields are empty.
-    { k: 'images',  l: 'Reviewer photos (layout 2)', type: 'images', max: 3,
-      hint: 'Small faces under the quote.' },
-    { k: 'reviews', l: 'Review count (layout 2)', d: PRICING_REVIEWS },
-    { k: 'rating',  l: 'Rating (layout 2)', d: PRICING_RATING,
+    // it fills; the row goes when all three of its fields are empty. Lime's
+    // layout 2 is its own composition and draws none of the five — which is
+    // why none of the five names a layout: a "(layout 2)" label sat over the
+    // "Not shown in this layout" note on Lime's layout 2, and the note is the
+    // one that knows the template. The hints say where on the card instead.
+    { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CARD,
+      hint: 'Small faces under the plan card’s quote.' },
+    { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CARD,
+      hint: 'In the credit row under the quote, after the stars.' },
+    { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CARD,
       hint: 'The five stars beside it are drawn while this is filled.' },
-    { k: 'cta',     l: 'Button (layout 2)', d: PRICING_CTA },
-    { k: 'note',    l: 'Line beside the button (layout 2)', d: PRICING_NOTE },
-    { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA,
+    // Named for its card rather than numbered, so it still reads apart from
+    // the row button below.
+    { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD },
+    { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD },
+    { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA, in: [3],
       hint: 'The pill under the price on every package row.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
@@ -927,37 +963,40 @@ export const FIELDS = {
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
-    { k: 'youtube',   l: 'YouTube link', d: '',
+    { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
       hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
-    { k: 'instagram', l: 'Instagram link', d: '',
+    { k: 'instagram', l: 'Instagram link', type: 'url', d: '', in: [0],
       hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
-    { k: 'tiktok',    l: 'TikTok link', d: '',
+    { k: 'tiktok',    l: 'TikTok link', type: 'url', d: '', in: [0],
       hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
   ],
-  // `heading` heads the flat layout, layout 2's slot list and layout 4's whole
-  // block — the scheduler frame draws no title — and every other key is read by
-  // at least two designed layouts. `open` is the one date the section is built
-  // from (in layouts 2 and 4 the slot it opens picked), `booked` the days it
-  // will not take (in those two the slots it strikes through), `time` the hour
-  // the foot line names and layout 4's own stat cell, and `cta` the label on
-  // the pill beside that line, which was an unread key until the pill existed
-  // and which layout 3 alone still leaves editing nothing.
+  // `heading` heads layout 2's slot list, layout 3's scheduler and layout 4's
+  // whole block, and Lime's layout 1 as well — Retro's draws no title. `open`
+  // is the one date the section is built from (in layouts 2 and 4 the slot it
+  // opens picked), `booked` the days it will not take (in those two the slots
+  // it strikes through), `time` the hour the foot line names and layout 4's
+  // own stat cell, and `cta` the label on the pill beside that line, which was
+  // an unread key until the pill existed and which layouts 2 and 3 still leave
+  // editing nothing. `in` records each key's reach.
   calendar: [
-    { k: 'image',   l: 'Photo', type: 'image',
+    { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
-    { k: 'heading', l: 'Heading', d: 'Availability' },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], '*': [1, 2, 3] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
-          + `It reaches ${CAL_SPAN} months from there.` },
+          + `It reaches ${CAL_SPAN} months from there. On the published page, days `
+          + "before today can't be picked, and a past date opens it on today's month." },
     { k: 'booked',  l: 'Booked dates', type: 'booked',
-      hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
-    { k: 'time',    l: 'Enquiry time', d: CAL_TIME,
+      hint: 'Click a day to block it. A blocked day cannot be picked on the published page. '
+          + 'The months here are the published ones, so they start at today when the opening '
+          + 'date has passed.' },
+    { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'summary card. Leave it empty and the line stops at the date.' },
-    { k: 'cta',     l: 'Button (layouts 1 and 4)', d: 'Check a date' },
-    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA },
-    { k: 'types',   l: 'Event types (layout 4)', type: 'area', d: CAL_TYPES.join(', '),
+    { k: 'cta',     l: 'Button (layouts 1 and 4)', d: 'Check a date', in: [0, 3] },
+    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
+    { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3],
       hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
@@ -980,35 +1019,34 @@ export const FIELDS = {
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
     { k: 'base',    l: 'Based in',       d: MAP_BASE },
-    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS },
-    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME },
-    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE },
+    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1, 3] },
+    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1] },
+    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1] },
     // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
     // draws one. Live it lifts the pager and lists every gig under the current
     // filter; where the list is already one page it stays a picture (the
     // Soundcloud rule). An emptied label drops the pill.
-    { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs',
+    { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs', in: [2],
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
-    { k: 'status',  l: 'Map tag (layout 3)', d: MAP_STATUS },
-    { k: 'updated', l: 'Map note (layout 3)', d: MAP_UPDATED },
-    { k: 'rings',   l: 'Ring labels (layout 3)', d: MAP_RINGS,
+    { k: 'status',  l: 'Map tag (layout 3)', d: MAP_STATUS, in: [2] },
+    { k: 'updated', l: 'Map note (layout 3)', d: MAP_UPDATED, in: [2] },
+    { k: 'rings',   l: 'Ring labels (layouts 3 and 4)', d: MAP_RINGS, in: [2, 3],
       hint: 'Up to three, inner ring first, separated by commas.' },
-    { k: 'expand',  l: 'Map link (layout 3)', d: MAP_EXPAND,
+    { k: 'expand',  l: 'Map link (layout 3)', d: MAP_EXPAND, in: [2],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
-    { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN,
+    { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
       hint: 'Beside "Travel & reach" above the four stat cards. Leave empty to hide it.' },
-    { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
   ],
   testimonials: [
     // A textarea, because layout 2's default breaks onto a second line.
-    { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth',
+    { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
       hint: 'Layout 2 starts from its own two-line heading; a line break you type is kept there.' },
     // Layout 2 was the first design to head this section, so both of the plain
     // strings below reached it alone — FIELDS.media.soundcloud's case the other
     // way up, hence the layout in each hint. Layout 3's bento wall then gave
     // `sub` a second seat: its stat card sets the sentence the frame fills with
     // a fabricated event count.
-    { k: 'sub',     l: 'Intro line', def: 'testiSub',
+    { k: 'sub',     l: 'Intro line', def: 'testiSub', in: [1, 2],
       hint: 'The line under the heading in layout 2, and the sentence on the stat '
           + 'card in layout 3.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
@@ -1022,28 +1060,29 @@ export const FIELDS = {
           + "above the quote in layout 1. Layout 2's selector takes the name's "
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
-    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS,
+    // Lime's layout 2 prints no stars.
+    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS, in: { Lime: [], '*': [1] },
       hint: 'Printed in the corner of the card, beside the reviewer. Empty it to drop them.' },
-    { k: 'cta',     l: 'Button', d: 'Book Now',
+    { k: 'cta',     l: 'Button', d: 'Book Now', in: [1],
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],
   form: [
-    { k: 'image',    l: 'Portrait', type: 'image',
+    { k: 'image',    l: 'Portrait', type: 'image', in: [0, 1],
       hint: 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
     // avatar. FIELDS.media.soundcloud's case: it reaches one layout, so the
     // hint says which.
-    { k: 'photo',    l: 'Stage photo', type: 'image',
+    { k: 'photo',    l: 'Stage photo', type: 'image', in: [1],
       hint: 'The big picture above the heading. Layout 2 only.' },
     // A textarea, because the default breaks after "Let's make" — layout 2
     // keeps the break, the others read it as a space.
     { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable." },
-    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara',
+    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2],
       hint: 'The line under the heading. Layout 3 only.' },
-    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
+    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1, 3],
       hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
           + 'right-hand column, and with none it draws no column at all.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
@@ -1054,23 +1093,23 @@ export const FIELDS = {
           + 'which set the label inside the box and draw no placeholder. An odd last box '
           + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
           + 'form emails you what the visitor types.' },
-    { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
+    { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
-    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, hint: 'Layouts 1 and 4.' },
+    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
-    { k: 'button',   l: 'Button', d: 'Book Now', hint: 'Layouts 1 and 4.' },
+    { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
     // so an emptied label falls back to `button`.
-    { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE },
-    { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT },
-    { k: 'bookings',  l: 'Bookings line (layouts 2 and 3)', d: FORM_BOOKINGS,
+    { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE, in: [1, 2] },
+    { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT, in: [1, 2] },
+    { k: 'bookings',  l: 'Bookings line (layouts 2 and 3)', d: FORM_BOOKINGS, in: [1, 2],
       hint: 'The five stars before it are drawn while this is filled.' },
-    { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA },
-    { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE },
-    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE,
+    { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA, in: [1, 2] },
+    { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE, in: [1, 2] },
+    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE, in: [2],
       hint: 'The small line above the heading. Leave it empty to hide it.' },
   ],
   footer: [
@@ -1089,7 +1128,7 @@ export const FIELDS = {
     // section's own content, so the footer's seal was hidable by nothing only
     // because no field here named it.
     { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
-    { k: 'copyright', l: 'Small print', def: 'copyright' },
+    { k: 'copyright', l: 'Small print' },                 // defaults to copyrightOf(name) — special-cased
   ],
 }
 
@@ -1132,19 +1171,86 @@ export function caseText(t, casing) {
   return t
 }
 
+// The footer's small print, off the artist's name. sectionVm and EditPanel both read it.
+export const copyrightOf = (name) => `C 2026 ${name}`
+
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
 
-// A user-typed outbound URL → an absolute one, or '' if the field is empty.
+// Whether a section's current design reads field `f` — `design` being
+// `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
+// its `'*'` standing for any template it does not name; a template it does not
+// cover at all is left unmarked (true), which is how the flat three's header
+// stays silent. Read by EditPanel alone: nothing on the canvas consults it,
+// so a field the design ignores keeps its copy for the next layout.
+export function fieldReach(f, themeName, design) {
+  const r = !f.in || Array.isArray(f.in) ? f.in : (f.in[themeName] ?? f.in['*'])
+  return !r || r.includes(design)
+}
+
+// Why a user-typed outbound address cannot be linked, or null if it can (an
+// empty one included — empty is every seam's "no link", not a mistake).
 //
-// Everything the artist types is meant to leave the page, so a schemeless
-// "soundcloud.com/kai" gets https://. It cannot be left relative: the published
-// tab carries a <base href> to the opener (§ Publish), so a relative href would
-// resolve against the builder and load it over the page. mailto:/tel: and an
-// explicit scheme are passed through untouched.
-export function extUrl(v) {
+// The rule is extUrl's, below, and lives here so the editor can say *why* under
+// the input rather than the published page quietly dropping the link. Four
+// schemes are real addresses — http, https, mailto, tel — and everything else
+// (javascript:, data:, vbscript:, …) is refused: React 19 swaps a javascript:
+// href for one that throws, so passing it through published a dead link.
+// Whitespace or a control character anywhere inside is refused rather than
+// %-encoded, since "not a url" is a sentence and not an address. A schemeless
+// address needs a host with a dot in it, which is what refuses bare
+// `localhost`; and `//host` is refused outright (F18: the published page is the
+// artist's public site, and neither is an address a visitor can reach). A
+// `host:port` is not a scheme — `example.com:8080/x` is schemeless. `web` drops
+// mailto: and tel: from the four, for a track's audio: an <audio> cannot play
+// either, and the no-audio row is the honest state.
+const URL_SCHEMES = ['http', 'https', 'mailto', 'tel']
+const URL_HOST = /^[^./:?#@\s]+(\.[^./:?#@\s]+)+$/
+export function urlProblem(v, web = false) {
   const t = String(v ?? '').trim()
-  if (!t) return ''
-  return /^[a-z][a-z0-9+.-]*:/i.test(t) || t.startsWith('//') ? t : `https://${t}`
+  if (!t) return null
+  if (/[\s\x00-\x1f\x7f]/.test(t)) return 'An address can’t contain spaces.'
+  if (t.startsWith('//')) return 'Start the address with https:// or the site’s name.'
+  const m = /^([a-z][a-z0-9+.-]*):(.*)$/is.exec(t)
+  const scheme = m?.[1].toLowerCase()
+  if (web && m && scheme !== 'http' && scheme !== 'https'
+      && (URL_SCHEMES.includes(scheme) || !/^\d/.test(m[2]))) {
+    return 'This needs a web address — https://…'
+  }
+  if (m && !URL_SCHEMES.includes(scheme) && !/^\d/.test(m[2])) {
+    return 'Only web, mailto: and tel: addresses can be linked.'
+  }
+  if (scheme === 'mailto') {
+    return /^[^@]+@[^@]+\.[^@]+/.test(m[2]) ? null : 'That email address looks incomplete.'
+  }
+  if (scheme === 'tel') return /\d/.test(m[2]) ? null : 'That phone number has no digits.'
+  const http = scheme === 'http' || scheme === 'https'
+  if (http && !m[2].startsWith('//')) return 'Write the address as https://…'
+  const rest = http ? m[2].slice(2) : t
+  const host = rest.split(/[/?#]/)[0].replace(/:\d*$/, '')
+  if (!URL_HOST.test(host)) return 'That doesn’t look like a web address — e.g. soundcloud.com/you'
+  try {
+    new URL(http ? t : `https://${t}`)
+  } catch {
+    return 'That doesn’t look like a web address — e.g. soundcloud.com/you'
+  }
+  return null
+}
+
+// A user-typed outbound URL → an absolute one, or '' if the field is empty or
+// holds nothing urlProblem() above will link.
+//
+// '' is already every seam's "no link" state — the Soundcloud button stays a
+// picture, the gallery hides the row, a gig row stays unlinked, an audio row is
+// unplayable — so a refused address needs nothing downstream. Everything the
+// artist types is meant to leave the page, so a schemeless "soundcloud.com/kai"
+// gets https://. It cannot be left relative: the published tab carries a
+// <base href> to the opener (§ Publish), so a relative href would resolve
+// against the builder and load it over the page. An address with one of the
+// four schemes is passed through as typed; `web` is urlProblem's.
+export function extUrl(v, web = false) {
+  const t = String(v ?? '').trim()
+  if (!t || urlProblem(t, web)) return ''
+  return /^(https?|mailto|tel):/i.test(t) ? t : `https://${t}`
 }
 
 // The events map's layout-2 Get Directions pill: a Google Maps route to the
@@ -1240,10 +1346,12 @@ export function repChips(songs) {
  * Date built from those parts lands on the previous day west of
  * Greenwich, which would name the wrong weekday in the enquiry line.
  *
- * Nothing here reads the clock. The calendar opens on the date the artist
- * set, not on today, so a published page draws the same month whenever it
- * is opened — and the canvas's picture cannot drift off the reference
- * frame's June overnight.
+ * Nothing here reads the clock. The canvas opens on the date the artist set,
+ * not on today, so its picture cannot drift off the reference frame's June
+ * overnight. The published tab knows the date: PublishedPage reads it once
+ * and hands `sectionVm` a `today` it honours only when live, which kills the
+ * days before it and opens a past `open` on today's month instead. The
+ * editor's BookedField reads it too, to page that same window (calStart).
  * ------------------------------------------------------------------ */
 
 // The shape of one month's grid: the blank cells that lead it, and the days
@@ -1269,6 +1377,16 @@ export function parseDate(v) {
 
 export function isoDate(y, m, d) {
   return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+
+// The day the calendar's CAL_SPAN window counts from (F20): `open`, or today
+// once `open` has passed — max(open, today), read by month. `open` is parsed,
+// `today` an ISO string or nothing, and with nothing it is `open`, which is
+// how the canvas stays off the clock. The published section and BookedField
+// both ask this, so the editor pages exactly the months a visitor can pick in.
+export function calStart(open, today) {
+  const now = parseDate(today)
+  return now && isoDate(open.y, open.m, open.d) < isoDate(now.y, now.m, now.d) ? now : open
 }
 
 export function weekdayOf(y, m, d) {

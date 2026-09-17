@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { sectionVm } from './builder/EncoreBuilder.jsx'
 import EncoreSection from './builder/EncoreSection.jsx'
+import { EXAMPLE_PAGE, catName } from './builder/data.js'
 
 // A hand copy of EncoreBuilder's SIZES + RAMP + RAMP_REST + WIDE. Theme ramps
 // (THEME_RAMP) are not copied: sectionVm lays them over this by `dev`.
@@ -49,11 +50,14 @@ const arch = Number(q.get('arch') ?? 1)
 const device = q.get('w') || 'desktop'
 const themeIdx = Number(q.get('theme') ?? 0)
 
-const navSections = [
-  { cat: 'header', label: 'Header' }, { cat: 'bio', label: 'About' },
-  { cat: 'media', label: 'Top tracks' }, { cat: 'pricing', label: 'Pricing' },
-  { cat: 'calendar', label: 'Booking Calendar' }, { cat: 'form', label: 'Enquiries' },
-]
+// The seeded page's sections, derived the way the editor derives them. It used
+// to be a hand list of six, which left four of FOOTER_LINKS' eight targets off
+// the page — harmless while a dead footer row still rendered, but the published
+// footer drops those rows now (F25), so `&live=1` would have shown a footer no
+// seeded page can publish.
+const navSections = EXAMPLE_PAGE
+  .filter(([id]) => id !== 'header' && id !== 'footer')
+  .map(([id]) => ({ cat: id, label: catName(id) }))
 
 // &n=8 fills the section's list-shaped content with n rows, to see a design
 // hold at a count the seed does not reach (FIELDS.media.tracks allows 8). It
@@ -148,7 +152,7 @@ const LIST = {
   }),
   // The footer's sitemap. The eighth of every eight rows is an address rather
   // than a section, so `live=1` renders one `target="_blank"` link; the rest
-  // cycle through sections the harness's page carries. An odd count leaves the
+  // cycle through sections the harness's page carries (all of EXAMPLE_PAGE's). An odd count leaves the
   // second column one short, and `&n=0` is the pill standing alone.
   footer: (i) => ({
     label: `Link ${i + 1}`,
@@ -199,6 +203,13 @@ if (q.get('promises') !== null) c.promises = q.get('promises').split('|').join('
 // Neither seeded theme shows that empty state any other way.
 if (q.get('noimage') === '1') c.image = null
 
+// &cj=<url-encoded JSON> merges an object into `c`, last, so it wins over every
+// key above. It is how arbitrary content is seen without a named parameter for
+// each — a 40-character venue is `&cj=` + encodeURIComponent(JSON.stringify(
+// { gigs: [{ venue: '…', city: 'Leeds' }] })). Rows it supplies are whole rows:
+// nothing is merged into the seeded ones.
+if (q.get('cj')) Object.assign(c, JSON.parse(q.get('cj')))
+
 // &live=1 renders the section as the published page does, so the controls that
 // are gated on `s.live` can be exercised with a real click here rather than by
 // driving the editor and its popup.
@@ -207,11 +218,15 @@ if (q.get('noimage') === '1') c.image = null
 // which drops its horizontal padding, in a wrapper the column's own width
 // (684 / 323). Desktop only — the narrow frames never compose.
 const column = device === 'desktop' ? q.get('column') || undefined : undefined
+// &today=2026-09-17 is the date PublishedPage reads off the clock, which is how
+// the calendar's past days are seen dead. Opt-in, so a live digest never moves
+// with the calendar, and ignored without &live=1, as sectionVm ignores it.
+const today = q.get('today') || undefined
 const s = sectionVm({
   // &name=Poppy%20Jaeggy is how a display slot is checked against descenders
   // and a longer string — the seeded "Kai Mercer" has neither.
   themeIdx, cat, arch, c, artistName: q.get('name') || 'Kai Mercer',
-  Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections,
+  Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections, today,
   ...(column ? { column } : null),
 })
 

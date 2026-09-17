@@ -45,9 +45,9 @@ import {
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, TESTI_STARS,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
-  parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
+  parseDate, isoDate, calStart, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
-  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, extUrl, songTags, repChips,
+  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, urlProblem, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -151,6 +151,18 @@ function useIsMobile() {
 // interactive handler and every modal panel isolates its events (§5.6).
 const stopE = (e) => e.stopPropagation()
 
+// A tap on a toast (the delete toast's Undo) is not a tap outside a drawer.
+// A guard: vaul was measured not to close on one without it, but the mobile
+// sheets pass this as `onPointerDownOutside` so that stays true.
+const keepOnToast = (e) => {
+  if (e.target?.closest?.('[data-sonner-toaster]')) e.preventDefault()
+}
+
+// The site address the publish dialog shows, off the artist's name. Letters in
+// any script survive (an IDN host is legal); an unnamed page gets a stand-in.
+const siteSlug = (name) =>
+  String(name).normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '') || 'my-page'
+
 const initialsOf = (name) =>
   String(name).trim().split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase()
 
@@ -184,7 +196,7 @@ const HEADING_4 = {
   calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false, today }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -357,8 +369,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // rule was about a horizontal bar, which cannot carry "Booking Calendar" and
   // "Enquiry Form" at 390px — the burger panel is a column and has the room, so
   // mobile now shows the artist's own sections like every other width.
+  //
+  // Minimal's Music / Shows / Book name no category, so one can resolve to
+  // nothing. The footer's rule applies (§4.3a): the canvas keeps the label and
+  // the published page leaves it out, before navEms below measures the row.
   vm.navLinks = vm.navMode === 'minimal'
-    ? minimalNav(navSections)
+    ? minimalNav(navSections).filter((l) => !live || l.to)
     : navSections.map((n) => ({ label: n.label, to: n.cat }))
   // How wide Lime's one row of nav links wants to be, in ems of its own type:
   // every label in Bebas Neue plus the frame's 23/24 gap between each, with 1%
@@ -424,15 +440,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
   // string is what tells the ID card not to draw the column.
   vm.since = cv('since', DEFS.since)
-  vm.bioQuote = cased(cv('statement', DEFS.statement))
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
-  // The now-playing card is no longer content of its own: it names and shows
-  // the track the player is on, which `Media` resolves from `vm.tracks`. What
-  // is left here is the canvas's decorative clock — the frame draws a player
-  // mid-song — and the fallback label for a section with no tracks at all.
-  vm.nowPlaying = { ...NOW_PLAYING, by: cased(artistName) }
+  // vm.nowPlaying is resolved under `tracks` below, because it reads them.
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
   // the opener, so a schemeless "soundcloud.com/kai" would resolve against the
@@ -454,7 +465,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // seam (§10.2a): the published player loads it into its one <audio> element,
   // and a row without one is unplayable rather than silent-but-selected. A
   // typed address is normalised through extUrl for the same <base href> reason
-  // as the Soundcloud button; the seeds are already absolute. It follows the
+  // as the Soundcloud button, in its web-only mode — a mailto: or tel: cannot
+  // play, and an address extUrl refuses is the no-audio row, not a broken one;
+  // the seeds are already absolute. It follows the
   // artwork's rule about re-seeding by index, for the same reason.
   //
   // `sub` is the one subline the fitted layout 1 sets; `rel` is the same line
@@ -467,7 +480,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     vm.tracks = c.tracks.map((t, i) => {
       const sub = (t?.sub ?? '').trim()
       return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
-               img: t?.image ?? null, src: extUrl(t?.audio ?? '') || null }
+               img: t?.image ?? null, src: extUrl(t?.audio ?? '', true) || null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
@@ -476,6 +489,18 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
+
+  // The now-playing card is no longer content of its own: it names and shows
+  // the track the player is on, which `Media` resolves from `vm.tracks`. What
+  // is left here is the canvas's decorative clock — the frame draws a player
+  // mid-song — and only while there is a song to be in the middle of. With no
+  // tracks the clock stands at 00:00 under an empty bar on both surfaces, and
+  // the card names `mediaEmpty`, the one message the empty list prints too.
+  // `tracks3` is a prefix of `tracks`, so one test covers every design.
+  vm.mediaEmpty = 'No tracks yet.'
+  vm.nowPlaying = vm.tracks.length
+    ? { ...NOW_PLAYING, by: cased(artistName) }
+    : { at: '00:00', of: '00:00', pct: 0, by: cased(artistName) }
 
   // pricing — the artist's own packages, else the seeded ones. The `songs`
   // rule again: an absent key means TIERS, an emptied array means no packages,
@@ -761,16 +786,32 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // opens on *and* the day it opens picked; a field that is empty, half-typed
   // or impossible (31 June) parses to null and falls back to the seed, so the
   // calendar can never open on a month the artist did not choose.
+  //
+  // The published tab also knows what day it is (F20), and so does BookedField,
+  // which pages the window this computes. `today` is an ISO
+  // date PublishedPage reads off the clock once, and it is honoured only when
+  // `live`, so the canvas never reads the clock and stays the reference frame's
+  // June. With it, every day before today is **dead** — a flag beside `booked`
+  // that the section tests as the same `hit`, drawn as a booked day without the
+  // strike — a cued `open` in the past cues nothing, and a past `open` month
+  // gives way to today's as the first month of the window.
   if (cat === 'calendar') {
     const open = parseDate(cv('open', CAL_OPEN)) ?? parseDate(CAL_OPEN)
     // Absent and emptied both mean none: there is no seeded booking to lose, so
     // this follows the gallery's social addresses rather than the songs' rule.
     const booked = new Set(Array.isArray(c.booked) ? c.booked : CAL_BOOKED)
     const time = cv('time', CAL_TIME)
+    const now = live ? parseDate(today) : null
+    // ISO dates compare as strings, so "before today" needs no Date.
+    const nowIso = now ? isoDate(now.y, now.m, now.d) : ''
+    const dead = (iso) => !!nowIso && !!iso && iso < nowIso
+    const openIso = isoDate(open.y, open.m, open.d)
+    // max(open, today), by month: CAL_SPAN counts from whichever is later.
+    const start = calStart(open, live ? today : null)
 
     vm.calMonths = Array.from({ length: CAL_SPAN }, (_, i) => {
-      const m = open.m + i
-      const y = open.y + Math.floor(m / 12)
+      const m = start.m + i
+      const y = start.y + Math.floor(m / 12)
       const mo = ((m % 12) + 12) % 12
       const { lead, length } = monthSpan(y, mo)
       // Lead blanks are `{ d: '' }` — the cell renderer's own test for the
@@ -780,14 +821,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       const cells = Array.from({ length: lead }, () => ({ d: '' }))
       for (let d = 1; d <= length; d++) {
         const iso = isoDate(y, mo, d)
+        const gone = dead(iso)
         cells.push({
-          d, iso, booked: booked.has(iso),
+          d, iso, booked: booked.has(iso), dead: gone,
           // Composed per cell rather than on the pick, because the line is what
-          // the foot prints and EncoreSection composes nothing.
-          line: enquiryLine(y, mo, d, time),
+          // the foot prints and EncoreSection composes nothing. A dead day has
+          // none: nobody can enquire about a date that has passed.
+          line: gone ? '' : enquiryLine(y, mo, d, time),
           // Layout 3's pill, which its frame labels with the date alone
           // ("Enquiry About June 11") where the other layouts print the line.
-          short: `Enquiry About ${MONTHS[mo]} ${d}`,
+          short: gone ? '' : `Enquiry About ${MONTHS[mo]} ${d}`,
         })
       }
       // `label` is the one line layouts 1 draws; layout 3's head columns the
@@ -806,9 +849,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // the pick sideways to the day after.
     // Off the *parsed* date, not the raw field: an unparseable `open` falls back
     // to CAL_OPEN above, and testing the field would then cue a June 12 the
-    // artist has blocked — lit and struck through at once.
-    const openIso = isoDate(open.y, open.m, open.d)
-    vm.calPick = booked.has(openIso) ? '' : openIso
+    // artist has blocked — lit and struck through at once. A cue that has
+    // passed cues nothing either, and the foot prints the prompt.
+    vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
@@ -853,7 +896,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // the row prints is composed here, the way every cell above carries its own
     // enquiry line — EncoreSection looks a row up rather than working a date
     // out. `booked` reaches the list too: a slot the artist has blocked is a
-    // dead row, which is the one field that ties the two layouts together.
+    // dead row, which is the one field that ties the two layouts together —
+    // and live, so does a slot that has passed (`dead`, above).
     //
     // A row whose date does not parse keeps its place and simply does not pick,
     // §4.3a's rule for a link whose target is missing; it cannot happen from
@@ -871,10 +915,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
         kind: cased(sl.kind ?? ''),
         price: sl.price ?? '',
         booked: iso ? booked.has(iso) : false,
+        // A slot that has passed, live only — the cells' `dead`.
+        dead: dead(iso),
         // Layout 2's foot line when this slot is picked — the frame's own
         // "Thursday evening selected", the weekday and the slot's kind. The raw
         // kind, since `kind` above is already cased and cased() runs once here.
-        line: at
+        line: at && !dead(iso)
           ? cased(`${[DAY_FULL[weekdayOf(at.y, at.m, at.d)], String(sl.kind ?? '').trim().toLowerCase()]
             .filter(Boolean).join(' ')} selected`)
           : '',
@@ -901,17 +947,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // stays a span.
     vm.calBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'calendar'), navSections)
   }
-  // The tour-date rows of the calendar's flat layout. It sat under `map` for
+  // The tour-date rows of the calendar's unreachable fallthrough after layout 4. It sat under `map` for
   // years on the strength of its name; nothing in the events map reads it.
   vm.cities = CITIES
 
   // map
   //
-  // `pins` stays the raw five positions for the *flat* map layout, which draws
-  // them as decoration over a banner and has no list to pair them with. The
-  // compact tile pairs instead: every gig below carries the pin it lights.
+  // `pins` is the raw five positions, which layout 4 draws whole — five seats
+  // over any number of gigs, the one on show lit by identity. The other
+  // layouts pair instead: every gig below carries the pin it lights.
   vm.pins = PINS
-  vm.mapSub = cv('sub', DEFS.mapSub)
   // The events map renders on `mapBg` for Retro rather than the page background,
   // so a row hue has to separate from that charcoal — Retro's near-black tag reads
   // fine on sand and disappears on the dark. Fall back to the cream, as §10.2 does.
@@ -1151,7 +1196,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.formCheck = ({ vals }) => formErrors(vm.formFields, vals)
 
   // footer
-  vm.copyright = cv('copyright', DEFS.copyright)
+  vm.copyright = cv('copyright', copyrightOf(artistName))
   // The §10.2 footer frames break this line by hand after "make" and let the
   // measure fold the rest — that is what sets the three-line block the left
   // column is built round, and it does not fall out of the measure alone in a
@@ -1165,21 +1210,32 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // renderer (the gigs' rule); anything else is a section id, resolved against
   // the page the way firstPresent resolves the header's. A target the page does
   // not carry — a section deleted after the link was written, or the whole of
-  // BLANK_PAGE — resolves to undefined rather than to a dead fragment, and §4.3a
-  // has already said what happens then: the label keeps its place in the design
-  // and simply does not link.
+  // BLANK_PAGE — resolves to undefined rather than to a dead fragment.
+  //
+  // What happens then depends on the surface (§4.3a). The canvas keeps the row,
+  // so the artist still sees the label they wrote and LinksField can say why it
+  // goes nowhere. The published page leaves it out: a visitor gains nothing
+  // from a word that does not link, which is the gallery's hide-the-empty-row
+  // rule. Only a *missing section* is dropped. A 'none' row is a plain label the
+  // artist chose, and a 'link' row whose address extUrl refuses stays a
+  // picture, the Soundcloud rule, with UrlInput already saying why.
   const linkRows = Array.isArray(c.links) ? c.links : FOOTER_LINKS
-  vm.footerLinks = linkRows.map((r) => {
-    const to = String(r?.to ?? '').trim()
-    return {
+  vm.footerLinks = linkRows.flatMap((r) => {
+    // No target reads as 'none', which is what LinksField's select shows for it.
+    const to = String(r?.to ?? '').trim() || 'none'
+    const onPage = navSections.some((n) => n.cat === to)
+    if (live && !onPage && to !== 'link' && to !== 'none') return []
+    return [{
       label: cased(String(r?.label ?? '').trim()),
-      to: to !== 'link' && navSections.some((n) => n.cat === to) ? to : undefined,
+      to: to !== 'link' && onPage ? to : undefined,
       url: to === 'link' ? extUrl(r?.url) : '',
-    }
+    }]
   })
-  // The frames draw four and four, so the columns are the list halved with the
-  // remainder in the first — the pricing deck's odd-count rule, and the first is
-  // the column the Book pill stands in, so it is the one that should run long.
+  // The frames draw four and four, so the columns are the rendered list halved
+  // with the remainder in the first. It runs after the drop above, or a deleted
+  // section would leave the published columns lopsided. That is the pricing
+  // deck's odd-count rule, and the first is the column the Book pill stands in,
+  // so it is the one that should run long.
   // An empty second column is dropped rather than rendered as a nav with no
   // children: `links` is a flex row and an empty child still spends its gap. The
   // first is kept at any count, the pill being what it is there for.
@@ -1497,20 +1553,48 @@ const MENU_ITEM = { fontSize: '13px', fontWeight: 500, padding: '8px 10px', bord
  * Nothing here may originate a network request.
  * ------------------------------------------------------------------ */
 
-// Shared by the single- and multi-photo controls. Rejects anything that is not
-// a PNG/JPG under 4 MB and hands back a data URL — never a network request.
-function readImage(file, onOk, onToast) {
-  if (!file) return
-  if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-    onToast('Please choose a PNG or JPG'); return
-  }
-  if (file.size > 4 * 1024 * 1024) {
-    onToast('That image is too large — 4 MB maximum'); return
-  }
+// The upload limit, in decimal megabytes — the unit macOS's Finder prints, so
+// a file Finder calls "4.1 MB" is refused by a message that says 4 MB, and one
+// it calls "3.9 MB" is not. The message prints the size in the same unit.
+const IMAGE_MAX = 4_000_000
+
+// Why a picked file cannot be a photo here: null, or one sentence. Every
+// upload control (ImageField, ImagesField, RowThumb) asks this at pick time
+// and prints the answer twice — as a toast, and under the control itself
+// until the next pick that refuses nothing, since a toast is far from the
+// field, short-lived and replaced by the next one.
+function imageProblem(file) {
+  if (file.type !== 'image/png' && file.type !== 'image/jpeg') return 'Please choose a PNG or JPG'
+  // Rounded up, so a file a byte over the limit never prints as "4.0 MB".
+  if (file.size > IMAGE_MAX) return `That image is ${(Math.ceil(file.size / 1e5) / 10).toFixed(1)} MB — the limit is 4 MB`
+  return null
+}
+
+// Hands back a file that imageProblem() passed as a data URL — never a
+// network request.
+function readImage(file, onOk) {
   const r = new FileReader()
   r.onload = () => onOk(r.result)
   r.readAsDataURL(file)
 }
+
+// Vets one pick (a file input's change or a drop): returns the files that
+// pass and the line to print, toasting that line too. A pick that carries no
+// file at all returns null, and leaves whatever line is up where it is.
+function vetImages(files, onToast) {
+  const list = [...(files || [])]
+  if (!list.length) return null
+  const bad = list.map(imageProblem).filter(Boolean)
+  const msg = bad.length > 1
+    ? `${bad.length} photos were not added — each must be a PNG or JPG of 4 MB or less`
+    : bad[0] || null
+  if (msg) onToast(msg)
+  return { ok: list.filter((f) => !imageProblem(f)), msg }
+}
+
+// The refusal line under an upload control, in UrlInput's type.
+const ERR_LINE = { margin: 0, fontSize: '10px', color: '#B3261E', lineHeight: 1.45 }
+const ERR_RED = '#B3261E'
 
 const FILE_INPUT = {
   position: 'absolute', width: 1, height: 1, padding: 0, margin: -1,
@@ -1520,19 +1604,36 @@ const FILE_INPUT = {
 function ImageField({ value, onChange, onToast }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
+  const [err, setErr] = useState(null)
 
-  const take = (file) => readImage(file, onChange, onToast)
+  // One file per pick: a multi-file drop takes the first, as it always has.
+  const take = (files) => {
+    const v = vetImages(files ? [...files].slice(0, 1) : [], onToast)
+    if (!v) return
+    setErr(v.msg)
+    v.ok.forEach((f) => readImage(f, onChange))
+  }
+  // The filled photo is a dropzone too, and a drop there replaces it — without
+  // these the browser takes the drop itself and opens the file in the tab.
+  const dropZone = {
+    onDragOver: (e) => { e.preventDefault(); setOver(true) },
+    onDragLeave: () => setOver(false),
+    onDrop: (e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) },
+  }
 
   return (
-    <div onClick={stopE}>
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <input
         ref={inputRef} type="file" accept="image/png,image/jpeg"
-        onChange={(e) => { take(e.target.files?.[0]); e.target.value = '' }}
+        onChange={(e) => { take(e.target.files); e.target.value = '' }}
         style={FILE_INPUT}
       />
       {value ? (
-        <div>
-          <img src={value} alt="" style={{ height: '108px', width: '100%', objectFit: 'cover', borderRadius: '10px', border: '1px solid #E2DFD7', display: 'block' }} />
+        <div {...dropZone}>
+          <img src={value} alt="" style={{
+            height: '108px', width: '100%', objectFit: 'cover', borderRadius: '10px', display: 'block',
+            border: `1px solid ${over ? '#1B1A17' : err ? ERR_RED : '#E2DFD7'}`,
+          }} />
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
             <button
               type="button" onClick={() => inputRef.current?.click()}
@@ -1549,21 +1650,20 @@ function ImageField({ value, onChange, onToast }) {
       ) : (
         <div
           onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setOver(true) }}
-          onDragLeave={() => setOver(false)}
-          onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files?.[0]) }}
+          {...dropZone}
           className="hover:border-foreground"
           style={{
-            border: `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`, borderRadius: '10px', height: '108px',
+            border: `1.5px dashed ${over ? '#1B1A17' : err ? ERR_RED : '#C9C6BB'}`, borderRadius: '10px', height: '108px',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             gap: '4px', cursor: 'pointer',
           }}
         >
           <Upload size={18} style={{ color: '#B9B6AA' }} />
           <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Upload a photo</span>
-          <span style={{ fontSize: '10px', color: '#98958A' }}>PNG or JPG · from your device</span>
+          <span style={{ fontSize: '10px', color: '#98958A' }}>PNG or JPG up to 4 MB · from your device</span>
         </div>
       )}
+      {err && <p role="alert" style={ERR_LINE}>{err}</p>}
     </div>
   )
 }
@@ -1579,15 +1679,22 @@ function ImagesField({ value, max, onChange, onToast }) {
   const [over, setOver] = useState(false)
   const list = Array.isArray(value) ? value : []
   const room = max - list.length
+  const [err, setErr] = useState(null)
 
   const take = (files) => {
-    const chosen = [...(files || [])].slice(0, room)
-    if (!chosen.length) return
-    if ([...(files || [])].length > room) onToast(`Room for ${max} photos here`)
+    const all = [...(files || [])]
+    if (!all.length || room <= 0) return
+    // The room is counted in files that pass, so a refused one takes no slot.
+    if (all.filter((f) => !imageProblem(f)).length > room) onToast(`Room for ${max} photos here`)
+    // Vetted after the room toast, so a refusal is the toast left standing.
+    // The line is decided here, at pick time, not as the reads land: in a
+    // batch with one refused file the good reads must not wipe it.
+    const v = vetImages(all, onToast)
+    setErr(v.msg)
     // Each read is async, so accumulate against the latest list rather than a
     // stale copy — otherwise a multi-select drops all but the last file.
     let next = list
-    chosen.forEach((f) => readImage(f, (url) => { next = [...next, url]; onChange(next) }, onToast))
+    v.ok.slice(0, room).forEach((f) => readImage(f, (url) => { next = [...next, url]; onChange(next) }))
   }
 
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
@@ -1632,7 +1739,7 @@ function ImagesField({ value, max, onChange, onToast }) {
             onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
             className="hover:border-foreground"
             style={{
-              border: `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`, borderRadius: '9px', height: '62px',
+              border: `1.5px dashed ${over ? '#1B1A17' : err ? ERR_RED : '#C9C6BB'}`, borderRadius: '9px', height: '62px',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               gap: '2px', cursor: 'pointer',
             }}
@@ -1643,8 +1750,11 @@ function ImagesField({ value, max, onChange, onToast }) {
         )}
       </div>
       <p style={{ margin: '6px 0 0', fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · PNG or JPG · from your device
+        {list.length} of {max} · PNG or JPG up to 4 MB · from your device
       </p>
+      {/* Kept while the grid is full as well: a refused file is still news
+          when the good ones in its batch filled the last slot. */}
+      {err && <p role="alert" style={{ ...ERR_LINE, marginTop: '3px' }}>{err}</p>}
     </div>
   )
 }
@@ -1658,6 +1768,41 @@ const FIELD_BOX = {
   width: '100%', border: '1px solid #D8D5CC', borderRadius: '8px', padding: '9px 10px',
   fontSize: '13px', fontFamily: "'Archivo', sans-serif", color: '#1B1A17',
   background: '#FFFFFF', outline: 'none',
+}
+
+// Every input that takes an outbound address: the Soundcloud link, the
+// gallery's three social links, a track's audio, a gig's tickets and a footer
+// link's url. The value is stored as typed — extUrl() in sectionVm is what
+// refuses it — and this only says why, under the box, once the artist leaves
+// it: on blur, never per keystroke, since every address is invalid until it is
+// finished. Correcting it clears the line at once. The message remembers the
+// value it was worked out for, so a repeater row deleted above this one (rows
+// key on index) cannot hand its line to the row that moves up.
+function UrlInput({ value, onChange, style, className, placeholder, web = false }) {
+  const [err, setErr] = useState(null)
+  const msg = err && err.v === value ? err.msg : null
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
+      <Input
+        value={value} placeholder={placeholder} onClick={stopE}
+        aria-invalid={msg ? true : undefined}
+        onChange={(e) => {
+          const v = e.target.value
+          if (msg && !urlProblem(v, web)) setErr(null)
+          onChange(v)
+        }}
+        onBlur={() => {
+          const p = urlProblem(value, web)
+          setErr(p ? { v: value, msg: p } : null)
+        }}
+        className={className}
+        style={{ ...style, ...(msg ? { borderColor: '#B3261E' } : null) }}
+      />
+      {msg && (
+        <p role="alert" style={ERR_LINE}>{msg}</p>
+      )}
+    </div>
+  )
 }
 
 /* ------------------------------------------------------------------ *
@@ -1782,15 +1927,26 @@ function SongsField({ value, max, onChange }) {
 // The compact artwork control: a 46px square that is the dropzone, the
 // preview and the file trigger at once. ImageField's 108px panel is the
 // right size for a section photo and far too tall for a repeater row.
-function RowThumb({ value, label, onChange, onToast }) {
+//
+// It has no room for a sentence, so it holds no refusal line of its own:
+// `onFail` hands the line (or null, on a clean pick) to the repeater, which
+// prints it under the whole row and says whether it is up, via `failed`.
+function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
+
+  const take = (files) => {
+    const v = vetImages(files ? [...files].slice(0, 1) : [], onToast)
+    if (!v) return
+    onFail(v.msg)
+    v.ok.forEach((f) => readImage(f, onChange))
+  }
 
   return (
     <div style={{ position: 'relative', flex: 'none' }}>
       <input
         ref={inputRef} type="file" accept="image/png,image/jpeg"
-        onChange={(e) => { readImage(e.target.files?.[0], onChange, onToast); e.target.value = '' }}
+        onChange={(e) => { take(e.target.files); e.target.value = '' }}
         style={FILE_INPUT}
       />
       <button
@@ -1798,14 +1954,13 @@ function RowThumb({ value, label, onChange, onToast }) {
         onClick={(e) => { stopE(e); inputRef.current?.click() }}
         onDragOver={(e) => { e.preventDefault(); setOver(true) }}
         onDragLeave={() => setOver(false)}
-        onDrop={(e) => {
-          e.preventDefault(); setOver(false)
-          readImage(e.dataTransfer.files?.[0], onChange, onToast)
-        }}
+        onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
         className="hover:border-foreground"
         style={{
           width: '46px', height: '46px', padding: 0, borderRadius: '9px', overflow: 'hidden',
-          border: value ? '1px solid #E2DFD7' : `1.5px dashed ${over ? '#1B1A17' : '#C9C6BB'}`,
+          border: value
+            ? `1px solid ${failed ? ERR_RED : '#E2DFD7'}`
+            : `1.5px dashed ${over ? '#1B1A17' : failed ? ERR_RED : '#C9C6BB'}`,
           background: '#FFFFFF', cursor: 'pointer', display: 'flex',
           alignItems: 'center', justifyContent: 'center',
         }}
@@ -1839,13 +1994,20 @@ function TracksField({ value, max, onChange, onToast }) {
   // Same shape as SongsField: every keystroke rewrites the whole array, which
   // keeps `c.tracks` a plain value rather than something patched in place.
   const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
-  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  // The artwork refusal line, held here rather than in RowThumb (see there).
+  // Rows key on index, so a line held by the row would pass to the row that
+  // moves up when one above it is deleted; this one moves with its track.
+  const [refused, setRefused] = useState(null) // { i, msg } | null
+  const removeAt = (i) => {
+    if (refused) setRefused(refused.i === i ? null : refused.i > i ? { ...refused, i: refused.i - 1 } : refused)
+    onChange(list.filter((_, j) => j !== i))
+  }
   const add = () => onChange([...list, { title: '', sub: '', image: null, audio: '' }])
 
   const row = (i, t) => (
     <div key={i} style={{
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
-      display: 'flex', alignItems: 'flex-start', gap: '8px', background: '#FCFBF8',
+      display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: '8px', background: '#FCFBF8',
     }}>
       <span style={{
         width: '12px', flex: 'none', fontSize: '10px', fontWeight: 700,
@@ -1854,6 +2016,8 @@ function TracksField({ value, max, onChange, onToast }) {
       <RowThumb
         value={t.image ?? null} label={`artwork for track ${i + 1}`}
         onChange={(v) => setAt(i, 'image', v)} onToast={onToast}
+        onFail={(msg) => setRefused(msg ? { i, msg } : refused?.i === i ? null : refused)}
+        failed={refused?.i === i}
       />
       {/* Stacked rather than side by side: this panel is also the mobile edit
           sheet, and a thumbnail plus two inputs across does not fit at its width. */}
@@ -1882,12 +2046,18 @@ function TracksField({ value, max, onChange, onToast }) {
           onChange={(e) => setAt(i, 'sub', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
         />
-        <Input
-          value={t.audio ?? ''} placeholder="Audio file URL (MP3)" onClick={stopE}
-          onChange={(e) => setAt(i, 'audio', e.target.value)}
-          className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
-        />
+        <div style={{ marginRight: '28px' }}>
+          <UrlInput
+            value={t.audio ?? ''} placeholder="Audio file URL (MP3)" web
+            onChange={(v) => setAt(i, 'audio', v)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+        </div>
       </div>
+      {/* The row wraps, so this takes a line of its own, indented to the thumb. */}
+      {refused?.i === i && (
+        <p role="alert" style={{ ...ERR_LINE, flexBasis: '100%', paddingLeft: '20px', marginTop: '-2px' }}>{refused.msg}</p>
+      )}
     </div>
   )
 
@@ -2004,9 +2174,9 @@ function GigsField({ value, max, onChange }) {
             className="h-auto" style={SONG_ROW_INPUT}
           />,
         )}
-        <Input
-          value={g.link ?? ''} placeholder="Tickets link" onClick={stopE}
-          onChange={(e) => setAt(i, 'link', e.target.value)}
+        <UrlInput
+          value={g.link ?? ''} placeholder="Tickets link"
+          onChange={(v) => setAt(i, 'link', v)}
           className="h-auto" style={SONG_ROW_INPUT}
         />
       </div>
@@ -2170,10 +2340,22 @@ function TiersField({ value, max, onChange }) {
  * Modelled on GigsField above, the plainest of them. Deliberately not
  * reorderable, like the rest — but order matters more here than anywhere else,
  * because it is the order the boxes appear in, two to a row.
+ *
+ * One row is guarded: the **last `email` row** can be neither removed nor
+ * retyped, since it is the only box a reply can be addressed to. Its trash
+ * button is disabled and its select disables the other kinds rather than
+ * dropping them (a Radix value naming no item blanks the trigger), and a hint
+ * under the row says why. Nothing else is guarded — an emptied list renders in
+ * every layout — but the seed carries an email row and a new row is `text`, so
+ * the editor never reaches a list without one.
  * ------------------------------------------------------------------- */
+
+const FORM_EMAIL_HINT = 'Visitors need somewhere to leave an address.'
 
 function FormFieldsField({ value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
+  const emails = list.filter((f) => f?.kind === 'email').length
+  const lastEmail = (f) => f.kind === 'email' && emails === 1
 
   const setAt = (i, k, v) => onChange(list.map((f, j) => (j === i ? { ...f, [k]: v } : f)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
@@ -2196,12 +2378,14 @@ function FormFieldsField({ value, max, onChange }) {
         />
         <button
           type="button" aria-label={`Remove field ${i + 1}`}
+          disabled={lastEmail(f)} title={lastEmail(f) ? FORM_EMAIL_HINT : undefined}
           onClick={(e) => { stopE(e); removeAt(i) }}
-          className="hover:bg-destructive/10"
+          className="hover:bg-destructive/10 disabled:bg-transparent"
           style={{
             width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
-            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            cursor: lastEmail(f) ? 'not-allowed' : 'pointer', opacity: lastEmail(f) ? 0.35 : 1,
+            display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
           }}
         ><X size={11} /></button>
@@ -2222,9 +2406,14 @@ function FormFieldsField({ value, max, onChange }) {
             style={{ ...SONG_ROW_INPUT, paddingRight: '28px' }}
           ><SelectValue /></SelectTrigger>
           <SelectContent onClick={stopE}>
-            {FORM_KINDS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+            {FORM_KINDS.map((o) => (
+              <SelectItem key={o.v} value={o.v} disabled={lastEmail(f) && o.v !== 'email'}>{o.l}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
+        {lastEmail(f) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{FORM_EMAIL_HINT}</p>
+        )}
       </div>
     </div>
   )
@@ -2262,9 +2451,14 @@ function FormFieldsField({ value, max, onChange }) {
  * cannot be read against the month it falls in — which is the whole
  * question being asked here.
  *
- * It pages the same CAL_SPAN window from the same opening date the
- * section does, and wraps at both ends the way the published arrows do,
- * so there is no date it can block that the published grid cannot show.
+ * It pages the same CAL_SPAN window the *published* section does —
+ * calStart(), so from today's month once `open` has passed (F20) — and
+ * wraps at both ends the way the published arrows do, so every date a
+ * visitor can pick is one it can block. That makes it the editor's one
+ * reader of the clock, once per mount, as PublishedPage reads it; the
+ * canvas still never does, so with a past `open` the panel pages months
+ * the canvas's picture does not show. A day before today is drawn faded
+ * and takes no click unless it is already blocked, which stays undoable.
  *
  * `value` is the array of ISO dates, rewritten whole and sorted — the
  * repeaters' rule — and an empty array is a real answer: absent and
@@ -2282,11 +2476,13 @@ const CAL_NAV_BTN = {
 
 function BookedField({ value, open, onChange }) {
   const [mi, setMi] = useState(0)
+  const [today] = useState(() => new Date().toISOString().slice(0, 10))
   const list = Array.isArray(value) ? value : []
+  const start = calStart(open, today)
 
   const at = ((mi % CAL_SPAN) + CAL_SPAN) % CAL_SPAN
-  const abs = open.m + at
-  const y = open.y + Math.floor(abs / 12)
+  const abs = start.m + at
+  const y = start.y + Math.floor(abs / 12)
   const mo = ((abs % 12) + 12) % 12
   const { lead, length } = monthSpan(y, mo)
 
@@ -2308,14 +2504,17 @@ function BookedField({ value, open, onChange }) {
       const d = i + 1
       const iso = isoDate(y, mo, d)
       const off = list.includes(iso)
+      // ISO dates compare as strings, sectionVm's `dead` test.
+      const past = iso < today && !off
       return (
         <button
-          key={iso} type="button"
+          key={iso} type="button" disabled={past}
           aria-pressed={off} aria-label={`${d} ${monthLabel(y, mo)}`}
           onClick={(e) => { stopE(e); toggle(iso) }}
-          className={off ? undefined : 'hover:border-foreground'}
+          className={off || past ? undefined : 'hover:border-foreground'}
           style={{
-            height: '25px', borderRadius: '7px', padding: 0, cursor: 'pointer',
+            height: '25px', borderRadius: '7px', padding: 0,
+            cursor: past ? 'default' : 'pointer', opacity: past ? 0.4 : 1,
             fontFamily: 'inherit', fontSize: '11px',
             fontWeight: off ? 700 : 500,
             border: `1px solid ${off ? '#1B1A17' : '#E9E7E0'}`,
@@ -2497,8 +2696,17 @@ function QuotesField({ value, max, onChange }) {
  * form's is, because sectionVm halves this list into the two columns.
  * ------------------------------------------------------------------- */
 
-function LinksField({ value, max, onChange }) {
+// Under a footer row's select, and above the header's nav select in Minimal,
+// when the target is not on the page. The canvas still draws the label; the published page does not.
+const LINK_GONE_HINT = 'Section not on the page — left off the published footer.'
+const navGoneHint = (labels) =>
+  `${labels.join(', ')}: section not on the page — left off the published nav.`
+
+function LinksField({ value, max, navSections = [], onChange }) {
   const list = Array.isArray(value) ? value : []
+  // A section target the page does not carry. sectionVm resolves the same test,
+  // and the published footer leaves the row out, so the editor says so here.
+  const gone = (to) => !!to && to !== 'none' && to !== 'link' && !navSections.some((n) => n.cat === to)
 
   const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
@@ -2537,7 +2745,9 @@ function LinksField({ value, max, onChange }) {
         {/* FOOTER_TARGETS is every category the page *can* carry, not the ones
             it does: a value naming no item blanks a Radix trigger, so a link to
             a section since deleted must still read as what it points at. The
-            canvas resolves it against the page instead (§4.3a). */}
+            view-model resolves it against the page instead (§4.3a): the canvas
+            keeps such a row, the published footer drops it, and the line under
+            the select is how the artist finds out. */}
         <Select value={r.to ?? 'none'} onValueChange={(v) => setAt(i, 'to', v)}>
           <SelectTrigger
             onClick={stopE} className="w-full h-auto"
@@ -2547,10 +2757,15 @@ function LinksField({ value, max, onChange }) {
             {FOOTER_TARGETS.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
           </SelectContent>
         </Select>
+        {gone(r.to) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+            {LINK_GONE_HINT}
+          </p>
+        )}
         {r.to === 'link' && (
-          <Input
-            value={r.url ?? ''} placeholder="instagram.com/kaimercer" onClick={stopE}
-            onChange={(e) => setAt(i, 'url', e.target.value)}
+          <UrlInput
+            value={r.url ?? ''} placeholder="instagram.com/kaimercer"
+            onChange={(v) => setAt(i, 'url', v)}
             className="h-auto" style={SONG_ROW_INPUT}
           />
         )}
@@ -2639,6 +2854,12 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
   const bookedVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : CAL_BOOKED)
   const openVal = (k) => parseDate(sec.c[k] ?? CAL_OPEN) ?? parseDate(CAL_OPEN)
 
+  // Minimal's labels that resolve to nothing on this page (§4.3a), for the hint
+  // above the header's navigation select. Only a header reads it.
+  const deadNav = sec.cat === 'header'
+    ? minimalNav(navSections).filter((l) => !l.to).map((l) => l.label)
+    : []
+
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
 
   return (
@@ -2667,7 +2888,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                   // down: the header's title is the artist's name, and the
                   // repertoire's heading counts the songs — both mirroring what
                   // sectionVm resolves, so panel and canvas never disagree.
-                  const fallback = f.k === 'title' && sec.cat === 'header' ? artistName
+                  const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
+                    : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
@@ -2678,11 +2900,20 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
+                  // A field this design does not read stays editable — the copy
+                  // is kept for the next layout — but says so.
+                  const unread = !fieldReach(f, themeName, design)
                   return (
                     <div key={f.k}>
-                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint ? '2px' : '5px' }}>{f.l}</Label>
+                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
+                      {unread && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45, fontStyle: 'italic' }}>Not shown in this layout</p>
+                      )}
                       {f.hint && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{f.hint}</p>
+                      )}
+                      {deadNav.length > 0 && f.k === 'navMode' && val === 'minimal' && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{navGoneHint(deadNav)}</p>
                       )}
                       {f.type === 'image' ? (
                         <ImageField value={imgVal(f.k)} onChange={(v) => set(v)} onToast={api.toast} />
@@ -2701,7 +2932,7 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                       ) : f.type === 'quotes' ? (
                         <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'links' ? (
-                        <LinksField value={linksVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <LinksField value={linksVal(f.k)} max={f.max} navSections={navSections} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month
@@ -2724,6 +2955,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                             {f.opts.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
                           </SelectContent>
                         </Select>
+                      ) : f.type === 'url' ? (
+                        <UrlInput value={val} onChange={set} style={FIELD_BOX} />
                       ) : f.type === 'area' ? (
                         <Textarea
                           rows={3} value={val} onClick={stopE}
@@ -2879,15 +3112,19 @@ const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
 const firstFreeCat = (present) =>
   (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
 
-function AddComposer({ add, present, themeIdx, artistName, navSections, onChange, onAdd, onCancel }) {
+function AddComposer({ add, present, removed, themeIdx, artistName, navSections, onChange, onAdd, onCancel }) {
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
   const taken = present.includes(add.cat)
+  // A category deleted earlier restores its content on add; Start fresh opts
+  // out. A flag rather than a button that discards, so nothing is lost until
+  // Add section is pressed.
+  const restorable = !taken && !!removed[add.cat]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
         <Label style={groupLabel}>Section</Label>
-        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: 0 })}>
+        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: removed[cat]?.arch ?? 0, fresh: false })}>
           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
             <SelectValue />
           </SelectTrigger>
@@ -2909,7 +3146,7 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
         <LayoutPicker
           cat={add.cat} arch={add.arch}
           themeIdx={themeIdx} artistName={artistName} navSections={navSections}
-          onPick={(i) => onChange({ cat: add.cat, arch: i })}
+          onPick={(i) => onChange({ ...add, arch: i })}
         />
       </div>
 
@@ -2917,6 +3154,24 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
         <p style={{ margin: 0, fontSize: '11px', color: '#98958A', lineHeight: 1.45 }}>
           This section is already on the page. Pick another to add.
         </p>
+      )}
+
+      {restorable && (
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '11px', color: '#5B5850', lineHeight: 1.45, cursor: 'pointer' }}>
+          <input
+            type="checkbox" checked={!!add.fresh} onClick={stopE}
+            onChange={(e) => onChange({ ...add, fresh: e.target.checked })}
+            style={{ margin: '2px 0 0', accentColor: '#1B1A17', cursor: 'pointer' }}
+          />
+          <span>
+            <span style={{ fontWeight: 700 }}>Start fresh</span>
+            <span style={{ display: 'block', color: '#98958A' }}>
+              {add.fresh
+                ? 'The content you removed is discarded when you add.'
+                : 'Unticked, this section comes back with the content you removed.'}
+            </span>
+          </span>
+        </label>
       )}
 
       <div style={{ display: 'flex', gap: '8px' }}>
@@ -2930,7 +3185,7 @@ function AddComposer({ add, present, themeIdx, artistName, navSections, onChange
         >Cancel</button>
         <button
           type="button" aria-disabled={taken || undefined}
-          onClick={(e) => { stopE(e); if (!taken) onAdd(add.cat, add.arch) }}
+          onClick={(e) => { stopE(e); if (!taken) onAdd(add.cat, add.arch, add.fresh) }}
           className={taken ? '' : 'hover:bg-primary/90'}
           style={{
             flex: 1, border: 0, background: '#1B1A17', color: '#FFFFFF', opacity: taken ? 0.45 : 1,
@@ -3184,6 +3439,11 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   // leave the column a scrollbar's width narrower than the editor's.
   const measure = () => win.document.documentElement.clientWidth
   const [w, setW] = useState(measure)
+  // Today, in UTC like every other date sum here, read once when the tab's
+  // root mounts — one of the builder's two clock reads, BookedField's being the
+  // other; the canvas makes none. A republish re-renders
+  // the same root, so a tab left open past midnight keeps the day it opened on.
+  const [today] = useState(() => new Date().toISOString().slice(0, 10))
 
   useEffect(() => {
     // Re-measure once: the first read happens before there is any content, so
@@ -3235,7 +3495,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, Z, mob: key === 'mobile', live: true, navSections,
-      column: inColumns.get(i),
+      column: inColumns.get(i), today,
     })} />
   )))
 }
@@ -3312,11 +3572,10 @@ function dressPublishedWindow(win, artistName, pageBg) {
   // the click would be a cross-document navigation and the published tab would
   // load the builder. Every fragment is therefore swallowed, exactly as before,
   // and the scroll is done by hand against this document's own ids. Sections
-  // carry theirs from `vm.anchor` (§4.3a), gated on `live`, so a link that names
-  // nothing on the page — a footer link, or a Minimal label, whose target
-  // section has been deleted — simply does nothing. It carries no href at all
-  // by then, sectionVm having resolved the target against the page, so it never
-  // even reaches this listener; the swallow is what catches the rest.
+  // carry theirs from `vm.anchor` (§4.3a), gated on `live`. A footer link or a
+  // Minimal label whose target section has been deleted is not rendered here at
+  // all, sectionVm having dropped it, and a pill with no target carries no href,
+  // so neither reaches this listener; the swallow is what catches the rest.
   doc.addEventListener('click', (e) => {
     const a = e.target.closest?.('a')
     const href = a ? a.getAttribute('href') || '' : ''
@@ -3338,7 +3597,7 @@ function dressPublishedWindow(win, artistName, pageBg) {
  * §5–§9 The builder
  * ------------------------------------------------------------------ */
 
-export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 'Picker' }) {
+export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', startTheme = 'Picker' }) {
   const uidRef = useRef(100)
   const isMobile = useIsMobile()
 
@@ -3356,6 +3615,11 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       // The publish success dialog. The tab it opens is held in a ref, not
       // in state: nothing renders from it.
       published: false,
+      // The last deleted section of each category, as `{ arch, c }`, so adding
+      // that category again brings its content back (uploads included, as the
+      // data URIs they are). Keys are only ever categories *not* on the page:
+      // re-adding, Undo and Start fresh all consume the entry.
+      removed: {},
     }
     return ti >= 0
       ? { ...base, stage: 'editor', theme: ti, sections: buildPage(EXAMPLE_PAGE) }
@@ -3365,22 +3629,58 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
   const patch = useCallback((p) => setSt((s) => ({ ...s, ...(typeof p === 'function' ? p(s) : p) })), [])
 
   // §9.2 — one toast at a time; the timer resets on each new one.
+  //
+  // `action` ({ label, run }) adds a button to the pill — the delete toast's
+  // Undo. Such a toast lives longer, since it asks for a decision rather than
+  // reporting one, but it is still replaced by the next toast like any other:
+  // what it would undo is kept in `st.removed` either way, so a toast bumped
+  // early costs the shortcut, not the content.
   const toastRef = useRef(null)
-  const toast = useCallback((msg) => {
+  const toast = useCallback((msg, action) => {
     if (toastRef.current !== null) sonnerToast.dismiss(toastRef.current)
-    toastRef.current = sonnerToast.custom(() => (
+    toastRef.current = sonnerToast.custom((id) => (
       <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <span style={{
           background: '#1B1A17', color: '#FFFFFF', fontSize: '13px', fontWeight: 700,
-          padding: '12px 22px', borderRadius: '99px', boxShadow: '0 12px 30px rgba(20,18,12,.3)',
+          padding: action ? '6px 6px 6px 22px' : '12px 22px', borderRadius: '99px', boxShadow: '0 12px 30px rgba(20,18,12,.3)',
           maxWidth: '92vw', textAlign: 'center', animation: 'fadeIn .25s ease',
-        }}>{msg}</span>
+          display: 'flex', alignItems: 'center', gap: '14px', pointerEvents: 'auto',
+        }}>
+          {msg}
+          {action && (
+            <button
+              type="button"
+              onClick={(e) => {
+                stopE(e)
+                action.run()
+                sonnerToast.dismiss(id)
+                if (toastRef.current === id) toastRef.current = null
+              }}
+              className="hover:bg-white/25"
+              style={{
+                flex: 'none', border: 0, borderRadius: '99px', background: 'rgba(255,255,255,.14)',
+                color: '#FFFFFF', fontSize: '13px', fontWeight: 700, padding: '6px 14px', cursor: 'pointer',
+              }}
+            >{action.label}</button>
+          )}
+        </span>
       </div>
-    ), { duration: 2400, unstyled: true })
+    ), { duration: action ? 6000 : 2400, unstyled: true })
   }, [])
 
   const T = THEMES[st.theme]
   const sections = st.sections
+  const toastTop = isMobile && !!(st.add || st.sheet || st.editSheet)
+  const toastOffset = !isMobile ? '28px'
+    : toastTop ? 'calc(12px + env(safe-area-inset-top))'
+    : 'calc(72px + env(safe-area-inset-bottom))'
+
+  // The artist's name is the header's Title: the prop only seeds it. Every
+  // other reading — the nav brand, the initials placeholders, the bio and
+  // player bylines, the badge, the small print, the published tab's <title>
+  // and the site address — follows what the artist typed there. An emptied
+  // Title blanks the hero alone; everything else falls back to the seed.
+  const artistName = String(sections.find((s) => s.cat === 'header')?.c.title ?? '').trim() || profileName
   const present = sections.map((s) => s.cat)
 
   // §5.5 — a real phone forces mobile canvas sizing at full width.
@@ -3421,6 +3721,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
       win.addEventListener('pagehide', closePublished)
     } else {
       win.document.documentElement.style.background = THEMES[st.theme].palette[0]
+      win.document.title = artistName
     }
 
     // Publishing again re-renders the tab that is already open rather than
@@ -3473,39 +3774,64 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
     sections: s.sections.map((x) => (x.id === id ? { ...x, ...p } : x)),
   })), [patch])
 
-  const del = useCallback((id) => patch((s) => {
-    const sec = s.sections.find((x) => x.id === id)
-    if (!sec || sec.cat === 'header' || sec.cat === 'footer') return {}
-    return {
+  // Delete stays one click; what makes it safe is the toast's Undo and
+  // `st.removed`. Undo puts the very same section object back where it was,
+  // clamped so the footer stays last (canMove's invariant), and leaves the
+  // selection alone — it restores the page, it does not open an editor.
+  //
+  // The section and its index are read off the rendered page, not captured
+  // from inside the updater: React may run an updater lazily, after this
+  // handler has returned, so a flag set in there is not there to read yet.
+  const del = useCallback((id) => {
+    const i = st.sections.findIndex((x) => x.id === id)
+    const sec = st.sections[i]
+    if (!sec || sec.cat === 'header' || sec.cat === 'footer') return
+    patch((s) => ({
       sections: s.sections.filter((x) => x.id !== id),
+      removed: { ...s.removed, [sec.cat]: { arch: sec.arch, c: sec.c } },
       menuFor: null,
       ...(s.selectedId === id ? { selectedId: null, editSheet: false } : {}),
-    }
-  }), [patch])
+    }))
+    toast(`${catName(sec.cat)} removed`, {
+      label: 'Undo',
+      run: () => patch((s) => {
+        // Already back — re-added from the composer while the toast was up.
+        if (s.sections.some((x) => x.cat === sec.cat)) return {}
+        const next = s.sections.slice()
+        next.splice(Math.min(i, next.length - 1), 0, sec)
+        const { [sec.cat]: _, ...removed } = s.removed
+        return { sections: next, removed }
+      }),
+    })
+  }, [patch, toast, st.sections])
 
-  const addSection = useCallback((cat, arch) => {
-    let added = false
+  // A category deleted earlier comes back with its content unless the
+  // composer's Start fresh is on; either way its `removed` entry is spent.
+  // The layout is the composer's pick, which opens on the remembered one.
+  const addSection = useCallback((cat, arch, fresh) => {
+    if (st.sections.some((x) => x.cat === cat)) return
     patch((s) => {
       if (s.sections.some((x) => x.cat === cat)) return {}
-      added = true
-      const sec = { id: ++uidRef.current, cat, arch, c: {} }
+      const { [cat]: kept, ...removed } = s.removed
+      const sec = { id: ++uidRef.current, cat, arch, c: kept && !fresh ? kept.c : {} }
       const next = s.sections.slice()
       next.splice(next.length - 1, 0, sec)   // immediately before the footer
-      return { sections: next, add: null }
+      return { sections: next, add: null, removed }
     })
-    if (added) toast(`${catName(cat)} added`)
-  }, [patch, toast])
+    toast(`${catName(cat)} added`)
+  }, [patch, toast, st.sections])
 
   const openEdit = useCallback((id) => patch(
     isMobile ? { selectedId: id, editSheet: true, sheet: null, menuFor: null }
              : { selectedId: id, menuFor: null },
   ), [patch, isMobile])
 
-  // §9.1 — the add composer opens on the first category not already used.
-  const openAdd = useCallback(() => patch((s) => ({
-    add: { cat: firstFreeCat(s.sections.map((x) => x.cat)), arch: 0 },
-    sheet: null, menuFor: null,
-  })), [patch])
+  // §9.1 — the add composer opens on the first category not already used,
+  // at the layout that category had when it was deleted, if it was.
+  const openAdd = useCallback(() => patch((s) => {
+    const cat = firstFreeCat(s.sections.map((x) => x.cat))
+    return { add: { cat, arch: s.removed[cat]?.arch ?? 0, fresh: false }, sheet: null, menuFor: null }
+  }), [patch])
 
   const closeAdd = useCallback(() => patch({ add: null, sheet: null }), [patch])
 
@@ -3618,7 +3944,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
           const next = buildPage(EXAMPLE_PAGE)
           const header = next.find((x) => x.cat === 'header')
           return {
-            stage: 'editor', theme: i, sections: next, onboard: true,
+            stage: 'editor', theme: i, sections: next, onboard: true, removed: {},
             // The editor opens on the header's edit panel: the modal does not
             // need it, but it is where the user goes next and it leaves the
             // right state behind once the modal is dismissed. The mobile edit
@@ -3650,7 +3976,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
   const addComposer = st.add && (
     <AddComposer
-      add={st.add} present={present}
+      add={st.add} present={present} removed={st.removed}
       themeIdx={st.theme} artistName={artistName} navSections={navSections}
       onChange={(next) => patch({ add: next })}
       onAdd={addSection}
@@ -3779,7 +4105,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             background: '#F4F2ED', border: '1px solid #E7E4DC',
             fontSize: '13px', fontWeight: 600, color: '#3A382F',
             fontFamily: "'Courier Prime', monospace", overflowWrap: 'anywhere',
-          }}>kaimercer.encore.site</div>
+          }}>{siteSlug(artistName)}.encore.site</div>
         </div>
 
         <div style={{
@@ -3940,8 +4266,11 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
                       <span style={{ display: 'block', fontSize: '11px', color: '#98958A' }}>{selectedVm.layoutLabel}</span>
                     </span>
                   </div>
+                  {/* Keyed on the section, here and in the edit drawer, so a
+                      field's own line (a refused photo or address) is not
+                      inherited by the same field of the next section opened. */}
                   <EditPanel
-                    sec={selectedSec} vm={selectedVm} api={api}
+                    key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
                     artistName={artistName} themeIdx={st.theme} navSections={navSections}
                   />
                 </>
@@ -4048,7 +4377,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             a bottom drawer on mobile. There is no right-hand panel. */}
         {isMobile && (
           <Drawer open={!!st.add} onOpenChange={(v) => { if (!v) closeAdd() }}>
-            <DrawerContent onClick={stopE} className={`${PILL} !max-h-[82vh]`} style={{ ...sheetShell, maxHeight: '82vh' }}>
+            <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[82vh]`} style={{ ...sheetShell, maxHeight: '82vh' }}>
               <DrawerTitle className="sr-only">Add a section</DrawerTitle>
               <DrawerDescription className="sr-only">Choose a section and its layout</DrawerDescription>
               {addHeader(closeAdd)}
@@ -4061,7 +4390,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
         {/* §8.9 Sections sheet */}
         <Drawer open={isMobile && st.sheet === 'sections'} onOpenChange={(v) => { if (!v) patch({ sheet: null }) }}>
-          <DrawerContent onClick={stopE} className={`${PILL} !max-h-[78vh]`} style={{ ...sheetShell, maxHeight: '78vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[78vh]`} style={{ ...sheetShell, maxHeight: '78vh' }}>
             <DrawerDescription className="sr-only">The sections on this page</DrawerDescription>
             {sheetHead(`Page · ${sections.length} sections`, () => patch({ sheet: null }))}
             <ScrollArea className="flex-1 min-h-0">
@@ -4073,7 +4402,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
 
         {/* §8.9 Theme sheet */}
         <Drawer open={isMobile && st.sheet === 'theme'} onOpenChange={(v) => { if (!v) patch({ sheet: null }) }}>
-          <DrawerContent onClick={stopE} className={`${PILL} !max-h-[60vh]`} style={{ ...sheetShell, height: '60vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[60vh]`} style={{ ...sheetShell, height: '60vh' }}>
             <DrawerDescription className="sr-only">Choose a template</DrawerDescription>
             {sheetHead('Theme', () => patch({ sheet: null }))}
             <ScrollArea className="flex-1 min-h-0">
@@ -4108,7 +4437,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
           open={isMobile && st.editSheet && !!selectedSec}
           onOpenChange={(v) => { if (!v) patch({ editSheet: false, selectedId: null }) }}
         >
-          <DrawerContent onClick={stopE} className={`${PILL} !max-h-[84vh]`} style={{ ...sheetShell, height: '84vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[84vh]`} style={{ ...sheetShell, height: '84vh' }}>
             <DrawerDescription className="sr-only">Edit this section</DrawerDescription>
             {selectedSec && sheetHead(
               `${catName(selectedSec.cat)} — ${selectedVm.layoutLabel}`,
@@ -4116,7 +4445,7 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
             )}
             {selectedSec && (
               <EditPanel
-                sec={selectedSec} vm={selectedVm} api={api}
+                key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
                 artistName={artistName} themeIdx={st.theme} navSections={navSections}
               />
             )}
@@ -4126,9 +4455,15 @@ export default function EncoreBuilder({ artistName = 'Kai Mercer', startTheme = 
         {headerModal}
         {publishModal}
 
+        {/* On a phone the toast clears the bottom nav — but a drawer covers
+            that nav and would lose its own foot (the composer's Add section)
+            under the toast, so while one is up the toast drops from the top,
+            which every drawer leaves free. Sonner reads `mobileOffset`, not
+            `offset`, below 600px, so the phone value goes to both. */}
         <Toaster
-          position="bottom-center"
-          offset={isMobile ? 'calc(72px + env(safe-area-inset-bottom))' : '28px'}
+          position={toastTop ? 'top-center' : 'bottom-center'}
+          offset={toastOffset}
+          mobileOffset={toastOffset}
           toastOptions={{ unstyled: true, style: { zIndex: 100 } }}
         />
       </div>

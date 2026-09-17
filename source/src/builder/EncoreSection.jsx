@@ -39,11 +39,6 @@ import {
  * §10.1 Shared style factories
  * ------------------------------------------------------------------ */
 
-const kickerStyle = (s) => ({
-  fontSize: '12px', fontWeight: 700, letterSpacing: '2px',
-  textTransform: 'uppercase', color: s.ac,
-})
-
 const h2Style = (s) => ({
   fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1.02,
 })
@@ -4306,13 +4301,9 @@ function Bio({ s }) {
     )
   }
 
-  return (
-    <div style={col('20px', { alignItems: 'center', textAlign: 'center', maxWidth: '760px', margin: '0 auto' })}>
-      <span style={kickerStyle(s)}>About</span>
-      <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.1 }}>{s.bioQuote}</h2>
-      <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.65, color: s.muted, maxWidth: '560px' }}>{s.bioP1}</p>
-    </div>
-  )
+  // `arch % designCount` is 0–3, so the four branches above are the whole
+  // section: the centred fallthrough that used to stand here was unreachable.
+  return null
 }
 
 // v0 — Media Player layout 1 · Floating cards stack (§10.2 reference design)
@@ -4422,15 +4413,18 @@ function Media({ s }) {
 
   // The now-playing block. The card always names the track the player is on —
   // track one until the visitor picks another — because the section no longer
-  // carries a now-playing track or sleeve of its own to name instead.
+  // carries a now-playing track or sleeve of its own to name instead. With no
+  // tracks at all it names `mediaEmpty`, and there is nothing to play: `goTo`
+  // returns before its modulo, and `toggle` and `pick` both go through it.
   //
   // The clock is the one thing that still differs by side. Live it is the
   // element's, from 00:00: before the metadata lands both ends read 00:00, and
   // a track's `sub` is a release line, not a duration, so it cannot stand in.
   // On the canvas it stays NOW_PLAYING's, because the frame draws a player
-  // caught mid-song and a dead 00:00 under an empty bar is not that picture.
+  // caught mid-song and a dead 00:00 under an empty bar is not that picture —
+  // unless the list is empty, where `sectionVm` has already stopped it.
   const np = s.nowPlaying
-  const title = track ? track.name : np.track
+  const title = track ? track.name : s.mediaEmpty
   const now = s.live
     ? {
         track: title, by: np.by, at: clock(pos), of: clock(len),
@@ -5819,7 +5813,7 @@ function Media({ s }) {
               <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
             </div>
             {s.tracks.length === 0 && (
-              <span style={{ ...bodySm, fontSize: s.bodyMd, color: s.muted }}>No tracks yet.</span>
+              <span style={{ ...bodySm, fontSize: s.bodyMd, color: s.muted }}>{s.mediaEmpty}</span>
             )}
             {s.tracks.map((t, i) => {
               const dur = t.dur && t.dur !== t.rel ? t.dur : ''
@@ -5951,7 +5945,7 @@ function Media({ s }) {
             is only ever seen mid-edit. */}
         {s.tracks.length === 0 && (
           <span style={{ fontFamily: s.body, fontSize: u(T.dur), color: s.muted }}>
-            No tracks yet.
+            {s.mediaEmpty}
           </span>
         )}
 
@@ -6256,7 +6250,7 @@ function Media({ s }) {
               {progress}
             </div>
             {s.tracks.length === 0
-              ? <span style={{ fontFamily: s.body, fontSize: u(tk.body), flex: 1 }}>No tracks yet.</span>
+              ? <span style={{ fontFamily: s.body, fontSize: u(tk.body), flex: 1 }}>{s.mediaEmpty}</span>
               : tiles}
           </div>
         </div>
@@ -6604,7 +6598,7 @@ function Media({ s }) {
                 than leaving a hole. Any minimum height for it would be an
                 invented number, and it is only ever seen mid-edit. */}
             {s.tracks.length === 0
-              ? <span style={{ fontFamily: s.body, fontSize: u(T.body), flex: 1 }}>No tracks yet.</span>
+              ? <span style={{ fontFamily: s.body, fontSize: u(T.body), flex: 1 }}>{s.mediaEmpty}</span>
               : tiles}
           </div>
         </div>
@@ -11948,6 +11942,11 @@ function Calendar({ s }) {
   const [wStep, setWStep] = useState(0)
   const [wType, setWType] = useState(0)
   const [wVals, setWVals] = useState({})
+  // Whether a day or a slot is shut to the visitor: blocked by the artist, or
+  // — live only — already past. One test, so the two behave identically
+  // everywhere a pick is resolved or a handler given; only `booked` is struck
+  // through, since a past day is not one the artist took.
+  const blocked = (x) => x.booked || x.dead
 
   if (s.v0) {
     // §5.5 — one scheduler across three frames: the 768 (986:39251) and 390
@@ -11979,7 +11978,7 @@ function Calendar({ s }) {
     const hit = want
       ? s.calMonths.reduce((f, mo) => f || mo.cells.find((c) => c.iso === want), null)
       : null
-    const cur = hit && !hit.booked ? hit.iso : ''
+    const cur = hit && !blocked(hit) ? hit.iso : ''
     const line = cur ? hit.line : s.calPrompt
 
     // The month arrows. They *wrap* at both ends of the window rather than
@@ -12042,14 +12041,14 @@ function Calendar({ s }) {
       const day = (c, i) => {
         if (c.iso === undefined) return <span key={i} />
         const on = c.iso === cur
-        const onClick = s.live && !c.booked
+        const onClick = s.live && !blocked(c)
           ? () => setSel((v) => (v === c.iso ? '' : c.iso))
           : undefined
         return (
           <span key={i} onClick={onClick} style={type(s.ui, s.labelXs, 1.26, {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             height: u(s.mob ? 50.49 : 55.89), borderRadius: u(26),
-            background: s.box2, color: s.tx, opacity: c.booked ? 0.38 : undefined,
+            background: s.box2, color: s.tx, opacity: blocked(c) ? 0.38 : undefined,
             boxShadow: `inset 0 0 0 1px ${s.stroke1}${on ? `, inset 0 0 20px 0 ${s.glow}` : ''}`,
             cursor: onClick ? 'pointer' : undefined,
           })}>{c.d}</span>
@@ -12174,11 +12173,12 @@ function Calendar({ s }) {
     // which days are taken would click one and watch nothing happen: a booked
     // day is muted ink on the section's own soft tone, and takes no handler.
     // That is a *content* state, not a live one, so it renders on the canvas
-    // too — and since CAL_BOOKED is empty, the seeded picture does not move.
+    // too — and since CAL_BOOKED is empty, the seeded picture does not move. A
+    // past day in the published tab (`dead`) takes the same muted cell, unstruck.
     // Clicking the lit day again unlights it, the map's pin/row toggle.
     const cell = (c, i) => {
       const on = c.iso !== undefined && c.iso === cur
-      const onClick = s.live && c.iso !== undefined && !c.booked
+      const onClick = s.live && c.iso !== undefined && !blocked(c)
         ? () => setSel((v) => (v === c.iso ? '' : c.iso))
         : undefined
       return (
@@ -12188,8 +12188,8 @@ function Calendar({ s }) {
           fontFamily: s.body, fontSize: u(18.132),
           borderRadius: u(12.088),
           border: c.d === '' ? 'none' : `${s.bw} solid ${on ? s.tx : s.line}`,
-          background: on ? s.ac : c.booked ? s.soft : 'transparent',
-          color: on ? (s.retro ? s.pillBg : s.acFg) : c.booked ? s.muted : s.tx,
+          background: on ? s.ac : blocked(c) ? s.soft : 'transparent',
+          color: on ? (s.retro ? s.pillBg : s.acFg) : blocked(c) ? s.muted : s.tx,
           textDecoration: c.booked ? 'line-through' : undefined,
           cursor: onClick ? 'pointer' : undefined,
         }}>{c.d}</span>
@@ -12429,7 +12429,7 @@ function Calendar({ s }) {
     // block the date a visitor had lit.
     const want = (s.live && sel) || s.calPick
     const hit = want ? s.calSlots.find((sl) => sl.iso && sl.iso === want) : null
-    const cur = hit && !hit.booked ? hit.iso : ''
+    const cur = hit && !blocked(hit) ? hit.iso : ''
     const line = cur ? hit.line : s.calPrompt
 
     // Lime — the slot list frames 964:64593 / 986:11861 / 986:11880, as a block
@@ -12463,7 +12463,7 @@ function Calendar({ s }) {
       })
       // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
       // its own — opacity .38, no strike — and the row takes it, handlerless.
-      const dim = (booked) => (booked ? { opacity: 0.38 } : null)
+      const dim = (off) => (off ? { opacity: 0.38 } : null)
 
       const flow = (
         <div style={col(u(4), { alignItems: 'flex-start', flex: 'none' })}>
@@ -12480,17 +12480,17 @@ function Calendar({ s }) {
       )
 
       const slotRow = (sl, i) => {
-        const onClick = s.live && sl.iso && !sl.booked
+        const onClick = s.live && sl.iso && !blocked(sl)
           ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
           : undefined
         const mark = (
           <span style={type(s.display, s.dispLg, 0.89, {
-            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(sl.booked),
+            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(blocked(sl)),
           })}>{sl.mark}</span>
         )
         const day = (
           <span style={type(s.ui, s.labelXs, 1.26, {
-            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(sl.booked),
+            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(blocked(sl)),
           })}>{sl.day}</span>
         )
         return (
@@ -12503,7 +12503,7 @@ function Calendar({ s }) {
               ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
               : <>{mark}{day}</>}
             <div style={col(u(2), {
-              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(sl.booked),
+              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(blocked(sl)),
             })}>
               {!!sl.kind && (
                 <span style={type(s.body, s.bodyMd, 1.5, { whiteSpace: 'nowrap' })}>{sl.kind}</span>
@@ -12606,7 +12606,7 @@ function Calendar({ s }) {
         </div>
         <div style={{ width: '100%', paddingBottom: u(20), borderBottom: `1px solid ${headRule}` }}>
           {/* The one thing the section already had that this frame left room
-              for: `heading` headed the flat layout alone, the scheduler frame
+              for: `heading` once headed only the unreachable fallthrough, the scheduler frame
               drawing no title at all. The frame's own sentence goes with it —
               which is also why the head is shorter than the master's here: two
               lines of "Find a date that works for your event" against our one
@@ -12647,7 +12647,7 @@ function Calendar({ s }) {
     // up. The frame draws no state for the row the visitor is on: the foot's
     // chip and line are the whole cue, the media player's now-playing rule.
     const slotRow = (sl, i) => {
-      const onClick = s.live && sl.iso && !sl.booked
+      const onClick = s.live && sl.iso && !blocked(sl)
         ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
         : undefined
       const mark = (
@@ -12667,7 +12667,7 @@ function Calendar({ s }) {
       return (
         <div key={i} onClick={onClick} style={row(gap, {
           padding: `${u(16)} ${padX}`, borderBottom: `1px solid ${rule}`,
-          color: sl.booked ? gone : ink, cursor: onClick ? 'pointer' : undefined,
+          color: blocked(sl) ? gone : ink, cursor: onClick ? 'pointer' : undefined,
         })}>
           {/* The 390 master stacks the mark over the weekday, tight against it
               at no gap at all, and leaves the availability block where it is.
@@ -12847,7 +12847,7 @@ function Calendar({ s }) {
     const month = s.calMonths[0]
     const want = (s.live && sel) || s.calPick
     const at = want ? month.cells.findIndex((c) => c.iso === want) : -1
-    const hit = at >= 0 && !month.cells[at].booked ? month.cells[at] : null
+    const hit = at >= 0 && !blocked(month.cells[at]) ? month.cells[at] : null
     const line = hit ? hit.short : s.calPrompt
 
     // Lime — the frames 964:68677 / 984:10763 / 984:10794, as a block after
@@ -12872,7 +12872,7 @@ function Calendar({ s }) {
       const dot = (c, i) => {
         if (c.iso === undefined) return <span key={i} />
         const on = hit ? c.iso === hit.iso : false
-        const onClick = s.live && !c.booked
+        const onClick = s.live && !blocked(c)
           ? () => setSel((v) => (v === c.iso ? '' : c.iso))
           : undefined
         // The free dot's ring is the frame's raw 2.559, stroked inside, so it
@@ -12880,8 +12880,8 @@ function Calendar({ s }) {
         return (
           <span key={i} onClick={onClick} style={{
             width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
-            background: on ? s.ac : c.booked ? s.box2 : s.box1,
-            boxShadow: on || c.booked ? undefined : `inset 0 0 0 ${lu(2.559)} ${s.stroke1}`,
+            background: on ? s.ac : blocked(c) ? s.box2 : s.box1,
+            boxShadow: on || blocked(c) ? undefined : `inset 0 0 0 ${lu(2.559)} ${s.stroke1}`,
             cursor: onClick ? 'pointer' : undefined,
           }} />
         )
@@ -13008,14 +13008,14 @@ function Calendar({ s }) {
     const dot = (c, i) => {
       if (c.iso === undefined) return <span key={i} />
       const on = hit ? c.iso === hit.iso : false
-      const onClick = s.live && !c.booked
+      const onClick = s.live && !blocked(c)
         ? () => setSel((v) => (v === c.iso ? '' : c.iso))
         : undefined
       return (
         <span key={i} onClick={onClick} style={{
           width: u(30.713), height: u(30.713), borderRadius: '999px', justifySelf: 'center',
-          background: on ? hue : c.booked ? taken : 'transparent',
-          border: on || c.booked ? 'none' : `${u(2.559)} solid ${ink}`,
+          background: on ? hue : blocked(c) ? taken : 'transparent',
+          border: on || blocked(c) ? 'none' : `${u(2.559)} solid ${ink}`,
           cursor: onClick ? 'pointer' : undefined,
         }} />
       )
@@ -13198,7 +13198,7 @@ function Calendar({ s }) {
     // block the date a visitor was on.
     const want = (s.live && sel) || s.calPick
     const hit = want ? s.calSlots.find((sl) => sl.iso && sl.iso === want) : null
-    const cur = hit && !hit.booked ? hit.iso : ''
+    const cur = hit && !blocked(hit) ? hit.iso : ''
     const feat = cur ? hit : null
 
     // One stat cell. The frame styles the **first** label in Display/Title 24
@@ -13308,7 +13308,7 @@ function Calendar({ s }) {
     // above carries a stroke too, in its own fill colour, and that one is not
     // transcribed: it draws nothing at any width.
     const slotRow = (sl, i) => {
-      const onClick = s.live && sl.iso && !sl.booked ? () => setSel(sl.iso) : undefined
+      const onClick = s.live && sl.iso && !blocked(sl) ? () => setSel(sl.iso) : undefined
       return (
         // Keyed on the date, which is what the row *is*, with the index behind
         // it for the rows whose date does not parse — they keep their place and
@@ -13319,7 +13319,7 @@ function Calendar({ s }) {
           background: sheet, borderRadius: u(30),
           padding: `calc(${u(18)} - 1px) calc(${u(24)} - 1px)`,
           border: `1px solid ${sheetInk}`, justifyContent: 'space-between',
-          color: sl.booked ? gone : sheetInk, cursor: onClick ? 'pointer' : undefined,
+          color: blocked(sl) ? gone : sheetInk, cursor: onClick ? 'pointer' : undefined,
         })}>
           <span style={col(u(2))}>
             <span style={{
@@ -13594,8 +13594,8 @@ function Calendar({ s }) {
       )
 
       const slotRow = (sl, i) => {
-        const onClick = s.live && sl.iso && !sl.booked ? () => setSel(sl.iso) : undefined
-        const dim = sl.booked ? { opacity: 0.38 } : null
+        const onClick = s.live && sl.iso && !blocked(sl) ? () => setSel(sl.iso) : undefined
+        const dim = blocked(sl) ? { opacity: 0.38 } : null
         return (
           <div key={sl.iso || `row${i}`} onClick={onClick} style={row(u(14), {
             background: s.box1, color: s.tx, borderRadius: u(50), boxShadow: hair,
@@ -14268,6 +14268,9 @@ function EventsMap({ s }) {
                   fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
                   opacity: onDark ? 1 : 0.8,
                   color: on ? contrastInk(g.hue) : onDark ? s.mapFg : undefined,
+                  // The city is the artist's, and one long word has no break
+                  // opportunity of its own.
+                  overflowWrap: 'anywhere',
                 }}>
                   {g.city} · {g.time}
                 </span>
@@ -14334,8 +14337,12 @@ function EventsMap({ s }) {
           </div>
         </div>
 
+        {/* `minmax(0, …)`, Lime's block's columns: a bare `1fr` floors each
+            track at its content's min-content, which is the venue's whole
+            nowrap string, so a long one widened both cards past the page and
+            the row's ellipsis never engaged. */}
         <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1.15fr',
+          display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1.15fr)',
           gap: s.gGap, alignItems: 'start',
         }}>
           {tile}{list}
@@ -14544,7 +14551,7 @@ function EventsMap({ s }) {
                   <span style={{ width: u(24), height: '1px', background: ink }} />
                 </span>
                 <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
-                  <span style={display(s.list, 1.2)}>{g.city}</span>
+                  <span style={{ ...display(s.list, 1.2), overflowWrap: 'anywhere' }}>{g.city}</span>
                   <span style={bodySm}>Venue location</span>
                 </div>
               </>
@@ -14605,7 +14612,7 @@ function EventsMap({ s }) {
                   }}>↗</Tix>
                 )}
               </div>
-              <span style={{ ...bodySm, whiteSpace: 'nowrap' }}>
+              <span style={{ ...bodySm, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
               </span>
             </div>
@@ -14687,8 +14694,10 @@ function EventsMap({ s }) {
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {g ? (
                 <>
-                  <h3 style={display(titleSize, 1.1)}>{g.venue}</h3>
-                  <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7 }}>{g.city}</span>
+                  <h3 style={{ ...display(titleSize, 1.1), overflowWrap: 'anywhere' }}>{g.venue}</h3>
+                  <span style={{
+                    fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7, overflowWrap: 'anywhere',
+                  }}>{g.city}</span>
                 </>
               ) : (
                 <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7 }}>No dates yet.</span>
@@ -14764,7 +14773,7 @@ function EventsMap({ s }) {
 
       return (
         <div style={{
-          display: 'grid', gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+          display: 'grid', gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
           gap: u(24), alignItems: 'start',
         }}>
           <div style={col(u(18))}>{lcard}{llist}</div>
@@ -14839,6 +14848,7 @@ function EventsMap({ s }) {
               <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+                  overflowWrap: 'anywhere',
                 }}>{g.city}</span>
                 <span style={label12}>Venue location</span>
               </div>
@@ -14956,7 +14966,7 @@ function EventsMap({ s }) {
                 }}>↗</Tix>
               )}
             </div>
-            <span style={label12}>
+            <span style={{ ...label12, overflowWrap: 'anywhere' }}>
               {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
             </span>
           </div>
@@ -15036,12 +15046,16 @@ function EventsMap({ s }) {
           </span>
           {g ? (
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
+              {/* A display head wraps rather than ellipsising, so a venue or
+                  city that is one long word breaks anywhere instead of setting
+                  the panel's width. */}
               <h3 style={{
                 margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
-                letterSpacing: s.dls,
+                letterSpacing: s.dls, overflowWrap: 'anywhere',
               }}>{g.venue}</h3>
               <span style={{
                 fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, opacity: 0.7,
+                overflowWrap: 'anywhere',
               }}>{g.city}</span>
             </div>
           ) : (
@@ -15134,8 +15148,10 @@ function EventsMap({ s }) {
       <div style={{
         display: 'grid',
         // 768 keeps the desktop's two columns at 342 + 342; only 390 stacks.
-        // The 24 gap is the frames' own at all three widths.
-        gridTemplateColumns: s.mob ? '1fr' : '1fr 1fr',
+        // The 24 gap is the frames' own at all three widths. `minmax(0, …)`,
+        // or a track floors at its content's min-content and one long venue
+        // widens both columns past the page.
+        gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
         gap: u(24), alignItems: s.mob ? 'start' : 'stretch',
       }}>
         {/* The panel stretches to the left column, the frame's `self-stretch`,
@@ -16169,8 +16185,8 @@ function EventsMap({ s }) {
   // `rings`, on each ring's right edge at the midline, and the *+ / −* zoom
   // controls step layer 3's `zoom` hook live. *LIVE · LAST 12 MONTHS* beside
   // the head label is a field of its own, `span`, seeded with the frame's copy
-  // and emptiable — `s.mapSub` stays refused there, its default "12 dates · 8
-  // cities · this season" contradicting the two stat cards on the seeded page.
+  // and emptiable, rather than a count the two stat cards beside it could
+  // contradict.
   // The ticker's *×* is still declined, a dismiss with no state to dismiss,
   // and its seat takes the `›` that makes the frame's own `‹` a pair.
   //
@@ -16760,27 +16776,9 @@ function EventsMap({ s }) {
     )
   }
 
-  return (
-    <div style={{
-      background: s.soft, aspectRatio: '16 / 7', borderRadius: s.radius, position: 'relative',
-      overflow: 'hidden', display: 'flex', alignItems: 'flex-end', padding: '26px',
-    }}>
-      {/* The flat layout has no gig list to pair with, so its dots stay the raw
-          five positions rather than one per gig — twelve gigs would otherwise
-          stack twelve dots on five spots. */}
-      {s.pins.map((p, i) => (
-        <span key={i} style={{
-          position: 'absolute', left: p.x, top: p.y, width: '12px', height: '12px',
-          borderRadius: '999px', background: s.ac, boxShadow: `0 0 0 5px ${s.soft2}`,
-          transform: 'translate(-50%, -50%)',
-        }} />
-      ))}
-      <div style={{ position: 'relative' }}>
-        <h2 style={{ margin: 0, fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1 }}>{s.title}</h2>
-        <div style={{ fontSize: '13px', fontWeight: 600, color: s.muted, marginTop: '8px' }}>{s.mapSub}</div>
-      </div>
-    </div>
-  )
+  // `arch % designCount` is 0–3, so the four branches above are the whole
+  // section: the full-map fallthrough that used to stand here was unreachable.
+  return null
 }
 
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one

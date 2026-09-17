@@ -110,8 +110,40 @@ mutated through a single `patch()` helper.
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
+- **`st.removed` is `{ [cat]: { arch, c } }`, the last deleted section of each category**, so
+  re-adding a category restores its content (data-URI uploads and all) and the add composer
+  opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts out. Its keys
+  are only ever categories **not** on the page — `addSection`, Undo and Start fresh all consume
+  the entry, and picking a template resets it. `del` is still one click from all three call
+  sites (the list row's menu, `EditPanel`'s Delete, the canvas toolbar's trash) and toasts an
+  **Undo** that reinserts the very same section object at `min(oldIndex, sections.length - 1)`
+  (the footer stays last) without selecting it. The toast helper takes an optional
+  `{ label, run }` action; such a toast lives 6 s but is still replaced by the next toast, since
+  `st.removed` holds the content either way. `del` and `addSection` read the section off the
+  **rendered** `st.sections`, not from inside the `patch` updater — React may run an updater
+  after the handler returns, so a flag set in there is not there yet. On a phone the toaster
+  moves to the top while any drawer is open (closing the drawer remounts a live toast at the
+  bottom, fade and timer restarting). The drawers also carry `keepOnToast`, a guard against a
+  press on a toast counting as outside, though vaul was measured not to close on one anyway.
+- **The artist's name is the header's `c.title`.** The `artistName` prop only seeds it: the
+  builder derives `artistName` from the header section (trimmed, falling back to the prop when
+  empty) and passes *that* everywhere — nav brand, initials placeholders, bylines, badge,
+  `copyrightOf()`, the published tab's `<title>` (reset on every republish, not only when the tab
+  is first opened) and the dialog's site address. Header `badgeText` and footer `copyright` have
+  no static default for that reason; `EditPanel` special-cases them beside `title`.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
+- **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
+  ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
+  `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
+  `'*'` for the rest), and `fieldReach()` in `data.js` is what `EditPanel` asks before printing
+  "Not shown in this layout" under the label. The field stays editable — switching layouts
+  never discards copy. `in` is **measured, not read off the prose**: type into the field and
+  see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
+  `in` names Retro and Lime only, so the flat three's undesigned header family carries no
+  note. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
+  `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
+  sections still end in one after `v3`, which `arch % designCount` never reaches).
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
   it names a real theme (`"Picker"` deliberately matches nothing, giving the full flow).
 
@@ -157,7 +189,11 @@ mutated through a single `patch()` helper.
   **events map's per-gig tickets link** and the **footer's web-address rows**
   (`extLink()` in `EncoreSection`, `extUrl()` in
   `data.js`: they open in a new tab, and a schemeless address is given `https://`, or
-  `<base href>` would resolve it against the builder). Do **not** make `EncoreSection` interactive
+  `<base href>` would resolve it against the builder; anything `urlProblem()` refuses — a scheme
+  outside http / https / mailto / tel, whitespace inside, a schemeless host with no dot, `//host`
+  — comes out `''`, which is each seam's existing no-link state, and a track's audio also refuses
+  mailto / tel. Every address input in `EditPanel` is a `UrlInput`, which prints that reason under
+  the box on blur). Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
   would both filter and select the section. `EncoreSection` therefore imports `useState` and
   `useRef` as well as `useId`; that is the whole of its React surface and it stays that way —
@@ -177,14 +213,19 @@ mutated through a single `patch()` helper.
   marked as playing and the clock does not start — the card still names and shows track one,
   which is what the player is cued to. `FIELDS.media` therefore has **no now-playing track or
   sleeve field**: a second, separately editable copy of what the card shows could only
-  contradict the list. Do not mark the
+  contradict the list. Nor does `NOW_PLAYING`, which is only the canvas's mid-song clock: with
+  **no tracks at all** the card names `vm.mediaEmpty` (the one "No tracks yet." the empty lists
+  print too) and `sectionVm` stops the clock at 00:00 under an empty bar on both surfaces, since
+  a mid-song clock with nothing cued is a lie. The transport stays wired but inert there —
+  `goTo` returns on an empty list before its modulo. Do not mark the
   playing card by raising it out of the stack — the cards overlap by 18px at the foot and a raised
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
   **Layout 2 plays through the same hooks**, and draws the one list twice: the fan and the
   numbered list beside it are both the whole of `s.tracks`, and **layout 3 is that numbered
   list under a bar-meter now-playing card** (its disc is the play/pause, its meter counts bars off
-  `vm.contentW`), so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — the
-  flat design still shows three and Next must not leave the page.
+  `vm.contentW`), so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — every
+  design plays the whole list, and `s.tracks3` (three) serves only the unreachable fallthrough,
+  whose Next must not leave the page.
   Its fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
@@ -316,9 +357,7 @@ mutated through a single `patch()` helper.
   dots carry no handler — five seats over any number of gigs means a dot does not name one — the
   ticker's own text block is the gig's `link` where it has one (layout 1's empty-link rule
   again), and the ticker is **not drawn at one gig** and gone at none. Its section stands on the
-  page ground, so the root's `darkMap` flag stays layout 1's. The flat map layout
-  keeps raw `vm.pins` with nothing lit: it has no list to pair with, and twelve gigs would stack
-  twelve dots on five spots.
+  page ground, so the root's `darkMap` flag stays layout 1's.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection` — because it is an
   `href`.** The repertoire's layout-4 A–Z rail scrolls from *inside* the file, and the two do not
   contradict: the nav's target is a fragment, which cannot be followed in the popup, so it needs
@@ -415,14 +454,26 @@ mutated through a single `patch()` helper.
   goes through `Date.UTC` (a local-time `Date` names the wrong weekday west of Greenwich), and
   `vm.calMonths` resolves the whole `CAL_SPAN` window — label, cells, booked flags and **one
   composed enquiry line per cell** — so the section looks a line up rather than working a date
-  out, the way it draws the pin `sectionVm` paired with a gig. Nothing reads the clock: the
-  calendar opens on the artist's date, not on today, or the canvas's picture would drift off the
-  reference frame's June overnight. The arrows **wrap** at both ends rather than clamping, the
+  out, the way it draws the pin `sectionVm` paired with a gig. Nothing on the canvas reads the
+  clock: the canvas opens on the artist's date, not on today, or its picture would drift off the
+  reference frame's June overnight. **The published tab knows what day it is** (F20), and so
+  does `BookedField` (below), which pages the published window and nothing else:
+  `PublishedPage` reads today once, in UTC, and passes it to `sectionVm` as the ISO `today`,
+  which is honoured only when `live`. With it, a day or slot before today carries **`dead`**
+  beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
+  four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
+  strike** — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
+  past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
+  (`max(open, today)`, `calStart()` in `data.js`, which `BookedField` shares so the artist
+  can block every day a visitor can pick; it fades the days before today and takes no click on
+  them unless they are already blocked). So the published first paint is the canvas's picture only while `open`
+  is today or later: a named, accepted diff. The harness takes `&today=` (opt-in, so a `live=1`
+  digest never moves with the date). The arrows **wrap** at both ends rather than clamping, the
   media player's rule — a clamped first month opens the published page on a dead-looking arrow,
   a diff from the canvas — and their cursor is read off the handler, `Pager`'s rule. `sel` is an
   **ISO date, not an index**, because it must survive the month turning, and the **empty string is
   this section's `-1`**: nothing chosen, so `vm.calPick` renders and the published first paint is
-  the canvas's picture by construction. Blocking the *cued* day cues nothing (`vm.calPick` is
+  the canvas's picture by construction, the clock aside. Blocking the *cued* day cues nothing (`vm.calPick` is
   `''`) and the foot prints `vm.calPrompt`, rather than sliding the pick to the day after — the
   artist blocked it. A booked day is muted, struck through and handlerless (under Lime it is
   dimmed to .38 with no strike, its frame's own state), which is a **content** state and not a
@@ -432,7 +483,8 @@ mutated through a single `patch()` helper.
   `CTA_TARGETS.book` ends here — which is what turned `cta` from a field that edited nothing into
   a control, and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
   month needing six rows grows one where June needs five, the grid never being padded to 35.
-  The flat layout (arch 1, 3) still draws the hardcoded `CITIES` and reads none of this.
+  The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
+  none of this.
   **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**: layout 2 is a
   bold list of named slots — `CAL_SLOTS`, seeded in `data.js` in the row shape a repeater
   would edit and resolved by the `songs` rule onto `vm.calSlots`, with no editor beside it
@@ -444,7 +496,7 @@ mutated through a single `patch()` helper.
   pill takes the same `calBookTo` under its own label, `slotCta` ("Start Enquiry"; the frame's
   "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
-  a link column. `heading`, which headed the flat layout alone, heads it; `image` does not
+  a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
   reach it at all. And the slot list is the one list-shaped content with **no** editor, so
   `FIELDS.calendar` still names no `slots`.
   **Layout 4 is that same slot list a second time, stacked rather than tabled**, and it is the
@@ -496,7 +548,7 @@ mutated through a single `patch()` helper.
   picture *is* a choice, and pricing's `active` pins 0 on the canvas for the same reason; do not
   "fix" it to -1. It is clamped for pricing's reason too, since Publish re-renders the tab that is
   already open. `showTypes` is `s.v0 && nTypes`, and the **mailto reads it rather than the count**:
-  the flat layout draws no chip row, so it sends the bare `Enquiry` rather than claiming a type
+  a layout that draws no chip row sends the bare `Enquiry` rather than claiming a type
   the visitor was never offered. **No palette has a red**, so a refused box is an *inset* rule in
   `ctlInk` — inset, so the frame's stated 60 does not grow — under a prompt line (Lime's boxes
   are pills, so there its hairline thickens to a 2px inset ring of full ink, layout 2's rule); errors are
@@ -536,8 +588,8 @@ mutated through a single `patch()` helper.
   the frame's "Available 2025 / 2026" and emptiable; `para` takes the paragraph under the
   head; and the card carries **layout 2's own card fields** — the price row, the
   `★★★★★ 42 bookings` line, the `cta` submit label and the `note` line under the pill —
-  because it is the same card component (QA, 2026-09-15). So `promises` reaches layout 4
-  alone now. Under Lime a refused box takes layout 2's 2px ring of full ink, and the desktop
+  because it is the same card component (QA, 2026-09-15). So `promises` skips layout 3
+  alone: layouts 1, 2 and 4 read it. Under Lime a refused box takes layout 2's 2px ring of full ink, and the desktop
   head shrinks to fit its widest word in the half column (`vm.titleWordEms`, a Lime-only key
   beside `navNameEms`) rather than breaking inside it.
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
@@ -660,10 +712,18 @@ mutated through a single `patch()` helper.
   `FOOTER_TARGETS` lists **every category the page can carry, not the ones it does**: a Radix
   `Select` whose value names no item blanks its trigger, so a link to a section since deleted
   must still read as what it points at, and one can be aimed at a section not added yet.
-  Resolving it against the page is `sectionVm`'s job, and §4.3a already says what happens when
-  it fails — the label keeps its place in the design and simply does not link, which is also
-  the whole of `BLANK_PAGE`'s footer. The two columns are **derived**, not stored: the frames
-  draw four and four, so the list is halved with the remainder in **column one** — the pricing
+  Resolving it against the page is `sectionVm`'s job. When a section target fails (§4.3a, F25),
+  the **canvas keeps the row** and `LinksField` prints "Section not on the page" under its
+  select, but the **published footer drops it** — the gallery's hide-the-empty-row rule, since a
+  visitor gains nothing from a dead word. Only a missing section is dropped: a `none` row is a
+  label the artist chose, and a `link` row whose address `extUrl()` refuses stays a picture (the
+  Soundcloud rule, with `UrlInput` saying why). `BLANK_PAGE`'s published footer is therefore the
+  Book pill alone, a span with nothing to book at, where its canvas still draws all eight labels.
+  The header's **Minimal** nav follows the same rule: a Music / Shows / Book label with no
+  candidate on the page is kept on the canvas, named in a hint above the Navigation links
+  select, and left out of the published nav (`vm.navLinks`, filtered before `navEms` measures
+  it). The two columns are **derived**, not stored, and derived from the **rendered** list, after
+  that drop, or the published columns would go lopsided. The frames draw four and four, so the list is halved with the remainder in **column one** — the pricing
   deck's odd-count rule, and column one is the one the pill stands in, so it is the one that
   should run long — and an empty second column is dropped rather than rendered as a `nav` with
   no children, because `links` is a flex row and an empty child still spends its gap. The pill
@@ -706,7 +766,13 @@ mutated through a single `patch()` helper.
   spinners break the frame's 60px box, so it takes `inputMode` only — and a date stays a text box
   with the artist's placeholder, the native picker being unstylable onto mustard. Its order is
   load-bearing where the other repeaters' is merely entry order: it is the order the boxes appear
-  in, two to a row. `pricing`'s `c.tiers` is an array of
+  in, two to a row. It also carries the only **guarded row**: the last `email` row can be neither
+  removed nor retyped — its trash button is disabled and its select disables Text and Number
+  rather than dropping them (a Radix value naming no item blanks the trigger), under the hint
+  "Visitors need somewhere to leave an address." — so the editor never reaches a list without an
+  email row, since the seed carries one and a new row is `text`. Nothing else is guarded: an
+  emptied list renders in all four layouts, the published form still sending the bare body.
+  `pricing`'s `c.tiers` is an array of
   `{ name, price, tags, blurb, feats }`, maintained by `TiersField`, and it replaced a **flattened
   key set** (`t1n`/`t1p`/…, which reached two of the five things a card prints and could not add a
   fourth card) rather than a textarea. It carries the only rows with *two* delimited strings, and
