@@ -47,7 +47,7 @@ import {
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
-  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, copyrightOf, extUrl, songTags, repChips,
+  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -2692,9 +2692,15 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
+                  // A field this design does not read stays editable — the copy
+                  // is kept for the next layout — but says so.
+                  const unread = !fieldReach(f, themeName, design)
                   return (
                     <div key={f.k}>
-                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint ? '2px' : '5px' }}>{f.l}</Label>
+                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
+                      {unread && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45, fontStyle: 'italic' }}>Not shown in this layout</p>
+                      )}
                       {f.hint && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{f.hint}</p>
                       )}

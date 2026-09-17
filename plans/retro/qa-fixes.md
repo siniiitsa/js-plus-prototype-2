@@ -23,7 +23,7 @@ over, so do not renumber.
 |---|---|---|---|---|---|---|
 | 1 | F4 | Long venue name widens the gig cards on mobile | **Confirmed**: layout 1 (spaced name) and layout 2 (one long word) | S | no | **done** |
 | 2 | F10 | An empty media player shows the hardcoded "Night Rain" | **Confirmed** | S | no | **done** |
-| 3 | F2 | Four fields edit nothing in layout 1 | **Confirmed**, and it is one case of a wider class | M | **yes** | open |
+| 3 | F2 | Four fields edit nothing in layout 1 | **Confirmed**, and it is one case of a wider class | M | **yes** | **done** (A) |
 | 4 | F9 | Enquiry form can lose every box, Email included | **Confirmed** | S | small | open |
 | 5 | F18 | Link fields don't validate (`not a url`, `javascript:`) | **Confirmed** | M | small | open |
 | 6 | F25 | Footer link to a deleted section stays as a dead label | **Confirmed**: currently *documented as intended* | S | **yes** | open |
@@ -255,7 +255,56 @@ change where the note shows, and does where it doesn't.
 **Docs.** The `FIELDS.header` comment, and a line in CLAUDE.md ("A layout that does not consume a
 key simply ignores it" gains "and the panel says so").
 
-**Decision.** —  **Settled.** —
+**Decision.** 2026-09-17: **A** (mark the field per layout; the field stays editable).
+
+**Settled.** 2026-09-17.
+- **Shape.** `in` is an array of 0-based designs (`arch % designCount`), or an object keyed by
+  template name with `'*'` for any template it does not name. No `in` means every design reads
+  the key. `fieldReach(f, themeName, design)` sits under `fieldDefault` in `data.js`. `EditPanel`
+  reuses its existing `design` and prints an italic "Not shown in this layout" between the label
+  and `f.hint`, in the hint's style. The header's `in` is always `{ Retro, Lime }`. The flat
+  three's header family is undesigned (its `FlatNav` ignores even `navMode`), so it carries no
+  note rather than being folded onto either list.
+- **The reach was measured, not read.** A scratch probe rendered `preview.html` for every
+  field × design × theme 0, 1, 2 × three widths × canvas and `live=1`, once with a sentinel in
+  `&cj=` (a string, a data-URI photo, the other select option, one custom list row, every June
+  date booked, `open` = March) and once without, and compared `#root.innerHTML`. `title` was
+  skipped: it is the artist's name and reaches every header. The `in` tables are that output
+  verbatim. An assertion over `fieldReach` gave 999 checks and 0 mismatches (Grunge included,
+  except its header).
+- **What the probe corrected in the triage table.** `para2` is read by bio layouts 3 **and 4**.
+  `cta2` is `{ Retro: [1, 2, 4], Lime: [1, 2] }` and `subtitle` is `{ Retro: [1, 4], Lime: [1] }`.
+  Calendar `heading` is `{ Lime: all four, '*': [1, 2, 3] }`, and the flat three match Retro.
+  Unmarked fields the audit also caught: header `kicker`, `location`, `showTags`, `showBadge`,
+  `badgeText` (Lime layout 4 only) and `align` (layout 1 only); bio `heading` (not layout 2);
+  media `kicker` (layouts 1 and 3 only) and `soundcloud`; calendar `image`, `time`, `cta`; map `terms` (not
+  layout 3); testimonials `heading` (not layout 1) and `sub`; form `promises` (not layout 3, so
+  CLAUDE.md's "reaches layout 4 alone" was wrong and is fixed).
+- **Lime differs outside the header in two places.** Its pricing layout 2 is its own composition
+  and draws none of `images` / `reviews` / `rating` / `cta` / `note` (`PRICING_CARD` =
+  `{ Lime: [], '*': [1] }`). Its testimonials layout 2 prints no `stars`.
+- **Two dead fields.** `bio.statement` and `map.sub` are read only by the fallthrough after
+  `v0`–`v3`, which `arch % 4` never reaches, so they are `in: []` and carry the note everywhere.
+  Their labels lost the suffixes that named layouts that no longer exist ("centred layout",
+  "full map layout"). **Removal is left to the sweep** (the fallthrough branches with them).
+- **Suffix rule.** A `(layout …)` suffix was dropped only where the hint already names the
+  layout, or where the suffix named a layout that does not exist. It was kept where it tells two
+  same-named fields apart (the "Button" pairs in pricing, calendar and form). By that rule only
+  calendar's "Event types" lost one. "Ring labels (layout 3)" was **wrong** (layouts 3 and 4 read
+  it) and now says so. **Named edge:** under Lime, pricing layout 2's "Review count (layout 2)"
+  and its siblings show the note *on* layout 2. The suffix is Retro's truth and the note is
+  Lime's. Not chased.
+- **Named edge:** header `cta2` is also bio layout 4's Listen label. The bio panel has no such
+  field, so the note on the header speaks for the header alone.
+- **Verified in the editor** (puppeteer on the real app, 1600 wide): Retro and Lime × setup card
+  1–4 × Header, Bio, Booking Calendar. The notes matched the probe on every panel. Typing into
+  each text field (132 fields in all) moved the canvas exactly where no note stood (0
+  contradictions). Select and photo fields are covered by the probe alone.
+- **Digest** (all categories, themes 0, 1, 2, three widths, canvas and `live=1`):
+  **byte-identical**, as expected for a chrome-only change.
+- **Docs:** the §4.8 `FIELDS` comment, the `FIELDS.header` and `FIELDS.calendar` comments, a new
+  CLAUDE.md bullet under *Navigation and state*, the `promises` sentence in CLAUDE.md, and a
+  README *Scope boundaries* bullet.
 
 ---
 
@@ -500,6 +549,11 @@ drop. Check that the error sits next to the control, and that a following valid 
   ones entries F4 (overflow cases, plus Grunge's seeded `map` layout 2 at 768 / 390, see its
   *Settled*), F10 (not seeds) and F2 (option C only) name.
 - Update `plans/README.md`'s Retro table row for this plan.
+- Decide whether to delete `bio.statement` and `map.sub` along with the unreachable fallthrough
+  branches that read them (F2's *Settled*).
+- A field added by any entry needs its `in` (F2): re-measure, don't guess.
+- Under Lime, pricing layout 2 shows "Review count (layout 2)" and its four siblings with the
+  note directly beneath (F2's *Settled*). Decide whether those labels lose the suffix.
 
 ## Conventions learned on this pass
 
@@ -511,3 +565,6 @@ drop. Check that the error sits next to the control, and that a following valid 
 - **Seed a harness case with `&cj=`** (F4): `encodeURIComponent(JSON.stringify({ gigs: [...] }))`.
   Keep the case script in the scratchpad, drive it with puppeteer-core plus
   `scripts/headless-shell.mjs`, and measure `document.documentElement.scrollWidth`.
+- **A field's reach is measured** (F2): render with and without a sentinel in `&cj=` and compare
+  `#root.innerHTML` at three widths, on the canvas and with `live=1`. A field no design reads
+  still keeps its copy, and its `in` says so.

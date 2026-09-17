@@ -797,50 +797,75 @@ export const BLANK_PAGE = [
 
 /* ------------------------------------------------------------------ *
  * §4.8 FIELDS — editable content per category
- * { k, l, type?, opts?, d?, def? }
+ * { k, l, type?, opts?, d?, def?, in? }
+ *
+ * `in` is the designs that read the key, 0-based like `arch % designCount`
+ * (so layout 1 is 0). It is an array when every template reads the key in
+ * the same designs, or an object keyed by template name when one differs —
+ * `'*'` standing for any template the object does not name. A field with no
+ * `in` is read by every design. EditPanel says so beside a field the section's
+ * current design does not read; see fieldReach() below.
  * ------------------------------------------------------------------ */
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
 
+// Pricing layout 2's card fields, which Lime's own layout 2 does not draw.
+const PRICING_CARD = { Lime: [], '*': [1] }
+
 export const FIELDS = {
   // Every element appearing in any header layout is exposed. A layout that
   // does not consume a key simply ignores it, so swapping layouts never
-  // silently discards copy the user typed.
+  // silently discards copy the user typed — and the panel says so, off `in`.
+  //
+  // The header's `in` is always an object naming Retro and Lime alone: the
+  // two have different header families (six designs against four), and the
+  // flat three have a third family of their own that is not designed, so
+  // they are left unmarked rather than folded onto either list.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
     { k: 'avatar',    l: 'Artist photo',     type: 'image',
       hint: 'The portrait card and the small round avatar.' },
-    { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act' },
+    { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3] } },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
-    { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub' },
-    { k: 'location',  l: 'Location',         d: 'Manchester, UK' },
+    { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
+      in: { Retro: [1, 4], Lime: [1] } },
+    { k: 'location',  l: 'Location',         d: 'Manchester, UK',
+      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3] } },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
-    { k: 'cta2',      l: 'Secondary button', d: 'Listen' },
-    { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE },
-    { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE },
-    { k: 'badgeText', l: 'Badge text' },                  // defaults to the artist's name — special-cased
+    // Bio layout 4's Listen reads this key too; `in` speaks for the header.
+    { k: 'cta2',      l: 'Secondary button', d: 'Listen',
+      in: { Retro: [1, 2, 4], Lime: [1, 2] } },
+    { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] } },
+    { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3] } },
+    { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Shows · Book)' },
     ] },
-    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', opts: [
+    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
   ],
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
-    { k: 'heading',   l: 'Heading', d: 'Reads the room.' },
-    { k: 'statement', l: 'Statement (centred layout)', def: 'statement' },
+    { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
+    // Read only by the centred fallthrough after the four designs, which
+    // `arch % designCount` never reaches — so no design reads it at all.
+    { k: 'statement', l: 'Statement', def: 'statement', in: [] },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
-    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2' },
+    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3] },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
     // so the seeded card draws the frame's three columns; emptied, the column
     // is not drawn.
-    { k: 'since',     l: 'Performing since', def: 'since',
+    { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
   ],
   // The second list-shaped content type with a structured editor (see
@@ -860,9 +885,9 @@ export const FIELDS = {
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
       hint: 'Each row is one card in the stack, with its own artwork and audio file. '
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
-    { k: 'kicker',  l: 'Kicker', d: 'Top tracks' },
+    { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
-    { k: 'soundcloud', l: 'SoundCloud link', d: '',
+    { k: 'soundcloud', l: 'SoundCloud link', d: '', in: [0],
       hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
@@ -873,7 +898,7 @@ export const FIELDS = {
   // sentinel. The tags are layout 1's filter row, the repertoire's rule; layout 2
   // names the packages themselves in its chip row and reads no tags at all.
   pricing: [
-    { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night",
+    { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night", in: [0, 1, 2],
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
@@ -884,21 +909,22 @@ export const FIELDS = {
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
-    { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro',
+    { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro', in: [2],
       hint: 'A line under the heading. Layout 3 only.' },
-    { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote',
+    { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote', in: [1],
       hint: 'A line of praise beside the plan. Layout 2 only.' },
     // Layout 2's credit row under the quote and the line beside its pill, all
     // seeded with the frame's own copy. Every one is emptiable and drops what
-    // it fills; the row goes when all three of its fields are empty.
-    { k: 'images',  l: 'Reviewer photos (layout 2)', type: 'images', max: 3,
+    // it fills; the row goes when all three of its fields are empty. Lime's
+    // layout 2 is its own composition and draws none of the five.
+    { k: 'images',  l: 'Reviewer photos (layout 2)', type: 'images', max: 3, in: PRICING_CARD,
       hint: 'Small faces under the quote.' },
-    { k: 'reviews', l: 'Review count (layout 2)', d: PRICING_REVIEWS },
-    { k: 'rating',  l: 'Rating (layout 2)', d: PRICING_RATING,
+    { k: 'reviews', l: 'Review count (layout 2)', d: PRICING_REVIEWS, in: PRICING_CARD },
+    { k: 'rating',  l: 'Rating (layout 2)', d: PRICING_RATING, in: PRICING_CARD,
       hint: 'The five stars beside it are drawn while this is filled.' },
-    { k: 'cta',     l: 'Button (layout 2)', d: PRICING_CTA },
-    { k: 'note',    l: 'Line beside the button (layout 2)', d: PRICING_NOTE },
-    { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA,
+    { k: 'cta',     l: 'Button (layout 2)', d: PRICING_CTA, in: PRICING_CARD },
+    { k: 'note',    l: 'Line beside the button (layout 2)', d: PRICING_NOTE, in: PRICING_CARD },
+    { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA, in: [3],
       hint: 'The pill under the price on every package row.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
@@ -927,37 +953,37 @@ export const FIELDS = {
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
-    { k: 'youtube',   l: 'YouTube link', d: '',
+    { k: 'youtube',   l: 'YouTube link', d: '', in: [0],
       hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
-    { k: 'instagram', l: 'Instagram link', d: '',
+    { k: 'instagram', l: 'Instagram link', d: '', in: [0],
       hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
-    { k: 'tiktok',    l: 'TikTok link', d: '',
+    { k: 'tiktok',    l: 'TikTok link', d: '', in: [0],
       hint: 'Where the TikTok row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
   ],
-  // `heading` heads the flat layout, layout 2's slot list and layout 4's whole
-  // block — the scheduler frame draws no title — and every other key is read by
-  // at least two designed layouts. `open` is the one date the section is built
-  // from (in layouts 2 and 4 the slot it opens picked), `booked` the days it
-  // will not take (in those two the slots it strikes through), `time` the hour
-  // the foot line names and layout 4's own stat cell, and `cta` the label on
-  // the pill beside that line, which was an unread key until the pill existed
-  // and which layout 3 alone still leaves editing nothing.
+  // `heading` heads layout 2's slot list, layout 3's scheduler and layout 4's
+  // whole block, and Lime's layout 1 as well — Retro's draws no title. `open`
+  // is the one date the section is built from (in layouts 2 and 4 the slot it
+  // opens picked), `booked` the days it will not take (in those two the slots
+  // it strikes through), `time` the hour the foot line names and layout 4's
+  // own stat cell, and `cta` the label on the pill beside that line, which was
+  // an unread key until the pill existed and which layouts 2 and 3 still leave
+  // editing nothing. `in` records each key's reach.
   calendar: [
-    { k: 'image',   l: 'Photo', type: 'image',
+    { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
-    { k: 'heading', l: 'Heading', d: 'Availability' },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], '*': [1, 2, 3] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `It reaches ${CAL_SPAN} months from there.` },
     { k: 'booked',  l: 'Booked dates', type: 'booked',
       hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
-    { k: 'time',    l: 'Enquiry time', d: CAL_TIME,
+    { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'summary card. Leave it empty and the line stops at the date.' },
-    { k: 'cta',     l: 'Button (layouts 1 and 4)', d: 'Check a date' },
-    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA },
-    { k: 'types',   l: 'Event types (layout 4)', type: 'area', d: CAL_TYPES.join(', '),
+    { k: 'cta',     l: 'Button (layouts 1 and 4)', d: 'Check a date', in: [0, 3] },
+    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
+    { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3],
       hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
@@ -980,35 +1006,37 @@ export const FIELDS = {
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
     { k: 'base',    l: 'Based in',       d: MAP_BASE },
-    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS },
-    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME },
-    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE },
+    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1, 3] },
+    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1] },
+    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1] },
     // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
     // draws one. Live it lifts the pager and lists every gig under the current
     // filter; where the list is already one page it stays a picture (the
     // Soundcloud rule). An emptied label drops the pill.
-    { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs',
+    { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs', in: [2],
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
-    { k: 'status',  l: 'Map tag (layout 3)', d: MAP_STATUS },
-    { k: 'updated', l: 'Map note (layout 3)', d: MAP_UPDATED },
-    { k: 'rings',   l: 'Ring labels (layout 3)', d: MAP_RINGS,
+    { k: 'status',  l: 'Map tag (layout 3)', d: MAP_STATUS, in: [2] },
+    { k: 'updated', l: 'Map note (layout 3)', d: MAP_UPDATED, in: [2] },
+    { k: 'rings',   l: 'Ring labels (layouts 3 and 4)', d: MAP_RINGS, in: [2, 3],
       hint: 'Up to three, inner ring first, separated by commas.' },
-    { k: 'expand',  l: 'Map link (layout 3)', d: MAP_EXPAND,
+    { k: 'expand',  l: 'Map link (layout 3)', d: MAP_EXPAND, in: [2],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
-    { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN,
+    { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
       hint: 'Beside "Travel & reach" above the four stat cards. Leave empty to hide it.' },
-    { k: 'sub',     l: 'Subline (full map layout)', def: 'mapSub' },
+    // Read only by the full-map fallthrough after the four designs, which
+    // `arch % designCount` never reaches — so no design reads it at all.
+    { k: 'sub',     l: 'Subline', def: 'mapSub', in: [] },
   ],
   testimonials: [
     // A textarea, because layout 2's default breaks onto a second line.
-    { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth',
+    { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
       hint: 'Layout 2 starts from its own two-line heading; a line break you type is kept there.' },
     // Layout 2 was the first design to head this section, so both of the plain
     // strings below reached it alone — FIELDS.media.soundcloud's case the other
     // way up, hence the layout in each hint. Layout 3's bento wall then gave
     // `sub` a second seat: its stat card sets the sentence the frame fills with
     // a fabricated event count.
-    { k: 'sub',     l: 'Intro line', def: 'testiSub',
+    { k: 'sub',     l: 'Intro line', def: 'testiSub', in: [1, 2],
       hint: 'The line under the heading in layout 2, and the sentence on the stat '
           + 'card in layout 3.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
@@ -1022,28 +1050,29 @@ export const FIELDS = {
           + "above the quote in layout 1. Layout 2's selector takes the name's "
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
-    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS,
+    // Lime's layout 2 prints no stars.
+    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS, in: { Lime: [], '*': [1] },
       hint: 'Printed in the corner of the card, beside the reviewer. Empty it to drop them.' },
-    { k: 'cta',     l: 'Button', d: 'Book Now',
+    { k: 'cta',     l: 'Button', d: 'Book Now', in: [1],
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],
   form: [
-    { k: 'image',    l: 'Portrait', type: 'image',
+    { k: 'image',    l: 'Portrait', type: 'image', in: [0, 1],
       hint: 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
     // avatar. FIELDS.media.soundcloud's case: it reaches one layout, so the
     // hint says which.
-    { k: 'photo',    l: 'Stage photo', type: 'image',
+    { k: 'photo',    l: 'Stage photo', type: 'image', in: [1],
       hint: 'The big picture above the heading. Layout 2 only.' },
     // A textarea, because the default breaks after "Let's make" — layout 2
     // keeps the break, the others read it as a space.
     { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable." },
-    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara',
+    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2],
       hint: 'The line under the heading. Layout 3 only.' },
-    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'),
+    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1, 3],
       hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
           + 'right-hand column, and with none it draws no column at all.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
@@ -1054,23 +1083,23 @@ export const FIELDS = {
           + 'which set the label inside the box and draw no placeholder. An odd last box '
           + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
           + 'form emails you what the visitor types.' },
-    { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '),
+    { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
-    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, hint: 'Layouts 1 and 4.' },
+    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
-    { k: 'button',   l: 'Button', d: 'Book Now', hint: 'Layouts 1 and 4.' },
+    { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
     // so an emptied label falls back to `button`.
-    { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE },
-    { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT },
-    { k: 'bookings',  l: 'Bookings line (layouts 2 and 3)', d: FORM_BOOKINGS,
+    { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE, in: [1, 2] },
+    { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT, in: [1, 2] },
+    { k: 'bookings',  l: 'Bookings line (layouts 2 and 3)', d: FORM_BOOKINGS, in: [1, 2],
       hint: 'The five stars before it are drawn while this is filled.' },
-    { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA },
-    { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE },
-    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE,
+    { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA, in: [1, 2] },
+    { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE, in: [1, 2] },
+    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE, in: [2],
       hint: 'The small line above the heading. Leave it empty to hide it.' },
   ],
   footer: [
@@ -1136,6 +1165,17 @@ export function caseText(t, casing) {
 export const copyrightOf = (name) => `C 2026 ${name}`
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
+
+// Whether a section's current design reads field `f` — `design` being
+// `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
+// its `'*'` standing for any template it does not name; a template it does not
+// cover at all is left unmarked (true), which is how the flat three's header
+// stays silent. Read by EditPanel alone: nothing on the canvas consults it,
+// so a field the design ignores keeps its copy for the next layout.
+export function fieldReach(f, themeName, design) {
+  const r = !f.in || Array.isArray(f.in) ? f.in : (f.in[themeName] ?? f.in['*'])
+  return !r || r.includes(design)
+}
 
 // A user-typed outbound URL → an absolute one, or '' if the field is empty.
 //

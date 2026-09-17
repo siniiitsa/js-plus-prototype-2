@@ -531,6 +531,11 @@ These are intentional limits, not oversights — see §12 for the full list. The
 - **Layout folding.** For the 10 non-header categories, more layout numbers are offered than
   there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
   keeping their own labels. The header is exempt.
+- **Fields a layout does not read stay editable.** Each section's panel lists every field any
+  of its layouts reads, so switching layouts never discards copy. A field the current layout
+  ignores says "Not shown in this layout" under its label, off the field's `in` list and
+  `fieldReach()` in `data.js`. The flat three's header carries no such note: its family is not
+  designed, and `in` names Retro's and Lime's header layouts only.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

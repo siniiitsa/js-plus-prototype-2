@@ -118,6 +118,16 @@ mutated through a single `patch()` helper.
   no static default for that reason; `EditPanel` special-cases them beside `title`.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
+- **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
+  ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
+  `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
+  `'*'` for the rest), and `fieldReach()` in `data.js` is what `EditPanel` asks before printing
+  "Not shown in this layout" under the label. The field stays editable — switching layouts
+  never discards copy. `in` is **measured, not read off the prose**: type into the field and
+  see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
+  `in` names Retro and Lime only, so the flat three's undesigned header family carries no
+  note. `bio.statement` and `map.sub` are `in: []` — only the fallthrough after the four
+  designs reads them, and `arch % designCount` never reaches it.
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
   it names a real theme (`"Picker"` deliberately matches nothing, giving the full flow).
 
@@ -546,8 +556,8 @@ mutated through a single `patch()` helper.
   the frame's "Available 2025 / 2026" and emptiable; `para` takes the paragraph under the
   head; and the card carries **layout 2's own card fields** — the price row, the
   `★★★★★ 42 bookings` line, the `cta` submit label and the `note` line under the pill —
-  because it is the same card component (QA, 2026-09-15). So `promises` reaches layout 4
-  alone now. Under Lime a refused box takes layout 2's 2px ring of full ink, and the desktop
+  because it is the same card component (QA, 2026-09-15). So `promises` skips layout 3
+  alone: layouts 1, 2 and 4 read it. Under Lime a refused box takes layout 2's 2px ring of full ink, and the desktop
   head shrinks to fit its widest word in the half column (`vm.titleWordEms`, a Lime-only key
   beside `navNameEms`) rather than breaking inside it.
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
