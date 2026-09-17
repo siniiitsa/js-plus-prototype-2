@@ -356,7 +356,11 @@ That distinction is the whole design, and it buys two things:
   dead-looking arrow, which is a diff from the canvas. `sel` is an ISO date rather than a cell
   index, because it has to survive the month turning — it names a day, not a square of whatever
   month is on screen — and the empty string is this section's `-1`, so `vm.calPick` renders until
-  a visitor picks something and the published first paint is the canvas's picture by construction.
+  a visitor picks something and the published first paint is the canvas's picture by construction
+  — up to the clock. The canvas never reads it, so it stays the frame's June; the published tab
+  reads today once (in UTC) and, from it, kills every day and slot before today exactly as a
+  booked one is killed but without the strike, drops a cued date that has passed, and opens on
+  today's month when `open` is earlier.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
   blocked it. Booked days are muted and struck through and take no handler (Lime dims them to .38
   with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid), which is a **content** state rather than a

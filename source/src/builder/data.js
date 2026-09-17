@@ -638,8 +638,10 @@ export const CAL_DAYS   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 // gallery's three social addresses rather than GIGS and TIERS — absent and
 // emptied both mean none, because there is nothing here to seed.
 export const CAL_BOOKED = []
-// How far ahead the calendar reaches, in months from CAL_OPEN's. The arrows
-// wrap at both ends of it rather than clamping — see EncoreSection's Calendar.
+// How far ahead the calendar reaches, in months from the opening month — the
+// `open` field's, or on the published page today's when that is later. The
+// arrows wrap at both ends of it rather than clamping — see EncoreSection's
+// Calendar.
 export const CAL_SPAN   = 12
 
 // §10.2 layouts 2 and 4 — the named slots. Where layout 1 draws a month and lets
@@ -981,7 +983,8 @@ export const FIELDS = {
     { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], '*': [1, 2, 3] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
-          + `It reaches ${CAL_SPAN} months from there.` },
+          + `It reaches ${CAL_SPAN} months from there. On the published page, days `
+          + "before today can't be picked, and a past date opens it on today's month." },
     { k: 'booked',  l: 'Booked dates', type: 'booked',
       hint: 'Click a day to block it. A blocked day cannot be picked on the published page.' },
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
@@ -1342,10 +1345,11 @@ export function repChips(songs) {
  * Date built from those parts lands on the previous day west of
  * Greenwich, which would name the wrong weekday in the enquiry line.
  *
- * Nothing here reads the clock. The calendar opens on the date the artist
- * set, not on today, so a published page draws the same month whenever it
- * is opened — and the canvas's picture cannot drift off the reference
- * frame's June overnight.
+ * Nothing here reads the clock. The canvas opens on the date the artist set,
+ * not on today, so its picture cannot drift off the reference frame's June
+ * overnight. The published tab alone knows the date: PublishedPage reads it
+ * once and hands `sectionVm` a `today` it honours only when live, which kills
+ * the days before it and opens a past `open` on today's month instead.
  * ------------------------------------------------------------------ */
 
 // The shape of one month's grid: the blank cells that lead it, and the days

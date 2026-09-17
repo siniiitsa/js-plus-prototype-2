@@ -218,11 +218,15 @@ if (q.get('cj')) Object.assign(c, JSON.parse(q.get('cj')))
 // which drops its horizontal padding, in a wrapper the column's own width
 // (684 / 323). Desktop only — the narrow frames never compose.
 const column = device === 'desktop' ? q.get('column') || undefined : undefined
+// &today=2026-09-17 is the date PublishedPage reads off the clock, which is how
+// the calendar's past days are seen dead. Opt-in, so a live digest never moves
+// with the calendar, and ignored without &live=1, as sectionVm ignores it.
+const today = q.get('today') || undefined
 const s = sectionVm({
   // &name=Poppy%20Jaeggy is how a display slot is checked against descenders
   // and a longer string — the seeded "Kai Mercer" has neither.
   themeIdx, cat, arch, c, artistName: q.get('name') || 'Kai Mercer',
-  Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections,
+  Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections, today,
   ...(column ? { column } : null),
 })
 

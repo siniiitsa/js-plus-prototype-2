@@ -196,7 +196,7 @@ const HEADING_4 = {
   calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false, today }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -787,16 +787,31 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   // opens on *and* the day it opens picked; a field that is empty, half-typed
   // or impossible (31 June) parses to null and falls back to the seed, so the
   // calendar can never open on a month the artist did not choose.
+  //
+  // The published tab alone also knows what day it is (F20). `today` is an ISO
+  // date PublishedPage reads off the clock once, and it is honoured only when
+  // `live`, so the canvas never reads the clock and stays the reference frame's
+  // June. With it, every day before today is **dead** — a flag beside `booked`
+  // that the section tests as the same `hit`, drawn as a booked day without the
+  // strike — a cued `open` in the past cues nothing, and a past `open` month
+  // gives way to today's as the first month of the window.
   if (cat === 'calendar') {
     const open = parseDate(cv('open', CAL_OPEN)) ?? parseDate(CAL_OPEN)
     // Absent and emptied both mean none: there is no seeded booking to lose, so
     // this follows the gallery's social addresses rather than the songs' rule.
     const booked = new Set(Array.isArray(c.booked) ? c.booked : CAL_BOOKED)
     const time = cv('time', CAL_TIME)
+    const now = live ? parseDate(today) : null
+    // ISO dates compare as strings, so "before today" needs no Date.
+    const nowIso = now ? isoDate(now.y, now.m, now.d) : ''
+    const dead = (iso) => !!nowIso && !!iso && iso < nowIso
+    const openIso = isoDate(open.y, open.m, open.d)
+    // max(open, today), by month: CAL_SPAN counts from whichever is later.
+    const start = dead(openIso) ? now : open
 
     vm.calMonths = Array.from({ length: CAL_SPAN }, (_, i) => {
-      const m = open.m + i
-      const y = open.y + Math.floor(m / 12)
+      const m = start.m + i
+      const y = start.y + Math.floor(m / 12)
       const mo = ((m % 12) + 12) % 12
       const { lead, length } = monthSpan(y, mo)
       // Lead blanks are `{ d: '' }` — the cell renderer's own test for the
@@ -806,14 +821,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
       const cells = Array.from({ length: lead }, () => ({ d: '' }))
       for (let d = 1; d <= length; d++) {
         const iso = isoDate(y, mo, d)
+        const gone = dead(iso)
         cells.push({
-          d, iso, booked: booked.has(iso),
+          d, iso, booked: booked.has(iso), dead: gone,
           // Composed per cell rather than on the pick, because the line is what
-          // the foot prints and EncoreSection composes nothing.
-          line: enquiryLine(y, mo, d, time),
+          // the foot prints and EncoreSection composes nothing. A dead day has
+          // none: nobody can enquire about a date that has passed.
+          line: gone ? '' : enquiryLine(y, mo, d, time),
           // Layout 3's pill, which its frame labels with the date alone
           // ("Enquiry About June 11") where the other layouts print the line.
-          short: `Enquiry About ${MONTHS[mo]} ${d}`,
+          short: gone ? '' : `Enquiry About ${MONTHS[mo]} ${d}`,
         })
       }
       // `label` is the one line layouts 1 draws; layout 3's head columns the
@@ -832,9 +849,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // the pick sideways to the day after.
     // Off the *parsed* date, not the raw field: an unparseable `open` falls back
     // to CAL_OPEN above, and testing the field would then cue a June 12 the
-    // artist has blocked — lit and struck through at once.
-    const openIso = isoDate(open.y, open.m, open.d)
-    vm.calPick = booked.has(openIso) ? '' : openIso
+    // artist has blocked — lit and struck through at once. A cue that has
+    // passed cues nothing either, and the foot prints the prompt.
+    vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
@@ -879,7 +896,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // the row prints is composed here, the way every cell above carries its own
     // enquiry line — EncoreSection looks a row up rather than working a date
     // out. `booked` reaches the list too: a slot the artist has blocked is a
-    // dead row, which is the one field that ties the two layouts together.
+    // dead row, which is the one field that ties the two layouts together —
+    // and live, so does a slot that has passed (`dead`, above).
     //
     // A row whose date does not parse keeps its place and simply does not pick,
     // §4.3a's rule for a link whose target is missing; it cannot happen from
@@ -897,10 +915,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
         kind: cased(sl.kind ?? ''),
         price: sl.price ?? '',
         booked: iso ? booked.has(iso) : false,
+        // A slot that has passed, live only — the cells' `dead`.
+        dead: dead(iso),
         // Layout 2's foot line when this slot is picked — the frame's own
         // "Thursday evening selected", the weekday and the slot's kind. The raw
         // kind, since `kind` above is already cased and cased() runs once here.
-        line: at
+        line: at && !dead(iso)
           ? cased(`${[DAY_FULL[weekdayOf(at.y, at.m, at.d)], String(sl.kind ?? '').trim().toLowerCase()]
             .filter(Boolean).join(' ')} selected`)
           : '',
@@ -3333,6 +3353,10 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   // leave the column a scrollbar's width narrower than the editor's.
   const measure = () => win.document.documentElement.clientWidth
   const [w, setW] = useState(measure)
+  // Today, in UTC like every other date sum here, read once when the tab's
+  // root mounts — the only clock read in the builder. A republish re-renders
+  // the same root, so a tab left open past midnight keeps the day it opened on.
+  const [today] = useState(() => new Date().toISOString().slice(0, 10))
 
   useEffect(() => {
     // Re-measure once: the first read happens before there is any content, so
@@ -3384,7 +3408,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, Z, mob: key === 'mobile', live: true, navSections,
-      column: inColumns.get(i),
+      column: inColumns.get(i), today,
     })} />
   )))
 }

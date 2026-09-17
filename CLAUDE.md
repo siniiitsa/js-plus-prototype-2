@@ -454,14 +454,23 @@ mutated through a single `patch()` helper.
   goes through `Date.UTC` (a local-time `Date` names the wrong weekday west of Greenwich), and
   `vm.calMonths` resolves the whole `CAL_SPAN` window — label, cells, booked flags and **one
   composed enquiry line per cell** — so the section looks a line up rather than working a date
-  out, the way it draws the pin `sectionVm` paired with a gig. Nothing reads the clock: the
-  calendar opens on the artist's date, not on today, or the canvas's picture would drift off the
-  reference frame's June overnight. The arrows **wrap** at both ends rather than clamping, the
+  out, the way it draws the pin `sectionVm` paired with a gig. Nothing on the canvas reads the
+  clock: the canvas opens on the artist's date, not on today, or its picture would drift off the
+  reference frame's June overnight. **The published tab alone knows what day it is** (F20):
+  `PublishedPage` reads today once, in UTC, and passes it to `sectionVm` as the ISO `today`,
+  which is honoured only when `live`. With it, a day or slot before today carries **`dead`**
+  beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
+  four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
+  strike** — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
+  past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
+  (`max(open, today)`). So the published first paint is the canvas's picture only while `open`
+  is today or later: a named, accepted diff. The harness takes `&today=` (opt-in, so a `live=1`
+  digest never moves with the date). The arrows **wrap** at both ends rather than clamping, the
   media player's rule — a clamped first month opens the published page on a dead-looking arrow,
   a diff from the canvas — and their cursor is read off the handler, `Pager`'s rule. `sel` is an
   **ISO date, not an index**, because it must survive the month turning, and the **empty string is
   this section's `-1`**: nothing chosen, so `vm.calPick` renders and the published first paint is
-  the canvas's picture by construction. Blocking the *cued* day cues nothing (`vm.calPick` is
+  the canvas's picture by construction, the clock aside. Blocking the *cued* day cues nothing (`vm.calPick` is
   `''`) and the foot prints `vm.calPrompt`, rather than sliding the pick to the day after — the
   artist blocked it. A booked day is muted, struck through and handlerless (under Lime it is
   dimmed to .38 with no strike, its frame's own state), which is a **content** state and not a

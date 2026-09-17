@@ -28,7 +28,7 @@ over, so do not renumber.
 | 5 | F18 | Link fields don't validate (`not a url`, `javascript:`) | **Confirmed** | M | small | **done** (drop `//host` and `localhost`) |
 | 6 | F25 | Footer link to a deleted section stays as a dead label | **Confirmed**: currently *documented as intended* | S | **yes** | **done** (A) |
 | 7 | F24 | Delete has no confirm or Undo, and re-adding resets the content | **Confirmed** | M | **yes** | **done** (A) |
-| 8 | F20 | Published calendar lets a visitor pick a past date | **Confirmed**: collides with a documented rule | M | **yes** | open |
+| 8 | F20 | Published calendar lets a visitor pick a past date | **Confirmed**: collides with a documented rule | M | **yes** | **done** (A, opens on max(open, today)) |
 | 9 | F15 | Photo over ~4 MB is ignored silently | **Not reproduced as stated**: see entry | S | **yes** | open |
 | 10 | — | End-of-pass sweep | — | S | no | open |
 
@@ -689,7 +689,72 @@ wrapping, and the foot prompt when the cue is dead. The canvas digest must be un
 **Docs.** CLAUDE.md's calendar paragraph: "Nothing reads the clock" becomes "Nothing on the
 canvas reads the clock", plus the new live-only rule. Also the `data.js:~1246` comment.
 
-**Decision.** —  **Settled.** —
+**Decision.** 2026-09-17: **A**, a clock in the published tab only. Sub-decision: **yes**, the
+published grid opens on `max(open, today)`'s month, and the `CAL_SPAN` window counts from it.
+
+**Settled.** 2026-09-17.
+- **`sectionVm({ …, today })`** takes an ISO date and reads it only when `live`
+  (`parseDate(today)` under `live`, else null), so "the canvas never reads the clock" is
+  structural, not a caller convention. In the calendar block, `dead(iso)` is a string compare
+  against today (strictly before, so today itself is pickable). `vm.calMonths` cells and
+  `vm.calSlots` rows carry `dead` beside `booked`. A dead cell's `line` and `short` are `''`,
+  and so is a dead slot's `line`. `vm.calPick` is `''` when the cue is booked *or* dead. The
+  window starts on `open`'s month, or on today's when `open` is dead.
+- **`PublishedPage`** reads today once, `useState(() => new Date().toISOString().slice(0, 10))`
+  (UTC, like every other date sum), and passes it to every `sectionVm` call. A republish
+  re-renders the same root, so a tab left open past midnight keeps the day it opened on. That
+  is accepted.
+- **`EncoreSection`** has one predicate after the hooks, `blocked = (x) => x.booked || x.dead`.
+  It replaces `.booked` at the four `hit` sites (layouts 1–4) and at every handler gate and
+  every fill / colour / opacity read: Retro and Lime layout 1's cell, Retro's layout 2 row and
+  Lime's `dim`, the layout 3 dots in both, and the layout 4 rows in both. Every `line-through`
+  still reads `booked` alone. **Layout 4's wizard needed nothing**: its date box is free text
+  with a placeholder, and its *Send Enquiry* is a fragment link. The featured card and the
+  stack are layout 4's only date controls, and they follow `hit` (a dead cue features nothing,
+  and the card prints `calPrompt`).
+- **Harness.** `preview.jsx` takes `&today=` beside `&cj=`, and **it is opt-in**: with no
+  `&today=` a `live=1` render reads no date, so `scripts/digest.mjs`'s live output does not move
+  from day to day. The prompt's expected "`live=1` calendar changes" therefore lands only with
+  `EXTRA='&live=1&today=…'`, and in the real published tab.
+- **Digest** (all categories, themes 0, 1, 2, three widths, 387 renders each), against HEAD:
+  canvas **byte-identical**; canvas with `&today=2026-09-17` **byte-identical** (ignored
+  without `live`); `live=1` **byte-identical**; `live=1&today=2026-09-17` differs in **36
+  files, all `cat_calendar_*`** (4 layouts × 3 themes × 3 widths). That is the named cost:
+  the seed's `open` is in the past.
+- **Harness behaviour** (`scratchpad/f20-probe.mjs`, `&live=1&today=2026-09-17`, layouts 1–4
+  × themes 0, 1, 2 × three widths, five cases, no page errors):
+  - **Seed:** layouts 1 and 3 open on September 2026, only 17–30 take a handler, and the foot
+    prints the prompt. Layout 1's left arrow wraps to August 2027. Layouts 2 and 4 have no
+    pickable row (every seeded slot is 2025), and their foot prints the prompt.
+  - **`open=2026-09-10`:** the same, because a cue earlier in today's month is dead.
+  - **`open=2026-11-05`:** the grid opens on November with the 5th cued, all 30 days are
+    pickable, and the left arrow wraps to October 2027.
+  - **Slots 09-10 / 09-17 / 10-01 with the cue on 09-17:** layout 2 offers the last two, and
+    its foot reads "Thursday late selected". Layout 4 features 09-17 and offers only 10-01.
+  - **The same slots with the cue on 09-10:** the prompt, and layout 4 offers 09-17 and 10-01.
+  - **Everywhere:** no dead item is struck through. Lime dims a dead item to .38.
+  - **Screenshots** (Retro layouts 1 and 2 with 09-22 booked) show a dead item muted with no
+    strike and the booked one struck.
+- **Published tab** (`scratchpad/f20-pub.mjs`, the editor at 1600, Retro, *Publish* → *Open*,
+  trusted clicks), 19/19. The canvas still shows June 2025 with the 12th cued and no day
+  handlers. The popup at 1440, 768 and 390 opens on today's month (September 2026), offers
+  exactly today..30, prints the prompt, does not overflow, ignores a trusted click on the 1st,
+  and picks today on a trusted click. No page errors.
+- **Named edges.**
+  - **UTC:** a visitor at UTC−10 late in the evening finds their own today already dead, and
+    one at UTC+10 early in the morning can still pick their own yesterday.
+  - **`BookedField` cannot reach the published window.** The editor's month picker covers
+    `CAL_SPAN` months from `open`. With the seed that is June 2025 – May 2026, while the
+    published page shows September 2026 – August 2027, so the artist cannot block a date a
+    visitor can pick until they move `open` forward. The `open` hint now says a past date opens
+    the published page on today's month. Left for the sweep.
+  - The published first paint no longer matches the canvas whenever `open` is in the past.
+    This is accepted and named in CLAUDE.md.
+- **Docs:** `sectionVm`'s calendar comment and its slot comment, `PublishedPage`, the
+  `blocked` comment and layout 1's three-states comment in `EncoreSection`, `preview.jsx`'s
+  `&today=` comment, `data.js` §4.10 (now at `:~1345`, not `:~1246`), the `CAL_SPAN` comment and
+  the `open` field hint, CLAUDE.md's calendar paragraph ("Nothing on the canvas reads the
+  clock" plus the live-only rule), and README's calendar paragraph.
 
 ---
 
@@ -747,6 +812,10 @@ drop. Check that the error sits next to the control, and that a following valid 
 - A field added by any entry needs its `in` (F2): re-measure, don't guess.
 - Under Lime, pricing layout 2 shows "Review count (layout 2)" and its four siblings with the
   note directly beneath (F2's *Settled*). Decide whether those labels lose the suffix.
+- `BookedField` pages `CAL_SPAN` months from `open`, but the published window starts at
+  `max(open, today)` (F20). With a past `open`, the artist cannot block a date that a visitor
+  can pick. Decide whether the picker should follow the same rule, or whether the `open` hint
+  is enough.
 
 ## Conventions learned on this pass
 
@@ -777,3 +846,7 @@ drop. Check that the error sits next to the control, and that a following valid 
 - **Open a Radix trigger inside a vaul drawer with a trusted click** (F24). The synthetic
   `pointerdown` recipe (F9) is fine on desktop, but inside a mobile drawer it leaves the drawer
   closing on the next trusted press.
+- **The clock is read in the published tab only, once, and passed down** (F20). `sectionVm`
+  ignores `today` unless `live`, and the harness's `&today=` is opt-in, so neither the canvas
+  nor the `live=1` digest moves from day to day. A past day is `dead`, not `booked`, and the
+  section tests both through one `blocked()`.

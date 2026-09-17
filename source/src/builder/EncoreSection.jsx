@@ -11951,6 +11951,11 @@ function Calendar({ s }) {
   const [wStep, setWStep] = useState(0)
   const [wType, setWType] = useState(0)
   const [wVals, setWVals] = useState({})
+  // Whether a day or a slot is shut to the visitor: blocked by the artist, or
+  // — live only — already past. One test, so the two behave identically
+  // everywhere a pick is resolved or a handler given; only `booked` is struck
+  // through, since a past day is not one the artist took.
+  const blocked = (x) => x.booked || x.dead
 
   if (s.v0) {
     // §5.5 — one scheduler across three frames: the 768 (986:39251) and 390
@@ -11982,7 +11987,7 @@ function Calendar({ s }) {
     const hit = want
       ? s.calMonths.reduce((f, mo) => f || mo.cells.find((c) => c.iso === want), null)
       : null
-    const cur = hit && !hit.booked ? hit.iso : ''
+    const cur = hit && !blocked(hit) ? hit.iso : ''
     const line = cur ? hit.line : s.calPrompt
 
     // The month arrows. They *wrap* at both ends of the window rather than
@@ -12045,14 +12050,14 @@ function Calendar({ s }) {
       const day = (c, i) => {
         if (c.iso === undefined) return <span key={i} />
         const on = c.iso === cur
-        const onClick = s.live && !c.booked
+        const onClick = s.live && !blocked(c)
           ? () => setSel((v) => (v === c.iso ? '' : c.iso))
           : undefined
         return (
           <span key={i} onClick={onClick} style={type(s.ui, s.labelXs, 1.26, {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             height: u(s.mob ? 50.49 : 55.89), borderRadius: u(26),
-            background: s.box2, color: s.tx, opacity: c.booked ? 0.38 : undefined,
+            background: s.box2, color: s.tx, opacity: blocked(c) ? 0.38 : undefined,
             boxShadow: `inset 0 0 0 1px ${s.stroke1}${on ? `, inset 0 0 20px 0 ${s.glow}` : ''}`,
             cursor: onClick ? 'pointer' : undefined,
           })}>{c.d}</span>
@@ -12177,11 +12182,12 @@ function Calendar({ s }) {
     // which days are taken would click one and watch nothing happen: a booked
     // day is muted ink on the section's own soft tone, and takes no handler.
     // That is a *content* state, not a live one, so it renders on the canvas
-    // too — and since CAL_BOOKED is empty, the seeded picture does not move.
+    // too — and since CAL_BOOKED is empty, the seeded picture does not move. A
+    // past day in the published tab (`dead`) takes the same muted cell, unstruck.
     // Clicking the lit day again unlights it, the map's pin/row toggle.
     const cell = (c, i) => {
       const on = c.iso !== undefined && c.iso === cur
-      const onClick = s.live && c.iso !== undefined && !c.booked
+      const onClick = s.live && c.iso !== undefined && !blocked(c)
         ? () => setSel((v) => (v === c.iso ? '' : c.iso))
         : undefined
       return (
@@ -12191,8 +12197,8 @@ function Calendar({ s }) {
           fontFamily: s.body, fontSize: u(18.132),
           borderRadius: u(12.088),
           border: c.d === '' ? 'none' : `${s.bw} solid ${on ? s.tx : s.line}`,
-          background: on ? s.ac : c.booked ? s.soft : 'transparent',
-          color: on ? (s.retro ? s.pillBg : s.acFg) : c.booked ? s.muted : s.tx,
+          background: on ? s.ac : blocked(c) ? s.soft : 'transparent',
+          color: on ? (s.retro ? s.pillBg : s.acFg) : blocked(c) ? s.muted : s.tx,
           textDecoration: c.booked ? 'line-through' : undefined,
           cursor: onClick ? 'pointer' : undefined,
         }}>{c.d}</span>
@@ -12432,7 +12438,7 @@ function Calendar({ s }) {
     // block the date a visitor had lit.
     const want = (s.live && sel) || s.calPick
     const hit = want ? s.calSlots.find((sl) => sl.iso && sl.iso === want) : null
-    const cur = hit && !hit.booked ? hit.iso : ''
+    const cur = hit && !blocked(hit) ? hit.iso : ''
     const line = cur ? hit.line : s.calPrompt
 
     // Lime — the slot list frames 964:64593 / 986:11861 / 986:11880, as a block
@@ -12466,7 +12472,7 @@ function Calendar({ s }) {
       })
       // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
       // its own — opacity .38, no strike — and the row takes it, handlerless.
-      const dim = (booked) => (booked ? { opacity: 0.38 } : null)
+      const dim = (off) => (off ? { opacity: 0.38 } : null)
 
       const flow = (
         <div style={col(u(4), { alignItems: 'flex-start', flex: 'none' })}>
@@ -12483,17 +12489,17 @@ function Calendar({ s }) {
       )
 
       const slotRow = (sl, i) => {
-        const onClick = s.live && sl.iso && !sl.booked
+        const onClick = s.live && sl.iso && !blocked(sl)
           ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
           : undefined
         const mark = (
           <span style={type(s.display, s.dispLg, 0.89, {
-            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(sl.booked),
+            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(blocked(sl)),
           })}>{sl.mark}</span>
         )
         const day = (
           <span style={type(s.ui, s.labelXs, 1.26, {
-            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(sl.booked),
+            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(blocked(sl)),
           })}>{sl.day}</span>
         )
         return (
@@ -12506,7 +12512,7 @@ function Calendar({ s }) {
               ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
               : <>{mark}{day}</>}
             <div style={col(u(2), {
-              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(sl.booked),
+              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(blocked(sl)),
             })}>
               {!!sl.kind && (
                 <span style={type(s.body, s.bodyMd, 1.5, { whiteSpace: 'nowrap' })}>{sl.kind}</span>
@@ -12650,7 +12656,7 @@ function Calendar({ s }) {
     // up. The frame draws no state for the row the visitor is on: the foot's
     // chip and line are the whole cue, the media player's now-playing rule.
     const slotRow = (sl, i) => {
-      const onClick = s.live && sl.iso && !sl.booked
+      const onClick = s.live && sl.iso && !blocked(sl)
         ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
         : undefined
       const mark = (
@@ -12670,7 +12676,7 @@ function Calendar({ s }) {
       return (
         <div key={i} onClick={onClick} style={row(gap, {
           padding: `${u(16)} ${padX}`, borderBottom: `1px solid ${rule}`,
-          color: sl.booked ? gone : ink, cursor: onClick ? 'pointer' : undefined,
+          color: blocked(sl) ? gone : ink, cursor: onClick ? 'pointer' : undefined,
         })}>
           {/* The 390 master stacks the mark over the weekday, tight against it
               at no gap at all, and leaves the availability block where it is.
@@ -12850,7 +12856,7 @@ function Calendar({ s }) {
     const month = s.calMonths[0]
     const want = (s.live && sel) || s.calPick
     const at = want ? month.cells.findIndex((c) => c.iso === want) : -1
-    const hit = at >= 0 && !month.cells[at].booked ? month.cells[at] : null
+    const hit = at >= 0 && !blocked(month.cells[at]) ? month.cells[at] : null
     const line = hit ? hit.short : s.calPrompt
 
     // Lime — the frames 964:68677 / 984:10763 / 984:10794, as a block after
@@ -12875,7 +12881,7 @@ function Calendar({ s }) {
       const dot = (c, i) => {
         if (c.iso === undefined) return <span key={i} />
         const on = hit ? c.iso === hit.iso : false
-        const onClick = s.live && !c.booked
+        const onClick = s.live && !blocked(c)
           ? () => setSel((v) => (v === c.iso ? '' : c.iso))
           : undefined
         // The free dot's ring is the frame's raw 2.559, stroked inside, so it
@@ -12883,8 +12889,8 @@ function Calendar({ s }) {
         return (
           <span key={i} onClick={onClick} style={{
             width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
-            background: on ? s.ac : c.booked ? s.box2 : s.box1,
-            boxShadow: on || c.booked ? undefined : `inset 0 0 0 ${lu(2.559)} ${s.stroke1}`,
+            background: on ? s.ac : blocked(c) ? s.box2 : s.box1,
+            boxShadow: on || blocked(c) ? undefined : `inset 0 0 0 ${lu(2.559)} ${s.stroke1}`,
             cursor: onClick ? 'pointer' : undefined,
           }} />
         )
@@ -13011,14 +13017,14 @@ function Calendar({ s }) {
     const dot = (c, i) => {
       if (c.iso === undefined) return <span key={i} />
       const on = hit ? c.iso === hit.iso : false
-      const onClick = s.live && !c.booked
+      const onClick = s.live && !blocked(c)
         ? () => setSel((v) => (v === c.iso ? '' : c.iso))
         : undefined
       return (
         <span key={i} onClick={onClick} style={{
           width: u(30.713), height: u(30.713), borderRadius: '999px', justifySelf: 'center',
-          background: on ? hue : c.booked ? taken : 'transparent',
-          border: on || c.booked ? 'none' : `${u(2.559)} solid ${ink}`,
+          background: on ? hue : blocked(c) ? taken : 'transparent',
+          border: on || blocked(c) ? 'none' : `${u(2.559)} solid ${ink}`,
           cursor: onClick ? 'pointer' : undefined,
         }} />
       )
@@ -13201,7 +13207,7 @@ function Calendar({ s }) {
     // block the date a visitor was on.
     const want = (s.live && sel) || s.calPick
     const hit = want ? s.calSlots.find((sl) => sl.iso && sl.iso === want) : null
-    const cur = hit && !hit.booked ? hit.iso : ''
+    const cur = hit && !blocked(hit) ? hit.iso : ''
     const feat = cur ? hit : null
 
     // One stat cell. The frame styles the **first** label in Display/Title 24
@@ -13311,7 +13317,7 @@ function Calendar({ s }) {
     // above carries a stroke too, in its own fill colour, and that one is not
     // transcribed: it draws nothing at any width.
     const slotRow = (sl, i) => {
-      const onClick = s.live && sl.iso && !sl.booked ? () => setSel(sl.iso) : undefined
+      const onClick = s.live && sl.iso && !blocked(sl) ? () => setSel(sl.iso) : undefined
       return (
         // Keyed on the date, which is what the row *is*, with the index behind
         // it for the rows whose date does not parse — they keep their place and
@@ -13322,7 +13328,7 @@ function Calendar({ s }) {
           background: sheet, borderRadius: u(30),
           padding: `calc(${u(18)} - 1px) calc(${u(24)} - 1px)`,
           border: `1px solid ${sheetInk}`, justifyContent: 'space-between',
-          color: sl.booked ? gone : sheetInk, cursor: onClick ? 'pointer' : undefined,
+          color: blocked(sl) ? gone : sheetInk, cursor: onClick ? 'pointer' : undefined,
         })}>
           <span style={col(u(2))}>
             <span style={{
@@ -13597,8 +13603,8 @@ function Calendar({ s }) {
       )
 
       const slotRow = (sl, i) => {
-        const onClick = s.live && sl.iso && !sl.booked ? () => setSel(sl.iso) : undefined
-        const dim = sl.booked ? { opacity: 0.38 } : null
+        const onClick = s.live && sl.iso && !blocked(sl) ? () => setSel(sl.iso) : undefined
+        const dim = blocked(sl) ? { opacity: 0.38 } : null
         return (
           <div key={sl.iso || `row${i}`} onClick={onClick} style={row(u(14), {
             background: s.box1, color: s.tx, borderRadius: u(50), boxShadow: hair,
