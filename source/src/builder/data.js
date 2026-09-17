@@ -818,6 +818,8 @@ const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
 
 // Pricing layout 2's card fields, which Lime's own layout 2 does not draw.
 const PRICING_CARD = { Lime: [], '*': [1] }
+// Its credit row under the quote, which Lime's layout 2 draws as well.
+const PRICING_CREDIT = [1]
 
 export const FIELDS = {
   // Every element appearing in any header layout is exposed. A layout that
@@ -920,15 +922,15 @@ export const FIELDS = {
     // Layout 2's credit row under the quote and the line beside its pill, all
     // seeded with the frame's own copy. Every one is emptiable and drops what
     // it fills; the row goes when all three of its fields are empty. Lime's
-    // layout 2 is its own composition and draws none of the five — which is
-    // why none of the five names a layout: a "(layout 2)" label sat over the
-    // "Not shown in this layout" note on Lime's layout 2, and the note is the
-    // one that knows the template. The hints say where on the card instead.
-    { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CARD,
+    // layout 2 draws the credit row but not the pill's label or its line —
+    // which is why none of the five names a layout: a "(layout 2)" label sat
+    // over the "Not shown in this layout" note on Lime's layout 2, and the note
+    // is the one that knows the template. The hints say where instead.
+    { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CREDIT,
       hint: 'Small faces under the plan card’s quote.' },
-    { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CARD,
+    { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CREDIT,
       hint: 'In the credit row under the quote, after the stars.' },
-    { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CARD,
+    { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CREDIT,
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
     // the row button below.
@@ -1060,8 +1062,7 @@ export const FIELDS = {
           + "above the quote in layout 1. Layout 2's selector takes the name's "
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
-    // Lime's layout 2 prints no stars.
-    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS, in: { Lime: [], '*': [1] },
+    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS, in: [1],
       hint: 'Printed in the corner of the card, beside the reviewer. Empty it to drop them.' },
     { k: 'cta',     l: 'Button', d: 'Book Now', in: [1],
       hint: 'The pill under the card, which scrolls to wherever the page takes a '

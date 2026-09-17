@@ -172,7 +172,7 @@ mutated through a single `patch()` helper.
   header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section),
   the **media player** (below), the **gallery's arrows
   and thumbnail strip, and layout 3's fullscreen viewer** (below), the **events map's pager, its pin/row pairing, its map zoom
-  (layouts 3 and 4) and — in layout 3 alone — its city chip row and its See all gigs reveal**
+  (layouts 3 and 4, and Lime's layout 2) and — in layout 3 alone — its city chip row and its See all gigs reveal**
   (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
@@ -462,7 +462,8 @@ mutated through a single `patch()` helper.
   which is honoured only when `live`. With it, a day or slot before today carries **`dead`**
   beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
-  strike** — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
+  strike** (except Lime's layout 2, whose past rows keep full ink and only lose the handler —
+  its seeded slots have no editor and are all past; user call, 2026-09-17) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
   past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
   (`max(open, today)`, `calStart()` in `data.js`, which `BookedField` shares so the artist
   can block every day a visitor can pick; it fades the days before today and takes no click on
