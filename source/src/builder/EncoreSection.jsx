@@ -4606,8 +4606,12 @@ function Media({ s }) {
       </div>
     )
 
+    // At 390 the root's 44 `padY` is the 44 seam exactly, so the kicker sat
+    // flush under the top arc and the pill flush over the bottom one; the
+    // wrapper pads a further 24 at each end there (user call, 2026-09-17) —
+    // padding, so the arcs stay on the section's edges.
     return (
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', padding: s.mob ? '24px 0' : undefined }}>
         <ArcEdge s={s} side="top" height={44.24 * z} />
         <ArcEdge s={s} side="bottom" height={44.24 * z} />
         <div style={col(desk ? u(33) : '40px')}>
@@ -12037,7 +12041,10 @@ function Calendar({ s }) {
       // has it. A booked day is the frame's own dimmed cell — opacity .38 and
       // no strike, where Retro's frame drew no such state and its branch
       // invented one — and still takes no handler. Lead blanks draw nothing.
-      // Clicking the lit day again unlights it, layout 1's toggle.
+      // Clicking the lit day again unlights it, layout 1's toggle. At 390 the
+      // master's stated 50.49 stands on a ~45 column, which the 26 corner
+      // draws as a lozenge; there the cell is square and fully round instead
+      // (user call, 2026-09-17), so every day is a circle.
       const day = (c, i) => {
         if (c.iso === undefined) return <span key={i} />
         const on = c.iso === cur
@@ -12047,7 +12054,9 @@ function Calendar({ s }) {
         return (
           <span key={i} onClick={onClick} style={type(s.ui, s.labelXs, 1.26, {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            height: u(s.mob ? 50.49 : 55.89), borderRadius: u(26),
+            ...(s.mob
+              ? { aspectRatio: '1', borderRadius: '999px' }
+              : { height: u(55.89), borderRadius: u(26) }),
             background: s.box2, color: s.tx, opacity: blocked(c) ? 0.38 : undefined,
             boxShadow: `inset 0 0 0 1px ${s.stroke1}${on ? `, inset 0 0 20px 0 ${s.glow}` : ''}`,
             cursor: onClick ? 'pointer' : undefined,
@@ -14123,9 +14132,15 @@ function EventsMap({ s }) {
 
       // The seams are this band's own, at its head and its foot, in the page
       // ground (section 3's `ArcEdge`). Desktop stands the two cards side by
-      // side at equal width, 768 stacks them 32 apart, 390 10 apart.
+      // side at equal width, 768 stacks them 32 apart, 390 10 apart. At 390
+      // the root's 44 `padY` is the 44 seam exactly, so the wrapper pads a
+      // further 24 at each end there (user call, 2026-09-17), the media
+      // player's fix.
       return (
-        <div style={{ position: 'relative', color: ink, ...col(s.narrow ? '30px' : u(32)) }}>
+        <div style={{
+          position: 'relative', color: ink, ...col(s.narrow ? '30px' : u(32)),
+          padding: s.mob ? '24px 0' : undefined,
+        }}>
           <ArcEdge s={s} side="top" height={44.24 * z} />
           <ArcEdge s={s} side="bottom" height={44.24 * z} />
           {head}
@@ -18887,9 +18902,17 @@ function EnquiryForm({ s }) {
 
     // The seams are this band's own (section 3's `ArcEdge`): the page ground
     // at its head, and at its foot the testimonials' `#2E3928` — `s.box1`, the
-    // one caller that passes a colour.
+    // one caller that passes a colour. At 768 the root's 56 `padY` leaves the
+    // shell 12 clear of a 44 seam, which reads as touching, so the shell
+    // stands a further 20 off each seam there, and at 390, where the 44 `padY`
+    // is the seam exactly, a further 24 (user call, 2026-09-17) — as padding
+    // on this wrapper, not margin on the shell, which would collapse through
+    // the wrapper and leave the seams inside the section's edges.
     return (
-      <div style={{ position: 'relative', color: ink }}>
+      <div style={{
+        position: 'relative', color: ink,
+        padding: tab ? '20px 0' : s.mob ? '24px 0' : undefined,
+      }}>
         <ArcEdge s={s} side="top" height={44.24 * z} />
         <ArcEdge s={s} side="bottom" height={44.24 * z} colour={s.box1} />
         <div style={{
