@@ -1254,6 +1254,8 @@ Learned on the end-of-pass sweep (`c7caa62` and `350ccd0`):
    did, and Retro ships neutral crops instead (`RETRO_TRACK_ART`). Lime inherits the crops
    through session 0. *Settled in session 0:* the covers' image hashes are identical on both
    pages, so sharing `ROW_ART` is the faithful answer, not a stand-in.
+   *Superseded 2026-09-17:* by user call, `track-1…5.jpg` are now the frames' own covers, so
+   both templates draw the Figma pictures.
 4. **Arc seams against a reordered page.** An arc is drawn in the colour of the band it
    assumes sits above it, and a user can reorder sections. Retro accepted the same cost for its
    torn edges. Confirm in section 3 whether an arc can read `s.bg` of its own section and stay

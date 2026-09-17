@@ -98,9 +98,9 @@ Six, all deliberate:
    *Soulway*, which is commercial and cannot ship, so Retro sets its display type in **Fraunces**
    at `wght 900 / SOFT 100 / WONK 1 / opsz 144` — the nearest free match for Soulway's soft 70s
    slab, and much closer than the Alfa Slab One it replaced (its Anton and Inter faces are used
-   as drawn); and the design's five album covers are real records, which
-   are not ours to redistribute, so the media player's artwork is neutral crops of the same
-   live-set photography in the framing the design uses. Everything else — the photography, the
+   as drawn). The media player's track artwork is the frame's own five album covers, which are
+   real records: shipping them in the demo was a user call (2026-09-17), and they would have to be
+   replaced before anything public. Everything else — the photography, the
    paper-grain texture and the Manchester map tile — now ships as committed assets; see
    *Seeded photography* below.
 2. **React 19 / Vite 8** instead of §2.2's React 18.3 / Vite 6 pins, at the repo owner's
