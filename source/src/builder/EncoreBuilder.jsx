@@ -43,7 +43,7 @@ import {
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, CAL_HEADING_3, TESTI_STARS,
+  TESTI_HEADING_2, CAL_HEADING_3, LIME_KICKER_3, TESTI_STARS,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
@@ -204,7 +204,19 @@ const HEADING_4 = {
   calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false, today }) {
+// The page's layout, for the one section that cannot say it itself: the footer
+// has a single design, so its own `arch` is always 0. The header is the
+// section the setup modal lays the whole page out from, so its design stands
+// for the page's. -1 when there is no header (it is locked, so never in the
+// editor; only a preview that renders a lone section).
+export const pageDesignOf = (sections, themeName) => {
+  const h = sections.find((x) => x.cat === 'header')
+  if (!h) return -1
+  const n = designCount('header', themeName) || 1
+  return ((h.arch % n) + n) % n
+}
+
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -325,6 +337,45 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // `retro` rather than replacing it: what both designed templates draw is
     // gated `(s.retro || s.lime)`, what Lime alone draws is `s.lime`.
     lime: T.name === 'Lime',
+    // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
+    // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
+    // ground; its seal's disc follows. `page` is the header's design.
+    footerBand: T.name === 'Lime' && cat === 'footer' && page === 2 ? T.sem?.box1 : undefined,
+  }
+  // Lime layout 3's column heads — the bio's "KM BIO", the player's and the
+  // calendar's "Book Me" — stand 50 below their row in all three frames
+  // (964:68655 · 984:10741 · 984:10772), where `padY` gave 80 / 56 and left a
+  // wide gap under the header. All three at once, or the two heads of the
+  // desktop row would part. 390 keeps its 44: under the 50 already, and the
+  // header's own inset is the frame's 10. The frames stand the player's
+  // Section 80 below the bio's, so the bio pads 30 underneath where `padY`
+  // doubled up with the player's own top. The player's list ends 122 / 90 / 70
+  // above the repertoire's head (100 on the 0.82 canvas); the repertoire's own
+  // top inset is its fitted one, so the player's foot takes the difference —
+  // 37 / 47 / 35, measured against the seeded page.
+  if (T.name === 'Lime' && d === 2 && (cat === 'bio' || cat === 'calendar' || cat === 'media')) {
+    const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
+    const top = Z.dev === 'mobile' ? vm.padY : z(50)
+    const foot = cat === 'bio' ? z(30)
+      : cat === 'media' ? ({ desktop: '37px', tablet: '47px', mobile: '35px' })[Z.dev]
+      : vm.padY
+    vm.pad = `${top} ${vm.padX} ${foot}`
+  }
+  // The pricing stack's footnote stands 32 above the section's foot at 1440
+  // and 768 (964:68680 · 984:10765). 390 keeps its 44, under the master's 60.
+  if (T.name === 'Lime' && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
+    vm.pad = `${vm.padY} ${vm.padX} ${Z.dev === 'desktop' ? Math.round(32 * 0.82) : 32}px`
+  }
+  // The form's card ends 90 / 60 above its foot and the testimonials' head
+  // stands 56 / 30 below their top (964:68682 + 964:68683 · 984:10767 +
+  // 984:10768), where `padY` doubled up to 160 / 112. The wall's own foot is
+  // 56 at both widths — the 768 `padY` already. 390 is under the frames.
+  if (T.name === 'Lime' && d === 2 && (cat === 'form' || cat === 'testimonials') && Z.dev !== 'mobile') {
+    const desk = Z.dev === 'desktop'
+    const px = (v) => `${desk ? Math.round(v * 0.82) : v}px`
+    vm.pad = cat === 'form'
+      ? `${vm.padY} ${vm.padX} ${px(desk ? 90 : 60)}`
+      : `${px(desk ? 56 : 30)} ${vm.padX} ${px(56)}`
   }
 
   // ---- content -----------------------------------------------------
@@ -335,7 +386,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.title = cased(cv('heading', cat === 'header' ? artistName : (TITLES[cat] ?? '')))
 
   // header
-  vm.kicker = cv('kicker', 'DJ · Live Act')
+  // Lime's layout-3 glass card types its own strapline; EditPanel mirrors it.
+  vm.kicker = cv('kicker', cat === 'header' && d === 2 && T.name === 'Lime' ? LIME_KICKER_3 : 'DJ · Live Act')
   vm.subtitle = cv('subtitle', DEFS.heroSub)
   vm.location = cv('location', 'Manchester, UK')
   vm.cta1 = cv('cta1', 'Book Now')
@@ -2901,6 +2953,8 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
+                    : f.k === 'kicker' && sec.cat === 'header' && themeName === 'Lime'
+                      && design === 2 ? LIME_KICKER_3
                     : f.k === 'heading' && sec.cat === 'calendar'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
@@ -3503,7 +3557,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, Z, mob: key === 'mobile', live: true, navSections,
-      column: inColumns.get(i), today,
+      column: inColumns.get(i), today, page: pageDesignOf(sections, T.name),
     })} />
   )))
 }
@@ -3859,7 +3913,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i) }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,

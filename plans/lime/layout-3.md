@@ -184,7 +184,7 @@ masters are fitted in one session.
 | 9 | `form` | `964:68682` | 1440 × 570 | `984:10767` | 768 × 734 | `984:10798` | 390 × 755 | `964:68650` / `977:23406` / `982:10472` | done `6d9b95d` |
 | 10 | `testimonials` | `964:68683` | 1440 × 790 | `984:10768` | 768 × 790 | `984:10799` | 390 × 1108 | `964:68651` / `982:8584` / `982:10499` | done `f17ea37` |
 | — | `footer` | `964:68684` | 1440 × 479.5 | `984:10769` | 768 × 647.4 | `984:10800` | 390 × 619.4 | — | **out of scope** — the same tree as Lime layout 1's footer, fitted in that pass's section 11, and `NVAR.footer` is 1 |
-| — | `tags` | `964:68664` | 858 × 75 | `984:10749` | 708 × 67 | `984:10780` | 370 × 97 | — | **not in the project** (`d734992`); not drawn under the bio card either |
+| — | `tags` | `964:68664` | 858 × 75 | `984:10749` | 708 × 67 | `984:10780` | 370 × 97 | — | **not in the project** (`d734992`) as a section; its Genres row is drawn inside the bio's `v2` Lime block, under the card (the layout-4 bio's row) |
 
 The Retro twin's node id is what `EncoreSection.jsx`'s `v2` fit comments cite, so grep for it to
 find the branch. **Cite branches by that id, never by line number.**
@@ -582,8 +582,9 @@ Settled in section 1 (the header):
 - **The glass card's glow is `s.glow`, confirmed off the node** (INNER_SHADOW 19, spread 0,
   `#A6E22E`), one `boxShadow` with the 1px `s.ac` ring on the card itself (ring first; the 40
   padding clears it). The 1% `box1` fill paints nothing and is not drawn. Its two lines are
-  `brand` and `kicker`, Retro's reading, so the seed prints *DJ · Live Act* where the frame
-  types *Performing since 2021*.
+  `brand` and `kicker`, Retro's reading; under Lime layout 3 the kicker's default is the
+  frame's own *Performing since 2021* (`LIME_KICKER_3`, resolved in `sectionVm` and `EditPanel`
+  alike), where the other layouts keep *DJ · Live Act*.
 - **The nav is HeaderV1's two halves, not the frame's five cells.** The frame spreads four equal
   flex cells round the name; any capsule wider than a quarter of the bar (the harness's six
   links already are) pushed the name 105 right of centre. With the spacers folded into the

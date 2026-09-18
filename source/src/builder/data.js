@@ -672,6 +672,9 @@ export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
 // The booking calendar's layout-3 heading, the composed page's "Book Me" over
 // the card (964:68644). Layouts 1, 2 and 4 keep TITLES.calendar.
 export const CAL_HEADING_3 = 'Book Me'
+// Lime layout 3's header kicker, the glass card's second line (964:68654).
+// The other layouts, and Retro's layout 3, keep the field's 'DJ · Live Act'.
+export const LIME_KICKER_3 = 'Performing since 2021'
 // Layout 4's heads, each its composed page's own wrapper head over the section
 // (QA, 2026-09-15): the Book Us panel (964:72839), the gallery's column
 // (964:72784), the map band (964:72827) and the testimonials sheet. The other

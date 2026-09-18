@@ -804,10 +804,11 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // nest the seal in Scheme 4 at 1440 and 768 — a pale `sem/bg` disc with
   // `sem/text/1` marks in ink — and draw it lime with ink marks at 390, the
   // pair Scheme 3 resolves to. Additive: 1 is the default above, and every
-  // caller written before it passes nothing.
+  // caller written before it passes nothing. 2 is Scheme 2's olive `box1`
+  // disc with the same lime marks, for the footer on Lime's layout-3 page.
   if (s.lime && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
-    const [disc, mk] = scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : [s.bg, s.ac]
+    const [disc, mk] = scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
     return (
       <div style={{
         position: 'absolute', width: size, height: size,
@@ -3646,6 +3647,18 @@ function Bio({ s }) {
             }} />
           )}
         </div>
+        {/* The Genres row: the removed tags section's instance (964:68664 ·
+            984:10749 · 984:10780), which this page's Section keeps under the
+            card, 30 below it. The layout-4 bio's row — a `body-lg` "Genres"
+            line in the accent over TagChips, 16 apart — at the full measure,
+            and the line stays at 390 where layout 4's hides, since this 390
+            instance draws it. */}
+        {s.showTags === 'show' && (
+          <div style={col(u(16), { alignItems: 'stretch' })}>
+            <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>Genres</span>
+            <TagChips s={s} radius={s.radiusChip} />
+          </div>
+        )}
       </div>
     )
   }
@@ -21078,7 +21091,7 @@ function Footer({ s }) {
     const disc = s.mob ? 78.5 : 158.67 * scale
     const [inX, downY] = s.mob ? [60.25, 12.73] : s.narrow ? [101.87, 70.13] : [85.18, 49.62]
     const seal = (
-      <SealBadge s={s} size={disc} tilt={26.06} style={{
+      <SealBadge s={s} size={disc} tilt={26.06} scheme={s.footerBand ? 2 : 1} style={{
         right: `${Math.round((inX * scale - disc / 2) * 100) / 100}px`,
         top: `${Math.round((downY * scale - disc / 2) * 100) / 100}px`,
         zIndex: 2,
@@ -21121,9 +21134,11 @@ function Footer({ s }) {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         gap: s.mob ? 0 : u(16), height: u(68), borderTop: hair, ...face, color: s.tx,
+        // The row is the instance's floor at every width — nothing under it —
+        // so it takes back the root's bottom `padY`, as Line 19 does the top.
         ...(s.narrow
-          ? { padding: `0 ${s.mob ? 0 : '56px'}` }
-          : { margin: `0 calc(-1 * ${s.padX})`, padding: `0 ${s.padX}` }),
+          ? { padding: `0 ${s.mob ? 0 : '56px'}`, marginBottom: `calc(-1 * ${s.padY})` }
+          : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`, padding: `0 ${s.padX}` }),
       }}>
         <span style={half}>{s.copyright}</span>
         <span style={{ ...half, textAlign: 'right' }}>{s.footerCredit}</span>
@@ -21399,7 +21414,7 @@ export default function EncoreSection({ s }) {
     // document renders a dozen header previews at once through LayoutPicker
     // and HeaderChoices, which would all claim id="header".
     <div id={s.live ? s.anchor : undefined} style={{
-      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : s.bg,
+      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : s.footerBand || s.bg,
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
