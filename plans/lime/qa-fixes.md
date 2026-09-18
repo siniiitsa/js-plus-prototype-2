@@ -30,7 +30,7 @@ JP-034 are untouched by anything merged since and stand as reported.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-035 / F1 | Header Kicker and Location do not reach the bio's foot line and the enquiry form's credit | **Already fixed** in `2fd4d23`; the tester's build predates it | XS (verify only) | no | open |
+| 1 | JP-035 / F1 | Header Kicker and Location do not reach the bio's foot line and the enquiry form's credit | **Already fixed** in `2fd4d23`; the tester's build predates it | XS (verify only) | no | **done** (verified on the 18 Sep 12:15:15 GMT build; nothing to fix) |
 | 2 | JP-034 | Media player's SOUNDCLOUD pill publishes as a dead `<span>`; it can be neither renamed nor hidden, and the frame draws BOOK NOW there | **Confirmed** — currently *documented as intended* | S | **yes** | open |
 | 3 | JP-033 | Header nav prints section type names (BIO · MEDIA PLAYER · …) instead of the frame's labels, and a ninth link | **Confirmed** — a shared seam, every template | M | **yes** | open |
 | 4 | — | End-of-pass sweep, deploy, hand the tester the new build stamp | — | S | no | open |
@@ -99,7 +99,33 @@ say so under **Settled**.
 
 **Docs.** None expected. The reply to the tester names the build stamp to retest against.
 
-**Settled.** *(to fill in)*
+**Settled** (2026-09-18, verify only, no code changed).
+- **Build stamp.** `curl -sI` on the Pages URL: `last-modified: Fri, 18 Sep 2026 12:15:15 GMT`,
+  the build that carries `2fd4d23`. The tester's was 17 Sep 15:17:22 GMT.
+- **Deployed page, the tester's path** (one puppeteer script, editor at 1600: Lime thumbnail →
+  big card → the modal's first card, *Hero* → *Use this header* → Kicker and Location typed into
+  the header's panel → *Publish* → *Open*, popup at 1440). Occurrences, case-folded, in the
+  published tab: `QK Kicker Singer` **3** (header, bio, form), `QLOC Leeds, UK` **2** (header,
+  bio), `Live Act` **0**, `Manchester, UK` **0**. The canvas's eleven roots give the same four
+  counts. The two leaves the tester named sit at the tester's own offsets: the bio's foot line
+  reads "QK Kicker Singer · QLOC Leeds, UK" at **1217 px**, and the form's credit
+  "QK Kicker Singer" at **6249 px**. The calendar's Lime layout 1 prints neither string. No
+  page errors in the editor, none in the popup from the resize on (the listener was attached
+  after first paint; the sweep does the full pass); `scrollWidth` equals 1440.
+- **Dev build** (`main` at `7e15144`, same script): identical counts at 1440 and at **390**
+  (popup `setViewport` plus a dispatched `resize`; the header's ten fragment links collapse to
+  one, the burger's state — that count is the probe; `svg.lucide-menu` matched nothing at either
+  width, so do not copy it). At 390 the two leaves are at 1548 px and 8447 px, `scrollWidth`
+  equals 390, no page errors.
+- **The "Manchester, UK" the tester might still count does not exist.** The Lime seed never says
+  it verbatim outside the header's Location default. A bare `Manchester` survives **9** times
+  and all nine are the artist's own copy, each editable in its own panel: the bio's
+  *Paragraph 1* ("based in Manchester", F1's named case) 1, the media player's track
+  "Manchester at 3am" 1, the map's heading, "Based in Manchester" and four gig cities 6, and the
+  form's promise "Covers 120 mi from Manchester" 1. The reply to the tester should name these,
+  since a plain-text search for the town still finds them.
+- **No Lime-layout-1 seat was missed**, so the grep the entry keeps in reserve was not needed.
+- The one-off script lived in `source/scripts/` (where `puppeteer-core` resolves) and is deleted.
 
 ---
 
