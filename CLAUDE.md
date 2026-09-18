@@ -396,11 +396,25 @@ mutated through a single `patch()` helper.
   reload the builder. On the canvas the links carry **no href at all** (not `#`, which would jump
   the builder to its own top); `navHref()` in `EncoreSection` is the whole of that gate.
   `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
-  because Minimal's Shows and Book can resolve to the same section. Below `desktop` the links
-  collapse to `NavMenu`'s burger, in all six Retro layouts. Layout 2's 768 master draws the
+  because Minimal's Shows and Book can resolve to the same section. **The label is the visitor's
+  word, not the editor's** (JP-033): `CATS[].nav` through `navLabel()` in `data.js` — About, Top
+  Tracks, Media, Repertoire, Shows/Coverage, Pricing, Enquiries, Reviews, the eight every frame's
+  nav and footer draw, plus **Availability** for the calendar, which is on the seeded page and in
+  no frame's nav (user call, 2026-09-18: a ninth link over an unreachable section). `catName()`
+  keeps every editor-side use, `FOOTER_TARGETS`' select included. One `navSectionsOf(cats)`
+  builds the list for the editor, `PublishedPage`, the picker's `previewNav` and the harness, and
+  `FOOTER_LINKS` seeds its labels from the same `navLabel()`, so a fresh page's two lists agree;
+  the footer's rows are then the artist's to reword and the nav's are not. `vm.calFlow` reads
+  these labels too, so calendar layout 2's head says "Availability · Pricing · Enquiries" where
+  its frame's flow says "Available dates · Packages · Enquire". **The flat three's header reads
+  none of this**: `FlatNav` hardcodes Music / Shows / Book. Below `desktop` the links
+  collapse to `NavMenu`'s burger in four of the six Retro layouts; layouts 5 and 6 draw
+  `NavLinks`, which keeps the (wrapping) link row at 768 and collapses only at 390 (measured in
+  JP-033's digest). Layout 2's 768 master draws the
   links instead, and is **not** followed: its three are the Figma component's default, where
-  `navLinks` is the artist's page and the seeded eleven sections give nine — 765px of type in a
-  688px canvas. What that master does settle is the bordered capsule the burger stands in, which
+  `navLinks` is the artist's page and the seeded eleven sections give nine — 576px of type at the
+  master's own 16px, 720 with the capsule's eight 18px gaps, in a 688px canvas that also seats the
+  wordmark, Listen and the pill (re-measured on the visitor's words, JP-033). What that master does settle is the bordered capsule the burger stands in, which
   its own 390 sibling draws the same way.
 - **The pricing cards filter, in the published tab only.** The Solo / Trio / Band selector was a
   constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's

@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { sectionVm } from './builder/EncoreBuilder.jsx'
 import EncoreSection from './builder/EncoreSection.jsx'
-import { EXAMPLE_PAGE, catName } from './builder/data.js'
+import { EXAMPLE_PAGE, navSectionsOf } from './builder/data.js'
 
 // A hand copy of EncoreBuilder's SIZES + RAMP + RAMP_REST + WIDE. Theme ramps
 // (THEME_RAMP) are not copied: sectionVm lays them over this by `dev`.
@@ -55,9 +55,7 @@ const themeIdx = Number(q.get('theme') ?? 0)
 // the page — harmless while a dead footer row still rendered, but the published
 // footer drops those rows now (F25), so `&live=1` would have shown a footer no
 // seeded page can publish.
-const navSections = EXAMPLE_PAGE
-  .filter(([id]) => id !== 'header' && id !== 'footer')
-  .map(([id]) => ({ cat: id, label: catName(id) }))
+const navSections = navSectionsOf(EXAMPLE_PAGE.map(([id]) => id))
 
 // &n=8 fills the section's list-shaped content with n rows, to see a design
 // hold at a count the seed does not reach (FIELDS.media.tracks allows 8). It

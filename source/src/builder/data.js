@@ -145,24 +145,33 @@ export const THEMES = [
  * `n` is how many layout choices are offered to the user. Layouts are
  * always shown as "{name} layout {i+1}"; the internal identifiers in
  * the comments are never surfaced in the UI.
+ *
+ * A category has two words. `name` is the editor's — the sidebar, the
+ * toasts, the layout names, the footer rows' target select — and `nav`
+ * is the visitor's: what the published header's nav calls the section
+ * (JP-033), and what FOOTER_LINKS seeds its rows from. Eight of the nine
+ * are the words every frame's nav and footer draw; the calendar's is
+ * ours, because no frame's nav lists it (§4.3a). The header and the
+ * footer are never linked to, so they have none.
  * ------------------------------------------------------------------ */
 
 export const CATS = [
   { id: 'header', name: 'Header', n: 6 },   // header count is theme-dependent — see headerVariants()
-  { id: 'bio', name: 'Bio', n: 6 },
-  { id: 'media', name: 'Media Player', n: 7 },
-  { id: 'pricing', name: 'Pricing', n: 8 },
-  { id: 'repertoire', name: 'Repertoire', n: 7 },
-  { id: 'gallery', name: 'Gallery', n: 4 },
-  { id: 'calendar', name: 'Booking Calendar', n: 5 },
-  { id: 'map', name: 'Events Map', n: 4 },
-  { id: 'testimonials', name: 'Testimonials', n: 8 },
-  { id: 'form', name: 'Enquiry Form', n: 6 },
+  { id: 'bio', name: 'Bio', nav: 'About', n: 6 },
+  { id: 'media', name: 'Media Player', nav: 'Top Tracks', n: 7 },
+  { id: 'pricing', name: 'Pricing', nav: 'Pricing', n: 8 },
+  { id: 'repertoire', name: 'Repertoire', nav: 'Repertoire', n: 7 },
+  { id: 'gallery', name: 'Gallery', nav: 'Media', n: 4 },
+  { id: 'calendar', name: 'Booking Calendar', nav: 'Availability', n: 5 },
+  { id: 'map', name: 'Events Map', nav: 'Shows/Coverage', n: 4 },
+  { id: 'testimonials', name: 'Testimonials', nav: 'Reviews', n: 8 },
+  { id: 'form', name: 'Enquiry Form', nav: 'Enquiries', n: 6 },
   { id: 'footer', name: 'Footer', n: 1 },
 ]
 
 export const catById = (id) => CATS.find((c) => c.id === id)
 export const catName = (id) => catById(id)?.name ?? id
+export const navLabel = (id) => catById(id)?.nav ?? catName(id)
 
 /* ------------------------------------------------------------------ *
  * §4.3a Nav targets.
@@ -172,6 +181,17 @@ export const catName = (id) => catById(id)?.name ?? id
  * `{ cat, label }` and a section id *is* its category: addSection()
  * refuses a category the page already has, so `cat` is unique per page
  * and reads honestly in a fragment — `#repertoire`, `#calendar`.
+ *
+ * The label is the **visitor's** word, `navLabel()`, never `catName()`
+ * (JP-033: the nav used to print the sidebar's "Events Map" and "Enquiry
+ * Form" on the published page). The list still follows the page's order
+ * and presence; only the words are fixed. The frames' navs draw eight
+ * and the seeded page gives nine: the calendar is on the page and in no
+ * frame's nav, and a section the visitor cannot reach from the nav is
+ * the worse defect, so it is listed as "Availability" — its own default
+ * heading — and the ninth link is a named diff from the frames.
+ * `navSectionsOf()` is the one builder, so the editor, the published
+ * tab, the picker's previews and the harness cannot drift apart.
  *
  * The header's other two controls point at a section too, and so does
  * the fixed Music / Shows / Book triple, which names no category at
@@ -192,6 +212,12 @@ export const CTA_TARGETS = {
   book: ['form', 'calendar', 'pricing'],
   listen: ['media'],
 }
+
+// Category ids in page order → `navSections`. Ids, because its callers hold
+// three shapes: section objects, pageOrder()'s ids and EXAMPLE_PAGE's tuples.
+export const navSectionsOf = (cats) => cats
+  .filter((cat) => cat !== 'header' && cat !== 'footer')
+  .map((cat) => ({ cat, label: navLabel(cat) }))
 
 export const firstPresent = (prefs, navSections) =>
   prefs.find((cat) => navSections.some((n) => n.cat === cat))
@@ -550,16 +576,13 @@ export const FORM_MESSAGE = 'Tell me about your event…'
 //
 // A flat list, not two columns: sectionVm does the halving, or a repeater row
 // would have to carry which column it stands in.
-export const FOOTER_LINKS = [
-  { label: 'About',          to: 'bio' },
-  { label: 'Top Tracks',     to: 'media' },
-  { label: 'Media',          to: 'gallery' },
-  { label: 'Repertoire',     to: 'repertoire' },
-  { label: 'Shows/Coverage', to: 'map' },
-  { label: 'Pricing',        to: 'pricing' },
-  { label: 'Enquiries',      to: 'form' },
-  { label: 'Reviews',        to: 'testimonials' },
-]
+//
+// The labels are seeded from navLabel(), the header nav's own words (JP-033),
+// so the two lists agree on a fresh page; from there the rows are the artist's
+// to reword, which the nav's are not. No `calendar` row: the frames' footers
+// draw these eight, and a ninth would unbalance the two columns of four.
+export const FOOTER_LINKS = ['bio', 'media', 'gallery', 'repertoire', 'map', 'pricing', 'form', 'testimonials']
+  .map((to) => ({ label: navLabel(to), to }))
 
 // The per-row target select, in the { v, l } shape EditPanel's own select
 // branch reads — FORM_KINDS' shape.

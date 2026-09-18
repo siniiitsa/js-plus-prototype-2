@@ -1667,11 +1667,14 @@ function HeaderV1({ s }) {
       {/* The 768 master fills the capsule with links and the 390 one with the
           burger — but its three links are the *component's* default, the bio's
           five-chip rule, and `navLinks` is the artist's page: the seeded eleven
-          sections give nine, which at the master's own 16px comes to 765px of
-          type inside a 688px canvas. Even the harness's six overflow it. So the
-          burger holds at 768 as well, which is also what the other five Retro
-          headers do below desktop; what the master settles is the capsule the
-          burger stands in, and everything else in the bar. */}
+          sections give nine, which at the master's own 16px comes to 576px of
+          type — 720 with the capsule's eight 18px gaps — inside a 688px canvas
+          that also seats the wordmark, Listen and the pill (measured on the
+          visitor's words, JP-033; the sidebar's names it used to print came to
+          651). So the burger holds at 768 as well, which is also what Retro
+          layouts 1, 3 and 4 do below desktop (5 and 6 keep NavLinks' row down
+          to 768); what the master settles is the capsule the burger stands in,
+          and everything else in the bar. */}
       {s.narrow
         ? navCapsule(<NavMenu s={s} color={ink} />)
         : navCapsule(s.navLinks.map((l) => (
@@ -2148,7 +2151,8 @@ function HeaderV2({ s }) {
   // The 768 master draws links too, and is not followed for layout 2's reason:
   // its three are the component's default where `navLinks` is the artist's page,
   // and the seeded nine come to more type than the capsule's share of a 684px
-  // bar. The burger therefore holds at 768, as it does in all six Retro headers.
+  // bar. The burger therefore holds at 768, as it does in Retro layouts 1, 2 and 4
+  (5 and 6 keep NavLinks' row down to 768).
   const capsule = (
     <nav style={{
       // This rule is *not* inside its padding, where the card's 5px one is: the

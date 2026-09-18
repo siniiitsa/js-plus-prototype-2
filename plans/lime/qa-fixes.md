@@ -32,7 +32,7 @@ JP-034 are untouched by anything merged since and stand as reported.
 |---|---|---|---|---|---|---|
 | 1 | JP-035 / F1 | Header Kicker and Location do not reach the bio's foot line and the enquiry form's credit | **Already fixed** in `2fd4d23`; the tester's build predates it | XS (verify only) | no | **done** (verified on the 18 Sep 12:15:15 GMT build; nothing to fix) |
 | 2 | JP-034 | Media player's SOUNDCLOUD pill publishes as a dead `<span>`; it can be neither renamed nor hidden, and the frame draws BOOK NOW there | **Confirmed** — currently *documented as intended* | S | **yes** → A | **done** |
-| 3 | JP-033 | Header nav prints section type names (BIO · MEDIA PLAYER · …) instead of the frame's labels, and a ninth link | **Confirmed** — a shared seam, every template | M | **yes** | open |
+| 3 | JP-033 | Header nav prints section type names (BIO · MEDIA PLAYER · …) instead of the frame's labels, and a ninth link | **Confirmed** — a shared seam, Retro and Lime (the flat three's header hardcodes its nav) | M | **yes** → A, A1 "Availability" | **done** |
 | 4 | — | End-of-pass sweep, deploy, hand the tester the new build stamp | — | S | no | open |
 
 **Why this order:** JP-035 costs one verification and closes the tester's loudest complaint.
@@ -377,9 +377,72 @@ the seeded page carries it.
 the label is) and the layout-2 768 sentence above; `data.js`'s §4.3a block and the `CATS` comment;
 README's nav paragraph if it names `catName`.
 
-**Decision.** *(to fill in)*
+**Decision.** **A**, and under it **A1 with "Availability"** (user, 2026-09-18), after reading
+calendar layout 2's Lime frame `964:64593`. Its head lists "● Available dates · Packages ·
+Enquire" — the flow's **own** vocabulary, not the nav's: the frame's nav and footer say Pricing
+and Enquiries where the flow says Packages and Enquire, so the frame offers a word for the
+calendar and does not settle the other two. "Availability" is the section's own default heading
+(`TITLES.calendar`) and that frame's column head, and three glyphs shorter in a nine-link
+capsule. The ninth link is the named diff from the frame's eight, and `calFlow` reads
+"Availability · Pricing · Enquiries", the nav's words, as a named diff from its frame's three.
 
-**Settled.** *(to fill in)*
+**Settled** (2026-09-18).
+- **What changed.** `CATS[].nav` on the nine linkable categories, `navLabel(id)` beside
+  `catName(id)`, and one `navSectionsOf(cats)` in `data.js` that the editor, `PublishedPage`,
+  `previewNav` and `preview.jsx` all call — it takes category **ids**, because the four callers
+  hold three shapes. `FOOTER_LINKS` is eight ids mapped through `navLabel()`, the same array
+  `linksVal` and `sectionVm` both import. `catName` keeps every editor-side use: the sidebar still
+  reads "Media Player", "Events Map", and so does `FOOTER_TARGETS`' select. `EncoreSection` gained
+  no code, only a re-measured comment. The nine words are distinct, so `key={l.label}` holds.
+- **Which templates move: Retro and Lime — not "every one".** The entry's Verdict was wrong about
+  the flat three: their header is `FlatNav`, which **hardcodes Music / Shows / Book** and never
+  read `navLinks`, so Grunge's header digest is zero files on both surfaces, in both modes. The
+  flat three move only in calendar layout 2. Named for the sweep, not fixed here: `FlatNav`'s
+  three links carry literal `#music` / `#shows` / `#book` hrefs on both surfaces, which is the
+  dead-fragment shape `navHref()` was written to remove, and `navMode` edits nothing under a
+  flat theme.
+- **Digest** (all categories, themes 0, 1, 2, three widths, canvas and `live=1`, 387 renders a
+  side, BEFORE on a clean HEAD). Moved, identically on both surfaces: `header` × Retro's six and
+  Lime's six arch rows at **desktop** (12), Retro header layouts 5 and 6 at **tablet** (2 — they
+  are `NavLinks`, which draws the link row down to 768 and the burger only at 390; `CLAUDE.md` said
+  "all six Retro layouts" collapse below desktop; corrected in this commit, with the two
+  `EncoreSection` comments that repeated it), and
+  `calendar` layout 2 × three themes × three widths (9). **`footer`: zero files**, the proof the
+  re-seed kept its words. Nothing else moves. Minimal mode (`&cj={"navMode":"minimal"}`, header,
+  54 renders a side, both surfaces): **zero files**.
+- **What the moves are.** Link text and the x positions after it; every root height is unchanged.
+  Lime layouts 1 and 4: the links grow from 18.64px back to `s.labelSm`'s **20px**, one row,
+  ending at the same right edge (1036). Lime layouts 2 and 3: 15px before and after, one row,
+  the row 53px shorter. Retro: one row in every layout, and layout 6's desktop row, which
+  wrapped to two before, is now one. Calendar layout 2: the flow block is 37px narrower at
+  desktop and reads "● Availability / Pricing / Enquiries"; the leading entry is still a span.
+- **Accepted: calendar layout 2's seeded head now says "Availability" three times** — the flow's
+  leading entry, the `H2` (`TITLES.calendar`; the frame's own head is "Find a date that works
+  for your event") and the column head "Availability ↓". The last two were already there. The
+  user chose the word knowing it is the section's default heading; the heading is a field.
+- **The 768 sentence, re-measured** (Retro layout 2's own links set to the master's 16px in the
+  harness and read off `getBoundingClientRect`): **576px of type, 720 with the capsule's eight
+  18px gaps**, against 651 / 795 for the old names by the same method. Still over a 688px canvas
+  that also seats the wordmark, Listen and the pill, so the burger holds at 768 and the
+  conclusion stands. `CLAUDE.md` and the `HeaderV1` comment carry the new numbers.
+- **Real app** (the JP-035 path, dev build). Start screen, Retro and Lime spotlights: 0 × each
+  of the five old names, 3 × "Top Tracks" / "Shows/Coverage" / "Availability". Setup modal: four
+  cards, 0 × old names, each card listing the words in **its own page order** (card 2 reads
+  About · Top Tracks · Repertoire · Media …). Published, Lime *Hero*, 1440: About · Top Tracks ·
+  Media · Repertoire · Shows/Coverage · Pricing · Availability · Enquiries · Reviews, each an
+  `<a href="#cat">`; a click on each of the nine and on Book Now leaves its section's top at
+  **0** (read 3 s after the click — at 1.2 s the smooth scroll to the last two was still
+  running), the popup still `about:blank`, `scrollWidth` 1440. At 768 and 390 the closed header
+  carries one fragment link, the burger panel lists the same nine in the same order, and
+  Shows/Coverage scrolls the map to 7 / 0; `scrollWidth` equals the width. Deleting the media
+  player and moving the events map up, then republishing: the nav drops Top Tracks and reads
+  About · Media · Shows/Coverage · Repertoire …, the page's own order. No page errors in either
+  window.
+- **The ninth link is the named diff from the frame**, and the footer still lists eight: no
+  calendar row was added to `FOOTER_LINKS`, so the two lists agree on the eight words and the
+  header alone carries Availability.
+- `npm run build` passes. One-off scripts lived in `source/scripts/` and are deleted.
+  `index.html` not refreshed.
 
 ---
 
@@ -412,6 +475,15 @@ README's nav paragraph if it names `catName`.
   `s.cta1` only on a nullish label and draws `''` as a wordless pill (JP-034).
 - **The real-app path, as a script** (JP-035, reused in JP-034): buttons are found by
   `aria-label || innerText` — `^Lime$`, `^Open the editor with the Lime`, the modal's first card
-  `^KAI MERCER BIO`, `^Use this header`, `^Publish$`, `^Open`, and the popup off
+  `^KAI MERCER ABOUT` (it was `^KAI MERCER BIO` before JP-033: a card's label is its nav's
+  words), `^Use this header`, `^Publish$`, `^Open`, and the popup off
   `page.once('popup')`. A section's panel is `^Back to page list` then its row
   (`^Media Player Media Player`), and the panel's own `^Delete$` removes it.
+- **Collapse whitespace before matching a button's label.** `innerText` puts a newline between
+  a row's two lines, so `^Media Player Media Player` only matches after `.replace(/\s+/g, ' ')`
+  (JP-033).
+- **Read a nav click's scroll 3 s after it, not 1 s.** The published tab scrolls smoothly, and a
+  jump to the foot of a Lime page was still 17–41px short at 1.2 s (JP-033).
+- **The flat three's header nav is a constant.** `FlatNav` reads neither `navLinks` nor
+  `navMode`, so a nav fix moves Retro and Lime only; check the digest before writing "every
+  template" into a commit (JP-033).
