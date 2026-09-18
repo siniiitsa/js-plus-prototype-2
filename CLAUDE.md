@@ -134,7 +134,15 @@ mutated through a single `patch()` helper.
   empty) and passes *that* everywhere — nav brand, initials placeholders, bylines, badge,
   `copyrightOf()`, the published tab's `<title>` (reset on every republish, not only when the tab
   is first opened) and the dialog's site address. Header `badgeText` and footer `copyright` have
-  no static default for that reason; `EditPanel` special-cases them beside `title`.
+  no static default for that reason; `EditPanel` special-cases them beside `title`. **The
+  artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
+  header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
+  section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
+  stamp, layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
+  reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
+  `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
+  composed with its `·`, so an emptied half drops with the separator, and an emptied value
+  drops the ID card's column (the `since` rule).
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply

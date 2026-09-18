@@ -959,6 +959,62 @@ is not.
   on both surfaces. That is F4's named diff. F10 and F2 moved no seed, and F20 moves only with
   `&today=`.
 
+## F1 — Kicker and Location change only the header (reported after the pass)
+
+> Kicker = "QK Kicker Singer", Location = "QLOC Leeds, UK". Published: the bio's polaroid rail
+> and its "DJ · LIVE ACT · MANCHESTER, UK" line, the calendar's three polaroid stamps and the
+> enquiry form's "DJ · Live Act" still print the seed: Manchester, UK ×5, DJ · Live Act ×2.
+> No text field in any section holds either string.
+
+**Verdict: confirmed.** `sectionVm` resolved `vm.kicker` / `vm.location` with `cv()`, which reads
+the section's *own* `c`. Only the header has the two fields, so every other section always fell
+back to the defaults. This is the case `0e93400` fixed for the name, but not for these two.
+
+**Fix** (2026-09-18, branch `kicker-location-from-header`, off `main`).
+- `headerIdentity(sections)` (`data.js`) returns the header's raw `{ kicker, location }`.
+  `sectionVm({ identity })` reads it for every category but the header, which keeps reading its
+  own `c`, so a preview of another layout still shows that layout's Lime default. It is passed
+  by the canvas (`makeVm`), `PublishedPage` and `LayoutPicker` (through `EditPanel` and
+  `AddComposer`). The header previews in the template stage and the setup modal build the header
+  alone and need none.
+- `vm.roleLine` is `[kicker, location].filter(Boolean).join(' · ')` and replaces the four
+  `` `${s.kicker} · ${s.location}` `` sites in the bio. An emptied half drops with its separator.
+  The bio's ID card drops the *Current role* / *Based in* column for an empty value, the
+  `since` rule.
+- **Newly reachable overflow.** Once the artist's strings reach the bio, a long role or a one-word
+  town (a 58-character Welsh village) widened bio layout 1: 1353 under Lime and 1365 under Grunge
+  at desktop. Lime's grid is now `minmax(0, 1fr) 580 minmax(0, 1fr)` and its role line
+  `overflowWrap: anywhere`. Retro and the flat three take `minmax(0, 1fr)` on the **prose track
+  only** and let the role label wrap. `minmax` on all three tracks moved Grunge's seed (its
+  254px "READS THE ROOM." then overflowed a 251px column by 2.3), so the heading track stays
+  `1fr`.
+- The header's Kicker and Location hints now say where else they print. Their `in` still speaks
+  for the header alone, as `cta2`'s does.
+
+**Verified.**
+- **Digest** (all categories, themes 0, 1, 2, three widths, canvas and `live=1`, against `main`):
+  **byte-identical**.
+- **Harness** (`&who=`, bio / calendar / form × layouts 1–4 × themes 0, 1, 2 × three widths ×
+  both surfaces, 432 renders): the tester's values leave no seed string. Emptied values leave
+  no orphan `·` and no role column, with no overflow. Two long cases (spaced, and one word)
+  across the header and those three sections also show no overflow.
+- **Real app** (puppeteer, 1600 and 390, Retro cards 1–4 and Lime cards 1 and 3, *Publish* →
+  *Open*): canvas and published tab alike carry **0** "Manchester, UK" and **0** "Live Act".
+  On Retro card 1, the tester's page, the bio has 1 kicker and 2 locations, the calendar 3
+  locations and the form 1 kicker, exactly the five and two they counted. Emptying both leaves
+  no orphan separator. There are no page errors, and `scrollWidth` equals the width.
+- **In Chrome** (chrome-devtools, trusted *Open*): the same counts. A screenshot of the
+  published bio shows "QLOC LEEDS, UK" on the rail and "QK KICKER SINGER · QLOC LEEDS, UK" under
+  About.
+- **Named:** the bio's About paragraph still says "based in Manchester", because that is the
+  artist's own *Paragraph 1*, not the location.
+
+**Docs:** `sectionVm`'s header comment, `headerIdentity`, the `FIELDS.header` kicker/location
+comment and hints, `preview.jsx`'s `&who=`, the bio grid comments and CLAUDE.md's artist-name
+bullet.
+
+---
+
 ## Conventions learned on this pass
 
 *(Filled in as sessions settle things.)*

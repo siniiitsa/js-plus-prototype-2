@@ -3049,14 +3049,16 @@ function Bio({ s }) {
         {/* The frame's own flexible spacer on desktop; a 1px one below it. */}
         <span style={{ flex: 1, minHeight: '1px' }} />
         <span style={{ height: '1px', background: s.ac, flex: 'none' }} />
-        {eyebrow(`${s.kicker} · ${s.location}`, { textTransform: 'uppercase' })}
+        {/* The artist's own role and town (F1), so it wraps rather than
+            widening the column — anywhere, since a town can be one long word. */}
+        {eyebrow(s.roleLine, { textTransform: 'uppercase', overflowWrap: 'anywhere' })}
       </div>
     )
 
     if (s.narrow) return <div style={col('40px')}>{heading}{card}{prose}</div>
     return (
       <div style={{
-        display: 'grid', gridTemplateColumns: `1fr ${u(580)} 1fr`,
+        display: 'grid', gridTemplateColumns: `minmax(0, 1fr) ${u(580)} minmax(0, 1fr)`,
         gap: u(40), alignItems: 'stretch',
       }}>
         {heading}{card}{prose}
@@ -3134,7 +3136,9 @@ function Bio({ s }) {
         </div>
         <div style={col('10px')}>
           <span style={{ height: '1px', background: (s.retro && s.chips[0]?.bg) || s.line2, width: '100%' }} />
-          {label(`${s.kicker} · ${s.location}`)}
+          {/* The one label here the artist types (F1): it wraps, anywhere,
+              where the flank's fixed labels stay on one line. */}
+          {label(s.roleLine, { whiteSpace: 'normal', overflowWrap: 'anywhere' })}
         </div>
       </div>
     )
@@ -3142,7 +3146,10 @@ function Bio({ s }) {
     if (s.narrow) return <div style={col(s.gGap)}>{heading}{card}{prose}</div>
     return (
       <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1.9fr 1fr',
+        // The prose track is `minmax(0, …)` so the artist's role line (F1)
+        // wraps inside it; the heading's stays `1fr`, whose min-content floor
+        // is what holds a wide display face's title (Grunge) off the card.
+        display: 'grid', gridTemplateColumns: '1fr 1.9fr minmax(0, 1fr)',
         gap: s.gGap, alignItems: 'stretch',
       }}>
         {heading}{card}{prose}
@@ -3289,7 +3296,7 @@ function Bio({ s }) {
           }}>
             <div style={col(u(4), { flex: 1, minWidth: 0 })}>
               <span style={labelStyle(s, s.labelLg, { lineHeight: 1.1, whiteSpace: 'normal' })}>{s.brand}</span>
-              <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4 }}>{s.kicker} · {s.location}</span>
+              <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4 }}>{s.roleLine}</span>
             </div>
             {/* A 36 disc on desktop; both narrow masters let it hug its one
                 Body/SM line, Retro's 36 × 18 pill. The glyph is the frame's
@@ -3353,7 +3360,7 @@ function Bio({ s }) {
                 <span style={labelStyle(s, tab ? '16px' : nar ? '14px' : '20px', {
                   whiteSpace: 'normal', textTransform: 'none', letterSpacing: s.lime ? s.dls : 0,
                 })}>{s.brand}</span>
-                <span style={{ ...body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4 }}>{s.kicker} · {s.location}</span>
+                <span style={{ ...body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4 }}>{s.roleLine}</span>
               </div>
               {/* A 36px disc on desktop, where the frame pins its height; both
                   narrow instances let the same box hug its one 12px line, so it
@@ -3537,8 +3544,8 @@ function Bio({ s }) {
     )
     const stats = [
       s.since ? stat('Performing\nsince:', s.since) : null,
-      stat('Current\nrole:', s.kicker),
-      stat('Based\nin:', s.location),
+      s.kicker ? stat('Current\nrole:', s.kicker) : null,
+      s.location ? stat('Based\nin:', s.location) : null,
     ].filter(Boolean)
 
     const head = (
@@ -3707,8 +3714,8 @@ function Bio({ s }) {
     )
     const stats = [
       s.since ? stat('Performing\nsince:', s.since) : null,
-      stat('Current\nrole:', s.kicker),
-      stat('Based\nin:', s.location),
+      s.kicker ? stat('Current\nrole:', s.kicker) : null,
+      s.location ? stat('Based\nin:', s.location) : null,
     ].filter(Boolean)
 
     // 390 draws this as a column — the name over the stats, at the same 10 the
