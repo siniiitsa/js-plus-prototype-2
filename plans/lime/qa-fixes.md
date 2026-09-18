@@ -33,7 +33,7 @@ JP-034 are untouched by anything merged since and stand as reported.
 | 1 | JP-035 / F1 | Header Kicker and Location do not reach the bio's foot line and the enquiry form's credit | **Already fixed** in `2fd4d23`; the tester's build predates it | XS (verify only) | no | **done** (verified on the 18 Sep 12:15:15 GMT build; nothing to fix) |
 | 2 | JP-034 | Media player's SOUNDCLOUD pill publishes as a dead `<span>`; it can be neither renamed nor hidden, and the frame draws BOOK NOW there | **Confirmed** — currently *documented as intended* | S | **yes** → A | **done** |
 | 3 | JP-033 | Header nav prints section type names (BIO · MEDIA PLAYER · …) instead of the frame's labels, and a ninth link | **Confirmed** — a shared seam, Retro and Lime (the flat three's header hardcodes its nav) | M | **yes** → A, A1 "Availability" | **done** |
-| 4 | — | End-of-pass sweep, deploy, hand the tester the new build stamp | — | S | no | open |
+| 4 | — | End-of-pass sweep, deploy, hand the tester the new build stamp | — | S | no | **swept and pushed**; PR, merge and the stamp are open (no `gh` here) |
 
 **Why this order:** JP-035 costs one verification and closes the tester's loudest complaint.
 JP-034 is one block in one section. JP-033 is last because it moves the header's digest in every
@@ -463,7 +463,84 @@ capsule. The ninth link is the named diff from the frame's eight, and `calFlow` 
    link, a second pill), and says JP-035 was fixed by the 18 Sep 12:15 GMT build.
 5. Update [`plans/README.md`](../README.md)'s Lime table row for this pass.
 
-**Deployed build stamp:** *(to fill in)*
+**Settled** (2026-09-18, steps 1–3 up to the push and step 5; the PR, the merge and step 4 are
+the user's, see the last bullet).
+- **The sweep found one defect, and it was JP-033's own commit.** `bb76030` left a comment's
+  continuation line in `HeaderV2` without its `//` (`(5 and 6 keep NavLinks' row down to 768).`),
+  so `EncoreSection.jsx` did not parse: the dev server answered 500 and the digest's HEAD side
+  rendered 387 empty roots — every file "moved". That entry's "`npm run build` passes" was
+  measured before the docs edit that broke it. Fixed in `86e46ba`, its own commit; `npm run
+  build` and `build:standalone` pass on it. An all-files diff is a broken side, not a finding:
+  `wc -l` the smallest file first.
+- **Digest, `main` → HEAD** (all categories, themes 0, 1, 2, three widths, canvas and `live=1`,
+  387 renders a side a surface; base from a worktree of `main` on :5190 with a cloned
+  `node_modules`, port and `?t=` normalised). **The base ran `main`'s own `preview.jsx`, not
+  HEAD's** — the Retro convention departed from on purpose: HEAD's harness imports
+  `navSectionsOf`, which `main`'s `data.js` does not export, and the harness's only change is the
+  label source, which is JP-033's intended move. Moved: **26 + 26 files, the same set on both
+  surfaces**, and exactly the two entries' named diffs — `header` × Retro's six and Lime's six
+  at desktop (12) and Retro layouts 5 and 6 at tablet (2), `calendar` layout 2 × three themes ×
+  three widths (9), `media` Lime layout 1 × three widths (3). `footer`: zero. Grunge: calendar
+  layout 2 only.
+- **Real app, on the deliverable** — `source/dist-standalone/index.html`, the bytes that became
+  the root `index.html`, served from `127.0.0.1:8931`; editor at 1600, one fresh editor and
+  popup per run, popup at **1440 and 390** (`setViewport` plus a dispatched `resize`),
+  `pageerror` and console-error listeners attached to both windows, the popup's on the `popup`
+  event itself. Lime cards 1–4 and Retro card 1, ten runs. Every run: **no page errors in either
+  window**, popup still `about:blank` after every click, `scrollWidth` equal to the width before
+  and after, eleven sections. At 1440 every fragment link in the header (the nine nav words,
+  Book Now, and cards 2 and 3's Listen and card 2's "Enquire about a date") leaves its section's
+  top at **0**, read 3 s after a trusted click. At 390 the closed header carries only its pills,
+  the burger opens, its panel lists the same nine words in the page's order, and each leaves its
+  section at **0** (scrolled back to the top and the burger reopened between clicks). The nine
+  words follow each card's own page order (card 2: About · Top Tracks · Repertoire · Media ·
+  Pricing · Availability · Shows/Coverage …). **Media pill:** Lime card 1 publishes one
+  `<a href="#form">` "Book Now", no Soundcloud pill, and a click leaves the form at 0, at both
+  widths; Lime cards 2–4 draw no pill (their layouts never did); Retro card 1 publishes the
+  `SPAN` "Soundcloud" JP-034 accepted. The modal's cards are picked by index
+  (`[role=dialog] button[aria-pressed]`), since two of the four labels now start
+  `KAI MERCER ABOUT`.
+- **"1600 and 390" was read as the popup's widths** (with 1440 for the wide one, the entries'
+  own). Publishing from the editor's phone chrome was not driven; nothing on this branch touches
+  the chrome.
+- **Docs audit.** `CLAUDE.md`'s media-player and header-nav paragraphs, `layout-1.md`'s media
+  entry (the "Soundcloud, not Book Now" departure is struck through and reversed) and README's
+  nav paragraph were all rewritten by their entries; nothing left to correct.
+- **Named, not fixed: `FlatNav`'s dead fragments** (JP-033's *Settled*). The flat three's header
+  hardcodes Music / Shows / Book on literal `#music` / `#shows` / `#book` hrefs on both surfaces,
+  and `navMode` edits nothing there. It predates the branch, no report names it, and fixing it
+  here would add moves to a digest whose premise is "exactly the named set". A follow-up of its
+  own, beside the seven unreachable NVAR-4 fallthroughs the Retro sweep named.
+- `index.html` refreshed in `3f07358` (6,958,977 bytes against 6,958,675). One-off scripts lived
+  in `source/scripts/` and are deleted; the worktree is removed.
+- **`gh` is not installed on this machine**, so the branch is pushed and the PR and merge are
+  the user's. Step 4 follows the merge: `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`
+  until `last-modified` moves past `Fri, 18 Sep 2026 12:15:15 GMT`, and write the stamp below —
+  on a branch, not straight to `main`, because every push to `main` redeploys and moves the
+  stamp again.
+
+**Reply to the tester** (fill in the stamp):
+
+> Retest against the build with `Last-Modified: <stamp>`.
+> - **JP-035** — fixed by the build of Fri, 18 Sep 2026 12:15:15 GMT; your report was against the
+>   17 Sep 15:17 build. With your values the published page prints "QK Kicker Singer" 3×,
+>   "QLOC Leeds, UK" 2×, "Live Act" 0× and "Manchester, UK" 0×. A plain search for "Manchester"
+>   still finds 9, all the artist's own copy and each editable in its panel: the bio's
+>   Paragraph 1, the track "Manchester at 3am", the map's heading, "Based in Manchester" and four
+>   gig cities, and the form's promise "Covers 120 mi from Manchester".
+> - **JP-034** — Lime's media-player pill is the frame's BOOK NOW: a link that scrolls to the
+>   enquiry form, with a new *Button* field in the Media Player panel; emptying it removes the
+>   pill. A Soundcloud pill appears beside it only when *SoundCloud link* is filled (no frame
+>   draws that second pill — an accepted diff). Retro's frame draws a Soundcloud pill, so Retro
+>   is unchanged.
+> - **JP-033** — the header nav prints About · Top Tracks · Media · Repertoire · Shows/Coverage ·
+>   Pricing · Availability · Enquiries · Reviews, in the page's order, at all three widths, on
+>   the start screen and in the setup modal. The ninth link, Availability, is a deliberate diff
+>   from the frame's eight: the seeded page carries a booking calendar and the nav should reach
+>   it. The footer's seed uses the same words (it still lists eight). Grunge, Editorial and Pop
+>   keep their fixed Music / Shows / Book nav.
+
+**Deployed build stamp:** *(to fill in after the merge)*
 
 ---
 
@@ -487,3 +564,11 @@ capsule. The ninth link is the named diff from the frame's eight, and `calFlow` 
 - **The flat three's header nav is a constant.** `FlatNav` reads neither `navLinks` nor
   `navMode`, so a nav fix moves Retro and Lime only; check the digest before writing "every
   template" into a commit (JP-033).
+- **Build after the last docs edit, not before it.** JP-033 measured `npm run build`, then
+  reworded a comment and dropped a `//`; the branch did not parse until the sweep. A digest in
+  which *every* file moves is a side that failed to render (sweep).
+- **Serve the digest's base with its own harness when HEAD's harness imports something the base
+  lacks.** The Retro convention (copy HEAD's `preview.jsx` into the worktree) assumes the
+  harness changed independently of the code; here it calls `navSectionsOf` (sweep).
+- **Pick a setup-modal card by index.** Cards 1 and 4 share a page order, so their labels are
+  the same string (sweep).
