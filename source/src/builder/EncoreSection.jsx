@@ -2152,7 +2152,7 @@ function HeaderV2({ s }) {
   // its three are the component's default where `navLinks` is the artist's page,
   // and the seeded nine come to more type than the capsule's share of a 684px
   // bar. The burger therefore holds at 768, as it does in Retro layouts 1, 2 and 4
-  (5 and 6 keep NavLinks' row down to 768).
+  // (5 and 6 keep NavLinks' row down to 768).
   const capsule = (
     <nav style={{
       // This rule is *not* inside its padding, where the card's 5px one is: the
