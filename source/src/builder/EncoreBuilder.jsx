@@ -912,6 +912,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
     // artist has blocked — lit and struck through at once. A cue that has
     // passed cues nothing either, and the foot prints the prompt.
     vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
+    // The same cue with the past let through, for Lime layout 4's featured
+    // card alone (user call, 2026-09-18): its seeded slots are all past on a
+    // published page, and the card would otherwise never show the frame's 2×2.
+    vm.calCue = booked.has(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two

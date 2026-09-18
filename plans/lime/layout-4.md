@@ -851,7 +851,9 @@ Settled in section 3 (the media player):
   nodes at all three widths (the 1440 foot vector nests Scheme 5, whose `sem/bg` is the same
   `#15180F`). So our page, which carries no video band, shows the media's dark foot arc meeting
   the gallery's dark head arc directly — a 44 + 44 dark lens between the olive and the lime,
-  which is what the frame would show with its video frame deleted. Named in the block; the
+  which is what the frame would show with its video frame deleted. *(Superseded, user call
+  2026-09-18: the media's foot arc is no longer drawn, so the band ends square and the
+  gallery's head arc, recoloured to the media's olive `s.box1`, is the only seam — no lens.)* Named in the block; the
   gallery session checks the meeting in the editor with the `[--ac]` rect walk. The 390
   vectors are the leaked 576.56 at x −93 and the 768 ones are 768 wide; `ArcEdge` stretches
   to the sheet and `scrollWidth` does not move at any width (checked).
