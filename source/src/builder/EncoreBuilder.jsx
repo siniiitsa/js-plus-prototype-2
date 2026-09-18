@@ -47,7 +47,7 @@ import {
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
-  catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, urlProblem, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, urlProblem, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -434,13 +434,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.mapSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.map : undefined
   vm.mapRadialSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.mapRadial : undefined
 
-  // §4.8 — `navSections` is `{ cat, label }`, and a nav link keeps the target
-  // as `to` so the published page can scroll to it (§4.3a).
+  // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
+  // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
+  // nav link keeps the target as `to` so the published page can scroll to it.
   //
   // §10.2 also collapsed mobile to the fixed triple regardless of navMode. That
-  // rule was about a horizontal bar, which cannot carry "Booking Calendar" and
-  // "Enquiry Form" at 390px — the burger panel is a column and has the room, so
-  // mobile now shows the artist's own sections like every other width.
+  // rule was about a horizontal bar, which cannot carry nine section links at
+  // 390px — the burger panel is a column and has the room, so mobile now shows
+  // the artist's own sections like every other width.
   //
   // Minimal's Music / Shows / Book name no category, so one can resolve to
   // nothing. The footer's rule applies (§4.3a): the canvas keeps the label and
@@ -519,8 +520,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
   // the opener, so a schemeless "soundcloud.com/kai" would resolve against the
-  // builder and open it instead. An empty field leaves the pill a picture.
+  // builder and open it instead. An empty field leaves the pill a picture —
+  // except under Lime, whose layout 1 draws the pill only when this is filled.
   vm.soundcloud = extUrl(cv('soundcloud', ''))
+  // Lime layout 1's pill, which is its frame's Book Now on vm.bookTo rather
+  // than the Soundcloud button (JP-034). `media` is not in CTA_TARGETS.book, so
+  // bookTo needs no self-exclusion here. Uncased, vm.footerCta's rule — it is
+  // the same pill — and an emptied label drops it, the footer's rule again.
+  vm.mediaCta = cv('cta', 'Book Now')
 
   // tracks — the media player's *array* of { title, sub, image, audio } on
   // `c.tracks` (TracksField); an absent key means the seeded TRACKS, dressed
@@ -1008,6 +1015,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // than an invented nav. The current section leads and does not link to
     // itself; a page carrying neither of the other two is left with one entry,
     // which still reads as the head's own label.
+    // The words are the header nav's (`navLabel()`, JP-033) — "Availability ·
+    // Pricing · Enquiries" on the seed — where the frame's flow has a vocabulary
+    // of its own, "Available dates · Packages · Enquire": one word per section
+    // across the page outranks a second set nothing else prints.
     const flow = navSections.filter((n) => CTA_TARGETS.book.includes(n.cat))
     vm.calFlow = [
       ...flow.filter((n) => n.cat === 'calendar'),
@@ -3288,9 +3299,7 @@ function AddComposer({ add, present, removed, themeIdx, artistName, identity, na
 // The nav links a header preview shows: the same derivation the editor uses,
 // applied to the page the picker is about to build (§4.8), in the order that
 // page takes when its header takes layout `i`.
-const previewNav = (i) => pageOrder(i)
-  .filter((cat) => cat !== 'header' && cat !== 'footer')
-  .map((cat) => ({ cat, label: catName(cat) }))
+const previewNav = (i) => navSectionsOf(pageOrder(i))
 
 // Every frame in the picker uses one aspect: the desktop canvas against the
 // tallest header render (Retro's photographic layout 1). A render that comes
@@ -3561,9 +3570,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   }
 
   // §4.8, as the editor derives it at the same names.
-  const navSections = sections
-    .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
-    .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
+  const navSections = navSectionsOf(sections.map((s) => s.cat))
   const identity = headerIdentity(sections)
 
   const T = THEMES[themeIdx]
@@ -3774,9 +3781,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   // §4.8 — nav links follow the optional sections currently on the page, and
   // carry the category as the anchor the published page scrolls to (§4.3a).
-  const navSections = sections
-    .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
-    .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
+  const navSections = navSectionsOf(sections.map((s) => s.cat))
 
   /* ---- publish ----------------------------------------------------- */
 

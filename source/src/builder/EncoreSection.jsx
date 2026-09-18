@@ -1667,11 +1667,14 @@ function HeaderV1({ s }) {
       {/* The 768 master fills the capsule with links and the 390 one with the
           burger — but its three links are the *component's* default, the bio's
           five-chip rule, and `navLinks` is the artist's page: the seeded eleven
-          sections give nine, which at the master's own 16px comes to 765px of
-          type inside a 688px canvas. Even the harness's six overflow it. So the
-          burger holds at 768 as well, which is also what the other five Retro
-          headers do below desktop; what the master settles is the capsule the
-          burger stands in, and everything else in the bar. */}
+          sections give nine, which at the master's own 16px comes to 576px of
+          type — 720 with the capsule's eight 18px gaps — inside a 688px canvas
+          that also seats the wordmark, Listen and the pill (measured on the
+          visitor's words, JP-033; the sidebar's names it used to print came to
+          651). So the burger holds at 768 as well, which is also what Retro
+          layouts 1, 3 and 4 do below desktop (5 and 6 keep NavLinks' row down
+          to 768); what the master settles is the capsule the burger stands in,
+          and everything else in the bar. */}
       {s.narrow
         ? navCapsule(<NavMenu s={s} color={ink} />)
         : navCapsule(s.navLinks.map((l) => (
@@ -2148,7 +2151,8 @@ function HeaderV2({ s }) {
   // The 768 master draws links too, and is not followed for layout 2's reason:
   // its three are the component's default where `navLinks` is the artist's page,
   // and the seeded nine come to more type than the capsule's share of a 684px
-  // bar. The burger therefore holds at 768, as it does in all six Retro headers.
+  // bar. The burger therefore holds at 768, as it does in Retro layouts 1, 2 and 4
+  // (5 and 6 keep NavLinks' row down to 768).
   const capsule = (
     <nav style={{
       // This rule is *not* inside its padding, where the card's 5px one is: the
@@ -4487,9 +4491,12 @@ function Media({ s }) {
   // Named departures from the frame. The progress bar's track and fill are both
   // `sem/active/bg` there, so the playhead is invisible — a player that cannot
   // show where it is — and here the track is the rows' own `sem/stroke/1`
-  // hairline under the lime fill. The pill says Soundcloud, not the frame's
-  // "Book Now": it is the section's Soundcloud link, and the frame's label is
-  // the shared pill component's default.
+  // hairline under the lime fill. The pill is the frame's Book Now on the
+  // page's booking target (JP-034; it used to say Soundcloud and published as
+  // a dead span on the seed), so the second pill is the departure now: the
+  // Soundcloud link stands beside it once the artist has an address for it —
+  // the rule the flat tail at the foot of this function already follows — in
+  // a seat no master draws.
   if (s.v0 && s.lime) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -4659,9 +4666,16 @@ function Media({ s }) {
           </div>
           {/* The frame's pill ink is Scheme 2's `sem/bg`, the band itself; at
               390 the master keeps it at full size on its 46 disc. */}
-          <span style={{ alignSelf: 'flex-start' }}>
-            <BookPill s={s} label="Soundcloud" ext={s.soundcloud} fg={s.box1} full={s.mob} />
-          </span>
+          {/* An emptied label drops the Book pill and an empty address the
+              Soundcloud one, and with neither the row is not drawn — `col`
+              would spend its gap on it. It wraps: two `full` pills do not
+              always share a 390 line. */}
+          {(s.mediaCta || s.soundcloud) && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignSelf: 'flex-start' }}>
+              {s.mediaCta && <BookPill s={s} label={s.mediaCta} to={s.bookTo} fg={s.box1} full={s.mob} />}
+              {s.soundcloud && <BookPill s={s} label="Soundcloud" ext={s.soundcloud} fg={s.box1} full={s.mob} />}
+            </div>
+          )}
         </div>
       </div>
     )

@@ -293,7 +293,9 @@ That distinction is the whole design, and it buys two things:
   empty field, and the editor says why under the input once the artist leaves it
   (`urlProblem()`, shared with every other address field: a track's audio, a gig's tickets link,
   a footer link's url). An empty field leaves the
-  Soundcloud pill the picture it always was — but an empty *gallery* row is not published at all.
+  Soundcloud pill the picture it always was (under Lime, whose layout-1 frame draws Book Now in
+  that seat, the seat is the `cta` Book pill and the Soundcloud pill is drawn only when filled)
+  — but an empty *gallery* row is not published at all.
   A tile that promises a destination it cannot go to is worse than no tile, and unlike the pill,
   which sits alone, these sit in a row that reads as a list of where to follow the artist. The
   canvas still draws all four: it is the reference design, the three fields start empty, and an

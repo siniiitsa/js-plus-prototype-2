@@ -172,7 +172,7 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **fifteen things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **sixteen things read it**: `Repertoire` — its search field, its filter chips and
   its pager, and in layout 3 the set cards' *View full set* reveal, which is the one control
   in the file that is a **reveal rather than a toggle**: the frame draws four song rows and a
   link, so the link is what reaches the fifth song and there is no way back, and in layout 4
@@ -196,6 +196,7 @@ mutated through a single `patch()` helper.
   initial tiles instead, layout 4 pages it from a pair of arrow discs in its head, and layout 3
   reads it **not at all**: it is a wall of every review, so there is nothing to page),
   the **footer's link columns and its Book pill** (below),
+  **Lime's media-player Book pill** (layout 1: `vm.mediaCta` on `vm.bookTo`, below),
   and the four sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
   **events map's per-gig tickets link** and the **footer's web-address rows**
@@ -238,7 +239,16 @@ mutated through a single `patch()` helper.
   `vm.contentW`), so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — every
   design plays the whole list, and `s.tracks3` (three) serves only the unreachable fallthrough,
   whose Next must not leave the page.
-  Its fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
+  **Layout 1's pill is per template, because the frames disagree** (JP-034, user call,
+  2026-09-18): Retro's frame draws a Soundcloud pill, so under Retro and the flat three it is the
+  `soundcloud` link and an empty address leaves it a picture; Lime's draws Book Now, so under
+  Lime the seat is `FIELDS.media.cta` — `vm.mediaCta`, uncased, on `vm.bookTo` with no
+  self-exclusion since `media` is not in `CTA_TARGETS.book`, and an emptied label drops it, the
+  footer pill's rule — and the Soundcloud pill stands beside it **only when filled**, in a
+  wrapping row no master draws. `cta`'s `in` is `{ Lime: [0], '*': [] }`: the `'*'` row is what
+  prints "Not shown in this layout" on the other templates, an uncovered template being left
+  unmarked.
+  Layout 2's fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
   open one-sided. Geometry and hue belong to the seat, not the track, or the composition would
@@ -272,7 +282,9 @@ mutated through a single `patch()` helper.
   in `FIELDS.gallery`, change that array. The first row has no key: it *is* the strip. An
   **unfilled social row is not rendered at all when `s.live`** — an artist with no TikTok should
   not publish a tile promising one — which is where the gallery parts company with the Soundcloud
-  button, still a picture when empty. The **canvas keeps all four regardless**: it is the reference
+  button, still a picture when empty (that is the "Soundcloud rule" wherever this file says it —
+  though under Lime the button it is named after no longer follows it: JP-034, in the media
+  player's paragraph above). The **canvas keeps all four regardless**: it is the reference
   design, the three fields start empty, and a fresh page would otherwise open on a single tile with
   no clue the others are a field away. The filter carries the index, because `srcIcons` and the
   per-source colours are positional. And the mobile source row **wraps** rather than clipping: the
@@ -384,11 +396,25 @@ mutated through a single `patch()` helper.
   reload the builder. On the canvas the links carry **no href at all** (not `#`, which would jump
   the builder to its own top); `navHref()` in `EncoreSection` is the whole of that gate.
   `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
-  because Minimal's Shows and Book can resolve to the same section. Below `desktop` the links
-  collapse to `NavMenu`'s burger, in all six Retro layouts. Layout 2's 768 master draws the
+  because Minimal's Shows and Book can resolve to the same section. **The label is the visitor's
+  word, not the editor's** (JP-033): `CATS[].nav` through `navLabel()` in `data.js` — About, Top
+  Tracks, Media, Repertoire, Shows/Coverage, Pricing, Enquiries, Reviews, the eight every frame's
+  nav and footer draw, plus **Availability** for the calendar, which is on the seeded page and in
+  no frame's nav (user call, 2026-09-18: a ninth link over an unreachable section). `catName()`
+  keeps every editor-side use, `FOOTER_TARGETS`' select included. One `navSectionsOf(cats)`
+  builds the list for the editor, `PublishedPage`, the picker's `previewNav` and the harness, and
+  `FOOTER_LINKS` seeds its labels from the same `navLabel()`, so a fresh page's two lists agree;
+  the footer's rows are then the artist's to reword and the nav's are not. `vm.calFlow` reads
+  these labels too, so calendar layout 2's head says "Availability · Pricing · Enquiries" where
+  its frame's flow says "Available dates · Packages · Enquire". **The flat three's header reads
+  none of this**: `FlatNav` hardcodes Music / Shows / Book. Below `desktop` the links
+  collapse to `NavMenu`'s burger in four of the six Retro layouts; layouts 5 and 6 draw
+  `NavLinks`, which keeps the (wrapping) link row at 768 and collapses only at 390 (measured in
+  JP-033's digest). Layout 2's 768 master draws the
   links instead, and is **not** followed: its three are the Figma component's default, where
-  `navLinks` is the artist's page and the seeded eleven sections give nine — 765px of type in a
-  688px canvas. What that master does settle is the bordered capsule the burger stands in, which
+  `navLinks` is the artist's page and the seeded eleven sections give nine — 576px of type at the
+  master's own 16px, 720 with the capsule's eight 18px gaps, in a 688px canvas that also seats the
+  wordmark, Listen and the pill (re-measured on the visitor's words, JP-033). What that master does settle is the bordered capsule the burger stands in, which
   its own 390 sibling draws the same way.
 - **The pricing cards filter, in the published tab only.** The Solo / Trio / Band selector was a
   constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's
