@@ -515,13 +515,13 @@ the user's, see the last bullet).
   in `source/scripts/` and are deleted; the worktree is removed.
 - **`gh` is not installed on this machine**, so the branch is pushed and the PR and merge are
   the user's. Step 4 follows the merge: `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`
-  until `last-modified` moves past `Fri, 18 Sep 2026 12:15:15 GMT`, and write the stamp below —
-  on a branch, not straight to `main`, because every push to `main` redeploys and moves the
-  stamp again.
+  until `last-modified` moves past `Fri, 18 Sep 2026 12:15:15 GMT`, and write the stamp below.
+  Any later push to `main` redeploys and moves it again, so the reply asks for that stamp **or
+  later**, not for an exact match.
 
 **Reply to the tester** (fill in the stamp):
 
-> Retest against the build with `Last-Modified: <stamp>`.
+> Retest against a build whose `Last-Modified` is `<stamp>` or later.
 > - **JP-035** — fixed by the build of Fri, 18 Sep 2026 12:15:15 GMT; your report was against the
 >   17 Sep 15:17 build. With your values the published page prints "QK Kicker Singer" 3×,
 >   "QLOC Leeds, UK" 2×, "Live Act" 0× and "Manchester, UK" 0×. A plain search for "Manchester"
