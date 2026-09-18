@@ -838,13 +838,18 @@ export const FIELDS = {
       hint: 'Fills the header behind the type.' },
     { k: 'avatar',    l: 'Artist photo',     type: 'image',
       hint: 'The portrait card and the small round avatar.' },
+    // Kicker and Location are the artist's role and home town, so they also
+    // reach the bio, the booking calendar and the enquiry form (F1,
+    // headerIdentity); `in`, and the note it prints, speak for the header.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3] } },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3] },
+      hint: 'Your role. The bio and the enquiry form print it too.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
-      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3] } },
+      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3] },
+      hint: 'Where you are based. The bio and the booking calendar print it too.' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     // Bio layout 4's Listen reads this key too; `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
@@ -1177,6 +1182,15 @@ export function caseText(t, casing) {
 
 // The footer's small print, off the artist's name. sectionVm and EditPanel both read it.
 export const copyrightOf = (name) => `C 2026 ${name}`
+
+// F1 — the artist's role and home town, as the header's Kicker and Location
+// hold them: the one place either is typed. Raw, so an absent key still means
+// "the seed" and an emptied one means "none" in every section sectionVm
+// builds; the page's other sections have no field of their own for either.
+export const headerIdentity = (sections) => {
+  const c = sections.find((s) => s.cat === 'header')?.c ?? {}
+  return { kicker: c.kicker, location: c.location }
+}
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
 

@@ -45,7 +45,7 @@ import {
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, LIME_KICKER_3, TESTI_STARS,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
-  parseDate, isoDate, calStart, monthSpan, monthLabel, enquiryLine, weekdayOf,
+  parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, urlProblem, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
@@ -216,7 +216,7 @@ export const pageDesignOf = (sections, themeName) => {
   return ((h.arch % n) + n) % n
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -386,10 +386,22 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, Z, mob, liv
   vm.title = cased(cv('heading', cat === 'header' ? artistName : (TITLES[cat] ?? '')))
 
   // header
-  // Lime's layout-3 glass card types its own strapline; EditPanel mirrors it.
-  vm.kicker = cv('kicker', cat === 'header' && d === 2 && T.name === 'Lime' ? LIME_KICKER_3 : 'DJ · Live Act')
+  // The kicker and the location are the artist's, typed once on the header
+  // (F1), the way the name is its Title: every other section that prints them
+  // — the bio's role lines and ID card, the calendar's polaroid and summary
+  // card, the enquiry form's credit — reads the header's through `identity`
+  // (`headerIdentity()` in data.js), since only the header has the fields.
+  // The header reads its own content, so a preview of a layout the page is not
+  // on still shows what that layout would. Lime's layout-3 glass card types
+  // its own strapline; EditPanel mirrors it.
+  const own = cat === 'header' ? c : identity
+  vm.kicker = own.kicker !== undefined ? own.kicker
+    : cat === 'header' && d === 2 && T.name === 'Lime' ? LIME_KICKER_3 : 'DJ · Live Act'
   vm.subtitle = cv('subtitle', DEFS.heroSub)
-  vm.location = cv('location', 'Manchester, UK')
+  vm.location = own.location !== undefined ? own.location : 'Manchester, UK'
+  // "DJ · Live Act · Manchester, UK", composed here so an emptied half drops
+  // with its separator rather than leaving a bare " · ".
+  vm.roleLine = [vm.kicker, vm.location].filter(Boolean).join(' · ')
   vm.cta1 = cv('cta1', 'Book Now')
   vm.cta2 = cv('cta2', 'Listen')
   vm.showTags = cv('showTags', 'show')
@@ -2865,7 +2877,7 @@ function LinksField({ value, max, navSections = [], onChange }) {
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
+function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }) {
   const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
 
@@ -2934,7 +2946,7 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
             <Label style={groupLabel}>Layout</Label>
             <LayoutPicker
               cat={sec.cat} arch={sec.arch} content={sec.c}
-              themeIdx={themeIdx} artistName={artistName} navSections={navSections}
+              themeIdx={themeIdx} artistName={artistName} identity={identity} navSections={navSections}
               onPick={(i) => api.setSection(sec.id, { arch: i })}
             />
           </div>
@@ -3084,7 +3096,7 @@ function EditPanel({ sec, vm, api, artistName, themeIdx, navSections }) {
  * designs (§4.4), so some rows render identically. That is on purpose.
  * ------------------------------------------------------------------ */
 
-function LayoutPicker({ cat, arch, themeIdx, artistName, navSections, content = {}, onPick }) {
+function LayoutPicker({ cat, arch, themeIdx, artistName, identity, navSections, content = {}, onPick }) {
   const [open, setOpen] = useState(false)
   const themeName = THEMES[themeIdx].name
   const n = layoutCount(cat, themeName)
@@ -3147,7 +3159,7 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, navSections, content = 
                   autoMax={210} radius={6}
                   vm={sectionVm({
                     themeIdx, cat, arch: i, c: content,
-                    artistName, Z: SIZES.desktop, mob: false, navSections,
+                    artistName, identity, Z: SIZES.desktop, mob: false, navSections,
                   })}
                 />
               </span>
@@ -3178,7 +3190,7 @@ const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
 const firstFreeCat = (present) =>
   (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
 
-function AddComposer({ add, present, removed, themeIdx, artistName, navSections, onChange, onAdd, onCancel }) {
+function AddComposer({ add, present, removed, themeIdx, artistName, identity, navSections, onChange, onAdd, onCancel }) {
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
   const taken = present.includes(add.cat)
   // A category deleted earlier restores its content on add; Start fresh opts
@@ -3211,7 +3223,7 @@ function AddComposer({ add, present, removed, themeIdx, artistName, navSections,
         <Label style={groupLabel}>Layout</Label>
         <LayoutPicker
           cat={add.cat} arch={add.arch}
-          themeIdx={themeIdx} artistName={artistName} navSections={navSections}
+          themeIdx={themeIdx} artistName={artistName} identity={identity} navSections={navSections}
           onPick={(i) => onChange({ ...add, arch: i })}
         />
       </div>
@@ -3552,6 +3564,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const navSections = sections
     .filter((s) => s.cat !== 'header' && s.cat !== 'footer')
     .map((s) => ({ cat: s.cat, label: catName(s.cat) }))
+  const identity = headerIdentity(sections)
 
   const T = THEMES[themeIdx]
   const rows = pageRows(sections, T.name, key === 'desktop')
@@ -3560,7 +3573,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   return arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
-      artistName, Z, mob: key === 'mobile', live: true, navSections,
+      artistName, identity, Z, mob: key === 'mobile', live: true, navSections,
       column: inColumns.get(i), today, page: pageDesignOf(sections, T.name),
     })} />
   )))
@@ -3748,6 +3761,9 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // and the site address — follows what the artist typed there. An emptied
   // Title blanks the hero alone; everything else falls back to the seed.
   const artistName = String(sections.find((s) => s.cat === 'header')?.c.title ?? '').trim() || profileName
+  // And the header's Kicker and Location are the artist's too (F1): sectionVm
+  // hands them to every other section that prints a role or a home town.
+  const identity = headerIdentity(sections)
   const present = sections.map((s) => s.cat)
 
   // §5.5 — a real phone forces mobile canvas sizing at full width.
@@ -3917,7 +3933,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
@@ -4047,7 +4063,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const addComposer = st.add && (
     <AddComposer
       add={st.add} present={present} removed={st.removed}
-      themeIdx={st.theme} artistName={artistName} navSections={navSections}
+      themeIdx={st.theme} artistName={artistName} identity={identity} navSections={navSections}
       onChange={(next) => patch({ add: next })}
       onAdd={addSection}
       onCancel={closeAdd}
@@ -4342,7 +4358,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                       inherited by the same field of the next section opened. */}
                   <EditPanel
                     key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
-                    artistName={artistName} themeIdx={st.theme} navSections={navSections}
+                    artistName={artistName} identity={identity} themeIdx={st.theme} navSections={navSections}
                   />
                 </>
               ) : (
@@ -4517,7 +4533,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             {selectedSec && (
               <EditPanel
                 key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
-                artistName={artistName} themeIdx={st.theme} navSections={navSections}
+                artistName={artistName} identity={identity} themeIdx={st.theme} navSections={navSections}
               />
             )}
           </DrawerContent>
