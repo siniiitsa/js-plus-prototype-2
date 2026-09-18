@@ -15536,6 +15536,10 @@ function EventsMap({ s }) {
         const tix = extLink(s, gg.url)
         const Tix = tix ? 'a' : 'span'
         const showTix = !!tix || !s.live
+        // The 390 master sets the hour after the city — "Manchester · 22:00" —
+        // with no hour chip, and stands Tickets → alone under the row (user
+        // call, 2026-09-18). The wide rows keep the chip.
+        const place = s.mob ? [gg.city, gg.time].filter(Boolean).join(' · ') : gg.city
         const mark = (
           <span style={col(0, {
             width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
@@ -15554,10 +15558,10 @@ function EventsMap({ s }) {
               fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls,
               overflowWrap: 'anywhere',
             }}>{gg.venue}</span>
-            {!!gg.city && (
+            {!!place && (
               <span style={on
                 ? { fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3, letterSpacing: s.dls }
-                : bodySm}>{gg.city}</span>
+                : bodySm}>{place}</span>
             )}
           </div>
         )
@@ -15589,11 +15593,7 @@ function EventsMap({ s }) {
             {s.mob ? (
               <>
                 <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
-                {(showTix || !!gg.time) && (
-                  <div style={row(u(10), {
-                    width: '100%', justifyContent: showTix ? 'space-between' : 'flex-end',
-                  })}>{tickets}{when}</div>
-                )}
+                {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
               </>
             ) : <>{mark}{lines}{when}{tickets}</>}
           </div>
@@ -21130,15 +21130,22 @@ function Footer({ s }) {
     // shows and is followed; at 390 the inset is gone and the two halves split
     // the row.
     const half = s.mob ? { flex: '1 1 0', minWidth: 0 } : {}
+    const safe = s.live ? 'env(safe-area-inset-bottom)' : '0'
     const smallPrint = (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: s.mob ? 0 : u(16), height: u(68), borderTop: hair, ...face, color: s.tx,
+        gap: s.mob ? 0 : u(16), borderTop: hair, ...face, color: s.tx,
         // The row is the instance's floor at every width — nothing under it —
         // so it takes back the root's bottom `padY`, as Line 19 does the top.
+        // Being the page's last line, the published row also grows by the
+        // safe-area inset: the tab is `viewport-fit=cover`, so on an iPad with
+        // a home indicator the bottom ~20px sit under it, and the band (not
+        // the type) should be what runs there. The canvas never reaches the
+        // viewport's edge, so it keeps the frame's 68.
+        height: s.live ? `calc(${u(68)} + env(safe-area-inset-bottom))` : u(68),
         ...(s.narrow
-          ? { padding: `0 ${s.mob ? 0 : '56px'}`, marginBottom: `calc(-1 * ${s.padY})` }
-          : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`, padding: `0 ${s.padX}` }),
+          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe}`, marginBottom: `calc(-1 * ${s.padY})` }
+          : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`, padding: `0 ${s.padX} ${safe}` }),
       }}>
         <span style={half}>{s.copyright}</span>
         <span style={{ ...half, textAlign: 'right' }}>{s.footerCredit}</span>
