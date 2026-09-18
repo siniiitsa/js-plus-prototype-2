@@ -248,7 +248,8 @@ mutated through a single `patch()` helper.
   Lime the mark on both the sleeve and the tile is the frame's inset **glow** (a 34px `s.ac`
   inner shadow) rather than a ring, still a shadow on the scrim for the same reason. It is also
   the one layout whose section paints the page's whole band — Retro's cream with a
-  checkerboard strip at each end, Lime's olive `s.box1` with an arc seam at each end — and the
+  checkerboard strip at each end, Lime's olive `s.box1` with a lime arc seam at its head and a square foot (the
+  frame's dark foot arc met the gallery's head arc as a lens; user call, 2026-09-18) — and the
   only one to draw those strips or arcs.
 - **The gallery browses, in the published tab only, and its three social rows leave the page.**
   Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" rewinds, and the
@@ -467,7 +468,8 @@ mutated through a single `patch()` helper.
   beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
   strike** (except Lime's layout 2, whose past rows keep full ink and only lose the handler —
-  its seeded slots have no editor and are all past; user call, 2026-09-17) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
+  its seeded slots have no editor and are all past; user call, 2026-09-17 — and Lime's layout
+  4, whose rows do the same and whose card still features a past cue, 2×2 and all; 2026-09-18) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
   past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
   (`max(open, today)`, `calStart()` in `data.js`, which `BookedField` shares so the artist
   can block every day a visitor can pick; it fades the days before today and takes no click on

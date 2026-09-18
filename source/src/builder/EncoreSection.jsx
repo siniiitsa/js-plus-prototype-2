@@ -4004,6 +4004,10 @@ function Bio({ s }) {
     const well = desk ? s.box3 : '#263020'
     const dusk = desk ? s.box2 : '#43523B'
     const panelPad = u(s.mob ? 20 : 30)
+    // The phone's photo stage (below): its height, and how far the panel
+    // stands up into it.
+    const stageH = 400
+    const stageOver = 60
     const body = { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }
 
     const head = (
@@ -4071,9 +4075,17 @@ function Bio({ s }) {
           // content-tall, so a second paragraph grows the card.
           minHeight: u(s.mob ? 536 : 720),
           padding: u(s.mob ? 10 : 30),
+          // At 390 the content-tall panel covered all but the top ~130 of the
+          // photograph, cutting the artist off at the forehead (user call,
+          // 2026-09-18). So the phone keeps a clear stage above the panel: the
+          // photograph fills a fixed top band and the panel starts `stageOver`
+          // above that band's foot, its blur carrying the picture's last strip.
+          ...(s.mob ? { paddingTop: `${stageH - stageOver}px` } : null),
           ...col('0', { justifyContent: 'flex-end', alignItems: 'center' }),
         }}>
-          <div style={{ position: 'absolute', inset: 0 }}>
+          <div style={s.mob
+            ? { position: 'absolute', top: 0, left: 0, right: 0, height: `${stageH}px` }
+            : { position: 'absolute', inset: 0 }}>
             <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={s.tx} />
           </div>
           <div style={{
@@ -6038,19 +6050,19 @@ function Media({ s }) {
   // the hoisted seam whole: the one <audio>, `at`, `now`, `sleeve`, `goTo`,
   // `toggle`, `onPick` and `playing`.
   //
-  // ── The band is Scheme 2, and it owns both arcs ────────────────────────
+  // ── The band is Scheme 2, and it draws only its head arc ───────────────
   // The band frame fills `sem/bg` in Scheme 2 (`s.box1`, #2E3928) and parents
   // the head, the instance and two 44.24-deep vectors: the head one in
   // Scheme 1's `sem/text/1` (#AFE335, the bio band's lime — `s.ac`) at y −1,
   // the foot one turned 180° in `sem/bg` (#15180F, the page — `s.bg`), read
-  // off the nodes at all three widths. Both are `ArcEdge` with `bleed={false}`:
-  // this sheet has already cancelled the root's padding, so the helper's own
-  // −padX / −padY offset would land twice (plans/lime/layout-4.md, open
-  // question 2). On the frame the foot arc bulges into the video band; our
-  // page carries no video, so this dark foot arc meets the gallery's dark head
-  // arc directly — a 44 + 44 dark lens between the olive and the lime, which
-  // is exactly what the frame would show with its video frame deleted (open
-  // question 1: each seam kept in its frame's own colour, and the lens named).
+  // off the nodes at all three widths. The head arc is `ArcEdge` with
+  // `bleed={false}`: this sheet has already cancelled the root's padding, so
+  // the helper's own −padX / −padY offset would land twice (plans/lime/
+  // layout-4.md, open question 2). The foot arc is **not drawn** (user call,
+  // 2026-09-18): on the frame it bulges into the video band, and our page
+  // carries no video, so it met the gallery's own dark head arc as a 44 + 44
+  // dark lens between the olive and the lime. The band now ends square and
+  // the gallery's head arc, drawn in this band's olive, is the only seam.
   //
   // ── The insets are the band's and the instance's, added up ─────────────
   // Retro's rule with Lime's numbers: the band pads 156 / 100 / 100 over the
@@ -6271,7 +6283,6 @@ function Media({ s }) {
               : tiles}
           </div>
         </div>
-        <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />
         {/* The one transport on the page rides at the foot of the sheet, as
             Retro's does; without it every tile click is dead. */}
         {audio}
@@ -8304,8 +8315,13 @@ function Pricing({ s }) {
         </div>
       )
 
+      // The frame's instance starts at its first row's own 48 / 30 inset and
+      // ends at the small print's 18, so the root's `padY` is taken back at
+      // both ends: stacked on the neighbours' own `padY` (the map above, the
+      // calendar below) it made each gap read as a hole (user call,
+      // 2026-09-18).
       return (
-        <div style={col('0')}>
+        <div style={col('0', { margin: `calc(-1 * ${s.padY}) 0` })}>
           {s.tiers.length === 0 ? (
             // Retro's one message, in the pale ink layout 3's Lime stack prints
             // it in; the frame draws no such state.
@@ -11655,12 +11671,13 @@ function Gallery({ s }) {
     // The wrapper parents a head arc, `Vector 1`, at y −1 (1437.84 / 768 /
     // the leaked 576.56 wide). Its fill binds `sem/box/3` **#101309** at 1440
     // and `sem/bg` **#15180F** at 768 and 390 — the plan's open question 5 —
-    // so it is drawn in `s.bg`, ArcEdge's default: two masters and layout 1's
-    // rule (a seam is the neighbour's ground) say so, and the 1440 binding is
-    // 5 in 255 off, not drawn. With no video band on our page this arc meets
-    // the media's foot arc directly, a 44 + 44 dark lens between the olive and
-    // the lime, which section 3 named. `bleed={false}`: the sheet already
-    // covers the root, so the arc wants its own edges.
+    // — the frame's video band's ground. Our page has no video band: the
+    // section above is the media player's olive sheet, so the arc is drawn in
+    // `s.box1`, layout 1's rule (a seam is the neighbour's ground) applied to
+    // our page rather than the frame's (user call, 2026-09-18 — the dark arc
+    // read as a strip of page between the olive and the lime). A gallery
+    // reordered under another section keeps the olive. `bleed={false}`: the
+    // sheet already covers the root, so the arc wants its own edges.
     //
     // ── Sizes ──────────────────────────────────────────────────────────────
     // Type is the Lime ramp's: `s.eyebrow` (15 / 12 / 11) in Inter Bold at
@@ -11787,7 +11804,7 @@ function Gallery({ s }) {
                  + `${u(desk ? 56 : tab ? 30 : 40)}`,
           ...col(u(desk ? 112 : tab ? 60 : 24)),
         }}>
-          <ArcEdge s={s} side="top" height={44.24 * z} bleed={false} />
+          <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />
           <div style={desk ? row(u(112), { alignItems: 'center' }) : col(u(tab ? 60 : 24))}>
             <div style={col(u(s.mob ? 10 : 36), {
               alignItems: 'flex-start', ...(desk ? { width: u(454), flex: 'none' } : null),
@@ -13614,6 +13631,24 @@ function Calendar({ s }) {
     // too (its first group stands at x −32), so Retro's clip-about-the-centre
     // mechanism is kept. No node carries an effect at any width.
     if (s.lime) {
+      // Past (`dead`) is not blocked here, layout 2's Lime rule (user call,
+      // 2026-09-18): the seeded slots have no editor and are all past on a
+      // published page, so the shared seam would feature nothing and dim every
+      // row — the card losing the frame's whole 2×2. Only a *booked* slot is
+      // refused the card and dimmed; a past one is featured and drawn at full
+      // ink, and stays handlerless (the click test below still reads
+      // `blocked`), so a visitor cannot pick one.
+      // `calCue` is `calPick` with the past let through (the vm's `calPick`
+      // is '' for a past cue, so `hit` above would be null).
+      const limeWant = (s.live && sel) || s.calCue
+      const limeHit = limeWant ? s.calSlots.find((sl) => sl.iso && sl.iso === limeWant) : null
+      const limeCur = limeHit && !limeHit.booked ? limeHit : null
+      const limeStats = limeCur ? [
+        statCell(limeCur.mark, limeCur.day, true),
+        statCell('SET', limeCur.kind),
+        statCell('PRICE', limeCur.price),
+        statCell('TIME', s.calTime),
+      ].filter(Boolean) : []
       const hair = `inset 0 0 0 1px ${s.stroke1}`
       const titleSize = u(desk ? 36 : s.mob ? 26 : 28)
       const body = (size, lh, extra) => ({
@@ -13644,11 +13679,11 @@ function Calendar({ s }) {
               <Photo s={s} initialsSize={Math.round(18 * z)} ink={s.tx} />
             </div>
           </div>
-          {stats.length ? (
+          {limeStats.length ? (
             <div style={{
               display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: u(12),
             }}>
-              {stats.map((st, i) => {
+              {limeStats.map((st, i) => {
                 const right = i % 2 === 1
                 return (
                   <div key={st.label} style={col(u(6), {
@@ -13669,7 +13704,7 @@ function Calendar({ s }) {
 
       const slotRow = (sl, i) => {
         const onClick = s.live && sl.iso && !blocked(sl) ? () => setSel(sl.iso) : undefined
-        const dim = blocked(sl) ? { opacity: 0.38 } : null
+        const dim = sl.booked ? { opacity: 0.38 } : null
         return (
           <div key={sl.iso || `row${i}`} onClick={onClick} style={row(u(14), {
             background: s.box1, color: s.tx, borderRadius: u(50), boxShadow: hair,
@@ -13835,7 +13870,7 @@ function Calendar({ s }) {
             {wizard}
             <div style={col(u(16))}>
               {summary}
-              {s.calSlots.filter((sl) => !cur || sl.iso !== cur).map(slotRow)}
+              {s.calSlots.filter((sl) => !limeCur || sl !== limeCur).map(slotRow)}
               <BookPill s={s} to={s.calBookTo} label={s.calCta} fg={s.box1} full={s.mob}
                         style={{ width: '100%', justifyContent: 'space-between' }} />
             </div>
@@ -20425,9 +20460,8 @@ function EnquiryForm({ s }) {
   //
   // ── What stands where Retro's did ──────────────────────────────────────
   // The instance pads 40 / 30 / 24 over and 56 / 56 / 40 under, where the
-  // root's `padY` gives 80 / 56 / 44; the root's stands in, as it does for the
-  // map's, the pricing's and the calendar's page-ground bands on this page,
-  // and the diff is named rather than bled. A refused box thickens its ring
+  // root's `padY` gives 80 / 56 / 44; the root's stands in at the foot, and
+  // the head takes the instance's own (below). A refused box thickens its ring
   // to 2px of `s.tx` — layout 3's Lime rule for a box on the dark ground; the
   // idle ring is already lime, so a heavier lime would not read as a refusal
   // — and the stated height does not grow. Retro's readings hold: `heading`
@@ -20585,8 +20619,13 @@ function EnquiryForm({ s }) {
       </div>
     ) : null
 
+    // The head takes the instance's own 40 / 30 / 24 inset rather than the
+    // root's `padY`, which stacked on the calendar's foot `padY` read as a
+    // hole (user call, 2026-09-18); the foot keeps the root's.
     return (
-      <div style={col(u(24), { color: s.tx })}>
+      <div style={col(u(24), {
+        color: s.tx, marginTop: `calc(${desk ? u(40) : s.mob ? '24px' : '30px'} - ${s.padY})`,
+      })}>
         <div style={{ boxShadow: hairline, paddingBottom: u(12), width: '100%' }}>
           <h2 style={type(s.display, s.dispLg, 0.89, {
             margin: 0, color: s.ac, overflowWrap: 'break-word',
