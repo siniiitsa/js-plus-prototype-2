@@ -172,7 +172,7 @@ mutated through a single `patch()` helper.
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
   The tab is a child of the editor and freezes if the editor reloads. Accepted.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
-  real, and **fifteen things read it**: `Repertoire` — its search field, its filter chips and
+  real, and **sixteen things read it**: `Repertoire` — its search field, its filter chips and
   its pager, and in layout 3 the set cards' *View full set* reveal, which is the one control
   in the file that is a **reveal rather than a toggle**: the frame draws four song rows and a
   link, so the link is what reaches the fifth song and there is no way back, and in layout 4
@@ -196,6 +196,7 @@ mutated through a single `patch()` helper.
   initial tiles instead, layout 4 pages it from a pair of arrow discs in its head, and layout 3
   reads it **not at all**: it is a wall of every review, so there is nothing to page),
   the **footer's link columns and its Book pill** (below),
+  **Lime's media-player Book pill** (layout 1: `vm.mediaCta` on `vm.bookTo`, below),
   and the four sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
   **events map's per-gig tickets link** and the **footer's web-address rows**
@@ -238,7 +239,16 @@ mutated through a single `patch()` helper.
   `vm.contentW`), so `list` is `s.v0 || s.v1 || s.v2 || s.v3 ? s.tracks : s.tracks3` — every
   design plays the whole list, and `s.tracks3` (three) serves only the unreachable fallthrough,
   whose Next must not leave the page.
-  Its fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
+  **Layout 1's pill is per template, because the frames disagree** (JP-034, user call,
+  2026-09-18): Retro's frame draws a Soundcloud pill, so under Retro and the flat three it is the
+  `soundcloud` link and an empty address leaves it a picture; Lime's draws Book Now, so under
+  Lime the seat is `FIELDS.media.cta` — `vm.mediaCta`, uncased, on `vm.bookTo` with no
+  self-exclusion since `media` is not in `CTA_TARGETS.book`, and an emptied label drops it, the
+  footer pill's rule — and the Soundcloud pill stands beside it **only when filled**, in a
+  wrapping row no master draws. `cta`'s `in` is `{ Lime: [0], '*': [] }`: the `'*'` row is what
+  prints "Not shown in this layout" on the other templates, an uncovered template being left
+  unmarked.
+  Layout 2's fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
   open one-sided. Geometry and hue belong to the seat, not the track, or the composition would
@@ -272,7 +282,9 @@ mutated through a single `patch()` helper.
   in `FIELDS.gallery`, change that array. The first row has no key: it *is* the strip. An
   **unfilled social row is not rendered at all when `s.live`** — an artist with no TikTok should
   not publish a tile promising one — which is where the gallery parts company with the Soundcloud
-  button, still a picture when empty. The **canvas keeps all four regardless**: it is the reference
+  button, still a picture when empty (that is the "Soundcloud rule" wherever this file says it —
+  though under Lime the button it is named after no longer follows it: JP-034, in the media
+  player's paragraph above). The **canvas keeps all four regardless**: it is the reference
   design, the three fields start empty, and a fresh page would otherwise open on a single tile with
   no clue the others are a field away. The filter carries the index, because `srcIcons` and the
   per-source colours are positional. And the mobile source row **wraps** rather than clipping: the

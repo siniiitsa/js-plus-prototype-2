@@ -31,7 +31,7 @@ JP-034 are untouched by anything merged since and stand as reported.
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-035 / F1 | Header Kicker and Location do not reach the bio's foot line and the enquiry form's credit | **Already fixed** in `2fd4d23`; the tester's build predates it | XS (verify only) | no | **done** (verified on the 18 Sep 12:15:15 GMT build; nothing to fix) |
-| 2 | JP-034 | Media player's SOUNDCLOUD pill publishes as a dead `<span>`; it can be neither renamed nor hidden, and the frame draws BOOK NOW there | **Confirmed** — currently *documented as intended* | S | **yes** | open |
+| 2 | JP-034 | Media player's SOUNDCLOUD pill publishes as a dead `<span>`; it can be neither renamed nor hidden, and the frame draws BOOK NOW there | **Confirmed** — currently *documented as intended* | S | **yes** → A | **done** |
 | 3 | JP-033 | Header nav prints section type names (BIO · MEDIA PLAYER · …) instead of the frame's labels, and a ninth link | **Confirmed** — a shared seam, every template | M | **yes** | open |
 | 4 | — | End-of-pass sweep, deploy, hand the tester the new build stamp | — | S | no | open |
 
@@ -222,9 +222,56 @@ form's submit and the rest still follow it, so do not rename it across the docs 
 sentence where it is first defined saying the button it is named after no longer does under
 Lime.
 
-**Decision.** *(to fill in)*
+**Decision.** **A** (user, 2026-09-18), after the re-read confirmed the frames disagree: Retro's
+`446:2265` is a literal SOUNDCLOUD pill, and Lime's media frame `964:58590` (the section inside
+page `964:58587`) draws BOOK NOW → under the track list. Lime layout 1 takes the frame's Book
+pill from a new `cta` field; Soundcloud is a second pill, only when filled. Retro and the flat
+three are untouched.
 
-**Settled.** *(to fill in)*
+**Settled** (2026-09-18).
+- **What changed.** `FIELDS.media.cta` (`d: 'Book Now'`), `vm.mediaCta = cv('cta', 'Book Now')`
+  (uncased, `vm.footerCta`'s rule), and the `s.v0 && s.lime` block's pill seat: a wrapping flex
+  row of `BookPill label={s.mediaCta} to={s.bookTo}` and, when `s.soundcloud` is filled, a second
+  `BookPill label="Soundcloud" ext=…`, both `fg={s.box1}` and `full` at 390. **The caller drops
+  the pill, not `BookPill`** — `label ?? s.cta1` would turn `''` into a wordless pill — and with
+  neither pill the row is not drawn, since `col` would spend its gap on it (the section is 72px
+  shorter at 1440, 94 at 768 and 390). Retro's and the flat three's block is untouched.
+- **`in`, measured** (sentinel in `&cj=`, `#root.innerHTML`, themes 0/1/2 × four layouts × three
+  widths × both surfaces). `cta` moves Lime layout 1 alone, on both surfaces. `soundcloud` moves
+  layout 1 alone: both surfaces under Lime (the pill appears), **`live` only** under Retro and
+  Grunge (span → a; the canvas is the same picture). So `soundcloud` stays `in: [0]`. The
+  `{s.soundcloud && …}` the Evidence cites at `:~6689` is in the **unreachable fallthrough**
+  after `v3`, not in layout 4: no reachable design but layout 1 reads the address.
+- **`cta`'s `in` is `{ Lime: [0], '*': [] }`, and the `'*'` row is load-bearing.** `fieldReach`
+  leaves a template the object does not cover *unmarked* (the flat three's header), so
+  `{ Lime: [0] }` alone would print no note on Retro. Checked in the real editor: the media
+  panel under Lime layout 1 lists *Button* with no note, the same panel under Retro prints "Not
+  shown in this layout" under it; `fieldReach` called directly gives Lime `true false false
+  false`, Retro and Grunge all `false`.
+- **Digest**, `media`, themes 0, 1, 2, three widths, canvas and `live=1` (72 renders a side):
+  exactly the six **Lime layout 1** files move — the wrapper SPAN is a DIV, the pill is 15.5px
+  narrower at 1440 (14 at 768 and 390; "Book Now" for "Soundcloud") at the same x, y and
+  height, and under `live=1` it is an `A`. Retro and Grunge: zero files, both surfaces.
+- **Harness states**, Lime layout 1, three widths. Canvas: no `href` on either pill. `live=1`:
+  seed → one `<a href="#form">`; `{"cta":""}` → no pill; a schemeless Soundcloud address → a
+  second `<a href="https://…" target="_blank">` 12px to the right on the same line, 304px of
+  pills in the 390 column, the section's `scrollWidth` equal to its width everywhere.
+- **Real app** (the JP-035 puppeteer path: Lime → *Hero* → *Use this header* → *Publish* →
+  *Open*; popup at 1440, 768, 390 by `setViewport` plus a dispatched `resize`). A trusted click
+  on the pill leaves the enquiry form's top at **0**, the popup still `about:blank`,
+  `scrollWidth` equal to the width, no Soundcloud pill in `#media`, no page errors in either
+  window.
+- **Accepted: a page with no form, calendar or pricing publishes the Lime pill as a span.**
+  Measured by deleting the three in the real editor. That is the F25 convention's pill rule
+  (a *label* with nothing to point at is dropped, a *pill* stays a picture), and unlike the old
+  Soundcloud pill it is not the seeded state — the artist has removed every place to book.
+- **Accepted: Retro and the flat three still publish a Soundcloud span on the seed.** That is
+  Retro's frame-faithful state (`446:2265` is a literal SOUNDCLOUD pill) and the user chose A
+  over D. The tester's report is against Lime; if it is re-filed against Retro, option B is one
+  line in that block.
+- **No frame draws the second pill.** It is the same lime pill twice; nothing marks Soundcloud
+  as secondary. Named here as the design's open seat rather than invented.
+- One-off scripts lived in `source/scripts/` and are deleted. `index.html` not refreshed.
 
 ---
 
@@ -359,4 +406,12 @@ README's nav paragraph if it names `catName`.
 
 ## Conventions learned on this pass
 
-*(Filled in as sessions settle things.)*
+- **A field one template reads is `in: { Name: […], '*': [] }`.** Without the `'*'` row
+  `fieldReach` leaves every other template unmarked (JP-034).
+- **A caller that wants "empty drops the pill" tests the label itself.** `BookPill` falls back to
+  `s.cta1` only on a nullish label and draws `''` as a wordless pill (JP-034).
+- **The real-app path, as a script** (JP-035, reused in JP-034): buttons are found by
+  `aria-label || innerText` — `^Lime$`, `^Open the editor with the Lime`, the modal's first card
+  `^KAI MERCER BIO`, `^Use this header`, `^Publish$`, `^Open`, and the popup off
+  `page.once('popup')`. A section's panel is `^Back to page list` then its row
+  (`^Media Player Media Player`), and the panel's own `^Delete$` removes it.

@@ -4487,9 +4487,12 @@ function Media({ s }) {
   // Named departures from the frame. The progress bar's track and fill are both
   // `sem/active/bg` there, so the playhead is invisible — a player that cannot
   // show where it is — and here the track is the rows' own `sem/stroke/1`
-  // hairline under the lime fill. The pill says Soundcloud, not the frame's
-  // "Book Now": it is the section's Soundcloud link, and the frame's label is
-  // the shared pill component's default.
+  // hairline under the lime fill. The pill is the frame's Book Now on the
+  // page's booking target (JP-034; it used to say Soundcloud and published as
+  // a dead span on the seed), so the second pill is the departure now: the
+  // Soundcloud link stands beside it once the artist has an address for it —
+  // the rule the flat tail at the foot of this function already follows — in
+  // a seat no master draws.
   if (s.v0 && s.lime) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -4659,9 +4662,16 @@ function Media({ s }) {
           </div>
           {/* The frame's pill ink is Scheme 2's `sem/bg`, the band itself; at
               390 the master keeps it at full size on its 46 disc. */}
-          <span style={{ alignSelf: 'flex-start' }}>
-            <BookPill s={s} label="Soundcloud" ext={s.soundcloud} fg={s.box1} full={s.mob} />
-          </span>
+          {/* An emptied label drops the Book pill and an empty address the
+              Soundcloud one, and with neither the row is not drawn — `col`
+              would spend its gap on it. It wraps: two `full` pills do not
+              always share a 390 line. */}
+          {(s.mediaCta || s.soundcloud) && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignSelf: 'flex-start' }}>
+              {s.mediaCta && <BookPill s={s} label={s.mediaCta} to={s.bookTo} fg={s.box1} full={s.mob} />}
+              {s.soundcloud && <BookPill s={s} label="Soundcloud" ext={s.soundcloud} fg={s.box1} full={s.mob} />}
+            </div>
+          )}
         </div>
       </div>
     )

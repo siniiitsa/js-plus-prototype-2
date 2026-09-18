@@ -632,7 +632,7 @@ Settled in section 1 (the header):
   draws no asterisk. The scales are Retro's (768 × 1, 1180 × 0.82, a 390 caller × 0.62, and `full`
   opts back up), and the small pill's type is the 768 type × 0.62, 11.8, since the 390 master's
   own 9.9 renders in a fallback face. The branch moved the bio a1, calendar a0–a3, footer, map
-  a1–a2, media a0 (Soundcloud), pricing a0–a3 and testimonials a1 pills. A section whose frame
+  a1–a2, media a0 (Soundcloud then; its Lime block's pill is Book Now since JP-034), pricing a0–a3 and testimonials a1 pills. A section whose frame
   draws a different pill overrides through `bg` / `fg` / `size` / `disc` / `discFg` / `style`;
   do not fork the branch.
 - **`TagChips`' designed branch is `s.retro || s.lime`** (`s.ui`, `labelXs`, 1.26), at 4.1 / 9
@@ -763,8 +763,12 @@ Settled in section 3 (the media player):
 - **Two named departures.** (1) The frame's progress bar paints track and fill both in
   `sem/active/bg`, so its playhead is invisible. The track here is `s.stroke1` (the rows' own
   hairline) under an `s.pillBg` fill, so the canvas at `pct` 34 is an intended diff from the
-  all-lime frame. (2) The frame's pill says "Book Now", the shared pill component's default. It
-  stays the **Soundcloud** link, `fg={s.box1}` (the frame's ink is Scheme 2's `sem/bg`), `full` at 390.
+  all-lime frame. (2) ~~The frame's pill says "Book Now", the shared pill component's default. It
+  stays the **Soundcloud** link.~~ **Reversed by JP-034** ([`qa-fixes.md`](./qa-fixes.md),
+  2026-09-18): the pill published as a dead span on the seed, so it is the frame's Book Now now
+  (`FIELDS.media.cta` on `vm.bookTo`, empty drops it), still `fg={s.box1}` (the frame's ink is
+  Scheme 2's `sem/bg`) and `full` at 390. The departure is the *second* pill: the Soundcloud link
+  beside it, drawn only when the address is filled, in a wrapping row no master draws.
 - **Icons the frame draws as vectors are transcribed** (`LimeSkip`, from the frame's "Group 2"),
   the `Reticle` precedent. Glyphs the frame sets as *text* (▶) stay lucide `Play`/`Pause`, because
   the live state needs the Pause the frame never draws. `SCRIM.limeSleeve` is the card's fade; the

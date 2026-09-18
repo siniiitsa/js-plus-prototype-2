@@ -519,8 +519,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
   // the opener, so a schemeless "soundcloud.com/kai" would resolve against the
-  // builder and open it instead. An empty field leaves the pill a picture.
+  // builder and open it instead. An empty field leaves the pill a picture —
+  // except under Lime, whose layout 1 draws the pill only when this is filled.
   vm.soundcloud = extUrl(cv('soundcloud', ''))
+  // Lime layout 1's pill, which is its frame's Book Now on vm.bookTo rather
+  // than the Soundcloud button (JP-034). `media` is not in CTA_TARGETS.book, so
+  // bookTo needs no self-exclusion here. Uncased, vm.footerCta's rule — it is
+  // the same pill — and an emptied label drops it, the footer's rule again.
+  vm.mediaCta = cv('cta', 'Book Now')
 
   // tracks — the media player's *array* of { title, sub, image, audio } on
   // `c.tracks` (TracksField); an absent key means the seeded TRACKS, dressed

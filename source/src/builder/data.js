@@ -901,8 +901,19 @@ export const FIELDS = {
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
+    // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, so there and
+    // on the flat three an empty address leaves it a picture — the rule the
+    // rest of the file calls the Soundcloud rule. Lime's frame draws Book Now in
+    // that seat (JP-034), so under Lime the seat is `cta` and the Soundcloud
+    // pill is drawn only once it has somewhere to go.
     { k: 'soundcloud', l: 'SoundCloud link', type: 'url', d: '', in: [0],
-      hint: 'Where the Soundcloud button goes on the published page. Leave empty and it stays a picture.' },
+      hint: 'Where the Soundcloud button goes on the published page. In Lime the button appears '
+          + 'once this is filled; in the other templates an empty one stays a picture.' },
+    // Lime layout 1 alone: its frame's Book Now pill, on the page's booking
+    // target. `'*': []` and not an absent row — an uncovered template is left
+    // unmarked by fieldReach, and no other template reads this.
+    { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], '*': [] },
+      hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
   // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
