@@ -678,7 +678,9 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   `visible: false`. The glyph's seat is an **empty radius-6 square in a 1px rule** (`s.box1` open,
   `s.ac` closed) where Lime fills a disc, and the vectors are Lime's at **stroke 1** —
   `LimeSourceGlyph` takes an additive `stroke`. Glyph ink `sem/bg` open, **`sem/stroke/2` `#FF0000`
-  closed** (followed, open question 5). The label is a direct `s.display` site: `faced(s, s.list)`,
+  closed** (followed, open question 5). The open row's label and cross are bound to `tag2/text`
+  `#0D1F03` where the code reads `s.activeFg` `#15180F`, Lime's read — both leaked inks, both black
+  on red. The label is a direct `s.display` site: `faced(s, s.list)`,
   `facedLh(s, 1.2)`, uppercase.
 - **The heading is the media player's two-tone rule again** — "See us" `sem/text/2`, "in action"
   `sem/text/1` across the typed break, so words one and two are a block line and the rest an accent
