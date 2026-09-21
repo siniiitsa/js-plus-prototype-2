@@ -149,7 +149,8 @@ mutated through a single `patch()` helper.
   ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
   `'*'` for the rest), and `fieldReach()` in `data.js` is what `EditPanel` asks before printing
-  "Not shown in this layout" under the label. The field stays editable — switching layouts
+  "Not shown in this layout" under the label ("…in this template" where `fieldNowhere()`
+  finds the template's row empty). The field stays editable — switching layouts
   never discards copy. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
   `in` names Retro and Lime only, so the flat three's undesigned header family carries no
@@ -246,8 +247,9 @@ mutated through a single `patch()` helper.
   self-exclusion since `media` is not in `CTA_TARGETS.book`, and an emptied label drops it, the
   footer pill's rule — and the Soundcloud pill stands beside it **only when filled**, in a
   wrapping row no master draws. `cta`'s `in` is `{ Lime: [0], '*': [] }`: the `'*'` row is what
-  prints "Not shown in this layout" on the other templates, an uncovered template being left
-  unmarked.
+  prints "Not shown in this template" on the other templates (`fieldNowhere()`: an empty row
+  means no layout of that template reads the key, so the note does not promise one), an
+  uncovered template being left unmarked.
   Layout 2's fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
@@ -449,6 +451,11 @@ mutated through a single `patch()` helper.
   `tierHues()` in `sectionVm`. Layout 2 also has no grain — its frame carries none — and it is
   what made **`BookPill`'s flat branch honour `bg`/`fg`** (defaulting to the accent pair): a pill
   standing on a card in the accent hue was invisible on Pop, in layout 1 as well as layout 2.
+  The card's pill is labelled by `cta` (`vm.pricingCta`, uncased) with `note`
+  (`vm.pricingNote`) beside it and stacked under it at 390, in Retro's card and Lime's alike
+  (JP-036: Lime's pill took no label and printed the section's static `cta1`, "Book Now", where
+  its frame reads the same "Enquire about a date"); an emptied label drops the pill, an emptied
+  line its span, and both the row.
   **Layout 3 is a stack of full-width rows on the page ground**, and it filters as layout 1 does
   — the same `chip`, in the frame's segmented capsule instead of a loose chip row — but what it
   adds is a **seat that the filter moves**: the last row *on show* is filled in `vm.tierRow`'s

@@ -33,7 +33,7 @@ is one entry.
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-042 | Two help texts lie: header Location's hint, the form-fields counter | **Confirmed** | S | no | **done** (four texts, not two) |
-| 2 | JP-036 | Pricing's *Plan card button* / *Line beside…* edit nothing; card prints BOOK NOW | **Confirmed**: F2 named it as an edge and did not chase it | S | small (the note line) | todo |
+| 2 | JP-036 | Pricing's *Plan card button* / *Line beside…* edit nothing; card prints BOOK NOW | **Confirmed**: F2 named it as an edge and did not chase it | S | none — the frame answered it | **done** |
 | 3 | JP-037 | Four drawn elements have no field: hero CTA, bio credit line, bio pill, bio chips | **Confirmed**, and two of the four are Retro's too | M | **yes** (three) | todo |
 | 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Confirmed**, one root, two surfaces | M | **yes** | todo |
 | 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** | todo |
@@ -202,7 +202,45 @@ panel under Lime vs Retro.
 **Docs.** The `PRICING_CARD` comment; CLAUDE.md's pricing paragraph if the Lime card gains the
 fields; F2's "named edge" in `../retro/qa-fixes.md` gets a pointer here.
 
-**Settled.** —
+**Settled** (2026-09-21).
+- **The frame answered the decision, against this entry's premise.** Lime's cta-row
+  (`I964:64591;715:2527`, and the 390 master's `I986:11878;880:11446`) reads **"Enquire about a
+  date"** on the arrow-disc pill (248 × 54) with **"3 dates open for Sept '26"** beside it in
+  Body/SM at 16 — Retro's copy exactly, stacked under the pill at 390. "BOOK NOW" was never the
+  frame's: it was the label-less `BookPill` default the layout-2 fit shipped, and that fit's
+  "stays dropped (Retro's claim rule)" was out of date once Retro's line became a field. So
+  there is no per-template seed and nobody was asked: `PRICING_CTA` / `PRICING_NOTE` already are
+  the frame's words, and wiring the fields moves the canvas **toward** the frame.
+- **The fix.** Lime's layout-2 block draws Retro's row — `col(16)` at 390, a wrapping `row(16)`
+  otherwise — holding `BookPill` with `label={s.pricingCta}` (only the label; Retro's `bg` / `fg`
+  / `disc` / `size` would repaint it) and `s.pricingNote` in `body(s.bodySm, 1.4)` / `s.tx`.
+  Emptied label drops the pill, emptied line its span, both the row. `PRICING_CARD` is `[1]` for
+  every template, and the two fields gained hints (they had none).
+- **Measured** (Lime, arch 1, canvas = `live=1`): pill 205 × 44.3 / 212.9 × 54 / 206 × 54 against
+  the frame's 248 × 0.82 = 203.4 × 44.3, 213 × 54 at 768 (`986:11859`, a row like desktop's)
+  and 205 × 54 at 390; the line 13 (16 × 0.82) / 16 right
+  of the pill, 16 under it at 390. Live, the pill is `<a href="#form">`. "Book Now" no longer
+  appears in the section.
+- **Reach, probed** (sentinels through `&cj=`, themes 0, 1, 2 × arch 0–3 × three widths × both
+  surfaces, 72 renders): both keys move the HTML at design 1 and nowhere else, on all three
+  themes. `in: [1]` is measured.
+- **One edge found and closed:** a 43-character label is `nowrap` in `labelStyle` and took the
+  390 page to 392. The Lime pill passes `whiteSpace: 'normal'`, `maxWidth: '100%'`, so a long
+  label wraps inside the card (390 / 768 / 1180 all hold `scrollWidth`); the seeded pill's box is
+  unchanged. Retro's at the same label already held 390.
+- **"Not shown in this template."** Nothing in pricing needs it any more, but
+  `FIELDS.media.cta` (`{ Lime: [0], '*': [] }`) had the tester's complaint on Retro and the flat
+  three: "this layout" promises a layout that reads it. `fieldNowhere()` in `data.js` (the
+  template's row is an empty array) switches `EditPanel`'s note to "Not shown in this template".
+  Checked by calling both helpers over `media.cta`, `pricing.cta` / `note` / `intro` × Retro,
+  Lime, Grunge × designs 0–3; not walked in the real app.
+- **Digest** (all categories, themes 0, 1, 2, three widths, canvas and `live=1`, 774 files):
+  exactly **pricing arch 1 at theme 1**, three widths, both surfaces — six files. Retro and
+  Grunge byte-identical; only Lime moved.
+- **Docs:** the `PRICING_CARD` and `FIELDS.pricing` comments, the Lime block's pill comment,
+  CLAUDE.md (the pricing paragraph, the `FIELDS` bullet, the media `cta` sentence), README's
+  *Fields a layout does not read*, F2's named edge in `../retro/qa-fixes.md`, and a correction
+  on `layout-2.md`'s pricing Settled.
 
 ---
 

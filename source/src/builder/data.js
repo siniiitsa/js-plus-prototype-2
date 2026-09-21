@@ -842,8 +842,10 @@ export const BLANK_PAGE = [
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
 
-// Pricing layout 2's card fields, which Lime's own layout 2 does not draw.
-const PRICING_CARD = { Lime: [], '*': [1] }
+// Pricing layout 2's card fields: the pill's label and the line beside it.
+// Lime's own layout 2 draws both, as its frame does (JP-036) — its pill used
+// to take no label, so it printed the section's static "Book Now".
+const PRICING_CARD = [1]
 // Its credit row under the quote, which Lime's layout 2 draws as well.
 const PRICING_CREDIT = [1]
 
@@ -971,10 +973,10 @@ export const FIELDS = {
     // Layout 2's credit row under the quote and the line beside its pill, all
     // seeded with the frame's own copy. Every one is emptiable and drops what
     // it fills; the row goes when all three of its fields are empty. Lime's
-    // layout 2 draws the credit row but not the pill's label or its line —
-    // which is why none of the five names a layout: a "(layout 2)" label sat
-    // over the "Not shown in this layout" note on Lime's layout 2, and the note
-    // is the one that knows the template. The hints say where instead.
+    // layout 2 draws all five as well (the pill's label and its line since
+    // JP-036). None of the five names a layout in its label: the "Not shown
+    // in this layout" note is what knows the design. The hints say where
+    // instead.
     { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CREDIT,
       hint: 'Small faces under the plan card’s quote.' },
     { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CREDIT,
@@ -983,8 +985,10 @@ export const FIELDS = {
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
     // the row button below.
-    { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD },
-    { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD },
+    { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD,
+      hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
+    { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
+      hint: 'Layout 2 only. A phone stacks it under the pill.' },
     { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA, in: [3],
       hint: 'The pill under the price on every package row.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
@@ -1243,9 +1247,19 @@ export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.
 // cover at all is left unmarked (true), which is how the flat three's header
 // stays silent. Read by EditPanel alone: nothing on the canvas consults it,
 // so a field the design ignores keeps its copy for the next layout.
+const reachOf = (f, themeName) => (
+  !f.in || Array.isArray(f.in) ? f.in : (f.in[themeName] ?? f.in['*'])
+)
 export function fieldReach(f, themeName, design) {
-  const r = !f.in || Array.isArray(f.in) ? f.in : (f.in[themeName] ?? f.in['*'])
+  const r = reachOf(f, themeName)
   return !r || r.includes(design)
+}
+// Whether *no* design of this template reads `f` — an empty row, as
+// FIELDS.media.cta's `'*'` is. EditPanel then says "template" rather than
+// "layout" (JP-036): switching layouts would never bring the field back.
+export function fieldNowhere(f, themeName) {
+  const r = reachOf(f, themeName)
+  return !!r && r.length === 0
 }
 
 // Why a user-typed outbound address cannot be linked, or null if it can (an

@@ -755,7 +755,12 @@ Settled in section 7 (pricing):
 - **The pill is `BookPill`'s Lime defaults exactly** — `<BookPill s={s} to={s.tierBookTo}
   full={s.mob} />`. Retro's `bg` / `fg` / `disc` / `size` would all be honoured by the Lime branch
   and repaint it wrong. "3 dates open…" stays dropped (Retro's claim rule), so the 390 master's
-  stacked cta-row has nothing to stack.
+  stacked cta-row has nothing to stack. **Corrected by JP-036**
+  ([`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)): the frame's pill reads "Enquire about a
+  date", not the default's "Book Now", and Retro's branch had since made the line a field. The
+  pill now takes `label={s.pricingCta}` (still no `bg` / `fg` / `disc` / `size`) and the line is
+  drawn, so the pill measures 205 × 44.3 / 212.9 × 54 / 206 × 54, not the 130.5 / 142.1 / 138.9
+  below.
 - **The narrow price row FILLs its numeral**, standing the unit at the card's right edge (layout 1's
   Lime pricing rule again); 1440 hugs. Emptied content drops its node (symbol, unit, blurb, quote,
   small print; the rule and the includes block go with an empty feature list), where Retro's branch

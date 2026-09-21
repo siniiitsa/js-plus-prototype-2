@@ -7320,10 +7320,24 @@ function Pricing({ s }) {
                 <span style={body(s.bodyMd, 1.5, { color: s.tx, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
               )}
             </span>
-            {/* The frame's pill is BookPill's Lime defaults exactly; the 390
-                master keeps it at full size. "3 dates open…" beside it stays
-                dropped, Retro's rule. */}
-            <BookPill s={s} to={s.tierBookTo} full={s.mob} />
+            {/* The frame's pill is BookPill's Lime defaults exactly, under the
+                card's own label; the 390 master keeps it at full size. Its
+                line stands beside it at 16 in Body/SM, and the 390 master
+                stacks it under the pill — Retro's row and its drop rules: an
+                emptied label drops the pill, an emptied line its span, and
+                both the row. The label is the artist's, so a long one wraps
+                inside the card rather than widening the 390 page. */}
+            {(!!s.pricingCta || !!s.pricingNote) && (
+              <span style={s.mob ? col(u(16), { alignItems: 'flex-start' }) : row(u(16), { flexWrap: 'wrap' })}>
+                {!!s.pricingCta && (
+                  <BookPill s={s} to={s.tierBookTo} full={s.mob} label={s.pricingCta}
+                            style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+                )}
+                {!!s.pricingNote && (
+                  <span style={body(s.bodySm, 1.4, { color: s.tx })}>{s.pricingNote}</span>
+                )}
+              </span>
+            )}
           </div>
 
           {t.feats.length > 0 && (
