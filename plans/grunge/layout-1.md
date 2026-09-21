@@ -98,7 +98,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 8 | `calendar` | `964:58607` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:44065` | 768 × 1376 | `986:44077` | 390 × 997 | `964:58595` | `964:58583` | done `fb89dde` |
 | 9 | `form` | `964:58608` | Enquiry Forms — B · Split context+form | 1440 × 965 | `986:44066` | 768 × 1122 | `986:44078` | 390 × 1176 | `964:58596` | `964:58584` | done `01e4cb2` |
 | 10 | `testimonials` | `964:58609` | Testimonials H — Stacked tag card | 1440 × 730 | `986:44067` | 768 × 730 | `986:44079` | 390 × 730 | `964:58597` | `964:58585` | done `9366e28` |
-| 11 | `footer` | `964:58610` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:44068` | 768 × 647.4 | `986:44080` | 390 × 619.4 | `964:58598` | `964:58586` | todo |
+| 11 | `footer` | `964:58610` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:44068` | 768 × 647.4 | `986:44080` | 390 × 619.4 | `964:58598` | `964:58586` | done `c1c7cc4` |
 
 Both twins' fit comments in `EncoreSection.jsx` cite their node ids; grep for either to find the
 branch and its `if (s.lime)` block. **Re-measure from the Grunge frame; never reuse Lime's or
@@ -985,6 +985,51 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   ENCORE.", 390 "…EMAIL TO THE / LAST ENCORE." against "…EMAIL TO / THE LAST ENCORE." — three lines
   either way.
 
+### Settled in section 11 (the footer)
+
+- **No Grunge block, for the eleventh and last time: Lime's `if (s.lime)` at the head of `Footer` is
+  `(s.lime || s.grunge)`**, `const grunge = s.grunge` naming the deltas (too few for a `G` lookup).
+  The tree is Lime's node for node at all three widths — Frame 199 / 175 / 202 / 178, Line 19, Frame
+  198, Frame 201, the same leaked 743 in the 708 frame — on **Scheme 1**, so every `s.*` read is right:
+  the top edge, Line 19, the row's rule and the globe are all `sem/stroke/1`, the name, bar, links and
+  small print `sem/text/2`, the statement `sem/text/1`. No node carries an effect, no grain, no seam.
+  Digest, all 645 renders canvas and `live=1` at themes 0–4: exactly footer a0 at theme 2, three
+  widths. Proved at `theme=2&live=1&n=8`, all three widths: rows are `<a href="#cat">`, the address
+  row opens a new tab, the pill is `<a href="#form">`; on the canvas every anchor is href-less and the
+  pill a span; `n=0` is the pill alone and `n=5` splits 3 / 2.
+- **Type**: the name and the links are **Label/MD `UPPER`** (20 / 14 / 13) through `labelStyle`, where
+  Lime's are Display/List and Label/SM. The statement (Display/MD) and the small print (Display/List)
+  are direct `s.display` sites: `faced` / `facedLh` unconditionally (identity off Grunge) and
+  `textTransform` behind `grunge`, since it is a digest column.
+- **The statement keeps the frame's own 439.59 box at 1440 and 768, and the column at 390.** Lime's
+  `9em` and its 390 `marginRight` are Bebas fits: in Anton at 0.75 "YOUR NIGHT UNFORGETTABLE." is
+  10.48em of the faced size — 393 at 768, 299 at 390 — and 464 against the desktop's 360, so the
+  lines are 3 / 2 / 2 as the frames draw them. One tone, so no positional rule.
+- **`BookPill` needed nothing**: the shared branch's defaults are the frame's pill exactly (red, black
+  type, a black disc round a red arrow), `full` at 390.
+- **The seal is the frame that "draws another": `SealBadge` takes an additive `line`.** Frame 178 is a
+  `sem/bg` disc with its rings and ticks in `sem/stroke/2` (`#FF0000`) and the name in `sem/active/bg`
+  — both reds followed (the ticks are bound to `active/bg` too; drawn with the rings, one `mk`). `line`
+  is Grunge's alone and the footer passes it, so the header's, the bio's and pricing's red discs, and
+  every unfitted layout's, do not move. **Not** done by honouring `scheme` under Grunge: that would
+  have flipped every default-scheme caller in layouts 2–4 to the black disc. Disc **150.37** (× 0.82 /
+  verbatim) and **74.4** at 390, tilt 26.06.
+- **A turned frame's centre from the plugin's x / y**: `n.x` / `n.y` are the turned frame's own
+  corner, so the centre is `(x + 0.2296a, y + 0.6689a)` at −26.06°, `a` the disc. It gives Lime's
+  three recorded pairs back exactly, and here **96.41 / 37.95, 107.42 / 64.57, 68.6 / 8.14** (in from
+  the column's / content's right, down from the top less the dropped 56) — confirmed by the red
+  ring's bounding-box centre on the renders (702.5 / 94, 630.1 / 120.8, 311 / 64) and on ours.
+  Cheaper than `get_design_context`, which this session did not need at all.
+- **At 390 the wordmark's bar runs 10px under the seal's disc** — our 346 column against the frame's
+  370, and "KAI MERCER" is wider than the mock "STATIC YOUTH". The disc is `s.bg` over it; left alone.
+- **`FIELDS.footer` has no Lime-keyed `in` row**, so nothing was owed.
+- **Measured against the masters' content edges**: desktop statement 360 × 177 on three lines (216 ×
+  0.82), link pitch 36.5 (45 × 0.82 = 36.9 — `s.labelMd` rounds to 16), column 2 at 187 from column 1
+  (233 × 0.82 = 191 less the narrower Anton pill, Lime's hug), pill 125 × 44.3, small print 56 row;
+  768 statement at 103.4 on two lines at 50, pitch 38.4 (38), pill 136.9 × 54 (141), row 68 with the
+  leaked 56 inset; 390 statement at 91.4, two lines at 38, pitch 37.3 (37), pill 134 × 54 (138), halves
+  173.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -1049,6 +1094,12 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - *`vm.title` shadows the ramp's `title` size* (Lime 1, map) — the pills' 36 / 28 / 26.
 - *Scan before deciding on a drop shadow* (Lime 1, testimonials) — kept; it is the shared value.
 
+- *The tenth Lime block, at the head of `Footer`*, *three rules the twin does not draw*, *the 768
+  small print's 56 inset is a leak, and it is followed* and *the link cursor is not live-gated* (Lime
+  1, footer) — all unchanged; *the statement's measure* is the one bullet not inherited.
+- *Place a seal by its disc's centre* (Lime 1, bio) — the fourth Grunge seal, by arithmetic this time.
+- *`textTransform` is a digest column* (this plan, repertoire) — the gate on the capitals.
+
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
 
@@ -1093,3 +1144,6 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
     "Let's make" is kept by position (words one and two a line), since the string is the artist's.
     The frames draw no refused box; ours is a 2px white ring. And the 768 / 390 band grain is drawn
     full where the masters cut it. Worth telling the designer with 8 and 10.
+15. **The footer seal's two reds, and the 390 bar** — *section 11:* the line seal's rings are
+    `#FF0000` and its name `#DF262C`, as the mode states; and the wordmark's bar meets the seal at 390
+    under a real artist's name. Worth telling the designer with 5.
