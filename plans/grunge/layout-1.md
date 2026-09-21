@@ -96,7 +96,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 6 | `map` | `964:58605` | Events Map — D · Compact tile | 1440 × 1151 | `986:44063` | 768 × 1349 | `986:44075` | 390 × 1172.2 | `964:58593` | `964:58581` | done `c4cbff0` |
 | 7 | `pricing` | `964:58606` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:44064` | 768 × 765 | `986:44076` | 390 × 1510 | `964:58594` | `964:58582` | done `a3e6bcf` |
 | 8 | `calendar` | `964:58607` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:44065` | 768 × 1376 | `986:44077` | 390 × 997 | `964:58595` | `964:58583` | done `fb89dde` |
-| 9 | `form` | `964:58608` | Enquiry Forms — B · Split context+form | 1440 × 965 | `986:44066` | 768 × 1122 | `986:44078` | 390 × 1176 | `964:58596` | `964:58584` | todo |
+| 9 | `form` | `964:58608` | Enquiry Forms — B · Split context+form | 1440 × 965 | `986:44066` | 768 × 1122 | `986:44078` | 390 × 1176 | `964:58596` | `964:58584` | done `01e4cb2` |
 | 10 | `testimonials` | `964:58609` | Testimonials H — Stacked tag card | 1440 × 730 | `986:44067` | 768 × 730 | `986:44079` | 390 × 730 | `964:58597` | `964:58585` | todo |
 | 11 | `footer` | `964:58610` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:44068` | 768 × 647.4 | `986:44080` | 390 × 619.4 | `964:58598` | `964:58586` | todo |
 
@@ -890,6 +890,64 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   648 × 486; 390 grid 427, photo half 308, photo 306 × 268, cells 44.8 × 50.5 (48.29 in the frame — our
   346 panel against its 370).
 
+### Settled in section 9 (the enquiry form)
+
+- **No Grunge block, for the ninth time: Lime's `if (s.v0 && s.lime)` ahead of `EnquiryForm`'s
+  `if (s.v0)` is `(s.lime || s.grunge)`**, with the **`G` lookup** at its head (Lime's arm is the old
+  literals; themes 0, 1, 3, 4 digest to zero, canvas and `live=1`, and at theme 2 only form a0 moved).
+  The tree is Lime's node for node at all three widths, both narrow masters in their page's Device
+  mode. The live seam is hoisted above the block, so nothing was owed. Proved at `theme=2&live=1`,
+  all three widths: a refused submit rings all four boxes and prints the prompt, typing clears each
+  ring, *Party* moves the mailto subject to *Party enquiry*, a valid submit (under a capture-phase
+  `preventDefault`) swaps in the sent block, *Write another* restores the values and the message,
+  the pill is `<a href="mailto:…">`; the canvas carries no anchor, input or pointer cursor.
+- **`grungeBand` is `(s.me || s.mp || s.fo)`** — the third and last Scheme-2 band. **The third trap
+  under *The schemes* closes**: the form half is a **nested Scheme 3** (`187:8`), whose `sem/bg` is
+  `s.ac` exactly; the context half is unfilled on the shell, which is Scheme 2's `box/1` `#000000` =
+  `s.bg` at a **raw radius 13**, and the form half is **square** inside that clip (Lime's 55 left
+  corners are gone). Named Scheme-3 literals: box `#F52E34` (`box/2`), idle chip `#9E1F17` (`box/1`),
+  its ring `rgba(0,0,0,.15)` (`stroke/1` — `s.stroke1` is the *white* 15% and wrong here). The boxes'
+  ring is 1px inside `sem/active/bg`, black, `s.bg`. **The submit alone is back on Scheme 1**:
+  `s.box1` `#1A1A1A` lettered in `s.ac`, an `s.ac` disc round an `s.box1` arrow; *Write another* is
+  the same pill. No node carries an effect.
+- **Inks**: everything on the context half is `sem/text/1`, `s.ac` — brand, kicker, heading, ✓ and
+  promises, one tone, so no two-tone rule this time; labels, placeholders, the prompt and the sent
+  block are `s.tx`; chip type is black on both the white picked chip and the idle ones.
+- **The refused box is the fourth redrawn live state**: the idle ring is already full black, so
+  thickening it is weight alone on red; it is **2px of `s.tx`**, Lime's layout-4 rule (colour, not
+  weight alone). CLAUDE.md's refused-box sentence owes a Grunge arm in the sweep.
+- **Type**: labels and the pill are Display/List, the heading Display/SM, the sent head the same —
+  all through the block's `disp()` helper (`faced` / `facedLh` / uppercase, identity off Grunge).
+  **The brand is Label/MD `UPPER`** (20 / 14 / 13) through `labelStyle`, where Lime's is Display/List;
+  **the chips and the ✓ are Body/MD at 1.5** (chips 31 / 30 / 30), where Lime's are Body/SM.
+- **The heading keeps the frame's typed break by position** — "Let's make" / "your night
+  unforgettable.": words one and two are a block line and the rest a second (the media heading's
+  rule in one tone), which is what gives the 390 master's own two lines, the break Lime's cap could
+  not reach. At 1440 and 768 the rest wraps inside Lime's cap recomputed for Anton at 0.75:
+  UNFORGETTABLE. 6.03em of the faced size, LET'S MAKE YOUR 6.35, so **6.2em** — three lines on both.
+  The credit row is 49 tall here (Lime's 56), so the 1440 head stands `u(20)` under it for the
+  frame's 68. Open question 14.
+- **The 390 master is Retro's where Lime's was not**: a 100 message box and the stacked pair 10
+  apart. The chip row's wrap to a second line at 390 is the frame's own here.
+- **The shell's clearance is the frame's own**: 170 / 100 / 60 round the shell less the root's
+  `padY`, as wrapper padding (`G.pad`) — the foot tear is 90 deep at 1440, where Lime's arcs were 44
+  and its extra 20 / 24 would have stood the shell 6 off the tear.
+- **Sheet and seams**: the media player's band recipe (`lighten` .29 out over the root's padding,
+  the shell lifted with `position: relative`). **Named departures**: the 768 master hangs its 1440
+  sheet at y 105 (the head ungrained) and the 390 one is 390 × 400 at y 159; both drawn full, the
+  map's story. Seams off the renders (PIL black-run maxima), head · foot: **40 · 90** at 1440
+  (× 0.82), **60 · 16** at 768, **40 · 38** at 390 — node arithmetic agrees at 1440 and 768 (the 768
+  foot vector sits at x −328 and shows 16.5), and at 390 the render wins again.
+- **Named diff, Lime's**: the frame's submit types *Enquire* where `vm.formBtn` seeds *Book Now*; and
+  the form half is 707.6 against the frame's 744.6 beside the fixed 420 × 0.82 context half.
+- **`FIELDS.form` has no Lime-keyed `in` row**, so nothing was owed.
+- **Measured against the masters**: desktop root 791.5 (965 × 0.82 = 791.3), shell 512.7 (512.5),
+  context 344.4, head 55.8 under the credit's top (55.8), boxes 49.2, chips 24.7, message 109.9; 768
+  root 1119.2 (1122), shell 919.2 (922), context 348.5 (350), form half 570.7 (572), boxes 60, message
+  134; 390 root 1171 (1176), shell 1051 (1056), context 286.5 (288), form half 764.6 (768), message 100,
+  *Other* on its second row. The narrow 2–5px are the Anton-at-0.75 label line boxes (22.8 against the
+  frame's rounded 23, 21.6 against 22), summed.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -941,6 +999,14 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   unchanged.
 - *A leak that shows is overridden* (this plan, gallery) — the 768 grain sheet's 624.
 
+- *A section whose live seam is hoisted above its branches can always take a block* (Lime 1, media)
+  — the form's, shared by a second template.
+- *A refused box changes colour, not weight alone, when the idle ring is already full ink* (Lime's
+  layout-4 form, CLAUDE.md) — the fourth redrawn live state.
+- *`get_variable_defs` mixes nested schemes in one list; the `use_figma` fills settle which node is
+  on which* (Lime 1, form) — the Scheme-3 half and the Scheme-1 pill.
+- *The 390 band sheet is drawn full* (this plan, map) — and the 768 one here.
+
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
 
@@ -981,3 +1047,7 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
     seal or the bio's. Worth telling the designer with 10.
 13. **The 768 calendar photograph's grain** — *section 8:* the master leaves its 624 sheet in a 668
     card, so the right 44px is ungrained; drawn across the card. Worth telling the designer with 10.
+14. **The form heading's break, and the refused box** — *section 9:* the frame's typed break after
+    "Let's make" is kept by position (words one and two a line), since the string is the artist's.
+    The frames draw no refused box; ours is a 2px white ring. And the 768 / 390 band grain is drawn
+    full where the masters cut it. Worth telling the designer with 8 and 10.
