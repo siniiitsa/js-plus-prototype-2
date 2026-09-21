@@ -92,7 +92,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 2 | `bio` | `964:58601` | Bios — A · Flanked portrait | 1440 × 769 | `986:44058` | 768 × 1142 | `986:44071` | 390 × 729 | `964:58589` | `964:58577` | done `7f80065` |
 | 3 | `media` | `964:58602` | Media Player — D · Floating cards stack | 1440 × 1253 | `986:44060` *(in `986:44059`)* | 768 × 1742.3 | `986:44072` | 390 × 1231.3 | `964:58590` | `964:58578` | done `036181e` |
 | 4 | `gallery` | `964:58603` | Gallery Sections — Component 1 | 1440 × 819 | `986:44061` | 768 × 1116 | `989:22292` | 390 × 760 | `964:58591` | `964:58579` | done `bc04864` |
-| 5 | `repertoire` | `964:58604` | Repertoire — A · Two-column dense | 1440 × 1096 | `986:44062` | 768 × 922 | `986:44074` | 390 × 918 | `964:58592` | `964:58580` | todo |
+| 5 | `repertoire` | `964:58604` | Repertoire — A · Two-column dense | 1440 × 1096 | `986:44062` | 768 × 922 | `986:44074` | 390 × 918 | `964:58592` | `964:58580` | done `7ea79e7` |
 | 6 | `map` | `964:58605` | Events Map — D · Compact tile | 1440 × 1151 | `986:44063` | 768 × 1349 | `986:44075` | 390 × 1172.2 | `964:58593` | `964:58581` | todo |
 | 7 | `pricing` | `964:58606` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:44064` | 768 × 765 | `986:44076` | 390 × 1510 | `964:58594` | `964:58582` | todo |
 | 8 | `calendar` | `964:58607` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:44065` | 768 × 1376 | `986:44077` | 390 × 997 | `964:58595` | `964:58583` | todo |
@@ -711,6 +711,45 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   its page). The bright spot in the 390 card's top-right corner is a ceiling light in the seeded
   photograph, not the grain.
 
+### Settled in section 5 (the repertoire)
+
+- **No Grunge block, for the fifth time: Lime's `if (s.lime)` inside `Repertoire`'s `if (s.v0)` is
+  `(s.lime || s.grunge)`**, after the seam, with the gallery's **`G` lookup** at its head (Lime's arm
+  is the old literals; themes 0, 1, 3, 4 digest to zero, canvas and `live=1`). The tree is Lime's node
+  for node at all three widths — root gap 32, rows padded 27 on an inside 1px `s.stroke1`, columns 70
+  apart, the 768 halves, the 390 stack — on **Scheme 1**, so every `s.*` sem read is right and no
+  literal is owed. `Layer_1` holds the torn vector, **hidden**, as section 1 found. Proved at
+  `theme=2&live=1&n=240`, all three widths: Next, a chip (the pager re-deriving, 20 → 7 pages), the
+  search's empty state.
+- **The leaves**: the field is an **empty box at a raw radius 9** in Lime's inset `s.stroke1` ring,
+  round an **empty radius-5 tile in a 1px inside `s.ac` rule** (the gallery's glyph seat) with the
+  same glyph in `s.ac`; the placeholder is `sem/text/1`, so the hint *and the live input* are `s.ac`. The published
+  `::placeholder` is that red at .45 — dim on black, Repertoire's accepted diff, not a new one.
+  **Chips are Body/MD at 1.5** (14 / 13 / 13; Lime's are Body/SM), the active one `s.pillBg` with
+  **`s.activeFg`** ink (the leaked `#15180F`, followed). **The song is Display/Title 36 / 28 / 26**, a
+  literal through `labelStyle` (`s.title` is the heading string — the media row's case), over
+  Label/SM, which the frame sets `UPPER`; the block's `bebas` helper is `labelStyle` under Grunge
+  only, since `textTransform` is a digest column. The artist's ink is bound to `sem/tag/2/bg`, the
+  accent's hex; written `s.ac`. No node carries an effect.
+- **The heading is two-tone and inline — the fourth positional rule**: "240" `sem/text/1`, "Songs"
+  `sem/text/2`, so **word one is `s.ac` and the rest `s.tx`**, one line; a one-word title is all
+  accent. `faced(s, s.dispLg)` / `facedLh(s, 0.89)`, uppercase, at its own site. Open question 9.
+- **`Pager`'s Lime branch is `(s.lime || s.grunge)`**, and `frame.lime` is the override key for both.
+  Grunge's arm: page pills `s.pillBg` with `s.tx` type through `labelStyle(s, s.labelSm)`, arrows
+  unchanged. **The frame draws no current page** — every pill is `sem/active/bg` with white type and
+  `effects: []`, red on red, the plan's own named risk — so the mark is a **named departure: the
+  active chip's pair (`s.activeFg` ink) inside a 2px inset `s.tx` ring** (`t.on` / `t.onRing`). The
+  ink alone was tried first: a 10px numeral changing colour does not read. What the widening moved,
+  theme 2 only, recorded rather than fitted (Lime's spread exactly): **repertoire a1** at all three
+  widths and **map a2 at 390**. The map session (a0) inherits the arm; check its pager on the
+  `#171716` band and the red panel, and pass `frame.lime` if the ring or pills stop reading.
+- **`FIELDS.repertoire` has no Lime-keyed `in` row**, so nothing was owed.
+- **Measured against the masters' content edges**: desktop head 123.9 (151 × 0.82), title line 95.2,
+  search 319 × 50, chips 24.7 (the ramp's 11px body-md against 14 × 0.82), rows 76.6 (94 × 0.82 =
+  77.1, the same rounding), six 459.8, pager 45.1 / 71.3; 768 head 103.7, halves 344 + 344, rows 84.8
+  (85), chips 29.5; 390 head 152.2 (152), rows 82.6 (83), the pager spread across the measure — six
+  buttons where the master draws five, `pageWindow`'s compact row, Lime's.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -739,6 +778,12 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - *Leaked tops are followed where they show* (Lime 1, gallery) — brackets and counter; the arrow
   row's leaked width is the exception, named above.
 
+- *`Pager` has a Lime branch, `BookPill`'s shape*, *the 768 halves take `flex: 1 1 50%`* and *the
+  search pill's ring is an inset `boxShadow`* (Lime 1, repertoire) — all three unchanged.
+- *Retro's live states vanish under Lime; redraw them, never inherit them* (Lime 1, map) — the
+  pager's current page, which Grunge's frame does not draw at all.
+- *One five-theme digest is the whole proof for a shared-helper change* (Lime 1, sweep) — `Pager`.
+
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
 
@@ -764,3 +809,7 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
    the string is the artist's. Worth telling the designer with 1 and 6.
 8. **The media heading's two-tone split** — *section 3:* words one and two are the white line, the
    rest the accent line, by position. Worth telling the designer with 7.
+9. **The repertoire heading's two-tone split, and the pager's current page** — *section 5:* word one
+   takes the accent and the rest white, by position (the frame's "240 Songs"). And the frame marks no
+   current page — every pill is the same red — so the shipped mark (dark ink in a white ring) is ours.
+   Worth telling the designer with 7 and 8.
