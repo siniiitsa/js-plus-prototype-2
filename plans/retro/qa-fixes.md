@@ -293,7 +293,9 @@ key simply ignores it" gains "and the panel says so").
   calendar's "Event types" lost one. "Ring labels (layout 3)" was **wrong** (layouts 3 and 4 read
   it) and now says so. **Named edge:** under Lime, pricing layout 2's "Review count (layout 2)"
   and its siblings show the note *on* layout 2. The suffix is Retro's truth and the note is
-  Lime's. Not chased.
+  Lime's. Not chased. *(Closed since: the suffixes went in (b) below, and JP-036 in
+  [`../lime/layout-2-qa-fixes.md`](../lime/layout-2-qa-fixes.md) made Lime's card read `cta` and
+  `note`, so all five are live on Lime's layout 2.)*
 - **Named edge:** header `cta2` is also bio layout 4's Listen label. The bio panel has no such
   field, so the note on the header speaks for the header alone.
 - **Verified in the editor** (puppeteer on the real app, 1600 wide): Retro and Lime × setup card

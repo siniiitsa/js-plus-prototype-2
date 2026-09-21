@@ -194,9 +194,11 @@ export const navLabel = (id) => catById(id)?.nav ?? catName(id)
  * tab, the picker's previews and the harness cannot drift apart.
  *
  * The header's other two controls point at a section too, and so does
- * the fixed Music / Shows / Book triple, which names no category at
- * all. Each is a preference list resolved against the page: the first
- * candidate actually on it wins. A pill whose every candidate is missing
+ * the fixed Music / Gigs / About triple, which names no category at
+ * all (the words layouts 2 and 3 draw in every designed frame — JP-033;
+ * Book went because its pill already stands beside the links). Each is
+ * a preference list resolved against the page: the first candidate
+ * actually on it wins. A pill whose every candidate is missing
  * keeps its place in the design and simply does not link. A *label* with
  * nothing to point at — a Minimal nav word, a footer row — is kept on the
  * canvas and left off the published page, where it would be a dead word.
@@ -204,8 +206,8 @@ export const navLabel = (id) => catById(id)?.nav ?? catName(id)
 
 export const NAV_MINIMAL = [
   ['Music', ['media', 'repertoire']],
-  ['Shows', ['map', 'calendar']],
-  ['Book', ['form', 'calendar', 'pricing']],
+  ['Gigs', ['map', 'calendar']],
+  ['About', ['bio']],
 ]
 
 export const CTA_TARGETS = {
@@ -243,6 +245,24 @@ const BEBAS_EM = {
 // the digits' own advance.
 export const bebasEms = (text) =>
   [...String(text).toUpperCase()].reduce((w, ch) => w + (BEBAS_EM[ch] ?? 0.4), 0)
+
+// Anton's, read the same way — Retro's label face, also set in caps. Retro's
+// labels carry `labelStyle`'s 0.02em tracking, which CSS spends after every
+// character, so it is folded into each advance here. Sums land within 1% of the
+// measured label, and over. Only the tablet header's fit gate reads it
+// (`vm.navFits`, JP-039).
+const ANTON_EM = {
+  A: 0.485, B: 0.479, C: 0.474, D: 0.493, E: 0.412, F: 0.399, G: 0.485, H: 0.499, I: 0.227,
+  J: 0.466, K: 0.472, L: 0.397, M: 0.746, N: 0.498, O: 0.486, P: 0.472, Q: 0.494, R: 0.477,
+  S: 0.461, T: 0.396, U: 0.474, V: 0.469, W: 0.712, X: 0.484, Y: 0.446, Z: 0.41,
+  1: 0.331, ' ': 0.234, '&': 0.52, '·': 0.234, '/': 0.405, '-': 0.311, "'": 0.214, '.': 0.229,
+  ',': 0.236, '!': 0.229, '?': 0.492, ':': 0.242, '(': 0.291, ')': 0.291, '+': 0.355,
+}
+
+// A label's width in ems of tracked Anton; the other digits and anything
+// unlisted take 0.494, the digits' own advance.
+export const antonEms = (text) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + 0.02, 0)
 
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
@@ -394,7 +414,24 @@ export const TRACK_AUDIO = [
 // the clock at 00:00 under an empty bar and names `vm.mediaEmpty` instead.
 export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 
+// TAGS is a palette as much as a list: `vm.chips` is one colour seat per entry,
+// and `s.chips[3].bg`, `s.chips[4 % n].bg` and friends are read as seats across
+// the header, media, map and pricing. Its length and order must not change.
+// The words the chip rows print are the artist's (JP-037): FIELDS.header.tags,
+// seeded with TAG_LABELS and zipped onto these seats by index, wrapping
+// (`vm.tagChips`). Five, not six: the Tags component draws five and carries
+// its sixth chip as a hidden frame (read off the Lime layout-2 bio's
+// instance; user call, 2026-09-21).
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
+export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live'
+
+// JP-037 — layout 2's copy that was a literal in EncoreSection: the hero's
+// pill, and the bio card's credit line and the pill beside it. Each is the
+// frame's own text (964:64580, 964:64581 and Retro's 964:64638), the credit
+// line lowercase as both frames type it.
+export const HERO_CTA = 'Enquire about a date'
+export const BIO_CREDIT = 'five years of rooms read & floors moved'
+export const BIO_CTA = 'Book Now'
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -842,8 +879,10 @@ export const BLANK_PAGE = [
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
 
-// Pricing layout 2's card fields, which Lime's own layout 2 does not draw.
-const PRICING_CARD = { Lime: [], '*': [1] }
+// Pricing layout 2's card fields: the pill's label and the line beside it.
+// Lime's own layout 2 draws both, as its frame does (JP-036) — its pill used
+// to take no label, so it printed the section's static "Book Now".
+const PRICING_CARD = [1]
 // Its credit row under the quote, which Lime's layout 2 draws as well.
 const PRICING_CREDIT = [1]
 
@@ -864,28 +903,49 @@ export const FIELDS = {
     // Kicker and Location are the artist's role and home town, so they also
     // reach the bio, the booking calendar and the enquiry form (F1,
     // headerIdentity); `in`, and the note it prints, speak for the header.
+    // Their hints name where else each prints, and that reach is measured
+    // (JP-042: a sentinel in `&who=`, every design × width × surface): the
+    // kicker in all four bios and the form's credit row (layouts 1 and 2); the
+    // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's
+    // calendar layout 1, which is its own block and draws no polaroid stamp.
+    // Change a reader, change the hint.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
       in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3] },
-      hint: 'Your role. The bio and the enquiry form print it too.' },
+      hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
       in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3] },
-      hint: 'Where you are based. The bio and the booking calendar print it too.' },
+      hint: 'Where you are based. The bio prints it too in layouts 1 to 3, and the booking '
+          + 'calendar in layouts 1 and 4 (in Lime, layout 4 only).' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
+    // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
+    // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
+    { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
+      in: { Retro: [1], Lime: [1] },
+      hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // Bio layout 4's Listen reads this key too; `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
       in: { Retro: [1, 2, 4], Lime: [1, 2] } },
+    // The chips are the header's the way Kicker and Location are (JP-037,
+    // headerIdentity): the bio prints the same list and honours the same
+    // Show / Hide. An emptied list hides the row, as Hide does. The bio's
+    // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's 3.
+    { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] },
+      hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
+          + '(in Lime, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] } },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] },
+      hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
       in: { Retro: [0, 1, 3, 4, 5], Lime: [3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
-      { v: 'minimal',  l: 'Minimal (Music · Shows · Book)' },
+      { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
     { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0] }, opts: [
       { v: 'left',   l: 'Left' },
@@ -897,6 +957,13 @@ export const FIELDS = {
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3] },
+    // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
+    // three words take the accent (`vm.bioCredit`), and the pill beside it.
+    // Each drops when emptied, and the row with both.
+    { k: 'credit',    l: 'Credit line', d: BIO_CREDIT, in: [1],
+      hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
+    { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1],
+      hint: 'The button beside the credit line. Left empty, it is not drawn.' },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
@@ -964,10 +1031,10 @@ export const FIELDS = {
     // Layout 2's credit row under the quote and the line beside its pill, all
     // seeded with the frame's own copy. Every one is emptiable and drops what
     // it fills; the row goes when all three of its fields are empty. Lime's
-    // layout 2 draws the credit row but not the pill's label or its line —
-    // which is why none of the five names a layout: a "(layout 2)" label sat
-    // over the "Not shown in this layout" note on Lime's layout 2, and the note
-    // is the one that knows the template. The hints say where instead.
+    // layout 2 draws all five as well (the pill's label and its line since
+    // JP-036). None of the five names a layout in its label: the "Not shown
+    // in this layout" note is what knows the design. The hints say where
+    // instead.
     { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CREDIT,
       hint: 'Small faces under the plan card’s quote.' },
     { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CREDIT,
@@ -976,8 +1043,10 @@ export const FIELDS = {
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
     // the row button below.
-    { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD },
-    { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD },
+    { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD,
+      hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
+    { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
+      hint: 'Layout 2 only. A phone stacks it under the pill.' },
     { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA, in: [3],
       hint: 'The pill under the price on every package row.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
@@ -1058,7 +1127,8 @@ export const FIELDS = {
       // time in layout 4, which counts them (vm.gigCityCount).
       hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
           + `a real link on the published page; the list pages ${PINS.length} at a time in `
-          + "layouts 1–3 and one at a time in layout 4's ticker. "
+          + "layouts 1–3 (layout 3 shows one at a time on a phone) and one at a time in "
+          + "layout 4's ticker. "
           + 'Layout 3 also turns the cities into its filter chips, and layout 4 counts them.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
@@ -1072,11 +1142,15 @@ export const FIELDS = {
     // Soundcloud rule). An emptied label drops the pill.
     { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs', in: [2],
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
-    { k: 'status',  l: 'Map tag (layout 3)', d: MAP_STATUS, in: [2] },
-    { k: 'updated', l: 'Map note (layout 3)', d: MAP_UPDATED, in: [2] },
-    { k: 'rings',   l: 'Ring labels (layouts 3 and 4)', d: MAP_RINGS, in: [2, 3],
+    // Layout 3's QA fields, which layout 2 reads as well since JP-040 (its fit
+    // had dropped all four as claims). None names a layout in its label: the
+    // "Not shown in this layout" note is what knows the design.
+    { k: 'status',  l: 'Map tag', d: MAP_STATUS, in: [1, 2],
+      hint: 'The tag above the featured gig. Layout 2 also prints it as the chip on every gig row.' },
+    { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2] },
+    { k: 'rings',   l: 'Ring labels', d: MAP_RINGS, in: [1, 2, 3],
       hint: 'Up to three, inner ring first, separated by commas.' },
-    { k: 'expand',  l: 'Map link (layout 3)', d: MAP_EXPAND, in: [2],
+    { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
       hint: 'Beside "Travel & reach" above the four stat cards. Leave empty to hide it.' },
@@ -1132,7 +1206,8 @@ export const FIELDS = {
     // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
     // no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
-      hint: 'One box each — two to a row in layouts 1 and 4, one to a row in layouts 2 and 3, '
+      hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
+          + 'one to a row in layouts 2 and 3, '
           + 'which set the label inside the box and draw no placeholder. An odd last box '
           + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
           + 'form emails you what the visitor types.' },
@@ -1221,9 +1296,11 @@ export const copyrightOf = (name) => `C 2026 ${name}`
 // hold them: the one place either is typed. Raw, so an absent key still means
 // "the seed" and an emptied one means "none" in every section sectionVm
 // builds; the page's other sections have no field of their own for either.
+// JP-037 added the tag chips, list and Show / Hide alike: the bio draws the
+// header's row, so it reads the header's words and the header's switch.
 export const headerIdentity = (sections) => {
   const c = sections.find((s) => s.cat === 'header')?.c ?? {}
-  return { kicker: c.kicker, location: c.location }
+  return { kicker: c.kicker, location: c.location, tags: c.tags, showTags: c.showTags }
 }
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
@@ -1234,9 +1311,19 @@ export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.
 // cover at all is left unmarked (true), which is how the flat three's header
 // stays silent. Read by EditPanel alone: nothing on the canvas consults it,
 // so a field the design ignores keeps its copy for the next layout.
+const reachOf = (f, themeName) => (
+  !f.in || Array.isArray(f.in) ? f.in : (f.in[themeName] ?? f.in['*'])
+)
 export function fieldReach(f, themeName, design) {
-  const r = !f.in || Array.isArray(f.in) ? f.in : (f.in[themeName] ?? f.in['*'])
+  const r = reachOf(f, themeName)
   return !r || r.includes(design)
+}
+// Whether *no* design of this template reads `f` — an empty row, as
+// FIELDS.media.cta's `'*'` is. EditPanel then says "template" rather than
+// "layout" (JP-036): switching layouts would never bring the field back.
+export function fieldNowhere(f, themeName) {
+  const r = reachOf(f, themeName)
+  return !!r && r.length === 0
 }
 
 // Why a user-typed outbound address cannot be linked, or null if it can (an

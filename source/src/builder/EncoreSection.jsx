@@ -763,7 +763,7 @@ function TagChips({ s, justify = 'flex-start', radius, size }) {
       }
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: justify }}>
-      {s.chips.map((c, i) => (
+      {s.tagChips.map((c, i) => (
         <span key={i} style={{
           background: c.bg, color: c.fg, borderRadius: radius ?? s.btnR, whiteSpace: 'nowrap', ...chip,
         }}>{c.label}</span>
@@ -1447,15 +1447,18 @@ function HeaderV1({ s }) {
             the name stays centred whenever the links fit their half and slides
             right when they do not. Only below the floor, where the one row
             outgrows the room, does the cell stop at the room and the capsule
-            wrap, its corner the one-row half-height. Both narrow masters hand
-            the links to the burger, which stands in the same capsule at 390;
-            768 does too, Retro's reason — its three are the component's
-            default, and nine at 14px cannot fit. */}
+            wrap, its corner the one-row half-height. The 390 master hands the
+            links to the burger, which stands in the same capsule. The 768 one
+            draws them, so tablet does too whenever the one row holds them
+            (`s.navFits`, summed in sectionVm at this bar's own sizes — JP-039):
+            at Label/SM with no budget to divide, the cell pinned at the
+            capsule's own width so it cannot wrap. The seeded nine do not fit,
+            and keep the burger. */}
         <div style={{
           flex: '1 1 0', display: 'flex',
-          minWidth: nar ? 0 : `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))`,
+          minWidth: nar ? (s.navFits ? 'max-content' : 0) : `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))`,
         }}>
-          {nar ? (
+          {nar && !s.navFits ? (
             <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
               <NavMenu s={s} color={s.tx} />
             </span>
@@ -1463,7 +1466,7 @@ function HeaderV1({ s }) {
             <nav style={{
               ...capsule, borderRadius: u(18), maxWidth: '100%',
               display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: `${23 / 24}em`,
-              fontSize: linkSize,
+              fontSize: nar ? s.labelSm : linkSize,
             }}>
               {s.navLinks.map((l) => (
                 <a key={l.label} href={navHref(s, l.to)}
@@ -1520,7 +1523,11 @@ function HeaderV1({ s }) {
         }}>{s.subtitle}</p>
         {/* BookPill's Lime defaults exactly: 246 × 54 at 1440 is its 0.82, 212 at
             768 its full size, and 390 keeps the full size too. */}
-        <BookPill s={s} to={s.bookTo} label="Enquire about a date" full={s.mob} />
+        {/* `heroCta` is the artist's (JP-037): emptied, no pill, and a long
+            one wraps inside the column rather than widening a 390 page —
+            JP-036's pricing pill. The seeded box does not move. */}
+        {s.heroCta && <BookPill s={s} to={s.bookTo} label={s.heroCta} full={s.mob}
+                                style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />}
       </div>
     )
 
@@ -1671,15 +1678,17 @@ function HeaderV1({ s }) {
           type — 720 with the capsule's eight 18px gaps — inside a 688px canvas
           that also seats the wordmark, Listen and the pill (measured on the
           visitor's words, JP-033; the sidebar's names it used to print came to
-          651). So the burger holds at 768 as well, which is also what Retro
-          layouts 1, 3 and 4 do below desktop (5 and 6 keep NavLinks' row down
-          to 768); what the master settles is the capsule the burger stands in,
-          and everything else in the bar. */}
-      {s.narrow
+          651). So at 768 the links draw only when the bar's one row holds
+          them (`s.navFits`, summed in sectionVm — JP-039), at Listen's own
+          16, which Minimal's three do and the seeded nine do not; otherwise
+          the burger holds, as it does in Retro layouts 1 and 4 below desktop
+          (5 and 6 keep NavLinks' row down to 768). The capsule the burger
+          stands in is the master's either way. */}
+      {s.narrow && !s.navFits
         ? navCapsule(<NavMenu s={s} color={ink} />)
         : navCapsule(s.navLinks.map((l) => (
             <a key={l.label} href={navHref(s, l.to)}
-               style={labelStyle(s, '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
+               style={labelStyle(s, tab ? '16px' : '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
           )))}
       <span style={{ flex: 1 }} />
       {/* The masters emit `size/label-lg, 24px` here, which is the component's
@@ -1786,9 +1795,12 @@ function HeaderV1({ s }) {
           768 one does — `full` is what buys that at 390, where BookPill would
           otherwise take its `small` scale and hang a 46px disc off a pill
           padded for a 17px one. */}
-      <BookPill s={s} to={s.bookTo} label="Enquire about a date" glyph="arrow"
-                disc={nar ? 46 : 38} full={s.mob} size={nar ? '16px' : undefined}
-                bg={s.ac} fg={mustard} shadow={mustard} />
+      {s.heroCta && (
+        <BookPill s={s} to={s.bookTo} label={s.heroCta} glyph="arrow"
+                  disc={nar ? 46 : 38} full={s.mob} size={nar ? '16px' : undefined}
+                  bg={s.ac} fg={mustard} shadow={mustard}
+                  style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+      )}
     </div>
   )
 
@@ -1949,9 +1961,12 @@ function HeaderV2({ s }) {
     // every fixed box beside them are paid for — the capsule's 18 + 18, two 16
     // gaps, Listen's 12 and the pill's 17.92 + 4.27 padding, 8.53 gap and 27.6
     // disc. The gap is HeaderV1's 23/24em, which `navEms`
-    // is summed with, rather than the frame's 1em. Both narrow masters hand
-    // the links to the burger (768's three are the component's default, the
-    // layout-2 reading), which stands in the same capsule.
+    // is summed with, rather than the frame's 1em. The 390 master hands the
+    // links to the burger, which stands in the same capsule; the 768 one
+    // (984:10740) draws them, and so does tablet whenever the one row holds
+    // them — HeaderV1's `s.navFits` rule, at Label/SM with the cell pinned at
+    // the capsule's width (JP-039). The seeded nine keep the burger.
+    const links = desk || !!s.navFits
     const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)})`
     const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
     const capsule = { background: s.bg, boxShadow: ring('1px', s.stroke1), padding: `${u(8)} ${u(18)}` }
@@ -1962,15 +1977,16 @@ function HeaderV2({ s }) {
       })}>
         <div style={{
           flex: '1 1 0', display: 'flex',
-          minWidth: desk ? `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))` : 0,
+          minWidth: desk ? `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))`
+            : links ? 'max-content' : 0,
         }}>
-          {desk ? (
+          {links ? (
             // Corner at the one-row half-height, so a capsule that has to wrap
             // below the 12px floor keeps its ends rather than turning stadium.
             <nav style={{
               ...capsule, borderRadius: u(18), maxWidth: '100%',
               display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: `${23 / 24}em`,
-              fontSize: linkSize,
+              fontSize: desk ? linkSize : s.labelSm,
             }}>
               {s.navLinks.map((l) => (
                 <a key={l.label} href={navHref(s, l.to)}
@@ -2010,7 +2026,7 @@ function HeaderV2({ s }) {
     // and nothing is swapped. The leaked 700.74 measure is dropped, Retro's call.
     const chips = s.showTags === 'show' && (
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.01) }}>
-        {s.chips.map((c, i) => (
+        {s.tagChips.map((c, i) => (
           <span key={i} style={{
             background: c.bg, color: c.fg,
             borderRadius: u(4.51), padding: `${u(3.76)} ${u(8.27)}`,
@@ -2148,11 +2164,12 @@ function HeaderV2({ s }) {
   // arrangement — and here the 390 master draws it literally, putting the burger
   // inside the very pill the other two fill with links.
   //
-  // The 768 master draws links too, and is not followed for layout 2's reason:
-  // its three are the component's default where `navLinks` is the artist's page,
-  // and the seeded nine come to more type than the capsule's share of a 684px
-  // bar. The burger therefore holds at 768, as it does in Retro layouts 1, 2 and 4
-  // (5 and 6 keep NavLinks' row down to 768).
+  // The 768 master draws links too, and is followed on layout 2's terms: its
+  // three are the component's default where `navLinks` is the artist's page, and
+  // the seeded nine come to more type than a 684px bar holds. So tablet draws
+  // the links when the bar's one row holds them (`s.navFits`, summed in
+  // sectionVm — JP-039) and the burger otherwise, as Retro layouts 1 and 4 do
+  // below desktop (5 and 6 keep NavLinks' row down to 768).
   const capsule = (
     <nav style={{
       // This rule is *not* inside its padding, where the card's 5px one is: the
@@ -2163,7 +2180,7 @@ function HeaderV2({ s }) {
       padding: `${u(8)} ${u(18)}`, minWidth: 0,
       ...row(u(18), { flexWrap: 'wrap', alignItems: 'flex-start' }),
     }}>
-      {desk
+      {desk || s.navFits
         ? s.navLinks.map((l) => (
             <a key={l.label} href={navHref(s, l.to)}
                style={labelStyle(s, T.labelSm, { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
@@ -2497,7 +2514,7 @@ function HeaderV3({ s }) {
         width: desk ? u(344) : '100%', flex: 'none',
         display: 'flex', flexWrap: 'wrap', gap: u(8),
       }}>
-        {s.chips.map((c, i) => (
+        {s.tagChips.map((c, i) => (
           <span key={i} style={{
             background: i % 2 ? s.tx : s.box1, color: i % 2 ? s.activeFg : s.ac,
             borderRadius: s.radiusChip, padding: `${u(5)} ${u(11)}`,
@@ -2880,7 +2897,7 @@ function FlatNav({ s }) {
 function FlatHeader({ s }) {
   const chipRow = (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
-      {s.chips.map((c, i) => (
+      {s.tagChips.map((c, i) => (
         <span key={i} style={{
           background: c.bg, color: c.fg, fontSize: '11px', fontWeight: 700,
           letterSpacing: '1.2px', textTransform: 'uppercase', padding: '6px 13px', borderRadius: s.btnR,
@@ -3211,10 +3228,10 @@ function Bio({ s }) {
     // #C7FF3C and #15180F on its third and fourth chips are other schemes'
     // tokens leaking through the component, and are not a third seat.
     const chipK = s.mob ? 9.22 : tab ? 10.76 : 15.37
-    const chips = (
+    const chips = s.showTags === 'show' && (
       <div style={{ padding: `${u(22.19)} 0` }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.15), maxWidth: u(264.4) }}>
-          {s.chips.map((c, i) => (
+          {s.tagChips.map((c, i) => (
             <span key={i} style={{
               background: i % 2 ? c.bg : s.box2, color: c.fg,
               borderRadius: u(4.61), padding: `${u(3.84)} ${u(8.45)}`,
@@ -3231,8 +3248,8 @@ function Bio({ s }) {
     // widths and only Label/SM ramps. Both narrow masters give it a hard
     // DROP_SHADOW 5 / 5 in `#15180F`, which reads on the olive card; the desktop
     // pill carries none. It goes through `style`, so `BookPill` is untouched.
-    const pill = (
-      <BookPill s={s} to={s.bookTo} bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * z}
+    const pill = s.bioCta && (
+      <BookPill s={s} to={s.bookTo} label={s.bioCta} bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * z}
                 style={{
                   padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
                   gap: u(8.53), lineHeight: 1.1,
@@ -3260,15 +3277,22 @@ function Bio({ s }) {
               leaked 637.5 row. That box's leaked 39 height is kept, as a
               minimum: it is what sets the row's height and stands the line
               high beside the centred pill, at all three widths. */}
-          <div style={s.mob
-            ? col('9.64px', { alignItems: 'flex-start' })
-            : row(u(9.64), { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-            <span style={{ ...text, display: 'block', minHeight: u(39) }}>
-              <span style={{ color: s.ac }}>Five years of </span>
-              rooms read &amp; floors moved
-            </span>
-            {pill}
-          </div>
+          {/* JP-037: the line and the pill are the bio's `credit` and `cta`.
+              Each drops when emptied and the row with both; the pill alone
+              keeps the frame's right-hand seat. */}
+          {(s.bioCredit.lead || pill) && (
+            <div style={s.mob
+              ? col('9.64px', { alignItems: 'flex-start' })
+              : row(u(9.64), { justifyContent: s.bioCredit.lead ? 'space-between' : 'flex-end', flexWrap: 'wrap' })}>
+              {s.bioCredit.lead && (
+                <span style={{ ...text, display: 'block', minHeight: u(39) }}>
+                  <span style={{ color: s.ac }}>{s.bioCredit.lead}</span>
+                  {s.bioCredit.rest && ` ${s.bioCredit.rest}`}
+                </span>
+              )}
+              {pill}
+            </div>
+          )}
         </div>
       </div>
     )
@@ -3408,13 +3432,13 @@ function Bio({ s }) {
               264.4 is the one number the narrow masters leave unchanged; only
               the chips inside it shrink, which is why 768 wraps 3 + 2 where
               390 fits 4 + 1 in the same measure. */}
-          <div style={{
+          {s.showTags === 'show' && <div style={{
             display: 'flex', flexWrap: 'wrap',
             gap: nar ? '6.149px' : '5px',
             maxWidth: nar ? '264.4px' : '217px',
             padding: nar ? '22.19px 0' : '18px 0',
           }}>
-            {s.chips.map((c, i) => (
+            {s.tagChips.map((c, i) => (
               <span key={i} style={{
                 background: c.bg, color: s.retro ? '#FBF6EA' : c.fg,
                 borderRadius: nar ? '6.149px' : '5px',
@@ -3423,24 +3447,33 @@ function Bio({ s }) {
                 whiteSpace: 'nowrap',
               }}>{c.label}</span>
             ))}
-          </div>
+          </div>}
           {/* 390 sets the pill under the credit line rather than beside it —
               a column with its own 9.6 gap, not a wrapped row: the master's
               own row still carries the desktop component's 637.5px width, so
               its wrap is a leaked default and the column is the design. */}
-          <div style={s.mob
-            ? col('9.6px', { alignItems: 'flex-start' })
-            : row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-            {/* The frame's own credit line, two-tone the way it sets it. */}
-            <span style={body}>
-              <span style={{ color: s.ac }}>Five years of </span>
-              rooms read &amp; floors moved
-            </span>
-            {/* Both masters draw the pill at the *same* full-scale box — 390
-                included, which is what `full` buys — and only ramp its type. */}
-            <BookPill s={s} to={s.bookTo} glyph="arrow"
-                      full={s.mob} size={nar ? (tab ? '13px' : '12px') : undefined} />
-          </div>
+          {(s.bioCredit.lead || s.bioCta) && (
+            <div style={s.mob
+              ? col('9.6px', { alignItems: 'flex-start' })
+              : row('16px', { justifyContent: s.bioCredit.lead ? 'space-between' : 'flex-end', flexWrap: 'wrap' })}>
+              {/* The frame's own credit line, two-tone the way it sets it: the
+                  bio's `credit`, its first three words in the accent
+                  (`vm.bioCredit`, JP-037). Emptied, it drops; so does the
+                  pill, and the row with both. */}
+              {s.bioCredit.lead && (
+                <span style={body}>
+                  <span style={{ color: s.ac }}>{s.bioCredit.lead}</span>
+                  {s.bioCredit.rest && ` ${s.bioCredit.rest}`}
+                </span>
+              )}
+              {/* Both masters draw the pill at the *same* full-scale box — 390
+                  included, which is what `full` buys — and only ramp its type. */}
+              {s.bioCta && (
+                <BookPill s={s} to={s.bookTo} label={s.bioCta} glyph="arrow"
+                          full={s.mob} size={nar ? (tab ? '13px' : '12px') : undefined} />
+              )}
+            </div>
+          )}
         </div>
       </div>
     )
@@ -3923,8 +3956,9 @@ function Bio({ s }) {
   // · 964:76443 · 971:14238), drawn here because this Section is where the page
   // puts it: a "Genres" line in `body-lg` 16/15/15 in the accent over
   // `TagChips` at `label-xs` 20/14/12, 16 apart, at the instance's own 457
-  // measure at 1440. It reads `vm.chips` — TAGS, the header's list — through
-  // TagChips' own `showTags` guard, which the bio has no field for. The 390
+  // measure at 1440. It reads `vm.tagChips` — the header's Tags, which reach
+  // the bio through `identity` with the header's own Show / Hide (JP-037) —
+  // through TagChips' `showTags` guard. The 390
   // instance hides the line (58 tall against the 768 one's 103), so it does
   // here too.
   //
@@ -7320,10 +7354,24 @@ function Pricing({ s }) {
                 <span style={body(s.bodyMd, 1.5, { color: s.tx, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
               )}
             </span>
-            {/* The frame's pill is BookPill's Lime defaults exactly; the 390
-                master keeps it at full size. "3 dates open…" beside it stays
-                dropped, Retro's rule. */}
-            <BookPill s={s} to={s.tierBookTo} full={s.mob} />
+            {/* The frame's pill is BookPill's Lime defaults exactly, under the
+                card's own label; the 390 master keeps it at full size. Its
+                line stands beside it at 16 in Body/SM, and the 390 master
+                stacks it under the pill — Retro's row and its drop rules: an
+                emptied label drops the pill, an emptied line its span, and
+                both the row. The label is the artist's, so a long one wraps
+                inside the card rather than widening the 390 page. */}
+            {(!!s.pricingCta || !!s.pricingNote) && (
+              <span style={s.mob ? col(u(16), { alignItems: 'flex-start' }) : row(u(16), { flexWrap: 'wrap' })}>
+                {!!s.pricingCta && (
+                  <BookPill s={s} to={s.tierBookTo} full={s.mob} label={s.pricingCta}
+                            style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+                )}
+                {!!s.pricingNote && (
+                  <span style={body(s.bodySm, 1.4, { color: s.tx })}>{s.pricingNote}</span>
+                )}
+              </span>
+            )}
           </div>
 
           {t.feats.length > 0 && (
@@ -8422,7 +8470,7 @@ function Pricing({ s }) {
               face at 11/5 on a `radius/chip` 8, which is the pair its layout-4
               branch already passes TagChips (`radius={u(8)} size={u(T.chip)}`,
               20/14/12). Written again rather than routed through TagChips,
-              which is hardwired to `s.chips` and guarded on `showTags` — a
+              which is hardwired to `s.tagChips` and guarded on `showTags` — a
               header key that has no business gating a package's features.
 
               The hue belongs to the seat and not to the feature (`s.tierFeatSeats`,
@@ -14762,13 +14810,16 @@ function EventsMap({ s }) {
               </div>
               <span style={{ ...bodySm, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
+                {!!gg.time && ` · ${gg.time}`}
               </span>
             </div>
-            {!!gg.time && (
+            {/* Retro's call (JP-040): the chip is `status`, the hour joins
+                the meta line. */}
+            {!!s.mapStatus && (
               <span style={{
                 ...bodySm, flex: 'none', boxShadow: ring(s.stroke1), borderRadius: '999px',
                 padding: `${u(4)} ${u(10)}`, whiteSpace: 'nowrap',
-              }}>{gg.time}</span>
+              }}>{s.mapStatus}</span>
             )}
           </div>
         )
@@ -14830,15 +14881,28 @@ function EventsMap({ s }) {
           borderRadius: u(s.mob ? 30 : 50),
         })}>
           <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
-            {/* Retro's Featured tab in the frame's Scheme 2 status pill. The
-                frame's "Updated 2m ago" stays dropped. */}
-            <span style={row(u(8), {
-              background: s.box1, color: s.ac, borderRadius: '999px',
-              padding: `${u(6)} ${u(12)}`, ...chip,
-            })}>
-              <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: s.ac }} />
-              Featured
-            </span>
+            {/* The frame's Scheme 2 status pill and its note, on layout 3's
+                two fields (JP-040); each drops when emptied, the row with
+                both. */}
+            {(!!s.mapStatus || !!s.mapUpdated) && (
+              <div style={row(u(12), {
+                width: '100%', justifyContent: 'space-between',
+                ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+              })}>
+                {!!s.mapStatus && (
+                  <span style={row(u(8), {
+                    background: s.box1, color: s.ac, borderRadius: '999px', flex: 'none',
+                    padding: `${u(6)} ${u(12)}`, ...chip,
+                  })}>
+                    <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: s.ac, flex: 'none' }} />
+                    {s.mapStatus}
+                  </span>
+                )}
+                {!!s.mapUpdated && (
+                  <span style={{ ...bodySm, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
+                )}
+              </div>
+            )}
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {g ? (
                 <>
@@ -14889,6 +14953,15 @@ function EventsMap({ s }) {
                             stroke={s.ac} strokeWidth={r.w} strokeDasharray={r.dash} opacity={r.o} />
                   </svg>
                 ))}
+                {/* `rings`, on each ring's right edge at the midline, inner
+                    label first — layout 3's seat and dress (JP-040). */}
+                {s.mapRings.slice(0, rings.length).map((label, k) => (
+                  <span key={k} aria-hidden style={{
+                    position: 'absolute', left: `${50 + rings[rings.length - 1 - k].d / vw * 50}%`, top: '50%',
+                    transform: 'translate(-50%, -50%)', background: s.ac, color: ink,
+                    borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip, textTransform: 'none',
+                  }}>{label}</span>
+                ))}
                 {lpins}
                 {/* The centre pin: a lime disc in a 2px ink ring round the frame's
                     `user` glyph (lucide's, at its bounds), over a small lime tail.
@@ -14926,14 +14999,22 @@ function EventsMap({ s }) {
                 ))}
               </div>
             </div>
-            {/* Retro's allocation: the travel terms, and the count where the
-                frame's dead "EXPAND VIEW" stood. */}
+            {/* Retro's allocation: the travel terms and the count on one line,
+                and the frame's "EXPAND VIEW" on `expand`, layout 3's link to
+                the featured gig's route (JP-040). */}
             <div style={row(u(12), {
               justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
               boxShadow: `inset 0 1px 0 ${s.stroke1}`,
             })}>
-              <span style={bodySm}>{s.mapTerms}</span>
-              <span style={{ ...chip, flex: 'none' }}>{s.gigs.length} pins</span>
+              <span style={{ ...bodySm, minWidth: 0 }}>
+                {[s.mapTerms, `${s.gigs.length} pins`].filter(Boolean).join(' · ')}
+              </span>
+              {!!s.mapExpand && (
+                <Dir {...dir} style={row(u(4), {
+                  ...chip, flex: 'none', color: 'inherit', textDecoration: 'none',
+                  cursor: dir ? 'pointer' : undefined,
+                })}>{s.mapExpand}<span aria-hidden style={{ color: s.ac }}>→</span></Dir>
+              )}
             </div>
             <span aria-hidden style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit',
@@ -15143,16 +15224,20 @@ function EventsMap({ s }) {
             </div>
             <span style={{ ...label12, overflowWrap: 'anywhere' }}>
               {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
+              {!!gg.time && ` · ${gg.time}`}
             </span>
           </div>
-          {/* The frame's "In transit" is a status the section cannot know. The
-              row's own hour is what belongs in that chip, and an emptied one
-              drops it rather than printing an empty pill. */}
-          {!!gg.time && (
+          {/* The frame's "In transit" chip is `status` (JP-040, PO call): one
+              section-wide word on every row, the artist's claim rather than
+              the page's — the pricing `unit` precedent — and not a per-gig
+              status. The row's own hour, which held this seat while the fit
+              declined the claim, joins the meta line; an emptied `status`
+              drops the chip rather than printing an empty pill. */}
+          {!!s.mapStatus && (
             <span style={{
               ...label12, flex: 'none', border: `1px solid ${hair}`, borderRadius: '999px',
               padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`, whiteSpace: 'nowrap',
-            }}>{gg.time}</span>
+            }}>{s.mapStatus}</span>
           )}
         </div>
       )
@@ -15182,9 +15267,11 @@ function EventsMap({ s }) {
     // The route. Its pins are the page's gigs at the positions sectionVm paired
     // them with, the featured one lit; the marker at the middle is the artist's
     // base, which is what the frame's rings are drawn around. The frame's
-    // 30/60/120mi ring labels and its zoom controls are gone with the fabricated
-    // metrics — the first are numbers the artist never typed and contradict the
-    // coverage badge, the second a control this file has nothing to do.
+    // 30/60/120mi ring labels are `rings`, the artist's own numbers (JP-040;
+    // the fit had declined them as fabricated). Its zoom controls stay gone
+    // under Retro and the flat three; Lime's block draws them.
+    // The three coverage rings as a share of the viewport's width, outer first.
+    const ringW = desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]
     const pins = shown.map((gg, i) => {
       const on = first + i === feat
       const d = on ? u(16) : u(8)
@@ -15209,16 +15296,30 @@ function EventsMap({ s }) {
         border: s.retro ? undefined : `${s.bw} solid ${hair}`,
       })}>
         <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
-          {/* The frame's "● IN TRANSIT" is a claim about a booking; what the
-              tab can honestly say is what the panel is. The media player's
-              centre seat already carries a Featured tab. */}
-          <span style={row(u(8), {
-            background: tabBg, color: tabFg, borderRadius: '999px',
-            padding: `${u(6)} ${u(12)}`, ...chip12,
-          })}>
-            <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: tabFg }} />
-            Featured
-          </span>
+          {/* The frame's "● IN TRANSIT" tab and its "Updated 2m ago" note, on
+              layout 3's `status` and `updated` (JP-040, PO call): the fit had
+              declined both as claims and printed "Featured" here; as fields
+              they are the artist's claims. Each drops when emptied, and the
+              row with both. */}
+          {(!!s.mapStatus || !!s.mapUpdated) && (
+            <div style={row(u(12), {
+              width: '100%', justifyContent: 'space-between',
+              ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+            })}>
+              {!!s.mapStatus && (
+                <span style={row(u(8), {
+                  background: tabBg, color: tabFg, borderRadius: '999px', flex: 'none',
+                  padding: `${u(6)} ${u(12)}`, ...chip12,
+                })}>
+                  <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: tabFg, flex: 'none' }} />
+                  {s.mapStatus}
+                </span>
+              )}
+              {!!s.mapUpdated && (
+                <span style={{ ...label12, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
+              )}
+            </div>
+          )}
           {g ? (
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {/* A display head wraps rather than ellipsising, so a venue or
@@ -15288,13 +15389,24 @@ function EventsMap({ s }) {
                 width they carry to a canvas the frame's width is not. The outer
                 one already runs past the frame's own viewport at every width
                 (and the middle one too at 390), so the clip is the picture. */}
-            {(desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]).map((w, i) => (
+            {ringW.map((w, i) => (
               <span key={w} aria-hidden style={{
                 position: 'absolute', left: '50%', top: '50%', width: `${w}%`,
                 aspectRatio: '1', borderRadius: '999px',
                 border: `1px solid ${plateFg}`, opacity: i === 0 ? 0.28 : 0.45,
                 transform: 'translate(-50%, -50%)',
               }} />
+            ))}
+            {/* `rings`, on each ring's right edge at the midline, inner label
+                first — layout 3's seat (JP-040), in the centre marker's pair.
+                The outer label runs off the narrow viewports with its ring. */}
+            {s.mapRings.slice(0, ringW.length).map((label, k) => (
+              <span key={k} aria-hidden style={{
+                position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
+                transform: 'translate(-50%, -50%)', background: s.retro ? '#5B5E2E' : s.ac,
+                color: s.retro ? plateFg : s.acFg,
+                borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip12, textTransform: 'none',
+              }}>{label}</span>
             ))}
             {pins}
             <span aria-hidden style={row(0, {
@@ -15309,11 +15421,20 @@ function EventsMap({ s }) {
             justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
             borderTop: `1px solid ${hair}`,
           })}>
-            {/* The frame's data line and its "EXPAND VIEW ›" — a control with
-                nowhere to expand to — become the artist's travel terms and the
-                count the frame's own line carries. */}
-            <span style={label12}>{s.mapTerms}</span>
-            <span style={{ ...chip12, flex: 'none' }}>{s.gigs.length} pins</span>
+            {/* The frame's data line is the artist's travel terms and the count
+                its own line carries; its "EXPAND VIEW ›" is `expand` (JP-040),
+                layout 3's link — the route to the gig the panel features, so
+                the travel card's Get Directions a second time, as the frame
+                itself offers both. A picture where there is no route. */}
+            <span style={{ ...label12, minWidth: 0 }}>
+              {[s.mapTerms, `${s.gigs.length} pins`].filter(Boolean).join(' · ')}
+            </span>
+            {!!s.mapExpand && (
+              <Dir {...dir} style={row(u(4), {
+                ...chip12, flex: 'none', color: 'inherit', textDecoration: 'none',
+                cursor: dir ? 'pointer' : undefined,
+              })}>{s.mapExpand}<span aria-hidden>→</span></Dir>
+            )}
           </div>
         </div>
       </div>
@@ -15365,8 +15486,8 @@ function EventsMap({ s }) {
   //
   // **The right-hand panel is the same Figma component layout 2 fitted**
   // (`radius-map`), and it is written again rather than lifted — the media
-  // player's rule: grep first, then count the disagreements. Four here. Its
-  // head carries a second slot layout 2's panel has no seat for; its ground is
+  // player's rule: grep first, then count the disagreements. Three here since
+  // JP-040 gave layout 2's head the same second slot (it was four). Its ground is
   // the olive card where layout 2's is a cream panel, so every ink on it pairs
   // the other way (the status tab is olive-on-olive with mustard type against
   // layout 2's cream-with-rust); its viewport's derived shape differs at all
@@ -15396,8 +15517,10 @@ function EventsMap({ s }) {
   // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (the row's
   // own hour takes that seat, layout 2's own words), the 30/60/120mi ring
   // labels and the zoom controls (numbers the artist never typed, and a control
-  // this file has nothing to do — layout 2 dropped both already), and
-  // "Updated 2m ago", a timestamp nothing here can produce. The row's `↗` goes
+  // this file has nothing to do), and
+  // "Updated 2m ago", a timestamp nothing here can produce — the labels, the
+  // controls and the stamp all since re-seated as fields (QA, 2026-09-15), and
+  // in layout 2 after them (JP-040). The row's `↗` goes
   // too, because the row already carries the same address in its own
   // `Tickets →` column and that is the column which shapes the row — the events
   // map's allocate-each-field-once rule.

@@ -138,18 +138,30 @@ mutated through a single `patch()` helper.
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
   section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
-  stamp, layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
+  stamp, which Lime's layout-1 block does not draw, and layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
-  drops the ID card's column (the `since` rule).
+  drops the ID card's column (the `since` rule). **The tag chips are the header's as well**
+  (JP-037): `FIELDS.header.tags` is a comma list seeded with `TAG_LABELS` (five — the Tags
+  component hides its sixth chip), and `identity` carries `tags` and `showTags` to the bio,
+  which prints them in layouts 2 and 4 and Lime's 3 (measured, `scripts/reach.mjs`). An emptied
+  list folds into `vm.showTags = 'hide'`, since every reader of that key is a chip-row gate.
+  **`vm.chips` is a palette, not the chip row**: six colour seats off `TAGS`, read as
+  `s.chips[3].bg` and the like across header, media, map and pricing, carrying no label and
+  never changing length; the rows print `vm.tagChips`, the labels seated on it by index,
+  wrapping. Layout 2's other three literals went the same way: the hero pill is
+  `FIELDS.header.heroCta` (`vm.heroCta`), and the bio card's foot row is `FIELDS.bio.credit` /
+  `cta` — `vm.bioCredit` is `{ lead, rest }`, the first three words taking the accent, split in
+  `sectionVm`; each drops when emptied and the row with both.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
   `'*'` for the rest), and `fieldReach()` in `data.js` is what `EditPanel` asks before printing
-  "Not shown in this layout" under the label. The field stays editable — switching layouts
+  "Not shown in this layout" under the label ("…in this template" where `fieldNowhere()`
+  finds the template's row empty). The field stays editable — switching layouts
   never discards copy. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
   `in` names Retro and Lime only, so the flat three's undesigned header family carries no
@@ -246,8 +258,9 @@ mutated through a single `patch()` helper.
   self-exclusion since `media` is not in `CTA_TARGETS.book`, and an emptied label drops it, the
   footer pill's rule — and the Soundcloud pill stands beside it **only when filled**, in a
   wrapping row no master draws. `cta`'s `in` is `{ Lime: [0], '*': [] }`: the `'*'` row is what
-  prints "Not shown in this layout" on the other templates, an uncovered template being left
-  unmarked.
+  prints "Not shown in this template" on the other templates (`fieldNowhere()`: an empty row
+  means no layout of that template reads the key, so the note does not promise one), an
+  uncovered template being left unmarked.
   Layout 2's fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
@@ -369,7 +382,16 @@ mutated through a single `patch()` helper.
   whole row, layout 2's ↗ and Venue Link pill (beside which its Get Directions pill takes
   `vm.gigs[].directions`, a Google Maps route composed from the venue and city), layout 3's
   Tickets → column — and layout 3 drops
-  the frame's second `↗` beside the venue, the same address marked twice. **Layout 4 is the
+  the frame's second `↗` beside the venue, the same address marked twice. **Layouts 2 and 3
+  share the frame's four claims as fields** (JP-040, PO call, 2026-09-21; layout 2's fit had
+  dropped them and layout 3's QA re-seated them): `status` is the panel's tab and `updated` the
+  note beside it, `rings` labels each ring's right edge at the midline (layout 4 too), and
+  `expand` is the foot's link on the featured gig's `directions` — a span on the canvas and
+  where there is no route, and in layout 2 the travel card's Get Directions a second time, as
+  the frame offers both. Layout 2 alone also prints `status` as the chip on **every** gig row:
+  one section-wide word, not a per-gig status (pricing's `unit` precedent), with the row's own
+  hour, which held that seat, moved into the meta line. Each drops when emptied. Layout 2's
+  Lime block reads layout 3's `zoom`; Retro's layout 2 draws no zoom controls. **Layout 4 is the
   pager alone**: its whole gig list is one ticker (mustard under Retro, an olive `s.box1`
   capsule in a `s.stroke1` hairline under Lime) at a `perPage` of **1**, so `page` is
   the only list state it reads — `sel` reaches nothing there, the way the testimonials' `cur`
@@ -396,26 +418,44 @@ mutated through a single `patch()` helper.
   reload the builder. On the canvas the links carry **no href at all** (not `#`, which would jump
   the builder to its own top); `navHref()` in `EncoreSection` is the whole of that gate.
   `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
-  because Minimal's Shows and Book can resolve to the same section. **The label is the visitor's
+  because the label is what is distinct by construction in both modes; `to` is not promised to
+  be (Minimal's old Shows and Book could land on one section, and today's three preference
+  lists are disjoint only by their seeds). **The label is the visitor's
   word, not the editor's** (JP-033): `CATS[].nav` through `navLabel()` in `data.js` — About, Top
   Tracks, Media, Repertoire, Shows/Coverage, Pricing, Enquiries, Reviews, the eight every frame's
-  nav and footer draw, plus **Availability** for the calendar, which is on the seeded page and in
+  footer draws and layouts 1 and 4's navs with it, plus **Availability** for the calendar, which is on the seeded page and in
   no frame's nav (user call, 2026-09-18: a ninth link over an unreachable section). `catName()`
   keeps every editor-side use, `FOOTER_TARGETS`' select included. One `navSectionsOf(cats)`
   builds the list for the editor, `PublishedPage`, the picker's `previewNav` and the harness, and
   `FOOTER_LINKS` seeds its labels from the same `navLabel()`, so a fresh page's two lists agree;
   the footer's rows are then the artist's to reword and the nav's are not. `vm.calFlow` reads
   these labels too, so calendar layout 2's head says "Availability · Pricing · Enquiries" where
-  its frame's flow says "Available dates · Packages · Enquire". **The flat three's header reads
-  none of this**: `FlatNav` hardcodes Music / Shows / Book. Below `desktop` the links
-  collapse to `NavMenu`'s burger in four of the six Retro layouts; layouts 5 and 6 draw
-  `NavLinks`, which keeps the (wrapping) link row at 768 and collapses only at 390 (measured in
-  JP-033's digest). Layout 2's 768 master draws the
-  links instead, and is **not** followed: its three are the Figma component's default, where
-  `navLinks` is the artist's page and the seeded eleven sections give nine — 576px of type at the
-  master's own 16px, 720 with the capsule's eight 18px gaps, in a 688px canvas that also seats the
-  wordmark, Listen and the pill (re-measured on the visitor's words, JP-033). What that master does settle is the bordered capsule the burger stands in, which
-  its own 390 sibling draws the same way.
+  its frame's flow says "Available dates · Packages · Enquire" (held when JP-041 reported it
+  again, 2026-09-21). **Minimal's triple is the frames' own** (JP-033, second pass): layouts 2
+  and 3 draw Music / Gigs / About in Retro and Lime alike, so `NAV_MINIMAL` is those three —
+  Gigs on the map or the calendar, About on the bio, Book gone because its pill already stands
+  beside the links — while `navMode` still defaults to `sections` at every layout, so the seeded
+  header is its frame's picture at layouts 1 and 4 only (user call, 2026-09-21). **The flat three's header reads
+  none of this**: `FlatNav` hardcodes Music / Shows / Book. **At 768 the links are
+  fit-gated in layouts 2 and 3, and folded everywhere else** (JP-039, user call, 2026-09-21).
+  The 768 masters of layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and
+  Lime alike; those of layouts 1 and 4 hide all eight link nodes beside a burger. But `navLinks`
+  is the artist's page, and the seeded eleven sections give nine — 576px of type at the master's
+  own 16px, 720 with the capsule's eight 18px gaps, in a 688px bar that also seats the wordmark,
+  Listen and the pill. So `sectionVm` sums the bar's one row at the master's own sizes — the
+  capsule, the name, Listen and the pill, against 688 in layout 2 and 684 in layout 3 — and
+  **`vm.navFits`** is the answer: the links draw when it is true and `NavMenu`'s burger stands
+  otherwise, in the same bordered capsule, which the 390 masters draw the burger in. Minimal's
+  three fit under the seeded name (the wordmark is in the sum, so a long one can fold them too); *Follow my sections* on the seeded names fits up to four links in Retro
+  layout 2, five in Retro layout 3 and six in Lime's two (it is the words' width that counts, not
+  their number), so the seeded header is still the burger. It is a vm boolean
+  because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
+  `navNameEms` / `navCtaEms` (Bebas, `bebasEms()`), Retro's is `antonEms()` in `data.js`, its
+  0.02em tracking folded in. It is set at tablet only — desktop never reads it and always draws
+  the links — and is undefined, so the burger, at 390, on an empty nav and in layouts 1 and 4;
+  layouts 5 and 6 draw `NavLinks`, which
+  keeps the (wrapping) link row at 768 and collapses only at 390 (measured in JP-033's digest).
+  The harness takes `&nav=<n>` to shorten the page and walk the flip.
 - **The pricing cards filter, in the published tab only.** The Solo / Trio / Band selector was a
   constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's
   (`FIELDS.pricing.tiers`, below) and the chip row is **derived from their tags** by the same
@@ -449,6 +489,11 @@ mutated through a single `patch()` helper.
   `tierHues()` in `sectionVm`. Layout 2 also has no grain — its frame carries none — and it is
   what made **`BookPill`'s flat branch honour `bg`/`fg`** (defaulting to the accent pair): a pill
   standing on a card in the accent hue was invisible on Pop, in layout 1 as well as layout 2.
+  The card's pill is labelled by `cta` (`vm.pricingCta`, uncased) with `note`
+  (`vm.pricingNote`) beside it and stacked under it at 390, in Retro's card and Lime's alike
+  (JP-036: Lime's pill took no label and printed the section's static `cta1`, "Book Now", where
+  its frame reads the same "Enquire about a date"); an emptied label drops the pill, an emptied
+  line its span, and both the row.
   **Layout 3 is a stack of full-width rows on the page ground**, and it filters as layout 1 does
   — the same `chip`, in the frame's segmented capsule instead of a loose chip row — but what it
   adds is a **seat that the filter moves**: the last row *on show* is filled in `vm.tierRow`'s
@@ -760,7 +805,7 @@ mutated through a single `patch()` helper.
   label the artist chose, and a `link` row whose address `extUrl()` refuses stays a picture (the
   Soundcloud rule, with `UrlInput` saying why). `BLANK_PAGE`'s published footer is therefore the
   Book pill alone, a span with nothing to book at, where its canvas still draws all eight labels.
-  The header's **Minimal** nav follows the same rule: a Music / Shows / Book label with no
+  The header's **Minimal** nav follows the same rule: a Music / Gigs / About label with no
   candidate on the page is kept on the canvas, named in a hint above the Navigation links
   select, and left out of the published nav (`vm.navLinks`, filtered before `navEms` measures
   it). The two columns are **derived**, not stored, and derived from the **rendered** list, after

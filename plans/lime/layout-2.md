@@ -509,7 +509,9 @@ Settled in section 1 (the header):
   sit at 15 on one row everywhere, the capsule 630 wide in a 637 cell, the name to its right.
 - **`ListenLink`'s base `fontWeight: 700` synthesises a bold on Bebas Neue**; pass `fontWeight: 400`
   with `labelStyle`. The 768 master's three nav links are the component's default again, so 768 keeps
-  the burger in the capsule, as Retro's does.
+  the burger in the capsule, as Retro's does. **Superseded by JP-039** (`layout-2-qa-fixes.md`,
+  2026-09-21): 768 draws the links whenever they fit the bar's one row (`vm.navFits`) — Minimal's
+  three do, the seeded nine do not — in layouts 2 and 3 of Retro and Lime.
 - **Under Lime the digest's header arch 5 folds onto arch 1** (`HEADER_COUNT.lime` is 4), so a
   layout-2 header change is six theme-1 files, not three; the arch 5 files were byte-identical to arch 1.
 - **Named diffs.** The seeded subtitle is longer than the frame's, so it runs 2 / 3 / 3 lines against
@@ -755,7 +757,12 @@ Settled in section 7 (pricing):
 - **The pill is `BookPill`'s Lime defaults exactly** — `<BookPill s={s} to={s.tierBookTo}
   full={s.mob} />`. Retro's `bg` / `fg` / `disc` / `size` would all be honoured by the Lime branch
   and repaint it wrong. "3 dates open…" stays dropped (Retro's claim rule), so the 390 master's
-  stacked cta-row has nothing to stack.
+  stacked cta-row has nothing to stack. **Corrected by JP-036**
+  ([`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)): the frame's pill reads "Enquire about a
+  date", not the default's "Book Now", and Retro's branch had since made the line a field. The
+  pill now takes `label={s.pricingCta}` (still no `bg` / `fg` / `disc` / `size`) and the line is
+  drawn, so the pill measures 205 × 44.3 / 212.9 × 54 / 206 × 54, not the 130.5 / 142.1 / 138.9
+  below.
 - **The narrow price row FILLs its numeral**, standing the unit at the card's right edge (layout 1's
   Lime pricing rule again); 1440 hugs. Emptied content drops its node (symbol, unit, blurb, quote,
   small print; the rule and the includes block go with an empty feature list), where Retro's branch
@@ -832,7 +839,9 @@ Settled in section 9 (the events map):
   allocation in `stats` are shared whole, so the published featuring, paging and Venue Link needed
   nothing new, and every one of Retro's drops and re-seatings (Get Directions, the fabricated
   metrics, the ring labels, the zoom controls, "Updated 2m ago", the terms and the pin count in the
-  bar) holds as written. **The boxes are Retro's twin's** (card insets 18 / 20, rows 10 / 14, panel
+  bar) holds as written — until JP-040 (`layout-2-qa-fixes.md`, PO call, 2026-09-21), which
+  draws the tag, the note, the ring labels and EXPAND VIEW again from layout 3's fields, in
+  both templates. **The boxes are Retro's twin's** (card insets 18 / 20, rows 10 / 14, panel
   32 / 12 / 12, the 24 gap); only type-driven heights differ. Retro's `T`, `card` … `tabBg`,
   `travel`, `gigRow`, `list`, `pins` and `featured` are not read. Pure additions (305 / 0).
 - **Three schemes, by node.** The scheme table's "featured panel (652 × 363)" is the **travel

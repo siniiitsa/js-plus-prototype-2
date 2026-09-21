@@ -55,7 +55,10 @@ const themeIdx = Number(q.get('theme') ?? 0)
 // the page — harmless while a dead footer row still rendered, but the published
 // footer drops those rows now (F25), so `&live=1` would have shown a footer no
 // seeded page can publish.
+// &nav=4 keeps only the first four of them — a shorter page, to walk the tablet
+// header's links-or-burger flip (`vm.navFits`, JP-039). Opt-in, so no digest moves.
 const navSections = navSectionsOf(EXAMPLE_PAGE.map(([id]) => id))
+  .slice(0, q.get('nav') === null ? undefined : Number(q.get('nav')))
 
 // &n=8 fills the section's list-shaped content with n rows, to see a design
 // hold at a count the seed does not reach (FIELDS.media.tracks allows 8). It
@@ -220,9 +223,9 @@ const column = device === 'desktop' ? q.get('column') || undefined : undefined
 // the calendar's past days are seen dead. Opt-in, so a live digest never moves
 // with the calendar, and ignored without &live=1, as sectionVm ignores it.
 const today = q.get('today') || undefined
-// &who=<url-encoded JSON> is the header's { kicker, location } as the rest of
-// the page reads them (F1, headerIdentity): the bio, the calendar and the form
-// print the header's, having no fields of their own.
+// &who=<url-encoded JSON> is the header's { kicker, location, tags, showTags }
+// as the rest of the page reads them (F1 and JP-037, headerIdentity): the bio,
+// the calendar and the form print the header's, having no fields of their own.
 const identity = q.get('who') ? JSON.parse(q.get('who')) : undefined
 const s = sectionVm({
   // &name=Poppy%20Jaeggy is how a display slot is checked against descenders

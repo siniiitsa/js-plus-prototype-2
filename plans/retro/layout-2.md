@@ -278,7 +278,10 @@ Learned on the bio (section 2):
   imported; do not remove it, and distrust any geometry digest that is off by exactly a padding.
 - Two creams, both literal under Retro, whose `paper` IS the page ground: `#FAECD5` (Figma box/1 —
   the text card, the caption card) and `#FBF6EA` (the portrait card's mount, and cream type).
-- **A frame that drops in the Tags component shows five chips; render all of `s.chips`.** The five
+- *(Reversed by JP-037, user call 2026-09-21 — `../lime/layout-2-qa-fixes.md`: the Tags instance
+  carries its sixth chip as a `hidden` frame, so the rows now print the header's **Tags** field,
+  seeded with five. `vm.chips` keeps six colour seats; the labels are `vm.tagChips`.)*
+  **A frame that drops in the Tags component shows five chips; render all of `s.chips`.** The five
   are that component's *default*, not a statement that the row holds five — our `TAGS` has six, so
   the row wraps one line further than the frame does. Do not slice.
 - **The pickers are safe for fixed widths.** All three `ScaledPreview` call sites pass
@@ -632,6 +635,9 @@ Learned on the events map (section 9):
   aspect floor outgrew the 768 column — with the aspect kept at 390, which
   stacks. Still dropped, as claims: IN TRANSIT, Updated 2m ago, the rows'
   In transit, the ring labels, the zoom controls and EXPAND VIEW.
+  **Superseded by JP-040** (`../lime/layout-2-qa-fixes.md`, PO call, 2026-09-21): all but
+  the zoom controls are drawn again, from layout 3's `status` / `updated` / `rings` /
+  `expand` fields.
 
 Learned on the header (section 1):
 
@@ -776,6 +782,9 @@ Learned on the header's narrow masters (section 1, and the first of the narrow p
   burger stands in (the 390 one draws the burger inside the very pill the 768
   one fills with links), the wordmark, Listen and the pill's scale. Check the
   real count against the real width before transcribing a nav.
+  **Superseded by JP-039** (`../lime/layout-2-qa-fixes.md`, 2026-09-21): 768 draws
+  the links whenever they fit the bar's one row (`vm.navFits`) and keeps the
+  burger otherwise — here and in layout 3, whose 768 master draws them too.
 - **A rotated square in the metadata is a bounding box; a rotated *disc* is
   not.** The seal's `173.02` at 768 is the 1.38 inflation the memory note
   describes, and the disc is 125. But because a circle's bbox is itself, the
@@ -1379,7 +1388,8 @@ Learned on the end-of-pass refresh (the `index.html` rebuild):
    invented designs with no Figma frame behind them.
 2. **`tags` and `audio` have no layout-2 design.** This page omits both. They keep their generic
    flat `v1` unless a frame turns up.
-3. **The bio's credit line is fixed copy.** Layout 2's foot sets *"Five years of rooms read &
+3. *(Closed by JP-037: `FIELDS.bio.credit` and `cta`, the split in `vm.bioCredit`.)*
+   **The bio's credit line is fixed copy.** Layout 2's foot sets *"Five years of rooms read &
    floors moved"* two-tone, and the bio has no field for it, so it is a literal — prose that will
    read as the artist's own on a published page. Precedent exists for literal *labels* in these
    designs; this is the first literal *sentence*. It needs a `FIELDS.bio` entry if that matters.

@@ -34,7 +34,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import EncoreSection from './EncoreSection.jsx'
 import {
-  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
+  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -47,9 +47,9 @@ import {
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, copyrightOf, extUrl, urlProblem, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
@@ -404,7 +404,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.roleLine = [vm.kicker, vm.location].filter(Boolean).join(' · ')
   vm.cta1 = cv('cta1', 'Book Now')
   vm.cta2 = cv('cta2', 'Listen')
-  vm.showTags = cv('showTags', 'show')
+  // JP-037 — layout 2's hero pill. Uncased, the footer pill's rule.
+  vm.heroCta = cv('heroCta', HERO_CTA)
   vm.showBadge = cv('showBadge', 'show')
   vm.badgeText = cv('badgeText', artistName)
   vm.navMode = cv('navMode', 'sections')
@@ -443,7 +444,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 390px — the burger panel is a column and has the room, so mobile now shows
   // the artist's own sections like every other width.
   //
-  // Minimal's Music / Shows / Book name no category, so one can resolve to
+  // Minimal's Music / Gigs / About name no category, so one can resolve to
   // nothing. The footer's rule applies (§4.3a): the canvas keeps the label and
   // the published page leaves it out, before navEms below measures the row.
   vm.navLinks = vm.navMode === 'minimal'
@@ -466,6 +467,31 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // which the seeded nine could only fill on two rows.
   vm.navNameEms = T.name === 'Lime' ? +bebasEms(vm.brand).toFixed(3) : undefined
   vm.navCtaEms = T.name === 'Lime' ? +(bebasEms(vm.cta1) + bebasEms(vm.cta2)).toFixed(3) : undefined
+  // Whether the tablet header draws its links (JP-039). The 768 masters of
+  // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime
+  // alike, where layouts 1 and 4 hide the links behind a burger — but
+  // `navLinks` is the artist's page, and the seeded nine come to more type
+  // than the bar is wide. So the links draw when the bar's one row holds them
+  // and the burger stands otherwise: the capsule, the wordmark, Listen and the
+  // pill, summed at the master's own sizes against the bar (688 in layout 2;
+  // 684 in layout 3, whose card insets it 10 + 32 a side). `other` is every
+  // fixed box beside the type — Lime's is HeaderV1's desktop `reserve` unscaled
+  // (138.32, the capsule's 36 in it), Retro's the capsule's 36 + 2 of border,
+  // four 16 gaps, Listen's 12 and the pill's 59 of padding, gap and disc. An
+  // empty nav keeps the burger, and 390 always does: its master draws one.
+  if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
+    const px = (v) => parseFloat(v)
+    const row = d === 1 ? 688 : 684
+    if (T.name === 'Lime') {
+      vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
+        + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
+    } else if (T.name === 'Retro') {
+      const [link, name] = d === 1 ? [16, 20] : [13, 16]
+      vm.navFits = vm.navLinks.reduce((w, l) => w + antonEms(l.label), 0) * link
+        + (vm.navLinks.length - 1) * 18 + antonEms(vm.brand) * name
+        + (antonEms(vm.cta1) + antonEms(vm.cta2)) * link + 38 + 64 + 12 + 59 <= row
+    }
+  }
 
   // The header's two CTAs point at a section as well: Book Now at wherever the
   // page takes a booking, Listen at wherever it plays something (§4.3a).
@@ -485,10 +511,21 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // chips — TAGS, one per palette tag hue. A template whose Figma mode names
   // each tag's ink (`sem.tagFg`, parallel to `tags`) takes it; contrast()'s
   // black-or-white is the fallback, and is wrong on both of Lime's seats.
-  vm.chips = TAGS.map((t, i) => {
+  // These are colour seats and nothing else (JP-037): `s.chips[3].bg` and
+  // friends are read across the header, media, map and pricing, so the list
+  // keeps TAGS' length and order and carries no label.
+  vm.chips = TAGS.map((_, i) => {
     const cbg = T.tags[i % T.tags.length]
-    return { label: cased(t), bg: cbg, fg: T.sem?.tagFg?.[i % T.tags.length] ?? contrast(cbg) }
+    return { bg: cbg, fg: T.sem?.tagFg?.[i % T.tags.length] ?? contrast(cbg) }
   })
+  // The chip rows print the artist's tags — the header's, which the bio reads
+  // through `identity` as it reads the kicker — each seated on `vm.chips` by
+  // index, wrapping. `showTags` travels with them, and an emptied list hides
+  // the row as Hide does: every reader of it is a chip-row gate, and a row of
+  // none would still spend its gap and padding.
+  const tagList = songTags(own.tags !== undefined ? own.tags : TAG_LABELS)
+  vm.tagChips = tagList.map((t, i) => ({ label: cased(t), ...vm.chips[i % vm.chips.length] }))
+  vm.showTags = tagList.length && own.showTags !== 'hide' ? 'show' : 'hide'
 
   // §10.2 — the Book Now pill is accent-coloured type on a second palette hue,
   // not on the accent itself. The reference uses the palette's lightest hue
@@ -509,6 +546,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
 
   // bio
   vm.bioP1 = cv('para1', DEFS.bioP1)
+  // JP-037 — layout 2's foot row. The frame sets the line two-tone, its first
+  // three words in the accent; split here, since EncoreSection composes
+  // nothing. A line of three words or fewer is all lead. The pill is uncased.
+  const credit = String(cv('credit', BIO_CREDIT) ?? '').trim().split(/\s+/).filter(Boolean)
+  vm.bioCredit = { lead: credit.slice(0, 3).join(' '), rest: credit.slice(3).join(' ') }
+  vm.bioCta = cv('cta', BIO_CTA)
   vm.bioP2 = cv('para2', DEFS.bioP2)
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
   // string is what tells the ID card not to draw the column.
@@ -2191,9 +2234,13 @@ function TracksField({ value, max, onChange, onToast }) {
  * numbered rows, a round X, a dashed add, an "n of max" footnote, no
  * reordering — order is entry order, and it is the order the map pins
  * pair against.
+ *
+ * The footnote's page size is the open design's (JP-042), and measured:
+ * a whole set of pins in layouts 1–3, except layout 3 on a phone, and one
+ * gig in layout 4's ticker. Change a layout's `perPage`, change it here.
  * ------------------------------------------------------------------- */
 
-function GigsField({ value, max, onChange }) {
+function GigsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
@@ -2288,7 +2335,8 @@ function GigsField({ value, max, onChange }) {
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · {PINS.length} to a page on the published site
+        {list.length} of {max} · {design === 3 ? 'one at a time'
+          : `${PINS.length} to a page`} on the published site{design === 2 ? ', one on a phone' : ''}
       </p>
     </div>
   )
@@ -2426,7 +2474,10 @@ function TiersField({ value, max, onChange }) {
  *
  * Modelled on GigsField above, the plainest of them. Deliberately not
  * reorderable, like the rest — but order matters more here than anywhere else,
- * because it is the order the boxes appear in, two to a row.
+ * because it is the order the boxes appear in — two to a row in layouts 1
+ * and 4, one to a row in layouts 2 and 3 and in layout 1 on a phone, which
+ * is what the footnote says of the open design (JP-042, measured: it used
+ * to say "two to a row" whatever the layout).
  *
  * One row is guarded: the **last `email` row** can be neither removed nor
  * retyped, since it is the only box a reply can be addressed to. Its trash
@@ -2439,7 +2490,7 @@ function TiersField({ value, max, onChange }) {
 
 const FORM_EMAIL_HINT = 'Visitors need somewhere to leave an address.'
 
-function FormFieldsField({ value, max, onChange }) {
+function FormFieldsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
   const emails = list.filter((f) => f?.kind === 'email').length
   const lastEmail = (f) => f.kind === 'email' && emails === 1
@@ -2523,7 +2574,8 @@ function FormFieldsField({ value, max, onChange }) {
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · two to a row on the published page
+        {list.length} of {max} · {design === 0 || design === 3 ? 'two' : 'one'} to a row
+        {' '}on the published page{design === 0 ? ', one on a phone' : ''}
       </p>
     </div>
   )
@@ -2990,13 +3042,15 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
                   // A field this design does not read stays editable — the copy
-                  // is kept for the next layout — but says so.
+                  // is kept for the next layout — but says so, and says
+                  // "template" where no layout of this one reads it.
                   const unread = !fieldReach(f, themeName, design)
+                  const nowhere = unread && fieldNowhere(f, themeName)
                   return (
                     <div key={f.k}>
                       <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
                       {unread && (
-                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45, fontStyle: 'italic' }}>Not shown in this layout</p>
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45, fontStyle: 'italic' }}>{nowhere ? 'Not shown in this template' : 'Not shown in this layout'}</p>
                       )}
                       {f.hint && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{f.hint}</p>
@@ -3013,11 +3067,11 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                       ) : f.type === 'tracks' ? (
                         <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'gigs' ? (
-                        <GigsField value={gigsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <GigsField value={gigsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
                       ) : f.type === 'tiers' ? (
                         <TiersField value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'formFields' ? (
-                        <FormFieldsField value={formFieldsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <FormFieldsField value={formFieldsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
                       ) : f.type === 'quotes' ? (
                         <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'links' ? (

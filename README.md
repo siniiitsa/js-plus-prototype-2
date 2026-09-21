@@ -243,7 +243,7 @@ That distinction is the whole design, and it buys two things:
 
   **The header's navigation.** Every section is given a DOM id — its category, which is unique per
   page — so the nav links, *Book Now* and *Listen* all scroll to the section they name, and the
-  *Minimal* triple resolves Music / Shows / Book to the nearest section the page actually carries.
+  *Minimal* triple resolves Music / Gigs / About to the nearest section the page actually carries.
   A label with no such section stays on the canvas, is named in a hint above the Navigation links select,
   and is left out of the published nav, the footer's rule.
   Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
@@ -561,10 +561,15 @@ These are intentional limits, not oversights — see §12 for the full list. The
 - **Layout folding.** Seven of the 10 non-header categories offer more layout numbers than
   there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
   keeping their own labels. The header, the footer, the gallery and the map are level.
+- **The desktop page is the 1440 frame at 0.82.** The editor draws it 1180 wide beside the
+  sidebar — a 64px gutter and a 1052px column — and the published tab keeps that column: a
+  window past 1180 widens the gutters, not the column (`PublishedPage`; `scripts/gutter.mjs`
+  measures it).
 - **Fields a layout does not read stay editable.** Each section's panel lists every field any
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and
-  `fieldReach()` in `data.js`. The flat three's header carries no such note: its family is not
+  `fieldReach()` in `data.js` — or "Not shown in this template" where no layout of the active
+  template reads it (`fieldNowhere()`). The flat three's header carries no such note: its family is not
   designed, and `in` names Retro's and Lime's header layouts only.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
