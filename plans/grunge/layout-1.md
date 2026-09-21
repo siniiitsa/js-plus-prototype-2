@@ -89,7 +89,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:58599` *(page)* | Static Youth → `THEMES[2]`, font, ramp, `s.grunge`, the shared gate, photos | — | `986:44056` | — | `986:44069` | — | — | — | **done** |
 | 1 | `header` | `964:58600` | Headers — hero | 1440 × 750 | `986:44057` | 768 × 1024 | `986:44070` | 390 × 844 | `964:58588` | `964:58576` | done `45d8e2c` |
-| 2 | `bio` | `964:58601` | Bios — A · Flanked portrait | 1440 × 769 | `986:44058` | 768 × 1142 | `986:44071` | 390 × 729 | `964:58589` | `964:58577` | todo |
+| 2 | `bio` | `964:58601` | Bios — A · Flanked portrait | 1440 × 769 | `986:44058` | 768 × 1142 | `986:44071` | 390 × 729 | `964:58589` | `964:58577` | done `7f80065` |
 | 3 | `media` | `964:58602` | Media Player — D · Floating cards stack | 1440 × 1253 | `986:44060` *(in `986:44059`)* | 768 × 1742.3 | `986:44072` | 390 × 1231.3 | `964:58590` | `964:58578` | todo |
 | 4 | `gallery` | `964:58603` | Gallery Sections — Component 1 | 1440 × 819 | `986:44061` | 768 × 1116 | `989:22292` | 390 × 760 | `964:58591` | `964:58579` | todo |
 | 5 | `repertoire` | `964:58604` | Repertoire — A · Two-column dense | 1440 × 1096 | `986:44062` | 768 × 922 | `986:44074` | 390 × 918 | `964:58592` | `964:58580` | todo |
@@ -571,6 +571,35 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - **Harness scripts**: a synthetic click on an anchor *detached* by the burger panel closing
   navigates the popup to the builder (`<base href>`) — reopen the burger per link.
 
+### Settled in section 2 (the bio)
+
+- **No Grunge block again: Lime's `if (s.v0 && s.lime)` is `(s.lime || s.grunge)`**, with
+  `const grunge = s.grunge` naming four deltas. The tree is Lime's node for node at all three
+  widths — flanks, the 488 × 648 frame (230 × 311 at 390), the 29 stacked head, the seal on Lime's
+  exact centres (11.5 outside the left edge / 16.87 past the right / 5.58 inside it). **Theme 1 is
+  the digest at risk in a widened block**, not theme 0; it came back zero.
+- **The photograph is a raw radius 13 on `s.box3`, with no effect at all** — `effects: []`, so
+  the *Glows* guess does not reach the bio. The outer 15 clip has no fill and its drop shadow
+  draws nothing on black. A third fill, a gradient at .63, is `visible: false`.
+- **The grain is the hero's recipe on a fixed sheet**: `image 1` is a **648 square hung off the
+  card's bottom-left corner** at every width (at 390 it starts 337 above the card), lighten .5,
+  with the same `#0B0B0B` foot paint as a 16.3% mask. `Grain`'s `style` takes
+  `inset: 'auto auto 0 0'` and the square; the card's clip does the rest.
+- **The title's second word takes the accent** — the frame reads "Reads *the* room." in
+  `sem/text/2` with "the" in `#DF262C`. `s.title` is the artist's string, so the rule is
+  positional: word two is `s.ac`, which on a two-word title is the header's own split and on one
+  word colours nothing. A product call, reversible in one line; worth telling the designer. The
+  emitted `Soulway 96px` on that span is the component default leaking — `getStyledTextSegments`
+  gives one face at `display-lg` throughout (130 / 81 / 46), so neither narrow master overrides
+  its Device mode and `s.dispLg` is right.
+- **The left flank's foot line is Body/Eyebrow, bold**, where Lime's is Body/SM (the metadata
+  gives it away: 204 wide against 173).
+- **Measured**: desktop title 285.7 tall on three lines (348 × 0.82 = 285.4), "READS" 186.8 wide
+  (225 × 0.82 = 184.5) — `faced` holds at display-lg too; photo 400.2 × 531.4; one line at 768
+  and 390 as the frames draw. The root's 40 / 22 side padding against the masters' 30 / 20 is
+  Lime's, inherited.
+- **No live control**, Lime's note: `live=1` digests identical to the canvas at all three widths.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -580,6 +609,10 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   globe's `#5B5E2E`, the title's Soulway run.
 - *A rotated group's metadata x/y* (`figma-frame-reading`) — the seal.
 - *Divide the face out before comparing any width* (Retro 2) — became `faced`.
+- *Place a seal by its disc's centre* and *measure under `.seal-spin` with the animation stopped*
+  (Lime 1, bio) — the bio's seal, unchanged.
+- *The emitted `var(--token, #hex)` fallback is the component's default* (Retro 2, media) — again:
+  the title's `Soulway 96px` span and the narrow masters' `130px`.
 
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
@@ -602,3 +635,5 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
    the render draws them as stated, so they are followed. Worth telling the designer.
 6. **Anton at 0.75** — the stand-in is a third larger per em than Stones Crush, so the shipped type
    is scaled to the frame's glyph size. Worth telling the designer with open question 1.
+7. **The bio title's accent word** — *section 2:* the second word takes `s.ac`, by position, since
+   the string is the artist's. Worth telling the designer with 1 and 6.
