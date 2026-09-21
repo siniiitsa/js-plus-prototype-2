@@ -88,7 +88,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | # | Cat | Desktop node | Composition | Size | Tablet node | Size | Mobile node | Size | Lime twin | Retro twin | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:58599` *(page)* | Static Youth → `THEMES[2]`, font, ramp, `s.grunge`, the shared gate, photos | — | `986:44056` | — | `986:44069` | — | — | — | **done** |
-| 1 | `header` | `964:58600` | Headers — hero | 1440 × 750 | `986:44057` | 768 × 1024 | `986:44070` | 390 × 844 | `964:58588` | `964:58576` | todo |
+| 1 | `header` | `964:58600` | Headers — hero | 1440 × 750 | `986:44057` | 768 × 1024 | `986:44070` | 390 × 844 | `964:58588` | `964:58576` | done `45d8e2c` |
 | 2 | `bio` | `964:58601` | Bios — A · Flanked portrait | 1440 × 769 | `986:44058` | 768 × 1142 | `986:44071` | 390 × 729 | `964:58589` | `964:58577` | todo |
 | 3 | `media` | `964:58602` | Media Player — D · Floating cards stack | 1440 × 1253 | `986:44060` *(in `986:44059`)* | 768 × 1742.3 | `986:44072` | 390 × 1231.3 | `964:58590` | `964:58578` | todo |
 | 4 | `gallery` | `964:58603` | Gallery Sections — Component 1 | 1440 × 819 | `986:44061` | 768 × 1116 | `989:22292` | 390 × 760 | `964:58591` | `964:58579` | todo |
@@ -519,7 +519,67 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   the map raster shows pink; pricing's deck alternates red / `#1A1A1A` / red; repertoire and the
   media band still draw the flat checkerboard strips; the header is still `FlatHeader`.
 
+### Settled in section 1 (the header)
+
+- **The hero is Lime's composition node for node**, so there is no Grunge block: `HeaderV0`,
+  `NavBar`, `Wordmark`, `LogoMark`, `BookPill`, `TagChips`' desktop padding and `SealBadge`'s Lime
+  branch read `s.lime || s.grunge` (`const lime = s.lime || grunge` in the first two — "the capsule
+  composition"), and `grunge` names the deltas. `headerFamily('Grunge')` is `'grunge'`, four
+  layouts (Layout 3 `964:68686` / `984:13900` / `984:13931` and Layout 4 `964:72944` / `971:7823` /
+  `977:12044` confirmed in Static Youth); the still and `grunge-header.jpg` are gone.
+- **Anton is set at 0.75 of the token, line height divided back out — `faced(s, size)` /
+  `facedLh(s, lh)`, beside `labelStyle`.** Session 0's "the frame's weight and proportions" was
+  wrong: measured off the render against canvas `measureText`, Stones Crush's cap height is .636em
+  to Anton's .859 and "STATICYOUTH" 3.51em to 4.71; the nav, the wordmark and the location row give
+  the same ratio to 2%. **`labelStyle`, `Title` and the Grunge `Wordmark` apply both centrally**, so
+  every label-face site and every header title is already right; **a direct `fontFamily: s.display`
+  site in a section owes `faced` / `facedLh` and `textTransform: 'uppercase'` itself** — grep
+  `s.display` in the branch. The ramp stays the mode's. A width sum multiplies `antonEms(x, 0)` by
+  0.75 (`vm.navEms` does; `antonEms` takes `track`, 0.02 by default for Retro).
+- **`labelStyle` tracks `s.dls` (0) under Grunge**, as under Lime.
+- **`Grain` takes an opt-in `grunge` prop** — `if (!s.retro && !(grunge && s.grunge)) return null`
+  — not a widened gate: Retro calls `Grain` from every band, `exact` from fifteen sites, and a
+  blanket gate would paint them all. A section passes `grunge` on the layer its frame carries.
+  The hero's sheet also carries a `#0B0B0B` paint off its foot to 16.3%, drawn as a `maskImage`
+  (under `lighten` it just removes the grain from the floor).
+- **Session 0's "hidden grain layers" is corrected**: in media, map and form the `image 1` sheet is
+  **visible** at .29 `LIGHTEN` at all three widths; what is hidden is the sheet's second paint, its
+  gradient. The band table's "+ grain .29" stands. The sheets are 1527² (media) and 1440² at desktop
+  and 768, hung at y −34 / −81 / −52; 390 map and form carry a 390 × 400 sheet only.
+- **The band table is confirmed** by the walk (all three pages): media, map and form each own two
+  `#000000` 1554 × 581 vectors; repertoire and testimonials carry a **hidden** `Layer_1` of the same
+  size (Retro's torn edge, switched off). Narrow y's: media 768 head −529.7 / foot 1694.3 of 1742;
+  390 foot 1183.8 of 1231 (that vector is 1176 wide); map 768 −510.7 / 1282.2 of 1349, 390 −530.7 /
+  1132.2 of 1172; form 768 −520.7 / 1105.5 of 1122, 390 −537.4 / 1130.4 of 1176.
+- **Device modes**: the 390 hero is Tablet (its `tk` is `{ list 19, dispXl 95, labelXs 14 }`, name
+  28); the 768 and 390 calendar, the 390 gallery and the 390 testimonials state their page's own.
+- **The header's Scheme 2 literals** are `G2 = { bg: '#171716', box3: '#353535' }` in `HeaderV0`:
+  the pill's ink and the card's ground, and the chips' dark seat through `TagChips`' new `hues`
+  (by seat, additive). The capsule's `box/1` is `#000000`, which is `s.bg` exactly. Chips state a raw
+  radius 6, the card a raw 15.
+- **Open question 5, sampled**: the render draws `#15180F` on the red chips, `#171716` in the pill
+  and `#FF0000` on the card's rule and the location ring — the mode's values as stated, all followed.
+- **`SealBadge` under Grunge is always the red disc with `s.bg` marks**, whatever `scheme` says,
+  until a frame draws another; its name is `faced`. Tilt 26.06 (CSS sign), placed by the bounding
+  box's centre: (1303, 220.9) / (669.4, 191.9) / (332.9, 166.9). `badgeText` prints, unlike Lime's
+  reticle.
+- **The title is two-tone and `inline` at every width**: at 0.75 "KAI MERCER" holds one line at
+  390 as the frame's does, and a longer name wraps.
+- **Moved with the shared helpers, theme 2 only** (digest: 91 files, none at 0, 1, 3, 4): every
+  section's labels (size and tracking), every pill (now the capsule pill), every seal, the footer's
+  wordmark. Nothing broke; each session re-reads its own.
+- **Harness scripts**: a synthetic click on an anchor *detached* by the burger panel closing
+  navigates the popup to the builder (`<base href>`) — reopen the burger per link.
+
 ### Inherited and used
+
+- *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
+- *Under Lime `pillBg` IS the accent* (Lime 1, header) — cards 2 and 3.
+- *`vm.title` shadows the ramp's `title` size* (Lime 1, map) — the wordmark's literal 29.5 / 28.
+- *The emitted `var(--token, #hex)` fallback is the component's default* (Retro 2, media) — the
+  globe's `#5B5E2E`, the title's Soulway run.
+- *A rotated group's metadata x/y* (`figma-frame-reading`) — the seal.
+- *Divide the face out before comparing any width* (Retro 2) — became `faced`.
 
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
@@ -531,6 +591,14 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
 2. **Does Grunge desaturate an artist's uploads?** *Closed in session 0:* the greyscale is in the
    assets, so nothing desaturates and uploads stay in colour.
 3. **`gigDark` under Grunge** — the map session's.
-4. **Header cards 2–4 under Grunge**: record what each looks like and needs, in section 1.
-5. **The leaked Lime inks** (`#15180F`, `#0D1F03`) and `stroke2` `#FF0000` — sampled in section 1;
-   worth telling the designer either way.
+4. **Header cards 2–4 under Grunge** — *recorded in section 1.* All three render at three widths and
+   publish. Card 2 (`HeaderV1`): Retro's cream mount, checker floor and sub-cards in Grunge tokens;
+   its second hue is a placeholder (`mustard = s.grunge ? s.tx : s.pillBg`, the place card on
+   `s.box1`) because `pillBg` is the accent. Card 3 (`HeaderV2`): a red sheet round the photograph,
+   checker ribbon; the nav capsule takes `s.box1` for the same reason. Card 4 (`HeaderV3`): close
+   already — capsule nav, seal, ruled avatar — with Retro's checker floor. Each is its layout
+   pass's to fit; none reads `navNameEms` / `navCtaEms` / `navFits` yet (Lime's and Retro's).
+5. **The leaked Lime inks** (`#15180F`, `#0D1F03`) and `stroke2` `#FF0000` — *sampled in section 1:*
+   the render draws them as stated, so they are followed. Worth telling the designer.
+6. **Anton at 0.75** — the stand-in is a third larger per em than Stones Crush, so the shipped type
+   is scaled to the frame's glyph size. Worth telling the designer with open question 1.

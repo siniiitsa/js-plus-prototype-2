@@ -63,7 +63,7 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
-| Layout 1 | [`grunge/layout-1.md`](./grunge/layout-1.md) | `grunge-layout-1` (session 0 done; section 1 next) | Retro and Lime layout 1's eleven components in the Figma mode **Static Youth**: a token foundation (session 0, which opens on a user call — the display face, Stones Crush, is not a Google Font), then `s.grunge` decoration inside the shared `s.v0` branches, a shared `s.designed` gate, the header's four modal cards, plus a sweep that extracts `plans/CONVENTIONS.md`. Written as deltas against Lime layout 1. |
+| Layout 1 | [`grunge/layout-1.md`](./grunge/layout-1.md) | `grunge-layout-1` (session 0 and section 1 done; section 2 next) | Retro and Lime layout 1's eleven components in the Figma mode **Static Youth**: a token foundation (session 0, which opens on a user call — the display face, Stones Crush, is not a Google Font), then `s.grunge` decoration inside the shared `s.v0` branches, a shared `s.designed` gate, the header's four modal cards, plus a sweep that extracts `plans/CONVENTIONS.md`. Written as deltas against Lime layout 1. |
 
 **Reading order in a Grunge session:** `CLAUDE.md`, then the plan, then the whole *Conventions* of
 `lime/layout-1.md` and of `retro/layout-2.md`, and Lime layout 1's *Per-session procedure*.
