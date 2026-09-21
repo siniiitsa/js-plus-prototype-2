@@ -10,6 +10,7 @@ One folder per template, one file per pass:
 
 ```
 plans/
+  CONVENTIONS.md   ← the conventions every template shares, named and located
   retro/
     layout-2.md
     layout-3.md
@@ -22,7 +23,8 @@ plans/
     layout-4.md
     qa-fixes.md
     layout-2-qa-fixes.md
-  grunge/      ← not started
+  grunge/
+    layout-1.md
   editorial/   ← not started
   pop/         ← not started
 ```
@@ -58,15 +60,26 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 
 **Reading order in a Lime session:** `CLAUDE.md`, then the plan, then the sections it names at its top. Layout 2 also reads layout 1's whole *Conventions*, since that pass built the foundation; layout 3 reads both, and Retro layout 3's *Conventions* and *Addendum*, since that pass built the branches it dresses; layout 4 reads all three Lime *Conventions*, and Retro layout 4's *Conventions* and *Addendum*.
 
+## Grunge
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`grunge/layout-1.md`](./grunge/layout-1.md) | `grunge-layout-1`, forked from `main` (closed and swept; push, PR and merge are the user's call) | Retro and Lime layout 1's eleven components in the Figma mode **Static Youth**: a token foundation (session 0, which opens on a user call — the display face, Stones Crush, is not a Google Font), then `s.grunge` decoration inside the shared `s.v0` branches, a shared `s.designed` gate, the header's four modal cards, plus the end-of-pass sweep, which extracted [`CONVENTIONS.md`](./CONVENTIONS.md). Written as deltas against Lime layout 1. Card 1 of the setup modal is a fitted page; cards 2–4 are placeholders that render and publish, each its own layout pass's to fit. |
+
+**Reading order in a Grunge session:** `CLAUDE.md`, then the plan, then [`CONVENTIONS.md`](./CONVENTIONS.md)
+and the bullets it points at, and Lime layout 1's *Per-session procedure*. A layout-2 pass also reads
+layout 1's whole *Conventions*, since that pass built the foundation.
+
 ## Other templates
 
-Grunge, Editorial and Pop work, but they render flat (see CLAUDE.md, *Only Retro is
-designed*). When one of them gets its first plan:
+Editorial and Pop work, but they render flat (see CLAUDE.md, *Retro and Lime are designed*). When one
+of them gets its first plan:
 
 - Start its folder here, and add a table to this file.
-- Say which of Retro's Conventions it inherits. Many are about reading Figma, verifying the
-  published tab and the `sectionVm` rules, and those carry over. Others are about Retro's decorative
-  language (`s.retro`, grain, torn edges, seeded photography), and those don't. Once a second
-  template shows which is which, pull the shared ones out into a `plans/CONVENTIONS.md`.
+- Say which groups of [`CONVENTIONS.md`](./CONVENTIONS.md) it inherits — the file Grunge's sweep
+  extracted, from the bullets a third template actually leaned on. Reading Figma, and measuring and
+  proving, always carry over; a template's decorative language (`s.retro`'s grain and torn edges,
+  Lime's arcs, Grunge's tears) never does. Keep a running *Inherited and used* list as Grunge's plan
+  did, and fold what it confirms back into that file in the sweep.
 
 `SPEC.md`, which the plans number against, lives in git history: `git show 8fa8ff4:SPEC.md`.

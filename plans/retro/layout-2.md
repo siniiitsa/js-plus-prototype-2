@@ -231,6 +231,9 @@ comparison found and what it cost.
 
 ## Conventions
 
+*The bullets a third template leaned on are named and located in [`../CONVENTIONS.md`](../CONVENTIONS.md)
+(extracted in Grunge's layout-1 sweep); a new template's plan starts there.*
+
 Everything a fresh session would otherwise re-derive. Append to this list as the pass goes on.
 
 - **Where layout 2 goes.** `sectionVm` sets `v0`…`v5` from `d = arch % NVAR[cat]`

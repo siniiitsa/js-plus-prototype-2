@@ -106,6 +106,13 @@ const THEME_RAMP = {
     tablet:  { dispXl: '120px', dispLg: '81px',  dispMd: '50px', dispSm: '40px', title: '28px', list: '19px', labelLg: '21px', labelMd: '17px', labelSm: '14px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '13px', chip: '12px', eyebrow: '12px' },
     desktop: { dispXl: '164px', dispLg: '107px', dispMd: '59px', dispSm: '41px', title: '30px', list: '20px', labelLg: '26px', labelMd: '20px', labelSm: '15px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '11px', chip: '11px', eyebrow: '12px' },
   },
+  // Static Youth, Grunge's mode: Lime's ramp but for display-xl, the three
+  // larger labels, body-sm and chip.
+  Grunge: {
+    mobile:  { dispXl: '52px',  dispLg: '46px',  dispMd: '38px', dispSm: '30px', title: '26px', list: '18px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
+    tablet:  { dispXl: '95px',  dispLg: '81px',  dispMd: '50px', dispSm: '40px', title: '28px', list: '19px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
+    desktop: { dispXl: '162px', dispLg: '107px', dispMd: '59px', dispSm: '41px', title: '30px', list: '20px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
+  },
 }
 
 // The two keys that only matter once a window is wider than the canvas its
@@ -270,7 +277,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // theme typography
     display: T.display, label: T.label, body: T.body, dls: T.dls,
     // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
-    // carry one; the flat three fall back to their body face.
+    // carry one; the flat two fall back to their body face.
     ui: T.ui ?? T.body,
     // Space Mono, the frames' typewriter face; only Retro names it so far.
     mono: T.mono ?? T.body,
@@ -328,15 +335,28 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // §10.2 — the layouts are shared by every template, but the Figma page's
     // decorative treatment (grain, torn edges, checkerboard, hard offset
     // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
-    // Grunge, Editorial and Pop render the identical structure, flat, and Lime
-    // draws a decoration of its own behind `lime` below.
+    // Editorial and Pop render the identical structure, flat, and Lime and
+    // Grunge each draw a decoration of their own behind `lime` and `grunge`
+    // below.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
     // inside the same shared branches, behind this flag. It composes with
-    // `retro` rather than replacing it: what both designed templates draw is
+    // `retro` rather than replacing it: what Retro and Lime both draw is
     // gated `(s.retro || s.lime)`, what Lime alone draws is `s.lime`.
     lime: T.name === 'Lime',
+    // What every designed template's frame draws alike — the full-bleed hero,
+    // TagChips' sentence-case chips — is gated on this rather than on a list of
+    // names. A site only some of them share stays a named pair, widened per
+    // site from the frame.
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge',
+    // Grunge's layout-1 page is the same eleven components in a third mode,
+    // Static Youth, so its decoration — torn black seams round its textured
+    // bands, grain, the red seal — goes behind this flag in the shared
+    // branches, the way Lime's does. A value two templates share is written as
+    // the pair: `(s.retro || s.grunge)` for grain and torn edges,
+    // `(s.lime || s.grunge)` for the `sem` reads and the capsule nav.
+    grunge: T.name === 'Grunge',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc follows. `page` is the header's design.
@@ -410,8 +430,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.badgeText = cv('badgeText', artistName)
   vm.navMode = cv('navMode', 'sections')
   vm.align = cv('align', 'left')
-  // Retro and Lime seed their Figma pages' mock photography (photos.js); the
-  // flat three resolve to undefined and keep the initials placeholder. `undefined` already means "key
+  // Retro, Lime and Grunge seed their Figma pages' mock photography (photos.js); the
+  // flat two resolve to undefined and keep the initials placeholder. `undefined` already means "key
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
@@ -429,11 +449,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // explicitly emptied array is already distinguishable, so no sentinel is needed.
   vm.images = Array.isArray(c.images) ? c.images : (defaultImages(cat, T.name) ?? [])
   // Fixed decoration — paper grain and the events-map raster (§10.2). The grain
-  // is Retro's alone (Lime's frames carry no texture); the raster is the same
-  // image in Lime's map frame, so both designed templates take it.
-  vm.grainSrc = T.name === 'Retro' ? RETRO_TEXTURE.grain : undefined
-  vm.mapSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.map : undefined
-  vm.mapRadialSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.mapRadial : undefined
+  // is Retro's and Grunge's (Lime's frames carry no texture); the raster is the
+  // same image in Lime's map frame, so every designed template takes it.
+  // Grunge's frames lay the very raster grain.jpg was cut from (image hash
+  // b74be8bc, a 3/255 re-encode apart) over their bands and photographs, as a
+  // LIGHTEN layer where Retro's is a multiply; the sections pass the blend.
+  vm.grainSrc = T.name === 'Retro' || T.name === 'Grunge' ? RETRO_TEXTURE.grain : undefined
+  vm.mapSrc = vm.designed ? RETRO_TEXTURE.map : undefined
+  vm.mapRadialSrc = vm.designed ? RETRO_TEXTURE.mapRadial : undefined
 
   // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
   // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
@@ -455,9 +478,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // spare. NavBar divides the room it has by this, so the links drop below
   // `s.list` only when the artist's section names would otherwise wrap the
   // capsule onto a second row. Floored at 1 so an empty nav divides by nothing
-  // worse than itself. Undefined off Lime, whose label faces are not Bebas.
-  vm.navEms = T.name === 'Lime'
-    ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + bebasEms(l.label), 0)
+  // worse than itself. Grunge draws the same capsule over the same links in
+  // Anton, untracked (its mode states 0), so it takes the same sum off that
+  // face's table. Undefined on the rest, which draw no capsule.
+  // Its labels are set at 0.75 of the row's size (`faced` in EncoreSection —
+  // Anton standing in for Stones Crush), while the gaps stay the row's ems.
+  const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75 : null
+  vm.navEms = navFace
+    ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * (23 / 24)) * 1.01).toFixed(3))
     : undefined
   // What the rest of Lime's layout-2 nav spends beside those links, in the same
@@ -505,7 +533,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
   // Layout 4's row pill label (its frame's "Star Enquiry", read as "Start").
   // Uncased, the footer's rule: the pill sets it in the display face with no
-  // text transform, and casing it would shout on Grunge and Pop.
+  // text transform, and casing it would shout on Pop.
   vm.tierRowCta = cv('rowCta', PRICING_ROW_CTA)
 
   // chips — TAGS, one per palette tag hue. A template whose Figma mode names
@@ -743,7 +771,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   //
   // Unlike `tierHero` it has to read against the *page*, on both jobs: an
   // outline the ground swallows leaves the plain rows as loose type, and
-  // Grunge's T.tags[3] IS its black background. So the walk starts at 3 and
+  // a tag can BE the page ground (Grunge's fourth was its black, before its
+  // Static Youth tokens left it two). So the walk starts at 3 and
   // takes the first tag that clears `tierHues`' own 0.22 — olive on Retro and
   // pale lime on Lime (both index 3), the stamp red on Grunge and the
   // terracotta on Editorial, whose index 3 is a wash only a shade off its
@@ -1194,7 +1223,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 2026-09-15). Emptiable.
   vm.mapSpan = cv('span', MAP_SPAN)
   // Layout 3's foot pill. Uncased, the footer's rule: the pill has always drawn
-  // an uncased label and casing it would shout on Grunge and Pop.
+  // an uncased label and casing it would shout on Pop.
   vm.mapCta = cv('cta', 'See all gigs')
 
   // testimonials — the songs rule, the gigs' and the packages': an absent key
@@ -1276,8 +1305,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // pricing stack's own seat, the first palette tag that clears `tierHues`'
   // 0.22 against the page ground. Taken rather than derived a second time
   // because the job is the same one that walk was written for: a line or an
-  // outline that has to read against the *page*, where Grunge's T.tags[3] IS
-  // its black background and Retro's is the olive the frame binds.
+  // outline that has to read against the *page*, where a tag can be the page
+  // ground itself and Retro's is the olive the frame binds.
   vm.formRule = vm.tierRow.card
   // The boxes are the artist's now, on the `songs` rule — absent key means the
   // seed, emptied array means none, no null sentinel. Every row is normalised
@@ -1374,8 +1403,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     .filter((colLinks, i) => i === 0 || colLinks.length)
   // Uncased, unlike vm.calCta and unlike every other string in this block: the
   // pill has always drawn `cta1`, which is uncased too, and caseText is only a
-  // passthrough on the two `title` themes. Casing it here would upper-case the
-  // footer's pill on Grunge and Pop — a picture that moved, on a change that was
+  // passthrough on the `title` themes. Casing it here would upper-case the
+  // footer's pill on Pop — a picture that moved, on a change that was
   // only meant to hand the artist a field for a default they already had.
   vm.footerCta = cv('cta', 'Book Now')
   vm.footerCredit = FOOTER_CREDIT
@@ -3364,7 +3393,7 @@ const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.he
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
-  // The flat three show their Figma header as a still (photos.js). It is
+  // The flat two show their Figma header as a still (photos.js). It is
   // SPOT_ASPECT already, so `cover` crops nothing — not `contain`.
   const { name } = THEMES[themeIdx]
   const still = TEMPLATE_STILLS[name]
@@ -3451,11 +3480,101 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * ThemePicker — the top bar's theme switcher
+ *
+ * LayoutPicker's construction, and a DropdownMenu for LayoutPicker's reason:
+ * a stock <Select> would mirror the thumbnail into the closed trigger. The
+ * thumbnails are the template stage's own (`TemplatePreview`), so a theme
+ * looks here the way it did where it was first picked — its default header,
+ * not the user's page.
+ * ------------------------------------------------------------------ */
+
+function ThemePicker({ themeIdx, artistName, onPick }) {
+  const [open, setOpen] = useState(false)
+  const cur = THEMES[themeIdx]
+  const [bg, ac] = cur.palette
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button" onClick={stopE} aria-label={`Theme: ${cur.name}`}
+          className="hover:border-foreground"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', borderRadius: '9px',
+            padding: '6px 10px', cursor: 'pointer',
+          }}
+        >
+          <span style={{
+            width: '18px', height: '18px', borderRadius: '999px', flex: 'none',
+            background: `linear-gradient(135deg, ${bg} 50%, ${ac} 50%)`,
+            boxShadow: '0 0 0 1px rgba(0,0,0,.12)',
+          }} />
+          <span style={{ fontSize: '13px', fontWeight: 600 }}>{cur.name}</span>
+          <ChevronDown size={14} style={{ color: '#8B887D', flex: 'none' }} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start" sideOffset={6} onClick={stopE}
+        className="p-[5px]"
+        style={{
+          width: 'min(560px, calc(100vw - 24px))', maxHeight: 'min(640px, 80vh)', overflowY: 'auto',
+          display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '4px',
+          borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)',
+        }}
+      >
+        {THEMES.map((t, i) => {
+          const isCur = i === themeIdx
+          return (
+            <DropdownMenuItem
+              key={t.name} textValue={t.name} onSelect={() => onPick(i)}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: '7px',
+                padding: '6px', borderRadius: '8px', cursor: 'pointer', minWidth: 0,
+                background: isCur ? '#F2F6FE' : undefined,
+              }}
+            >
+              {/* LayoutPicker's rule: the current one is an inset outline, not a
+                  border, so the frame's width — and ScaledPreview's scale — holds. */}
+              <span style={{
+                display: 'block', width: '100%', aspectRatio: SPOT_ASPECT,
+                borderRadius: '6px', overflow: 'hidden', border: '1px solid #E2DFD7',
+                outline: isCur ? '2px solid #2B6BE4' : undefined, outlineOffset: '-2px',
+              }}>
+                <TemplatePreview themeIdx={i} artistName={artistName} />
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600 }}>{t.name}</span>
+                  <span style={{ fontSize: '11px', color: '#8B887D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {t.sub}
+                  </span>
+                </span>
+                {isCur && <Check size={12} style={{ color: '#2B6BE4', flex: 'none' }} />}
+              </span>
+            </DropdownMenuItem>
+          )
+        })}
+        {/* `arch` lives on the section, not the theme, so a switch loses nothing.
+            A plain paragraph, not an item: it is nothing to pick. */}
+        <p style={{
+          gridColumn: '1 / -1', margin: '2px 0 0', padding: '6px 6px 4px',
+          borderTop: '1px solid #E2DFD7', fontSize: '11px', color: '#8B887D',
+        }}>
+          Your layouts and content are kept when you switch.
+        </p>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §6 The header layout picker
  *
  * The grid the setup modal (§6.2) is built around: the template's header
  * designs, up to four — `setupHeaderCount()`, since only layouts 1–4 are
- * a whole page — so four for Retro and Lime and three for the flat
+ * a whole page — so four for Retro, Lime and Grunge and three for the flat
  * templates (§4.4). Three up on a desktop, two around 720px, one below
  * ~560.
  *
@@ -4311,7 +4430,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               className="hover:bg-muted"
               style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '3px 9px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
             >‹</button>
-            <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '16px' }}>encore</span>
+            <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '16px' }}>JustPay+</span>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E' }}>{T.name}</span>
             <span style={{ flex: 1 }} />
             <button type="button" onClick={(e) => { stopE(e); patch({ published: true }) }}
@@ -4332,37 +4451,13 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               <TooltipContent>Back to templates</TooltipContent>
             </Tooltip>
 
-            <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '17px' }}>encore</span>
+            <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '17px' }}>JustPay+</span>
             <span style={{ width: '1px', height: '24px', background: '#E2DFD7' }} />
 
             {/* Theme switcher — a labelled control, not decoration. */}
             <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D' }}>Theme</span>
-              <span style={{ display: 'flex', gap: '6px' }}>
-                {THEMES.map((t, i) => {
-                  const [bg, ac] = t.palette
-                  const on = i === st.theme
-                  return (
-                    <Tooltip key={t.name}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button" aria-label={t.name} onClick={(e) => { stopE(e); patch({ theme: i }) }}
-                          className="hv-scale12"
-                          style={{
-                            width: '26px', height: '26px', borderRadius: '999px', padding: 0, cursor: 'pointer',
-                            background: `linear-gradient(135deg, ${bg} 50%, ${ac} 50%)`,
-                            border: `2px solid ${on ? '#1B1A17' : '#FFFFFF'}`,
-                            boxShadow: on ? '0 0 0 2px rgba(27,26,23,.2)' : '0 0 0 2px rgba(0,0,0,.12)',
-                            transition: 'transform .15s',
-                          }}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>{t.name}</TooltipContent>
-                    </Tooltip>
-                  )
-                })}
-              </span>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#6B685E' }}>{T.name}</span>
+              <ThemePicker themeIdx={st.theme} artistName={artistName} onPick={(i) => patch({ theme: i })} />
             </span>
 
             <span style={{ flex: 1 }} />

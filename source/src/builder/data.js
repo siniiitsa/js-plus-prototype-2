@@ -95,18 +95,57 @@ export const THEMES = [
   },
   {
     name: 'Grunge',
-    sub: 'Special Elite · stamp red',
-    display: "'Special Elite', monospace",
-    label: "'Courier Prime', monospace",
-    body: "'Courier Prime', monospace",
-    casing: 'upper',
-    dls: '0.04em',
-    radius: '0',
-    radiusSm: '0',
-    btnR: '0',
-    bw: '1.5px',
+    sub: 'Anton · stamp red',
+    // Grunge is the third template with a Figma variable mode ("1 · Primitives"
+    // → Static Youth, "2 · Scheme" → Scheme 1), so every value below is that
+    // mode's. The exception is the display and label face: the mode names
+    // Stones Crush, a commercial distressed caps grotesque that cannot ship, so
+    // it is set in Anton — the nearest free silhouette, heavy and condensed,
+    // without the distress (user call, 2026-09-21; Retro's Soulway → Fraunces
+    // precedent). Anton has a lowercase where Stones Crush is all capitals, so
+    // a Grunge block sets its display and label strings `textTransform:
+    // 'uppercase'` per site; Chakra Petch and Inter set mixed case ("Sold Out",
+    // "Full name"), which is why casing is 'title' and not 'upper'.
+    display: "'Anton', sans-serif",
+    label: "'Anton', sans-serif",
+    ui: "'Chakra Petch', sans-serif",
+    body: "'Inter', sans-serif",
+    casing: 'title',
+    // Every Static Youth text style states letterSpacing 0.
+    dls: '0px',
+    // radius/card, radius/control, radius/pill, border/thin, radius/chip.
+    radius: '8px',
+    radiusSm: '8px',
+    btnR: '999px',
+    bw: '2px',
+    radiusChip: '4px',
     palette: ['#000000', '#DF262C', '#FFFFFF'], // black · stamp red · white
-    tags: ['#DF262C', '#171716', '#FFFFFF', '#000000'],
+    // Scheme 1's tag1…tag7 alternate between exactly these two — Lime's two-seat
+    // system — with their inks in `sem.tagFg`.
+    tags: ['#1A1A1A', '#DF262C'],
+    // Scheme 1, the scheme seven of the eleven layout-1 sections stand on (and
+    // Scheme 4, which is Scheme 1 byte for byte in this mode). The header, the
+    // media player, the events map and the enquiry form stand on Scheme 2
+    // (`#171716` ground, `#000000` box1) and take its values as named literals.
+    sem: {
+      box1: '#1A1A1A',                      // sem/box/1
+      box2: '#383838',                      // sem/box/2
+      box3: '#0E0E0E',                      // sem/box/3
+      glow: '#DF262C',                      // sem/glow
+      activeBg: '#DF262C',                  // sem/active/bg
+      // sem/active/text and sem/tag/2/text are Lime's inks (#15180F, #0D1F03),
+      // leaked into this mode: a lime-tinted near-black nobody chose for a red
+      // chip. Written as the mode states them, since they render as black
+      // either way — plans/grunge/layout-1.md, open question 5.
+      activeFg: '#15180F',
+      inactiveBg: '#1A1A1A',                // sem/inactive/bg
+      inactiveFg: '#FFFFFF',                // sem/inactive/text
+      inactiveLine: '#1A1A1A',              // sem/state/inactive/border
+      stroke1: 'rgba(255, 255, 255, 0.15)', // sem/stroke/1 — hairlines
+      stroke2: '#FF0000',                   // sem/stroke/2 — pure red, not the accent; the header session checks it
+      hl: '#FFFFFF',                        // sem/box/1/text
+      tagFg: ['#FFFFFF', '#0D1F03'],        // sem/tag/1/text, sem/tag/2/text — parallel to `tags`
+    },
   },
   {
     name: 'Editorial',
@@ -260,9 +299,10 @@ const ANTON_EM = {
 }
 
 // A label's width in ems of tracked Anton; the other digits and anything
-// unlisted take 0.494, the digits' own advance.
-export const antonEms = (text) =>
-  [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + 0.02, 0)
+// unlisted take 0.494, the digits' own advance. `track` is the tracking in
+// ems: Retro's 0.02 by default, and 0 for Grunge, whose mode states none.
+export const antonEms = (text, track = 0.02) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + track, 0)
 
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
@@ -284,12 +324,16 @@ export const NVAR = {
 // layout passes fit the first four of them in its own variable mode —
 // header card N lays out the whole page as layout N, and Lime's page N is
 // Retro's page-N components re-skinned — so its family is those four and
-// no more. Grunge, Editorial and Pop offer three flat layouts (§10.3);
-// their designs do not exist yet.
+// no more. Grunge is the same four in a third mode (Static Youth), all four
+// pages confirmed in the Figma file; only its Hero is fitted so far, and
+// cards 2–4 render HeaderV1…V3 in its tokens until their layout passes.
+// Editorial and Pop offer three flat layouts (§10.3); their designs do not
+// exist yet.
 export const headerFamily = (themeName) =>
-  themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime' : 'flat'
+  themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
+    : themeName === 'Grunge' ? 'grunge' : 'flat'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, flat: 3 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, flat: 3 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -353,6 +397,7 @@ const HEADER_NAMES = {
   // The same HeaderV0…V3, so the same names — sliced, not copied, so a rename
   // reaches both templates.
   lime: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lime),
+  grunge: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.grunge),
   flat: [
     ['Centred', 'Title, tags and buttons'],
     ['Split', 'Text beside an image'],
@@ -891,10 +936,12 @@ export const FIELDS = {
   // does not consume a key simply ignores it, so swapping layouts never
   // silently discards copy the user typed — and the panel says so, off `in`.
   //
-  // The header's `in` is always an object naming Retro and Lime alone: the
-  // two have different header families (six designs against four), and the
-  // flat three have a third family of their own that is not designed, so
-  // they are left unmarked rather than folded onto either list.
+  // The header's `in` is always an object naming Retro, Lime and Grunge alone:
+  // they have different header families (six designs against four and four —
+  // Grunge's row is measured over its fitted card 1 and its placeholder cards
+  // 2–4, so each layout pass re-measures it), and the flat two have a family
+  // of their own that is not designed, so they are left unmarked rather than
+  // folded onto any list.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
@@ -907,47 +954,47 @@ export const FIELDS = {
     // (JP-042: a sentinel in `&who=`, every design × width × surface): the
     // kicker in all four bios and the form's credit row (layouts 1 and 2); the
     // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's
-    // calendar layout 1, which is its own block and draws no polaroid stamp.
+    // and Grunge's calendar layout 1, a block of its own with no polaroid stamp.
     // Change a reader, change the hint.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
-      in: { Retro: [1, 4], Lime: [1] } },
+      in: { Retro: [1, 4], Lime: [1], Grunge: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
-      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3] },
+      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, and the booking '
-          + 'calendar in layouts 1 and 4 (in Lime, layout 4 only).' },
+          + 'calendar in layouts 1 and 4 (in Lime and Grunge, layout 4 only).' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1] },
       hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // Bio layout 4's Listen reads this key too; `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
-      in: { Retro: [1, 2, 4], Lime: [1, 2] } },
+      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2] } },
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
           + '(in Lime, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 1, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 1, 3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0] }, opts: [
+    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -992,17 +1039,18 @@ export const FIELDS = {
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, so there and
-    // on the flat three an empty address leaves it a picture — the rule the
+    // on the flat two an empty address leaves it a picture — the rule the
     // rest of the file calls the Soundcloud rule. Lime's frame draws Book Now in
-    // that seat (JP-034), so under Lime the seat is `cta` and the Soundcloud
-    // pill is drawn only once it has somewhere to go.
+    // that seat (JP-034), and Grunge's does too (it shares Lime's block), so
+    // under those two the seat is `cta` and the Soundcloud pill is drawn only
+    // once it has somewhere to go.
     { k: 'soundcloud', l: 'SoundCloud link', type: 'url', d: '', in: [0],
-      hint: 'Where the Soundcloud button goes on the published page. In Lime the button appears '
-          + 'once this is filled; in the other templates an empty one stays a picture.' },
-    // Lime layout 1 alone: its frame's Book Now pill, on the page's booking
-    // target. `'*': []` and not an absent row — an uncovered template is left
-    // unmarked by fieldReach, and no other template reads this.
-    { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], '*': [] },
+      hint: 'Where the Soundcloud button goes on the published page. In Lime and Grunge the button '
+          + 'appears once this is filled; in the other templates an empty one stays a picture.' },
+    // Lime's and Grunge's layout 1 alone: their frames' Book Now pill, on the
+    // page's booking target. `'*': []` and not an absent row — an uncovered
+    // template is left unmarked by fieldReach, and no other template reads this.
+    { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], Grunge: [0], '*': [] },
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
@@ -1095,7 +1143,7 @@ export const FIELDS = {
     { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], '*': [1, 2, 3] } },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], '*': [1, 2, 3] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `It reaches ${CAL_SPAN} months from there. On the published page, days `
@@ -1308,7 +1356,7 @@ export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.
 // Whether a section's current design reads field `f` — `design` being
 // `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
 // its `'*'` standing for any template it does not name; a template it does not
-// cover at all is left unmarked (true), which is how the flat three's header
+// cover at all is left unmarked (true), which is how the flat two's header
 // stays silent. Read by EditPanel alone: nothing on the canvas consults it,
 // so a field the design ignores keeps its copy for the next layout.
 const reachOf = (f, themeName) => (

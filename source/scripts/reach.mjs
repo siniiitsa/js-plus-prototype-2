@@ -23,6 +23,15 @@ const PROBES = [
   { name: 'who.location', cats: OTHERS, param: 'who', value: { location: Z } },
   { name: 'who.tags', cats: OTHERS, param: 'who', value: { tags: Z } },
   { name: 'who.showTags=hide', cats: OTHERS, param: 'who', value: { showTags: 'hide' } },
+  // The header's own `in` rows (the sweep of Grunge layout 1 measured its
+  // Grunge row with these; each layout pass re-measures its card).
+  { name: 'header.kicker', cats: ['header'], param: 'cj', value: { kicker: Z } },
+  { name: 'header.subtitle', cats: ['header'], param: 'cj', value: { subtitle: Z } },
+  { name: 'header.location', cats: ['header'], param: 'cj', value: { location: Z } },
+  { name: 'header.cta2', cats: ['header'], param: 'cj', value: { cta2: Z } },
+  { name: 'header.showBadge=hide', cats: ['header'], param: 'cj', value: { showBadge: 'hide' } },
+  { name: 'header.badgeText', cats: ['header'], param: 'cj', value: { badgeText: Z } },
+  { name: 'header.align=centre', cats: ['header'], param: 'cj', value: { align: 'centre' } },
   { name: 'header.tags', cats: ['header'], param: 'cj', value: { tags: Z } },
   { name: 'header.showTags=hide', cats: ['header'], param: 'cj', value: { showTags: 'hide' } },
   { name: 'header.heroCta', cats: ['header'], param: 'cj', value: { heroCta: Z } },
