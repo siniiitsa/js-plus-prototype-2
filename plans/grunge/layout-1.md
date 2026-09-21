@@ -95,7 +95,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 5 | `repertoire` | `964:58604` | Repertoire — A · Two-column dense | 1440 × 1096 | `986:44062` | 768 × 922 | `986:44074` | 390 × 918 | `964:58592` | `964:58580` | done `7ea79e7` |
 | 6 | `map` | `964:58605` | Events Map — D · Compact tile | 1440 × 1151 | `986:44063` | 768 × 1349 | `986:44075` | 390 × 1172.2 | `964:58593` | `964:58581` | done `c4cbff0` |
 | 7 | `pricing` | `964:58606` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:44064` | 768 × 765 | `986:44076` | 390 × 1510 | `964:58594` | `964:58582` | done `a3e6bcf` |
-| 8 | `calendar` | `964:58607` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:44065` | 768 × 1376 | `986:44077` | 390 × 997 | `964:58595` | `964:58583` | todo |
+| 8 | `calendar` | `964:58607` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:44065` | 768 × 1376 | `986:44077` | 390 × 997 | `964:58595` | `964:58583` | done `fb89dde` |
 | 9 | `form` | `964:58608` | Enquiry Forms — B · Split context+form | 1440 × 965 | `986:44066` | 768 × 1122 | `986:44078` | 390 × 1176 | `964:58596` | `964:58584` | todo |
 | 10 | `testimonials` | `964:58609` | Testimonials H — Stacked tag card | 1440 × 730 | `986:44067` | 768 × 730 | `986:44079` | 390 × 730 | `964:58597` | `964:58585` | todo |
 | 11 | `footer` | `964:58610` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:44068` | 768 × 647.4 | `986:44080` | 390 × 619.4 | `964:58598` | `964:58586` | todo |
@@ -851,6 +851,45 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   there), pill 54; 390 head 117.1 (117), deck at 149.1 (149), cards 376.6 / 416.5 / 416.5 (377 / 417
   / 417). "Drinks + dinner ambience" wraps at 768, Lime's inherited 216 against 222.67.
 
+### Settled in section 8 (the booking calendar)
+
+- **No Grunge block, for the eighth time: Lime's `if (s.lime)` inside `Calendar`'s `if (s.v0)` is
+  `(s.lime || s.grunge)`**, after the seam, with the **`G` lookup** at its head (Lime's arm is the old
+  literals; themes 0, 1, 3, 4 digest to zero, canvas and `live=1`, and at theme 2 only calendar a0
+  moved). The tree is Lime's node for node at all three widths, on **Scheme 1**, both narrow masters
+  in their page's Device mode, so every `s.*` sem read and ramp key is right. Proved at
+  `theme=2&live=1`, all three widths: both arrows wrap the twelve months, a pick moves the red fill
+  and the line, a booked day takes no click or cursor, re-clicking the lit day falls back to the cued
+  June 12, and the pill is `<a href="#form">`.
+- **The leaves**: the panel is `s.box1` at a **raw radius 13 in a 3px `s.stroke1` ring** (Lime:
+  55, `stroke2`), still the overlay span. The month discs are **`s.bg`** (the frame binds `sem/bg`;
+  Lime's `s.activeFg` would only have looked right) round an `s.ac` arrow. Cells are **`s.bg` at a
+  raw 10** in the same 1px `s.stroke1` ring (Lime: `box2`, `radius/card`). **The picked day is the
+  active pair — `s.pillBg` under `s.activeFg`, and `effects: []`**, so the *Glows* guess is wrong a
+  fifth time. Day names, the foot line, the month and the heading are all `s.ac`; only the day
+  numbers are `s.tx`. Booked is Lime's state unchanged — opacity .38, no strike — and the frame dims
+  Lime's own six days (2, 6, 14, 24, 27, 28).
+- **The 390 cell keeps the master's 50.49 at radius 10** — Lime's circle (`G.round`) was a user call
+  for a 26 corner drawing a lozenge on a 45 column, which a 10 does not; not inherited.
+- **Two direct face sites owed `faced` / `facedLh` / uppercase**: the heading (Display/MD, one tone —
+  "Book Now" is all `sem/text/1`, so no positional rule this time) and the month (Display/SM), through
+  the block's `disp()` helper, Grunge's arm only. The month measures 124.9 / 121.8 / 91.4 against the
+  frames' 121.4 (148 × 0.82) / 118 / 89.
+- **The photograph is a raw radius 12 under a sheet of the band grain**: `image 1`, a 624 square at
+  the card's top-left, `lighten` .29, its gradient paint hidden — section 4's correction of session 0
+  once more. **Named departure**: the 768 master leaves the 624 sheet in a 668 card (44px ungrained);
+  drawn `width: 100%`, `aspectRatio: 1`, the gallery's desktop recipe. At 390 it is the 624 square
+  hung 217.5 above the card, as stated. No seal, no seam.
+- **The foot keeps Retro's `BookPill`** in the capsule defaults (`s.pillBg` / `s.bg`), which read on
+  `#1A1A1A`; the frame draws no pill. Foot 110 / 134 / 149 against the frames' 101 / 100 / 100, Lime's
+  own diff.
+- **`FIELDS.calendar.heading`'s `in` gained `Grunge: [0, 1, 2, 3]`** — the row the last five sections
+  named as due. No other Lime-keyed row outside the header remains (`grep -n "Lime: \[" data.js`).
+- **Measured against the masters' content edges**: desktop head 59, grid half 431 (526 × 0.82), cells
+  58.8 × 45.8, discs 45.1 × 44.3, photo 493.2 × 398.2; 768 halves 526 + 526, cells 78.3 × 55.9, photo
+  648 × 486; 390 grid 427, photo half 308, photo 306 × 268, cells 44.8 × 50.5 (48.29 in the frame — our
+  346 panel against its 370).
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -896,6 +935,11 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - *Place a seal by its disc's centre, off the edges of what it hangs on* (Lime 1, bio) — the third
   Grunge seal.
 - *A leak that shows and reads as a defect is overridden* (this plan, gallery) — the 390 seal.
+
+- *The panel's ring is an overlay, not a `boxShadow` on the panel*, *booked is the frame's own
+  state: opacity .38, no strike* and *the foot keeps Retro's BookPill* (Lime 1, calendar) — all three
+  unchanged.
+- *A leak that shows is overridden* (this plan, gallery) — the 768 grain sheet's 624.
 
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
