@@ -3480,6 +3480,88 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * ThemePicker — the top bar's theme switcher
+ *
+ * LayoutPicker's construction, and a DropdownMenu for LayoutPicker's reason:
+ * a stock <Select> would mirror the thumbnail into the closed trigger. The
+ * thumbnails are the template stage's own (`TemplatePreview`), so a theme
+ * looks here the way it did where it was first picked — its default header,
+ * not the user's page.
+ * ------------------------------------------------------------------ */
+
+function ThemePicker({ themeIdx, artistName, onPick }) {
+  const [open, setOpen] = useState(false)
+  const cur = THEMES[themeIdx]
+  const [bg, ac] = cur.palette
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button" onClick={stopE} aria-label={`Theme: ${cur.name}`}
+          className="hover:border-foreground"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', borderRadius: '9px',
+            padding: '6px 10px', cursor: 'pointer',
+          }}
+        >
+          <span style={{
+            width: '18px', height: '18px', borderRadius: '999px', flex: 'none',
+            background: `linear-gradient(135deg, ${bg} 50%, ${ac} 50%)`,
+            boxShadow: '0 0 0 1px rgba(0,0,0,.12)',
+          }} />
+          <span style={{ fontSize: '13px', fontWeight: 600 }}>{cur.name}</span>
+          <ChevronDown size={14} style={{ color: '#8B887D', flex: 'none' }} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start" sideOffset={6} onClick={stopE}
+        className="p-[5px]"
+        style={{
+          width: 'min(560px, calc(100vw - 24px))', maxHeight: 'min(640px, 80vh)', overflowY: 'auto',
+          display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '4px',
+          borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)',
+        }}
+      >
+        {THEMES.map((t, i) => {
+          const isCur = i === themeIdx
+          return (
+            <DropdownMenuItem
+              key={t.name} textValue={t.name} onSelect={() => onPick(i)}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: '7px',
+                padding: '6px', borderRadius: '8px', cursor: 'pointer', minWidth: 0,
+                background: isCur ? '#F2F6FE' : undefined,
+              }}
+            >
+              {/* LayoutPicker's rule: the current one is an inset outline, not a
+                  border, so the frame's width — and ScaledPreview's scale — holds. */}
+              <span style={{
+                display: 'block', width: '100%', aspectRatio: SPOT_ASPECT,
+                borderRadius: '6px', overflow: 'hidden', border: '1px solid #E2DFD7',
+                outline: isCur ? '2px solid #2B6BE4' : undefined, outlineOffset: '-2px',
+              }}>
+                <TemplatePreview themeIdx={i} artistName={artistName} />
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600 }}>{t.name}</span>
+                  <span style={{ fontSize: '11px', color: '#8B887D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {t.sub}
+                  </span>
+                </span>
+                {isCur && <Check size={12} style={{ color: '#2B6BE4', flex: 'none' }} />}
+              </span>
+            </DropdownMenuItem>
+          )
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §6 The header layout picker
  *
  * The grid the setup modal (§6.2) is built around: the template's header
@@ -4367,31 +4449,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             {/* Theme switcher — a labelled control, not decoration. */}
             <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D' }}>Theme</span>
-              <span style={{ display: 'flex', gap: '6px' }}>
-                {THEMES.map((t, i) => {
-                  const [bg, ac] = t.palette
-                  const on = i === st.theme
-                  return (
-                    <Tooltip key={t.name}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button" aria-label={t.name} onClick={(e) => { stopE(e); patch({ theme: i }) }}
-                          className="hv-scale12"
-                          style={{
-                            width: '26px', height: '26px', borderRadius: '999px', padding: 0, cursor: 'pointer',
-                            background: `linear-gradient(135deg, ${bg} 50%, ${ac} 50%)`,
-                            border: `2px solid ${on ? '#1B1A17' : '#FFFFFF'}`,
-                            boxShadow: on ? '0 0 0 2px rgba(27,26,23,.2)' : '0 0 0 2px rgba(0,0,0,.12)',
-                            transition: 'transform .15s',
-                          }}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>{t.name}</TooltipContent>
-                    </Tooltip>
-                  )
-                })}
-              </span>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#6B685E' }}>{T.name}</span>
+              <ThemePicker themeIdx={st.theme} artistName={artistName} onPick={(i) => patch({ theme: i })} />
             </span>
 
             <span style={{ flex: 1 }} />

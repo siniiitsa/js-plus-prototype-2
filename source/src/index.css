@@ -155,12 +155,11 @@ input::placeholder, textarea::placeholder { color: inherit; opacity: .45; }
 
 /* ------------------------------------------------------------------ *
  * §3.3 Hover utilities
- * Only six survive: three chrome transforms/lifts that a utility class
+ * Only five survive: two chrome transforms/lifts that a utility class
  * cannot express, and three section classes that read custom properties
  * set per section at runtime. Everything else uses token utilities.
  * ------------------------------------------------------------------ */
 
-.hv-scale12:hover { transform: scale(1.12); }
 .hv-scale15:hover { transform: scale(1.15); }
 .hv-lift:hover    { transform: translateY(-5px); border-color: #4a4a42; box-shadow: 0 20px 40px rgba(0,0,0,.4); }
 
