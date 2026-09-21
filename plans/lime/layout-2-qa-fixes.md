@@ -37,7 +37,7 @@ is one entry.
 | 3 | JP-037 | Four drawn elements have no field: hero CTA, bio credit line, bio pill, bio chips | **Confirmed**, and two of the four are Retro's too | M | **yes** (three) — A, A, A, five chips | **done** |
 | 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Re-triaged**: PR #24 closed the labels and JP-041; the count survived | S | **yes** — Minimal is the frame's Music / Gigs / About; default stays `sections`; JP-041 held | **done** |
 | 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** — A, fit-gated; layouts 2 + 3, both templates | **done** |
-| 6 | JP-038 | Desktop side gutter 189px vs the frame's ~55 | **By construction, not a padding bug** — see entry; the "constant at six widths" half is unexplained | S–L | **yes** | todo |
+| 6 | JP-038 | Desktop side gutter 189px vs the frame's ~55 | **By construction, not a padding bug** — see entry; the constant 189 did not reproduce (114–429 measured), no stale-width bug | S | **yes** — A, by design | **done** (README bullet + `scripts/gutter.mjs`, no app code) |
 | 7 | JP-040 | Events Map layout 2 draws none of In transit / ring labels / EXPAND VIEW / Updated 2m ago | **Documented drop**; a BA/PO question, as the tester says | S–M | **blocked on PO** | todo |
 | 8 | — | End-of-pass sweep | — | S | — | todo |
 
@@ -638,9 +638,37 @@ tester's six widths, reading the first section's `padding-left`). If B or C: out
 boundaries* bullet saying in one line what the tester had to discover: the desktop page is the
 1440 frame at 0.82, and windows past 1180 widen the gutters, not the column.
 
-**Decision.** —
+**Decision.** **A** (user, 2026-09-21), after the reproduction: works as designed, answer the
+ticket, no app code.
 
-**Settled.** —
+**Settled.**
+- **The constant 189 does not reproduce, and there is no stale-width bug.**
+  `source/scripts/gutter.mjs` drives the real published tab in Chrome for Testing and resizes
+  its *window* (`Browser.setWindowBounds` — viewport emulation fires `resize` whatever the
+  tab's state and would prove nothing). With the tab in front the gutter is **241 / 114 / 194 /
+  274 / 354 / 429** at 1170 / 1280 / 1440 / 1600 / 1760 / 1910, each `64 + (clientWidth −
+  1180) / 2` to the pixel (1170 is under 1180, so it is the tablet frame: `40 + (1170 − 768) /
+  2`). Resized with the *editor* in front, the hidden tab simply keeps the size it was hidden
+  at — `clientWidth` and the gutter both — and lands on the same six numbers the moment it is
+  shown. So suspect 1 is cleared: `w` never disagrees with the window. `PublishedPage` is
+  untouched.
+- **Where 189 comes from:** a 1440 window with a classic ~10px scrollbar — 64 + (1430 − 1180)
+  / 2. Headless Chrome has overlay scrollbars, hence 194 above. One stuck width of 1430 is
+  also the only input that gives 189 at all six sizes, so the six "widths" were not six window
+  sizes as the page saw them — suspect 2 (emulating sizes over a popup that stayed 1440) is
+  the reading left standing; it cannot be told from here and does not need to be.
+- **Suspect 3 cannot give it either:** the editor canvas's own gutter is `padX` 64 at any
+  window, and at 1170 `useTabletCap` has already forced the tablet canvas.
+- **The reply to QA:** (1) the desktop page is the 1440 frame at 0.82 everywhere — canvas
+  1180, gutter 64, column 1052 against the frame's 1330, which is the reported 21%; (2) past
+  1180 the published tab puts the surplus in the gutters by design, the bands bleeding and the
+  column holding the measure the type was tuned for; (3) the gutter is not a constant — the
+  six measured values above, script attached — and 189 is the 1440-window value.
+- **The header's root has no padding** (its compositions apply the gutter themselves), so a
+  script that reads "the first section's `padding-left`" gets 0; `gutter.mjs` reads the second.
+- README *Scope boundaries* has the bullet; `headless-shell.mjs` gained `chromeForTesting()`
+  for the script. No file under `src/` changed, so every digest is byte-identical by
+  construction.
 
 ---
 
