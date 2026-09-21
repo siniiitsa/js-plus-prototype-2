@@ -509,7 +509,9 @@ Settled in section 1 (the header):
   sit at 15 on one row everywhere, the capsule 630 wide in a 637 cell, the name to its right.
 - **`ListenLink`'s base `fontWeight: 700` synthesises a bold on Bebas Neue**; pass `fontWeight: 400`
   with `labelStyle`. The 768 master's three nav links are the component's default again, so 768 keeps
-  the burger in the capsule, as Retro's does.
+  the burger in the capsule, as Retro's does. **Superseded by JP-039** (`layout-2-qa-fixes.md`,
+  2026-09-21): 768 draws the links whenever they fit the bar's one row (`vm.navFits`) — Minimal's
+  three do, the seeded nine do not — in layouts 2 and 3 of Retro and Lime.
 - **Under Lime the digest's header arch 5 folds onto arch 1** (`HEADER_COUNT.lime` is 4), so a
   layout-2 header change is six theme-1 files, not three; the arch 5 files were byte-identical to arch 1.
 - **Named diffs.** The seeded subtitle is longer than the frame's, so it runs 2 / 3 / 3 lines against

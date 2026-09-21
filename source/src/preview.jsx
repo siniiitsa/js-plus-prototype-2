@@ -55,7 +55,10 @@ const themeIdx = Number(q.get('theme') ?? 0)
 // the page — harmless while a dead footer row still rendered, but the published
 // footer drops those rows now (F25), so `&live=1` would have shown a footer no
 // seeded page can publish.
+// &nav=4 keeps only the first four of them — a shorter page, to walk the tablet
+// header's links-or-burger flip (`vm.navFits`, JP-039). Opt-in, so no digest moves.
 const navSections = navSectionsOf(EXAMPLE_PAGE.map(([id]) => id))
+  .slice(0, q.get('nav') === null ? undefined : Number(q.get('nav')))
 
 // &n=8 fills the section's list-shaped content with n rows, to see a design
 // hold at a count the seed does not reach (FIELDS.media.tracks allows 8). It

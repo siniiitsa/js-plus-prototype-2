@@ -49,7 +49,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
@@ -467,6 +467,31 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // which the seeded nine could only fill on two rows.
   vm.navNameEms = T.name === 'Lime' ? +bebasEms(vm.brand).toFixed(3) : undefined
   vm.navCtaEms = T.name === 'Lime' ? +(bebasEms(vm.cta1) + bebasEms(vm.cta2)).toFixed(3) : undefined
+  // Whether the tablet header draws its links (JP-039). The 768 masters of
+  // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime
+  // alike, where layouts 1 and 4 hide the links behind a burger — but
+  // `navLinks` is the artist's page, and the seeded nine come to more type
+  // than the bar is wide. So the links draw when the bar's one row holds them
+  // and the burger stands otherwise: the capsule, the wordmark, Listen and the
+  // pill, summed at the master's own sizes against the bar (688 in layout 2;
+  // 684 in layout 3, whose card insets it 10 + 32 a side). `other` is every
+  // fixed box beside the type — Lime's is HeaderV1's desktop `reserve` unscaled
+  // (138.32, the capsule's 36 in it), Retro's the capsule's 36 + 2 of border,
+  // four 16 gaps, Listen's 12 and the pill's 59 of padding, gap and disc. An
+  // empty nav keeps the burger, and 390 always does: its master draws one.
+  if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
+    const px = (v) => parseFloat(v)
+    const row = d === 1 ? 688 : 684
+    if (T.name === 'Lime') {
+      vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
+        + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
+    } else if (T.name === 'Retro') {
+      const [link, name] = d === 1 ? [16, 20] : [13, 16]
+      vm.navFits = vm.navLinks.reduce((w, l) => w + antonEms(l.label), 0) * link
+        + (vm.navLinks.length - 1) * 18 + antonEms(vm.brand) * name
+        + (antonEms(vm.cta1) + antonEms(vm.cta2)) * link + 38 + 64 + 12 + 59 <= row
+    }
+  }
 
   // The header's two CTAs point at a section as well: Book Now at wherever the
   // page takes a booking, Listen at wherever it plays something (§4.3a).

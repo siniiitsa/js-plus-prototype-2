@@ -1447,15 +1447,18 @@ function HeaderV1({ s }) {
             the name stays centred whenever the links fit their half and slides
             right when they do not. Only below the floor, where the one row
             outgrows the room, does the cell stop at the room and the capsule
-            wrap, its corner the one-row half-height. Both narrow masters hand
-            the links to the burger, which stands in the same capsule at 390;
-            768 does too, Retro's reason — its three are the component's
-            default, and nine at 14px cannot fit. */}
+            wrap, its corner the one-row half-height. The 390 master hands the
+            links to the burger, which stands in the same capsule. The 768 one
+            draws them, so tablet does too whenever the one row holds them
+            (`s.navFits`, summed in sectionVm at this bar's own sizes — JP-039):
+            at Label/SM with no budget to divide, the cell pinned at the
+            capsule's own width so it cannot wrap. The seeded nine do not fit,
+            and keep the burger. */}
         <div style={{
           flex: '1 1 0', display: 'flex',
-          minWidth: nar ? 0 : `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))`,
+          minWidth: nar ? (s.navFits ? 'max-content' : 0) : `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))`,
         }}>
-          {nar ? (
+          {nar && !s.navFits ? (
             <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
               <NavMenu s={s} color={s.tx} />
             </span>
@@ -1463,7 +1466,7 @@ function HeaderV1({ s }) {
             <nav style={{
               ...capsule, borderRadius: u(18), maxWidth: '100%',
               display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: `${23 / 24}em`,
-              fontSize: linkSize,
+              fontSize: nar ? s.labelSm : linkSize,
             }}>
               {s.navLinks.map((l) => (
                 <a key={l.label} href={navHref(s, l.to)}
@@ -1675,15 +1678,17 @@ function HeaderV1({ s }) {
           type — 720 with the capsule's eight 18px gaps — inside a 688px canvas
           that also seats the wordmark, Listen and the pill (measured on the
           visitor's words, JP-033; the sidebar's names it used to print came to
-          651). So the burger holds at 768 as well, which is also what Retro
-          layouts 1, 3 and 4 do below desktop (5 and 6 keep NavLinks' row down
-          to 768); what the master settles is the capsule the burger stands in,
-          and everything else in the bar. */}
-      {s.narrow
+          651). So at 768 the links draw only when the bar's one row holds
+          them (`s.navFits`, summed in sectionVm — JP-039), at Listen's own
+          16, which Minimal's three do and the seeded nine do not; otherwise
+          the burger holds, as it does in Retro layouts 1 and 4 below desktop
+          (5 and 6 keep NavLinks' row down to 768). The capsule the burger
+          stands in is the master's either way. */}
+      {s.narrow && !s.navFits
         ? navCapsule(<NavMenu s={s} color={ink} />)
         : navCapsule(s.navLinks.map((l) => (
             <a key={l.label} href={navHref(s, l.to)}
-               style={labelStyle(s, '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
+               style={labelStyle(s, tab ? '16px' : '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
           )))}
       <span style={{ flex: 1 }} />
       {/* The masters emit `size/label-lg, 24px` here, which is the component's
@@ -1956,9 +1961,12 @@ function HeaderV2({ s }) {
     // every fixed box beside them are paid for — the capsule's 18 + 18, two 16
     // gaps, Listen's 12 and the pill's 17.92 + 4.27 padding, 8.53 gap and 27.6
     // disc. The gap is HeaderV1's 23/24em, which `navEms`
-    // is summed with, rather than the frame's 1em. Both narrow masters hand
-    // the links to the burger (768's three are the component's default, the
-    // layout-2 reading), which stands in the same capsule.
+    // is summed with, rather than the frame's 1em. The 390 master hands the
+    // links to the burger, which stands in the same capsule; the 768 one
+    // (984:10740) draws them, and so does tablet whenever the one row holds
+    // them — HeaderV1's `s.navFits` rule, at Label/SM with the cell pinned at
+    // the capsule's width (JP-039). The seeded nine keep the burger.
+    const links = desk || !!s.navFits
     const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)})`
     const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
     const capsule = { background: s.bg, boxShadow: ring('1px', s.stroke1), padding: `${u(8)} ${u(18)}` }
@@ -1969,15 +1977,16 @@ function HeaderV2({ s }) {
       })}>
         <div style={{
           flex: '1 1 0', display: 'flex',
-          minWidth: desk ? `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))` : 0,
+          minWidth: desk ? `min(calc(${s.navEms} * ${linkSize} + ${u(36)}), calc(100cqi - ${reserve} + ${u(36)}))`
+            : links ? 'max-content' : 0,
         }}>
-          {desk ? (
+          {links ? (
             // Corner at the one-row half-height, so a capsule that has to wrap
             // below the 12px floor keeps its ends rather than turning stadium.
             <nav style={{
               ...capsule, borderRadius: u(18), maxWidth: '100%',
               display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: `${23 / 24}em`,
-              fontSize: linkSize,
+              fontSize: desk ? linkSize : s.labelSm,
             }}>
               {s.navLinks.map((l) => (
                 <a key={l.label} href={navHref(s, l.to)}
@@ -2155,11 +2164,12 @@ function HeaderV2({ s }) {
   // arrangement — and here the 390 master draws it literally, putting the burger
   // inside the very pill the other two fill with links.
   //
-  // The 768 master draws links too, and is not followed for layout 2's reason:
-  // its three are the component's default where `navLinks` is the artist's page,
-  // and the seeded nine come to more type than the capsule's share of a 684px
-  // bar. The burger therefore holds at 768, as it does in Retro layouts 1, 2 and 4
-  // (5 and 6 keep NavLinks' row down to 768).
+  // The 768 master draws links too, and is followed on layout 2's terms: its
+  // three are the component's default where `navLinks` is the artist's page, and
+  // the seeded nine come to more type than a 684px bar holds. So tablet draws
+  // the links when the bar's one row holds them (`s.navFits`, summed in
+  // sectionVm — JP-039) and the burger otherwise, as Retro layouts 1 and 4 do
+  // below desktop (5 and 6 keep NavLinks' row down to 768).
   const capsule = (
     <nav style={{
       // This rule is *not* inside its padding, where the card's 5px one is: the
@@ -2170,7 +2180,7 @@ function HeaderV2({ s }) {
       padding: `${u(8)} ${u(18)}`, minWidth: 0,
       ...row(u(18), { flexWrap: 'wrap', alignItems: 'flex-start' }),
     }}>
-      {desk
+      {desk || s.navFits
         ? s.navLinks.map((l) => (
             <a key={l.label} href={navHref(s, l.to)}
                style={labelStyle(s, T.labelSm, { color: s.ac, cursor: 'pointer' })}>{l.label}</a>

@@ -427,15 +427,26 @@ mutated through a single `patch()` helper.
   Gigs on the map or the calendar, About on the bio, Book gone because its pill already stands
   beside the links — while `navMode` still defaults to `sections` at every layout, so the seeded
   header is its frame's picture at layouts 1 and 4 only (user call, 2026-09-21). **The flat three's header reads
-  none of this**: `FlatNav` hardcodes Music / Shows / Book. Below `desktop` the links
-  collapse to `NavMenu`'s burger in four of the six Retro layouts; layouts 5 and 6 draw
-  `NavLinks`, which keeps the (wrapping) link row at 768 and collapses only at 390 (measured in
-  JP-033's digest). Layout 2's 768 master draws the
-  links instead, and is **not** followed: its three are the Figma component's default, where
-  `navLinks` is the artist's page and the seeded eleven sections give nine — 576px of type at the
-  master's own 16px, 720 with the capsule's eight 18px gaps, in a 688px canvas that also seats the
-  wordmark, Listen and the pill (re-measured on the visitor's words, JP-033). What that master does settle is the bordered capsule the burger stands in, which
-  its own 390 sibling draws the same way.
+  none of this**: `FlatNav` hardcodes Music / Shows / Book. **At 768 the links are
+  fit-gated in layouts 2 and 3, and folded everywhere else** (JP-039, user call, 2026-09-21).
+  The 768 masters of layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and
+  Lime alike; those of layouts 1 and 4 hide all eight link nodes beside a burger. But `navLinks`
+  is the artist's page, and the seeded eleven sections give nine — 576px of type at the master's
+  own 16px, 720 with the capsule's eight 18px gaps, in a 688px bar that also seats the wordmark,
+  Listen and the pill. So `sectionVm` sums the bar's one row at the master's own sizes — the
+  capsule, the name, Listen and the pill, against 688 in layout 2 and 684 in layout 3 — and
+  **`vm.navFits`** is the answer: the links draw when it is true and `NavMenu`'s burger stands
+  otherwise, in the same bordered capsule, which the 390 masters draw the burger in. Minimal's
+  three always fit; *Follow my sections* on the seeded names fits up to four links in Retro
+  layout 2, five in Retro layout 3 and six in Lime's two (it is the words' width that counts, not
+  their number), so the seeded header is still the burger. It is a vm boolean
+  because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
+  `navNameEms` / `navCtaEms` (Bebas, `bebasEms()`), Retro's is `antonEms()` in `data.js`, its
+  0.02em tracking folded in. It is set at tablet only — desktop never reads it and always draws
+  the links — and is undefined, so the burger, at 390, on an empty nav and in layouts 1 and 4;
+  layouts 5 and 6 draw `NavLinks`, which
+  keeps the (wrapping) link row at 768 and collapses only at 390 (measured in JP-033's digest).
+  The harness takes `&nav=<n>` to shorten the page and walk the flip.
 - **The pricing cards filter, in the published tab only.** The Solo / Trio / Band selector was a
   constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's
   (`FIELDS.pricing.tiers`, below) and the chip row is **derived from their tags** by the same

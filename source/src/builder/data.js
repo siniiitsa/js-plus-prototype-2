@@ -246,6 +246,24 @@ const BEBAS_EM = {
 export const bebasEms = (text) =>
   [...String(text).toUpperCase()].reduce((w, ch) => w + (BEBAS_EM[ch] ?? 0.4), 0)
 
+// Anton's, read the same way — Retro's label face, also set in caps. Retro's
+// labels carry `labelStyle`'s 0.02em tracking, which CSS spends after every
+// character, so it is folded into each advance here. Sums land within 1% of the
+// measured label, and over. Only the tablet header's fit gate reads it
+// (`vm.navFits`, JP-039).
+const ANTON_EM = {
+  A: 0.485, B: 0.479, C: 0.474, D: 0.493, E: 0.412, F: 0.399, G: 0.485, H: 0.499, I: 0.227,
+  J: 0.466, K: 0.472, L: 0.397, M: 0.746, N: 0.498, O: 0.486, P: 0.472, Q: 0.494, R: 0.477,
+  S: 0.461, T: 0.396, U: 0.474, V: 0.469, W: 0.712, X: 0.484, Y: 0.446, Z: 0.41,
+  1: 0.331, ' ': 0.234, '&': 0.52, '·': 0.234, '/': 0.405, '-': 0.311, "'": 0.214, '.': 0.229,
+  ',': 0.236, '!': 0.229, '?': 0.492, ':': 0.242, '(': 0.291, ')': 0.291, '+': 0.355,
+}
+
+// A label's width in ems of tracked Anton; the other digits and anything
+// unlisted take 0.494, the digits' own advance.
+export const antonEms = (text) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + 0.02, 0)
+
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has

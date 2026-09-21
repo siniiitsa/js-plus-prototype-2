@@ -36,7 +36,7 @@ is one entry.
 | 2 | JP-036 | Pricing's *Plan card button* / *Line beside…* edit nothing; card prints BOOK NOW | **Confirmed**: F2 named it as an edge and did not chase it | S | none — the frame answered it | **done** |
 | 3 | JP-037 | Four drawn elements have no field: hero CTA, bio credit line, bio pill, bio chips | **Confirmed**, and two of the four are Retro's too | M | **yes** (three) — A, A, A, five chips | **done** |
 | 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Re-triaged**: PR #24 closed the labels and JP-041; the count survived | S | **yes** — Minimal is the frame's Music / Gigs / About; default stays `sections`; JP-041 held | **done** |
-| 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** | todo |
+| 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** — A, fit-gated; layouts 2 + 3, both templates | **done** |
 | 6 | JP-038 | Desktop side gutter 189px vs the frame's ~55 | **By construction, not a padding bug** — see entry; the "constant at six widths" half is unexplained | S–L | **yes** | todo |
 | 7 | JP-040 | Events Map layout 2 draws none of In transit / ring labels / EXPAND VIEW / Updated 2m ago | **Documented drop**; a BA/PO question, as the tester says | S–M | **blocked on PO** | todo |
 | 8 | — | End-of-pass sweep | — | S | — | todo |
@@ -543,9 +543,47 @@ drawn. 1440 and 390 digests byte-identical.
 **Docs.** CLAUDE.md's header-nav paragraph (the "is **not** followed" sentence), the `:1440`
 comment block, `layout-2.md`'s header Settled gets a pointer here.
 
-**Decision.** —
+**Decision (user, 2026-09-21).** **A — fit-gated links at tablet**, scoped to **layouts 2 and 3
+in both templates**, which are exactly the headers whose 768 master draws links. Read this
+session: Lime 2 `986:11848`, Retro 2 `984:34438`, Lime 3 `984:10740` and Retro 3 `977:22532` all
+draw Music / Gigs / About in a capsule (the two layout-3 instances return an empty `hero-card`
+from `get_metadata`; `get_design_context` has the three `<p>`s); Lime 1 `986:39876`, Lime 4
+`971:5299` and Retro 4 `964:77544` carry all eight link nodes `hidden="true"` beside a `burger`
+frame. Retro 1's 768 was not read — it is Lime 1's component. Layouts 1 and 4 stay on the
+burger. `vm.navEms` is Lime-only, so Retro gets an Anton advance table beside `bebasEms`.
 
-**Settled.** —
+**Settled (2026-09-21).**
+- **`vm.navFits`**, set in `sectionVm` for `cat === 'header'` at tablet, designs 1 and 2, Retro
+  and Lime, on a non-empty nav. One sum per bar — capsule + wordmark + Listen + pill at the
+  master's own sizes — against the measured row: **688** in layout 2, **684** in layout 3
+  (the card insets it 10 + 32 a side). Lime's sum is HeaderV1's desktop `reserve` unscaled
+  (`navEms × labelSm + navNameEms × labelLg + navCtaEms × labelSm + 138.32`); Retro's is
+  `antonEms()` (new, `data.js`: Anton's advances by canvas `measureText`, 0.02em tracking folded
+  in, within 1% and over) at 16 / 20 in layout 2 and 13 / 16 in layout 3, plus 38 of capsule,
+  four 16 gaps, Listen's 12 and the pill's 59.
+- **Four sites, one gate each**: Lime `HeaderV1`, Retro `HeaderV1`, Lime `HeaderV2`, Retro
+  `HeaderV2`. Tablet links draw at the bar's own Label/SM (Lime 14, Retro 16 / 13 — Listen's
+  size beside them), never on the desktop `cqi` budget; Lime's left cell is pinned at
+  `max-content` so the capsule cannot wrap. The burger state keeps the 390 master's capsule.
+- **Which is which.** Links at 768 when they fit: layouts 2 and 3, both templates. Burger at
+  768 always: layouts 1 and 4, both templates (their masters). `NavLinks` row: Retro 5 and 6,
+  untouched. Flat three: `FlatNav`, untouched.
+- **The flip, walked** (harness `&nav=<n>`, new and opt-in, seeded names): Retro 2 draws up to
+  4 links, Retro 3 up to 5, Lime 2 and 3 up to 6; past that the burger. Every state is one
+  row, no element past the section's right edge, canvas `href` absent and `live=1` `#media`.
+  Past its half of the bar Lime's capsule slides the name off centre (5+ links) — the desktop
+  rule, not a new one. Minimal: capsule 180 (Retro 2), 160 (Retro 3), 136 (Lime, against the
+  master's 145 at its leaked desktop type).
+- **Digest** (`header`, themes 0,1,2, canvas and `live=1`, `sections` and Minimal; 4 × 54
+  files): 1440 and 390 byte-identical in all four; `sections` byte-identical at all three
+  widths; the only diffs are tablet + Minimal at arch 1 and 2 of Retro and Lime, and Lime arch 5
+  (layout 2 folded, `5 % 4`). Grunge zero. No new field, so no `reach.mjs` row.
+- **Named.** Lime 3's and Retro 3's `get_metadata` is an empty `hero-card`; use
+  `get_design_context`. HeaderV2's Lime comment claimed both narrow masters draw a burger — it
+  was wrong about 768 and is corrected.
+- **Reply to the tester.** Fixed: at 768 layouts 2 and 3 draw the links whenever they fit on
+  the bar's one row — Minimal always does; *Follow my sections* does on a short page. The
+  seeded nine cannot (720px of row in a 688px bar), so that state keeps the burger, by design.
 
 ---
 
