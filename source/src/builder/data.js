@@ -1039,15 +1039,16 @@ export const FIELDS = {
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, so there and
     // on the flat three an empty address leaves it a picture — the rule the
     // rest of the file calls the Soundcloud rule. Lime's frame draws Book Now in
-    // that seat (JP-034), so under Lime the seat is `cta` and the Soundcloud
-    // pill is drawn only once it has somewhere to go.
+    // that seat (JP-034), and Grunge's does too (it shares Lime's block), so
+    // under those two the seat is `cta` and the Soundcloud pill is drawn only
+    // once it has somewhere to go.
     { k: 'soundcloud', l: 'SoundCloud link', type: 'url', d: '', in: [0],
-      hint: 'Where the Soundcloud button goes on the published page. In Lime the button appears '
-          + 'once this is filled; in the other templates an empty one stays a picture.' },
-    // Lime layout 1 alone: its frame's Book Now pill, on the page's booking
-    // target. `'*': []` and not an absent row — an uncovered template is left
-    // unmarked by fieldReach, and no other template reads this.
-    { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], '*': [] },
+      hint: 'Where the Soundcloud button goes on the published page. In Lime and Grunge the button '
+          + 'appears once this is filled; in the other templates an empty one stays a picture.' },
+    // Lime's and Grunge's layout 1 alone: their frames' Book Now pill, on the
+    // page's booking target. `'*': []` and not an absent row — an uncovered
+    // template is left unmarked by fieldReach, and no other template reads this.
+    { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], Grunge: [0], '*': [] },
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that

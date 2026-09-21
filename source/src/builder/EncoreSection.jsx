@@ -185,8 +185,13 @@ const bleedTo = (s, side) => ({
   [side]: `calc(-1 * ${s.padY})`,
 })
 
-function TornEdge({ s, side = 'top', height = 26, colour, bleed = true }) {
-  if (!s.retro) return null
+// `grunge` is `Grain`'s opt-in, for `Grain`'s reason: Static Youth's Scheme-2
+// bands carry this same vector (964:58602's two are 446:2390 path for path),
+// but Retro calls this from repertoire and testimonials too, where Grunge's
+// frames switch the layer off. A Grunge band shows the vector's foot contour at
+// its head and its head contour at its foot; both are drawn with this one.
+function TornEdge({ s, side = 'top', height = 26, colour, bleed = true, grunge = false }) {
+  if (!s.retro && !(grunge && s.grunge)) return null
   return (
     <svg viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden style={{
       // An <svg> has an intrinsic ratio, so left+right alone will not stretch
@@ -236,6 +241,22 @@ function ArcEdge({ s, side = 'top', height = 44.24, colour, bleed = true }) {
     }}>
       <path d="M1437.84 0H0V4.99C0 4.99 212.94 44.24 718.92 44.24C1224.9 44.24 1437.84 4.99 1437.84 4.99V0Z"
             fill={colour || s.bg} />
+    </svg>
+  )
+}
+
+// Grunge's four-point star (964:58602 "Vector", 144 × 145.33), transcribed from
+// the frame's own path: it stands beside the media heading in `sem/text/1`.
+const GRUNGE_STAR_D =
+  'M82.07 81.73C84.9 79.11 88.58 77.4 92.64 77.05L144 72.66L92.64 68.28C88.58 67.93 84.9 66.22 82.07 63.6' +
+  'L108.06 36.27L80.98 62.49C78.38 59.64 76.69 55.93 76.34 51.83L72 0L67.65 51.84C67.31 55.94 65.62 59.64 63.02 62.5' +
+  'L35.94 36.28L61.92 63.61C59.09 66.22 55.42 67.93 51.36 68.28L0 72.66L51.36 77.05C55.42 77.4 59.1 79.11 61.93 81.73' +
+  'L35.94 109.06L63.02 82.83C65.62 85.69 67.31 89.4 67.66 93.5L72 145.33L76.35 93.5C76.69 89.4 78.38 85.69 80.98 82.83' +
+  'L108.06 109.06L82.08 81.73Z'
+function GrungeStar({ s, style }) {
+  return (
+    <svg viewBox="0 0 144 145.333" aria-hidden style={{ position: 'absolute', display: 'block', pointerEvents: 'none', ...style }}>
+      <path d={GRUNGE_STAR_D} fill={s.ac} />
     </svg>
   )
 }
@@ -4685,7 +4706,17 @@ function Media({ s }) {
   // Soundcloud link stands beside it once the artist has an address for it —
   // the rule the flat tail at the foot of this function already follows — in
   // a seat no master draws.
-  if (s.v0 && s.lime) {
+  //
+  // Grunge layout 1 (964:58602 · 986:44060 at 768 · 986:44072 at 390) is this
+  // tree node for node — the flush rows on hairlines, the 710 / 558 grid at 60,
+  // the opacity-0 disc, the transport, the Book Now pill — so the block is both
+  // templates' and `grunge` names the deltas: the rows are 128 tall under
+  // Display/Title, the card's radius is 13 with no glow and it stands in a
+  // white polaroid leant 2°, the heading is two-tone beside a four-point star,
+  // and the band is Scheme 2's `#171716` (the root's `grungeBand`) under the
+  // grain sheet at .29 lighten between two torn seams.
+  if (s.v0 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -4704,13 +4735,30 @@ function Media({ s }) {
     // and "Five worth your" (5.34em) reproduces it at every size; Retro's 5.8em
     // is Soulway's and would put "your" on the first line.
     const featured = eyebrow(`${s.tracks.length} / ${s.tracks.length} Featured`, { textTransform: 'uppercase' })
+    const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
     const titleBlock = (
       <div style={col(u(36), desk ? { flex: 1, minWidth: 0 } : undefined)}>
         {eyebrow(s.mediaKicker, { textTransform: 'uppercase' })}
-        <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-          letterSpacing: s.dls, color: s.ac, maxWidth: '4.6em',
-        }}>{s.title}</h2>
+        {/* Grunge's frame types the same break and colours across it: "Five
+            worth" in `sem/text/2`, "your ear." in `sem/text/1`. The string is
+            the artist's, so the rule is positional — the first two words are
+            one line and the rest another, in the accent — which keeps the
+            break and the colour on one seam at any size (a product call,
+            the bio's accent word again). */}
+        {grunge ? (
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+            letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
+          }}>
+            <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
+            {titleWords.length > 2 && <span style={{ display: 'block', color: s.ac }}>{titleWords.slice(2).join(' ')}</span>}
+          </h2>
+        ) : (
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac, maxWidth: '4.6em',
+          }}>{s.title}</h2>
+        )}
       </div>
     )
     const heading = desk
@@ -4725,11 +4773,20 @@ function Media({ s }) {
     // hole. At 390 the frame's 16 inset is inert (a 60px sleeve in a 74 row
     // sits 7 from its top), so the row takes 7. The bottom inset gives back the
     // 1px rule, which Figma strokes inside the row's height.
-    const padT = s.mob ? 7 : 16
+    //
+    // Grunge's rows divide the polaroid's 640 (548 at 768, 438 at 390), and
+    // its 390 row seats the same inert inset at 13.8. Its track name is
+    // Display/Title — 36 / 28 / 26, written out because `s.title` is the
+    // heading string — where Lime's is Label/LG.
+    const padT = s.mob ? (grunge ? 13.8 : 7) : 16
+    const rowTitle = desk ? u(36) : tab ? '28px' : '26px'
+    const listMin = grunge
+      ? (desk ? u(640) : tab ? '548px' : '438px')
+      : (desk ? u(540) : tab ? '462px' : '370px')
     const list = (
       <div style={col('0', {
         alignItems: 'stretch', alignSelf: 'stretch',
-        minHeight: s.tracks.length ? (desk ? u(540) : tab ? '462px' : '370px') : undefined,
+        minHeight: s.tracks.length ? listMin : undefined,
       })}>
         {s.tracks.map((t, i) => {
           // The playing row is marked by its button turning to Pause and by the
@@ -4746,7 +4803,7 @@ function Media({ s }) {
               <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none', color: s.ac, letterSpacing: s.dls }}>{t.n}</span>
               <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch', ...txt })}>
                 {/* Label/LG over Body/SM, both clipped on one line like the frame's. */}
-                <span style={{
+                <span style={grunge ? labelStyle(s, rowTitle, { overflow: 'hidden', textOverflow: 'ellipsis' }) : {
                   fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>{t.name}</span>
@@ -4788,28 +4845,40 @@ function Media({ s }) {
         cursor: s.live ? 'pointer' : undefined, position: 'relative',
       }}><LimeSkip width={16.028 * z} color={s.tx} back={back} /></span>
     )
-    const player = (
+    //
+    // Grunge's card is the same stack at radius 13 on Scheme 2's `sem/box/2`,
+    // stated 540 at desktop and 768 and 313.3 at 390, with no effect on it at
+    // all. Its now-playing title is Label/MD in the display face over Body/MD,
+    // its `<` and ▶ are the mode's leaked `#15180F` (`s.activeFg` — the `<`
+    // all but vanishes on the sleeve, as it does in the render), and its
+    // progress track is solid `sem/text/2` under the accent fill, which reads,
+    // so Lime's departure is not needed.
+    const card = (
       <div style={{
         position: 'relative', overflow: 'hidden', width: '100%',
-        background: s.box2, color: s.tx, borderRadius: u(80), padding: u(32),
-        height: desk ? u(540) : s.mob ? '343px' : undefined,
+        background: grunge ? '#222222' : s.box2, color: s.tx, borderRadius: u(grunge ? 13 : 80), padding: u(32),
+        height: desk ? u(540) : s.mob ? (grunge ? '313.3px' : '343px') : grunge ? '540px' : undefined,
         ...col(u(18), { alignItems: 'center' }),
       }}>
         <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
           <Photo s={s} initialsSize={44} src={sleeve} ink={s.tx} />
         </div>
         <div aria-hidden style={{ position: 'absolute', inset: 0, background: SCRIM.limeSleeve }} />
-        <span style={{ position: 'relative', fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>{'<'}</span>
+        <span style={{ position: 'relative', fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: grunge ? s.activeFg : undefined }}>{'<'}</span>
         <span style={s.mob ? { flex: '1 1 0', minHeight: 0 } : { height: u(252), flex: 'none' }} />
         <div style={col(u(4), { alignItems: 'stretch', position: 'relative', width: '100%', textAlign: 'center' })}>
-          <span style={{ fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls }}>{now.track}</span>
-          <span style={{ fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }}>{now.by}</span>
+          <span style={grunge
+            ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' })
+            : { fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls }}>{now.track}</span>
+          <span style={grunge
+            ? { fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls }
+            : { fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }}>{now.by}</span>
         </div>
         <div style={row(u(14), { position: 'relative' })}>
           {skip(true, () => goTo(at - 1))}
           <span onClick={s.live ? toggle : undefined} style={{
             width: u(48), height: u(48), borderRadius: '999px', flex: 'none',
-            background: s.tx, color: s.bg,
+            background: s.tx, color: grunge ? s.activeFg : s.bg,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: s.live ? 'pointer' : undefined,
           }}>{playing
@@ -4819,29 +4888,62 @@ function Media({ s }) {
         </div>
         <div style={row(u(10), { width: '100%', position: 'relative' })}>
           {eyebrow(now.at)}
-          <span style={{ flex: 1, height: '3px', background: s.stroke1, borderRadius: '2px', overflow: 'hidden' }}>
+          <span style={{ flex: 1, height: '3px', background: grunge ? s.tx : s.stroke1, borderRadius: '2px', overflow: 'hidden' }}>
             <span style={{ display: 'block', width: `${now.pct}%`, height: '100%', background: s.pillBg, borderRadius: '2px' }} />
           </span>
           {eyebrow(now.of)}
         </div>
         {audio}
         {/* INNER_SHADOW 64, spread 0, `sem/glow` — over the photograph, the bio's arch. */}
-        <div aria-hidden style={{
-          position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-          boxShadow: `inset 0 0 ${u(64)} ${s.glow}`,
+        {!grunge && (
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+            boxShadow: `inset 0 0 ${u(64)} ${s.glow}`,
+          }} />
+        )}
+      </div>
+    )
+    // Grunge's "Frame 211": the card in a `sem/text/2` polaroid, radius 15 and
+    // 20 / 20 / 80 / 20 (10 / 10 / 50 / 10 at 390), leant 2° clockwise — Figma's
+    // −2, written out because `tilt()` is Retro's. The grain crosses the whole
+    // print, sleeve and transport included, at .5 DIFFERENCE, and its second
+    // paint clears it off the foot: that sheet hangs 50 past the wide cards'
+    // foot, so the ramp is cut there at .45, and wholly past the 390 one. CSS
+    // reserves no room for the lean where Figma's auto-layout does, so the
+    // print stands a few px left of the frame's.
+    const player = !grunge ? card : (
+      <div style={{
+        position: 'relative', overflow: 'hidden', width: '100%',
+        background: s.tx, borderRadius: u(15), transform: 'rotate(2deg)',
+        padding: s.mob ? '10px 10px 50px' : `${u(20)} ${u(20)} ${u(80)}`,
+      }}>
+        {card}
+        <Grain s={s} exact grunge blend="difference" opacity={0.5} style={s.mob ? undefined : {
+          maskImage: 'linear-gradient(0deg, rgba(0,0,0,.45) 0%, #000 9.7%)',
         }} />
       </div>
     )
 
+    const pillType = grunge ? { color: s.tx } : undefined
     // At 390 the root's 44 `padY` is the 44 seam exactly, so the kicker sat
     // flush under the top arc and the pill flush over the bottom one; the
     // wrapper pads a further 24 at each end there (user call, 2026-09-17) —
     // padding, so the arcs stay on the section's edges.
     return (
       <div style={{ position: 'relative', padding: s.mob ? '24px 0' : undefined }}>
+        {/* Grunge's band sheet: `image 1` at .29 LIGHTEN under everything, out
+            over the root's padding, so the content is lifted over it below. Its
+            seams are the frame's two `#000000` vectors, read off the renders:
+            51 deep at every head, 35 / 48 / 40 at the foot. The 390 master's
+            own 24 inset puts its kicker under the head tear; Lime's extra 24
+            here is what clears it. */}
+        <Grain s={s} exact grunge blend="lighten" opacity={0.29}
+               style={{ inset: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})` }} />
         <ArcEdge s={s} side="top" height={44.24 * z} />
         <ArcEdge s={s} side="bottom" height={44.24 * z} />
-        <div style={col(desk ? u(33) : '40px')}>
+        <TornEdge s={s} grunge side="top" height={51 * z} />
+        <TornEdge s={s} grunge side="bottom" height={desk ? 35 * z : tab ? 48 : 40} />
+        <div style={col(desk ? u(33) : '40px', grunge ? { position: 'relative' } : undefined)}>
           {heading}
           <div style={{
             // Retro's `1.27fr 1fr` at 49 is this same 710 / 558 at 60, × 0.82.
@@ -4860,11 +4962,21 @@ function Media({ s }) {
               always share a 390 line. */}
           {(s.mediaCta || s.soundcloud) && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignSelf: 'flex-start' }}>
-              {s.mediaCta && <BookPill s={s} label={s.mediaCta} to={s.bookTo} fg={s.box1} full={s.mob} />}
-              {s.soundcloud && <BookPill s={s} label="Soundcloud" ext={s.soundcloud} fg={s.box1} full={s.mob} />}
+              {/* Grunge's pill is lettered `sem/text/2` beside a `#000000` disc
+                  with the accent arrow, so the disc's ink and the type's part. */}
+              {s.mediaCta && <BookPill s={s} label={s.mediaCta} to={s.bookTo} fg={grunge ? s.bg : s.box1} full={s.mob} style={pillType} />}
+              {s.soundcloud && <BookPill s={s} label="Soundcloud" ext={s.soundcloud} fg={grunge ? s.bg : s.box1} full={s.mob} style={pillType} />}
             </div>
           )}
         </div>
+        {/* 144 × 145.33 at every width, off the content's top-right corner: 42
+            in and 25 down at 1440, 9.7 / 11.7 at 768, and at 390 18 *past* the
+            edge and 47.7 down (the wrapper's 24 is in the 71.7). */}
+        {grunge && <GrungeStar s={s} style={{
+          width: u(144), height: u(145.33),
+          right: desk ? u(42) : tab ? '9.7px' : '-18px',
+          top: desk ? u(25) : tab ? '11.7px' : '71.7px',
+        }} />}
       </div>
     )
   }
@@ -21753,12 +21865,18 @@ export default function EncoreSection({ s }) {
   // carries it, and its ink is Scheme 4's `text/1`, which is `s.bg`. The
   // enquiry form (964:58596) stands on the same Scheme 4 band.
   const limeLight = (s.mp || s.fo) && s.v0 && s.lime
+  // Grunge's bands — Static Youth's page alternates `#000000` with Scheme 2's
+  // `#171716`, and a band that differs draws its own grain sheet and both of
+  // its torn seams. The media player (964:58602) is the first; the map and the
+  // form extend this, one section at a time. Scheme 2's `sem/bg` has no vm key
+  // (`sem` is Scheme 1), hence the literal, which is `HeaderV0`'s `G2.bg`.
+  const grungeBand = s.me && s.v0 && s.grunge
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
     // and HeaderChoices, which would all claim id="header".
     <div id={s.live ? s.anchor : undefined} style={{
-      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : s.footerBand || s.bg,
+      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : grungeBand ? '#171716' : s.footerBand || s.bg,
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
