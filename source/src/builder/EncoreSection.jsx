@@ -3109,7 +3109,23 @@ function Bio({ s }) {
   // `s.*`. The frame's 14 + 1px spacer + 14 between the stacked slots reads as
   // one 29. Its drop shadow under the arch (4/4/9 at 25% black) is dropped: it
   // draws nothing on `#15180F`.
-  if (s.v0 && s.lime) {
+  //
+  // Grunge layout 1 (964:58601 · 986:44058 at 768 · 986:44071 at 390) is Lime's
+  // tree node for node — the same flanks, the same 488 × 648 photograph frame,
+  // the seal on the same centre at all three widths — so it reads this block
+  // and `grunge` names its four deltas. The photograph is a rounded rectangle
+  // (a raw 13) on `sem/box/3` with no glow, under the hero's own sheet of grain:
+  // `image 1`, a 648 square hung off the card's bottom-left corner, lighten at
+  // .5, its `#0B0B0B` foot paint drawn as the same mask. The title is
+  // `sem/text/2` with **its second word in the accent** ("Reads *the* room."):
+  // a rule for a string the artist types, which on a two-word title is the
+  // header's own split and on one word colours nothing — a product call,
+  // reversible in one line. It is a direct display-face site, so it owes
+  // `faced` / `facedLh` and the capitals Stones Crush has and Anton does not.
+  // And the left flank's foot line is Body/Eyebrow, bold, where Lime's is
+  // Body/SM. Neither narrow master overrides its Device mode.
+  if (s.v0 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const tab = isTablet(s)
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -3129,14 +3145,23 @@ function Bio({ s }) {
           whiteSpace: 'nowrap', ...ink,
         }}>{s.initials} Bio</span>
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-          letterSpacing: s.dls, color: s.ac,
-        }}>{s.title}</h2>
-        {/* Body/SM — Inter regular, not the eyebrow. */}
-        <span style={{
-          fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, textTransform: 'uppercase',
-          whiteSpace: 'nowrap', ...ink,
-        }}>[ 001 ] Structure · Bio_01</span>
+          margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+          letterSpacing: s.dls, color: grunge ? s.tx : s.ac,
+          textTransform: grunge ? 'uppercase' : undefined,
+        }}>{grunge
+          ? String(s.title || '').split(' ').map((w, i) => (
+            <span key={i} style={i === 1 ? { color: s.ac } : undefined}>{i ? ' ' : ''}{w}</span>
+          ))
+          : s.title}</h2>
+        {/* Body/SM — Inter regular, not the eyebrow; Grunge's is the eyebrow. */}
+        {grunge
+          ? eyebrow('[ 001 ] Structure · Bio_01', { textTransform: 'uppercase', whiteSpace: 'nowrap' })
+          : (
+            <span style={{
+              fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, textTransform: 'uppercase',
+              whiteSpace: 'nowrap', ...ink,
+            }}>[ 001 ] Structure · Bio_01</span>
+          )}
       </div>
     )
 
@@ -3168,12 +3193,19 @@ function Bio({ s }) {
           width: s.mob ? undefined : u(488), height: s.mob ? '311px' : u(648),
         }}>
           <div style={{
-            position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: u(151), background: s.bg,
+            position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: u(grunge ? 13 : 151),
+            background: grunge ? s.box3 : s.bg,
           }}>
             <Photo s={s} initialsSize={54} />
-            <div style={{
-              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: `inset 0 0 ${u(64)} ${s.glow}`,
+            {!grunge && (
+              <div style={{
+                position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                boxShadow: `inset 0 0 ${u(64)} ${s.glow}`,
+              }} />
+            )}
+            <Grain s={s} exact grunge blend="lighten" opacity={0.5} style={{
+              inset: 'auto auto 0 0', width: u(648), height: u(648),
+              maskImage: 'linear-gradient(0deg, transparent 0%, #000 16.3%)',
             }} />
           </div>
           <SealBadge s={s} size={s.mob ? disc : Math.round(disc * z * 10) / 10} tilt={26.06} style={seal} />
