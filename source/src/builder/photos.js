@@ -1,5 +1,6 @@
-// The seeded mock photography of the two designed templates, exported from their
-// Figma frames — Retro's §10.2 page and Lime's four layout pages.
+// The seeded mock photography of the designed templates, exported from their
+// Figma frames — Retro's §10.2 page, Lime's four layout pages and Grunge's
+// layout-1 page.
 //
 // These are *imports*, never fetched: §8.6 forbids a network request anywhere in
 // the render path, and vite-plugin-singlefile forces `assetsInlineLimit = () => true`,
@@ -10,8 +11,9 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// Retro and Lime are the designed templates (README "Scope boundaries"), so they
-// are the ones that seed photography. The other three keep the initials placeholder.
+// Retro, Lime and Grunge are the templates with Figma frames of their own, so
+// they are the ones that seed photography. The other two keep the initials
+// placeholder.
 
 import hero from './photos/hero.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
@@ -45,6 +47,15 @@ import limeCalendar from './photos/lime-calendar.jpg'
 import limeAvatar from './photos/lime-avatar.jpg'
 import limeGallery4 from './photos/lime-gallery-4.jpg'
 import limeFormPhoto from './photos/lime-form-photo.jpg'
+import grungeHero from './photos/grunge-hero.jpg'
+import grungeHeaderAvatar from './photos/grunge-header-avatar.jpg'
+import grungeStage from './photos/grunge-stage.jpg'
+import grungeSinger from './photos/grunge-singer.jpg'
+import grungeCalendar from './photos/grunge-calendar.jpg'
+import grungeAvatar from './photos/grunge-avatar.jpg'
+import grungeGallery4 from './photos/grunge-gallery-4.jpg'
+import grungeGallery7 from './photos/grunge-gallery-7.jpg'
+import grungeFormPhoto from './photos/grunge-form-photo.jpg'
 import grungeHeader from './photos/grunge-header.jpg'
 import editorialHeader from './photos/editorial-header.jpg'
 import popHeader from './photos/pop-header.jpg'
@@ -96,6 +107,31 @@ export const LIME_PHOTOS = {
   pricing: REVIEWERS,
 }
 
+// Grunge's layout-1 frames (964:58600…10, the mode "Static Youth") are a third
+// shoot, black-and-white in the assets themselves — no fill filter and no node
+// effect desaturates them, so an artist's colour upload stays in colour. Own:
+// the hero (hash 221f121f, a 2632 × 1402 stage shot) and its portrait card
+// (3ef9ee55, the singer), the bio's portrait (8031d0f3, the drummer), the
+// calendar's crowd (019c80fd), the form's avatar (81e1c9a9, the centre square
+// of a pub shot, whose whole frame seeds `photo` on Lime's rule) and the
+// gallery's spotlight (a746e7e4, the band). Shared: the five track covers and
+// the map raster.
+//
+// The gallery strip is the one place this departs from the frame, which draws
+// the bio's drummer six times round Retro's colour spotlight in the ringed
+// fourth seat — a placeholder, not a strip. The seven slots are the shoot's
+// own six photographs and a second crop of the hero, with the frame's
+// spotlight in galActive()'s slot, so every thumbnail is a different picture
+// and none is in colour.
+export const GRUNGE_PHOTOS = {
+  header: grungeHero,
+  bio: grungeStage,
+  calendar: grungeCalendar,
+  form: grungeAvatar,
+  gallery: [grungeStage, grungeSinger, grungeCalendar, grungeGallery4, grungeFormPhoto, grungeHero, grungeGallery7],
+  pricing: REVIEWERS,
+}
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
@@ -126,9 +162,11 @@ const ROW_ART = { media: RETRO_TRACK_ART }
 // centre square of its own `pp` card's source (964:58588), at the same size.
 export const RETRO_HEADER_AVATAR = headerAvatar
 export const LIME_HEADER_AVATAR = limeHeaderAvatar
+export const GRUNGE_HEADER_AVATAR = grungeHeaderAvatar
 
 // Fixed decoration rather than user content, so these are not in FIELDS. The
-// grain is Retro's alone; the map raster is also Lime's (sectionVm decides).
+// grain is Retro's and Grunge's; the map raster is every designed template's
+// (sectionVm decides).
 // `mapRadial` is the events map's layout-3 plate, the frame's own radial street
 // raster (964:68649's Map Texture), re-encoded at 900px; it is drawn as it is,
 // where `map` is inverted onto a dark plate.
@@ -144,7 +182,7 @@ export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeader, Pop: popHeader }
 
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
-// nothing, which is what leaves the flat three rendering exactly as they did.
+// nothing, which is what leaves Editorial and Pop rendering exactly as they did.
 //   photos — the section photographs above
 //   avatar — the header's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
@@ -173,6 +211,7 @@ export const TEMPLATE_STILLS = { Grunge: grungeHeader, Editorial: editorialHeade
 const SEEDS = {
   Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage, layouts: { 2: { bio: bioStage } } },
   Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto, layouts: { 2: { bio: limeBioStage }, 3: { bio: limeBioStage } } },
+  Grunge: { photos: GRUNGE_PHOTOS, avatar: GRUNGE_HEADER_AVATAR, photo: grungeFormPhoto },
 }
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.

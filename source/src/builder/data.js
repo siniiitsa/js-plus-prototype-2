@@ -95,18 +95,57 @@ export const THEMES = [
   },
   {
     name: 'Grunge',
-    sub: 'Special Elite · stamp red',
-    display: "'Special Elite', monospace",
-    label: "'Courier Prime', monospace",
-    body: "'Courier Prime', monospace",
-    casing: 'upper',
-    dls: '0.04em',
-    radius: '0',
-    radiusSm: '0',
-    btnR: '0',
-    bw: '1.5px',
+    sub: 'Anton · stamp red',
+    // Grunge is the third template with a Figma variable mode ("1 · Primitives"
+    // → Static Youth, "2 · Scheme" → Scheme 1), so every value below is that
+    // mode's. The exception is the display and label face: the mode names
+    // Stones Crush, a commercial distressed caps grotesque that cannot ship, so
+    // it is set in Anton — the nearest free silhouette, heavy and condensed,
+    // without the distress (user call, 2026-09-21; Retro's Soulway → Fraunces
+    // precedent). Anton has a lowercase where Stones Crush is all capitals, so
+    // a Grunge block sets its display and label strings `textTransform:
+    // 'uppercase'` per site; Chakra Petch and Inter set mixed case ("Sold Out",
+    // "Full name"), which is why casing is 'title' and not 'upper'.
+    display: "'Anton', sans-serif",
+    label: "'Anton', sans-serif",
+    ui: "'Chakra Petch', sans-serif",
+    body: "'Inter', sans-serif",
+    casing: 'title',
+    // Every Static Youth text style states letterSpacing 0.
+    dls: '0px',
+    // radius/card, radius/control, radius/pill, border/thin, radius/chip.
+    radius: '8px',
+    radiusSm: '8px',
+    btnR: '999px',
+    bw: '2px',
+    radiusChip: '4px',
     palette: ['#000000', '#DF262C', '#FFFFFF'], // black · stamp red · white
-    tags: ['#DF262C', '#171716', '#FFFFFF', '#000000'],
+    // Scheme 1's tag1…tag7 alternate between exactly these two — Lime's two-seat
+    // system — with their inks in `sem.tagFg`.
+    tags: ['#1A1A1A', '#DF262C'],
+    // Scheme 1, the scheme seven of the eleven layout-1 sections stand on (and
+    // Scheme 4, which is Scheme 1 byte for byte in this mode). The header, the
+    // media player, the events map and the enquiry form stand on Scheme 2
+    // (`#171716` ground, `#000000` box1) and take its values as named literals.
+    sem: {
+      box1: '#1A1A1A',                      // sem/box/1
+      box2: '#383838',                      // sem/box/2
+      box3: '#0E0E0E',                      // sem/box/3
+      glow: '#DF262C',                      // sem/glow
+      activeBg: '#DF262C',                  // sem/active/bg
+      // sem/active/text and sem/tag/2/text are Lime's inks (#15180F, #0D1F03),
+      // leaked into this mode: a lime-tinted near-black nobody chose for a red
+      // chip. Written as the mode states them, since they render as black
+      // either way — plans/grunge/layout-1.md, open question 5.
+      activeFg: '#15180F',
+      inactiveBg: '#1A1A1A',                // sem/inactive/bg
+      inactiveFg: '#FFFFFF',                // sem/inactive/text
+      inactiveLine: '#1A1A1A',              // sem/state/inactive/border
+      stroke1: 'rgba(255, 255, 255, 0.15)', // sem/stroke/1 — hairlines
+      stroke2: '#FF0000',                   // sem/stroke/2 — pure red, not the accent; the header session checks it
+      hl: '#FFFFFF',                        // sem/box/1/text
+      tagFg: ['#FFFFFF', '#0D1F03'],        // sem/tag/1/text, sem/tag/2/text — parallel to `tags`
+    },
   },
   {
     name: 'Editorial',

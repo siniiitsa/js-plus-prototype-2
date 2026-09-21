@@ -87,7 +87,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 
 | # | Cat | Desktop node | Composition | Size | Tablet node | Size | Mobile node | Size | Lime twin | Retro twin | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:58599` *(page)* | Static Youth → `THEMES[2]`, font, ramp, `s.grunge`, the shared gate, photos | — | `986:44056` | — | `986:44069` | — | — | — | todo |
+| 0 | *foundation* | `964:58599` *(page)* | Static Youth → `THEMES[2]`, font, ramp, `s.grunge`, the shared gate, photos | — | `986:44056` | — | `986:44069` | — | — | — | **done** |
 | 1 | `header` | `964:58600` | Headers — hero | 1440 × 750 | `986:44057` | 768 × 1024 | `986:44070` | 390 × 844 | `964:58588` | `964:58576` | todo |
 | 2 | `bio` | `964:58601` | Bios — A · Flanked portrait | 1440 × 769 | `986:44058` | 768 × 1142 | `986:44071` | 390 × 729 | `964:58589` | `964:58577` | todo |
 | 3 | `media` | `964:58602` | Media Player — D · Floating cards stack | 1440 × 1253 | `986:44060` *(in `986:44059`)* | 768 × 1742.3 | `986:44072` | 390 × 1231.3 | `964:58590` | `964:58578` | todo |
@@ -192,7 +192,11 @@ Three traps in that table:
 
 ## The three decisions this plan makes or hands over
 
-### 1. Stones Crush is not a Google Font — **user call, blocks session 0**
+### 1. Stones Crush is not a Google Font — **settled: answer B, Anton**
+
+*Settled in session 0 (2026-09-21):* the user chose a free substitute and delegated the pick
+("pick the closest"). It is **Anton** — see *Conventions → Settled in session 0*. The table below
+is kept as the record of the question.
 
 `fonts.googleapis.com/css2?family=Stones+Crush` answers 400, the repo has no `@font-face`
 anywhere, and `TEMPLATE_STILLS`' own comment already says the frames use "demo faces this app
@@ -330,7 +334,8 @@ Lime's section, with `'grunge'` for `'lime'`:
   needs its own four numbers.
 - **The nav fit.** `vm.navEms` and its siblings are `T.name === 'Lime'` and `bebasEms()`. Grunge
   draws the same capsule over the same nine seeded labels, so it needs the same sums in its own
-  face: a measured advance table beside `BEBAS_EM`, and the gates widened. JP-039's `navFits`
+  face — which is Anton (session 0), so `antonEms()` is the table and only the gates widen; mind
+  that the strings are uppercased by style, so measure the uppercased string. JP-039's `navFits`
   rule is layouts 2 and 3's and does not arise here.
 - **What the frame draws** (read off the desktop render; confirm each against `HeaderV0`'s
   existing Lime block before inventing anything): a black capsule nav with a globe mark and a red
@@ -467,6 +472,53 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - **Read a section node, never the desktop page**, for variables: the page frame is set to Lime.
 - **Scheme 4 ≡ Scheme 1** in this mode; a nested Scheme-4 override changes nothing.
 
+### Settled in session 0 (the foundation)
+
+- **The display and label face is Anton**, standing in for Stones Crush (user call, 2026-09-21:
+  substitute, "pick the closest"). Google Fonts has no face both condensed and distressed; Anton
+  is the frame's weight and proportions without the distress, was already loaded in `index.html`
+  and `preview.html` for Retro, and **`antonEms()` in `data.js` is already its advance table**, so
+  the header's nav fit needs no new measurement — widen the `T.name === 'Retro'` arm. The choice
+  is final: every measured width from section 1 on is Anton's. The distress is not drawn; if it is
+  ever wanted, it is a mask over the type, not a face.
+- **Casing is `'title'`, and Grunge's display and label strings take `textTransform: 'uppercase'`
+  per site.** Stones Crush is all capitals and Anton is not, so every frame string in the display
+  or label face ("STATIC YOUTH", the nav, "MANCHESTER, UK", "SEE US IN ACTION", the gallery rows)
+  wants the transform inside its `s.grunge` block — Retro's own idiom for its Anton labels
+  (`labelStyle` sites already carry it; check each). `'upper'` would shout the ~41 `cased()` keys,
+  chips and form labels included, which the frame sets mixed-case in Chakra Petch and Inter.
+  After session 0 the display heads render in mixed case ("Reads the room."): that is expected,
+  and each section session owes its own heads the transform.
+- **`s.designed` reaches two sites**: `TagChips`' designed branch and the root's `bleed` (which
+  also needs `!s.flatHeader`, so it is inert for Grunge until the header session). The gallery's
+  two layout-2 sites (`bw`, the caption ink) stay `(s.retro || s.lime)` — not this pass's frame.
+  `vm.mapSrc` / `mapRadialSrc` read `vm.designed` as well.
+- **`vm.grainSrc` is widened and still inert**: the raster is Retro's to 3/255 (a re-encode of
+  hash `b74be8bc`), but **`Grain` itself opens with `if (!s.retro) return null`**. The first
+  section that draws grain widens that to `(s.retro || s.grunge)` and passes `exact`, `blend`
+  and `opacity` (`lighten` at .5 over the header and inside photographs, .29 over the Scheme-2
+  bands). Read off the nodes: **in media, gallery, map, calendar and form some `image 1` grain
+  layers are hidden** (media's 1527 sheet, the gallery's 636, both of the map's, the calendar's,
+  the form's 1440) — visible are the header's 1440, the bio's 648 and media's 689. So the band
+  table's "+ grain .29" on map and form is suspect; each session reads `visible` before drawing.
+- **The `sem` path is generic**: `pillBg` / `pillFg` and `vm.chips`' `tagFg` read `T.sem`, not the
+  name. `activeFg` and `tagFg[1]` are written as the mode's leaked Lime inks, commented.
+- **Photographs** (`SEEDS.Grunge`, nine `grunge-*.jpg`, ~970 KB): hero `221f121f` is the
+  2632 × 1402 stage shot (exported 1920 × 1023), the `pp` card `3ef9ee55` the singer (384 square),
+  bio `8031d0f3` the drummer (820 × 1024, a plain `FILL`, no crop), gallery spotlight `a746e7e4`
+  the band, calendar `019c80fd` the crowd, form avatar `81e1c9a9` the centre square of a pub shot
+  whose whole frame seeds `photo`. **The greyscale is in the assets** — no fill filter, no node
+  effect — so uploads stay in colour and open question 2 is closed. **The gallery strip departs
+  from the frame on purpose**: the frame repeats the drummer six times round Retro's *colour*
+  spotlight, a placeholder; the seven slots are the shoot's six pictures and a second hero crop,
+  the band in `galActive()`'s slot.
+- **Fonts**: Special Elite left the `index.html` link (nothing else named it); Courier Prime
+  stays — the builder chrome reads it.
+- **After-render, what the tokens alone did** (shots in the session scratchpad): every section is
+  legible. The form's whole card is red with an unfilled submit (Lime's `pillBg` note, same cause);
+  the map raster shows pink; pricing's deck alternates red / `#1A1A1A` / red; repertoire and the
+  media band still draw the flat checkerboard strips; the header is still `FlatHeader`.
+
 ### Inherited and used
 
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
@@ -474,10 +526,10 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
 
 ## Open questions
 
-1. **Stones Crush** — decision 1. Open until the user answers; blocks session 0's font step and
-   all of section 1.
-2. **Does Grunge desaturate an artist's uploads?** Only if session 0 finds the greyscale on the
-   node rather than in the asset.
+1. **Stones Crush** — *settled in session 0:* Anton, by user call. Worth telling the designer
+   that the shipped face is a clean stand-in.
+2. **Does Grunge desaturate an artist's uploads?** *Closed in session 0:* the greyscale is in the
+   assets, so nothing desaturates and uploads stay in colour.
 3. **`gigDark` under Grunge** — the map session's.
 4. **Header cards 2–4 under Grunge**: record what each looks like and needs, in section 1.
 5. **The leaked Lime inks** (`#15180F`, `#0D1F03`) and `stroke2` `#FF0000` — sampled in section 1;

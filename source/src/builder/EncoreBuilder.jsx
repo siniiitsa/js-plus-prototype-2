@@ -106,6 +106,13 @@ const THEME_RAMP = {
     tablet:  { dispXl: '120px', dispLg: '81px',  dispMd: '50px', dispSm: '40px', title: '28px', list: '19px', labelLg: '21px', labelMd: '17px', labelSm: '14px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '13px', chip: '12px', eyebrow: '12px' },
     desktop: { dispXl: '164px', dispLg: '107px', dispMd: '59px', dispSm: '41px', title: '30px', list: '20px', labelLg: '26px', labelMd: '20px', labelSm: '15px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '11px', chip: '11px', eyebrow: '12px' },
   },
+  // Static Youth, Grunge's mode: Lime's ramp but for display-xl, the three
+  // larger labels, body-sm and chip.
+  Grunge: {
+    mobile:  { dispXl: '52px',  dispLg: '46px',  dispMd: '38px', dispSm: '30px', title: '26px', list: '18px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
+    tablet:  { dispXl: '95px',  dispLg: '81px',  dispMd: '50px', dispSm: '40px', title: '28px', list: '19px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
+    desktop: { dispXl: '162px', dispLg: '107px', dispMd: '59px', dispSm: '41px', title: '30px', list: '20px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
+  },
 }
 
 // The two keys that only matter once a window is wider than the canvas its
@@ -341,7 +348,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // TagChips' sentence-case chips — is gated on this rather than on a list of
     // names. A site only some of them share stays a named pair, widened per
     // site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge',
+    // Grunge's layout-1 page is the same eleven components in a third mode,
+    // Static Youth, so its decoration — torn black seams round its textured
+    // bands, grain, the red seal — goes behind this flag in the shared
+    // branches, the way Lime's does. A value two templates share is written as
+    // the pair: `(s.retro || s.grunge)` for grain and torn edges,
+    // `(s.lime || s.grunge)` for the `sem` reads and the capsule nav.
+    grunge: T.name === 'Grunge',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc follows. `page` is the header's design.
@@ -436,9 +450,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Fixed decoration — paper grain and the events-map raster (§10.2). The grain
   // is Retro's alone (Lime's frames carry no texture); the raster is the same
   // image in Lime's map frame, so both designed templates take it.
-  vm.grainSrc = T.name === 'Retro' ? RETRO_TEXTURE.grain : undefined
-  vm.mapSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.map : undefined
-  vm.mapRadialSrc = T.name === 'Retro' || T.name === 'Lime' ? RETRO_TEXTURE.mapRadial : undefined
+  // Grunge's frames lay the very raster grain.jpg was cut from (image hash
+  // b74be8bc, a 3/255 re-encode apart) over their bands and photographs, as a
+  // LIGHTEN layer where Retro's is a multiply; the sections pass the blend.
+  vm.grainSrc = T.name === 'Retro' || T.name === 'Grunge' ? RETRO_TEXTURE.grain : undefined
+  vm.mapSrc = vm.designed ? RETRO_TEXTURE.map : undefined
+  vm.mapRadialSrc = vm.designed ? RETRO_TEXTURE.mapRadial : undefined
 
   // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
   // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
