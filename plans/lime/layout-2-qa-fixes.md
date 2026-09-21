@@ -39,7 +39,7 @@ is one entry.
 | 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** — A, fit-gated; layouts 2 + 3, both templates | **done** |
 | 6 | JP-038 | Desktop side gutter 189px vs the frame's ~55 | **By construction, not a padding bug** — see entry; the constant 189 did not reproduce (114–429 measured), no stale-width bug | S | **yes** — A, by design | **done** (README bullet + `scripts/gutter.mjs`, no app code) |
 | 7 | JP-040 | Events Map layout 2 draws none of In transit / ring labels / EXPAND VIEW / Updated 2m ago | **Documented drop**; a BA/PO question, as the tester says | M | **yes** — A (PO), Retro and Lime together | **done** |
-| 8 | — | End-of-pass sweep | — | S | — | todo |
+| 8 | — | End-of-pass sweep | — | S | — | **done** |
 
 **Why this order:** the two text-only editor fixes first (042, 036). JP-037 before JP-033 because
 both add header-adjacent fields and 037's are the simpler shape. JP-033+041 before JP-039 because
@@ -761,3 +761,64 @@ fields, Retro and Lime together.
 4. `npm run build:standalone`, `cp source/dist-standalone/index.html index.html`, its own
    commit (`Refresh index.html for the Lime QA fixes`).
 5. `plans/README.md`'s row, and a reply line per ticket for QA (fixed / by design / needs PO).
+
+**Settled** (2026-09-21, all five steps; the push, the PR and the merge are the user's).
+- **Digest, `main` → HEAD** (all categories, themes 0, 1, 2 = Retro, Lime, Grunge, three widths,
+  canvas and `live=1`; 387 renders a side a surface, 774 files a side; base from a worktree of
+  `main` (`476f5c7`) on :5174 running its own `preview.jsx` — the harness's only change is the
+  opt-in `&nav=` — with `node_modules` symlinked, port and `?t=` normalised). Moved: **132
+  files, 66 + 66, the same set on both surfaces, and exactly the three named sets** —
+  JP-037's 108 (header 1, 3, 4, 5, 6 Retro / 1, 3, 4, 5 Lime / 1, 4 Grunge; bio 2 and 4 on all
+  three, Lime's bio 3), JP-040's 18 (map layout 2 × three themes), JP-036's 6 (pricing layout 2,
+  Lime). **Map layouts 1, 3 and 4 byte-identical**; JP-042, JP-033 + 041, JP-039 and JP-038 move
+  nothing on the seeded harness, as each Settled says (`sections` is the default `navMode`).
+- **Reach** (`scripts/reach.mjs 0,1,2`, 6,840 renders): every hit is 6/6, none partial, and
+  every row agrees with `FIELDS`' `in` and the two identity hints — `heroCta` header 2 (and
+  Lime's folded 6), `credit` / `cta` bio 2, `tags` / `showTags` the chip-row set above, `status`
+  / `updated` / `expand` map 2 and 3, `rings` map 2, 3 and 4. **0 mismatches.**
+- **Real app** (puppeteer on Chrome for Testing, editor at 1600, Lime → setup card 2 → *Use this
+  header*; sections picked by a trusted click inside their canvas root). Panels: the header
+  lists *Hero button*, *Tags* and both corrected hints; the bio *Credit line* and *Button*;
+  pricing *Plan card button*; the map *Map tag* / *Map note* / *Ring labels* / *Map link* and
+  "5 to a page"; the form "one to a row". **Published tab at 1440 / 768 / 390** (the real
+  window via `Browser.setWindowBounds` at 1440 and 768; Chrome will not take a window to 390, so
+  that width is `setViewport`): no page error in either window, the tab still `about:blank`,
+  `scrollWidth` equal to the width, eleven sections in card 2's order. Header: the hero pill
+  "Enquire about a date" → `#form`. Bio: the credit line, *Book Now*, the header's chips, no
+  *All Access*. Pricing: "Enquire about a date" and "3 dates open for Sept '26", no *Book Now*.
+  Map: *In transit*, *Updated 2m ago*, 30mi / 60mi / 120mi, *Expand view* and *Get Directions*
+  both on the featured gig's Google Maps route. Nav under *Follow my sections*: nine links at
+  1440, the burger at 768 and 390, and the 768 burger opens on the same nine fragments. Flipped
+  to **Minimal** in the panel and republished into the open tab (*Publish*, then the dialog's
+  *Open* again — *Publish* alone only arms it): Music → `#media`, Gigs → `#map`, About → `#bio`
+  drawn as links at 1440 **and 768**, the burger at 390.
+- **The tester's six screenshots are not in the repo**, so the walk was read against each
+  entry's own evidence and Settled rather than against the pictures.
+- **Learned.** `Browser.setWindowBounds` on the popup resizes the one window both tabs share:
+  put it back to 1600 before driving the editor again, or the phone chrome takes over and the
+  panel's controls are in a drawer.
+- `index.html` refreshed in `312414e` (6,964,127 bytes against 6,958,977); `npm run build`
+  passes. The one-off walk script is deleted and the worktree removed.
+
+**Replies to QA, one line per ticket.**
+- **JP-042 — fixed.** The header's Kicker and Location hints, the form-fields counter and the
+  gigs footnote now say what the chosen layout draws.
+- **JP-036 — fixed.** Lime's plan card reads *Plan card button* and the line beside it
+  ("Enquire about a date", "3 dates open for Sept '26"); it no longer prints BOOK NOW.
+- **JP-037 — fixed.** The hero button, the bio's credit line, the bio's button and the chips
+  are fields (Header → *Hero button*, *Tags*; Bio → *Credit line*, *Button*); each drops when
+  emptied. Retro's layout 2 moved with it.
+- **JP-033 — fixed.** The labels were fixed in the layout-1 pass; the design's three are
+  *Navigation links → Minimal*, now Music / Gigs / About. The default stays *Follow my
+  sections*, by product call.
+- **JP-041 — by design.** The calendar head uses the page's one word per section
+  (Availability · Pricing · Enquiries); decided 2026-09-18, held 2026-09-21.
+- **JP-039 — fixed.** At 768 layouts 2 and 3 draw the links whenever they fit the bar's one row:
+  Minimal does; the seeded nine under *Follow my sections* cannot (720px in a 688px bar), so
+  that state keeps the burger, by design.
+- **JP-038 — by design.** Past 1180 the page is a centred 1180 column, so the gutter grows with
+  the window (64 + (width − 1180) / 2); the constant 189 did not reproduce and there is no
+  stale-width bug (`scripts/gutter.mjs`).
+- **JP-040 — fixed; the PO chose A.** Events Map layout 2 draws the *In transit* tag, *Updated
+  2m ago*, the ring labels and *Expand view*, each an editable field that drops when emptied, in
+  Retro and Lime together — which closes the tester's Retro "#4" as well.
