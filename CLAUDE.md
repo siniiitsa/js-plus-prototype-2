@@ -437,7 +437,7 @@ mutated through a single `patch()` helper.
   capsule, the name, Listen and the pill, against 688 in layout 2 and 684 in layout 3 — and
   **`vm.navFits`** is the answer: the links draw when it is true and `NavMenu`'s burger stands
   otherwise, in the same bordered capsule, which the 390 masters draw the burger in. Minimal's
-  three always fit; *Follow my sections* on the seeded names fits up to four links in Retro
+  three fit under the seeded name (the wordmark is in the sum, so a long one can fold them too); *Follow my sections* on the seeded names fits up to four links in Retro
   layout 2, five in Retro layout 3 and six in Lime's two (it is the words' width that counts, not
   their number), so the seeded header is still the burger. It is a vm boolean
   because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /

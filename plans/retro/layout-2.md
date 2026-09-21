@@ -779,6 +779,9 @@ Learned on the header's narrow masters (section 1, and the first of the narrow p
   burger stands in (the 390 one draws the burger inside the very pill the 768
   one fills with links), the wordmark, Listen and the pill's scale. Check the
   real count against the real width before transcribing a nav.
+  **Superseded by JP-039** (`../lime/layout-2-qa-fixes.md`, 2026-09-21): 768 draws
+  the links whenever they fit the bar's one row (`vm.navFits`) and keeps the
+  burger otherwise — here and in layout 3, whose 768 master draws them too.
 - **A rotated square in the metadata is a bounding box; a rotated *disc* is
   not.** The seal's `173.02` at 768 is the 1.38 inflation the memory note
   describes, and the disc is 125. But because a circle's bbox is itself, the

@@ -578,11 +578,13 @@ burger. `vm.navEms` is Lime-only, so Retro gets an Anton advance table beside `b
   files): 1440 and 390 byte-identical in all four; `sections` byte-identical at all three
   widths; the only diffs are tablet + Minimal at arch 1 and 2 of Retro and Lime, and Lime arch 5
   (layout 2 folded, `5 % 4`). Grunge zero. No new field, so no `reach.mjs` row.
+- **The burger still opens** where it is drawn: `live=1`, tablet, `sections`, all four sites —
+  a click adds the panel's ten fragment links.
 - **Named.** Lime 3's and Retro 3's `get_metadata` is an empty `hero-card`; use
   `get_design_context`. HeaderV2's Lime comment claimed both narrow masters draw a burger — it
   was wrong about 768 and is corrected.
 - **Reply to the tester.** Fixed: at 768 layouts 2 and 3 draw the links whenever they fit on
-  the bar's one row — Minimal always does; *Follow my sections* does on a short page. The
+  the bar's one row — Minimal does under the seeded name (the wordmark is in the sum); *Follow my sections* does on a short page. The
   seeded nine cannot (720px of row in a 688px bar), so that state keeps the burger, by design.
 
 ---
