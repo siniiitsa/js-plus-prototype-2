@@ -981,7 +981,9 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   arrows 45.1 × 44.3; 768 band 729.3, card 464 × 372.3 (373), backs 390 × 391.3 (392) and 436 × 349.3
   (350), pills 42.8 (43); 390 band 729.8, card 364 × 332.8 (333) at x 13, backs 301 × 320.8 and 336 ×
   285.8, pills 40.6 (41), arrows at 567.8 (568). At 768 and 390 Anton at 0.75 breaks the quote one
-  word later than Stones Crush ("…TO THE / LAST ENCORE."), three lines either way.
+  word later than Stones Crush — 768 "…TO THE LAST / ENCORE." against the frame's "…TO THE / LAST
+  ENCORE.", 390 "…EMAIL TO THE / LAST ENCORE." against "…EMAIL TO / THE LAST ENCORE." — three lines
+  either way.
 
 ### Inherited and used
 
