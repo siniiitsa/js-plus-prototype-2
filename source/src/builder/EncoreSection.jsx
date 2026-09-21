@@ -842,7 +842,7 @@ function TagChips({ s, justify = 'flex-start', radius, size, hues }) {
   )
 }
 
-function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk', classic = false, scheme = 1 }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk', classic = false, scheme = 1, line = false }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
@@ -880,11 +880,16 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // Grunge's seal (964:58600 "Frame 178") is the same component again — the
   // same 125.37 / 120 / 109.3 / 14 and the same "Group 9" — as a `sem/active/bg`
   // disc with black marks, which is this branch's Scheme 3 pair on Grunge's
-  // own palette, so it takes that pair whatever `scheme` says until a Grunge
-  // frame draws another.
+  // own palette, so it takes that pair whatever `scheme` says. The footer's
+  // (964:58610 "Frame 178") is the frame that draws another: a `sem/bg` disc
+  // with its rings and ticks in `sem/stroke/2` and the name in `sem/active/bg`
+  // — the two reds the mode states, both followed. `line` asks for it; it is
+  // additive and Grunge's alone, so every caller written before it, and every
+  // layout this pass has not fitted, keeps the red disc.
   if ((s.lime || s.grunge) && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
-    const [disc, mk] = s.grunge ? [s.ac, s.bg] : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
+    const [disc, mk] = s.grunge ? (line ? [s.bg, s.stroke2] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
+    const nameMk = s.grunge && line ? s.ac : mk
     return (
       <div style={{
         position: 'absolute', width: size, height: size,
@@ -907,7 +912,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
             </g>
           </g>
           <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
-            <text fill={mk} textAnchor="middle" style={{
+            <text fill={nameMk} textAnchor="middle" style={{
               fontSize: faced(s, '14.05px'), letterSpacing: '4.21px', fontFamily: s.label,
             }}>
               <textPath href={`#seal-${id}`} startOffset="25%">{name}</textPath>
@@ -21835,10 +21840,23 @@ function Footer({ s }) {
   // ternary on nearly every node Retro renders, so it is a block, and the seam
   // below it — `extLink` / `navHref` per row, the pill on `bookTo` and dropped
   // with its label — is restated verbatim. Scheme 1 throughout, so no literal.
-  if (s.lime) {
+  //
+  // Grunge's (964:58610 at 1440, 986:44068 at 768, 986:44080 at 390) is Lime's
+  // tree node for node, on its own Scheme 1 — the same rules in `sem/stroke/1`,
+  // the same dim globe, the same 68 row, `BookPill`'s shared branch exactly —
+  // so the block is both templates' and `grunge` names the deltas: the name
+  // and the links are Label/MD, the three direct display sites owe the face
+  // factor and the capitals Stones Crush has and Anton has not, the statement
+  // keeps the frame's own 439.59 box at both wide widths (Lime's 9em and its
+  // 390 margin are Bebas fits), and the seal is a smaller disc drawn in line.
+  if (s.lime || s.grunge) {
+    const grunge = s.grunge
     const hair = `1px solid ${s.stroke1}`
     const px = (v) => `${Math.round(v * scale * 100) / 100}px`
-    const face = { fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls }
+    const face = {
+      fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls,
+      ...(grunge ? { textTransform: 'uppercase' } : null),
+    }
 
     // The instance's own top stroke (inside, 1px, full width at all three
     // widths): the band table's straight edge. It bleeds over the root's
@@ -21856,7 +21874,9 @@ function Footer({ s }) {
       <span style={row(u(20))}>
         <span style={row(u(10))}>
           <LimeGlobeMark size={27.37 * scale} color={s.stroke1} />
-          <span style={{ ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
+          <span style={grunge
+            ? labelStyle(s, s.labelMd, { color: s.tx })
+            : { ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
         </span>
         <span style={{ width: u(150), height: u(2), background: s.tx, flex: 'none' }} />
       </span>
@@ -21868,13 +21888,16 @@ function Footer({ s }) {
     // Bebas measure, 443.5 against the box, so the cap is 9em (the seal's disc
     // starts past 500); and at 390 the same line is 354.8 against our 346
     // column, so the heading takes back 12 of the root's padding on its right —
-    // the frame's own 10 inset — rather than grow a third line.
+    // the frame's own 10 inset — rather than grow a third line. Anton at 0.75
+    // needs neither: the same line is 10.48em of the faced size, 393 in the 768
+    // box and 299 at 390, so Grunge keeps the box and the column as stated.
     const statement = (
       <h2 style={{
-        margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+        margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd), lineHeight: facedLh(s, 1),
         letterSpacing: s.dls, color: s.ac, whiteSpace: 'pre-wrap',
-        maxWidth: s.mob ? 'none' : s.narrow ? '9em' : u(439.59),
-        marginRight: s.mob ? `calc(10px - ${s.padX})` : undefined,
+        ...(grunge ? { textTransform: 'uppercase' } : null),
+        maxWidth: s.mob ? 'none' : s.narrow ? (grunge ? '439.59px' : '9em') : u(439.59),
+        marginRight: s.mob && !grunge ? `calc(10px - ${s.padX})` : undefined,
       }}>{s.footerStatement}</h2>
     )
 
@@ -21884,10 +21907,18 @@ function Footer({ s }) {
     // plus half the box, against the column's top with the dropped 56 taken out:
     // 85.18 in from the column's right and 49.62 down on desktop, 101.87 in from
     // the content's right and 70.13 down at 768, 60.25 in and 12.73 down at 390.
-    const disc = s.mob ? 78.5 : 158.67 * scale
-    const [inX, downY] = s.mob ? [60.25, 12.73] : s.narrow ? [101.87, 70.13] : [85.18, 49.62]
+    //
+    // Grunge's "Frame 178" is a 150.37 disc (74.4 at 390) on the same tilt, in
+    // line on `sem/bg`. The plugin's x/y is the turned frame's own corner, so
+    // the centre is that plus the half-diagonal turned with it — a sum that
+    // gives Lime's three pairs back exactly: 96.41 / 37.95, 107.42 / 64.57 and
+    // 68.6 / 8.14.
+    const disc = grunge ? (s.mob ? 74.4 : 150.37 * scale) : s.mob ? 78.5 : 158.67 * scale
+    const [inX, downY] = grunge
+      ? (s.mob ? [68.6, 8.14] : s.narrow ? [107.42, 64.57] : [96.41, 37.95])
+      : s.mob ? [60.25, 12.73] : s.narrow ? [101.87, 70.13] : [85.18, 49.62]
     const seal = (
-      <SealBadge s={s} size={disc} tilt={26.06} scheme={s.footerBand ? 2 : 1} style={{
+      <SealBadge s={s} size={disc} tilt={26.06} scheme={s.footerBand ? 2 : 1} line style={{
         right: `${Math.round((inX * scale - disc / 2) * 100) / 100}px`,
         top: `${Math.round((downY * scale - disc / 2) * 100) / 100}px`,
         zIndex: 2,
@@ -21903,7 +21934,7 @@ function Footer({ s }) {
           const ext = extLink(s, l.url)
           return (
             <a key={j} {...(ext || { href: navHref(s, l.to) })}
-               style={labelStyle(s, s.labelSm, {
+               style={labelStyle(s, grunge ? s.labelMd : s.labelSm, {
                  color: s.tx, letterSpacing: s.dls, cursor: 'pointer', textDecoration: 'none',
                })}>{l.label}</a>
           )
