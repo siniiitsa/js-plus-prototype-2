@@ -382,7 +382,16 @@ mutated through a single `patch()` helper.
   whole row, layout 2's ↗ and Venue Link pill (beside which its Get Directions pill takes
   `vm.gigs[].directions`, a Google Maps route composed from the venue and city), layout 3's
   Tickets → column — and layout 3 drops
-  the frame's second `↗` beside the venue, the same address marked twice. **Layout 4 is the
+  the frame's second `↗` beside the venue, the same address marked twice. **Layouts 2 and 3
+  share the frame's four claims as fields** (JP-040, PO call, 2026-09-21; layout 2's fit had
+  dropped them and layout 3's QA re-seated them): `status` is the panel's tab and `updated` the
+  note beside it, `rings` labels each ring's right edge at the midline (layout 4 too), and
+  `expand` is the foot's link on the featured gig's `directions` — a span on the canvas and
+  where there is no route, and in layout 2 the travel card's Get Directions a second time, as
+  the frame offers both. Layout 2 alone also prints `status` as the chip on **every** gig row:
+  one section-wide word, not a per-gig status (pricing's `unit` precedent), with the row's own
+  hour, which held that seat, moved into the meta line. Each drops when emptied. Layout 2's
+  Lime block reads layout 3's `zoom`; Retro's layout 2 draws no zoom controls. **Layout 4 is the
   pager alone**: its whole gig list is one ticker (mustard under Retro, an olive `s.box1`
   capsule in a `s.stroke1` hairline under Lime) at a `perPage` of **1**, so `page` is
   the only list state it reads — `sel` reaches nothing there, the way the testimonials' `cur`

@@ -28,6 +28,10 @@ const PROBES = [
   { name: 'header.heroCta', cats: ['header'], param: 'cj', value: { heroCta: Z } },
   { name: 'bio.credit', cats: ['bio'], param: 'cj', value: { credit: Z } },
   { name: 'bio.cta', cats: ['bio'], param: 'cj', value: { cta: Z } },
+  { name: 'map.status', cats: ['map'], param: 'cj', value: { status: Z } },
+  { name: 'map.updated', cats: ['map'], param: 'cj', value: { updated: Z } },
+  { name: 'map.rings', cats: ['map'], param: 'cj', value: { rings: Z } },
+  { name: 'map.expand', cats: ['map'], param: 'cj', value: { expand: Z } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

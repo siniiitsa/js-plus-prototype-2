@@ -14810,13 +14810,16 @@ function EventsMap({ s }) {
               </div>
               <span style={{ ...bodySm, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
+                {!!gg.time && ` · ${gg.time}`}
               </span>
             </div>
-            {!!gg.time && (
+            {/* Retro's call (JP-040): the chip is `status`, the hour joins
+                the meta line. */}
+            {!!s.mapStatus && (
               <span style={{
                 ...bodySm, flex: 'none', boxShadow: ring(s.stroke1), borderRadius: '999px',
                 padding: `${u(4)} ${u(10)}`, whiteSpace: 'nowrap',
-              }}>{gg.time}</span>
+              }}>{s.mapStatus}</span>
             )}
           </div>
         )
@@ -14878,15 +14881,28 @@ function EventsMap({ s }) {
           borderRadius: u(s.mob ? 30 : 50),
         })}>
           <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
-            {/* Retro's Featured tab in the frame's Scheme 2 status pill. The
-                frame's "Updated 2m ago" stays dropped. */}
-            <span style={row(u(8), {
-              background: s.box1, color: s.ac, borderRadius: '999px',
-              padding: `${u(6)} ${u(12)}`, ...chip,
-            })}>
-              <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: s.ac }} />
-              Featured
-            </span>
+            {/* The frame's Scheme 2 status pill and its note, on layout 3's
+                two fields (JP-040); each drops when emptied, the row with
+                both. */}
+            {(!!s.mapStatus || !!s.mapUpdated) && (
+              <div style={row(u(12), {
+                width: '100%', justifyContent: 'space-between',
+                ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+              })}>
+                {!!s.mapStatus && (
+                  <span style={row(u(8), {
+                    background: s.box1, color: s.ac, borderRadius: '999px', flex: 'none',
+                    padding: `${u(6)} ${u(12)}`, ...chip,
+                  })}>
+                    <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: s.ac, flex: 'none' }} />
+                    {s.mapStatus}
+                  </span>
+                )}
+                {!!s.mapUpdated && (
+                  <span style={{ ...bodySm, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
+                )}
+              </div>
+            )}
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {g ? (
                 <>
@@ -14937,6 +14953,15 @@ function EventsMap({ s }) {
                             stroke={s.ac} strokeWidth={r.w} strokeDasharray={r.dash} opacity={r.o} />
                   </svg>
                 ))}
+                {/* `rings`, on each ring's right edge at the midline, inner
+                    label first — layout 3's seat and dress (JP-040). */}
+                {s.mapRings.slice(0, rings.length).map((label, k) => (
+                  <span key={k} aria-hidden style={{
+                    position: 'absolute', left: `${50 + rings[rings.length - 1 - k].d / vw * 50}%`, top: '50%',
+                    transform: 'translate(-50%, -50%)', background: s.ac, color: ink,
+                    borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip, textTransform: 'none',
+                  }}>{label}</span>
+                ))}
                 {lpins}
                 {/* The centre pin: a lime disc in a 2px ink ring round the frame's
                     `user` glyph (lucide's, at its bounds), over a small lime tail.
@@ -14974,14 +14999,22 @@ function EventsMap({ s }) {
                 ))}
               </div>
             </div>
-            {/* Retro's allocation: the travel terms, and the count where the
-                frame's dead "EXPAND VIEW" stood. */}
+            {/* Retro's allocation: the travel terms and the count on one line,
+                and the frame's "EXPAND VIEW" on `expand`, layout 3's link to
+                the featured gig's route (JP-040). */}
             <div style={row(u(12), {
               justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
               boxShadow: `inset 0 1px 0 ${s.stroke1}`,
             })}>
-              <span style={bodySm}>{s.mapTerms}</span>
-              <span style={{ ...chip, flex: 'none' }}>{s.gigs.length} pins</span>
+              <span style={{ ...bodySm, minWidth: 0 }}>
+                {[s.mapTerms, `${s.gigs.length} pins`].filter(Boolean).join(' · ')}
+              </span>
+              {!!s.mapExpand && (
+                <Dir {...dir} style={row(u(4), {
+                  ...chip, flex: 'none', color: 'inherit', textDecoration: 'none',
+                  cursor: dir ? 'pointer' : undefined,
+                })}>{s.mapExpand}<span aria-hidden style={{ color: s.ac }}>→</span></Dir>
+              )}
             </div>
             <span aria-hidden style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit',
@@ -15191,16 +15224,20 @@ function EventsMap({ s }) {
             </div>
             <span style={{ ...label12, overflowWrap: 'anywhere' }}>
               {gg.city} · <span style={{ textTransform: 'uppercase' }}>{gg.month}</span>
+              {!!gg.time && ` · ${gg.time}`}
             </span>
           </div>
-          {/* The frame's "In transit" is a status the section cannot know. The
-              row's own hour is what belongs in that chip, and an emptied one
-              drops it rather than printing an empty pill. */}
-          {!!gg.time && (
+          {/* The frame's "In transit" chip is `status` (JP-040, PO call): one
+              section-wide word on every row, the artist's claim rather than
+              the page's — the pricing `unit` precedent — and not a per-gig
+              status. The row's own hour, which held this seat while the fit
+              declined the claim, joins the meta line; an emptied `status`
+              drops the chip rather than printing an empty pill. */}
+          {!!s.mapStatus && (
             <span style={{
               ...label12, flex: 'none', border: `1px solid ${hair}`, borderRadius: '999px',
               padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`, whiteSpace: 'nowrap',
-            }}>{gg.time}</span>
+            }}>{s.mapStatus}</span>
           )}
         </div>
       )
@@ -15230,9 +15267,11 @@ function EventsMap({ s }) {
     // The route. Its pins are the page's gigs at the positions sectionVm paired
     // them with, the featured one lit; the marker at the middle is the artist's
     // base, which is what the frame's rings are drawn around. The frame's
-    // 30/60/120mi ring labels and its zoom controls are gone with the fabricated
-    // metrics — the first are numbers the artist never typed and contradict the
-    // coverage badge, the second a control this file has nothing to do.
+    // 30/60/120mi ring labels are `rings`, the artist's own numbers (JP-040;
+    // the fit had declined them as fabricated). Its zoom controls stay gone
+    // under Retro and the flat three; Lime's block draws them.
+    // The three coverage rings as a share of the viewport's width, outer first.
+    const ringW = desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]
     const pins = shown.map((gg, i) => {
       const on = first + i === feat
       const d = on ? u(16) : u(8)
@@ -15257,16 +15296,30 @@ function EventsMap({ s }) {
         border: s.retro ? undefined : `${s.bw} solid ${hair}`,
       })}>
         <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
-          {/* The frame's "● IN TRANSIT" is a claim about a booking; what the
-              tab can honestly say is what the panel is. The media player's
-              centre seat already carries a Featured tab. */}
-          <span style={row(u(8), {
-            background: tabBg, color: tabFg, borderRadius: '999px',
-            padding: `${u(6)} ${u(12)}`, ...chip12,
-          })}>
-            <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: tabFg }} />
-            Featured
-          </span>
+          {/* The frame's "● IN TRANSIT" tab and its "Updated 2m ago" note, on
+              layout 3's `status` and `updated` (JP-040, PO call): the fit had
+              declined both as claims and printed "Featured" here; as fields
+              they are the artist's claims. Each drops when emptied, and the
+              row with both. */}
+          {(!!s.mapStatus || !!s.mapUpdated) && (
+            <div style={row(u(12), {
+              width: '100%', justifyContent: 'space-between',
+              ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+            })}>
+              {!!s.mapStatus && (
+                <span style={row(u(8), {
+                  background: tabBg, color: tabFg, borderRadius: '999px', flex: 'none',
+                  padding: `${u(6)} ${u(12)}`, ...chip12,
+                })}>
+                  <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: tabFg, flex: 'none' }} />
+                  {s.mapStatus}
+                </span>
+              )}
+              {!!s.mapUpdated && (
+                <span style={{ ...label12, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
+              )}
+            </div>
+          )}
           {g ? (
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {/* A display head wraps rather than ellipsising, so a venue or
@@ -15336,13 +15389,24 @@ function EventsMap({ s }) {
                 width they carry to a canvas the frame's width is not. The outer
                 one already runs past the frame's own viewport at every width
                 (and the middle one too at 390), so the clip is the picture. */}
-            {(desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]).map((w, i) => (
+            {ringW.map((w, i) => (
               <span key={w} aria-hidden style={{
                 position: 'absolute', left: '50%', top: '50%', width: `${w}%`,
                 aspectRatio: '1', borderRadius: '999px',
                 border: `1px solid ${plateFg}`, opacity: i === 0 ? 0.28 : 0.45,
                 transform: 'translate(-50%, -50%)',
               }} />
+            ))}
+            {/* `rings`, on each ring's right edge at the midline, inner label
+                first — layout 3's seat (JP-040), in the centre marker's pair.
+                The outer label runs off the narrow viewports with its ring. */}
+            {s.mapRings.slice(0, ringW.length).map((label, k) => (
+              <span key={k} aria-hidden style={{
+                position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
+                transform: 'translate(-50%, -50%)', background: s.retro ? '#5B5E2E' : s.ac,
+                color: s.retro ? plateFg : s.acFg,
+                borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip12, textTransform: 'none',
+              }}>{label}</span>
             ))}
             {pins}
             <span aria-hidden style={row(0, {
@@ -15357,11 +15421,20 @@ function EventsMap({ s }) {
             justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
             borderTop: `1px solid ${hair}`,
           })}>
-            {/* The frame's data line and its "EXPAND VIEW ›" — a control with
-                nowhere to expand to — become the artist's travel terms and the
-                count the frame's own line carries. */}
-            <span style={label12}>{s.mapTerms}</span>
-            <span style={{ ...chip12, flex: 'none' }}>{s.gigs.length} pins</span>
+            {/* The frame's data line is the artist's travel terms and the count
+                its own line carries; its "EXPAND VIEW ›" is `expand` (JP-040),
+                layout 3's link — the route to the gig the panel features, so
+                the travel card's Get Directions a second time, as the frame
+                itself offers both. A picture where there is no route. */}
+            <span style={{ ...label12, minWidth: 0 }}>
+              {[s.mapTerms, `${s.gigs.length} pins`].filter(Boolean).join(' · ')}
+            </span>
+            {!!s.mapExpand && (
+              <Dir {...dir} style={row(u(4), {
+                ...chip12, flex: 'none', color: 'inherit', textDecoration: 'none',
+                cursor: dir ? 'pointer' : undefined,
+              })}>{s.mapExpand}<span aria-hidden>→</span></Dir>
+            )}
           </div>
         </div>
       </div>
@@ -15413,8 +15486,8 @@ function EventsMap({ s }) {
   //
   // **The right-hand panel is the same Figma component layout 2 fitted**
   // (`radius-map`), and it is written again rather than lifted — the media
-  // player's rule: grep first, then count the disagreements. Four here. Its
-  // head carries a second slot layout 2's panel has no seat for; its ground is
+  // player's rule: grep first, then count the disagreements. Three here since
+  // JP-040 gave layout 2's head the same second slot (it was four). Its ground is
   // the olive card where layout 2's is a cream panel, so every ink on it pairs
   // the other way (the status tab is olive-on-olive with mustard type against
   // layout 2's cream-with-rust); its viewport's derived shape differs at all
@@ -15444,8 +15517,10 @@ function EventsMap({ s }) {
   // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (the row's
   // own hour takes that seat, layout 2's own words), the 30/60/120mi ring
   // labels and the zoom controls (numbers the artist never typed, and a control
-  // this file has nothing to do — layout 2 dropped both already), and
-  // "Updated 2m ago", a timestamp nothing here can produce. The row's `↗` goes
+  // this file has nothing to do), and
+  // "Updated 2m ago", a timestamp nothing here can produce — the labels, the
+  // controls and the stamp all since re-seated as fields (QA, 2026-09-15), and
+  // in layout 2 after them (JP-040). The row's `↗` goes
   // too, because the row already carries the same address in its own
   // `Tickets →` column and that is the column which shapes the row — the events
   // map's allocate-each-field-once rule.

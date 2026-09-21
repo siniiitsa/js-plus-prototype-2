@@ -635,6 +635,9 @@ Learned on the events map (section 9):
   aspect floor outgrew the 768 column — with the aspect kept at 390, which
   stacks. Still dropped, as claims: IN TRANSIT, Updated 2m ago, the rows'
   In transit, the ring labels, the zoom controls and EXPAND VIEW.
+  **Superseded by JP-040** (`../lime/layout-2-qa-fixes.md`, PO call, 2026-09-21): all but
+  the zoom controls are drawn again, from layout 3's `status` / `updated` / `rings` /
+  `expand` fields.
 
 Learned on the header (section 1):
 

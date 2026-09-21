@@ -38,7 +38,7 @@ is one entry.
 | 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Re-triaged**: PR #24 closed the labels and JP-041; the count survived | S | **yes** — Minimal is the frame's Music / Gigs / About; default stays `sections`; JP-041 held | **done** |
 | 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** — A, fit-gated; layouts 2 + 3, both templates | **done** |
 | 6 | JP-038 | Desktop side gutter 189px vs the frame's ~55 | **By construction, not a padding bug** — see entry; the constant 189 did not reproduce (114–429 measured), no stale-width bug | S | **yes** — A, by design | **done** (README bullet + `scripts/gutter.mjs`, no app code) |
-| 7 | JP-040 | Events Map layout 2 draws none of In transit / ring labels / EXPAND VIEW / Updated 2m ago | **Documented drop**; a BA/PO question, as the tester says | S–M | **blocked on PO** | todo |
+| 7 | JP-040 | Events Map layout 2 draws none of In transit / ring labels / EXPAND VIEW / Updated 2m ago | **Documented drop**; a BA/PO question, as the tester says | M | **yes** — A (PO), Retro and Lime together | **done** |
 | 8 | — | End-of-pass sweep | — | S | — | todo |
 
 **Why this order:** the two text-only editor fixes first (042, 036). JP-037 before JP-033 because
@@ -710,9 +710,43 @@ still holds; layout 3 and 4 digests byte-identical.
 layout 3's `zoom`" now has a third reader), `FIELDS.map` labels and `in`, both layout-2 plans'
 "still dropped" lines get a pointer here.
 
-**Decision.** —
+**Decision.** **A** (PO via user, 2026-09-21): draw all four in layout 2 from the existing
+fields, Retro and Lime together.
 
-**Settled.** —
+**Settled.**
+- **`expand` is directions, not zoom.** Option A above said "wired to layout 3's own `zoom`
+  state"; that was wrong about layout 3, whose Expand view is `extLink(feature.directions)` and
+  whose hint already says so. One field, one meaning: layout 2's is the same link — an `<a
+  target="_blank">` on the published side where the featured gig has a route, a span on the
+  canvas and otherwise. It repeats the travel card's Get Directions; the frame draws both.
+  Zoom is not one of the four: Lime's layout 2 already drew the controls (2026-09-17), Retro's
+  still draws none.
+- **Seats, both templates and the flat three, all inside `if (s.v1)`; no `sectionVm` change**
+  (the four `vm.map*` keys were already unconditional):
+  - panel head — the hardcoded *Featured* tab is `status`, `updated` beside it at the right
+    (wrapping at 390, layout 3's row); the row goes when both are emptied;
+  - ring labels — layout 3's formula over layout 2's own ring widths, inner label first; under
+    Lime inside the zoom layer, so they scale with the rings. The outer label runs off the 768
+    and 390 viewports with its ring, as layout 3's does;
+  - foot — `expand` takes the right seat; the pin count that stood there joins the terms line
+    (`terms · N pins`);
+  - rows — the chip is `status`, and **the row's hour moves into the meta line** (`city · MON ·
+    time`), so no per-gig fact is lost. The caveat the PO accepted: it is one section-wide word
+    on every row, not a per-gig status (`vm.tierKind`'s precedent). Emptied, the chip drops.
+- **`FIELDS.map`:** `status`, `updated`, `expand` → `in: [1, 2]`, `rings` → `[1, 2, 3]`; the
+  "(layout 3)" suffixes are gone (the panel's note knows the design) and `status` gained a hint
+  naming the row chip. Measured, not read: `scripts/reach.mjs` gained the four map probes and
+  reports exactly those designs on themes 0, 1, 2.
+- **Verified.** Map digest × themes 0, 1, 2 × three widths × canvas and `live=1` against the
+  pre-change tree: all 18 layout-2 renders differ, **layouts 1, 3 and 4 byte-identical** (54 /
+  54). All four emptied leaves none of them in the text on either surface; canvas has no `<a>`;
+  picking a row live still features it and the Expand link follows the pick, so `sel` is
+  untouched and the pins (not edited) keep the one-pin-per-gig rule.
+- Docs: CLAUDE.md's events-map paragraph, both layout-2 plans' "still dropped" lines, six
+  comments in the branch that said "dropped", and layout 3's "layout 2 dropped both already".
+- **Named edge, not fixed:** Lime's row meta line is `nowrap` with an ellipsis where Retro's
+  wraps, so a long city now truncates the hour that moved there. The seeds fit at 390.
+- The tester's older Retro "#4" closes with this.
 
 ---
 

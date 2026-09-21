@@ -1142,11 +1142,15 @@ export const FIELDS = {
     // Soundcloud rule). An emptied label drops the pill.
     { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs', in: [2],
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
-    { k: 'status',  l: 'Map tag (layout 3)', d: MAP_STATUS, in: [2] },
-    { k: 'updated', l: 'Map note (layout 3)', d: MAP_UPDATED, in: [2] },
-    { k: 'rings',   l: 'Ring labels (layouts 3 and 4)', d: MAP_RINGS, in: [2, 3],
+    // Layout 3's QA fields, which layout 2 reads as well since JP-040 (its fit
+    // had dropped all four as claims). None names a layout in its label: the
+    // "Not shown in this layout" note is what knows the design.
+    { k: 'status',  l: 'Map tag', d: MAP_STATUS, in: [1, 2],
+      hint: 'The tag above the featured gig. Layout 2 also prints it as the chip on every gig row.' },
+    { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2] },
+    { k: 'rings',   l: 'Ring labels', d: MAP_RINGS, in: [1, 2, 3],
       hint: 'Up to three, inner ring first, separated by commas.' },
-    { k: 'expand',  l: 'Map link (layout 3)', d: MAP_EXPAND, in: [2],
+    { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
       hint: 'Beside "Travel & reach" above the four stat cards. Leave empty to hide it.' },

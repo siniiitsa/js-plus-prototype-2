@@ -839,7 +839,9 @@ Settled in section 9 (the events map):
   allocation in `stats` are shared whole, so the published featuring, paging and Venue Link needed
   nothing new, and every one of Retro's drops and re-seatings (Get Directions, the fabricated
   metrics, the ring labels, the zoom controls, "Updated 2m ago", the terms and the pin count in the
-  bar) holds as written. **The boxes are Retro's twin's** (card insets 18 / 20, rows 10 / 14, panel
+  bar) holds as written — until JP-040 (`layout-2-qa-fixes.md`, PO call, 2026-09-21), which
+  draws the tag, the note, the ring labels and EXPAND VIEW again from layout 3's fields, in
+  both templates. **The boxes are Retro's twin's** (card insets 18 / 20, rows 10 / 14, panel
   32 / 12 / 12, the 24 gap); only type-driven heights differ. Retro's `T`, `card` … `tabBg`,
   `travel`, `gigRow`, `list`, `pins` and `featured` are not read. Pure additions (305 / 0).
 - **Three schemes, by node.** The scheme table's "featured panel (652 × 363)" is the **travel
