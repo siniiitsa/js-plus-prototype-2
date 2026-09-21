@@ -91,7 +91,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 1 | `header` | `964:58600` | Headers — hero | 1440 × 750 | `986:44057` | 768 × 1024 | `986:44070` | 390 × 844 | `964:58588` | `964:58576` | done `45d8e2c` |
 | 2 | `bio` | `964:58601` | Bios — A · Flanked portrait | 1440 × 769 | `986:44058` | 768 × 1142 | `986:44071` | 390 × 729 | `964:58589` | `964:58577` | done `7f80065` |
 | 3 | `media` | `964:58602` | Media Player — D · Floating cards stack | 1440 × 1253 | `986:44060` *(in `986:44059`)* | 768 × 1742.3 | `986:44072` | 390 × 1231.3 | `964:58590` | `964:58578` | done `036181e` |
-| 4 | `gallery` | `964:58603` | Gallery Sections — Component 1 | 1440 × 819 | `986:44061` | 768 × 1116 | `989:22292` | 390 × 760 | `964:58591` | `964:58579` | todo |
+| 4 | `gallery` | `964:58603` | Gallery Sections — Component 1 | 1440 × 819 | `986:44061` | 768 × 1116 | `989:22292` | 390 × 760 | `964:58591` | `964:58579` | done `bc04864` |
 | 5 | `repertoire` | `964:58604` | Repertoire — A · Two-column dense | 1440 × 1096 | `986:44062` | 768 × 922 | `986:44074` | 390 × 918 | `964:58592` | `964:58580` | todo |
 | 6 | `map` | `964:58605` | Events Map — D · Compact tile | 1440 × 1151 | `986:44063` | 768 × 1349 | `986:44075` | 390 × 1172.2 | `964:58593` | `964:58581` | todo |
 | 7 | `pricing` | `964:58606` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:44064` | 768 × 765 | `986:44076` | 390 × 1510 | `964:58594` | `964:58582` | todo |
@@ -663,6 +663,52 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   118.1, heading lines 95.2 (130 × 0.82 × 0.89); 768 rows 109.6, print 640, card 540; 390 rows 87.6,
   print 373, card 313.
 
+### Settled in section 4 (the gallery)
+
+- **No Grunge block, for the fourth time: Lime's `if (s.lime)` inside `Gallery`'s `if (s.v0)` is
+  `(s.lime || s.grunge)`**, still after the seam, so `strip`, `active`, `go`, the 390 window and
+  `srcRows` are shared whole. The tree is Lime's node for node at all three widths (`446:3352…3433`
+  against `446:3270…3350`). The deltas are about fifteen leaves, so they sit in **one lookup at the
+  block's head, `G`**, whose Lime arm is today's literals — theme 1 digests to zero. Proved at
+  `theme=2&live=1`, all three widths: both arrows wrapping 6 → 0 and 0 → 6, Back to beginning, a
+  thumb pick, the counter following, the 390 window sliding.
+- **The rows are boards, not capsules**: radius 10 raw, gap 4 (Lime 5), a **3px INSIDE rule** —
+  `s.box1` on the open row, `s.stroke1` on the closed — drawn as an inset box shadow so the stated 92
+  holds. The open row adds `INNER_SHADOW 0 0 4 .25`; the closed rows' 7 / 9 drop shadow is
+  `visible: false`. The glyph's seat is an **empty radius-6 square in a 1px rule** (`s.box1` open,
+  `s.ac` closed) where Lime fills a disc, and the vectors are Lime's at **stroke 1** —
+  `LimeSourceGlyph` takes an additive `stroke`. Glyph ink `sem/bg` open, **`sem/stroke/2` `#FF0000`
+  closed** (followed, open question 5). The label is a direct `s.display` site: `faced(s, s.list)`,
+  `facedLh(s, 1.2)`, uppercase.
+- **The heading is the media player's two-tone rule again** — "See us" `sem/text/2`, "in action"
+  `sem/text/1` across the typed break, so words one and two are a block line and the rest an accent
+  block line; Lime's `4em` cap is not needed. The kicker stays `s.tx`; the back link, its arrow and
+  both credit lines are `s.ac`.
+- **The card**: radius 13 on all three nested frames (no largest-wins), 557 / 524 / 344, shadow
+  4 / 4 / 9 at .16. Counter chip on `s.box3`; brackets `s.inactiveLine`, unchanged. Arrow discs
+  `s.box3` in a 1px `s.stroke1` ring round an `s.ac` arrow, blur dropped again.
+- **Session 0's "the gallery's 636 is hidden" is wrong, section 1's correction again**: `image 1` is
+  visible at .29 `LIGHTEN` at all three widths, and only its gradient paint is hidden. It is a 636
+  square hung 6.5 down the desktop card (`width: 100%`, `aspectRatio: 1`), and a **973.64 square at
+  (−132.8, −195.5) / (−132.8, −375.5)** at 768 / 390, passed through `Grain`'s `style`. Paint order:
+  over the photograph, brackets and counter, under the arrows. The calendar's is probably the same
+  story — read `visible` on the paint, not only the node.
+- **The strip**: the viewer's tile takes a **1px inside `s.ac` rule** and the others nothing —
+  `effects: []`, a plain stroke, so the *Glows* guess is wrong here too. An idle tile states no fill,
+  so an empty one stands on `s.box1` with `s.tx` initials (Lime's is `s.tx` / `s.bg`).
+- **Desktop halves are 636 : 636 with 56 between** (28 + 28), `1fr 1fr`, against Lime's 608 : 585
+  at 135.
+- **One named departure: the desktop arrow row.** "Frame 184" is 545 wide in the 636 card — Lime's
+  585 − 40, leaked — which stands the right disc 71 in from the edge. Drawn 20 in on both sides, as
+  the 768 master draws it (667 in 708). A leak that shows *and* reads as a defect is overridden;
+  Lime's "leaked tops are followed where they show" covered the brackets and counter, which still are.
+- **`FIELDS.gallery` has no Lime-keyed `in` row**, so nothing was owed there.
+- **Measured**: desktop rows 75.4 at 3.3, head 190.4 (232 × 0.82), card 456.7 (557 × 0.82), thumbs
+  62.3, rows' and strip's feet level at 659.7; 768 rows 92, card 524, heading lines 72.1; 390 card
+  344, lines 40.9, TikTok wrapped to a second row (the section's own rule — the frame runs it 10 past
+  its page). The bright spot in the 390 card's top-right corner is a ceiling light in the seeded
+  photograph, not the grain.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -684,6 +730,12 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - *`vm.title` shadows the ramp's `title` size* (Lime 1, map) — the row name's 36 / 28 / 26.
 - *The emitted DOM order is the frame's paint order* (`figma-frame-reading`) — the sheet under the
   content, the print's grain over the transport.
+
+- *Where a section's seam lives in the branch, put the block after the seam* (Lime 1, gallery) —
+  and widen it there.
+- *Transcribed glyphs share one viewBox* (Lime 1, gallery) — `LimeSourceGlyph` at stroke 1.
+- *Leaked tops are followed where they show* (Lime 1, gallery) — brackets and counter; the arrow
+  row's leaked width is the exception, named above.
 
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
