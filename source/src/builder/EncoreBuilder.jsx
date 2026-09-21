@@ -3556,6 +3556,14 @@ function ThemePicker({ themeIdx, artistName, onPick }) {
             </DropdownMenuItem>
           )
         })}
+        {/* `arch` lives on the section, not the theme, so a switch loses nothing.
+            A plain paragraph, not an item: it is nothing to pick. */}
+        <p style={{
+          gridColumn: '1 / -1', margin: '2px 0 0', padding: '6px 6px 4px',
+          borderTop: '1px solid #E2DFD7', fontSize: '11px', color: '#8B887D',
+        }}>
+          Your layouts and content are kept when you switch.
+        </p>
       </DropdownMenuContent>
     </DropdownMenu>
   )
