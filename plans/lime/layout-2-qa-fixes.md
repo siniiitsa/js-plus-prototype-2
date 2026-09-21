@@ -1,0 +1,462 @@
+# Lime layout 2 QA fixes — bug-by-bug plan
+
+Working checklist for a batch of QA reports against the **Lime template, layout 2** (card 2 of the
+setup modal). It works like [`../retro/qa-fixes.md`](../retro/qa-fixes.md): **one entry per
+session, with context cleared between sessions**, and each session writes what it settled back
+into this file. Nothing here is a fit. Each entry is a behaviour or editor defect, and the fix has
+to leave every fitted picture unchanged unless the entry says otherwise.
+
+**Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then *How each
+session runs* and *Verification harness* in `../retro/qa-fixes.md` (the harness it built —
+`&cj=`, `&today=`, `&who=` — is what these sessions drive), then the memory notes
+`verifying-the-published-tab` and `browser-tool-choice`. [`layout-2.md`](./layout-2.md) holds the
+Figma node ids of every layout-2 frame; read it only where an entry sends you to a frame.
+
+Branch: **`lime-layout-2-qa-fixes`, forked from `main`** (`476f5c7`). One commit per entry
+(`Fix JP-042: …`).
+
+**The triage was taken on a stale `main` (`7e15144`), one merge short.** PR #24 — the layout-1
+pass, [`qa-fixes.md`](./qa-fixes.md), which owns the `lime-qa-fixes` branch name — had already
+landed on `origin/main`. Session 1 fast-forwarded, renamed this file and its branch, and checked
+JP-042's evidence against the new tree. **JP-033 + JP-041 must be re-triaged in its own session**:
+PR #24 shipped `navLabel()` (`data.js`, the `nav` word per category, seeding `FOOTER_LINKS` too),
+which is that entry's option A for the header. What is left is whatever the tester still sees on
+the new build, and `vm.calFlow`. Every other entry's line numbers are 7e15144's and drift by
+PR #24's diff as well as the usual.
+
+**Report IDs are the tester's own** (JP-033 …). The gaps (034, 035) were not handed over, so do
+not renumber. The tester's two lists (UI, editing) are merged here; JP-036 appeared in both and
+is one entry.
+
+## Status
+
+| Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
+|---|---|---|---|---|---|---|
+| 1 | JP-042 | Two help texts lie: header Location's hint, the form-fields counter | **Confirmed** | S | no | todo |
+| 2 | JP-036 | Pricing's *Plan card button* / *Line beside…* edit nothing; card prints BOOK NOW | **Confirmed**: F2 named it as an edge and did not chase it | S | small (the note line) | todo |
+| 3 | JP-037 | Four drawn elements have no field: hero CTA, bio credit line, bio pill, bio chips | **Confirmed**, and two of the four are Retro's too | M | **yes** (three) | todo |
+| 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Confirmed**, one root, two surfaces | M | **yes** | todo |
+| 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** | todo |
+| 6 | JP-038 | Desktop side gutter 189px vs the frame's ~55 | **By construction, not a padding bug** — see entry; the "constant at six widths" half is unexplained | S–L | **yes** | todo |
+| 7 | JP-040 | Events Map layout 2 draws none of In transit / ring labels / EXPAND VIEW / Updated 2m ago | **Documented drop**; a BA/PO question, as the tester says | S–M | **blocked on PO** | todo |
+| 8 | — | End-of-pass sweep | — | S | — | todo |
+
+**Why this order:** the two text-only editor fixes first (042, 036). JP-037 before JP-033 because
+both add header-adjacent fields and 037's are the simpler shape. JP-033+041 before JP-039 because
+whether three links fit at 768 depends on what the labels *are*. JP-038 is late because its first
+step is agreeing what the bug is, and JP-040 last because it cannot start without an answer from
+outside the session.
+
+**"Decision needed"** means the entry lists options with a recommendation. The session starts by
+asking the user (one `AskUserQuestion`) and records the answer under **Decision** before writing
+code.
+
+## How each session runs
+
+As `../retro/qa-fixes.md`, with these differences:
+
+1. Re-check the *Evidence* line numbers; they are from the triage (2026-09-21, `7e15144` — see the note under *Branch*) and
+   will drift.
+2. **Lime first, but not Lime only.** Layout 2 is the shared `s.v1` branches with `s.lime` blocks
+   inside them, and several of these defects live in Retro's half of the same branch (JP-037's
+   bio line is hardcoded at both `:3264` and `:3433`; JP-033, JP-041 and JP-042 are in
+   `sectionVm` / `data.js` and reach every template). Fix both halves, check Retro (theme 0) and
+   one flat theme (theme 2), and say in the commit which moved.
+3. Verify at **all three widths** and on **both surfaces** (canvas and `live=1`) wherever the
+   entry touches `EncoreSection` or `sectionVm`; digest before and after
+   (`scripts/digest.mjs`, themes `0,1,2`). A chrome-only change must be byte-identical.
+4. **A new or re-scoped field gets a measured `in`** — type into it and watch the section's HTML
+   (CLAUDE.md, the `FIELDS` bullet). F2's probe recipe is in `../retro/qa-fixes.md`.
+5. Update the docs the entry names. Commit, fill in **Settled** and the status row, then print
+   the hand-off prompt for the next entry and stop.
+
+**Do not refresh the root `index.html` per bug.** The sweep does it once.
+
+---
+
+## JP-042 — the editor describes its own output wrongly, twice
+
+> Header → Location: the help says "The bio and the booking calendar print it too" — 1 hit in the
+> header, 1 in the bio, 0 in the booking calendar. Enquiry Form → Form fields: the field's help
+> says "one to a row in layouts 2 and 3", the counter under the list says "two to a row on the
+> published page"; it renders one to a row.
+
+Per the 2026-09-18 ruling, help text is the spec where there is no AC, so these are spec errors.
+
+**Verdict: confirmed, both.**
+
+**Evidence.**
+- `data.js:852` — Location's hint is unconditional, but F1 gave `location` to calendar
+  **layouts 1 and 4 only** (the polaroid stamp, the summary card; CLAUDE.md, *The artist's role
+  and town*). Layout 2's slot list and layout 3 print neither. `data.js:846` (Kicker: "The bio
+  and the enquiry form print it too") has the same shape — measure it the same way before
+  assuming it is right at every form layout.
+- `EncoreBuilder.jsx:2515` — `FormFieldsField`'s counter says "two to a row on the published
+  page" whatever the design, contradicting `data.js:1101`, which has it right (two in layouts 1
+  and 4, one in 2 and 3). The component comment at `:2418` repeats the claim.
+
+**Fix.**
+- Hints: name the layouts ("The bio prints it too, and the booking calendar in layouts 1 and
+  4."). **Measure first** (F2's probe: a sentinel in `&who=` / the header's `c`, diff the bio,
+  calendar and form HTML at designs 0–3, Retro and Lime) — the bio's reach may also be partial,
+  and the hint must say what the probe says, not what this entry guesses.
+- Counter: `EditPanel` already has `design`; pass it to `FormFieldsField` and print "two to a
+  row" only for designs 0 and 3, "one to a row" for 1 and 2 — or drop the clause and let the
+  field hint carry it. Prefer passing `design`: the counter sits where the artist is looking.
+- Sweep for the class: grep `FIELDS` hints for "too", "also", "published page" and any layout
+  number, and check each against the probe. This entry fixes what the sweep finds, not only the
+  two reported.
+
+**Verify.** Editor, Lime and Retro × setup cards 1–4: open Header and Enquiry Form, read the
+hint and the counter against the canvas. Digest byte-identical (chrome only).
+
+**Docs.** The `FIELDS.header` comment above `kicker` (`data.js:~842`), `FormFieldsField`'s
+comment.
+
+**Settled.** —
+
+---
+
+## JP-036 — Pricing's plan-card button and its line edit nothing; the card prints BOOK NOW
+
+> *Plan card button* ("Enquire about a date") and *Line beside the plan card button* ("3 dates
+> open for Sept '26") are filled by default, marked "Not shown in this layout", and render in
+> none of the 8 pricing layouts. Emptying them does not remove the hardcoded BOOK NOW.
+
+**Verdict: confirmed under Lime; Retro is fine.** `PRICING_CARD = { Lime: [], '*': [1] }`
+(`data.js:823`), so under Lime both fields are dead at every layout — F2's Settled recorded
+exactly this ("Lime's pricing layout 2 is its own composition and draws none of `images` /
+`reviews` / `rating` / `cta` / `note`") and named the label edge as *not chased*. The tester is
+right that "not shown in this layout" undersells it: under Lime they are shown in **no** layout.
+
+**Evidence.**
+- Retro's layout 2 reads them: `EncoreSection.jsx:7526-7541` (`s.pricingCta`, `s.pricingNote`,
+  each dropped when emptied).
+- Lime's layout-2 block (`:7204`) draws `<BookPill s={s} to={s.tierBookTo} full={s.mob} />` at
+  `:7312` with **no label**, and `BookPill` falls back to `s.cta1` (`:558`) — which `sectionVm`
+  resolves per section, so on pricing it is the static default "Book Now". That is also why the
+  tester's rename of Header → Primary button moved only the nav pill.
+
+**Fix.**
+- `:7312` takes `label={s.pricingCta}` and is not drawn when it is empty (Retro's rule at
+  `:7526`). `cta`'s `in` becomes `[1]` for every template.
+- **The canvas picture changes**: the Lime card's pill reads "Enquire about a date" where the
+  frame reads BOOK NOW. **Small decision:** (A, recommended) seed Lime's `cta` with the frame's
+  own "Book Now" via a per-template default, so the fitted picture holds and the field is live;
+  (B) accept the seeded copy changing. Check how `fieldDefault` handles per-template defaults
+  before choosing (`FIELDS.header.kicker` has a Lime-layout-3 default — `data.js:~675`).
+- `note`: open the Lime layout-2 pricing frame (ids in `layout-2.md`) and see whether it draws
+  a line beside the pill. If it does, draw `s.pricingNote` there. If it does not, `note` stays
+  legitimately unreached under Lime and the fix is to **say so honestly**: a field whose `in` is
+  empty for the active template should read "Not shown in this template", not "…in this layout"
+  (`fieldReach` / `EditPanel`'s note; one extra branch). Apply the same wording to `images` /
+  `reviews` / `rating` if they stay `Lime: []`.
+
+**Verify.** Lime layout 2, three widths, both surfaces: type into *Plan card button*, the pill
+follows; empty it, the pill goes. Retro layout 2 unchanged (digest). The note wording in the
+panel under Lime vs Retro.
+
+**Docs.** The `PRICING_CARD` comment; CLAUDE.md's pricing paragraph if the Lime card gains the
+fields; F2's "named edge" in `../retro/qa-fixes.md` gets a pointer here.
+
+**Settled.** —
+
+---
+
+## JP-037 — four drawn elements have no field
+
+> Layout 2 draws four things no panel can reach: the hero CTA "Enquire about a date"; the bio
+> card's line "Five years of rooms read & floors moved"; the BOOK NOW pill beside it; the bio's
+> chip row (six, with a spare *All Access* — the design has five). Renaming Header → Primary
+> button changed only the navbar pill; Header → Tag chips → Hide did not hide the bio's chips.
+
+**Verdict: confirmed, all four.** The artist cannot change or hide a CTA and a claim about
+themselves on their own published page.
+
+**Evidence.**
+- **Hero CTA** — `HeaderV1` hardcodes `label="Enquire about a date"` in both halves: Lime
+  `EncoreSection.jsx:1523`, Retro `:1786`.
+- **Bio credit line** — a literal two-tone span in both halves: Lime `:3264`, Retro `:3433`.
+- **Bio pill** — `BookPill` with no label (Lime's `pill` near `:3250`, Retro `:3440`), so
+  `s.cta1` resolved on the *bio's* content: the static "Book Now" (JP-036's mechanism).
+- **Chips** — `s.chips` is `TAGS` (`data.js:371`, six strings ending *All Access*) mapped in
+  `sectionVm` (`EncoreBuilder.jsx:487`); no field names it, in any section, and the bio's rows
+  (`:3213`, `:3413`) do not read `showTags`, which is the header's own key.
+
+**Trap — `vm.chips` is a palette as much as a chip row.** `s.chips[3]?.bg`,
+`s.chips[4 % n].bg` and friends are colour seats at ~20 sites across header, media, map and
+pricing. **`TAGS` and `vm.chips` must not change length or order.** Editable chip *labels* are a
+separate list (`vm.chipLabels` or similar) that the drawn rows read, zipped onto the seats by
+index and wrapping.
+
+**Decision needed** (one `AskUserQuestion`, three questions):
+
+1. **Hero CTA.** (A, recommended) a new header field, *Hero button*, seeded with the frame's
+   "Enquire about a date", `in: { Retro: [1], Lime: [1] }`, emptied → not drawn. The picture
+   holds. (B) read `cta1`: no new field, but the fitted hero changes to "Book Now" and nav pill
+   and hero can never differ, which the frame's own copy does.
+2. **Bio line and pill.** (A, recommended) two bio fields: *Credit line* (seeded with the frame
+   copy; emptied → the line is dropped and the pill keeps the row) and *Button* (seeded "Book
+   Now"; emptied → dropped; both empty → the row is not drawn). The frame sets the line two-tone
+   ("Five years of" in the accent), so the split needs a rule once the copy is the artist's:
+   accent the **first three words**, computed in `sectionVm` as `vm.bioCredit = { lead, rest }`
+   since `EncoreSection` composes nothing. (B) one field for the line, pill reads the header's `cta1` through
+   `identity` (F1's route) — fewer fields, but the tester's control (rename → bio follows)
+   becomes a cross-section dependency the bio panel cannot explain.
+3. **Chips.** (A, recommended) one header field, *Tags* — a comma textarea seeded from `TAGS`
+   **minus *All Access*** if the frames agree on five (check the header and bio frames at
+   layouts 1–4 for both templates first; if any frame draws six, seed six and let the artist
+   trim) — flowing to the bio through `headerIdentity` like `kicker` / `location`, and the bio's
+   rows honouring the header's `showTags` the same way. The hint says the bio prints them too
+   (and JP-042's lesson: name the layouts, measured). Layout 3 and 4's **Genres row**
+   (`:3657`, `:3912`) reads the same chips — it follows too. (B) a separate bio field: two lists
+   to keep in step for what every frame draws as one set.
+
+**Fix (if A, A, A).** `data.js`: the fields with measured `in`, `headerIdentity` extended with
+`tags` / `showTags`. `sectionVm`: `vm.heroCta`, `vm.bioCredit`, `vm.bioCta`, the label list.
+`EncoreSection`: the six literal sites above plus every `s.chips.map` that *prints* `c.label`
+(leave the `.bg` / `.fg` reads alone). Harness: `&who=` must carry the new identity keys.
+
+**Verify.** Each new field at layouts 1–4 × Retro, Lime, Grunge × three widths × both surfaces:
+it moves the HTML exactly where `in` says. Emptied states (line only, pill only, both, zero
+tags, one tag, twelve tags — `scrollWidth` equals the width at 390). Seeded digest: byte-identical
+except the chip rows if *All Access* is dropped, which is then the named diff.
+
+**Docs.** CLAUDE.md's *The artist's role and town are the header's too* paragraph (identity now
+carries tags), the `FIELDS.header` / `FIELDS.bio` comments, the `TAGS` comment (palette vs
+labels), README's field list if it has one.
+
+**Decision.** —
+
+**Settled.** —
+
+---
+
+## JP-033 + JP-041 — visitor-facing links print section *type* names
+
+> JP-033: the header nav prints nine section-type names where the design has three (MUSIC / GIGS
+> / ABOUT). No *Navigation links* option gives the design: Minimal has the right shape but
+> hardcodes MUSIC / SHOWS / BOOK. JP-041: the Booking Calendar card's quick links print
+> *Booking Calendar / Pricing / Enquiry Form* where the design has *Available dates / Packages /
+> Enquire*, and there is no field. Same root, different component — verifying one does not
+> cover the other.
+
+**Verdict: confirmed, one root.** `navSections` is `{ cat, label: catName(cat) }`
+(`EncoreBuilder.jsx:~3564` and the editor's twin), and `catName` is the **builder's** name for a
+section type — right for the sidebar, wrong for a visitor. Two consumers print it: the header's
+`vm.navLinks` in `sections` mode, and `vm.calFlow` (`EncoreBuilder.jsx:1011-1018`). The footer
+does not have the bug: `FOOTER_LINKS` (`data.js`) already carries visitor labels per category
+(*About, Media, Shows…*) and the artist can edit them. One ticket, **two verification
+surfaces**; it is Retro's bug as much as Lime's.
+
+Two separable halves:
+- **What a link says** (both tickets) — no decision needed on *whether*; only on where the words
+  live.
+- **How many links the header draws** (JP-033 only) — "Follow my sections" giving nine is the
+  option doing what it says. The design's three is what Minimal is for, and Minimal's triple
+  (Music / Shows / Book) is not the frame's (Music / Gigs / About).
+
+**Decision needed.**
+
+1. **Where the visitor label lives.**
+   - **A (recommended). One per-category visitor label in `data.js`** (`NAV_LABELS`: `bio` →
+     About, `media` → Music, `map` → Gigs, `calendar` → Dates, `pricing` → Packages, `form` →
+     Enquire …), used by `navSections` for the header, seeding `FOOTER_LINKS`' labels so the two
+     cannot drift, plus a three-entry `CAL_FLOW_LABELS` for the calendar card's longer frame copy
+     (*Available dates / Packages / Enquire*). No new fields; the header stays derived. The
+     artist still cannot *rename* a nav link — record that as the named limit.
+   - **B. A, plus an editable override**: a `LinksField`-style repeater on the header
+     (`{ label, to }`) replacing `navMode`. It is the footer's editor reused and gives the
+     design exactly, but it is an L, it retires `navMode` / `NAV_MINIMAL` / the F25 Minimal
+     hint, and the seeded nav would no longer follow the page as sections are added. Not
+     recommended in a QA pass.
+   - **C. A per-section "Menu label" field** on every category. Eleven panels grow a field for
+     one row of type.
+2. **Minimal's triple.** Re-seed `NAV_MINIMAL` to the frame's Music / Gigs / About
+   (`['About', ['bio']]` replacing Book — the Book pill already stands beside the links), or
+   keep Book. Recommended: the frame's. It changes Retro's Minimal nav too; check Retro's
+   layout-2 768 master, which CLAUDE.md says draws the same three.
+3. **Default `navMode`.** Stays `sections` (recommended — a fresh page advertising every section
+   it has is the builder's own reading, and JP-039 is where the three-link state gets its room),
+   or flips to `minimal` so the seeded header is the frame's picture.
+
+**Fix (if A).** `data.js`: the label map beside `CATS`; `FOOTER_LINKS` rows written from it.
+Both `navSections` builders and `preview.jsx`'s. `sectionVm`'s calendar block maps
+`CAL_FLOW_LABELS[n.cat] ?? n.label`. **`navEms` measures the labels** — shorter words change
+Lime's capsule fit at desktop; re-check the header at layouts 1–4. Labels that are the artist's
+to see in the *sidebar* (`catName`) do not move.
+
+**Verify.** *Surface 1, header:* both nav modes × layouts 1–4 (Retro's six) × three widths ×
+both surfaces; F25's dropped-label behaviour still holds in Minimal with the new triple.
+*Surface 2, calendar layout 2 head* (`EncoreSection.jsx:12563`, `:12682`): three labels, the
+section's own dotted and unlinked, a page missing `pricing` or `form` still reads right.
+*Footer:* the seeded columns read exactly as before (digest). Published tab: every nav and
+flow link still scrolls (fragment → `scrollIntoView`).
+
+**Docs.** CLAUDE.md's header-nav paragraph (`navSections` is `{ cat, label }`; key on `label`
+— Minimal's two labels can still resolve to one section), the calendar paragraph's `vm.calFlow`
+sentence, `data.js` §4.3a, README's header-nav paragraph.
+
+**Decision.** —
+
+**Settled.** —
+
+---
+
+## JP-039 — the 768 header folds to a burger where the frame keeps the links
+
+> At 768 the header collapses to a burger; the design keeps the nav in a row. Control: with
+> Minimal (three items) it is still a burger, so this is a breakpoint rule, not a consequence of
+> nine generated items.
+
+**Verdict: documented as intended — and the tester's control is a fair hit on the documented
+reason.** CLAUDE.md: "Layout 2's 768 master draws the links instead, and is **not** followed:
+its three are the Figma component's default, where `navLinks` is the artist's page and the
+seeded eleven sections give nine — 765px of type in a 688px canvas." The Lime block says the
+same at `EncoreSection.jsx:1451-1453`. The reason given is "nine do not fit". Three do, and the
+code never asks: `nar ? <NavMenu/> : <nav>` (`:1458`).
+
+**Decision needed.**
+- **A (recommended). Fit-gated links at tablet.** `sectionVm` already measures the row
+  (`vm.navEms`, Bebas advance widths). Add `vm.navFits`: at tablet, the links draw when
+  `navEms × size + gaps` clears the room the row leaves (the desktop `minWidth` expression at
+  `:1456` is the same sum); otherwise the burger, as now. 390 is always the burger — its master
+  draws one. With JP-033's shorter labels, Minimal fits and *Follow my sections* on a full page
+  does not, which is the frame's state for the frame's content and the documented fallback for
+  everything else. No effect, no measuring in `EncoreSection` — the gate is a vm boolean.
+- **B. Links at 768 whenever `navMode` is `minimal`**, burger otherwise. Simpler, but a
+  five-section page in `sections` mode would fit and still get the burger.
+- **C. Keep the burger**, and rewrite the documented reason so it is true ("a row that changes
+  shape with the section count is not drawn at tablet").
+
+**Scope question inside A:** Lime layout 2 only (the report), or every header whose 768 master
+draws links? Check the 768 masters of Lime layouts 1, 3, 4 and Retro's six in the session;
+recommended: gate every header whose master draws links, leave the rest on the burger, and list
+which is which under Settled. The capsule the burger stands in (`:1459`) is the 390 master's and
+stays for the burger state.
+
+**Verify.** 768, canvas and `live=1`: Minimal draws three links in the frame's capsule;
+`sections` with nine draws the burger; walk the count down (delete sections in the editor)
+and find the flip — no state where the capsule wraps to two rows or the name is pushed out
+(`scrollWidth` = 768). The links scroll in the published tab. `NavMenu` still opens where it is
+drawn. 1440 and 390 digests byte-identical.
+
+**Docs.** CLAUDE.md's header-nav paragraph (the "is **not** followed" sentence), the `:1440`
+comment block, `layout-2.md`'s header Settled gets a pointer here.
+
+**Decision.** —
+
+**Settled.** —
+
+---
+
+## JP-038 — the desktop side gutter is 189px where the frame has ~55
+
+> On desktop the side padding is a hard 189px against ~55 in the design. Measured at six widths
+> from 1170 to 1910 — always 189, so it is padding and not a max-width. All 11 sections; the
+> content column is 21% narrower.
+
+**Verdict: the number is real, the diagnosis is not — and half of the report is unexplained.**
+
+- **There is no 189 anywhere in the source.** The desktop canvas is **1180 wide, not 1440**
+  (`SIZES.desktop.canvasW`, `EncoreBuilder.jsx:66`): every desktop value is the Figma value
+  × 1180/1440 ≈ 0.82 (`:73-74`), because the editor draws the desktop page beside a sidebar.
+  The gutter is `padX: 64px` and the column is 1180 − 128 = **1052**. The frame's column is
+  1440 − 2·55 = 1330. **1052 / 1330 = 0.79 — the tester's "21% narrower", to the percent.** So
+  the column is not narrow because of padding; the whole desktop page is a 0.82 scale of the
+  frame, type and all, and the gutter scaled with it (then was rounded up to 64).
+- **Past 1180 the published tab folds the surplus into the gutter on purpose**
+  (`PublishedPage`, `:3540-3561`, and its comment): the column holds 1052 and the bands bleed.
+  At a 1440 window with a ~10px scrollbar that is 64 + (1430 − 1180)/2 = **189**. That is where
+  the number comes from.
+- **"Always 189 from 1170 to 1910" does not follow from the code**, which gives 64 at 1180 and
+  429 at 1910. *First step of the session: reproduce it.* Suspects, in order: the popup was
+  resized while in the background (memory note `verifying-the-published-tab`: background tabs
+  do not fire `resize`, so `w` goes stale); the six widths were DevTools device emulation of a
+  fixed-size popup; the measurement was taken on the editor canvas, which is capped at 1180 and
+  centred. If a foreground resize really leaves the gutter at 189, that is a **real bug** in
+  `PublishedPage`'s resize handling and gets fixed whatever the decision below.
+
+**Decision needed** (after the reproduction):
+- **A (recommended). Works as designed; answer the ticket.** The 0.82 desktop is the
+  architecture of all eight fitted pages (every `u()` in `EncoreSection`, every Settled number
+  in seven plans). Reply to QA with the three bullets above, and fix only the stale-width bug
+  if it reproduces.
+- **B. Let the published column grow past 1052** — a second desktop frame for wide windows:
+  between 1180 and 1440 the surplus goes to *scale* (the page approaches the true 1440 frame,
+  k: 0.82 → 1) before any goes to the gutter. This is what the tester is actually asking for,
+  and it is an **L outside a QA pass**: `u()`, `contentWidth`, `COLUMN_SPLIT`, the ramp and
+  every `0.82` literal assume one desktop scale. If chosen, it gets its own plan
+  (`plans/published-scale.md`), not a session here.
+- **C. Trim the gutter only** (64 → 45 = 55 × 0.82). Widens the column by 38px at every
+  desktop width and moves every desktop digest of both designed templates for a change no one
+  can see beside the scale question. Not recommended.
+
+**Verify.** The reproduction script (puppeteer, published tab, *foreground* resizes to the
+tester's six widths, reading the first section's `padding-left`). If B or C: out of scope here.
+
+**Docs.** If the stale-width bug is real, `PublishedPage`'s comment. If A, a README *Scope
+boundaries* bullet saying in one line what the tester had to discover: the desktop page is the
+1440 frame at 0.82, and windows past 1180 widen the gutters, not the column.
+
+**Decision.** —
+
+**Settled.** —
+
+---
+
+## JP-040 — Events Map layout 2 draws none of four things its frame shows
+
+> Layout 2 does not draw the rows' *In transit* chip, the 30mi / 60mi / 120mi ring labels,
+> EXPAND VIEW, or *Updated 2m ago*. All four exist as filled fields marked "(layout 3)" and
+> render as soon as the section is switched to layout 3 — the feature works; design and spec
+> disagree. Severity pending; a question for BA/PO, not a defect.
+
+**Verdict: a documented drop, and the tester has filed it correctly.** Retro's layout-2 fit
+dropped them deliberately — `../retro/layout-2.md:633-634`: "Still dropped, as claims: IN
+TRANSIT, Updated 2m ago, the rows' In transit, the ring labels, the zoom controls and EXPAND
+VIEW" — and Lime's pass inherited it (`layout-2.md:~834`). The reasoning then: each is a
+*claim* the builder cannot stand behind (a live status, a freshness stamp) or a control with
+nothing behind it. Layout 3's QA (2026-09-15) later re-seated the same four as **fields**
+(`status`, `updated`, `rings`, `expand`; `data.js:1039-1045`), which is what makes layout 2 now
+look inconsistent: the objection "it is a claim" was answered by "make it the artist's claim".
+
+**Blocked on the PO answer. No code until it is recorded here.** What to put in front of them:
+- **A (recommended if they want parity). Draw them in layout 2 from the existing fields** —
+  `rings` and `updated` on the map tile, `expand` wired to layout 3's own `zoom` state (the map
+  is the same raster in both designed templates), `status` as the rows' chip. `in` for the four
+  becomes `[1, 2]` / `[1, 2, 3]`, the "(layout 3)" suffixes go, no new fields. Caveats to
+  state: *In transit* on **every** row is one section-wide word, not a per-gig status (the
+  pricing `unit` precedent — CLAUDE.md, `vm.tierKind`); an emptied field drops its element.
+  Size M, Retro and Lime together.
+- **B. Keep the drop**; close as by-design, and make the panel honest — JP-036's
+  "this template / this layout" wording already covers it.
+- Note for the PO: the tester links this to an older open bug against Retro layout 2 (their
+  "#4", four separate omissions). That number is not in these plans; whatever is decided here
+  closes both.
+
+**Verify (if A).** Layout 2 × Retro, Lime, Grunge × three widths × both surfaces; each field
+empties cleanly; the zoom does not fight the featured-gig `sel`; the one-pin-per-gig rule
+still holds; layout 3 and 4 digests byte-identical.
+
+**Docs (if A).** CLAUDE.md's events-map paragraph (layout 2's state list, "its other state is
+layout 3's `zoom`" now has a third reader), `FIELDS.map` labels and `in`, both layout-2 plans'
+"still dropped" lines get a pointer here.
+
+**Decision.** —
+
+**Settled.** —
+
+---
+
+## End-of-pass sweep
+
+1. Full digest, all categories × themes 0, 1, 2 × three widths × canvas and `live=1`, against
+   `main`: every diff is one a Settled above names.
+2. The editor probe from F2 (`fieldReach` vs measured reach) re-run over every field this pass
+   added or re-scoped: 0 mismatches.
+3. Walk card 2 of Lime's setup modal end to end in the real app and the published tab at 1440 /
+   768 / 390 against the tester's six screenshots.
+4. `npm run build:standalone`, `cp source/dist-standalone/index.html index.html`, its own
+   commit (`Refresh index.html for the Lime QA fixes`).
+5. `plans/README.md`'s row, and a reply line per ticket for QA (fixed / by design / needs PO).
