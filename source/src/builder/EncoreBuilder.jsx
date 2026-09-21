@@ -477,9 +477,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // spare. NavBar divides the room it has by this, so the links drop below
   // `s.list` only when the artist's section names would otherwise wrap the
   // capsule onto a second row. Floored at 1 so an empty nav divides by nothing
-  // worse than itself. Undefined off Lime, whose label faces are not Bebas.
-  vm.navEms = T.name === 'Lime'
-    ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + bebasEms(l.label), 0)
+  // worse than itself. Grunge draws the same capsule over the same links in
+  // Anton, untracked (its mode states 0), so it takes the same sum off that
+  // face's table. Undefined on the rest, which draw no capsule.
+  // Its labels are set at 0.75 of the row's size (`faced` in EncoreSection —
+  // Anton standing in for Stones Crush), while the gaps stay the row's ems.
+  const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75 : null
+  vm.navEms = navFace
+    ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * (23 / 24)) * 1.01).toFixed(3))
     : undefined
   // What the rest of Lime's layout-2 nav spends beside those links, in the same
@@ -3386,7 +3391,7 @@ const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.he
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
-  // The flat three show their Figma header as a still (photos.js). It is
+  // The flat two show their Figma header as a still (photos.js). It is
   // SPOT_ASPECT already, so `cover` crops nothing — not `contain`.
   const { name } = THEMES[themeIdx]
   const still = TEMPLATE_STILLS[name]

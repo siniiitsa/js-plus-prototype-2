@@ -299,9 +299,10 @@ const ANTON_EM = {
 }
 
 // A label's width in ems of tracked Anton; the other digits and anything
-// unlisted take 0.494, the digits' own advance.
-export const antonEms = (text) =>
-  [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + 0.02, 0)
+// unlisted take 0.494, the digits' own advance. `track` is the tracking in
+// ems: Retro's 0.02 by default, and 0 for Grunge, whose mode states none.
+export const antonEms = (text, track = 0.02) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + track, 0)
 
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
@@ -323,12 +324,16 @@ export const NVAR = {
 // layout passes fit the first four of them in its own variable mode —
 // header card N lays out the whole page as layout N, and Lime's page N is
 // Retro's page-N components re-skinned — so its family is those four and
-// no more. Grunge, Editorial and Pop offer three flat layouts (§10.3);
-// their designs do not exist yet.
+// no more. Grunge is the same four in a third mode (Static Youth), all four
+// pages confirmed in the Figma file; only its Hero is fitted so far, and
+// cards 2–4 render HeaderV1…V3 in its tokens until their layout passes.
+// Editorial and Pop offer three flat layouts (§10.3); their designs do not
+// exist yet.
 export const headerFamily = (themeName) =>
-  themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime' : 'flat'
+  themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
+    : themeName === 'Grunge' ? 'grunge' : 'flat'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, flat: 3 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, flat: 3 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -392,6 +397,7 @@ const HEADER_NAMES = {
   // The same HeaderV0…V3, so the same names — sliced, not copied, so a rename
   // reaches both templates.
   lime: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lime),
+  grunge: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.grunge),
   flat: [
     ['Centred', 'Title, tags and buttons'],
     ['Split', 'Text beside an image'],
