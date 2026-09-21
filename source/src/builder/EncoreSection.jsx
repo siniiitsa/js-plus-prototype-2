@@ -17675,7 +17675,17 @@ function Testimonials({ s }) {
     // edge and no grain: the frame's `Layer_1` is an empty hidden frame and it
     // carries no texture. Every box is a raw number (radius 55 and 12, padding
     // 50) and every type size the ramp's, × 0.82 on desktop.
-    if (s.lime) {
+    //
+    // Grunge (964:58609 · 986:44067 · 986:44079) is the same tree node for node
+    // — the tenth widened block — on Scheme 1, `Layer_1` hidden again, so `G`
+    // names the deltas and its Lime arm is the old literals. Every corner is a
+    // raw 13; the card is `box/1` lettered in `text/2` under a quote in
+    // `text/1`, one tone; the dark back is Scheme 2's `box/3` (`HeaderV0`'s
+    // `G2.box3`); the reviewer pill is the active pair, the role pill `sem/bg`
+    // lettered in the accent, both Display/Title; and the narrow backs and the
+    // card's place in the band are the masters' own.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       // Scheme 2's `box/2`, which no Scheme 1 key carries (its `box2` is
@@ -17688,20 +17698,31 @@ function Testimonials({ s }) {
       // bio's invisible one: a pixel scan of the 1440 render darkens the ground
       // for 7px under the card's foot.
       const shadow = `0 ${u(4)} ${u(4)} #00000040`
+      const G = grunge ? {
+        r: u(13), back: '#353535', card: s.box1, ink: s.tx, quote: s.ac,
+        who: [s.pillBg, s.activeFg], role: [s.bg, s.ac],
+        backs: s.mob
+          ? [[-45.7, 30, 33, 57.7], [-29.7, 14, 14, 76.7]]
+          : tab ? [[-46, 35, 39, 27], [-27, 14, 14, 50]] : [[-46, 46, 50, 74], [-27, 21, 21, 22]],
+        pad: s.mob ? [201.2, 108] : tab ? [201.5, 155.5] : [165, 145], gap: 33.8,
+      } : {
+        r: u(55), back: dusk, card: s.tx, ink: s.bg, quote: undefined,
+        who: [s.bg, litInk], role: [mist, s.bg],
+        backs: s.mob
+          ? [[-46, 26, 30, 24], [-27, 13, 13, 24]]
+          : tab ? [[-46, 43, 47, 19], [-27, 14, 14, 35]] : [[-46, 46, 50, 74], [-27, 21, 21, 22]],
+        pad: s.mob ? [205.2, 108] : tab ? [205.5, 159.5] : [165, 145], gap: 38,
+      }
 
       // Each back as insets off the card — [fill, top, left, right, bottom] —
       // so a longer quote grows the backs with the card. The tops are −46 and
       // −27 at every width; the sides are what the three masters settle. The
       // lime one is drawn first, which is what stands it behind the dark one.
-      const backs = s.mob
-        ? [[s.ac, -46, 26, 30, 24], [dusk, -27, 13, 13, 24]]
-        : tab
-          ? [[s.ac, -46, 43, 47, 19], [dusk, -27, 14, 14, 35]]
-          : [[s.ac, -46, 46, 50, 74], [dusk, -27, 21, 21, 22]]
+      const backs = [[s.ac, ...G.backs[0]], [G.back, ...G.backs[1]]]
       const backing = ([fill, top, left, right, bottom], i) => (
         <div key={i} style={{
           position: 'absolute', top: u(top), left: u(left), right: u(right), bottom: u(bottom),
-          background: fill, borderRadius: u(55), boxShadow: shadow,
+          background: fill, borderRadius: G.r, boxShadow: shadow,
         }} />
       )
 
@@ -17711,7 +17732,11 @@ function Testimonials({ s }) {
       const tag = (label, i, bg, fg) => (
         <span key={i} style={{
           background: bg, color: fg, borderRadius: u(12), padding: `${u(6)} ${u(12)}`,
-          fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
+          // Display/Title 36 / 28 / 26 under Grunge, a literal because
+          // `s.title` is the heading string; content, so it may wrap.
+          ...(grunge
+            ? labelStyle(s, s.mob ? '26px' : tab ? '28px' : u(36), { whiteSpace: 'normal' })
+            : { fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls }),
           maxWidth: '100%', overflowWrap: 'break-word',
         }}>{label}</span>
       )
@@ -17729,21 +17754,22 @@ function Testimonials({ s }) {
             )}
             {!!q.quote && (
               <p style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
-                letterSpacing: s.dls, overflowWrap: 'break-word',
+                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd),
+                lineHeight: facedLh(s, 1), letterSpacing: s.dls, overflowWrap: 'break-word',
+                color: G.quote, textTransform: grunge ? 'uppercase' : undefined,
               }}>{q.quote}</p>
             )}
           </div>
           {!!q.byline && (
             <div style={row(u(8), { flexWrap: 'wrap' })}>
-              {!!q.who && tag(q.who, 0, s.bg, litInk)}
-              {!!q.role && tag(q.role, 1, mist, s.bg)}
+              {!!q.who && tag(q.who, 0, ...G.who)}
+              {!!q.role && tag(q.role, 1, ...G.role)}
             </div>
           )}
         </>
       ) : (
         <span style={{
-          fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, color: s.bg,
+          fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, color: G.ink,
         }}>No reviews yet.</span>
       )
 
@@ -17760,7 +17786,7 @@ function Testimonials({ s }) {
         }}>
           {backs.map(backing)}
           <div style={{
-            position: 'relative', background: s.tx, color: s.bg, borderRadius: u(55),
+            position: 'relative', background: G.card, color: G.ink, borderRadius: G.r,
             padding: u(50), boxShadow: shadow,
             ...(s.narrow ? { gap: u(50) } : { minHeight: u(420) }),
             display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
@@ -17792,7 +17818,7 @@ function Testimonials({ s }) {
       // does not already give is the shell's padding.
       const pad = (top, bottom) => `calc(${u(top)} - ${s.padY}) 0 calc(${u(bottom)} - ${s.padY})`
       return s.mob ? (
-        <div style={col(u(38), { padding: pad(205.2, 108) })}>
+        <div style={col(u(G.gap), { padding: pad(...G.pad) })}>
           {card}
           {paging && (
             <div style={row('0px', {
@@ -17806,7 +17832,7 @@ function Testimonials({ s }) {
       ) : (
         <div style={row('0px', {
           justifyContent: paging ? 'space-between' : 'center',
-          padding: tab ? pad(205.5, 159.5) : pad(165, 145),
+          padding: pad(...G.pad),
         })}>
           {paging && lPrev}
           {card}
