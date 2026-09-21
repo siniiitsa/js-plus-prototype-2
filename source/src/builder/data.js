@@ -194,9 +194,11 @@ export const navLabel = (id) => catById(id)?.nav ?? catName(id)
  * tab, the picker's previews and the harness cannot drift apart.
  *
  * The header's other two controls point at a section too, and so does
- * the fixed Music / Shows / Book triple, which names no category at
- * all. Each is a preference list resolved against the page: the first
- * candidate actually on it wins. A pill whose every candidate is missing
+ * the fixed Music / Gigs / About triple, which names no category at
+ * all (the words layouts 2 and 3 draw in every designed frame — JP-033;
+ * Book went because its pill already stands beside the links). Each is
+ * a preference list resolved against the page: the first candidate
+ * actually on it wins. A pill whose every candidate is missing
  * keeps its place in the design and simply does not link. A *label* with
  * nothing to point at — a Minimal nav word, a footer row — is kept on the
  * canvas and left off the published page, where it would be a dead word.
@@ -204,8 +206,8 @@ export const navLabel = (id) => catById(id)?.nav ?? catName(id)
 
 export const NAV_MINIMAL = [
   ['Music', ['media', 'repertoire']],
-  ['Shows', ['map', 'calendar']],
-  ['Book', ['form', 'calendar', 'pricing']],
+  ['Gigs', ['map', 'calendar']],
+  ['About', ['bio']],
 ]
 
 export const CTA_TARGETS = {
@@ -925,7 +927,7 @@ export const FIELDS = {
       in: { Retro: [0, 1, 3, 4, 5], Lime: [3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
-      { v: 'minimal',  l: 'Minimal (Music · Shows · Book)' },
+      { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
     { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0] }, opts: [
       { v: 'left',   l: 'Left' },

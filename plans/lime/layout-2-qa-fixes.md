@@ -35,7 +35,7 @@ is one entry.
 | 1 | JP-042 | Two help texts lie: header Location's hint, the form-fields counter | **Confirmed** | S | no | **done** (four texts, not two) |
 | 2 | JP-036 | Pricing's *Plan card button* / *Line beside…* edit nothing; card prints BOOK NOW | **Confirmed**: F2 named it as an edge and did not chase it | S | none — the frame answered it | **done** |
 | 3 | JP-037 | Four drawn elements have no field: hero CTA, bio credit line, bio pill, bio chips | **Confirmed**, and two of the four are Retro's too | M | **yes** (three) — A, A, A, five chips | **done** |
-| 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Confirmed**, one root, two surfaces | M | **yes** | todo |
+| 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Re-triaged**: PR #24 closed the labels and JP-041; the count survived | S | **yes** — Minimal is the frame's Music / Gigs / About; default stays `sections`; JP-041 held | **done** |
 | 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** | todo |
 | 6 | JP-038 | Desktop side gutter 189px vs the frame's ~55 | **By construction, not a padding bug** — see entry; the "constant at six widths" half is unexplained | S–L | **yes** | todo |
 | 7 | JP-040 | Events Map layout 2 draws none of In transit / ring labels / EXPAND VIEW / Updated 2m ago | **Documented drop**; a BA/PO question, as the tester says | S–M | **blocked on PO** | todo |
@@ -442,9 +442,56 @@ flow link still scrolls (fragment → `scrollIntoView`).
 — Minimal's two labels can still resolve to one section), the calendar paragraph's `vm.calFlow`
 sentence, `data.js` §4.3a, README's header-nav paragraph.
 
-**Decision.** —
+**Re-triage (2026-09-21, on `3628b2b`).** Measured on the harness, `live=1`, Retro and Lime,
+header layout 2 at 1440: `sections` prints *About · Top Tracks · Media · Repertoire ·
+Shows/Coverage · Pricing · Availability · Enquiries · Reviews*; `minimal` prints *Music · Shows ·
+Book*; calendar layout 2's head prints *● Availability · Pricing · Enquiries*. So PR #24 closed
+the **label half** of both tickets — decision 1 above is gone, and `CAL_FLOW_LABELS` with it:
+JP-033's Decision in [`qa-fixes.md`](./qa-fixes.md) read this very frame (`964:64593`, "●
+Available dates · Packages · Enquire") and chose the nav's words as a named diff. What survives
+is the **count half**, decisions 2 and 3. The frames' text nodes make it per-layout, which the
+triage had not seen: **layouts 2 and 3 draw Music / Gigs / About** (Lime `964:64580`, its 768
+`986:11848`, Lime layout 3 `964:68654`, Retro layout 2 `964:64637`), **layouts 1 and 4 draw the
+eight** (`964:58588`, `964:72849`), and layout 2's 390 (`986:11867`) draws no link words at all.
+The plan's "check Retro's layout-2 768 master" is answered by the same read.
 
-**Settled.** —
+**Decision** (user, 2026-09-21).
+1. Where the label lives — **moot**, shipped as `navLabel()` by PR #24.
+2. Minimal's triple — **the frame's, Music / Gigs / About.**
+3. Default `navMode` — **stays `sections` at every layout.** The seeded header is therefore the
+   frame's picture at layouts 1 and 4 only; at 2 and 3 the artist picks Minimal. Named diff.
+4. JP-041 — **held: closed by JP-033.** No `CAL_FLOW_LABELS`; the reply to the tester names the
+   calendar head's words an intended diff.
+
+**Settled** (2026-09-21).
+- **What changed.** `NAV_MINIMAL` is Music → `media`/`repertoire`, Gigs → `map`/`calendar`
+  (Shows' own list), About → `bio`; Book and its list are gone, its pill standing beside the
+  links in every frame. The `navMode` option reads "Minimal (Music · Gigs · About)". Nothing
+  else is code: `minimalNav`, the F25 drop and the hint above the select all read the constant
+  (a page with no bio keeps About on the canvas, names it in the hint and leaves it off the
+  published nav — checked through `minimalNav()` directly, the harness having no way to take a
+  section off its page). No new field, so no `reach.mjs` row: the digest is the measurement.
+- **Which templates move: Retro and Lime, Minimal mode only.** The flat three's `FlatNav`
+  still hardcodes Music / Shows / Book and reads none of this (named in `qa-fixes.md`, not
+  fixed here either).
+- **Digest** (themes 0, 1, 2; three widths; canvas and `live=1`). `sections` mode, `header` +
+  `calendar` + `footer`: **zero files** on both surfaces. Minimal mode
+  (`&cj={"navMode":"minimal"}`), `header`: **14 + 14 files, the same set on both surfaces** —
+  Retro's six and Lime's six arch rows at desktop (12) and Retro layouts 5 and 6 at tablet (2,
+  the `NavLinks` pair); Grunge zero. That is JP-033's first-pass set exactly.
+- **Fit.** `live=1`, every Retro and Lime header layout at 1440 (and Retro 5/6 at 768): one row,
+  no overflow, Music → `#media`, Gigs → `#map`, About → `#bio`. Lime's links draw at 20px
+  (layouts 1, 4) and 15px (2, 3) — the triple is shorter than the old one, so `navEms` only
+  relaxes.
+- **Named, not chased.** Layouts 1 and 4's frames write "Shows/coverage" with a small c where
+  `navLabel` and the footer seed say "Shows/Coverage"; Lime's nav is Bebas caps, Retro's nav is
+  uppercased, and the tester passed the footer against the frame. At 768 layout 2 still folds to
+  the burger where its master draws these three links — that is **JP-039**, next, and the
+  three-word Minimal is what makes its row fit.
+- **Reply to the tester.** JP-033: labels fixed in the layout-1 pass; the design's three are
+  *Navigation links → Minimal*, now Music / Gigs / About; the default stays "Follow my
+  sections" by product call. JP-041: intended — the calendar head uses the page's one word per
+  section (Availability · Pricing · Enquiries), decided 2026-09-18 and held 2026-09-21.
 
 ---
 
@@ -460,6 +507,13 @@ its three are the Figma component's default, where `navLinks` is the artist's pa
 seeded eleven sections give nine — 765px of type in a 688px canvas." The Lime block says the
 same at `EncoreSection.jsx:1451-1453`. The reason given is "nine do not fit". Three do, and the
 code never asks: `nar ? <NavMenu/> : <nav>` (`:1458`).
+
+**From entry 4 (2026-09-21).** Minimal is now **Music / Gigs / About** — the very three this
+frame's 768 master (`986:11848`) draws, in a 145px capsule at 15px type — and `navMode` still
+defaults to `sections`, so the seeded 768 header is nine words whichever option wins. The
+CLAUDE.md sentence quoted above now reads 576px of type / 720 with gaps (re-measured by PR #24).
+Retro's layouts 5 and 6 (`NavLinks`) already draw their row at 768. Lime layout 3's master
+(`964:68654`) draws the same three at desktop; its 768 was not read.
 
 **Decision needed.**
 - **A (recommended). Fit-gated links at tablet.** `sectionVm` already measures the row

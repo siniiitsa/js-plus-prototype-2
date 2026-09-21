@@ -444,7 +444,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 390px — the burger panel is a column and has the room, so mobile now shows
   // the artist's own sections like every other width.
   //
-  // Minimal's Music / Shows / Book name no category, so one can resolve to
+  // Minimal's Music / Gigs / About name no category, so one can resolve to
   // nothing. The footer's rule applies (§4.3a): the canvas keeps the label and
   // the published page leaves it out, before navEms below measures the row.
   vm.navLinks = vm.navMode === 'minimal'

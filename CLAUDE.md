@@ -409,17 +409,24 @@ mutated through a single `patch()` helper.
   reload the builder. On the canvas the links carry **no href at all** (not `#`, which would jump
   the builder to its own top); `navHref()` in `EncoreSection` is the whole of that gate.
   `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
-  because Minimal's Shows and Book can resolve to the same section. **The label is the visitor's
+  because the label is what is distinct by construction in both modes; `to` is not promised to
+  be (Minimal's old Shows and Book could land on one section, and today's three preference
+  lists are disjoint only by their seeds). **The label is the visitor's
   word, not the editor's** (JP-033): `CATS[].nav` through `navLabel()` in `data.js` — About, Top
   Tracks, Media, Repertoire, Shows/Coverage, Pricing, Enquiries, Reviews, the eight every frame's
-  nav and footer draw, plus **Availability** for the calendar, which is on the seeded page and in
+  footer draws and layouts 1 and 4's navs with it, plus **Availability** for the calendar, which is on the seeded page and in
   no frame's nav (user call, 2026-09-18: a ninth link over an unreachable section). `catName()`
   keeps every editor-side use, `FOOTER_TARGETS`' select included. One `navSectionsOf(cats)`
   builds the list for the editor, `PublishedPage`, the picker's `previewNav` and the harness, and
   `FOOTER_LINKS` seeds its labels from the same `navLabel()`, so a fresh page's two lists agree;
   the footer's rows are then the artist's to reword and the nav's are not. `vm.calFlow` reads
   these labels too, so calendar layout 2's head says "Availability · Pricing · Enquiries" where
-  its frame's flow says "Available dates · Packages · Enquire". **The flat three's header reads
+  its frame's flow says "Available dates · Packages · Enquire" (held when JP-041 reported it
+  again, 2026-09-21). **Minimal's triple is the frames' own** (JP-033, second pass): layouts 2
+  and 3 draw Music / Gigs / About in Retro and Lime alike, so `NAV_MINIMAL` is those three —
+  Gigs on the map or the calendar, About on the bio, Book gone because its pill already stands
+  beside the links — while `navMode` still defaults to `sections` at every layout, so the seeded
+  header is its frame's picture at layouts 1 and 4 only (user call, 2026-09-21). **The flat three's header reads
   none of this**: `FlatNav` hardcodes Music / Shows / Book. Below `desktop` the links
   collapse to `NavMenu`'s burger in four of the six Retro layouts; layouts 5 and 6 draw
   `NavLinks`, which keeps the (wrapping) link row at 768 and collapses only at 390 (measured in
@@ -778,7 +785,7 @@ mutated through a single `patch()` helper.
   label the artist chose, and a `link` row whose address `extUrl()` refuses stays a picture (the
   Soundcloud rule, with `UrlInput` saying why). `BLANK_PAGE`'s published footer is therefore the
   Book pill alone, a span with nothing to book at, where its canvas still draws all eight labels.
-  The header's **Minimal** nav follows the same rule: a Music / Shows / Book label with no
+  The header's **Minimal** nav follows the same rule: a Music / Gigs / About label with no
   candidate on the page is kept on the canvas, named in a hint above the Navigation links
   select, and left out of the published nav (`vm.navLinks`, filtered before `navEms` measures
   it). The two columns are **derived**, not stored, and derived from the **rendered** list, after

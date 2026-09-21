@@ -243,7 +243,7 @@ That distinction is the whole design, and it buys two things:
 
   **The header's navigation.** Every section is given a DOM id — its category, which is unique per
   page — so the nav links, *Book Now* and *Listen* all scroll to the section they name, and the
-  *Minimal* triple resolves Music / Shows / Book to the nearest section the page actually carries.
+  *Minimal* triple resolves Music / Gigs / About to the nearest section the page actually carries.
   A label with no such section stays on the canvas, is named in a hint above the Navigation links select,
   and is left out of the published nav, the footer's rule.
   Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
