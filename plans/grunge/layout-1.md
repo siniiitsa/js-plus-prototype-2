@@ -94,7 +94,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 4 | `gallery` | `964:58603` | Gallery Sections — Component 1 | 1440 × 819 | `986:44061` | 768 × 1116 | `989:22292` | 390 × 760 | `964:58591` | `964:58579` | done `bc04864` |
 | 5 | `repertoire` | `964:58604` | Repertoire — A · Two-column dense | 1440 × 1096 | `986:44062` | 768 × 922 | `986:44074` | 390 × 918 | `964:58592` | `964:58580` | done `7ea79e7` |
 | 6 | `map` | `964:58605` | Events Map — D · Compact tile | 1440 × 1151 | `986:44063` | 768 × 1349 | `986:44075` | 390 × 1172.2 | `964:58593` | `964:58581` | done `c4cbff0` |
-| 7 | `pricing` | `964:58606` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:44064` | 768 × 765 | `986:44076` | 390 × 1510 | `964:58594` | `964:58582` | todo |
+| 7 | `pricing` | `964:58606` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:44064` | 768 × 765 | `986:44076` | 390 × 1510 | `964:58594` | `964:58582` | done `a3e6bcf` |
 | 8 | `calendar` | `964:58607` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:44065` | 768 × 1376 | `986:44077` | 390 × 997 | `964:58595` | `964:58583` | todo |
 | 9 | `form` | `964:58608` | Enquiry Forms — B · Split context+form | 1440 × 965 | `986:44066` | 768 × 1122 | `986:44078` | 390 × 1176 | `964:58596` | `964:58584` | todo |
 | 10 | `testimonials` | `964:58609` | Testimonials H — Stacked tag card | 1440 × 730 | `986:44067` | 768 × 730 | `986:44079` | 390 × 730 | `964:58597` | `964:58585` | todo |
@@ -805,6 +805,52 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   326 × 298, foot 110.9, rows 97. The root's 22 side padding against the master's 10 is Lime's,
   inherited. `n=30` gives `1 2 … 6` on one row at all three widths.
 
+### Settled in section 7 (pricing)
+
+- **No Grunge block, for the seventh time: Lime's `if (s.lime)` inside `Pricing`'s `if (s.v0)` is
+  `(s.lime || s.grunge)`**, after the seam, with the **`G` lookup** at its head (Lime's arm is the old
+  literals; themes 0, 1, 3, 4 digest to zero, canvas and `live=1`, and at theme 2 only pricing a0
+  moved). The tree is Lime's node for node at all three widths, on **Scheme 1**, so every `s.*` sem
+  read is right and no literal is owed: chips, ico, tick, unit, blurb, features, small print and
+  `BookPill bg={s.pillBg} fg={s.activeFg}` needed nothing (the frame binds `#0D1F03` where the code
+  reads `s.activeFg` `#15180F` — the gallery's reading, both black on red). Proved at
+  `theme=2&live=1&n=8`, all three widths: the chips filter, the lit chip reads, cursors are live,
+  the pills are `<a href="#form">`, and `n=0` prints *No packages yet.*
+- **The leaves**: the card is **`s.box1` at a raw radius 13 in a 1px inside `s.stroke1` hairline**
+  (Lime: `box2`, 55, 3px); the ico binds `radius/chip`, so `s.radiusChip`. **The featured seat is a
+  1px `sem/stroke/2` rule (`#FF0000`, followed) and nothing else** — `effects: []` on every node, so
+  the *Glows* guess is wrong a fourth time and pricing's "ringed in red" is a plain stroke. The seat
+  rule is Lime's, `i % 3 === 1`: `n=8` rules 2 / 5 / 8, and a filter moves it (Solo → package 3).
+- **Three direct face sites owed `faced` / `facedLh`**: the heading and the numeral (`s.display`) and
+  the package name (`s.label`, already uppercase). The pill's type was already `BookPill`'s.
+- **The heading is two-tone and inline — the fifth positional rule**: "Choose the set that's"
+  `sem/text/2`, "right for your night" `sem/text/1`, and the colour break does not coincide with the
+  line break, so spans and not block lines: **words one to four are `s.tx`, the rest `s.ac`**; four
+  words or fewer are all white. Its box is a FIXED 597.53 at 1440 (Lime's 640), in `G`; at 0.75 Anton
+  breaks after "YOUR" there exactly as the frame does, one line at 768, two at 390. Open question 11.
+- **The seal ("Frame 178") is new — neither twin draws one.** 125.37 (101.56 at 768), tilt 26.06,
+  placed by the disc's centre off the *content's* right edge and foot (the wrapper takes
+  `position: relative` under Grunge): 39.15 in / 7 up at 1440, 40.35 in / 16.93 up at 768 — measured
+  32.1 / 5.71 (× 0.82) and 40.35 / 16.93. **Named departure: the 390 master's seal is a leak** — its
+  constraints are MIN / MIN and it stands at y 612 of 1510, over the featured card's unit and blurb
+  ("One DJ for the whole" is hidden). It keeps the frame's x (78.6 in) and size and hangs on the
+  same corner as the wide masters, the disc's foot the master's own 40 under the content's; the
+  small print takes a 150 right reserve there (only while the seal shows) and wraps to two lines.
+  **`showBadge` has no pricing field**, so this seal is hidable by nothing — the bio's case, not
+  fixed here. Open question 12.
+- **The root's hairline: `grungeRule`** (`s.pr && s.v0 && s.grunge`, beside `grungeBand`), an inset
+  1px `s.inactiveLine` box shadow. Pricing is the **only** Static Youth instance whose own stroke is
+  visible (every root at all three widths was read; the footer's is a top-only white 1px, its own
+  session's) — both twins carry the same stroke HIDDEN. It is drawn at the root because the block
+  stands inside the root's padding. `#1A1A1A` on black: all but invisible, and followed.
+- **`FIELDS.pricing` has no Lime-keyed `in` row**, so nothing was owed; the calendar's `heading` is
+  next, in section 8.
+- **Measured against the masters' content edges**: desktop head 82 (100 × 0.82), heading 490 wide on
+  two lines, deck at 108.2, cards 417.7 (the frame's 512 × 0.82 = 419.8 — Lime's same 2px, our
+  narrower column's wrap), pill 44.3; 768 head 99.6, deck at 131.6, cards 462 (465, the panel FIXED
+  there), pill 54; 390 head 117.1 (117), deck at 149.1 (149), cards 376.6 / 416.5 / 416.5 (377 / 417
+  / 417). "Drinks + dinner ambience" wraps at 768, Lime's inherited 216 against 222.67.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -845,6 +891,12 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - *The 390 page is five gigs* and *the compact `pageWindow` at every width* (Lime 1, map) — unchanged.
 - *The emitted DOM order is the frame's paint order* (`figma-frame-reading`) — the panel's sheet last.
 
+- *The glow is a seat: rendered index `i % 3 === 1`* and *emptied content drops its node* (Lime 1,
+  pricing) — the seat now carries a rule instead of a glow.
+- *Place a seal by its disc's centre, off the edges of what it hangs on* (Lime 1, bio) — the third
+  Grunge seal.
+- *A leak that shows and reads as a defect is overridden* (this plan, gallery) — the 390 seal.
+
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
 
@@ -877,3 +929,9 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
 10. **The map's pin and lit row** — *section 6:* the frames draw neither (nor do Lime's or Retro's), so
     the black-in-white pin and the black lit row are ours. And the 390 band's grain is drawn full where
     the master cuts it at 400. Worth telling the designer with 9.
+11. **The pricing heading's two-tone split** — *section 7:* words one to four are white and the rest
+    the accent, by position (the frame's "Choose the set that's / right for your night"). Worth
+    telling the designer with 7, 8 and 9.
+12. **The 390 pricing seal** — *section 7:* the master stands it over the featured card's text (a
+    leaked y); shipped on the panel's foot-right corner, as at 1440 and 768. And no field hides this
+    seal or the bio's. Worth telling the designer with 10.
