@@ -93,7 +93,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 3 | `media` | `964:58602` | Media Player — D · Floating cards stack | 1440 × 1253 | `986:44060` *(in `986:44059`)* | 768 × 1742.3 | `986:44072` | 390 × 1231.3 | `964:58590` | `964:58578` | done `036181e` |
 | 4 | `gallery` | `964:58603` | Gallery Sections — Component 1 | 1440 × 819 | `986:44061` | 768 × 1116 | `989:22292` | 390 × 760 | `964:58591` | `964:58579` | done `bc04864` |
 | 5 | `repertoire` | `964:58604` | Repertoire — A · Two-column dense | 1440 × 1096 | `986:44062` | 768 × 922 | `986:44074` | 390 × 918 | `964:58592` | `964:58580` | done `7ea79e7` |
-| 6 | `map` | `964:58605` | Events Map — D · Compact tile | 1440 × 1151 | `986:44063` | 768 × 1349 | `986:44075` | 390 × 1172.2 | `964:58593` | `964:58581` | todo |
+| 6 | `map` | `964:58605` | Events Map — D · Compact tile | 1440 × 1151 | `986:44063` | 768 × 1349 | `986:44075` | 390 × 1172.2 | `964:58593` | `964:58581` | done `c4cbff0` |
 | 7 | `pricing` | `964:58606` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:44064` | 768 × 765 | `986:44076` | 390 × 1510 | `964:58594` | `964:58582` | todo |
 | 8 | `calendar` | `964:58607` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:44065` | 768 × 1376 | `986:44077` | 390 × 997 | `964:58595` | `964:58583` | todo |
 | 9 | `form` | `964:58608` | Enquiry Forms — B · Split context+form | 1440 × 965 | `986:44066` | 768 × 1122 | `986:44078` | 390 × 1176 | `964:58596` | `964:58584` | todo |
@@ -750,6 +750,59 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   (85), chips 29.5; 390 head 152.2 (152), rows 82.6 (83), the pager spread across the measure — six
   buttons where the master draws five, `pageWindow`'s compact row, Lime's.
 
+### Settled in section 6 (the events map)
+
+- **No Grunge block, for the sixth time: Lime's `if (s.lime)` inside `EventsMap`'s `if (s.v0)` is
+  `(s.lime || s.grunge)`**, after the seam, with the **`G` lookup** at its head (Lime's arm is the old
+  literals; themes 0, 1, 3, 4 digest to zero, canvas and `live=1`, and at theme 2 only map a0 moved).
+  The tree is Lime's node for node at all three widths. Proved at `theme=2&live=1&n=30`, all three
+  widths: a row lights its pin, a pin lights its row, the pager steps, the lit gig survives paging
+  away and back, linked rows are `<a>`, and every click lands through the panel's grain sheet.
+- **`grungeBand` is `(s.me || s.mp) && s.v0 && s.grunge`**; the form adds `s.fo`. **Scheme 2 lands on
+  the palette but for one literal**: `box/1` and `inactive/border` are `#000000` = `s.bg`,
+  `active/bg` and `text/1` are `s.ac`, `text/2` is `s.tx`; only `box/2` **`#222222`** is named (the map's
+  ground, the date box, the idle page pill — the media card's own fill). "UPCOMING GIGS" is bound to
+  `sem/tag/2/text` and resolves **white** here, not the mode table's `#0D1F03` — followed off the render.
+- **Open question 3 closes: `gigDark` is not widened.** The block reads no `g.hue`, `mapBg` or `mapFg`.
+- **The red panel is no nested mode and no raw fill**: the gig panel and every row are bound to
+  `sem/active/bg`, the rows inside a 1px INSIDE `inactive/border` (black) at a raw radius 10. The third
+  trap under *The schemes* is answered for the map; the form's half is still its session's read.
+- **The leaves**: both cards radius 13 (`u(13)`) at every width; the tile is `s.bg` padded 20 (10 at
+  390) round a radius-8 map on `#222222` under Lime's multiply at .6 in **`s.ac`**, with **no** stroke
+  overlay and **no gap** over its foot at 768 (map 214.84, Lime's 219.84 and 12); the panel head is
+  flush (no 20 inset), its 1px rule **is filled** (`s.bg`, 30 from the count) where Lime's is empty, and
+  the 390 panel pads 30 at its top; the date is a radius-6 `#222222` box with white type. No node
+  carries an effect. Head, radius label, base line and globe are `s.ac`; terms and everything on the
+  panel `s.tx`. The radius label is **Display/Title** here (Lime's is Label/LG), through `labelStyle`;
+  the block's `disp()` helper is `faced` / `facedLh` / uppercase for its three direct `s.display` sites.
+- **Two sheets of grain.** The band's is the media player's recipe (`lighten` .29, out over the root's
+  padding, `head` and the grid lifted with `position: relative`). The panel's is **its own**: a 682.5
+  square hung off the panel's **bottom-left corner** at every width (y 3.5 / −87.5 / −209.5 is just
+  the panel's height less 682.5), **`HARD_LIGHT` at .19**, the frame's *last* child — over the rows and
+  the pager. `Grain` is `pointerEvents: 'none'`, so nothing is covered. **Named departure**: the 390
+  band sheet is 390 × 400 at y −60.5 in the master (the head only, its cut edge hidden behind the
+  tile but for two 10px slivers); drawn full, as at the other widths. The form's 390 sheet is the same
+  story.
+- **Seams off the renders** (PIL black-run maxima): head · foot **40 · 73** at 1440 (× 0.82),
+  **70 · 66** at 768, **46 · 33** at 390. Node arithmetic agrees at 1440 and 768; at 390 the vector sits
+  at x −582 and shows a shallower stretch, so the render wins.
+- **This frame marks its current page**, unlike the repertoire's: a `box/1` black pill with white
+  type among `#222222` pills with red type, arrows in a black 1px ring round a black glyph. `Pager`'s
+  `frame.lime` takes an additive **`onBox`** (the current pill's own fill; nobody else passes it) and
+  the map passes `{ box: '#222222', onBox: s.bg, ring: s.bg, ink: s.bg, idle: s.ac, on: s.tx,
+  onRing: undefined }` — the `undefined` switches off the repertoire's ring. Section 5's worry (the
+  inherited arm on the red panel) is closed by this. Map a2 at 390 still has the inherited arm.
+- **Two live states the frames do not draw, redrawn** (Lime's rule): the **pin is `s.bg` in a 3px
+  `s.tx` ring**, lit `s.tx` in a 5px `s.bg` ring at 16 — the accent vanishes on a raster multiplied
+  with itself; the **lit row is the pager's own current-page pair**, `s.bg` under white type, the
+  `#222222` date box still reading on it.
+- **`FIELDS.map` has no Lime-keyed `in` row**, so nothing was owed.
+- **Measured against the masters' content edges**: desktop head line 95.2, cards 562 (686 × 0.82 =
+  562.5), map 410.9 (501 × 0.82), foot 118.3 (145 × 0.82 = 118.9), rows 79.5, date 45.9 × 46.7; 768
+  tile 387.6 (388), map 214.8, foot 132.8, rows 79, panel 592.6 (595); 390 tile 428.9 (429.16), map
+  326 × 298, foot 110.9, rows 97. The root's 22 side padding against the master's 10 is Lime's,
+  inherited. `n=30` gives `1 2 … 6` on one row at all three widths.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -784,6 +837,12 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   pager's current page, which Grunge's frame does not draw at all.
 - *One five-theme digest is the whole proof for a shared-helper change* (Lime 1, sweep) — `Pager`.
 
+- *Retro's live states vanish under Lime; redraw them, never inherit them* (Lime 1, map) — the pin
+  and the lit row, again.
+- *`vm.title` shadows the ramp's `title` size* (Lime 1, map) — the block's own `titleSize`, reused.
+- *The 390 page is five gigs* and *the compact `pageWindow` at every width* (Lime 1, map) — unchanged.
+- *The emitted DOM order is the frame's paint order* (`figma-frame-reading`) — the panel's sheet last.
+
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
 
@@ -793,7 +852,7 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
    that the shipped face is a clean stand-in.
 2. **Does Grunge desaturate an artist's uploads?** *Closed in session 0:* the greyscale is in the
    assets, so nothing desaturates and uploads stay in colour.
-3. **`gigDark` under Grunge** — the map session's.
+3. **`gigDark` under Grunge** — *closed in section 6:* not widened; the block reads no `g.hue`.
 4. **Header cards 2–4 under Grunge** — *recorded in section 1.* All three render at three widths and
    publish. Card 2 (`HeaderV1`): Retro's cream mount, checker floor and sub-cards in Grunge tokens;
    its second hue is a placeholder (`mustard = s.grunge ? s.tx : s.pillBg`, the place card on
@@ -813,3 +872,6 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
    takes the accent and the rest white, by position (the frame's "240 Songs"). And the frame marks no
    current page — every pill is the same red — so the shipped mark (dark ink in a white ring) is ours.
    Worth telling the designer with 7 and 8.
+10. **The map's pin and lit row** — *section 6:* the frames draw neither (nor do Lime's or Retro's), so
+    the black-in-white pin and the black lit row are ours. And the 390 band's grain is drawn full where
+    the master cuts it at 400. Worth telling the designer with 9.
