@@ -772,6 +772,9 @@ fields, Retro and Lime together.
   three, Lime's bio 3), JP-040's 18 (map layout 2 × three themes), JP-036's 6 (pricing layout 2,
   Lime). **Map layouts 1, 3 and 4 byte-identical**; JP-042, JP-033 + 041, JP-039 and JP-038 move
   nothing on the seeded harness, as each Settled says (`sections` is the default `navMode`).
+  Row-level spot check of three JP-037 buckets (Retro header 1 and bio 2 at desktop, Grunge
+  header 4 at 390 live): the differing rows are the removed *All Access* chip and the rows it
+  reflowed, nothing else.
 - **Reach** (`scripts/reach.mjs 0,1,2`, 6,840 renders): every hit is 6/6, none partial, and
   every row agrees with `FIELDS`' `in` and the two identity hints — `heroCta` header 2 (and
   Lime's folded 6), `credit` / `cta` bio 2, `tags` / `showTags` the chip-row set above, `status`
@@ -800,7 +803,10 @@ fields, Retro and Lime together.
 - `index.html` refreshed in `312414e` (6,964,127 bytes against 6,958,977); `npm run build`
   passes. The one-off walk script is deleted and the worktree removed.
 
-**Replies to QA, one line per ticket.**
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified`
+is past `<stamp — filled in after the PR merges>`, or later**
+(`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`): JP-033 was re-filed in this batch
+because a fix and a retest crossed, the layout-1 pass's own lesson.
 - **JP-042 — fixed.** The header's Kicker and Location hints, the form-fields counter and the
   gigs footnote now say what the chosen layout draws.
 - **JP-036 — fixed.** Lime's plan card reads *Plan card button* and the line beside it
