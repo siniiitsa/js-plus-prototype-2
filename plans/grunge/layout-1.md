@@ -97,7 +97,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 7 | `pricing` | `964:58606` | Pricing — B · 3-col in soft panel | 1440 × 895 | `986:44064` | 768 × 765 | `986:44076` | 390 × 1510 | `964:58594` | `964:58582` | done `a3e6bcf` |
 | 8 | `calendar` | `964:58607` | Booking Calendar — A · Scheduler | 1440 × 869 | `986:44065` | 768 × 1376 | `986:44077` | 390 × 997 | `964:58595` | `964:58583` | done `fb89dde` |
 | 9 | `form` | `964:58608` | Enquiry Forms — B · Split context+form | 1440 × 965 | `986:44066` | 768 × 1122 | `986:44078` | 390 × 1176 | `964:58596` | `964:58584` | done `01e4cb2` |
-| 10 | `testimonials` | `964:58609` | Testimonials H — Stacked tag card | 1440 × 730 | `986:44067` | 768 × 730 | `986:44079` | 390 × 730 | `964:58597` | `964:58585` | todo |
+| 10 | `testimonials` | `964:58609` | Testimonials H — Stacked tag card | 1440 × 730 | `986:44067` | 768 × 730 | `986:44079` | 390 × 730 | `964:58597` | `964:58585` | done `9366e28` |
 | 11 | `footer` | `964:58610` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:44068` | 768 × 647.4 | `986:44080` | 390 × 619.4 | `964:58598` | `964:58586` | todo |
 
 Both twins' fit comments in `EncoreSection.jsx` cite their node ids; grep for either to find the
@@ -948,6 +948,41 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   *Other* on its second row. The narrow 2–5px are the Anton-at-0.75 label line boxes (22.8 against the
   frame's rounded 23, 21.6 against 22), summed.
 
+### Settled in section 10 (the testimonials)
+
+- **No Grunge block, for the tenth time: Lime's `if (s.lime)` inside `Testimonials`' `if (s.v0)` is
+  `(s.lime || s.grunge)`**, after the seam, with the **`G` lookup** at its head (Lime's arm is the old
+  literals; themes 0, 1, 3, 4 digest to zero, canvas and `live=1`, and at theme 2 only testimonials
+  a0 moved). The tree is Lime's node for node at all three widths, on **Scheme 1** — so the root is
+  untouched: no band, `s.bg` is the ground. `Layer_1` is visible but its one fill is hidden, the band
+  table's "none" confirmed again; no grain, no seal. The 390 master states Device: Mobile. Proved at
+  `theme=2&live=1`, all three widths: Next walks all five reviews and wraps, Back wraps 0 → 4,
+  pointer cursors; the canvas arrows carry no cursor and ignore a click; `n=1` draws no arrows and
+  `n=0` prints *No reviews yet.* in white.
+- **The leaves**: card and both backs a **raw radius 13** (Lime 55). The card is `s.box1` lettered in
+  `s.tx` (its nested Scheme 4 ≡ 1, a no-op); the red back is `s.ac`, the dark back **Scheme 2's
+  `box/3` `#353535`** — `HeaderV0`'s `G2.box3`, a named literal (Lime's seat is `box/2`). All three
+  keep Lime's `DROP_SHADOW` 0 / 4 / 4 at 25%, which on black shows only where a foot crosses the back
+  under it. The reviewer pill is the active pair (`s.pillBg` / `s.activeFg`, the leaked `#15180F`,
+  followed), the role pill `s.bg` lettered in `s.ac`; both keep radius 12 and 6 / 12. **The arrows
+  needed nothing**: a 1px inside `stroke/1` ring round a `text/2` glyph, Lime's `ring()` as it stands.
+- **Type**: the quote is Display/MD at 1 — a direct `s.display` site, so `faced` / `facedLh(s, 1)` /
+  uppercase — and **one tone, all `sem/text/1`, `s.ac`: no positional rule this time**. The eyebrow is
+  `s.tx`, otherwise Lime's. **The pills are Display/Title 36 / 28 / 26**, not Lime's Label/LG — the
+  `titleSize` literal through `labelStyle`, with `whiteSpace: 'normal'` because they are content.
+- **The narrow backs and the card's place are the masters' own** (desktop is Lime's exactly):
+  `[top, left, right, bottom]` off the card — 768 red −46 / 35 / 39 / 27, dark −27 / 14 / 14 / 50; 390
+  red −45.7 / 30 / 33 / 57.7, dark −29.7 / 14 / 14 / 76.7. The card stands 201.5 down and 155.5 up the
+  768 band (Lime 205.5 / 159.5), 201.2 down at 390 with the arrows 33.8 under it (Lime 38). The 390
+  bleed to x 13 and the arrows' `marginBottom` (20 / 46) are Lime's, unchanged.
+- **`FIELDS.testimonials` has no Lime-keyed `in` row**, so nothing was owed.
+- **Measured against the masters**: desktop band 598.6 (730 × 0.82), card 590.4 × 344.4, backs 511.7 ×
+  321.4 and 556 × 348.5, quote three lines as the frame breaks them, pills 42.2 (52 × 0.82 = 42.6),
+  arrows 45.1 × 44.3; 768 band 729.3, card 464 × 372.3 (373), backs 390 × 391.3 (392) and 436 × 349.3
+  (350), pills 42.8 (43); 390 band 729.8, card 364 × 332.8 (333) at x 13, backs 301 × 320.8 and 336 ×
+  285.8, pills 40.6 (41), arrows at 567.8 (568). At 768 and 390 Anton at 0.75 breaks the quote one
+  word later than Stones Crush ("…TO THE / LAST ENCORE."), three lines either way.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -1006,6 +1041,11 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - *`get_variable_defs` mixes nested schemes in one list; the `use_figma` fills settle which node is
   on which* (Lime 1, form) — the Scheme-3 half and the Scheme-1 pill.
 - *The 390 band sheet is drawn full* (this plan, map) — and the 768 one here.
+
+- *The backs are insets off the card*, *the 390 card bleeds into the root's padding* and *the wide
+  arrows centre on the wrap, not the card* (Lime 1, testimonials) — all three unchanged.
+- *`vm.title` shadows the ramp's `title` size* (Lime 1, map) — the pills' 36 / 28 / 26.
+- *Scan before deciding on a drop shadow* (Lime 1, testimonials) — kept; it is the shared value.
 
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
