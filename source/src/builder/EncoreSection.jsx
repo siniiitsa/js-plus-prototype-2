@@ -8938,6 +8938,9 @@ function Pager({ s, colour, fill, frame = {} }) {
   // same frame, `s.activeFg` on the red, inside a 2px inset ring of `s.tx` —
   // the ink alone is a 10px numeral changing colour, which does not read — and
   // the rest keep the white.
+  // The events map's frame (964:58605) does draw one — a `box/1` pill among
+  // `box/2` ones — so `frame.lime` takes an additive `onBox`, the current
+  // pill's own fill, which no other caller passes.
   if (s.lime || s.grunge) {
     const grunge = s.grunge
     const z = s.narrow ? 1 : 0.82
@@ -8949,7 +8952,7 @@ function Pager({ s, colour, fill, frame = {} }) {
     const btn = (key, child, on, end, onClick) => (
       <span key={key} onClick={onClick} style={{
         minWidth: u(end ? 55 : 87), height: u(54), flex: 'none', borderRadius: '999px',
-        background: end ? 'transparent' : t.box,
+        background: end ? 'transparent' : on && t.onBox ? t.onBox : t.box,
         boxShadow: end ? `inset 0 0 0 1px ${t.ring}` : on && t.onRing ? `inset 0 0 0 2px ${t.onRing}` : on && t.glow ? `inset 0 0 ${u(17)} ${t.glow}` : 'none',
         color: on && t.on ? t.on : end || on ? t.ink : t.idle,
         cursor: onClick ? 'pointer' : undefined,
@@ -14501,7 +14504,21 @@ function EventsMap({ s }) {
     // the page**, which no Lime or Retro frame draws but the pairing needs (a
     // lit row has to light something), and the 390 page is Retro's five gigs
     // where its master draws three, since `perPage` is the section's seam.
-    if (s.lime) {
+    //
+    // Grunge (964:58605 1440 × 1151, 986:44063 768 × 1349, 986:44075 390 ×
+    // 1172) is this tree node for node, so it is this block and `G` names its
+    // leaves; Lime's arm is the literals the block was written with. It stands
+    // on **Scheme 2** (the root's `grungeBand`), whose values all land on the
+    // palette — `box/1` and `inactive/border` are `s.bg`, `active/bg` and
+    // `text/1` are `s.ac`, `text/2` is `s.tx` — but `box/2`, `#222222`. The
+    // tile is a black card padded round the map, the gig panel is the accent
+    // under a second sheet of grain, and the rows are boards in a 1px black
+    // rule. Its frames draw no pin and no lit row either: the pin is black in a
+    // white ring, since the accent vanishes on a raster tinted with it, and the
+    // lit row takes the frame's own current-page pair from its pager, black
+    // under white type.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const tab = isTablet(s)
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -14509,6 +14526,31 @@ function EventsMap({ s }) {
       const mist = '#D5E3B2' // sem/box/3 — the tile and the gig panel
       const hair = '#15180F26' // sem/stroke/1 — the rows' hairline, 15%
       const litInk = '#C7FF3C' // sem/active/text, on sem/active/bg (`ink`)
+      const box2 = '#222222' // Scheme 2's sem/box/2 — map ground, date box, idle page pill
+      const G = grunge ? {
+        head: s.ac, tile: s.bg, panel: s.ac, onTile: s.ac, terms: s.tx, onPanel: s.tx,
+        radius: u(13), tilePad: s.mob ? '10px' : u(20), tileGap: '0px', mapR: u(8), mapH: '214.84px', mapBg: box2, tint: s.ac,
+        pin: s.bg, pinRing: s.tx, pinOn: s.tx, pinOnRing: s.bg,
+        rowBg: s.ac, rowOn: s.bg, rowFg: s.tx, rowOnFg: s.tx, rowRule: s.bg, rowR: u(10),
+        date: box2, dateFg: s.tx, dateR: u(6),
+        panelPad: s.mob ? '30px 20px 20px' : u(20),
+        pager: { box: box2, onBox: s.bg, ring: s.bg, ink: s.bg, idle: s.ac, on: s.tx, onRing: undefined },
+      } : {
+        head: ink, tile: mist, panel: mist, onTile: ink, terms: ink, onPanel: ink,
+        radius: s.mob ? '30px' : u(55), tilePad: s.mob ? '10px' : 0, tileGap: s.narrow ? '12px' : '0px',
+        mapR: s.mob ? '24px' : u(8), mapH: '219.84px', mapBg: s.tx, tint: s.box1,
+        pin: s.ac, pinRing: ink, pinOn: ink, pinOnRing: s.ac,
+        rowBg: s.tx, rowOn: ink, rowFg: ink, rowOnFg: litInk, rowRule: hair, rowR: '999px',
+        date: s.ac, dateFg: s.box1, dateR: u(46),
+        panelPad: u(20),
+        pager: { box: s.tx, ring: ink, ink, idle: ink, glow: ink },
+      }
+      // Anton at the frame's glyph size, in capitals: every direct display
+      // site here owes both under Grunge (section 1's `faced`).
+      const disp = (size, lh) => ({
+        fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
+        ...(grunge ? { textTransform: 'uppercase' } : null),
+      })
       // `vm.title` is the heading string and overwrites the ramp's `title` key
       // in sectionVm, so Display/Title is the frames' own 36 / 28 / 26.
       const titleSize = s.mob ? '26px' : tab ? '28px' : u(36)
@@ -14521,18 +14563,18 @@ function EventsMap({ s }) {
 
       const head = (
         <div style={col(u(16))}>
-          <span style={eyebrow({ color: ink })}>Shows/coverage</span>
+          <span style={eyebrow({ color: G.head })}>Shows/coverage</span>
           {/* Display/LG over Label/LG, which stands at the row's right on
               desktop and 768 and stacks 10 under the heading at 390. */}
           <div style={s.mob ? col('10px', { alignItems: 'flex-start' }) : row(u(10), { justifyContent: 'space-between' })}>
-            <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-              letterSpacing: s.dls, color: ink, minWidth: 0,
-            }}>{s.title}</h2>
-            <span style={{
-              fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
-              color: ink, whiteSpace: 'nowrap', flex: 'none',
-            }}>{s.mapRadius}</span>
+            <h2 style={{ margin: 0, ...disp(s.dispLg, 0.89), color: G.head, minWidth: 0 }}>{s.title}</h2>
+            {/* Label/LG under Lime; Grunge's frame sets it in Display/Title. */}
+            <span style={grunge
+              ? labelStyle(s, titleSize, { color: G.head, flex: 'none' })
+              : {
+                fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
+                color: ink, whiteSpace: 'nowrap', flex: 'none',
+              }}>{s.mapRadius}</span>
           </div>
         </div>
       )
@@ -14545,8 +14587,8 @@ function EventsMap({ s }) {
         return (
           <span key={i} onClick={onPick(i)} style={{
             position: 'absolute', left: g.pin.x, top: g.pin.y, width: `${d}px`, height: `${d}px`,
-            borderRadius: '999px', background: on ? ink : s.ac,
-            boxShadow: `0 0 0 ${on ? 5 : 3}px ${on ? s.ac : ink}`,
+            borderRadius: '999px', background: on ? G.pinOn : G.pin,
+            boxShadow: `0 0 0 ${on ? 5 : 3}px ${on ? G.pinOnRing : G.pinRing}`,
             transform: 'translate(-50%, -50%)',
             cursor: s.live ? 'pointer' : undefined,
           }} />
@@ -14562,37 +14604,38 @@ function EventsMap({ s }) {
       // ground's own colour, so it only shows where it crosses the raster, and
       // is drawn over it.
       const tileL = (
-        <div style={col(s.narrow ? '12px' : '0px', {
-          position: 'relative', background: mist, borderRadius: s.mob ? '30px' : u(55),
-          overflow: 'hidden', padding: s.mob ? '10px' : 0, minWidth: 0,
+        <div style={col(G.tileGap, {
+          position: 'relative', background: G.tile, borderRadius: G.radius,
+          overflow: 'hidden', padding: G.tilePad, minWidth: 0,
         })}>
           <div style={{
-            position: 'relative', overflow: 'hidden', borderRadius: s.mob ? '24px' : u(8), background: s.tx,
+            position: 'relative', overflow: 'hidden', borderRadius: G.mapR, background: G.mapBg,
             ...(s.mapSrc ? { backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' } : null),
-            ...(s.narrow ? { flex: 'none', height: s.mob ? '298px' : '219.84px' } : { flex: '1 1 auto', minHeight: u(219.84) }),
+            ...(s.narrow ? { flex: 'none', height: s.mob ? '298px' : G.mapH } : { flex: '1 1 auto', minHeight: u(219.84) }),
           }}>
             <span aria-hidden style={{
-              position: 'absolute', inset: 0, background: s.box1,
+              position: 'absolute', inset: 0, background: G.tint,
               mixBlendMode: 'multiply', opacity: 0.6, pointerEvents: 'none',
             }} />
             {pinsL}
           </div>
           <div style={col(u(4), { padding: s.mob ? '10px' : `${u(38)} ${u(30)}` })}>
             <span style={s.mob ? col('8px', { alignItems: 'flex-start' }) : row(u(8))}>
-              <LimeGlobeFill size={35.16 * z} color={ink} />
-              <span style={{
-                fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1, letterSpacing: s.dls, color: ink,
-              }}>{s.mapBase}</span>
+              <LimeGlobeFill size={35.16 * z} color={G.onTile} />
+              <span style={{ ...disp(titleSize, 1.1), color: G.onTile }}>{s.mapBase}</span>
             </span>
             {/* Label/XS — Chakra Petch, this section's `s.ui` site. */}
             <span style={{
-              fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, color: ink,
+              fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, color: G.terms,
             }}>{s.mapTerms}</span>
           </div>
-          <span aria-hidden style={{
-            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-            boxShadow: `inset 0 0 0 1px ${s.tx}`,
-          }} />
+          {/* Grunge's tile carries no stroke. */}
+          {!grunge && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 1px ${s.tx}`,
+            }} />
+          )}
         </div>
       )
 
@@ -14606,11 +14649,11 @@ function EventsMap({ s }) {
         const link = extLink(s, g.url)
         const Tag = link ? 'a' : 'div'
         const on = lit(i)
-        const fg = on ? litInk : ink
+        const fg = on ? G.rowOnFg : G.rowFg
         return (
           <Tag key={i} {...link} onClick={onPick(i)} style={{
             ...row(u(12), { justifyContent: 'space-between' }),
-            background: on ? ink : s.tx, boxShadow: `inset 0 0 0 1px ${hair}`, borderRadius: '999px',
+            background: on ? G.rowOn : G.rowBg, boxShadow: `inset 0 0 0 1px ${G.rowRule}`, borderRadius: G.rowR,
             padding: tab ? '11px 10px 11px 33px' : `${u(20)} ${u(20)} ${u(20)} ${u(33)}`,
             textDecoration: 'none', color: fg,
             cursor: s.live ? 'pointer' : undefined,
@@ -14618,7 +14661,7 @@ function EventsMap({ s }) {
             <span style={col(u(2), { minWidth: 0 })}>
               {/* Display/List. */}
               <span style={{
-                fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, color: fg,
+                ...disp(s.list, 1.2), color: fg,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{g.venue}</span>
               <span style={eyebrow({ color: fg, overflow: 'hidden', textOverflow: 'ellipsis' })}>
@@ -14627,15 +14670,15 @@ function EventsMap({ s }) {
             </span>
             <span style={col('0px', {
               alignItems: 'center', justifyContent: 'center', flex: 'none',
-              width: u(56), height: u(57), borderRadius: u(46), padding: `${u(4)} ${u(6)}`,
-              background: s.ac, color: s.box1,
+              width: u(56), height: u(57), borderRadius: G.dateR, padding: `${u(4)} ${u(6)}`,
+              background: G.date, color: G.dateFg,
             })}>
               {/* The seed's month is title case and the frame's capitals, so
                   the casing is the site's, the panel head's rule. */}
-              <span style={eyebrow({ color: s.box1, textTransform: 'uppercase' })}>{g.month}</span>
+              <span style={eyebrow({ color: G.dateFg, textTransform: 'uppercase' })}>{g.month}</span>
               {/* Body/MD. */}
               <span style={{
-                fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, color: s.box1,
+                fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, color: G.dateFg,
               }}>{g.day}</span>
             </span>
           </Tag>
@@ -14658,24 +14701,34 @@ function EventsMap({ s }) {
       const win = pageWindow(pages, pg, true)
       const listL = (
         <div style={col(u(20), {
-          background: mist, borderRadius: s.mob ? '30px' : u(55), padding: u(20), minWidth: 0,
+          background: G.panel, borderRadius: G.radius, padding: G.panelPad, minWidth: 0,
+          ...(grunge ? { position: 'relative', overflow: 'hidden' } : null),
         })}>
-          <span style={row('0px', { padding: `0 ${u(20)}` })}>
-            <span style={eyebrow({ color: ink, textTransform: 'uppercase' })}>
+          {/* Grunge's head is flush with the rows and its 1px rule is filled
+              (`box/1`), 30 from the count, where Lime's carries no fill. */}
+          <span style={row(grunge ? u(30) : '0px', { padding: grunge ? 0 : `0 ${u(20)}` })}>
+            <span style={eyebrow({ color: G.onPanel, textTransform: 'uppercase' })}>
               Upcoming gigs · {s.gigs.length}
             </span>
+            {grunge && <span aria-hidden style={{ flex: 1, height: '1px', background: s.bg }} />}
           </span>
           {rowsL.length > 0 && <div style={col(u(12))}>{rowsL}</div>}
           {win.labels.length > 0 && (
             <Pager s={s} frame={{
               pages: win.labels, active: win.at, justify: 'center', grow: !tab,
-              lime: { box: s.tx, ring: ink, ink, idle: ink, glow: ink },
+              lime: G.pager,
               onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
               onStep: s.live
                 ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
                 : undefined,
             }} />
           )}
+          {/* The panel's own sheet, the frame's last child, so it lies over
+              the rows and the pager: a 682.5 square hung off the panel's
+              bottom-left corner at every width, HARD_LIGHT at .19. */}
+          <Grain s={s} exact grunge blend="hard-light" opacity={0.19} style={{
+            inset: 'auto auto 0 0', width: u(682.5), height: u(682.5),
+          }} />
         </div>
       )
 
@@ -14687,13 +14740,22 @@ function EventsMap({ s }) {
       // player's fix.
       return (
         <div style={{
-          position: 'relative', color: ink, ...col(s.narrow ? '30px' : u(32)),
+          position: 'relative', color: grunge ? s.tx : ink, ...col(s.narrow ? '30px' : u(32)),
           padding: s.mob ? '24px 0' : undefined,
         }}>
+          {/* Grunge's band sheet, the media player's: `image 1` at .29 LIGHTEN
+              under everything and out over the root's padding, so the head and
+              the cards are lifted over it. Its seams are the frame's two
+              `#000000` vectors, their depths read off the renders. */}
+          <Grain s={s} exact grunge blend="lighten" opacity={0.29}
+                 style={{ inset: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})` }} />
           <ArcEdge s={s} side="top" height={44.24 * z} />
           <ArcEdge s={s} side="bottom" height={44.24 * z} />
-          {head}
+          <TornEdge s={s} grunge side="top" height={s.mob ? 46 : tab ? 70 : 40 * z} />
+          <TornEdge s={s} grunge side="bottom" height={s.mob ? 33 : tab ? 66 : 73 * z} />
+          {grunge ? <div style={{ position: 'relative' }}>{head}</div> : head}
           <div style={{
+            ...(grunge ? { position: 'relative' } : null),
             display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
             gap: s.mob ? '10px' : tab ? '32px' : u(36), alignItems: 'stretch',
           }}>
@@ -21981,10 +22043,10 @@ export default function EncoreSection({ s }) {
   const limeLight = (s.mp || s.fo) && s.v0 && s.lime
   // Grunge's bands — Static Youth's page alternates `#000000` with Scheme 2's
   // `#171716`, and a band that differs draws its own grain sheet and both of
-  // its torn seams. The media player (964:58602) is the first; the map and the
-  // form extend this, one section at a time. Scheme 2's `sem/bg` has no vm key
+  // its torn seams. The media player (964:58602) was the first and the events
+  // map (964:58605) is the second; the form extends this in its session. Scheme 2's `sem/bg` has no vm key
   // (`sem` is Scheme 1), hence the literal, which is `HeaderV0`'s `G2.bg`.
-  const grungeBand = s.me && s.v0 && s.grunge
+  const grungeBand = (s.me || s.mp) && s.v0 && s.grunge
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
