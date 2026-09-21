@@ -3177,12 +3177,15 @@ function Bio({ s }) {
     // arch's left edge, 11.5 outside it and 166.35 above its foot; at 768 it
     // hangs 16.87 past the right edge, 25.15 above the foot; at 390 it sits
     // 5.58 inside the right edge, 0.65 below the foot.
+    // Grunge's narrow masters hang it on the same x but 23.15 above the foot at
+    // 768 and 5.65 below it at 390 — its shorter foot line lifts the card under
+    // a seal the section places absolutely.
     const disc = s.mob ? 63.94 : 125.37
     const half = disc / 2
     const seal = s.mob
-      ? { right: `${-(-5.58 + half).toFixed(2)}px`, bottom: `${-(0.65 + half).toFixed(2)}px` }
+      ? { right: `${-(-5.58 + half).toFixed(2)}px`, bottom: `${-((grunge ? 5.65 : 0.65) + half).toFixed(2)}px` }
       : tab
-        ? { right: `${-(16.87 + half).toFixed(2)}px`, bottom: `${(25.15 - half).toFixed(2)}px` }
+        ? { right: `${-(16.87 + half).toFixed(2)}px`, bottom: `${((grunge ? 23.15 : 25.15) - half).toFixed(2)}px` }
         : { left: u(-11.5 - half), bottom: u(166.35 - half) }
     const card = (
       <div style={row('0', {

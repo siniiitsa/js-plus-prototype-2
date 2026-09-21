@@ -576,7 +576,10 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - **No Grunge block again: Lime's `if (s.v0 && s.lime)` is `(s.lime || s.grunge)`**, with
   `const grunge = s.grunge` naming four deltas. The tree is Lime's node for node at all three
   widths — flanks, the 488 × 648 frame (230 × 311 at 390), the 29 stacked head, the seal on Lime's
-  exact centres (11.5 outside the left edge / 16.87 past the right / 5.58 inside it). **Theme 1 is
+  x at all three (11.5 outside the left edge / 16.87 past the right / 5.58 inside it) and Lime's
+  desktop y; **the narrow y's are Grunge's own** — 23.15 above the card's foot at 768 (card y 264,
+  seal top 805) and 5.65 below it at 390 (card y 192, top 465.89) against Lime's 25.15 / 0.65,
+  since the section places the seal absolutely and the shorter foot line lifts the card. **Theme 1 is
   the digest at risk in a widened block**, not theme 0; it came back zero.
 - **The photograph is a raw radius 13 on `s.box3`, with no effect at all** — `effects: []`, so
   the *Glows* guess does not reach the bio. The outer 15 clip has no fill and its drop shadow
