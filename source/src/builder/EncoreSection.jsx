@@ -12579,12 +12579,34 @@ function Calendar({ s }) {
     // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both
     // in their page's Device mode, so every type size is the Lime ramp's `s.*`.
     // Scheme 1: the page ground, no band and no seams.
-    if (s.lime) {
+    //
+    // Grunge (964:58607 1440 × 869, 986:44065 768 × 1376, 986:44077 390 × 997)
+    // is this tree node for node, also on Scheme 1, so it is this block and `G`
+    // names its leaves; Lime's arm is the literals the block was written with.
+    // The panel is `box/1` at a raw 13 in a 3px `stroke/1` ring, the cells and
+    // the month discs are the page's black, every line of type but the day
+    // numbers is the accent, and the picked day is the active pair — a red
+    // fill under the leaked dark ink, with no effect on any node. The
+    // photograph takes a sheet of the band grain.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
+      const G = grunge ? {
+        panelR: u(13), ring: s.stroke1, disc: s.bg, arrow: s.ac, names: s.ac, line: s.ac,
+        cell: s.bg, cellR: u(10), on: s.pillBg, onFg: s.activeFg, onGlow: '', round: false, photoR: u(12),
+      } : {
+        panelR: u(55), ring: s.stroke2, disc: s.activeFg, arrow: s.tx, names: s.tx, line: s.tx,
+        cell: s.box2, cellR: u(26), on: s.box2, onFg: s.tx, onGlow: `, inset 0 0 20px 0 ${s.glow}`, round: s.mob, photoR: u(35),
+      }
+      // Anton at the frame's glyph size, in capitals: the heading and the
+      // month are direct display sites (section 1's `faced`).
+      const disp = (size, extra) => (grunge
+        ? type(s.display, faced(s, size), facedLh(s, 1), { textTransform: 'uppercase', ...extra })
+        : type(s.display, size, 1, extra))
       // The 390 master closes the grid's gaps to 2 and its padding to 20 / 10.
       const cols = {
         display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
@@ -12599,7 +12621,7 @@ function Calendar({ s }) {
         return (
           <span onClick={onClick} style={{
             width: u(55), height: u(54), flex: 'none', borderRadius: '999px',
-            background: s.activeFg, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, color: s.tx,
+            background: G.disc, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, color: G.arrow,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: onClick ? 'pointer' : undefined,
           }}><LimeArrow back={back} z={z} /></span>
@@ -12615,7 +12637,8 @@ function Calendar({ s }) {
       // Clicking the lit day again unlights it, layout 1's toggle. At 390 the
       // master's stated 50.49 stands on a ~45 column, which the 26 corner
       // draws as a lozenge; there the cell is square and fully round instead
-      // (user call, 2026-09-17), so every day is a circle.
+      // (user call, 2026-09-17), so every day is a circle. Grunge's raw 10
+      // draws no lozenge, so its 390 cell keeps the master's 50.49.
       const day = (c, i) => {
         if (c.iso === undefined) return <span key={i} />
         const on = c.iso === cur
@@ -12625,11 +12648,11 @@ function Calendar({ s }) {
         return (
           <span key={i} onClick={onClick} style={type(s.ui, s.labelXs, 1.26, {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            ...(s.mob
+            ...(G.round
               ? { aspectRatio: '1', borderRadius: '999px' }
-              : { height: u(55.89), borderRadius: u(26) }),
-            background: s.box2, color: s.tx, opacity: blocked(c) ? 0.38 : undefined,
-            boxShadow: `inset 0 0 0 1px ${s.stroke1}${on ? `, inset 0 0 20px 0 ${s.glow}` : ''}`,
+              : { height: s.mob ? '50.49px' : u(55.89), borderRadius: G.cellR }),
+            background: on ? G.on : G.cell, color: on ? G.onFg : s.tx, opacity: blocked(c) ? 0.38 : undefined,
+            boxShadow: `inset 0 0 0 1px ${s.stroke1}${on ? G.onGlow : ''}`,
             cursor: onClick ? 'pointer' : undefined,
           })}>{c.d}</span>
         )
@@ -12644,7 +12667,7 @@ function Calendar({ s }) {
         })}>
           <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center' })}>
             {disc(true, -1)}
-            <span style={type(s.display, s.dispSm, 1, { color: s.ac, whiteSpace: 'nowrap' })}>
+            <span style={disp(s.dispSm, { color: s.ac, whiteSpace: 'nowrap' })}>
               {month.label}
             </span>
             {disc(false, 1)}
@@ -12656,7 +12679,7 @@ function Calendar({ s }) {
           <div style={{ ...cols, height: u(30.22) }}>
             {s.calDays.map((d) => (
               <span key={d} style={type(s.body, s.bodyLg, 1.5, {
-                display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.tx,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: G.names,
               })}>{d}</span>
             ))}
           </div>
@@ -12668,11 +12691,11 @@ function Calendar({ s }) {
         <div style={col(u(24))}>
           {/* Display/MD at lh 1, held to the frame's 640 on desktop. The frame
               types BOOK NOW; the seed's heading stays `TITLES.calendar`. */}
-          <h2 style={type(s.display, s.dispMd, 1, {
+          <h2 style={disp(s.dispMd, {
             margin: 0, color: s.ac, maxWidth: s.narrow ? '100%' : u(640),
           })}>{s.title}</h2>
           <div style={{
-            position: 'relative', background: s.box1, borderRadius: u(55), overflow: 'hidden',
+            position: 'relative', background: s.box1, borderRadius: G.panelR, overflow: 'hidden',
           }}>
             <div style={{
               display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
@@ -12685,8 +12708,20 @@ function Calendar({ s }) {
                 display: 'flex', padding: u(20),
                 height: s.narrow ? (s.mob ? '308px' : '526px') : undefined,
               }}>
-                <div style={{ flex: 1, minWidth: 0, borderRadius: u(35), overflow: 'hidden' }}>
+                <div style={{
+                  flex: 1, minWidth: 0, borderRadius: G.photoR, overflow: 'hidden',
+                  position: grunge ? 'relative' : undefined,
+                }}>
                   <Photo s={s} initialsSize={Math.round(44 * z)} />
+                  {/* Grunge's `image 1`: a 624 square of the band grain hung off
+                      the photograph's top-left, lighten at .29 (its gradient
+                      paint is hidden). The 768 master leaves it 624 in a 668
+                      card; it is drawn across the card, the gallery's recipe.
+                      At 390 the master hangs it 217.5 above the card. */}
+                  <Grain s={s} exact grunge blend="lighten" opacity={0.29} style={{
+                    inset: s.mob ? '-217.5px auto auto 0' : '0 auto auto 0',
+                    width: s.mob ? '624px' : '100%', aspectRatio: '1',
+                  }} />
                 </div>
               </div>
             </div>
@@ -12695,7 +12730,7 @@ function Calendar({ s }) {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               flexWrap: 'wrap', gap: u(16),
             }}>
-              <span style={type(s.body, s.bodyMd, 1.5, { color: s.tx })}>{line}</span>
+              <span style={type(s.body, s.bodyMd, 1.5, { color: G.line })}>{line}</span>
               {/* Retro's one deliberate addition to the frame, kept: a picked
                   date has to lead somewhere. BookPill's Lime branch dresses it. */}
               <BookPill s={s} to={s.calBookTo} label={s.calCta} />
@@ -12706,7 +12741,7 @@ function Calendar({ s }) {
                 panel's `effects` are empty. */}
             <span aria-hidden style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: `inset 0 0 0 3px ${s.stroke2}`,
+              boxShadow: `inset 0 0 0 3px ${G.ring}`,
             }} />
           </div>
         </div>
