@@ -752,7 +752,7 @@ function TagChips({ s, justify = 'flex-start', radius, size }) {
   // tracked-out caps the flat templates use. Lime's mode is the same chip in
   // Chakra Petch (`s.ui`); its 1180 canvas takes the frame's 5/11 × 0.82, where
   // Retro's kept the 768 numbers at every width.
-  const chip = s.retro || s.lime
+  const chip = s.designed
     ? {
         fontFamily: s.ui, fontSize: size || s.labelXs, lineHeight: 1.26,
         padding: s.lime && !s.narrow ? '4.1px 9px' : '5px 11px',
@@ -21566,7 +21566,7 @@ function Footer({ s }) {
 export default function EncoreSection({ s }) {
   // §10.2 — the hero is the one full-bleed composition: the photograph runs to
   // the section edges and the layout supplies its own insets.
-  const bleed = s.hd && s.v0 && !s.flatHeader && (s.retro || s.lime)
+  const bleed = s.hd && s.v0 && !s.flatHeader && s.designed
   // §10.2 — Retro's events map is the one section painted on a dark ground
   // rather than the page background, so its checkerboard bands and cream type
   // read. Lime's map stands on a light band instead (`limeLight`, below).

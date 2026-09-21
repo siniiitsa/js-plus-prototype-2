@@ -337,6 +337,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // `retro` rather than replacing it: what both designed templates draw is
     // gated `(s.retro || s.lime)`, what Lime alone draws is `s.lime`.
     lime: T.name === 'Lime',
+    // What every designed template's frame draws alike — the full-bleed hero,
+    // TagChips' sentence-case chips — is gated on this rather than on a list of
+    // names. A site only some of them share stays a named pair, widened per
+    // site from the frame.
+    designed: T.name === 'Retro' || T.name === 'Lime',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc follows. `page` is the header's design.
