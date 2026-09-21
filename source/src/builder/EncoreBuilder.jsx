@@ -2191,9 +2191,13 @@ function TracksField({ value, max, onChange, onToast }) {
  * numbered rows, a round X, a dashed add, an "n of max" footnote, no
  * reordering — order is entry order, and it is the order the map pins
  * pair against.
+ *
+ * The footnote's page size is the open design's (JP-042), and measured:
+ * a whole set of pins in layouts 1–3, except layout 3 on a phone, and one
+ * gig in layout 4's ticker. Change a layout's `perPage`, change it here.
  * ------------------------------------------------------------------- */
 
-function GigsField({ value, max, onChange }) {
+function GigsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
@@ -2288,7 +2292,8 @@ function GigsField({ value, max, onChange }) {
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · {PINS.length} to a page on the published site
+        {list.length} of {max} · {design === 3 ? 'one at a time'
+          : `${PINS.length} to a page`} on the published site{design === 2 ? ', one on a phone' : ''}
       </p>
     </div>
   )
@@ -2426,7 +2431,10 @@ function TiersField({ value, max, onChange }) {
  *
  * Modelled on GigsField above, the plainest of them. Deliberately not
  * reorderable, like the rest — but order matters more here than anywhere else,
- * because it is the order the boxes appear in, two to a row.
+ * because it is the order the boxes appear in — two to a row in layouts 1
+ * and 4, one to a row in layouts 2 and 3 and in layout 1 on a phone, which
+ * is what the footnote says of the open design (JP-042, measured: it used
+ * to say "two to a row" whatever the layout).
  *
  * One row is guarded: the **last `email` row** can be neither removed nor
  * retyped, since it is the only box a reply can be addressed to. Its trash
@@ -2439,7 +2447,7 @@ function TiersField({ value, max, onChange }) {
 
 const FORM_EMAIL_HINT = 'Visitors need somewhere to leave an address.'
 
-function FormFieldsField({ value, max, onChange }) {
+function FormFieldsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
   const emails = list.filter((f) => f?.kind === 'email').length
   const lastEmail = (f) => f.kind === 'email' && emails === 1
@@ -2523,7 +2531,8 @@ function FormFieldsField({ value, max, onChange }) {
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · two to a row on the published page
+        {list.length} of {max} · {design === 0 || design === 3 ? 'two' : 'one'} to a row
+        {' '}on the published page{design === 0 ? ', one on a phone' : ''}
       </p>
     </div>
   )
@@ -3013,11 +3022,11 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                       ) : f.type === 'tracks' ? (
                         <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'gigs' ? (
-                        <GigsField value={gigsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <GigsField value={gigsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
                       ) : f.type === 'tiers' ? (
                         <TiersField value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'formFields' ? (
-                        <FormFieldsField value={formFieldsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <FormFieldsField value={formFieldsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
                       ) : f.type === 'quotes' ? (
                         <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'links' ? (

@@ -32,7 +32,7 @@ is one entry.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-042 | Two help texts lie: header Location's hint, the form-fields counter | **Confirmed** | S | no | todo |
+| 1 | JP-042 | Two help texts lie: header Location's hint, the form-fields counter | **Confirmed** | S | no | **done** (four texts, not two) |
 | 2 | JP-036 | Pricing's *Plan card button* / *Line beside…* edit nothing; card prints BOOK NOW | **Confirmed**: F2 named it as an edge and did not chase it | S | small (the note line) | todo |
 | 3 | JP-037 | Four drawn elements have no field: hero CTA, bio credit line, bio pill, bio chips | **Confirmed**, and two of the four are Retro's too | M | **yes** (three) | todo |
 | 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Confirmed**, one root, two surfaces | M | **yes** | todo |
@@ -113,7 +113,50 @@ hint and the counter against the canvas. Digest byte-identical (chrome only).
 **Docs.** The `FIELDS.header` comment above `kicker` (`data.js:~842`), `FormFieldsField`'s
 comment.
 
-**Settled.** —
+**Settled** (2026-09-21).
+- **Housekeeping first.** The triage's `main` was one merge stale; see the note under *Branch*.
+  JP-042's evidence held on the new tree (`data.js:869/875/1135`, `EncoreBuilder.jsx:2526`).
+- **The identity reach, measured** (a sentinel in `&who=`; every non-header category × designs
+  0–3 × themes 0, 1, 2 × three widths × canvas and `live=1`, 666 renders; a hit is all six
+  renders of a design or none, never partial). **JP-037 extends `headerIdentity` and should
+  rerun this, not re-derive it.**
+
+  | | bio | calendar | form | every other section |
+  |---|---|---|---|---|
+  | `kicker` | layouts 1–4 | — | layouts 1, 2 (the credit row) | — |
+  | `location` | layouts 1–3 | layouts 1, 4 — **Lime: 4 only** | — | — |
+
+  Retro and Grunge agree everywhere. Lime's calendar layout 1 is its own block
+  (`if (s.lime)` inside `v0`) and draws no polaroid stamp, which is a fit, not a defect
+  (`layout-1.md`, the calendar's Settled: "None of Retro's `nav` / `cell` / `dayName` / `print` /
+  `stack` is read").
+  So **both** hints were wrong, the Kicker's too: the form prints it in two layouts of four.
+- **The hints say the table.** Kicker: "The bio prints it too, and the enquiry form in layouts
+  1 and 2." Location: "The bio prints it too in layouts 1 to 3, and the booking calendar in
+  layouts 1 and 4 (in Lime, layout 4 only)." Hints stay plain strings; no per-template hint
+  mechanism was built for one parenthesis.
+- **The counter, and what the probe added.** Counting `<input>` tops under `live=1` with four
+  boxes: layouts 1 and 4 pair, 2 and 3 stack, **and layout 1 stacks at 390** — deliberate, both
+  halves' `fieldRow` comments say the 390 master stacks the pair. `FormFieldsField` takes
+  `design` and prints "two to a row on the published page, one on a phone" (layout 1), "two to
+  a row…" (4), "one to a row…" (2, 3). The field hint gained "(layout 1 stacks them on a
+  phone)".
+- **The sweep found one more of the class: `GigsField`'s footnote** said "5 to a page" whatever
+  the design. Measured with `&n=8`: 5 / 5 / 5 in layouts 1 and 2, **5 / 5 / 1 in layout 3**,
+  1 / 1 / 1 in layout 4. It takes `design` too — "5 to a page", "…, one on a phone", "one at a
+  time" — and the `gigs` hint gained layout 3's phone. Every other hint naming a layout, a
+  template or another surface was checked against its measured `in` (F2's) or probed
+  (`tiers` tags / feats / `unit`, `songs` tags, `quotes` `when` / `role`, form `placeholder`):
+  all true. The Quotes, Links and Tracks footnotes are true at every design.
+- **Verified in the real app** (puppeteer, 1600 wide): Retro and Lime × setup cards 1–4 ×
+  Header, Enquiry Form, Events Map; the two hints and both footnotes read as the tables say on
+  all eight pages. **Cards are picked by index over `/ABOUT TOP TRACKS/`** — only cards 1 and 4
+  lead with `KAI MERCER`, so the earlier pass's `^KAI MERCER` finds two of four.
+- **Digest** (all categories, themes 0, 1, 2, three widths, canvas and `live=1`, 774 files):
+  **byte-identical**. Chrome only; no template moved.
+- **Docs:** the `FIELDS.header` comment above `kicker` (it now carries the reach and "change a
+  reader, change the hint"), `FormFieldsField`'s and `GigsField`'s comments, and CLAUDE.md's
+  *role and town* paragraph (Lime's layout-1 calendar draws no stamp).
 
 ---
 

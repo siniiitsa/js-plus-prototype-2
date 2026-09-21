@@ -138,7 +138,7 @@ mutated through a single `patch()` helper.
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
   section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
-  stamp, layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
+  stamp, which Lime's layout-1 block does not draw, and layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value

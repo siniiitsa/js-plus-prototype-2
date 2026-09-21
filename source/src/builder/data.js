@@ -864,15 +864,22 @@ export const FIELDS = {
     // Kicker and Location are the artist's role and home town, so they also
     // reach the bio, the booking calendar and the enquiry form (F1,
     // headerIdentity); `in`, and the note it prints, speak for the header.
+    // Their hints name where else each prints, and that reach is measured
+    // (JP-042: a sentinel in `&who=`, every design × width × surface): the
+    // kicker in all four bios and the form's credit row (layouts 1 and 2); the
+    // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's
+    // calendar layout 1, which is its own block and draws no polaroid stamp.
+    // Change a reader, change the hint.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
       in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3] },
-      hint: 'Your role. The bio and the enquiry form print it too.' },
+      hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
       in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3] },
-      hint: 'Where you are based. The bio and the booking calendar print it too.' },
+      hint: 'Where you are based. The bio prints it too in layouts 1 to 3, and the booking '
+          + 'calendar in layouts 1 and 4 (in Lime, layout 4 only).' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     // Bio layout 4's Listen reads this key too; `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
@@ -1058,7 +1065,8 @@ export const FIELDS = {
       // time in layout 4, which counts them (vm.gigCityCount).
       hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
           + `a real link on the published page; the list pages ${PINS.length} at a time in `
-          + "layouts 1–3 and one at a time in layout 4's ticker. "
+          + "layouts 1–3 (layout 3 shows one at a time on a phone) and one at a time in "
+          + "layout 4's ticker. "
           + 'Layout 3 also turns the cities into its filter chips, and layout 4 counts them.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
@@ -1132,7 +1140,8 @@ export const FIELDS = {
     // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
     // no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
-      hint: 'One box each — two to a row in layouts 1 and 4, one to a row in layouts 2 and 3, '
+      hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
+          + 'one to a row in layouts 2 and 3, '
           + 'which set the label inside the box and draw no placeholder. An odd last box '
           + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
           + 'form emails you what the visitor types.' },
