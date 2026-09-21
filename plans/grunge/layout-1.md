@@ -90,7 +90,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 0 | *foundation* | `964:58599` *(page)* | Static Youth → `THEMES[2]`, font, ramp, `s.grunge`, the shared gate, photos | — | `986:44056` | — | `986:44069` | — | — | — | **done** |
 | 1 | `header` | `964:58600` | Headers — hero | 1440 × 750 | `986:44057` | 768 × 1024 | `986:44070` | 390 × 844 | `964:58588` | `964:58576` | done `45d8e2c` |
 | 2 | `bio` | `964:58601` | Bios — A · Flanked portrait | 1440 × 769 | `986:44058` | 768 × 1142 | `986:44071` | 390 × 729 | `964:58589` | `964:58577` | done `7f80065` |
-| 3 | `media` | `964:58602` | Media Player — D · Floating cards stack | 1440 × 1253 | `986:44060` *(in `986:44059`)* | 768 × 1742.3 | `986:44072` | 390 × 1231.3 | `964:58590` | `964:58578` | todo |
+| 3 | `media` | `964:58602` | Media Player — D · Floating cards stack | 1440 × 1253 | `986:44060` *(in `986:44059`)* | 768 × 1742.3 | `986:44072` | 390 × 1231.3 | `964:58590` | `964:58578` | done `036181e` |
 | 4 | `gallery` | `964:58603` | Gallery Sections — Component 1 | 1440 × 819 | `986:44061` | 768 × 1116 | `989:22292` | 390 × 760 | `964:58591` | `964:58579` | todo |
 | 5 | `repertoire` | `964:58604` | Repertoire — A · Two-column dense | 1440 × 1096 | `986:44062` | 768 × 922 | `986:44074` | 390 × 918 | `964:58592` | `964:58580` | todo |
 | 6 | `map` | `964:58605` | Events Map — D · Compact tile | 1440 × 1151 | `986:44063` | 768 × 1349 | `986:44075` | 390 × 1172.2 | `964:58593` | `964:58581` | todo |
@@ -372,8 +372,9 @@ Everything here is behind `s.grunge` or a named pair.
   Lime branch with a `scheme` prop; look there first.
 - **A four-point star** beside the media heading (red, ~60 px at desktop) — new; nothing in
   Retro or Lime draws it. One small inline SVG in the media block.
-- **The media sleeve is a tilted pale polaroid**, which is Retro's composition and not Lime's
-  glowing card — read Retro's block first there.
+- **The media sleeve is a tilted pale polaroid** — ~~which is Retro's composition and not Lime's
+  glowing card~~ *corrected in section 3:* the tree is Lime's node for node, and the polaroid is a
+  frame round Lime's card.
 - **Glows are unverified.** `sem/glow` exists, and the gallery's fourth thumb and pricing's
   middle card look ringed in red. Lime's lesson stands: every glow is a guess until the node's
   `effects` confirm it; a ring may be a plain stroke.
@@ -603,6 +604,65 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   Lime's, inherited.
 - **No live control**, Lime's note: `live=1` digests identical to the canvas at all three widths.
 
+### Settled in section 3 (the media player)
+
+- **No Grunge block, for the third time: Lime's `if (s.v0 && s.lime)` in `Media` is
+  `(s.lime || s.grunge)`**, `const grunge = s.grunge` naming the deltas. The plan's "read Retro's
+  block first" was a guess off the render: the tree is Lime's at all three widths (flush rows on
+  `sem/stroke/1` hairlines, 710 / 558 at 60, the opacity-0 252 disc, `LimeSkip`, the Book Now
+  pill), and Retro's is overlapping cards beside a disc panel. The hooks sit above the block, so the
+  published player needed nothing: row pick, pick-again-pauses, the disc, and Back wrapping 3 → 5
+  all proved at `theme=2&live=1`, Book Now on `#form`.
+- **`grungeBand` in the root** (`s.me && s.v0 && s.grunge` → `'#171716'`, after `limeLight`), the
+  literal being Scheme 2's `sem/bg` — `HeaderV0`'s `G2.bg`. **The map and the form extend it**; the
+  root's `color` stays `s.tx`, which is right on all three.
+- **`TornEdge` takes `Grain`'s opt-in `grunge` prop**, for `Grain`'s reason (Retro calls it from
+  repertoire and testimonials, where Grunge hides the layer). **The vector is Retro's `446:2390`
+  path for path** (`vectorPaths[0].data` compared equal; the 390 foot alone is a 1176-wide variant),
+  unrotated at both ends — so a band's head shows the vector's *foot* contour and its foot the
+  *head* contour. `TORN_D` is only the head contour and is drawn at both; not worth a second path.
+  **Depths off the renders** (PIL black-run per column): head **51** at all three widths, foot
+  **35 / 48 / 40** — the plan's node arithmetic held. Expect the same method on map and form.
+- **The band sheet**: `<Grain exact grunge blend="lighten" opacity={0.29}>` with
+  `inset: calc(-1 * padY) calc(-1 * padX)`, first child of the wrapper. **An absolute layer paints
+  over non-positioned content**, so the content column takes `position: relative` under Grunge to
+  stand over it (the frame's paint order: sheet, content, seams, star).
+- **The polaroid is "Frame 211"**: `s.tx`, radius 15, 20 / 20 / 80 / 20 (10 / 10 / 50 / 10 at 390),
+  `rotate(2deg)` — Figma's −2 is CSS +2, and the render's right side sits lower. The card inside is
+  radius 13 on `#222222` (Scheme 2's `box/2`, the disc's own fill), stated 540 at 1440 **and 768**
+  (Lime's hugs there) and 313.3 at 390, **`effects: []`** — no glow, again. The scrim's
+  `gradientTransform` works out to `SCRIM.limeSleeve` exactly. Its grain is `difference` at .5
+  across the whole print, and that sheet's second paint (visible here, unlike the band's) is the
+  hero's foot ramp: the sheet hangs 50 past the wide cards, so the mask is
+  `linear-gradient(0deg, rgba(0,0,0,.45) 0%, #000 9.7%)`, and none at 390. CSS reserves no room for
+  the lean (Figma's bounding box is 580 × 659), so the print stands a few px off the frame's x.
+- **Type**: the row name is **Display/Title 36 / 28 / 26**, not Lime's Label/LG — written out
+  through `labelStyle` because `s.title` is the heading string; now-playing is Label/MD over
+  Body/MD. The heading is `faced` / `facedLh(0.89)` and uppercase at its own site. `<` and the disc's
+  ▶ are `s.activeFg` (the leaked `#15180F`, followed; the `<` all but vanishes on the sleeve, as in
+  the render).
+- **The heading is two-tone across its typed break** — "Five worth" `sem/text/2`, "your ear."
+  `sem/text/1`. Positional, since the string is the artist's: **words one and two are a block line,
+  the rest a second block line in `s.ac`**, so the break and the colour cannot part and Lime's em
+  measure is not needed (`antonEms`: "FIVE WORTH" 4.31, "…YOUR" 6.43, had it been). A title of two
+  words or fewer is one white line. Open question 8.
+- **The progress bar needs no departure**: track solid `sem/text/2`, fill the accent. The narrow
+  masters' all-red bar is the fill set to FILL — a leak, not followed.
+- **`BookPill` ties the disc to `fg`**, and this pill is white type beside a black disc with a red
+  arrow: `fg={s.bg}` with `style={{ color: s.tx }}` (`style` spreads last). No new prop.
+- **`GrungeStar`** (beside `LimeSkip`): the frame's path, 144 × 145.33 at every width, `s.ac`,
+  placed off the content's top-right corner — 42 in / 25 down at 1440, 9.7 / 11.7 at 768, 18 *past*
+  the edge and 47.7 down at 390.
+- **The 390 master puts its own kicker under the head tear** (24 inset, 51 tear — the render clips
+  "TOP TRACKS"). Not followed: Lime's extra `24px 0` on the wrapper stays, and the foot pill clears
+  its 40 seam.
+- **`FIELDS.media.cta`'s `in` is `{ Lime: [0], Grunge: [0], '*': [] }`**, and the Soundcloud hint
+  names both. Any Lime-keyed `in` row is owed the same when its block is widened — the calendar's
+  `heading` is next.
+- **Measured**: desktop rows 105 (128 × 0.82), list and print 524.8 / 525, card 443 (442.8), star
+  118.1, heading lines 95.2 (130 × 0.82 × 0.89); 768 rows 109.6, print 640, card 540; 390 rows 87.6,
+  print 373, card 313.
+
 ### Inherited and used
 
 - *Check a narrow master's Device mode* (Lime 1, header) — the 390 hero, again.
@@ -616,6 +676,14 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   (Lime 1, bio) — the bio's seal, unchanged.
 - *The emitted `var(--token, #hex)` fallback is the component's default* (Retro 2, media) — again:
   the title's `Soulway 96px` span and the narrow masters' `130px`.
+
+- *A section whose live seam is hoisted above its branches can always take a block* (Lime 1,
+  media) — and a second template can share it.
+- *An opacity-0 node is a spacer* and *a stated list height is a column minimum* (Lime 1, media) —
+  both unchanged under Grunge.
+- *`vm.title` shadows the ramp's `title` size* (Lime 1, map) — the row name's 36 / 28 / 26.
+- *The emitted DOM order is the frame's paint order* (`figma-frame-reading`) — the sheet under the
+  content, the print's grain over the transport.
 
 *(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
 Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
@@ -640,3 +708,5 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
    is scaled to the frame's glyph size. Worth telling the designer with open question 1.
 7. **The bio title's accent word** — *section 2:* the second word takes `s.ac`, by position, since
    the string is the artist's. Worth telling the designer with 1 and 6.
+8. **The media heading's two-tone split** — *section 3:* words one and two are the white line, the
+   rest the accent line, by position. Worth telling the designer with 7.
