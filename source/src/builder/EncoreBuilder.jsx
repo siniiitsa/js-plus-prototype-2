@@ -4340,7 +4340,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               className="hover:bg-muted"
               style={{ fontSize: '16px', fontWeight: 600, color: '#5B5850', padding: '3px 9px', borderRadius: '8px', border: '1px solid #D8D5CC', background: '#FFFFFF', cursor: 'pointer' }}
             >‹</button>
-            <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '16px' }}>encore</span>
+            <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '16px' }}>JustPay+</span>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E' }}>{T.name}</span>
             <span style={{ flex: 1 }} />
             <button type="button" onClick={(e) => { stopE(e); patch({ published: true }) }}
@@ -4361,7 +4361,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               <TooltipContent>Back to templates</TooltipContent>
             </Tooltip>
 
-            <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '17px' }}>encore</span>
+            <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '17px' }}>JustPay+</span>
             <span style={{ width: '1px', height: '24px', background: '#E2DFD7' }} />
 
             {/* Theme switcher — a labelled control, not decoration. */}
