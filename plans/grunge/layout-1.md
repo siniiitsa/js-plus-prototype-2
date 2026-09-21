@@ -979,3 +979,5 @@ Lime's or Retro's Conventions, name it here in one line, with the plan it came f
 12. **The 390 pricing seal** — *section 7:* the master stands it over the featured card's text (a
     leaked y); shipped on the panel's foot-right corner, as at 1440 and 768. And no field hides this
     seal or the bio's. Worth telling the designer with 10.
+13. **The 768 calendar photograph's grain** — *section 8:* the master leaves its 624 sheet in a 668
+    card, so the right 44px is ungrained; drawn across the card. Worth telling the designer with 10.
