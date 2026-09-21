@@ -142,7 +142,18 @@ mutated through a single `patch()` helper.
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
-  drops the ID card's column (the `since` rule).
+  drops the ID card's column (the `since` rule). **The tag chips are the header's as well**
+  (JP-037): `FIELDS.header.tags` is a comma list seeded with `TAG_LABELS` (five — the Tags
+  component hides its sixth chip), and `identity` carries `tags` and `showTags` to the bio,
+  which prints them in layouts 2 and 4 and Lime's 3 (measured, `scripts/reach.mjs`). An emptied
+  list folds into `vm.showTags = 'hide'`, since every reader of that key is a chip-row gate.
+  **`vm.chips` is a palette, not the chip row**: six colour seats off `TAGS`, read as
+  `s.chips[3].bg` and the like across header, media, map and pricing, carrying no label and
+  never changing length; the rows print `vm.tagChips`, the labels seated on it by index,
+  wrapping. Layout 2's other three literals went the same way: the hero pill is
+  `FIELDS.header.heroCta` (`vm.heroCta`), and the bio card's foot row is `FIELDS.bio.credit` /
+  `cta` — `vm.bioCredit` is `{ lead, rest }`, the first three words taking the accent, split in
+  `sectionVm`; each drops when emptied and the row with both.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are not per-section: every section renders in the active theme's single `palette`.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply

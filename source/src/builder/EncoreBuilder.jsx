@@ -34,7 +34,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import EncoreSection from './EncoreSection.jsx'
 import {
-  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TIERS, PRICE_UNIT, QUOTES,
+  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -404,7 +404,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.roleLine = [vm.kicker, vm.location].filter(Boolean).join(' · ')
   vm.cta1 = cv('cta1', 'Book Now')
   vm.cta2 = cv('cta2', 'Listen')
-  vm.showTags = cv('showTags', 'show')
+  // JP-037 — layout 2's hero pill. Uncased, the footer pill's rule.
+  vm.heroCta = cv('heroCta', HERO_CTA)
   vm.showBadge = cv('showBadge', 'show')
   vm.badgeText = cv('badgeText', artistName)
   vm.navMode = cv('navMode', 'sections')
@@ -485,10 +486,21 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // chips — TAGS, one per palette tag hue. A template whose Figma mode names
   // each tag's ink (`sem.tagFg`, parallel to `tags`) takes it; contrast()'s
   // black-or-white is the fallback, and is wrong on both of Lime's seats.
-  vm.chips = TAGS.map((t, i) => {
+  // These are colour seats and nothing else (JP-037): `s.chips[3].bg` and
+  // friends are read across the header, media, map and pricing, so the list
+  // keeps TAGS' length and order and carries no label.
+  vm.chips = TAGS.map((_, i) => {
     const cbg = T.tags[i % T.tags.length]
-    return { label: cased(t), bg: cbg, fg: T.sem?.tagFg?.[i % T.tags.length] ?? contrast(cbg) }
+    return { bg: cbg, fg: T.sem?.tagFg?.[i % T.tags.length] ?? contrast(cbg) }
   })
+  // The chip rows print the artist's tags — the header's, which the bio reads
+  // through `identity` as it reads the kicker — each seated on `vm.chips` by
+  // index, wrapping. `showTags` travels with them, and an emptied list hides
+  // the row as Hide does: every reader of it is a chip-row gate, and a row of
+  // none would still spend its gap and padding.
+  const tagList = songTags(own.tags !== undefined ? own.tags : TAG_LABELS)
+  vm.tagChips = tagList.map((t, i) => ({ label: cased(t), ...vm.chips[i % vm.chips.length] }))
+  vm.showTags = tagList.length && own.showTags !== 'hide' ? 'show' : 'hide'
 
   // §10.2 — the Book Now pill is accent-coloured type on a second palette hue,
   // not on the accent itself. The reference uses the palette's lightest hue
@@ -509,6 +521,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
 
   // bio
   vm.bioP1 = cv('para1', DEFS.bioP1)
+  // JP-037 — layout 2's foot row. The frame sets the line two-tone, its first
+  // three words in the accent; split here, since EncoreSection composes
+  // nothing. A line of three words or fewer is all lead. The pill is uncased.
+  const credit = String(cv('credit', BIO_CREDIT) ?? '').trim().split(/\s+/).filter(Boolean)
+  vm.bioCredit = { lead: credit.slice(0, 3).join(' '), rest: credit.slice(3).join(' ') }
+  vm.bioCta = cv('cta', BIO_CTA)
   vm.bioP2 = cv('para2', DEFS.bioP2)
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
   // string is what tells the ID card not to draw the column.

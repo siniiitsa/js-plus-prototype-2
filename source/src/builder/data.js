@@ -394,7 +394,24 @@ export const TRACK_AUDIO = [
 // the clock at 00:00 under an empty bar and names `vm.mediaEmpty` instead.
 export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 
+// TAGS is a palette as much as a list: `vm.chips` is one colour seat per entry,
+// and `s.chips[3].bg`, `s.chips[4 % n].bg` and friends are read as seats across
+// the header, media, map and pricing. Its length and order must not change.
+// The words the chip rows print are the artist's (JP-037): FIELDS.header.tags,
+// seeded with TAG_LABELS and zipped onto these seats by index, wrapping
+// (`vm.tagChips`). Five, not six: the Tags component draws five and carries
+// its sixth chip as a hidden frame (read off the Lime layout-2 bio's
+// instance; user call, 2026-09-21).
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
+export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live'
+
+// JP-037 — layout 2's copy that was a literal in EncoreSection: the hero's
+// pill, and the bio card's credit line and the pill beside it. Each is the
+// frame's own text (964:64580, 964:64581 and Retro's 964:64638), the credit
+// line lowercase as both frames type it.
+export const HERO_CTA = 'Enquire about a date'
+export const BIO_CREDIT = 'five years of rooms read & floors moved'
+export const BIO_CTA = 'Book Now'
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -883,11 +900,25 @@ export const FIELDS = {
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, and the booking '
           + 'calendar in layouts 1 and 4 (in Lime, layout 4 only).' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
+    // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
+    // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
+    { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
+      in: { Retro: [1], Lime: [1] },
+      hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // Bio layout 4's Listen reads this key too; `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
       in: { Retro: [1, 2, 4], Lime: [1, 2] } },
+    // The chips are the header's the way Kicker and Location are (JP-037,
+    // headerIdentity): the bio prints the same list and honours the same
+    // Show / Hide. An emptied list hides the row, as Hide does. The bio's
+    // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's 3.
+    { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] },
+      hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
+          + '(in Lime, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] } },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] },
+      hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
@@ -906,6 +937,13 @@ export const FIELDS = {
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3] },
+    // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
+    // three words take the accent (`vm.bioCredit`), and the pill beside it.
+    // Each drops when emptied, and the row with both.
+    { k: 'credit',    l: 'Credit line', d: BIO_CREDIT, in: [1],
+      hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
+    { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1],
+      hint: 'The button beside the credit line. Left empty, it is not drawn.' },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
@@ -1234,9 +1272,11 @@ export const copyrightOf = (name) => `C 2026 ${name}`
 // hold them: the one place either is typed. Raw, so an absent key still means
 // "the seed" and an emptied one means "none" in every section sectionVm
 // builds; the page's other sections have no field of their own for either.
+// JP-037 added the tag chips, list and Show / Hide alike: the bio draws the
+// header's row, so it reads the header's words and the header's switch.
 export const headerIdentity = (sections) => {
   const c = sections.find((s) => s.cat === 'header')?.c ?? {}
-  return { kicker: c.kicker, location: c.location }
+  return { kicker: c.kicker, location: c.location, tags: c.tags, showTags: c.showTags }
 }
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }

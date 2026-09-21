@@ -278,7 +278,10 @@ Learned on the bio (section 2):
   imported; do not remove it, and distrust any geometry digest that is off by exactly a padding.
 - Two creams, both literal under Retro, whose `paper` IS the page ground: `#FAECD5` (Figma box/1 —
   the text card, the caption card) and `#FBF6EA` (the portrait card's mount, and cream type).
-- **A frame that drops in the Tags component shows five chips; render all of `s.chips`.** The five
+- *(Reversed by JP-037, user call 2026-09-21 — `../lime/layout-2-qa-fixes.md`: the Tags instance
+  carries its sixth chip as a `hidden` frame, so the rows now print the header's **Tags** field,
+  seeded with five. `vm.chips` keeps six colour seats; the labels are `vm.tagChips`.)*
+  **A frame that drops in the Tags component shows five chips; render all of `s.chips`.** The five
   are that component's *default*, not a statement that the row holds five — our `TAGS` has six, so
   the row wraps one line further than the frame does. Do not slice.
 - **The pickers are safe for fixed widths.** All three `ScaledPreview` call sites pass
@@ -1379,7 +1382,8 @@ Learned on the end-of-pass refresh (the `index.html` rebuild):
    invented designs with no Figma frame behind them.
 2. **`tags` and `audio` have no layout-2 design.** This page omits both. They keep their generic
    flat `v1` unless a frame turns up.
-3. **The bio's credit line is fixed copy.** Layout 2's foot sets *"Five years of rooms read &
+3. *(Closed by JP-037: `FIELDS.bio.credit` and `cta`, the split in `vm.bioCredit`.)*
+   **The bio's credit line is fixed copy.** Layout 2's foot sets *"Five years of rooms read &
    floors moved"* two-tone, and the bio has no field for it, so it is a literal — prose that will
    read as the artist's own on a published page. Precedent exists for literal *labels* in these
    designs; this is the first literal *sentence*. It needs a `FIELDS.bio` entry if that matters.

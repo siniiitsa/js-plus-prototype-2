@@ -34,7 +34,7 @@ is one entry.
 |---|---|---|---|---|---|---|
 | 1 | JP-042 | Two help texts lie: header Location's hint, the form-fields counter | **Confirmed** | S | no | **done** (four texts, not two) |
 | 2 | JP-036 | Pricing's *Plan card button* / *Line beside…* edit nothing; card prints BOOK NOW | **Confirmed**: F2 named it as an edge and did not chase it | S | none — the frame answered it | **done** |
-| 3 | JP-037 | Four drawn elements have no field: hero CTA, bio credit line, bio pill, bio chips | **Confirmed**, and two of the four are Retro's too | M | **yes** (three) | todo |
+| 3 | JP-037 | Four drawn elements have no field: hero CTA, bio credit line, bio pill, bio chips | **Confirmed**, and two of the four are Retro's too | M | **yes** (three) — A, A, A, five chips | **done** |
 | 4 | JP-033 + JP-041 | Header nav and the calendar card's links print section *type* names | **Confirmed**, one root, two surfaces | M | **yes** | todo |
 | 5 | JP-039 | 768 header is a burger; the frame draws the links | **Documented as intended**; the tester's Minimal control undercuts the documented reason | M | **yes** | todo |
 | 6 | JP-038 | Desktop side gutter 189px vs the frame's ~55 | **By construction, not a padding bug** — see entry; the "constant at six widths" half is unexplained | S–L | **yes** | todo |
@@ -66,7 +66,8 @@ As `../retro/qa-fixes.md`, with these differences:
    entry touches `EncoreSection` or `sectionVm`; digest before and after
    (`scripts/digest.mjs`, themes `0,1,2`). A chrome-only change must be byte-identical.
 4. **A new or re-scoped field gets a measured `in`** — type into it and watch the section's HTML
-   (CLAUDE.md, the `FIELDS` bullet). F2's probe recipe is in `../retro/qa-fixes.md`.
+   (CLAUDE.md, the `FIELDS` bullet). The probe is `source/scripts/reach.mjs` (JP-037): add a row
+   to its `PROBES`, do not rebuild it.
 5. Update the docs the entry names. Commit, fill in **Settled** and the status row, then print
    the hand-off prompt for the next entry and stop.
 
@@ -307,9 +308,72 @@ except the chip rows if *All Access* is dropped, which is then the named diff.
 carries tags), the `FIELDS.header` / `FIELDS.bio` comments, the `TAGS` comment (palette vs
 labels), README's field list if it has one.
 
-**Decision.** —
+**Decision** (user, 2026-09-21): **A, A, A — and the chips seed five.**
+1. Hero CTA: a new header field seeded with the frame's "Enquire about a date" (read off
+   `964:64580`'s own text node, `I964:64580;624:4884` — the frame's copy, not a default).
+2. Bio: two fields, *Credit line* and *Button*. The pill's "Book Now" **is** the frame's text
+   (`I964:64581;676:2215`), so JP-036's mechanism (a label-less `BookPill`) produced the right
+   word here by accident; the seed is the frame's. The frame's line is typed lowercase — "five
+   years of rooms read & floors moved" (`I964:64581;676:2212`) — check how it is cased before
+   seeding. Accent = the first three words, split in `sectionVm`.
+3. Chips: one header *Tags* field through `headerIdentity`, **seeded without *All Access***. This
+   reverses `../retro/layout-2.md`'s "render all of `s.chips`, do not slice" (the five were read
+   there as the Tags component's default): the bio's instance (`I964:64581;676:2209`) carries the
+   sixth chip as a `hidden` frame, and the user chose the frames' five. Named diff: every chip
+   row on every template loses a chip. `TAGS` / `vm.chips` keep six seats.
 
-**Settled.** —
+**Settled** (2026-09-21).
+- **The frames were read before the questions were asked** (JP-036's lesson). All three strings
+  are the frames' own, Lime's and Retro's (`964:64638`) alike — so unlike JP-036 no seed moved a
+  pill — with one exception: **both frames type the credit line lowercase**, "five years of…",
+  and the fit had shipped a capital F. `BIO_CREDIT` is the frame's, a named one-letter diff.
+- **Four fields.** `FIELDS.header.heroCta` (`HERO_CTA`, `in: { Retro: [1], Lime: [1] }`),
+  `FIELDS.header.tags` (`TAG_LABELS`, a comma `area`, `showTags`' own `in`), `FIELDS.bio.credit`
+  and `FIELDS.bio.cta` (`in: [1]`). `vm.heroCta` and `vm.bioCta` are uncased (the footer pill's
+  rule); `vm.bioCredit` is `{ lead, rest }`, split on whitespace in `sectionVm`, three words or
+  fewer being all lead. The space between the halves now sits outside the accent span.
+- **The palette / label split is real, not documented.** `vm.chips` lost its `label` and is six
+  seats off `TAGS`; `vm.tagChips` is the labels seated on it by index, wrapping, in `vm.chips`'
+  shape, so the six row sites (`TagChips`, the three header rows, both bio layout-2 rows) were a
+  one-token swap and every `.bg` / `.fg` seat read is untouched. Lime's bio row alternates
+  `i % 2`, and six seats being even keeps its parity past the wrap.
+- **`showTags` travels through `identity` with the tags, and an emptied list folds into it**
+  (`vm.showTags = tags.length && own.showTags !== 'hide' ? 'show' : 'hide'`): every reader of the
+  key is a chip-row gate, so a list of none hides the row without spending its gap or the Lime
+  bio's 22.19 padding. Both bio layout-2 rows gained the guard; the layout 3 / 4 Genres rows
+  already had it, unreachable until now (`../retro/layout-4.md`'s "cannot fire").
+- **The probe is committed: `source/scripts/reach.mjs`** (JP-042's lived in a scratchpad and was
+  gone). 6,264 renders, themes 0, 1, 2 × three widths × both surfaces, a hit always 6/6.
+  It reproduces JP-042's `kicker` / `location` table exactly, and adds:
+
+  | | reach |
+  |---|---|
+  | `who.tags`, `who.showTags` | bio layouts 2 and 4; **Lime: 3 as well**. No other section |
+  | `header.tags`, `header.showTags` | Retro 1, 3, 4, 5, 6 · Lime 1, 3, 4 (5 folding onto 1) · Grunge 1, 4 — `showTags`' existing `in` |
+  | `header.heroCta` | layout 2, Retro and Lime (Lime's 6 folds onto 2); nothing on Grunge |
+  | `bio.credit`, `bio.cta` | layout 2, all three themes |
+
+  The hints say the table: Tags "…The bio prints them too in layouts 2 and 4 (in Lime, layout 3
+  as well)", Tag chips "Hides the bio's chips as well."
+- **States** (bio layouts 2 and 4 and header layout 2, Retro and Lime, three widths, `live=1`,
+  `scrollWidth` = width in every one): line only, pill only (the row takes `flex-end`, so the
+  pill keeps the frame's right-hand seat), neither (no row), a two-word line, a 120-character
+  line with a 43-character label, zero / one / twelve tags, hidden. **One edge found and
+  closed:** a 47-character hero label took the 390 page to 435 (Retro) and 400 (Lime); both hero
+  pills take JP-036's `whiteSpace: 'normal'`, `maxWidth: '100%'`, and the seeded header
+  re-digested byte-identical.
+- **Digest** (774 files): 108 moved, **exactly the probe's chip-row set** on all three themes —
+  header 1, 3, 4, 5, 6 (Retro) / 1, 3, 4, 5 (Lime) / 1, 4 (Grunge), bio 2 and 4, Lime's bio 3 —
+  so Retro and Grunge moving is the named diff. Less geometry, every differing row is the
+  removed chip or (bio layout 2) the two credit spans. **Header layout 2 is byte-identical.**
+- **Real app** (puppeteer, 1600 wide, Lime and Retro, setup card 2): the panel lists *Hero
+  button* and *Tags*; typing moves the hero pill; the header's tags land in the bio's row, which
+  is the tester's control (layout 2's header draws no chips of its own); *All Access* is gone.
+  The published tab was not walked — `live=1` in the harness stands in for it.
+- **Docs:** CLAUDE.md (*role and town*: tags, the palette / label split, the three literals),
+  the `TAGS`, `FIELDS.header`, `FIELDS.bio` and `headerIdentity` comments, `preview.jsx`'s
+  `&who=`, the two stale `TagChips` comments in `EncoreSection`, and `../retro/layout-2.md`
+  (its "do not slice" ruling reversed, its open question 3 closed).
 
 ---
 

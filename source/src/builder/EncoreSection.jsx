@@ -763,7 +763,7 @@ function TagChips({ s, justify = 'flex-start', radius, size }) {
       }
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: justify }}>
-      {s.chips.map((c, i) => (
+      {s.tagChips.map((c, i) => (
         <span key={i} style={{
           background: c.bg, color: c.fg, borderRadius: radius ?? s.btnR, whiteSpace: 'nowrap', ...chip,
         }}>{c.label}</span>
@@ -1520,7 +1520,11 @@ function HeaderV1({ s }) {
         }}>{s.subtitle}</p>
         {/* BookPill's Lime defaults exactly: 246 × 54 at 1440 is its 0.82, 212 at
             768 its full size, and 390 keeps the full size too. */}
-        <BookPill s={s} to={s.bookTo} label="Enquire about a date" full={s.mob} />
+        {/* `heroCta` is the artist's (JP-037): emptied, no pill, and a long
+            one wraps inside the column rather than widening a 390 page —
+            JP-036's pricing pill. The seeded box does not move. */}
+        {s.heroCta && <BookPill s={s} to={s.bookTo} label={s.heroCta} full={s.mob}
+                                style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />}
       </div>
     )
 
@@ -1786,9 +1790,12 @@ function HeaderV1({ s }) {
           768 one does — `full` is what buys that at 390, where BookPill would
           otherwise take its `small` scale and hang a 46px disc off a pill
           padded for a 17px one. */}
-      <BookPill s={s} to={s.bookTo} label="Enquire about a date" glyph="arrow"
-                disc={nar ? 46 : 38} full={s.mob} size={nar ? '16px' : undefined}
-                bg={s.ac} fg={mustard} shadow={mustard} />
+      {s.heroCta && (
+        <BookPill s={s} to={s.bookTo} label={s.heroCta} glyph="arrow"
+                  disc={nar ? 46 : 38} full={s.mob} size={nar ? '16px' : undefined}
+                  bg={s.ac} fg={mustard} shadow={mustard}
+                  style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+      )}
     </div>
   )
 
@@ -2010,7 +2017,7 @@ function HeaderV2({ s }) {
     // and nothing is swapped. The leaked 700.74 measure is dropped, Retro's call.
     const chips = s.showTags === 'show' && (
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.01) }}>
-        {s.chips.map((c, i) => (
+        {s.tagChips.map((c, i) => (
           <span key={i} style={{
             background: c.bg, color: c.fg,
             borderRadius: u(4.51), padding: `${u(3.76)} ${u(8.27)}`,
@@ -2497,7 +2504,7 @@ function HeaderV3({ s }) {
         width: desk ? u(344) : '100%', flex: 'none',
         display: 'flex', flexWrap: 'wrap', gap: u(8),
       }}>
-        {s.chips.map((c, i) => (
+        {s.tagChips.map((c, i) => (
           <span key={i} style={{
             background: i % 2 ? s.tx : s.box1, color: i % 2 ? s.activeFg : s.ac,
             borderRadius: s.radiusChip, padding: `${u(5)} ${u(11)}`,
@@ -2880,7 +2887,7 @@ function FlatNav({ s }) {
 function FlatHeader({ s }) {
   const chipRow = (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
-      {s.chips.map((c, i) => (
+      {s.tagChips.map((c, i) => (
         <span key={i} style={{
           background: c.bg, color: c.fg, fontSize: '11px', fontWeight: 700,
           letterSpacing: '1.2px', textTransform: 'uppercase', padding: '6px 13px', borderRadius: s.btnR,
@@ -3211,10 +3218,10 @@ function Bio({ s }) {
     // #C7FF3C and #15180F on its third and fourth chips are other schemes'
     // tokens leaking through the component, and are not a third seat.
     const chipK = s.mob ? 9.22 : tab ? 10.76 : 15.37
-    const chips = (
+    const chips = s.showTags === 'show' && (
       <div style={{ padding: `${u(22.19)} 0` }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.15), maxWidth: u(264.4) }}>
-          {s.chips.map((c, i) => (
+          {s.tagChips.map((c, i) => (
             <span key={i} style={{
               background: i % 2 ? c.bg : s.box2, color: c.fg,
               borderRadius: u(4.61), padding: `${u(3.84)} ${u(8.45)}`,
@@ -3231,8 +3238,8 @@ function Bio({ s }) {
     // widths and only Label/SM ramps. Both narrow masters give it a hard
     // DROP_SHADOW 5 / 5 in `#15180F`, which reads on the olive card; the desktop
     // pill carries none. It goes through `style`, so `BookPill` is untouched.
-    const pill = (
-      <BookPill s={s} to={s.bookTo} bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * z}
+    const pill = s.bioCta && (
+      <BookPill s={s} to={s.bookTo} label={s.bioCta} bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * z}
                 style={{
                   padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
                   gap: u(8.53), lineHeight: 1.1,
@@ -3260,15 +3267,22 @@ function Bio({ s }) {
               leaked 637.5 row. That box's leaked 39 height is kept, as a
               minimum: it is what sets the row's height and stands the line
               high beside the centred pill, at all three widths. */}
-          <div style={s.mob
-            ? col('9.64px', { alignItems: 'flex-start' })
-            : row(u(9.64), { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-            <span style={{ ...text, display: 'block', minHeight: u(39) }}>
-              <span style={{ color: s.ac }}>Five years of </span>
-              rooms read &amp; floors moved
-            </span>
-            {pill}
-          </div>
+          {/* JP-037: the line and the pill are the bio's `credit` and `cta`.
+              Each drops when emptied and the row with both; the pill alone
+              keeps the frame's right-hand seat. */}
+          {(s.bioCredit.lead || pill) && (
+            <div style={s.mob
+              ? col('9.64px', { alignItems: 'flex-start' })
+              : row(u(9.64), { justifyContent: s.bioCredit.lead ? 'space-between' : 'flex-end', flexWrap: 'wrap' })}>
+              {s.bioCredit.lead && (
+                <span style={{ ...text, display: 'block', minHeight: u(39) }}>
+                  <span style={{ color: s.ac }}>{s.bioCredit.lead}</span>
+                  {s.bioCredit.rest && ` ${s.bioCredit.rest}`}
+                </span>
+              )}
+              {pill}
+            </div>
+          )}
         </div>
       </div>
     )
@@ -3408,13 +3422,13 @@ function Bio({ s }) {
               264.4 is the one number the narrow masters leave unchanged; only
               the chips inside it shrink, which is why 768 wraps 3 + 2 where
               390 fits 4 + 1 in the same measure. */}
-          <div style={{
+          {s.showTags === 'show' && <div style={{
             display: 'flex', flexWrap: 'wrap',
             gap: nar ? '6.149px' : '5px',
             maxWidth: nar ? '264.4px' : '217px',
             padding: nar ? '22.19px 0' : '18px 0',
           }}>
-            {s.chips.map((c, i) => (
+            {s.tagChips.map((c, i) => (
               <span key={i} style={{
                 background: c.bg, color: s.retro ? '#FBF6EA' : c.fg,
                 borderRadius: nar ? '6.149px' : '5px',
@@ -3423,24 +3437,33 @@ function Bio({ s }) {
                 whiteSpace: 'nowrap',
               }}>{c.label}</span>
             ))}
-          </div>
+          </div>}
           {/* 390 sets the pill under the credit line rather than beside it —
               a column with its own 9.6 gap, not a wrapped row: the master's
               own row still carries the desktop component's 637.5px width, so
               its wrap is a leaked default and the column is the design. */}
-          <div style={s.mob
-            ? col('9.6px', { alignItems: 'flex-start' })
-            : row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-            {/* The frame's own credit line, two-tone the way it sets it. */}
-            <span style={body}>
-              <span style={{ color: s.ac }}>Five years of </span>
-              rooms read &amp; floors moved
-            </span>
-            {/* Both masters draw the pill at the *same* full-scale box — 390
-                included, which is what `full` buys — and only ramp its type. */}
-            <BookPill s={s} to={s.bookTo} glyph="arrow"
-                      full={s.mob} size={nar ? (tab ? '13px' : '12px') : undefined} />
-          </div>
+          {(s.bioCredit.lead || s.bioCta) && (
+            <div style={s.mob
+              ? col('9.6px', { alignItems: 'flex-start' })
+              : row('16px', { justifyContent: s.bioCredit.lead ? 'space-between' : 'flex-end', flexWrap: 'wrap' })}>
+              {/* The frame's own credit line, two-tone the way it sets it: the
+                  bio's `credit`, its first three words in the accent
+                  (`vm.bioCredit`, JP-037). Emptied, it drops; so does the
+                  pill, and the row with both. */}
+              {s.bioCredit.lead && (
+                <span style={body}>
+                  <span style={{ color: s.ac }}>{s.bioCredit.lead}</span>
+                  {s.bioCredit.rest && ` ${s.bioCredit.rest}`}
+                </span>
+              )}
+              {/* Both masters draw the pill at the *same* full-scale box — 390
+                  included, which is what `full` buys — and only ramp its type. */}
+              {s.bioCta && (
+                <BookPill s={s} to={s.bookTo} label={s.bioCta} glyph="arrow"
+                          full={s.mob} size={nar ? (tab ? '13px' : '12px') : undefined} />
+              )}
+            </div>
+          )}
         </div>
       </div>
     )
@@ -3923,8 +3946,9 @@ function Bio({ s }) {
   // · 964:76443 · 971:14238), drawn here because this Section is where the page
   // puts it: a "Genres" line in `body-lg` 16/15/15 in the accent over
   // `TagChips` at `label-xs` 20/14/12, 16 apart, at the instance's own 457
-  // measure at 1440. It reads `vm.chips` — TAGS, the header's list — through
-  // TagChips' own `showTags` guard, which the bio has no field for. The 390
+  // measure at 1440. It reads `vm.tagChips` — the header's Tags, which reach
+  // the bio through `identity` with the header's own Show / Hide (JP-037) —
+  // through TagChips' `showTags` guard. The 390
   // instance hides the line (58 tall against the 768 one's 103), so it does
   // here too.
   //
@@ -8436,7 +8460,7 @@ function Pricing({ s }) {
               face at 11/5 on a `radius/chip` 8, which is the pair its layout-4
               branch already passes TagChips (`radius={u(8)} size={u(T.chip)}`,
               20/14/12). Written again rather than routed through TagChips,
-              which is hardwired to `s.chips` and guarded on `showTags` — a
+              which is hardwired to `s.tagChips` and guarded on `showTags` — a
               header key that has no business gating a package's features.
 
               The hue belongs to the seat and not to the feature (`s.tierFeatSeats`,
