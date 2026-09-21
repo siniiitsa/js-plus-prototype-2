@@ -277,7 +277,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // theme typography
     display: T.display, label: T.label, body: T.body, dls: T.dls,
     // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
-    // carry one; the flat three fall back to their body face.
+    // carry one; the flat two fall back to their body face.
     ui: T.ui ?? T.body,
     // Space Mono, the frames' typewriter face; only Retro names it so far.
     mono: T.mono ?? T.body,
@@ -335,8 +335,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // §10.2 — the layouts are shared by every template, but the Figma page's
     // decorative treatment (grain, torn edges, checkerboard, hard offset
     // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
-    // Grunge, Editorial and Pop render the identical structure, flat, and Lime
-    // draws a decoration of its own behind `lime` below.
+    // Editorial and Pop render the identical structure, flat, and Lime and
+    // Grunge each draw a decoration of their own behind `lime` and `grunge`
+    // below.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
@@ -429,8 +430,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.badgeText = cv('badgeText', artistName)
   vm.navMode = cv('navMode', 'sections')
   vm.align = cv('align', 'left')
-  // Retro and Lime seed their Figma pages' mock photography (photos.js); the
-  // flat three resolve to undefined and keep the initials placeholder. `undefined` already means "key
+  // Retro, Lime and Grunge seed their Figma pages' mock photography (photos.js); the
+  // flat two resolve to undefined and keep the initials placeholder. `undefined` already means "key
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
@@ -448,8 +449,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // explicitly emptied array is already distinguishable, so no sentinel is needed.
   vm.images = Array.isArray(c.images) ? c.images : (defaultImages(cat, T.name) ?? [])
   // Fixed decoration — paper grain and the events-map raster (§10.2). The grain
-  // is Retro's alone (Lime's frames carry no texture); the raster is the same
-  // image in Lime's map frame, so both designed templates take it.
+  // is Retro's and Grunge's (Lime's frames carry no texture); the raster is the
+  // same image in Lime's map frame, so every designed template takes it.
   // Grunge's frames lay the very raster grain.jpg was cut from (image hash
   // b74be8bc, a 3/255 re-encode apart) over their bands and photographs, as a
   // LIGHTEN layer where Retro's is a multiply; the sections pass the blend.
@@ -532,7 +533,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
   // Layout 4's row pill label (its frame's "Star Enquiry", read as "Start").
   // Uncased, the footer's rule: the pill sets it in the display face with no
-  // text transform, and casing it would shout on Grunge and Pop.
+  // text transform, and casing it would shout on Pop.
   vm.tierRowCta = cv('rowCta', PRICING_ROW_CTA)
 
   // chips — TAGS, one per palette tag hue. A template whose Figma mode names
@@ -770,7 +771,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   //
   // Unlike `tierHero` it has to read against the *page*, on both jobs: an
   // outline the ground swallows leaves the plain rows as loose type, and
-  // Grunge's T.tags[3] IS its black background. So the walk starts at 3 and
+  // a tag can BE the page ground (Grunge's fourth was its black, before its
+  // Static Youth tokens left it two). So the walk starts at 3 and
   // takes the first tag that clears `tierHues`' own 0.22 — olive on Retro and
   // pale lime on Lime (both index 3), the stamp red on Grunge and the
   // terracotta on Editorial, whose index 3 is a wash only a shade off its
@@ -1221,7 +1223,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 2026-09-15). Emptiable.
   vm.mapSpan = cv('span', MAP_SPAN)
   // Layout 3's foot pill. Uncased, the footer's rule: the pill has always drawn
-  // an uncased label and casing it would shout on Grunge and Pop.
+  // an uncased label and casing it would shout on Pop.
   vm.mapCta = cv('cta', 'See all gigs')
 
   // testimonials — the songs rule, the gigs' and the packages': an absent key
@@ -1303,8 +1305,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // pricing stack's own seat, the first palette tag that clears `tierHues`'
   // 0.22 against the page ground. Taken rather than derived a second time
   // because the job is the same one that walk was written for: a line or an
-  // outline that has to read against the *page*, where Grunge's T.tags[3] IS
-  // its black background and Retro's is the olive the frame binds.
+  // outline that has to read against the *page*, where a tag can be the page
+  // ground itself and Retro's is the olive the frame binds.
   vm.formRule = vm.tierRow.card
   // The boxes are the artist's now, on the `songs` rule — absent key means the
   // seed, emptied array means none, no null sentinel. Every row is normalised
@@ -1401,8 +1403,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     .filter((colLinks, i) => i === 0 || colLinks.length)
   // Uncased, unlike vm.calCta and unlike every other string in this block: the
   // pill has always drawn `cta1`, which is uncased too, and caseText is only a
-  // passthrough on the two `title` themes. Casing it here would upper-case the
-  // footer's pill on Grunge and Pop — a picture that moved, on a change that was
+  // passthrough on the `title` themes. Casing it here would upper-case the
+  // footer's pill on Pop — a picture that moved, on a change that was
   // only meant to hand the artist a field for a default they already had.
   vm.footerCta = cv('cta', 'Book Now')
   vm.footerCredit = FOOTER_CREDIT
@@ -3482,7 +3484,7 @@ function TemplateStage({ artistName, spotIdx, onPick }) {
  *
  * The grid the setup modal (§6.2) is built around: the template's header
  * designs, up to four — `setupHeaderCount()`, since only layouts 1–4 are
- * a whole page — so four for Retro and Lime and three for the flat
+ * a whole page — so four for Retro, Lime and Grunge and three for the flat
  * templates (§4.4). Three up on a desktop, two around 720px, one below
  * ~560.
  *

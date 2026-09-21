@@ -936,10 +936,12 @@ export const FIELDS = {
   // does not consume a key simply ignores it, so swapping layouts never
   // silently discards copy the user typed — and the panel says so, off `in`.
   //
-  // The header's `in` is always an object naming Retro and Lime alone: the
-  // two have different header families (six designs against four), and the
-  // flat three have a third family of their own that is not designed, so
-  // they are left unmarked rather than folded onto either list.
+  // The header's `in` is always an object naming Retro, Lime and Grunge alone:
+  // they have different header families (six designs against four and four —
+  // Grunge's row is measured over its fitted card 1 and its placeholder cards
+  // 2–4, so each layout pass re-measures it), and the flat two have a family
+  // of their own that is not designed, so they are left unmarked rather than
+  // folded onto any list.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
@@ -952,47 +954,47 @@ export const FIELDS = {
     // (JP-042: a sentinel in `&who=`, every design × width × surface): the
     // kicker in all four bios and the form's credit row (layouts 1 and 2); the
     // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's
-    // calendar layout 1, which is its own block and draws no polaroid stamp.
+    // and Grunge's calendar layout 1, a block of its own with no polaroid stamp.
     // Change a reader, change the hint.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
-      in: { Retro: [1, 4], Lime: [1] } },
+      in: { Retro: [1, 4], Lime: [1], Grunge: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
-      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3] },
+      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, and the booking '
-          + 'calendar in layouts 1 and 4 (in Lime, layout 4 only).' },
+          + 'calendar in layouts 1 and 4 (in Lime and Grunge, layout 4 only).' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1] },
       hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // Bio layout 4's Listen reads this key too; `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
-      in: { Retro: [1, 2, 4], Lime: [1, 2] } },
+      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2] } },
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
           + '(in Lime, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 1, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 1, 3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0] }, opts: [
+    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -1037,7 +1039,7 @@ export const FIELDS = {
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, so there and
-    // on the flat three an empty address leaves it a picture — the rule the
+    // on the flat two an empty address leaves it a picture — the rule the
     // rest of the file calls the Soundcloud rule. Lime's frame draws Book Now in
     // that seat (JP-034), and Grunge's does too (it shares Lime's block), so
     // under those two the seat is `cta` and the Soundcloud pill is drawn only
@@ -1354,7 +1356,7 @@ export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.
 // Whether a section's current design reads field `f` — `design` being
 // `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
 // its `'*'` standing for any template it does not name; a template it does not
-// cover at all is left unmarked (true), which is how the flat three's header
+// cover at all is left unmarked (true), which is how the flat two's header
 // stays silent. Read by EditPanel alone: nothing on the canvas consults it,
 // so a field the design ignores keeps its copy for the next layout.
 const reachOf = (f, themeName) => (

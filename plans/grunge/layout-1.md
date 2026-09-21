@@ -230,7 +230,7 @@ Lime's open question 1 named this plan as its trigger. The answer:
 - A value two of the three share is written as the pair: `(s.retro || s.grunge)` for grain and
   torn edges, `(s.lime || s.grunge)` for the `sem`-token reads and the capsule nav.
 
-### 3. `plans/CONVENTIONS.md` — **scheduled: the end-of-pass sweep, not session 0**
+### 3. `plans/CONVENTIONS.md` — **done in the end-of-pass sweep: [`../CONVENTIONS.md`](../CONVENTIONS.md)**
 
 `plans/README.md` asks for the shared conventions to be pulled out "once a second template shows
 which is which". Lime showed it; this pass confirms it against a third. Extracting now, before
@@ -1100,8 +1100,9 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - *Place a seal by its disc's centre* (Lime 1, bio) — the fourth Grunge seal, by arithmetic this time.
 - *`textTransform` is a digest column* (this plan, repertoire) — the gate on the capitals.
 
-*(A running list for the sweep's `CONVENTIONS.md`: each time a session leans on a bullet from
-Lime's or Retro's Conventions, name it here in one line, with the plan it came from.)*
+*(The running list the sweep extracted [`../CONVENTIONS.md`](../CONVENTIONS.md) from: each time a
+session leaned on a bullet from Lime's or Retro's Conventions, it was named here in one line, with
+the plan it came from. Kept as the pass wrote it, a blank line between sections.)*
 
 ## Open questions
 

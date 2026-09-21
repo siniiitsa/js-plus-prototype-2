@@ -163,7 +163,7 @@ Four things about it are load-bearing:
   over a page that has just been built and not yet touched.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Stacked,
-  Overlay card, Stage wide (Lime's family is the first four, and Grunge, Editorial and Pop's is
+  Overlay card, Stage wide (Lime's and Grunge's family is the first four, and Editorial and Pop's is
   Centred / Split / Rule) — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
@@ -172,23 +172,23 @@ The `startTheme` prop skips the template picker, and skips the onboarding with i
 
 ## Seeded photography
 
-Retro and Lime — the two designed templates — open with their Figma mock photography already in
+Retro, Lime and Grunge — the three designed templates — open with their Figma mock photography already in
 place.
 The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
 the only module that imports them.
 
-- **Retro and Lime only.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` resolve
-  through `SEEDS` in `photos.js`, one row per seeded theme, and return `undefined` for Grunge,
-  Editorial and Pop, so those three render the initials placeholder exactly as before. Lime's row
+- **Retro, Lime and Grunge only.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` resolve
+  through `SEEDS` in `photos.js`, one row per seeded theme, and return `undefined` for
+  Editorial and Pop, so those two render the initials placeholder exactly as before. Lime's row
   is a different shoot for the artist's own pictures (the hero, its portrait card, the bio and
   its layout-3 landscape shot, the calendar, the form avatar, the form's layout-2 stage photograph and the gallery spotlight) and
-  Retro's files for the rest. The photography is Retro's art direction, not the user's content, so switching template
+  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload). The photography is Retro's art direction, not the user's content, so switching template
   drops it — with one exception: the media player's track art is materialised into `c.tracks` the
   moment the artist edits the list (it has to be, or renaming track one would delete five
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
-  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all thirty-five files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~6.5 MB.
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all forty-three files are
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~7.9 MB.
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
@@ -365,7 +365,7 @@ That distinction is the whole design, and it buys two things:
   today's month when `open` is earlier.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
   blocked it. Booked days are muted and struck through and take no handler (Lime dims them to .38
-  with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid), which is a **content** state rather than a
+  with no strike, its own frames' state — Grunge's layout-1 grid shares it — in the layout-2 slot list as in the layout-1 grid), which is a **content** state rather than a
   live one — it renders on the canvas too, and since the seed blocks nothing
   the reference picture does not move. Two intended diffs from the Figma frame: the foot row gains
   the Book pill (`vm.calBookTo`, `bookTo` minus `calendar` itself, the tier pills' rule), which is
@@ -418,7 +418,7 @@ That distinction is the whole design, and it buys two things:
   visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
   out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
   box does not grow — under one prompt line. (Lime's boxes are pills, and a rule under a pill
-  smears, so there the hairline thickens to a 2px inset ring of full ink.) Errors are `useState`, set on a refused submit and
+  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black, so its refused box is a 2px white one.) Errors are `useState`, set on a refused submit and
   cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
   valid submit swaps the mustard half alone for a confirmation that prints the address in plain
   text, since a browser that opened no mail app must still show one, and *Write another* comes
@@ -504,7 +504,7 @@ That distinction is the whole design, and it buys two things:
   section's content, so the seal was hidable by nothing only because no field here named it; and
   `vm.footerCta` is deliberately **uncased** where the statement and the labels are cased,
   because the pill has always drawn the uncased `cta1` and casing it would upper-case the
-  footer's pill on Grunge and Pop. `FOOTER_CREDIT` stays a constant on purpose — it is the
+  footer's pill on Pop. `FOOTER_CREDIT` stays a constant on purpose — it is the
   platform's byline, not the artist's. The footer keeps no local state: every link is an anchor
   whose href is `navHref()` or `extLink()`, so it needs none of the `useState` the sections above
   it take.
@@ -538,8 +538,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   each category's last deleted `{ arch, c }`, uploads included, so adding that category again
   brings its content back and the add composer opens on its old layout; a *Start fresh* tick
   in the composer opts out. It lives only as long as the session, like everything else.
-- **Retro and Lime are designed; Grunge, Editorial and Pop are not.** Retro ships six
-  photographic header layouts. Grunge, Editorial and Pop are fully selectable and functional but
+- **Retro and Lime are designed, and Grunge is at layout 1; Editorial and Pop are not.** Retro ships six
+  photographic header layouts. Editorial and Pop are fully selectable and functional but
   render flat-colour sections and a three-layout flat header family — whose nav is still the
   hardcoded `Music · Shows · Book` triple in `FlatNav`, ignoring the artist's sections and never
   collapsing to a burger. Deliberate: the live navigation was scoped to the designed templates.
@@ -553,7 +553,12 @@ These are intentional limits, not oversights — see §12 for the full list. The
   different compositions from Retro's: an upright glass card where Retro tilts a polaroid, and a
   glass nav capsule over an identity panel where Retro stands on a checker floor), so every card
   in the setup modal lays out a whole Lime page and the Lime family is closed. At layouts 2, 3
-  and 4 the footer is layout 1's. One piece of Retro's treatment is placed
+  and 4 the footer is layout 1's. **Grunge is designed at layout 1**: its page is Lime's layout-1
+  page in a third Figma mode (*Static Youth*), so its treatment — torn black seams round the three
+  textured bands, grain as a lighten layer, the red seal, Anton at 0.75 standing in for Stones
+  Crush — is `s.grunge` arms inside Lime's blocks, widened to `(s.lime || s.grunge)`. Its header
+  family is the same first four; only Hero is fitted, and cards 2–4 are placeholders that render
+  and publish. One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
@@ -569,8 +574,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and
   `fieldReach()` in `data.js` — or "Not shown in this template" where no layout of the active
-  template reads it (`fieldNowhere()`). The flat three's header carries no such note: its family is not
-  designed, and `in` names Retro's and Lime's header layouts only.
+  template reads it (`fieldNowhere()`). The flat two's header carries no such note: its family is not
+  designed, and `in` names Retro's, Lime's and Grunge's header layouts only.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

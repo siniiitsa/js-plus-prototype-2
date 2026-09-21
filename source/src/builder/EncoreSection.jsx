@@ -85,7 +85,7 @@ const isTablet = (s) => !!s.narrow && !s.mob
 
 // Anton (or the theme's label face): uppercase, tight, used for nav, eyebrows,
 // buttons and every small caps-y label in the reference page.
-// The 0.02em tracking is Retro's fitted value (and the flat three's by
+// The 0.02em tracking is Retro's fitted value (and the flat two's by
 // inheritance); Lime's mode states 0 on every text style, so it takes `s.dls`,
 // and so does Grunge's (Static Youth), whose label face is the same Anton.
 //
@@ -1043,7 +1043,8 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // panel rather than a giant set of initials, so the overlaid type still reads
 // the way it does over a real photograph. Its browns are Retro's; Lime's well
 // is the same ramp in its Scheme 1 greens (`box/1` → `bg` → `box/3`), or a
-// removed hero would leave a brown panel under a lime nav.
+// removed hero would leave a brown panel under a lime nav. Grunge takes the
+// same three tokens, which in Static Youth are neutral near-blacks.
 // `src` lets a layout address one slot of a multi-photo section; it falls back
 // to the section's single photo, then to the initials placeholder.
 // `avatar` reads the header's second photo slot, and reads it strictly: an empty
@@ -1069,7 +1070,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
     return (
       <div style={{
         width: '100%', height: '100%',
-        background: s.lime
+        background: (s.lime || s.grunge)
           ? `linear-gradient(150deg, ${s.box1}, ${s.bg} 55%, ${s.box3})`
           : `linear-gradient(150deg, ${s.edge}, #2A2622 55%, #14110E)`,
         ...style,
@@ -18577,8 +18578,8 @@ function Testimonials({ s }) {
     const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
     // Anton at Label/LG, and *not* `labelStyle`: the frame sets these quotes
     // mixed-case at letterSpacing 0, where the helper's whole point is uppercase
-    // tracked-out caps. Casing is `sectionVm`'s (`cased`), so Grunge and Pop
-    // still shout and Retro does not.
+    // tracked-out caps. Casing is `sectionVm`'s (`cased`), so Pop
+    // still shouts and Retro does not.
     const quoteType = {
       fontFamily: s.label, fontSize: u(T.label), lineHeight: 1.1, overflowWrap: 'break-word',
     }
@@ -21498,8 +21499,8 @@ function EnquiryForm({ s }) {
     // jobs, and `sem/stroke/2` #5B5E2E is `vm.formRule` exactly — the pricing
     // stack's own seat, which is the first palette tag clearing 0.22 against the
     // page ground. Reused rather than re-derived because the job is identical:
-    // an outline the page swallows leaves the boxes as loose type, and Grunge's
-    // T.tags[3] IS its black background.
+    // an outline the page swallows leaves the boxes as loose type, and a tag can
+    // be the page ground itself.
     const rule = s.formRule
     // Small caps in the display face — every label in this design is the
     // *display* face, which is why none of them goes through `labelStyle`. Two
