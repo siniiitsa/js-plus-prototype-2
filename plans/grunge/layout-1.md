@@ -440,6 +440,10 @@ Do **not** refresh the root `index.html` per section; it is the sweep's last ste
 
 ## The end-of-pass sweep
 
+**Done: `8a1d63e` (code, CLAUDE.md, README, `CONVENTIONS.md`, the two scripts) and `50d6338` (the
+`index.html` refresh).** What each item came to is under *Learned on the end-of-pass sweep* at the
+foot of *Conventions*; the list is kept as it was written.
+
 One session after section 11. Lime's list applies item for item (its *The end-of-pass sweep* and
 *Learned on the end-of-pass sweep*); what is Grunge's own:
 
@@ -1103,6 +1107,66 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 *(The running list the sweep extracted [`../CONVENTIONS.md`](../CONVENTIONS.md) from: each time a
 session leaned on a bullet from Lime's or Retro's Conventions, it was named here in one line, with
 the plan it came from. Kept as the pass wrote it, a blank line between sections.)*
+
+### Learned on the end-of-pass sweep (`8a1d63e` and `50d6338`)
+
+- **`Photo`'s empty `backdrop`** was Retro's browns under a red nav (`s.edge` → `#2A2622` →
+  `#14110E`). It takes Lime's arm — `(s.lime || s.grunge)`, `box1` → `bg` → `box3`, which in Static
+  Youth are `#1A1A1A` → `#000` → `#0E0E0E`. `&noimage=1` moved `_theme_2_` alone (header arch 0, 2,
+  3, 4 × three widths: the four that draw a backdrop); the seeded five-theme digest moved nothing,
+  Lime's lesson again.
+- **The header's `in` had no Grunge row**, so under Grunge the edit panel printed no "Not shown in
+  this layout" at all — not on the plan's list; found by reading CLAUDE.md's "names Retro and Lime
+  only" against a template that now has a four-card family. Measured with `reach.mjs` plus seven
+  header probes (kicker, subtitle, location, cta2, showBadge, badgeText, align): kicker / tags /
+  showTags `[0, 2, 3]`, subtitle and heroCta `[1]`, location all four, cta2 `[1, 2]`, showBadge and
+  badgeText `[0, 1, 3]`, align `[0]`. Cards 2–4 are placeholders, so **each layout pass re-measures
+  its card** (Lime's `badgeText` is `[3]` where Grunge's placeholder cards still read it). The
+  identity probes agree with Lime's hints but for one: Grunge's bio layout 3 prints no tags, so the
+  tags hint's "(in Lime, layout 3 as well)" stands; the location hint now says "in Lime and Grunge,
+  layout 4 only".
+- **Two stale Grunge facts session 0 left in the docs**, neither on the list: "casing it would shout
+  on Grunge and Pop" (Grunge cases `'title'` now) and "Grunge's `T.tags[3]` IS its black background"
+  (it has two tags; the walk starts at `3 % 2` and still lands on the stamp red). Reworded in
+  CLAUDE.md, README and the five comments that said either. "On Grunge `tx` and `paper` are one
+  value" is still true and stays.
+- **The template-list grep** returned 21 hits; eight made a claim about the list (`sectionVm`'s
+  `retro` and grain comments, `T.ui`'s, the seeding comment, the §6 picker banner, `labelStyle`'s,
+  `FIELDS.media.soundcloud`'s, `reachOf`'s) and were fixed. "The flat three" inside bio layout 2 and
+  map layout 3 is a branch-local truth — Grunge is flat there — and stays until those passes.
+- **The whole-page published check is committed: `source/scripts/page-check.mjs <Template>
+  [cards]`.** Lime's was never kept, so this is its *Learned* bullets rebuilt. Card 1's full walk
+  under Grunge: nine nav links and Book Now each scroll to their section; the media player plays
+  (`paused: false`, `currentTime` 1.03 after one trusted click); gallery, repertoire, map, pricing,
+  calendar and testimonials all answer the generic probe (the `false`s are All chips already lit
+  and the gallery's current slot); the form composes its `mailto:` and swaps to the sent block;
+  all nine footer links scroll; the 390 burger opens (1 fragment link → 11); `scrollWidth −
+  innerWidth` is 0 at 390; no console or page error in either window. **Two traps of its own**: a
+  popup opens at 800 × 600, so the first run "proved" a one-link nav — resize before anything,
+  not only before the narrow pass; and `NavMenu`'s burger is a 26px `<span>`, not a button, so it
+  is found by cursor and width.
+- **The seams, against real neighbours**: 180px clips on the top of every section at 1440 and 390.
+  The header fades into the bio with no seam; media, map and form each own a head and a foot tear
+  onto black neighbours; pricing's `grungeRule` hairline and the footer's top rule meet their
+  neighbours square. Nothing to fix. **Section 6's 9px ungrained strip** at the head of the 390 map
+  panel was read at 3× on the real page: invisible, left.
+- **The four header cards** all render at 1440 and 390 and publish, eleven sections each, in
+  `pageOrder(i)`'s own order, with no error — open question 4's record stands after sections 2–11
+  moved `SealBadge`, `BookPill` and `Pager`. Cards 2 and 3 logged React's "removing
+  `rowGap` … `gap`" shorthand warning **once**, on the script's first run (the popup resized 800 →
+  390 directly), and never again in three reruns, under any template. The one node that drops an
+  inline `rowGap` on that resize is in the header, and it does the same under Retro's card 2, so it
+  is `HeaderV1`'s own code and not this pass's. Not chased further; noted for the layout-2 pass.
+- **The two-build digest is committed too: `source/scripts/build-digest.mjs <label> <url>`**, the
+  editor walk Lime's notes describe. Old build digested before the `cp`: themes 0, 1, 3 and 4
+  byte-identical at Desktop / Tablet / Mobile, theme 2 moved 1506 / 1423 / 1397 rows, and
+  `modal.txt` reads `Grunge: 3 cards` → `4 cards` — the shipped-it tell.
+- **Sizes after the pass**: 43 photograph files, 5.19 MB; the standalone `index.html` is 7.92 MB
+  (was 6.96). Anton was already loaded, so no face was added.
+- **`CONVENTIONS.md` came out as four groups, not one list**: reading Figma, measuring and proving,
+  dressing a shared branch in a second mode, and — kept apart on purpose — the facts about Lime's
+  eleven layout-1 blocks that Grunge inherited only because its page *is* those blocks. A template
+  with its own compositions inherits the first three and none of the fourth.
 
 ## Open questions
 
