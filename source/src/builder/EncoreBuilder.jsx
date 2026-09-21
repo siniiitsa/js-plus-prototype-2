@@ -342,7 +342,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
     // inside the same shared branches, behind this flag. It composes with
-    // `retro` rather than replacing it: what both designed templates draw is
+    // `retro` rather than replacing it: what Retro and Lime both draw is
     // gated `(s.retro || s.lime)`, what Lime alone draws is `s.lime`.
     lime: T.name === 'Lime',
     // What every designed template's frame draws alike — the full-bleed hero,

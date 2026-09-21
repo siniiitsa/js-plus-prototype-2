@@ -1117,8 +1117,8 @@ the plan it came from. Kept as the pass wrote it, a blank line between sections.
   Lime's lesson again.
 - **The header's `in` had no Grunge row**, so under Grunge the edit panel printed no "Not shown in
   this layout" at all — not on the plan's list; found by reading CLAUDE.md's "names Retro and Lime
-  only" against a template that now has a four-card family. Measured with `reach.mjs` plus seven
-  header probes (kicker, subtitle, location, cta2, showBadge, badgeText, align): kicker / tags /
+  only" against a template that now has a four-card family. Measured with `reach.mjs` and seven new
+  header probes, now in its `PROBES` (kicker, subtitle, location, cta2, showBadge, badgeText, align): kicker / tags /
   showTags `[0, 2, 3]`, subtitle and heroCta `[1]`, location all four, cta2 `[1, 2]`, showBadge and
   badgeText `[0, 1, 3]`, align `[0]`. Cards 2–4 are placeholders, so **each layout pass re-measures
   its card** (Lime's `badgeText` is `[3]` where Grunge's placeholder cards still read it). The
@@ -1153,8 +1153,8 @@ the plan it came from. Kept as the pass wrote it, a blank line between sections.
 - **The four header cards** all render at 1440 and 390 and publish, eleven sections each, in
   `pageOrder(i)`'s own order, with no error — open question 4's record stands after sections 2–11
   moved `SealBadge`, `BookPill` and `Pager`. Cards 2 and 3 logged React's "removing
-  `rowGap` … `gap`" shorthand warning **once**, on the script's first run (the popup resized 800 →
-  390 directly), and never again in three reruns, under any template. The one node that drops an
+  `rowGap` … `gap`" shorthand warning **once**, on the script's first run, and never again in three
+  reruns, under any of four templates; the cause was not found. The one node that drops an
   inline `rowGap` on that resize is in the header, and it does the same under Retro's card 2, so it
   is `HeaderV1`'s own code and not this pass's. Not chased further; noted for the layout-2 pass.
 - **The two-build digest is committed too: `source/scripts/build-digest.mjs <label> <url>`**, the

@@ -452,7 +452,7 @@ mutated through a single `patch()` helper.
   their number), so the seeded header is still the burger. It is a vm boolean
   because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
   `navNameEms` / `navCtaEms` (Bebas, `bebasEms()`), Retro's is `antonEms()` in `data.js`, its
-  0.02em tracking folded in. It is set at tablet only — desktop never reads it and always draws
+  0.02em tracking folded in (Grunge's arm is the same table at a tracking of 0, its mode stating none). It is set at tablet only — desktop never reads it and always draws
   the links — and is undefined, so the burger, at 390, on an empty nav and in layouts 1 and 4;
   layouts 5 and 6 draw `NavLinks`, which
   keeps the (wrapping) link row at 768 and collapses only at 390 (measured in JP-033's digest).
@@ -929,7 +929,7 @@ mutated through a single `patch()` helper.
   a branch of its own — `if (s.lime)` or `if (s.v0 && s.lime)` in the `v0` code, and
   `if (s.v1 && s.lime)` / `if (s.v2 && s.lime)` / `if (s.v3 && s.lime)` ahead of an
   `if (s.v1)` / `if (s.v2)` / `if (s.v3)` whose state is hoisted or `if (s.lime)` inside it
-  after the seam — and a value both designed templates draw is gated `(s.retro || s.lime)`.
+  after the seam — and a value Retro and Lime both draw is gated `(s.retro || s.lime)`.
   The header components are the exception: each is its own branch, so its Lime block is
   `if (s.lime) { … return }` at the head (`HeaderV1`; `HeaderV2`, whose Lime frame is a
   different composition — an upright glass card where Retro tilts a polaroid; and `HeaderV3`,
