@@ -310,7 +310,8 @@ function LimeTransportGlyph({ kind, height, color }) {
 // frame's own vectors into the 60 disc they stand in, each at its offset there
 // and at its own stroke (3.5, 3, 4, 3): the picture frame, YouTube, Instagram
 // and TikTok, positional like `srcIcons`. One viewBox for all four, so a caller
-// sizes the disc and never the glyph.
+// sizes the disc and never the glyph. `stroke` overrides the four weights:
+// Static Youth draws the same vectors as 1px hairlines.
 const LIME_SOURCES = [
   { x: 14, y: 14, w: 3.5, round: true, d: [
     'M6.66667 28H25.3333C26.8061 28 28 26.8061 28 25.3333V6.66667C28 5.19391 26.8061 4 25.3333 4H6.66667C5.19391 4 4 5.19391 4 6.66667V25.3333C4 26.8061 5.19391 28 6.66667 28ZM6.66667 28L21.3333 13.3333L28 20M13.3333 11.3333C13.3333 12.4379 12.4379 13.3333 11.3333 13.3333C10.2288 13.3333 9.33333 12.4379 9.33333 11.3333C9.33333 10.2288 10.2288 9.33333 11.3333 9.33333C12.4379 9.33333 13.3333 10.2288 13.3333 11.3333Z',
@@ -326,11 +327,11 @@ const LIME_SOURCES = [
     'M33.7502 18.541C34.4012 21.4679 36.7256 23.7413 39.673 24.3125V26.8496C38.366 26.7499 37.0953 26.1976 36.0559 25.291L33.5705 23.1231L33.5695 26.4209L33.5685 35.4864C32.9347 41.1818 25.9382 43.5078 22.0666 39.3047L21.884 39.0987C18.2959 34.8987 21.3725 28.4458 26.5656 28.1914V30.1768C25.8199 30.2314 25.0296 30.4464 24.2404 31C20.1748 33.8524 22.8287 40.2243 27.6877 39.4815L27.9211 39.4414C28.8458 39.2589 29.7676 38.7287 30.4601 38.0625C31.1409 37.4077 31.8145 36.4079 31.8146 35.1924V18.541H33.7502Z',
   ] },
 ]
-function LimeSourceGlyph({ i, size, color }) {
+function LimeSourceGlyph({ i, size, color, stroke }) {
   const g = LIME_SOURCES[i] || LIME_SOURCES[0]
   return (
     <svg viewBox="0 0 60 60" width={size} height={size} aria-hidden style={{ display: 'block', flex: 'none' }}>
-      <g transform={`translate(${g.x} ${g.y})`} fill="none" stroke={color} strokeWidth={g.w}
+      <g transform={`translate(${g.x} ${g.y})`} fill="none" stroke={color} strokeWidth={stroke ?? g.w}
          strokeLinecap={g.round ? 'round' : undefined} strokeLinejoin={g.round ? 'round' : undefined}>
         {g.d.map((d, k) => <path key={k} d={d} />)}
       </g>
@@ -10890,9 +10891,43 @@ function Gallery({ s }) {
     // the frame runs TikTok off the page — the rule this section already has.
     // And the arrow discs' 24 background blur is dropped: their fill is opaque,
     // the header's capsule precedent.
-    if (s.lime) {
+    //
+    // Grunge layout 1 (964:58603 · 986:44061 at 768 · 989:22292 at 390) is this
+    // block a second time: the tree is Lime's node for node at all three widths,
+    // in Static Youth's Scheme 1, so the gate is widened and `G` names what
+    // differs. The rows are radius-10 boards in a 3px inside rule with the glyph
+    // in a ruled square, not capsules with a disc; the heading is two-tone across
+    // its typed break (the media player's positional rule); the top row is all
+    // accent; the card is radius 13 under the band's grain (lighten, .29); the
+    // arrow discs are `sem/box/3`; and the strip marks its tile with a 1px accent
+    // rule where every other tile has none. One named departure of its own: the
+    // desktop master's arrow row is 545 wide in a 636 card — Lime's 585 − 40,
+    // leaked — which stands the right disc 71 in from the edge. Drawn 20 in on
+    // both sides, as the 768 master draws it.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const z = desk ? 0.82 : 1
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
+      const G = grunge ? {
+        rowGap: 4, rowR: u(10), cardR: u(13),
+        cardH: desk ? u(557) : tab ? '524px' : '344px',
+        cardShadow: `${u(4)} ${u(4)} ${u(9)} rgba(0,0,0,.16)`,
+        // The open row's INNER_SHADOW 4 rides inside its rule; the closed rows'
+        // drop shadow is hidden. Both strokes are INSIDE, so inset shadows.
+        rowOn: `inset 0 0 0 ${u(3)} ${s.box1}, inset 0 0 ${u(4)} ${u(3)} rgba(0,0,0,.25)`,
+        rowOff: `inset 0 0 0 ${u(3)} ${s.stroke1}`,
+        top: s.ac, chip: s.box3, discRing: s.stroke1, discInk: s.ac,
+        // An idle tile states no fill at all, so an empty one stands on
+        // `sem/box/1` rather than Lime's pale ground.
+        thumbBg: s.box1, thumbInk: s.tx,
+      } : {
+        rowGap: 5, rowR: u(90), cardR: u(80),
+        cardH: desk ? u(560) : tab ? '527px' : '346px',
+        cardShadow: `${u(4)} ${u(4)} ${u(9)} rgba(0,0,0,.25)`,
+        rowOn: 'none', rowOff: `${u(7)} ${u(9)} 0 rgba(0,0,0,.25)`,
+        top: s.tx, chip: s.bg, discRing: s.tx, discInk: s.bg,
+        thumbBg: s.tx, thumbInk: s.bg,
+      }
       // Body/Eyebrow — Inter bold, the kicker, the back link, the credit and
       // the counter.
       const eyebrow = (t, extra) => (
@@ -10902,13 +10937,27 @@ function Gallery({ s }) {
         }}>{t}</span>
       )
 
+      // Grunge's frame types Lime's break and colours across it — "See us" in
+      // `sem/text/2`, "in action" in `sem/text/1` — so its heading is the media
+      // player's: words one and two a block line, the rest a second in the accent.
+      const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
       const head = (
         <div style={col(s.mob ? '10px' : u(36))}>
           {eyebrow('Media')}
-          <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-            letterSpacing: s.dls, color: s.ac, maxWidth: '4em',
-          }}>{s.title}</h2>
+          {grunge ? (
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+              letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
+            }}>
+              <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
+              {titleWords.length > 2 && <span style={{ display: 'block', color: s.ac }}>{titleWords.slice(2).join(' ')}</span>}
+            </h2>
+          ) : (
+            <h2 style={{
+              margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+              letterSpacing: s.dls, color: s.ac, maxWidth: '4em',
+            }}>{s.title}</h2>
+          )}
         </div>
       )
 
@@ -10918,8 +10967,8 @@ function Gallery({ s }) {
       // the closed ones `sem/box/1` under the frame's hard 7 / 9 shadow.
       const rows = (
         <div style={desk
-          ? col(u(5), { alignItems: 'stretch' })
-          : row('5px', { alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}) })}>
+          ? col(u(G.rowGap), { alignItems: 'stretch' })
+          : row(`${G.rowGap}px`, { alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}) })}>
           {srcRows.map(({ g, i }) => {
             const link = extLink(s, g.url)
             const Tag = link ? 'a' : 'div'
@@ -10929,25 +10978,36 @@ function Gallery({ s }) {
                 ...row(desk ? u(20) : '5px', tab ? { justifyContent: g.on ? 'space-between' : 'center' } : undefined),
                 ...(desk ? { height: u(92) } : tab ? { flex: '1 1 0', minWidth: 0, height: '92px' } : { flex: 'none' }),
                 padding: s.mob ? '10px' : `${u(16)} ${u(24)} ${u(16)} ${u(16)}`,
-                borderRadius: u(90), overflow: 'hidden', textDecoration: 'none',
+                borderRadius: G.rowR, overflow: 'hidden', textDecoration: 'none',
                 background: g.on ? s.pillBg : s.box1,
-                boxShadow: g.on ? 'none' : `${u(7)} ${u(9)} 0 rgba(0,0,0,.25)`,
+                boxShadow: g.on ? G.rowOn : G.rowOff,
                 cursor: link ? 'pointer' : undefined,
               }}>
                 {/* The open disc is `sem/tag/2/text` in a 2px `sem/glow` ring
                     stroked inside; the closed ones are `sem/glow` with the
                     glyph in `sem/box/3`. */}
-                <span style={{
-                  width: u(60), height: u(60), flex: 'none', borderRadius: '999px',
-                  background: g.on ? s.activeFg : s.glow,
-                  boxShadow: g.on ? `inset 0 0 0 ${u(2)} ${s.glow}` : 'none',
-                }}><LimeSourceGlyph i={i} size={60 * z} color={g.on ? s.ac : s.box3} /></span>
+                {/* Grunge's seat is an empty radius-6 square in a 1px rule —
+                    `sem/box/1` open, the accent closed — round the same vectors
+                    as 1px hairlines, `sem/bg` open and `sem/stroke/2` closed. */}
+                {grunge ? (
+                  <span style={{
+                    width: u(60), height: u(60), flex: 'none', borderRadius: u(6),
+                    boxShadow: `inset 0 0 0 1px ${g.on ? s.box1 : s.ac}`,
+                  }}><LimeSourceGlyph i={i} size={60 * z} color={g.on ? s.bg : s.stroke2} stroke={1} /></span>
+                ) : (
+                  <span style={{
+                    width: u(60), height: u(60), flex: 'none', borderRadius: '999px',
+                    background: g.on ? s.activeFg : s.glow,
+                    boxShadow: g.on ? `inset 0 0 0 ${u(2)} ${s.glow}` : 'none',
+                  }}><LimeSourceGlyph i={i} size={60 * z} color={g.on ? s.ac : s.box3} /></span>
+                )}
                 {desk && (
                   // Display/List.
                   <span style={{
-                    flex: 1, minWidth: 0, fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                    flex: 1, minWidth: 0, fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
                     letterSpacing: s.dls, color: ink,
                     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    ...(grunge ? { textTransform: 'uppercase' } : {}),
                   }}>{g.label}</span>
                 )}
                 {(g.on || desk) && (
@@ -10966,12 +11026,12 @@ function Gallery({ s }) {
         <div style={row('12px', { justifyContent: 'space-between' })}>
           {/* The frame's arrow is a Body/MD character, not an icon. */}
           <span onClick={s.live ? () => setPick(0) : undefined}
-                style={row(u(8), { color: s.tx, cursor: s.live ? 'pointer' : undefined })}>
+                style={row(u(8), { color: G.top, cursor: s.live ? 'pointer' : undefined })}>
             <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>←</span>
-            {eyebrow('Back to beginning')}
+            {eyebrow('Back to beginning', { color: G.top })}
           </span>
           <span style={col(u(2), { alignItems: 'flex-end' })}>
-            {eyebrow(s.brand)}
+            {eyebrow(s.brand, { color: G.top })}
             {eyebrow('Gallery', { color: s.ac })}
           </span>
         </div>
@@ -10979,7 +11039,8 @@ function Gallery({ s }) {
 
       // The arrow discs: `#D5E3B2` is Scheme 4's `sem/box/1`, which the gallery's
       // own Scheme 1 does not carry, in a 1px `sem/text/2` ring stroked inside,
-      // round the frame's own arrow vector in `sem/bg`.
+      // round the frame's own arrow vector in `sem/bg`. Grunge's are `sem/box/3`
+      // in a `sem/stroke/1` ring round an accent arrow.
       const mist = '#D5E3B2'
       const arrowPath = (back) => (back
         ? 'M35.2703 27.5863L36.8853 29.1256L30.4633 35.7758L47.3912 35.4804L47.4308 37.7484L30.5029 38.0439L37.1527 44.4453L35.5928 46.0607L26.1944 36.9847L35.2703 27.5863Z'
@@ -10987,11 +11048,11 @@ function Gallery({ s }) {
       const arrow = (back) => (
         <span onClick={s.live ? () => go(active + (back ? -1 : 1)) : undefined} style={{
           width: u(73.605), height: u(73.605), flex: 'none', borderRadius: '999px',
-          background: mist, boxShadow: `inset 0 0 0 1px ${s.tx}`,
+          background: grunge ? s.box3 : mist, boxShadow: `inset 0 0 0 1px ${G.discRing}`,
           cursor: s.live ? 'pointer' : undefined,
         }}>
           <svg viewBox="0 0 73.6051 73.5989" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
-            <path fill={s.bg} d={arrowPath(back)} />
+            <path fill={G.discInk} d={arrowPath(back)} />
           </svg>
         </span>
       )
@@ -11007,9 +11068,9 @@ function Gallery({ s }) {
       const card = (
         <div style={{
           position: 'relative', overflow: 'hidden', width: '100%',
-          height: desk ? u(560) : tab ? '527px' : '346px',
-          borderRadius: u(80), background: s.bg,
-          boxShadow: `${u(4)} ${u(4)} ${u(9)} rgba(0,0,0,.25)`,
+          height: G.cardH,
+          borderRadius: G.cardR, background: s.bg,
+          boxShadow: G.cardShadow,
         }}>
           <div style={{ position: 'absolute', inset: 0 }}>
             <Photo s={s} initialsSize={52} src={s.images[active]} ink={s.tx} />
@@ -11023,9 +11084,15 @@ function Gallery({ s }) {
           {desk && (
             <span style={{
               position: 'absolute', left: u(410), top: u(380), padding: `0 ${u(10)}`,
-              background: s.bg, borderRadius: u(4),
+              background: G.chip, borderRadius: u(4),
             }}>{eyebrow(`0${active + 1} — 0${strip.length}`, { color: s.ac, display: 'block' })}</span>
           )}
+          {/* Grunge's "image 1": the band sheet, lighten at .29, under the
+              arrows. A square the card's width hung 6.5 down at desktop; a
+              973.64 square hung off the card's corner at 768 and 390. */}
+          <Grain s={s} exact grunge blend="lighten" opacity={0.29} style={desk
+            ? { inset: `${u(6.5)} auto auto 0`, width: '100%', aspectRatio: '1' }
+            : { inset: `${tab ? -195.5 : -375.5}px auto auto -132.8px`, width: '973.64px', height: '973.64px' }} />
           <div style={{
             position: 'absolute',
             ...(s.mob ? { inset: 0 } : { left: u(20), right: u(20), top: u(20), height: u(469) }),
@@ -11045,16 +11112,20 @@ function Gallery({ s }) {
           {strip.slice(from, from + shown).map((i) => (
             <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
               flex: '1 1 0', minWidth: 0, height: u(76), position: 'relative', overflow: 'hidden',
-              borderRadius: u(20), background: s.tx, cursor: s.live ? 'pointer' : undefined,
+              borderRadius: u(20), background: G.thumbBg, cursor: s.live ? 'pointer' : undefined,
             }}>
               {/* An empty tile stands on the frame's own `sem/text/2` fill, so
                   its initials take the ground's ink. */}
               <div style={{ position: 'absolute', inset: 0 }}>
-                <Photo s={s} initialsSize={12} src={s.images[i]} ink={s.bg} />
+                <Photo s={s} initialsSize={12} src={s.images[i]} ink={G.thumbInk} />
               </div>
+              {/* Grunge rings the viewer's tile in 1px of accent and the rest
+                  in nothing — `effects: []`, so no glow here either. */}
               <span aria-hidden style={{
                 position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                boxShadow: i === active ? `inset 0 0 ${u(18)} ${s.glow}` : `inset 0 0 0 1px ${s.stroke2}`,
+                boxShadow: grunge
+                  ? (i === active ? `inset 0 0 0 1px ${s.ac}` : 'none')
+                  : i === active ? `inset 0 0 ${u(18)} ${s.glow}` : `inset 0 0 0 1px ${s.stroke2}`,
               }} />
             </span>
           ))}
@@ -11074,8 +11145,9 @@ function Gallery({ s }) {
       // stack the halves, 60 apart at 768 (two 30 insets) and 20 at 390.
       return desk ? (
         <div style={{
-          display: 'grid', gridTemplateColumns: 'minmax(0, 608fr) minmax(0, 585fr)',
-          gap: u(135), alignItems: 'start',
+          // Grunge's halves are 636 each, 28 + 28 apart.
+          display: 'grid', gridTemplateColumns: grunge ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 608fr) minmax(0, 585fr)',
+          gap: u(grunge ? 56 : 135), alignItems: 'start',
         }}>
           <div style={col(u(40), { minWidth: 0 })}>{head}{rows}</div>
           {viewer}
