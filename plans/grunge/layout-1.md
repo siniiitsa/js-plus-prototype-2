@@ -782,7 +782,8 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   the pager. `Grain` is `pointerEvents: 'none'`, so nothing is covered. **Named departure**: the 390
   band sheet is 390 × 400 at y −60.5 in the master (the head only, its cut edge hidden behind the
   tile but for two 10px slivers); drawn full, as at the other widths. The form's 390 sheet is the same
-  story.
+  story. And the inherited five-gig 390 page makes the panel 691 tall against the master's 473, so the
+  682.5 sheet leaves its top 9px ungrained — invisible at .19, left alone; the sweep's page check will see it.
 - **Seams off the renders** (PIL black-run maxima): head · foot **40 · 73** at 1440 (× 0.82),
   **70 · 66** at 768, **46 · 33** at 390. Node arithmetic agrees at 1440 and 768; at 390 the vector sits
   at x −582 and shows a shallower stretch, so the render wins.
@@ -796,7 +797,8 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   `s.tx` ring**, lit `s.tx` in a 5px `s.bg` ring at 16 — the accent vanishes on a raster multiplied
   with itself; the **lit row is the pager's own current-page pair**, `s.bg` under white type, the
   `#222222` date box still reading on it.
-- **`FIELDS.map` has no Lime-keyed `in` row**, so nothing was owed.
+- **`FIELDS.map` has no Lime-keyed `in` row** (grepped by line range, 1166–1204 of `data.js`), so
+  nothing was owed. Nor has `FIELDS.pricing`; the calendar's `heading` is still the next one due.
 - **Measured against the masters' content edges**: desktop head line 95.2, cards 562 (686 × 0.82 =
   562.5), map 410.9 (501 × 0.82), foot 118.3 (145 × 0.82 = 118.9), rows 79.5, date 45.9 × 46.7; 768
   tile 387.6 (388), map 214.8, foot 132.8, rows 79, panel 592.6 (595); 390 tile 428.9 (429.16), map
