@@ -22,7 +22,8 @@ plans/
     layout-4.md
     qa-fixes.md
     layout-2-qa-fixes.md
-  grunge/      ← not started
+  grunge/
+    layout-1.md
   editorial/   ← not started
   pop/         ← not started
 ```
@@ -58,10 +59,20 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 
 **Reading order in a Lime session:** `CLAUDE.md`, then the plan, then the sections it names at its top. Layout 2 also reads layout 1's whole *Conventions*, since that pass built the foundation; layout 3 reads both, and Retro layout 3's *Conventions* and *Addendum*, since that pass built the branches it dresses; layout 4 reads all three Lime *Conventions*, and Retro layout 4's *Conventions* and *Addendum*.
 
+## Grunge
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`grunge/layout-1.md`](./grunge/layout-1.md) | `grunge-layout-1`, to fork from `main` (not started) | Retro and Lime layout 1's eleven components in the Figma mode **Static Youth**: a token foundation (session 0, which opens on a user call — the display face, Stones Crush, is not a Google Font), then `s.grunge` decoration inside the shared `s.v0` branches, a shared `s.designed` gate, the header's four modal cards, plus a sweep that extracts `plans/CONVENTIONS.md`. Written as deltas against Lime layout 1. |
+
+**Reading order in a Grunge session:** `CLAUDE.md`, then the plan, then the whole *Conventions* of
+`lime/layout-1.md` and of `retro/layout-2.md`, and Lime layout 1's *Per-session procedure*.
+
 ## Other templates
 
-Grunge, Editorial and Pop work, but they render flat (see CLAUDE.md, *Only Retro is
-designed*). When one of them gets its first plan:
+Editorial and Pop work, but they render flat (see CLAUDE.md, *Retro and Lime are designed*).
+Grunge's first plan schedules the `plans/CONVENTIONS.md` extraction below for its sweep. When one
+of them gets its first plan:
 
 - Start its folder here, and add a table to this file.
 - Say which of Retro's Conventions it inherits. Many are about reading Figma, verifying the
