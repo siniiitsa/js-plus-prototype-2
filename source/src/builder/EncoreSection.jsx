@@ -7070,18 +7070,53 @@ function Pricing({ s }) {
     // Every *box* is a raw number — none of the three masters binds a `radius/`
     // or `size/` token — so the card's 55, the chip's 56 and the ico's 4 are the
     // frame's own. Scheme 1: no band and no seams.
-    if (s.lime) {
+    //
+    // Grunge — the same component a third time (964:58606 at 1440, 986:44064 at
+    // 768, 986:44076 at 390), Lime's tree node for node, so the block is
+    // widened and `G` names the leaves that change: the card is `sem/box/1` at a
+    // raw radius 13 in a 1px `sem/stroke/1` hairline, and the featured seat
+    // carries no glow — `effects: []` — but a 1px `sem/stroke/2` rule. The
+    // heading is two-tone, "Choose the set that's" `sem/text/2` and the rest
+    // `sem/text/1`, inline — the break and the colour do not coincide — and the
+    // string is the artist's, so the rule is positional: words one to four are
+    // `s.tx`. Two things the twins do not draw: the seal off the panel's
+    // foot-right corner, and the instance's own 1px inside stroke, which is the
+    // root's (`grungeRule`) since this block stands inside its padding.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
+      const G = grunge ? {
+        headW: u(597.53), card: s.box1, cardR: u(13), icoR: s.radiusChip,
+        ring: `inset 0 0 0 1px ${s.stroke1}`, lit: `inset 0 0 0 1px ${s.stroke2}`,
+      } : {
+        headW: u(640), card: s.box2, cardR: u(55), icoR: u(4),
+        ring: `inset 0 0 0 3px ${s.stroke1}`, lit: `inset 0 0 0 3px ${s.stroke1}, inset 0 0 ${u(55)} 0 ${s.glow}`,
+      }
+      const words = String(s.title || '').split(' ')
+      // The seal (964:58606 "Frame 178"), placed by its disc's centre off the
+      // content's right edge and foot: 39.15 in and 7 up at 1440, 40.35 in and
+      // 16.93 up at 768, where the disc is 101.56. The 390 master leaks a
+      // desktop y and stands it over the featured card's blurb; it keeps that
+      // frame's x (78.6 in) and size and hangs on the same corner instead, its
+      // disc's foot the master's own 40 under the content's, and the small
+      // print beside it keeps clear.
+      const disc = tab ? 101.56 : 125.37
+      const half = disc / 2
+      const seal = s.mob
+        ? { right: `${(78.6 - half).toFixed(2)}px`, bottom: '-40px' }
+        : tab
+          ? { right: `${(40.35 - half).toFixed(2)}px`, bottom: `${(16.93 - half).toFixed(2)}px` }
+          : { right: u(39.15 - half), bottom: u(7 - half) }
       // Label/XS — the chips, the unit, the blurb and the features.
       const ui = (extra) => ({
         fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, ...extra,
       })
       return (
-        <div style={col(u(32))}>
+        <div style={col(u(32), grunge ? { position: 'relative' } : undefined)}>
           {/* Desktop centres the chips against the heading at the row's far
               end; both narrow masters stack them 24 under it. */}
           <div style={s.narrow
@@ -7089,9 +7124,12 @@ function Pricing({ s }) {
             : row(u(24), { justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' })}>
             {/* Display/SM at lh 1, held to the frame's 640 on desktop. */}
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
-              letterSpacing: s.dls, color: s.ac, maxWidth: s.narrow ? '100%' : u(640),
-            }}>{s.title}</h2>
+              margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
+              letterSpacing: s.dls, color: s.ac, maxWidth: s.narrow ? '100%' : G.headW,
+              textTransform: grunge ? 'uppercase' : undefined,
+            }}>{grunge
+              ? <><span style={{ color: s.tx }}>{words.slice(0, 4).join(' ')}</span>{words.length > 4 && ` ${words.slice(4).join(' ')}`}</>
+              : s.title}</h2>
             {/* Filled pills in Label/XS, mixed case: `sem/active` for the chip
                 on show, `sem/box/1` with lime type for the rest. The frame lights
                 its second chip; ours pins chip 0 (All) on the canvas, layout 1's
@@ -7135,11 +7173,12 @@ function Pricing({ s }) {
                 // Keyed on the package's place in the whole list, layout 1's
                 // rule, though nothing here cross-fades.
                 <div key={t.n} style={{
-                  background: s.box2, borderRadius: u(55), minWidth: 0,
+                  background: G.card, borderRadius: G.cardR, minWidth: 0,
                   // Figma strokes the 3px ring inside the card without growing
                   // it, and paints the INNER_SHADOW 55 under it — so both are
                   // inset shadows, ring first, and the padding stays the frame's.
-                  boxShadow: `inset 0 0 0 3px ${s.stroke1}${featured ? `, inset 0 0 ${u(55)} 0 ${s.glow}` : ''}`,
+                  // Grunge's featured seat swaps the hairline's colour instead.
+                  boxShadow: featured ? G.lit : G.ring,
                   padding: tab ? '30px 20px' : u(44),
                   // The pill stands at the card's foot at 1440 and 768, at least
                   // 40 under the content; the 390 card hugs it 30 down.
@@ -7154,11 +7193,11 @@ function Pricing({ s }) {
                       ? col('10px', { alignItems: 'flex-start' })
                       : row(u(10), { alignItems: 'center' })}>
                       <span style={body(s.eyebrow, 1.3, {
-                        fontWeight: 700, padding: `${u(4)} ${u(6)}`, borderRadius: u(4),
+                        fontWeight: 700, padding: `${u(4)} ${u(6)}`, borderRadius: G.icoR,
                         background: s.pillBg, color: s.activeFg, whiteSpace: 'nowrap', flex: 'none',
                       })}>[ico]</span>
                       <span style={{
-                        fontFamily: s.label, fontSize: tab ? s.labelMd : s.labelSm, lineHeight: 1.1,
+                        fontFamily: s.label, fontSize: faced(s, tab ? s.labelMd : s.labelSm), lineHeight: facedLh(s, 1.1),
                         letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
                       }}>{t.name}</span>
                     </span>
@@ -7173,7 +7212,7 @@ function Pricing({ s }) {
                         <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{symbol}</span>
                       )}
                       <span style={{
-                        fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+                        fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
                         letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
                         flex: s.narrow ? '1 1 auto' : 'none',
                       }}>{amount}</span>
@@ -7216,7 +7255,13 @@ function Pricing({ s }) {
           {/* Body/Eyebrow in `sem/text/2` at full strength, where Retro's small
               print is a warm grey. An emptied field drops the line. */}
           {!!s.pricingSub && (
-            <span style={body(s.eyebrow, 1.3, { fontWeight: 700, color: s.tx })}>{s.pricingSub}</span>
+            <span style={body(s.eyebrow, 1.3, {
+              fontWeight: 700, color: s.tx,
+              paddingRight: grunge && s.mob && s.showBadge === 'show' ? '150px' : undefined,
+            })}>{s.pricingSub}</span>
+          )}
+          {grunge && (
+            <SealBadge s={s} size={s.narrow ? disc : Math.round(disc * z * 10) / 10} tilt={26.06} style={seal} />
           )}
         </div>
       )
@@ -22047,6 +22092,9 @@ export default function EncoreSection({ s }) {
   // map (964:58605) is the second; the form extends this in its session. Scheme 2's `sem/bg` has no vm key
   // (`sem` is Scheme 1), hence the literal, which is `HeaderV0`'s `G2.bg`.
   const grungeBand = (s.me || s.mp) && s.v0 && s.grunge
+  // Pricing (964:58606) is the one Static Youth instance whose own stroke is
+  // visible: 1px of `sem/state/inactive/border`, inside, at all three widths.
+  const grungeRule = s.pr && s.v0 && s.grunge
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
@@ -22056,6 +22104,7 @@ export default function EncoreSection({ s }) {
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
+      boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : undefined,
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,
     }}>
