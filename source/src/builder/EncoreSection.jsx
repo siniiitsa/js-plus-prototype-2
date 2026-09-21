@@ -8929,20 +8929,34 @@ function Pager({ s, colour, fill, frame = {} }) {
   // `activeFg`, `font`, `idle`) and reads only the row's content and layout:
   // `pages`, `active`, `onPage`, `onStep`, `justify`, `grow`. `frame.lime`
   // overrides the Scheme 1 colours for a caller standing on another band.
-  if (s.lime) {
+  //
+  // Grunge's (964:58604 / 986:44062 / 986:44074) is the same row in another
+  // dress: every page pill is `sem/active/bg` with `sem/text/2` type, the
+  // arrows are Lime's ring, and `effects` is empty — the frame draws the
+  // current page like every other, red on red. So the mark is this file's, not
+  // the frame's: the current pill takes the active chip's own pair from the
+  // same frame, `s.activeFg` on the red, inside a 2px inset ring of `s.tx` —
+  // the ink alone is a 10px numeral changing colour, which does not read — and
+  // the rest keep the white.
+  if (s.lime || s.grunge) {
+    const grunge = s.grunge
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
-    const t = { box: s.box2, ring: s.stroke1, ink: s.tx, idle: s.ac, glow: s.glow, ...frame.lime }
+    const t = grunge
+      ? { box: s.pillBg, ring: s.stroke1, ink: s.tx, idle: s.tx, on: s.activeFg, onRing: s.tx, ...frame.lime }
+      : { box: s.box2, ring: s.stroke1, ink: s.tx, idle: s.ac, glow: s.glow, ...frame.lime }
     const arrow = (back) => <LimeArrow back={back} z={z} />
     const btn = (key, child, on, end, onClick) => (
       <span key={key} onClick={onClick} style={{
         minWidth: u(end ? 55 : 87), height: u(54), flex: 'none', borderRadius: '999px',
         background: end ? 'transparent' : t.box,
-        boxShadow: end ? `inset 0 0 0 1px ${t.ring}` : on ? `inset 0 0 ${u(17)} ${t.glow}` : 'none',
-        color: end || on ? t.ink : t.idle,
+        boxShadow: end ? `inset 0 0 0 1px ${t.ring}` : on && t.onRing ? `inset 0 0 0 2px ${t.onRing}` : on && t.glow ? `inset 0 0 ${u(17)} ${t.glow}` : 'none',
+        color: on && t.on ? t.on : end || on ? t.ink : t.idle,
         cursor: onClick ? 'pointer' : undefined,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: s.label, fontSize: s.labelSm, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap',
+        ...(grunge
+          ? labelStyle(s, s.labelSm)
+          : { fontFamily: s.label, fontSize: s.labelSm, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap' }),
         // The 390 master spreads every button to one width across the measure.
         ...(frame.grow ? { flex: '1 1 0', minWidth: 0 } : null),
       }}>{child}</span>
@@ -9096,15 +9110,40 @@ function Repertoire({ s }) {
     // their page's Device mode, so every size is the Lime ramp's `s.*`. Scheme
     // 1, so no band and no seams (the frame's `Layer_1` is an empty frame here,
     // where Retro's holds the torn edge).
-    if (s.lime) {
+    //
+    // Grunge — the same component a third time, in Static Youth (964:58604 at
+    // 1440, 986:44062 at 768, 986:44074 at 390): Lime's tree node for node, on
+    // Scheme 1 again (`Layer_1` holds the torn vector, hidden), so the block is
+    // widened and `G` names the leaves that change. The field is an empty box
+    // at a raw radius 9 round an empty radius-5 tile ruled in the accent — the
+    // gallery's glyph seat — with accent type; the chips are Body/MD with the
+    // active one in `sem/active/text`; the song is Display/Title 36 / 28 / 26
+    // (a literal, `s.title` being the heading string) over an uppercase
+    // Label/SM; and the heading is two-tone, "240" `sem/text/1` and "Songs"
+    // `sem/text/2`. The string is the artist's, so that rule is positional:
+    // word one is the accent, the rest `s.tx`, inline.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
-      const bebas = (size, extra) => ({
+      const bebas = (size, extra) => (grunge ? labelStyle(s, size, extra) : {
         fontFamily: s.label, fontSize: size, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap', ...extra,
       })
+      const G = grunge ? {
+        field: 'transparent', fieldR: u(9), tile: 'transparent', tileR: u(5),
+        tileRule: `inset 0 0 0 1px ${s.ac}`, glyph: s.ac, hintInk: s.ac,
+        chipSize: s.bodyMd, chipLh: 1.5, chipOn: s.activeFg,
+        song: s.narrow ? (tab ? '28px' : '26px') : u(36),
+      } : {
+        field: s.box2, fieldR: '999px', tile: s.pillBg, tileR: '999px',
+        tileRule: undefined, glyph: s.bg, hintInk: s.tx,
+        chipSize: s.bodySm, chipLh: 1.4, chipOn: s.bg,
+        song: s.labelLg,
+      }
+      const words = String(s.title || '').split(' ')
       const hint = 'Search songs or artists…'
       return (
         <div style={col(u(32))}>
@@ -9125,26 +9164,29 @@ function Repertoire({ s }) {
               })}>Repertoire</span>
               {/* Display/LG. */}
               <h2 style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-                letterSpacing: s.dls, color: s.ac,
-              }}>{s.title}</h2>
+                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+                letterSpacing: s.dls, color: s.ac, textTransform: grunge ? 'uppercase' : undefined,
+              }}>{grunge && words.length > 1
+                ? <>{words[0]} <span style={{ color: s.tx }}>{words.slice(1).join(' ')}</span></>
+                : s.title}</h2>
             </div>
             {/* The pill: `sem/box/2` in a 1px `sem/stroke/1` ring stroked
                 inside, round a `sem/active` tile carrying the frame's own
                 glyph in `sem/bg`. It yields to the heading on desktop, the
                 layout-1 rule; the 768 master grows it to half the row. */}
             <div style={row(u(10), {
-              background: s.box2, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, borderRadius: '999px',
+              background: G.field, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, borderRadius: G.fieldR,
               padding: u(10), height: u(61), minWidth: 0, overflow: 'hidden',
               ...(s.mob ? { width: '100%' } : tab ? { flex: '1 1 50%' } : { flex: `0 1 ${u(389)}` }),
             })}>
               <span style={{
-                width: u(43.562), height: '100%', flex: 'none', borderRadius: '999px',
-                background: s.pillBg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: u(43.562), height: '100%', flex: 'none', borderRadius: G.tileR,
+                background: G.tile, boxShadow: G.tileRule,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <svg viewBox="0 0 21.1602 21.5977" width={21.1602 * z} height={21.5977 * z}
                      aria-hidden style={{ display: 'block' }}>
-                  <path fill={s.bg} d="M1.55122 21.5977L0 19.9272L4.85252 15.1542C4.13657 14.2791 3.59299 13.3511 3.22176 12.37C2.87704 11.3888 2.70468 10.3414 2.70468 9.22775C2.70468 7.53069 3.11569 5.99273 3.9377 4.61387C4.78623 3.2085 5.91318 2.09481 7.31856 1.27279C8.72393 0.424265 10.2619 0 11.9324 0C13.6295 0 15.1674 0.424265 16.5463 1.27279C17.9517 2.09481 19.0654 3.2085 19.8874 4.61387C20.7359 5.99273 21.1602 7.53069 21.1602 9.22775C21.1602 10.8983 20.7359 12.4362 19.8874 13.8416C19.0654 15.247 17.9517 16.3739 16.5463 17.2225C15.1674 18.0445 13.6295 18.4555 11.9324 18.4555C10.9248 18.4555 9.97021 18.3097 9.06864 18.018C8.16708 17.7263 7.31856 17.2888 6.52306 16.7054L1.55122 21.5977ZM11.9324 15.9497C13.1522 15.9497 14.2659 15.658 15.2735 15.0746C16.3077 14.4648 17.1297 13.656 17.7395 12.6484C18.3494 11.6142 18.6544 10.474 18.6544 9.22775C18.6544 7.98147 18.3494 6.85452 17.7395 5.84689C17.1297 4.81275 16.3209 4.00399 15.3133 3.42063C14.3057 2.81075 13.1787 2.50581 11.9324 2.50581C10.6862 2.50581 9.54594 2.81075 8.5118 3.42063C7.50417 4.00399 6.69542 4.81275 6.08554 5.84689C5.50218 6.85452 5.21049 7.98147 5.21049 9.22775C5.21049 10.474 5.50218 11.6142 6.08554 12.6484C6.69542 13.656 7.50417 14.4648 8.5118 15.0746C9.54594 15.658 10.6862 15.9497 11.9324 15.9497Z" />
+                  <path fill={G.glyph} d="M1.55122 21.5977L0 19.9272L4.85252 15.1542C4.13657 14.2791 3.59299 13.3511 3.22176 12.37C2.87704 11.3888 2.70468 10.3414 2.70468 9.22775C2.70468 7.53069 3.11569 5.99273 3.9377 4.61387C4.78623 3.2085 5.91318 2.09481 7.31856 1.27279C8.72393 0.424265 10.2619 0 11.9324 0C13.6295 0 15.1674 0.424265 16.5463 1.27279C17.9517 2.09481 19.0654 3.2085 19.8874 4.61387C20.7359 5.99273 21.1602 7.53069 21.1602 9.22775C21.1602 10.8983 20.7359 12.4362 19.8874 13.8416C19.0654 15.247 17.9517 16.3739 16.5463 17.2225C15.1674 18.0445 13.6295 18.4555 11.9324 18.4555C10.9248 18.4555 9.97021 18.3097 9.06864 18.018C8.16708 17.7263 7.31856 17.2888 6.52306 16.7054L1.55122 21.5977ZM11.9324 15.9497C13.1522 15.9497 14.2659 15.658 15.2735 15.0746C16.3077 14.4648 17.1297 13.656 17.7395 12.6484C18.3494 11.6142 18.6544 10.474 18.6544 9.22775C18.6544 7.98147 18.3494 6.85452 17.7395 5.84689C17.1297 4.81275 16.3209 4.00399 15.3133 3.42063C14.3057 2.81075 13.1787 2.50581 11.9324 2.50581C10.6862 2.50581 9.54594 2.81075 8.5118 3.42063C7.50417 4.00399 6.69542 4.81275 6.08554 5.84689C5.50218 6.85452 5.21049 7.98147 5.21049 9.22775C5.21049 10.474 5.50218 11.6142 6.08554 12.6484C6.69542 13.656 7.50417 14.4648 8.5118 15.0746C9.54594 15.658 10.6862 15.9497 11.9324 15.9497Z" />
                 </svg>
               </span>
               {/* Body/MD. The published field takes the same type, so it
@@ -9155,13 +9197,13 @@ function Repertoire({ s }) {
                   value={q} placeholder={hint}
                   onChange={(e) => { setQ(e.target.value); setPage(0) }}
                   style={body(s.bodyMd, 1.5, {
-                    color: s.tx, flex: 1, minWidth: 0, border: 'none', outline: 'none',
+                    color: G.hintInk, flex: 1, minWidth: 0, border: 'none', outline: 'none',
                     background: 'transparent', padding: 0,
                   })}
                 />
               ) : (
                 <span style={body(s.bodyMd, 1.5, {
-                  color: s.tx, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  color: G.hintInk, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 })}>{hint}</span>
               )}
             </div>
@@ -9174,9 +9216,9 @@ function Repertoire({ s }) {
               <span
                 key={i}
                 onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
-                style={body(s.bodySm, 1.4, {
+                style={body(G.chipSize, G.chipLh, {
                   padding: `${u(5)} ${u(11)}`, borderRadius: '999px', whiteSpace: 'nowrap',
-                  background: i === active ? s.pillBg : s.box2, color: i === active ? s.bg : s.ac,
+                  background: i === active ? s.pillBg : s.box2, color: i === active ? G.chipOn : s.ac,
                   cursor: s.live ? 'pointer' : undefined,
                 })}
               >{f.label}</span>
@@ -9211,7 +9253,7 @@ function Repertoire({ s }) {
                         flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
                       })}>
                         {/* Label/LG over Label/SM. */}
-                        <span style={bebas(s.labelLg, {
+                        <span style={bebas(G.song, {
                           color: s.tx, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis',
                         })}>{t.title}</span>
                         <span style={bebas(s.labelSm, { color: s.ac, flex: 'none' })}>· {t.artist}</span>
