@@ -1143,7 +1143,7 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 
 - **No Grunge block, for the seventh time in this pass: Lime's `if (s.lime)` inside
   `EventsMap`'s `if (s.v1)`, after `stats`, is `(s.lime || s.grunge)`**, with the **`G` lookup**
-  at its head (nine keys — the card, its hairline, its ink, the zoom fill, the panel, the status
+  at its head (ten keys — the card, its hairline, its ink, the zoom fill, the panel, the status
   pill, the card/row radius, the panel radius, the map container's radius and the viewport's
   aspect; Lime's arm is today's literals) and the block's `display()` faced / `facedLh` /
   uppercase behind `grunge`. The tree is Lime's **node for node, 123 = 123 at all three
@@ -1384,7 +1384,7 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
 - *The raster: Retro's call is followed* (Lime 2, map) — a third time, sampled to the unit.
 - *`Pager`'s Lime branch is `(s.lime || s.grunge)`* (layout 1, section 5) — its default on the
   page ground; layout 1's map-only `onBox` was not needed.
-- *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — nine keys.
+- *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — ten keys.
 - *A stand-in face is scaled to the frame's glyph size* (C) — every display site through the
   block's one `display()`.
 - *Field reach is measured, not read off the prose* (B) — `reach.mjs 2`, confirm-only.
