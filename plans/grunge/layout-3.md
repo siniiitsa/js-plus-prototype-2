@@ -1109,6 +1109,14 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **`FIELDS.pricing` has no template-keyed `in` row** (`heading` `[0, 1, 2]`, `intro` `[2]`,
   `quote` `[1]`, `rowCta` `[3]`, and `PRICING_CARD` / `PRICING_CREDIT` flat), so no
   `reach.mjs` run was owed — layout 2's finding, re-checked.
+- **For the sweep, two sites this session settles.** CLAUDE.md's "**Lime's stack reads no
+  `vm.tierRow`**" is now **Lime's and Grunge's**: the widened block reads Retro's `T`,
+  `chipType`, `h` (`vm.tierRow`), `panelFg` and `selector` not at all, so the guarded walk
+  reaching pale lime — and, under Grunge, the page's own black — is Retro's and the flat
+  two's alone. And the Retro fallthrough's own tail comment ("Lime drew pale lime on pale
+  lime and Grunge white on white, both of them a capsule with nothing in it") now describes
+  a path **Grunge never reaches** at layout 3; it stands as Retro's and the flat two's
+  reason, and the sweep's grep for "Grunge" will find it.
 - **Verified in the builder**: `scripts/page-check.mjs Grunge 2` — four modal cards, bio and
   calendar composed at top 738, media under the bio at 1761, pricing at **3812 · 948** between
   the gallery's floor and the map's head, all three of its Book Now pills scrolling to
