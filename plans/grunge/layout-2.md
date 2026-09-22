@@ -159,7 +159,7 @@ for the block); it is the gate this session widens.
 | 3 | `media` | `964:64620` *(Section; fan `964:64624` 629 × 441, list `964:64625` 529 × 673, heading `964:64623`)* | 1440 × 965 | `986:13755` *(Frame 299; `986:13759` + `986:13760`)* | 768 × 1568 | `986:13774` *(Frame 299; `986:13778` + `986:13779`)* | 390 × 1438 | `964:64582` / `986:11850` / `986:11869` | `964:64639` / `984:35122` / `984:35396` | `if (s.lime)` inside `Media`'s `if (s.v1)`, after `nowArt` | done `334f580` |
 | 4 | `repertoire` | `964:64627` | 1440 × 792 | `986:13762` | 768 × 792 | `986:13781` | 390 × 594 | `964:64589` / `986:11857` / `986:11876` | `964:64646` / `984:35876` / `984:35961` | `if (s.lime)` inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | done `8c9db4e` |
 | 5 | `gallery` | `964:64628` | 1440 × 675 | `986:13763` | 768 × 468 | `986:13782` | 390 × 364 | `964:64590` / `986:11858` / `986:11877` | `964:64647` / `984:36046` / `984:36070` | **no block** — seven `s.lime` ternaries and one `s.lime &&` overlay through `Gallery`'s `if (s.v1)` | done `71c6e84` |
-| 6 | `pricing` | `964:64629` | 1440 × 708 | `986:13764` | 768 × 923 | `986:13783` | 390 × 871 | `964:64591` / `986:11859` / `986:11878` | `964:64648` / `986:10425` / `986:10492` | `if (s.lime)` inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | — |
+| 6 | `pricing` | `964:64629` | 1440 × 708 | `986:13764` | 768 × 923 | `986:13783` | 390 × 871 | `964:64591` / `986:11859` / `986:11878` | `964:64648` / `986:10425` / `986:10492` | `if (s.lime)` inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | done `c76b5f7` |
 | 7 | `calendar` | `964:64631` *(in `964:64630`)* | 1328 × 1068 *(wrapper 1440 × 1180)* | `986:13766` *(in `986:13765`)* | 708 × 841 *(953)* | `986:13785` *(in `986:13784`)* | 370 × 734 *(814)* | `964:64593` / `986:11861` / `986:11880` | `964:64650` / `986:10607` / `986:10800` | `if (s.lime)` inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | — |
 | 8 | `map` | `964:64632` | 1440 × 858 | `986:13767` | 768 × 823 | `986:13786` | 390 × 1286 | `964:64594` / `986:11862` / `986:11881` | `964:64651` / `986:10974` / `986:11467` | `if (s.lime)` inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
 | 9 | `form` | `964:64633` | 1440 × 812 | `986:13768` | 768 × 849 | `986:13787` | 390 × 929 | `964:64595` / `986:11863` / `986:11882` | `964:64652` / `986:11591` / `986:11633` | `if (s.v1 && s.lime)` ahead of `EnquiryForm`'s `if (s.v1)` | — |
@@ -355,13 +355,15 @@ hashes, read off the frames at all three widths:
 | media | five covers | the shared five | `ROW_ART.media` | ✓ |
 | gallery | hero 784 × 583 / 342 × 392 / 253 × 284 | `a746e7e4` | `grungeGallery4`, slot 3 = `galActive()` | ✓ — the canvas opens on the frame's own hero |
 | gallery | six tiles | Retro's colour strip (`b35b6507`, `b073b46f`, `8f69a4a6`, `35ae28b9`, `3f0c98b4`) | the shoot's six other pictures | **layout 1's departure again**: the frame's strip is a placeholder; the seven Grunge slots stand |
-| pricing | three 28 × 28 `av` | Retro's | — | nothing: Retro's fit dropped the credit row (its claim rule — "32 reviews · 4.9" is a fabricated metric), Lime inherited the drop, Grunge does too |
+| pricing | three 28 × 28 `av` | Retro's (`fbe69d03`, `ef14e35b`, `2de917bf`) | `REVIEWERS` (`photos.js` seeds `pricing: REVIEWERS` under Grunge) | ~~nothing: Retro's fit dropped the credit row (its claim rule — "32 reviews · 4.9" is a fabricated metric), Lime inherited the drop, Grunge does too~~ *corrected in section 6:* the credit row **came back** in Retro's QA addendum (`images` / `reviews` / `rating`, each a field), Lime's block draws it (`hasCredit`) and so does the widened one; the frame's three faces are Retro's own colour reviewers, so the seed is the frame's ✓ |
 | map | raster 588 × 512 / 318 × 520 / 346 × 298 | `e089bd11` | `vm.mapSrc` under Retro's screened invert on its `#292A1C` plate | Retro's and Lime's call; the plate's colour against this frame's map card is the session's sample |
 | form | stage photo 838 × 437 / 334 × 437 / 370 × 262 | `81e1c9a9` | `grungeFormPhoto` (`SEEDS.Grunge.photo`, the whole pub shot) | ✓ |
 | form | credit avatar 48 | **`f821adc2` — Lime's colour avatar** | `grungeAvatar` (the pub shot's centre square) | **the second leak**; keep the seed |
 
 **The greyscale is in the assets** (layout 1, session 0), so nothing here desaturates and the two
 leaked colour pictures are the only colour on the page — which is how they give themselves away.
+*(Section 6: plus the pricing credit row's three reviewer faces, which are colour on the frame too
+and are the seed's own, so they do not give anything away.)*
 
 ## What already renders, and the traps in it
 
@@ -971,6 +973,82 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly gallery
   arch 1 at three widths on both surfaces.
 
+### Settled in section 6 (pricing)
+
+- **No Grunge block, for the fifth time in this pass: Lime's `if (s.lime)` inside `Pricing`'s
+  `if (s.v1)`, after `sel` / `t`, is `(s.lime || s.grunge)`**, with the **`G` lookup** at its
+  head (six keys — the card's radius, padding and ring, the idle chip's ring, the faces' ring
+  and radius; Lime's arm is today's literals) and one `disp()` spread for the three display
+  sites. The tree is Lime's node for node at all three widths (grid / left / right, Frame 279,
+  toggles, price, cta-row, div, includes, grid2, the small print), on **Scheme 1** (`187:4` on
+  every root) with **no Device override**: `get_variable_defs` returns chip 12 / 11 / 11,
+  display-md 72 / 50 / 38, display-sm 50 / 40 / 30, body-lg 16 / 15 / 15, body-md 14 / 13 / 13,
+  body-sm 12, label-xs 20 / 14 / 12, eyebrow 15 / 12 / 11, list 24 / 19 / 18 — `THEME_RAMP.Grunge`
+  to the token, so there is no `T` table and every size reads `s.*`. Section 1's walker ran once
+  per master (the 768 and 390 halves a second time, compactly, after the first return truncated
+  at 20 KB — keep the walk's per-node fields short when three masters go in one call). The
+  hooks sit above the branches, so the published toggle needed nothing: at `theme=2&live=1`,
+  desktop and 390, a trusted click on the third chip swaps name and price (The Festival Set,
+  1,200) and moves the red fill, a second on the second chip does the same (650), the pill is
+  `<a href="#form">`, `n=0` keeps the card with *No packages yet.*, `n=1` draws no chips, `n=8`
+  wraps them; no page errors or warnings.
+- **Every leaf but seven reads a key Lime's block already reads.** Heading and numeral `s.ac`,
+  name and every Inter string `s.tx`, `[ PRICING ]` / `WHAT'S INCLUDED` / the chips in Body/Chip
+  (`s.chip`, Inter Bold, −6%), the features in `s.ui` at `s.labelXs`, the small print
+  `s.eyebrow` Bold at 1.3, the div and the picked chip's pair unchanged. The seven: the card is
+  `sem/box/1` at a **raw 15** (Lime 50) in a 1px inside **`sem/stroke/2` `#FF0000`**
+  (`s.stroke2`; Lime `stroke1`), padded **32** at 1440 and 768 (Lime 42) and the same 30 / 20 at
+  390; the idle chip's 1px inside ring is the same `stroke/2` (Lime `s.ac`), its type still
+  `s.ac`; the three faces' 2px ring is **`sem/stroke/1`** (Lime `sem/text/2`) at
+  **`radius/control` 8**, which is bound but has no vm key, so `u(8)` is the block's one
+  literal (Lime's `u(13)`). The chips' 4 is `s.radiusChip`, already.
+- **The picked chip is Lime's call a second time.** `toggle-a`'s fill is `#1a1a1a` — the card's
+  own colour — so the frame's two chips read identically here as under Lime, and the picked one
+  stays redrawn in `sem/active` (`s.pillBg` red under `s.activeFg`, the leaked `#15180F`). The
+  canvas pins chip 0, one filled chip where the frame draws two outlines: the intended diff.
+- **The pill is `BookPill`'s Grunge defaults exactly** — red under black type, a black disc round
+  a red arrow — which is the frame's `#df262c` / `#000000` pair to the node; `label={s.pricingCta}`
+  and the JP-036 row are Lime's and carry. Measured **191.3 × 44.3 / 199.9 × 54 / 193.7 × 54**
+  against the masters' 241 × 54 × 0.82 = 197.6 × 44.3, 208 × 54 and 202 × 54 — Anton at 0.75
+  narrower than Stones Crush, the header's own diff.
+- **Rings, not glows — confirmed off every node**: no effect on any of the three masters, no
+  `image 1`, no `Frame 178` seal (layout 1's is that page's alone). Every ring is a plain inside
+  stroke drawn as Lime's inset `boxShadow`, so every stated height holds.
+- **The instance ring is drawn, the pass's open question 5 closed for pricing.** All three
+  masters carry a visible 1px inside `stroke/1` on all four sides and every render samples
+  **38** at row 0, column 0, the last column and the last row; ours samples the same four 38s at
+  all three widths. It is an absolute `pointerEvents: 'none'` span at `inset: 0` last in the
+  block's wrapper — the section root is the nearest positioned ancestor (`position: relative`,
+  its padding `s.pad`), so the span is the root's box and no negative-margin arithmetic is
+  needed — since `grungeRule` gates on `s.v0` and no root flag widens. Lime's desktop foot rule
+  keeps its box (its `u(8)` plus the column's 24 is what holds the frame's 32 foot) and paints
+  `transparent` under Grunge: the overlay owns that row, and two 15% layers would have stacked
+  to 28%. And the seam premise was wrong: pricing follows the **gallery**, not the repertoire,
+  on all three page frames, and the calendar's wrapper follows it, so nothing doubles.
+- **Type**: `disp(size)` is `faced(s, size)` / `facedLh(s, 1)` / `textTransform` behind `grunge`
+  (identity off it) on the heading (`s.dispMd`), the name (`s.dispSm`) and the numeral
+  (`s.dispMd`) — 44.25 / 37.5 / 28.5px in 59 / 50 / 38 line boxes for the two Display/MD sites
+  and 30.75 / 30 / 22.5 in 41 / 40 / 30 for the name, the ramp × 0.75 to the hundredth. The
+  heading is one tone, `s.ac`, the frame's own all-red "PERSONALISED / PLANS & PRICING", so
+  neither positional two-tone rule carries. The seeded "CHOOSE THE SET THAT'S RIGHT FOR YOUR
+  NIGHT" runs 2 / 1 / 2 lines against the frame's typed 2 / 2 / 2.
+- **Measured against the masters' content edges**: desktop card 532.5 × 400.8 at radius 12.3
+  (15 × 0.82) in the `#FF0000` ring, padded 26.2 (32 × 0.82), chips 23.2 tall (28 × 0.82) at
+  106.2, faces 23 (28 × 0.82) at radius 6.6 (8 × 0.82) with the 15% ring, small print at
+  500.5 with the foot 27.2 under it (32 × 0.82 plus the rule); 768 card 688 × 439.7 at 15 in 32,
+  chips 27, name 40, numeral 50 with the unit flush right, faces 28 at 8, foot 56 (`padY`,
+  frame 60); 390 card 346 × 476.5 at 15 in 30 / 20, chips 27 wrapping the seeded third onto a
+  second row, name 30, numeral 38, pill `full` at 54, note stacked under it, foot 44 (frame
+  30). **Named diffs, Lime's**: the seeded packages' two feature rows against the frame's four,
+  so the cards stand 400.8 / 439.7 / 476.5 against 577 × 0.82 / 501 / 512; the desktop card
+  532.5 wide against 640 × 0.82 = 525 (our content width split by the same `flex: 1 1 0`); the
+  root's 40 / 22 side padding against the masters' 30 / 10; the seeded heading's own wrap.
+- **`FIELDS.pricing` has no template-keyed `in` row** (`PRICING_CARD` and `PRICING_CREDIT` are
+  a flat `[1]`, `heading` `[0, 1, 2]`, `quote` `[1]`, `intro` `[2]`), so no `reach.mjs` run was
+  owed.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly pricing
+  arch 1 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
@@ -1083,6 +1161,28 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
   Retro already makes, so Retro's own grain is untouched.
 - *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a fourth
   time.
+- *Check a narrow master's Device mode before trusting `s.*`* (A) — all three pricing nodes,
+  none overridden; all 27 sizes `THEME_RAMP.Grunge`'s.
+- *Every glow is a guess until the node's `effects` confirm it* (A) — no effect on any of the
+  three masters; the card's, the chips', the faces' and the instance's rings are plain strokes.
+- *The page walk is cheap, and it answered the pass's first question* (this plan's Conventions)
+  — turned on open question 5: the page frames' child list said pricing follows the gallery,
+  which no seam sample could have.
+- *The fifth layout-2 block, after the seam: `if (s.lime)` within `Pricing`'s `if (s.v1)`,
+  after `sel` / `t`*, *the frame's selected chip is invisible, so it is redrawn* and *the pill
+  is `BookPill`'s defaults exactly* (Lime 2, pricing) — widened; all three held, the defaults
+  now Grunge's pair.
+- *The instance carries a 1px `sem/stroke/1` inside ring — declined* (Lime 2, pricing) —
+  **not** inherited: Grunge's is visible and drawn, the repertoire's reading (section 4).
+- *`grungeRule` is drawn at the root because the block stands inside its padding* (layout 1,
+  section 7) — the same fact met with the flag closed to `s.v0`: the overlay on the root's box
+  is the branch-side answer.
+- *Every `sem/stroke/2` rule is an inside stroke, drawn as `inset 0 0 0 1px`* (Lime 2, header)
+  — the card and the idle chips.
+- *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — six keys.
+- *A stand-in face is scaled to the frame's glyph size* (C) — heading, name, numeral.
+- *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a fifth
+  time.
 
 ## Open questions
 
@@ -1119,6 +1219,10 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
    render samples it on every edge, 89 where it stacks on the head's ring. The pricing session
    inherits that reading and samples its own seam: its instance ring would stand directly under
    the repertoire's foot hairline, so "stacked bands double it" is a fact to read off the page
-   frame there, not a reason to drop either.
+   frame there, not a reason to drop either. *Closed in section 6:* the ring is **drawn** (an
+   overlay on the root's box, `grungeRule` staying layout 1's), and the seam premise was wrong —
+   on all three page frames the order is repertoire → **gallery** → pricing → `Frame 298`, so the
+   pricing ring meets the gallery's bare page ground above and the calendar wrapper's inset below.
+   Nothing doubles anywhere; the page walk's child list is what settled it, not a sample.
 6. **The footer is shared with layout 1** (`NVAR.footer` is 1), which is structural; section 1's
    comparison against Grunge's own layout-1 footer is what closes the row.
