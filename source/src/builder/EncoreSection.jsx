@@ -18428,25 +18428,50 @@ function Testimonials({ s }) {
     // idle tiles are Scheme 1's olive, and every size is the Lime ramp (no `T`
     // table: `get_variable_defs` returns `THEME_RAMP.Lime` at all three widths).
     // No node carries an effect, so there is no glow and no shadow.
-    if (s.lime) {
+    //
+    // Grunge (964:64634 · 986:13769 · 986:13788) is the same 26 nodes at all
+    // three widths in Static Youth, on Scheme 1 with the card and the picked
+    // tile on Scheme 3 and no Device override — so the block is widened, and
+    // `G` carries what the mode moves: Scheme 3's `box/1` is `#9E1F17` (the
+    // map's red was its `box/2`), lettered white where Lime's is ink; its
+    // `stroke/1` is a **black** 15%; and every radius is a raw 15 (Lime's 30
+    // tiles and 50 card). The idle tiles' `s.box1` and `s.ac` ring, the head's
+    // `s.tx` and the whole ramp are the same keys on both templates.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       // Scheme 3's `box/1` and `stroke/1`, the map block's names for them.
       const lime3 = '#CCFA61'
       const hair = '#15180F26'
+      const G = grunge
+        ? { card: '#9E1F17', ink: s.tx, hair: '#00000026', tileR: 15, cardR: 15, pillFg: s.chips[1].fg }
+        : { card: lime3, ink: s.bg, hair, tileR: 30, cardR: 50, pillFg: s.activeFg }
       // Every stroke is inside, so each is an inset ring: the frame's heights
       // hold, and the picked tile's 2px needs no border arithmetic against its
       // `flex-basis: 0` share (Retro's note below, dodged rather than paid).
       const ring = (w, c) => `inset 0 0 0 ${w}px ${c}`
       const bodyType = (size, lh) => ({ fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls })
-      const dispType = (size, lh) => ({ fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls })
+      // Every display site — the head, the marks, the glyph, the reviewer —
+      // is Stones Crush on the Grunge masters: Anton at 0.75, and uppercase at
+      // its own site (identity off Grunge).
+      const dispType = (size, lh) => ({
+        fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
+        ...(grunge ? { textTransform: 'uppercase' } : null),
+      })
 
       // Body/SM, Display/LG and Body/MD, all `sem/text/2`. No measure: the
       // frame's break after FEEDBACK is typed, and the seeded heading is one
-      // line at every width.
+      // line at every width. Under Grunge the heading keeps its own line break
+      // (`TESTI_HEADING_2`'s, Retro's `pre-wrap` below): Anton at 0.75 breaks
+      // greedily after PEOPLE, where all three masters set the typed FEEDBACK /
+      // FROM PEOPLE WHO BOOKED — and its longer line fits every width.
       const limeHead = (
         <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
           <span style={bodyType(s.bodySm, 1.4)}>&#9998; What clients say</span>
           {!!s.title && (
-            <h2 style={{ margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%' }}>
+            <h2 style={{
+              margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%',
+              ...(grunge ? { whiteSpace: 'pre-wrap' } : null),
+            }}>
               {s.title}
             </h2>
           )}
@@ -18476,8 +18501,8 @@ function Testimonials({ s }) {
                 ...(wide
                   ? { flex: '1 1 0', minHeight: 0, padding: `0 ${u(30)}`, ...(on ? { alignSelf: 'stretch' } : null) }
                   : { flex: on ? '1 0 auto' : 'none', padding: `${u(36)} ${u(30)}`, minWidth: 0 }),
-                background: on ? lime3 : s.box1, color: on ? s.bg : s.tx,
-                boxShadow: on ? ring(2, hair) : ring(1, s.ac), borderRadius: u(30),
+                background: on ? G.card : s.box1, color: on ? G.ink : s.tx,
+                boxShadow: on ? ring(2, G.hair) : ring(1, s.ac), borderRadius: u(G.tileR),
                 overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: s.live ? 'pointer' : undefined,
               }}>
@@ -18495,7 +18520,7 @@ function Testimonials({ s }) {
       const limeBig = (
         <div style={col(u(40), {
           ...(wide ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
-          background: lime3, color: s.bg, boxShadow: ring(1, hair), borderRadius: u(50),
+          background: G.card, color: G.ink, boxShadow: ring(1, G.hair), borderRadius: u(G.cardR),
           padding: u(40), alignItems: 'flex-start',
         })}>
           {q ? (
@@ -18548,8 +18573,12 @@ function Testimonials({ s }) {
               `k` gives the frames' 54 box and `s.list` label; `full` at 390. */}
           {!!s.testiCta && (
             <div style={row('0px', { width: '100%', justifyContent: 'center' })}>
+              {/* Under Grunge the frame binds the type and the disc to
+                  `sem/tag/2/text` — `#0D1F03`, Lime's ink leaked into the mode
+                  (`s.chips[1].fg`) — where `s.activeFg` is the other leak,
+                  `#15180F`. Lime's two keys are the one value. */}
               <BookPill s={s} to={s.bookTo} label={s.testiCta}
-                        bg={s.pillBg} fg={s.activeFg} full={s.mob} />
+                        bg={s.pillBg} fg={G.pillFg} full={s.mob} />
             </div>
           )}
         </div>
