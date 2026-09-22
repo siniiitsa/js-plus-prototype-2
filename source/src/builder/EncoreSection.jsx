@@ -7730,7 +7730,33 @@ function Pricing({ s }) {
     // Lime chip pair, since a live toggle has to show which package is on show.
     // The canvas pins chip 0, so its picture has one filled chip where the
     // frame has two outlines: the intended diff.
-    if (s.lime) {
+    //
+    // Grunge — the same composition a third time (964:64629 at 1440, 986:13764
+    // at 768, 986:13783 at 390), Lime's tree node for node on Scheme 1 with no
+    // Device override, so every size reads `s.*` and `G` names the leaves that
+    // change: the card is `sem/box/1` at a raw 15 in a 1px `sem/stroke/2` ring
+    // (`#FF0000`), padded 32 where Lime's is 42; the idle chip's ring is the
+    // same `stroke/2`; the faces' 2px ring is `sem/stroke/1` at `radius/control`
+    // 8. No effect, grain or seal on any master. The picked chip is the same
+    // call as Lime's — `toggle-a`'s fill is `#1a1a1a` on a `#1a1a1a` card,
+    // invisible again — and the instance's own 1px `stroke/1` ring is DRAWN
+    // (visible on all four sides at every width, and the section stands
+    // between the gallery's bare ground and the calendar's wrapper, so no seam
+    // doubles): an overlay on the root's box, since `grungeRule` is layout 1's.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const G = grunge ? {
+        cardR: u(15), cardPad: s.mob ? '30px 20px' : u(32), ring: `inset 0 0 0 1px ${s.stroke2}`,
+        chipRing: `inset 0 0 0 1px ${s.stroke2}`, faceRing: `2px solid ${s.stroke1}`, faceR: u(8),
+      } : {
+        cardR: u(50), cardPad: s.mob ? '30px 20px' : u(42), ring: `inset 0 0 0 1px ${s.stroke1}`,
+        chipRing: `inset 0 0 0 1px ${s.ac}`, faceRing: `2px solid ${s.tx}`, faceR: u(13),
+      }
+      // The display sites, `faced` and uppercase under Grunge (identity off it).
+      const disp = (size) => ({
+        fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, 1),
+        letterSpacing: s.dls, textTransform: grunge ? 'uppercase' : undefined,
+      })
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
@@ -7751,14 +7777,12 @@ function Pricing({ s }) {
           {/* Display/MD at lh 1. The frame's break after "Personalised" is a
               typed one; the heading is the artist's, so it wraps on the
               column. */}
-          <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
-            letterSpacing: s.dls, color: s.ac,
-          }}>{s.title}</h2>
+          <h2 style={{ margin: 0, ...disp(s.dispMd), color: s.ac }}>{s.title}</h2>
           {/* The quote over its credit row, Retro's block and its drop rules.
               All three masters draw the row at the same 28px faces, 12 gap
               and Body/SM. Each face is a 2px `border/thin` ring in
-              `sem/text/2` on a `sem/box/1` ground at `radius/control`. */}
+              `sem/text/2` (`sem/stroke/1` under Grunge) on a `sem/box/1`
+              ground at `radius/control`. */}
           {(!!s.pricingQuote || hasCredit) && (
             <div style={col(u(16), { paddingTop: u(12), width: '100%', alignItems: 'flex-start' })}>
               {!!s.pricingQuote && (
@@ -7771,7 +7795,7 @@ function Pricing({ s }) {
                       {faces.map((src, i) => (
                         <span key={i} style={{
                           width: u(28), height: u(28), flex: 'none', overflow: 'hidden',
-                          border: `2px solid ${s.tx}`, borderRadius: u(13),
+                          border: G.faceRing, borderRadius: G.faceR,
                           background: s.box1,
                           marginRight: i < faces.length - 1 ? u(-8) : 0,
                         }}><Photo s={s} src={src} /></span>
@@ -7810,25 +7834,21 @@ function Pricing({ s }) {
                       background: i === sel ? s.pillBg : 'transparent',
                       color: i === sel ? s.activeFg : s.ac,
                       // The 1px `sem/stroke/2` rule, stroked inside.
-                      boxShadow: i === sel ? 'none' : `inset 0 0 0 1px ${s.ac}`,
+                      boxShadow: i === sel ? 'none' : G.chipRing,
                       cursor: s.live ? 'pointer' : undefined,
                     })}
                   >{p.name}</span>
                 ))}
               </div>
             )}
-            <span style={{
-              fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
-              letterSpacing: s.dls, color: s.tx,
-            }}>{t.name}</span>
+            <span style={{ ...disp(s.dispSm), color: s.tx }}>{t.name}</span>
             {!!t.blurb && <p style={body(s.bodyMd, 1.5, { margin: 0, color: s.tx })}>{t.blurb}</p>}
             {/* Bottom-aligned at 6. The narrow masters FILL the numeral, which
                 stands the unit at the card's right edge; 1440 hugs it. */}
             <span style={row(u(6), { alignItems: 'flex-end', alignSelf: 'stretch' })}>
               {!!symbol && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{symbol}</span>}
               <span style={{
-                fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
-                letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
+                ...disp(s.dispMd), color: s.ac, whiteSpace: 'nowrap',
                 flex: desk ? 'none' : '1 1 auto',
               }}>{amount}</span>
               {!!s.tierUnit && (
@@ -7894,9 +7914,9 @@ function Pricing({ s }) {
             <div style={{
               ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
               ...col(u(30), { alignItems: 'flex-start' }),
-              background: s.box1, borderRadius: u(50),
-              boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
-              padding: s.mob ? '30px 20px' : u(42),
+              background: s.box1, borderRadius: G.cardR,
+              boxShadow: G.ring,
+              padding: G.cardPad,
             }}>{plan}</div>
           </div>
           {!!s.pricingSub && (
@@ -7907,11 +7927,24 @@ function Pricing({ s }) {
               between this section and the next, 32 under the small print
               (the column's 24 plus 8). It bleeds to the page edges and stands
               in for the root's bottom `padY`, so the gap below it is the next
-              section's own top inset. */}
+              section's own top inset. Under Grunge the ring overlay below owns
+              that row (two 15% layers would stack to 28%), so the span keeps
+              only its box — the frame's 32 foot. */}
           {desk && (
             <span style={{
-              display: 'block', height: '1px', background: s.stroke1, flex: 'none',
+              display: 'block', height: '1px', background: grunge ? 'transparent' : s.stroke1, flex: 'none',
               margin: `${u(8)} calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`,
+            }} />
+          )}
+          {/* Grunge's instance ring: 1px of `sem/stroke/1` inside the frame's
+              own box on all four sides, at all three widths (the render samples
+              38 on every edge). The root is the nearest positioned ancestor,
+              so `inset: 0` is its box; `pointerEvents` off, or the published
+              chips would click the overlay (the repertoire's sheet ring). */}
+          {grunge && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
             }} />
           )}
         </div>
