@@ -773,11 +773,15 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   header's own layouts) are untouched by a bio that now draws a seal. CLAUDE.md's "prints them in
   layouts 2 and 4 and Lime's 3" owes "and Grunge's" in the sweep.
 - **No live control**, Lime's note: `live=1` digests byte-identical to the canvas at all three
-  widths.
+  widths. `&noimage=1` holds: the white 64px initials on `s.soft`, under the screened grain,
+  which lifts the empty well to a mid grey — the frame's own layer order, over a photograph or
+  not.
 - **Verified in the builder**: `scripts/page-check.mjs Grunge 2` — four modal cards; card 3's
   published 1440 page stands the bio and the calendar in one row at top 738, media under the bio
   at 1761; every nav link and fragment anchor scrolls to its id; no errors or warnings; the 390
-  burger opens 1 → 11 links, no overflow.
+  burger opens 1 → 11 links, no overflow. The column widths were not re-read: `pageRows`,
+  `arrangeRows` and `COLUMN_SPLIT` are untouched since section 1 walked the row, and the
+  harness's `&column=left` renders the bio at the 684 it is given.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly bio arch 2
   at three widths on both surfaces.
 
