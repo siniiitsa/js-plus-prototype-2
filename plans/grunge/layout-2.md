@@ -546,6 +546,46 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **The page walk is cheap, and it answered the pass's first question** (Lime 2's bullet): one
   `use_figma` read per page frame plus the multiset comparison. Re-run it rather than re-deriving
   a section by eye; the script's shape is in this plan's planning session and Lime's.
+- **The node walker, kept** (section 2 rewrote section 1's from nothing — a cleared context has
+  no transcript). One `use_figma` call per master, `getNodeByIdAsync` on the instance id with no
+  page switch; it returns every node's box relative to the master, fills (hex, opacity, blend,
+  image hash, `scaleMode`, `imageTransform`), strokes with weight and align, effects, radius,
+  auto-layout paddings and gaps, and each text node's styled segments (face, size, line height,
+  ink, `textCase`). Everything a session reads off a frame is in one return:
+
+  ```js
+  const root = await figma.getNodeByIdAsync('964:64619')
+  const hex = (c) => '#' + [c.r, c.g, c.b].map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('')
+  const paint = (p) => {
+    const o = { t: p.type, vis: p.visible, op: +(p.opacity ?? 1).toFixed(3), bm: p.blendMode }
+    if (p.type === 'SOLID') o.c = hex(p.color)
+    if (p.type === 'IMAGE') { o.hash = (p.imageHash || '').slice(0, 8); o.scale = p.scaleMode; o.tr = p.imageTransform }
+    if (p.type?.startsWith('GRADIENT')) o.stops = p.gradientStops.map((s) => hex(s.color) + '@' + s.color.a.toFixed(2) + '/' + s.position.toFixed(2))
+    return o
+  }
+  const rx = root.absoluteBoundingBox.x, ry = root.absoluteBoundingBox.y, out = []
+  const walk = (n, d) => {
+    const b = n.absoluteBoundingBox || { x: 0, y: 0, width: 0, height: 0 }
+    const r = { d, id: n.id.split(';').pop(), name: n.name.slice(0, 28), type: n.type, x: +(b.x - rx).toFixed(2), y: +(b.y - ry).toFixed(2), w: +b.width.toFixed(2), h: +b.height.toFixed(2), vis: n.visible }
+    if (n.opacity !== undefined && n.opacity !== 1) r.op = n.opacity
+    if (n.blendMode && n.blendMode !== 'PASS_THROUGH' && n.blendMode !== 'NORMAL') r.bm = n.blendMode
+    if ('fills' in n && Array.isArray(n.fills) && n.fills.length) r.fills = n.fills.map(paint)
+    if ('strokes' in n && n.strokes.length) { r.strokes = n.strokes.map(paint); r.sw = n.strokeWeight; r.sa = n.strokeAlign }
+    if ('effects' in n && n.effects.length) r.fx = n.effects.map((e) => ({ t: e.type, vis: e.visible, c: e.color ? hex(e.color) + '@' + e.color.a.toFixed(2) : null, off: e.offset, r: e.radius, sp: e.spread }))
+    if ('cornerRadius' in n && n.cornerRadius !== 0) r.rad = typeof n.cornerRadius === 'number' ? +n.cornerRadius.toFixed(2) : [n.topLeftRadius, n.topRightRadius, n.bottomRightRadius, n.bottomLeftRadius].map((v) => +v.toFixed(2))
+    if ('layoutMode' in n && n.layoutMode !== 'NONE') r.lay = [n.layoutMode, n.itemSpacing, n.paddingTop, n.paddingRight, n.paddingBottom, n.paddingLeft, n.primaryAxisAlignItems, n.counterAxisAlignItems, n.layoutWrap].join('/')
+    if (n.type === 'TEXT') r.seg = n.getStyledTextSegments(['fontName', 'fontSize', 'lineHeight', 'fills', 'textCase']).map((s) => ({ f: s.fontName.family + '/' + s.fontName.style, sz: s.fontSize, lh: s.lineHeight.unit === 'PERCENT' ? s.lineHeight.value + '%' : s.lineHeight.unit === 'PIXELS' ? s.lineHeight.value + 'px' : 'auto', c: s.fills[0]?.type === 'SOLID' ? hex(s.fills[0].color) : '?', tc: s.textCase, ch: s.characters.slice(0, 16) }))
+    if (n.type === 'INSTANCE' && n.explicitVariableModes) r.modes = Object.values(n.explicitVariableModes)
+    if (n.clipsContent === true) r.clip = 1
+    out.push(r)
+    if ('children' in n && d < 9) for (const c of n.children) walk(c, d + 1)
+  }
+  walk(root, 0)
+  return out
+  ```
+
+  Read it as arithmetic first (a chip's height less twice its padding is its line box; a caption
+  card's height pins its title size), and the `modes` on the root are `[Device, Scheme]` ids.
 
 ### Settled in section 1 (the header)
 
