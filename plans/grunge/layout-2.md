@@ -140,7 +140,9 @@ plan dropped it for the same reason one pass earlier.
   above, the editorial numbered list. 297 / 296 / list: 56·86 / 60·60 / x 739 at 1440, 30·60 / 30·60
   / y 792 at 768, 10·40 / 20·40 / **y 722** at 390 (Lime's is 736: the 390 heading box is 251 × 82
   here and the fan is stated at y 32 inside 296, overlapping it — read that master before trusting
-  either number). Fit the whole wrapper.
+  either number). Fit the whole wrapper. *Confirmed in section 3:* both numbers are the one
+  arithmetic — the heading is two lines at 46 × 0.89 = 82, Frame 296's gap is −50, so the fan's
+  32 is 82 − 50 and the list's 722 is 40 + (82 − 50 + 600) + 50; ours lands at 721.9.
 - **calendar**'s `Frame 298` only insets the instance: 56·56, 30·56 and 10·40. Fit the instance.
 
 ## The sections
@@ -154,7 +156,7 @@ for the block); it is the gate this session widens.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:64618` | 1440 × 900 | `986:13753` | 768 × 1024 | `986:13772` | 390 × 886 | `964:64580` / `986:11848` / `986:11867` | `964:64637` / `984:34438` / `984:34636` | `if (s.lime) { … return }` at the head of `HeaderV1` | done `2478039` |
 | 2 | `bio` | `964:64619` | 1440 × 760 | `986:13754` | 768 × 1138.8 | `986:13773` | 390 × 881.3 | `964:64581` / `986:11849` / `986:11868` | `964:64638` / `984:34877` / `984:34834` | `if (s.v1 && s.lime)` ahead of `Bio`'s `if (s.v1)` | done `0cc99f0` |
-| 3 | `media` | `964:64620` *(Section; fan `964:64624` 629 × 441, list `964:64625` 529 × 673, heading `964:64623`)* | 1440 × 965 | `986:13755` *(Frame 299; `986:13759` + `986:13760`)* | 768 × 1568 | `986:13774` *(Frame 299; `986:13778` + `986:13779`)* | 390 × 1438 | `964:64582` / `986:11850` / `986:11869` | `964:64639` / `984:35122` / `984:35396` | `if (s.lime)` inside `Media`'s `if (s.v1)`, after `nowArt` | — |
+| 3 | `media` | `964:64620` *(Section; fan `964:64624` 629 × 441, list `964:64625` 529 × 673, heading `964:64623`)* | 1440 × 965 | `986:13755` *(Frame 299; `986:13759` + `986:13760`)* | 768 × 1568 | `986:13774` *(Frame 299; `986:13778` + `986:13779`)* | 390 × 1438 | `964:64582` / `986:11850` / `986:11869` | `964:64639` / `984:35122` / `984:35396` | `if (s.lime)` inside `Media`'s `if (s.v1)`, after `nowArt` | done `334f580` |
 | 4 | `repertoire` | `964:64627` | 1440 × 792 | `986:13762` | 768 × 792 | `986:13781` | 390 × 594 | `964:64589` / `986:11857` / `986:11876` | `964:64646` / `984:35876` / `984:35961` | `if (s.lime)` inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | — |
 | 5 | `gallery` | `964:64628` | 1440 × 675 | `986:13763` | 768 × 468 | `986:13782` | 390 × 364 | `964:64590` / `986:11858` / `986:11877` | `964:64647` / `984:36046` / `984:36070` | **no block** — seven `s.lime` ternaries and one `s.lime &&` overlay through `Gallery`'s `if (s.v1)` | — |
 | 6 | `pricing` | `964:64629` | 1440 × 708 | `986:13764` | 768 × 923 | `986:13783` | 390 × 871 | `964:64591` / `986:11859` / `986:11878` | `964:64648` / `986:10425` / `986:10492` | `if (s.lime)` inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | — |
@@ -767,6 +769,68 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   all four bios and `who.location` layouts 1–3 — the hints' own table. Nothing in `FIELDS`
   moved.
 
+### Settled in section 3 (the media player)
+
+- **No Grunge block, for the third time in this pass: Lime's `if (s.lime)` inside `Media`'s
+  `if (s.v1)`, after `nowArt`, is `(s.lime || s.grunge)`**, `const grunge = s.grunge` naming the
+  deltas at nine sites. The tree is Lime's node for node at all three widths — Section / Frame
+  297 / Frame 296 / the two instances, the fan's five cards at Retro's offsets, sizes, angles and
+  opacities — on **Scheme 1** with Frame 297 on **Scheme 2** and **no Device override**
+  (`get_variable_defs`: display-lg 130 / 81 / 46, list 24 / 19 / 18, title 36 / 28 / 26, chip
+  12 / 11 / 11, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12), so every ramp size reads
+  `s.*` and there is no `tk` table beyond Lime's Display/Title. Section 1's walker ran once per
+  master before anything was written. The hooks sit above the branches, so the published player
+  needed nothing: at `theme=2&live=1`, desktop and 390, the outermost card clicked on its visible
+  edge deals Echo & The Floor to the centre and plays it, a row plays and a second click pauses
+  it (the row's glyph goes pause → play), back from track one wraps to Roomtone, and the centre
+  card, the bar's title and the row's glyph follow together. No page errors.
+- **Scheme 2 is three literals, `G2`, the plan's first trap met**: `sem/bg` `#171716` on the
+  panel (Lime reads `s.box1`, which is `#1A1A1A` here), `box/1` `#000000` on the fan cards, the
+  bar and its inner pill (Lime `s.box2`; the value is `s.bg`'s and is written as the scheme's,
+  layout 1's header rule), `box/2` `#222222` on every artwork well (Lime's `dusk` `#43523B`;
+  layout 1's card fill). `stroke1` and the Featured chip's `s.ac` / `s.tx` pair read the same
+  keys on both templates and needed nothing.
+- **Rings, not glows — confirmed off every node**: no effect on any of the three masters (the
+  panel, the band, the cards and the bar all `effects: []`). The bar's ring is a 1px inside
+  `sem/stroke/2` (`#FF0000`, `s.stroke2`) and its inner shadow is gone, so the overlay is the
+  ring alone; the cards keep their 1px inside `stroke1`; the rows' rule is **top-only at all
+  three widths** (`strokeTopWeight` 1, the other three 0 — the desktop instance's rows read via
+  `findOne` after a constructed `I964:64625;690:3710` id returned null; `figma-frame-reading`'s
+  route). Radii are the mode's own: the panel a raw **15** at desktop and 30 narrow (Lime 50 /
+  30), the cards **8** (Lime 13), the bar **92** (a full capsule on 108 either way, stated), the
+  wells 4 and the sleeve 64 unchanged. The 1440 Section's `#FF0000` stroke is `visible: false`
+  and not drawn — Lime's hidden 5px lime top stroke, the same class.
+- **Type**: the heading (`s.dispLg`, lh 0.89), the card titles (`s.list`, lh 1.2) and
+  `titleType` (Display/Title, lh 1.1 — the bar's and the rows') are `faced` / `facedLh` and
+  uppercase through one `disp` spread. The heading is **one tone per width** — white at 1440,
+  `s.ac` at 768 and 390, Lime's flip on the same keys — so layout 1's two-tone block-line rule
+  does not carry and Lime's `maxWidth` cap does. **The 390 master breaks after "your"** where
+  Lime's breaks after "worth": its box is the frame's own 251 at 46, which holds "FIVE WORTH
+  YOUR" (`antonEms` 6.43 × 0.75 × 46 = 222) and not "EAR.", so under Grunge the 390 cap is
+  `251px`; the desktop cap stays Lime's 4.6em, whose Bebas number lands between Anton's "FIVE
+  WORTH" 4.31 and "…YOUR" 6.43 and so still breaks after "worth" — a coincidence, named in the
+  comment. Line boxes 95.23 / 72.09 / 40.94 land the masters' 232 / 72 / 82 on 2 / 1 / 2 lines.
+- **The 390 fan band does not clip where the 768 and 1440 bands do** (`clipsContent` false on
+  `879:10429`), but Frame 297 clips at 370, and Lime's bleed of the band over the panel's 20
+  padding is exactly that clip; nothing moves.
+- **Measured against the masters' content edges**: desktop panel 650.3 (793 × 0.82) at radius
+  12.3, heading 190.4 (232 × 0.82) at 80.25px on two lines, fan band from 239.6, bar at 512.5
+  (625 × 0.82) and 88.6 tall at radius 75.4 in the `#FF0000` ring, list at x 606 with rows
+  103.1 (125.8 × 0.82) under a 36.2 counter, bar and row titles 22.125px (36 × 0.82 × 0.75) in
+  a 32.45 line box, card titles 15px in 24; 768 panel 1448.1 (1448), heading 72.1 on one line
+  in red, fan at 142.1 (142), bar at 634.1 (634) at radius 92, list at 792.1 (792), rows 110.6
+  (110.6), counter 43; 390 panel 1357.9 (1358), heading 251 × 81.9 on two lines, fan at 71.9
+  (72), bar at 563.9 (564), list at 721.9 (722), rows 110.6. Eleven `#222222` wells (five
+  cards, five rows, the sleeve). **Named diffs, Lime's**: the root's 40 / 22 side padding
+  against the masters' 30 / 10; the narrow canvases 688 / 346 against 708 / 370, a clip on the
+  centred fan; the harness's neutral track art against the frame's covers; Anton at 0.75
+  against Stones Crush.
+- **`FIELDS.media` moves nothing**: `cta` is `{ Lime: [0], Grunge: [0], '*': [] }` and layout 2
+  draws no pill (the walk has none), `soundcloud` reaches layout 1 alone, and `reach.mjs`
+  carries no media probe, so no run was owed.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly media arch
+  1 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
@@ -820,6 +884,25 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
 - *A stand-in face is scaled to the frame's glyph size* (C) — every label in the block through
   `labelStyle` / `faced`; `facedLh` passed where a caller's `style` would override the line box.
 - *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero.
+- *Check a narrow master's Device mode before trusting `s.*`* (A) — all three media nodes, none
+  overridden.
+- *Every glow is a guess until the node's `effects` confirm it* (A) — the bar's glow is gone
+  from the node; every ring on the section is a plain stroke.
+- *`get_variable_defs` mixes nested schemes; the fills settle which node is on which* (A) — the
+  panel's `#171716` beside the instances' `#000000` cards, read off the fills.
+- *`getNodeByIdAsync` on the instance id works without a page switch; walk down with `findOne`*
+  (memory: `figma-frame-reading`) — the desktop rows' per-side strokes, after the constructed id
+  returned null.
+- *The third layout-2 block: `if (s.lime)` within `Media`'s `if (s.v1)`, after `nowArt`*, *the
+  featured tag sits at the frame's 26.5 / 26*, *row rules are top-only* and *`tilt()` is
+  Retro's alone, so a Lime fan writes its angle out* (Lime 2, media) — widened; all four held.
+- *Read a hand-fanned stack's states off the frame; do not ramp them* (Retro 2, media) — the
+  same five states, shared.
+- *Scheme 2 is a literal, not `s.box1`* (this plan's Conventions) — the first section to meet
+  it: three literals.
+- *A stand-in face is scaled to the frame's glyph size* (C) — heading, card, bar and row titles.
+- *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a second
+  time.
 
 ## Open questions
 
