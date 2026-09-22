@@ -3,7 +3,9 @@
 // the dev server's harness, so this one walks the editor of a BUILT app: per
 // theme, the picker's thumbnail, the big card, the setup modal's first card,
 // then the Desktop / Tablet / Mobile tabs, digesting every section root on the
-// canvas at each.
+// canvas at each. `CARD=<n>` picks the setup modal's 0-based card instead of the
+// first — the proof for a layout pass, whose seeded page is arch 0 and so
+// cannot move (CARD=1 walks every theme's layout-2 page).
 //
 //   python3 -m http.server 8931 --bind 127.0.0.1        # at the repo root
 //   node scripts/build-digest.mjs old 'http://127.0.0.1:8931/index.html?v=old'   # BEFORE the cp
@@ -19,6 +21,7 @@ import path from 'node:path'
 import { headlessShell } from './headless-shell.mjs'
 
 const [label, url] = process.argv.slice(2)
+const card = Number(process.env.CARD || 0)
 if (!label || !url) { console.error('usage: node scripts/build-digest.mjs <label> <url>'); process.exit(1) }
 const dir = path.join(process.env.OUT || path.join(os.tmpdir(), 'encore-build-digest'), label)
 fs.mkdirSync(dir, { recursive: true })
@@ -59,7 +62,9 @@ for (let t = 0; ; t++) {
   await thumbs[t].click()
   await (await page.waitForSelector(`button[aria-label^="Open the editor with the ${name} template"]`)).click()
   await page.waitForSelector('[role=dialog] button[aria-pressed]')
-  modal.push(`${t} ${name}: ${(await page.$$('[role=dialog] button[aria-pressed]')).length} cards`)
+  const cards = await page.$$('[role=dialog] button[aria-pressed]')
+  modal.push(`${t} ${name}: ${cards.length} cards`)
+  if (card) await cards[Math.min(card, cards.length - 1)].click()
   await (await byText(page, 'Use this header', 'button')).click()
   await wait(500)
   for (const tab of ['Desktop', 'Tablet', 'Mobile']) {

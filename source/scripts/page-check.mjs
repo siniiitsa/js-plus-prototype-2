@@ -5,11 +5,15 @@
 //
 //   node scripts/page-check.mjs [template=Grunge] [cards=0,1,2,3]
 //
-// Card 0 gets the full walk: every nav link, Book Now, the media player, a
-// generic control probe per section, the enquiry form's mailto, the burger at
-// 390, and a 180px seam clip on the top of every section at 1440 and 390. The
-// other cards are only proved to render and publish: section ids, console
-// errors and one full-page picture. Writes $OUT/<template>/ and prints a JSON
+// The FIRST card in the list gets the full walk (so `Grunge 1,0,2,3` walks
+// card 2): every nav link, Book Now, every other fragment link on the page,
+// the media player, a generic control probe per section, the enquiry form's
+// refused and filled submits, the footer, a tablet ↔ mobile resize walk, the
+// burger at 390, and a 180px seam clip on the top of every section at 1440
+// and 390. The other cards are only proved to render and publish: section
+// ids, console errors and one full-page picture. Console warnings are kept
+// apart from errors, unfiltered — React's text is a `%s` format string, so a
+// filter on a word finds nothing (plans/grunge/layout-2.md, open question 1). Writes $OUT/<template>/ and prints a JSON
 // report. Clicks are puppeteer's trusted CDP clicks, which is what gets past
 // the popup blocker and starts audio.
 import puppeteer from 'puppeteer-core'
@@ -36,11 +40,14 @@ const byText = async (page, text, scope = 'button') => {
 }
 
 // Picker → editor → setup modal's card → Publish → Open. Returns the popup.
-async function publish(card, errors) {
+async function publish(card, errors, warnings = []) {
   const page = await browser.newPage()
   await page.setViewport({ width: 1440, height: 900 })
   page.on('pageerror', (e) => errors.push(`editor: ${e.message}`))
-  page.on('console', (m) => m.type() === 'error' && errors.push(`editor console: ${m.text()}`))
+  page.on('console', (m) => {
+    if (m.type() === 'error') errors.push(`editor console: ${m.text()}`)
+    if (m.type() === 'warn') warnings.push(`editor: ${m.text()} ${m.args().length > 1 ? '(args follow the format string)' : ''}`.trim())
+  })
   await page.goto(base, { waitUntil: 'load' })
   await (await page.waitForSelector(`button[aria-label="${template}"][aria-pressed]`)).click()
   await (await page.waitForSelector(`button[aria-label^="Open the editor with the ${template} template"]`)).click()
@@ -56,7 +63,10 @@ async function publish(card, errors) {
   await (await byText(page, 'Open')).click()
   const popup = await popupP
   popup.on('pageerror', (e) => errors.push(`popup: ${e.message}`))
-  popup.on('console', (m) => m.type() === 'error' && errors.push(`popup console: ${m.text()}`))
+  popup.on('console', (m) => {
+    if (m.type() === 'error') errors.push(`popup console: ${m.text()}`)
+    if (m.type() === 'warn') warnings.push(`popup: ${m.text()}`)
+  })
   await wait(1200)
   return { page, popup, cards: cards.length }
 }
@@ -86,11 +96,12 @@ async function seams(popup, width) {
 
 const report = { template, cards: {} }
 
-for (const card of cardsArg.split(',').map(Number)) {
-  const errors = []
-  const r = (report.cards[card] = { errors })
+const cardList = cardsArg.split(',').map(Number)
+for (const card of cardList) {
+  const errors = [], warnings = []
+  const r = (report.cards[card] = { errors, warnings })
   let ctx
-  try { ctx = await publish(card, errors) } catch (e) { r.failed = e.message; continue }
+  try { ctx = await publish(card, errors, warnings) } catch (e) { r.failed = e.message; continue }
   const { page, popup } = ctx
   r.modalCards = ctx.cards
   r.title = await popup.title()
@@ -98,7 +109,7 @@ for (const card of cardsArg.split(',').map(Number)) {
 
   await resize(popup, 1440)
 
-  if (card !== 0) {
+  if (card !== cardList[0]) {
     r.sections = (await sections(popup)).map((s) => s.id)
     await popup.screenshot({ path: path.join(dir, `card${card}_1440.jpg`), type: 'jpeg', quality: 60, fullPage: true })
     await resize(popup, 390)
@@ -125,6 +136,19 @@ for (const card of cardsArg.split(',').map(Number)) {
     const label = await a.evaluate((el) => `${el.textContent.trim()} → ${el.getAttribute('href')}`)
     await a.click(); await wait(150)
     r.nav.push({ label, scrolled: await scrolled() })
+  }
+
+  // Every other fragment link on the page: the section pills, the calendar's
+  // flow. Each should scroll to its id.
+  r.anchors = []
+  const an = await popup.$$eval('a[href^="#"]', (as) => as.filter((a) => !a.closest('#header, #footer')).length)
+  for (let i = 0; i < an; i++) {
+    const a = (await popup.$$('a[href^="#"]')).filter(Boolean)
+    const h = (await Promise.all(a.map((el) => el.evaluate((x) => !x.closest('#header, #footer'))))).map((ok, k) => ok ? a[k] : null).filter(Boolean)[i]
+    const label = await h.evaluate((el) => `${el.closest('[id]')?.id}: ${el.textContent.trim().slice(0, 24)} → ${el.getAttribute('href')}`)
+    await h.evaluate((el) => el.scrollIntoView({ block: 'center' })); await scrolled()
+    await h.click(); await wait(150)
+    r.anchors.push({ label, scrolled: await scrolled() })
   }
 
   // The media player: one trusted click on a track, then what the element says.
@@ -172,6 +196,15 @@ for (const card of cardsArg.split(',').map(Number)) {
     const submit = () => popup.$('#form a[href^="mailto:"], #form a:not([href])')
     const inputs = await popup.$$('#form input, #form textarea')
     if (!inputs.length) return 'no inputs'
+    // Refused: click the submit with every box empty and read the boxes' rings.
+    const rings = () => popup.$$eval('#form input, #form textarea', (els) => els.map((el) => {
+      const cs = getComputedStyle(el)
+      return `${Math.round(el.getBoundingClientRect().height)} ${cs.boxShadow}`
+    }))
+    const ringsBefore = await rings()
+    const s0 = await submit()
+    if (s0) { await s0.evaluate((el) => el.scrollIntoView({ block: 'center' })); await s0.click(); await wait(200) }
+    const ringsRefused = await rings()
     const hrefBefore = await popup.$$eval('#form a', (as) => as.map((a) => a.getAttribute('href')))
     for (const i of inputs) {
       const kind = await i.evaluate((el) => el.type)
@@ -181,7 +214,7 @@ for (const card of cardsArg.split(',').map(Number)) {
     const hrefs = await popup.$$eval('#form a', (as) => as.map((a) => a.getAttribute('href')).filter((h) => h?.startsWith('mailto:')))
     const s = await submit()
     if (s) { await s.evaluate((el) => el.scrollIntoView({ block: 'center' })); await s.click(); await wait(300) }
-    return { inputs: inputs.length, hrefBefore, mailto: hrefs[0]?.slice(0, 200) ?? null, sentText: await popup.$eval('#form', (el) => el.innerText.slice(0, 200)) }
+    return { inputs: inputs.length, ringsBefore, ringsRefused, hrefBefore, mailto: hrefs[0]?.slice(0, 200) ?? null, sentText: await popup.$eval('#form', (el) => el.innerText.slice(0, 200)) }
   })()
 
   // The footer's links and pill.
@@ -194,10 +227,16 @@ for (const card of cardsArg.split(',').map(Number)) {
     await a.click(); await wait(150)
     r.footer.push({ label, scrolled: await scrolled() })
   }
+  // Resize walk for React's style-collision warnings: they fire on a re-render
+  // that drops a longhand, and only a tablet ↔ mobile step shows every one
+  // (plans/grunge/layout-2.md, open question 1).
+  const w0 = warnings.length
+  for (const w of [768, 390, 768, 1440, 390, 1440]) await resize(popup, w)
+  r.resizeWarnings = warnings.slice(w0)
   await popup.close(); await page.close()
 
   // 390 in a fresh tab: NavMenu's open state survives a resize.
-  const m = await publish(card, errors)
+  const m = await publish(card, errors, warnings)
   await resize(m.popup, 390)
   r.sections390 = await seams(m.popup, 390)
   r.overflow390 = await m.popup.evaluate(() => document.documentElement.scrollWidth - innerWidth)

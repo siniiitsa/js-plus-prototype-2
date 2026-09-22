@@ -15497,10 +15497,39 @@ function EventsMap({ s }) {
     // #CCFA61, ink `s.bg`, a 15% ink hairline); the rows stand on the page in
     // Scheme 1 (`s.box1`, `s.stroke1`); the map panel is **Scheme 2**, whose
     // `box/1` is Scheme 1's `s.box2`. No node carries an effect.
-    if (s.lime) {
-      const lime3 = '#CCFA61' // Scheme 3 sem/box/1 — the travel card
-      const hair = '#15180F26' // Scheme 3 sem/stroke/1, 15% ink
-      const ink = s.bg // Scheme 3 sem/text/1 and /2
+    //
+    // Grunge (964:64632 1440 × 858, 986:13767 768 × 823, 986:13786 390 ×
+    // 1286) is the same tree node for node at all three widths, on the same
+    // three schemes, so it widens this block through `G` (Lime's arm is the
+    // literals it had). What moves: Scheme 3 is red here — the travel card
+    // and the zoom buttons are its `box/2` `#F52E34` under **white** type, in
+    // a **black** 15% hairline — so Lime's one `ink` splits in two: the
+    // card's type and everything standing on the accent (the ring labels, the
+    // centre pin's ring and glyph, and so the lit pin's ring) is `ink`, which
+    // is `s.tx` here, while the Venue Link pill and Get Directions read `s.bg`
+    // directly, the frame's `#000000` on both (Lime's `ink` is `s.bg` too).
+    // The panel and the map container are Scheme 1's `#1A1A1A` (`s.box1`;
+    // `s.box2` is `#383838` here), the status pill is
+    // `#000000`, the radii are a raw 15 (card, rows, panel) and 8 (the map
+    // container) at every width, and the viewport's derived shape follows the
+    // shorter left column (588 × 512, 318 × 520). The raster is the same
+    // `e089bd11` and its render samples (42, 44, 29) between the roads, so
+    // Retro's plate stands; the display strings are faced and uppercase.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const G = grunge ? {
+        card: '#F52E34', hair: '#00000026', ink: s.tx, zoom: '#F52E34',
+        panel: s.box1, status: s.bg, r: u(15), panelR: u(15), mapR: u(8),
+        aspect: desk ? '588 / 512' : tab ? '318 / 520' : '346 / 298',
+      } : {
+        card: '#CCFA61', hair: '#15180F26', ink: s.bg, zoom: '#D9FF7F',
+        panel: s.box2, status: s.box1, r: u(50), panelR: u(s.mob ? 30 : 50),
+        mapR: desk ? u(13) : tab ? '42px' : '25px',
+        aspect: desk ? '588 / 519' : tab ? '318 / 518' : '346 / 298',
+      }
+      const lime3 = G.card // Scheme 3 sem/box/1 (Lime) or /2 (Grunge) — the travel card
+      const hair = G.hair // Scheme 3 sem/stroke/1, 15% ink
+      const ink = G.ink // Scheme 3 sem/text/1 and /2
       // The raster's own ground. The frame's texture (`e089bd11`) is a dark
       // street map; ours is `mapSrc`, the light Manchester raster layout 1 and
       // Retro's layout 2 share, so Retro's screened invert stands in for it.
@@ -15512,8 +15541,10 @@ function EventsMap({ s }) {
       // Display/Title is the frames' own 36 / 28 / 26.
       const titleSize = desk ? u(36) : tab ? '28px' : '26px'
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
+      // Faced and uppercase under Grunge; identity off it.
       const display = (size, lh) => ({
-        margin: 0, fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls,
+        margin: 0, fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
+        ...(grunge ? { textTransform: 'uppercase' } : null),
       })
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -15526,7 +15557,7 @@ function EventsMap({ s }) {
       const lcard = (
         <div style={col(u(18), {
           background: lime3, color: ink, boxShadow: ring(hair),
-          borderRadius: u(50), padding: `${u(18)} ${u(20)}`,
+          borderRadius: G.r, padding: `${u(18)} ${u(20)}`,
           // Left-aligned, Retro's rule: the one pill at the foot hugs its label.
           alignItems: 'flex-start',
         })}>
@@ -15589,11 +15620,11 @@ function EventsMap({ s }) {
               and a picture where the route is empty. */}
           {!!g && (
             <div style={row(u(10), { width: '100%', alignItems: 'stretch' })}>
-              <BookPill s={s} ext={g.url} label="Venue Link" bg={ink} fg={s.ac} full={s.mob}
+              <BookPill s={s} ext={g.url} label="Venue Link" bg={s.bg} fg={s.ac} full={s.mob}
                         style={{ flex: '1 1 0', minWidth: 0, justifyContent: 'space-between' }} />
               <Dir {...dir} style={row(0, {
                 flex: '1 1 0', minWidth: 0, justifyContent: 'center',
-                boxShadow: ring(ink), borderRadius: '999px', color: ink,
+                boxShadow: ring(s.bg), borderRadius: '999px', color: s.bg,
                 padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'nowrap',
                 textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
               })}>Get Directions</Dir>
@@ -15608,7 +15639,7 @@ function EventsMap({ s }) {
         return (
           <div key={i} onClick={onPick(i)} style={row(u(12), {
             width: '100%', background: s.box1, color: s.tx, boxShadow: ring(s.stroke1),
-            borderRadius: u(50), padding: `${u(10)} ${u(14)}`,
+            borderRadius: G.r, padding: `${u(10)} ${u(14)}`,
             cursor: s.live ? 'pointer' : undefined,
           })}>
             {/* Label/XS in the frame's first row and hand-set Body/MD in the
@@ -15700,8 +15731,8 @@ function EventsMap({ s }) {
 
       const lpanel = (
         <div style={col(u(24), {
-          background: s.box2, color: s.tx, padding: pad,
-          borderRadius: u(s.mob ? 30 : 50),
+          background: G.panel, color: s.tx, padding: pad,
+          borderRadius: G.panelR,
         })}>
           <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
             {/* The frame's Scheme 2 status pill and its note, on layout 3's
@@ -15710,11 +15741,14 @@ function EventsMap({ s }) {
             {(!!s.mapStatus || !!s.mapUpdated) && (
               <div style={row(u(12), {
                 width: '100%', justifyContent: 'space-between',
-                ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+                // `rowGap` at every width, inert without the wrap: dropping it
+                // on a re-render beside `gap` is React's shorthand warning
+                // when the published tab is resized into or out of 390.
+                ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
               })}>
                 {!!s.mapStatus && (
                   <span style={row(u(8), {
-                    background: s.box1, color: s.ac, borderRadius: '999px', flex: 'none',
+                    background: G.status, color: s.ac, borderRadius: '999px', flex: 'none',
                     padding: `${u(6)} ${u(12)}`, ...chip,
                   })}>
                     <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: s.ac, flex: 'none' }} />
@@ -15744,14 +15778,14 @@ function EventsMap({ s }) {
               masters. The ring is an overlay, since the raster would paint
               over an inset shadow on the container. */}
           <div style={col(0, {
-            position: 'relative', width: '100%', background: s.box2,
-            borderRadius: desk ? u(13) : tab ? '42px' : '25px', overflow: 'hidden',
+            position: 'relative', width: '100%', background: G.panel,
+            borderRadius: G.mapR, overflow: 'hidden',
           })}>
             {/* The viewport is `flex: 1 0 0` under a stated panel height, so its
                 shape is derived: 588 × 519, 318 × 518 and 346 × 298. */}
             <div style={{
               position: 'relative', width: '100%', background: plate, overflow: 'hidden',
-              aspectRatio: desk ? '588 / 519' : tab ? '318 / 518' : '346 / 298',
+              aspectRatio: G.aspect,
             }}>
               {/* The zoom layer (user call, 2026-09-17): the raster, rings and
                   pins scale together on layout 3's `zoom` hook, a quarter a
@@ -15813,7 +15847,7 @@ function EventsMap({ s }) {
                   <span key={glyph}
                         onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
                         style={{
-                          width: u(30), height: u(40), borderRadius: u(8), background: '#D9FF7F', color: ink,
+                          width: u(30), height: u(40), borderRadius: u(8), background: G.zoom, color: ink,
                           boxShadow: ring(hair), boxSizing: 'border-box',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
@@ -16092,7 +16126,8 @@ function EventsMap({ s }) {
     // base, which is what the frame's rings are drawn around. The frame's
     // 30/60/120mi ring labels are `rings`, the artist's own numbers (JP-040;
     // the fit had declined them as fabricated). Its zoom controls stay gone
-    // under Retro and the flat three; Lime's block draws them.
+    // under Retro and the flat two; the Lime block above draws them, under
+    // Grunge too.
     // The three coverage rings as a share of the viewport's width, outer first.
     const ringW = desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]
     const pins = shown.map((gg, i) => {
@@ -16127,7 +16162,7 @@ function EventsMap({ s }) {
           {(!!s.mapStatus || !!s.mapUpdated) && (
             <div style={row(u(12), {
               width: '100%', justifyContent: 'space-between',
-              ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+              ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
             })}>
               {!!s.mapStatus && (
                 <span style={row(u(8), {
@@ -16653,7 +16688,7 @@ function EventsMap({ s }) {
           <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
             <div style={row(u(12), {
               width: '100%', justifyContent: 'space-between',
-              ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+              ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
             })}>
               {!!s.mapStatus && (
                 <span style={row(u(8), {
@@ -17027,7 +17062,7 @@ function EventsMap({ s }) {
         <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
           <div style={row(u(12), {
             width: '100%', justifyContent: 'space-between',
-            ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+            ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
           })}>
             {/* The frame's tag and note, seeded with its own copy and emptiable
                 (QA, 2026-09-15 — the fit had declined both as claims). */}
@@ -18393,25 +18428,50 @@ function Testimonials({ s }) {
     // idle tiles are Scheme 1's olive, and every size is the Lime ramp (no `T`
     // table: `get_variable_defs` returns `THEME_RAMP.Lime` at all three widths).
     // No node carries an effect, so there is no glow and no shadow.
-    if (s.lime) {
+    //
+    // Grunge (964:64634 · 986:13769 · 986:13788) is the same 26 nodes at all
+    // three widths in Static Youth, on Scheme 1 with the card and the picked
+    // tile on Scheme 3 and no Device override — so the block is widened, and
+    // `G` carries what the mode moves: Scheme 3's `box/1` is `#9E1F17` (the
+    // map's red was its `box/2`), lettered white where Lime's is ink; its
+    // `stroke/1` is a **black** 15%; and every radius is a raw 15 (Lime's 30
+    // tiles and 50 card). The idle tiles' `s.box1` and `s.ac` ring, the head's
+    // `s.tx` and the whole ramp are the same keys on both templates.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       // Scheme 3's `box/1` and `stroke/1`, the map block's names for them.
       const lime3 = '#CCFA61'
       const hair = '#15180F26'
+      const G = grunge
+        ? { card: '#9E1F17', ink: s.tx, hair: '#00000026', tileR: 15, cardR: 15, pillFg: s.chips[1].fg }
+        : { card: lime3, ink: s.bg, hair, tileR: 30, cardR: 50, pillFg: s.activeFg }
       // Every stroke is inside, so each is an inset ring: the frame's heights
       // hold, and the picked tile's 2px needs no border arithmetic against its
       // `flex-basis: 0` share (Retro's note below, dodged rather than paid).
       const ring = (w, c) => `inset 0 0 0 ${w}px ${c}`
       const bodyType = (size, lh) => ({ fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls })
-      const dispType = (size, lh) => ({ fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls })
+      // Every display site — the head, the marks, the glyph, the reviewer —
+      // is Stones Crush on the Grunge masters: Anton at 0.75, and uppercase at
+      // its own site (identity off Grunge).
+      const dispType = (size, lh) => ({
+        fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
+        ...(grunge ? { textTransform: 'uppercase' } : null),
+      })
 
       // Body/SM, Display/LG and Body/MD, all `sem/text/2`. No measure: the
       // frame's break after FEEDBACK is typed, and the seeded heading is one
-      // line at every width.
+      // line at every width. Under Grunge the heading keeps its own line break
+      // (`TESTI_HEADING_2`'s, Retro's `pre-wrap` below): Anton at 0.75 breaks
+      // greedily after PEOPLE, where all three masters set the typed FEEDBACK /
+      // FROM PEOPLE WHO BOOKED — and its longer line fits every width.
       const limeHead = (
         <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
           <span style={bodyType(s.bodySm, 1.4)}>&#9998; What clients say</span>
           {!!s.title && (
-            <h2 style={{ margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%' }}>
+            <h2 style={{
+              margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%',
+              ...(grunge ? { whiteSpace: 'pre-wrap' } : null),
+            }}>
               {s.title}
             </h2>
           )}
@@ -18441,8 +18501,8 @@ function Testimonials({ s }) {
                 ...(wide
                   ? { flex: '1 1 0', minHeight: 0, padding: `0 ${u(30)}`, ...(on ? { alignSelf: 'stretch' } : null) }
                   : { flex: on ? '1 0 auto' : 'none', padding: `${u(36)} ${u(30)}`, minWidth: 0 }),
-                background: on ? lime3 : s.box1, color: on ? s.bg : s.tx,
-                boxShadow: on ? ring(2, hair) : ring(1, s.ac), borderRadius: u(30),
+                background: on ? G.card : s.box1, color: on ? G.ink : s.tx,
+                boxShadow: on ? ring(2, G.hair) : ring(1, s.ac), borderRadius: u(G.tileR),
                 overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: s.live ? 'pointer' : undefined,
               }}>
@@ -18460,7 +18520,7 @@ function Testimonials({ s }) {
       const limeBig = (
         <div style={col(u(40), {
           ...(wide ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
-          background: lime3, color: s.bg, boxShadow: ring(1, hair), borderRadius: u(50),
+          background: G.card, color: G.ink, boxShadow: ring(1, G.hair), borderRadius: u(G.cardR),
           padding: u(40), alignItems: 'flex-start',
         })}>
           {q ? (
@@ -18513,8 +18573,12 @@ function Testimonials({ s }) {
               `k` gives the frames' 54 box and `s.list` label; `full` at 390. */}
           {!!s.testiCta && (
             <div style={row('0px', { width: '100%', justifyContent: 'center' })}>
+              {/* Under Grunge the frame binds the type and the disc to
+                  `sem/tag/2/text` — `#0D1F03`, Lime's ink leaked into the mode
+                  (`s.chips[1].fg`) — where `s.activeFg` is the other leak,
+                  `#15180F`. Lime's two keys are the one value. */}
               <BookPill s={s} to={s.bookTo} label={s.testiCta}
-                        bg={s.pillBg} fg={s.activeFg} full={s.mob} />
+                        bg={s.pillBg} fg={G.pillFg} full={s.mob} />
             </div>
           )}
         </div>
@@ -20423,7 +20487,8 @@ function EnquiryForm({ s }) {
   // band*; the credit row is narrower for the shorter role, and the card runs
   // shorter than the frames' by the dropped price and stars. The sheet's own
   // `s.gPad` inset makes the desktop photo column 686.2, the frame's 687.2.
-  if (s.v1 && s.lime) {
+  if (s.v1 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -20431,38 +20496,72 @@ function EnquiryForm({ s }) {
     const type = (family, size, lh, extra) => ({
       fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
     })
-    const ink = s.bg // Scheme 4 `sem/text/1` and `/2`
-    const mist = '#D5E3B2' // Scheme 4 `sem/box/1` — the card and every box
-    const hair = '#15180F26' // Scheme 4 `sem/stroke/1`, 15%
+    // Grunge — 964:64633 / 986:13768 / 986:13787, Lime's tree node for node (42
+    // = 42 at every width), so the block is shared and `G` names the leaves
+    // (Lime's arm is the old literals). The root is `187:4`, Scheme 1, which is
+    // Scheme 4 byte for byte in this mode, so there is **no band**: the frame's
+    // root is the page's own `#000000`, and the sheet keeps its geometry and
+    // paints nothing. Every ink is `s.tx` but the heading, the price and the
+    // stars, which are the accent; the card and the boxes are `s.box1` in the
+    // `s.stroke1` hairline, the photograph `s.box2` in a 1px `s.ac` ring with no
+    // glow, the pill Scheme 1's own red with black type round a black disc.
+    // Radii are a raw 15 where Lime's are 50. No node carries an effect.
+    const G = grunge ? {
+      sheet: undefined, ink: s.tx, head: s.ac,
+      mist: s.box1, hair: s.stroke1, r: u(15),
+      well: s.box2, photoRing: `inset 0 0 0 1px ${s.ac}`, avatarWell: s.bg,
+      // 12 over Label/SM's own line box, 16 / 13 / 12 here.
+      boxH: desk ? u(42) : s.mob ? '37px' : '38px',
+      pillBg: s.ac, pillFg: s.bg, discBg: s.bg, discFg: s.ac,
+    } : {
+      sheet: s.tx, ink: s.bg, head: s.bg,
+      mist: '#D5E3B2', hair: '#15180F26', r: u(50),
+      well: s.tx, photoRing: `inset 0 0 0 1px ${s.bg}, inset 0 0 ${u(34)} ${s.ac}`, avatarWell: s.tx,
+      boxH: desk ? u(44) : s.mob ? '37px' : '39px',
+      pillBg: s.bg, pillFg: s.tx, discBg: s.tx, discFg: s.bg,
+    }
+    // Anton at the frame's glyph size, in capitals: every direct display or
+    // label site here owes both under Grunge; identity off it.
+    const disp = (family, size, lh, extra) => type(family, faced(s, size), facedLh(s, lh), {
+      ...(grunge ? { textTransform: 'uppercase' } : null), ...extra,
+    })
+    const ink = G.ink // Lime: Scheme 4 `sem/text/1` and `/2`
+    const mist = G.mist // Lime: Scheme 4 `sem/box/1` — the card and every box
+    const hair = G.hair // Lime: Scheme 4 `sem/stroke/1`, 15%
     // Retro's twin's page inset, for Retro's reasons (the repertoire's bleed).
     const padV = desk ? s.gPad : s.mob ? '40px' : '60px'
     const padH = `calc(${s.surplus} + ${desk ? s.gPad : s.mob ? '10px' : '30px'})`
     // Retro's rule: the label is uppercased as a string so the live input can
     // carry it as its placeholder without shouting what the visitor types.
     const up = (t) => String(t).toUpperCase()
+    const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
 
     // Label/SM in ink on `mist` inside the hairline, at `radius/pill`. A refused
     // box thickens that ring to 2px of full ink — layout 1's Lime rule — so the
-    // stated height does not grow.
-    const box = (bad) => type(s.label, s.labelSm, 1.1, {
+    // stated height does not grow. Under Grunge the idle ring is the white 15%,
+    // so the refused one is 2px of full white: colour and weight.
+    // Faced but not transformed: `up()` cases the label, and what the visitor
+    // types stays as typed.
+    const box = (bad) => type(s.label, faced(s, s.labelSm), facedLh(s, 1.1), {
       background: mist, color: ink, border: 'none', borderRadius: s.btnR,
       boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? ink : hair}`,
-      height: desk ? u(44) : s.mob ? '37px' : '39px',
+      height: G.boxH,
       padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
     })
 
     // The submit and *Write another*: layout 1's Lime pill with the pair turned
     // round — `sem/text/1` with Display/List in `s.tx`, and the 46 × 44 disc in
-    // `s.tx` round an ink arrow. 5 + 44 + 5 is the frames' 54.
-    const pill = (extra) => type(s.display, s.list, 1.2, {
+    // `s.tx` round an ink arrow. 5 + 44 + 5 is the frames' 54. Under Grunge it
+    // is the accent lettered in black, a black disc round a red arrow.
+    const pill = (extra) => disp(s.display, s.list, 1.2, {
       ...row(u(10), { justifyContent: 'space-between' }),
-      background: ink, color: s.tx, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
+      background: G.pillBg, color: G.pillFg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
       padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
     })
     const disc = (
       <span style={{
         width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
-        background: s.tx, color: ink,
+        background: G.discBg, color: G.discFg,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
     )
@@ -20476,12 +20575,16 @@ function EnquiryForm({ s }) {
     const title = desk ? u(36) : s.mob ? '26px' : '28px'
     const priceRow = (!!s.formPrice || !!s.formPriceUnit) && (
       <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
-        {!!s.formPrice && <span style={type(s.display, title, 1.1)}>{s.formPrice}</span>}
+        {!!s.formPrice && <span style={disp(s.display, title, 1.1, { color: G.head })}>{s.formPrice}</span>}
         {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
       </div>
     )
+    // Under Grunge the line is two-tone: the stars are the accent, the count
+    // `s.tx`. Lime keeps its one text node.
     const bookingsLine = !!s.formBookings && (
-      <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>★★★★★{'  '}{s.formBookings}</span>
+      <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>
+        {grunge ? <span style={{ color: s.ac }}>★★★★★</span> : '★★★★★'}{'  '}{s.formBookings}
+      </span>
     )
 
     return (
@@ -20490,7 +20593,7 @@ function EnquiryForm({ s }) {
         // root's `limeLight` is layout 1's, so the band paints its own ground
         // and its own ink.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-        background: s.tx, color: ink,
+        background: G.sheet, color: ink,
         padding: `${padV} ${padH}`,
         display: 'flex', gap: u(40), alignItems: 'flex-start',
         flexDirection: s.mob ? 'column' : 'row',
@@ -20501,17 +20604,19 @@ function EnquiryForm({ s }) {
         })}>
           {/* 437 at 1440 and 768, 262 at 390. The ring and the glow are one
               last-child overlay, so they paint over the photograph as Figma's
-              stroke and inner shadow do; the well is Scheme 4's `sem/box/2`. */}
+              stroke and inner shadow do; the well is Scheme 4's `sem/box/2`.
+              Under Grunge the overlay is the ring alone, in the accent, on
+              Scheme 1's `sem/box/2`. */}
           <div style={{
             position: 'relative', height: u(s.mob ? 262 : 437),
-            borderRadius: u(50), overflow: 'hidden', background: s.tx,
+            borderRadius: G.r, overflow: 'hidden', background: G.well,
           }}>
             {/* `null`, Retro's reason: an emptied stage photo must not fall
                 through to `s.image`, which is the credit row's portrait. */}
             <Photo s={s} src={s.formPhoto ?? null} ink={ink} initialsSize={desk ? 56 : 40} />
             <span style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: `inset 0 0 0 1px ${ink}, inset 0 0 ${u(34)} ${s.ac}`,
+              boxShadow: G.photoRing,
             }} />
           </div>
           {/* Display/SM at lh 1. The frames break it LET'S MAKE / YOUR NIGHT
@@ -20521,18 +20626,32 @@ function EnquiryForm({ s }) {
               its own breaks, so 768 is 5.2em (layout 1's value for this string).
               1440 wants two, and any cap over the second line's 8.87em gives two
               with the break after NIGHT instead — 9em, the footer's. 390 needs
-              none: our 346 column is 10.8em at 32. */}
-          <h2 style={type(s.display, s.dispSm, 1, {
-            margin: 0, color: ink, overflowWrap: 'break-word',
-            maxWidth: desk ? '9em' : tab ? '5.2em' : undefined,
-          })}>{s.title}</h2>
+              none: our 346 column is 10.8em at 32.
+              Under Grunge the head is all accent and two lines at every width,
+              broken after MAKE, so it takes layout 1's Grunge rule — words one
+              and two a block line, the rest a second — and no cap: YOUR NIGHT
+              UNFORGETTABLE. is 7.86em of the faced size, 322 / 314 / 236px
+              against the frames' 332 / 334 / 370 boxes. */}
+          <h2 style={disp(s.display, s.dispSm, 1, {
+            margin: 0, color: G.head, overflowWrap: 'break-word',
+            maxWidth: grunge ? undefined : desk ? '9em' : tab ? '5.2em' : undefined,
+          })}>{grunge && titleWords.length > 2 ? (
+            <>
+              <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
+              <span style={{ display: 'block' }}>{titleWords.slice(2).join(' ')}</span>
+            </>
+          ) : s.title}</h2>
           {/* Frame 284: Retro's axis flip — a space-between row at 1440 and
               390, a column at 768. An emptied promise list drops its node. */}
           <div style={tab
             ? col(u(30), { alignItems: 'flex-start' })
             : row(u(20), {
               justifyContent: 'space-between', alignItems: 'flex-end',
-              ...(desk ? { flexWrap: 'wrap', rowGap: u(20) } : null),
+              // `rowGap` at every width, inert without the wrap: a longhand
+              // dropped beside the `gap` shorthand on a resize is React's
+              // "Removing a style property" warning (plans/grunge/layout-2.md,
+              // open question 1).
+              rowGap: u(20), ...(desk ? { flexWrap: 'wrap' } : null),
             })}>
             {s.formPromises.length > 0 && (
               <div style={col(u(10), { minWidth: 0 })}>
@@ -20552,10 +20671,10 @@ function EnquiryForm({ s }) {
               {/* The portrait on `sem/bg`, radius 24 of 48 — a circle. */}
               <span style={{
                 width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
-                overflow: 'hidden', background: s.tx,
+                overflow: 'hidden', background: G.avatarWell,
               }}><Photo s={s} ink={ink} initialsSize={Math.round(15 * z)} /></span>
               <span style={col(u(2), { minWidth: 0 })}>
-                <span style={type(s.display, s.list, 1.2)}>{s.brand}</span>
+                <span style={disp(s.display, s.list, 1.2)}>{s.brand}</span>
                 <span style={type(s.ui, s.labelXs, 1.26)}>{s.kicker}</span>
               </span>
             </span>
@@ -20571,7 +20690,7 @@ function EnquiryForm({ s }) {
           alignSelf: s.mob ? undefined : 'stretch',
         }}>
           <div style={col(u(14), {
-            background: mist, color: ink, borderRadius: u(50),
+            background: mist, color: ink, borderRadius: G.r,
             boxShadow: `inset 0 0 0 1px ${hair}`,
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
             position: 'sticky', top: 0,
@@ -20584,7 +20703,7 @@ function EnquiryForm({ s }) {
               // since `s.title` is the heading string), and the address is
               // Body/MD — both invented, Retro's same two.
               <>
-                <h3 style={type(s.display, title, 1.1, {
+                <h3 style={disp(s.display, title, 1.1, {
                   margin: 0, overflowWrap: 'break-word',
                 })}>{s.formSentTitle}</h3>
                 <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
@@ -20894,7 +21013,11 @@ function EnquiryForm({ s }) {
             ? col(u(30), { alignItems: 'flex-start' })
             : row(u(20), {
               justifyContent: 'space-between', alignItems: 'flex-end',
-              ...(desk ? { flexWrap: 'wrap', rowGap: u(20) } : null),
+              // `rowGap` at every width, inert without the wrap: a longhand
+              // dropped beside the `gap` shorthand on a resize is React's
+              // "Removing a style property" warning (plans/grunge/layout-2.md,
+              // open question 1).
+              rowGap: u(20), ...(desk ? { flexWrap: 'wrap' } : null),
             })}>
             <div style={col(u(10), { minWidth: 0 })}>
               {s.formPromises.map((p) => (
