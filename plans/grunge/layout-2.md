@@ -584,6 +584,12 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   walk's paddings, gap and disc are Lime's to the hundredth). `navNameEms` / `navCtaEms` take
   Grunge through `navFace`. Measured: Minimal's capsule **134** at 768 against the master's 135,
   **121** at 1440 against 149 × 0.82 = 122.2.
+- **The desktop links' 12px floor holds under Grunge, and `NavBar`'s 16 does not carry.** This
+  bar caps its links at Label/SM — 13.12 unfaced, 9.84 rendered — and CSS `clamp` lets a floor
+  above the cap win outright, so a 16 floor set every link at 16 (12 rendered), a size the
+  frame never draws (tried and re-digested: desktop theme 2 moved; reverted). `NavBar`'s 16 is
+  for a bar capped at `s.list`. Under Grunge the links can shrink only from 9.84 to 9 before
+  the capsule wraps; a floor is nearly a fixed size here, and the seeded nine never reach it.
 - **Anton at 0.75 is narrow, so the flip sits higher than Lime's**: at 768 the seeded names
   draw up to **eight** links (Lime's six), nine fold to the burger; `scrollWidth` is 768 at
   every count and the name stays centred to five links. At 1440 the seeded nine sit at the

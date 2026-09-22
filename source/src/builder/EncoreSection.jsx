@@ -1601,6 +1601,11 @@ function HeaderV1({ s }) {
     // the capsule's 18 + 18, the row's two 16 gaps, Listen's 12 and the pill's
     // 17.92 + 4.27 padding, 8.53 gap and 27.6 disc.
     const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)} + ${navGaps})`
+    // The 12 floor holds under Grunge too, though its labels are `faced` to
+    // 0.75 of it (9px): this bar caps its links at Label/SM, 13.12 unfaced,
+    // and a floor above the cap wins a `clamp` outright — NavBar's 16 is for
+    // a bar capped at `s.list`. So Grunge's links can only shrink from their
+    // 9.84 to 9 before the capsule wraps, which the seeded nine never reach.
     const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
     const nav = (
       <div style={row(u(16), {
