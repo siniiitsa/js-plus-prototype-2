@@ -197,7 +197,7 @@ the block); it is the gate this session widens.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:68686` | 1440 × 900 | `984:13900` | 768 × 1024 | `984:13931` | 390 × 606.5 | `964:68654` / `984:10740` / `984:10771` | `964:68622` / `977:22532` / `982:9583` | `if (s.lime) { … return }` at the head of `HeaderV2` | done e231ad0 |
 | 2 | `bio` | `964:68695` *(head `964:68690`, in Section `964:68689`)* | 858 × 882 | `984:13908` *(head `984:13903`)* | 708 × 912 | `984:13939` *(head `984:13934`)* | 370 × 876 | `964:68663` / `984:10748` / `984:10779` | `964:68631` / `977:22717` / `982:10013` | `if (s.v2 && s.lime)` ahead of `Bio`'s `if (s.v2)` | done 095e495 |
-| 3 | `media` | `964:68706` list + `964:68705` card *(head `964:68698`)* | 858 × 424 + 858 × 243 | `984:13919` + `984:13918` *(head `984:13911`)* | 708 × 647 + 708 × 243 | `984:13950` + `984:13949` *(head `984:13942`)* | 370 × 647 + 370 × 243 | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | `if (s.lime)` inside `Media`'s `if (s.v2)`, after `nHot` | — |
+| 3 | `media` | `964:68706` list + `964:68705` card *(head `964:68698`)* | 858 × 424 + 858 × 243 | `984:13919` + `984:13918` *(head `984:13911`)* | 708 × 647 + 708 × 243 | `984:13950` + `984:13949` *(head `984:13942`)* | 370 × 647 + 370 × 243 | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | `if (s.lime)` inside `Media`'s `if (s.v2)`, after `nHot` | done d067f7b |
 | 4 | `repertoire` | `964:68710` | 1440 × 621 | `984:13920` *(in `984:13917`)* | 708 × 655 | `984:13951` | 390 × 702 | `964:68678` / `984:10760` / `984:10791` | `964:68646` / `977:23041` / `982:10193` | `if (s.lime)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | — |
 | 5 | `calendar` | `964:68709` *(in `964:68707`)* | 405 × 537.6 | `984:13923` *(in `984:13921`)* | 708 × 482.6 | `984:13954` *(in `984:13952`)* | 370 × 441.6 | `964:68677` / `984:10763` / `984:10794` | `964:68645` / `984:10605` / `984:10673` | `if (s.lime)` inside `Calendar`'s `if (s.v2)`, after `line` | — |
 | 6 | `gallery` | `964:68711` | 1440 × 789 | `984:13924` | 768 × 884 | `984:13955` | 390 × 585 | `964:68679` / `984:10764` / `984:10795` | `964:68647` / `977:23131` / `982:10257` | **no block** — `s.lime` ternaries through `Gallery`'s `if (s.v2)` | — |
@@ -630,7 +630,8 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   `vm.pad` arm at `d === 2` gives the bio, media and calendar a 50 top together under Lime; under
   Grunge each joins in its own session (the digest rule), so until section 5 the calendar's
   "Book Me" stands 30 below "KM BIO" on the 1440 page. Media's and the calendar's sessions add
-  `cat === 'media'` / `'calendar'` to the Grunge half of that arm.
+  `cat === 'media'` / `'calendar'` to the Grunge half of that arm. *Media joined in section 3*;
+  the calendar's is the one left.
 
 ### Settled in section 1 (the header)
 
@@ -785,6 +786,50 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly bio arch 2
   at three widths on both surfaces.
 
+### Settled in section 3 (the media player)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `Media`'s `if (s.v2)`, after `nHot`, is
+  `(s.lime || s.grunge)`**, with a five-key `G` at its head (`card`, `dusk`, `disc`, `radius`,
+  `ring`) whose Lime arm is today's literals, and `const grunge = s.grunge` naming the `disp`
+  spread and the heading's cap. The paired diff against the Lime twin (head, card, list, at all
+  three widths) found the trees equal node for node, the boxes within a pixel, **no effect on any
+  node** and no Device override. The hooks sit above the branches, so the published player needed
+  nothing new.
+- **The card is Scheme 2, as planned, and it gains a ring.** `#353535` (`box/3`), idle bars
+  `#222222` (`box/2`), disc `#000000` (`box/1`, where Lime's reads `s.box2`), at a raw radius
+  **15** at every width (Lime 50), in a **1px inside `#FF0000`** stroke, drawn as an inset
+  `boxShadow` on the card with `s.stroke2` (the bars stand in the 24 padding, so no overlay).
+  The played bars read `s.ac` (`#DF262C`, the frame's). The list needed nothing: the root is the
+  page's `#000000`, the sleeve wells are `#383838` (`s.box2`), the hairlines are white 15%
+  (`s.stroke1`), every ink is `s.tx`, and the sizes are all ramp tokens (body-sm 12, chip 12 / 11,
+  display-lg 130 / 81 / 46, `get_variable_defs`'s Grunge numbers read as `s.*`).
+- **Type**: the heading, the card's two names (`s.list`) and the rows' titles (Display/Title)
+  are `faced` / `facedLh` and uppercase. The heading is **one red tone at every width** (the
+  segments, not layout 1's two-tone split). The desktop frame breaks after "WORTH"; Lime's
+  `u(632.156)` cap is 6.48 Anton ems at 0.75 and would hold "FIVE WORTH YOUR" (6.43), so under
+  Grunge the cap is **layout 2's `4.6em`**. 768 and 390 set one line, as their masters do (the
+  390 head is 41 tall at 46 in a 370 box; ours is 285 wide in the 346 column).
+- **`vm.pad`'s layout-3 arm takes media under Grunge** (top 50 / 50 / `padY`, foot 37 / 47 / 35,
+  Lime's, since the composed region is Lime's to the pixel). The feet were measured by Lime's
+  session against Lime's repertoire head; the repertoire session re-checks the gap under Grunge.
+- **Measured against the masters' content edges** (`column=left` at desktop): eyebrow 20.2, h2
+  190.4 (232 × 0.82) on two lines at 80.25px standing 44.8 under the eyebrow's top, card 197.8
+  (243 × 0.82 = 199.3) at radius 12.3; 768 head 120 (eyebrow 17.6 + 30 + h2 72.1 on one line),
+  card 236.8; 390 head 86 (15.1 + 30 + 40.9 on one line), card 236.8. **Named diffs, Lime's**:
+  the narrow card is 236.8 against the stated 243 (Grunge's body-sm 12 takes one more px off
+  Lime's 238); the rows are content-tall (Lime's open question 3); the clock row reads 00:00 /
+  the track's length and `track.rel` where the frame types 1:00 / 2:00 and "Mix 028"; the narrow
+  meters paint from the left; Anton at 0.75 against Stones Crush.
+- **`live=1` at desktop and 390** (puppeteer, autoplay allowed, probe in the scratchpad): a row
+  click plays that track and its number becomes the glyph, a second click pauses, the disc plays
+  again. `n=0` prints the head and the counter with no card; `n=8` holds. No page errors.
+- **Verified in the builder**: `scripts/page-check.mjs Grunge 2` — four modal cards, bio and
+  calendar at top 738, media under the bio at 1761, every anchor scrolls, no errors or warnings.
+- **`FIELDS.media` moves nothing** (layout 3 draws no pill; `cta` stays `{ Lime: [0], Grunge:
+  [0], '*': [] }`).
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly media arch 2
+  at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's or 2's or
@@ -804,6 +849,12 @@ Lime's Conventions, with the plan it came from — the running list for the swee
   *casing stays the theme's; uppercase per site* (grunge/layout-1); *the grain lift is sampled,
   mean and stddev* (grunge/layout-2, section 2); *theme 1 is the digest at risk*; *field reach is
   measured*.
+- Section 3: *the paired diff walk* (grunge/layout-2, section 8); *a section on another scheme
+  writes that scheme's values as named literals* (Scheme 2's three); *the `G` lookup at the
+  block's head*; *a frame's inside stroke is an inset `boxShadow`* (lime/layout-2); *every glow
+  is a guess until `effects` confirm it*; *a stand-in face is scaled*; *casing stays the theme's;
+  uppercase per site*; *the whole-page published check is one puppeteer script*; *theme 1 is
+  the digest at risk*.
 
 ## Open questions
 
