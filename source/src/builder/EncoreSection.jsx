@@ -13935,9 +13935,38 @@ function Calendar({ s }) {
     // and every size is the Lime ramp's `s.*` rather than Retro's `T`. None of
     // Retro's `panel` / `ink` / `hue` / `taken` is read: under Lime they are
     // `paper`-derived, a pale card. No node carries an effect.
-    if (s.lime) {
+    //
+    // Grunge (964:68709 / 984:13923 / 984:13954, inside the same `Frame 300`
+    // wrappers at a 30 head gap) is Lime's tree node for node at all three
+    // widths, on **Scheme 1** with no Device override, and it is the cheapest
+    // widening of the pass: every colour Lime's block reads is bound to the
+    // same `sem` key here — the card `box/1` in a `border/thin` `stroke/1`
+    // ring, the numeral / month / year / weekday / letters all `text/2`, the
+    // dots `box/2` booked, `text/1` picked and `box/1` inside a raw 2.559
+    // `stroke/1` ring free, the legend's two marks the same two fills — and
+    // every size is a ramp token (display-lg 130 / 81 / 46, display-sm
+    // 50 / 40 / 30, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12,
+    // title 36 / 28 / 26), so there is no `T` table and two values move:
+    //
+    //   · the card's corner is a raw **15** at every width (Lime 50);
+    //   · the foot pill's label and disc are **`#171716`**, Scheme 2's
+    //     `sem/bg` — the pill is the one nested scheme on this master, and the
+    //     plan's guess at Scheme 2's `box/1` (`#000000`) was wrong. Named as
+    //     the literal, `HeaderV0`'s `G2` rule; Lime's `s.box1` is `#1A1A1A`
+    //     here, which would have looked nearly right and read as the card's
+    //     own fill.
+    //
+    // The three display sites — "Book Me", the numeral and the month — are
+    // Stones Crush, so each takes `faced` / `facedLh` / uppercase through
+    // `disp()`. Everything else is Lime's, including the pill's own
+    // `labelStyle`, which faces and cases its label already.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const lz = desk ? 0.82 : 1
       const lu = (v) => `${Math.round(v * lz * 10) / 10}px`
+      const disp = (lh) => (grunge
+        ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' }
+        : { lineHeight: lh })
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
@@ -13963,23 +13992,26 @@ function Calendar({ s }) {
           {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 —
               `s.title` is the heading string, not the ramp's size. */}
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: lu(desk ? 36 : s.mob ? 26 : 28),
-            lineHeight: 1.1, letterSpacing: s.dls, color: s.tx,
+            margin: 0, fontFamily: s.display,
+            fontSize: faced(s, lu(desk ? 36 : s.mob ? 26 : 28)), ...disp(1.1),
+            letterSpacing: s.dls, color: s.tx,
           }}>{s.title}</h2>
           <div style={col(lu(18), {
-            background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(50),
+            background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(grunge ? 15 : 50),
             boxShadow: `inset 0 0 0 ${s.bw} ${s.stroke1}`, overflow: 'hidden',
           })}>
             <div style={col('0')}>
               {!!hit && (
                 <span style={{
-                  fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89, letterSpacing: s.dls,
+                  fontFamily: s.display, fontSize: faced(s, s.dispLg), ...disp(0.89),
+                  letterSpacing: s.dls,
                 }}>{hit.d}</span>
               )}
               <div style={row(lu(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
                 <div style={col(lu(2.745), { alignItems: 'flex-start' })}>
                   <span style={{
-                    fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1, letterSpacing: s.dls,
+                    fontFamily: s.display, fontSize: faced(s, s.dispSm), ...disp(1),
+                    letterSpacing: s.dls,
                   }}>{month.name}</span>
                   <span style={body(s.bodyMd, 1.5)}>{month.year}</span>
                 </div>
@@ -14007,12 +14039,13 @@ function Calendar({ s }) {
               <span><span style={{ color: s.ac }}>●</span> Selected</span>
               <span>○ Free</span>
             </div>
-            {/* The foot pill is Scheme 2: `text/1` lime lettered and disced in
-                its `sem/bg`, which is Scheme 1's `box/1` — so `fg` is the one
-                override, and the disc's arrow follows the lime `bg`.
+            {/* The foot pill is Scheme 2: `text/1` lettered and disced in its
+                `sem/bg`, which under Lime is Scheme 1's `box/1` and under
+                Grunge the literal `#171716` — so `fg` is the one override, and
+                the disc's arrow follows the `bg`.
                 BookPill's own scale gives the 54 box and `s.list` label, with
                 `full` opting the 390 canvas back up. */}
-            <BookPill s={s} to={s.calBookTo} label={line} fg={s.box1} full={s.mob}
+            <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : s.box1} full={s.mob}
                       style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal' }} />
           </div>
         </div>
