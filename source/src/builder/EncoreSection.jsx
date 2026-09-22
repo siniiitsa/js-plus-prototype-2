@@ -15497,10 +15497,39 @@ function EventsMap({ s }) {
     // #CCFA61, ink `s.bg`, a 15% ink hairline); the rows stand on the page in
     // Scheme 1 (`s.box1`, `s.stroke1`); the map panel is **Scheme 2**, whose
     // `box/1` is Scheme 1's `s.box2`. No node carries an effect.
-    if (s.lime) {
-      const lime3 = '#CCFA61' // Scheme 3 sem/box/1 — the travel card
-      const hair = '#15180F26' // Scheme 3 sem/stroke/1, 15% ink
-      const ink = s.bg // Scheme 3 sem/text/1 and /2
+    //
+    // Grunge (964:64632 1440 × 858, 986:13767 768 × 823, 986:13786 390 ×
+    // 1286) is the same tree node for node at all three widths, on the same
+    // three schemes, so it widens this block through `G` (Lime's arm is the
+    // literals it had). What moves: Scheme 3 is red here — the travel card
+    // and the zoom buttons are its `box/2` `#F52E34` under **white** type, in
+    // a **black** 15% hairline — so Lime's one `ink` splits in two: the
+    // card's type and everything standing on the accent (the ring labels, the
+    // centre pin's ring and glyph, and so the lit pin's ring) is `ink`, which
+    // is `s.tx` here, while the Venue Link pill and Get Directions read `s.bg`
+    // directly, the frame's `#000000` on both (Lime's `ink` is `s.bg` too).
+    // The panel and the map container are Scheme 1's `#1A1A1A` (`s.box1`;
+    // `s.box2` is `#383838` here), the status pill is
+    // `#000000`, the radii are a raw 15 (card, rows, panel) and 8 (the map
+    // container) at every width, and the viewport's derived shape follows the
+    // shorter left column (588 × 512, 318 × 520). The raster is the same
+    // `e089bd11` and its render samples (42, 44, 29) between the roads, so
+    // Retro's plate stands; the display strings are faced and uppercase.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const G = grunge ? {
+        card: '#F52E34', hair: '#00000026', ink: s.tx, zoom: '#F52E34',
+        panel: s.box1, status: s.bg, r: u(15), panelR: u(15), mapR: u(8),
+        aspect: desk ? '588 / 512' : tab ? '318 / 520' : '346 / 298',
+      } : {
+        card: '#CCFA61', hair: '#15180F26', ink: s.bg, zoom: '#D9FF7F',
+        panel: s.box2, status: s.box1, r: u(50), panelR: u(s.mob ? 30 : 50),
+        mapR: desk ? u(13) : tab ? '42px' : '25px',
+        aspect: desk ? '588 / 519' : tab ? '318 / 518' : '346 / 298',
+      }
+      const lime3 = G.card // Scheme 3 sem/box/1 (Lime) or /2 (Grunge) — the travel card
+      const hair = G.hair // Scheme 3 sem/stroke/1, 15% ink
+      const ink = G.ink // Scheme 3 sem/text/1 and /2
       // The raster's own ground. The frame's texture (`e089bd11`) is a dark
       // street map; ours is `mapSrc`, the light Manchester raster layout 1 and
       // Retro's layout 2 share, so Retro's screened invert stands in for it.
@@ -15512,8 +15541,10 @@ function EventsMap({ s }) {
       // Display/Title is the frames' own 36 / 28 / 26.
       const titleSize = desk ? u(36) : tab ? '28px' : '26px'
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
+      // Faced and uppercase under Grunge; identity off it.
       const display = (size, lh) => ({
-        margin: 0, fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls,
+        margin: 0, fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
+        ...(grunge ? { textTransform: 'uppercase' } : null),
       })
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -15526,7 +15557,7 @@ function EventsMap({ s }) {
       const lcard = (
         <div style={col(u(18), {
           background: lime3, color: ink, boxShadow: ring(hair),
-          borderRadius: u(50), padding: `${u(18)} ${u(20)}`,
+          borderRadius: G.r, padding: `${u(18)} ${u(20)}`,
           // Left-aligned, Retro's rule: the one pill at the foot hugs its label.
           alignItems: 'flex-start',
         })}>
@@ -15589,11 +15620,11 @@ function EventsMap({ s }) {
               and a picture where the route is empty. */}
           {!!g && (
             <div style={row(u(10), { width: '100%', alignItems: 'stretch' })}>
-              <BookPill s={s} ext={g.url} label="Venue Link" bg={ink} fg={s.ac} full={s.mob}
+              <BookPill s={s} ext={g.url} label="Venue Link" bg={s.bg} fg={s.ac} full={s.mob}
                         style={{ flex: '1 1 0', minWidth: 0, justifyContent: 'space-between' }} />
               <Dir {...dir} style={row(0, {
                 flex: '1 1 0', minWidth: 0, justifyContent: 'center',
-                boxShadow: ring(ink), borderRadius: '999px', color: ink,
+                boxShadow: ring(s.bg), borderRadius: '999px', color: s.bg,
                 padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'nowrap',
                 textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
               })}>Get Directions</Dir>
@@ -15608,7 +15639,7 @@ function EventsMap({ s }) {
         return (
           <div key={i} onClick={onPick(i)} style={row(u(12), {
             width: '100%', background: s.box1, color: s.tx, boxShadow: ring(s.stroke1),
-            borderRadius: u(50), padding: `${u(10)} ${u(14)}`,
+            borderRadius: G.r, padding: `${u(10)} ${u(14)}`,
             cursor: s.live ? 'pointer' : undefined,
           })}>
             {/* Label/XS in the frame's first row and hand-set Body/MD in the
@@ -15700,8 +15731,8 @@ function EventsMap({ s }) {
 
       const lpanel = (
         <div style={col(u(24), {
-          background: s.box2, color: s.tx, padding: pad,
-          borderRadius: u(s.mob ? 30 : 50),
+          background: G.panel, color: s.tx, padding: pad,
+          borderRadius: G.panelR,
         })}>
           <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
             {/* The frame's Scheme 2 status pill and its note, on layout 3's
@@ -15714,7 +15745,7 @@ function EventsMap({ s }) {
               })}>
                 {!!s.mapStatus && (
                   <span style={row(u(8), {
-                    background: s.box1, color: s.ac, borderRadius: '999px', flex: 'none',
+                    background: G.status, color: s.ac, borderRadius: '999px', flex: 'none',
                     padding: `${u(6)} ${u(12)}`, ...chip,
                   })}>
                     <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: s.ac, flex: 'none' }} />
@@ -15744,14 +15775,14 @@ function EventsMap({ s }) {
               masters. The ring is an overlay, since the raster would paint
               over an inset shadow on the container. */}
           <div style={col(0, {
-            position: 'relative', width: '100%', background: s.box2,
-            borderRadius: desk ? u(13) : tab ? '42px' : '25px', overflow: 'hidden',
+            position: 'relative', width: '100%', background: G.panel,
+            borderRadius: G.mapR, overflow: 'hidden',
           })}>
             {/* The viewport is `flex: 1 0 0` under a stated panel height, so its
                 shape is derived: 588 × 519, 318 × 518 and 346 × 298. */}
             <div style={{
               position: 'relative', width: '100%', background: plate, overflow: 'hidden',
-              aspectRatio: desk ? '588 / 519' : tab ? '318 / 518' : '346 / 298',
+              aspectRatio: G.aspect,
             }}>
               {/* The zoom layer (user call, 2026-09-17): the raster, rings and
                   pins scale together on layout 3's `zoom` hook, a quarter a
@@ -15813,7 +15844,7 @@ function EventsMap({ s }) {
                   <span key={glyph}
                         onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
                         style={{
-                          width: u(30), height: u(40), borderRadius: u(8), background: '#D9FF7F', color: ink,
+                          width: u(30), height: u(40), borderRadius: u(8), background: G.zoom, color: ink,
                           boxShadow: ring(hair), boxSizing: 'border-box',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
@@ -16092,7 +16123,8 @@ function EventsMap({ s }) {
     // base, which is what the frame's rings are drawn around. The frame's
     // 30/60/120mi ring labels are `rings`, the artist's own numbers (JP-040;
     // the fit had declined them as fabricated). Its zoom controls stay gone
-    // under Retro and the flat three; Lime's block draws them.
+    // under Retro and the flat two; the Lime block above draws them, under
+    // Grunge too.
     // The three coverage rings as a share of the viewport's width, outer first.
     const ringW = desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]
     const pins = shown.map((gg, i) => {
