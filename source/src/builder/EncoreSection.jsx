@@ -11759,9 +11759,35 @@ function Gallery({ s }) {
     // `s.box3` wells, and the caption and 768 head in Body/Chip — `s.chip`
     // (13 / 12 / 11 in the frames) at -6%, pale on `s.box1`. The tiles' edge is
     // already `s.ac`, which is the frame's `sem/text/1`.
-    const bw = (s.retro || s.lime) ? '1px' : s.bw
-    const well = s.lime ? { background: s.box3 } : undefined
-    const r = u(s.mob ? 10 : 30)
+    //
+    // Grunge (964:64628, 986:13763, 986:13782) is Lime's tree node for node
+    // plus the `image 1` grain, on Scheme 1 with no Device override (`size/chip`
+    // 12 / 11 / 11, which is `THEME_RAMP.Grunge`'s chip), so it widens the same
+    // ternaries rather than adding any: `s.bw` is 2 and the frame strokes 1
+    // inside; the hero's ring is `sem/stroke/2` `#FF0000` (`s.stroke2`) where
+    // the tiles' is `sem/text/1` `#DF262C` (`s.ac`, the edge already drawn);
+    // the well, the caption's `s.box1` / `s.tx` and the chip type are the same
+    // keys. No node on the three masters carries an effect, so Lime's glow
+    // overlay stays Lime's and the ring is the whole cue. What moves is the
+    // radius: the hero and the tiles are a raw 15 at 1440 and 768 where Lime's
+    // are 30 (the 390 rail keeps its 10), read off the nodes and confirmed on
+    // the render — the ring crosses a corner's diagonal 4px in, which is 15,
+    // and 9px in on the two seats below. The grain is the header's recipe.
+    const grunge = s.grunge
+    const bw = (s.retro || s.lime || grunge) ? '1px' : s.bw
+    const well = (s.lime || grunge) ? { background: s.box3 } : undefined
+    const r = u(s.mob ? 10 : grunge ? 15 : 30)
+    // The last tile in each column keeps a 30 on its top corners under
+    // Grunge, where every other corner in the rail is 15: `[30, 30, 0, 0]` on
+    // both of those nodes at 1440 and 768, Lime's component value the mode did
+    // not override, and it shows at desktop (the 768 seats are 1px tall) —
+    // "leaked tops are followed where they show". The 390 master's other stray,
+    // a `[0, 0, 40, 40]` on the right column's first-tile *wrapper* alone (its
+    // own image frame says 10, Lime's 390 says 10 there, and Grunge's 768 and
+    // 1440 say 15 on the same node), is not followed: one seat of ten with a
+    // capsule foot reads as a slip, not a design, and this rail is one
+    // template. Reversible in one line here.
+    const rTop = grunge && !s.mob ? u(30) : r
     const seats = 7
     const home = galActive(s)
     const active = s.live && pick >= 0 ? pick : home
@@ -11827,7 +11853,7 @@ function Gallery({ s }) {
                     // The 390 rail rounds every tile whole; the two wider
                     // masters square off the corners the dropped border would
                     // have run through.
-                    borderRadius: s.mob ? r : first ? `0 0 ${r} ${r}` : last ? `${r} ${r} 0 0` : r,
+                    borderRadius: s.mob ? r : first ? `0 0 ${r} ${r}` : last ? `${rTop} ${rTop} 0 0` : r,
                     cursor: s.live ? 'pointer' : undefined,
                   }}
                 >
@@ -11864,8 +11890,8 @@ function Gallery({ s }) {
     const head = tab && s.title ? (
       <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <span style={{
-          fontFamily: s.body, fontWeight: 700, fontSize: s.lime ? s.chip : u(11), lineHeight: 1,
-          letterSpacing: s.lime ? '-0.06em' : u(-0.66), color: s.tx,
+          fontFamily: s.body, fontWeight: 700, fontSize: (s.lime || grunge) ? s.chip : u(11), lineHeight: 1,
+          letterSpacing: (s.lime || grunge) ? '-0.06em' : u(-0.66), color: s.tx,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{s.title}</span>
       </div>
@@ -11884,12 +11910,12 @@ function Gallery({ s }) {
         // line, so a long heading ends in an ellipsis inside the hero rather
         // than running out under its own clip.
         maxWidth: `calc(100% - ${u(80)})`,
-        background: s.lime ? s.box1 : s.chips[0].bg,
+        background: (s.lime || grunge) ? s.box1 : s.chips[0].bg,
         // Ink on the purple, which is what the frame sets and what the bio's
         // "Retro's chips are cream on every hue" note does not cover — the
         // repertoire's frame already contradicted it once. The flat four take
         // the chip's own computed foreground, which is guaranteed against it.
-        color: (s.retro || s.lime) ? s.tx : s.chips[0].fg,
+        color: (s.retro || s.lime || grunge) ? s.tx : s.chips[0].fg,
         borderRadius: u(4), padding: `${u(10)} ${u(14)}`,
         ...col(u(4), { alignItems: 'flex-start' }),
       }}>
@@ -11901,8 +11927,8 @@ function Gallery({ s }) {
             // `size/chip` is 12 on the 1440 master and 11 on both narrow ones —
             // the one token here that is not the desktop number verbatim, so it
             // is read off `get_variable_defs` rather than left to `z`.
-            fontFamily: s.body, fontWeight: 700, fontSize: s.lime ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
-            textTransform: 'uppercase', letterSpacing: s.lime ? '-0.06em' : u(desk ? -0.72 : -0.66),
+            fontFamily: s.body, fontWeight: 700, fontSize: (s.lime || grunge) ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
+            textTransform: 'uppercase', letterSpacing: (s.lime || grunge) ? '-0.06em' : u(desk ? -0.72 : -0.66),
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>{t}</span>
         ))}
@@ -11915,9 +11941,9 @@ function Gallery({ s }) {
       })}>
         <div style={{
           position: 'relative', overflow: 'hidden', minWidth: 0,
-          // The hero rounds at 30 on all three masters; only the 390 rail's
-          // tiles drop to 10, so this is not `r`.
-          border: `${bw} solid ${s.lime ? s.ac : s.tx}`, borderRadius: u(30),
+          // The hero rounds at 30 on all three masters (15 on Grunge's three);
+          // only the 390 rail's tiles drop to 10, so this is not `r`.
+          border: `${bw} solid ${grunge ? s.stroke2 : s.lime ? s.ac : s.tx}`, borderRadius: u(grunge ? 15 : 30),
           flex: '1 1 0', height: '100%',
         }}>
           <span style={{ position: 'absolute', inset: 0 }}>
@@ -11937,8 +11963,14 @@ function Gallery({ s }) {
             }} />
           )}
           {/* Last, the way the frame paints it: the sheet crosses the caption
-              too, and lifts its ink off #111 by a few points. */}
-          <Grain s={s} exact blend="lighten" opacity={0.29} />
+              too, and lifts its ink off #111 by a few points. Grunge's is the
+              header's recipe on this hero: `image 1`, an 831 square hung
+              (1, 0.18) off the photo's top-left at every width — inside the
+              ring, so the padding box's own corner — lighten .29, its
+              gradient paint hidden; one four-value `inset` plus `width` /
+              `height` (section 1's shorthand rule). */}
+          <Grain s={s} exact grunge blend="lighten" opacity={0.29}
+            style={grunge ? { inset: `${u(0.18)} auto auto ${u(1)}`, width: u(831), height: u(831) } : undefined} />
         </div>
         {/* Only 768 wraps: the head row is its alone, and an extra element in
             the desktop tree would move every row of the geometry digest. */}
