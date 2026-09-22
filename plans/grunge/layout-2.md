@@ -160,7 +160,7 @@ for the block); it is the gate this session widens.
 | 4 | `repertoire` | `964:64627` | 1440 × 792 | `986:13762` | 768 × 792 | `986:13781` | 390 × 594 | `964:64589` / `986:11857` / `986:11876` | `964:64646` / `984:35876` / `984:35961` | `if (s.lime)` inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | done `8c9db4e` |
 | 5 | `gallery` | `964:64628` | 1440 × 675 | `986:13763` | 768 × 468 | `986:13782` | 390 × 364 | `964:64590` / `986:11858` / `986:11877` | `964:64647` / `984:36046` / `984:36070` | **no block** — seven `s.lime` ternaries and one `s.lime &&` overlay through `Gallery`'s `if (s.v1)` | done `71c6e84` |
 | 6 | `pricing` | `964:64629` | 1440 × 708 | `986:13764` | 768 × 923 | `986:13783` | 390 × 871 | `964:64591` / `986:11859` / `986:11878` | `964:64648` / `986:10425` / `986:10492` | `if (s.lime)` inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | done `c76b5f7` |
-| 7 | `calendar` | `964:64631` *(in `964:64630`)* | 1328 × 1068 *(wrapper 1440 × 1180)* | `986:13766` *(in `986:13765`)* | 708 × 841 *(953)* | `986:13785` *(in `986:13784`)* | 370 × 734 *(814)* | `964:64593` / `986:11861` / `986:11880` | `964:64650` / `986:10607` / `986:10800` | `if (s.lime)` inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | — |
+| 7 | `calendar` | `964:64631` *(in `964:64630`)* | 1328 × 1068 *(wrapper 1440 × 1180)* | `986:13766` *(in `986:13765`)* | 708 × 841 *(953)* | `986:13785` *(in `986:13784`)* | 370 × 734 *(814)* | `964:64593` / `986:11861` / `986:11880` | `964:64650` / `986:10607` / `986:10800` | `if (s.lime)` inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | done `76fca10` |
 | 8 | `map` | `964:64632` | 1440 × 858 | `986:13767` | 768 × 823 | `986:13786` | 390 × 1286 | `964:64594` / `986:11862` / `986:11881` | `964:64651` / `986:10974` / `986:11467` | `if (s.lime)` inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
 | 9 | `form` | `964:64633` | 1440 × 812 | `986:13768` | 768 × 849 | `986:13787` | 390 × 929 | `964:64595` / `986:11863` / `986:11882` | `964:64652` / `986:11591` / `986:11633` | `if (s.v1 && s.lime)` ahead of `EnquiryForm`'s `if (s.v1)` | — |
 | 10 | `testimonials` | `964:64634` | 1440 × 853.9 | `986:13769` | 768 × 803 | `986:13788` | 390 × 840 | `964:64596` / `986:11864` / `986:11883` | `964:64653` / `986:11675` / `986:11701` | `if (s.lime)` inside `Testimonials`' `if (s.v1)`, after `rail` | — |
@@ -196,7 +196,10 @@ Anton at 0.75 runs narrower than Bebas Neue per em. The frames move where the ty
 block pins its date column at `u(desk ? 301 : 187)`, a width it *measured* for Bebas; Anton at
 0.75 is a different width. Re-measure the pin at all three widths with the harness's `&open=`
 looping every month (Retro layout 2, "measure the pin, never transcribe it"), and note that the
-390 master hugs its own "JUN 12" — that is the number that proves the face.
+390 master hugs its own "JUN 12" — that is the number that proves the face. *Measured in section
+7:* no overflow. Anton at 0.75 is **narrower** than Bebas — the widest mark is `MAR 02` at 235.2
+canvas px on the 1440 master's 130 and `MAR 30` at 178 on 768's 81, so the pin is `u(desk ? 287 :
+179)` (Lime's 301 / 187); at 390 Anton's `JUN 12` is 86.2 against the master's own 91 hug.
 
 ## Grunge's layout-2 mode
 
@@ -1049,6 +1052,92 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly pricing
   arch 1 at three widths on both surfaces.
 
+### Settled in section 7 (the booking calendar)
+
+- **No Grunge block, for the sixth time in this pass: Lime's `if (s.lime)` inside `Calendar`'s
+  `if (s.v1)`, after `want` / `hit` / `cur` / `line`, is `(s.lime || s.grunge)`**, with the **`G`
+  lookup** at its head (four keys — the panel's radius, Scheme 2's ground, the pin, the head
+  rule; Lime's arm is today's literals) and one `disp(size, lh, extra)` for the two display
+  sites. The tree is Lime's node for node at all three widths (head band / Frame 42 / column
+  head / four rows / foot, the 390 rows' `Frame 313`–`316` stacks included), on **Scheme 2**
+  (`187:7` beside `187:4` on every root) with **no Device override**: `get_variable_defs`
+  returns display-md 72 / 50 / 38, display-lg 130 / 81 / 46, label-xs 20 / 14 / 12, body-lg
+  16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12, chip 12 / 11 / 11, list 24 / 19 / 18 —
+  `THEME_RAMP.Grunge` to the token, so there is no `T` table and every size reads `s.*`.
+  Section 1's walker ran once over all three masters (one call, three roots, and the 390 half a
+  second time compactly after the return truncated at 20 KB — pricing's lesson again). The
+  hooks sit above the branches, so the published row picking needed nothing: at
+  `theme=2&live=1`, desktop and 390, a row click moves the chip and the line to JUN 14 /
+  "Saturday full day selected", a second click falls back to the cued JUN 12, a fourth-row
+  click features JUL 05, the pill is `<a href="#form">` and the flow is a span plus
+  `#pricing` / `#form` links; `&booked=2025-06-12,2025-06-14` dims both rows to .38 with
+  `cursor: auto` and no state change on click, drops the chip and prints *Pick a date to
+  enquire*; `n=0` prints *No dates yet.* at .38 and `n=8` draws eight rows with no overflow.
+  No page errors or warnings.
+- **Scheme 2 is one literal in four seats, the plan's first trap met a second time**: `sem/bg`
+  `#171716` is the panel, every ink on the red band (the brand, the flow links, the heading),
+  the foot chip's label and the pill's type and disc — all of which Lime's block reads as
+  `s.box1`, which is `#1A1A1A` here. Named `G.bg2` once, `HeaderV0`'s `G2` rule; nothing in the
+  block falls to `s.box1` or `s.bg`. The band is `s.ac`, the column heads `s.ac`, the rows
+  `s.tx`, every hairline `s.stroke1` as a bottom inset shadow — the same keys on both
+  templates, and every one confirmed off the fills.
+- **The heading's `sem/stroke/2` rule is drawn here, where Lime declined it.** Frame 42's 1px
+  INSIDE bottom stroke is `#FF0000` on the `#DF262C` band and the render samples `(255, 0, 0)`
+  on all three masters (y 278 / 234 / 210); it is `inset 0 -1px 0 ${s.stroke2}` on the wrapper
+  that already carries the 20 of padding, so the stated 164 / 120 / 96 hold. Lime's arm is
+  `undefined`, which React drops — the theme-1 digest is zero.
+- **Rings, not glows — confirmed off every node, and no instance ring either.** The root
+  carries fills and a raw **15** radius (Lime 50) but **no stroke** at any width, so pricing's
+  overlay does not carry here and none is drawn; no `image 1`, no seal, no effect on any node
+  but the pill's `DROP_SHADOW 5 / 5` in `#DF262C` — `Retro/Poster` bound to `sem/text/1`, the
+  accent, the very key Lime's block already passes through `style` (Lime 2, route 1), so the
+  `BookPill` call changes only `fg`. The pill is the frame's white `s.tx` on a 67 capsule
+  (`s.btnR` 999 on 54), Scheme 2's `#171716` disc round an `s.ac` arrow, its label
+  `labelStyle`-faced: **149.2 × 44.3 / 159.8 × 54 / 155.8 × 54** against the masters' 177 × 54
+  × 0.82 = 145.1 / 158 / 154 — Anton wider than Stones Crush by 3–4px here where it was
+  narrower on the header's, the same class of diff.
+- **The pin is measured for Anton, and it is narrower than both faces before it** (the plan's
+  *Sizes* note): `u(desk ? 287 : 179)`, off a 12 × 31 loop in the rendered style, and re-run
+  after the fit off the mark span itself (235.2 / 178). The frame's 350 would have cleared
+  Anton at 1440 — it is only at 768 that it is the leaked desktop number — but it is measured
+  at both, Lime's call, so the cost is Lime's too: the desktop weekday stands at **322** against
+  the frame's 374 (Lime's 333.7), the 768 one at 285 against 456. At 390 there is no pin and
+  the mark hugs: Anton's `JUN 12` 86.2 against the master's 91.
+- **Type**: the heading (Display/MD, lh 1) and the marks (Display/LG, lh 0.89) go through
+  `disp()` — `faced` / `facedLh` / `textTransform` behind `grunge`, identity off it — landing
+  44.25 / 37.5 / 28.5px in 59 / 50 / 38 line boxes and 80.25 / 60.75 / 34.5px in 95.2 / 72.1 /
+  40.9 (the masters' 116 × 0.82 = 95.1 / 72 / 41). The heading is one tone, Scheme 2's
+  `#171716` on the band — "FIND A DATE THAT WORKS FOR YOUR EVENT" is all `sem/bg` — so neither
+  positional two-tone rule carries. The column heads, the weekday and the chip are Chakra Petch
+  and Inter at the ramp and need no facing; `sl.mark` is upper-cased in `sectionVm` already, so
+  the transform on it is a digest column and nothing more.
+- **Blocked is Lime's state, inherited**: opacity .38 on the row's three children, no strike,
+  no handler — Grunge's layout-1 calendar takes the same state on its cells, so nothing was
+  added. **The 390 foot stack is inherited too**: Grunge's 390 master keeps chip, line and pill
+  on one row with the line at 90 wide on three lines, exactly as Lime's did, and Lime's block
+  departed from its own frame there (the pill on its own row); a Grunge-only row would be the
+  ternary tree the plan forbids, so the foot is 113 against the frame's 84 (Lime's 129).
+- **Measured against the masters' content edges**: desktop panel 1052 × 816.8 at radius 12.3
+  (15 × 0.82), band 199.5, h2 at 94.6 (115 × 0.82 = 94.3) and 468 wide inside the 571 cap,
+  column head 49.8 (61 × 0.82 = 50), rows 121.4 (148 × 0.82), marks 235.3 wide, weekday at 322,
+  foot 82 (100 × 0.82), chip 49.8 × 19.8 (62 × 24 × 0.82 = 50.8 × 19.7) at 10px / −0.6px, pill
+  block 4.1, disc 37.7 × 36.1; 768 panel 688 (our canvas against 708), band 220.4, h2 at 114.4
+  (115) and 571 wide, column head 53.6 (54), rows 104.1 (104), marks 179 wide in 72.1, foot 100,
+  chip 57.2 × 23 (58 × 23), pill 159.8 × 54 at x 488 flush right; 390 panel 346 (370), band
+  208.4, h2 at 114.4 (115) full width, column head 51.1 (51) with *Date ↓* at 10 and
+  *Availability ↓* flush right, rows **88** (88), marks 40.9 over weekdays 15.1 (the frame's 41
+  + 15 = 56 stack), chip 57.2 × 23, pill `full` 155.8 × 54. **Named diffs, Lime's**: every head
+  is one heading line shorter than its frame (199.5 / 220.4 / 208.4 against 258.3 / 271 / 247),
+  since the seed prints AVAILABILITY where the frame sets a two-line sentence; the desktop and
+  768 weekdays under the measured pin; the root's 40 / 22 side padding against the masters'
+  30 / 10; the 390 foot stack.
+- **`FIELDS.calendar.heading`'s `Grunge: [0, 1, 2, 3]`** (layout 1, section 8) holds over the
+  fitted card: the h2 is in every layout-2 render above. `reach.mjs` carries no calendar probe
+  (its `cj` probes are the header's, the bio's and the map's), so no run was owed; `slotCta`
+  is a flat `[1]` for every template and the fitted pill prints it.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly calendar
+  arch 1 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
@@ -1182,6 +1271,32 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
 - *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — six keys.
 - *A stand-in face is scaled to the frame's glyph size* (C) — heading, name, numeral.
 - *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a fifth
+  time.
+- *Check a narrow master's Device mode before trusting `s.*`* (A) — all three calendar nodes,
+  none overridden; all 24 sizes `THEME_RAMP.Grunge`'s.
+- *Every glow is a guess until the node's `effects` confirm it* (A) — no effect on any of the
+  three masters but the pill's block; every hairline a plain inside stroke, and the root carries
+  none at all.
+- *`get_variable_defs` mixes nested schemes; the fills settle which node is on which* (A) — the
+  panel's `#171716` read off the root's fill, not off the emitted `sem/bg`.
+- *Scheme 2 is a literal, not `s.box1`* (this plan's Conventions) — the second section to meet
+  it: one literal, four seats.
+- *A leak that shows and reads as a defect is overridden* (A) — turned round: the head rule
+  Lime declined as lime-on-lime shows here, and is drawn.
+- *Where the seam lives inside the branch, the block goes after the seam* (C) and *the sixth
+  layout-2 block, after the seam: `if (s.lime)` within `Calendar`'s `if (s.v1)`, after `want` /
+  `hit` / `cur` / `line`* (Lime 2, calendar) — widened; the seam shared whole.
+- *Measure the pin, never transcribe it* (Retro 2, calendar) and *the pin is re-measured for
+  Bebas Neue, and the frame's 350 is not followed* (Lime 2, calendar) — a third face, a third
+  pair of numbers, the same call.
+- *A blocked slot takes layout 1's Lime state* and *the 390 foot stacks, Retro's departure*
+  (Lime 2, calendar) — both inherited, neither grown.
+- *Open question 2's route 1: the hard shadow goes through `style`* (Lime 2, bio) — the pill's
+  block, already Lime's, on the same key.
+- *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — four keys.
+- *A stand-in face is scaled to the frame's glyph size* (C) — heading and marks; the pill's
+  label through `labelStyle`.
+- *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a sixth
   time.
 
 ## Open questions
