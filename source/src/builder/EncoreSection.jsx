@@ -20458,7 +20458,8 @@ function EnquiryForm({ s }) {
   // band*; the credit row is narrower for the shorter role, and the card runs
   // shorter than the frames' by the dropped price and stars. The sheet's own
   // `s.gPad` inset makes the desktop photo column 686.2, the frame's 687.2.
-  if (s.v1 && s.lime) {
+  if (s.v1 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -20466,38 +20467,72 @@ function EnquiryForm({ s }) {
     const type = (family, size, lh, extra) => ({
       fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
     })
-    const ink = s.bg // Scheme 4 `sem/text/1` and `/2`
-    const mist = '#D5E3B2' // Scheme 4 `sem/box/1` — the card and every box
-    const hair = '#15180F26' // Scheme 4 `sem/stroke/1`, 15%
+    // Grunge — 964:64633 / 986:13768 / 986:13787, Lime's tree node for node (42
+    // = 42 at every width), so the block is shared and `G` names the leaves
+    // (Lime's arm is the old literals). The root is `187:4`, Scheme 1, which is
+    // Scheme 4 byte for byte in this mode, so there is **no band**: the frame's
+    // root is the page's own `#000000`, and the sheet keeps its geometry and
+    // paints nothing. Every ink is `s.tx` but the heading, the price and the
+    // stars, which are the accent; the card and the boxes are `s.box1` in the
+    // `s.stroke1` hairline, the photograph `s.box2` in a 1px `s.ac` ring with no
+    // glow, the pill Scheme 1's own red with black type round a black disc.
+    // Radii are a raw 15 where Lime's are 50. No node carries an effect.
+    const G = grunge ? {
+      sheet: undefined, ink: s.tx, head: s.ac,
+      mist: s.box1, hair: s.stroke1, r: u(15),
+      well: s.box2, photoRing: `inset 0 0 0 1px ${s.ac}`, avatarWell: s.bg,
+      // 12 over Label/SM's own line box, 16 / 13 / 12 here.
+      boxH: desk ? u(42) : s.mob ? '37px' : '38px',
+      pillBg: s.ac, pillFg: s.bg, discBg: s.bg, discFg: s.ac,
+    } : {
+      sheet: s.tx, ink: s.bg, head: s.bg,
+      mist: '#D5E3B2', hair: '#15180F26', r: u(50),
+      well: s.tx, photoRing: `inset 0 0 0 1px ${s.bg}, inset 0 0 ${u(34)} ${s.ac}`, avatarWell: s.tx,
+      boxH: desk ? u(44) : s.mob ? '37px' : '39px',
+      pillBg: s.bg, pillFg: s.tx, discBg: s.tx, discFg: s.bg,
+    }
+    // Anton at the frame's glyph size, in capitals: every direct display or
+    // label site here owes both under Grunge; identity off it.
+    const disp = (family, size, lh, extra) => type(family, faced(s, size), facedLh(s, lh), {
+      ...(grunge ? { textTransform: 'uppercase' } : null), ...extra,
+    })
+    const ink = G.ink // Lime: Scheme 4 `sem/text/1` and `/2`
+    const mist = G.mist // Lime: Scheme 4 `sem/box/1` — the card and every box
+    const hair = G.hair // Lime: Scheme 4 `sem/stroke/1`, 15%
     // Retro's twin's page inset, for Retro's reasons (the repertoire's bleed).
     const padV = desk ? s.gPad : s.mob ? '40px' : '60px'
     const padH = `calc(${s.surplus} + ${desk ? s.gPad : s.mob ? '10px' : '30px'})`
     // Retro's rule: the label is uppercased as a string so the live input can
     // carry it as its placeholder without shouting what the visitor types.
     const up = (t) => String(t).toUpperCase()
+    const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
 
     // Label/SM in ink on `mist` inside the hairline, at `radius/pill`. A refused
     // box thickens that ring to 2px of full ink — layout 1's Lime rule — so the
-    // stated height does not grow.
-    const box = (bad) => type(s.label, s.labelSm, 1.1, {
+    // stated height does not grow. Under Grunge the idle ring is the white 15%,
+    // so the refused one is 2px of full white: colour and weight.
+    // Faced but not transformed: `up()` cases the label, and what the visitor
+    // types stays as typed.
+    const box = (bad) => type(s.label, faced(s, s.labelSm), facedLh(s, 1.1), {
       background: mist, color: ink, border: 'none', borderRadius: s.btnR,
       boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? ink : hair}`,
-      height: desk ? u(44) : s.mob ? '37px' : '39px',
+      height: G.boxH,
       padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
     })
 
     // The submit and *Write another*: layout 1's Lime pill with the pair turned
     // round — `sem/text/1` with Display/List in `s.tx`, and the 46 × 44 disc in
-    // `s.tx` round an ink arrow. 5 + 44 + 5 is the frames' 54.
-    const pill = (extra) => type(s.display, s.list, 1.2, {
+    // `s.tx` round an ink arrow. 5 + 44 + 5 is the frames' 54. Under Grunge it
+    // is the accent lettered in black, a black disc round a red arrow.
+    const pill = (extra) => disp(s.display, s.list, 1.2, {
       ...row(u(10), { justifyContent: 'space-between' }),
-      background: ink, color: s.tx, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
+      background: G.pillBg, color: G.pillFg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
       padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
     })
     const disc = (
       <span style={{
         width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
-        background: s.tx, color: ink,
+        background: G.discBg, color: G.discFg,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
     )
@@ -20511,12 +20546,16 @@ function EnquiryForm({ s }) {
     const title = desk ? u(36) : s.mob ? '26px' : '28px'
     const priceRow = (!!s.formPrice || !!s.formPriceUnit) && (
       <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
-        {!!s.formPrice && <span style={type(s.display, title, 1.1)}>{s.formPrice}</span>}
+        {!!s.formPrice && <span style={disp(s.display, title, 1.1, { color: G.head })}>{s.formPrice}</span>}
         {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
       </div>
     )
+    // Under Grunge the line is two-tone: the stars are the accent, the count
+    // `s.tx`. Lime keeps its one text node.
     const bookingsLine = !!s.formBookings && (
-      <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>★★★★★{'  '}{s.formBookings}</span>
+      <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>
+        {grunge ? <span style={{ color: s.ac }}>★★★★★</span> : '★★★★★'}{'  '}{s.formBookings}
+      </span>
     )
 
     return (
@@ -20525,7 +20564,7 @@ function EnquiryForm({ s }) {
         // root's `limeLight` is layout 1's, so the band paints its own ground
         // and its own ink.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-        background: s.tx, color: ink,
+        background: G.sheet, color: ink,
         padding: `${padV} ${padH}`,
         display: 'flex', gap: u(40), alignItems: 'flex-start',
         flexDirection: s.mob ? 'column' : 'row',
@@ -20536,17 +20575,19 @@ function EnquiryForm({ s }) {
         })}>
           {/* 437 at 1440 and 768, 262 at 390. The ring and the glow are one
               last-child overlay, so they paint over the photograph as Figma's
-              stroke and inner shadow do; the well is Scheme 4's `sem/box/2`. */}
+              stroke and inner shadow do; the well is Scheme 4's `sem/box/2`.
+              Under Grunge the overlay is the ring alone, in the accent, on
+              Scheme 1's `sem/box/2`. */}
           <div style={{
             position: 'relative', height: u(s.mob ? 262 : 437),
-            borderRadius: u(50), overflow: 'hidden', background: s.tx,
+            borderRadius: G.r, overflow: 'hidden', background: G.well,
           }}>
             {/* `null`, Retro's reason: an emptied stage photo must not fall
                 through to `s.image`, which is the credit row's portrait. */}
             <Photo s={s} src={s.formPhoto ?? null} ink={ink} initialsSize={desk ? 56 : 40} />
             <span style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: `inset 0 0 0 1px ${ink}, inset 0 0 ${u(34)} ${s.ac}`,
+              boxShadow: G.photoRing,
             }} />
           </div>
           {/* Display/SM at lh 1. The frames break it LET'S MAKE / YOUR NIGHT
@@ -20556,11 +20597,21 @@ function EnquiryForm({ s }) {
               its own breaks, so 768 is 5.2em (layout 1's value for this string).
               1440 wants two, and any cap over the second line's 8.87em gives two
               with the break after NIGHT instead — 9em, the footer's. 390 needs
-              none: our 346 column is 10.8em at 32. */}
-          <h2 style={type(s.display, s.dispSm, 1, {
-            margin: 0, color: ink, overflowWrap: 'break-word',
-            maxWidth: desk ? '9em' : tab ? '5.2em' : undefined,
-          })}>{s.title}</h2>
+              none: our 346 column is 10.8em at 32.
+              Under Grunge the head is all accent and two lines at every width,
+              broken after MAKE, so it takes layout 1's Grunge rule — words one
+              and two a block line, the rest a second — and no cap: YOUR NIGHT
+              UNFORGETTABLE. is 7.86em of the faced size, 322 / 314 / 236px
+              against the frames' 332 / 334 / 370 boxes. */}
+          <h2 style={disp(s.display, s.dispSm, 1, {
+            margin: 0, color: G.head, overflowWrap: 'break-word',
+            maxWidth: grunge ? undefined : desk ? '9em' : tab ? '5.2em' : undefined,
+          })}>{grunge && titleWords.length > 2 ? (
+            <>
+              <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
+              <span style={{ display: 'block' }}>{titleWords.slice(2).join(' ')}</span>
+            </>
+          ) : s.title}</h2>
           {/* Frame 284: Retro's axis flip — a space-between row at 1440 and
               390, a column at 768. An emptied promise list drops its node. */}
           <div style={tab
@@ -20587,10 +20638,10 @@ function EnquiryForm({ s }) {
               {/* The portrait on `sem/bg`, radius 24 of 48 — a circle. */}
               <span style={{
                 width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
-                overflow: 'hidden', background: s.tx,
+                overflow: 'hidden', background: G.avatarWell,
               }}><Photo s={s} ink={ink} initialsSize={Math.round(15 * z)} /></span>
               <span style={col(u(2), { minWidth: 0 })}>
-                <span style={type(s.display, s.list, 1.2)}>{s.brand}</span>
+                <span style={disp(s.display, s.list, 1.2)}>{s.brand}</span>
                 <span style={type(s.ui, s.labelXs, 1.26)}>{s.kicker}</span>
               </span>
             </span>
@@ -20606,7 +20657,7 @@ function EnquiryForm({ s }) {
           alignSelf: s.mob ? undefined : 'stretch',
         }}>
           <div style={col(u(14), {
-            background: mist, color: ink, borderRadius: u(50),
+            background: mist, color: ink, borderRadius: G.r,
             boxShadow: `inset 0 0 0 1px ${hair}`,
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
             position: 'sticky', top: 0,
@@ -20619,7 +20670,7 @@ function EnquiryForm({ s }) {
               // since `s.title` is the heading string), and the address is
               // Body/MD — both invented, Retro's same two.
               <>
-                <h3 style={type(s.display, title, 1.1, {
+                <h3 style={disp(s.display, title, 1.1, {
                   margin: 0, overflowWrap: 'break-word',
                 })}>{s.formSentTitle}</h3>
                 <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
