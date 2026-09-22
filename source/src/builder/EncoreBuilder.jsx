@@ -389,7 +389,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   // The pricing stack's footnote stands 32 above the section's foot at 1440
   // and 768 (964:68680 · 984:10765). 390 keeps its 44, under the master's 60.
-  if (T.name === 'Lime' && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
+  // Grunge's three masters state the same 32 / 32 / 60 (964:68712 · 984:13925
+  // · 984:13956), so the arm is both templates'.
+  if ((T.name === 'Lime' || T.name === 'Grunge') && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
     vm.pad = `${vm.padY} ${vm.padX} ${Z.dev === 'desktop' ? Math.round(32 * 0.82) : 32}px`
   }
   // The form's card ends 90 / 60 above its foot and the testimonials' head

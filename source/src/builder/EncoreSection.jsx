@@ -8432,25 +8432,69 @@ function Pricing({ s }) {
     // ramp's `s.*` at all three widths but Display/Title, which is the frames'
     // own 36 × 0.82 / 28 / 26 (`s.title` is the heading string).
     //
-    // Declined: the instance's own 1px `stroke1` ring on all four sides — the
-    // component frame's stroke, which layout 2's pricing declined for the same
-    // reason (stacked bands would double it). The 390 master's 60 top and
-    // bottom inset is the root's `padY`'s, as everywhere.
-    if (s.lime) {
+    // Declined under Lime: the instance's own 1px `stroke1` ring on all four
+    // sides — the component frame's stroke, which layout 2's pricing declined
+    // for the same reason (stacked bands would double it). Grunge's masters
+    // draw it, so the Grunge arm below puts it back. The 390 master's 60 top
+    // and bottom inset is the root's `padY`'s, as everywhere.
+    //
+    // Grunge — the same three masters in Static Youth's mode (964:68712 at
+    // 1440, 984:13925 at 768, 984:13956 at 390), widened rather than branched.
+    // One node-walk call per master found Lime's tree node for node at all
+    // three widths — the 24 between blocks, the 12 head, the 14 toggle row, the
+    // 16 between rows, the 40 column gap, the 10 left column, the 6 price row,
+    // the 12/8/24 includes grid, the badge's 3/8 on a 4 corner, the pill's whole
+    // box — on **Scheme 1** (`187:4` on every root) with no Device override and
+    // **no effect on any node**. Every size is a Grunge ramp token
+    // (`get_variable_defs`: title 36 / 28 / 26, list 24 / 19 / 18, display-md
+    // 72 / 50 / 38, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12,
+    // label-xs 20 / 14 / 12, chip 12 / 11 / 11, eyebrow 15 / 12 / 11), so there
+    // is still no `T` table and every size reads `s.*`.
+    //
+    // What moves is eight values, all of them in `G`. The row's corner is a raw
+    // **15** at every width (Lime 50) and its padding **28** (Lime 38), which is
+    // Retro's own number again and is what leaves the 768 includes panel at
+    // **248** (Lime 240). A plain row is outlined in `sem/stroke/2` **#FF0000**
+    // (`s.stroke2`) where Lime's is `s.ac`. The featured row nests **Scheme 3**,
+    // and there the three literals are the scheme's, not the palette's: its
+    // `stroke/2` is **white**, its `text/2` — every ink on the row, the name,
+    // the blurb, the unit, the whole includes column — is **white too** (Lime
+    // flips the row to `s.bg`), and only its `text/1`, the numeral, is
+    // **black**. Its badge is Scheme 3's `box/1` **#9E1F17** lettered white
+    // (Lime `#CCFA61` on `s.bg`). The capsule needs nothing: `sem/box/1` in a
+    // `stroke/1` hairline, the lit option `sem/text/1` (= `s.ac`) lettered
+    // `sem/bg`, the idle ones `sem/text/2` — Lime's five keys to the node.
+    // Both pills need nothing either: the plain row draws `BookPill`'s Grunge
+    // defaults exactly (red under black type, a black disc round a red arrow)
+    // and the featured one is Lime's pair turned round, `bg={s.bg} fg={s.ac}`,
+    // which on Scheme 3 is the frame's black pill with a red label and a red
+    // disc round a black arrow.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const ring = (c) => `inset 0 0 0 1px ${c}`
-      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the badge
+      // Lime's arm is this block's own literals, so theme 1 digests to zero.
+      const G = grunge
+        ? { radius: 15, pad: 28, incW: 248, rowRing: s.stroke2, featRing: '#FFFFFF',
+            featInk: s.tx, featNum: '#000000', badgeBg: '#9E1F17', badgeFg: '#FFFFFF' }
+        : { radius: 50, pad: 38, incW: 240, rowRing: s.ac, featRing: s.bg,
+            featInk: s.bg, featNum: s.bg, badgeBg: '#CCFA61', badgeFg: s.bg }
+      // Anton stands in for Stones Crush, which is all capitals: every display
+      // site scales and cases at its own site (layout 1, session 0).
+      const disp = (lh) => (grunge
+        ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' }
+        : { lineHeight: lh })
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
         letterSpacing: '-0.06em', whiteSpace: 'nowrap',
       }
       // Label/XS — the blurb and the features.
       const ui = { fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls }
-      const rowBox = { width: '100%', borderRadius: u(50), padding: u(38) }
+      const rowBox = { width: '100%', borderRadius: u(G.radius), padding: u(G.pad) }
 
       const packRow = (t, i) => {
         // The seat, Retro's rule whole: the last row on show, not at one row.
         const feat = shown.length > 1 && i === shown.length - 1
-        const ink = feat ? s.bg : s.tx
+        const ink = feat ? G.featInk : s.tx
         const money = t.price
         const symbol = /^[^\d]/.test(money) ? money[0] : ''
         const amount = symbol ? money.slice(1) : money
@@ -8461,7 +8505,7 @@ function Pricing({ s }) {
               : row(u(40), { alignItems: 'flex-start' })),
             ...rowBox, color: ink,
             background: feat ? s.ac : 'transparent',
-            boxShadow: ring(feat ? s.bg : s.ac),
+            boxShadow: ring(feat ? G.featRing : G.rowRing),
           }}>
             <div style={col(u(10), {
               alignItems: 'flex-start',
@@ -8469,11 +8513,12 @@ function Pricing({ s }) {
             })}>
               <div style={row(u(8), { flexWrap: 'wrap' })}>
                 <span style={{
-                  fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls,
+                  fontFamily: s.display, fontSize: faced(s, s.list), ...disp(1.2),
+                  letterSpacing: s.dls,
                 }}>{t.name}</span>
                 {feat && (
                   <span style={{
-                    ...chip, background: lime3, color: s.bg,
+                    ...chip, background: G.badgeBg, color: G.badgeFg,
                     borderRadius: u(4), padding: `${u(3)} ${u(8)}`,
                   }}>FEATURED</span>
                 )}
@@ -8490,8 +8535,8 @@ function Pricing({ s }) {
                     }}>{symbol}</span>
                   )}
                   <span style={{
-                    fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
-                    letterSpacing: s.dls, color: feat ? s.bg : s.ac, whiteSpace: 'nowrap',
+                    fontFamily: s.display, fontSize: faced(s, s.dispMd), ...disp(1),
+                    letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
                     ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
                   }}>{amount}</span>
                   {!!s.tierUnit && (
@@ -8514,7 +8559,7 @@ function Pricing({ s }) {
               <div style={col(u(12), {
                 alignItems: 'flex-start',
                 ...(desk ? { flex: '1 1 0', minWidth: 0 }
-                  : tab ? { width: u(240), flex: 'none' } : { width: '100%' }),
+                  : tab ? { width: u(G.incW), flex: 'none' } : { width: '100%' }),
               })}>
                 <span style={chip}>WHAT&rsquo;S INCLUDED</span>
                 {/* One grid, Retro's normalisation: the 768 master spaces a
@@ -8542,8 +8587,9 @@ function Pricing({ s }) {
           <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
             {!!s.title && (
               <h2 style={{
-                margin: 0, fontFamily: s.display, fontSize: desk ? u(36) : tab ? '28px' : '26px',
-                lineHeight: 1.1, letterSpacing: s.dls, color: s.tx,
+                margin: 0, fontFamily: s.display,
+                fontSize: faced(s, desk ? u(36) : tab ? '28px' : '26px'),
+                ...disp(1.1), letterSpacing: s.dls, color: s.tx,
               }}>{s.title}</h2>
             )}
             {!!s.pricingIntro && (
@@ -8579,7 +8625,7 @@ function Pricing({ s }) {
           )}
           <div style={col(u(16), { width: '100%' })}>
             {shown.length === 0 ? (
-              <div style={{ ...rowBox, ...ui, boxShadow: ring(s.ac), color: s.tx }}>
+              <div style={{ ...rowBox, ...ui, boxShadow: ring(G.rowRing), color: s.tx }}>
                 No packages yet.
               </div>
             ) : shown.map(packRow)}
@@ -8589,6 +8635,18 @@ function Pricing({ s }) {
               fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
               letterSpacing: s.dls, color: s.tx,
             }}>{s.pricingSub}</span>
+          )}
+          {/* Grunge's instance ring, layout 2's pricing mechanism exactly: 1px
+              of `sem/stroke/1` inside the frame's own box on all four sides, at
+              all three widths (the desktop render samples 38 on every edge).
+              The section root is the nearest positioned ancestor, so `inset: 0`
+              is its box; `pointerEvents` off, or the published capsule would
+              click the overlay. Lime's masters carry no such stroke. */}
+          {grunge && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+            }} />
           )}
         </div>
       )
