@@ -196,7 +196,7 @@ the block); it is the gate this session widens.
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Lime twin (1440 / 768 / 390) | Retro twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:68686` | 1440 × 900 | `984:13900` | 768 × 1024 | `984:13931` | 390 × 606.5 | `964:68654` / `984:10740` / `984:10771` | `964:68622` / `977:22532` / `982:9583` | `if (s.lime) { … return }` at the head of `HeaderV2` | done e231ad0 |
-| 2 | `bio` | `964:68695` *(head `964:68690`, in Section `964:68689`)* | 858 × 882 | `984:13908` *(head `984:13903`)* | 708 × 912 | `984:13939` *(head `984:13934`)* | 370 × 876 | `964:68663` / `984:10748` / `984:10779` | `964:68631` / `977:22717` / `982:10013` | `if (s.v2 && s.lime)` ahead of `Bio`'s `if (s.v2)` | — |
+| 2 | `bio` | `964:68695` *(head `964:68690`, in Section `964:68689`)* | 858 × 882 | `984:13908` *(head `984:13903`)* | 708 × 912 | `984:13939` *(head `984:13934`)* | 370 × 876 | `964:68663` / `984:10748` / `984:10779` | `964:68631` / `977:22717` / `982:10013` | `if (s.v2 && s.lime)` ahead of `Bio`'s `if (s.v2)` | done 095e495 |
 | 3 | `media` | `964:68706` list + `964:68705` card *(head `964:68698`)* | 858 × 424 + 858 × 243 | `984:13919` + `984:13918` *(head `984:13911`)* | 708 × 647 + 708 × 243 | `984:13950` + `984:13949` *(head `984:13942`)* | 370 × 647 + 370 × 243 | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | `if (s.lime)` inside `Media`'s `if (s.v2)`, after `nHot` | — |
 | 4 | `repertoire` | `964:68710` | 1440 × 621 | `984:13920` *(in `984:13917`)* | 708 × 655 | `984:13951` | 390 × 702 | `964:68678` / `984:10760` / `984:10791` | `964:68646` / `977:23041` / `982:10193` | `if (s.lime)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | — |
 | 5 | `calendar` | `964:68709` *(in `964:68707`)* | 405 × 537.6 | `984:13923` *(in `984:13921`)* | 708 × 482.6 | `984:13954` *(in `984:13952`)* | 370 × 441.6 | `964:68677` / `984:10763` / `984:10794` | `964:68645` / `984:10605` / `984:10673` | `if (s.lime)` inside `Calendar`'s `if (s.v2)`, after `line` | — |
@@ -620,6 +620,17 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **`CROP` honours the transform; `FILL` ignores it.** Layout 2's rule was written over `FILL`
   fills. The bio's photograph is the first `CROP` on a Grunge master, so there the transform is
   read and the render correlated.
+- **A `CROP` transform does not adapt when an instance is resized — the band is stretched.** The
+  bio's 768 master keeps the desktop transform in a narrower box, so the frame draws the same
+  band squashed horizontally (slice-stretched 0.92 against any cover's ≤ 0.53). A cover cannot
+  squash and should not: centre the same band in our box and name it. `objectPosition` through
+  `Photo`'s `style` is the route, not a landscape export, when the narrowest master is a plain
+  `FILL` of the same file.
+- **The composed row's pad arm moves per section, so the two heads part in between.** The
+  `vm.pad` arm at `d === 2` gives the bio, media and calendar a 50 top together under Lime; under
+  Grunge each joins in its own session (the digest rule), so until section 5 the calendar's
+  "Book Me" stands 30 below "KM BIO" on the 1440 page. Media's and the calendar's sessions add
+  `cat === 'media'` / `'calendar'` to the Grunge half of that arm.
 
 ### Settled in section 1 (the header)
 
@@ -695,6 +706,81 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`, and the full 810-render
   five-theme run differs in exactly header arch 2 at theme 2, three widths.
 
+### Settled in section 2 (the bio)
+
+- **No Grunge block: Lime's `if (s.v2 && s.lime)` ahead of `Bio`'s `if (s.v2)` is
+  `(s.lime || s.grunge)`**, `const grunge = s.grunge` naming the deltas at nine sites, plus a
+  block-local `brand()` and `upper`. The tree is Lime's box for box at all three widths — the
+  440 / 279 photo row, the 148 / 144 / 184 head band, `Frame 8`'s 100 / 100 / 52 gaps, Frame 9,
+  the 179 name cap, the 1px rules at node opacity .32 in white (Lime's `${s.tx}52`, unchanged),
+  the `stroke1` card ring at 1440 and 768 and none at 390 — on **Scheme 1 with no nested scheme
+  and no Device override**. Every size is a Grunge ramp token (`get_variable_defs`: display-sm
+  50 / 40 / 30, label-xs 20 / 14 / 12, chip 12 / 11 / 11, body-md 14 / 13 / 13), so no `T` table.
+- **The deltas, off the walk**: the card's radius is **50 at 1440 and 768 and 15 at 390** (Lime
+  60) — the plan's "expected 15" held only at 390; the photograph is a raw **15** at every
+  width (Lime 55) on the same `s.box3` well, with **no effect** — Lime's `s.ac` glow is dropped
+  and nothing replaces it (no stroke on the node either); the name is **two-tone**, `sem/text/2`
+  then `text/1` at the first space (the header's `brand()` copied in), `faced` / `facedLh` and
+  uppercase; the stat **values are Label/XS in `font/ui`** — Chakra Petch at 1.26, written
+  directly rather than through `labelStyle`, which would `faced()` a real face — with a
+  **2.52em** floor (two lines at 1.26, the frame's 50 box) where Lime's 2.2em is two at 1.1.
+- **Open question 2 closes: the head is one tone.** "Reads the room." is a single `#DF262C`
+  segment at every width (Stones Crush 130 / 81 / 46 at .89), so the block keeps Lime's `s.ac`
+  and adds `faced` / `facedLh` / uppercase. The two Grunge bios disagree by frame: layout 1's
+  word-two accent was that page's, not the template's.
+- **Open question 1 closes: no export, an `objectPosition`.** The fill is `8031d0f3` under
+  `CROP` with `[[1, 0, 0], [0, 0.3811, 0.1689]]` — rows 16.9–55% of `grungeStage`, full width —
+  at 1440 and 768, and a plain `FILL` at 390. PIL against the renders: the slice correlates
+  **0.93 / 0.92** (desktop / 768) where a centred cover gives −0.01 / 0.02; 390's centred cover
+  gives **0.885**. At desktop the slice's 2.10 aspect is the box's, so it is a cover at
+  **27.3%** (0.89 at the peak, the screened grain included); the 768 box is narrower but keeps
+  the same transform, so the frame squashes the band (see *Conventions*) and ours centres it in
+  our 628 × 380 at **22.7%**; 390 is centred. Passed as `Photo`'s `style.objectPosition` behind
+  `grunge && !s.mob`, so an upload takes the same band. A landscape export through
+  `SEEDS.Grunge.layouts[2].bio` was rejected: it would have cropped 768's sides and given 390 a
+  different band from the frame's whole-portrait cover. `photos.js` did not move.
+- **Grain inside the photograph is layout 2's bio recipe on the photo's own box**: `image 2` is
+  exactly the 798 × 380 / 648 × 380 / 350 × 259 box, `SCREEN` at 1, the `b74be8bc` raster under
+  `FILL` — `<Grain exact grunge blend="screen" opacity={1} />` with the default `inset: 0`.
+  Sampled (mean / stddev inside the photo, corners skipped): frame **86.9 / 40.8**, ours **87.4 /
+  41.1** at desktop; 86.9 / 41.4 against 85.0 / 41.6 at 768; 86.1 / 40.0 against 84.0 / 39.3 at
+  390. The card beside it samples 26.0 flat on both.
+- **The seal is layout 1's red disc**: `classic={!grunge}`, tilt **26.06** (Figma −26.06), disc
+  125.37 / 62.68. Placed by the bounding box's centre — (30, 653.92) 167.7² in the instance at
+  1440 and 768, so 113.85 in and 148.77 / 152.77 down the about band (`left` 51.17, `top` 86.08 /
+  90.08), **8.25 right of and 1.6 above Lime's**; at 390 (265.96, 41.93) 83.85², Lime's centre to
+  the hundredth, so its `right` / `top` stand. Measured with the spin stopped: centre 93.4 in
+  (113.85 × 0.82 = 93.4) and 3.2 above the frame at desktop — the head band's difference, below;
+  exact at 768 (737.8 into the card); 62.1 from the card's right at 390, as in the frame. The
+  frame's name is Bebas leaking; `SealBadge`'s Grunge branch sets the label face, `faced`.
+- **`vm.pad`'s layout-3 arm takes the bio under Grunge alone** — top 50 / 50 / `padY`, foot 30 —
+  split from Lime's three-section arm so media and the calendar do not move this session (see
+  *Conventions* for the interim parting).
+- **Named diffs**: "KAI MERCER" holds one line at 0.75 where the frame's "STATIC YOUTH" wraps
+  in the 179 cap, so the desktop head band comes out 118 against 121.4 (148 × 0.82) and
+  everything under it stands 3.4 higher; the 390 values run one line where the frame's copy
+  hand-breaks "JUNE\n2021" (Retro's QA stat rule); the seeded paragraphs are shorter than the
+  frame's, so the cards run 706.7 / 865.5 / 765 against 882 × 0.82 / 912 / 876; the Genres row's
+  two red chips are lettered `#0D1F03` where the frame letters every chip white — `TagChips`
+  takes no ink, and this is the same component-override diff layout 2's bio and section 1 named
+  (the chips are otherwise the frame's: 28.3 tall at desktop against 35 × 0.82, radius 4 read,
+  gap 8, *Live* wrapping at 390 where the frame wraps *All Access*, having five to its six).
+- **`FIELDS`: one hint moved, no `in` row.** `scripts/reach.mjs 2` (2,784 renders) now has
+  `who.tags` and `who.showTags` reaching bio layouts **2, 3 and 4** — Lime's Genres row, widened
+  — so `FIELDS.header.tags`' hint reads "(in Lime and Grunge, layout 3 as well)"; the header's
+  own rows are unchanged. `vm.showBadge` / `vm.badgeText` read the bio's own content (`cv`), not
+  the header's fields, so the header's `showBadge` / `badgeText` Grunge rows (`[0, 3]`, the
+  header's own layouts) are untouched by a bio that now draws a seal. CLAUDE.md's "prints them in
+  layouts 2 and 4 and Lime's 3" owes "and Grunge's" in the sweep.
+- **No live control**, Lime's note: `live=1` digests byte-identical to the canvas at all three
+  widths.
+- **Verified in the builder**: `scripts/page-check.mjs Grunge 2` — four modal cards; card 3's
+  published 1440 page stands the bio and the calendar in one row at top 738, media under the bio
+  at 1761; every nav link and fragment anchor scrolls to its id; no errors or warnings; the 390
+  burger opens 1 → 11 links, no overflow.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly bio arch 2
+  at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's or 2's or
@@ -706,17 +792,22 @@ Lime's Conventions, with the plan it came from — the running list for the swee
   (`faced`, grunge/layout-1); *read a fill's `scaleMode` before its `imageTransform`*
   (grunge/layout-2); *the whole-page published check is one puppeteer script*; *field reach is
   measured*; *theme 1 is the digest at risk*.
+- Section 2: *the node walker, kept* (grunge/layout-2); *read a fill's `scaleMode` before its
+  `imageTransform`; correlate the render with the seed* (grunge/layout-2 — here the `CROP` half
+  of it); *place a seal by its disc's centre* (lime/layout-1); *measure anything under
+  `.seal-spin` with the animation stopped* (lime/layout-1); *every glow is a guess until
+  `effects` confirm it* (lime/layout-1); *a stand-in face is scaled* (`faced`, grunge/layout-1);
+  *casing stays the theme's; uppercase per site* (grunge/layout-1); *the grain lift is sampled,
+  mean and stddev* (grunge/layout-2, section 2); *theme 1 is the digest at risk*; *field reach is
+  measured*.
 
 ## Open questions
 
-1. **The bio photograph's crop.** The frame holds `grungeStage` (820 × 1024, a portrait) under
-   `CROP` in a 798 × 380 landscape box, so some band of the drummer is what the frame draws. If a
-   centred cover of the file is not that band, the answer is a landscape export seeded through
-   `SEEDS.Grunge.layouts[2].bio` — Lime's own mechanism for the same slot — and nothing else in
-   `photos.js` moves. The bio session decides against the render, not the transform alone.
-2. **The bio head's colour rule.** Layout 1's bio takes the accent on word two by position;
-   the layout-3 render reads all red. If the segments say one tone, the widened block draws one
-   tone and this plan records that the two Grunge bios disagree by frame, not by rule.
+1. ~~**The bio photograph's crop.**~~ *Closed in section 2:* the band is rows 16.9–55% of
+   `grungeStage`, drawn as a cover at `objectPosition` 27.3% (22.7% at 768, centred at 390); no
+   export, `photos.js` unchanged.
+2. ~~**The bio head's colour rule.**~~ *Closed in section 2:* one tone, `#DF262C`; the two Grunge
+   bios disagree by frame, not by rule.
 3. ~~**The 390 header's two missing frames**~~ *Closed in section 1:* the nav's two 1px spacer
    cells, which Lime's two-halves nav already folds away; Lime's written-out 390 holds.
 4. **The two leaked pictures are one this time** — the bio well's `fa453f7d` (Lime's stage shot)
