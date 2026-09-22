@@ -161,7 +161,7 @@ for the block); it is the gate this session widens.
 | 5 | `gallery` | `964:64628` | 1440 × 675 | `986:13763` | 768 × 468 | `986:13782` | 390 × 364 | `964:64590` / `986:11858` / `986:11877` | `964:64647` / `984:36046` / `984:36070` | **no block** — seven `s.lime` ternaries and one `s.lime &&` overlay through `Gallery`'s `if (s.v1)` | done `71c6e84` |
 | 6 | `pricing` | `964:64629` | 1440 × 708 | `986:13764` | 768 × 923 | `986:13783` | 390 × 871 | `964:64591` / `986:11859` / `986:11878` | `964:64648` / `986:10425` / `986:10492` | `if (s.lime)` inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | done `c76b5f7` |
 | 7 | `calendar` | `964:64631` *(in `964:64630`)* | 1328 × 1068 *(wrapper 1440 × 1180)* | `986:13766` *(in `986:13765`)* | 708 × 841 *(953)* | `986:13785` *(in `986:13784`)* | 370 × 734 *(814)* | `964:64593` / `986:11861` / `986:11880` | `964:64650` / `986:10607` / `986:10800` | `if (s.lime)` inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | done `76fca10` |
-| 8 | `map` | `964:64632` | 1440 × 858 | `986:13767` | 768 × 823 | `986:13786` | 390 × 1286 | `964:64594` / `986:11862` / `986:11881` | `964:64651` / `986:10974` / `986:11467` | `if (s.lime)` inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
+| 8 | `map` | `964:64632` | 1440 × 858 | `986:13767` | 768 × 823 | `986:13786` | 390 × 1286 | `964:64594` / `986:11862` / `986:11881` | `964:64651` / `986:10974` / `986:11467` | `if (s.lime)` inside `EventsMap`'s `if (s.v1)`, after `stats` | done `e19fa35` |
 | 9 | `form` | `964:64633` | 1440 × 812 | `986:13768` | 768 × 849 | `986:13787` | 390 × 929 | `964:64595` / `986:11863` / `986:11882` | `964:64652` / `986:11591` / `986:11633` | `if (s.v1 && s.lime)` ahead of `EnquiryForm`'s `if (s.v1)` | — |
 | 10 | `testimonials` | `964:64634` | 1440 × 853.9 | `986:13769` | 768 × 803 | `986:13788` | 390 × 840 | `964:64596` / `986:11864` / `986:11883` | `964:64653` / `986:11675` / `986:11701` | `if (s.lime)` inside `Testimonials`' `if (s.v1)`, after `rail` | — |
 | — | `footer` | `964:64635` | 1440 × 479.5 | `986:13770` | 768 × 647.4 | `986:13789` | 390 × 619.4 | `964:64597` | — | — | **out of scope**, expected: the same tree as Lime's layout-2 footer but for the mock name and its seal frame, and `NVAR.footer` is 1. **Confirmed in section 1** against Grunge's own layout-1 footer (`964:58610` / `986:44068` / `986:44080`): the depth-6 `type:name` multisets are identical at all three widths, 47 nodes each, mock name and seal frame included. The row is closed. |
@@ -516,7 +516,8 @@ Written now from what the plan can see; the sections add to it. One session, in 
    state. Grep both files for "layout 2", "Grunge" and "flat three".
 2. **The branch-local "flat three" comment** in `EventsMap`'s layout-2 branch (the zoom controls
    "stay gone under Retro and the flat three; Lime's block draws them" — JP-040's seat): true until
-   the map session, false after it. `Bio`'s two hits are in its layouts 3 and 4 and stay.
+   the map session, false after it. `Bio`'s two hits are in its layouts 3 and 4 and stay. *Done in
+   section 8* ("the flat two; the Lime block above draws them, under Grunge too").
 3. **One whole-page published check under Grunge at layout 2** — `scripts/page-check.mjs Grunge 1`
    (card 2, 0-based) plus the layout-2 controls Lime's sweep listed (header nav and burger, bio pill, media fan /
    bar / list with audio, repertoire search / chips / pager, gallery tiles, pricing chips and pill,
@@ -1138,6 +1139,75 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly calendar
   arch 1 at three widths on both surfaces.
 
+### Settled in section 8 (the events map)
+
+- **No Grunge block, for the seventh time in this pass: Lime's `if (s.lime)` inside
+  `EventsMap`'s `if (s.v1)`, after `stats`, is `(s.lime || s.grunge)`**, with the **`G` lookup**
+  at its head (nine keys — the card, its hairline, its ink, the zoom fill, the panel, the status
+  pill, the card/row radius, the panel radius, the map container's radius and the viewport's
+  aspect; Lime's arm is today's literals) and the block's `display()` faced / `facedLh` /
+  uppercase behind `grunge`. The tree is Lime's **node for node, 123 = 123 at all three
+  widths**, on the same three schemes (Scheme 1 root, Scheme 3 travel card and viewport,
+  Scheme 1 `radius-map` — plan trap 2), with **no Device override** (`get_variable_defs`: title
+  36 / 28 / 26, list 24 / 19 / 18, body-sm 12, chip 12 / 11 / 11, label-xs 20 / 14 / 12). The
+  walk was a **paired diff**: one `use_figma` call flattened the Grunge master and its Lime twin
+  in traversal order and returned only the fields that differ, which put the whole section on
+  one screen (the desktop return still truncated at 20 KB — split the node range, or drop the
+  text segments, when two 123-node trees go in one call). The hooks sit above the branches, so
+  the published featuring needed nothing: at `theme=2&live=1&n=8`, desktop and 390, a row click
+  and a pin click each feature their gig and move the lit pin, the Venue Link flips span ↔
+  `<a>` with the gig's link, `+` scales the layer to 1.25, `n=30` pages `1 2 … 6` and page 2
+  features gig 6, `n=0` prints *No dates yet.*, `n=1` draws no list; no page errors or warnings.
+- **Scheme 3 is red, and Lime's one `ink` was doing two jobs.** The travel card and the zoom
+  buttons are `box/2` **`#F52E34`** (the plan's named literal; Lime's `#CCFA61` / `#D9FF7F`)
+  under **white** type, in a **black** 15% hairline `#00000026` (card, chip, stats rules, zoom
+  rings). Lime's `ink` (`s.bg`) lettered the card *and* filled the Venue Link pill *and* ringed
+  Get Directions; under Grunge the frame splits them — the card's type, the connector, the zoom
+  glyphs and everything on the accent (ring labels, the centre pin's ring and glyph, so the lit
+  pin's ring, "the centre marker's pair") are white, `G.ink` = `s.tx`, while the pill and Get
+  Directions are `#000000` on both templates and now read `s.bg` directly. The pill is
+  `bg={s.bg} fg={s.ac}` — black under red type, a red disc round a black arrow — the frame's
+  pair to the node.
+- **The panel is Scheme 1, and every radius moves.** `radius-map` and the Map View Container
+  are `#1A1A1A` (`s.box1`; Lime `s.box2`, which is `#383838` here), the status pill `#000000`
+  (`s.bg`; Lime `s.box1`) with its red dot and type unchanged. Radii read off every node: card,
+  rows and panel a raw **15** at every width (Lime 50 / 50 / 50·30), the map container **8** at
+  every width (Lime 13 / 42 / 25); the day tile's 4 is `s.radiusChip`, already.
+- **The plate stands: Retro's `#292A1C`.** The texture is the same `e089bd11` at `FILL`,
+  opacity 1, and the frame's viewport samples **(42.4, 43.8, 29.1)** in a ring-free corner —
+  Retro's plate to the unit, as under Lime. The five dots are white at 60% (sampled 169, 169,
+  164), so Lime's redrawn pins (`s.tx` idle, `s.ac` lit in a 2px ring) carry on the same keys.
+- **The viewport's derived shape follows the shorter column**: 588 × **512** at 1440 and 318 ×
+  **520** at 768 (Lime 519 / 518), 346 × 298 at 390 unchanged — `flex: 1 0 0` under a panel
+  stretched to the left column, which Stones Crush makes 9px shorter at desktop.
+- **Two leaves inherited on purpose.** The EXPAND VIEW arrow's stroke is `#000000` on the
+  `#1A1A1A` bar (sampled: 0–26, it does not show); Lime's block draws it `s.ac` over its own
+  near-invisible `#2E3928`, and the widened block keeps that call rather than draw a black arrow
+  nobody sees. `Pager` on the page ground is layout 1's Grunge default (red pills, white type,
+  the current one in the leaked `s.activeFg` inside a 2px white ring) — no `onBox` overrides,
+  which layout 1's map needed only because its list stood on a red panel; it reads.
+- **Type**: the heading, both location names, every row venue, the panel venue and Get
+  Directions go through `display()` — 22.125 / 21 / 19.5px (Display/Title × 0.82 × 0.75 and
+  the narrow 28 / 26 × 0.75) in 32.4 / 30.8 / 28.6 line boxes, Display/List the same way — and
+  are uppercase; the Venue Link label is `BookPill`'s own. Every Inter string is the ramp's
+  (`s.bodySm` 12 against Lime's 13 is `THEME_RAMP.Grunge`'s, not a delta).
+- **Measured against the masters' content edges**: desktop card 516.2 × 278.1 at radius 12.3,
+  h2 32.4 tall at 22.125px, rows 65.3 (80 × 0.82 = 65.6), panel 594.7, container radius 6.6,
+  viewport 463.8 × 403.8 (588 : 512); 768 card 344.3 (343), rows 70.6, panel 702.5 (703),
+  container 565.2 (565) at 8, viewport 308 × 503.6 (318 : 520); 390 card 339.7 (340), rows 68.4,
+  panel 474 (479), container 338.9 (343). **Named diffs, Lime's**: the card prints two lines a
+  column where the frame prints three (Retro's "Based in" call), so the desktop card is 278.1
+  against 359 × 0.82 = 294.4 and the panel 594.7 against 611.7; the 768 rows hug at 70.6 where
+  the master states a **fixed 73.3** (content 51, centred — a leaked box; Lime's hugged its 72);
+  the 390 rows 68.4 against 74 (Retro's residue, declined); the root's 40 / 22 side padding
+  against the masters' 30 / 10.
+- **`FIELDS.map` holds**: `reach.mjs 2` reports `status`, `updated` and `expand` in layouts 2
+  and 3 and `rings` in 2, 3 and 4 over the fitted card — JP-040's rows exactly. Nothing moved.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly map arch 1
+  at three widths on both surfaces.
+- **Open question 1 paid for the map** in its own commit (`eb4ac06`, after the fit's digest was
+  clean): see the question.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
@@ -1298,6 +1368,28 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
   label through `labelStyle`.
 - *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a sixth
   time.
+- *Check a narrow master's Device mode before trusting `s.*`* (A) — all three map nodes, none
+  overridden.
+- *Every glow is a guess until the node's `effects` confirm it* (A) — no effect on any of the
+  three masters, as under Lime.
+- *`get_variable_defs` mixes nested schemes; the fills settle which node is on which* (A) — the
+  defs return Scheme 3's `sem/bg` `#DF262C` and `box/2` beside Scheme 1's; the fills put
+  `#F52E34` on the card and `#1A1A1A` on the panel.
+- *Scheme 3 is two literals, not one* (this plan's Conventions) — the map's `#F52E34`, named;
+  and its ink is white, which split Lime's `ink`.
+- *`radius-map` is Scheme 1 here* (this plan's traps) — `s.box1`, as written.
+- *Where the seam lives inside the branch, the block goes after the seam* (C) and *the seventh
+  layout-2 block, after the seam: `if (s.lime)` within `EventsMap`'s `if (s.v1)`, after
+  `stats`* (Lime 2, map) — widened; the seam shared whole.
+- *The raster: Retro's call is followed* (Lime 2, map) — a third time, sampled to the unit.
+- *`Pager`'s Lime branch is `(s.lime || s.grunge)`* (layout 1, section 5) — its default on the
+  page ground; layout 1's map-only `onBox` was not needed.
+- *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — nine keys.
+- *A stand-in face is scaled to the frame's glyph size* (C) — every display site through the
+  block's one `display()`.
+- *Field reach is measured, not read off the prose* (B) — `reach.mjs 2`, confirm-only.
+- *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a seventh
+  time.
 
 ## Open questions
 
@@ -1313,7 +1405,18 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
    whose `gap` is set — and `EventsMap`'s layout-2 and -3 rows (`...(s.mob ? { flexWrap,
    rowGap } : null)`), which fire on a resize into or out of 390 — card 3's logging is
    presumably the map's layout-3 row; not verified. The fix is to state `rowGap` unconditionally (it is inert without `flexWrap`); the
-   form session (9) and the map session (8) take their own rows.
+   form session (9) and the map session (8) take their own rows. *Map half paid in section 8
+   (`eb4ac06`):* four rows, not two — the status rows of layout 2's Lime block and shared
+   branch and layout 3's two — now spread `{ flexWrap }` at 390 and state `rowGap: u(6)` at
+   every width. **Reproduced first**: a throwaway copy of the harness re-rendering one root
+   tablet → mobile → tablet logs React's warning on map arch 1 and 2 at themes 0, 1 and 2, and
+   none after the fix. It needs **tablet**, not desktop: going from desktop the row's `gap`
+   also changes (9.8 → 12), and React's collision check lets the shorthand's update overwrite
+   the longhand's removal, so a desktop → mobile walk never warns — which is why the harness at
+   one width could not have caught it. The map digest is zero rows at all five themes, canvas
+   and live (it records geometry; the row does not wrap wide). **The form's rows are section 9's**
+   — they toggle at desktop, so walk desktop ↔ tablet, and expect a changed `gap` to mask
+   the warning there; stating `rowGap` unconditionally is right either way.
 2. **The pricing credit row** — the frame draws the three avatars, the stars and "32 reviews ·
    4.9", as Lime's did. Retro's claim rule dropped it and Lime inherited the drop; this plan inherits
    it too. Worth telling the designer with layout 1's list.
