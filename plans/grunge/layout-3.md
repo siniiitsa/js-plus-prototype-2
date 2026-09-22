@@ -195,7 +195,7 @@ the block); it is the gate this session widens.
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Lime twin (1440 / 768 / 390) | Retro twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `header` | `964:68686` | 1440 × 900 | `984:13900` | 768 × 1024 | `984:13931` | 390 × 606.5 | `964:68654` / `984:10740` / `984:10771` | `964:68622` / `977:22532` / `982:9583` | `if (s.lime) { … return }` at the head of `HeaderV2` | — |
+| 1 | `header` | `964:68686` | 1440 × 900 | `984:13900` | 768 × 1024 | `984:13931` | 390 × 606.5 | `964:68654` / `984:10740` / `984:10771` | `964:68622` / `977:22532` / `982:9583` | `if (s.lime) { … return }` at the head of `HeaderV2` | done e231ad0 |
 | 2 | `bio` | `964:68695` *(head `964:68690`, in Section `964:68689`)* | 858 × 882 | `984:13908` *(head `984:13903`)* | 708 × 912 | `984:13939` *(head `984:13934`)* | 370 × 876 | `964:68663` / `984:10748` / `984:10779` | `964:68631` / `977:22717` / `982:10013` | `if (s.v2 && s.lime)` ahead of `Bio`'s `if (s.v2)` | — |
 | 3 | `media` | `964:68706` list + `964:68705` card *(head `964:68698`)* | 858 × 424 + 858 × 243 | `984:13919` + `984:13918` *(head `984:13911`)* | 708 × 647 + 708 × 243 | `984:13950` + `984:13949` *(head `984:13942`)* | 370 × 647 + 370 × 243 | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | `if (s.lime)` inside `Media`'s `if (s.v2)`, after `nHot` | — |
 | 4 | `repertoire` | `964:68710` | 1440 × 621 | `984:13920` *(in `984:13917`)* | 708 × 655 | `984:13951` | 390 × 702 | `964:68678` / `984:10760` / `984:10791` | `964:68646` / `977:23041` / `982:10193` | `if (s.lime)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | — |
@@ -622,10 +622,91 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   fills. The bio's photograph is the first `CROP` on a Grunge master, so there the transform is
   read and the render correlated.
 
+### Settled in section 1 (the header)
+
+- **No Grunge block: Lime's `if (s.lime) { … return }` at the head of `HeaderV2` is
+  `(s.lime || s.grunge)`**, `const grunge = s.grunge` naming the deltas (about a dozen sites — no
+  `G` lookup). The tree is Lime's node for node at 1440 and 768, on Scheme 1 with **no nested
+  scheme anywhere** and no Device override. Retro's half lost `mustard`'s `s.grunge ? s.box1`
+  arm (now `s.pillBg`, and nothing else in that half reads `s.grunge`); the theme-0 digest is
+  zero.
+- **Open question 3, answered: the 390 master's two missing frames are the nav's 1px spacer
+  cells** (`Frame` 296.5 × 1 either side of the name at 1440, 140.75 × 1 at 768). Lime's block
+  already folds them into its two halves, so nothing was written for them; Lime's written-out 390
+  (the 370.52 band, the card on its side, padding 20, gap 21) describes this master too.
+- **Rings, not glows, as predicted — and every ring is `s.stroke2`.** No node carries an effect.
+  The capsule (168 × 38, r999), the card (220 × 249, r15, now **opaque `s.box1`**) and the
+  portrait (87, r10, on `s.box1`) are 1px inside `#FF0000`; the well keeps Lime's `stroke1`
+  hairline. The card's `s.glow` is the one shadow dropped. Radii are raw **15 / 15 / 10 at every
+  width** (Lime 50·50·20 / 45·45·12 / 21), the chips' **3.01** (`radius/chip` 4 × 0.752; Lime
+  4.51), everything else about the chips Lime's (Label/XS × 0.752, 3.76 / 8.27, gap 6.01 —
+  read at all three widths).
+- **The capsule is `s.box1`, its links white at Label/MD, gapped a fixed 18.** `get_variable_defs`
+  settles the plan's open choice: the links are bound to **`size/label-md`** (20 / 14), Lime's to
+  `label-sm`. So `linkCap` is `s.labelMd` under Grunge (the `clamp` cap and the narrow size), the
+  links read `s.tx` (Lime `s.ac`), and the gap is layout 2's fixed `u(18)` with `navGaps` in the
+  `reserve` and the left cell's `minWidth`. In `sectionVm`, `navGapEm` is 0 at `d === 1 || d ===
+  2` under Grunge, and the Grunge `navFits` arm serves both layouts — Label/SM at `d === 1`,
+  Label/MD at `d === 2` — against 684 with Lime's 138.32 (the walk's paddings, gaps and disc are
+  Lime's to the hundredth). Measured at 768: up to **seven** seeded names draw, eight and nine fold
+  to the burger; **Minimal's capsule is 138.8 × 31.4 against the master's 140 × 31**, the name
+  centred. At 1440 the seeded nine hold one row at 16px (12 rendered), a 560 capsule, the name
+  slid right — Lime's accepted behaviour.
+- **The three names are two-tone** — the nav's wordmark, the hero and the card's — `sem/text/2`
+  then `text/1` at the first space, Title's split. `Title` takes `twoTone={grunge}`; the other two
+  go through a block-local `brand()` that returns `s.brand` untouched under Lime. The card's name
+  and the location are direct `s.display` sites, so they take `faced` / `facedLh` and
+  `textTransform` behind `grunge`.
+- **The well paints a second fade Lime's does not.** Two `GRADIENT_LINEAR` fills, both
+  `#1A1A1A`@1 → `#15180F`@0: the first is Lime's floor fade (transform `[[0, −1, 1], [1, 0, 0]]`,
+  t = 1 − y); the second's `[[0, 6.956, −0.566], [−6.956, 0, 3.978]]` gives t = 6.956y − 0.566 —
+  **opaque over the head to 8.14%, clear by 22.51%**. The render confirms it (flat 25–33 above
+  y 100 in every column, the lights' included), so it is drawn as `linear-gradient(to bottom,
+  s.box1 8.14%, #15180F00 22.51%)` and the links stand on the dark. Read every paint in a fill
+  list, not the first of each type.
+- **Grain inside the well**: `image 1`, lighten .29, gradient paint hidden, well-relative at
+  (0, −296) 1400² / (0, 20) 748 × 964 / (0, −189) 370 × 964 — through `Grain`'s `style` as one
+  four-value `inset` plus `width` / `height`. At 768 the sheet is shorter than the 1004 well, so
+  a flat band shows at its head and foot: the frame's too (sampled, 25.5 vs our 26.0 flat, 41.0
+  vs 40.9 at the sheet's edge). Not a defect.
+- **The pill follows the leaked ink**: `fg={s.pillFg}` (`sem/active/text`, `#15180F`) on
+  BookPill's red; the disc takes the same ink where the node draws `#0E0E0E` (`box3`), a named
+  7/255 diff, since BookPill paints the disc in the label's colour and gaining a prop for it was
+  not worth it. Layout 2 took `fg={s.bg}` for the same node; either reads black.
+- **`KICKER_3`** (was `LIME_KICKER_3`): "Performing since 2021" is the frame's copy on both
+  templates, so the constant is renamed and its gate widened in `sectionVm` and `EditPanel`
+  together; Retro's layout 3 keeps "DJ · Live Act".
+- **Measured against the masters' content edges**: desktop h1 at 520 (634.48 × 0.82 = 520.3),
+  card 180.4 × 203.9 at 957 / 491.5 (180.4 × 204.2 at 957.8 / 491.2), pill 85.4 × 28.6 (88.8 ×
+  28.6 — Anton narrower), capsule 30.7 tall (31.2); 768 h1 at 824.4 (824.48), card 220 × 239.6
+  at 506 / 742.4 (220 × 240 at 506 / 742), pill 95.9 × 34.9 (99.3); 390 h1 at 312 (311.93), card
+  350 × 127 at 20 / 459.4 (exact), pill 93 × 34.9 (96.3), section 606.4 (606.45). Named diffs:
+  five chips where the frame draws six (`TAG_LABELS`), and the frame's fourth chip lettered
+  white on red where `vm.chips` letters it `#0D1F03` (a component override the seats do not
+  model).
+- **`FIELDS.header` needed no change**: `scripts/reach.mjs 2` over the fitted card gives kicker /
+  tags / showTags `[0, 2, 3]`, location all four, cta2 `[1, 2]`, showBadge / badgeText `[0, 3]`,
+  subtitle / heroCta `[1]`, align `[0]` — the rows layout 2's sweep measured over the placeholder.
+- **Verified in the builder**: `scripts/page-check.mjs Grunge 2,0,1,3` — four modal cards; card 3
+  lays out every section at arch 2 in `PAGE_ORDERS[2]` with the calendar composed beside the bio
+  at 1440 (both at top 738); in the published 1440 tab all eleven header anchors scroll to real
+  ids, Book Now on `form`; the 390 burger opens 1 → 11 links; no errors or warnings; cards 1, 2
+  and 4 render and publish. The 820 burger, in a fresh tab by a one-off script (deleted): 2 → 12
+  anchors, a panel link scrolls `#pricing`, no overflow.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`, and the full 810-render
+  five-theme run differs in exactly header arch 2 at theme 2, three widths.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's or 2's or
 Lime's Conventions, with the plan it came from — the running list for the sweep's item 6.)*
+
+- Section 1: *the node walker, kept* (grunge/layout-2); *a frame's inside stroke is an inset
+  `boxShadow`* (lime/layout-2); *every glow is a guess until `effects` confirm it* (lime/layout-1);
+  *the capsule's gap is a fixed 18* (grunge/layout-2, section 1); *a stand-in face is scaled*
+  (`faced`, grunge/layout-1); *read a fill's `scaleMode` before its `imageTransform`*
+  (grunge/layout-2); *the whole-page published check is one puppeteer script*; *field reach is
+  measured*; *theme 1 is the digest at risk*.
 
 ## Open questions
 
@@ -637,9 +718,8 @@ Lime's Conventions, with the plan it came from — the running list for the swee
 2. **The bio head's colour rule.** Layout 1's bio takes the accent on word two by position;
    the layout-3 render reads all red. If the segments say one tone, the widened block draws one
    tone and this plan records that the two Grunge bios disagree by frame, not by rule.
-3. **The 390 header's two missing frames** (0.84 against Lime's 390, where 1440 and 768 are
-   0.88). The header session reads which two and whether Lime's written-out 390 (a 370.52 band
-   over a horizontal card) still describes this master.
+3. ~~**The 390 header's two missing frames**~~ *Closed in section 1:* the nav's two 1px spacer
+   cells, which Lime's two-halves nav already folds away; Lime's written-out 390 holds.
 4. **The two leaked pictures are one this time** — the bio well's `fa453f7d` (Lime's stage shot)
    under Grunge's own photograph, painted over. Worth telling the designer with layout 2's two.
 5. **The Scheme 3 pricing badge and the map's `#F52E34`** are the pass's likely red-on-red
