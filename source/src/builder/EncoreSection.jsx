@@ -9862,27 +9862,50 @@ function Repertoire({ s }) {
     // and the divider down the inside of the left column. The frame closes on
     // the pager band with no rule of its own, where Retro's closes on a
     // hairline.
-    if (s.lime) {
+    //
+    // Grunge — the same component a third time, in Static Youth (964:64627 at
+    // 1440, 986:13762 at 768, 986:13781 at 390): Lime's tree node for node at
+    // all three widths, on Scheme 1 with no Device override, so every size is
+    // the Grunge ramp's `s.*` (display-sm 50 / 40 / 30, list 24 / 19 / 18,
+    // label-sm 16 / 13 / 12, body-md 14 / 13 / 13, body-sm 12) and every ink
+    // is the key Lime's block already reads — the active chip is `s.ac` under
+    // `s.bg` type here, the fills say `#000000`, so layout 1's `s.activeFg`
+    // leak does not recur. No `Layer_1` at all (layout 1's held the torn
+    // vector, hidden) and no effect on any node. Four deltas, `grunge`-gated:
+    // the display strings are `faced` / `facedLh` and uppercase (the heading
+    // one tone in `s.tx`, the frame's own "Repertoire", not layout 1's split);
+    // the 390 rows pin at their master's 59.4 (a 297 list over five, Lime's
+    // 295 over five); and the sheet's own `sem/stroke/1` ring is drawn — the
+    // `phone` frame's inside stroke is visible at every Grunge width where
+    // Lime's 1440 master hides it, and the render samples it on all four
+    // edges: 60 under the pager and down the list, 89 over the head, where it
+    // stacks on the head's ring. Figma paints a frame's stroke above its
+    // children, so it is an overlay after them (`pointerEvents: 'none'`, or
+    // it would take every published click), which is what reproduces the 89.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const ring = `inset 0 0 0 1px ${s.stroke1}`
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       const hint = 'Search songs or artists…'
       // Each master's `flex-1` division of its list (416 / 410 / 295 over
-      // five), pinned for Retro's reason: our list has no height to divide.
-      const limeRowH = u(desk ? 83.2 : tab ? 82 : 59)
+      // five; Grunge's 390 list is 297), pinned for Retro's reason: our list
+      // has no height to divide.
+      const limeRowH = u(desk ? 83.2 : tab ? 82 : grunge ? 59.4 : 59)
       return (
         <div style={{
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
           background: s.box1, color: s.tx,
+          position: grunge ? 'relative' : undefined,
         }}>
           <div style={col(u(12), {
             padding: `${headPadY} ${padH}`, boxShadow: ring,
           })}>
             {/* Display/SM in `sem/text/2`, line height 1. */}
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
-              letterSpacing: s.dls, color: s.tx,
+              margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
+              letterSpacing: s.dls, color: s.tx, textTransform: grunge ? 'uppercase' : undefined,
             }}>{s.title}</h2>
             <div style={row(u(16), {
               justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(s.mob ? 10 : 12),
@@ -9962,8 +9985,9 @@ function Repertoire({ s }) {
                       <span style={col(u(2), { flex: 1, minWidth: 0 })}>
                         {/* Display/List over Body/SM. */}
                         <span style={{
-                          fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls,
+                          fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls,
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          textTransform: grunge ? 'uppercase' : undefined,
                         }}>{t.title}</span>
                         <span style={body(s.bodySm, 1.4, {
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -9989,6 +10013,14 @@ function Repertoire({ s }) {
               }} />
             )}
           </div>
+          {/* The sheet's own ring, above its children as Figma paints a
+              frame's stroke — so it stacks on the head's ring, the render's
+              89 over the head against 60 under the pager. */}
+          {grunge && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, boxShadow: ring, pointerEvents: 'none',
+            }} />
+          )}
         </div>
       )
     }
