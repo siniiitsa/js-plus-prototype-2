@@ -15741,7 +15741,10 @@ function EventsMap({ s }) {
             {(!!s.mapStatus || !!s.mapUpdated) && (
               <div style={row(u(12), {
                 width: '100%', justifyContent: 'space-between',
-                ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+                // `rowGap` at every width, inert without the wrap: dropping it
+                // on a re-render beside `gap` is React's shorthand warning
+                // when the published tab is resized into or out of 390.
+                ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
               })}>
                 {!!s.mapStatus && (
                   <span style={row(u(8), {
@@ -16159,7 +16162,7 @@ function EventsMap({ s }) {
           {(!!s.mapStatus || !!s.mapUpdated) && (
             <div style={row(u(12), {
               width: '100%', justifyContent: 'space-between',
-              ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+              ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
             })}>
               {!!s.mapStatus && (
                 <span style={row(u(8), {
@@ -16685,7 +16688,7 @@ function EventsMap({ s }) {
           <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
             <div style={row(u(12), {
               width: '100%', justifyContent: 'space-between',
-              ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+              ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
             })}>
               {!!s.mapStatus && (
                 <span style={row(u(8), {
@@ -17059,7 +17062,7 @@ function EventsMap({ s }) {
         <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
           <div style={row(u(12), {
             width: '100%', justifyContent: 'space-between',
-            ...(s.mob ? { flexWrap: 'wrap', rowGap: u(6) } : null),
+            ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
           })}>
             {/* The frame's tag and note, seeded with its own copy and emptiable
                 (QA, 2026-09-15 — the fit had declined both as claims). */}
