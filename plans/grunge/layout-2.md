@@ -163,7 +163,7 @@ for the block); it is the gate this session widens.
 | 7 | `calendar` | `964:64631` *(in `964:64630`)* | 1328 × 1068 *(wrapper 1440 × 1180)* | `986:13766` *(in `986:13765`)* | 708 × 841 *(953)* | `986:13785` *(in `986:13784`)* | 370 × 734 *(814)* | `964:64593` / `986:11861` / `986:11880` | `964:64650` / `986:10607` / `986:10800` | `if (s.lime)` inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | done `76fca10` |
 | 8 | `map` | `964:64632` | 1440 × 858 | `986:13767` | 768 × 823 | `986:13786` | 390 × 1286 | `964:64594` / `986:11862` / `986:11881` | `964:64651` / `986:10974` / `986:11467` | `if (s.lime)` inside `EventsMap`'s `if (s.v1)`, after `stats` | done `e19fa35` |
 | 9 | `form` | `964:64633` | 1440 × 812 | `986:13768` | 768 × 849 | `986:13787` | 390 × 929 | `964:64595` / `986:11863` / `986:11882` | `964:64652` / `986:11591` / `986:11633` | `if (s.v1 && s.lime)` ahead of `EnquiryForm`'s `if (s.v1)` | done `3e5e255` |
-| 10 | `testimonials` | `964:64634` | 1440 × 853.9 | `986:13769` | 768 × 803 | `986:13788` | 390 × 840 | `964:64596` / `986:11864` / `986:11883` | `964:64653` / `986:11675` / `986:11701` | `if (s.lime)` inside `Testimonials`' `if (s.v1)`, after `rail` | — |
+| 10 | `testimonials` | `964:64634` | 1440 × 853.9 | `986:13769` | 768 × 803 | `986:13788` | 390 × 840 | `964:64596` / `986:11864` / `986:11883` | `964:64653` / `986:11675` / `986:11701` | `if (s.lime)` inside `Testimonials`' `if (s.v1)`, after `rail` | done `85ea218` |
 | — | `footer` | `964:64635` | 1440 × 479.5 | `986:13770` | 768 × 647.4 | `986:13789` | 390 × 619.4 | `964:64597` | — | — | **out of scope**, expected: the same tree as Lime's layout-2 footer but for the mock name and its seal frame, and `NVAR.footer` is 1. **Confirmed in section 1** against Grunge's own layout-1 footer (`964:58610` / `986:44068` / `986:44080`): the depth-6 `type:name` multisets are identical at all three widths, 47 nodes each, mock name and seal frame included. The row is closed. |
 | — | `video` | `964:64626` | 1440 × 782 | `986:13761` | 768 × 1112.2 | `986:13780` | 390 × 1119.8 | `964:64588` | — | — | **not a category** (above) |
 
@@ -518,7 +518,9 @@ Written now from what the plan can see; the sections add to it. One session, in 
    state. Grep both files for "layout 2", "Grunge" and "flat three". *Section 9 adds:* the enquiry
    form's layout-2 sentence "Its refused box thickens an inset **ring** … (under Lime the ring is 2px
    of full ink …)" owes "and under Grunge 2px of `s.tx`, the idle ring being the white 15%"; and its
-   "on a full-bleed mustard sheet" owes that Grunge's layout 2 paints no sheet at all.
+   "on a full-bleed mustard sheet" owes that Grunge's layout 2 paints no sheet at all. *Section 10
+   adds:* the testimonials' "under Lime it widens in the desktop and 768 column as well" owes "and
+   under Grunge", which inherits the mechanism whole.
 2. **The branch-local "flat three" comment** in `EventsMap`'s layout-2 branch (the zoom controls
    "stay gone under Retro and the flat three; Lime's block draws them" — JP-040's seat): true until
    the map session, false after it. `Bio`'s two hits are in its layouts 3 and 4 and stay. *Done in
@@ -1271,6 +1273,65 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **Open question 1 paid for the form**, and closed, in its own commit (`8c8be93`): see the
   question.
 
+### Settled in section 10 (the testimonials)
+
+- **No Grunge block, for the ninth time in this pass: Lime's `if (s.lime)` inside
+  `Testimonials`' `if (s.v1)`, after `rail`, is `(s.lime || s.grunge)`**, with the **`G` lookup**
+  at its head (six keys — the Scheme 3 fill, its ink, its hairline, the tile and card radii, the
+  pill's ink; Lime's arm is today's literals) and the block's `dispType` faced / `facedLh` /
+  uppercase behind `grunge`, identity off it. The tree is Lime's **node for node, 26 = 26 at all
+  three widths** (the section-8 paired diff, one call for 1440 and one for both narrow masters, no
+  truncation), the root on Scheme 1 (`187:4`) with no Device override. `get_variable_defs` was
+  not run: the walk's text segments already carry every size — Display/LG 130 / 81 / 46,
+  Display/XL 198 / 95 / 52, Display/List 24 / 19 / 18, Body/LG 16 / 15 / 15, Body/MD 14 / 13 / 13,
+  Body/SM 12 — which is `THEME_RAMP.Grunge` to the token, so there is no `T` table. No effect, no
+  `image 1`, no seal on any node. The seam is shared whole, so the published rail and pill needed
+  nothing: at `theme=2&live=1`, desktop and 390, tile clicks move the red fill and the card
+  (reviews 3 and 5, back to 1), a repeat click is idempotent, the 390 picked tile is the wide one
+  (91–95 beside 69–76, and the whole measure alone on its own line), the pill is `<a href="#form">`
+  live and a span on the canvas, whose tiles carry no pointer; `n=1` draws no rail, `n=0` no rail
+  and no quote; no page errors or warnings.
+- **Scheme 3 is the second of the plan's two reds**: the card and the picked tile are `box/1`
+  **`#9E1F17`** (the map's travel card was `box/2` `#F52E34`), lettered **white** (`s.tx`, `G.ink`)
+  where Lime letters its lime in ink, in a **black** 15% `stroke/1` — `#00000026`, 1px on the card
+  and 2px on the tile. The idle tiles are Scheme 1's `s.box1` in a 1px `s.ac` ring, and the head is
+  `s.tx` — the same keys on both templates, so those leaves needed nothing. Radii are a raw **15**
+  on every tile and on the card (Lime 30 / 50).
+- **The pill's ink is `sem/tag/2/text`**, bound on the label and the disc: `#0D1F03`, Lime's ink
+  leaked into the mode (`s.chips[1].fg`), where Lime's block passes `s.activeFg` — Grunge's other
+  leak, `#15180F`. Under Lime the two keys are one value, which is why the theme-1 digest is zero.
+  Invisible either way (both render as black on the red); followed because the node says it.
+  **125 / 136.9 / 134 wide against 128.7 / 141 / 138** (157 × 0.82 at desktop) — Anton narrower
+  than Stones Crush, the header's diff.
+- **The heading keeps its typed break**, which Lime's block lets collapse: under Grunge the h2 is
+  `whiteSpace: 'pre-wrap'`, Retro's own arm's mechanism for the same field, behind `grunge`. Anton at
+  0.75 breaks greedily after PEOPLE at desktop and 390 where all three masters set HONEST FEEDBACK /
+  FROM PEOPLE WHO BOOKED; the seed *is* that break (`TESTI_HEADING_2`), so the artist's own newline
+  is what is honoured — not the form's positional word split, which is for a head whose field
+  carries no break — and a long typed line still wraps further. The longer line is 801.5 / 606.8 /
+  344.6 against the frames' 990 × 0.82 = 812 at desktop, a 708 box at 768 and a 350 box at
+  390, so it fits every width; 2 / 2 / 2 lines,
+  190.4 / 144.2 / 81.9 tall (232 × 0.82 / 144 / 82).
+- **Type**: the head (Display/LG at 0.89) 80.25 / 60.75 / 34.5px, the glyph (Display/XL at 0.75)
+  121.8 / 71.25 / 39 in the frame's own 55.9 × 0.82 / 71 / 39 boxes (the desktop hand-set height is
+  Lime's `u(56)` and holds), the marks and the reviewer (Display/List at 1.2) 15 / 14.25 / 13.5 — all
+  uppercase at the site, one tone, white. The eyebrow, the quote, the role and the stars are Inter
+  at the ramp; `s.bodySm` 12 against Lime's 13 is the ramp's, not a delta.
+- **Measured against the masters' content edges**: desktop h2 foot to grid 52.5 (65 × 0.82 =
+  53.3), card 952.8 × 251 at radius 12.3, picked tile 73 × 42.3, column 73; 768 h2 to grid 63.5
+  (64), card 571 × 313.3 at 15, column 85; 390 card 346 × 302.4, tiles 93.6 (94). **Named diffs,
+  Lime's**: the seeded quote is 1 / 1 / 2 lines where the frame's runs 2 / 3 / 5, so the cards are
+  short by exactly those lines (270.5 / 360 / 373 against ours); the five seeded reviews to the
+  frame's three; the 390 sub wraps (19 more to the grid); canvas tile 0 lit where the frame lights
+  the middle; the root's 40 / 22 side padding against the masters' 30 / 10. `n=8`: the desktop
+  idle tiles shrink to 22.8 (Lime's 23), the 768 ones to 28.7, and the 390 row wraps to **two**
+  lines (Lime's three — Anton's marks are narrower).
+- **`FIELDS.testimonials` has no template-keyed `in` row** (`heading` `[1, 2, 3]`, `sub`
+  `[1, 2]`, `stars` and `cta` `[1]`, every one drawn by the widened block), so no `reach.mjs` run was
+  owed.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly testimonials
+  arch 1 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
@@ -1471,6 +1532,19 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
   the box label faced without the transform.
 - *Field reach is measured, not read off the prose* (B) — `reach.mjs 2`, confirm-only.
 - *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, an eighth time.
+- *The paired diff walk* (section 8) — 26 = 26 at three widths; its text segments stood in for
+  `get_variable_defs`.
+- *Scheme 3 is two literals, not one* (this plan's Conventions) — the second, `#9E1F17`, named in
+  its own seat; white ink again.
+- *The ninth layout-2 block, after the seam: `if (s.lime)` within `Testimonials`' `if (s.v1)`,
+  after `rail`* and *the rail's mechanism is the frame's at every width* (Lime 2, testimonials) —
+  widened; the seam and the mechanism shared whole.
+- *The emitted `var(--token, #hex)` fallback is the component's default* (A) — the pill's bound
+  variable read off the node: `sem/tag/2/text`, not `sem/active/text`.
+- *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — six keys.
+- *A stand-in face is scaled to the frame's glyph size* (C) — every display site through the
+  block's one `dispType`.
+- *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a ninth time.
 
 ## Open questions
 
