@@ -987,9 +987,9 @@ export const FIELDS = {
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 1, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 1, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },

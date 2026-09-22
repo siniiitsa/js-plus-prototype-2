@@ -483,18 +483,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // face's table. Undefined on the rest, which draw no capsule.
   // Its labels are set at 0.75 of the row's size (`faced` in EncoreSection —
   // Anton standing in for Stones Crush), while the gaps stay the row's ems.
+  // Grunge's layout-2 capsule (964:64618) gaps its links a fixed 18 at 16px
+  // type and again at 13, so there the sum is the labels alone and HeaderV1
+  // adds the gaps as a fixed box beside the capsule's padding.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75 : null
+  const navGapEm = T.name === 'Grunge' && d === 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
-      + Math.max(0, vm.navLinks.length - 1) * (23 / 24)) * 1.01).toFixed(3))
+      + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
     : undefined
   // What the rest of Lime's layout-2 nav spends beside those links, in the same
   // Bebas ems: the name at Label/LG, and Listen plus the pill's label at
   // Label/SM. That bar centres the name between two cells, so HeaderV1 sizes
   // its links against the whole row less these rather than against one cell,
-  // which the seeded nine could only fill on two rows.
-  vm.navNameEms = T.name === 'Lime' ? +bebasEms(vm.brand).toFixed(3) : undefined
-  vm.navCtaEms = T.name === 'Lime' ? +(bebasEms(vm.cta1) + bebasEms(vm.cta2)).toFixed(3) : undefined
+  // which the seeded nine could only fill on two rows. Grunge's layout 2 is
+  // that bar in Anton at 0.75, so it takes the same two off `navFace`.
+  vm.navNameEms = navFace ? +navFace(vm.brand).toFixed(3) : undefined
+  vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // Whether the tablet header draws its links (JP-039). The 768 masters of
   // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime
   // alike, where layouts 1 and 4 hide the links behind a burger — but
@@ -507,12 +512,19 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // (138.32, the capsule's 36 in it), Retro's the capsule's 36 + 2 of border,
   // four 16 gaps, Listen's 12 and the pill's 59 of padding, gap and disc. An
   // empty nav keeps the burger, and 390 always does: its master draws one.
+  // Grunge's layout 2 (986:13753) is Lime's bar box for box — the same 138.32
+  // — at its own 13 / 16 in Anton at 0.75 (`navFace`), plus the capsule's
+  // fixed 18 gaps, which its `navEms` leaves out (above). Its layout 3 has no
+  // arm yet, so it keeps the burger until that pass.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
     const row = d === 1 ? 688 : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
+    } else if (T.name === 'Grunge' && d === 1) {
+      vm.navFits = vm.navEms * px(vm.labelSm) + (vm.navLinks.length - 1) * 18
+        + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {
       const [link, name] = d === 1 ? [16, 20] : [13, 16]
       vm.navFits = vm.navLinks.reduce((w, l) => w + antonEms(l.label), 0) * link
