@@ -152,7 +152,7 @@ for the block); it is the gate this session widens.
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Lime twin (1440 / 768 / 390) | Retro twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `header` | `964:64618` | 1440 × 900 | `986:13753` | 768 × 1024 | `986:13772` | 390 × 886 | `964:64580` / `986:11848` / `986:11867` | `964:64637` / `984:34438` / `984:34636` | `if (s.lime) { … return }` at the head of `HeaderV1` | — |
+| 1 | `header` | `964:64618` | 1440 × 900 | `986:13753` | 768 × 1024 | `986:13772` | 390 × 886 | `964:64580` / `986:11848` / `986:11867` | `964:64637` / `984:34438` / `984:34636` | `if (s.lime) { … return }` at the head of `HeaderV1` | done `2478039` |
 | 2 | `bio` | `964:64619` | 1440 × 760 | `986:13754` | 768 × 1138.8 | `986:13773` | 390 × 881.3 | `964:64581` / `986:11849` / `986:11868` | `964:64638` / `984:34877` / `984:34834` | `if (s.v1 && s.lime)` ahead of `Bio`'s `if (s.v1)` | — |
 | 3 | `media` | `964:64620` *(Section; fan `964:64624` 629 × 441, list `964:64625` 529 × 673, heading `964:64623`)* | 1440 × 965 | `986:13755` *(Frame 299; `986:13759` + `986:13760`)* | 768 × 1568 | `986:13774` *(Frame 299; `986:13778` + `986:13779`)* | 390 × 1438 | `964:64582` / `986:11850` / `986:11869` | `964:64639` / `984:35122` / `984:35396` | `if (s.lime)` inside `Media`'s `if (s.v1)`, after `nowArt` | — |
 | 4 | `repertoire` | `964:64627` | 1440 × 792 | `986:13762` | 768 × 792 | `986:13781` | 390 × 594 | `964:64589` / `986:11857` / `986:11876` | `964:64646` / `984:35876` / `984:35961` | `if (s.lime)` inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | — |
@@ -162,7 +162,7 @@ for the block); it is the gate this session widens.
 | 8 | `map` | `964:64632` | 1440 × 858 | `986:13767` | 768 × 823 | `986:13786` | 390 × 1286 | `964:64594` / `986:11862` / `986:11881` | `964:64651` / `986:10974` / `986:11467` | `if (s.lime)` inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
 | 9 | `form` | `964:64633` | 1440 × 812 | `986:13768` | 768 × 849 | `986:13787` | 390 × 929 | `964:64595` / `986:11863` / `986:11882` | `964:64652` / `986:11591` / `986:11633` | `if (s.v1 && s.lime)` ahead of `EnquiryForm`'s `if (s.v1)` | — |
 | 10 | `testimonials` | `964:64634` | 1440 × 853.9 | `986:13769` | 768 × 803 | `986:13788` | 390 × 840 | `964:64596` / `986:11864` / `986:11883` | `964:64653` / `986:11675` / `986:11701` | `if (s.lime)` inside `Testimonials`' `if (s.v1)`, after `rail` | — |
-| — | `footer` | `964:64635` | 1440 × 479.5 | `986:13770` | 768 × 647.4 | `986:13789` | 390 × 619.4 | `964:64597` | — | — | **out of scope**, expected: the same tree as Lime's layout-2 footer but for the mock name and its seal frame, and `NVAR.footer` is 1. **Section 1 confirms it against Grunge's own layout-1 footer** (`964:58610` / `986:44068` / `986:44080`) before this row is closed — Lime's plan compared against Lime's, and that is the comparison that matters. |
+| — | `footer` | `964:64635` | 1440 × 479.5 | `986:13770` | 768 × 647.4 | `986:13789` | 390 × 619.4 | `964:64597` | — | — | **out of scope**, expected: the same tree as Lime's layout-2 footer but for the mock name and its seal frame, and `NVAR.footer` is 1. **Confirmed in section 1** against Grunge's own layout-1 footer (`964:58610` / `986:44068` / `986:44080`): the depth-6 `type:name` multisets are identical at all three widths, 47 nodes each, mock name and seal frame included. The row is closed. |
 | — | `video` | `964:64626` | 1440 × 782 | `986:13761` | 768 × 1112.2 | `986:13780` | 390 × 1119.8 | `964:64588` | — | — | **not a category** (above) |
 
 `EncoreSection.jsx`'s fit comments cite the Retro twin's and the Lime twin's node ids, so grep for
@@ -208,7 +208,7 @@ mixes the schemes, and the fills below were read that way at planning time:
 
 | Section | Instance | Nested | What it paints |
 |---|---|---|---|
-| header | Scheme 1 | the nav's Book pill, 108 × 35 / 99 × 35: **Scheme 3**; at 390 (91 × 26) **Scheme 4** | the pill renders red with black type at all three widths, but the binding cannot be the same at both: Scheme 3's `sem/bg` / `text/1` is red / black where its `active` pair is black / red, and Scheme 4 (≡ 1) has it the other way round. Two bindings or a raw fill; the session reads the fill |
+| header | Scheme 1 | the nav's Book pill, 108 × 35 / 99 × 35: **Scheme 3**; at 390 (91 × 26) **Scheme 4** | ~~the pill renders red with black type at all three widths~~ *corrected in section 1:* the 390 pill is **black under red type** (fill `#000000`, text `#DF262C`, a red disc round a black arrow) with a **red** 3.77 / 3.77 offset block that shows — the render draws it so, and the walk's fills say so. At 1440 and 768 it is red under black type, the black block invisible. Two nodes, two pairs; no raw fill |
 | bio | Scheme 1 | — | card `#1A1A1A` (`s.box1`), photo frame `#1A1A1A` |
 | media | Section: Scheme 1 | `Frame 297`, the 1328 × 793 panel: **Scheme 2** | panel **`#171716`**, the bar `#000000` |
 | repertoire, gallery, pricing, testimonials | Scheme 1 | testimonials: `big-card` and `ts-photo` **Scheme 3** | the sheet `#1A1A1A`; the wells `#0E0E0E`; the big card **`#9E1F17`** |
@@ -543,17 +543,151 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   `use_figma` read per page frame plus the multiset comparison. Re-run it rather than re-deriving
   a section by eye; the script's shape is in this plan's planning session and Lime's.
 
+### Settled in section 1 (the header)
+
+- **No Grunge block, as under layout 1: Lime's `if (s.lime) { … return }` at the head of
+  `HeaderV1` is `(s.lime || s.grunge)`**, `const grunge = s.grunge` naming the deltas (eleven
+  sites — a `G` lookup was not worth it). The tree is Lime's node for node at all three widths,
+  on **Scheme 1**, with **no Device override** (`get_variable_defs` returns 130 / 81 / 46 and
+  16 / 13 / 12 on the three), so every leaf reads `s.*` and there is no `tk` table. Every node's
+  `fills`, `strokes`, `effects`, radius, blend and text segments were read in one `use_figma`
+  walk per master before anything was written; the walker is worth keeping (it is in this
+  session's transcript, ~30 lines). Retro's half lost its three `s.grunge ?` placeholder arms;
+  the theme-0 digest is zero.
+- **Rings, not glows — confirmed off every node.** Nothing on the three masters carries an
+  effect but the nav pill (below). The photo is a 1px inside `#FF0000` ring (`s.stroke2`) on the
+  `s.box3` well at a raw 15, drawn as Lime's inset overlay; the chip, the face card and its
+  tile read `s.stroke2` already in Lime's block, so those three needed nothing. The place card's
+  ring is `scheme/3/stroke/2`, **white on white** (sampled: nothing shows), so it is `s.hl`.
+- **The photograph is a plain centred cover.** Its fill carries `imageTransform
+  [[-1, 0, 1], [0, 0.781, 0.109]]` — a mirror and a vertical crop — under `scaleMode: FILL`,
+  which ignores the transform: the render correlates **0.98** with the seed as it is and 0.07
+  mirrored (PIL, all three widths). So Lime's `objectPosition: '22% 50%'` is not read and no
+  `scaleX(-1)` is drawn. Read a fill's `scaleMode` before believing its `imageTransform`, and
+  correlate the render with the seed when in doubt — a mirror is one PIL line to prove.
+- **Grain inside the photo is the hero's recipe on a fixed sheet**: `image 1`, a 733.18 square
+  at (−48.59, −22.59) / (−12.59, −99.09) / (−181.59, −235.09) off the photo's top-left, lighten
+  .29, its gradient paint hidden. Passed through `Grain`'s `style` as **one four-value `inset`
+  shorthand** plus `width` / `height` — not `inset` beside `left` / `top`, which is the
+  shorthand-longhand mix open question 1 is about.
+- **The nav is narrower than the spread.** A 1176 box centred in the 1440 frame (x 132 against
+  the spread's 56; `get_design_context` emits it `left-1/2 -translate-x-1/2 w-[1176px]`), 708
+  at 768 (flush with the spread), 350 at 390 (x 20 against 10). Drawn as the row's own
+  horizontal margin — `u(76)` / 0 / 10 — so the `100cqi` budget shrinks with it. Row tops are
+  the tallest child's: **40 / 30 / 12**, heights 34.93 / 34.93 / 34, gaps to the spread
+  **81.07 / 35.07 / 44** (the spreads start at Lime's 156 / 100 / 90).
+- **The capsule's gap is a fixed 18 at every width** (16px type at 1440, 13 at 768), where
+  Lime's block and `vm.navEms` carry it as 23/24 em. So `navEms` under Grunge at `d === 1`
+  is the **labels alone** (`navGapEm` 0 in `sectionVm`), and `HeaderV1` adds `(n − 1) × u(18)`
+  to the desktop `reserve` and the left cell's `minWidth`; the 768 `navFits` arm adds
+  `(n − 1) × 18` to Lime's sum against the same 688 and the same 138.32 of fixed boxes (the
+  walk's paddings, gap and disc are Lime's to the hundredth). `navNameEms` / `navCtaEms` take
+  Grunge through `navFace`. Measured: Minimal's capsule **134** at 768 against the master's 135,
+  **121** at 1440 against 149 × 0.82 = 122.2.
+- **Anton at 0.75 is narrow, so the flip sits higher than Lime's**: at 768 the seeded names
+  draw up to **eight** links (Lime's six), nine fold to the burger; `scrollWidth` is 768 at
+  every count and the name stays centred to five links. At 1440 the seeded nine sit at the
+  full 13.12px on one row (483 wide) and the name slides right (659 against 590) — Lime's rule,
+  "the name slides off centre only when it has to"; Minimal centres it.
+- **The nav pill is two nodes, two pairs.** 1440 and 768 are Scheme 3's: red under black type,
+  a black disc round a red arrow — `BookPill`'s Grunge defaults, passed `bg={s.pillBg}
+  fg={s.bg}` — with a black 5 / 5 block that draws nothing on the black page (sampled). **390 is
+  Scheme 4's, turned round**: black under red, a red disc round a black arrow, and a **red
+  `#DF262C` 3.77 / 3.77 block that shows** (sampled) — `bg={s.bg} fg={s.ac}` and the block
+  through `style` (Lime 2, route 1; `BookPill` untouched). Same `pk` 0.7547 recipe as Lime's:
+  the walk's 20.83 disc, 3.22 / 13.52 padding and 6.44 gap are 27.6 / 4.27 / 17.92 / 8.53 ×
+  0.7547.
+- **The 390 pill's label is the one node on the page set in Anton itself** — `Anton/Regular
+  12.073`, Retro's component default leaking (the `Retro/Poster` effect style is on the same
+  node) where every other string is Stones Crush. It is taken **at that size, undivided**, via
+  `style.fontSize: '12.07px'`: `faced` divides out a face that is not there, and the
+  convention is "scaled to the frame's glyph size". Result: the pill is **90.5 × 26.4 against
+  the master's 91.01 × 26.36**, where Lime's precedent (`s.labelSm` standing in) would have
+  set it at 9px Anton and ~76 wide. Lime's own 390 pill was named 82 against 91.
+- **Cards**: a raw 15 at every width (Lime 50 / 30), padded 20 / 20 / **10** (Lime 28·26 / 26 /
+  16), the tile a raw 6 on `s.box2` in the same `s.stroke2` ring, gap 8, `space-between` —
+  the frame's `Frame 2` at y 260 in a 351 card. `cardText`'s title is a direct `s.display`
+  site: `faced(s, s.list)` / `facedLh(s, 1.2)` unconditionally (identity off Grunge) and
+  `textTransform` behind `grunge`, a digest column. Body copy stays Lime's literals, as in the
+  frame; the tile's picture stays `grungeHeaderAvatar` (the frame's `e3790c2c` is Lime's
+  avatar, the plan's named leak).
+- **The title is two-tone** (`Title twoTone toneA={s.tx} toneB={s.ac}`), the hero's own split
+  — STATIC white, YOUTH red on the frame; KAI white, MERCER red on ours.
+- **`FIELDS.header` under Grunge: `showBadge` and `badgeText` are `[0, 3]`** (were
+  `[0, 1, 3]` over the placeholder card), measured with `scripts/reach.mjs 2` (2,784 renders):
+  kicker / tags / showTags `[0, 2, 3]`, subtitle and heroCta `[1]`, location all four, cta2
+  `[1, 2]` (4/6 hits — Listen is dropped at 390 in every block, Lime's too), align `[0]`. The
+  edit panel on card 2 prints "Not shown in this layout" under Corner badge and Badge text.
+- **Verified in the builder** (one puppeteer script, deleted): the setup modal offers four
+  Grunge cards; card 2 lays out every section at layout 2 and the footer at layout 1 (the
+  page list read after *Back to page list*); in the published tab at 1440 the header's twelve
+  fragment links (nine nav, Listen, Book Now, the hero pill) call `scrollIntoView` on their
+  ids, Book Now and the hero pill on `form`; the burger opens at 768 (3 → 13 links) and
+  toggles at 390; `scrollWidth − innerWidth` is 0 at all three. One link per run reads no
+  target — a puppeteer click landing during the previous smooth scroll (a different one each
+  run) — so a walk is two runs, not one. Minimal at 768 was proved in the harness
+  (`live=1`, three links on `#media` / `#map` / `#bio`), not the builder.
+- **Measured against the masters' content edges**: desktop spread at 127.9 (156 × 0.82 =
+  127.9), photo 503 × 564.2, grain 601.2 at (−39.8, −18.5), chip 132.9 × 23.8 (163 × 29 ×
+  0.82), h1 95.2 tall at 80.25px, hero pill 191.3 × 44.3 (241 × 54 × 0.82 = 197.6 — Anton
+  narrower), cards 245 × 268.4, tile 87.7 at radius 4.92 in 16.3 (20 × 0.82), nav pill 85.4 ×
+  28.6 flush right; 768 photo 688 × 535 at y 100, chip at **691**, h1 72.1, cards 314 × 128 /
+  129, tile 88 at 6 in 20, pill 95.9 × 34.9; 390 photo 346 × 263 at y 90, chip at **389**, h1
+  40.9, cards 346 × 108 / 109, tile 88 at 6 in 10, pill 90.5 × 26.4 at y 15.8 (the master's
+  15.82). **Named diffs, Lime's**: the seeded subtitle runs 2 / 3 / 3 lines against the frame's
+  1 / 2 / 2, so the hero pill and the cards stand ~19 / 21 / 21 lower and the desktop cards
+  come out 268 against 288; the section is 941 at 390 against 886 plus our `padY`; the root's
+  40 / 22 side padding against the masters' 30 / 10.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly header
+  arch 1 and arch 5 at three widths on both surfaces, arch 5 byte-identical to arch 1.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
 Conventions, with the plan it came from — layout 1's running list, kept for the sweep's item 7.)*
 
+- *Check a narrow master's Device mode before trusting `s.*`* (A) — all three header nodes,
+  none overridden.
+- *Every glow is a guess until the node's `effects` confirm it* (A) — every ring on the page is
+  a plain stroke; the one effect is the pill's block, sampled at each width.
+- *`get_variable_defs` mixes nested schemes; the fills settle which node is on which* (A) — the
+  nav pill's two schemes.
+- *The emitted `var(--token, #hex)` fallback is the component's default* (A) — and so is a
+  node's *font*: the 390 pill's Anton is Retro's.
+- *A stand-in face is scaled to the frame's glyph size* (C) — read literally on the one node
+  whose glyphs are already Anton's.
+- *Under Lime `pillBg` IS the accent* (C) — the nav pill's pair is the frame's own, so no
+  stand-in.
+- *`vm.title` shadows the ramp's `title` size* (C) — not met: this header's Display/List sites
+  are `s.list`.
+- *The first layout-2 block: `if (s.lime) { … return }` at the head of `HeaderV1`* and *the
+  capsule's links hold one row by budgeting the whole bar* (Lime 2, header) — widened; the
+  budget gained the fixed gaps.
+- *The Scheme 4 nav pill recipe* and *`pk` 0.7547* (Lime 2, header) — the same boxes.
+- *Open question 2's route 1: the hard shadow goes through `style`* (Lime 2, bio) — the 390
+  pill's red block.
+- *Under Lime the digest's header arch 5 folds onto arch 1* (Lime 2, header) — six theme-2
+  files, not three, again.
+- *`vm.navFits`: one sum per bar* (Lime 2 QA, JP-039) — the Grunge arm.
+- *Field reach is measured, not read off the prose* (B) — `reach.mjs 2` over the fitted card.
+- *The whole-page published check is one puppeteer script* (B) — a one-off off
+  `page-check.mjs`'s `publish`, since that script only renders and publishes cards past 0.
+
 ## Open questions
 
 1. **The `rowGap` shorthand warning** — layout 1's sweep saw React's "removing `rowGap` … `gap`"
    once on cards 2 and 3 under four templates, traced to a node in `HeaderV1` that drops an inline
-   `rowGap` on resize, and left it for this pass. Section 1 reads the node and either fixes it in
-   the widened block or records why it is Retro's.
+   `rowGap` on resize, and left it for this pass. ~~Section 1 reads the node and either fixes it in
+   the widened block or records why it is Retro's.~~ *Answered in section 1:* **it is not the
+   header's** — `HeaderV1` carries no `rowGap` at all. The warning (arguments read off the
+   console: `Removing`, `rowGap`, `gap`) fires in the *editor's* console because the published
+   root runs in the opener's JS, and it fires when the published tab is resized from desktop to
+   narrow: the only layout-2 rows that hold `rowGap` conditionally are **`EnquiryForm`'s**, in
+   both halves — `...(desk ? { flexWrap: 'wrap', rowGap: u(20) } : null)` inside a `row()`
+   whose `gap` is set — and `EventsMap`'s layout-2 and -3 rows (`...(s.mob ? { flexWrap,
+   rowGap } : null)`), which fire on a resize into or out of 390 — card 3's logging is
+   presumably the map's layout-3 row; not verified. The fix is to state `rowGap` unconditionally (it is inert without `flexWrap`); the
+   form session (9) and the map session (8) take their own rows.
 2. **The pricing credit row** — the frame draws the three avatars, the stars and "32 reviews ·
    4.9", as Lime's did. Retro's claim rule dropped it and Lime inherited the drop; this plan inherits
    it too. Worth telling the designer with layout 1's list.
