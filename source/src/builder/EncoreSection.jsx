@@ -6351,20 +6351,40 @@ function Media({ s }) {
     // where the masters centre a leaked 57-bar row and clip it — the lime head
     // is half gone at 708 and wholly gone at 370 — the derived-count rule
     // above.
-    if (s.lime) {
-      const card = '#263020' // Scheme 2 `sem/box/3`
-      const dusk = '#43523B' // Scheme 2 `sem/box/2` — the idle bars
+    //
+    // Grunge layout 3 (964:68705 card + 964:68706 list, head 964:68698 ·
+    // 984:13918 + 984:13919 at 708 · 984:13949 + 984:13950 at 370) is Lime's
+    // tree node for node at all three widths, so the block is widened and
+    // Grunge's differences are the `G` arm: the card is Scheme 2 again, whose
+    // `box/3` / `box/2` / `box/1` are `#353535` / `#222222` / `#000000` in
+    // Static Youth, at a raw radius 15 in a 1px inside `#FF0000` ring (the
+    // `sem/stroke/2` value, read as `s.stroke2`) — no effect on any node. The
+    // sleeve wells, the hairlines and every ink read the same keys on both.
+    // Every Stones Crush site — the heading, the card's two names, the rows'
+    // titles — is `faced` / `facedLh` and uppercase. The heading is one red
+    // tone at every width; at desktop it breaks after "worth" as Lime's does,
+    // but Lime's 632 box (6.48 Anton ems at 0.75) would hold "FIVE WORTH
+    // YOUR" (6.43), so Grunge caps it at layout 2's 4.6em instead, between
+    // `antonEms`' "FIVE WORTH" 4.31 and "…YOUR" 6.43. 768 and 390 set one line.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const G = grunge
+        ? { card: '#353535', dusk: '#222222', disc: '#000000', radius: u(15), ring: `inset 0 0 0 1px ${s.stroke2}` }
+        : { card: '#263020', dusk: '#43523B', disc: s.box2, radius: u(50), ring: undefined }
+      const card = G.card // Scheme 2 `sem/box/3`
+      const dusk = G.dusk // Scheme 2 `sem/box/2` — the idle bars
+      const disp = grunge ? { textTransform: 'uppercase' } : null
       const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls, ...clip }
-      const listName = { fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, ...clip }
+      const listName = { fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, ...disp, ...clip }
       // Body/Chip — Inter bold, tracked in by its own −6%.
       const chipType = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
         letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
       }
       const titleType = {
-        fontFamily: s.display, fontSize: desk ? u(36) : tab ? '28px' : '26px',
-        lineHeight: 1.1, letterSpacing: s.dls, ...clip,
+        fontFamily: s.display, fontSize: faced(s, desk ? u(36) : tab ? '28px' : '26px'),
+        lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, ...disp, ...clip,
       }
 
       // The wrapper's head: Label/XS in `font/ui` (Chakra Petch) over
@@ -6376,15 +6396,16 @@ function Media({ s }) {
             letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
           }}>{s.mediaKicker}</span>
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-            letterSpacing: s.dls, color: s.ac, maxWidth: desk ? u(632.156) : undefined,
+            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+            letterSpacing: s.dls, color: s.ac, ...disp,
+            maxWidth: desk ? (grunge ? '4.6em' : u(632.156)) : undefined,
           }}>{s.title}</h2>
         </div>
       )
 
       const limeCard = track && (
         <div style={{
-          background: card, color: s.tx, borderRadius: u(50), padding: u(24),
+          background: card, color: s.tx, borderRadius: G.radius, padding: u(24), boxShadow: G.ring,
           overflow: 'hidden', ...col(u(16), { alignItems: 'stretch' }),
         }}>
           <div style={row('0', { justifyContent: 'space-between' })}>
@@ -6411,7 +6432,7 @@ function Media({ s }) {
                 so both are lucide's, sized off their ink as Retro's are. */}
             <span onClick={s.live ? toggle : undefined} style={{
               width: u(44), height: u(44), borderRadius: '999px',
-              background: s.box2, color: s.tx,
+              background: G.disc, color: s.tx,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               cursor: s.live ? 'pointer' : undefined,
             }}>

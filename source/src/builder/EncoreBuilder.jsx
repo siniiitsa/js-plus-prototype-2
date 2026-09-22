@@ -375,9 +375,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // top inset is its fitted one, so the player's foot takes the difference —
   // 37 / 47 / 35, measured against the seeded page. Grunge's composed region
   // is Lime's to the pixel (plans/grunge/layout-3.md), so each of its three
-  // sections joins the arm in its own session — the bio first.
+  // sections joins the arm in its own session — the bio first, then media.
   if (d === 2 && ((T.name === 'Lime' && (cat === 'bio' || cat === 'calendar' || cat === 'media'))
-    || (T.name === 'Grunge' && cat === 'bio'))) {
+    || (T.name === 'Grunge' && (cat === 'bio' || cat === 'media')))) {
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)
     const foot = cat === 'bio' ? z(30)
