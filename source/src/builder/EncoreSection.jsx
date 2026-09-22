@@ -20618,7 +20618,11 @@ function EnquiryForm({ s }) {
             ? col(u(30), { alignItems: 'flex-start' })
             : row(u(20), {
               justifyContent: 'space-between', alignItems: 'flex-end',
-              ...(desk ? { flexWrap: 'wrap', rowGap: u(20) } : null),
+              // `rowGap` at every width, inert without the wrap: a longhand
+              // dropped beside the `gap` shorthand on a resize is React's
+              // "Removing a style property" warning (plans/grunge/layout-2.md,
+              // open question 1).
+              rowGap: u(20), ...(desk ? { flexWrap: 'wrap' } : null),
             })}>
             {s.formPromises.length > 0 && (
               <div style={col(u(10), { minWidth: 0 })}>
@@ -20980,7 +20984,11 @@ function EnquiryForm({ s }) {
             ? col(u(30), { alignItems: 'flex-start' })
             : row(u(20), {
               justifyContent: 'space-between', alignItems: 'flex-end',
-              ...(desk ? { flexWrap: 'wrap', rowGap: u(20) } : null),
+              // `rowGap` at every width, inert without the wrap: a longhand
+              // dropped beside the `gap` shorthand on a resize is React's
+              // "Removing a style property" warning (plans/grunge/layout-2.md,
+              // open question 1).
+              rowGap: u(20), ...(desk ? { flexWrap: 'wrap' } : null),
             })}>
             <div style={col(u(10), { minWidth: 0 })}>
               {s.formPromises.map((p) => (
