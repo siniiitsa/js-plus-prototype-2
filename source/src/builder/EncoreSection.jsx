@@ -13331,18 +13331,47 @@ function Calendar({ s }) {
     // frame's. The frame rules the heading in `sem/stroke/2`, which is `s.ac`
     // on the `s.ac` band — it paints nothing, and is not drawn (the header's
     // nav-pill shadow); its 20 of padding stays.
-    if (s.lime) {
+    //
+    // Grunge — the same composition a third time (964:64631 at 1440, 986:13766
+    // at 768, 986:13785 at 390), Lime's tree node for node on Scheme 2 with no
+    // Device override, so every size reads `s.*` and `G` names the leaves
+    // that change. Scheme 2's `sem/bg` is `#171716`, not `s.box1` (`#1A1A1A`
+    // here): it is the panel, every ink on the red band, the foot chip's
+    // label and the pill's type, so it is one literal in four seats. The
+    // panel is a raw 15; the heading's `sem/stroke/2` rule is `#FF0000` on
+    // the `#DF262C` band and DOES paint (sampled at all three widths), so it
+    // is drawn where Lime's is not. No instance ring (no stroke on the root),
+    // no grain, no effect but the pill's block, which is `sem/text/1` — the
+    // accent, the same key Lime's is. The pin is re-measured for Anton at
+    // 0.75: `MAR 02` 235.2 at the 1440 master's 130 (×0.82, so 287), `MAR 30`
+    // 178 at 768's 81 — the frame's 350 would clear it at 1440, but it is the
+    // same leaked number at 768, so it is measured at both, Lime's call; at
+    // 390 Anton's `JUN 12` is 86.2 against the master's own 91 hug.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const G = grunge ? {
+        panelR: u(15), bg2: '#171716', pin: desk ? 287 : 179,
+        headRule: `inset 0 -1px 0 ${s.stroke2}`,
+      } : {
+        panelR: u(50), bg2: s.box1, pin: desk ? 301 : 187,
+        headRule: undefined,
+      }
       // The pin is the widest mark Bebas Neue draws at each master's
       // `display-lg` (`MAR 01`: 246.3 at 107, 186.5 at 81). The frames state
       // 350, which clears Bebas's 299 at 130, but the 768 master leaks it
       // unscaled: its row is 350 + 66 + 69 + 66 + 77, its whole inner width,
       // and our 608 column would leave the weekday 46. The 390 master stacks
       // the two, so there is no second column and no pin.
-      const pin = s.mob ? undefined : u(desk ? 301 : 187)
+      const pin = s.mob ? undefined : u(G.pin)
       const rule = `inset 0 -1px 0 ${s.stroke1}`
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
+      // The two display sites — the heading and the marks — faced and
+      // uppercase under Grunge (identity off it).
+      const disp = (size, lh, extra) => (grunge
+        ? type(s.display, faced(s, size), facedLh(s, lh), { textTransform: 'uppercase', ...extra })
+        : type(s.display, size, lh, extra))
       // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
       // its own — opacity .38, no strike — and the row takes it, handlerless.
       // Only a *booked* row dims (user call, 2026-09-17): a past (`dead`) one
@@ -13357,7 +13386,7 @@ function Calendar({ s }) {
             const Tag = href ? 'a' : 'span'
             return (
               <Tag key={n.label} {...(href ? { href } : null)} style={type(s.body, s.bodySm, 1.4, {
-                color: s.box1, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
+                color: G.bg2, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
               })}>{n.on ? `● ${n.label}` : n.label}</Tag>
             )
           })}
@@ -13369,7 +13398,7 @@ function Calendar({ s }) {
           ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
           : undefined
         const mark = (
-          <span style={type(s.display, s.dispLg, 0.89, {
+          <span style={disp(s.dispLg, 0.89, {
             whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(sl.booked),
           })}>{sl.mark}</span>
         )
@@ -13405,20 +13434,22 @@ function Calendar({ s }) {
         // At desktop the panel stands inside Frame 298's own 56, not the
         // root's `padY` (user call, 2026-09-17).
         <div style={{
-          background: s.box1, color: s.tx, borderRadius: u(50), overflow: 'hidden',
+          background: G.bg2, color: s.tx, borderRadius: G.panelR, overflow: 'hidden',
           ...(desk ? { margin: `calc(${u(56)} - ${s.padY}) 0` } : null),
         }}>
           <div style={col(u(28), {
-            background: s.ac, color: s.box1, padding: `${u(28)} ${padX} ${u(36)}`,
+            background: s.ac, color: G.bg2, padding: `${u(28)} ${padX} ${u(36)}`,
           })}>
             <div style={row(u(24), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
               <span style={type(s.body, s.bodyLg, 1.5)}>{s.brand}</span>
               {flow}
             </div>
             {/* Display/MD at lh 1, held to the 571.1 both wider masters state
-                (it binds inside the 768 column too); 390 states the full width. */}
-            <div style={{ paddingBottom: u(20) }}>
-              <h2 style={type(s.display, s.dispMd, 1, {
+                (it binds inside the 768 column too); 390 states the full width.
+                Grunge draws the frame's 1px inside `sem/stroke/2` rule under
+                the 20 (inset, so the stated 164 / 120 / 96 hold). */}
+            <div style={{ paddingBottom: u(20), boxShadow: G.headRule }}>
+              <h2 style={disp(s.dispMd, 1, {
                 margin: 0, maxWidth: s.mob ? undefined : u(571),
               })}>{s.title}</h2>
             </div>
@@ -13446,7 +13477,7 @@ function Calendar({ s }) {
             <div style={row(u(12), s.mob ? { width: '100%' } : { flex: '1 1 0', minWidth: u(200) })}>
               {!!cur && (
                 <span style={type(s.body, s.chip, 1, {
-                  flex: 'none', background: s.ac, color: s.box1, borderRadius: '999px',
+                  flex: 'none', background: s.ac, color: G.bg2, borderRadius: '999px',
                   padding: `${u(6)} ${u(12)}`, fontWeight: 700,
                   letterSpacing: '-0.06em', whiteSpace: 'nowrap',
                 })}>{hit.mark}</span>
@@ -13456,9 +13487,12 @@ function Calendar({ s }) {
             {/* Scheme 2's pale pill: `sem/text/2` ground, `sem/bg` label and
                 disc, a lime arrow, and the frame's hard 5 / 5 block in
                 `sem/text/1` on all three masters — through `style`, open
-                question 2's route. 54 tall at every width, so `full` at 390. */}
+                question 2's route. 54 tall at every width, so `full` at 390.
+                Grunge's is the same pill with Scheme 2's `#171716` for its
+                type and disc, and the same red block (`sem/text/1` is the
+                accent on both). */}
             <BookPill s={s} to={s.calBookTo} label={s.calSlotCta}
-                      bg={s.tx} fg={s.box1} discFg={s.ac} full={s.mob}
+                      bg={s.tx} fg={G.bg2} discFg={s.ac} full={s.mob}
                       style={{ boxShadow: `${u(5)} ${u(5)} 0 ${s.ac}` }} />
           </div>
         </div>
