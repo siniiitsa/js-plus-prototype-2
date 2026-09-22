@@ -11965,12 +11965,13 @@ function Gallery({ s }) {
           {/* Last, the way the frame paints it: the sheet crosses the caption
               too, and lifts its ink off #111 by a few points. Grunge's is the
               header's recipe on this hero: `image 1`, an 831 square hung
-              (1, 0.18) off the photo's top-left at every width — inside the
-              ring, so the padding box's own corner — lighten .29, its
-              gradient paint hidden; one four-value `inset` plus `width` /
-              `height` (section 1's shorthand rule). */}
+              (1, 0.18) off the frame's top-left at every width — the 1 is the
+              inside stroke, which here is the border, so the padding box's
+              own left edge is the frame's 1 — lighten .29, its gradient paint
+              hidden; one four-value `inset` plus `width` / `height` (section
+              1's shorthand rule). */}
           <Grain s={s} exact grunge blend="lighten" opacity={0.29}
-            style={grunge ? { inset: `${u(0.18)} auto auto ${u(1)}`, width: u(831), height: u(831) } : undefined} />
+            style={grunge ? { inset: `${u(0.18)} auto auto 0`, width: u(831), height: u(831) } : undefined} />
         </div>
         {/* Only 768 wraps: the head row is its alone, and an extra element in
             the desktop tree would move every row of the geometry digest. */}

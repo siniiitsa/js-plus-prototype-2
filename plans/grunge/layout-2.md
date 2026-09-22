@@ -942,8 +942,10 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   off the photo's top-left at every width (not scaled at 768 or 390 — the clip does the
   cropping), lighten .29, its gradient paint hidden, passed through `Grain`'s opt-in `grunge`
   with `exact` and **one four-value `inset` plus `width` / `height`** (section 1's shorthand
-  rule); the offset sits inside the ring, so the padding box's own corner is the origin.
-  Paint order unchanged: after the caption, as Retro's is. Sampled: the frame's hero reads
+  rule). The frame's 1 is the inside stroke, which the branch draws as the border, so the
+  square is placed at `inset: u(0.18) auto auto 0` in the padding box — written first as
+  `u(1)` on top of the border, a double count of 0.8px the raster cannot show, corrected in
+  the same session. Paint order unchanged: after the caption, as Retro's is. Sampled: the frame's hero reads
   **38.7 / 40.6** (mean / stddev, desktop, inside the ring) and ours **36.9 / 42.2**; at 390
   34.7 / 39.6 against 34.5 / 40.6 — the lift is the node's, to the level.
 - **Everything else needed only its gate widened**: the well `s.box3` (`#0E0E0E`, the frames'
@@ -955,7 +957,7 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **Measured against the masters' content edges**: desktop row 478.1 (583 × 0.82), hero
   605.9 × 478.1 in the `#FF0000` ring at radius 12.3 (15 × 0.82), caption 102.8 × 39.7 at
   (33.8, 33.8) in, 10px Inter 700 at −0.6px on `#1A1A1A`, grain 681.4 square (831 × 0.82) at
-  (1.8, 1.1) from the hero's outer edge (the 1px border plus 0.8 / 0.1), tiles 209.1 wide
+  (1, 1.1) from the hero's outer edge (the 1px border, plus 0.18 × 0.82 down), tiles 209.1 wide
   (255 × 0.82) at 100.9 / 176.3 / 184.5 and 159.1 / 198.5 / 104.1 (the frame's six × 0.82 to
   the tenth), first tiles `0 0 12.3 12.3`, middles 12.3, lasts `24.6 24.6 0 0`; 768 hero
   333 × 392 at 15, caption 89.4 × 31 at 11px, head row 331 × 20 with *See us in action* at
