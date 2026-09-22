@@ -199,7 +199,7 @@ the block); it is the gate this session widens.
 | 2 | `bio` | `964:68695` *(head `964:68690`, in Section `964:68689`)* | 858 × 882 | `984:13908` *(head `984:13903`)* | 708 × 912 | `984:13939` *(head `984:13934`)* | 370 × 876 | `964:68663` / `984:10748` / `984:10779` | `964:68631` / `977:22717` / `982:10013` | `if (s.v2 && s.lime)` ahead of `Bio`'s `if (s.v2)` | done 095e495 |
 | 3 | `media` | `964:68706` list + `964:68705` card *(head `964:68698`)* | 858 × 424 + 858 × 243 | `984:13919` + `984:13918` *(head `984:13911`)* | 708 × 647 + 708 × 243 | `984:13950` + `984:13949` *(head `984:13942`)* | 370 × 647 + 370 × 243 | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | `if (s.lime)` inside `Media`'s `if (s.v2)`, after `nHot` | done d067f7b |
 | 4 | `repertoire` | `964:68710` | 1440 × 621 | `984:13920` *(in `984:13917`)* | 708 × 655 | `984:13951` | 390 × 702 | `964:68678` / `984:10760` / `984:10791` | `964:68646` / `977:23041` / `982:10193` | `if (s.lime)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | done cb08bb9 |
-| 5 | `calendar` | `964:68709` *(in `964:68707`)* | 405 × 537.6 | `984:13923` *(in `984:13921`)* | 708 × 482.6 | `984:13954` *(in `984:13952`)* | 370 × 441.6 | `964:68677` / `984:10763` / `984:10794` | `964:68645` / `984:10605` / `984:10673` | `if (s.lime)` inside `Calendar`'s `if (s.v2)`, after `line` | — |
+| 5 | `calendar` | `964:68709` *(in `964:68707`)* | 405 × 537.6 | `984:13923` *(in `984:13921`)* | 708 × 482.6 | `984:13954` *(in `984:13952`)* | 370 × 441.6 | `964:68677` / `984:10763` / `984:10794` | `964:68645` / `984:10605` / `984:10673` | `if (s.lime)` inside `Calendar`'s `if (s.v2)`, after `line` | done 1a5bbcb |
 | 6 | `gallery` | `964:68711` | 1440 × 789 | `984:13924` | 768 × 884 | `984:13955` | 390 × 585 | `964:68679` / `984:10764` / `984:10795` | `964:68647` / `977:23131` / `982:10257` | **no block** — `s.lime` ternaries through `Gallery`'s `if (s.v2)` | — |
 | 7 | `pricing` | `964:68712` | 1440 × 1138 | `984:13925` | 768 × 993 | `984:13956` | 390 × 1393 | `964:68680` / `984:10765` / `984:10796` | `964:68648` / `977:23149` / `982:10274` | `if (s.lime)` inside `Pricing`'s `if (s.v2)`, after `shown` | — |
 | 8 | `map` | `964:68713` | 1440 × 818 | `984:13926` | 768 × 828 | `984:13957` | 390 × 887 | `964:68681` / `984:10766` / `984:10797` | `964:68649` / `977:23264` / `982:10389` | `if (s.lime)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | — |
@@ -257,7 +257,7 @@ walk; each session re-reads its narrow masters.
 | bio | Scheme 1 | — | card `#1A1A1A` (`s.box1`) in a 1px `#FFFFFF` 15% ring; photo well `#0E0E0E` (`s.box3`); the seal `#DF262C` |
 | media card | **Scheme 2** | — | Lime's three literals map to Scheme 2's values: the card **`#353535`** (`box/3`; Lime `#263020`), the idle bars **`#222222`** (`box/2`; Lime `dusk` `#43523B`), the disc **`#000000`** (`box/1`; Lime `s.box2`) — read each off the fills |
 | media list | page | — | root `#000000`; rows on the page ground with top hairlines |
-| calendar | Scheme 1 | the foot pill (365 × 54) **Scheme 2**: fill `#DF262C` | Scheme 2's `active`: red under the leaked `#15180F`, its disc Scheme 2's `box/1` **`#000000`** (Lime's was `s.box1` — the key changes) |
+| calendar | Scheme 1 | the foot pill (365 × 54) **Scheme 2**: fill `#DF262C` | Scheme 2's `active` bg, ~~under the leaked `#15180F`, its disc Scheme 2's `box/1` `#000000`~~ — *corrected in section 5*: the label and the disc are both bound to `sem/bg`, so both are **`#171716`**, and the pill's own fill is `sem/text/1`, not `active/bg` (Lime's was `s.box1` — the key changes either way) |
 | repertoire | page | the three `set` cards are **Scheme 4 / Scheme 3 / Scheme 4** ✱ (Lime 1 / 4 / 3) | `#1A1A1A` in a 1px **`#FF0000`** ring (`stroke2`), **`#9E1F17`** (Scheme 3 `box/1`) in a 1px **`#FFFFFF`** ring (Scheme 3's `stroke2`), `#1A1A1A` in `#FF0000` again — so the middle seat is the testimonials' red, and its ring is white, not black |
 | gallery | **Scheme 2** | — | the sheet is Scheme 2's `sem/bg` **`#171716`** (Lime's block paints `s.box1`, which is `#1A1A1A` here — the plan's first trap); the tile wells *expected* at Scheme 2's `box/3` `#353535` (Lime's `#263020`) — the sheet was read, the wells are the token map's, so read them |
 | pricing | page | the featured `row` (1328 × 266) **Scheme 3**: fill `#DF262C`, 1px `#FFFFFF` ring | the featured row is Scheme 3's `bg` under `#000000` type in Scheme 3's white `stroke2`; its badge Scheme 3's `box/1` `#9E1F17` (Lime `lime3`); **the instance carries a visible 1px `#FFFFFF` 15% ring** — layout 2's pricing drew Grunge's where Lime declined, and so does this one |
@@ -297,7 +297,8 @@ value under Grunge — **and on this page the nested scheme often changes too, n
   red / dark. Re-read the 390 master's centre card before inheriting Lime's seating, since the
   discriminator was the *colour* and the colours are a different set.
 - **The leaked inks and the two reds are followed** (layout 1, open question 5): the header pill's
-  `#15180F`, the calendar pill's `#15180F`, `#FF0000` wherever `stroke2` is bound. Where a Grunge
+  `#15180F`, ~~the calendar pill's `#15180F`~~ (*section 5*: the calendar's pill is lettered
+  `sem/bg`, not `active/text`, so no leak reaches it), `#FF0000` wherever `stroke2` is bound. Where a Grunge
   node is bound to `sem/active/text`, the code reads `s.activeFg`, which is that leaked ink already.
 
 ### Grounds
@@ -629,9 +630,15 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **The composed row's pad arm moves per section, so the two heads part in between.** The
   `vm.pad` arm at `d === 2` gives the bio, media and calendar a 50 top together under Lime; under
   Grunge each joins in its own session (the digest rule), so until section 5 the calendar's
-  "Book Me" stands 30 below "KM BIO" on the 1440 page. Media's and the calendar's sessions add
-  `cat === 'media'` / `'calendar'` to the Grunge half of that arm. *Media joined in section 3*;
-  the calendar's is the one left.
+  "Book Me" stood 30 below "KM BIO" on the 1440 page. *Closed in section 5*: with all three
+  joined, the Lime half and the Grunge half are one condition again
+  (`(T.name === 'Lime' || T.name === 'Grunge') && (bio || calendar || media)`) and the three
+  heads stand together at 41.
+- **The calendar's foot is `vm.padY`, not the frame's 56, and that is Lime's arm.** The
+  `d === 2` arm gives the calendar `vm.padY` under its card — 80 at desktop against the
+  frame's 45.9 (56 × 0.82), exact at 768 and 4 over at 390. Section 4's repertoire-gap rule:
+  moving it would move Lime's page, so it is a named diff and one for a Lime-and-Grunge pass,
+  the sweep's to raise.
 
 ### Settled in section 1 (the header)
 
@@ -882,6 +889,71 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly
   repertoire arch 2 at three widths on both surfaces.
 
+### Settled in section 5 (the booking calendar)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `Calendar`'s `if (s.v2)`, after `line`, is
+  `(s.lime || s.grunge)`**, with `const grunge = s.grunge` naming the deltas at **three** sites
+  and a block-local `disp()` for the display type — **no `G` lookup, because there is almost
+  nothing to look up**. One node-walk call over the two wide masters and a second over the 390
+  one (plus the `boundVariables` of eleven nodes) found Lime's tree box for box at all three
+  widths — the 20 padding, the 18 stack gap, the 8 grid gap, the 30.713 dot with its raw 2.559
+  ring, the 21 legend gap, the pill's 5 / 5 / 5 / 21 round a 46 × 44 disc, `Frame 300`'s 30
+  head gap — on **Scheme 1** (`187:1` beside `187:4`) with **no Device override** and **no
+  effect on any node**. Every size is a ramp token (display-lg 130 / 81 / 46, display-sm
+  50 / 40 / 30, title 36 / 28 / 26, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12),
+  so no `T` table; the hooks sit above the block, so the published day picking needed nothing.
+- **Every colour Lime's block reads is bound to the same `sem` key here**, which is why this is
+  the cheapest widening of the pass: the card `box/1` in a `border/thin` (2px) `stroke/1` ring,
+  the numeral / month / year / weekday / day-letters all `text/2`, the dots `box/2` booked,
+  `text/1` picked (= `s.ac`, `#DF262C`) and `box/1` inside a `stroke/1` ring free, the legend's
+  two marks the same two fills. Nothing needed renaming and no Scheme 3 appears on this master.
+- **Two values move, and one of them corrects the plan.** The card's corner is a raw **15** at
+  every width (Lime 50), layout 2's pattern; and the foot pill's label and disc are
+  **`#171716`** — Scheme 2's `sem/bg`, the **one nested scheme on the master** — where the
+  plan's table predicted Scheme 2's `box/1` `#000000`. Named as the literal (`HeaderV0`'s `G2`
+  rule); Lime's `fg={s.box1}` is `#1A1A1A` here, which would have looked nearly right and read
+  as the card's own fill. The pill's ground is `sem/text/1`, which `BookPill`'s `s.pillBg`
+  default already is, and its arrow follows `bg`, so `fg` is the single override.
+- **Three display sites owed `faced` / `facedLh` / uppercase**, through `disp(lh)`: "Book Me"
+  (Display/Title, Lime's `lu(36 / 28 / 26)` literal — `size/title` to the number, so the
+  literal stands and only takes `faced`), the numeral (Display/LG, lh 0.89) and the month
+  (Display/SM, lh 1). The pill's label needed nothing: `labelStyle` already faces and cases it
+  under Grunge. The year, weekday, day letters and legend are Inter at the ramp.
+- **Measured against the masters' content edges** (`column=right` at desktop): "Book Me" at 41
+  (50 × 0.82) and 32.4 tall (40 × 0.82), the card 24.6 under it at radius 12.3 (15 × 0.82) in a
+  2px ring, head 155 (189.74 × 0.82 = 155.6), numeral 95.2 (116 × 0.82 = 95.1) at 80.25px,
+  month 41 at 30.75px, year 11, weekday 13, legend 20.6 at 10px, pill 44.3 (54 × 0.82) with a
+  37.7 × 36.1 disc, dots 25.2 in a 2.1 ring; 768 head at 50 and 30.8 tall, card at 110.8
+  (111) radius 15, head 134.3 (134.74), numeral 72.1 (72), month 40, legend 24.8 (25), pill 54
+  on a 46 × 44 disc, dots 30.7 in 2.6; 390 head at 44 and 28.6 tall (29), card radius 15, head
+  93.1 (93.74), numeral 40.9 (41), month 30, pill 54 `full`. **Named diffs, Retro's and
+  Lime's**: the cards run 472.3 / 520.5 / 479.3 against 537.6 × 0.82 / 482.6 / 441.6, each the
+  frame plus one dot row, because the seeded June runs five weeks where the frame draws four;
+  the 390 card is 346 in the root's own 22 padX against the master's 370 at 10; the frame's
+  four `box/2` booked dots and its week of red "selected" dots are filler the section has no
+  model for; the desktop foot (see *Conventions*).
+- **`live=1`** at desktop and 390: a dot click moves the numeral, the weekday and the pill to
+  *Enquiry About June 24 / Tue*, a second click falls back to the cued June 12, the pill is
+  `<a href="#form">` live and a span on the canvas, and 30 dots take a pointer where the canvas
+  has none. `&booked=2025-06-12` drops the numeral and the weekday, prints *Pick a date to
+  enquire*, gives the day the `#383838` fill and takes no click on it (`cursor: auto`);
+  `&open=2025-03-29` opens on March with six lead blanks and a sixth row, the 29th lit. No page
+  errors. **No red-on-red state**: the picked dot and the pill stand on the `#1A1A1A` card.
+- **The composed row closes here.** `vm.pad`'s `d === 2` arm takes the calendar under Grunge,
+  and the Lime and Grunge halves fold back into one condition; measured at desktop, the bio's
+  "KM BIO", the media player's "Top tracks" and the calendar's "Book Me" all stand at **41**.
+  `scripts/page-check.mjs Grunge 2`: four modal cards, bio and calendar both at top 738 in the
+  published 1440 tab, media under the bio at 1761, the calendar's own pill scrolling to
+  `#form`, no errors or warnings, the 390 burger 1 → 11.
+- **`FIELDS.calendar` moves nothing.** Its one template-keyed row, `heading`
+  (`Grunge: [0, 1, 2, 3]`, set in layout 1's section 8), holds over the fitted card — the
+  wrapper's "Book Me" is that field, falling back to `CAL_HEADING_3`. `image`, `time`, `cta`,
+  `slotCta` and `types` are flat rows layout 3 reads none of, as under Retro and Lime.
+  `reach.mjs` carries no calendar probe (its `cj` probes are the header's, the bio's and the
+  map's), so no run was owed — layout 2's finding, re-checked.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly calendar
+  arch 2 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's or 2's or
@@ -914,6 +986,15 @@ Lime's Conventions, with the plan it came from — the running list for the swee
   after the seam* (lime/layout-1); *a stand-in face is scaled*; *casing stays the theme's;
   uppercase per site*; *the whole-page published check is one puppeteer script*; *theme 1 is
   the digest at risk*.
+- Section 5: *the node walker, kept* (grunge/layout-2) — with `boundVariables` read beside the
+  fills, which is what proved every key unchanged; *a section on another scheme writes that
+  scheme's values as named literals* (the pill's `#171716`); *`get_variable_defs` mixes nested
+  schemes in one list; the fills settle which node is on which* (lime/layout-1 — here the pill,
+  the master's one nested scheme); *where the seam lives inside the branch, the block goes
+  after the seam* (lime/layout-1); *every glow is a guess until `effects` confirm it*; *a
+  stand-in face is scaled*; *casing stays the theme's; uppercase per site*; *`vm.title` shadows
+  the ramp's `title` size* (lime/layout-1 — why "Book Me" keeps Lime's 36 / 28 / 26 literal);
+  *the whole-page published check is one puppeteer script*; *theme 1 is the digest at risk*.
 
 ## Open questions
 
