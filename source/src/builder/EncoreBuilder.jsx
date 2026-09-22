@@ -350,10 +350,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // names. A site only some of them share stays a named pair, widened per
     // site from the frame.
     designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge',
-    // Grunge's layout-1 page is the same eleven components in a third mode,
-    // Static Youth, so its decoration — torn black seams round its textured
-    // bands, grain, the red seal — goes behind this flag in the shared
-    // branches, the way Lime's does. A value two templates share is written as
+    // Grunge's layout-1 and layout-2 pages are the same components in a third
+    // mode, Static Youth, so its decoration — at layout 1 torn black seams
+    // round its textured bands, grain and the red seal, at layout 2 rings
+    // where Lime glows — goes behind this flag in the shared branches, the way
+    // Lime's does. A value two templates share is written as
     // the pair: `(s.retro || s.grunge)` for grain and torn edges,
     // `(s.lime || s.grunge)` for the `sem` reads and the capsule nav.
     grunge: T.name === 'Grunge',

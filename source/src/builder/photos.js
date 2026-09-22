@@ -114,7 +114,10 @@ export const LIME_PHOTOS = {
 // calendar's crowd (019c80fd), the form's avatar (81e1c9a9, the centre square
 // of a pub shot, whose whole frame seeds `photo` on Lime's rule) and the
 // gallery's spotlight (a746e7e4, the band). Shared: the five track covers and
-// the map raster.
+// the map raster. Its layout-2 frames (964:64617…) draw the same pictures in
+// other boxes, so that pass owed no export; the two colour pictures they
+// carry in the header's portrait tile and the form's credit avatar are Lime's
+// component defaults leaking through, and the seeds stand.
 //
 // The gallery strip is the one place this departs from the frame, which draws
 // the bio's drummer six times round Retro's colour spotlight in the ringed

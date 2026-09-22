@@ -506,6 +506,10 @@ Three things the header settles for the pass:
 
 ## The end-of-pass sweep
 
+**Done in two commits: the docs, the two scripts, the comments and this plan, then the root
+`index.html` refresh.** What each item came to is under *Learned on the end-of-pass sweep* at the
+foot of *Conventions*; the list is kept as it was written.
+
 Written now from what the plan can see; the sections add to it. One session, in this order:
 
 1. **CLAUDE.md and README.md**, wherever they describe Grunge as designed at layout 1 only or a
@@ -1545,6 +1549,66 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
 - *A stand-in face is scaled to the frame's glyph size* (C) — every display site through the
   block's one `dispType`.
 - *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a ninth time.
+- *The whole-page published check is one puppeteer script* (B) — the sweep; the script now walks
+  the first card it is given.
+- *The two-build digest walks the editor* (B) — the sweep, with `CARD=1` added.
+- *Field reach is measured, not read off the prose* (B) — `reach.mjs 2`, confirm-only.
+
+### Learned on the end-of-pass sweep
+
+- **`page-check.mjs` walks the first card it is given**, so `Grunge 1,0,2,3` gives card 2 the full
+  walk and proves the other three render and publish; section 1's throwaway is no longer owed. It
+  also gained a pass over every other fragment link on the page (the section pills and the
+  calendar's flow), the form's **refused** submit read off the inputs' own `boxShadow` (the ring
+  sits on the input, not its parent — the first probe read a 215px grid cell), a tablet ↔ mobile
+  resize walk, and console **warnings** kept apart from errors and unfiltered.
+- **Card 2, published, under Grunge**: nine nav links, Listen, Book Now and the hero pill each
+  scroll to their section; the six other fragment links (bio, pricing and testimonials pills, the
+  calendar's two flow links and its Start Enquiry) all reach `#form` / `#pricing`; the media
+  player plays from a card click (`paused: false`); gallery tiles move the hero, repertoire chips
+  re-filter, map rows and pins feature, pricing chips swap the package, testimonials tiles move
+  the card; a refused form submit turns all four boxes from `inset 1px` white 15% to `inset 2px`
+  white with the heights unchanged, the valid one composes the mailto with all four values and
+  swaps in *Check your mail*; nine footer links scroll; the 390 burger opens (2 → 12 links);
+  `scrollWidth − innerWidth` 0 at 390. **No console error or warning in either window, and none
+  across the 768 → 390 → 768 → 1440 → 390 → 1440 resize walk**, which is open question 1's
+  closure confirmed at page level.
+- **The calendar's rows answer nothing in the published tab, by design**: the seeded slots are
+  June and July 2025, so with the published tab reading today every one is `dead` —
+  handlerless at full ink, Lime's layout-2 rule, which the widened block inherits. The generic
+  probe's empty `calendar: []` is that, not a regression; section 7's harness run (no `&today=`)
+  is the rows' proof.
+- **The seams are straight.** 180px clips at 1440 and 390: the repertoire's `#1A1A1A` sheet and
+  its `stroke1` ring meet the media panel's black above and the gallery's below square; pricing's
+  instance ring stands on bare ground both sides; map → form → testimonials is unbroken black,
+  with no residue of Lime's pale form sheet.
+- **Thumbnails (deliverable 4):** all ten arch-1 rows in the layout picker render their fitted
+  sections under Grunge. The sidebar rows read *Bio*, *Media Player*, *Gallery*, *Booking
+  Calendar*, *Events Map*, *Enquiry Form* — a `startsWith('Media')` match lands on *Media Player*,
+  so pick rows by their exact names.
+- **Cards 1, 3 and 4** render and publish with every section in `pageOrder(i)`'s order and no
+  error or warning; cards 3 and 4 still draw Retro's checker ribbon (unfitted, each its own
+  pass's).
+- **`reach.mjs 2`** (2,784 renders) matches every `Grunge` row in `FIELDS` — the header's and
+  `calendar.heading` — and the map's, bio's and identity rows; nothing moved.
+- **The docs' Grunge claims went further than the list.** Beyond the named sites: CLAUDE.md's map
+  paragraph (the compact pager, the raster plate and layout 3's `zoom` in the layout-2 block are
+  Grunge's too), the calendar's past-row exception, the nav flip count (eight links in Grunge's
+  layout 2), Minimal's triple and JP-039's masters, the `in` note's "fitted card 1", and the file
+  table's line counts; README's booked-day and refused-box parentheticals; comments in
+  `data.js` (`headerFamily`, the header's `in`), `photos.js` (the layout-2 frames owe no export)
+  and `sectionVm`'s `grunge` flag. The two "flat three" hits in `EncoreSection` are inside bio
+  layouts 3 and 4 and stay.
+- **The committed `index.html` was already refreshed mid-pass** (`af20e78`, after section 7, and
+  now `main`), so the plan's tell — "the old build's card 2 carries the checker ribbon" — no
+  longer held. Two-build digest (repo root on `127.0.0.1:8931`, the old build digested before the
+  `cp`): the seeded page **zero rows at all five themes and three widths**, `modal.txt` identical
+  (four Grunge cards in both); with `build-digest.mjs`'s new `CARD=1`, card 2's page is identical
+  under Retro, Lime, Editorial and Pop, and under Grunge differs from the map down (the map, the
+  form, the testimonials and the footer they shift) while the header through the calendar are
+  byte-identical — sections 8–10, exactly. String tell: `#00000026` (Scheme 3's black hairline)
+  is new-only. Only `EncoreSection.jsx` changed in `src` since `af20e78`, so no other hunk to
+  name. The standalone file is 7,924,585 bytes (was 7,923,048).
 
 ## Open questions
 
