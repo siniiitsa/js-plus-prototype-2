@@ -200,7 +200,7 @@ the block); it is the gate this session widens.
 | 3 | `media` | `964:68706` list + `964:68705` card *(head `964:68698`)* | 858 × 424 + 858 × 243 | `984:13919` + `984:13918` *(head `984:13911`)* | 708 × 647 + 708 × 243 | `984:13950` + `984:13949` *(head `984:13942`)* | 370 × 647 + 370 × 243 | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68642` + `964:68641` / `977:22728` + `977:22727` / `982:9779` + `982:9778` | `if (s.lime)` inside `Media`'s `if (s.v2)`, after `nHot` | done d067f7b |
 | 4 | `repertoire` | `964:68710` | 1440 × 621 | `984:13920` *(in `984:13917`)* | 708 × 655 | `984:13951` | 390 × 702 | `964:68678` / `984:10760` / `984:10791` | `964:68646` / `977:23041` / `982:10193` | `if (s.lime)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | done cb08bb9 |
 | 5 | `calendar` | `964:68709` *(in `964:68707`)* | 405 × 537.6 | `984:13923` *(in `984:13921`)* | 708 × 482.6 | `984:13954` *(in `984:13952`)* | 370 × 441.6 | `964:68677` / `984:10763` / `984:10794` | `964:68645` / `984:10605` / `984:10673` | `if (s.lime)` inside `Calendar`'s `if (s.v2)`, after `line` | done 1a5bbcb |
-| 6 | `gallery` | `964:68711` | 1440 × 789 | `984:13924` | 768 × 884 | `984:13955` | 390 × 585 | `964:68679` / `984:10764` / `984:10795` | `964:68647` / `977:23131` / `982:10257` | **no block** — `s.lime` ternaries through `Gallery`'s `if (s.v2)` | — |
+| 6 | `gallery` | `964:68711` | 1440 × 789 | `984:13924` | 768 × 884 | `984:13955` | 390 × 585 | `964:68679` / `984:10764` / `984:10795` | `964:68647` / `977:23131` / `982:10257` | **no block** — `s.lime` ternaries through `Gallery`'s `if (s.v2)` | done a4c6869 |
 | 7 | `pricing` | `964:68712` | 1440 × 1138 | `984:13925` | 768 × 993 | `984:13956` | 390 × 1393 | `964:68680` / `984:10765` / `984:10796` | `964:68648` / `977:23149` / `982:10274` | `if (s.lime)` inside `Pricing`'s `if (s.v2)`, after `shown` | — |
 | 8 | `map` | `964:68713` | 1440 × 818 | `984:13926` | 768 × 828 | `984:13957` | 390 × 887 | `964:68681` / `984:10766` / `984:10797` | `964:68649` / `977:23264` / `982:10389` | `if (s.lime)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | — |
 | 9 | `form` | `964:68714` | 1440 × 562 | `984:13927` | 768 × 728 | `984:13958` | 390 × 741 | `964:68682` / `984:10767` / `984:10798` | `964:68650` / `977:23406` / `982:10472` | `if (s.lime)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | — |
@@ -259,7 +259,7 @@ walk; each session re-reads its narrow masters.
 | media list | page | — | root `#000000`; rows on the page ground with top hairlines |
 | calendar | Scheme 1 | the foot pill (365 × 54) **Scheme 2**: fill `#DF262C` | Scheme 2's `active` bg, ~~under the leaked `#15180F`, its disc Scheme 2's `box/1` `#000000`~~ — *corrected in section 5*: the label and the disc are both bound to `sem/bg`, so both are **`#171716`**, and the pill's own fill is `sem/text/1`, not `active/bg` (Lime's was `s.box1` — the key changes either way) |
 | repertoire | page | the three `set` cards are **Scheme 4 / Scheme 3 / Scheme 4** ✱ (Lime 1 / 4 / 3) | `#1A1A1A` in a 1px **`#FF0000`** ring (`stroke2`), **`#9E1F17`** (Scheme 3 `box/1`) in a 1px **`#FFFFFF`** ring (Scheme 3's `stroke2`), `#1A1A1A` in `#FF0000` again — so the middle seat is the testimonials' red, and its ring is white, not black |
-| gallery | **Scheme 2** | — | the sheet is Scheme 2's `sem/bg` **`#171716`** (Lime's block paints `s.box1`, which is `#1A1A1A` here — the plan's first trap); the tile wells *expected* at Scheme 2's `box/3` `#353535` (Lime's `#263020`) — the sheet was read, the wells are the token map's, so read them |
+| gallery | **Scheme 2** | — | the sheet is Scheme 2's `sem/bg` **`#171716`** (Lime's block paints `s.box1`, which is `#1A1A1A` here — the plan's first trap); the tile wells *expected* at Scheme 2's `box/3` `#353535` (Lime's `#263020`) — the sheet was read, the wells are the token map's, so read them. *Confirmed in section 6*, both of them, plus a ring bound to `scheme/1/stroke/2` (`#FF0000`) where Lime's is `stroke1` |
 | pricing | page | the featured `row` (1328 × 266) **Scheme 3**: fill `#DF262C`, 1px `#FFFFFF` ring | the featured row is Scheme 3's `bg` under `#000000` type in Scheme 3's white `stroke2`; its badge Scheme 3's `box/1` `#9E1F17` (Lime `lime3`); **the instance carries a visible 1px `#FFFFFF` 15% ring** — layout 2's pricing drew Grunge's where Lime declined, and so does this one |
 | map | **Scheme 4** ≡ 1 | `radius-map` (634 × 706) **Scheme 3** ✱ (Lime Scheme 2): fill **`#F52E34`** | root `#000000`: **no pale sheet** — layout 2's form trap in the map (below); the panel is Scheme 3's `box/2`, the layout-2 travel card's red, not `lime3` |
 | form | Scheme 1 | — | root `#000000`; the card and boxes `s.box1` in `stroke1` (read); the submit red |
@@ -313,7 +313,7 @@ Sampled off the three renders at the band edges and the middle. **The sequence i
 | 3 | media | page | the Scheme 2 card `#353535` (radius to read; Lime 50); rows on the page with top hairlines |
 | 4 | repertoire | page | three cards: `#1A1A1A`, `#9E1F17`, `#1A1A1A`, each ringed (at 390 the carousel's peeks reach the page edge) |
 | 5 | calendar | page | a `#1A1A1A` panel (read its ring — Lime's is the page's one 2px ring) |
-| 6 | gallery | **full-bleed `#171716` sheet** (Scheme 2) | tiles on `#353535` wells, ringed |
+| 6 | gallery | **full-bleed `#171716` sheet** (Scheme 2) | tiles on `#353535` wells, ringed in `#FF0000` at radius 15 (section 6) |
 | 7 | pricing | page, in the instance's own `stroke1` ring | rows: page ground in a ring, the featured one `#DF262C` in a white ring |
 | 8 | map | **page** (no sheet) | the `#F52E34` panel, radius to read; the list on the ground with a red lit row |
 | 9 | form | page | a `#1A1A1A` card |
@@ -954,6 +954,78 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly calendar
   arch 2 at three widths on both surfaces.
 
+### Settled in section 6 (the gallery)
+
+- **No Grunge block, and no `G` lookup: Lime's ternaries through `Gallery`'s `if (s.v2)` are
+  widened one by one**, `const grunge = s.grunge` naming the deltas at eleven sites — `sheet`,
+  `ink`, `well`, a new `ring`, the desktop and 390 halves of `ratio`, the viewer's `cream` /
+  `ctlBg` / `scrim`, the head's type, and the tile's border / radius / overlay — layout 2's
+  gallery call for the second time. One node-walk call over all three masters found **Lime's
+  tree node for node**: the 56 / 60·30 / 60·20 insets, the 32 head gap, `columnGap` 8 with
+  `rowGap` 8 / 20 / 20, the 1px **INSIDE** stroke at every width, `minW 298` on the desktop
+  children (Retro's named artefact). The hooks sit above the branch, so the published viewer
+  needed nothing.
+- **Scheme 2 on all three roots**, `get_variable_defs`: *Static Youth · Scheme 2*, **no Device
+  override** and **no effect on any node** — the plan's prediction, confirmed rather than
+  guessed. Both values that move are the two Scheme 2 renames, and both are named literals
+  (`HeaderV0`'s `G2` rule): the sheet is `sem/bg` **`#171716`** where Lime's block paints
+  `s.box1` (`#1A1A1A` in this mode — the plan's first trap), and each tile's well is
+  `sem/box/3` **`#353535`** where Lime's literal is `#263020` (`s.box3` is Scheme 1's
+  `#0E0E0E`, and `s.box2`'s `#383838` is the near miss).
+- **The ring is `s.stroke2`, read off the node's own binding.** The tiles' stroke is bound to
+  **`scheme/1/stroke/2`** explicitly, not `sem/stroke/2` — `#FF0000`, so `s.stroke2` is the
+  key, a red hairline where Lime's is white 15%. It keeps Lime's mechanism exactly (a 1px
+  inset `boxShadow` on the last-child overlay, so the photograph cannot paint over it) and is
+  never scaled, the frame stating 1 at all three widths. The radius is a raw **15** at every
+  width against Lime's 30, layout 2's pattern.
+- **The head keeps Lime's two keys and gains the face.** It is `size/display-lg` in
+  `sem/text/1`, so `s.dispLg` and `s.ac` hold at every width (Lime's `tab ? s.h1` arm is
+  Retro's and now excludes Grunge too), with `faced` / `facedLh(0.89)` / uppercase —
+  80.25 / 60.75 / 34.5px in a 95.2 / 72.1 / 40.9 line box. One red tone at every width, the
+  bio's and the media player's reading again.
+- **The 390 tile is `111.333 / 83`**, Lime's residue rule over this page's own 585:
+  (585 − 120 − 41 − 32 − 60) / 4 = 83 (Lime 82.75 over 591). The desktop tile is **Lime's
+  exactly**, 326 / 171, and 768 states the same 660 grid, so only the 390 arm moves.
+- **The viewer is re-inked, not restructured**, Lime's call read on Grunge's palette: scrim
+  `rgba(0,0,0,.94)` (the page ink at .94) and controls `s.tx` on `rgba(255,255,255,.14)`. The
+  frames draw no viewer, so this is the palette's reading of a QA-added control on a third
+  template; it is not in the first paint, so the digest does not cover it and it was driven
+  live instead.
+- **Measured against the masters' content edges**: desktop inset 45.9 (56 × 0.82), head 95.2
+  (116 × 0.82), grid top 167.3 (204 × 0.82), tiles 267.1 × 140.1 (267.3 × 140.2) on a
+  6.6 pitch at radius 12.3, tile x 45.9 / 319.6 / 593.3 / 867 and y 167.3 / 314 (the frame's
+  × 0.82 to the tenth); 768 head 72.1 (72), grid top 164.1 (164), tiles 230.7 × 150 at 15,
+  x 30 / 268.7 / 507.3 and y 164.1 / 334.1 / 504.1; 390 head 40.9 (41), grid top 132.9 (133),
+  tiles 111.3 × 83 at 15, x 20 / 139.3 / 258.7 and y 132.9 / 235.9 / 338.9. The bleed hands
+  the section the frame's own measure (Retro's rule): 1088.2 / 708 / 350 against
+  1088.96 / 708 / 350.
+- **Named diffs, Lime's and Retro's**: the sections are **500 / 714 / 482** against
+  789 / 884 / 585, the frame's twelve tiles against our seven (`FIELDS.gallery.images` is
+  `max: 7`); the head prints `heading`'s "See us in action" where the frame writes "Gallery",
+  one line at every width either way, so the copy is the artist's and the word is the
+  component's; the seventh tile's well is `sem/active/bg` (`#DF262C`) under its photograph and
+  **paints nothing, so it is not drawn** — Lime's identical call on the identical slot of the
+  identical component. **No grain anywhere**: unlike layout 2's gallery hero, no master here
+  carries the raster, which is the plan's grain list holding.
+- **`live=1`**, desktop and 390: a tile click opens the viewer at 3 / 7 with focus taken and
+  `overflow: hidden` plus a stable gutter on the popup's `<html>`, → and the Next disc step to
+  4 / 7 and 5 / 7, Escape closes and restores both; `n=0` keeps seven `#353535` wells in red
+  rings with white **KM** initials at 32 / 14 and `cursor: auto` on every slot. No page errors
+  or warnings. **No red-on-red state**: the head and the rings stand on the `#171716` sheet.
+- **`FIELDS.gallery` has no template-keyed `in` row** (`images` and `heading` reach every
+  layout, the three social links are `[0]` for every template), so no `reach.mjs` run was owed
+  — layout 2's finding, re-checked.
+- **Verified in the builder**: `scripts/page-check.mjs Grunge 2` — four modal cards, bio and
+  calendar composed at top 738, media under the bio at 1761, the gallery at 3312 · 500 between
+  the repertoire's floor and the pricing's head, every anchor scrolling (Media → `#gallery`),
+  no errors or warnings, the 390 burger 1 → 11 with no overflow. *Process note*: two runs
+  failed, first on a `waitForSelector` timeout and then on "Execution context was destroyed" —
+  one cause wearing two faces, a Vite full reload mid-walk after a session's worth of HMR.
+  Restarting `npm run dev` fixed both; the script was not at fault, and the theme button's
+  selector matched when tested directly.
+- **Digest**: themes 0, 1, 3 and 4 zero files over all 645 renders, canvas and `live=1`; theme
+  2 exactly gallery arch 2 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's or 2's or
@@ -995,6 +1067,18 @@ Lime's Conventions, with the plan it came from — the running list for the swee
   stand-in face is scaled*; *casing stays the theme's; uppercase per site*; *`vm.title` shadows
   the ramp's `title` size* (lime/layout-1 — why "Book Me" keeps Lime's 36 / 28 / 26 literal);
   *the whole-page published check is one puppeteer script*; *theme 1 is the digest at risk*.
+- Section 6: *the node walker, kept* (grunge/layout-2) — with `boundVariables` beside the
+  fills again, which is what read `scheme/1/stroke/2` off the ring rather than inferring
+  `sem/stroke/2`; *a section on another scheme writes that scheme's values as named literals*
+  (Scheme 2's `#171716` and `#353535`); *a frame's inside stroke is an inset `boxShadow`, on an
+  overlay where an image paints over it* (lime/layout-2); *every glow is a guess until
+  `effects` confirm it* (none here, for the fourth pass running); *a bleed hands the section
+  the frame's own measure* (retro/layout-3, section 8); *the count is the section's when a
+  field states it* (retro/layout-3 — seven against the frame's twelve, a third time); *a
+  stand-in face is scaled*; *casing stays the theme's; uppercase per site*; *Retro's live
+  states vanish under Lime; redraw them, never inherit them* (lime/layout-1 — here the
+  viewer's scrim and controls, re-inked for a third palette); *the whole-page published check
+  is one puppeteer script*; *theme 1 is the digest at risk*.
 
 ## Open questions
 
