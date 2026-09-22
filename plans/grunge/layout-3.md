@@ -862,12 +862,17 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   where the frame writes "Curated sets"; the meta line is the set's count where the frame has
   a mood and a running time; the right-hand column is the artist, not a duration; the 768
   cards are 216 against 222.7 (a 688 column against 708); the section's own 80 / 56 / 44 top
-  pad is the shared `padY`, not the frame's 56 / 60 (the plan's `vm.pad` arms never carried a
-  repertoire row, under Lime either).
-- **The gap under the media section is Lime's by construction**: section 3 gave media Lime's
-  pad arm, the repertoire reads the same shared pad on both templates, and the Grunge page
-  frames stand the repertoire where Lime's do (desktop at 3298 under the composed row; 768 in
-  `Frame 301` 30 under the list; 390 at 2901.5 before the calendar). Nothing was moved.
+  pad is the shared `padY`, not the frame's 56 / 60 / 60 (the plan's `vm.pad` arms never
+  carried a repertoire row, under Lime either).
+- **The gap under the media section — the re-check section 3 owed — is Lime's, and off the
+  frame.** Measured last media content → repertoire head: the frame's (glyph bounds, so a few
+  px generous to us) **109.3** (133.3 × 0.82) / **128.2** / **109.2**; ours **128.5 / 117 /
+  93** — media's foot 48.5 / 61 / 49 plus the repertoire's `padY` 80 / 56 / 44 — and the same
+  three numbers at theme 1. So Grunge inherits Lime's gap exactly, and both run +19 at desktop
+  and −11 / −16 narrow, because the repertoire's top is the shared `padY` where the frame's
+  instance pads 56 / 60 / 60 and stands 66 / 30 / 10 under the list. A named diff, not fixed
+  here: a repertoire row in the `d === 2` `vm.pad` arm would move Lime's page too, and it is
+  one for a Lime-and-Grunge pass (the sweep's to raise), not a Grunge-only arm.
 - **`live=1`**, desktop and 390: the carousel wraps both ways; at `n=20` *View full set*
   reveals one card (three links become two) and Next turns to the All card on page 2; `n=0`
   prints *No songs yet.*; no page errors. No red-on-red state: the pills stand on the page.
