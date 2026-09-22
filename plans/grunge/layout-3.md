@@ -201,7 +201,7 @@ the block); it is the gate this session widens.
 | 4 | `repertoire` | `964:68710` | 1440 × 621 | `984:13920` *(in `984:13917`)* | 708 × 655 | `984:13951` | 390 × 702 | `964:68678` / `984:10760` / `984:10791` | `964:68646` / `977:23041` / `982:10193` | `if (s.lime)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | done cb08bb9 |
 | 5 | `calendar` | `964:68709` *(in `964:68707`)* | 405 × 537.6 | `984:13923` *(in `984:13921`)* | 708 × 482.6 | `984:13954` *(in `984:13952`)* | 370 × 441.6 | `964:68677` / `984:10763` / `984:10794` | `964:68645` / `984:10605` / `984:10673` | `if (s.lime)` inside `Calendar`'s `if (s.v2)`, after `line` | done 1a5bbcb |
 | 6 | `gallery` | `964:68711` | 1440 × 789 | `984:13924` | 768 × 884 | `984:13955` | 390 × 585 | `964:68679` / `984:10764` / `984:10795` | `964:68647` / `977:23131` / `982:10257` | **no block** — `s.lime` ternaries through `Gallery`'s `if (s.v2)` | done a4c6869 |
-| 7 | `pricing` | `964:68712` | 1440 × 1138 | `984:13925` | 768 × 993 | `984:13956` | 390 × 1393 | `964:68680` / `984:10765` / `984:10796` | `964:68648` / `977:23149` / `982:10274` | `if (s.lime)` inside `Pricing`'s `if (s.v2)`, after `shown` | — |
+| 7 | `pricing` | `964:68712` | 1440 × 1138 | `984:13925` | 768 × 993 | `984:13956` | 390 × 1393 | `964:68680` / `984:10765` / `984:10796` | `964:68648` / `977:23149` / `982:10274` | `if (s.lime)` inside `Pricing`'s `if (s.v2)`, after `shown` | done ec1c994 |
 | 8 | `map` | `964:68713` | 1440 × 818 | `984:13926` | 768 × 828 | `984:13957` | 390 × 887 | `964:68681` / `984:10766` / `984:10797` | `964:68649` / `977:23264` / `982:10389` | `if (s.lime)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | — |
 | 9 | `form` | `964:68714` | 1440 × 562 | `984:13927` | 768 × 728 | `984:13958` | 390 × 741 | `964:68682` / `984:10767` / `984:10798` | `964:68650` / `977:23406` / `982:10472` | `if (s.lime)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | — |
 | 10 | `testimonials` | `964:68715` | 1440 × 790 | `984:13928` | 768 × 789 | `984:13959` | 390 × **1248** | `964:68683` / `984:10768` / `984:10799` | `964:68651` / `982:8584` / `982:10499` | `if (s.lime)` inside `Testimonials`' `if (s.v2)`, after `template` | — |
@@ -1026,6 +1026,96 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Digest**: themes 0, 1, 3 and 4 zero files over all 645 renders, canvas and `live=1`; theme
   2 exactly gallery arch 2 at three widths on both surfaces.
 
+### Settled in section 7 (pricing)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `Pricing`'s `if (s.v2)`, after `shown`, is
+  `(s.lime || s.grunge)`**, with a **nine-key `G`** at its head (`radius`, `pad`, `incW`,
+  `rowRing`, `featRing`, `featInk`, `featNum`, `badgeBg`, `badgeFg`) whose Lime arm is the
+  block's own literals, and `const grunge = s.grunge` naming a `disp(lh)` spread (`facedLh`
+  and uppercase) for the three display sites. One node-walk call per master found **Lime's
+  tree node for node** at all three widths — the 24 between blocks, the 12 head, the 14
+  toggle row, the 16 between rows, the 40 column gap, the 10 left column, the 6 price row,
+  the 12/8/24 includes grid, the badge's 3/8 on a 4 corner, the pill's 5/5/5/21 round a
+  46 × 44 disc — on **Scheme 1** (`187:4` on every root) with **no Device override** and
+  **no effect on any node**. Every size is a Grunge ramp token (`get_variable_defs`:
+  title 36 / 28 / 26, list 24 / 19 / 18, display-md 72 / 50 / 38, body-lg 16 / 15 / 15,
+  body-md 14 / 13 / 13, body-sm 12, label-xs 20 / 14 / 12, chip 12 / 11 / 11, eyebrow
+  15 / 12 / 11), so there is still **no `T` table** and every size reads `s.*`. The hooks sit
+  above the branch, so the published filter and the moving FEATURED seat needed nothing.
+- **The boxes: 15, 28, 248.** The row's corner is a raw **15** at every width (Lime 50),
+  layout 2's pattern; its padding is **28** (Lime 38), which is Retro's own number again and
+  is what leaves the 768 includes panel at **248** (Lime 240, "what the wider padding
+  leaves"). The frame sums exactly: 28 + 210 + 28 = 266 at 1440.
+- **Scheme 3 is the whole of the featured row, and its ink rule is not Lime's.** A plain row
+  is the page ground in a 1px inside `sem/stroke/2` **`#FF0000`** (`s.stroke2`) where Lime's
+  is `s.ac`. The featured row's own fill is Scheme 3's `bg` **`#DF262C`**, which `s.ac`
+  already is, but its ring is Scheme 3's `stroke/2` — **white** — and its `text/2` is
+  **white too**, so the name, the blurb, the unit, the `£` and the whole includes column stay
+  `s.tx`; **only the numeral moves**, to Scheme 3's `text/1` **black**. Lime flips the entire
+  row to `s.bg`, so `ink` and the numeral part here into `G.featInk` / `G.featNum`. The badge
+  is Scheme 3's `box/1` **`#9E1F17`** lettered **white** (Lime `#CCFA61` on `s.bg`).
+- **The capsule and both pills needed nothing.** The capsule is `sem/box/1` in a `stroke/1`
+  hairline at `radius/pill` 999 (`s.btnR`), its lit option `sem/text/1` (= `s.ac`) lettered
+  `sem/bg`, its idle ones `sem/text/2` — Lime's five keys to the node. The plain row's pill is
+  `BookPill`'s Grunge defaults exactly (red under black type, a black disc round a red arrow,
+  the frame's `#df262c` / `#000000` pair — layout 2's pricing reading again) and the featured
+  one is **Lime's pair turned round unchanged**, `bg={s.bg} fg={s.ac}`, which on Scheme 3 is
+  the frame's black pill with a red label and a red disc round a black arrow.
+- **The instance ring is drawn, where Lime declined it** — the pass's open question 5 closed
+  for pricing's half of it as layout 2 closed its own. All three masters carry a visible 1px
+  inside `sem/stroke/1` on all four sides and the desktop render samples **38** at every edge;
+  ours is layout 2's mechanism verbatim, an absolute `pointerEvents: 'none'` span at
+  `inset: 0` last in the block's wrapper, the section root being the nearest positioned
+  ancestor. Nothing doubles: the gallery's `#171716` sheet is above it and the map stands on
+  the page ground below.
+- **`vm.pad`'s `d === 2` pricing arm takes Grunge too**: the three masters pad 56 / 30 / 60 at
+  the head and **32 / 32 / 60** at the foot, Lime's own numbers, so the arm's
+  `Z.dev !== 'mobile'` foot of 32 is both templates' and 390 keeps its `padY` 44 under the
+  master's 60.
+- **Type**: `disp(lh)` is `facedLh(s, lh)` plus `textTransform: 'uppercase'` behind `grunge`
+  (identity off it), beside `faced(s, size)`, on the heading (`u(36)` / 28 / 26 at lh 1.1),
+  the package name (`s.list` at 1.2) and the numeral (`s.dispMd` at 1) — 22.125 / 21 / 19.5px
+  in 32.45 / 30.8 / 28.6 line boxes for the heading and 44.25 / 37.5 / 28.5 in 59 / 50 / 38
+  for the numeral, the ramp × 0.75 to the hundredth with the frame's own line box held. The
+  heading is **one white tone** at every width (`sem/text/2`, the segments), so neither
+  positional two-tone rule carries — the bio's, the media player's and the gallery's reading
+  for the fourth time.
+- **Measured against the masters' content edges**: desktop rows **1052 × 218** (266 × 0.82 =
+  218.1) at radius 12.3 (15 × 0.82) and padding 23 (28 × 0.82), 16 apart, the capsule 28.8
+  tall in its 2.5 padding, the foot 26 (32 × 0.82); 768 rows 688 × 230.4 / 230.4 / **248** at
+  radius 15 in 28, includes 248 at x 452 against the row's own 700 right edge, foot 32; 390
+  rows 346 × **315.9 / 369.2 / 354.1** against the master's 316 / 369 / 354 — **exact** — at
+  radius 15 in 28, foot 44. Sections **948.3 / 1013.5 / 1340.5** against 1138 × 0.82 = 933.2
+  / 993 / 1393.
+- **Named diffs, Lime's and Retro's**: the section's own 80 / 56 / 44 **top** pad is the
+  shared `padY`, not the frame's 56 × 0.82 / 30 / 60 (section 4's repertoire rule — the
+  `vm.pad` arm carries the foot alone); the seeded intro is one line (`DEFS.pricingIntro`)
+  where the frame's wraps, and the seeded heading is the artist's copy, not "Pricing"; the
+  pill reads *Book Now* (`cta1`) where the frame types *Book*; the unit is `/event`
+  (`tierUnit`) where the frame types "— £1,400"; the capsule carries the extra leading `All`
+  chip, layout 1's intended diff; "Save 15% on bundles" stays dropped; the 768 featured row
+  runs 248 against the plain rows' 230.4 because the seeded festival blurb wraps to two lines
+  in the 364 left column, Lime's own 268-against-250 case.
+- **`live=1` at desktop and 390** (puppeteer, probes deleted): every chip filters and moves
+  the lit fill (black ink on red, the idle labels `s.tx`, the cursor a pointer); the FEATURED
+  seat follows the last row on show — Solo fills the Wedding Set, Trio and Band the Festival
+  Set; all three pills are `<a href="#form">`; `n=0` prints *No packages yet.* in a red-ringed
+  row at radius 12.3 with **no capsule**, `n=1` seats nothing, `n=8` seats row 8. No page
+  errors or warnings.
+- **Red on red, named rather than fixed** (open question 5's pricing half): the FEATURED badge
+  is `#9E1F17` on the featured row's `#DF262C`, which is exactly what the frame draws — a dark
+  red chip lettered white on the stamp red. It reads at every width on the render and on ours,
+  so it is the design's call and nothing is overridden. The map's `#F52E34` is section 8's.
+- **`FIELDS.pricing` has no template-keyed `in` row** (`heading` `[0, 1, 2]`, `intro` `[2]`,
+  `quote` `[1]`, `rowCta` `[3]`, and `PRICING_CARD` / `PRICING_CREDIT` flat), so no
+  `reach.mjs` run was owed — layout 2's finding, re-checked.
+- **Verified in the builder**: `scripts/page-check.mjs Grunge 2` — four modal cards, bio and
+  calendar composed at top 738, media under the bio at 1761, pricing at **3812 · 948** between
+  the gallery's floor and the map's head, all three of its Book Now pills scrolling to
+  `#form`, no errors or warnings, the 390 burger 1 → 11 with no overflow.
+- **Digest**: themes 0, 1, 3 and 4 zero files over all 645 renders, canvas and `live=1`;
+  theme 2 exactly pricing arch 2 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's or 2's or
@@ -1079,6 +1169,19 @@ Lime's Conventions, with the plan it came from — the running list for the swee
   states vanish under Lime; redraw them, never inherit them* (lime/layout-1 — here the
   viewer's scrim and controls, re-inked for a third palette); *the whole-page published check
   is one puppeteer script*; *theme 1 is the digest at risk*.
+- Section 7: *the node walker, kept* (grunge/layout-2) — with `boundVariables` beside the
+  fills for the third session running, which is what read `sem/stroke/2` off the plain row and
+  Scheme 3's white `stroke/2` off the featured one rather than inferring either; *the `G`
+  lookup at the block's head*; *a section on another scheme writes that scheme's values as
+  named literals* (Scheme 3's `#FFFFFF`, `#000000`, `#9E1F17` — all three, since only the
+  fill's `#DF262C` has a key); *a frame's inside stroke is an inset `boxShadow`*
+  (lime/layout-2); *the instance's own ring is an absolute span at `inset: 0`, the root being
+  the nearest positioned ancestor* (grunge/layout-2, section 6 — the same mechanism a second
+  time); *where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1); *every glow is a guess until `effects` confirm it* (none here, for the
+  fifth pass running); *a stand-in face is scaled*; *casing stays the theme's; uppercase per
+  site*; *field reach is measured* (none owed); *the whole-page published check is one
+  puppeteer script*; *theme 1 is the digest at risk*.
 
 ## Open questions
 
@@ -1093,4 +1196,7 @@ Lime's Conventions, with the plan it came from — the running list for the swee
    under Grunge's own photograph, painted over. Worth telling the designer with layout 2's two.
 5. **The Scheme 3 pricing badge and the map's `#F52E34`** are the pass's likely red-on-red
    states: the FEATURED badge (`#9E1F17`) on the featured row (`#DF262C`), and the lit pin on the
-   red panel. The pricing and map sessions sample both live.
+   red panel. The pricing and map sessions sample both live. *Half-closed in section 7:* the
+   badge is the frame's own dark-red chip lettered white on the stamp red, it reads at all
+   three widths on the master's render and on ours, and nothing is overridden. The map's
+   `#F52E34` is still section 8's to sample.
