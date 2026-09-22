@@ -5464,11 +5464,12 @@ function Media({ s }) {
     // Lime's), the cards 8, the bar 92. No grain, no effect, no seam. Every
     // Stones Crush site — the heading, the card titles, the bar's and the
     // rows' titles — is Anton `faced` / `facedLh` and uppercase; the heading's
-    // ink still flips by width on the same keys, one tone each, so Lime's
-    // 4.6em measure stands (its Bebas number lands between `antonEms`' "FIVE
-    // WORTH" 4.31 and "…YOUR" 6.43, so the break after "worth" holds — a
-    // coincidence, named). The 1440 Section's `#FF0000` stroke is `visible:
-    // false` and is not drawn.
+    // ink still flips by width on the same keys, one tone each, so it is
+    // capped rather than split: Lime's 4.6em at desktop (its Bebas number
+    // lands between `antonEms`' "FIVE WORTH" 4.31 and "…YOUR" 6.43, so the
+    // break after "worth" holds — a coincidence, named) and the 390 master's
+    // own 251 box, which breaks after "your" (see `heading`). The 1440
+    // Section's `#FF0000` stroke is `visible: false` and is not drawn.
     if (s.lime || s.grunge) {
       const grunge = s.grunge
       // Scheme 2's `sem/bg`, `box/1` and `box/2` in Static Youth — literals,

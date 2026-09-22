@@ -825,6 +825,10 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   against the masters' 30 / 10; the narrow canvases 688 / 346 against 708 / 370, a clip on the
   centred fan; the harness's neutral track art against the frame's covers; Anton at 0.75
   against Stones Crush.
+- **Retro layout-2 open question 15 stays closed under Grunge**: `n=8` at desktop and 390 draws
+  seventeen `#222222` wells (eight cards, eight rows, the sleeve) and the art-less rows' "KM"
+  initials in `s.tx`, white on the well — Lime's `ink` in the widened leaf, inherited and
+  seen. `n=0` is the counter alone over the sleeve's one well, 892.9 at 390.
 - **`FIELDS.media` moves nothing**: `cta` is `{ Lime: [0], Grunge: [0], '*': [] }` and layout 2
   draws no pill (the walk has none), `soundcloud` reaches layout 1 alone, and `reach.mjs`
   carries no media probe, so no run was owed.
