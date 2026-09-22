@@ -3917,12 +3917,34 @@ function Bio({ s }) {
   // 390 the foot rule stands inside the 20-gap column with the head rule
   // (Frame 258's children at 0 / 206 / 227 / 558), where Retro's stands
   // outside it.
-  if (s.v2 && s.lime) {
+  //
+  // Grunge layout 3 (964:68695 · 984:13908 at 768 · 984:13939 at 390; the head
+  // 964:68690 · 984:13903 · 984:13934) is Lime's tree box for box but for the
+  // seal, and `grunge` names what moves (plans/grunge/layout-3.md, section 2).
+  // No effect on any node, so the photograph loses its glow and gains nothing
+  // in its place; it is a raw 15 at every width (the card keeps 50, and takes
+  // 15 at 390), with the `b74be8bc` grain screened over it at 1 — layout 2's
+  // bio recipe on the photograph's own box. The seal is Frame 178, layout 1's
+  // red disc, not Lime's §10.2 one. The name is two-tone and the head one
+  // tone, both uppercase in the stand-in face; the stat values are Label/XS
+  // in `font/ui` (Chakra Petch 20 / 14 / 12 at 1.26), where Lime's are Label/LG
+  // in the label face.
+  if (s.v2 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     const pad = u(s.mob ? 10 : 32)
+    // Grunge's name is `sem/text/2` then `text/1` at the first space, the
+    // header's split (HeaderV2's `brand()`).
+    const brand = () => {
+      if (!grunge) return s.brand
+      const i = s.brand.indexOf(' ')
+      if (i === -1) return s.brand
+      return <>{s.brand.slice(0, i)} <span style={{ color: s.ac }}>{s.brand.slice(i + 1)}</span></>
+    }
+    const upper = grunge ? { textTransform: 'uppercase' } : null
     // Body/Chip, Inter bold at -6%: the stat labels and "[ About ]".
     const chipType = {
       fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -3937,7 +3959,12 @@ function Bio({ s }) {
         flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
       })}>
         <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
-        <span style={labelStyle(s, s.labelLg, { whiteSpace: 'normal', overflowWrap: 'break-word', minHeight: '2.2em' })}>{value}</span>
+        {/* Two lines reserved either way: 2 × 1.1 in the label face, 2 × 1.26
+            in Chakra Petch (Grunge's 50 box is 2 × 20 × 1.26). */}
+        <span style={grunge ? {
+          fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls,
+          textTransform: 'uppercase', overflowWrap: 'break-word', minHeight: '2.52em',
+        } : labelStyle(s, s.labelLg, { whiteSpace: 'normal', overflowWrap: 'break-word', minHeight: '2.2em' })}>{value}</span>
       </div>
     )
     const stats = [
@@ -3960,9 +3987,9 @@ function Bio({ s }) {
           minWidth: 0, maxWidth: u(179),
         }}>
           <p style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
-            letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
-          }}>{s.brand}</p>
+            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
+            letterSpacing: s.dls, color: grunge ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
+          }}>{brand()}</p>
         </div>
         <div style={row(u(s.mob ? 52 : 100), {
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
@@ -3976,13 +4003,18 @@ function Bio({ s }) {
     // (1) come to Retro's 144 + 5. At 768 the head is 144 over the same 1px
     // rule and the seal keeps its leaked desktop y, so the centre is 154.4
     // down. The 390 seal stands on the photograph at Retro's offsets.
+    // Grunge's Frame 178 is layout 1's red disc at layout 1's 26.06, centred
+    // (bounding box, 167.7 at 30 · 653.92 in the instance) 113.85 in and
+    // 148.77 / 152.77 down the about band at 1440 / 768 — 8.25 right of and
+    // 1.6 above Lime's; its 390 centre is Lime's to the hundredth.
     const sealBox = 125.37
-    const sealTop = tab ? 91.69 : 87.7
+    const sealTop = grunge ? (tab ? 90.08 : 86.08) : tab ? 91.69 : 87.7
     const seal = (
-      <SealBadge s={s} classic hue={s.ac} ink={s.bg} size={(s.mob ? 62.68 : sealBox) * z} tilt={32.38}
+      <SealBadge s={s} classic={!grunge} hue={s.ac} ink={s.bg} size={(s.mob ? 62.68 : sealBox) * z}
+                 tilt={grunge ? 26.06 : 32.38}
                  style={s.mob
                    ? { right: u(30.76), top: u(52.51) }
-                   : { left: u(42.9), top: u(sealTop) }} />
+                   : { left: u(grunge ? 51.17 : 42.9), top: u(sealTop) }} />
     )
 
     const about = (
@@ -4012,28 +4044,41 @@ function Bio({ s }) {
             fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
             letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
           }}>{s.initials} Bio</span>
+          {/* Grunge's head is one tone, `sem/text/1` throughout: layout 1's
+              word-two accent was that frame's, not the template's. */}
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-            letterSpacing: s.dls, color: s.ac,
+            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+            letterSpacing: s.dls, color: s.ac, ...upper,
           }}>{s.title}</h2>
         </div>
         <div style={{
           position: 'relative', background: s.box1, color: s.tx, overflow: 'hidden',
-          borderRadius: u(s.mob ? 60 : 50), paddingBottom: u(40),
+          borderRadius: u(s.mob ? (grunge ? 15 : 60) : 50), paddingBottom: u(40),
           ...col('0', { alignItems: 'stretch' }),
         }}>
           <div style={{ position: 'relative', padding: u(s.mob ? 10 : 30), ...row('0') }}>
             <div style={{
               position: 'relative', flex: '1 0 0', minWidth: 0, overflow: 'hidden',
-              height: u(s.mob ? 259 : 380), borderRadius: u(55), background: s.box3,
+              height: u(s.mob ? 259 : 380), borderRadius: u(grunge ? 15 : 55), background: s.box3,
             }}>
+              {/* Grunge's fill is `CROP`, which honours its transform: the
+                  drummer's rows 16.9–55%, full width. At desktop that is a
+                  cover at 27.3%; the 768 instance squashes the same band into
+                  a narrower box, which a cover cannot, so it is centred on
+                  the band instead (22.7% in our 628 × 380). 390 is `FILL`, a
+                  centred cover. */}
               <div style={{ position: 'absolute', inset: 0 }}>
-                <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={s.tx} />
+                <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={s.tx}
+                       style={grunge && !s.mob ? { objectPosition: `50% ${tab ? 22.7 : 27.3}%` } : undefined} />
               </div>
-              <span style={{
-                position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
-              }} />
+              {grunge
+                ? <Grain s={s} exact grunge blend="screen" opacity={1} />
+                : (
+                  <span style={{
+                    position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                    boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
+                  }} />
+                )}
             </div>
             {s.mob && seal}
           </div>
