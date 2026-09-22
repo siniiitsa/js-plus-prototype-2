@@ -5448,17 +5448,47 @@ function Media({ s }) {
     // the 20 gaps and hard-clip their titles mid-word (the gaps close to 14 and
     // the title ellipsises). The frame's 5px lime top stroke on the 1440
     // Section is a hidden paint — the render has none — and is not drawn.
-    if (s.lime) {
-      const dusk = '#43523B'
+    //
+    // Grunge layout 2 (964:64620 · 986:13755 at 768 · 986:13774 at 390) is
+    // this tree node for node — the same Section, wrapper and two instances,
+    // the same fan at the same offsets, the same flush rows — so the block is
+    // both templates' and `grunge` names the deltas. Its panel is Scheme 2
+    // again, but there Scheme 2's values are not Scheme 1's under other keys:
+    // the panel is `sem/bg` `#171716` (not `s.box1`, which is `#1A1A1A`), the
+    // fan cards, the bar and its inner pill are `box/1` `#000000`, and every
+    // artwork well is `box/2` `#222222` — the three literals `G2` below, layout
+    // 1's rule for a section on another scheme. Rings, not glows: the bar's
+    // inner shadow is gone from the node and its ring is `sem/stroke/2`, the
+    // `#FF0000` of the header's photograph; the cards keep `stroke1`. Radii
+    // are the mode's own — the panel a raw 15 at desktop (30 narrow, as
+    // Lime's), the cards 8, the bar 92. No grain, no effect, no seam. Every
+    // Stones Crush site — the heading, the card titles, the bar's and the
+    // rows' titles — is Anton `faced` / `facedLh` and uppercase; the heading's
+    // ink still flips by width on the same keys, one tone each, so Lime's
+    // 4.6em measure stands (its Bebas number lands between `antonEms`' "FIVE
+    // WORTH" 4.31 and "…YOUR" 6.43, so the break after "worth" holds — a
+    // coincidence, named). The 1440 Section's `#FF0000` stroke is `visible:
+    // false` and is not drawn.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      // Scheme 2's `sem/bg`, `box/1` and `box/2` in Static Youth — literals,
+      // since under Grunge none of them is a Scheme 1 key's value.
+      const G2 = { bg: '#171716', box1: '#000000', box2: '#222222' }
+      const panelBg = grunge ? G2.bg : s.box1
+      const cardBg = grunge ? G2.box1 : s.box2
+      const dusk = grunge ? G2.box2 : '#43523B'
       const tk = { title: desk ? u(36) : tab ? '28px' : '26px' }
       const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+      // The display face's three properties under Grunge (section 1's
+      // `faced`): identity on Lime.
+      const disp = grunge ? { textTransform: 'uppercase' } : null
       // Body/Chip — Inter bold, tracked in by its own −6%.
       const chipType = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
         letterSpacing: '-0.06em', whiteSpace: 'nowrap',
       }
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
-      const titleType = { fontFamily: s.display, fontSize: tk.title, lineHeight: 1.1, letterSpacing: s.dls, ...clip }
+      const titleType = { fontFamily: s.display, fontSize: faced(s, tk.title), lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, ...disp, ...clip }
       // A photograph on the frame's `box/2` well, so an art-less track is a
       // tile and not a hole, with initials that read on it.
       const art = (src, size, radius, initials) => (
@@ -5472,10 +5502,17 @@ function Media({ s }) {
       // 768, so the measure is layout 1's 4.6em (`bebasEms`: "Five worth" 3.59,
       // "Five worth your" 5.34) everywhere but the tablet. The 390 master's own
       // box is 251 wide at 54, which is 4.65em.
+      // Grunge's 390 master breaks after "your", not "worth": its box is the
+      // frame's own 251 at 46, which holds "FIVE WORTH YOUR" (`antonEms` 6.43
+      // × 0.75 × 46 = 222) and not "EAR." — so the cap there is that box, and
+      // the two lines still come to the master's 82. Desktop keeps the 4.6em:
+      // its 629 box breaks Stones Crush after "worth" by a hair Anton would
+      // not lose, so the cap is what reproduces the frame's break.
       const heading = (
         <h2 style={{
-          margin: 0, flex: 'none', fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-          letterSpacing: s.dls, color: desk ? s.tx : s.ac, maxWidth: tab ? undefined : '4.6em',
+          margin: 0, flex: 'none', fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+          letterSpacing: s.dls, color: desk ? s.tx : s.ac, ...disp,
+          maxWidth: tab ? undefined : grunge && s.mob ? '251px' : '4.6em',
         }}>{s.title}</h2>
       )
 
@@ -5497,9 +5534,10 @@ function Media({ s }) {
                 width: u(g.w), height: u(g.h),
                 transform: `rotate(${k * 5.33}deg)`, opacity: g.op, zIndex: 10 - Math.abs(k),
                 // `sem/stroke/1`, stroked inside: an inset ring, so the 16
-                // padding stays the frame's.
-                background: s.box2, color: s.tx, boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
-                borderRadius: u(13), padding: u(16), overflow: 'hidden',
+                // padding stays the frame's. Grunge's card is Scheme 2's
+                // `box/1` at the mode's raw 8.
+                background: cardBg, color: s.tx, boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+                borderRadius: u(grunge ? 8 : 13), padding: u(16), overflow: 'hidden',
                 cursor: s.live ? 'pointer' : undefined,
                 ...col(u(12), { alignItems: 'stretch' }),
               }}>
@@ -5509,7 +5547,7 @@ function Media({ s }) {
                 }}><Photo s={s} initialsSize={20} src={t.img} ink={s.tx} /></span>
                 <div style={col(u(4), { minWidth: 0, alignItems: 'stretch' })}>
                   {/* Display/List over Body/SM. */}
-                  <span style={{ fontFamily: s.display, fontSize: s.list, lineHeight: 1.2, letterSpacing: s.dls, ...clip }}>{t.name}</span>
+                  <span style={{ fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, ...disp, ...clip }}>{t.name}</span>
                   <span style={{ ...bodySm, ...clip }}>{t.rel || t.sub}</span>
                 </div>
                 {/* `sem/tag/1/bg` lettered in `sem/text/2`: the frame's own
@@ -5542,7 +5580,9 @@ function Media({ s }) {
       const bar = (
         <div style={{
           flex: 'none', position: 'relative', overflow: 'hidden',
-          height: u(108), background: s.box2, color: s.tx, borderRadius: '999px',
+          // Grunge's bar is Scheme 2's `box/1` at the mode's stated 92 — a
+          // full capsule on a 108 bar either way.
+          height: u(108), background: cardBg, color: s.tx, borderRadius: grunge ? u(92) : '999px',
           padding: `0 ${s.mob ? '16px' : u(40)}`,
           ...row(s.mob ? '14px' : u(24)),
         }}>
@@ -5559,7 +5599,7 @@ function Media({ s }) {
               and those 18px are what keep the seeded "Slow Burn" (90 wide at
               26) whole instead of "Slow B…". 768 is the frame's own. */}
           <span style={row(u(12), {
-            flex: 1, minWidth: 0, background: s.box2, borderRadius: u(80),
+            flex: 1, minWidth: 0, background: cardBg, borderRadius: u(80),
             padding: `${u(10)} ${desk ? u(12) : tab ? '30px' : 0} ${u(10)} ${s.mob ? 0 : u(10)}`,
           })}>
             {art(nowArt, u(60), '999px', 16)}
@@ -5577,10 +5617,13 @@ function Media({ s }) {
           {audio}
           {/* The 1px `sem/stroke/1` rule and the INNER_SHADOW 14 in `s.ac`
               (not `s.glow`), over the children as Figma paints a frame's
-              stroke and effects. */}
+              stroke and effects. Grunge's node carries no effect: its ring
+              is `sem/stroke/2`, the pass's `#FF0000`, and nothing else. */}
           <span aria-hidden style={{
             position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-            boxShadow: `inset 0 0 0 1px ${s.stroke1}, inset 0 0 ${u(14)} 0 ${s.ac}`,
+            boxShadow: grunge
+              ? `inset 0 0 0 1px ${s.stroke2}`
+              : `inset 0 0 0 1px ${s.stroke1}, inset 0 0 ${u(14)} 0 ${s.ac}`,
           }} />
         </div>
       )
@@ -5663,10 +5706,12 @@ function Media({ s }) {
       // 629 × 0.82, because its bar has no slack (the seeded "Slow Burn" needs
       // 102 of a title box that the split left 86), while the list's title
       // column still has 254 for "Late Lights".
+      // Grunge's panel is Scheme 2's `sem/bg` at the mode's raw 15 on desktop;
+      // its narrow masters state Lime's 30.
       return (
         <div style={{
-          background: s.box1, color: s.tx,
-          borderRadius: desk ? u(50) : '30px',
+          background: panelBg, color: s.tx,
+          borderRadius: desk ? u(grunge ? 15 : 50) : '30px',
           padding: desk ? u(60) : tab ? '60px 30px' : '40px 20px',
           ...(desk ? {
             display: 'grid', alignItems: 'stretch',
