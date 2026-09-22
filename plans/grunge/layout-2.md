@@ -157,7 +157,7 @@ for the block); it is the gate this session widens.
 | 1 | `header` | `964:64618` | 1440 × 900 | `986:13753` | 768 × 1024 | `986:13772` | 390 × 886 | `964:64580` / `986:11848` / `986:11867` | `964:64637` / `984:34438` / `984:34636` | `if (s.lime) { … return }` at the head of `HeaderV1` | done `2478039` |
 | 2 | `bio` | `964:64619` | 1440 × 760 | `986:13754` | 768 × 1138.8 | `986:13773` | 390 × 881.3 | `964:64581` / `986:11849` / `986:11868` | `964:64638` / `984:34877` / `984:34834` | `if (s.v1 && s.lime)` ahead of `Bio`'s `if (s.v1)` | done `0cc99f0` |
 | 3 | `media` | `964:64620` *(Section; fan `964:64624` 629 × 441, list `964:64625` 529 × 673, heading `964:64623`)* | 1440 × 965 | `986:13755` *(Frame 299; `986:13759` + `986:13760`)* | 768 × 1568 | `986:13774` *(Frame 299; `986:13778` + `986:13779`)* | 390 × 1438 | `964:64582` / `986:11850` / `986:11869` | `964:64639` / `984:35122` / `984:35396` | `if (s.lime)` inside `Media`'s `if (s.v1)`, after `nowArt` | done `334f580` |
-| 4 | `repertoire` | `964:64627` | 1440 × 792 | `986:13762` | 768 × 792 | `986:13781` | 390 × 594 | `964:64589` / `986:11857` / `986:11876` | `964:64646` / `984:35876` / `984:35961` | `if (s.lime)` inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | — |
+| 4 | `repertoire` | `964:64627` | 1440 × 792 | `986:13762` | 768 × 792 | `986:13781` | 390 × 594 | `964:64589` / `986:11857` / `986:11876` | `964:64646` / `984:35876` / `984:35961` | `if (s.lime)` inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | done `8c9db4e` |
 | 5 | `gallery` | `964:64628` | 1440 × 675 | `986:13763` | 768 × 468 | `986:13782` | 390 × 364 | `964:64590` / `986:11858` / `986:11877` | `964:64647` / `984:36046` / `984:36070` | **no block** — seven `s.lime` ternaries and one `s.lime &&` overlay through `Gallery`'s `if (s.v1)` | — |
 | 6 | `pricing` | `964:64629` | 1440 × 708 | `986:13764` | 768 × 923 | `986:13783` | 390 × 871 | `964:64591` / `986:11859` / `986:11878` | `964:64648` / `986:10425` / `986:10492` | `if (s.lime)` inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | — |
 | 7 | `calendar` | `964:64631` *(in `964:64630`)* | 1328 × 1068 *(wrapper 1440 × 1180)* | `986:13766` *(in `986:13765`)* | 708 × 841 *(953)* | `986:13785` *(in `986:13784`)* | 370 × 734 *(814)* | `964:64593` / `986:11861` / `986:11880` | `964:64650` / `986:10607` / `986:10800` | `if (s.lime)` inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | — |
@@ -835,6 +835,68 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly media arch
   1 at three widths on both surfaces.
 
+### Settled in section 4 (the repertoire)
+
+- **No Grunge block, for the fourth time in this pass: Lime's `if (s.lime)` inside
+  `Repertoire`'s `if (s.v1)`, after `pageWindow()`, is `(s.lime || s.grunge)`**, `const grunge =
+  s.grunge` naming four deltas at five sites — too few for a `G` lookup. The tree is Lime's node
+  for node at all three widths (`phone` / `sticky-head` / `Frame 286` / `list` / `pagination`,
+  the two columns of five, the seven-slot pager), on **Scheme 1** with **no Device override**
+  (`get_variable_defs`: display-sm 50 / 40 / 30, list 24 / 19 / 18, label-sm 16 / 13 / 12,
+  body-md 14 / 13 / 13, body-sm 12 throughout — `THEME_RAMP.Grunge` to the token), so every
+  size reads `s.*` and there is no `tk` table. **No `Layer_1` at all** (layout 1's held the torn
+  vector, hidden) and **no effect on any node**. Section 1's walker ran once per master before
+  anything was written. The hooks sit above the branches, so the published search, chips and
+  pager needed nothing: at `theme=2&live=1&n=30`, desktop and 390, Next steps to page 2 (the
+  first row reads 11 and the mark moves), a chip re-filters, and a no-match search prints
+  *No songs match that.*; no page errors.
+- **Every ink is a key Lime's block already reads.** The active chip is `s.ac` under **`s.bg`
+  type** — the fills say `#000000` — so layout 1's `s.activeFg` leak does not recur here; the
+  idle chips, the field, its placeholder, the numbers, the titles and the artists are all `s.tx`
+  on `s.box1`, every hairline `s.stroke1`. The toggle (radius 999, padding 3, chips 6 / 14), the
+  field (radius 118 — a capsule on 36 either way — padding 10 / 20, gap 8, the typed `⌕`), the
+  column divider, the rows' top-only rules and the 56 / 30 / 10 insets are Lime's to the
+  number. The toggle is 211 against Lime's 221 because Inter at 12 is narrower than at 13, the
+  ramp's own difference, not a delta.
+- **The sheet's ring is drawn, and it is the pass's open question 5, taken here.** `phone`
+  carries a 1px inside `sem/stroke/1` **visible at all three Grunge widths** where Lime's 1440
+  master hides it (its 768 and 390 do not, and Lime's block drew none); the render samples it on
+  all four edges — **60 under the pager and down the list, 89 across the top and down the head**,
+  where it stacks on the head's own ring. Figma paints a frame's stroke above its children, so
+  it is an **overlay after them** (`position: relative` on the sheet, a `pointerEvents: 'none'`
+  span last — without that the span takes every published click), which is what lands the 89:
+  our render samples 89 / 60 / 60 at the same points. The pricing session inherits *this*
+  reading — its instance ring stands directly under this foot hairline, so whether the two
+  double at the seam is its sample to take.
+- **Type**: the heading is `faced(s, s.dispSm)` / `facedLh(s, 1)` and uppercase, **one tone in
+  `s.tx`** — the frame's own "Repertoire" is white, so layout 1's positional two-tone split does
+  not carry; the row titles are `faced(s, s.list)` / `facedLh(s, 1.2)` and uppercase. The pager's
+  labels go through `Pager`'s own Grunge arm (`labelStyle(s, s.labelSm)`), and the frame's
+  `UPPER` on them is that arm's transform.
+- **The 390 rows pin at 59.4**, the master's 297 list over five (Lime's 295 gives 59); the
+  desktop 83.2 and 768 82 are shared.
+- **`Pager` needed nothing**: `grow: true` and no `frame.lime` on `s.box1`, layout 1's Grunge arm
+  — red pills with white type, the current one in the active chip's `s.activeFg` ink inside the
+  2px `s.tx` ring, the named departure — reads on this sheet as it did on the layout-1 page.
+- **Measured against the masters' content edges**: desktop section 649.5 (792 × 0.82 = 649.4),
+  head 172.3 (172.2), heading 41 tall at 30.75px (50 × 0.82 × 0.75 in the frame's 50 × 0.82
+  line box), toggle 28.8 (35 × 0.82) with chips 23.8 (29 × 0.82), field 311.6 × 29.5 (380 × 36 ×
+  0.82), rows 68.2 (83.2 × 0.82), titles 15px in a 24 line box (the ramp's 20 × 0.75 against 24 ×
+  0.82 × 0.75 = 14.8; the frame's 29 × 0.82 = 23.8), title at x 64.9 (Lime's, the number's
+  minWidth), pager band 136.3 (166 × 0.82) with 44.3 pills at 559.2 (682 × 0.82); 768 section 792,
+  head 208, heading 40 at 30px, toggle 34.8 (35), field 380 × 36 at x 358 (358), rows 82, titles
+  14.25px in 22.8 (23), title at x 53, pager 54 at 678 (678); 390 section 593.7 (594), head 202.8
+  (203), heading 30 at 22.5px, toggle at y 82 (82), field 370 × 36 at 126.8 (127), rows 59.4 in a
+  297 grid (297), titles 13.5px in 21.6 (22), title at x 32, pager band 94 at 499.7 (500) with 54
+  pills at 519.7 (520). **Named diffs, Lime's**: the seeded twelve make two pages, so the pager
+  is four buttons dividing the measure (267 / 171 / 86.5) where the frames draw a fictional seven
+  (182.86 / 94.29 / 46); the seeded four chips against the frame's three; the artist's "12 Songs"
+  against the frame's "Repertoire".
+- **`FIELDS.repertoire` has no `in` row at all** (`heading` and `songs` reach every layout), so
+  no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly repertoire
+  arch 1 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
@@ -907,6 +969,26 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
 - *A stand-in face is scaled to the frame's glyph size* (C) — heading, card, bar and row titles.
 - *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a second
   time.
+- *Check a narrow master's Device mode before trusting `s.*`* (A) — all three repertoire nodes,
+  none overridden; every token `THEME_RAMP.Grunge`'s.
+- *Every glow is a guess until the node's `effects` confirm it* (A) — no effect on any of the
+  three masters; every rule a plain inside stroke.
+- *Sample before believing a node's `strokes`* (Lime 2, media) — turned round: Lime's hidden
+  1440 `phone` stroke is Grunge's visible one, and the render's 60 / 89 said so before it was
+  drawn.
+- *Every `sem/stroke/2` rule is an inside stroke, drawn as `inset 0 0 0 1px` … on an overlay
+  where an image would paint over it* (Lime 2, header) — the sheet's `stroke1` ring, on an
+  overlay because the head paints over it.
+- *Where the seam lives inside the branch, the block goes after the seam* (C) and *the fourth
+  layout-2 block, after the seam: `if (s.lime)` within `Repertoire`'s `if (s.v1)`* (Lime 2,
+  repertoire) — widened; `active`, `filtered`, `pg`, `columns` and `labels` shared whole.
+- *Rows pin at each master's division result* (Lime 2, repertoire) — 59.4 at 390, the one
+  number that moved.
+- *`Pager`'s Lime branch is `(s.lime || s.grunge)`; the current page is a named departure*
+  (layout 1, section 5) — inherited on the sheet, nothing passed.
+- *A stand-in face is scaled to the frame's glyph size* (C) — heading and row titles.
+- *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a third
+  time.
 
 ## Open questions
 
@@ -933,10 +1015,16 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
    *Answered in section 2:* it does. The frame's photo region samples 73.3 / 39.2 against the
    seed's 42.5 / 43.9, and ours 73.0 / 39.5 with the raster screened at 1 — the lift is the
    node's, to the level, and the mount and the page do not move. Drawn as stated; not a diff.
-5. **The pricing instance's hairline ring** — visible here as under Lime, where section 7 declined
+5. ~~**The pricing instance's hairline ring** — visible here as under Lime, where section 7 declined
    it as the component frame's stroke (Retro's branch never drew it, and stacked bands would double
    it). Layout 1's pricing drew its root rule (`grungeRule`) because there it was the only visible
    root stroke on the page. Here the repertoire's sheet carries one too. The pricing session takes
-   the call once and the repertoire session inherits it.
+   the call once and the repertoire session inherits it.~~ *Taken in section 4, which runs first:*
+   the repertoire's sheet **draws** its ring — `phone`'s inside `stroke1` is visible at all three
+   Grunge widths (Lime's 1440 master hid its own, which is why Lime's block drew none) and the
+   render samples it on every edge, 89 where it stacks on the head's ring. The pricing session
+   inherits that reading and samples its own seam: its instance ring would stand directly under
+   the repertoire's foot hairline, so "stacked bands double it" is a fact to read off the page
+   frame there, not a reason to drop either.
 6. **The footer is shared with layout 1** (`NVAR.footer` is 1), which is structural; section 1's
    comparison against Grunge's own layout-1 footer is what closes the row.
