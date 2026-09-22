@@ -1201,8 +1201,14 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Named diffs, Lime's and Retro's**: the left column runs **506.6** against the panel's 579
   because the seeded six gigs are shorter than the frame's, Lime's own case; the 768 data bar
   wraps the seeded "Based in Manchester · 6 pins · 120 mi radius" and runs 61.6 against the
-  master's 45, Retro's named diff through Lime; the head prints `vm.title`'s "Manchester" where
-  the frame writes "Where I'm playing."; Retro's five drops still hold (the weekday, the
+  master's 45, Retro's named diff through Lime; **the 390 section is 872.9 against 887, and the
+  14 is the type**, not a box — the rows are content-tall (Lime's open question 3) and Anton at
+  0.75 sets a shorter line than Bebas Neue, so the list comes to 178.8 where Lime's measured
+  186.8 (row 122.8 + pager 54), with the chip row, the head and the panel making up the other 6
+  (26.8 / 51.4 / 357.9 against 30 / 52 / 360); the head prints `vm.title`'s "Manchester" where
+  the frame writes "Where I'm playing."; the panel's "Updated 2m ago" keeps Lime's own
+  `opacity: 0.6` where both frames print it at full strength, a diff inherited rather than
+  introduced; Retro's five drops still hold (the weekday, the
   status chip, the `↗`, and the frame's Upcoming/Past chips, which `vm.gigChips` replaces with
   the gigs' own cities). **Two states are ours and not the frame's**: the five map dots are
   redrawn `s.tx` at full strength where the master's are white at 60% (layout 2 sampled 169 on
