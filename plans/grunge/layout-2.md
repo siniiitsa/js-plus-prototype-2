@@ -153,7 +153,7 @@ for the block); it is the gate this session widens.
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Lime twin (1440 / 768 / 390) | Retro twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:64618` | 1440 × 900 | `986:13753` | 768 × 1024 | `986:13772` | 390 × 886 | `964:64580` / `986:11848` / `986:11867` | `964:64637` / `984:34438` / `984:34636` | `if (s.lime) { … return }` at the head of `HeaderV1` | done `2478039` |
-| 2 | `bio` | `964:64619` | 1440 × 760 | `986:13754` | 768 × 1138.8 | `986:13773` | 390 × 881.3 | `964:64581` / `986:11849` / `986:11868` | `964:64638` / `984:34877` / `984:34834` | `if (s.v1 && s.lime)` ahead of `Bio`'s `if (s.v1)` | — |
+| 2 | `bio` | `964:64619` | 1440 × 760 | `986:13754` | 768 × 1138.8 | `986:13773` | 390 × 881.3 | `964:64581` / `986:11849` / `986:11868` | `964:64638` / `984:34877` / `984:34834` | `if (s.v1 && s.lime)` ahead of `Bio`'s `if (s.v1)` | done `0cc99f0` |
 | 3 | `media` | `964:64620` *(Section; fan `964:64624` 629 × 441, list `964:64625` 529 × 673, heading `964:64623`)* | 1440 × 965 | `986:13755` *(Frame 299; `986:13759` + `986:13760`)* | 768 × 1568 | `986:13774` *(Frame 299; `986:13778` + `986:13779`)* | 390 × 1438 | `964:64582` / `986:11850` / `986:11869` | `964:64639` / `984:35122` / `984:35396` | `if (s.lime)` inside `Media`'s `if (s.v1)`, after `nowArt` | — |
 | 4 | `repertoire` | `964:64627` | 1440 × 792 | `986:13762` | 768 × 792 | `986:13781` | 390 × 594 | `964:64589` / `986:11857` / `986:11876` | `964:64646` / `984:35876` / `984:35961` | `if (s.lime)` inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | — |
 | 5 | `gallery` | `964:64628` | 1440 × 675 | `986:13763` | 768 × 468 | `986:13782` | 390 × 364 | `964:64590` / `986:11858` / `986:11877` | `964:64647` / `984:36046` / `984:36070` | **no block** — seven `s.lime` ternaries and one `s.lime &&` overlay through `Gallery`'s `if (s.v1)` | — |
@@ -387,9 +387,13 @@ filtered to the `s.v1` branches):
 - **`sectionVm` carries Lime-keyed layout-2 arms that do not fire under Grunge.** Each session
   reads its frame's insets and widens the arm to `(T.name === 'Lime' || T.name === 'Grunge')` only
   where the frame's numbers match Lime's:
-  - `vm.pad` at `d === 2` for `bio` / `calendar` / `media` (top 50, feet 30 / `padY` / 37 · 47 · 35),
+  - ~~`vm.pad` at `d === 2` for `bio` / `calendar` / `media` (top 50, feet 30 / `padY` / 37 · 47 · 35),
     for `pricing` (foot 32) and for `form` / `testimonials` (form foot 90 / 60; testimonials head
-    56 / 30, foot 56);
+    56 / 30, foot 56);~~ *Misfiled — corrected in section 2:* `d` is the 0-based design, so
+    `d === 2` is **layout 3's** (the comments cite `964:68655` and its column heads). Layout 2 has
+    no `vm.pad` arm under any template; the bio, media, calendar, pricing, form and testimonials
+    sessions of this pass widen nothing there and stand on the root's `padY` / `padX`, as Lime's
+    layout-2 blocks do.
   - `vm.navNameEms` and `vm.navCtaEms`, Lime-only and in `bebasEms` — the header needs both in
     Anton × 0.75, the way `vm.navEms` already takes `navFace`;
   - `vm.navFits` (JP-039) has a Lime arm and a Retro arm and **no Grunge arm**, so the 768 header
@@ -647,6 +651,82 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly header
   arch 1 and arch 5 at three widths on both surfaces, arch 5 byte-identical to arch 1.
 
+### Settled in section 2 (the bio)
+
+- **No Grunge block, as under layout 1: Lime's `if (s.v1 && s.lime)` ahead of `Bio`'s
+  `if (s.v1)` is `(s.lime || s.grunge)`**, `const grunge = s.grunge` naming eleven deltas at
+  seven sites. The tree is Lime's node for node at all three widths (the `+ RECTANGLE:image 1`
+  the page walk saw is the grain, below), on **Scheme 1** with **no Device override**
+  (`get_variable_defs`: label-sm 16 / 13 / 12, label-lg 24 / 16 / 14, body-lg 16 / 15 / 15,
+  body-sm 12 throughout), so every leaf reads `s.*` and there is no `tk` table. Section 1's
+  walker ran once per master before anything was written. The theme-1 digest — the one at risk
+  — is zero, and so are 0, 3 and 4, canvas and `live=1`.
+- **Five of Lime's leaves needed nothing**: the text card (`s.box1`, the `s.stroke1` hairline as
+  an inset ring, radius 30, padding 30 / 30 / 20, gap 18), the `/Featured` chip (its 1.417
+  inside stroke is `s.stroke2`, which is `#FF0000` here — the pass's first `stroke2` ring
+  outside the header; `labelStyle` faces, uppercases and sets the 999), the paragraph, the
+  credit line (`s.ac` lead over `s.tx`, the leaked 637.5 × 39 box as a `minHeight`) and the
+  390 column with the pill under the line. The Tags instance is the same hand-scaled 264.4
+  (15.37 / 10.76 / 9.22, padding 3.84 / 8.45, gap 6.15): only its **dark seat is `sem/box/3`**
+  (`#0E0E0E`, `grunge ? s.box3 : s.box2`) and its **radius the mode's own chip 4 × 0.7686 =
+  3.07** (Lime's 4.61 is its 6). The fourth chip's white `scheme/4/tag1/text` is the same class
+  of leak Lime's bullet ruled "not a third seat" — `c.fg` stands, so both red chips print
+  `#0D1F03`, and the frame's white *Archive* is the named one-chip diff.
+- **The pill is Scheme 4 turned round, the header's 390 pair at every width**: `bg={s.bg}
+  fg={s.ac}` — black under red type, a red disc round a black arrow — with the same 27.6 disc
+  and 4.27 / 17.92 padding at all three widths (`k` 0.82 / 1 / 1, Lime's bio recipe, not the
+  header's `pk`). Its label is **Stones Crush 12 at 390**, not the header's leaked Anton, so
+  `s.labelSm` is right throughout and `faced` applies; `lineHeight` goes through `facedLh`
+  (the raw 1.1 in `style` would undo `BookPill`'s faced line box — identity under Lime). Both
+  narrow masters carry `DROP_SHADOW 5 / 5` in **`#DF262C`** — `Retro/Poster` bound to
+  `sem/text/1`, the accent here — and the render shows it, so `boxShadow: 5px 5px 0 ${s.ac}`
+  on `nar`, route 1 again; the desktop pill carries none. Measured **85.4 × 28.6 / 95.9 × 34.9
+  / 93 × 34.9** against the masters' 108.32 × 34.93 × 0.82 = 88.8 / 99.32 / 96.32 — Anton at
+  0.75 narrower than Stones Crush by 3px, Lime's own diff; flush right at desktop and 768.
+- **The photo card keeps the frame's 10 mount, which Lime's frame closes**: `#1A1A1A`
+  (`s.box1`) at radius **26.25** with `padding` 10, the photo and its grain in an inner clip at
+  **21.44** (`inset: u(10)`, `overflow: hidden` — the absolute photo div grows the clip, so Lime's
+  DOM is unchanged), 648 / 648 / 362 tall (Lime 648 / 700 / 390). **No glow and no ring**: neither
+  node carries a stroke or an inner shadow (`!grunge &&` on Lime's glow span), and the soft
+  `1.25 / 1.25 / 10.81` at 16% black is Lime's, drawn — on black it samples nothing. The
+  caption block's 20 inset is measured from the clip, so the wrapper pads **30 / 30 / 31.88**
+  (the clip's own 1.875 foot). The caption card is `s.box1` at radius **9** (Lime `s.box2` at
+  29), so its `s.box1` disc vanishes into it — the frame's own (`sem/tag/1/bg` *is* box/1); the
+  36 disc hugs to 36 × 16.8 narrow as before.
+- **The photograph is a plain centred cover, section 1's rule a second time**: the fill's
+  `imageTransform [[1, 0, 0], [0, 0.381, 0.169]]` sits under `scaleMode: FILL`, which ignores it —
+  the render correlates **0.92** with `grungeStage` cover-fitted as it is and 0.17 mirrored (PIL,
+  desktop). No `objectPosition`, no `photos.js` change.
+- **Open question 4 closes: the bio's `SCREEN` at 1 is meant.** `image 1` is the **outer card's
+  box plus 2.32 tall** (433 × 650.32 / 708 × 650.32 / 370 × 364.32), hung 0.2 down the inner
+  clip's top-left and overrunning it right and below, the 740² raster under `FILL` (a centre
+  crop, `Grain`'s own `cover`), blend `SCREEN`, opacity 1, one paint. Drawn as `<Grain exact
+  grunge blend="screen" opacity={1}>` with **one four-value `inset` plus `width` / `height`**
+  (`calc(100% + 20)` / `calc(100% + 22.32)`), section 1's shorthand rule. Sampled: the frame's
+  photo region reads **73.3 / 39.2** (mean / stddev) where the seed cover-fitted reads 42.5 /
+  43.9, and ours renders **73.0 / 39.5** — the lift is the node's, to the level. The mount strip
+  and the text card still sample `#1A1A1A` and the page `#000000`: nothing outside the clip
+  lifted.
+- **Measured against the masters' content edges**: desktop text card 672.4 × 531.4 (Lime's,
+  our content width), `/Featured` 61.6 × 23.6 (76.35 × 29.34 × 0.82 = 62.6 × 24.1), chips 22.1
+  tall on a 27.2 pitch with *Default* 55.7 wide (67.91 × 0.82 = 55.7), chip row at 479.1
+  (479.6), credit at 554.8 (554.8), photo card 355 × 531.4 at 21.53, clip 338.7 × 515 at 17.58,
+  grain 355.1 × 533.3, caption card 305.9 × 68.8 with its foot 26.1 above the card's (31.875 ×
+  0.82); 768 chip 66.7 × 25.6 (67.35 × 25.34), chips 21.2 tall, pill flush right, photo 688 ×
+  648 with the clip 668 × 628, caption 628 × 74.4 (648 × 75), stack gap 30; 390 chip 63.8 ×
+  24.5 (64.35 × 24.34), chips 19.3 tall, pill 48.7 under the credit line (48.65), photo 346 ×
+  362, caption 286 × 72.2 (310 × 72), stack gap 10. **Named diffs, Lime's**: the seeded
+  paragraph runs 2 / 2 / 4 lines against the frame's 3 / 3 / 6, so the text cards come out
+  531.4 (stretched to the photo) / 316.1 / 400.6 against 648 / 340.75 / 449.33; the root's
+  40 / 22 side padding against the masters' 30 / 10.
+- **`live=1`**: the pill is `<a href="#form">` at all three widths and carries the red block at
+  768 and 390 only; nothing else in the section is live. No page errors or warnings.
+- **`FIELDS.bio` has no template-keyed row** (`credit` and `cta` are `in: [1]` for every
+  template), so `reach.mjs 2` was a confirm-only run (2,784 renders): `bio.credit` and `bio.cta`
+  reach bio layout 2 alone; `who.tags` / `who.showTags` reach bio layouts 2 and 4, `who.kicker`
+  all four bios and `who.location` layouts 1–3 — the hints' own table. Nothing in `FIELDS`
+  moved.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
@@ -678,6 +758,28 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
 - *Field reach is measured, not read off the prose* (B) — `reach.mjs 2` over the fitted card.
 - *The whole-page published check is one puppeteer script* (B) — a one-off off
   `page-check.mjs`'s `publish`, since that script only renders and publishes cards past 0.
+- *Every glow is a guess until the node's `effects` confirm it* (A) — the bio's photo card,
+  a second time: no stroke, no inner shadow, only Lime's soft drop shadow.
+- *Check a narrow master's Device mode before trusting `s.*`* (A) — all three bio nodes, none
+  overridden.
+- *The emitted `var(--token, #hex)` fallback is the component's default* (A) — the chips'
+  `sem/box/3` and `radius/chip` read off the nodes, not the emitted `#0e0e0e` / `3.074px`.
+- *The second layout-2 block: `if (s.v1 && s.lime)` ahead of `Bio`'s `if (s.v1)`* and *a chip
+  standing on `s.box1` takes `s.box2` as its dark seat* (Lime 2, bio) — widened; the seat is
+  box/3 here, read off the instance.
+- *A hand-scaled instance is not the ramp* (Lime 2, bio) — the same 264.4 Tags instance, its
+  radius the one number that moved.
+- *The 115 × 35 pale pill is not always hand-shrunk at 390* (Lime 2, bio) — `k` 0.82 / 1 / 1
+  again, and the label is the ramp's, not section 1's Anton leak.
+- *Open question 2's route 1: the hard shadow goes through `style`* (Lime 2, bio) — the
+  narrow pills' red block.
+- *The photograph is a plain centred cover; read a fill's `scaleMode` before its
+  `imageTransform`* (section 1) — correlated again, 0.92 against 0.17.
+- *Grain inside a photo: one four-value `inset` shorthand plus `width` / `height`* (section 1)
+  — the bio's sheet, screened at 1.
+- *A stand-in face is scaled to the frame's glyph size* (C) — every label in the block through
+  `labelStyle` / `faced`; `facedLh` passed where a caller's `style` would override the line box.
+- *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero.
 
 ## Open questions
 
@@ -700,7 +802,10 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
 3. **The two leaked colour pictures** (the header's avatar tile and the form's credit avatar are
    Lime's `e3790c2c` / `f821adc2`) — the seeds stand. Worth telling the designer: the Grunge
    instances carry the component's default pictures in two slots.
-4. **The bio grain's `SCREEN` at 1.0** — the session's sample decides whether the node means it.
+4. ~~**The bio grain's `SCREEN` at 1.0** — the session's sample decides whether the node means it.~~
+   *Answered in section 2:* it does. The frame's photo region samples 73.3 / 39.2 against the
+   seed's 42.5 / 43.9, and ours 73.0 / 39.5 with the raster screened at 1 — the lift is the
+   node's, to the level, and the mount and the page do not move. Drawn as stated; not a diff.
 5. **The pricing instance's hairline ring** — visible here as under Lime, where section 7 declined
    it as the component frame's stroke (Retro's branch never drew it, and stacked bands would double
    it). Layout 1's pricing drew its root rule (`grungeRule`) because there it was the only visible
