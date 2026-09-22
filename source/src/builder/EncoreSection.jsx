@@ -10587,20 +10587,40 @@ function Repertoire({ s }) {
     // grid colours its columns and the carousel its left, centre and right,
     // and a set takes the colour of wherever it stands. A lone card on the
     // grid is column one's olive; the carousel's lone card is the centre's.
-    if (s.lime) {
+    //
+    // Grunge (964:68710 / 984:13920 / 984:13951) is Lime's tree node for node
+    // at all three widths — a paired diff, 57 = 57 / 57 = 57 / 63 = 63 — and
+    // every size is a ramp token again (display-lg 130 / 81 / 46, list
+    // 24 / 19 / 18), so the deltas are the `G` below. Its seats are **dark /
+    // red / dark** by the same rendered place (the 390 master centres the red
+    // card): Scheme 1 twice, `s.box1` in a 1px `#FF0000` (`s.stroke2`) ring
+    // with a red meta line, and Scheme 3 in the middle — `box/1` `#9E1F17`
+    // in its own **white** `stroke2`, a black meta line and black 15% row
+    // rules, its titles still white. So a card's ring and its row rules part
+    // company here (`ring` / `edge`), where Lime's one hairline did both.
+    // The padding is 24 (Lime 34), the corner 15 (50), and the rows divide
+    // to 44.5 / 62.5 / 62.5 (Lime 39 / 57 / 57.5). The titles and the head
+    // are Stones Crush, so `faced` / `facedLh` and uppercase at their sites.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const mist = '#D5E3B2'  // Scheme 4 `sem/box/1`
       const lime3 = '#CCFA61' // Scheme 3 `sem/box/1`
       const dark = { bg: mist, ink: s.bg, acc: s.bg, edge: '#15180F26' }
-      const SEATS = [
-        { bg: s.box1, ink: s.tx, acc: s.ac, edge: s.stroke1 },
-        dark,
-        { ...dark, bg: lime3 },
-      ]
+      const blk = { bg: s.box1, ink: s.tx, acc: s.ac, edge: s.stroke1, ring: s.stroke2 }
+      const G = grunge ? {
+        seats: [blk, { bg: '#9E1F17', ink: s.tx, acc: '#000000', edge: '#00000026', ring: '#FFFFFF' }, blk],
+        pad: 24, radius: 15, rowH: desk ? 44.5 : 62.5,
+      } : {
+        seats: [{ bg: s.box1, ink: s.tx, acc: s.ac, edge: s.stroke1 }, dark, { ...dark, bg: lime3 }],
+        pad: 34, radius: 50, rowH: desk ? 39 : tab ? 57 : 57.5,
+      }
+      const SEATS = G.seats
       // Each master's `flex-1` division of its card (369 / 439 / 439 less
       // the head, the view block and the padding, over four), pinned for
       // Retro's reason: our card has no height to divide. The rows' own
       // `py-6` is therefore inert.
-      const limeRowH = u(desk ? 39 : tab ? 57 : 57.5)
+      const limeRowH = u(G.rowH)
+      const disp = (lh) => grunge ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, ...extra,
       })
@@ -10611,8 +10631,8 @@ function Repertoire({ s }) {
         const more = st.songs.length > rows.length
         return (
           <div key={st.label} style={col(u(10), {
-            background: k.bg, color: k.ink, boxShadow: `inset 0 0 0 1px ${k.edge}`,
-            borderRadius: u(50), padding: u(34), overflow: 'hidden', minWidth: 0,
+            background: k.bg, color: k.ink, boxShadow: `inset 0 0 0 1px ${k.ring || k.edge}`,
+            borderRadius: u(G.radius), padding: u(G.pad), overflow: 'hidden', minWidth: 0,
           })}>
             <span style={body(s.bodyLg, 1.5)}>{st.label}</span>
             {/* Body/Chip, letter-spaced −6 percent; the caps are a style. */}
@@ -10626,7 +10646,7 @@ function Repertoire({ s }) {
                 boxShadow: `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
               })}>
                 <span style={{
-                  fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                  fontFamily: s.display, fontSize: faced(s, s.list), ...disp(1.2),
                   letterSpacing: s.dls, minWidth: 0,
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{sg.title}</span>
@@ -10652,7 +10672,7 @@ function Repertoire({ s }) {
         <div style={col(u(24))}>
           {/* Display/LG in `sem/text/2`: pale, where Retro's head is the accent. */}
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), ...disp(0.89),
             letterSpacing: s.dls, color: s.tx,
           }}>{s.title}</h2>
 
