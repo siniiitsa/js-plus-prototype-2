@@ -3464,7 +3464,31 @@ function Bio({ s }) {
   // below — except the chips, which belong to a Tags instance the frame
   // hand-scales to a fixed 264.4 (× 0.7686), so their sizes are that scale's own
   // per-width numbers rather than `s.labelXs`.
-  if (s.v1 && s.lime) {
+  //
+  // Grunge layout 2 (964:64619 · 986:13754 at 768 · 986:13773 at 390) is this
+  // block's tree in Static Youth, Scheme 1 throughout, no Device override
+  // (`get_variable_defs` gives 16 / 13 / 12 and 24 / 16 / 14), so `grunge`
+  // names the deltas and nothing else moves. The text card is Lime's node for
+  // node — `s.box1`, the `s.stroke1` hairline, radius 30, the `s.stroke2` chip
+  // (`#FF0000` here) — and the Tags instance's dark seat is `sem/box/3`, not
+  // box/2, at the mode's own chip radius 3.07 (4 × 0.7686). The pill is
+  // Scheme 4 turned round, the header's 390 pair: `s.bg` under `s.ac` type, a
+  // red disc round a black arrow, with a **red** 5 / 5 block at 768 and 390
+  // (`Retro/Poster` bound to `sem/text/1`, which is the accent here). The
+  // photo card keeps its `#1A1A1A` mount — a 10 inset the Lime frame closes —
+  // at radius 26.25 outside and 21.44 on the inner clip, 648 / 648 / 362 tall
+  // (Lime 648 / 700 / 390), with no glow and no ring: neither node carries a
+  // stroke or an inner shadow, and the soft drop shadow is Lime's, drawn. The
+  // caption card is `s.box1` at radius 9, so its `s.box1` disc vanishes into it
+  // — the frame's own (`sem/tag/1/bg` is box/1). The photograph is a plain
+  // centred cover (its fill's `imageTransform` sits under `scaleMode: FILL`,
+  // which ignores it: the render correlates 0.92 with the seed as it is and
+  // 0.17 mirrored) under the frame's `image 1` grain — the outer card's box
+  // plus 2.32, hung 0.2 down the inner clip and overrunning it right and below,
+  // `SCREEN` at opacity 1. That lifts the photograph ~30 levels (the render's
+  // photo reads 73 against the seed's 42), which is what the node states.
+  if (s.v1 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const tab = isTablet(s)
     const nar = s.narrow
     const z = nar ? 1 : 0.82
@@ -3476,15 +3500,17 @@ function Bio({ s }) {
     // — `vm.chips`' own dark seat is box/1, which would vanish into it. The
     // lime seat and both inks are `vm.chips`' (`sem/tag/1|2`); the frame's
     // #C7FF3C and #15180F on its third and fourth chips are other schemes'
-    // tokens leaking through the component, and are not a third seat.
+    // tokens leaking through the component, and are not a third seat. Grunge's
+    // instance seats its dark chips on `sem/box/3` (`#0E0E0E`) and leaks a white
+    // `scheme/4/tag1/text` onto its fourth chip the same way — `c.fg` stands.
     const chipK = s.mob ? 9.22 : tab ? 10.76 : 15.37
     const chips = s.showTags === 'show' && (
       <div style={{ padding: `${u(22.19)} 0` }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.15), maxWidth: u(264.4) }}>
           {s.tagChips.map((c, i) => (
             <span key={i} style={{
-              background: i % 2 ? c.bg : s.box2, color: c.fg,
-              borderRadius: u(4.61), padding: `${u(3.84)} ${u(8.45)}`,
+              background: i % 2 ? c.bg : grunge ? s.box3 : s.box2, color: c.fg,
+              borderRadius: u(grunge ? 3.07 : 4.61), padding: `${u(3.84)} ${u(8.45)}`,
               fontFamily: s.ui, fontSize: u(chipK), lineHeight: 1.26, letterSpacing: s.dls,
               whiteSpace: 'nowrap',
             }}>{c.label}</span>
@@ -3498,12 +3524,17 @@ function Bio({ s }) {
     // widths and only Label/SM ramps. Both narrow masters give it a hard
     // DROP_SHADOW 5 / 5 in `#15180F`, which reads on the olive card; the desktop
     // pill carries none. It goes through `style`, so `BookPill` is untouched.
+    // Grunge's is the same box under Scheme 4 turned round — black, red type,
+    // a red disc — and its narrow block is the accent's red, which shows.
+    // The label is Stones Crush 12 at 390 (not the header's leaked Anton), so
+    // `s.labelSm` is right at every width; `facedLh` keeps the faced line box.
     const pill = s.bioCta && (
-      <BookPill s={s} to={s.bookTo} label={s.bioCta} bg={s.tx} fg={s.bg} size={s.labelSm} disc={27.6 * z}
+      <BookPill s={s} to={s.bookTo} label={s.bioCta} bg={grunge ? s.bg : s.tx} fg={grunge ? s.ac : s.bg}
+                size={s.labelSm} disc={27.6 * z}
                 style={{
                   padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
-                  gap: u(8.53), lineHeight: 1.1,
-                  boxShadow: nar ? `5px 5px 0 ${s.bg}` : undefined,
+                  gap: u(8.53), lineHeight: facedLh(s, 1.1),
+                  boxShadow: nar ? `5px 5px 0 ${grunge ? s.ac : s.bg}` : undefined,
                 }} />
     )
 
@@ -3554,23 +3585,41 @@ function Bio({ s }) {
     // frame, under the caption. Its soft DROP_SHADOW (1.25 / 1.25 / 10.81 at 16%
     // black) darkens the ground by a level or two for ~6px in the 1440 render,
     // so it is drawn.
+    // Grunge keeps the frame's 10 mount: the photo and its grain sit in an
+    // inner clip inset 10 at radius 21.44 inside the 26.25 card, and the
+    // caption block's 20 inset is measured from that clip — 30 from the card,
+    // 31.88 at the foot for the clip's own 1.875 padding.
     const photoCard = (
       <div style={{
         position: 'relative', flex: 'none', overflow: 'hidden',
-        width: nar ? '100%' : u(433), height: s.mob ? '390px' : tab ? '700px' : undefined,
-        background: s.box1, borderRadius: u(55),
+        width: nar ? '100%' : u(433),
+        height: s.mob ? (grunge ? '362px' : '390px') : tab ? (grunge ? '648px' : '700px') : undefined,
+        background: s.box1, borderRadius: u(grunge ? 26.25 : 55),
         boxShadow: `${u(1.25)} ${u(1.25)} ${u(10.81)} #00000029`,
         ...col('0', { justifyContent: 'flex-end' }),
       }}>
-        <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={54} /></div>
-        <span style={{
-          position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-          boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
-        }} />
-        <div style={{ position: 'relative', padding: u(20) }}>
+        <div style={{
+          position: 'absolute', inset: grunge ? u(10) : 0,
+          ...(grunge ? { overflow: 'hidden', borderRadius: u(21.44), background: s.box1 } : null),
+        }}>
+          <Photo s={s} initialsSize={54} />
+          {grunge && (
+            <Grain s={s} exact grunge blend="screen" opacity={1} style={{
+              inset: `${u(0.2)} auto auto 0`,
+              width: `calc(100% + ${u(20)})`, height: `calc(100% + ${u(22.32)})`,
+            }} />
+          )}
+        </div>
+        {!grunge && (
+          <span style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+            boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
+          }} />
+        )}
+        <div style={{ position: 'relative', padding: grunge ? `${u(30)} ${u(30)} ${u(31.88)}` : u(20) }}>
           <div style={{
-            ...row(u(12)), background: s.box2, color: s.tx,
-            borderRadius: u(29), padding: `${u(18)} ${u(20)}`,
+            ...row(u(12)), background: grunge ? s.box1 : s.box2, color: s.tx,
+            borderRadius: u(grunge ? 9 : 29), padding: `${u(18)} ${u(20)}`,
           }}>
             <div style={col(u(4), { flex: 1, minWidth: 0 })}>
               <span style={labelStyle(s, s.labelLg, { lineHeight: 1.1, whiteSpace: 'normal' })}>{s.brand}</span>
