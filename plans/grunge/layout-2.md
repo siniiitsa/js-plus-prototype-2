@@ -158,7 +158,7 @@ for the block); it is the gate this session widens.
 | 2 | `bio` | `964:64619` | 1440 × 760 | `986:13754` | 768 × 1138.8 | `986:13773` | 390 × 881.3 | `964:64581` / `986:11849` / `986:11868` | `964:64638` / `984:34877` / `984:34834` | `if (s.v1 && s.lime)` ahead of `Bio`'s `if (s.v1)` | done `0cc99f0` |
 | 3 | `media` | `964:64620` *(Section; fan `964:64624` 629 × 441, list `964:64625` 529 × 673, heading `964:64623`)* | 1440 × 965 | `986:13755` *(Frame 299; `986:13759` + `986:13760`)* | 768 × 1568 | `986:13774` *(Frame 299; `986:13778` + `986:13779`)* | 390 × 1438 | `964:64582` / `986:11850` / `986:11869` | `964:64639` / `984:35122` / `984:35396` | `if (s.lime)` inside `Media`'s `if (s.v1)`, after `nowArt` | done `334f580` |
 | 4 | `repertoire` | `964:64627` | 1440 × 792 | `986:13762` | 768 × 792 | `986:13781` | 390 × 594 | `964:64589` / `986:11857` / `986:11876` | `964:64646` / `984:35876` / `984:35961` | `if (s.lime)` inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | done `8c9db4e` |
-| 5 | `gallery` | `964:64628` | 1440 × 675 | `986:13763` | 768 × 468 | `986:13782` | 390 × 364 | `964:64590` / `986:11858` / `986:11877` | `964:64647` / `984:36046` / `984:36070` | **no block** — seven `s.lime` ternaries and one `s.lime &&` overlay through `Gallery`'s `if (s.v1)` | — |
+| 5 | `gallery` | `964:64628` | 1440 × 675 | `986:13763` | 768 × 468 | `986:13782` | 390 × 364 | `964:64590` / `986:11858` / `986:11877` | `964:64647` / `984:36046` / `984:36070` | **no block** — seven `s.lime` ternaries and one `s.lime &&` overlay through `Gallery`'s `if (s.v1)` | done `71c6e84` |
 | 6 | `pricing` | `964:64629` | 1440 × 708 | `986:13764` | 768 × 923 | `986:13783` | 390 × 871 | `964:64591` / `986:11859` / `986:11878` | `964:64648` / `986:10425` / `986:10492` | `if (s.lime)` inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | — |
 | 7 | `calendar` | `964:64631` *(in `964:64630`)* | 1328 × 1068 *(wrapper 1440 × 1180)* | `986:13766` *(in `986:13765`)* | 708 × 841 *(953)* | `986:13785` *(in `986:13784`)* | 370 × 734 *(814)* | `964:64593` / `986:11861` / `986:11880` | `964:64650` / `986:10607` / `986:10800` | `if (s.lime)` inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | — |
 | 8 | `map` | `964:64632` | 1440 × 858 | `986:13767` | 768 × 823 | `986:13786` | 390 × 1286 | `964:64594` / `986:11862` / `986:11881` | `964:64651` / `986:10974` / `986:11467` | `if (s.lime)` inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
@@ -409,12 +409,14 @@ filtered to the `s.v1` branches):
   session re-measures the rows its category owns with `scripts/reach.mjs` after fitting — the
   layout-1 sweep said each layout pass re-measures its card, and the header's `[1]` rows were
   measured over a placeholder.
-- **The gallery's two layout-2 sites are a named debt.** Layout 1's session 0 left `Gallery`'s
+- ~~**The gallery's two layout-2 sites are a named debt.** Layout 1's session 0 left `Gallery`'s
   `bw` gate and its caption ink at `(s.retro || s.lime)` as "not this pass's frame". They are this
   pass's: Grunge's `s.bw` is 2 and the frame strokes 1 inside, so the gate widens to
   `(s.retro || s.lime || s.grunge)` or Grunge takes its own 1; the hero's ring is `#FF0000` where
   the six tiles' are `#DF262C`; and the `s.lime &&` glow overlay becomes the ring. The section has
-  no block, so these are ternaries widened one by one.
+  no block, so these are ternaries widened one by one.~~ *Paid in section 5:* both gates widened,
+  the hero's ring `s.stroke2` on Lime's own border (the glow span stays `s.lime &&` and drops,
+  since no Grunge node carries the effect), the radii 15.
 - **Retro layout-2 open question 15** (the media bar's initials placeholder in `s.muted`) is
   closed under Lime by passing `ink` in the Lime leaf; the widened leaf inherits the fix, and
   `n=8` is still the only way to see it.
@@ -897,6 +899,76 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly repertoire
   arch 1 at three widths on both surfaces.
 
+### Settled in section 5 (the gallery)
+
+- **No Grunge block, and no `G` lookup either: Lime's seven ternaries through `Gallery`'s
+  `if (s.v1)` are widened one by one**, `const grunge = s.grunge` naming the deltas at nine
+  sites — `bw`, the well, the two chip-type sites (the 768 head and the caption), the
+  caption's fill and ink gate, the hero's ring and radius, the tile radius, and `Grain`. The
+  tree is Lime's node for node at all three widths plus the `image 1` rect the page walk saw,
+  on **Scheme 1** with **no Device override** (`get_variable_defs`: `size/chip` 12 / 11 / 11,
+  which is `THEME_RAMP.Grunge`'s chip 10 / 11 / 11 at the canvas — measured 10 / 11 / 11 on the
+  caption), so every leaf reads `s.*` and there is no `tk` table. Section 1's walker ran once
+  over all three masters (one call, three roots) before anything was written; Lime's three
+  twins were walked in a second call for their radii alone. The hooks sit above the branches,
+  so the published tiles needed nothing: at `theme=2&live=1`, desktop and 390, three tile
+  clicks move the hero and ring the tile (`s.ac`, 2.5 / 2 inset, reading against the 1px
+  `s.ac` edge — Lime's own state, inherited), a second click on the ringed tile hands the hero
+  back to `galActive()`'s slot with no ring, a hero click changes nothing, and at 390 a
+  repeated tile rings with its twin. No page errors or warnings.
+- **Rings, not glows — confirmed off every node**: no effect on any of the three masters
+  (Lime's `INNER_SHADOW 34` on the image frame is gone), so the `s.lime &&` glow span stays
+  Lime's and simply drops. The hero's ring is a 1px inside `sem/stroke/2` **`#FF0000`**
+  (`s.stroke2`, sampled `(255, 0, 0)` on the render) where the tiles' is `sem/text/1`
+  `#DF262C` (`s.ac`, the `edge` Lime's block already draws — sampled `(223, 38, 44)`). Both
+  keep Lime's mechanism, a CSS `border` whose 1px the `flex: h 1 auto` basis already carries;
+  only the colour and the radius change, which is what keeps the theme-1 digest at zero.
+- **Radii are 15, read off the nodes and confirmed on the render**: the hero at all three
+  widths (Lime 30), the tiles at 1440 and 768 (Lime 30), the 390 rail's 10 unchanged. The
+  ring crosses a corner's diagonal 4px in, which is `r × 0.293` for 15 (30 would cross at 9,
+  and would sample black 8px in — it does not). The one exception is the **last tile in each
+  column, whose top corners stay `[30, 30, 0, 0]`** on both nodes at 1440 and 768 — Lime's
+  component value the mode did not override, and it shows at desktop (the diagonal crosses at
+  9): "leaked tops are followed where they show", so `rTop` is `u(30)` there. The 768 seats
+  it would show on are 1px tall (Retro's squeeze, divided in the frame's proportions as
+  before), so nothing changes at 768.
+- **One named departure: the 390 right column's first-tile wrapper.** `880:19235` carries
+  `[0, 0, 40, 40]` where its own image frame says 10, Lime's 390 says 10 on the same node,
+  and Grunge's 768 and 1440 say 15 there — a one-node stray, not a leaked default (the render
+  samples black 4px inside that tile's bottom corners, so it does show). Not followed: one
+  seat of ten with a capsule foot reads as a slip, and the rail is one template. Reversible in
+  one line at the `rTop` comment. The desktop arrow row of layout 1 is the precedent.
+- **Grain inside the hero is the header's recipe**: `image 1`, an **831 square at (1, 0.18)**
+  off the photo's top-left at every width (not scaled at 768 or 390 — the clip does the
+  cropping), lighten .29, its gradient paint hidden, passed through `Grain`'s opt-in `grunge`
+  with `exact` and **one four-value `inset` plus `width` / `height`** (section 1's shorthand
+  rule); the offset sits inside the ring, so the padding box's own corner is the origin.
+  Paint order unchanged: after the caption, as Retro's is. Sampled: the frame's hero reads
+  **38.7 / 40.6** (mean / stddev, desktop, inside the ring) and ours **36.9 / 42.2**; at 390
+  34.7 / 39.6 against 34.5 / 40.6 — the lift is the node's, to the level.
+- **Everything else needed only its gate widened**: the well `s.box3` (`#0E0E0E`, the frames'
+  own fill on every image frame), the caption on `s.box1` in `s.tx` at Body/Chip
+  (`Inter/Bold`, `-6%`, radius 4, 10 / 14 inside, 40 in from the hero's corner), and the 768
+  head row's *Gallery* in the same face — every value the same key on both templates. The
+  seeded strip departs from the frame's placeholder six on purpose (layout 1's call, in
+  *Photography*), so the tiles' levels are not comparable and were not compared.
+- **Measured against the masters' content edges**: desktop row 478.1 (583 × 0.82), hero
+  605.9 × 478.1 in the `#FF0000` ring at radius 12.3 (15 × 0.82), caption 102.8 × 39.7 at
+  (33.8, 33.8) in, 10px Inter 700 at −0.6px on `#1A1A1A`, grain 681.4 square (831 × 0.82) at
+  (1.8, 1.1) from the hero's outer edge (the 1px border plus 0.8 / 0.1), tiles 209.1 wide
+  (255 × 0.82) at 100.9 / 176.3 / 184.5 and 159.1 / 198.5 / 104.1 (the frame's six × 0.82 to
+  the tenth), first tiles `0 0 12.3 12.3`, middles 12.3, lasts `24.6 24.6 0 0`; 768 hero
+  333 × 392 at 15, caption 89.4 × 31 at 11px, head row 331 × 20 with *See us in action* at
+  11px / −0.66px, grain 831 at (2, 1.2), tiles 160.5 wide at 73.9 / 129.3 / 134.8 and 116.3 /
+  145.4 / 76.3 (the 358 band in the frame's proportions, Retro's rule); 390 hero 249 × 284 at
+  15, caption 115.7 × 46 on two lines at 11px, ten tiles 36.5 × 48.8 at 10. **Named diffs,
+  Lime's**: the root's 40 / 22 side padding against the masters' 30 / 10; the 37 out of the
+  hero (Retro's rule); the seeded strip against the frame's placeholder six.
+- **`FIELDS.gallery` has no template-keyed `in` row** (the three social links are `[0]` for
+  every template, `images` and `heading` reach every layout), so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly gallery
+  arch 1 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layout 1's or Lime's
@@ -988,6 +1060,26 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
   (layout 1, section 5) — inherited on the sheet, nothing passed.
 - *A stand-in face is scaled to the frame's glyph size* (C) — heading and row titles.
 - *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a third
+  time.
+- *Check a narrow master's Device mode before trusting `s.*`* (A) — all three gallery nodes,
+  none overridden; `size/chip` 12 / 11 / 11 is the ramp's row.
+- *Every glow is a guess until the node's `effects` confirm it* (A) — the gallery's, a second
+  time: Lime's inner shadow is not on any Grunge node; the ring is the whole cue.
+- *Leaked tops are followed where they show, dropped where they don't* (A) — read literally:
+  the last tiles' 30 tops show at desktop and are drawn; their 768 seats are 1px and draw
+  nothing.
+- *A leak that shows and reads as a defect is overridden* (A) — the 390 wrapper's 40, one seat
+  of ten; the desktop arrow row's precedent.
+- *The first layout-2 section with no block: `s.lime` ternaries through `Gallery`'s
+  `if (s.v1)`* and *`size/chip` is `s.chip` exactly* (Lime 2, gallery) — widened per site;
+  the chip row is Grunge's own 10 / 11 / 11.
+- *Where the seam lives inside the branch, the block goes after the seam* (C) — `pick`,
+  `home`, `active` and `railSlot` shared whole; nothing in the widened ternaries reads state.
+- *Grain inside a photo: one four-value `inset` shorthand plus `width` / `height`* (section 1)
+  — the hero's 831 square, lighten .29.
+- *`Grain`'s and `TornEdge`'s opt-in `grunge`* (layout 1, session 0) — passed on a call that
+  Retro already makes, so Retro's own grain is untouched.
+- *Theme 1 is the digest at risk in a widened block* (layout 1, section 2) — zero, a fourth
   time.
 
 ## Open questions
