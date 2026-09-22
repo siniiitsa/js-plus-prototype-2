@@ -12242,6 +12242,25 @@ function Gallery({ s }) {
   // 111.333 / 107.5: the same residue rule, over Lime's taller Bebas head
   // (116 / 48 against 85 / 36) and its shorter 591 page. 768 states the same
   // 660 grid, so its tile is Retro's.
+  //
+  // **Grunge (964:68711 · 984:13924 · 984:13955) is that tree a third time**,
+  // so it widens the same ternaries — the insets, the gaps and the 32 head gap
+  // are still Retro's. All three masters are Static Youth · **Scheme 2** with
+  // no Device override and **no effect on any node**, so every ring here is a
+  // plain stroke and the two values that move are the ones Scheme 2 renames:
+  // the sheet is `sem/bg` **#171716** (not `s.box1`, which is #1A1A1A in this
+  // mode — the layout-3 plan's first trap) and each tile's well is
+  // `sem/box/3` **#353535** (not `s.box3`, Scheme 1's #0E0E0E). The tiles'
+  // ring is bound to `scheme/1/stroke/2` explicitly, which is `s.stroke2`
+  // (#FF0000) — a red hairline where Lime's is white 15% — at a raw radius
+  // **15** at every width against Lime's 30, layout 2's pattern. The head is
+  // the same `size/display-lg` in `sem/text/1` (`s.ac`, #DF262C), so it keeps
+  // Lime's key and takes `faced` / `facedLh` / uppercase for the stand-in face.
+  // Its 390 tile is **111.333 / 83**, the same residue over this page's own
+  // 585 (Lime 591): (585 − 120 − 41 − 32 − 60) / 4. The seventh tile's well is
+  // `sem/active/bg` under its photograph, as Lime's is — it paints nothing and
+  // is not drawn. No grain anywhere: unlike layout 2's gallery hero, no master
+  // here carries the raster.
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -12251,17 +12270,23 @@ function Gallery({ s }) {
     // beige page ground, so the cream is a literal, and the flat four have a
     // real second paper and take it with `paperFg` for the ink — `s.tx` is
     // chosen against the page and need not read on the sheet.
-    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : s.paper
-    const ink = s.retro ? '#111111' : s.lime ? s.tx : s.paperFg
+    const grunge = s.grunge
+    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : grunge ? '#171716' : s.paper
+    const ink = s.retro ? '#111111' : s.lime || grunge ? s.tx : s.paperFg
     const bw = s.retro ? '1px' : s.bw
-    const well = '#263020'
+    // Scheme 2's `box/3` on both designed pages, and a different value in each
+    // mode: neither theme has a key for it (Lime layout 3's open question 5).
+    const well = grunge ? '#353535' : '#263020'
+    // The tiles' ring: `scheme/1/stroke/2` under Grunge, `sem/stroke/1` under
+    // Lime — 1px INSIDE at every width on both, so it is never scaled.
+    const ring = grunge ? s.stroke2 : s.stroke1
     const slots = [0, 1, 2, 3, 4, 5, 6]
     const cols = desk ? 4 : 3
     // Each master's own tile, as a ratio: 326 / 181.333, 230.667 / 150 and
     // 111.333 / 107.5. See the note above — these are what each page's stated
     // height left over, so they travel as a shape rather than as a number.
-    const ratio = desk ? 326 / (s.lime ? 171 : 181.3333)
-      : tab ? 230.6667 / 150 : 111.3333 / (s.lime ? 82.75 : 107.5)
+    const ratio = desk ? 326 / (s.lime || grunge ? 171 : 181.3333)
+      : tab ? 230.6667 / 150 : 111.3333 / (grunge ? 83 : s.lime ? 82.75 : 107.5)
     const padH = `calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 20)})`
     const padV = u(desk ? 56 : 60)
 
@@ -12273,10 +12298,14 @@ function Gallery({ s }) {
     const at = filled.indexOf(pick)
     const step = (d) => setPick(filled[(at + d + filled.length) % filled.length])
     // Under Lime the same dark surround is the page ground and the controls
-    // its pale ink, so the viewer reads as the page's own and not Retro's.
-    const cream = s.lime ? s.tx : '#FBF6EA'
-    const ctlBg = s.lime ? 'rgba(242,255,208,.14)' : 'rgba(251,246,234,.14)'
-    const scrim = s.lime ? 'rgba(21,24,15,.94)' : 'rgba(17,17,17,.94)'
+    // its pale ink, so the viewer reads as the page's own and not Retro's —
+    // and under Grunge the page ground already *is* near-black, so the same
+    // reading gives the scrim #000000 at .94 and the controls white on white
+    // 14%. The frames draw no viewer at all, so on both templates this is the
+    // palette's reading of a QA-added control, not a fit.
+    const cream = s.lime || grunge ? s.tx : '#FBF6EA'
+    const ctlBg = s.lime ? 'rgba(242,255,208,.14)' : grunge ? 'rgba(255,255,255,.14)' : 'rgba(251,246,234,.14)'
+    const scrim = s.lime ? 'rgba(21,24,15,.94)' : grunge ? 'rgba(0,0,0,.94)' : 'rgba(17,17,17,.94)'
     const ctl = (label, act, Icon, pos) => (
       <button
         type="button" aria-label={label}
@@ -12367,8 +12396,9 @@ function Gallery({ s }) {
             and nothing in any master's layout depends on the leak, so it wraps
             here (the testimonials' rule). */}
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: tab && !s.lime ? s.h1 : s.dispLg,
-          lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !s.lime && !grunge ? s.h1 : s.dispLg),
+          lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac,
+          ...(grunge ? { textTransform: 'uppercase' } : null),
         }}>{s.title}</h2>
         <div style={{
           display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`,
@@ -12381,7 +12411,7 @@ function Gallery({ s }) {
               onClick={s.live && s.images[i] ? () => setPick(i) : undefined}
               style={{
                 aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
-                border: s.lime ? undefined : `${bw} solid ${ink}`, borderRadius: u(30),
+                border: s.lime || grunge ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : 30),
                 cursor: s.live && s.images[i] ? 'zoom-in' : undefined,
               }}>
               <span style={{ position: 'absolute', inset: 0 }}>
@@ -12394,14 +12424,14 @@ function Gallery({ s }) {
                 <Photo
                   s={s} src={s.images[i]}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
-                  ink={s.retro ? undefined : s.lime ? s.tx : s.paperFg}
-                  style={s.lime ? { background: well } : undefined}
+                  ink={s.retro ? undefined : s.lime || grunge ? s.tx : s.paperFg}
+                  style={s.lime || grunge ? { background: well } : undefined}
                 />
               </span>
-              {s.lime && (
+              {(s.lime || grunge) && (
                 <span style={{
                   position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                  boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+                  boxShadow: `inset 0 0 0 1px ${ring}`,
                 }} />
               )}
             </div>
