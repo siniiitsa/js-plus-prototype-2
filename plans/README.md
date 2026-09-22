@@ -25,6 +25,7 @@ plans/
     layout-2-qa-fixes.md
   grunge/
     layout-1.md
+    layout-2.md
   editorial/   ← not started
   pop/         ← not started
 ```
@@ -65,10 +66,13 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
 | Layout 1 | [`grunge/layout-1.md`](./grunge/layout-1.md) | `grunge-layout-1`, forked from `main` (closed and swept; push, PR and merge are the user's call) | Retro and Lime layout 1's eleven components in the Figma mode **Static Youth**: a token foundation (session 0, which opens on a user call — the display face, Stones Crush, is not a Google Font), then `s.grunge` decoration inside the shared `s.v0` branches, a shared `s.designed` gate, the header's four modal cards, plus the end-of-pass sweep, which extracted [`CONVENTIONS.md`](./CONVENTIONS.md). Written as deltas against Lime layout 1. Card 1 of the setup modal is a fitted page; cards 2–4 are placeholders that render and publish, each its own layout pass's to fit. |
+| Layout 2 | [`grunge/layout-2.md`](./grunge/layout-2.md) | `grunge-layout-2`, to be forked from `grunge-layout-1` (planned 2026-09-22, not started) | Lime layout 2's ten compositions in Static Youth: each Lime layout-2 block widened to `(s.lime || s.grunge)` with the Grunge deltas inside it, all three widths per session, plus the end-of-pass sweep. Written as deltas against Lime layout 2 and Grunge layout 1. Card 2 of the setup modal becomes a fitted page; the footer is layout 1's. |
 
 **Reading order in a Grunge session:** `CLAUDE.md`, then the plan, then [`CONVENTIONS.md`](./CONVENTIONS.md)
-and the bullets it points at, and Lime layout 1's *Per-session procedure*. A layout-2 pass also reads
-layout 1's whole *Conventions*, since that pass built the foundation.
+and the bullets it points at, and Lime layout 1's *Per-session procedure*. The layout-2 pass also reads
+layout 1's whole *Conventions*, since that pass built the foundation, and — because each session widens
+a Lime layout-2 block — that section's *Settled* bullet in Lime layout 2's *Conventions* and the Lime
+layout-2 QA entries that moved the same seam.
 
 ## Other templates
 
