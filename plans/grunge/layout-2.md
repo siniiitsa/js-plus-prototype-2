@@ -1240,7 +1240,7 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   the gallery's tiles' red — with Lime's `INNER_SHADOW 34` gone; the avatar well is `s.bg`.
 - **The pill is Scheme 1's own**: `#df262c` under `#000000` type, a black disc round a red arrow —
   `s.ac` / `s.bg` / `s.bg` / `s.ac`, Lime's four seats turned round again. No offset block.
-- **The refused box is colour and weight**, the fifth redrawn live state: the idle ring is the
+- **The refused box is colour and weight**, layout 1's redrawn state again: the idle ring is the
   white 15%, so a refused one is 2px of full `s.tx`, which is what Lime's `ink` rule yields here
   with no new key. The box label is `faced` / `facedLh` **but not transformed**: `up()` cases the
   label as a string, Retro's rule, so the live input's typed text stays as typed (read off the
