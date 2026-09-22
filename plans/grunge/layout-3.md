@@ -433,11 +433,10 @@ against the `if (s.v2` line numbers):
   - the three **`vm.pad` arms at `d === 2`** (above, *The composed page*): bio / calendar / media
     (top 50, feet 30 / `padY` / 37 · 47 · 35), pricing (foot 32 at 1440 and 768), form /
     testimonials (form foot 90 / 60; testimonials head 56 / 30, foot 56);
-  - **`vm.kicker`'s `LIME_KICKER_3`** ("Performing since 2021", the glass card's strapline) is
-    gated on Lime in **both** `sectionVm` and `EditPanel`'s fallback (`themeName === 'Lime' &&
-    design === 2`); the Grunge card types the same line, so both widen together or the panel
-    disagrees with the canvas. Section 1's.
-  - **`vm.navFits` at `d === 2`** has a Lime arm and a Retro arm and **no Grunge arm** (the
+  - ~~**`vm.kicker`'s `LIME_KICKER_3`** … gated on Lime in both `sectionVm` and `EditPanel`~~
+    *Done in section 1:* renamed `KICKER_3`, widened in both.
+  - ~~**`vm.navFits` at `d === 2`** has no Grunge arm~~ *Done in section 1* (the Grunge arm
+    serves both layouts; see *Settled in section 1*). The original note: it had a Lime arm and a Retro arm and **no Grunge arm** (the
     `EncoreBuilder.jsx` comment says so: "Its layout 3 has no arm yet, so it keeps the burger"), so
     the 768 header would fold to the burger where the master draws Music / Gigs / About. The
     Grunge arm sums at the capsule's own **`labelMd`** (20 at 1440 — read the 768 size) against
