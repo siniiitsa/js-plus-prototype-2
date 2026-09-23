@@ -228,7 +228,7 @@ off the nodes:
 | repertoire | inherits | the three `set` cards are **Scheme 1 / Scheme 4 / Scheme 3** in that order: `s.box1` with pale ink and `stroke1`; `mist` `#D5E3B2` and `lime3` `#CCFA61`, both with `#15180F` (`s.bg`) ink and a 15% ink hairline |
 | gallery | **Scheme 2** | — (the sheet is Scheme 2's `sem/bg`, `#2E3928` = `s.box1`) |
 | pricing | inherits | the featured `row` **Scheme 3**: `#AFE335` (`s.ac`) fill, `#15180F` ring and ink |
-| map | **Scheme 4** | `radius-map` **Scheme 2** (*corrected in section 8*): `#CCFA61` (`lime3`) at every width |
+| map | **Scheme 4** | `radius-map` ~~**Scheme 2**~~ (*corrected in section 8*, and again by Grunge's layout-3 section 8: the mode is **Scheme 3** at all three widths, and `#CCFA61` is its `sem/box/1` — read off `boundVariables`, which is the only source that tells a renamed value from a rebound one): `#CCFA61` (`lime3`) at every width |
 | form | Scheme 1 (768 / 390 inherit) | — (card `#2E3928`, boxes `#2E3928` pills, submit `#AFE335`) |
 | testimonials | inherits | `rating` **Scheme 3** (`#CCFA61`); `quote-cell` and `name-cell` **Scheme 2** (`#394732` and `#2E3928`); `small-quote` **Scheme 4** (`#D5E3B2`); `feat-quote` inherits (`#2E3928`) |
 | footer | Scheme 2 (layout 1's) | — |
@@ -924,7 +924,11 @@ Settled in section 8 (the events map):
   zoom buttons, the container and the data bar. The discs are `mist` in **both** states; Retro inverts
   the lit one. The lit row is an ink pill with `s.tx` type and no border, and its hour chip fills
   `s.tx`. `radius-map` is **Scheme 2 at all three widths**, not only at 390 as the plan's table read:
-  `#CCFA61` (`lime3`) for the panel and the container. Its status tab, ring labels, rings, pin head
+  `#CCFA61` (`lime3`) for the panel and the container. *(Corrected by Grunge's layout-3 section 8:
+  the mode is **Scheme 3**, not Scheme 2 — the fills were read but not the `boundVariables`, and
+  `#CCFA61` is Scheme 3's `sem/box/1` under the Lime primitive. The panel and the container share
+  one literal here because they are bound to the same token; Grunge's card is rebound to
+  `sem/box/2`, which is what parts them there. Nothing in this block moves — the value is right.)* Its status tab, ring labels, rings, pin head
   and tail are `s.ac`, and the zoom buttons are `#D9FF7F` (`lift`) with a 20px Inter Bold glyph at
   radius 8. No node carries an effect.
 - **Rings are the frame's weights, opacities and dash**: 1 / 1.5 / 2 at .3 / .5 / .8 in `s.ac`, and

@@ -325,9 +325,9 @@ export const NVAR = {
 // header card N lays out the whole page as layout N, and Lime's page N is
 // Retro's page-N components re-skinned — so its family is those four and
 // no more. Grunge is the same four in a third mode (Static Youth), all four
-// pages confirmed in the Figma file; Hero and Feature spread are fitted,
-// and cards 3 and 4 render HeaderV2 and HeaderV3 in its tokens until their
-// layout passes.
+// pages confirmed in the Figma file; Hero spread, Feature spread and Inset
+// Hero are fitted, and card 4 renders HeaderV3 in its tokens until its
+// layout pass.
 // Editorial and Pop offer three flat layouts (§10.3); their designs do not
 // exist yet.
 export const headerFamily = (themeName) =>
@@ -778,9 +778,10 @@ export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
 // The booking calendar's layout-3 heading, the composed page's "Book Me" over
 // the card (964:68644). Layouts 1, 2 and 4 keep TITLES.calendar.
 export const CAL_HEADING_3 = 'Book Me'
-// Lime layout 3's header kicker, the glass card's second line (964:68654).
-// The other layouts, and Retro's layout 3, keep the field's 'DJ · Live Act'.
-export const LIME_KICKER_3 = 'Performing since 2021'
+// Lime's and Grunge's layout-3 header kicker, the corner card's second line
+// (964:68654, 964:68686). The other layouts, and Retro's layout 3, keep the
+// field's 'DJ · Live Act'.
+export const KICKER_3 = 'Performing since 2021'
 // Layout 4's heads, each its composed page's own wrapper head over the section
 // (QA, 2026-09-15): the Book Us panel (964:72839), the gallery's column
 // (964:72784), the map band (964:72827) and the testimonials sheet. The other
@@ -939,8 +940,8 @@ export const FIELDS = {
   //
   // The header's `in` is always an object naming Retro, Lime and Grunge alone:
   // they have different header families (six designs against four and four —
-  // Grunge's row is measured over its fitted cards 1 and 2 and its
-  // placeholder cards 3 and 4, so each layout pass re-measures it), and the flat two have a family
+  // Grunge's row is measured over its fitted cards 1, 2 and 3 and its
+  // placeholder card 4, so each layout pass re-measures it), and the flat two have a family
   // of their own that is not designed, so they are left unmarked rather than
   // folded onto any list.
   header: [
@@ -983,7 +984,7 @@ export const FIELDS = {
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
-          + '(in Lime, layout 3 as well).' },
+          + '(in Lime and Grunge, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },

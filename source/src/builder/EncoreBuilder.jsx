@@ -43,7 +43,7 @@ import {
   FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, CAL_HEADING_3, LIME_KICKER_3, TESTI_STARS,
+  TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav,
@@ -350,10 +350,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // names. A site only some of them share stays a named pair, widened per
     // site from the frame.
     designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge',
-    // Grunge's layout-1 and layout-2 pages are the same components in a third
-    // mode, Static Youth, so its decoration — at layout 1 torn black seams
-    // round its textured bands, grain and the red seal, at layout 2 rings
-    // where Lime glows — goes behind this flag in the shared branches, the way
+    // Grunge's layout-1, layout-2 and layout-3 pages are the same components in
+    // a third mode, Static Youth, so its decoration — at layout 1 torn black
+    // seams round its textured bands, grain and the red seal, at layouts 2 and 3
+    // rings where Lime glows — goes behind this flag in the shared branches, the way
     // Lime's does. A value two templates share is written as
     // the pair: `(s.retro || s.grunge)` for grain and torn edges,
     // `(s.lime || s.grunge)` for the `sem` reads and the capsule nav.
@@ -373,8 +373,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // doubled up with the player's own top. The player's list ends 122 / 90 / 70
   // above the repertoire's head (100 on the 0.82 canvas); the repertoire's own
   // top inset is its fitted one, so the player's foot takes the difference —
-  // 37 / 47 / 35, measured against the seeded page.
-  if (T.name === 'Lime' && d === 2 && (cat === 'bio' || cat === 'calendar' || cat === 'media')) {
+  // 37 / 47 / 35, measured against the seeded page. Grunge's composed region
+  // is Lime's to the pixel (plans/grunge/layout-3.md), so each of its three
+  // sections joined the arm in its own session — the bio, then media, then the
+  // calendar, which closes the row: its `Frame 300` pads 50 / 50 / 40 above
+  // "Book Me" and 56 / 56 / 40 under the card, Lime's own numbers.
+  if (d === 2 && ((T.name === 'Lime' || T.name === 'Grunge')
+    && (cat === 'bio' || cat === 'calendar' || cat === 'media'))) {
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)
     const foot = cat === 'bio' ? z(30)
@@ -384,14 +389,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   // The pricing stack's footnote stands 32 above the section's foot at 1440
   // and 768 (964:68680 · 984:10765). 390 keeps its 44, under the master's 60.
-  if (T.name === 'Lime' && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
+  // Grunge's three masters state the same 32 / 32 / 60 (964:68712 · 984:13925
+  // · 984:13956), so the arm is both templates'.
+  if ((T.name === 'Lime' || T.name === 'Grunge') && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
     vm.pad = `${vm.padY} ${vm.padX} ${Z.dev === 'desktop' ? Math.round(32 * 0.82) : 32}px`
   }
   // The form's card ends 90 / 60 above its foot and the testimonials' head
   // stands 56 / 30 below their top (964:68682 + 964:68683 · 984:10767 +
   // 984:10768), where `padY` doubled up to 160 / 112. The wall's own foot is
   // 56 at both widths — the 768 `padY` already. 390 is under the frames.
-  if (T.name === 'Lime' && d === 2 && (cat === 'form' || cat === 'testimonials') && Z.dev !== 'mobile') {
+  //
+  // Grunge's form and testimonials masters state the same insets to the pixel
+  // (964:68714 + 964:68715 · 984:13927 + 984:13928 — the wall's own root pads
+  // 56 / 56 at 1440 and 30 / 56 at 768, Lime's numbers), so both templates are
+  // one condition again; the pair was two halves for one session, the composed
+  // row's rule (plans/grunge/layout-3.md).
+  if ((T.name === 'Lime' || T.name === 'Grunge')
+    && (cat === 'form' || cat === 'testimonials') && d === 2 && Z.dev !== 'mobile') {
     const desk = Z.dev === 'desktop'
     const px = (v) => `${desk ? Math.round(v * 0.82) : v}px`
     vm.pad = cat === 'form'
@@ -413,11 +427,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // card, the enquiry form's credit — reads the header's through `identity`
   // (`headerIdentity()` in data.js), since only the header has the fields.
   // The header reads its own content, so a preview of a layout the page is not
-  // on still shows what that layout would. Lime's layout-3 glass card types
-  // its own strapline; EditPanel mirrors it.
+  // on still shows what that layout would. Lime's and Grunge's layout-3 card
+  // types its own strapline; EditPanel mirrors it.
   const own = cat === 'header' ? c : identity
   vm.kicker = own.kicker !== undefined ? own.kicker
-    : cat === 'header' && d === 2 && T.name === 'Lime' ? LIME_KICKER_3 : 'DJ · Live Act'
+    : cat === 'header' && d === 2 && (T.name === 'Lime' || T.name === 'Grunge') ? KICKER_3 : 'DJ · Live Act'
   vm.subtitle = cv('subtitle', DEFS.heroSub)
   vm.location = own.location !== undefined ? own.location : 'Manchester, UK'
   // "DJ · Live Act · Manchester, UK", composed here so an emptied half drops
@@ -485,10 +499,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Its labels are set at 0.75 of the row's size (`faced` in EncoreSection —
   // Anton standing in for Stones Crush), while the gaps stay the row's ems.
   // Grunge's layout-2 capsule (964:64618) gaps its links a fixed 18 at 16px
-  // type and again at 13, so there the sum is the labels alone and HeaderV1
-  // adds the gaps as a fixed box beside the capsule's padding.
+  // type and again at 13, and its layout-3 one (964:68686) at 20 and 14, so
+  // there the sum is the labels alone and HeaderV1 / HeaderV2 add the gaps as
+  // a fixed box beside the capsule's padding.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75 : null
-  const navGapEm = T.name === 'Grunge' && d === 1 ? 0 : 23 / 24
+  const navGapEm = T.name === 'Grunge' && (d === 1 || d === 2) ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -515,16 +530,18 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // empty nav keeps the burger, and 390 always does: its master draws one.
   // Grunge's layout 2 (986:13753) is Lime's bar box for box — the same 138.32
   // — at its own 13 / 16 in Anton at 0.75 (`navFace`), plus the capsule's
-  // fixed 18 gaps, which its `navEms` leaves out (above). Its layout 3 has no
-  // arm yet, so it keeps the burger until that pass.
+  // fixed 18 gaps, which its `navEms` leaves out (above). Its layout 3
+  // (984:13900) is Lime's layout-3 bar box for box, the same 138.32 against
+  // the same 684, with the links at Label/MD (14 at 768) where Lime's are
+  // Label/SM, and the same fixed 18 gaps.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
     const row = d === 1 ? 688 : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge' && d === 1) {
-      vm.navFits = vm.navEms * px(vm.labelSm) + (vm.navLinks.length - 1) * 18
+    } else if (T.name === 'Grunge') {
+      vm.navFits = vm.navEms * px(d === 1 ? vm.labelSm : vm.labelMd) + (vm.navLinks.length - 1) * 18
         + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {
       const [link, name] = d === 1 ? [16, 20] : [13, 16]
@@ -3074,8 +3091,8 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
-                    : f.k === 'kicker' && sec.cat === 'header' && themeName === 'Lime'
-                      && design === 2 ? LIME_KICKER_3
+                    : f.k === 'kicker' && sec.cat === 'header'
+                      && (themeName === 'Lime' || themeName === 'Grunge') && design === 2 ? KICKER_3
                     : f.k === 'heading' && sec.cat === 'calendar'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3

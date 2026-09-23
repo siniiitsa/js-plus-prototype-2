@@ -26,6 +26,7 @@ plans/
   grunge/
     layout-1.md
     layout-2.md
+    layout-3.md
   editorial/   ← not started
   pop/         ← not started
 ```
@@ -66,13 +67,16 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
 | Layout 1 | [`grunge/layout-1.md`](./grunge/layout-1.md) | `grunge-layout-1`, forked from `main` (merged) | Retro and Lime layout 1's eleven components in the Figma mode **Static Youth**: a token foundation (session 0, which opens on a user call — the display face, Stones Crush, is not a Google Font), then `s.grunge` decoration inside the shared `s.v0` branches, a shared `s.designed` gate, the header's four modal cards, plus the end-of-pass sweep, which extracted [`CONVENTIONS.md`](./CONVENTIONS.md). Written as deltas against Lime layout 1. Card 1 of the setup modal is a fitted page; cards 2–4 are placeholders that render and publish, each its own layout pass's to fit. |
-| Layout 2 | [`grunge/layout-2.md`](./grunge/layout-2.md) | `grunge-layout-2`, forked from `grunge-layout-1` (closed and swept 2026-09-22; `main` already carries sections 1–7 through the `af20e78` refresh; push, PR and merge of the rest are the user's call) | Lime layout 2's ten compositions in Static Youth: each Lime layout-2 block widened to `(s.lime || s.grunge)` with the Grunge deltas inside it, all three widths per session, plus the end-of-pass sweep. Written as deltas against Lime layout 2 and Grunge layout 1. Card 2 of the setup modal is a fitted page; the footer is layout 1's. The sweep folded what the pass leaned on into [`CONVENTIONS.md`](./CONVENTIONS.md) (the *L2* entries and group D2) and taught `page-check.mjs` and `build-digest.mjs` to walk any card. |
+| Layout 2 | [`grunge/layout-2.md`](./grunge/layout-2.md) | `grunge-layout-2`, forked from `grunge-layout-1` (merged, PR #28, with the root `index.html` refreshed) | Lime layout 2's ten compositions in Static Youth: each Lime layout-2 block widened to `(s.lime || s.grunge)` with the Grunge deltas inside it, all three widths per session, plus the end-of-pass sweep. Written as deltas against Lime layout 2 and Grunge layout 1. Card 2 of the setup modal is a fitted page; the footer is layout 1's. The sweep folded what the pass leaned on into [`CONVENTIONS.md`](./CONVENTIONS.md) (the *L2* entries and group D2) and taught `page-check.mjs` and `build-digest.mjs` to walk any card. |
+| Layout 3 | [`grunge/layout-3.md`](./grunge/layout-3.md) | `grunge-layout-3`, forked from `main` (swept, with the root `index.html` refreshed; push, PR and merge still open) | Lime layout 3's ten compositions in Static Youth: each Lime layout-3 block widened to `(s.lime || s.grunge)` with the Grunge deltas inside it — `HeaderV2`'s block at its head, the bio's ahead of its branch, the rest after their seams, the gallery's ternaries — all three widths per session, the composed page inherited (it already composes under Grunge), plus the end-of-pass sweep. Written as deltas against Lime layout 3 and Grunge layouts 1 and 2. The page walk found no effect on any master, one `#171716` sheet (the gallery), no map sheet (Scheme 4 ≡ 1), the bio's seal swapped for layout 1's red one, and five nested sites (eight nodes) on a different scheme from Lime's — so the plan's first rule was to read every nested scheme off the Grunge master. Card 3 of the setup modal is a fitted page; the footer is layout 1's. The sweep folded the pass's three new rules into [`CONVENTIONS.md`](./CONVENTIONS.md) (the *L3* markers and group D3) and hardened `page-check.mjs`'s media probe. |
 
 **Reading order in a Grunge session:** `CLAUDE.md`, then the plan, then [`CONVENTIONS.md`](./CONVENTIONS.md)
 and the bullets it points at, and Lime layout 1's *Per-session procedure*. The layout-2 pass also reads
 layout 1's whole *Conventions*, since that pass built the foundation, and — because each session widens
 a Lime layout-2 block — that section's *Settled* bullet in Lime layout 2's *Conventions* and the Lime
-layout-2 QA entries that moved the same seam.
+layout-2 QA entries that moved the same seam. The layout-3 pass reads layouts 1's and 2's *Conventions*,
+Lime layout 3's *Conventions* and the section's *Settled* bullet (the block it widens), and Retro
+layout 3's *Conventions* and 2026-09-15 Addendum (the branch that block sits in).
 
 ## Other templates
 

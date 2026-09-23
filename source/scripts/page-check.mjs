@@ -159,8 +159,18 @@ for (const card of cardList) {
     const pts = await popup.$$eval('#media *', (els) => els.filter((el) => getComputedStyle(el).cursor === 'pointer' && !el.children.length)
       .map((el) => { const b = el.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 + scrollY, a: b.width * b.height } }).filter((p) => p.a > 0).slice(0, 1))
     if (!pts[0]) return 'no clickable'
-    await popup.evaluate((y) => scrollTo(0, y - 300), pts[0].y); await wait(200)
-    await popup.mouse.click(pts[0].x, 300); await wait(1500)
+    // The anchors walk above leaves a *smooth* scroll in flight (the popup's
+    // delegated fragment listener), which carries on past a `scrollTo` and
+    // slides the card out from under a fixed click point — the click then lands
+    // on nothing and the player reads `src: ''`. So settle first, then read the
+    // leaf's live rect and click that (plans/grunge/layout-3.md, the sweep).
+    await popup.evaluate((y) => scrollTo(0, y - 300), pts[0].y); await wait(700)
+    const at = await popup.$$eval('#media *', (els) => {
+      const el = els.filter((el) => getComputedStyle(el).cursor === 'pointer' && !el.children.length)[0]
+      const b = el.getBoundingClientRect()
+      return { x: b.x + b.width / 2, y: b.y + b.height / 2 }
+    })
+    await popup.mouse.click(at.x, at.y); await wait(1500)
     const st = await audio.evaluate((a) => ({ src: a.currentSrc || a.src, paused: a.paused, t: a.currentTime, err: a.error?.code ?? null }))
     return { ...st, moved: before !== await popup.$eval('#media', (el) => el.innerHTML) }
   })()
