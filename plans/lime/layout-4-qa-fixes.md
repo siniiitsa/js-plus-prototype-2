@@ -123,7 +123,31 @@ end on Lime card 4, in the editor and the published tab. Also check the map at 3
 
 **Docs.** None if it does not reproduce.
 
-**Settled.** —
+**Settled** (2026-09-23, `8a3c243`, no code). **Does not reproduce on HEAD.** The Evidence line
+numbers still hold (`:676`, `:1197`). The tester's build predates the JP-051 sweep.
+- **Harness.** The explicit seed (`TRACKS` in `TracksField`'s row shape with `image: null`, and
+  `GIGS`) against the same list + `{}`, + an all-`''` row (the add row's own shape) and + an
+  all-spaces row, for media and map × layouts 1–4 × themes 0, 1, 2 × three widths × canvas and
+  `live=1`. That is 12 comparisons of 36 renders each, and **every one is byte-identical**. As a
+  positive control, the same list + one named row moved all 36 renders of both families, so the
+  `&cj=` override was reaching the section. (The sixth gig's name paints in no render,
+  because it sits past the first page at every `perPage`. What moves is the stat's count and the pager.)
+- **The tester's steps, Lime card 4, real app** (puppeteer, trusted clicks): Add track and Add gig
+  left empty. Each repeater prints its "Empty … aren’t shown." hint. Publish → Open: at 1440 and
+  390 the media grid lists the five seeded tracks under *Five worth your ear.*, and the map's stat
+  reads *Gigs 5 upcoming*. At 390, ‹ from Hidden Warehouse walks Gorilla → Mint Lounge → Private
+  wedding → The Deaf Institute → Hidden Warehouse, and › walks the same five forward. No empty
+  slide, no page errors.
+- **One canvas change on Add track that is not this bug.** The first repeater edit writes
+  `c.tracks` from the seed, and the explicit branch sets `rel = sub` (TracksField has no
+  duration field). So media layout 4's release line goes from *Single* to *Single · 5:42* on
+  every card, whether the new row is blank or not. That is `sectionVm`'s documented seed-only
+  `rel` (the comment above `vm.tracks`). It was left alone.
+- **The heading** stays the artist's copy, as the verdict says.
+
+Reply: **fixed in PR #31 (the JP-051 sweep), deployed 2026-09-23 12:53:20 GMT**. The report's
+sixth card and *Gigs 6* come from the pre-fix build. The "Five worth your ear" heading is the
+artist's own copy, not a count.
 
 ---
 
