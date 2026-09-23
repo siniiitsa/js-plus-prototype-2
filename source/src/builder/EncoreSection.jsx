@@ -6840,18 +6840,55 @@ function Media({ s }) {
   // not the root's 346 that wrapped it in layout 3. The one named diff is
   // Retro's: the frame's bar is a hand-set 140 of 218 where ours is the
   // element's.
-  if (s.v3 && s.lime) {
+  //
+  // ── Grunge (964:72959 · 971:7955 at 768 · 977:12182 at 390, in the band
+  // 964:72953 · 971:9533 · 977:12176) ───────────────────────────────────────
+  // Lime's tree node for node (the paired diff at all three widths), in
+  // Static Youth's Scheme 2, so this block is widened and `G` names the
+  // deltas. Three moved values: the band, the tiles' well and the play glyph
+  // are Scheme 2's `sem/bg` #171716 (Lime reads `s.box1`, #1A1A1A here), and
+  // the bar's track is bound to `sem/box/2` #222222 where Lime's is
+  // `sem/box/1` (a moved binding; `s.box2` is #383838 here). Every other ink
+  // resolves through the same keys: `s.ac` is the frame's #DF262C, `s.tx`
+  // its white. The two glows are **rings in two reds** (no effect on any
+  // master): the sleeve 1px inside `scheme/1/stroke/2` #FF0000 (`s.stroke2`),
+  // tile one 1px inside `sem/text/1` #DF262C (`s.ac`), both still inset
+  // shadows on an overlay so no photograph is inset. Radii are a raw 15 (Lime
+  // 50), tile padding 20 (Lime 30). The 768 and 390 instances carry
+  // `Device: Tablet` as Lime's 390 does; the body sizes are Grunge's own,
+  // 12 / 12 at 1440 and 12 / 11 narrow (Lime 13 / 13 and 13 / 12).
+  // The boxes move at the two narrow widths, which is the 68 the 768
+  // instance lost: its band pads 100 / 100 with a 10 gap and the instance
+  // pads 0 at its foot, so the sheet's foot is 100 and head-to-player 66, and
+  // the tiles are 136 × 135 (three rows of them are the left column's 445);
+  // the 768 head frame pads 30 where the instance pads 56, so the head stands
+  // 26 left of the player, followed. The 390 band pads 60 / 60 (Lime 100), so
+  // 60 over the head and 70 under the player. The seams are Grunge's torn
+  // vector (`TornEdge grunge`), not arcs: a red `#DF262C` head (the bio's
+  // ground) and a black foot at 1440 and 768, 70 / 83 and 62 / 52 deep — the
+  // black-run per column off the renders, which matches the node arithmetic.
+  // The foot's paint is bound to `sem/tag/2/bg` (red in Scheme 2) but fills
+  // #000000, and the render is black: it is the page below, `s.bg`. At 390
+  // the band draws none; the bio owns the tear between them, in this band's
+  // #171716 (its section 2).
+  if (s.v3 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     const un = (v) => Math.round(v * z * 10) / 10
+    const G = grunge
+      ? { band: '#171716', track: '#222222', radius: 15, pad: 20, body: 12, chip: desk ? 12 : 11 }
+      : { band: s.box1, track: s.box2, radius: 50, pad: 30, body: 13, chip: desk ? 13 : 12 }
     const tk = desk
-      ? { title: 36, list: 24, body: 13, chip: 13 }
-      : { title: 28, list: 19, body: 13, chip: 12 }
+      ? { title: 36, list: 24, body: G.body, chip: G.chip }
+      : { title: 28, list: 19, body: G.body, chip: G.chip }
+    const disp = grunge ? { textTransform: 'uppercase' } : null
     // The tiles' foot fade, the twin's own gradient (0 → black at 88.942%).
     const scrim = 'linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 88.942%)'
-    const glow = `inset 0 0 ${u(34)} ${s.ac}`
+    const glow = grunge ? `inset 0 0 0 1px ${s.stroke2}` : `inset 0 0 ${u(34)} ${s.ac}`
+    const mark = grunge ? `inset 0 0 0 1px ${s.ac}` : glow
     const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
 
     // Body/Chip: Inter Bold at lh 1, tracked −6% of its own size.
@@ -6874,7 +6911,7 @@ function Media({ s }) {
     // outright at 390), on a pale `sem/text/3` well under the lime glow.
     const sleeveBox = (
       <div style={{
-        borderRadius: u(50), overflow: 'hidden', position: 'relative', background: s.tx,
+        borderRadius: u(G.radius), overflow: 'hidden', position: 'relative', background: s.tx,
         ...(s.mob
           ? { aspectRatio: '370 / 302', flex: 'none', width: '100%' }
           : { flex: '1 0 0', minHeight: u(308 * 302 / 370), width: '100%' }),
@@ -6892,8 +6929,8 @@ function Media({ s }) {
       <div style={row('0', { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
         <span style={col(u(4), { flex: '1 1 auto', minWidth: 0 })}>
           <span style={{
-            fontFamily: s.display, fontSize: u(tk.title), lineHeight: 1.1,
-            letterSpacing: s.dls, color: s.ac, ...clip,
+            fontFamily: s.display, fontSize: u(faced(s, tk.title)), lineHeight: facedLh(s, 1.1),
+            letterSpacing: s.dls, color: s.ac, ...clip, ...disp,
           }}>{now.track}</span>
           <span style={{
             fontFamily: s.body, fontSize: u(tk.body), lineHeight: 1.4,
@@ -6904,7 +6941,7 @@ function Media({ s }) {
           {skip(true, () => goTo(at - 1))}
           <span style={{
             width: u(48), height: u(48), borderRadius: '999px', flex: 'none',
-            background: s.ac, color: s.box1,
+            background: s.ac, color: G.band,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: s.live ? 'pointer' : undefined,
           }} onClick={s.live ? toggle : undefined}>
@@ -6920,7 +6957,7 @@ function Media({ s }) {
     const progress = (
       <div style={row(u(10), { width: '100%', flex: 'none' })}>
         <span style={clockType}>{now.at}</span>
-        <span style={{ flex: 1, minWidth: 0, height: u(3), background: s.box2, borderRadius: u(2) }}>
+        <span style={{ flex: 1, minWidth: 0, height: u(3), background: G.track, borderRadius: u(2) }}>
           <span style={{
             display: 'block', position: 'relative', height: '100%',
             width: `${now.pct}%`, background: s.tx, borderRadius: u(2),
@@ -6946,25 +6983,26 @@ function Media({ s }) {
       }}>
         {s.tracks.map((t, i) => (
           <div key={i} onClick={onPick(i)} style={{
-            position: 'relative', overflow: 'hidden', borderRadius: u(50), background: s.box1,
-            aspectRatio: desk ? '289.33 / 269.5' : tab ? '136 / 139' : '180 / 123.33',
-            padding: u(30), cursor: s.live ? 'pointer' : undefined,
+            position: 'relative', overflow: 'hidden', borderRadius: u(G.radius), background: G.band,
+            aspectRatio: desk ? '289.33 / 269.5' : tab ? (grunge ? '136 / 135' : '136 / 139') : '180 / 123.33',
+            padding: u(G.pad), cursor: s.live ? 'pointer' : undefined,
             ...col(u(4), { alignItems: 'flex-start', justifyContent: 'flex-end' }),
           }}>
             <span style={{ position: 'absolute', inset: 0 }}>
-              <Photo s={s} initialsSize={un(26)} src={t.img} ink={s.tx} style={{ background: s.box1 }} />
+              <Photo s={s} initialsSize={un(26)} src={t.img} ink={s.tx} style={{ background: G.band }} />
             </span>
             {/* The scrim, carrying the seat's glow: `at` is 0 until the visitor
                 picks, so the canvas draws the frame's own glowing first tile.
                 The radius is repeated here, or the parent's clip squares the
                 glow's inner corners (Retro's ring note). */}
             <span style={{
-              position: 'absolute', inset: 0, background: scrim, borderRadius: u(50),
-              boxShadow: i === at ? glow : undefined,
+              position: 'absolute', inset: 0, background: scrim, borderRadius: u(G.radius),
+              boxShadow: i === at ? mark : undefined,
             }} />
             <span style={{
               position: 'relative', width: '100%', fontFamily: s.display,
-              fontSize: u(tk.list), lineHeight: 1.2, letterSpacing: s.dls, color: '#FFFFFF', ...clip,
+              fontSize: u(faced(s, tk.list)), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, color: '#FFFFFF',
+              ...clip, ...disp,
             }}>{t.name}</span>
             {t.rel && (
               <span style={{
@@ -6982,16 +7020,23 @@ function Media({ s }) {
         // The sheet: out to the section's own edges, past the root's padding,
         // in Scheme 2's `sem/bg`. `position: relative` seats the two arcs.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-        background: s.box1, color: s.tx, position: 'relative', ...col('0'),
+        background: G.band, color: s.tx, position: 'relative', ...col('0'),
       }}>
-        <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />
+        {grunge
+          ? !s.mob && (<>
+              <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 70 * z : 62} colour={s.ac} />
+              <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 83 * z : 52} colour={s.bg} />
+            </>)
+          : <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />}
         <div style={{
-          padding: `${u(desk ? 156 : 100)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 156 : tab ? 106 : 110)}`,
-          ...col(u(s.mob ? 20 : 56)),
+          padding: grunge && !desk
+            ? `${u(tab ? 100 : 60)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(tab ? 100 : 70)}`
+            : `${u(desk ? 156 : 100)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 156 : tab ? 106 : 110)}`,
+          ...col(u(s.mob ? 20 : grunge && tab ? 66 : 56)),
         }}>
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg,
-            lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+            margin: grunge && tab ? `0 0 0 ${u(-26)}` : 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+            lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...disp,
           }}>{s.title}</h2>
           <div style={{
             ...(s.mob ? col(u(20)) : row(u(desk ? 112 : 56), { alignItems: 'stretch' })),
