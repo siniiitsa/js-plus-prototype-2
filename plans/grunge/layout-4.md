@@ -234,7 +234,7 @@ it is the gate this session widens.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:72944` | 1440 × 900 | `971:7823` | 768 × 1024 | `977:12044` | 390 × 844 | `964:72849` / `971:5299` / `977:8867` | `964:72511` / `964:77544` / `971:14040` | `if (s.lime) { … return }` at the head of `HeaderV3` | done `0c454fa` |
 | 2 | `bio` | `964:72952` *(Section `964:72945`, head `964:72946`)* | 664 × 720 | `971:7831` *(Section `971:7824`, head `971:7825`)* | 708 × 720 | `977:12052` *(Section `977:12045`, head `977:12046`)* | 370 × 536 | `964:72857` / `971:5307` / `977:8875` | `964:72519` / `964:76446` / `971:14479` | `if (s.v3 && s.lime)` ahead of `Bio`'s `if (s.v3)` | done `a8549e8` |
-| 3 | `media` | `964:72959` *(band `964:72953`, head `964:72954`)* | 1440 × 671 | `971:7955` *(band `971:9533`, head `971:10395`)* | 768 × 501 | `977:12182` *(band `977:12176`, head `977:12177`)* | 390 × 834 | `964:72864` / `971:5431` / `977:9005` | `964:72526` / `971:15190` / `971:14834` | `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)` | — |
+| 3 | `media` | `964:72959` *(band `964:72953`, head `964:72954`)* | 1440 × 671 | `971:7955` *(band `971:9533`, head `971:10395`)* | 768 × 501 | `977:12182` *(band `977:12176`, head `977:12177`)* | 390 × 834 | `964:72864` / `971:5431` / `977:9005` | `964:72526` / `971:15190` / `971:14834` | `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)` | done `3c6eae4` |
 | 4 | `gallery` | `964:73004` *(wrapper `964:72969`, head `964:72970`)* | 874 × 646 | `971:8121` *(wrapper `971:8086`, head `971:8087`)* | 768 × 594 | `977:12348` *(wrapper `977:12313`, head `977:12314`)* | 390 × 586.3 | `964:72909` / `971:5597` / `977:9171` | `964:72815` / `964:78491` / `977:8142` | `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from` | — |
 | 5 | `repertoire` | `964:73011` *(Section `964:73006`, panel `964:73007`)* | 1208 × **600** | `971:8128` *(Section `971:8123`, panel `971:8124`)* | 608 × 582 | `977:12355` *(Section `977:12350`, panel `977:12351`)* | 310 × 650 | `964:72916` / `971:5604` / `977:9178` | `964:72822` / `964:78509` / `977:8166` | `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump` | — |
 | 6 | `map` | `964:73019` *(Frame 319 `964:73013`, head `964:73014`)* | 1440 × 747 | `971:8136` *(Frame 319 `971:8130`, head `971:8131`)* | 768 × 870 | `977:12363` *(Frame 319 `977:12357`, head `977:12358`)* | 390 × 680 | `964:72924` / `971:5612` / `977:9186` | `964:72830` / `964:78599` / `977:8322` | `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | — |
@@ -889,6 +889,57 @@ them.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `bio_arch_3` at three widths on both surfaces.
 
+### Settled in section 3 (the media player)
+
+- **No Grunge block: Lime's `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)` is
+  `(s.lime || s.grunge)`**, with a six-key `G` at its head (`band`, `track`, `radius`, `pad`,
+  `body`, `chip`) whose Lime arm is today's literals, `const grunge = s.grunge` naming the seams
+  and the insets, and a `disp` spread (uppercase). The paired diff against the Lime twin's bands
+  at all three widths was the whole read: the tree is Lime's node for node (59 nodes at 1440 and
+  768; at 390 Lime's two arcs are simply absent). The hooks are hoisted, so the published player
+  needed nothing new.
+- **Scheme 2 moves three values and nothing else.** The band, the tiles' well and the play glyph
+  are `sem/bg` `#171716`, where Lime's block reads `s.box1` (`#1A1A1A` here). The bar's track is
+  bound to **`sem/box/2`** `#222222` where Lime's is `sem/box/1`: a moved binding, and `s.box2` is
+  `#383838` here. Every other ink resolves through Lime's keys (`s.ac` is `#DF262C`, `s.tx` white).
+  The plan's "the instance carries no scheme" at 1440 was wrong: it carries Scheme 2 (`187:4`)
+  explicitly. The values are the same either way.
+- **Two rings in two reds, no glow**: the sleeve is 1px inside `s.stroke2` (`#FF0000`,
+  `scheme/1/stroke/2`), and tile `at` is 1px inside `s.ac` (`#DF262C`, `sem/text/1`). Both stay
+  inset shadows on Lime's overlays, so no photograph is inset. Radius 15 (Lime 50), tile padding
+  20 (Lime 30). The tiles' `#D4D4D4` strokes are hidden, as under Lime.
+- **Type**: the body sizes are Grunge's own, 12 / 12 at 1440 and 12 / 11 narrow (Lime 13 / 13 and
+  13 / 12). The 768 and 390 instances carry `Device: Tablet`, so the titles are the 768 ramp's 28 /
+  19, as under Lime. The head (`s.dispLg`), the now-playing title and the tile titles are
+  `faced` / `facedLh` and uppercase. The seeded head holds one line at every width.
+- **The narrow boxes move, and that is the 68.** The 768 band pads 100 / 100 with a 10 gap, and
+  the instance pads 0 at its foot (Lime: 100 / 50, gap 0, instance 56). So the sheet's foot is
+  100 and head-to-player is 66. The tiles are **136 × 135** (three rows are the left column's 445;
+  Lime 139). The 768 head frame pads **30** where the instance pads 56, so the h2 takes a −26 left
+  margin at `tab && grunge`; the frame puts the head 26 left of the player, and ours follows. The
+  390 band pads 60 / 60 (Lime 100 / 100), so it is 60 over the head and 70 under the player. The
+  1440 boxes are Lime's.
+- **The seams are `TornEdge grunge bleed={false}`**: a head in `s.ac` (the bio's red) and a foot in
+  `s.bg`, at 1440 and 768 only (`!s.mob`). Their depths are **70 / 83 × 0.82 at 1440 and 62 / 52
+  at 768**, the black-run maximum per column off the renders (70 / 83 and 61 / 52), which match the
+  node arithmetic. The foot's paint is bound to `sem/tag/2/bg`, which is red, but it fills black
+  and renders black. `s.bg` is the page, so no literal. `ArcEdge` stays Lime's arm of a ternary.
+- **The 390 join is clean**: the bio's `#171716` tear stands on the `#171716` band with no
+  hairline (`page-check.mjs`'s `seam_390_media`), and at 1440 the red bio band runs straight into
+  the red head tear.
+- **Measured** (content edges): desktop sheet 854.8 (1043 × 0.82 = 855.3), h2 at 127.9, 95.2 tall
+  at 80.25px, tiles 237 × 220.8 from 269, seams 57.4 / 68. 768 sheet 783.1 (783), h2 at 30 · 100,
+  tiles 136 × 135 from 238.1 (238), seams 62 / 52. 390 sheet 1005.5 (1005), h2 at 60 and 40.9
+  tall (41), sleeve 370 × 302 at 120.9, tiles from 545.5 (546).
+- **Named diffs**: a 2px shorter sleeve at 1440 (406 falls out of the now-playing block's 61),
+  Anton at 0.75 against Stones Crush, five tiles against the frame's six (Lime's reading).
+- **`live=1`** at desktop (puppeteer, autoplay allowed): the ring starts on tile 1, a click on
+  tile 3 moves it there and plays `SoundHelix-Song-3`. No page errors. `page-check.mjs Grunge 3`:
+  no errors or warnings, the published player plays and moves, every link scrolls, the 390 burger
+  goes 1 → 11 links, overflow 0.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `media_arch_3` at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -905,6 +956,13 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   render* (grunge/layout-2, the cover); *a seam is the neighbour's ground* (grunge/layout-1, the
   390 tear); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1); *the layout-1 bio's
   grain mask* (grunge/layout-1, section 2).
+- Media: *the paired diff walk* (grunge/layout-2); *read `boundVariables`* (grunge/layout-3, the
+  track's `sem/box/2`); *the `G` lookup whose Lime arm is today's literals* (grunge/layout-1);
+  *a section on another scheme writes that scheme's values as named literals* (grunge/layout-1,
+  Scheme 2's `#171716` / `#222222`); *a frame's inside stroke is an inset `boxShadow` on an
+  overlay* (lime/layout-2, the two rings); *the black-run depth method* (grunge/layout-1, section
+  3); *a seam is the neighbour's ground; trust the render over the binding* (grunge/layout-1, the
+  foot tear); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1).
 
 ## Open questions
 
