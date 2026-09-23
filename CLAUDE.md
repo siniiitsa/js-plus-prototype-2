@@ -640,8 +640,10 @@ mutated through a single `patch()` helper.
   reloads into the builder. The `document.write` failure through a different door. There is no
   `<form>` element in the section and there must never be one; with none, Enter does nothing at
   all. The `<a>` is also what makes the whole thing testable from the opener: fill the boxes
-  synthetically and read the composed address off `getAttribute('href')`. An empty `email`
-  composes to `''` and the pill goes back to being a span — the Soundcloud rule, not the gallery's
+  synthetically and read the composed address off `getAttribute('href')`. An empty `email`, or
+  one `emailProblem()` in `data.js` refuses (JP-049 — the one email test, which `urlProblem`'s
+  `mailto:` branch and `formErrors` ask too; a pasted `mailto:` is taken off, and the field is a
+  `UrlInput` taught `check={emailProblem}`), composes to `''` and the pill goes back to being a span — the Soundcloud rule, not the gallery's
   hide-the-row rule: a form the artist has not addressed is still the picture their page is built
   around. The chip starts at **0**, not the `-1` the player's `cur`, the gallery's `pick`, the
   map's `sel` and the calendar's `''` start at — the frame draws chip 0 filled, so here the

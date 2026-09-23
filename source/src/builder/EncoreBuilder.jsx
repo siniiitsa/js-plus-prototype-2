@@ -47,7 +47,7 @@ import {
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -1303,8 +1303,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formPhoto = c.photo !== undefined ? (c.photo ?? undefined) : defaultImage(cat, T.name, 'photo')
   // The address every enquiry is mailed to, and the whole of this section's
   // live seam. It was a field that edited nothing until the submit was made
-  // real — cta's and para's state on the booking calendar before it.
-  vm.formEmail = String(cv('email', 'bookings@kaimercer.co.uk')).trim()
+  // real — cta's and para's state on the booking calendar before it. One
+  // emailAddr() refuses folds to '' (JP-049), the empty address's own state, so
+  // the submit stays a span on both surfaces and the confirmation panel can
+  // never print it; a pasted mailto: is taken off.
+  vm.formEmail = emailAddr(cv('email', 'bookings@kaimercer.co.uk'))
   vm.formBtn = cv('button', 'Book Now')
   // Layout 2's card: its price row, bookings line, submit label and the line
   // under it, each seeded with the frame's copy. The label is the submit, so an
@@ -1961,13 +1964,15 @@ const FIELD_BOX = {
 
 // Every input that takes an outbound address: the Soundcloud link, the
 // gallery's three social links, a track's audio, a gig's tickets and a footer
-// link's url. The value is stored as typed — extUrl() in sectionVm is what
-// refuses it — and this only says why, under the box, once the artist leaves
+// link's url — and, with `check={emailProblem}`, the enquiry form's own
+// address, which is the same question asked of an email. The value is stored
+// as typed — extUrl() (or emailAddr()) in sectionVm is what refuses it — and
+// this only says why, under the box, once the artist leaves
 // it: on blur, never per keystroke, since every address is invalid until it is
 // finished. Correcting it clears the line at once. The message remembers the
 // value it was worked out for, so a repeater row deleted above this one (rows
 // key on index) cannot hand its line to the row that moves up.
-function UrlInput({ value, onChange, style, className, placeholder, web = false }) {
+function UrlInput({ value, onChange, style, className, placeholder, web = false, check = urlProblem }) {
   const [err, setErr] = useState(null)
   const msg = err && err.v === value ? err.msg : null
   return (
@@ -1977,11 +1982,11 @@ function UrlInput({ value, onChange, style, className, placeholder, web = false 
         aria-invalid={msg ? true : undefined}
         onChange={(e) => {
           const v = e.target.value
-          if (msg && !urlProblem(v, web)) setErr(null)
+          if (msg && !check(v, web)) setErr(null)
           onChange(v)
         }}
         onBlur={() => {
-          const p = urlProblem(value, web)
+          const p = check(value, web)
           setErr(p ? { v: value, msg: p } : null)
         }}
         className={className}
@@ -3160,6 +3165,8 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                         </Select>
                       ) : f.type === 'url' ? (
                         <UrlInput value={val} onChange={set} style={FIELD_BOX} />
+                      ) : f.type === 'email' ? (
+                        <UrlInput value={val} onChange={set} style={FIELD_BOX} check={emailProblem} />
                       ) : f.type === 'area' ? (
                         <Textarea
                           rows={3} value={val} onClick={stopE}

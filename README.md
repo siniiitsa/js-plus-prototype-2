@@ -408,7 +408,8 @@ That distinction is the whole design, and it buys two things:
   the `document.write` failure through a second door, and with no form element there is no
   implicit submission either. Rendering the address on the anchor rather than calling
   `location.assign` in a handler is also what makes the whole thing verifiable: fill the boxes and
-  read `getAttribute('href')`. An empty address composes to `''` and the pill goes back to being
+  read `getAttribute('href')`. An empty address — or one `emailProblem()` refuses, which
+  `sectionVm` folds to empty through `emailAddr()` (JP-049) — composes to `''` and the pill goes back to being
   the span it always was — the Soundcloud button's rule rather than the gallery's, because a form
   the artist has not addressed is still the picture their page is built around.
 

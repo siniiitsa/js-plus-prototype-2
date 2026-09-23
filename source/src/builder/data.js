@@ -933,7 +933,8 @@ export const BLANK_PAGE = [
  * current design does not read; see fieldReach() below.
  *
  * `type: 'url'` is a plain text box that also says, on blur, why urlProblem()
- * refuses what was typed. The repeaters' address columns use the same input.
+ * refuses what was typed. The repeaters' address columns use the same input,
+ * and `type: 'email'` is that input asking emailProblem() instead.
  * ------------------------------------------------------------------ */
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
@@ -1277,8 +1278,8 @@ export const FIELDS = {
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Dead until the submit was made real — this is now what the form is for.
-    { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
-      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
+    { k: 'email',    l: 'Email address', type: 'email', d: 'bookings@kaimercer.co.uk',
+      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
@@ -1421,7 +1422,10 @@ export function urlProblem(v, web = false) {
     return 'Only web, mailto: and tel: addresses can be linked.'
   }
   if (scheme === 'mailto') {
-    return /^[^@]+@[^@]+\.[^@]+/.test(m[2]) ? null : 'That email address looks incomplete.'
+    // The query is a link's own business (?subject=…), and a mailto may name
+    // several recipients; each must pass the check the enquiry form's is held to.
+    const to = m[2].split('?')[0]
+    return to && to.split(',').every((a) => !emailProblem(a)) ? null : EMAIL_PROBLEM
   }
   if (scheme === 'tel') return /\d/.test(m[2]) ? null : 'That phone number has no digits.'
   const http = scheme === 'http' || scheme === 'https'
@@ -1435,6 +1439,31 @@ export function urlProblem(v, web = false) {
     return 'That doesn’t look like a web address — e.g. soundcloud.com/you'
   }
   return null
+}
+
+// The one email test (JP-049): the enquiry form's own address, the address
+// part of a mailto: link, and the visitor's email box all ask it, so the
+// editor, the link rules and the published form accept the same addresses.
+// null for empty or valid, else the reason, urlProblem()'s shape. One `@`,
+// something before it with no `?` or `#`, and a host after it that URL_HOST
+// would link, which refuses both too: either would split a composed mailto:
+// href in the wrong place. A pasted `mailto:` is taken off first, so the
+// artist can paste the link they already have.
+const EMAIL_PROBLEM = 'That email address looks incomplete.'
+export function emailProblem(v) {
+  const t = String(v ?? '').trim().replace(/^mailto:/i, '')
+  if (!t) return null
+  const at = t.lastIndexOf('@')
+  const local = t.slice(0, at)
+  return at > 0 && !/[\s@?#]/.test(local) && URL_HOST.test(t.slice(at + 1)) ? null : EMAIL_PROBLEM
+}
+
+// A typed email address → the bare address, or '' if it is empty or
+// emailProblem() refuses it — extUrl()'s shape, and '' is the enquiry form's
+// existing no-address state.
+export function emailAddr(v) {
+  const t = String(v ?? '').trim().replace(/^mailto:/i, '')
+  return emailProblem(t) ? '' : t
 }
 
 // A user-typed outbound URL → an absolute one, or '' if the field is empty or
@@ -1473,7 +1502,8 @@ export function directionsUrl(...parts) {
 // that is genuinely front-end-only. The result is already absolute, so it does
 // NOT go back through extUrl() — whose own comment above says a mailto: is
 // passed through untouched. An empty address returns '', and the pill goes
-// back to being the span it always was: the Soundcloud button's rule.
+// back to being the span it always was: the Soundcloud button's rule. The
+// address arrives through emailAddr(), so one it refuses is empty here too.
 export function enquiryMailto(email, { type, fields, message, msgLabel }) {
   const to = String(email ?? '').trim()
   if (!to) return ''
@@ -1502,7 +1532,7 @@ export function formErrors(fields, vals) {
   const f = (fields || []).map((fd, i) => {
     const v = String((vals || [])[i] ?? '').trim()
     if (!v) return true
-    return fd.kind === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+    return fd.kind === 'email' && !!emailProblem(v)
   })
   return { f, any: f.some(Boolean) }
 }

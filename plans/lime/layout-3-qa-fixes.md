@@ -29,7 +29,7 @@ so Retro, Grunge and the flat two move with them. The tester happened to be on L
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-049 | Enquiry Form's Email address takes `not-an-email` and the submit mails it | **Confirmed**: every other address box validates, this one does not | S | no | open |
+| 1 | JP-049 | Enquiry Form's Email address takes `not-an-email` and the submit mails it | **Confirmed**: every other address box validates, this one does not | S | no | **done** |
 | 2 | JP-048 | Three *Add package* clicks publish three blank cards, the last one lime and FEATURED | **Confirmed**; the FEATURED seat is working as documented, the defect is that a blank row renders | M | **yes** — what counts as blank | open |
 | 3 | JP-051 | An empty form-field row publishes an unlabelled box | **Confirmed**; JP-048's family, applied to the form | S | **yes** — the guarded email row | open |
 | 4 | JP-050 | Emptying the header Title publishes the sample name in eight slots and nothing in the h1 | **Half documented, half defect**: the fallback is CLAUDE.md's rule; the h1 disagreeing with it is a bug | M | **yes** — what an empty name means | open |
@@ -113,7 +113,42 @@ byte-identical on the seeded page (the seed address is valid).
 **Docs.** CLAUDE.md's enquiry-form paragraph ("An empty `email` composes to `''`" → empty or
 refused), the `FIELDS.form.email` hint, `enquiryMailto`'s comment.
 
-**Settled.**
+**Settled** (2026-09-23). Evidence lines had not drifted from the triage.
+
+- **One predicate, built on what was there.** `emailProblem(v)` in `data.js`, beside
+  `urlProblem()`: trim, drop a leading `mailto:` (any case), then one `@` with a non-empty local
+  part free of whitespace, `?` and `#`, and a domain `URL_HOST` would link (which refuses `?`,
+  `#`, `/`, `:` and demands a dot). `null` for empty or valid, else "That email address looks
+  incomplete.". Its sibling `emailAddr(v)` is `extUrl()`'s shape: the bare address or `''`.
+  `urlProblem`'s `mailto:` branch now asks it of the part before `?`, **split on commas** so a
+  footer `mailto:a@b.co?subject=Hi` or a two-recipient link still passes (the old unanchored test
+  passed both; an anchored one would have regressed them). `formErrors`' email rows ask it too,
+  so a visitor's `a@b.co?x` or `a#b@c.co` is now refused where it passed before — harmless, and
+  the three sites now agree.
+- **A pasted `mailto:` prefix is stripped, not refused**: `mailto:a@b.co` composes
+  `mailto:a@b.co?…`. The editor accepts it on blur for the same reason (the one predicate).
+- **`sectionVm`**: `vm.formEmail = emailAddr(cv('email', …))`, so a refused address is the empty
+  address's existing state on both surfaces. The nine `s.formEmail` print sites in `EncoreSection`
+  are all `sent` panels, reachable only through a linked submit, so none can print a refused
+  address and none needed touching.
+- **Editor**: `FIELDS.form.email` is `type: 'email'`, drawn as `UrlInput` taught a `check` prop
+  (default `urlProblem`) — `check={emailProblem}`. The hint gained "An address that isn't valid
+  also leaves the button a picture." `in` unchanged (the key's reach did not move).
+- **Class sweep**: nothing else found. Every other artist address is already a `UrlInput`
+  (Soundcloud, the three social links, a track's audio, a gig's link, a footer link's url);
+  `FORM_FIELDS`' `you@email.com` is the visitor's placeholder; `map.expand` ("Map link") is a
+  label; no field holds a phone number.
+- **Verified.** Pre-fix (stash): `live=1`, `not-an-email` → `href="mailto:not-an-email`.
+  After, `cat=form` × layouts 1–4 × themes 0, 1, 2 × three widths (36 renders a value):
+  `live=1` links none for `not-an-email` and `a@b`, and `mailto:a@b.co?…` for `a@b.co`,
+  `  a@b.co  ` and `mailto:a@b.co`, 36/36 each. The canvas never links (it is a picture) and its
+  HTML is identical for `not-an-email` and `a@b.co` in all 36, so the two surfaces agree. Editor
+  (puppeteer on `:5173`): no line while typing, the reason on blur with `aria-invalid`, cleared on
+  correction, none for `mailto:a@b.co`. Digest themes 0, 1, 2, canvas and `live=1`: 774 renders,
+  byte-identical to before (the seed address is valid). Retro, Lime and Grunge all moved together;
+  nothing is template-gated.
+- Docs: CLAUDE.md's enquiry-form paragraph, README's matching sentence, the field hint,
+  `enquiryMailto`'s and `FIELDS`' header comments, `UrlInput`'s comment.
 
 ---
 
