@@ -44,7 +44,7 @@ import {
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
-  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -211,9 +211,10 @@ const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
 
 // Layout 4's heading fallbacks, per category — the composed page's own heads
-// (QA, 2026-09-15). sectionVm and EditPanel both read this.
+// (QA, 2026-09-15; the form's, JP-054). sectionVm and EditPanel both read this.
 const HEADING_4 = {
   calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
+  form: FORM_HEADING_4,
 }
 
 // The page's layout, for the one section that cannot say it itself: the footer
@@ -1337,7 +1338,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the submit stays a span on both surfaces and the confirmation panel can
   // never print it; a pasted mailto: is taken off.
   vm.formEmail = emailAddr(cv('email', 'bookings@kaimercer.co.uk'))
-  vm.formBtn = cv('button', 'Book Now')
+  // Layout 4's frame types "Check Availability" (JP-054); EditPanel mirrors it.
+  vm.formBtn = cv('button', d === 3 ? FORM_BTN_4 : 'Book Now')
+  // Layout 4's small-caps line under the head, the frame's "Enquire". Emptied,
+  // the line drops.
+  vm.formSub = cv('sub', FORM_SUB_4)
   // Layout 2's card: its price row, bookings line, submit label and the line
   // under it, each seeded with the frame's copy. The label is the submit, so an
   // emptied one falls back to `button` rather than leaving a wordless pill.
@@ -3224,6 +3229,8 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
+                    : f.k === 'button' && sec.cat === 'form'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? FORM_BTN_4
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)

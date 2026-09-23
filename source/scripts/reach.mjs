@@ -41,6 +41,9 @@ const PROBES = [
   { name: 'map.updated', cats: ['map'], param: 'cj', value: { updated: Z } },
   { name: 'map.rings', cats: ['map'], param: 'cj', value: { rings: Z } },
   { name: 'map.expand', cats: ['map'], param: 'cj', value: { expand: Z } },
+  // JP-054: layout 4's small-caps line, and the button whose default moved there.
+  { name: 'form.sub', cats: ['form'], param: 'cj', value: { sub: Z } },
+  { name: 'form.button', cats: ['form'], param: 'cj', value: { button: Z } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

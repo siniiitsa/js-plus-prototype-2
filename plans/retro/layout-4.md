@@ -1153,6 +1153,10 @@ Learned on the enquiry form (section 11):
   the same positions is what kept `heading` as the display line in all four layouts and
   left nothing unread. **Match a slot by its type register, not by its place in the
   stack.**
+  *Reversed 2026-09-23 (JP-054, user call): the small-caps line is now its own
+  `FIELDS.form.sub`, seeded "Enquire", and the head and pill seed the frame's "Contact Us"
+  and "Check Availability" at layout 4. Do not restore `s.brand` there. See
+  `plans/lime/layout-4-qa-fixes.md`.*
 - **The frame's own copy told us which of the section's lists its column wanted.** The
   01/02/03 rows read "Send your details / I check availability / Quote & confirm" with
   subs, and row 02's sub is *"Reply within 24 hrs"* — `FORM_PROMISES[0]` almost

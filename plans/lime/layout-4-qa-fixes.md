@@ -44,8 +44,8 @@ does. Verify themes 0, 1 and 2.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-055 | A blank track and a blank gig render in media / map layout 4 | **Expected fixed on `main`** (the JP-051 sweep, `0b7e497`). Verify, and fix only if it reproduces | S | no | open |
-| 2 | JP-054 | Form layout 4's copy is not the frame's (head, sub-line, boxes, button, two-line steps) | **Named diffs of the fit** (L4 §9 Settled). The tester is right that nothing picks a side | S–M | **yes** (PO call) | open |
+| 1 | JP-055 | A blank track and a blank gig render in media / map layout 4 | **Expected fixed on `main`** (the JP-051 sweep, `0b7e497`). Verify, and fix only if it reproduces | S | no | **done** (does not reproduce) |
+| 2 | JP-054 | Form layout 4's copy is not the frame's (head, sub-line, boxes, button, two-line steps) | **Named diffs of the fit** (L4 §9 Settled). The tester is right that nothing picks a side | S–M | **yes** (PO call): **A** | **done** |
 | 3 | JP-038 (layout 4) | Adjacent sections disagree on their side inset: 189 vs 171 at desktop, 22 vs 10 at 390 | **Confirmed, and not the gutter question already settled**: page-ground sections keep `padX`, while sheets put the frame's own inset back | M | **yes** | open |
 | 4 | JP-052 | Book Us' right column prints dates and prices no field edits, and ignores the wizard | **Confirmed. It is a misreading of the frame**: the card is the wizard's summary, and the fit read it as `CAL_SLOTS` | L | **yes** | open |
 | 5 | JP-053 | The wizard's Send Enquiry is `#form`: the answers go nowhere, and there is no confirmation | **Confirmed.** Documented as a fragment link, but the tester is right that it loses everything | M | decided in entry 4 | open |
@@ -193,6 +193,14 @@ their own `*_HEADING_4` in `sectionVm` **and** `EditPanel` (`data.js:831`, `Enco
   so it needs its own hint and a reach row. Not recommended in a QA pass.
 - **C. By design; reply only.** The defaults are content, and the artist edits them.
 
+**Decided** (2026-09-23, user call): **A.** Retro's frame (`964:72845`) and Lime's (`964:72940`)
+carry the same copy at 1440: *Contact Us* over a rule, *ENQUIRE*, *Check Availability*. So the
+defaults are per-layout, not per-theme, and themes 0, 1 and 2 all move. (Retro's narrow masters
+read *KAI MERCER* in the head, which is the un-retyped layer name. Retro L4's section-11 lesson
+reads the 1440 one as the authored copy.) `FIELDS.form` has no `sub` key. The only neighbour is
+`available`, layout 3's eyebrow ("Available 2025 / 2026"). Reusing it would carry one layout's
+eyebrow copy into another's small-caps line, so the sub-line gets a new `sub` key.
+
 **Fix (on A).** The three resolutions in `sectionVm` and in `EditPanel`'s fallback chain (the
 `TESTI_HEADING_2` / `CAL_HEADING_4` pairing: change one, change both). This is an intended
 after-diff: form `arch 3`, themes 0, 1 and 2 if Retro's frame agrees (otherwise gate it and say
@@ -205,7 +213,38 @@ defaults at layout 4 and the shared ones at layouts 1–3. A stored value wins a
 **Docs.** CLAUDE.md's enquiry-form layout-4 sentences, README's matching passage, and Lime L4 §9
 Settled (append that the named diff was reversed, with the date).
 
-**Settled.** —
+**Settled** (2026-09-23). The Evidence lines had not drifted: `formBtn` at `:1340`, the Lime
+block at `:22122`.
+- **Code.** `data.js` has `FORM_HEADING_4` / `FORM_BTN_4` / `FORM_SUB_4` beside `CAL_HEADING_4`,
+  and a new `FIELDS.form.sub` ("Line under the heading", `in: [3]`, emptiable). The `button` hint
+  names the layout-4 start. In `EncoreBuilder.jsx`, `HEADING_4` gains `form`, so the head
+  resolves in `sectionVm` and in `EditPanel` through the existing pair. `vm.formBtn` falls back
+  to `FORM_BTN_4` at `d === 3`, and `EditPanel` has a matching `button` arm. `vm.formSub` is new.
+  Layouts 2 and 3's `formCta` still falls back to *Book Now*, since `d` is 1 or 2 there. In
+  `EncoreSection.jsx`, the Lime block and Retro's `v3` body print `s.formSub` where they printed
+  `s.brand`, and drop the span when it is empty. The artist's name therefore has no seat in form
+  layout 4, which matches the frame.
+- **Digest** (`main` worktree on :5174 against HEAD on :5173, themes 0, 1, 2, canvas and
+  `live=1`, port normalised): **exactly the 18 named files differ**, form arch 3 × three themes
+  × three widths × both surfaces. The text rows are the h2 (*Let's make / your night
+  unforgettable.* → *Contact Us*, one line: Lime's desktop h2 goes 190.4 → 95.2 against the
+  frame's 95.1), the small-caps span (*Kai Mercer* → *Enquire*) and the pill (*Book Now* →
+  *Check Availability*, at the same height at every width). Editorial and Pop move identically,
+  because it is the same branch (not digested; `reach.mjs` covered them).
+- **Reach** (new `PROBES` rows `form.sub` and `form.button`, themes 0–4): `sub` → layout 4 alone,
+  `button` → layouts 1 and 4, which matches both `in`s.
+- **Real app** (puppeteer, Lime / Retro / Grunge card 4 and Retro card 1): at layout 4 the panel's
+  Heading / Line under the heading / Button read *Contact Us* / *Enquire* / *Check Availability*
+  and the canvas agrees. At layout 1 the panel reads the shared heading and *Book Now*, and `sub`
+  prints "Not shown in this layout". A typed Button (*ZZ Ask me*) wins on the canvas and in the
+  published tab, and an emptied sub-line drops on both. The published form fills, composes
+  `mailto:bookings@…?subject=Enquiry&body=…` and swaps in the sent block. No page errors.
+- **Docs.** CLAUDE.md's form layout-4 sentences, and Lime L4 §9 Settled (a *Reversed* bullet).
+  README has no layout-4 form passage and no per-layout heading defaults, so it is unchanged.
+
+Reply: **fixed.** Layout 4 now opens on the frame's *Contact Us / ENQUIRE / Check Availability*
+under every template. The small-caps line is a new field ("Line under the heading"). The boxes
+stay the artist's one list (Location is one *Add field* away), and the steps stay one line.
 
 ---
 

@@ -832,6 +832,15 @@ export const CAL_HEADING_4 = 'Book Us'
 export const GALLERY_HEADING_4 = 'Snaps from the night'
 export const MAP_HEADING_4 = 'Distances we’ll Travel'
 export const TESTI_HEADING_4 = 'Client success stories'
+// The enquiry form's layout-4 copy (JP-054, user call, 2026-09-23): Retro's
+// frame (964:72845) and Lime's (964:72940) both read *Contact Us* over
+// *ENQUIRE* with a *Check Availability* pill, so these are per-layout
+// defaults, not per-theme ones. The head joins HEADING_4; the button and the
+// small-caps line under the head (`FIELDS.form.sub`, which reaches layout 4
+// alone) resolve here in sectionVm and in EditPanel's fallback chain.
+export const FORM_HEADING_4 = 'Contact Us'
+export const FORM_BTN_4 = 'Check Availability'
+export const FORM_SUB_4 = 'Enquire'
 export const TESTI_STARS = '★★★★★'
 // Booking calendar layout 4's wizard (964:72843): the event types its first
 // step offers, the frame's own four. The calendar's own list rather than the
@@ -1289,6 +1298,10 @@ export const FIELDS = {
     // A textarea, because the default breaks after "Let's make" — layout 2
     // keeps the break, the others read it as a space.
     { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable." },
+    // Layout 4's small-caps line under the head, which printed the artist's
+    // name until JP-054 gave it the frame's own word. Emptiable: it drops.
+    { k: 'sub',      l: 'Line under the heading', d: FORM_SUB_4, in: [3],
+      hint: 'Layout 4 only. Leave it empty to hide it.' },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2],
       hint: 'The line under the heading. Layout 3 only.' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1, 3],
@@ -1309,7 +1322,8 @@ export const FIELDS = {
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: 'bookings@kaimercer.co.uk',
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
-    { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3], hint: 'Layouts 1 and 4.' },
+    { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
+      hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
     // so an emptied label falls back to `button`.

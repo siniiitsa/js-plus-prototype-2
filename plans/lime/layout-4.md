@@ -1411,6 +1411,12 @@ Settled in section 9 (the enquiry form):
   `promises=`: one column and no rows; `n=5`: three rows with the lone fifth box full-measure.
   No page errors. Digest at themes 0, 2, 3 and 4: zero differing files; theme 1: exactly form
   arch 3 at three widths (form has no fold partner).
+- **Reversed 2026-09-23 (JP-054, user call, `plans/lime/layout-4-qa-fixes.md`).** The named copy
+  diffs above no longer hold: the head seeds *Contact Us* (`FORM_HEADING_4` in `HEADING_4`), the
+  small-caps line is a new `sub` field seeded *Enquire* instead of `s.brand`, and the pill seeds
+  *Check Availability* (`FORM_BTN_4`). All three apply at layout 4 on every theme, because Retro's
+  frame carries the same copy. The desktop head is now 95.2 against the frame's 95.1. The boxes
+  and the one-line steps still stand as named.
 
 Settled in section 10 (the testimonials — the last body section):
 

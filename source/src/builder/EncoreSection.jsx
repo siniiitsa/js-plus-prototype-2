@@ -22113,12 +22113,12 @@ function EnquiryForm({ s }) {
   // idle ring is already lime, so a heavier lime would not read as a refusal
   // — and the stated height does not grow. Retro's readings hold: `heading`
   // heads the design (the narrow masters' "KAI MERCER" is the component's
-  // default and the 1440 master types "Contact Us"), `s.brand` is the ENQUIRE
-  // line, the steps are `vm.formSteps` with the frame's second line per row
-  // dropped, the frame's five boxes are the seed's four, a lone trailing box
-  // runs the full measure, and the head's `whitespace-nowrap` is dropped for
-  // a sentence at 130. Named diff: the frame's pill types "Check Availability"
-  // where `vm.formBtn` seeds *Book Now*, Retro's own allocation.
+  // default and the 1440 master types "Contact Us"), `s.formSub` is the
+  // ENQUIRE line, the steps are `vm.formSteps` with the frame's second line
+  // per row dropped, the frame's five boxes are the seed's four, a lone
+  // trailing box runs the full measure, and the head's `whitespace-nowrap` is
+  // dropped for an artist's sentence at 130. The head, the ENQUIRE line and
+  // the pill seed the frame's own copy at this layout (JP-054).
   if (s.v3 && s.lime) {
     const desk = !s.narrow
     const z = desk ? 0.82 : 1
@@ -22278,7 +22278,9 @@ function EnquiryForm({ s }) {
             margin: 0, color: s.ac, overflowWrap: 'break-word',
           })}>{s.title}</h2>
         </div>
-        <span style={type(s.display, title, 1.1, { textTransform: 'uppercase' })}>{s.brand}</span>
+        {s.formSub && (
+          <span style={type(s.display, title, 1.1, { textTransform: 'uppercase' })}>{s.formSub}</span>
+        )}
         <div style={{
           display: 'grid', width: '100%', gap: u(desk ? 40 : 32),
           gridTemplateColumns: desk && stepsCol
@@ -22326,11 +22328,11 @@ function EnquiryForm({ s }) {
   //    third vote (a Figma layer keeps the string it was created with). So the
   //    desktop master is the authored one, "Contact Us" is a section heading,
   //    and `heading` heads this layout as it heads the other three.
-  //  - **The "ENQUIRE" line under the rule is `s.brand`**, upper-cased by the
-  //    render. That is layout 3's own allocation — the artist's name in the one
-  //    small caps line the design draws — with the two lines in the opposite
-  //    vertical order, and it is what keeps the name the frame does draw from
-  //    being dropped. Every field is still allocated exactly once.
+  //  - **The "ENQUIRE" line under the rule is `s.formSub`**, upper-cased by
+  //    the render and seeded with the frame's own word (JP-054, user call,
+  //    2026-09-23; it printed `s.brand`, layout 3's allocation, until then).
+  //    Emptied, the line drops. The head and the pill seed the frame's copy
+  //    too, "Contact Us" and "Check Availability", resolved in sectionVm.
   //  - **The 01 / 02 / 03 column is `vm.formPromises`**, numbered in sectionVm
   //    as `vm.formSteps`. The frame's own row 02 sets "Reply within 24 hrs",
   //    which is FORM_PROMISES[0] almost verbatim, so the column is already in
@@ -22621,7 +22623,7 @@ function EnquiryForm({ s }) {
             whole design stands on the page ground — so every line but the head,
             the pill and the discs inherits and the flat four are right by
             construction (the media player's rule). */}
-        <span style={subType}>{s.brand}</span>
+        {s.formSub && <span style={subType}>{s.formSub}</span>}
         <div style={{
           display: 'grid', width: '100%', gap: u(desk ? 40 : 32),
           gridTemplateColumns: desk && stepsCol

@@ -717,10 +717,16 @@ mutated through a single `patch()` helper.
   **Layout 4 is the editorial band, and it shares the seam whole for the third time** —
   the same `vals`, `errs`, `sent`, `<a href="mailto:">` and *Write another*, so its whole
   live surface is four handlers and the only line outside the branch is one comment. It
-  is a display head over a 4px mustard rule (1px of `s.stroke1` under Lime), the artist's
-  name in small caps under it,
+  is a display head over a 4px mustard rule (1px of `s.stroke1` under Lime), a small-caps
+  line under it (`FIELDS.form.sub`, layout 4 alone, emptiable),
   and then two columns: the boxes over a mustard submit pill (pale `s.tx` under Lime), and the promises numbered
-  01 / 02 / 03 beside them. Three things it does that no other layout here does. It draws
+  01 / 02 / 03 beside them. **Its head, that line and its pill seed the frame's own copy**
+  (JP-054, user call, 2026-09-23; Retro's frame and Lime's agree, so no theme gate):
+  `FORM_HEADING_4` "Contact Us" joins `HEADING_4`, `sub` defaults to `FORM_SUB_4` "Enquire"
+  (the line printed `s.brand` until then), and `button` falls back to `FORM_BTN_4` "Check
+  Availability" at this layout and "Book Now" at the others — each resolved in `sectionVm`
+  **and** in `EditPanel`'s fallback chain. The boxes stay the artist's one list and the steps
+  stay one line. Three things it does that no other layout here does. It draws
   a **label above a box *and* a placeholder inside it**, which is layout 1's pair and
   brings both `message` and the rows' `placeholder` column back after two layouts that
   spend their one slot on the label; a **trailing odd field runs the full measure** where
