@@ -49,7 +49,7 @@ does. Verify themes 0, 1 and 2.
 | 3 | JP-038 (layout 4) | Adjacent sections disagree on their side inset: 189 vs 171 at desktop, 22 vs 10 at 390 | **Confirmed, and not the gutter question already settled**: page-ground sections keep `padX`, while sheets put the frame's own inset back | M | **yes** (user call): **B** | **done** |
 | 4 | JP-052 | Book Us' right column prints dates and prices no field edits, and ignores the wizard | **Confirmed. It is a misreading of the frame**: the card is the wizard's summary, and the fit read it as `CAL_SLOTS` | L | **yes**: **1 A (Package › cycle), 2 (i)**; JP-053 **A** | **done** |
 | 5 | JP-053 | The wizard's Send Enquiry is `#form`: the answers go nowhere, and there is no confirmation | **Confirmed.** Documented as a fragment link, but the tester is right that it loses everything | M | decided in entry 4: **A** | **done** |
-| 6 | — | End-of-pass sweep | — | S | — | open |
+| 6 | — | End-of-pass sweep | — | S | — | **done** |
 
 **Why this order:** JP-055 is a check with no decision. JP-054 and JP-038 are single questions
 with small diffs. JP-052 is the largest refit and it asks the decision that JP-053 builds on, so
@@ -703,4 +703,130 @@ link.
    the pre-fix build's.** Add a JP-038 line that separates the gutter (decided and shipped:
    the published zoom) from this batch's section-inset finding.
 
-**Settled.** —
+**Settled** (2026-09-23, all six steps; the push, the PR and the merge are the user's).
+
+- **Digest, `main` (`01fa29b`) → HEAD (`55adee1`)**: all categories × layouts, themes 0, 1, 2
+  (Retro, Lime, Grunge), three widths, canvas and `live=1`, 387 renders a side a surface. The
+  base was a worktree of `main` on :5174 with `node_modules` symlinked, driven by this branch's
+  `digest.mjs` with `BASE=`, and removed afterwards. With the port normalised, **36 of 387
+  canvas and 36 of 387 live files differ**, and they are exactly map, pricing, calendar and form
+  at `arch 3` × three themes × three widths. Every one is named by a Settled above:
+  - map and pricing `arch 3`: JP-038 (the frame's 56 / 30 / 10 inset);
+  - calendar `arch 3`: JP-038 and JP-052 (the summary column);
+  - form `arch 3`: JP-038 and JP-054 (*Contact Us / ENQUIRE / Check Availability*).
+  JP-053 and JP-055 move nothing on the seeded page, as their Settleds say. Calendar `arch 1` is
+  byte-identical, so the slot seed's offsets still give the frame's dates. **No unnamed diff.**
+- **Repro digest on the final tree** (`digest.mjs` per case, driven from the scratchpad; the
+  cases were built from `data.js`'s own seeds). Each case was compared on canvas and on `live=1`
+  separately, over every `arch` of its category × themes 0, 1, 2 × three widths.
+  - JP-055, media and map: the explicit seed (tracks with `image: null`, and `GIGS`) against the
+    same list + `{}`, + an all-`''` row (the add row's shape) and + an all-spaces row gives
+    **0 / 36 + 0 / 36 each**. As a positive control, + a named row differs on 36 / 36 + 36 / 36.
+  - JP-052, calendar: an explicit `slotSeed(CAL_OPEN)` against the absent key gives 0 / 36 +
+    0 / 36, and + a blank slot also gives 0 / 36 + 0 / 36. `open` `2026-11-05` moves all four
+    layouts (`in`: all four). Emptied `types` moves `arch 3` alone. Emptied `time` moves
+    `arch` 0 and 3. `&tiers=none` and a one-package `&tiers=` move `arch 3` alone. (The raw
+    compare showed every `arch` moving for the two `&tiers` cases, but that was a filename
+    artefact: `digest.mjs` strips only `&cj=` from a file's name, so those cases were compared
+    against missing files. With the names normalised, only `arch 3` moves.)
+  - JP-054, form: `button` `ZZ Ask me` moves `arch` 0 and 3, and an emptied `sub` moves
+    `arch 3` alone.
+  - JP-053, `&email=` (the digest records no `href`, so this one was read off the DOM): on the
+    `live=1` calendar `arch 3`, themes 0, 1, 2, the seed gives one
+    `mailto:bookings@kaimercer.co.uk` on first paint (the foot pill). `me@band.co` gives
+    `mailto:me@band.co`. `none`, `''` and `not-an-email` give no mailto at all. The canvas
+    gives none in every case.
+- **Reach**: `reach.mjs 0,1,2`, 9,648 renders, then every `cat.key` row checked against
+  `fieldReach(f, theme, arch % designCount(cat, theme))`. That is 24 probes over 348
+  (probe × theme × `arch`) cells, with **0 mismatches**. The identity rows agree with CLAUDE.md:
+  `tiers` → calendar 4, `who.location` → calendar 1 (Retro only) and 4. The only partial rows
+  are header `cta2` at 4 / 6. They are older than this pass, which moved no header field.
+- **Real app** (one-off puppeteer, deleted; Chrome for Testing at 1600; Lime → card 4 → *Use
+  this header*):
+  - **Editor.** Media Player → *Add track* and Events Map → *Add gig*, both left empty, print
+    "Empty tracks aren’t shown." and "Empty gigs aren’t shown.". Enquiry Form's panel reads
+    *Contact Us* / *Enquire* at layout 4.
+  - **Published tab** at 1440 / 768 / 390, after *Publish → Open*:
+    - media lists the five titles under *Five worth your ear.*, with no KM card;
+    - the map's stat reads *Gigs 5 upcoming*, and at every width ‹ ×5 from Hidden Warehouse walks
+      Gorilla → Mint Lounge → Private wedding → The Deaf Institute → Hidden Warehouse, and › ×5
+      walks it back, with no empty slide;
+    - the form reads *Contact Us | ENQUIRE | Check Availability*;
+    - `scrollWidth` equals the width.
+  - **The wizard, end to end** at 390 and again at 1440, with a capture-phase `preventDefault` on
+    `mailto:`:
+    1. Festival and `14/11/2026` give *Sat, November 14*.
+    2. Step 2's cells carry the *e.g.* placeholders. Typing 300 / 5 hrs / £3,000 / Needed
+       shows all four, and Festival, in the summary.
+    3. *Package ›* steps to The Wedding Set.
+    4. An empty Send Enquiry on step 3 is refused in place: the prompt shows and the wizard
+       stays on *Step 3 of 3*.
+    5. Ana Lopes / `ana@example.com` composes
+       `mailto:bookings@kaimercer.co.uk?subject=Festival enquiry&body=Approx. date: 14/11/2026 /
+       Guests: 300 / Set length: 5 hrs / Budget: £3,000 / Sound: Needed / Package: The Wedding
+       Set · £650 / Name: Ana Lopes / Email: ana@example.com`, read off the clicked anchor's
+       `getAttribute('href')`.
+    6. The confirmation prints the address, and *Start again* returns with `14/11/2026`
+       still typed.
+    7. `01/01/2020` gives *Not available*.
+  - **Retro card 4** at 1440, the same walk: identical results. No page errors in either
+    window, on either template.
+  - **Insets** (`scripts/inset.mjs Lime,Retro,Grunge 4`) are as JP-038's Settled measured,
+    identical across the three templates. The sheets and the four page-ground sections sit at
+    56 / 30 / 10. Repertoire and calendar sit at 116 / 80 / 40 and 116 / 80 / 20. Media at
+    768 sits at 56. The footer sits at 78.1 / 40 / 22. At 1600 every gutter is 136.5–136.7.
+  - **One exception that JP-038's Settled did not list: the header at 390**, whose first glyph
+    is at 20 inside the nav capsule, where the root's padding is 22. It is byte-identical to
+    `main` (the header files are not in the digest diff), so it is not this batch's change,
+    and this session did not measure it against the frame.
+- **`index.html`** refreshed in `dba9473` (7,939,415 bytes, from `npm run build:standalone`).
+  - **Two-build digest, card 4.** `build-digest.mjs`, `CARD=3`, comparing the previous root
+    file against the new one from one origin. Retro, Lime and Grunge differ at all three
+    tabs, and the first differing row is the events map's root (x 64 → 46). Header, bio,
+    media, gallery and repertoire are identical. Editorial and Pop offer three cards, so no
+    card 4 is reached there, and they are identical.
+  - **The built file walked.** The wizard walk (Lime, 390) against the built file gives the
+    same mailto, hints and form copy.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified`
+is past `<stamp — filled in after the PR merges>`, or later**
+(`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or cached build will
+still show every one of these.
+- **JP-052 — fixed.** Book Us' right column is now the wizard's summary, as the frame reads it:
+  - the visitor's event type and step-2 answers as they are typed (*e.g.* placeholders until then);
+  - the date they asked about (a booked or past date is refused);
+  - a package from the artist's own Pricing section (*Package ›* cycles).
+  No date or price appears that the artist did not type. Layout 2's slots now have an editor
+  (*Dates on offer*) and a seed that is never all past on a published page.
+- **JP-053 — fixed.** Send Enquiry (the wizard's last step, and the pill under the summary)
+  opens the visitor's mail app, addressed to the Enquiry Form's email. The enquiry carries:
+  - the type and the date;
+  - guests, set length, budget and sound;
+  - the package, the name and the email.
+  It is refused in place until a name and a valid email are in, then confirms with *Start
+  again*. With no Enquiry Form on the page, or no valid address in it, the pill is not a link.
+- **JP-054 — fixed (PO call A).** Form layout 4 now opens on the frame's *Contact Us* /
+  *ENQUIRE* / *Check Availability*, under every template. The small-caps line is a new field,
+  "Line under the heading". **By design:** the boxes stay the artist's one list (Location is one
+  *Add field* away), and the steps stay one line.
+- **JP-038 (layout 4) — fixed, and it is not the gutter ticket.**
+  - **The page gutter** (JP-038 as first filed, reopened 2026-09-23) was decided and shipped
+    earlier: the published desktop page zooms to the 1440 frame. The report's 189 / 171 are
+    absolute numbers from a build that predates that zoom.
+  - **This batch's finding** is that neighbouring sections disagreed on their side inset, which
+    the zoom does not touch. On layout 4 the events map, pricing, Book Us and the enquiry form
+    now inset at the frame's 56 / 30 / 10, like the sections around them. Tablet disagreed too
+    (40 against 30), though the report named only desktop and mobile.
+  - The footer is layout 1's, sits on every page, and keeps the page gutter deliberately.
+- **JP-055 — fixed in PR #31 (the JP-051 sweep), deployed 2026-09-23 12:53:20 GMT.** A blank
+  track and a blank gig are not shown. Each editor says "Empty … aren’t shown.". The map counts
+  and pages five gigs, and ‹ from the first gig wraps to the last. **By design:** "Five worth
+  your ear" is the artist's own heading, not a count.
+- **JP-048, JP-049, JP-050, JP-051 — fixed in PR #31, deployed 2026-09-23 12:53:20 GMT.** The
+  report's symptoms are the pre-fix build's:
+  - an empty h1;
+  - Kai Mercer ×12;
+  - blank packages and fields;
+  - `mailto:not-an-email`.
+  The Pages build checked at triage is byte-identical to `main`'s root `index.html`, which
+  carries all four fixes. Please retest on it.
