@@ -572,7 +572,10 @@ Written now from what the plan can see; the sections add to it. One session, in 
    names a Lime-only state — the gallery viewer's re-inked scrim ("under Lime its scrim is the page
    ink at .94"), pricing's "**Lime's stack reads no `vm.tierRow`**", the form's `vm.titleWordEms`
    (**"a Lime-only key" stands as written** — section 9 measured the head at 484 against the 501
-   column and left the key Lime's, so this one owes *no* Grunge clause), the map's layout-2 block reading layout 3's `zoom` — owes a Grunge clause
+   column and left the key Lime's, so this one owes *no* Grunge clause) but its neighbour
+   **"Under Lime a refused box takes layout 2's 2px ring of full ink" owes "and Grunge"** —
+   section 9 measured the identical 2px `s.tx`, the idle hairline making it colour and weight
+   at once; the map's layout-2 block reading layout 3's `zoom` — owes a Grunge clause
    where the session found the same or another state; README's "Grunge is designed at layouts 1
    and 2"; `data.js`'s `headerFamily` comment; `photos.js`'s header; `sectionVm`'s `grunge` flag
    comment; `EncoreBuilder.jsx`'s "Its layout 3 has no arm yet". Grep both files and the four
