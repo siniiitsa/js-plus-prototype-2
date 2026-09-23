@@ -238,7 +238,7 @@ it is the gate this session widens.
 | 4 | `gallery` | `964:73004` *(wrapper `964:72969`, head `964:72970`)* | 874 × 646 | `971:8121` *(wrapper `971:8086`, head `971:8087`)* | 768 × 594 | `977:12348` *(wrapper `977:12313`, head `977:12314`)* | 390 × 586.3 | `964:72909` / `971:5597` / `977:9171` | `964:72815` / `964:78491` / `977:8142` | `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from` | done `68d23ba` |
 | 5 | `repertoire` | `964:73011` *(Section `964:73006`, panel `964:73007`)* | 1208 × **600** | `971:8128` *(Section `971:8123`, panel `971:8124`)* | 608 × 582 | `977:12355` *(Section `977:12350`, panel `977:12351`)* | 310 × 650 | `964:72916` / `971:5604` / `977:9178` | `964:72822` / `964:78509` / `977:8166` | `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump` | done `5b6eac4` |
 | 6 | `map` | `964:73019` *(Frame 319 `964:73013`, head `964:73014`)* | 1440 × 747 | `971:8136` *(Frame 319 `971:8130`, head `971:8131`)* | 768 × 870 | `977:12363` *(Frame 319 `977:12357`, head `977:12358`)* | 390 × 680 | `964:72924` / `971:5612` / `977:9186` | `964:72830` / `964:78599` / `977:8322` | `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | done `2125c9c` |
-| 7 | `pricing` | `964:73021` | 1440 × 542 | `971:8137` | 768 × 806 | `977:12364` | 390 × 829 | `964:72926` / `971:5613` / `977:9187` | `964:72831` / `964:78656` / `977:8440` | `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | — |
+| 7 | `pricing` | `964:73021` | 1440 × 542 | `971:8137` | 768 × 806 | `977:12364` | 390 × 829 | `964:72926` / `971:5613` / `977:9187` | `964:72831` / `964:78656` / `977:8440` | `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | done `e88a917` |
 | 8 | `calendar` | `964:73034` + wizard `964:73033` *(Section `964:73022`, Frame 324 `964:73023`)* | 478 × 533 + 680 × 533 | `971:8150` + `971:8149` *(Section `971:8138`, Frame 324 `971:8139`)* | 608 × 502 + 608 × 476 | `977:12377` + `977:12376` *(Section `977:12365`, Frame 324 `977:12366`)* | 350 × 496 + 350 × 474 | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | `if (s.lime)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | — |
 | 9 | `form` | **`725:2990`** *(the main component — no page instance at 1440)* | 1440 × 795 | `971:8151` | 768 × 1024 | `977:12378` | 390 × 964 | `964:72940` / `971:5627` / `977:9201` | `964:72845` / `964:79477` / `977:8663` | `if (s.v3 && s.lime)` ahead of `EnquiryForm`'s `if (s.v3)` | — |
 | 10 | `testimonials` | `964:73035` | 1440 × 716 | `971:8152` | 768 × 642.4 | `977:12379` | 390 × 603.4 | `964:72941` / `971:5628` / `977:9202` | `964:72846` / `964:79536` / `977:8764` | `if (s.lime)` inside `Testimonials`' `if (s.v3)`, after `padBot` | — |
@@ -1145,6 +1145,72 @@ them.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `map_arch_3` at three widths on both surfaces.
 
+### Settled in section 7 (pricing)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX`, is
+  `(s.lime || s.grunge)`**, with `const grunge = s.grunge` naming four deltas and a `disp`
+  spread. No `G`: every other leaf resolves through Lime's keys. The paired diff against the
+  Lime twin at all three widths was the whole read: **61 = 61 nodes**, Static Youth's Scheme 1
+  (`187:4`), no Device override, no effect. The 768 master stacks its three 1px `-div` frames
+  in row order where Lime's pile after the rows (its own section's note). They are the page
+  colour on the page colour, so nothing moves. The branch has no state, so the published pill
+  needed nothing new.
+- **Every text is `sem/text/1`, red, which is Lime's `s.ac`.** That covers the name, the tag
+  chips' labels, the blurb, the kind, "from", the numeral and the small print. Every size is
+  `THEME_RAMP.Grunge`'s `s.*` to the token: label-sm 16 / 13 / 12 (13 × 0.82 at desktop),
+  chip 12 / 11 / 11, display-sm 50 / 40 / 30, label-xs 20 / 14 / 12. So there is no `T` table.
+  What moves:
+  - **the rule is `sem/stroke/2` `#FF0000`** (`s.stroke2`), where Lime's resolves to its
+    accent. The prompt's "mixed weights" are the per-side 0 / 0 / 4 / 0 INSIDE, the same on
+    every ruled row at every width and the same as Lime's. The last row carries none. So the
+    inset shadow stands, in the new colour.
+  - **the feature pills are `vm.chips`' own seats by index**: `#1A1A1A` lettered white, then
+    `#DF262C` lettered the leaked `#0D1F03`. This is the header session's reading of the same
+    Tags component. The frame letters its third and fourth seats white through `scheme/3` /
+    `scheme/4` tokens. That is the override the header named and did not model. `radius/chip`
+    4 is `s.radiusChip` already.
+  - **the tag chips' hairline stays `s.stroke1`**. The frame's is `#F2FFD0` at 15%, unbound:
+    Lime's literal, leaked onto black. It reads as Scheme 1's white 15% `sem/stroke/1`, so it
+    is named, not drawn.
+  - **the price column hugs at 177** (Lime 184). Stones Crush's narrower "Star Enquiry" pill is
+    the column's widest child, so `minWidth` is `u(grunge ? 177 : 184)`.
+  - **the name and the numeral are Stones Crush**, so `faced` / `facedLh(1)` and uppercase. The
+    kind and the pill's label go through `labelStyle`, which faces them already.
+- **The pill needed nothing.** It is `bg={s.tx} fg={s.bg} discFg={s.ac}`, and BookPill's shared
+  Lime / Grunge branch draws exactly the frame from it: white under a black label, a black disc
+  (`face`) round a **red** arrow (`discFg`). The prompt's worry was whether the swapped pair
+  reached the arrow. It does: the disc takes `fg` and the arrow takes `discFg`, not `bg`.
+- **Measured against the masters' content edges** (canvas, seeded page):
+  - **desktop**: name 30.75px in a 41 line box (50 × 0.82 × 0.75); kind 9.75px (16 × 0.82 ×
+    0.75), 14.3 tall; tag chips 10px, 18.2 tall; feature pills 16px, 28.3 tall at radius 4;
+    rule 3.3px `rgb(255, 0, 0)`; price column at x 984.9; pill 149.2 × 44.3 against 177 ×
+    0.82 = 145.1;
+  - **768**: name 30px / 40, kind 9.75 (13 × 0.75), rule 4px, pill 159.8 × 54 (158);
+  - **390**: name 22.5px / 30 (the frame's 30 box), kind 9 (12 × 0.75), pill 155.8 × 54 (154).
+- **Named diffs, all Lime's**:
+  - the pill reads "Start Enquiry" against the frame's "Star Enquiry", so it is 4 / 2 / 2 px
+    wider;
+  - the seeded rows carry tag chips on every row and three to five features, so the rows run
+    199.8 / 392.4 / 401.9 against the frame's 242 × 0.82 / 358 / 354;
+  - `tierKind` prints one word, EVENT, on every row;
+  - the red seats' letters are `#0D1F03` where the frame's third and fourth are white;
+  - Anton at 0.75 stands in for Stones Crush.
+- **`live=1`** (puppeteer, desktop and 390, probe deleted):
+  - every pill is `<a href="#form">`, and a span on the canvas;
+  - `n=0` prints *No packages yet.* in one unruled row with no pill;
+  - `n=1` draws one row with no rule;
+  - `n=8` draws seven red rules.
+  No page errors. The section has no lit or refused state to read red on red.
+  `page-check.mjs Grunge 3`: four cards, no errors or warnings, every nav link scrolls, the
+  three Start Enquiry pills scroll `#form`, the 390 burger 1 → 11, overflow 0. Its first run
+  died on "Execution context was destroyed" (the repertoire session's flake) after the digests
+  had finished; the rerun was clean. The map's black meets pricing's black with no line
+  (`seam_1440_pricing`).
+- **`FIELDS.pricing` has no template-keyed `in` row**, so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `pricing_arch_3` at three widths on both surfaces. No `_arch_7_` file exists: `digest.mjs`
+  caps pricing at 4.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -1186,6 +1252,11 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   Scheme 3's `#F52E34` / `#00000026`); *Retro's live states vanish under Lime; redraw them*
   (lime/layout-1, the lit pin's white ring — layout 3's Grunge call); *`faced` / `facedLh` and
   uppercase per site* (grunge/layout-1).
+- Pricing: *the paired diff walk* (grunge/layout-2); *a widened block can need no `G` at all*
+  (grunge/layout-3, section 9 — four deltas); *leaked tops are followed where they show,
+  dropped where they don't* (lime/layout-1, the chips' `#F2FFD0` hairline as `s.stroke1`);
+  *`faced` / `facedLh` and uppercase per site* (grunge/layout-1); the header's *chips are
+  `vm.tagChips`' own seats* (this plan, section 1).
 
 ## Open questions
 
