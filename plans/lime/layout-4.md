@@ -1230,7 +1230,9 @@ Settled in section 7 (pricing):
   pill reads "Start Enquiry" against the frame's "Star Enquiry", so it is 158.8 / 169 / 164.5
   wide against 150.9 / 163 / 159; the 390 content column is the root's 346 (`padX` 22) against
   the frame's 370 (`bleedX` puts the identical value back, Retro's mechanism), so the seeded
-  feature rows wrap to three lines there; and the seeded rows run taller than the frame's two
+  feature rows wrap to three lines there (**reversed** by JP-038 (layout 4), 2026-09-23: the
+  section takes the frame's 56 / 30 / 10 inset in `sectionVm`, so the column is the frame's
+  370 / 708 and 1328 × 0.82); and the seeded rows run taller than the frame's two
   (chips, four or five features and a blurb in every mid) — 200.8 / 394.5 / 405.9 for the
   first row against 200.1 / 359 / 358, with the desktop row exactly the price column's 121.4
   plus twice 39.4.

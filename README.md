@@ -581,7 +581,10 @@ These are intentional limits, not oversights — see §12 for the full list. The
   sidebar — a 64px gutter and a 1052px column. The published tab zooms that page back up
   towards the frame: between 1180 and 1440 it is drawn `min(width, 1440) / 1180` times larger,
   so a 1440 window shows the frame at 1:1 (a 78px gutter), and only a window past 1440 widens
-  the gutters (`PublishedPage`; `scripts/gutter.mjs` measures it).
+  the gutters (`PublishedPage`; `scripts/gutter.mjs` measures it). At layout 4 every section
+  but the footer insets its content at the frame's own 56 / 30 / 10 rather than the gutter: the
+  sheets did already, and the page-ground map, pricing, calendar and form now match them
+  (JP-038, layout 4; `scripts/inset.mjs` measures each section's edges).
 - **Fields a layout does not read stay editable.** Each section's panel lists every field any
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and

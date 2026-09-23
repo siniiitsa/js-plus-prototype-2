@@ -418,6 +418,22 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       ? `${vm.padY} ${vm.padX} ${px(desk ? 90 : 60)}`
       : `${px(desk ? 56 : 30)} ${vm.padX} ${px(56)}`
   }
+  // Layout 4's page-ground sections take the frame's side inset, not `padX`
+  // (JP-038, layout 4; user call, 2026-09-23). Every layout-4 master stands
+  // its content 56 / 30 / 10 in from the page edge, and the sheets beside
+  // these four (media, gallery, repertoire, testimonials, the header, the bio)
+  // already bleed and put that inset back as `u(56)`, so a root at `padX`'s
+  // 64 / 40 / 22 read 22 / 10 / 12 in from its neighbours. `padX` is what
+  // pricing's `bleedX` and the root both read, so the rule still reaches the
+  // page edges and the calendar's panel lands at the frame's 56 / 30 / 10.
+  // Every theme: the sheets' `u(56)` is not theme-gated either. The footer is
+  // layout 1's on every page and keeps `padX`.
+  if (d === 3 && !column && (cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form')) {
+    const inset = { desktop: Math.round(56 * 0.82 * 100) / 100, tablet: 30, mobile: 10 }[Z.dev]
+    vm.padX = `${inset + parseInt(vm.surplus, 10)}px`
+    vm.pad = `${vm.padY} ${vm.padX}`
+    vm.contentW = parseInt(SIZES[Z.dev].canvasW, 10) - 2 * inset
+  }
 
   // ---- content -----------------------------------------------------
   // One resolved name for every slot that prints it (JP-050). The header

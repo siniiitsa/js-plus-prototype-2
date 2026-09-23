@@ -8932,9 +8932,9 @@ function Pricing({ s }) {
     // The rule runs to the page's edges in all three masters, where everything
     // it divides sits inside the frame's own 56 / 30 / 10 — so the row cancels
     // the root's padding and puts the identical value straight back as its own.
-    // Only the border bleeds; the content keeps the page's column (1052 / 688 /
-    // 346), which is the events map's reading of a 1440-wide instance that
-    // paints no sheet of its own.
+    // Only the border bleeds; the content keeps the section's column, and at
+    // layout 4 `sectionVm` sets `padX` to that same frame inset (JP-038) — so
+    // the column is the frame's 1088 / 708 / 370, as it is in the sheets.
     //
     // `sem/stroke/2` is #5B5E2E, which is `s.tierRow.card` exactly: layout 3's
     // seat, resolved in the view-model as the first palette tag that clears

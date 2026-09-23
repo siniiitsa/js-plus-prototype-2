@@ -538,7 +538,10 @@ mutated through a single `patch()` helper.
   rather than a border so the frame's row height holds) — and
   that rule is the one thing in the branch that **bleeds**: the row cancels the root's padding and
   puts the identical value straight back, so the border reaches the page edges and the content
-  keeps the column (the events map's reading of a 1440-wide instance that paints no sheet). It is
+  keeps the section's column. That column is the frame's 56 / 30 / 10 inset and not `padX`
+  (JP-038, layout 4, user call, 2026-09-23): at layout 4, `sectionVm` gives map, pricing, calendar
+  and form the inset the sheets beside them already put back, so no page-ground section stands
+  in from its neighbours. The footer is layout 1's and keeps `padX`. It is
   the first pricing layout to draw **no heading at all**, so `heading` reaches layouts 1, 2 and 3
   alone; and the only one to read a package's **tags and its features together** — the tags as the
   frame's small hairline chips, cased in `sectionVm` as `vm.tiers[].tagLabels` because `t.tags`

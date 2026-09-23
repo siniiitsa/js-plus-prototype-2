@@ -46,7 +46,7 @@ does. Verify themes 0, 1 and 2.
 |---|---|---|---|---|---|---|
 | 1 | JP-055 | A blank track and a blank gig render in media / map layout 4 | **Expected fixed on `main`** (the JP-051 sweep, `0b7e497`). Verify, and fix only if it reproduces | S | no | **done** (does not reproduce) |
 | 2 | JP-054 | Form layout 4's copy is not the frame's (head, sub-line, boxes, button, two-line steps) | **Named diffs of the fit** (L4 §9 Settled). The tester is right that nothing picks a side | S–M | **yes** (PO call): **A** | **done** |
-| 3 | JP-038 (layout 4) | Adjacent sections disagree on their side inset: 189 vs 171 at desktop, 22 vs 10 at 390 | **Confirmed, and not the gutter question already settled**: page-ground sections keep `padX`, while sheets put the frame's own inset back | M | **yes** | open |
+| 3 | JP-038 (layout 4) | Adjacent sections disagree on their side inset: 189 vs 171 at desktop, 22 vs 10 at 390 | **Confirmed, and not the gutter question already settled**: page-ground sections keep `padX`, while sheets put the frame's own inset back | M | **yes** (user call): **B** | **done** |
 | 4 | JP-052 | Book Us' right column prints dates and prices no field edits, and ignores the wizard | **Confirmed. It is a misreading of the frame**: the card is the wizard's summary, and the fit read it as `CAL_SLOTS` | L | **yes** | open |
 | 5 | JP-053 | The wizard's Send Enquiry is `#form`: the answers go nowhere, and there is no confirmation | **Confirmed.** Documented as a fragment link, but the tester is right that it loses everything | M | decided in entry 4 | open |
 | 6 | — | End-of-pass sweep | — | S | — | open |
@@ -292,6 +292,27 @@ insets ~55 / ~30 / 10". The tablet width is unreported, so find out whether it d
   every section of every layout of every designed template, so it gets its own plan and is not a
   QA session.
 
+**Decided** (2026-09-23, user call): **B.** Measured first (`source/scripts/inset.mjs`, the
+published tab, card 4, the leftmost / rightmost glyph off each section root in screen px):
+the sheets (header, bio, media, gallery, testimonials) start their text at **56 / 30 / 10**, the
+frames' own inset. Map, pricing and form start at **78.1 / 40 / 22** (`padX` 64 / 40 / 22, with
+the desktop zoom of 1440 / 1180), and the calendar's panel content at **138.1 / 90 / 32** against
+the frame's 116 / 80 / 20, since its panel stands at `padX` where the frame stands it at 56 / 30 / 10.
+Retro, Lime and Grunge read identically. The masters (`get_metadata`: map `964:72924` / Frame 319
+`971:5606` / `977:9180`, pricing `964:72926`, calendar Section `964:72927` / `971:5614` /
+`977:9188`, form `964:72940` / `971:5627` / `977:9201`) all inset 56 / 30 / 10. So **tablet
+disagrees too**, by 10 (the report named only desktop and 390). The deltas are 22 / 10 / 12.
+
+**Expected after-diff (named before the code).** Map, pricing, calendar and form at `arch 3`,
+themes 0, 1 and 2, all three widths, canvas and `live=1`: the section's padding goes from `padX` to
+the frame's inset, so every x in those 36 × 2 files moves, and pricing's rows and form's boxes
+widen (at 390 the pricing feature rows get 370 wide instead of 346, so row heights move too).
+Nothing else changes. That includes the footer, which is layout 1's (`NVAR.footer` is 1), sits
+on every page and keeps `padX`, and the same four sections at `arch` 0–2. The arm is not gated
+by theme, because the sheets' `u(56)` is not either, so Editorial and Pop move the same way. The
+base is a worktree of **HEAD** (`5250117`) on :5174, not of `main`: `main` predates JP-054, whose
+18 form `arch 3` files would otherwise land in this diff too.
+
 **Verify (on B).** The measure script shows every layout-4 section's content edge within ±1px of
 its neighbour's at all three widths (the footer excepted, if left). The digest's after-diff is
 exactly map / pricing / calendar / form `arch 3`, themes 0, 1 and 2, three widths. Check
@@ -301,7 +322,38 @@ exactly map / pricing / calendar / form `arch 3`, themes 0, 1 and 2, three width
 boundaries* JP-038 bullet (add one line: layout 4's page-ground sections inset at the frame's
 numbers).
 
-**Settled.** —
+**Settled** (2026-09-23). The Evidence lines had not drifted: `RAMP.*.padX` is still at
+`EncoreBuilder.jsx:79`–`81`, pricing's `bleedX` is at `EncoreSection.jsx:8944`, and the Lime
+L4 notes are at lines 878 and 1231.
+- **Code.** One arm in `sectionVm`, after the `d === 2` padding overrides. At `d === 3`, outside
+  a column, map / pricing / calendar / form set `vm.padX` to the frame's inset plus the surplus
+  (`56 × 0.82` = 45.92, which is the sheets' own `u(56)`, then 30, then 10), rebuild `vm.pad`
+  from it, and set `vm.contentW` to match (no layout-4 branch reads it; it is set so it does not
+  go stale). No branch changed. Pricing's `bleedX` reads `s.padX`, so its rule still reaches the
+  page edges. The calendar's panel stands at the new `padX` with its own 60 / 50 / 10 inside, so
+  its content lands on the frame's 116 / 80 / 20. The arm is not theme-gated.
+- **Measure after** (`scripts/inset.mjs`, a new sibling of `gutter.mjs`, committed): on
+  Retro, Lime and Grunge card 4, every section's text now starts at **56 / 30 / 10** except
+  these: the repertoire and the calendar (116 / 80 / 40 and 116 / 80 / 20), which are their own
+  inner panels and match the frame; media at 768 (56, its own tablet fit, unchanged and not
+  this report); and the footer (78.1 / 40 / 22), which is left at `padX` as decided. At 1600
+  every gutter widens by the same 80.6 (136.6 against the sheets' 136.5), so the surplus
+  survives. `scrollWidth` equals `clientWidth` at 1600 / 1440 / 768 / 390 on all three themes.
+- **Digest** (a HEAD worktree on :5174 against the edit on :5173, themes 0, 1, 2, canvas and
+  `live=1`, port normalised): **exactly the 72 named files differ**, map / pricing / calendar /
+  form `arch 3` × three themes × three widths × both surfaces. Nothing else moved, including those
+  four at `arch` 0–2 and the footer. A theme-3 spot check (pricing, every arch) moved `arch 3`
+  alone at all three widths, so Editorial and Pop move as predicted.
+- **Docs.** CLAUDE.md's pricing layout-4 sentence, which said the content "keeps the column" of
+  the page, now names the frame's inset and the footer. README's desktop-page bullet under *Scope
+  boundaries* has one more line. Lime L4 line 1231 has a *reversed* note, and the `bleedX` comment
+  in `EncoreSection` gives the new column (1088 / 708 / 370).
+
+Reply: **fixed.** On layout 4, the events map, pricing, Book Us and the enquiry form now inset
+their content at the frame's 56 / 30 / 10 like their neighbours, at desktop, tablet (which
+disagreed too, 40 against 30) and mobile. The footer is shared with layout 1, sits on every page
+and keeps the page gutter, deliberately.
+
 
 ---
 
