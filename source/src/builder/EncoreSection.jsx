@@ -21600,9 +21600,54 @@ function EnquiryForm({ s }) {
     // with a lime arrow (the frame's own SVG). The head stands on the page in
     // `s.tx` with a lime display line. Every size is the Lime ramp's; only
     // Display/Title is the frames' 36 / 28 / 26.
-    if (s.lime) {
+    //
+    // Grunge (964:68714 / 984:13927 / 984:13958) is the same tree — a paired
+    // diff against the Lime twin runs **27 = 27** at all three widths — and it
+    // is this pass's smallest widening, because **every colour on it is the
+    // same bound variable as Lime's**. The walk resolved `boundVariables` on
+    // every fill and stroke: `sem/text/1`, `sem/text/2`, `sem/bg`, `sem/box/1`
+    // and `sem/stroke/1`, which are exactly the keys this block already reads,
+    // so not one hue is named and there is no `G` lookup. Scheme 1 on the
+    // instance root, **no nested scheme anywhere**, no Device override, and no
+    // effect on any node at any width.
+    //
+    // Three things move:
+    //
+    // **The face.** Stones Crush where Lime sets Bebas Neue, at every display
+    // site — the head, the price, the box labels, the submit and the sent
+    // card's own title — so each goes through `disp()` / `faced` / `facedLh`
+    // and takes `textTransform` (session 0's rule; Anton has a lowercase).
+    // **The sizes follow the ramp on their own**: the frame's 130 / 81 / 46
+    // head, its 16 / 13 / 12 labels, 24 / 19 / 18 submit, 12 / 12 / 12 body
+    // and 12 / 11 / 11 eyebrow are `s.dispLg`, `s.labelSm`, `s.list`,
+    // `s.bodySm` and `s.chip` under Static Youth to the pixel, so there is
+    // **no `T` table** and no size is written out. Display/Title keeps the
+    // shared 36 / 28 / 26 literal, which both frames state.
+    //
+    // **The card's corner** is a raw 15 at every width where Lime's is 50 —
+    // layout 2's pattern, and this pass's reading on every card but the bio's.
+    //
+    // **The boxes are 42 / 38 / 37** where Lime's are 44 / 39 / 37: the same
+    // 12px of padding over `size/label-sm`'s 1.1 line box, two sizes down at
+    // the wide widths and level at 390. Written out for the branch's own
+    // reason — the padding that produced them is the frame's.
+    //
+    // `vm.titleWordEms` stays Lime's: at `faced(s.dispLg)` = 80.25px the
+    // seed's UNFORGETTABLE. is 6.025 Anton ems = 484, inside the 501 half
+    // column, so this head never has to give way and the key is not widened.
+    // A refused box keeps Lime's 2px of `s.tx`, which is colour *and* weight
+    // here — the idle ring is the 15% hairline, not full ink, so CONVENTIONS'
+    // "colour, not weight alone" rule does not bite.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+      })
+      // Every Stones Crush site: Anton at 0.75 of the frame's token with its
+      // line box divided back out, and uppercase because Anton has a lowercase
+      // where Stones Crush is all capitals. A no-op under Lime.
+      const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
+        ...(grunge && { textTransform: 'uppercase' }), ...extra,
       })
       const title = desk ? u(36) : s.mob ? '26px' : '28px'
       // Half of the content width less the 60 gap, floored to the pixel so the
@@ -21613,15 +21658,18 @@ function EnquiryForm({ s }) {
       // The ring is inset, so the 24 padding clears it and nothing needs an
       // overlay. A refused box thickens it to 2px of full ink — layout 1's and
       // layout 2's Lime rule for a pill — and the stated 44 / 39 / 37 (12 over
-      // Label/SM's line box) does not grow.
-      const box = (bad) => type(s.label, s.labelSm, 1.1, {
+      // Label/SM's line box) does not grow. Grunge's masters state 42 / 38 / 37
+      // for the same padding over its own two-sizes-smaller Label/SM.
+      const box = (bad) => type(s.label, faced(s, s.labelSm), facedLh(s, 1.1), {
         background: s.box1, color: s.tx, border: 'none', borderRadius: s.btnR,
         boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.stroke1}`,
-        height: desk ? u(44) : s.mob ? '37px' : '39px',
+        height: grunge
+          ? (desk ? u(42) : s.mob ? '37px' : '38px')
+          : (desk ? u(44) : s.mob ? '37px' : '39px'),
         padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
       })
       // The frame's 67 radius on a 54 pill is `radius/pill`.
-      const pill = (extra) => type(s.display, s.list, 1.2, {
+      const pill = (extra) => disp(s.list, 1.2, {
         ...row(u(10), { justifyContent: 'space-between' }),
         background: s.ac, color: s.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
         padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
@@ -21652,14 +21700,14 @@ function EnquiryForm({ s }) {
                 UNFORGETTABLE. (5.158em against 4.69), which broke the word, so
                 the size gives way to the column only when the widest word
                 (`s.titleWordEms`) would not fit. 768 and 390 never bite. */}
-            <h2 style={type(s.display, headSize, 0.89, {
+            <h2 style={disp(headSize, 0.89, {
               margin: 0, color: s.ac, overflowWrap: 'break-word',
             })}>{s.title}</h2>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formPara}</p>
           </div>
 
           <div style={col(u(14), {
-            background: s.box1, color: s.tx, borderRadius: u(50),
+            background: s.box1, color: s.tx, borderRadius: u(grunge ? 15 : 50),
             boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
           })}>
@@ -21668,7 +21716,7 @@ function EnquiryForm({ s }) {
                 through the confirmation swap; each drops when emptied. */}
             {(!!s.formPrice || !!s.formPriceUnit) && (
               <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
-                {!!s.formPrice && <span style={type(s.display, title, 1.1, { color: s.ac })}>{s.formPrice}</span>}
+                {!!s.formPrice && <span style={disp(title, 1.1, { color: s.ac })}>{s.formPrice}</span>}
                 {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
               </div>
             )}
@@ -21681,7 +21729,7 @@ function EnquiryForm({ s }) {
               // The card alone changes. No frame draws this state: the title is
               // Display/Title and the address Body/MD, layout 2's inventions.
               <>
-                <h3 style={type(s.display, title, 1.1, {
+                <h3 style={disp(title, 1.1, {
                   margin: 0, color: s.ac, overflowWrap: 'break-word',
                 })}>{s.formSentTitle}</h3>
                 <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
