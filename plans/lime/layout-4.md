@@ -1230,7 +1230,9 @@ Settled in section 7 (pricing):
   pill reads "Start Enquiry" against the frame's "Star Enquiry", so it is 158.8 / 169 / 164.5
   wide against 150.9 / 163 / 159; the 390 content column is the root's 346 (`padX` 22) against
   the frame's 370 (`bleedX` puts the identical value back, Retro's mechanism), so the seeded
-  feature rows wrap to three lines there; and the seeded rows run taller than the frame's two
+  feature rows wrap to three lines there (**reversed** by JP-038 (layout 4), 2026-09-23: the
+  section takes the frame's 56 / 30 / 10 inset in `sectionVm`, so the column is the frame's
+  370 / 708 and 1328 × 0.82); and the seeded rows run taller than the frame's two
   (chips, four or five features and a blurb in every mid) — 200.8 / 394.5 / 405.9 for the
   first row against 200.1 / 359 / 358, with the desktop row exactly the price column's 121.4
   plus twice 39.4.
@@ -1335,6 +1337,15 @@ Settled in section 8 (the calendar):
   no cursor and the hairline whole. `n=0`: the prompt and no rows; `n=1`: featured, no rows;
   `n=8`: seven rows. No page errors. Digest at themes 0, 2, 3 and 4: zero differing files;
   theme 1: exactly calendar arch 3 at three widths (calendar has no fold partner).
+- **Reversed** (JP-052, `plans/lime/layout-4-qa-fixes.md`, user call, 2026-09-23): the right-hand
+  column is the **wizard's summary**, not the slot list stacked. The summary card prints the picked
+  type over `location` and step 2's four answers (the canvas prints each box's bare example, and
+  the published page prints the visitor's answers or a .45 "e.g." placeholder). The first row is a
+  **date card** (the typed date, or the `open` cue, refused when booked or past, with `vm.calTime`),
+  and the second a **package card** on the Pricing section's packages (*Package ›* cycles). The
+  foot pill is Send Enquiry. The Lime-only past-cue exception (`vm.calCue`, 2026-09-18) went with
+  the slots. The block's paint above (radii, pads, `s.tx` card, `s.box1` rows, the hairline) is
+  unchanged: the rows are the same element, and only their content moved.
 
 Settled in section 9 (the enquiry form):
 
@@ -1411,6 +1422,12 @@ Settled in section 9 (the enquiry form):
   `promises=`: one column and no rows; `n=5`: three rows with the lone fifth box full-measure.
   No page errors. Digest at themes 0, 2, 3 and 4: zero differing files; theme 1: exactly form
   arch 3 at three widths (form has no fold partner).
+- **Reversed 2026-09-23 (JP-054, user call, `plans/lime/layout-4-qa-fixes.md`).** The named copy
+  diffs above no longer hold: the head seeds *Contact Us* (`FORM_HEADING_4` in `HEADING_4`), the
+  small-caps line is a new `sub` field seeded *Enquire* instead of `s.brand`, and the pill seeds
+  *Check Availability* (`FORM_BTN_4`). All three apply at layout 4 on every theme, because Retro's
+  frame carries the same copy. The desktop head is now 95.2 against the frame's 95.1. The boxes
+  and the one-line steps still stand as named.
 
 Settled in section 10 (the testimonials — the last body section):
 

@@ -79,9 +79,10 @@ Do not try to unify them. Only three hand-written CSS classes cross the boundary
 properties set per section at runtime.
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
-rendering, so `EncoreSection` does zero colour maths. The enquiry form is the one exception to
-"fully-resolved": `vm.formMailto` and `vm.formCheck` are closures rather than values, because
-their inputs are the visitor's keystrokes and `sectionVm` never sees those. Every address, label
+rendering, so `EncoreSection` does zero colour maths. The enquiry form and the calendar's
+layout-4 wizard are the exceptions to "fully-resolved": `vm.formMailto`, `vm.formCheck`,
+`vm.calWizard.dateOf`, `vm.calMailto` and `vm.calCheck` are closures rather than values, because their inputs are the visitor's
+keystrokes and `sectionVm` never sees those. Every address, label
 and case decision is still bound in `sectionVm`, so the renderer composes nothing.
 
 ## Deviations from SPEC.md
@@ -382,6 +383,21 @@ That distinction is the whole design, and it buys two things:
   unless already blocked — which makes it the editor's one reader of the clock. `para` went
   with `DEFS.calPara` — it rendered in neither calendar layout.
 
+  Layout 2's named slots are the artist's too since JP-052 (`FIELDS.calendar.slots`, a
+  `SlotsField` repeater of `{ date, kind, price }`). Their seed is four day offsets from `open`
+  rather than four 2025 dates, and on the published page from today when `open` has passed, so a
+  published slot list is never all past. Layout 4's right-hand column, which had been fitted as
+  those same slots stacked, is the **enquiry wizard's summary**, which is how its frame reads: the
+  event type over the four step-2 answers (the canvas prints the frame's examples, the published
+  page the visitor's answers or a faint "e.g." placeholder), a date card that shows the typed
+  date and refuses a booked or past one, a package card naming the **Pricing section's**
+  packages (read across sections, the header identity's way; *Package ›* steps through them),
+  and Send Enquiry. No date or price on it is one the artist did not type. Send Enquiry, there
+  and on the wizard's last step, **mails the answers like the enquiry form does** (JP-053): a
+  `mailto:` to the form section's own address, read across sections the same way, refused until
+  the name and email pass the form's checks, then a confirmation in the wizard card with *Start
+  again*. With no form section, or an address the form refuses, both pills stay pictures.
+
   **The enquiry form, which fills in and sends.** It was the last §10.2 section whose every
   control was a picture — and the one the rest of the page points at, since `CTA_TARGETS.book`
   starts at `form`, so the header's *Book Now*, the pricing pills and the calendar's foot pill all
@@ -398,8 +414,8 @@ That distinction is the whole design, and it buys two things:
   with a hint that says why. A box with neither a label nor a placeholder names nothing yet would
   be required, so `sectionVm` drops it on both surfaces (`blankRow()` over `FORM_FIELD_KEYS`) —
   except that guarded email row, which always shows and reads "Email" when its label is emptied.
-  The same blank-row drop covers every repeater: songs, tracks, gigs, packages, reviews and
-  footer links.
+  The same blank-row drop covers every repeater: songs, tracks, gigs, packages, reviews,
+  footer links and calendar slots.
 
   **The submit is a `mailto:`**, and `email` is what it is addressed to. There is no backend and
   never will be, so handing the enquiry to the visitor's own mail app is the one delivery that is
@@ -581,7 +597,10 @@ These are intentional limits, not oversights — see §12 for the full list. The
   sidebar — a 64px gutter and a 1052px column. The published tab zooms that page back up
   towards the frame: between 1180 and 1440 it is drawn `min(width, 1440) / 1180` times larger,
   so a 1440 window shows the frame at 1:1 (a 78px gutter), and only a window past 1440 widens
-  the gutters (`PublishedPage`; `scripts/gutter.mjs` measures it).
+  the gutters (`PublishedPage`; `scripts/gutter.mjs` measures it). At layout 4 every section
+  but the footer insets its content at the frame's own 56 / 30 / 10 rather than the gutter: the
+  sheets did already, and the page-ground map, pricing, calendar and form now match them
+  (JP-038, layout 4; `scripts/inset.mjs` measures each section's edges).
 - **Fields a layout does not read stay editable.** Each section's panel lists every field any
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and

@@ -790,26 +790,42 @@ export const CAL_BOOKED = []
 // Calendar.
 export const CAL_SPAN   = 12
 
-// §10.2 layouts 2 and 4 — the named slots. Where layout 1 draws a month and lets
-// the visitor pick any unbooked day out of it, layout 2 draws a short list of
-// named slots: a date, what the artist plays that night, and what it starts
-// from. None of that is derivable — `booked` is the days the artist is *not*
-// free, and inverting it would print every remaining day of June — so the list
-// is seeded here in the row shape a repeater would edit, exactly as GIGS and
-// TIERS were seeded before their editors existed. The price is a row
-// value like TIERS' `price`, not the video section's dropped view count: it is
-// the thing the row is for, and the whole phrase is the artist's, so an emptied
-// one drops its line rather than printing a bare "From".
+// §10.2 layout 2 — the named slots. Where layout 1 draws a month and lets the
+// visitor pick any unbooked day out of it, layout 2 draws a short list of named
+// slots: a date, what the artist plays that night, and what it starts from.
+// None of that is derivable — `booked` is the days the artist is *not* free,
+// and inverting it would print every remaining day of June — so the list is the
+// artist's, edited by SlotsField (JP-052), in the row shape `{ date, kind,
+// price }`. The price is a row value like TIERS' `price`: it is the thing the
+// row is for, and the whole phrase is the artist's, so an emptied one drops its
+// line rather than printing a bare "From".
 //
-// Slot one is CAL_OPEN, so the seeded page opens with that row already picked —
-// `vm.calPick` lights it — and the reference picture matches the frame with no
-// second field to keep in step.
+// The seed is **not** four dates. It is four day offsets from a base date
+// (`slotSeed()`), because a hardcoded 2025 is past on every published page and
+// every row would be dead (JP-052). The base is `open` on the canvas and in the
+// editor — so slot one is CAL_OPEN, the seeded page opens with that row already
+// picked, and the reference picture matches the frame (Jun 12 / 14 / 20 /
+// Jul 05) — and max(open, today) by day on the published page, layout 1's F20
+// rule. SlotsField writes the canvas's dates out on its first edit.
+//
+// Layout 4 read these rows too until JP-052, which found its right-hand column
+// is the enquiry wizard's summary, not a slot list.
 export const CAL_SLOTS  = [
-  { date: '2025-06-12', kind: 'Evening',  price: 'From £1,200' },
-  { date: '2025-06-14', kind: 'Full day', price: 'From £2,400' },
-  { date: '2025-06-20', kind: 'Late',     price: 'From £1,400' },
-  { date: '2025-07-05', kind: 'Wedding',  price: 'From £2,800' },
+  { after: 0,  kind: 'Evening',  price: 'From £1,200' },
+  { after: 2,  kind: 'Full day', price: 'From £2,400' },
+  { after: 8,  kind: 'Late',     price: 'From £1,400' },
+  { after: 23, kind: 'Wedding',  price: 'From £2,800' },
 ]
+// Every key a slot row carries — what `blankRow()` asks of it.
+export const SLOT_KEYS = ['date', 'kind', 'price']
+// The seeded slots, dated from `base` (a parsed date): the rows SlotsField
+// edits and sectionVm reads when the key is absent.
+export function slotSeed(base) {
+  return CAL_SLOTS.map(({ after, kind, price }) => {
+    const d = new Date(Date.UTC(base.y, base.m, base.d + after))
+    return { date: isoDate(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()), kind, price }
+  })
+}
 
 // Testimonials layout 2's own heading fallback — its frame's two-line display
 // head, broken where the frame breaks it — and the stars its card prints in
@@ -832,6 +848,19 @@ export const CAL_HEADING_4 = 'Book Us'
 export const GALLERY_HEADING_4 = 'Snaps from the night'
 export const MAP_HEADING_4 = 'Distances we’ll Travel'
 export const TESTI_HEADING_4 = 'Client success stories'
+// The enquiry form's layout-4 copy (JP-054, user call, 2026-09-23): Retro's
+// frame (964:72845) and Lime's (964:72940) both read *Contact Us* over
+// *ENQUIRE* with a *Check Availability* pill, so these are per-layout
+// defaults, not per-theme ones. The head joins HEADING_4; the button and the
+// small-caps line under the head (`FIELDS.form.sub`, which reaches layout 4
+// alone) resolve here in sectionVm and in EditPanel's fallback chain.
+export const FORM_HEADING_4 = 'Contact Us'
+export const FORM_BTN_4 = 'Check Availability'
+export const FORM_SUB_4 = 'Enquire'
+// The address every enquiry is mailed to, as the enquiry form seeds it. Named
+// because two sections resolve it (JP-053): the form's own sectionVm, and the
+// booking calendar's layout-4 wizard through pageEmail() below.
+export const FORM_EMAIL = 'bookings@kaimercer.co.uk'
 export const TESTI_STARS = '★★★★★'
 // Booking calendar layout 4's wizard (964:72843): the event types its first
 // step offers, the frame's own four. The calendar's own list rather than the
@@ -1177,12 +1206,13 @@ export const FIELDS = {
   ],
   // `heading` heads layout 2's slot list, layout 3's scheduler and layout 4's
   // whole block, and Lime's layout 1 as well — Retro's draws no title. `open`
-  // is the one date the section is built from (in layouts 2 and 4 the slot it
-  // opens picked), `booked` the days it will not take (in those two the slots
-  // it strikes through), `time` the hour the foot line names and layout 4's
-  // own stat cell, and `cta` the label on the pill beside that line, which was
-  // an unread key until the pill existed and which layouts 2 and 3 still leave
-  // editing nothing. `in` records each key's reach.
+  // is the one date the section is built from (in layout 2 the slot it opens
+  // picked and the date the seeded slots count from, in layout 4 the date card
+  // before the visitor types one), `booked` the days it will not take (in
+  // layout 2 the slots it strikes through, in layout 4 a typed date the date
+  // card refuses), `time` the hour the foot line names and layout 4's date
+  // card, `cta` the label on layout 1's pill, and `slots` layout 2's list
+  // (JP-052). `in` records each key's reach.
   calendar: [
     { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
@@ -1193,13 +1223,16 @@ export const FIELDS = {
           + `It reaches ${CAL_SPAN} months from there. On the published page, days `
           + "before today can't be picked, and a past date opens it on today's month." },
     { k: 'booked',  l: 'Booked dates', type: 'booked',
-      hint: 'Click a day to block it. A blocked day cannot be picked on the published page. '
+      hint: 'Click a day to block it. A blocked day cannot be picked on the published page, '
+          + "and layout 4's date card refuses it when a visitor types it. "
           + 'The months here are the published ones, so they start at today when the opening '
           + 'date has passed.' },
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
-          + 'summary card. Leave it empty and the line stops at the date.' },
-    { k: 'cta',     l: 'Button (layouts 1 and 4)', d: 'Check a date', in: [0, 3] },
+          + 'date card. Leave it empty and the line stops at the date.' },
+    { k: 'cta',     l: 'Button (layout 1)', d: 'Check a date', in: [0] },
+    { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
+      hint: 'The dates layout 2 lists, each with what you play and what it starts from.' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
     { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3],
       hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
@@ -1289,6 +1322,10 @@ export const FIELDS = {
     // A textarea, because the default breaks after "Let's make" — layout 2
     // keeps the break, the others read it as a space.
     { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable." },
+    // Layout 4's small-caps line under the head, which printed the artist's
+    // name until JP-054 gave it the frame's own word. Emptiable: it drops.
+    { k: 'sub',      l: 'Line under the heading', d: FORM_SUB_4, in: [3],
+      hint: 'Layout 4 only. Leave it empty to hide it.' },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2],
       hint: 'The line under the heading. Layout 3 only.' },
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1, 3],
@@ -1307,9 +1344,10 @@ export const FIELDS = {
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Dead until the submit was made real — this is now what the form is for.
-    { k: 'email',    l: 'Email address', type: 'email', d: 'bookings@kaimercer.co.uk',
-      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
-    { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3], hint: 'Layouts 1 and 4.' },
+    { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
+      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
+    { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
+      hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
     // so an emptied label falls back to `button`.
@@ -1393,6 +1431,31 @@ export const copyrightOf = (name) => `C 2026 ${name}`
 export const headerIdentity = (sections) => {
   const c = sections.find((s) => s.cat === 'header')?.c ?? {}
   return { kicker: c.kicker, location: c.location, tags: c.tags, showTags: c.showTags }
+}
+
+// JP-052 — the page's packages, as the Pricing section holds them, for the
+// booking calendar's layout-4 package card: the `identity` precedent, one
+// section reading another's content through sectionVm's arguments. Resolved
+// exactly as pricing's own sectionVm resolves `tierList` — an absent key is
+// the seeded TIERS, blank rows are dropped — and `[]` with no pricing section
+// on the page, which is the card's not-drawn state. Raw: the calendar cases.
+export const pageTiers = (sections) => {
+  const p = sections.find((s) => s.cat === 'pricing')
+  if (!p) return []
+  return (Array.isArray(p.c?.tiers) ? p.c.tiers : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
+}
+
+// JP-053 — the address the page's enquiries go to, as the enquiry form holds
+// it, for the booking calendar's layout-4 wizard, whose Send Enquiry mails the
+// visitor's answers there: pageTiers()' cross-section read again. Resolved
+// exactly as the form's own sectionVm resolves `vm.formEmail` — an absent key
+// is the seed, and emailAddr() folds an empty or refused address to '' — and
+// '' with no form section on the page, so the wizard's pills stay spans in
+// both cases, the form's own no-address state.
+export const pageEmail = (sections) => {
+  const f = sections.find((s) => s.cat === 'form')
+  if (!f) return ''
+  return emailAddr(f.c?.email !== undefined ? f.c.email : FORM_EMAIL)
 }
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
@@ -1641,6 +1704,21 @@ export function parseDate(v) {
   const t = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v ?? '').trim())
   if (!t) return null
   const y = +t[1], m = +t[2] - 1, d = +t[3]
+  if (m < 0 || m > 11 || d < 1 || d > monthSpan(y, m).length) return null
+  return { y, m, d }
+}
+
+// The enquiry wizard's typed date (JP-052): the visitor's own box, whose
+// placeholder is `dd / mm / yyyy`, so day first, with slashes, dots or dashes
+// and any spaces round them. An ISO date is taken too. Null for anything that
+// is not a real day, `parseDate`'s rule.
+export function parseDayFirst(v) {
+  const s = String(v ?? '').trim()
+  const iso = parseDate(s)
+  if (iso) return iso
+  const t = /^(\d{1,2})\s*[/.-]\s*(\d{1,2})\s*[/.-]\s*(\d{4})$/.exec(s)
+  if (!t) return null
+  const y = +t[3], m = +t[2] - 1, d = +t[1]
   if (m < 0 || m > 11 || d < 1 || d > monthSpan(y, m).length) return null
   return { y, m, d }
 }

@@ -42,9 +42,9 @@ import {
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE,
   FORM_PROMISES, FORM_FIELDS, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
-  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -211,9 +211,10 @@ const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
 
 // Layout 4's heading fallbacks, per category — the composed page's own heads
-// (QA, 2026-09-15). sectionVm and EditPanel both read this.
+// (QA, 2026-09-15; the form's, JP-054). sectionVm and EditPanel both read this.
 const HEADING_4 = {
   calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
+  form: FORM_HEADING_4,
 }
 
 // The page's layout, for the one section that cannot say it itself: the footer
@@ -228,7 +229,7 @@ export const pageDesignOf = (sections, themeName) => {
   return ((h.arch % n) + n) % n
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -416,6 +417,22 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     vm.pad = cat === 'form'
       ? `${vm.padY} ${vm.padX} ${px(desk ? 90 : 60)}`
       : `${px(desk ? 56 : 30)} ${vm.padX} ${px(56)}`
+  }
+  // Layout 4's page-ground sections take the frame's side inset, not `padX`
+  // (JP-038, layout 4; user call, 2026-09-23). Every layout-4 master stands
+  // its content 56 / 30 / 10 in from the page edge, and the sheets beside
+  // these four (media, gallery, repertoire, testimonials, the header, the bio)
+  // already bleed and put that inset back as `u(56)`, so a root at `padX`'s
+  // 64 / 40 / 22 read 22 / 10 / 12 in from its neighbours. `padX` is what
+  // pricing's `bleedX` and the root both read, so the rule still reaches the
+  // page edges and the calendar's panel lands at the frame's 56 / 30 / 10.
+  // Every theme: the sheets' `u(56)` is not theme-gated either. The footer is
+  // layout 1's on every page and keeps `padX`.
+  if (d === 3 && !column && (cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form')) {
+    const inset = { desktop: Math.round(56 * 0.82 * 100) / 100, tablet: 30, mobile: 10 }[Z.dev]
+    vm.padX = `${inset + parseInt(vm.surplus, 10)}px`
+    vm.pad = `${vm.padY} ${vm.padX}`
+    vm.contentW = parseInt(SIZES[Z.dev].canvasW, 10) - 2 * inset
   }
 
   // ---- content -----------------------------------------------------
@@ -1055,11 +1072,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // artist has blocked — lit and struck through at once. A cue that has
     // passed cues nothing either, and the foot prints the prompt.
     vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
-    // The same cue with the past let through, for Lime layout 4's featured
-    // card alone (user call, 2026-09-18): its seeded slots are all past on a
-    // published page, and the card would otherwise never show the frame's 2×2.
-    vm.calCue = booked.has(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
+    // Layout 1's pill. Layout 4's foot is the wizard's own Send Enquiry since
+    // JP-052, so this reaches one layout.
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
@@ -1068,38 +1083,124 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // (964:72843); the frame draws no step 2 or 3, so their boxes are what the
     // summary card beside it labels (Details) and a way to answer (Contact).
     // Every string is resolved here, cased, so EncoreSection composes nothing.
+    //
+    // JP-052: the column beside the wizard is the wizard's **summary** — the
+    // frame's card is step 1's type over step 2's four answers (964:72939,
+    // Retro's 964:72844), then a date card, then a package card. Each step-2
+    // box therefore carries `eg` beside `ph`: the frame's own bare example,
+    // which the canvas's summary prints where a visitor's answer would stand
+    // (the frame is a picture of a filled-in wizard). Live, an unanswered cell
+    // prints `ph`, "e.g." and all, at the placeholder's strength — so nothing
+    // on the published page can be read as a quote the artist never gave.
     vm.calTypes = songTags(cv('types', CAL_TYPES.join(', '))).map((l) => cased(l))
     const wizSteps = [
       ['Event', "What's the occasion?", []],
       ['Details', 'Tell us the details', [
-        ['guests', 'Guests', 'e.g. 120'], ['length', 'Set length', 'e.g. 4 hrs'],
-        ['budget', 'Budget', 'e.g. £1,200'], ['sound', 'Sound', 'Provided or needed'],
+        ['guests', 'Guests', 'e.g. 120', '120'], ['length', 'Set length', 'e.g. 4 hrs', '4 hrs'],
+        ['budget', 'Budget', 'e.g. £1,200', '£1,200'], ['sound', 'Sound', 'Provided or needed', 'Provided'],
       ]],
       ['Contact', 'How do we reach you?', [
         ['name', 'Name', 'Your name'], ['email', 'Email', 'you@example.com'],
       ]],
     ]
+    // The date card's one input is the visitor's typed date, so it is a
+    // closure, the enquiry form's `formMailto` rule: its argument is the
+    // keystrokes and everything else — the parse, the booked and past tests,
+    // the format and every string — is bound here. With nothing typed the card
+    // shows the section's cue (`calPick`: `open`, or nothing when that day is
+    // booked or past), which is what keeps the canvas the frame's picture and
+    // lets *Opens on* move it. `refused` is a date the visitor cannot have.
+    const dateCard = (at) => ({
+      mark: cased(`${CAL_DAYS[weekdayOf(at.y, at.m, at.d)]}, ${MONTHS[at.m]} ${at.d}`),
+      sub: String(at.y), time: String(time ?? '').trim(), refused: false,
+    })
+    const cue = parseDate(vm.calPick)
+    const taken = cased('Not available. Pick another date')
+    const badDate = cased('Type the date as dd / mm / yyyy')
     vm.calWizard = {
       steps: wizSteps.map(([name, title, boxes], i) => ({
         name: cased(name), title: cased(title), line: cased(`Step ${i + 1} of ${wizSteps.length}`),
-        boxes: boxes.map(([key, label, ph]) => ({ key, label: cased(label), ph })),
+        boxes: boxes.map(([key, label, ph, eg]) => ({ key, label: cased(label), ph, eg: eg ?? ph })),
       })),
       typesLabel: cased('Type of event'),
       date: { key: 'date', label: cased('Approx. date'), ph: 'dd / mm / yyyy' },
       back: cased('Back'), next: cased('Next Step'), send: cased('Send Enquiry'),
+      // The package card's control, the frame's "Package ›" — the chevron is
+      // the frame's glyph, not a composed separator.
+      pkg: `${cased('Package')} ›`,
+      dateOf: (raw) => {
+        if (!String(raw ?? '').trim()) {
+          return cue ? dateCard(cue) : { mark: '', sub: vm.calPrompt, time: '', refused: false }
+        }
+        const at = parseDayFirst(raw)
+        if (!at) return { mark: '', sub: badDate, time: '', refused: true }
+        const iso = isoDate(at.y, at.m, at.d)
+        return booked.has(iso) || dead(iso)
+          ? { ...dateCard(at), sub: taken, time: '', refused: true }
+          : dateCard(at)
+      },
     }
-    // The bare hour, beside the composed lines that already carry it. Layout 4
-    // draws no enquiry line at all — its foot is the pill and its card is that
-    // line taken apart into four stat cells — so `time` would otherwise reach
-    // that design through nothing. Raw rather than cased: it is a clock format,
-    // vm.calSlots[].mark's rule.
+    // The package card's list: the Pricing section's packages, read across
+    // sections through sectionVm's `tiers` argument (pageTiers, the
+    // `identity` precedent), so the price is always the artist's own. Empty
+    // with no pricing section on the page, and the card is then not drawn.
+    vm.calPackages = tiers.map((t) => ({
+      name: cased(String(t?.name ?? '').trim()), price: String(t?.price ?? '').trim(),
+    }))
+    // JP-053 — Send Enquiry mails the wizard's answers, as the enquiry form's
+    // submit does, to the form's own address: read across sections through
+    // sectionVm's `email` argument (pageEmail(), `tiers`' precedent), '' with
+    // no form section or an address emailAddr() refuses, which leaves both
+    // Send pills spans — the form's no-address state. The confirmation that
+    // replaces the wizard card prints it in plain text, the form's rule.
+    vm.calEmail = email
+    Object.assign(vm.calWizard, {
+      sentTitle: cased('Check your mail app'),
+      sentBody: 'Your enquiry should be open in it, ready to send. If nothing happened, write to:',
+      again: 'Start again',
+      prompt: 'Add your name and a valid email, then send again.',
+    })
+    // The wizard's two closures beside `dateOf`, and the form's formMailto /
+    // formCheck rule: their inputs are the visitor's keystrokes, so
+    // EncoreSection hands over the type's and the package's indexes and the
+    // raw box values, and gets an href and a verdict back. The body's labels
+    // are the raw ones (`wizSteps`' own), not the cased ones the wizard
+    // prints — the form's labels stay raw for the same reason, the body wants
+    // them as written — and so is the package, read off `tiers` rather than
+    // the cased card. The date goes as typed: it is the visitor's own words,
+    // and the date card has already said whether the artist can take it.
+    const wizBoxes = wizSteps.flatMap(([, , boxes]) => boxes)
+    const rawPkg = (pi) => {
+      const t = tiers.length ? tiers[((pi % tiers.length) + tiers.length) % tiers.length] : null
+      return t ? [t.name, t.price].map((x) => String(x ?? '').trim()).filter(Boolean).join(' · ') : ''
+    }
+    vm.calMailto = ({ ti, vals, pi }) => enquiryMailto(email, {
+      type: vm.calTypes[ti] ?? '',
+      fields: [
+        { label: 'Approx. date', value: (vals || {}).date },
+        ...wizBoxes.slice(0, 4).map(([key, label]) => ({ label, value: (vals || {})[key] })),
+        { label: 'Package', value: rawPkg(pi) },
+        ...wizBoxes.slice(4).map(([key, label]) => ({ label, value: (vals || {})[key] })),
+      ],
+    })
+    // Step 3's two boxes, by formErrors()' rules — the name required, the
+    // email required and checked by emailProblem() — keyed by box so the
+    // section can mark them without working anything out.
+    vm.calCheck = ({ vals }) => {
+      const { f, any } = formErrors([{ kind: 'text' }, { kind: 'email' }], [(vals || {}).name, (vals || {}).email])
+      return { f: { name: f[0], email: f[1] }, any }
+    }
+    // The bare hour, beside the composed lines that already carry it: layout
+    // 4's date card prints it on its own. Raw rather than cased: it is a clock
+    // format, vm.calSlots[].mark's rule.
     vm.calTime = time
 
-    // §10.2 layouts 2 and 4 — the named slots. Layout 2 tables them and layout
-    // 4 features one and stacks the rest; both read exactly these keys, and
-    // layout 4 adds no column. The rows are the artist's named
-    // slots (CAL_SLOTS), resolved by the `songs` rule: absent means the seed,
-    // an emptied array means none, and there is no null sentinel. Everything
+    // §10.2 layout 2 — the named slots, which it tables (layout 4 stacked them
+    // too until JP-052). The rows are the artist's named slots (SlotsField),
+    // resolved by the `songs` rule: absent means the seed, an emptied array
+    // means none, and there is no null sentinel. The seed is dated from `open`,
+    // or live from max(open, today) by day — slotSeed(), layout 1's F20 rule —
+    // and a blank row is not a row (JP-051's pattern). Everything
     // the row prints is composed here, the way every cell above carries its own
     // enquiry line — EncoreSection looks a row up rather than working a date
     // out. `booked` reaches the list too: a slot the artist has blocked is a
@@ -1108,8 +1209,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     //
     // A row whose date does not parse keeps its place and simply does not pick,
     // §4.3a's rule for a link whose target is missing; it cannot happen from
-    // the seed, and there is no editor for the list yet.
-    const slots = Array.isArray(c.slots) ? c.slots : CAL_SLOTS
+    // the seed.
+    const slotBase = nowIso && openIso < nowIso ? now : open
+    const slots = (Array.isArray(c.slots) ? c.slots : slotSeed(slotBase)).filter((sl) => !blankRow(sl, SLOT_KEYS))
     vm.calSlots = slots.map((sl) => {
       const at = parseDate(sl.date)
       const iso = at ? isoDate(at.y, at.m, at.d) : ''
@@ -1336,8 +1438,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // emailAddr() refuses folds to '' (JP-049), the empty address's own state, so
   // the submit stays a span on both surfaces and the confirmation panel can
   // never print it; a pasted mailto: is taken off.
-  vm.formEmail = emailAddr(cv('email', 'bookings@kaimercer.co.uk'))
-  vm.formBtn = cv('button', 'Book Now')
+  vm.formEmail = emailAddr(cv('email', FORM_EMAIL))
+  // Layout 4's frame types "Check Availability" (JP-054); EditPanel mirrors it.
+  vm.formBtn = cv('button', d === 3 ? FORM_BTN_4 : 'Book Now')
+  // Layout 4's small-caps line under the head, the frame's "Enquire". Emptied,
+  // the line drops.
+  vm.formSub = cv('sub', FORM_SUB_4)
   // Layout 2's card: its price row, bookings line, submit label and the line
   // under it, each seeded with the frame's copy. The label is the submit, so an
   // emptied one falls back to `button` rather than leaving a wordless pill.
@@ -1410,8 +1516,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formSentTitle = cased('Check your mail app')
   vm.formSentBody = 'Your enquiry should be open in it, ready to send. If nothing happened, write to:'
   vm.formAgain = 'Write another'
-  // The only two function-valued keys on the whole view-model, and they are
-  // here for the reason enquiryLine() is not: their inputs are the visitor's
+  // Two of the view-model's five function-valued keys — the calendar's
+  // layout-4 wizard carries the other three (`calWizard.dateOf`, `calMailto`,
+  // `calCheck`) — and they are here for the reason enquiryLine() is not: their inputs are the visitor's
   // keystrokes, which sectionVm never sees, so neither can be resolved to a
   // string ahead of time. EncoreSection hands over indexes and raw strings and
   // gets an href and a verdict back — every label, address and case decision
@@ -2492,6 +2599,100 @@ function GigsField({ value, max, design, onChange }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * SlotsField — the booking calendar's named slots (JP-052).
+ *
+ * The eighth repeater, and the last list-shaped content to get one: layout
+ * 2 tables these rows, and until JP-052 they were a seed no field edited,
+ * dated 2025 and so dead on every published page. Row shape is
+ * { date, kind, price }, CAL_SLOTS' own comment: a date, what the artist
+ * plays that night, and what it starts from. `date` is a native date input
+ * because sectionVm parses it as ISO (parseDate) — a row it cannot parse
+ * keeps its place and does not pick.
+ *
+ * GigsField's house rules: whole-array rewrite per keystroke, numbered
+ * rows, a round X, a dashed add, an "n of max" footnote, no reordering —
+ * order is entry order, and it is the order the table lists.
+ * ------------------------------------------------------------------- */
+
+const BLANK_SLOT_HINT = 'Empty slots aren’t shown.'
+
+function SlotsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { date: '', kind: '', price: '' }])
+
+  const row = (i, g) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          type="date" value={g.date ?? ''} aria-label={`Slot ${i + 1} date`} onClick={stopE}
+          onChange={(e) => setAt(i, 'date', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove slot ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <Input
+            value={g.kind ?? ''} placeholder="Evening" onClick={stopE}
+            onChange={(e) => setAt(i, 'kind', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+          <Input
+            value={g.price ?? ''} placeholder="From £1,200" onClick={stopE}
+            onChange={(e) => setAt(i, 'price', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+        </div>
+        {blankRow(g, SLOT_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_SLOT_HINT}</p>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((g, i) => row(i, g || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add slot</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>{list.length} of {max}</p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.6e TiersField — the pricing section's packages.
  *
  * The fourth structured repeater, and the first to replace a flattened
@@ -3125,7 +3326,7 @@ function LinksField({ value, max, navSections = [], onChange }) {
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }) {
+function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx, navSections }) {
   const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
 
@@ -3177,6 +3378,10 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
   // would page BookedField from a month the calendar is not on.
   const bookedVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : CAL_BOOKED)
   const openVal = (k) => parseDate(sec.c[k] ?? CAL_OPEN) ?? parseDate(CAL_OPEN)
+  // Layout 2's slots (JP-052): the seed dated from the canvas's `open`, which
+  // is exactly what sectionVm resolves off the clock, so the first edit writes
+  // out the dates the canvas shows.
+  const slotsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : slotSeed(openVal('open')))
 
   // Minimal's labels that resolve to nothing on this page (§4.3a), for the hint
   // above the header's navigation select. Only a header reads it.
@@ -3194,7 +3399,7 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
             <Label style={groupLabel}>Layout</Label>
             <LayoutPicker
               cat={sec.cat} arch={sec.arch} content={sec.c}
-              themeIdx={themeIdx} artistName={artistName} identity={identity} navSections={navSections}
+              themeIdx={themeIdx} artistName={artistName} identity={identity} tiers={tiers} email={email} navSections={navSections}
               onPick={(i) => api.setSection(sec.id, { arch: i })}
             />
           </div>
@@ -3224,6 +3429,8 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
+                    : f.k === 'button' && sec.cat === 'form'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? FORM_BTN_4
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
@@ -3262,6 +3469,8 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                         <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'links' ? (
                         <LinksField value={linksVal(f.k)} max={f.max} navSections={navSections} onChange={(v) => set(v)} />
+                      ) : f.type === 'slots' ? (
+                        <SlotsField value={slotsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month
@@ -3354,7 +3563,7 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
  * designs (§4.4), so some rows render identically. That is on purpose.
  * ------------------------------------------------------------------ */
 
-function LayoutPicker({ cat, arch, themeIdx, artistName, identity, navSections, content = {}, onPick }) {
+function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email, navSections, content = {}, onPick }) {
   const [open, setOpen] = useState(false)
   const themeName = THEMES[themeIdx].name
   const n = layoutCount(cat, themeName)
@@ -3417,7 +3626,7 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, navSections, 
                   autoMax={210} radius={6}
                   vm={sectionVm({
                     themeIdx, cat, arch: i, c: content,
-                    artistName, identity, Z: SIZES.desktop, mob: false, navSections,
+                    artistName, identity, tiers, email, Z: SIZES.desktop, mob: false, navSections,
                   })}
                 />
               </span>
@@ -3448,7 +3657,7 @@ const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
 const firstFreeCat = (present) =>
   (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
 
-function AddComposer({ add, present, removed, themeIdx, artistName, identity, navSections, onChange, onAdd, onCancel }) {
+function AddComposer({ add, present, removed, themeIdx, artistName, identity, tiers, email, navSections, onChange, onAdd, onCancel }) {
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
   const taken = present.includes(add.cat)
   // A category deleted earlier restores its content on add; Start fresh opts
@@ -3481,7 +3690,7 @@ function AddComposer({ add, present, removed, themeIdx, artistName, identity, na
         <Label style={groupLabel}>Layout</Label>
         <LayoutPicker
           cat={add.cat} arch={add.arch}
-          themeIdx={themeIdx} artistName={artistName} identity={identity} navSections={navSections}
+          themeIdx={themeIdx} artistName={artistName} identity={identity} tiers={tiers} email={email} navSections={navSections}
           onPick={(i) => onChange({ ...add, arch: i })}
         />
       </div>
@@ -3916,6 +4125,8 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   // §4.8, as the editor derives it at the same names.
   const navSections = navSectionsOf(sections.map((s) => s.cat))
   const identity = headerIdentity(sections)
+  const tiers = pageTiers(sections)
+  const email = pageEmail(sections)
 
   const T = THEMES[themeIdx]
   const rows = pageRows(sections, T.name, key === 'desktop')
@@ -3924,7 +4135,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const page = arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
-      artistName, identity, Z, mob: key === 'mobile', live: true, navSections,
+      artistName, identity, tiers, email, Z, mob: key === 'mobile', live: true, navSections,
       column: inColumns.get(i), today, page: pageDesignOf(sections, T.name),
     })} />
   )))
@@ -4117,6 +4328,8 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // And the header's Kicker and Location are the artist's too (F1): sectionVm
   // hands them to every other section that prints a role or a home town.
   const identity = headerIdentity(sections)
+  const tiers = pageTiers(sections)
+  const email = pageEmail(sections)
   const present = sections.map((s) => s.cat)
 
   // §5.5 — a real phone forces mobile canvas sizing at full width.
@@ -4284,7 +4497,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
@@ -4414,7 +4627,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const addComposer = st.add && (
     <AddComposer
       add={st.add} present={present} removed={st.removed}
-      themeIdx={st.theme} artistName={artistName} identity={identity} navSections={navSections}
+      themeIdx={st.theme} artistName={artistName} identity={identity} tiers={tiers} email={email} navSections={navSections}
       onChange={(next) => patch({ add: next })}
       onAdd={addSection}
       onCancel={closeAdd}
@@ -4685,7 +4898,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                       inherited by the same field of the next section opened. */}
                   <EditPanel
                     key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
-                    artistName={artistName} identity={identity} themeIdx={st.theme} navSections={navSections}
+                    artistName={artistName} identity={identity} tiers={tiers} email={email} themeIdx={st.theme} navSections={navSections}
                   />
                 </>
               ) : (
@@ -4860,7 +5073,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             {selectedSec && (
               <EditPanel
                 key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
-                artistName={artistName} identity={identity} themeIdx={st.theme} navSections={navSections}
+                artistName={artistName} identity={identity} tiers={tiers} email={email} themeIdx={st.theme} navSections={navSections}
               />
             )}
           </DrawerContent>

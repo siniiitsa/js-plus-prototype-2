@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { sectionVm } from './builder/EncoreBuilder.jsx'
 import EncoreSection from './builder/EncoreSection.jsx'
-import { EXAMPLE_PAGE, navSectionsOf } from './builder/data.js'
+import { EXAMPLE_PAGE, navSectionsOf, pageTiers, pageEmail } from './builder/data.js'
 
 // A hand copy of EncoreBuilder's SIZES + RAMP + RAMP_REST + WIDE. Theme ramps
 // (THEME_RAMP) are not copied: sectionVm lays them over this by `dev`.
@@ -227,11 +227,25 @@ const today = q.get('today') || undefined
 // as the rest of the page reads them (F1 and JP-037, headerIdentity): the bio,
 // the calendar and the form print the header's, having no fields of their own.
 const identity = q.get('who') ? JSON.parse(q.get('who')) : undefined
+// &tiers=<url-encoded JSON> is the Pricing section's `c.tiers` as the rest of
+// the page reads it (JP-052, pageTiers): the calendar's layout-4 package card
+// names these. Absent is the seeded page, which carries a pricing section with
+// the seeded packages; &tiers=none is a page with no pricing section at all.
+const tiersQ = q.get('tiers')
+const tiers = tiersQ === 'none' ? []
+  : pageTiers([{ cat: 'pricing', c: tiersQ ? { tiers: JSON.parse(tiersQ) } : {} }])
+// &email=<address> is the enquiry form's `email` as the rest of the page reads
+// it (JP-053, pageEmail): the calendar's layout-4 wizard mails its answers
+// there. Absent is the seeded page's form and its seeded address; &email=none
+// is a page with no form section, and &email= an emptied address.
+const emailQ = q.get('email')
+const email = emailQ === 'none' ? ''
+  : pageEmail([{ cat: 'form', c: emailQ !== null ? { email: emailQ } : {} }])
 const s = sectionVm({
   // &name=Poppy%20Jaeggy is how a display slot is checked against descenders
   // and a longer string — the seeded "Kai Mercer" has neither.
   themeIdx, cat, arch, c, artistName: q.get('name') || 'Kai Mercer',
-  identity, Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections, today,
+  identity, tiers, email, Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections, today,
   ...(column ? { column } : null),
 })
 
