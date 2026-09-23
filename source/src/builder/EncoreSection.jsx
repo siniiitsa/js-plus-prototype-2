@@ -4507,15 +4507,42 @@ function Bio({ s }) {
   // padding, landing the box ~6 low at 1440. The desktop card itself lands on
   // the frame's own half: 544.1 × 590.4 against 664 × 720 × 0.82, since the
   // sheet bleeds and hands the section the frame's 1328 measure.
-  if (s.v3 && s.lime) {
+  //
+  // ── Grunge ─────────────────────────────────────────────────────────────
+  // Grunge's layout-4 bio (964:72952 · 971:7831 · 977:12052) is Lime's tree
+  // plus three nodes, so it widens this block (plans/grunge/layout-4.md,
+  // section 2). The band is Scheme 3's red with the head in black and "KM BIO"
+  // white; the instance is Scheme 1 at 1440 and Scheme 3 narrow, so the well is
+  // #0E0E0E / #82211B and the prose box #1A1A1A / #9E1F17. The new nodes: the
+  // photograph's `image 1` grain, a `Frame 255` dimmer over the glass, and at
+  // 390 a torn foot. Radii 15 / 7.5 / 2.5. The photograph is a plain `FILL` of
+  // `grungeStage`, a centred cover (0.958 against the render), so no seed.
+  if (s.v3 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     // Scheme 2's `box/3` and `box/2` — the media card's and the testimonials'
     // literals — on the two narrow instances alone; Scheme 1's keys at 1440.
-    const well = desk ? s.box3 : '#263020'
-    const dusk = desk ? s.box2 : '#43523B'
+    const well = desk ? s.box3 : grunge ? '#82211B' : '#263020'
+    // Grunge's instance is Scheme 1 at 1440 and Scheme 3 narrow, and its prose
+    // box is bound to `sem/box/1` where Lime's is `sem/box/2` (a moved binding).
+    const dusk = desk ? (grunge ? s.box1 : s.box2) : grunge ? '#9E1F17' : '#43523B'
+    // Grunge's glass is Lime's #2E3928 at 1% (a leak, invisible) under
+    // `Frame 255`, a `sem/bg` dimmer at .5 over the whole panel and under the
+    // text — #000000 at 1440, Scheme 3's #DF262C narrow — drawn as the panel's
+    // own fill, one layer.
+    const glass = grunge ? `${desk ? s.bg : s.ac}80` : `${s.box1}B5`
+    const upper = grunge ? { textTransform: 'uppercase' } : null
+    // Grunge's name is `sem/text/2` then `text/1` at the first space: white /
+    // red on Scheme 1 at 1440, white / black on Scheme 3 narrow.
+    const brand = () => {
+      if (!grunge) return s.brand
+      const i = s.brand.indexOf(' ')
+      if (i === -1) return s.brand
+      return <>{s.brand.slice(0, i)} <span style={{ color: desk ? s.ac : s.bg }}>{s.brand.slice(i + 1)}</span></>
+    }
     const panelPad = u(s.mob ? 20 : 30)
     // The phone's photo stage (below): its height, and how far the panel
     // stands up into it.
@@ -4529,14 +4556,14 @@ function Bio({ s }) {
         : col(u(s.mob ? 15 : 30), { alignItems: 'flex-start' })}>
         <span style={{
           fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
-          letterSpacing: s.dls, textTransform: 'uppercase', color: s.bg,
+          letterSpacing: s.dls, textTransform: 'uppercase', color: grunge ? s.tx : s.bg,
         }}>{s.initials} Bio</span>
         {/* The 572.9 measure is on the text node at 1440 and 768 and is what
             breaks the head — three lines at 1440, two at 768; the 390 master
             states the full 370. */}
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: s.dispXl, lineHeight: 0.75,
-          letterSpacing: s.dls, color: s.bg,
+          margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispXl), lineHeight: facedLh(s, 0.75),
+          letterSpacing: s.dls, color: s.bg, ...upper,
           maxWidth: s.mob ? undefined : u(572.9), wordBreak: 'break-word',
         }}>{s.title}</h2>
         {/* The Tags instance's own 457 at 1440 and 768 (six chips wrap to two
@@ -4566,24 +4593,29 @@ function Bio({ s }) {
       </div>
     )
 
+    // Grunge's 390 Section pads its foot 60 where Lime's pads 30: the room for
+    // the torn seam it owns there (below).
+    const padV = u(desk ? 116 : tab ? 60 : 30)
+    const padB = grunge && s.mob ? '60px' : padV
     return (
       <div style={{
         // The sheet: out to the section's own edges, past the root's padding.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
         background: s.ac, color: s.bg,
-        padding: `${u(desk ? 116 : tab ? 60 : 30)} calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'})`,
+        ...(grunge ? { position: 'relative' } : null),
+        padding: `${padV} calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) ${padB}`,
         // Two `minmax(0, 1fr)` columns rather than two `flex: 1 1 0` halves:
         // a zero basis resolves against the content box, so the padded card
         // came out 24.6 wider than the head (the enquiry form's layout-3 trap).
         ...(desk
           ? { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'stretch' }
-          : col(u(tab ? 40 : 15))),
+          : col(u(tab ? 40 : grunge ? 10 : 15))),
       }}>
         {head}
         <div style={{
           ...(desk ? { minWidth: 0 } : null),
           position: 'relative', overflow: 'hidden', background: well,
-          borderRadius: u(55),
+          borderRadius: u(grunge ? 15 : 55),
           // The frame's own height as a floor, HeaderV3's rule: the panel is
           // content-tall, so a second paragraph grows the card.
           minHeight: u(s.mob ? 536 : 720),
@@ -4601,12 +4633,19 @@ function Bio({ s }) {
             : { position: 'absolute', inset: 0 }}>
             <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={s.tx} />
           </div>
+          {/* Grunge's `image 1`: a 640-wide sheet centred on the card at every
+              width, card-tall, lighten .5, under a #0B0B0B foot paint to 16.3%
+              that is a mask under `lighten` (the layout-1 bio's recipe). */}
+          <Grain s={s} exact grunge blend="lighten" opacity={0.5} style={{
+            left: '50%', width: u(640), transform: 'translateX(-50%)',
+            maskImage: 'linear-gradient(0deg, transparent 0%, #000 16.3%)',
+          }} />
           <div style={{
             position: 'relative', width: '100%', overflow: 'hidden',
-            borderRadius: u(27), padding: panelPad,
+            borderRadius: u(grunge ? 7.5 : 27), padding: panelPad,
             // `s.box1` at .71 as an 8-digit hex (no `rgba()` in the file),
             // over the frame's 54 backdrop blur, emitted as CSS 27.
-            background: `${s.box1}B5`,
+            background: glass,
             backdropFilter: `blur(${u(27)})`, WebkitBackdropFilter: `blur(${u(27)})`,
             ...col(panelPad, { alignItems: 'stretch' }),
           }}>
@@ -4614,13 +4653,13 @@ function Bio({ s }) {
               {/* Wraps, the layout-3 card's call: at leading 1 a clip would cut
                   the descenders off at the baseline. */}
               <p style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
-                letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
-              }}>{s.brand}</p>
+                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
+                letterSpacing: s.dls, color: grunge ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
+              }}>{brand()}</p>
               {meta}
             </div>
             <div style={{
-              background: dusk, color: s.tx, borderRadius: u(13.5), padding: u(20),
+              background: dusk, color: s.tx, borderRadius: u(grunge ? 2.5 : 13.5), padding: u(20),
               ...col(u(10), { alignItems: 'stretch' }),
             }}>
               <p style={{ margin: 0, ...body, fontSize: s.bodyLg }}>{s.bioP1}</p>
@@ -4636,6 +4675,12 @@ function Bio({ s }) {
             }} />
           )}
         </div>
+        {/* Grunge's 390 master gives the bio the tear between it and the
+            media band (977:16058, #1A1A1A); drawn in the band's own #171716,
+            layout 1's neighbour's-ground rule — 3 in 255 off the frame. */}
+        {grunge && s.mob && (
+          <TornEdge s={s} grunge side="bottom" bleed={false} height={40} colour="#171716" />
+        )}
       </div>
     )
   }
