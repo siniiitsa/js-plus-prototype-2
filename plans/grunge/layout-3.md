@@ -416,27 +416,32 @@ strip's colour tiles and the testimonials' colour faces are the frame's placehol
 A code survey at the start of this pass (`grep -n "s.grunge\|const grunge" EncoreSection.jsx`
 against the `if (s.v2` line numbers):
 
-- **No `s.v2` branch reads `s.grunge`, and neither does any Lime layout-3 block** — the nine blocks
-  are gated `s.lime` alone. So goal 1 is met before any session runs (every control is shared `v2`
+- ~~**No `s.v2` branch reads `s.grunge`, and neither does any Lime layout-3 block**~~ *Closed
+  across sections 1–10: every one of them does now.* At the survey the nine blocks
+  were gated `s.lime` alone. So goal 1 was met before any session ran (every control is shared `v2`
   code, as in layouts 1 and 2), and each session still runs `theme=2&live=1` for layout 1's reason:
   a live **state** can stop reading on a red ground.
-- **`HeaderV2` renders Retro's half in Grunge tokens** — its `if (s.lime)` block is not widened —
-  with the one `s.grunge ?` placeholder arm layout 1 left there so card 3 would publish
-  (`mustard = s.grunge ? s.box1 : s.pillBg`). Open question 4 of layout 1 describes the picture
-  ("a red sheet round the photograph, checker ribbon"). The arm leaves with this pass's first
-  session.
-- **Every other `s.v2` branch renders Retro's arm flat under Grunge, and on this page that is
-  worse than flat.** Under Grunge `s.paper` is `s.tx` (white) and `s.pillBg` is the accent, so
-  Retro's cream sheets and cards come out **white** (the gallery's sheet, the calendar's card, the
+- ~~**`HeaderV2` renders Retro's half in Grunge tokens**~~ *Closed in section 1:* the block is
+  widened and the one `s.grunge ?` placeholder arm layout 1 left in Retro's half
+  (`mustard = s.grunge ? s.box1 : s.pillBg`, so card 3 would publish) is deleted, the theme-0
+  digest proving it dead. Open question 4 of layout 1 described the picture it drew
+  ("a red sheet round the photograph, checker ribbon").
+- ~~**Every other `s.v2` branch renders Retro's arm flat under Grunge, and on this page that is
+  worse than flat.**~~ *Closed across sections 2–10.* At the survey `s.paper` was `s.tx` (white)
+  under Grunge and `s.pillBg` the accent, so
+  Retro's cream sheets and cards came out **white** (the gallery's sheet, the calendar's card, the
   form's card, the testimonials' light cells, the media's now-playing card) and Retro's mustard
-  map sheet comes out **red**. Card 3 today is a white-and-red page; the Lime blocks, widened, are
-  what take it black.
-- **`sectionVm` carries Lime-keyed layout-3 arms that do not fire under Grunge.** Each session
-  reads its frame and widens the arm to `(T.name === 'Lime' || T.name === 'Grunge')` only where
-  the numbers match:
-  - the three **`vm.pad` arms at `d === 2`** (above, *The composed page*): bio / calendar / media
+  map sheet came out **red**. Card 3 was a white-and-red page; the Lime blocks, widened, are
+  what took it black.
+- ~~**`sectionVm` carries Lime-keyed layout-3 arms that do not fire under Grunge.**~~ *Closed;
+  each is struck below.* Each session
+  read its frame and widened the arm to `(T.name === 'Lime' || T.name === 'Grunge')` only where
+  the numbers matched:
+  - ~~the three **`vm.pad` arms at `d === 2`**~~ *Done in sections 2, 3, 5, 7, 9 and 10:* bio /
+    calendar / media
     (top 50, feet 30 / `padY` / 37 · 47 · 35), pricing (foot 32 at 1440 and 768), form /
-    testimonials (form foot 90 / 60; testimonials head 56 / 30, foot 56);
+    testimonials (form foot 90 / 60; testimonials head 56 / 30, foot 56) — every number Lime's,
+    so all three arms are one `(Lime || Grunge)` condition again (*Conventions*);
   - ~~**`vm.kicker`'s `LIME_KICKER_3`** … gated on Lime in both `sectionVm` and `EditPanel`~~
     *Done in section 1:* renamed `KICKER_3`, widened in both.
   - ~~**`vm.navFits` at `d === 2`** has no Grunge arm~~ *Done in section 1* (the Grunge arm
@@ -447,16 +452,18 @@ against the `if (s.v2` line numbers):
     Lime's 684, plus the capsule's fixed gaps as layout 2's arm added them; `vm.navEms` at `d === 2`
     needs the same face and size. Section 1's.
   - **`vm.titleWordEms`** is `bebasEms` and Lime-only: it shrinks the form's desktop head until its
-    widest word fits the half column. Anton at 0.75 is narrower, so measure the seeded
-    "UNFORGETTABLE." at desktop first; if it outruns the column, widen through `antonEms` (the
-    `navFace` route), never a literal cap. Section 9's.
-- **`SEEDS.Grunge` has no `layouts` row**, where Lime's carries `2` and `3` for the landscape bio
-  stage. Open question 1 decides whether it gains one.
+    widest word fits the half column. *Measured in section 9 and left Lime's:* Anton at 0.75 puts
+    the seeded "UNFORGETTABLE." at 484 against the 501 column, so it fits and the key was not
+    widened.
+- ~~**`SEEDS.Grunge` has no `layouts` row**, where Lime's carries `2` and `3` for the landscape bio
+  stage. Open question 1 decides whether it gains one.~~ *Closed in section 2:* it gains none —
+  the bio's band is an `objectPosition` on `grungeStage`, and `photos.js` did not move.
 - **`FIELDS` rows keyed by template** already carry `Grunge` beside `Lime` for the header's keys
   (`kicker` / `tags` / `showTags` `[0, 2, 3]`, `location` all four, `cta2` `[1, 2]`, `showBadge` /
   `badgeText` `[0, 3]`, subtitle and `heroCta` `[1]`, `align` `[0]` — layout 2's sweep measured them
   over the **placeholder** card 3) and for `calendar.heading` (`[0, 1, 2, 3]`) and `media.cta`.
   Each session re-measures the rows its category owns with `scripts/reach.mjs 2` after fitting.
+  *Every one of them held over the fitted card* (section 1, and the sweep's own run).
 - **`HeaderV2` renders under Retro, Lime and Grunge only** (`headerFamily`), so the header needs
   the theme-0 and theme-1 digests and not the flat two's. Every other section needs all four.
 - **Under Grunge header arch 2 has no fold partner** (`HEADER_COUNT.grunge` is 4, as Lime's), so a

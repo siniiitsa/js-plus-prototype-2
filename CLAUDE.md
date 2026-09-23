@@ -989,8 +989,8 @@ mutated through a single `patch()` helper.
   row, `#9E1F17` its `box/1` on the repertoire's middle set card and three testimonials cells,
   `#F52E34` its `box/2` on the map panel), and inside a Scheme 3 node `stroke2` is **white**,
   `stroke1` black 15% and `text1` black — so a Lime block reading those keys lands on the wrong
-  value. Its live states are redrawn for the third time: the repertoire pager's page, the map's
-  pin and lit row, the gallery viewer's scrim and controls. Its header family is `'grunge'`:
+  value. Its live states are redrawn for the third time where the frames draw none: the
+  gallery viewer's scrim and controls, and the map's pin and lit row. Its header family is `'grunge'`:
   four cards, Hero spread, Feature spread and Inset Hero fitted — card 4 renders `HeaderV3` in
   its tokens (Retro's checker floor and all) and publishes, its own layout pass's to fit — and
   at layout 4 every other section still renders its shared branch flat.
