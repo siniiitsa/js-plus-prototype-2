@@ -1008,7 +1008,9 @@ them.
   slides. No page errors. **Red on red, open question 5**: the 3px active ring is black, inside
   the tile over its photograph, so it never stands on the red ground alone; it reads.
   `page-check.mjs Grunge 3`: no errors or warnings, every link scrolls (Media → `#gallery`),
-  the 390 burger 1 → 11, overflow 0.
+  the 390 burger 1 → 11, overflow 0. `n=0`, desktop and 390: the `#82211B` well under the
+  grain with white `KM` (`G.initials` is `s.tx`, where Lime inks it `s.bg` on its pale well), and
+  `#9E1F17` thumbs in black rings with white `KM`.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `gallery_arch_3` at three widths on both surfaces.
 
