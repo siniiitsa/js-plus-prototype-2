@@ -129,11 +129,17 @@ mutated through a single `patch()` helper.
   moves to the top while any drawer is open (closing the drawer remounts a live toast at the
   bottom, fade and timer restarting). The drawers also carry `keepOnToast`, a guard against a
   press on a toast counting as outside, though vaul was measured not to close on one anyway.
-- **The artist's name is the header's `c.title`.** The `artistName` prop only seeds it: the
-  builder derives `artistName` from the header section (trimmed, falling back to the prop when
-  empty) and passes *that* everywhere — nav brand, initials placeholders, bylines, badge,
+- **The artist's name is the header's `c.title`, and it is required** (JP-050, user call,
+  2026-09-23). The `artistName` prop only seeds it: the builder derives `artistName` from the
+  header section (`nameOf()`: trimmed, the prop only while the key is absent — a fresh page) and
+  passes *that* everywhere — the h1 included (`vm.heroTitle` is `vm.brand`; the header resolves
+  its own `c.title` the same way, so a header preview or a harness `&cj=` cannot split them),
+  nav brand, initials placeholders, bylines, badge,
   `copyrightOf()`, the published tab's `<title>` (reset on every republish, not only when the tab
-  is first opened) and the dialog's site address. Header `badgeText` and footer `copyright` have
+  is first opened) and the dialog's site address. `NameInput` never commits a Title that trims
+  to empty: the box may sit empty (with a "Your name is required" line) while the page keeps the
+  last name, and leaving it puts that name back — so no slot ever falls back to the prop once
+  the artist has typed one, and Publish never meets an empty name. Header `badgeText` and footer `copyright` have
   no static default for that reason; `EditPanel` special-cases them beside `title`. **The
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other

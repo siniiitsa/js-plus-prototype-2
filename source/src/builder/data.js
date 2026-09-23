@@ -1003,7 +1003,7 @@ export const FIELDS = {
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
       in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
-    { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
+    { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1], Grunge: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',

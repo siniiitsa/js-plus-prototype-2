@@ -178,6 +178,11 @@ const keepOnToast = (e) => {
 const siteSlug = (name) =>
   String(name).normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '') || 'my-page'
 
+// The artist's name off the header's Title (JP-050): trimmed, and the prop
+// only where the Title resolves to nothing — which the editor never stores
+// (NameInput), so in the app that is a fresh page's absent key alone.
+const nameOf = (title, fallback) => String(title ?? '').trim() || fallback
+
 const initialsOf = (name) =>
   String(name).trim().split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase()
 
@@ -414,11 +419,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
 
   // ---- content -----------------------------------------------------
-  const initials = initialsOf(artistName)
+  // One resolved name for every slot that prints it (JP-050). The header
+  // resolves its own Title the way the builder derives `artistName` from it,
+  // so the h1, the wordmark, the badge and the initials of a header preview
+  // (or a harness `&cj=`) can never disagree; every other section takes the
+  // builder's. An emptied Title used to blank the h1 alone.
+  const name = cat === 'header' ? nameOf(c.title, artistName) : artistName
+  const initials = initialsOf(name)
   vm.initials = initials
-  vm.brand = cased(artistName)
-  vm.heroTitle = cased(cv('title', artistName))
-  vm.title = cased(cv('heading', cat === 'header' ? artistName : (TITLES[cat] ?? '')))
+  vm.brand = cased(name)
+  vm.heroTitle = vm.brand
+  vm.title = cased(cv('heading', cat === 'header' ? name : (TITLES[cat] ?? '')))
 
   // header
   // The kicker and the location are the artist's, typed once on the header
@@ -442,7 +453,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // JP-037 — layout 2's hero pill. Uncased, the footer pill's rule.
   vm.heroCta = cv('heroCta', HERO_CTA)
   vm.showBadge = cv('showBadge', 'show')
-  vm.badgeText = cv('badgeText', artistName)
+  vm.badgeText = cv('badgeText', name)
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
   // Retro, Lime and Grunge seed their Figma pages' mock photography (photos.js); the
@@ -2030,6 +2041,34 @@ function UrlInput({ value, onChange, style, className, placeholder, web = false,
   )
 }
 
+// The header's Title, which is the artist's name and is required (JP-050).
+// An emptied or all-space box is held here and never committed, so the page
+// keeps the last name while the box is empty — every slot that prints it
+// agrees with the h1 — and leaving the box puts that name back. There is
+// therefore no empty state for Publish to meet, and no fallback to the
+// profile name once the artist has typed one.
+function NameInput({ value, onChange, style }) {
+  const [draft, setDraft] = useState(null)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
+      <Input
+        value={draft ?? value} onClick={stopE}
+        onChange={(e) => {
+          const v = e.target.value
+          if (v.trim()) { setDraft(null); onChange(v) } else setDraft(v)
+        }}
+        onBlur={() => setDraft(null)}
+        style={style}
+      />
+      {draft !== null && (
+        <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+          Your name is required. The page keeps &ldquo;{String(value).trim()}&rdquo; until you type another.
+        </p>
+      )}
+    </div>
+  )
+}
+
 /* ------------------------------------------------------------------ *
  * §8.6b SongsField — the repertoire's song list. The first of the five
  * list-shaped fields with a structured editor rather than a delimited
@@ -3245,6 +3284,11 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                             {f.opts.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
                           </SelectContent>
                         </Select>
+                      ) : f.k === 'title' && sec.cat === 'header' ? (
+                        // Stored as typed, so a space mid-name survives the
+                        // render; a stored blank (none the editor can make)
+                        // shows the name the page prints.
+                        <NameInput value={String(val).trim() ? val : artistName} onChange={set} style={FIELD_BOX} />
                       ) : f.type === 'url' ? (
                         <UrlInput value={val} onChange={set} style={FIELD_BOX} />
                       ) : f.type === 'email' ? (
@@ -4066,9 +4110,10 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // The artist's name is the header's Title: the prop only seeds it. Every
   // other reading — the nav brand, the initials placeholders, the bio and
   // player bylines, the badge, the small print, the published tab's <title>
-  // and the site address — follows what the artist typed there. An emptied
-  // Title blanks the hero alone; everything else falls back to the seed.
-  const artistName = String(sections.find((s) => s.cat === 'header')?.c.title ?? '').trim() || profileName
+  // and the site address — follows what the artist typed there. The Title is
+  // required (JP-050): NameInput never commits an empty one, so the prop is
+  // read only while the key is absent, which is a fresh page.
+  const artistName = nameOf(sections.find((s) => s.cat === 'header')?.c.title, profileName)
   // And the header's Kicker and Location are the artist's too (F1): sectionVm
   // hands them to every other section that prints a role or a home town.
   const identity = headerIdentity(sections)

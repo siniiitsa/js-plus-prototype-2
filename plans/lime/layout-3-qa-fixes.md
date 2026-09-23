@@ -32,7 +32,7 @@ so Retro, Grunge and the flat two move with them. The tester happened to be on L
 | 1 | JP-049 | Enquiry Form's Email address takes `not-an-email` and the submit mails it | **Confirmed**: every other address box validates, this one does not | S | no | **done** |
 | 2 | JP-048 | Three *Add package* clicks publish three blank cards, the last one lime and FEATURED | **Confirmed**; the FEATURED seat is working as documented, the defect is that a blank row renders | M | **yes** — what counts as blank | **done** |
 | 3 | JP-051 | An empty form-field row publishes an unlabelled box | **Confirmed**; JP-048's family, applied to the form | S | **yes** — the guarded email row | **done** |
-| 4 | JP-050 | Emptying the header Title publishes the sample name in eight slots and nothing in the h1 | **Half documented, half defect**: the fallback is CLAUDE.md's rule; the h1 disagreeing with it is a bug | M | **yes** — what an empty name means | open |
+| 4 | JP-050 | Emptying the header Title publishes the sample name in eight slots and nothing in the h1 | **Half documented, half defect**: the fallback is CLAUDE.md's rule; the h1 disagreeing with it is a bug | M | **yes** — what an empty name means | **done** |
 | 5 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:** JP-049 is the only entry with no decision and one seam. JP-048 before JP-051
@@ -381,6 +381,8 @@ any reading.**
   wordmark, `initialsOf`, `copyrightOf`, bylines, the badge, the seal text, `<title>` falling back
   to something generic). Largest diff, and several frames have no picture of a missing name.
 
+**Decided (user, 2026-09-23): A** — the Title is required; the h1 reads the one resolved name.
+
 **Fix.** Whichever is chosen: `vm.heroTitle` and every other slot read one resolved name, and the
 panel shows what the page prints. Audit with `grep -n artistName` in both files (and `initials`,
 `brand`), and add an empty-title row to the `&cj=` repro covering every section.
@@ -393,7 +395,50 @@ Seeded digest byte-identical.
 **Docs.** CLAUDE.md's *artist's name* bullet (rewritten to the decision), README's matching
 passage, `FIELDS.header.title`'s comment.
 
-**Settled.**
+**Settled** (2026-09-23). Evidence lines had drifted ~+11 in `sectionVm` and ~+90 below it: at
+`0b7e497` `vm.heroTitle` was `EncoreBuilder.jsx:420`, the player's `by` `:687`, `vm.copyright`
+`:1418`, the panel's fallback `:3176`, `doc.title` `:3949` / `:4116`, the derivation `:4071`.
+
+- **The slots** (the expected after-diff, audited before the code): `vm.brand` — the wordmark
+  and nav brand (`Wordmark`, `FlatNav`, `NavBar`, `InsetCard`), and the name printed by the bio,
+  the calendar, the gallery, the testimonials' stat card, the enquiry form and the footer;
+  `vm.initials` — `Photo`'s placeholder, `LogoMark`, the bio; `vm.badgeText` — `SealBadge`;
+  `NOW_PLAYING.by` — the player's credit; `vm.copyright`; `vm.heroTitle` — the h1 (`Title`,
+  `FlatHeader`); and outside `EncoreSection`, the published `<title>`, the publish dialog's line
+  and `siteSlug()`. Every one but the h1 already read the derived `artistName`; the h1 read the
+  stored `c.title`, so an emptied Title blanked it alone. That was the whole defect.
+- **The name.** `nameOf(title, fallback)` beside `initialsOf` is the one derivation: the
+  builder's `artistName` is `nameOf(header.c.title, profileName)`, and `sectionVm` resolves a
+  header's own `name` the same way (any other section takes `artistName`), so `vm.heroTitle` is
+  `vm.brand` and a header preview or a harness `&cj=` cannot split the h1 from the wordmark,
+  badge and initials. The header's `vm.badgeText` fallback reads `name` too; `badgeText`'s own
+  emptiable semantics (behind `showBadge`) are untouched.
+- **Required, in the editor.** `NameInput` (beside `UrlInput`) holds an emptied or all-space box
+  as a local draft and never commits it: the page keeps the last name meanwhile, a grey line says
+  "Your name is required. The page keeps “…” until you type another.", and blur drops the draft,
+  so the box shows the name again. Nothing is stored trimmed — a space mid-typing survives. So
+  `c.title` never trims to empty from the editor, the prop is read only while the key is absent
+  (a fresh page), and A's "Publish says why" branch has nothing to meet: pressing Publish blurs
+  the box first. Option A's "red box" variant was not needed.
+- **How the harness reaches the name:** `&cj=` merges into the section under test only, so a
+  header `&cj=` reaches the header alone; every other section takes `artistName` from `&name=`
+  (the `artistName` prop, default Kai Mercer). The harness repro is therefore the header's; the
+  other slots, which read code this entry did not change, are proved in the editor.
+- **Verified.** Seeded digest themes 0, 1, 2, canvas and `live=1`: 387 + 387 byte-identical
+  before/after. `cat=header` × six layouts × themes 0, 1, 2 × three widths with `&cj=` title
+  `''`, `'   '` and `'  Kai Mercer '`: before, `''` and `'   '` differed from the seed on 54/54
+  canvas and 54/54 live (the empty h1); after, all three are byte-identical to the seed on 54/54
+  + 54/54 — under A that is the right after-diff, not a moved slot list. End to end (one-off
+  puppeteer, deleted), Retro / Lime / Grunge card 3 and Lime card 1: type `QATITLE Jane Smith` →
+  canvas and published tab ×12 (×11 on card 1), Kai Mercer ×0, `<title>` the name; select-all +
+  Backspace → box empty with the hint, canvas unchanged (×12, h1 the name); `'   '` likewise;
+  blur → the box reads the name again; clear and press Publish directly → box restored,
+  republished tab ×12, Kai Mercer ×0, `<title>` `QATITLE Jane Smith`, no page errors. The same
+  script on the pre-fix tree: cleared → h1 `""`, Kai Mercer ×11 (×10), `<title>` Kai Mercer —
+  the ticket. Retro, Lime and Grunge moved together; nothing is template-gated. No `in` moved.
+- Docs: CLAUDE.md's *artist's name* bullet, `FIELDS.header.title`'s comment, the derivation's
+  comment in `EncoreBuilder`. README has no passage on the name (grep: none), so nothing there
+  to rewrite.
 
 ---
 
