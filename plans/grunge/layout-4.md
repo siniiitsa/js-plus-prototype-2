@@ -232,7 +232,7 @@ it is the gate this session widens.
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Lime twin (1440 / 768 / 390) | Retro twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `header` | `964:72944` | 1440 × 900 | `971:7823` | 768 × 1024 | `977:12044` | 390 × 844 | `964:72849` / `971:5299` / `977:8867` | `964:72511` / `964:77544` / `971:14040` | `if (s.lime) { … return }` at the head of `HeaderV3` | — |
+| 1 | `header` | `964:72944` | 1440 × 900 | `971:7823` | 768 × 1024 | `977:12044` | 390 × 844 | `964:72849` / `971:5299` / `977:8867` | `964:72511` / `964:77544` / `971:14040` | `if (s.lime) { … return }` at the head of `HeaderV3` | done `0c454fa` |
 | 2 | `bio` | `964:72952` *(Section `964:72945`, head `964:72946`)* | 664 × 720 | `971:7831` *(Section `971:7824`, head `971:7825`)* | 708 × 720 | `977:12052` *(Section `977:12045`, head `977:12046`)* | 370 × 536 | `964:72857` / `971:5307` / `977:8875` | `964:72519` / `964:76446` / `971:14479` | `if (s.v3 && s.lime)` ahead of `Bio`'s `if (s.v3)` | — |
 | 3 | `media` | `964:72959` *(band `964:72953`, head `964:72954`)* | 1440 × 671 | `971:7955` *(band `971:9533`, head `971:10395`)* | 768 × 501 | `977:12182` *(band `977:12176`, head `977:12177`)* | 390 × 834 | `964:72864` / `971:5431` / `977:9005` | `964:72526` / `971:15190` / `971:14834` | `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)` | — |
 | 4 | `gallery` | `964:73004` *(wrapper `964:72969`, head `964:72970`)* | 874 × 646 | `971:8121` *(wrapper `971:8086`, head `971:8087`)* | 768 × 594 | `977:12348` *(wrapper `977:12313`, head `977:12314`)* | 390 × 586.3 | `964:72909` / `971:5597` / `977:9171` | `964:72815` / `964:78491` / `977:8142` | `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from` | — |
@@ -752,10 +752,91 @@ them.
 - **Effects are back, and every one is a backdrop blur.** Four per page, three behind opaque fills;
   no inner or drop shadow on any master.
 
+### Settled in section 1 (the header)
+
+- **No Grunge block: Lime's `if (s.lime) { … return }` at the head of `HeaderV3` is
+  `(s.lime || s.grunge)`**, `const grunge = s.grunge` naming about a dozen deltas (no `G`). The
+  paired diff against the Lime twin at all three widths was the whole read: the tree matches node
+  for node plus the grain rect. Nothing in Retro's half read `s.grunge`, so it simply became
+  unreachable under Grunge. `lime3` / `lift` take Grunge arms (`#9E1F17` / `#F52E34`, Scheme 3's
+  `box1` / `box2`).
+- **The seal: `SealBadge` needed an additive Grunge arm.** Under Grunge it always drew the red
+  disc whatever `scheme` said, so `scheme === 4` now gives `[s.bg, s.ac]`, a black disc with red
+  marks and name. That is Scheme 4 ≡ Scheme 1's `sem/bg` / `sem/text/1`, and HeaderV3's Lime
+  block is the only caller that passes 4. HeaderV3 passes 4 at 1440 and 3 narrow, because the
+  768 `Frame 247` states no scheme and inherits the header's Scheme 3. **Position and size are
+  not re-measured**: the diff found `Frame 247` / `Frame 248`'s boxes identical to Lime's at all
+  three widths, so Lime's pixel-scanned placements stand.
+- **The mirror is Lime's alone** (`desk && !grunge`): Grunge's fill is `FILL`, which ignores the
+  transform.
+- **`navGapEm` is 0 under Grunge at `d >= 1`, and NavBar takes the gaps as a fixed box.** The
+  links are bound to `size/label-md` (read off `boundVariables`), and `Frame 50` spaces them, and
+  the pill, a fixed 23. So NavBar has a new additive `links={{ gap, cap }}`: the gap is `u(23)`,
+  and the type is `clamp(12px, (100cqi − gap × (n − 1)) / navEms, s.labelMd)`. The seeded nine
+  sit at the cap, 12px rendered (16 × 0.75), on one row. Two more additive props:
+  - `mark={{ glyph, gap }}` on NavBar and `gap` on Wordmark: the narrow masters keep the 36
+    globe 13.15 from the name, where the hero's shrink it to 27.37 / 10.
+  - `nameSize` now reaches the Wordmark at every width when `mark` is passed, since the name is
+    `size/label-lg` 24 / 16 / 14.
+  The pill is BookPill's Grunge default exactly (red, black label, black disc round a red arrow).
+  The 390 pill keeps Lime's × 0.712 recipe, since the boxes match to the hundredth.
+- **The name is two-tone and `inline` at every width**: `Title twoTone toneA={s.tx}
+  toneB={s.bg}`. The 1440 master sets "StaticYouth" on one 149-tall line, with no hand-break.
+  The kicker and the location are direct `s.display` sites (`faced` / `facedLh`), inked `s.bg`
+  (Scheme 3's `text1`). The location is uppercased.
+- **The avatar's ring is an overlay**: 1px inside, white (Scheme 3 `stroke/2`), radius 12, drawn
+  as an inset `boxShadow` over the photograph. Initials are `s.tx` on the red well.
+- **The chips are `vm.tagChips`' own seats** (`#1A1A1A` lettered white, `#DF262C` lettered
+  `#0D1F03`), not Lime's inlined pale pair. Radius, padding and Label/XS are Lime's, read through
+  `s.radiusChip` and `s.labelXs`.
+- **The grain is the frame's last child, so it lies over everything**: nav, type, seal. It is
+  lighten .29 (not the plan's .3; its gradient paint is hidden, so there is no mask). It is a 1440
+  square hung 270 above the top at 1440 (`u()`, `aspect-ratio: 1`), and 768 × 1030 / 390 × 850
+  from 6 above narrow, all through one four-value `inset`.
+- **Measured against the masters** (× 0.82 at desktop):
+
+  | Width | Avatar | Kicker | h1 (y × height) | Location | Chips | Capsule | Pill |
+  |---|---|---|---|---|---|---|---|
+  | 1440 | 359.4 (358.6) | 489.5 (488.7) | 536.8 × 121.5 (536.3 × 122.2) | 673 (673.2) | at 852 / 633.8 | 1088.2 × 60.6 | 125 × 44.3 (128.7 × 44.3) |
+  | 768 | 586.5 (586) | 745.5 (745) | 794.3 × 71.3 (794 × 71) | 883.6 (883) | 936.4 (936) | 708 × 74 | — |
+  | 390 | 431.6 (431) | 590.6 (590) | 637.2 × 39 (exact) | 694.2 (694) | 745.8 (746) | 370 × 58.4 | — |
+
+  At 1440 the links come out 27.8–80.7 wide against the frame's 28.7–84.5 × 0.82.
+- **Named diffs**:
+  - Anton is narrower than Stones Crush, so the links and the pill run a few px short.
+  - Ours has a ninth link, Availability.
+  - Five chips where the frame draws six (`TAG_LABELS`).
+  - The frame letters its second and third red chips white (`scheme/4/tag1/text`,
+    `sem/tag/6/text`), a component override the seats do not model, where ours letter all three
+    `#0D1F03`. This is layout 3's header reading again.
+  - The mock name's missing space.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `header_arch_3` at three widths on both surfaces.
+- **Verified in the builder** (`page-check.mjs Grunge 3,0,1,2`, plus one one-off script,
+  deleted):
+  - The modal offers four Grunge cards with no `conic` gradient on any, and card 4's disc is
+    black.
+  - After *Use this header* the page list reads ten rows at "layout 4" and the footer at
+    "layout 1". Published, the page stacks in the seeded order with no composed row.
+  - All nine nav links and Book Now scroll (Book Now to `#form`). The 390 burger goes 1 → 11
+    links, and the 820 burger 1 → 11 in a fresh tab, where a panel link scrolls `#pricing` and
+    overflow is 0.
+  - No errors on any of the four cards.
+- **`FIELDS.header` needed no change**: `reach.mjs 2` over the fitted card folds to the stored
+  rows. Kicker / tags / showTags are `[0, 2, 3]`, location all four, showBadge / badgeText
+  `[0, 3]`, cta2 `[1, 2]`, subtitle / heroCta `[1]`, align `[0]`.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
 Conventions, or Lime's, with the plan it came from — the running list for the sweep's item 6.)*
+
+- Header: *the paired diff walk* (grunge/layout-2); *read `boundVariables`* (grunge/layout-3, the
+  links' `size/label-md`); *read a fill's `scaleMode` before its `imageTransform`* (grunge/layout-2,
+  the unmirrored photo); *a frame's inside stroke is an inset `boxShadow` on an overlay*
+  (lime/layout-2, the avatar); *`vm.title` shadows the ramp's `title` size* (lime/layout-1, the
+  kicker literal); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1); *Scheme 4 ≡
+  Scheme 1* (grunge/layout-1, the seal).
 
 ## Open questions
 

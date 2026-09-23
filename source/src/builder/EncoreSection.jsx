@@ -888,7 +888,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // Grunge's seal (964:58600 "Frame 178") is the same component again — the
   // same 125.37 / 120 / 109.3 / 14 and the same "Group 9" — as a `sem/active/bg`
   // disc with black marks, which is this branch's Scheme 3 pair on Grunge's
-  // own palette, so it takes that pair whatever `scheme` says. The footer's
+  // own palette, so it takes that pair unless `scheme` is 4 (below). The footer's
   // (964:58610 "Frame 178") is the frame that draws another: a `sem/bg` disc
   // with its rings and ticks in `sem/stroke/2` and the name in `sem/active/bg`
   // — the two reds the mode states, both followed. `line` asks for it; it is
