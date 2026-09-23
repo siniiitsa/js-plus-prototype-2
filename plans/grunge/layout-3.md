@@ -204,7 +204,7 @@ the block); it is the gate this session widens.
 | 7 | `pricing` | `964:68712` | 1440 × 1138 | `984:13925` | 768 × 993 | `984:13956` | 390 × 1393 | `964:68680` / `984:10765` / `984:10796` | `964:68648` / `977:23149` / `982:10274` | `if (s.lime)` inside `Pricing`'s `if (s.v2)`, after `shown` | done ec1c994 |
 | 8 | `map` | `964:68713` | 1440 × 818 | `984:13926` | 768 × 828 | `984:13957` | 390 × 887 | `964:68681` / `984:10766` / `984:10797` | `964:68649` / `977:23264` / `982:10389` | `if (s.lime)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | done 627849a |
 | 9 | `form` | `964:68714` | 1440 × 562 | `984:13927` | 768 × 728 | `984:13958` | 390 × 741 | `964:68682` / `984:10767` / `984:10798` | `964:68650` / `977:23406` / `982:10472` | `if (s.lime)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | done fdc9c25 |
-| 10 | `testimonials` | `964:68715` | 1440 × 790 | `984:13928` | 768 × 789 | `984:13959` | 390 × **1248** | `964:68683` / `984:10768` / `984:10799` | `964:68651` / `982:8584` / `982:10499` | `if (s.lime)` inside `Testimonials`' `if (s.v2)`, after `template` | — |
+| 10 | `testimonials` | `964:68715` | 1440 × 790 | `984:13928` | 768 × 789 | `984:13959` | 390 × **1248** | `964:68683` / `984:10768` / `984:10799` | `964:68651` / `982:8584` / `982:10499` | `if (s.lime)` inside `Testimonials`' `if (s.v2)`, after `template` | done 9dc2a7a |
 | — | `footer` | `964:68716` | 1440 × 479.5 | `984:13929` | 768 × 647.4 | `984:13960` | 390 × 619.4 | `964:68684` | — | — | **out of scope**: Grunge's own layout-1 footer, tree for tree (above); `NVAR.footer` is 1 |
 | — | `tags` | `964:68696` | 858 × 75 | `984:13909` | 708 × 67 | `984:13940` | 370 × 97 | `964:68664` | — | — | **not in the project** (`d734992`); its Genres row is drawn inside the bio's Lime block, under the card |
 
@@ -232,9 +232,12 @@ Anton at 0.75 runs narrower than Bebas Neue per em. The frames move where the ty
 | form | **562 / 728 / 741** | 570 / 734 / 755 |
 | testimonials | 790 / **789** / **1248** | 790 / 790 / 1108 |
 
-**The 390 testimonials master is 140 taller than Lime's** on an identical tree — Stones Crush at
-Grunge's mobile ramp wraps its quotes further. The section is content-tall (Retro's reading), so
-the number is the master's and not a target; the session names the diff. The pricing stack is
+~~**The 390 testimonials master is 140 taller than Lime's** on an identical tree — Stones Crush at
+Grunge's mobile ramp wraps its quotes further.~~ *Corrected in section 10:* the tree is identical
+but the **token is not** — the quote binds `size/title` (26 at 390) under Grunge where Lime binds
+`size/label-lg` (14), so the 140 is a type ramp and not a wrap. The section is content-tall
+(Retro's reading), so the number is the master's and not a target; the session names the diff.
+The pricing stack is
 **61 / 79 / 81 shorter** than Lime's on the same tree, the display numerals and rows at Grunge's
 smaller label sizes; measure the rows as Lime's session did (`flex-1` divisions of the stated
 card), never transcribe them.
@@ -263,7 +266,7 @@ walk; each session re-reads its narrow masters.
 | pricing | page | the featured `row` (1328 × 266) **Scheme 3**: fill `#DF262C`, 1px `#FFFFFF` ring | the featured row is Scheme 3's `bg` under `#000000` type in Scheme 3's white `stroke2`; its badge Scheme 3's `box/1` `#9E1F17` (Lime `lime3`); **the instance carries a visible 1px `#FFFFFF` 15% ring** — layout 2's pricing drew Grunge's where Lime declined, and so does this one |
 | map | **Scheme 4** ≡ 1 | `radius-map` (634 × 706) **Scheme 3** — ~~✱ (Lime Scheme 2)~~; *corrected in section 8*: **Lime's is Scheme 3 too**, and what moves is the *binding*, `sem/box/1` → **`sem/box/2`** `#F52E34`. Its `Map View Container` stays `box/1`, so under Grunge that is **`#9E1F17`** where Lime's is `lime3` again | root `#000000`: **no pale sheet** — layout 2's form trap in the map (below); the panel is Scheme 3's `box/2`, the layout-2 travel card's red, not `lime3` |
 | form | Scheme 1 | — | root `#000000`; the card and boxes `s.box1` in `stroke1` (read); the submit red |
-| testimonials | page | `rating` 275 **Scheme 3** (`#9E1F17`, black 15% ring); `quote-cell` 511 **Scheme 3** ✱ (`#9E1F17`, unstroked; Lime Scheme 2); `name-cell` 510 **Scheme 4** ✱ (`#1A1A1A`, white 15% ring; Lime Scheme 2); `small-quote` 510 **Scheme 3** ✱ (`#9E1F17`, black 15% ring; Lime Scheme 4); `feat-quote` inherits (`s.box1` by inheritance — read it) | a **red / red / dark / red / dark** register where Lime's was olive / olive / olive / mist / olive: write a Grunge `REG`, never remap Lime's |
+| testimonials | page | `rating` 275 **Scheme 3** (`#9E1F17`, black 15% ring); `quote-cell` 511 **Scheme 3** ✱ (`#9E1F17`, unstroked; Lime Scheme 2); `name-cell` 510 **Scheme 4** ✱ (`#1A1A1A`, white 15% ring; Lime Scheme 2); `small-quote` 510 **Scheme 3** ✱ (`#9E1F17`, black 15% ring; Lime Scheme 4); `feat-quote` inherits (`s.box1` by inheritance — read it) | *Section 10:* the row above names five nodes for **six** cells — row 0's `name-cell` has no scheme override and was missed. The stat card is red, and the five **quote** cells run **dark / red / dark / red / dark**, which is **two** registers where Lime has three: write a Grunge `REG` and a Grunge `SEATS`, never remap Lime's |
 | footer | Scheme 2 (layout 1's) | — | `#171716` |
 
 Six traps in that table, each a place where Lime's block reads a key that lands on the wrong
@@ -645,7 +648,8 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   "Book Me" stood 30 below "KM BIO" on the 1440 page. *Closed in section 5*: with all three
   joined, the Lime half and the Grunge half are one condition again
   (`(T.name === 'Lime' || T.name === 'Grunge') && (bio || calendar || media)`) and the three
-  heads stand together at 41.
+  heads stand together at 41. **The form-and-testimonials arm parted the same way and closed
+  the same way** in sections 9 and 10.
 - **A widened block can need no `G` at all, and `boundVariables` is what says so in one call**
   (section 9). Every trap this pass has met was a *key that lands on the wrong value* — a moved
   scheme, a moved binding, a literal with no key. The form is the other outcome: all five of
@@ -653,6 +657,13 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   the Lime block already reads, so the mode swaps every value and the widening is the face and
   two numbers. Read the bindings **before** reaching for a `G`: a lookup written over keys that
   already resolve is a Lime arm restating itself.
+- **`faced` is for a glyph the frame states; an invented size is left where it is** (section
+  10). Every display- and label-face site under Grunge owes `faced` / `facedLh` because the
+  frame states a Stones Crush size there and the scaling lands Anton in the frame's own line
+  box. The testimonials' 24px face-stack disc is the exception the rule needed: the frame puts
+  **photographs** in that seat, so its 11px is Retro's own invention carried by Lime, there is
+  no frame glyph to land, and × 0.75 only made two marks in a 19.7px disc unreadable. Read the
+  seat before scaling it — `faced` on a number nobody measured is a shrink, not a fit.
 - **The calendar's foot is `vm.padY`, not the frame's 56, and that is Lime's arm.** The
   `d === 2` arm gives the calendar `vm.padY` under its card — 80 at desktop against the
   frame's 45.9 (56 × 0.82), exact at 768 and 4 over at 390. Section 4's repertoire-gap rule:
@@ -1339,6 +1350,115 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Digest**: themes 0, 1, 3 and 4 zero files over all 645 renders, canvas and `live=1`; theme
   2 exactly form arch 2 at three widths on both surfaces.
 
+### Settled in section 10 (the testimonials)
+
+- **No Grunge block, for the tenth and last time in this pass: Lime's `if (s.lime)` inside
+  `Testimonials`' `if (s.v2)`, after `template`, is `(s.lime || s.grunge)`**, with a **ten-key
+  `G`** at its head (`REG`, `SEATS`, `card`, `cardFg`, `hair`, `lift`, `radius`, `pad`, `quote`)
+  whose Lime arm is the block's own literals — `mist`, `lime3`, `lift` and `hair` are gone as
+  standalone consts — and a `disp(family, size, lh)` spread (`faced` / `facedLh` / uppercase
+  behind `grunge`) for the six display-face sites. The walk was a **paired diff** against the
+  Lime twin, one call per master: **44 = 44** at all three widths, with every box, gap and inset
+  Lime's, **no Device override** and **no effect on any node** — the eighth pass running. The
+  section has no control on either template, so `desk`, `u`, `n`, `marked`, `perRow` and
+  `template` are read unchanged and `live=1` digests byte-identical to the canvas at all three
+  widths. Retro's `T`, `cardBg` … `cardLine`, `REG`, `SEATS`, `edge`, `body12`, `quoteType`,
+  `disc`, `statCard`, `quoteCard` and `empty` stay unread, as under Lime.
+- **The wall has two registers, not three, and Lime's seating does not carry.** The five quote
+  cells run **dark / red / dark / red / dark** — `name-cell` `#1A1A1A` (`sem/box/1` on Scheme 1
+  and on Scheme 4, which is Scheme 1) in a white 15% `s.stroke1` ring, `quote-cell` and
+  `small-quote` **`#9E1F17`** (Scheme 3's `box/1`) in Scheme 3's **black** 15% `#00000026`, and
+  `feat-quote` dark again — where Lime's run olive / `box2` / `box2` / mist / olive. So `SEATS`
+  is **`[0, 1, 0, 1, 0]`** over a two-entry `REG`, read off each cell's own fill at all three
+  widths rather than inherited: the plan's ✱ marks were right about the schemes and right that
+  Lime's `[0, 1, 1, 2, 0]` could not be remapped. The **dark register is Lime's `REG[0]` key for
+  key** — `s.box1` / `s.tx` / `s.stroke1` / `s.bg`, disc `s.ac` lettered `sem/bg` — so only the
+  red one is new.
+- **The quote is a different token, and that is the 390 master's 140.** Grunge binds it to
+  **`size/title` in `font/display`** (36 / 28 / 26) where Lime binds `size/label-lg` in
+  `font/label` (32 / 21 / 14). `s.title` is shadowed by `vm.title`, so `G.quote` writes the size
+  out — `s.mob ? '26px' : tab ? '28px' : u(36)`, the events map's `titleSize` — and it renders
+  **22.125 / 21 / 19.5px in 32.4 / 30.8 / 28.6 line boxes**, the ramp × 0.75 with the frame's own
+  1.1 box held, for the third section running. The family is `s.label` either way: both
+  templates set `display` and `label` to one face, so only the size and `faced` move. At 390 that
+  is 19.5px of Anton against Lime's 14px of Bebas over the same five cells, which is the whole of
+  the master's **1248 against Lime's 1108** — not "Stones Crush wraps further", as the plan
+  guessed.
+- **The stat card letters in two inks, the pass's first two-tone card.** Scheme 3's
+  `sem/text/1` is **black** and its `sem/text/2` **white**, so the card's own ink is `G.cardFg`
+  = `s.tx` (`/5`, the unit, `sub`, `brand`) and the numeral takes `s.bg` back behind `grunge` —
+  which is the frame's `#000000` **by construction**, this scheme's `text/1` being black, and not
+  by the coincidence section 8 named. Sampled off the master's render: `#9E1F17` ground at
+  (158, 31, 23), numeral and the dropped stars (0, 0, 0), prose (255, 255, 255). Under Lime the
+  whole card stays `s.bg`, so theme 1 digests to zero.
+- **The face stack is the one display-face site in the block that is not `faced`.** Its ring is
+  Scheme 3's `sem/box/2` **`#F52E34`** (Lime's `lift` `#D9FF7F`) and Lime's invented pair — an
+  `s.bg` disc lettered `s.ac` — is kept, which on `#9E1F17` is a black disc under stamp red.
+  But its **11 is Retro's invented size, not a frame glyph**: the frame puts photographs in this
+  seat and states no type at all, so `faced` has nothing to land — scaling it to 6.75px made two
+  marks in a 19.7px disc unreadable (rendered and looked at). Anton is set at the number Bebas
+  is, 9 / 11 / 11, and takes the casing alone. **The rule is `faced` where the frame states a
+  glyph size; an invented micro-size is left where it is.**
+- **Radii and padding.** The cells and the stat card are a raw **15 at every width** (Lime 50),
+  and the padding is **24** (Lime 30) — the Grunge masters state **28 on the last column of each
+  row** (`quote-cell` and `feat-quote`) and 24 on every other cell at all three widths, a
+  position a wall of any count cannot model, so the majority is taken and the diff named. The
+  frame's one **unstroked** cell is `quote-cell` on both templates, and it is ringed like its
+  neighbours, Retro's normalisation inherited whole.
+- **No `T` table, for the fifth section running.** Every other size is the ramp's at all three
+  widths: display-md 72 / 50 / **38** (Lime 40) for the head *and* the numeral, label-lg
+  24 / 16 / 14 for the disc mark, list 24 / 19 / 18 for the reviewer, body-lg / md / sm the
+  ramp's (`s.bodySm` 12 / 12 / 12 against Lime's 13 / 13 / 12). The head is **one white tone** at
+  every width (the segments) — the bio's, media's, gallery's, pricing's and the map's reading for
+  the sixth time.
+- **Measured against the masters' content edges**: desktop section **626.6** against
+  790 × 0.82 = 647.8, root pad 46 (56 × 0.82), head **73** (89 × 0.82 = 73, exact), grid at 138.7
+  (169 × 0.82 = 138.6), h2 44.25px in a 59 line box, cells at radius **12.3** in 19.7 padding,
+  row 0 **225.5** / 400.2 / 400.2 (the frame's 275 seat exact) and row 1 399.8 / 399.8 / **226.3**
+  (the 276 seat exact), rows 214.4 against 274.5 × 0.82 = 225.1; 768 section 837.9 against 789,
+  pad 30 / 56, head 66.8 (67), h2 37.5px, cells radius **15** in **24**, row 0
+  **275** / 190.5 / 190.5 and row 1 190 / 190 / **276**, rows 346.4 / 298.8 (298); 390 section
+  1622.5 against 1248, pad `padY` 44 both ends, head 54.8 (55), h2 28.5px, six stacked cells at
+  217.8 + 5 × 231.6 (the frame's own `name-cell` is 233).
+- **Named diffs, Lime's and Retro's**: the desktop measure is **1052** against the frame's
+  1328 × 0.82 = 1088.9 and the narrow root paddings are ours, the page gutter — Retro's diff
+  through Lime; the rows are **content-tall** where the frame's are `flex-1` residues of a stated
+  790, so they run short at 1440 and long at 768 where our quotes wrap further in a 190.5 column;
+  the head prints `vm.title`'s "Word of Mouth" where the frame writes "Experiences."; the
+  numeral is the review count and the stars, the `®` and the 306 head cap stay dropped, Retro's
+  re-seating. **The 390 section's 1622.5 against 1248 is the seed, not the fit**: all five seeded
+  reviews carry a name and a role, so all five cells are the frame's 233-tall `name-cell`, where
+  the master fills three of its six seats with bare repeated quote cells — the branch's own
+  "the frame's five quote cells are the component's default content" reading, measured.
+- **Edge states** (puppeteer, probes deleted; `theme=2&live=1` at desktop and 390): `n=0` keeps
+  the stat card at *0 reviews* with no stack beside a dark *No reviews yet.* cell; `n=1` fills
+  row 0; `n=8` gives row 1 the 276 seat and row 2 three equal fills, the fifth review (no `who`,
+  no `role`) collapsing to the frame's bare quote cell in that 276 seat and the stack marking
+  only the named seven, with the seats still cycling dark / red / dark / red / dark / dark / red
+  / dark. No pointer cursors, no anchors, no page errors or warnings.
+- **`vm.pad`'s layout-3 arm takes the wall under Grunge, and the two halves close.** The masters'
+  own root paddings are 56 / 56 at 1440, 30 / 56 at 768 and 30 / 60 at 390 — Lime's to the pixel
+  — so the condition is `(T.name === 'Lime' || T.name === 'Grunge') && (cat === 'form' || cat ===
+  'testimonials')` again, the bio's rule in section 2 and the composed row's in section 5, for
+  the last time in this pass. 390 stays `padY`'s 44, "390 is under the frames".
+- **`FIELDS.testimonials` holds, and nothing was owed**: every `in` row is a flat array — no
+  template-keyed row, the map's and the form's finding for a third time — and `reach.mjs 2`
+  (2,784 renders) reports **no identity key reaching this section at all**, so no row moves.
+  Layout 2's sweep had already recorded the same.
+- **Nothing owed to the sweep's item 1 either.** CLAUDE.md's layout-3 testimonials paragraph
+  ("**Layout 3 is a bento wall and the one design here that pages nothing**") names no
+  template-specific state, and its neighbour's "layout 3 draws neither either" is about texture
+  both templates lack. This is the first section of the pass whose prose needs no Grunge clause.
+- **Verified in the builder**: `scripts/page-check.mjs Grunge 2` — four modal cards, bio and
+  calendar composed at top 738, media under the bio at 1761, the testimonials at **5939 · 627**
+  between the form's floor and the footer's head, every nav link, footer link and anchor
+  scrolling, `controls.testimonials` empty (the wall pages nothing), no errors or warnings, the
+  390 burger 1 → 11 with no overflow. The 1440 seam clip shows the section standing on the page
+  ground with no sheet edge.
+- **Digest**: themes 0, 1, 3 and 4 zero files over all 645 renders, canvas and `live=1`; theme 2
+  exactly testimonials arch 2 at three widths on both surfaces, and the three live files are
+  byte-identical to the three canvas ones.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's or 2's or
@@ -1432,6 +1552,23 @@ Lime's Conventions, with the plan it came from — the running list for the swee
   finding: no `G` lookup, no named literal, no scheme reading — *a section on another scheme
   writes that scheme's values as named literals* had nothing to bite on, for the first time in
   the pass.
+- Section 10: *the paired diff walk* (grunge/layout-2, section 8) — 44 = 44 at three widths,
+  one call for the desktop pair (its tail truncated at 20 KB and was re-read on its own) and
+  one per narrow master; *the `G` lookup at the block's head*, ten keys; *a section on another
+  scheme writes that scheme's values as named literals* (Scheme 3's `#9E1F17`, `#F52E34` and
+  `#00000026` — all three, and its black `text/1` where `s.bg` happens to agree); *read every
+  nested node's scheme off the Grunge master, never off Lime's row* (this plan's Conventions —
+  the section that most needed it: three of the five cells moved scheme and the register count
+  moved with them); *a frame's inside stroke is an inset `boxShadow`* (lime/layout-2 — the
+  block already drew every ring that way); *where the seam lives inside the branch, the block
+  goes after the seam* (lime/layout-1 — here there is no seam at all, the wall paging nothing);
+  *every glow is a guess until `effects` confirm it* (none here, for the eighth pass running);
+  *a stand-in face is scaled* (`faced`, grunge/layout-1 — and the **one** site in the pass
+  where it was read and declined, the frame stating no glyph there); *casing stays the theme's;
+  uppercase per site*; *`vm.title` shadows the ramp's `title` size* (lime/layout-1 — why the
+  quote's 36 / 28 / 26 is written out); *field reach is measured* (none owed, a third time);
+  *the whole-page published check is one puppeteer script*; *theme 1 is the digest at risk*
+  (zero, a tenth time).
 
 ## Open questions
 
