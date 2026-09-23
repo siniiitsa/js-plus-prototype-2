@@ -399,12 +399,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 984:10768), where `padY` doubled up to 160 / 112. The wall's own foot is
   // 56 at both widths — the 768 `padY` already. 390 is under the frames.
   //
-  // Grunge's form masters state the same insets to the pixel (964:68714 ·
-  // 984:13927), so the form joins the arm; the wall joins in its own session,
-  // the composed row's rule (plans/grunge/layout-3.md), which is why the
-  // condition is two halves until then.
-  if (((T.name === 'Lime' && (cat === 'form' || cat === 'testimonials'))
-    || (T.name === 'Grunge' && cat === 'form')) && d === 2 && Z.dev !== 'mobile') {
+  // Grunge's form and testimonials masters state the same insets to the pixel
+  // (964:68714 + 964:68715 · 984:13927 + 984:13928 — the wall's own root pads
+  // 56 / 56 at 1440 and 30 / 56 at 768, Lime's numbers), so both templates are
+  // one condition again; the pair was two halves for one session, the composed
+  // row's rule (plans/grunge/layout-3.md).
+  if ((T.name === 'Lime' || T.name === 'Grunge')
+    && (cat === 'form' || cat === 'testimonials') && d === 2 && Z.dev !== 'mobile') {
     const desk = Z.dev === 'desktop'
     const px = (v) => `${desk ? Math.round(v * 0.82) : v}px`
     vm.pad = cat === 'form'

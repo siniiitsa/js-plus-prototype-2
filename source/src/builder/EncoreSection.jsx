@@ -19401,54 +19401,130 @@ function Testimonials({ s }) {
         : Array(k).fill(fill).join(' ')
 
     // Lime (964:68683 · 984:10768 · 984:10799) — `if (s.lime)` after the
-    // wall's arithmetic, this pass's seat inside a branch. The tree is Retro's
-    // twin's box for box (the 30 padding, the 14 / 16 / 24 gaps, the 56 and 24
-    // discs at −8, the 275 / 276 seats, the foot's 10), so `u()`, `n`,
-    // `marked`, `perRow` and `template` are shared and the one box that moves
-    // is the corner, **50** where Retro's is 30. Every size is the ramp's at
-    // all three widths (display-md, label-lg, list, body-lg / md / sm), so no
-    // `T` table. Retro's `REG`, `SEATS`, `cardBg`, `edge` and cards are
-    // `paper` / `deep` derivations and are not read. No node carries an effect.
-    if (s.lime) {
-      const mist = '#D5E3B2'  // Scheme 4 `sem/box/1` — the small quote
-      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the stat card
-      const lift = '#D9FF7F'  // Scheme 3 `sem/box/2` — the face stack's rings
-      const hair = '#15180F26' // `sem/stroke/1` on a light scheme, 15% ink
+    // wall's arithmetic, this pass's seat inside a branch — widened to
+    // `(s.lime || s.grunge)` for Grunge (964:68715 · 984:13928 · 984:13959).
+    // The tree is Retro's twin's box for box (the 30 padding, the 14 / 16 / 24
+    // gaps, the 56 and 24 discs at −8, the 275 / 276 seats, the foot's 10), so
+    // `u()`, `n`, `marked`, `perRow` and `template` are shared and the one box
+    // that moves is the corner, **50** where Retro's is 30. Every size is the
+    // ramp's at all three widths (display-md, label-lg, list, body-lg / md /
+    // sm), so no `T` table. Retro's `REG`, `SEATS`, `cardBg`, `edge` and cards
+    // are `paper` / `deep` derivations and are not read. No node carries an
+    // effect, on either template's three masters.
+    //
+    // **Grunge (Static Youth) is the same tree a third time — 44 = 44 nodes at
+    // all three widths, paired-diffed against the Lime twin** — on Scheme 1
+    // with no Device override, so what moves is the `G` lookup below and the
+    // face. Three of its findings are not colour swaps:
+    //
+    //  - **The wall has two registers, not three.** Lime's five quote cells
+    //    run olive / box2 / box2 / mist / olive; Grunge's run dark / red /
+    //    dark / red / dark (`#1A1A1A` on Schemes 1 and 4, `#9E1F17` on Scheme
+    //    3), so `SEATS` is `[0, 1, 0, 1, 0]` over a two-entry `REG`. Read off
+    //    each cell's own fill, never inherited from Lime's seating.
+    //  - **The quote is a different token.** Grunge binds it to `size/title`
+    //    in `font/display` (36 / 28 / 26) where Lime binds `size/label-lg` in
+    //    `font/label` (32 / 21 / 14) — the whole of why the 390 master is
+    //    1248 tall against Lime's 1108 on an identical tree. `s.title` is
+    //    shadowed by `vm.title`, so the size is written out (the events map's
+    //    `titleSize`); the family is `s.label` either way, both templates
+    //    setting display and label to one face.
+    //  - **The stat card letters in two inks.** Scheme 3's `text/1` is black
+    //    and its `text/2` white, so the numeral (and the dropped stars) are
+    //    `s.bg` while `/5`, `sub` and `brand` are `s.tx` — where Lime letters
+    //    the whole card `s.bg`. Sampled off the master's render: `#9E1F17`
+    //    ground, (0,0,0) numeral, (255,255,255) prose.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const ring = (c, w = 1) => `inset 0 0 0 ${w}px ${c}`
-      // The frame's five quote cells by scheme, read off the nodes' fills: a
-      // Scheme 1 olive, two Scheme 2 `box/1`s (`#394732`, which is Scheme 1's
-      // `box2`), Scheme 4's mist and Scheme 1's olive again. `disc` is the
-      // initials' ink, the cell's own `sem/bg` — which is why the second row's
-      // disc is lettered in `#2E3928` and the first row's in `s.bg`. The mist
-      // cell carries no disc in the frame, so its `s.bg` is the scheme's
-      // legible reading. Seat 1's `quote-cell` is the frame's one unstroked
-      // cell; it is ringed like its neighbours, Retro's normalisation of the
-      // same bare cell.
-      const REG = [
-        { bg: s.box1, fg: s.tx, edge: s.stroke1, disc: s.bg },
-        { bg: s.box2, fg: s.tx, edge: s.stroke1, disc: s.box1 },
-        { bg: mist, fg: s.bg, edge: hair, disc: s.bg },
-      ]
-      const SEATS = [0, 1, 1, 2, 0]
+      // The frame's five quote cells by scheme, read off the nodes' fills —
+      // Lime: a Scheme 1 olive, two Scheme 2 `box/1`s (`#394732`, which is
+      // Scheme 1's `box2`), Scheme 4's mist and Scheme 1's olive again;
+      // Grunge: Scheme 1 dark, Scheme 3 red, Scheme 4 dark (≡ Scheme 1),
+      // Scheme 3 red, inherited dark. `disc` is the initials' ink, the cell's
+      // own `sem/bg` — which is why Lime's second row is lettered `#2E3928`
+      // and its first `s.bg`. Neither template's frame draws a disc on a cell
+      // that is not a `name-cell`, so the register that has none takes the
+      // frame's own disc ink: `s.bg` on Lime's mist, and `s.bg` again on
+      // Grunge's red, where the cell's literal `sem/bg` would be the accent
+      // and a red disc would vanish into a red one. Seat 1's `quote-cell` is
+      // the one unstroked cell on both frames; it is ringed like its
+      // neighbours, Retro's normalisation of the same bare cell.
+      //
+      // `pad` is the cells' own inset, 24 under Grunge against Lime's 30 — the
+      // Grunge masters state 28 on the **last column of each row** and 24 on
+      // every other cell at all three widths, which a wall of any count cannot
+      // model, so the majority is taken and the diff named.
+      const G = grunge
+        ? {
+          REG: [
+            { bg: s.box1, fg: s.tx, edge: s.stroke1, disc: s.bg },
+            // Scheme 3: `sem/box/1`, and its `sem/stroke/1` is black at 15%
+            // where Scheme 1's is white — two literals the mode has no key for.
+            { bg: '#9E1F17', fg: s.tx, edge: '#00000026', disc: s.bg },
+          ],
+          SEATS: [0, 1, 0, 1, 0],
+          card: '#9E1F17',   // the stat card, Scheme 3 `sem/box/1`
+          cardFg: s.tx,      // Scheme 3 `sem/text/2`
+          hair: '#00000026', // Scheme 3 `sem/stroke/1`
+          lift: '#F52E34',   // Scheme 3 `sem/box/2` — the face stack's rings
+          radius: 15,
+          pad: 24,
+          quote: s.mob ? '26px' : tab ? '28px' : u(36),
+        }
+        : {
+          REG: [
+            { bg: s.box1, fg: s.tx, edge: s.stroke1, disc: s.bg },
+            { bg: s.box2, fg: s.tx, edge: s.stroke1, disc: s.box1 },
+            { bg: '#D5E3B2', fg: s.bg, edge: '#15180F26', disc: s.bg },
+          ],
+          SEATS: [0, 1, 1, 2, 0],
+          card: '#CCFA61',    // Scheme 3 `sem/box/1`
+          cardFg: s.bg,
+          hair: '#15180F26',  // `sem/stroke/1` on a light scheme, 15% ink
+          lift: '#D9FF7F',    // Scheme 3 `sem/box/2`
+          radius: 50,
+          pad: 30,
+          quote: s.labelLg,
+        }
+      const REG = G.REG
+      const SEATS = G.SEATS
       const cell = (reg, extra) => col(u(14), {
         background: reg.bg, color: reg.fg, boxShadow: ring(reg.edge),
-        borderRadius: u(50), padding: u(30), justifyContent: 'center',
+        borderRadius: u(G.radius), padding: u(G.pad), justifyContent: 'center',
         alignItems: 'flex-start', overflow: 'hidden', ...extra,
       })
       const small = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4 }
+      // Anton stands in for Stones Crush, so every display- and label-face site
+      // here is scaled and its line height divided back out; the casing is the
+      // site's. Under Lime both helpers are identity and no transform is added,
+      // so the emitted style is unchanged. `letterSpacing` stays at each call
+      // site, because the two label-face sites carry none.
+      const disp = (family, size, lh) => ({
+        fontFamily: family, fontSize: faced(s, size), lineHeight: facedLh(s, lh),
+        ...(grunge ? { textTransform: 'uppercase' } : null),
+      })
 
       // The frame's four stack faces are photographs in a 2px `lift` ring;
       // the marks stand in for them (Retro's reading), so their disc is this
       // block's own: an ink disc lettered in the accent, which reads on the
-      // lime card where an accent disc would vanish into it. The `lift` ring
-      // is faint on `lime3` by the frame's own hand. 11 is Retro's invented
-      // size for two marks in the ring.
+      // lime card where an accent disc would vanish into it — and on Grunge's
+      // `#9E1F17` card, where the same pair is a black disc under stamp red.
+      // The `lift` ring is faint on `lime3` by the frame's own hand and plain
+      // on the red. 11 is Retro's invented size for two marks in the ring, and
+      // it is the **one** display-face site in this block that is not `faced`:
+      // `faced` exists to land the frame's own stated glyph in the frame's own
+      // line box, and this seat states no glyph at all — the frame puts
+      // photographs here. Scaling an invented micro-size by 0.75 only makes
+      // two marks in a 19.7px disc unreadable, so Anton is set at the number
+      // Bebas is, and the casing is still the site's.
       const face = (mark, last, key) => (
         <span key={key} style={{
           width: u(24), height: u(24), flex: 'none', borderRadius: '999px',
-          background: s.bg, color: s.ac, boxShadow: ring(lift, 2),
+          background: s.bg, color: s.ac, boxShadow: ring(G.lift, 2),
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           overflow: 'hidden', fontFamily: s.label, fontSize: u(11), lineHeight: 1.1,
+          ...(grunge ? { textTransform: 'uppercase' } : null),
           ...(last ? null : { marginRight: u(-8) }),
         }}>{mark}</span>
       )
@@ -19457,10 +19533,16 @@ function Testimonials({ s }) {
       // numeral included, where Retro's is `pillBg` on its dark card. The
       // numeral, the unit, `sub`, `brand` and the stack are Retro's
       // re-seatings of the frame's rating, and the stars stay dropped.
+      //
+      // Grunge's card is the one place the frame letters in two inks: Scheme
+      // 3's `sem/text/1` is black and its `sem/text/2` white, so the card's
+      // own ink is `s.tx` and the numeral takes `s.bg` back — which is the
+      // frame's `#000000` by construction, not by coincidence, this scheme's
+      // `text/1` being black.
       const statCard = (
         <div key="stat" style={col(u(16), {
-          background: lime3, color: s.bg, boxShadow: ring(hair),
-          borderRadius: u(50), padding: u(30), justifyContent: 'space-between',
+          background: G.card, color: G.cardFg, boxShadow: ring(G.hair),
+          borderRadius: u(G.radius), padding: u(G.pad), justifyContent: 'space-between',
           overflow: 'hidden',
         })}>
           <div style={col(u(16), { width: '100%' })}>
@@ -19468,8 +19550,9 @@ function Testimonials({ s }) {
               alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
             })}>
               <span style={{
-                fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
-                letterSpacing: s.dls, flex: desk ? 'none' : '1 0 0',
+                ...disp(s.display, s.dispMd, 1),
+                letterSpacing: s.dls, ...(grunge ? { color: s.bg } : null),
+                flex: desk ? 'none' : '1 0 0',
               }}>{n}</span>
               <span style={{
                 fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
@@ -19495,6 +19578,8 @@ function Testimonials({ s }) {
       // Label/LG in the label face (Bebas, caps by its own glyphs), the name
       // at Display/List and the role at Body/SM, in the cell's ink. The disc is
       // the accent in the cell's own ring colour, lettered in `reg.disc`.
+      // Grunge sets the quote itself at Display/Title instead — `G.quote`, the
+      // one size this block writes out.
       const quoteCard = (q, i) => {
         const reg = REG[SEATS[i % SEATS.length]]
         return (
@@ -19504,20 +19589,20 @@ function Testimonials({ s }) {
                 width: u(56), height: u(56), flex: 'none', borderRadius: '999px',
                 background: s.ac, color: reg.disc, boxShadow: ring(reg.edge),
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                overflow: 'hidden', fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1,
+                overflow: 'hidden', ...disp(s.label, s.labelLg, 1.1),
               }}>{q.mark}</span>
             )}
             {!!q.quote && (
               <p style={{
-                margin: 0, width: '100%', fontFamily: s.label, fontSize: s.labelLg,
-                lineHeight: 1.1, overflowWrap: 'break-word',
+                margin: 0, width: '100%', ...disp(s.label, G.quote, 1.1),
+                overflowWrap: 'break-word',
               }}>{q.quote}</p>
             )}
             {!!q.byline && (
               <div style={col(u(4), { width: '100%' })}>
                 {!!q.who && (
                   <span style={{
-                    fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+                    ...disp(s.display, s.list, 1.2),
                     letterSpacing: s.dls,
                   }}>{q.who}</span>
                 )}
@@ -19540,15 +19625,16 @@ function Testimonials({ s }) {
       for (let i = 0; i < items.length; i += perRow) rows.push(items.slice(i, i + perRow))
 
       // The head is `s.tx` for both lines (Retro's display line is ink on
-      // beige); Display/MD is 72 / 50 / 40. The 1440 column's 306 cap is
-      // dropped, Retro's call.
+      // beige); Display/MD is 72 / 50 / 40 under Lime and 72 / 50 / 38 under
+      // Grunge, the ramp either way, and one tone on both frames' segments.
+      // The 1440 column's 306 cap is dropped, Retro's call.
       return (
         <div style={col(u(24))}>
           <div style={col('0px', { width: '100%', color: s.tx })}>
             <span style={small}>&#9679; Testimonials</span>
             {!!s.title && (
               <h2 style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispMd, lineHeight: 1,
+                margin: 0, ...disp(s.display, s.dispMd, 1),
                 letterSpacing: s.dls,
               }}>{s.title}</h2>
             )}
