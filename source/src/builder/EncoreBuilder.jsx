@@ -529,9 +529,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Grunge's layout-2 capsule (964:64618) gaps its links a fixed 18 at 16px
   // type and again at 13, and its layout-3 one (964:68686) at 20 and 14, so
   // there the sum is the labels alone and HeaderV1 / HeaderV2 add the gaps as
-  // a fixed box beside the capsule's padding.
+  // a fixed box beside the capsule's padding. Its layout-4 capsule (964:72944)
+  // gaps them a fixed 23 at 20px type, and NavBar's `links` takes them off the
+  // row the same way.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75 : null
-  const navGapEm = T.name === 'Grunge' && (d === 1 || d === 2) ? 0 : 23 / 24
+  const navGapEm = T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
