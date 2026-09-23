@@ -3,6 +3,7 @@
 //
 //   node scripts/digest.mjs <label> [themes=0,2,3,4] [cats=all]
 //   WIDTHS=desktop EXTRA='&live=1' OUT=/tmp/digest node scripts/digest.mjs after 0
+//   EXTRA="&cj=$(node -p 'encodeURIComponent(…)')" node scripts/digest.mjs blank 0,1,2 form
 //
 // Renders every cat × layout × width × theme and writes one file per render,
 // one row per element under #root (skipping .seal-spin, a running animation),
@@ -64,7 +65,9 @@ const worker = async () => {
         await page.goto(`${base}/preview.html?${q}`, { waitUntil: 'load' })
         await page.evaluate(() => document.fonts.ready)
         await new Promise((r) => setTimeout(r, 250))
-        fs.writeFileSync(path.join(dir, q.replace(/[&=]/g, '_') + '.txt'), await page.evaluate(probe))
+        // A `&cj=` override is left out of the name (ENAMETOOLONG otherwise):
+        // the content it seeds belongs in the label.
+        fs.writeFileSync(path.join(dir, q.replace(/&cj=[^&]*/, '').replace(/[&=]/g, '_') + '.txt'), await page.evaluate(probe))
         break
       } catch (e) {
         if (attempt >= 2 || !/context was destroyed|navigat/i.test(e.message)) throw e

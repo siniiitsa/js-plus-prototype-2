@@ -129,11 +129,17 @@ mutated through a single `patch()` helper.
   moves to the top while any drawer is open (closing the drawer remounts a live toast at the
   bottom, fade and timer restarting). The drawers also carry `keepOnToast`, a guard against a
   press on a toast counting as outside, though vaul was measured not to close on one anyway.
-- **The artist's name is the header's `c.title`.** The `artistName` prop only seeds it: the
-  builder derives `artistName` from the header section (trimmed, falling back to the prop when
-  empty) and passes *that* everywhere — nav brand, initials placeholders, bylines, badge,
+- **The artist's name is the header's `c.title`, and it is required** (JP-050, user call,
+  2026-09-23). The `artistName` prop only seeds it: the builder derives `artistName` from the
+  header section (`nameOf()`: trimmed, the prop only while the key is absent — a fresh page) and
+  passes *that* everywhere — the h1 included (`vm.heroTitle` is `vm.brand`; the header resolves
+  its own `c.title` the same way, so a header preview or a harness `&cj=` cannot split them),
+  nav brand, initials placeholders, bylines, badge,
   `copyrightOf()`, the published tab's `<title>` (reset on every republish, not only when the tab
-  is first opened) and the dialog's site address. Header `badgeText` and footer `copyright` have
+  is first opened) and the dialog's site address. `NameInput` never commits a Title that trims
+  to empty: the box may sit empty (with a "Your name is required" line) while the page keeps the
+  last name, and leaving it puts that name back — so no slot ever falls back to the prop once
+  the artist has typed one, and Publish never meets an empty name. Header `badgeText` and footer `copyright` have
   no static default for that reason; `EditPanel` special-cases them beside `title`. **The
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
@@ -510,7 +516,9 @@ mutated through a single `patch()` helper.
   — the same `chip`, in the frame's segmented capsule instead of a loose chip row — but what it
   adds is a **seat that the filter moves**: the last row *on show* is filled in `vm.tierRow`'s
   hue where the others are merely outlined in it, and carries the frame's FEATURED badge, so
-  hiding the artist's last package promotes whatever now ends the stack. That is the deck's own
+  hiding the artist's last package promotes whatever now ends the stack — though never onto a
+  package the artist added and left empty, since `sectionVm` drops those first (JP-048, below).
+  That is the deck's own
   rule that the tilt and the mobile overlap take the **rendered** index while `t.n` keys the
   card, and it is not drawn at one row. `vm.tierRow` is `tierHero`'s shape with one extra
   constraint — it has to read against the **page** rather than on a card, so it walks `T.tags`
@@ -640,8 +648,10 @@ mutated through a single `patch()` helper.
   reloads into the builder. The `document.write` failure through a different door. There is no
   `<form>` element in the section and there must never be one; with none, Enter does nothing at
   all. The `<a>` is also what makes the whole thing testable from the opener: fill the boxes
-  synthetically and read the composed address off `getAttribute('href')`. An empty `email`
-  composes to `''` and the pill goes back to being a span — the Soundcloud rule, not the gallery's
+  synthetically and read the composed address off `getAttribute('href')`. An empty `email`, or
+  one `emailProblem()` in `data.js` refuses (JP-049 — the one email test, which `urlProblem`'s
+  `mailto:` branch and `formErrors` ask too; a pasted `mailto:` is taken off, and the field is a
+  `UrlInput` taught `check={emailProblem}`), composes to `''` and the pill goes back to being a span — the Soundcloud rule, not the gallery's
   hide-the-row rule: a form the artist has not addressed is still the picture their page is built
   around. The chip starts at **0**, not the `-1` the player's `cur`, the gallery's `pick`, the
   map's `sel` and the calendar's `''` start at — the frame draws chip 0 filled, so here the
@@ -876,7 +886,10 @@ mutated through a single `patch()` helper.
   removed nor retyped — its trash button is disabled and its select disables Text and Number
   rather than dropping them (a Radix value naming no item blanks the trigger), under the hint
   "Visitors need somewhere to leave an address." — so the editor never reaches a list without an
-  email row, since the seed carries one and a new row is `text`. Nothing else is guarded: an
+  email row, since the seed carries one and a new row is `text`. The guard reaches `sectionVm`
+  too (JP-051): that row is never dropped as blank, and an emptied label reads
+  `FORM_EMAIL_LABEL` ("Email") on the box and in the mailto body alike, under the hint "Shown as
+  Email.". Nothing else is guarded: an
   emptied list renders in all four layouts, the published form still sending the bare body.
   `pricing`'s `c.tiers` is an array of
   `{ name, price, tags, blurb, feats }`, maintained by `TiersField`, and it replaced a **flattened
@@ -905,7 +918,20 @@ mutated through a single `patch()` helper.
   `images`, not
   `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS`, an emptied array
   means none, and there is no
-  `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
+  `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
+  is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package
+  (over `TIER_KEYS`, all five) before the hue walk and `n`, so on both surfaces the page is the
+  page without it — the canvas included, JP-045's rule. `TiersField` keeps the row, the artist
+  being mid-edit, and says "Empty packages aren't shown." under it. The test is every key and
+  never the ones a layout prints, so it cannot discard a word the artist typed. **All seven
+  repeaters take it** (JP-051 and its sweep), each over a `*_KEYS` beside its seed — `SONG_KEYS`,
+  `TRACK_KEYS` (art and sound included), `GIG_KEYS`, `TIER_KEYS`, `QUOTE_KEYS`, and two that
+  leave a select out because a select always holds a value: `FORM_FIELD_KEYS` (label and
+  placeholder, not `kind`) and `LINK_KEYS` (label and url, not `to`). Each list is filtered
+  *before* anything indexes it (pins, hues, fan seats, marks, the footer's halving,
+  `formRows` / `formMailto` / `formCheck`), each repeater prints its own "Empty … aren't shown."
+  under a blank row, and the repertoire's song-count heading counts the filtered list in both
+  places. The one exception is the form's guarded email row, above. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
   both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard

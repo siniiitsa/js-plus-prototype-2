@@ -463,6 +463,9 @@ export const TRACK_AUDIO = [
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
 ]
+// What `blankRow()` asks of a TracksField row (the JP-051 sweep): a track with
+// only a photograph, or only a sound file, is still a track.
+export const TRACK_KEYS = ['title', 'sub', 'image', 'audio']
 
 // The clock on the "now playing" card beside the track stack — a player caught
 // mid-song, which is what the Figma frame draws. Only the editor canvas shows
@@ -515,6 +518,10 @@ export const TIERS = [
             'Extended encore', 'Festival-grade PA'].join('\n') },
 ]
 
+// Every key a package row carries — what `blankRow()` asks of it. A row is
+// blank only when all five are, whichever of them a layout prints.
+export const TIER_KEYS = ['name', 'price', 'tags', 'blurb', 'feats']
+
 // The suffix beside every card's price. A field rather than the literal the
 // frame draws, because /event is one booking model among several.
 export const PRICE_UNIT = '/event'
@@ -537,6 +544,8 @@ export const QUOTES = [
   { quote: '"Booking again next year, no question."',
     who: 'Olivia B.', role: 'Wedding planner', when: 'Reviewed 3 months ago' },
 ]
+// What `blankRow()` asks of a QuotesField row (the JP-051 sweep).
+export const QUOTE_KEYS = ['quote', 'who', 'role', 'when']
 
 export const CITIES = [
   { date: '14 Aug', city: 'Manchester', venue: 'Albert Hall',         status: 'Tickets'  },
@@ -579,6 +588,8 @@ export const SONGS = [
   { title: 'Rather Be',         artist: 'Clean Bandit',      tags: 'Weddings' },
   { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Pubs' },
 ]
+// What `blankRow()` asks of a SongsField row (the JP-051 sweep).
+export const SONG_KEYS = ['title', 'artist', 'tags']
 
 // The chip that clears the filter. It is index 0 of the row and carries a null
 // tag; repChips() skips a tag of the same name so an artist who writes "All" on
@@ -600,6 +611,8 @@ export const GIGS = [
   { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', link: '' },
   { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', link: '' },
 ]
+// What `blankRow()` asks of a GigsField row (the JP-051 sweep).
+export const GIG_KEYS = ['venue', 'city', 'time', 'month', 'day', 'link']
 export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
@@ -648,6 +661,16 @@ export const FORM_FIELDS = [
   { label: 'Event date', placeholder: 'dd / mm / yyyy', kind: 'text' },
   { label: 'Guests',     placeholder: 'approx.',        kind: 'number' },
 ]
+// What `blankRow()` asks of a box (JP-051): the two strings it can print. Not
+// `kind`, which is a select that always holds a value, so asking it too would
+// make no row blank. A box with only a placeholder is still a box; in layouts
+// 2 and 3, which print the label alone, it falls back to the placeholder.
+export const FORM_FIELD_KEYS = ['label', 'placeholder']
+// The word the guarded email row — the form's only reply box, FormFieldsField's
+// `lastEmail` — is labelled by when the artist empties its label. It never
+// drops, or the form would have nowhere to be replied to; the seed's own word,
+// so a box and its mailto body line read the same.
+export const FORM_EMAIL_LABEL = 'Email'
 // The three kinds a row can be, in the { v, l } shape EditPanel's own select
 // branch reads. Anything else sectionVm resolves to 'text'.
 export const FORM_KINDS = [
@@ -678,6 +701,12 @@ export const FORM_MESSAGE = 'Tell me about your event…'
 // draw these eight, and a ninth would unbalance the two columns of four.
 export const FOOTER_LINKS = ['bio', 'media', 'gallery', 'repertoire', 'map', 'pricing', 'form', 'testimonials']
   .map((to) => ({ label: navLabel(to), to }))
+// What `blankRow()` asks of a LinksField row (the JP-051 sweep): the two strings
+// it can print or follow. Not `to`, a select that always holds a value — 'none'
+// on a new row — which is FORM_FIELD_KEYS' reason for leaving out `kind`. A row
+// aimed at a section with its label emptied is therefore blank too: it prints
+// nothing to click.
+export const LINK_KEYS = ['label', 'url']
 
 // The per-row target select, in the { v, l } shape EditPanel's own select
 // branch reads — FORM_KINDS' shape.
@@ -933,7 +962,8 @@ export const BLANK_PAGE = [
  * current design does not read; see fieldReach() below.
  *
  * `type: 'url'` is a plain text box that also says, on blur, why urlProblem()
- * refuses what was typed. The repeaters' address columns use the same input.
+ * refuses what was typed. The repeaters' address columns use the same input,
+ * and `type: 'email'` is that input asking emailProblem() instead.
  * ------------------------------------------------------------------ */
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
@@ -973,7 +1003,7 @@ export const FIELDS = {
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
       in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
       hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
-    { k: 'title',     l: 'Title' },                       // the artist's name, page-wide — special-cased
+    { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1], Grunge: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
@@ -1277,8 +1307,8 @@ export const FIELDS = {
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Dead until the submit was made real — this is now what the form is for.
-    { k: 'email',    l: 'Email address', d: 'bookings@kaimercer.co.uk',
-      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture.' },
+    { k: 'email',    l: 'Email address', type: 'email', d: 'bookings@kaimercer.co.uk',
+      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
@@ -1421,7 +1451,10 @@ export function urlProblem(v, web = false) {
     return 'Only web, mailto: and tel: addresses can be linked.'
   }
   if (scheme === 'mailto') {
-    return /^[^@]+@[^@]+\.[^@]+/.test(m[2]) ? null : 'That email address looks incomplete.'
+    // The query is a link's own business (?subject=…), and a mailto may name
+    // several recipients; each must pass the check the enquiry form's is held to.
+    const to = m[2].split('?')[0]
+    return to && to.split(',').every((a) => !emailProblem(a)) ? null : EMAIL_PROBLEM
   }
   if (scheme === 'tel') return /\d/.test(m[2]) ? null : 'That phone number has no digits.'
   const http = scheme === 'http' || scheme === 'https'
@@ -1435,6 +1468,31 @@ export function urlProblem(v, web = false) {
     return 'That doesn’t look like a web address — e.g. soundcloud.com/you'
   }
   return null
+}
+
+// The one email test (JP-049): the enquiry form's own address, the address
+// part of a mailto: link, and the visitor's email box all ask it, so the
+// editor, the link rules and the published form accept the same addresses.
+// null for empty or valid, else the reason, urlProblem()'s shape. One `@`,
+// something before it with no `?` or `#`, and a host after it that URL_HOST
+// would link, which refuses both too: either would split a composed mailto:
+// href in the wrong place. A pasted `mailto:` is taken off first, so the
+// artist can paste the link they already have.
+const EMAIL_PROBLEM = 'That email address looks incomplete.'
+export function emailProblem(v) {
+  const t = String(v ?? '').trim().replace(/^mailto:/i, '')
+  if (!t) return null
+  const at = t.lastIndexOf('@')
+  const local = t.slice(0, at)
+  return at > 0 && !/[\s@?#]/.test(local) && URL_HOST.test(t.slice(at + 1)) ? null : EMAIL_PROBLEM
+}
+
+// A typed email address → the bare address, or '' if it is empty or
+// emailProblem() refuses it — extUrl()'s shape, and '' is the enquiry form's
+// existing no-address state.
+export function emailAddr(v) {
+  const t = String(v ?? '').trim().replace(/^mailto:/i, '')
+  return emailProblem(t) ? '' : t
 }
 
 // A user-typed outbound URL → an absolute one, or '' if the field is empty or
@@ -1473,7 +1531,8 @@ export function directionsUrl(...parts) {
 // that is genuinely front-end-only. The result is already absolute, so it does
 // NOT go back through extUrl() — whose own comment above says a mailto: is
 // passed through untouched. An empty address returns '', and the pill goes
-// back to being the span it always was: the Soundcloud button's rule.
+// back to being the span it always was: the Soundcloud button's rule. The
+// address arrives through emailAddr(), so one it refuses is empty here too.
 export function enquiryMailto(email, { type, fields, message, msgLabel }) {
   const to = String(email ?? '').trim()
   if (!to) return ''
@@ -1502,7 +1561,7 @@ export function formErrors(fields, vals) {
   const f = (fields || []).map((fd, i) => {
     const v = String((vals || [])[i] ?? '').trim()
     if (!v) return true
-    return fd.kind === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+    return fd.kind === 'email' && !!emailProblem(v)
   })
   return { f, any: f.some(Boolean) }
 }
@@ -1527,6 +1586,16 @@ export function songTags(str) {
 // promises are the same shape and go through it too.
 export function tierFeats(str) {
   return String(str ?? '').split('\n').map((t) => t.trim()).filter(Boolean)
+}
+
+// A repeater row the artist added and never filled in: every one of `keys`
+// trims to empty (a missing key, a null row and a lone newline included). Such a
+// row is not content, so `sectionVm` drops it before anything indexes the list
+// and both surfaces render the page it would be without it (JP-048). The test is
+// *every* key, never the ones a layout prints, so it cannot discard a word the
+// artist typed: a package with only a price is still a package.
+export function blankRow(row, keys) {
+  return keys.every((k) => !String(row?.[k] ?? '').trim())
 }
 
 export function repChips(songs) {

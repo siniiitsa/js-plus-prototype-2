@@ -333,7 +333,8 @@ That distinction is the whole design, and it buys two things:
   chip that clears the filter. That extra chip is the intended diff from the Figma frame, the way
   the events map losing its pager was; the row is not drawn at all when the packages carry no
   tags, since a filter with nothing to filter is the pager's case again. The cards key on the
-  package's index in the *whole* list, not its place in the filtered one — they cross-fade their
+  package's index in the *whole* list (a package left wholly empty is not in it: `blankRow()`
+  drops it in `sectionVm`, so it draws no card on either surface), not its place in the filtered one — they cross-fade their
   background, and a positional key would animate one card's hue into another's on every chip
   click — while the tilt and the mobile deck's 18px overlap keep the rendered index, so the deck
   reads as a deck at any count. Three columns stay three: a fourth package wraps to a second row
@@ -394,7 +395,11 @@ That distinction is the whole design, and it buys two things:
   validation derivable rather than guessed: with a label and a placeholder alone there is no way
   to know which box holds the address a reply goes to. For the same reason the last `email` row
   cannot be removed or retyped in the editor: its trash button and its other kinds are disabled,
-  with a hint that says why.
+  with a hint that says why. A box with neither a label nor a placeholder names nothing yet would
+  be required, so `sectionVm` drops it on both surfaces (`blankRow()` over `FORM_FIELD_KEYS`) —
+  except that guarded email row, which always shows and reads "Email" when its label is emptied.
+  The same blank-row drop covers every repeater: songs, tracks, gigs, packages, reviews and
+  footer links.
 
   **The submit is a `mailto:`**, and `email` is what it is addressed to. There is no backend and
   never will be, so handing the enquiry to the visitor's own mail app is the one delivery that is
@@ -408,7 +413,8 @@ That distinction is the whole design, and it buys two things:
   the `document.write` failure through a second door, and with no form element there is no
   implicit submission either. Rendering the address on the anchor rather than calling
   `location.assign` in a handler is also what makes the whole thing verifiable: fill the boxes and
-  read `getAttribute('href')`. An empty address composes to `''` and the pill goes back to being
+  read `getAttribute('href')`. An empty address — or one `emailProblem()` refuses, which
+  `sectionVm` folds to empty through `emailAddr()` (JP-049) — composes to `''` and the pill goes back to being
   the span it always was — the Soundcloud button's rule rather than the gallery's, because a form
   the artist has not addressed is still the picture their page is built around.
 

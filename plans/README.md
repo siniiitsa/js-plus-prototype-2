@@ -23,6 +23,7 @@ plans/
     layout-4.md
     qa-fixes.md
     layout-2-qa-fixes.md
+    layout-3-qa-fixes.md
   grunge/
     layout-1.md
     layout-2.md
@@ -59,6 +60,7 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 | Layout 4 | [`lime/layout-4.md`](./lime/layout-4.md) | `lime-layout-4`, forked from `main` (closed, not yet merged) | Retro layout 4's ten compositions in Lime's mode — `s.lime` decoration inside the shared `s.v3` branches, a Lime `HeaderV3` (a glass nav capsule and no checker floor), and the page's first arc seams since layout 1 — all three widths per session, plus the end-of-pass sweep. Card 4 of the setup modal is a fitted page, which **closes the Lime family**: all four of its header cards lay out fitted pages. |
 | QA fixes | [`lime/qa-fixes.md`](./lime/qa-fixes.md) | `lime-qa-fixes`, from `main` (swept and pushed; PR, merge and the deployed build stamp still open) | Not a fit: the tester's reports against layout 1 (JP-033 header nav labels, JP-034 the media player's dead Soundcloud pill, JP-035 = F1 re-filed against a stale build), one bug per session, plus a sweep that ends by handing the tester the deployed build stamp. |
 | Layout 2 QA fixes | [`lime/layout-2-qa-fixes.md`](./lime/layout-2-qa-fixes.md) | `lime-layout-2-qa-fixes`, forked from `main` (swept; push, PR, merge and the deployed build stamp still open) | Not a fit: the tester's layout-2 reports (JP-036 … JP-042, plus JP-033 re-filed with JP-041), one entry per session, plus the end-of-pass sweep. Several are shared seams, so Retro moved with them. Six fixed (JP-040 on the PO's call, A), JP-038 and JP-041 closed as by design (JP-038 and JP-039 reopened 2026-09-23 on branch `lime-qa-reopen`: the published desktop zooms to the frame, and layouts 2 and 3 default to Minimal — entries appended); the sweep's Settled carries a reply line per ticket. |
+| Layout 3 QA fixes | [`lime/layout-3-qa-fixes.md`](./lime/layout-3-qa-fixes.md) | `lime-layout-3-qa-fixes`, forked from `main` (swept, with the root `index.html` refreshed; push, PR, merge and the deployed build stamp still open) | Not a fit: the tester's layout-3 reports (JP-048 blank packages, JP-049 the unchecked enquiry address, JP-050 the empty Title, JP-051 a blank form field), one entry per session, plus the end-of-pass sweep. None is inside an `s.lime` block, so every template moves. All four fixed (JP-050 under decision A: the Title is required); JP-051 extended the blank-row rule to all seven repeaters. The seeded page is byte-identical to `main` (387 + 387); the sweep's Settled carries a reply line per ticket. JP-045 is not in this batch. |
 
 **Reading order in a Lime session:** `CLAUDE.md`, then the plan, then the sections it names at its top. Layout 2 also reads layout 1's whole *Conventions*, since that pass built the foundation; layout 3 reads both, and Retro layout 3's *Conventions* and *Addendum*, since that pass built the branches it dresses; layout 4 reads all three Lime *Conventions*, and Retro layout 4's *Conventions* and *Addendum*.
 
