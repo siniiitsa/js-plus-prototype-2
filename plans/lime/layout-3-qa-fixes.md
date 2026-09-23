@@ -33,7 +33,7 @@ so Retro, Grunge and the flat two move with them. The tester happened to be on L
 | 2 | JP-048 | Three *Add package* clicks publish three blank cards, the last one lime and FEATURED | **Confirmed**; the FEATURED seat is working as documented, the defect is that a blank row renders | M | **yes** — what counts as blank | **done** |
 | 3 | JP-051 | An empty form-field row publishes an unlabelled box | **Confirmed**; JP-048's family, applied to the form | S | **yes** — the guarded email row | **done** |
 | 4 | JP-050 | Emptying the header Title publishes the sample name in eight slots and nothing in the h1 | **Half documented, half defect**: the fallback is CLAUDE.md's rule; the h1 disagreeing with it is a bug | M | **yes** — what an empty name means | **done** |
-| 5 | — | End-of-pass sweep | — | S | — | open |
+| 5 | — | End-of-pass sweep | — | S | — | **done** |
 
 **Why this order:** JP-049 is the only entry with no decision and one seam. JP-048 before JP-051
 because it defines the blank-row rule (a helper in `data.js`) that JP-051 reuses. JP-050 last: it
@@ -457,4 +457,72 @@ passage, `FIELDS.header.title`'s comment.
 6. `plans/README.md`'s row, and a reply line per ticket for QA (fixed / by design / needs PO),
    headed by the retest-against-the-stamp line, and a line saying JP-045 was not in this batch.
 
-**Settled.**
+**Settled** (2026-09-23, all six steps; the push, the PR and the merge are the user's).
+
+- **Digest, `main` (`dd31711`) → HEAD** (all categories × layouts, themes 0, 1, 2 = Retro, Lime,
+  Grunge, three widths, canvas and `live=1`: 387 renders a side a surface). Base from a
+  worktree of `main` on :5174, `node_modules` symlinked, driven by this branch's `digest.mjs`
+  with `BASE=`. The first compare showed 120 + 120 files differing, and every one was the port
+  in a `background-image` URL (`localhost:5174` against `:5173`: the grain and map rasters).
+  With the port normalised: **0 of 387 canvas and 0 of 387 live differ.** The seeded page did
+  not move at all, as each entry's own 387 + 387 said it would. No ticket moves the seeded
+  harness, because every one of them is about a blank row, a refused address or an empty title,
+  and the seed has none.
+- **Repro digest on the final tree** (one driver, deleted; the override is in the label, since
+  `digest.mjs` strips `&cj=`). Each case is compared on canvas and on `live=1` separately. For
+  a family whose seed is reached through the absent key, the baseline is an *explicit* seed
+  (`&cj=` with the seed array itself); pricing's and the form's explicit seeds are
+  themselves byte-identical to the absent key (36/36 + 36/36).
+  - JP-049, form `email`: `not-an-email` and `a@b` → identical to `''` (the unlinked submit),
+    36/36 + 36/36. `a@b.co`, `  a@b.co  ` and `mailto:a@b.co` → identical to `''` on the canvas
+    (36/36, a picture either way), differ from it on 36/36 live (the pill is an `<a>`), and are
+    identical to the seed on both surfaces.
+  - JP-048, pricing: the seed + `{}`, all-`''` and a `'  '` / `'\n'` row → identical to the seed,
+    36/36 + 36/36. A `{}` between seed rows 1 and 2 → 36/36 + 36/36. A `{ price: '£99' }` row →
+    differs on 36/36 + 36/36 (a fourth package).
+  - JP-051, form: the seed + `{}` and the seed + `{ label: '', placeholder: '  ', kind: 'text' }`
+    → 36/36 + 36/36; the email label emptied → identical to the absent-key seed, 36/36 + 36/36.
+    The family sweeps, each the explicit seed + `{}` and + an all-spaces row over its `*_KEYS`:
+    songs, tracks (art-less, so both sides carry `image: null`), gigs and quotes 36/36 + 36/36
+    each, links 9/9 + 9/9. Sanity check on `main`: the songs and links `{}` rows differ from
+    their seeds on 36/36 and 9/9 live, so the overrides do reach the page.
+  - JP-050, header: `title` `''`, `'   '` and `'  Kai Mercer '` → identical to the seed, 54/54
+    + 54/54 each.
+- **Reach not re-run.** No `in:` line differs from `main` (`git diff main -- source/src`, grep
+  `in: `), so step 3 does not apply.
+- **Real app** (one-off puppeteer, `source/scripts/`, deleted; editor at 1600, Lime → setup card
+  3 → *Use this header*). Pricing, *Add package* ×3: three "Empty packages aren’t shown." hints.
+  Enquiry Form: *Email address* `not-an-email` + Tab: "That email address looks incomplete."
+  under the box, `aria-invalid`. *Add field*: one "Empty fields aren’t shown.". Header: Title
+  typed `QATITLE Jane Smith`, then select-all + Backspace: the box is empty, "Your name is
+  required" shows and the canvas keeps the name (h1 and 12 slots, Kai Mercer ×0). After blur the
+  box reads the name again and the line is gone. **Canvas at Desktop / Tablet / Mobile:** 11
+  sections, the name ×12, Kai Mercer ×0, three packages, FEATURED on The Festival Set, no
+  `mailto:`. Emptied again and *Publish* pressed directly: the box is restored. **Published tab
+  at 1440 / 768 / 390:** `<title>` `QATITLE Jane Smith`, h1 the same, the name ×12, Kai Mercer
+  ×0, three packages with FEATURED on The Festival Set, four form boxes (NAME / EMAIL / EVENT
+  DATE / GUESTS, no unlabelled box), no `mailto:` in the form, so the submit stays a span. No
+  page errors in either window.
+- `index.html` refreshed in `e07d9c4` (7,932,003 bytes). It carries the four new strings (the
+  name line, the two blank hints and the email reason). The worktree is removed.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified`
+is past `<stamp — filled in after the PR merges>`, or later**
+(`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or cached build will
+still show every one of these.
+- **JP-049 — fixed.** The Enquiry Form's *Email address* is checked like every other address
+  box. `not-an-email` gets a reason under the box on blur, and the submit stays a picture until
+  the address is valid. A pasted `mailto:` is accepted.
+- **JP-048 — fixed.** A package with every field empty is not shown on the page or in the
+  published tab, and the editor says "Empty packages aren’t shown." under it. FEATURED stays on
+  the last real package. A package with any one field filled (a price alone) is still a package.
+- **JP-051 — fixed.** A blank form field is not drawn and does not block the submit. The same
+  rule now covers songs, tracks, gigs, reviews and footer links, and each one's editor says so.
+  The one email row cannot be blanked: emptying its label shows "Email".
+- **JP-050 — fixed under decision A.** The fallback you saw (the sample name in eight slots) was
+  documented behaviour, and it is now removed: the Title is required. Emptying it leaves the
+  page on the last name, the h1 included, with a "Your name is required" line, and leaving the
+  box puts the name back. Nothing can publish an empty name or the sample one.
+- **JP-045 was not in this batch.** Its complaint (the canvas draws Tickets → on map rows whose
+  link is empty or refused) is still open. JP-048, JP-051 and JP-050 were each held to "canvas
+  and published agree" in their own section.
