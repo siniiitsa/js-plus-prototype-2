@@ -8,8 +8,10 @@
 // emulation, which fires `resize` whatever the tab's state) — first with the
 // published tab in front, then with the editor in front, reading the first
 // padded section's padding-left while the tab is hidden and again once it is
-// shown. Expected past 1180: 64 + (clientWidth - 1180) / 2; below it the
-// tablet frame's 40 + (clientWidth - 768) / 2. A hidden tab keeps the size it
+// shown, in screen pixels. Expected past 1180: the page zoomed by
+// k = min(clientWidth, 1440) / 1180, so 64k up to 1440 and 64k + the surplus
+// past it (JP-038, reopened); below it the tablet frame's
+// 40 + (clientWidth - 768) / 2. A hidden tab keeps the size it
 // was hidden at and catches up when shown, so no width goes stale.
 import puppeteer from 'puppeteer-core'
 import { chromeForTesting } from './headless-shell.mjs'
@@ -23,8 +25,8 @@ const page = (await browser.pages())[0]
 await page.goto(base, { waitUntil: 'load' })
 
 const press = async (test) => {
-  const h = await page.evaluateHandle((t) => [...document.querySelectorAll('button')].find((b) =>
-    (b.getAttribute('aria-label') || '').startsWith(t) || b.textContent.trim().startsWith(t)), test)
+  const h = await page.waitForFunction((t) => [...document.querySelectorAll('button')].find((b) =>
+    (b.getAttribute('aria-label') || '').startsWith(t) || b.textContent.trim().startsWith(t)), {}, test)
   await h.asElement().click()
   await nap(300)
 }
@@ -41,8 +43,13 @@ await nap(500)
 const read = () => pop.evaluate(() => {
   const roots = [...document.querySelectorAll('[id]')].filter((el) => el.style.getPropertyValue('--ac'))
   const w = document.documentElement.clientWidth
-  const want = w < 1180 ? 40 + Math.round((w - 768) / 2) : 64 + Math.round((w - 1180) / 2)
-  return `clientWidth ${w}, gutter ${getComputedStyle(roots[1]).paddingLeft} (expected ${want}px), ${document.visibilityState}`
+  const k = w < 1180 ? 1 : Math.min(w, 1440) / 1180
+  const want = w < 1180 ? 40 + Math.round((w - 768) / 2) : (64 + Math.max(0, Math.round((w / k - 1180) / 2))) * k
+  // Screen pixels: the padding is in the page's own px, which the desktop
+  // zoom draws `currentCSSZoom` times larger.
+  const zoom = roots[1].currentCSSZoom ?? 1
+  const got = parseFloat(getComputedStyle(roots[1]).paddingLeft) * zoom
+  return `clientWidth ${w}, zoom ${zoom.toFixed(3)}, gutter ${got.toFixed(1)}px (expected ${want.toFixed(1)}px), ${document.visibilityState}`
 })
 
 const cdp = await browser.target().createCDPSession()

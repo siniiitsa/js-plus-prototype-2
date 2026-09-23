@@ -266,6 +266,18 @@ export const firstPresent = (prefs, navSections) =>
 export const minimalNav = (navSections) =>
   NAV_MINIMAL.map(([label, prefs]) => ({ label, to: firstPresent(prefs, navSections) }))
 
+// The header's navigation mode when the artist has not chosen one (JP-039,
+// reopened; user call, 2026-09-23). Layouts 2 and 3 of the three designed
+// templates draw Music / Gigs / About at every width (986:11848, 984:34438,
+// 984:10740, 977:22532), so there the seeded header is Minimal and its frame's
+// picture — at 768 the three fit the bar where the seeded nine fold to the
+// burger. Everywhere else it follows the sections. `d` is the design index,
+// `arch % designCount`. A stored value always wins, so a header moved back
+// to layout 1 returns to its sections unless the artist picked Minimal.
+export const navModeDefault = (themeName, d) =>
+  (themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
+    && (d === 1 || d === 2) ? 'minimal' : 'sections'
+
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas
 // measureText. Summed a character at a time they land within 1% of each

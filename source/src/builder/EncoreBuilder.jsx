@@ -46,7 +46,7 @@ import {
   TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
-  CTA_TARGETS, firstPresent, minimalNav,
+  CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, songTags, repChips,
   tierFeats, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms,
@@ -443,7 +443,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.heroCta = cv('heroCta', HERO_CTA)
   vm.showBadge = cv('showBadge', 'show')
   vm.badgeText = cv('badgeText', artistName)
-  vm.navMode = cv('navMode', 'sections')
+  vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
   // Retro, Lime and Grunge seed their Figma pages' mock photography (photos.js); the
   // flat two resolve to undefined and keep the initials placeholder. `undefined` already means "key
@@ -3091,6 +3091,7 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
+                    : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
                     : f.k === 'kicker' && sec.cat === 'header'
                       && (themeName === 'Lime' || themeName === 'Grunge') && design === 2 ? KICKER_3
                     : f.k === 'heading' && sec.cat === 'calendar'
@@ -3749,20 +3750,27 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const key = w < 768 ? 'mobile' : w < 1180 ? 'tablet' : 'desktop'
   const base = SIZES[key]
 
-  // Past the canvas its frame was drawn at, the design does not get wider: the
-  // surplus is split into the gutters, so the content column keeps the measure
-  // the type ramp was tuned for and each section's own background carries the
-  // page out to the window edges as a full-bleed band.
+  // Past the canvas its frame was drawn at, the desktop page scales up to the
+  // frame it was drawn from (JP-038, reopened; user call, 2026-09-23): the
+  // canvas is the 1440 frame at 0.82, so between 1180 and 1440 the whole page
+  // is zoomed by `k` — type, gutter and column alike — and a 1440 window shows
+  // the frame at 1:1. Only past 1440 does the design stop growing: that
+  // surplus is split into the gutters, so the content column keeps the frame's
+  // measure and each section's own background carries the page out to the
+  // window edges as a full-bleed band. Tablet and mobile never zoom.
   //
-  // Doing it through `padX` rather than with a centred wrapper element is what
-  // makes this three lines: `padX` is also what bleedTo() and TornEdge offset
-  // against, so the torn edges, the checker ribbons and the form's grain follow
-  // the gutter out to the true section edge for free. A wrapper would have left
-  // them bleeding to the old 64px and stopping short of the window.
+  // The page is laid out at `w / k` and drawn `k` times larger, so every
+  // section keeps the 1180 geometry the canvas has. Doing the surplus through
+  // `padX` rather than with a centred wrapper element is what keeps it short:
+  // `padX` is also what bleedTo() and TornEdge offset against, so the torn
+  // edges, the checker ribbons and the form's grain follow the gutter out to
+  // the true section edge for free.
   //
   // `surplus` is carried separately for HeaderV0, the one composition that sits
   // outside the root's padding and has to apply the gutter itself.
-  const surplus = Math.max(0, Math.round((w - parseInt(base.canvasW, 10)) / 2))
+  const canvasW = parseInt(base.canvasW, 10)
+  const k = key === 'desktop' ? Math.min(w, 1440) / canvasW : 1
+  const surplus = Math.max(0, Math.round((w / k - canvasW) / 2))
   const padX = `${parseInt(base.padX, 10) + surplus}px`
   const Z = {
     ...base, surplus: `${surplus}px`,
@@ -3780,13 +3788,14 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const rows = pageRows(sections, T.name, key === 'desktop')
   const inColumns = columnSides(rows)
 
-  return arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
+  const page = arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, identity, Z, mob: key === 'mobile', live: true, navSections,
       column: inColumns.get(i), today, page: pageDesignOf(sections, T.name),
     })} />
   )))
+  return k === 1 ? page : <div style={{ zoom: k }}>{page}</div>
 }
 
 // Lays out `pageRows` (data.js): a plain row is its section's own element, and

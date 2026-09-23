@@ -570,9 +570,10 @@ These are intentional limits, not oversights — see §12 for the full list. The
   there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
   keeping their own labels. The header, the footer, the gallery and the map are level.
 - **The desktop page is the 1440 frame at 0.82.** The editor draws it 1180 wide beside the
-  sidebar — a 64px gutter and a 1052px column — and the published tab keeps that column: a
-  window past 1180 widens the gutters, not the column (`PublishedPage`; `scripts/gutter.mjs`
-  measures it).
+  sidebar — a 64px gutter and a 1052px column. The published tab zooms that page back up
+  towards the frame: between 1180 and 1440 it is drawn `min(width, 1440) / 1180` times larger,
+  so a 1440 window shows the frame at 1:1 (a 78px gutter), and only a window past 1440 widens
+  the gutters (`PublishedPage`; `scripts/gutter.mjs` measures it).
 - **Fields a layout does not read stay editable.** Each section's panel lists every field any
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and
