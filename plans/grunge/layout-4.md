@@ -233,7 +233,7 @@ it is the gate this session widens.
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Lime twin (1440 / 768 / 390) | Retro twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `header` | `964:72944` | 1440 × 900 | `971:7823` | 768 × 1024 | `977:12044` | 390 × 844 | `964:72849` / `971:5299` / `977:8867` | `964:72511` / `964:77544` / `971:14040` | `if (s.lime) { … return }` at the head of `HeaderV3` | done `0c454fa` |
-| 2 | `bio` | `964:72952` *(Section `964:72945`, head `964:72946`)* | 664 × 720 | `971:7831` *(Section `971:7824`, head `971:7825`)* | 708 × 720 | `977:12052` *(Section `977:12045`, head `977:12046`)* | 370 × 536 | `964:72857` / `971:5307` / `977:8875` | `964:72519` / `964:76446` / `971:14479` | `if (s.v3 && s.lime)` ahead of `Bio`'s `if (s.v3)` | — |
+| 2 | `bio` | `964:72952` *(Section `964:72945`, head `964:72946`)* | 664 × 720 | `971:7831` *(Section `971:7824`, head `971:7825`)* | 708 × 720 | `977:12052` *(Section `977:12045`, head `977:12046`)* | 370 × 536 | `964:72857` / `971:5307` / `977:8875` | `964:72519` / `964:76446` / `971:14479` | `if (s.v3 && s.lime)` ahead of `Bio`'s `if (s.v3)` | done `a8549e8` |
 | 3 | `media` | `964:72959` *(band `964:72953`, head `964:72954`)* | 1440 × 671 | `971:7955` *(band `971:9533`, head `971:10395`)* | 768 × 501 | `977:12182` *(band `977:12176`, head `977:12177`)* | 390 × 834 | `964:72864` / `971:5431` / `977:9005` | `964:72526` / `971:15190` / `971:14834` | `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)` | — |
 | 4 | `gallery` | `964:73004` *(wrapper `964:72969`, head `964:72970`)* | 874 × 646 | `971:8121` *(wrapper `971:8086`, head `971:8087`)* | 768 × 594 | `977:12348` *(wrapper `977:12313`, head `977:12314`)* | 390 × 586.3 | `964:72909` / `971:5597` / `977:9171` | `964:72815` / `964:78491` / `977:8142` | `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from` | — |
 | 5 | `repertoire` | `964:73011` *(Section `964:73006`, panel `964:73007`)* | 1208 × **600** | `971:8128` *(Section `971:8123`, panel `971:8124`)* | 608 × 582 | `977:12355` *(Section `977:12350`, panel `977:12351`)* | 310 × 650 | `964:72916` / `971:5604` / `977:9178` | `964:72822` / `964:78509` / `977:8166` | `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump` | — |
@@ -826,6 +826,68 @@ them.
   rows. Kicker / tags / showTags are `[0, 2, 3]`, location all four, showBadge / badgeText
   `[0, 3]`, cta2 `[1, 2]`, subtitle / heroCta `[1]`, align `[0]`.
 
+### Settled in section 2 (the bio)
+
+- **No Grunge block: Lime's `if (s.v3 && s.lime)` ahead of `Bio`'s `if (s.v3)` is
+  `(s.lime || s.grunge)`**, with `const grunge = s.grunge` naming the deltas, plus a block-local
+  `brand()`, `upper` and `glass`. The paired diff against the Lime twin's Sections at all three
+  widths was the whole read. The tree is Lime's node for node plus three nodes: `image 1` (the
+  grain), `Frame 255` (the dimmer) and, at 390, the torn `Vector`. There is no Device override and
+  no `T` table. The head is Display/XL 198 / 95 / 52 (`s.dispXl`), `faced` / `facedLh(0.75)` and
+  uppercase. The name is Display/SM 50 / 40 / 30.
+- **The scheme moves at 768, and one binding moved.** The well (`sem/box/3`) is `s.box3`
+  `#0E0E0E` at 1440 and `#82211B` narrow. The prose box `Frame 228` is bound to **`sem/box/1`**
+  (resolved by name off `boundVariables`), where Lime's is `sem/box/2`. So it is `s.box1`
+  `#1A1A1A` at 1440 and `#9E1F17` narrow. "KM BIO" is white (`s.tx`), where Lime inks it
+  `s.bg`. The band and the head need nothing: `s.ac` / `s.bg` already resolve to red / black.
+- **`Frame 255` is the panel's own fill.** It is `sem/bg` at node opacity .5, the glass's full box
+  at radius 0 inside the glass's 7.5 clip, and first among the glass's children, so it sits under
+  the text. The glass's own paint is Lime's `#2E3928` at 1%, a leak that draws nothing, so the
+  one layer is `${desk ? s.bg : s.ac}80`: black at 1440 and Scheme 3's red narrow. The blur 54
+  stays.
+- **The name's second half moves by width**: `sem/text/1` is red on Scheme 1 at 1440 and black on
+  Scheme 3 at 768 and 390. So `brand()` colours it `desk ? s.ac : s.bg`. The prompt's "white /
+  red" holds at 1440 only.
+- **The grain is at all three widths**, not "1440 and 768" as the plan's *decorative language*
+  said. It is a 640-wide sheet centred on the card (x 12 / 34 / −135), card-tall, `LIGHTEN` at .5.
+  It is `CROP` at the wide widths and `FILL` at 390. Its second paint is a `#0B0B0B` → 0 linear
+  gradient off the foot to 16.3%, with the same transform at every width, so it is layout 1's
+  mask. Drawn as `<Grain exact grunge blend="lighten" opacity={0.5}>` after the photo wrapper,
+  `left: 50%` / `translateX(-50%)` / `width: u(640)`. Sampled at 1440 over the photo's top
+  (mean / stddev): frame **49.7 / 40.0**, ours **47.0 / 38.0**, correlation 0.911. The foot strip
+  is 14.9 against 14.6.
+- **The photograph: no `layouts[3]` seed.** `8031d0f3` at `FILL` over a covered `000ea835`. A
+  centred cover of `grunge-stage.jpg` into 664 × 720 correlates **0.958** with the render over the
+  card's top 380. Cover at 0 / 25 / 75% gives 0.23 / 0.34 / 0.35. `photos.js` did not move.
+- **Open question 3 closes: the bio draws the 390 tear.** It is `<TornEdge s grunge side="bottom"
+  bleed={false} height={40} colour="#171716">` inside the sheet, which takes `position: relative`
+  under Grunge. The 390 Section pads its foot **60** where Lime's pads 30 (room for the tear), and
+  stacks head and card **10** apart where Lime's are 15. Both are Grunge arms.
+  - The node's fill is `#1A1A1A`. It is drawn in the media band's `#171716`, layout 1's
+    neighbour's-ground rule, 3 in 255 off the frame (named).
+  - 40 is the node arithmetic (vector top 738 of 778). The frame's visible tear is a slice of the
+    vector's middle: 6–32 deep, mean 18.9, per column off the render. `TORN_D`'s own contour cannot
+    reproduce that slice at any height, so ours peaks at the left where the frame peaks
+    mid-width (named).
+  - Until section 3 lands, the tear stands over Retro's flat media sheet on the page. The media
+    session checks the join.
+- **Measured** (canvas, content edges):
+  - Desktop h2: 364.5 tall on three lines (447 × 0.82 = 366.5). Card 544.1 × 590.4 at radius
+    12.3. Panel radius 6.1, prose box 2.1.
+  - 768: h2 71.3 (71). Card 708 × 720, panel 648 × 305.5 (305).
+  - 390: h2 39 (39). The tear 390 × 40 at the sheet's foot.
+- **Named diffs, all Lime's**:
+  - No Genres label; five chips on one row, so the 768 and 390 heads are shorter and the card
+    stands higher. The red chips are lettered `#0D1F03`, where the frame letters them white.
+  - The seeded two paragraphs make the panel content-tall: 282.8 / 305.5 / 383.
+  - The 390 photo stage is 400 tall (Lime's user call), so the sheet is 942 against the frame's
+    778.
+- **`live=1`**: only Listen changes (span → `<a href="#media">`) at three widths. `&noimage=1`:
+  the red / black well under the grain with the initials. `page-check.mjs Grunge 3`: four cards,
+  no errors or warnings, About → `#bio` and Listen → `#media` scroll, the 390 burger 1 → 11.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `bio_arch_3` at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -837,6 +899,11 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   (lime/layout-2, the avatar); *`vm.title` shadows the ramp's `title` size* (lime/layout-1, the
   kicker literal); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1); *Scheme 4 ≡
   Scheme 1* (grunge/layout-1, the seal).
+- Bio: *the paired diff walk* (grunge/layout-2); *read `boundVariables`* (grunge/layout-3, the
+  prose box's `sem/box/1`); *read a fill's `scaleMode` before its `imageTransform`; correlate the
+  render* (grunge/layout-2, the cover); *a seam is the neighbour's ground* (grunge/layout-1, the
+  390 tear); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1); *the layout-1 bio's
+  grain mask* (grunge/layout-1, section 2).
 
 ## Open questions
 
@@ -854,7 +921,8 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
    it to the media (a red head); the 390 master gives it to the bio (a `#1A1A1A` foot) and draws
    none on the media. Default: follow each master and colour the 390 foot in the band's
    `#171716`, naming the 3-in-255; the alternative is one owner at every width. The bio session
-   decides and the media session checks the join.
+   decides and the media session checks the join. **Closed in section 2**: the default holds. The bio draws
+   the 390 foot tear in `#171716` at 40.
 4. **Two covered pictures to tell the designer**: `000ea835`, an image no earlier walk has named,
    under the bio's photograph, and Lime's `e3790c2c` under the header's avatar tile — both painted
    over, both invisible, with layout 3's `fa453f7d` and layout 2's two.
