@@ -236,7 +236,7 @@ it is the gate this session widens.
 | 2 | `bio` | `964:72952` *(Section `964:72945`, head `964:72946`)* | 664 × 720 | `971:7831` *(Section `971:7824`, head `971:7825`)* | 708 × 720 | `977:12052` *(Section `977:12045`, head `977:12046`)* | 370 × 536 | `964:72857` / `971:5307` / `977:8875` | `964:72519` / `964:76446` / `971:14479` | `if (s.v3 && s.lime)` ahead of `Bio`'s `if (s.v3)` | done `a8549e8` |
 | 3 | `media` | `964:72959` *(band `964:72953`, head `964:72954`)* | 1440 × 671 | `971:7955` *(band `971:9533`, head `971:10395`)* | 768 × 501 | `977:12182` *(band `977:12176`, head `977:12177`)* | 390 × 834 | `964:72864` / `971:5431` / `977:9005` | `964:72526` / `971:15190` / `971:14834` | `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)` | done `3c6eae4` |
 | 4 | `gallery` | `964:73004` *(wrapper `964:72969`, head `964:72970`)* | 874 × 646 | `971:8121` *(wrapper `971:8086`, head `971:8087`)* | 768 × 594 | `977:12348` *(wrapper `977:12313`, head `977:12314`)* | 390 × 586.3 | `964:72909` / `971:5597` / `977:9171` | `964:72815` / `964:78491` / `977:8142` | `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from` | done `68d23ba` |
-| 5 | `repertoire` | `964:73011` *(Section `964:73006`, panel `964:73007`)* | 1208 × **600** | `971:8128` *(Section `971:8123`, panel `971:8124`)* | 608 × 582 | `977:12355` *(Section `977:12350`, panel `977:12351`)* | 310 × 650 | `964:72916` / `971:5604` / `977:9178` | `964:72822` / `964:78509` / `977:8166` | `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump` | — |
+| 5 | `repertoire` | `964:73011` *(Section `964:73006`, panel `964:73007`)* | 1208 × **600** | `971:8128` *(Section `971:8123`, panel `971:8124`)* | 608 × 582 | `977:12355` *(Section `977:12350`, panel `977:12351`)* | 310 × 650 | `964:72916` / `971:5604` / `977:9178` | `964:72822` / `964:78509` / `977:8166` | `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump` | done `5b6eac4` |
 | 6 | `map` | `964:73019` *(Frame 319 `964:73013`, head `964:73014`)* | 1440 × 747 | `971:8136` *(Frame 319 `971:8130`, head `971:8131`)* | 768 × 870 | `977:12363` *(Frame 319 `977:12357`, head `977:12358`)* | 390 × 680 | `964:72924` / `971:5612` / `977:9186` | `964:72830` / `964:78599` / `977:8322` | `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | — |
 | 7 | `pricing` | `964:73021` | 1440 × 542 | `971:8137` | 768 × 806 | `977:12364` | 390 × 829 | `964:72926` / `971:5613` / `977:9187` | `964:72831` / `964:78656` / `977:8440` | `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | — |
 | 8 | `calendar` | `964:73034` + wizard `964:73033` *(Section `964:73022`, Frame 324 `964:73023`)* | 478 × 533 + 680 × 533 | `971:8150` + `971:8149` *(Section `971:8138`, Frame 324 `971:8139`)* | 608 × 502 + 608 × 476 | `977:12377` + `977:12376` *(Section `977:12365`, Frame 324 `977:12366`)* | 350 × 496 + 350 × 474 | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | `if (s.lime)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | — |
@@ -1014,6 +1014,76 @@ them.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `gallery_arch_3` at three widths on both surfaces.
 
+### Settled in section 5 (the repertoire)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump`, is
+  `(s.lime || s.grunge)`**, with `const grunge = s.grunge` naming five deltas plus `ink2` and an
+  `upper` spread. There is no `G`: `lime3` takes a Grunge arm and everything else resolves
+  through Lime's keys. The paired diff of the three Sections against Lime's (`964:73006` /
+  `971:8123` / `977:12350` against the Lime twins' parents) was the whole read: **96 = 96 nodes
+  at every width**, no effect, no Device override. The rail's seam is shared whole, so the
+  published jump, the clamp and the sticky needed nothing new.
+- **Scheme 3 again, and most of it is Lime's keys**: the band is `sem/bg` `#DF262C` (`s.ac`).
+  The head, the titles, the rail's rings and letters are `sem/text/1`, black (`s.bg`). The rules
+  are black at .15 (`${s.bg}26`, Lime's formula). The lit cell is black lettered `sem/bg`, the
+  band's red: `s.bg` / `s.ac`, Lime's exactly. What moves:
+  - **the panel's binding**: `sem/box/2` **`#F52E34`**, where Lime's is `sem/box/1` (`lime3`),
+    as the plan said;
+  - **`sem/text/2` is white** on Grunge's Scheme 3, where Lime's equals its ink. So the sub,
+    the group letters and the artists are `s.tx` (`ink2`). "No songs yet." takes the same
+    white, since it is the sub's style;
+  - **the desktop instance pads 32 all round** (it states Scheme 3 itself; Lime's instance
+    states the Lime primitive and pads 0). That is the whole of the 600 against 536, and of the
+    872 list against 936. The narrow instances pad 0, so it is `grunge && desk`;
+  - **the 390 Section pads 60 below** (901 = 30 + 811 + 60), where Lime's pads 100. The 811
+    panel against Lime's 818 is the Grunge head (46 against 54), which `s.dispLg` already
+    carries.
+- **Type**: the head is `faced(s.dispLg)` / `facedLh(0.89)`, the titles `faced` Display/Title
+  (36 / 28 / 26) at `facedLh(1.1)`, the artists `faced(s.list)` at `facedLh(1.2)`. All three
+  are uppercase. The rail is Inter 12 at radius 4, which is `s.bodySm` and `s.radiusChip`
+  under Grunge already (Lime's 13 and 6), so no literal. The desktop instance holding the
+  frame's 600 is **not** a count read: the frame has six rows in three groups where the seed
+  has twelve in eight, so our height is the seed's, as under Lime.
+- **The foot is `TornEdge grunge bleed={false}` in `s.bg`**, `ArcEdge` staying Lime's arm of a
+  ternary. It is 1554 / 882 / 1541.3 wide (leaked) at y 1073.2 / 1000 / 858, so the node
+  arithmetic is **52.8 × 0.82 / 44 / 43**, the media's and the gallery's convention. Its paint
+  is bound `sem/tag/2/bg` at 1440 and `sem/text/1` narrow, black on all three. Black-run maxima
+  per column: frame 52 (42.6 at canvas scale) / 43 / 35, ours 43 / 42 / 40. The 390 frame
+  again shows a slice of the vector's middle, so the contour differs where the depths agree
+  (named).
+- **The join with the gallery is one red ground at all three widths**. Checked in the editor
+  (card 4, the device tabs): the gallery root's bottom is the repertoire root's top to the
+  pixel at 1180 / 768 / 390, both `#DF262C`. The published seam clips at 1440 and 390 show no
+  line. The repertoire's black tear runs into the page above the map.
+- **Measured** (content edges):
+  - desktop: panel 1088.2 at 45.9 · 82 (56 · 100 × 0.82), instance at 259.2 (259.1), sub at
+    285.4 (348 × 0.82), rows 48.8 × 714.5 (49.2 × 715), rail cell at 868.5 · 365.6
+    (869.2 · 365.7), h2 95.2 tall at 80.25px;
+  - 768: instance at 262.1 (262), rail at 308.6 (309), rows 50.8 (51), h2 72.1 at 60.75px;
+  - 390: instance at 150.9 (151), rail at 197.4 (198), rows 48.6 (49), h2 40.9 at 34.5px,
+    sheet 30 + 1350.6 + 60.
+- **Named diffs, Lime's and Retro's**: the head is `s.title` ("12 Songs") where the frame
+  writes "Repertoire"; the seeded twelve songs in eight groups make the panel content-tall
+  (1220.7 at desktop against 876 × 0.82); Anton at 0.75 against Stones Crush.
+- **`live=1`, red on red (open question 5)**, desktop and 390:
+  - only the eight lit letters carry a pointer (`CDIMRSUV`);
+  - S lights S (black, letter `rgb(223, 38, 44)`) and calls `scrollIntoView` on the S group;
+    Q changes nothing;
+  - `n=0` prints *No songs yet.* beside a full, unlit rail, and `n=1` lights S alone;
+  - no page errors.
+  The lit cell is a black square on `#F52E34`, so it reads; its red letter on black is small
+  but legible. **There is no hover state**: the block draws none under Lime either, so there
+  was none to check. In the popup at 1440 the rail is `sticky` and pins at viewport top 0
+  after a jump to I. After a jump to V, the last group, the row's own foot carries it up to
+  −99, which is sticky's containing-block rule and Lime's behaviour too.
+  `page-check.mjs Grunge 3`: four cards, no errors or warnings, every link scrolls
+  (Repertoire → `#repertoire`), the rail letters change the section, the 390 burger 1 → 11,
+  overflow 0. Its first run died on a header-link click while the digest was loading the dev
+  server; the rerun was clean.
+- **`FIELDS.repertoire` has no `in` row**, so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `repertoire_arch_3` at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -1043,6 +1113,12 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   (grunge/layout-1, section 3); *grain inside a photograph, its gradient paint hidden*
   (grunge/layout-2, section 5); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1);
   *the lens, checked in the editor* (lime/layout-4, section 4).
+- Repertoire: *the paired diff walk* (grunge/layout-2); *read `boundVariables`* (grunge/layout-3,
+  the panel's `sem/box/2`); *a widened block can need no `G` at all* (grunge/layout-3, section
+  9 — one arm and `ink2`); *the black-run depth method* (grunge/layout-1, section 3); *a seam's
+  binding can lie — trust the render* (this plan, section 3: the 1440 foot is bound
+  `sem/tag/2/bg`); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1); *the lens,
+  checked in the editor* (lime/layout-4, section 4 — here one ground, not a lens).
 
 ## Open questions
 
