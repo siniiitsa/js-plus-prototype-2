@@ -1048,7 +1048,8 @@ them.
   ternary. It is 1554 / 882 / 1541.3 wide (leaked) at y 1073.2 / 1000 / 858, so the node
   arithmetic is **52.8 × 0.82 / 44 / 43**, the media's and the gallery's convention. Its paint
   is bound `sem/tag/2/bg` at 1440 and `sem/text/1` narrow, black on all three. Black-run maxima
-  per column: frame 52 (42.6 at canvas scale) / 43 / 35, ours 43 / 42 / 40. The 390 frame
+  per column: frame 52 (42.6 at canvas scale) / 43 / 35, ours 41 / 42 / 40. The desktop scan
+  skips the element screenshot's last row, a red sub-pixel edge at 0.82, which reads 0. The 390 frame
   again shows a slice of the vector's middle, so the contour differs where the depths agree
   (named).
 - **The join with the gallery is one red ground at all three widths**. Checked in the editor
