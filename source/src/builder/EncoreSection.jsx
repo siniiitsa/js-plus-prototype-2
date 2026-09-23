@@ -9153,8 +9153,40 @@ function Pricing({ s }) {
     // draws one on its second row alone (Retro's reading, inherited);
     // `tierKind` prints one word on every row; the pill reads "Start Enquiry"
     // against the frame's "Star Enquiry", so it is a few px wider.
-    if (s.lime) {
-      const featSeats = [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
+    //
+    // Grunge (964:73021 at 1440 × 542; 971:8137 at 768 × 806; 977:12364 at 390
+    // × 829) is this tree node for node at all three widths (61 = 61; the 768
+    // master merely stacks its three 1px divs in row order where Lime's pile
+    // after the rows), on Static Youth's Scheme 1 with no Device override and
+    // no effect. Every text is `sem/text/1`, red — `s.ac`, Lime's key — and
+    // every size is `THEME_RAMP.Grunge`'s `s.*` (label-sm 16 / 13 / 12, chip
+    // 12 / 11 / 11, display-sm 50 / 40 / 30), so what moves is:
+    //   · the rule, `sem/stroke/2` **#FF0000** (`s.stroke2`), where Lime's
+    //     resolves to its accent — 4px INSIDE the foot, the same weights on
+    //     every row;
+    //   · the feature pills, `vm.chips`' own seats by index (#1A1A1A lettered
+    //     white, #DF262C lettered the leaked #0D1F03), the layout-4 header's
+    //     reading of the same Tags component — the frame letters its third
+    //     and fourth seats white through `scheme/3` / `scheme/4` tokens, the
+    //     override the header named and did not model; `radius/chip` 4 is
+    //     `s.radiusChip` already;
+    //   · the tag chips' hairline is the frame's unbound #F2FFD0 at 15%, Lime's
+    //     literal leaked onto black, where it reads as Scheme 1's white 15%
+    //     `sem/stroke/1` — so it stays `s.stroke1`, named;
+    //   · the price column hugs at **177** (Lime 184): Stones Crush's narrower
+    //     "Star Enquiry" pill is the column's widest child;
+    //   · the name and the numeral are Stones Crush, so `faced` / `facedLh`
+    //     and uppercase; the kind and the pill's label go through
+    //     `labelStyle`, which faces them already.
+    // The pill is the same turned-round pair: white under a black label, a
+    // black disc round a red arrow — BookPill's shared branch draws exactly
+    // that from `bg={s.tx} fg={s.bg} discFg={s.ac}`.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const featSeats = grunge ? s.chips : [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
+      const disp = grunge
+        ? { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1), textTransform: 'uppercase' }
+        : { fontSize: s.dispSm, lineHeight: 1 }
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
         letterSpacing: '-0.06em',
@@ -9162,7 +9194,7 @@ function Pricing({ s }) {
       const limeRow = (last) => ({
         ...(desk ? row(u(40), { alignItems: 'flex-start' }) : col('32px', { alignItems: 'flex-start' })),
         ...bleedX, paddingTop: pad, paddingBottom: pad,
-        boxShadow: last ? undefined : `inset 0 ${u(-4)} 0 0 ${s.ac}`,
+        boxShadow: last ? undefined : `inset 0 ${u(-4)} 0 0 ${grunge ? s.stroke2 : s.ac}`,
         color: s.ac,
       })
 
@@ -9170,7 +9202,7 @@ function Pricing({ s }) {
         <div key={t.n} style={limeRow(i === s.tiers.length - 1)}>
           {!!t.name && (
             <span style={{
-              fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+              fontFamily: s.display, ...disp,
               letterSpacing: s.dls, overflowWrap: 'break-word', textTransform: 'uppercase',
               ...(desk ? { width: u(409), flex: 'none' } : { width: '100%' }),
             }}>{t.name}</span>
@@ -9216,7 +9248,7 @@ function Pricing({ s }) {
 
           <div style={col(u(12), {
             alignItems: 'flex-start',
-            ...(desk ? { flex: 'none', minWidth: u(184) } : { width: '100%' }),
+            ...(desk ? { flex: 'none', minWidth: u(grunge ? 177 : 184) } : { width: '100%' }),
           })}>
             {!!s.tierKind && <span style={labelStyle(s, s.labelSm)}>{s.tierKind}</span>}
             {!!t.price && (
@@ -9225,7 +9257,7 @@ function Pricing({ s }) {
                   fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
                 }}>from</span>
                 <span style={{
-                  fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+                  fontFamily: s.display, ...disp,
                   letterSpacing: s.dls, overflowWrap: 'break-word', minWidth: 0,
                 }}>{t.price}</span>
               </span>
