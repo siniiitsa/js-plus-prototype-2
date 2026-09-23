@@ -19536,9 +19536,11 @@ function Testimonials({ s }) {
       //
       // Grunge's card is the one place the frame letters in two inks: Scheme
       // 3's `sem/text/1` is black and its `sem/text/2` white, so the card's
-      // own ink is `s.tx` and the numeral takes `s.bg` back — which is the
-      // frame's `#000000` by construction, not by coincidence, this scheme's
-      // `text/1` being black.
+      // own ink is `s.tx` and the numeral takes `s.bg` back. The two are
+      // different keys that land on one value — Scheme 1's `sem/bg` and
+      // Scheme 3's `sem/text/1` are both `#000000`, the events map's
+      // coincidence for a second time — so `s.bg` is what is written, and a
+      // scheme that parted them would want a literal here.
       const statCard = (
         <div key="stat" style={col(u(16), {
           background: G.card, color: G.cardFg, boxShadow: ring(G.hair),

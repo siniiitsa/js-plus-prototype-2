@@ -598,7 +598,11 @@ Written now from what the plan can see; the sections add to it. One session, in 
    fitted layouts 1, 2 and 3 and placeholder 4.
 6. **`plans/README.md`**: mark the pass closed; **`CONVENTIONS.md`**: fold in whatever *Inherited
    and used* below confirmed again, and add any bullet a third layout of a widened template
-   leaned on and the file does not yet name (the nested-scheme rule below is the candidate).
+   leaned on and the file does not yet name. Three candidates, each written in this plan's
+   *Conventions*: **read every nested node's scheme off the master, never off the twin's row**;
+   **a scheme that did not move can still move the binding — read `boundVariables`** (sections
+   8 and 9, and what settled section 10's register too); and **`faced` is for a glyph the frame
+   states, not for an invented size** (section 10).
 7. **Refresh the root `index.html`** with the two-build digest, `CARD=2`: zero rows at every theme
    on the seeded page; the shipped-it tell is card 3 in the two builds' setup modals (the old
    build's card 3 carries the checker ribbon and the red sheet; the new one the `#383838` well in
@@ -1386,9 +1390,11 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   guessed.
 - **The stat card letters in two inks, the pass's first two-tone card.** Scheme 3's
   `sem/text/1` is **black** and its `sem/text/2` **white**, so the card's own ink is `G.cardFg`
-  = `s.tx` (`/5`, the unit, `sub`, `brand`) and the numeral takes `s.bg` back behind `grunge` —
-  which is the frame's `#000000` **by construction**, this scheme's `text/1` being black, and not
-  by the coincidence section 8 named. Sampled off the master's render: `#9E1F17` ground at
+  = `s.tx` (`/5`, the unit, `sub`, `brand`) and the numeral takes `s.bg` back behind `grunge`.
+  The two are **different keys landing on one value** — Scheme 1's `sem/bg` and Scheme 3's
+  `sem/text/1` are both `#000000` — so this is section 8's coincidence for a second time, and
+  `s.bg` is written with that named rather than a literal. Sampled off the master's render:
+  `#9E1F17` ground at
   (158, 31, 23), numeral and the dropped stars (0, 0, 0), prose (255, 255, 255). Under Lime the
   whole card stays `s.bg`, so theme 1 digests to zero.
 - **The face stack is the one display-face site in the block that is not `faced`.** Its ring is
