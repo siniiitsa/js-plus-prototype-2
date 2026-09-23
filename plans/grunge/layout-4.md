@@ -235,7 +235,7 @@ it is the gate this session widens.
 | 1 | `header` | `964:72944` | 1440 × 900 | `971:7823` | 768 × 1024 | `977:12044` | 390 × 844 | `964:72849` / `971:5299` / `977:8867` | `964:72511` / `964:77544` / `971:14040` | `if (s.lime) { … return }` at the head of `HeaderV3` | done `0c454fa` |
 | 2 | `bio` | `964:72952` *(Section `964:72945`, head `964:72946`)* | 664 × 720 | `971:7831` *(Section `971:7824`, head `971:7825`)* | 708 × 720 | `977:12052` *(Section `977:12045`, head `977:12046`)* | 370 × 536 | `964:72857` / `971:5307` / `977:8875` | `964:72519` / `964:76446` / `971:14479` | `if (s.v3 && s.lime)` ahead of `Bio`'s `if (s.v3)` | done `a8549e8` |
 | 3 | `media` | `964:72959` *(band `964:72953`, head `964:72954`)* | 1440 × 671 | `971:7955` *(band `971:9533`, head `971:10395`)* | 768 × 501 | `977:12182` *(band `977:12176`, head `977:12177`)* | 390 × 834 | `964:72864` / `971:5431` / `977:9005` | `964:72526` / `971:15190` / `971:14834` | `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)` | done `3c6eae4` |
-| 4 | `gallery` | `964:73004` *(wrapper `964:72969`, head `964:72970`)* | 874 × 646 | `971:8121` *(wrapper `971:8086`, head `971:8087`)* | 768 × 594 | `977:12348` *(wrapper `977:12313`, head `977:12314`)* | 390 × 586.3 | `964:72909` / `971:5597` / `977:9171` | `964:72815` / `964:78491` / `977:8142` | `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from` | — |
+| 4 | `gallery` | `964:73004` *(wrapper `964:72969`, head `964:72970`)* | 874 × 646 | `971:8121` *(wrapper `971:8086`, head `971:8087`)* | 768 × 594 | `977:12348` *(wrapper `977:12313`, head `977:12314`)* | 390 × 586.3 | `964:72909` / `971:5597` / `977:9171` | `964:72815` / `964:78491` / `977:8142` | `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from` | done `68d23ba` |
 | 5 | `repertoire` | `964:73011` *(Section `964:73006`, panel `964:73007`)* | 1208 × **600** | `971:8128` *(Section `971:8123`, panel `971:8124`)* | 608 × 582 | `977:12355` *(Section `977:12350`, panel `977:12351`)* | 310 × 650 | `964:72916` / `971:5604` / `977:9178` | `964:72822` / `964:78509` / `977:8166` | `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump` | — |
 | 6 | `map` | `964:73019` *(Frame 319 `964:73013`, head `964:73014`)* | 1440 × 747 | `971:8136` *(Frame 319 `971:8130`, head `971:8131`)* | 768 × 870 | `977:12363` *(Frame 319 `977:12357`, head `977:12358`)* | 390 × 680 | `964:72924` / `971:5612` / `977:9186` | `964:72830` / `964:78599` / `977:8322` | `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | — |
 | 7 | `pricing` | `964:73021` | 1440 × 542 | `971:8137` | 768 × 806 | `977:12364` | 390 × 829 | `964:72926` / `971:5613` / `977:9187` | `964:72831` / `964:78656` / `977:8440` | `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | — |
@@ -940,6 +940,78 @@ them.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `media_arch_3` at three widths on both surfaces.
 
+### Settled in section 4 (the gallery)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from`, is
+  `(s.lime || s.grunge)`**, with a nine-key `G` at its head (`well3`, `well1`, `mist`, `ring`,
+  `arrow`, `eyebrow`, `photoR`, `pillR`, `initials`) whose Lime arm is today's literals, and
+  `const grunge = s.grunge` naming the seam, the 390 head pad and the dropped pill shadow. The
+  paired diff of the three wrappers against Lime's (`964:72969` / `971:8086` / `977:12313` against
+  `964:72874` / `971:5562` / `977:9136`) was the whole read. The tree is Lime's node for node
+  plus `image 1`, and Lime's `Vector 1` arc is a torn `Vector`. **Every box is Lime's but one**:
+  the 390 wrapper pads **60** over the head where Lime's pads 100, so the sheet is 711.3 against
+  806.3. The seam is shared whole, so the published thumbs, discs and 390 window needed nothing
+  new.
+- **Scheme 3, and the band and the head resolve through Lime's keys**: the wrapper and instance
+  fill `#DF262C` (`s.ac`), and the head is `sem/text/1`, black (`s.bg`). What moves:
+  - the MEDIA eyebrow is `sem/text/2`, **white** (`s.tx`) where Lime's is `s.bg`;
+  - the head is Stones Crush 130 / 81 / 46 at .89, so `faced` / `facedLh` / uppercase: 80.25 /
+    60.75 / 34.5px, three lines at 1440 and one narrow, as the frame sets it;
+  - the spotlight's well is Scheme 3 `box/3` **`#82211B`** (Lime `#9CCF23`), radius **15 / 4 /
+    4** (Lime 50 / 50 / 4 — the 768 node says 4, not the prompt's 15);
+  - the thumbs' well is `sem/tag/1/bg` **`#9E1F17`** (Lime `s.bg`), and their ring is black,
+    which is Lime's own `s.bg`, so the 1 / 3 / 4 mechanism did not move;
+  - the brackets are black, also Lime's `s.bg`.
+- **The discs and pills**: `#0E0E0E` (`s.box3`, Scheme 4 ≡ 1) in a 0.754 black inside ring
+  (Lime `s.tx`). The arrow is **`#FF0000`** (`s.stroke2`) on the wide discs and **`#DF262C`**
+  (`s.ac`) on the 390 pills: two nodes, two bindings, followed. The 390 pills are radius **5**
+  (Lime 60) and carry **no effect at all**, so Lime's 5 / 5 hard shadow drops under Grunge.
+  The wide discs' blur 18.1 stands behind an opaque fill, dropped as under Lime.
+- **Grain inside the spotlight**: `image 1`, a 550.5 square at (0.5, 0) off the photograph's
+  top-left at every width, clipped by it, node `LIGHTEN` at .29, its gradient paint hidden. It
+  is drawn as `<Grain exact grunge blend="lighten" opacity={0.29}>` inside the photo wrapper,
+  `inset: 0 auto auto u(0.5)`, `u(550.5)` square (451.4 at desktop). It unscaled-overflows the
+  390 photo and the clip crops it, as the frame's does. Scanned at 1440 inside the spotlight
+  (mean / stddev): frame **37.1 / 35.7**, ours **38.6 / 40.3**, and **30.5 / 43.6** with the
+  layer hidden, so the lift is the grain's. Nothing else in the section carries grain.
+- **The head seam is `TornEdge grunge bleed={false}` in `s.bg`**, `ArcEdge` staying Lime's arm of
+  a ternary. The vector is 1554 × 581 at y −513.18 / −514.67 / −544.67, so the heights are the
+  node arithmetic **67.8 × 0.82 / 66.3 / 36.3** (the media's convention). Black-run maxima per
+  column: frame 67 (55 at canvas scale) / 65 / 33, ours 53 / 63 / 34. `TORN_D` peaks at .955 of
+  its height, and the 390 frame shows a slice of the vector's middle (the bio's 390 case), so
+  the contours differ where the depths agree (named). Its paint is bound to `sem/bg`
+  (`290:131` at 1440, `290:128` narrow), black on both.
+- **The meeting with the media, checked in the editor at all three widths** (one puppeteer
+  script, deleted: Grunge → card 4 → *Use this header* → the device tabs). The media root's
+  bottom is the gallery root's top to the pixel at 1180 / 768 / 390. The two seams keep their
+  frames' colours, and the frame's black is followed rather than Lime's user call (the olive
+  arc), because under Grunge the media still draws its own black foot tear:
+  - at **1440 and 768** the media's black foot tear and the gallery's black head tear read as
+    **one dark torn band**, roughly the two depths deep, between `#171716` and red. That is the
+    frame's picture with its video band taken out (named);
+  - at **390** the media has no foot tear, so its `#171716` band meets the gallery's black tear
+    on a **straight edge**, 23 in 255 (named). Painting the gallery's head in `#171716` instead
+    would leave a black-then-`#171716` double contour at the wide widths.
+- **Measured** (content edges):
+  - desktop: eyebrow 12px at 181.5, h2 285.7 tall at 226.5 (348 × 0.82 = 285.4), spotlight
+    451.2 × 405.1 at 526.4 · 144.3 (642 · 176 × 0.82), sheet 611.7 (746 × 0.82);
+  - 768: eyebrow at 130, h2 72.1 at 181.6, spotlight 497 × 494 at 50 · 333.7 (50 · 334), sheet
+    877.7 (878);
+  - 390: eyebrow at 60 (60), h2 40.9 at 84.3 (41 at 84), spotlight 330 × 297 at 30 · 169.2
+    (30 · 169), strip at 536.2 (536), sheet 711.4 (711.3).
+  `scrollWidth` holds.
+- **Named diffs, all Lime's**: the thumbs and spotlight top-anchored (the seeded strip is
+  portrait, the frame's crops landscape), seven thumbs against the frame's six, and the seeded
+  strip against the frame's Retro placeholders (layout 1's call).
+- **`live=1`**, desktop and 390: the ring follows `active` (`1113111` → `1311111` on a click of
+  slot 1), ↓ / ↑ step, back from slot 0 wraps to 6 with the ring on it, and the 390 window
+  slides. No page errors. **Red on red, open question 5**: the 3px active ring is black, inside
+  the tile over its photograph, so it never stands on the red ground alone; it reads.
+  `page-check.mjs Grunge 3`: no errors or warnings, every link scrolls (Media → `#gallery`),
+  the 390 burger 1 → 11, overflow 0.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `gallery_arch_3` at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -963,6 +1035,12 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   overlay* (lime/layout-2, the two rings); *the black-run depth method* (grunge/layout-1, section
   3); *a seam is the neighbour's ground; trust the render over the binding* (grunge/layout-1, the
   foot tear); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1).
+- Gallery: *the paired diff walk* (grunge/layout-2); *the `G` lookup whose Lime arm is today's
+  literals* (grunge/layout-1); *a section on another scheme writes that scheme's values as named
+  literals* (grunge/layout-1, Scheme 3's `#82211B` / `#9E1F17`); *the black-run depth method*
+  (grunge/layout-1, section 3); *grain inside a photograph, its gradient paint hidden*
+  (grunge/layout-2, section 5); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1);
+  *the lens, checked in the editor* (lime/layout-4, section 4).
 
 ## Open questions
 
