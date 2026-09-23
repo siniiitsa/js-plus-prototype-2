@@ -12838,23 +12838,59 @@ function Gallery({ s }) {
     // 60), so the insets are 156 / 130 / 100 over and 56 / 30 / 40 under; the
     // 390 card is **337** tall (Retro's 343.14). Every other number is the
     // twin's, through `u()`.
-    if (s.lime) {
+    //
+    // ── Grunge ─────────────────────────────────────────────────────────────
+    // Grunge layout 4 (964:73004 · 971:8121 · 977:12348, in the 964:72969 /
+    // 971:8086 / 977:12313 wrappers) is this block in Static Youth's mode:
+    // the paired diff against Lime's wrappers found every box the same but
+    // the 390 wrapper's head pad, **60** where Lime's is 100. The wrapper and
+    // instance are Scheme 3, so the band `s.ac` and the head's `s.bg` already
+    // resolve to #DF262C and black; the deltas are the dress, in `G`:
+    //  · the MEDIA eyebrow is `sem/text/2`, **white** under Scheme 3, and the
+    //    head is Stones Crush, so `faced` / `facedLh` / uppercase;
+    //  · the spotlight's well is Scheme 3's `box/3` #82211B at radius **15 /
+    //    4 / 4** (Lime 50 / 50 / 4 — the 768 node says 4), under grain `image
+    //    1`: a 550.5 square hung 0.5 in from the photograph's top-left, clipped
+    //    by it, LIGHTEN at .29, its gradient paint hidden;
+    //  · the thumbs' well is `sem/tag/1/bg` #9E1F17 (`box/1`), ringed in black —
+    //    `s.bg` again, so the 1 / 3 / 4 ring is Lime's mechanism unchanged;
+    //  · the discs are Scheme 4 ≡ 1's `box/3` `s.box3` #0E0E0E in a 0.754
+    //    black ring, the arrow `stroke/2` #FF0000 at the wide widths and
+    //    `sem/text/1` **#DF262C** on the 390 pills, which are radius **5** and
+    //    carry **no** shadow. The blur 18.1 stands behind an opaque fill.
+    // The head seam is layout 1's torn vector, `TornEdge grunge`: 1554 × 581
+    // at y −513.18 / −514.67 / −544.67, so 67.8 / 66.3 / 36.3 deep by node
+    // arithmetic (black-run max off the renders 67 / 65 / 33 — the 390 frame
+    // shows a slice of the vector's middle, the bio's 390 case). It is the
+    // frame's black (`sem/bg`), not the media band's #171716: the media owns a
+    // black foot tear at 1440 and 768, so the two meet as one black tear
+    // where the frame's video band stood (named, plans/grunge/layout-4.md).
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const un = (v) => Math.round(v * z * 10) / 10
-      const well3 = '#9CCF23'
-      const mist = '#D5E3B2'
+      const G = grunge
+        ? { well3: '#82211B', well1: '#9E1F17', mist: s.box3, ring: s.bg,
+            arrow: s.mob ? s.ac : s.stroke2, eyebrow: s.tx, photoR: desk ? 15 : 4,
+            pillR: 5, initials: s.tx }
+        : { well3: '#9CCF23', well1: s.bg, mist: '#D5E3B2', ring: s.tx,
+            arrow: s.bg, eyebrow: s.bg, photoR: s.mob ? 4 : 50,
+            pillR: 60, initials: s.bg }
+      const well3 = G.well3
+      const mist = G.mist
+      const disp = grunge ? { textTransform: 'uppercase' } : null
       const ringW = (i) => (s.mob ? 4 : i === active ? 3 : 1)
 
       const glyph = (turn) => (
         <svg viewBox="0 0 16.02 13.94" width={un(16.02)} height={un(13.94)} aria-hidden
              style={{ display: 'block', flex: 'none', transform: turn ? `rotate(${turn}deg)` : undefined }}>
-          <path fill={s.bg} d="M9.17262 13.9348L7.95447 12.7737L12.7985 7.7576L0.0301014 7.98047L0.000240302 6.26973L12.7686 6.04686L7.75277 1.21842L8.92939 -6.17033e-06L16.0184 6.84576L9.17262 13.9348Z" />
+          <path fill={G.arrow} d="M9.17262 13.9348L7.95447 12.7737L12.7985 7.7576L0.0301014 7.98047L0.000240302 6.26973L12.7686 6.04686L7.75277 1.21842L8.92939 -6.17033e-06L16.0184 6.84576L9.17262 13.9348Z" />
         </svg>
       )
 
       const thumb = (i) => (
         <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
           position: 'relative', overflow: 'hidden', minWidth: 0, minHeight: 0,
-          borderRadius: u(s.mob ? 25 : 10), background: s.bg,
+          borderRadius: u(s.mob ? 25 : 10), background: G.well1,
           cursor: s.live ? 'pointer' : undefined,
         }}>
           <span style={{ position: 'absolute', inset: 0 }}>
@@ -12863,7 +12899,7 @@ function Gallery({ s }) {
                 crops where ours are the tall strip photographs, and a centred
                 cover of those into a 121 × 68 pill is a torso with no head. */}
             <Photo s={s} src={s.images[i]} initialsSize={un(26)} ink={s.tx}
-                   style={{ background: s.bg, objectPosition: '50% 0%' }} />
+                   style={{ background: G.well1, objectPosition: '50% 0%' }} />
           </span>
           {/* The ring, over the photograph as Figma strokes it: 1px, the
               active slot's 3px, or the 390 master's 4px on every tile.
@@ -12877,8 +12913,8 @@ function Gallery({ s }) {
 
       const arrowBtn = (key, turn, step) => (
         <span key={key} onClick={s.live ? () => go(active + step) : undefined} style={{
-          height: u(55.514), borderRadius: u(s.mob ? 60 : 10), background: mist,
-          boxShadow: `inset 0 0 0 ${u(0.754)} ${s.tx}${s.mob ? `, 5px 5px 0 ${s.bg}` : ''}`,
+          height: u(55.514), borderRadius: u(s.mob ? G.pillR : 10), background: mist,
+          boxShadow: `inset 0 0 0 ${u(0.754)} ${G.ring}${s.mob && !grunge ? `, 5px 5px 0 ${s.bg}` : ''}`,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: s.live ? 'pointer' : undefined,
           ...(s.mob ? { flex: '1 1 0', minWidth: 0 } : { width: u(55.514), flex: 'none' }),
@@ -12929,13 +12965,18 @@ function Gallery({ s }) {
         }}>
           <div style={{
             width: '100%', height: '100%', position: 'relative', overflow: 'hidden',
-            borderRadius: u(s.mob ? 4 : 50), background: well3,
+            borderRadius: u(G.photoR), background: well3,
           }}>
             {/* Top-anchored as well: the seeded slot 3 is a 1200 × 800 the
                 cover crops sideways, so this is a no-op on the frame's own
                 picture and keeps the heads of the six portrait slots. */}
-            <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={s.bg}
+            <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={G.initials}
                    style={{ background: well3, objectPosition: '50% 0%' }} />
+            {/* Grunge's `image 1`, clipped by the photograph (Grain draws
+                nothing on the other templates). */}
+            <Grain s={s} exact grunge blend="lighten" opacity={0.29} style={{
+              inset: `0 auto auto ${u(0.5)}`, width: u(550.5), height: u(550.5),
+            }} />
           </div>
           {bracket('tl', { top: 0, left: 0, borderTop: edge, borderLeft: edge })}
           {bracket('tr', { top: 0, right: 0, borderTop: edge, borderRight: edge })}
@@ -12951,23 +12992,25 @@ function Gallery({ s }) {
           // seats the arc.
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
           background: s.ac, color: s.bg, position: 'relative',
-          padding: `${u(desk ? 156 : tab ? 130 : 100)} `
+          padding: `${u(desk ? 156 : tab ? 130 : grunge ? 60 : 100)} `
                  + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
                  + `${u(desk ? 56 : tab ? 30 : 40)}`,
           ...col(u(desk ? 112 : tab ? 60 : 24)),
         }}>
-          <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />
+          {grunge
+            ? <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 67.8 * z : tab ? 66.3 : 36.3} colour={s.bg} />
+            : <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />}
           <div style={desk ? row(u(112), { alignItems: 'center' }) : col(u(tab ? 60 : 24))}>
             <div style={col(u(s.mob ? 10 : 36), {
               alignItems: 'flex-start', ...(desk ? { width: u(454), flex: 'none' } : null),
             })}>
               <span style={{
                 fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
-                letterSpacing: s.dls, textTransform: 'uppercase', color: s.bg,
+                letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow,
               }}>Media</span>
               <h2 style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispLg,
-                lineHeight: 0.89, letterSpacing: s.dls, color: s.bg,
+                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+                lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.bg, ...disp,
               }}>{s.title}</h2>
             </div>
             {s.mob
