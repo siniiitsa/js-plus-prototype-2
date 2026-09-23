@@ -565,6 +565,11 @@ exception:
 
 ## The end-of-pass sweep
 
+**Done in two commits, layout 2's shape: the docs, the comments, `CONVENTIONS.md`, one script
+and this plan, then the root `index.html` refresh.** What each item came to is under *Learned
+on the end-of-pass sweep* at the foot of *Conventions*; the list below is kept as it was
+written.
+
 Written now from what the plan can see; the sections add to it. One session, in this order:
 
 1. **CLAUDE.md and README.md**, wherever they describe Grunge as designed at layouts 1 and 2, or a
@@ -1575,6 +1580,94 @@ Lime's Conventions, with the plan it came from — the running list for the swee
   quote's 36 / 28 / 26 is written out); *field reach is measured* (none owed, a third time);
   *the whole-page published check is one puppeteer script*; *theme 1 is the digest at risk*
   (zero, a tenth time).
+- The sweep: *the whole-page published check is one puppeteer script* (B — now hardened, below);
+  *the two-build digest walks the editor* (B, with `CARD=2`); *field reach is measured* (B,
+  confirm-only); *a seeded page cannot show an empty slot* (B — section 2's `&noimage=1`, not
+  re-run here); *do not refresh the root `index.html` per section* (C — the pass, and the
+  sweep's last step).
+
+### Learned on the end-of-pass sweep
+
+- **`page-check.mjs`'s media probe could be beaten by a scroll still in flight.** On this page
+  it reported `src: ''`, `paused: true`, `moved: false` under Grunge card 3 — and the same
+  click in the harness played at both themes. The cause is the anchors walk that runs just
+  before it: the popup's delegated fragment listener scrolls **smoothly**, the probe's own
+  `scrollTo` does not cancel that, and the card slid out from under a fixed click point
+  (`mouse.click(x, 300)`) 200 ms later. The probe now settles for 700 ms and clicks the leaf's
+  **live** rect; re-run, the player loads `SoundHelix-Song-1.mp3` and reads `paused: false`.
+  Layout 2's page was short enough that the tail of that scroll never reached the media
+  section, which is why it took a third layout to show. The only source change in the sweep.
+- **Card 3, published, under Grunge** (`page-check.mjs Grunge 2,0,1,3`): eleven header
+  fragment links (nine nav plus Listen and Book Now) each scroll to their section; the four
+  other fragment links on the page — the calendar's *Pick a date to enquire* and the pricing
+  stack's three Book Now pills — all reach `#form`; a refused form submit turns all four boxes
+  from `inset 1px` white 15% to `inset 2px` white at an unchanged 34px, and the valid one
+  composes the mailto with all four values and swaps in *Check your mail*; nine footer links
+  scroll; the 390 burger opens 1 → 11 and `scrollWidth − innerWidth` is 0. **No console error
+  or warning in either window, and none across the 768 → 390 → 768 → 1440 → 390 → 1440 resize
+  walk.** The composed row holds: bio and calendar both at top 738, media under the bio at
+  1761, and the page runs repertoire 2735, gallery 3312, pricing 3812, map 4760, form 5430,
+  testimonials 5939, footer 6566.
+- **The generic control probe reaches eight of the ten sections, and the two it misses are
+  expected.** `testimonials: []` is the wall paging nothing (section 10), and `gallery: []` is
+  the probe's own filter — layout 3's tiles are `<img>` inside a div with children, so no
+  "childless pointer leaf" matches. Everything else answered: the repertoire's two *View full
+  set* links, the map's chips, rows and dates, pricing's four chips, the calendar's six dots.
+- **The controls the builder walk cannot reach were driven in the harness** at
+  `theme=2&arch=2&live=1` (one throwaway script, deleted). The **gallery's viewer**: a tile
+  opens it at 3 / 7 on a `rgba(0, 0, 0, .94)` scrim with `<html>` and `<body>` at
+  `overflow: hidden`, → steps to 4 / 7, Escape closes it and restores both, at desktop and
+  390 alike. The **repertoire's reveal** at `n=20`: one *View full set* link goes and fifteen
+  rows show. The **pricing capsule's moving seat**: exactly one FEATURED badge at every chip,
+  on *The Festival Set* under All, Trio and Band and on *The Wedding Set* under Solo — the
+  last row on show, at desktop and 390. The **map's zoom** 1 → 1.25 → 1.5625 → 1.25, and
+  ***See all gigs*** at `n=30` turning a page of six into the whole thirty-one, at both
+  widths. No page error or warning in any of them.
+- **The seams are straight.** 180px clips at 1440 and 390: the gallery's `#171716` sheet is
+  the page's one full-bleed edge and meets the black square at both widths; the pricing
+  instance's `stroke1` ring ends on bare ground and the map stands on the page between it and
+  the form's card, with no residue of Lime's `s.tx` map sheet.
+- **Thumbnails (deliverable 4):** every category's layout picker renders its fitted arch-2
+  section under Grunge — the bio's stacked ID card, the media player's bar-meter card over the
+  numbered list, the repertoire's set cards, the calendar's *Book Me* month, the gallery grid,
+  the pricing stack, the map's *Gigs & travel*, the form's *Available 2025 / 2026* eyebrow, the
+  testimonials' *Word of Mouth* wall — and the header's four cards, card 3 marked current. The
+  footer offers one row, layout 1's. Reaching the list from the editor needs the
+  **`button[aria-label="Back to page list"]`**, not the top bar's `‹`, which goes back to the
+  templates and empties the sidebar.
+- **Cards 1, 2 and 4** render and publish with every section in `pageOrder(i)`'s order and no
+  error or warning; card 4 still draws Retro's checker floor, its own pass's to fit.
+- **`reach.mjs 2`** (2,784 renders) matches every `Grunge` row in `FIELDS` exactly — kicker,
+  tags and showTags `[0, 2, 3]`, location `[0, 1, 2, 3]`, cta2 `[1, 2]`, showBadge and
+  badgeText `[0, 3]`, subtitle and heroCta `[1]`, align `[0]` — and the identity rows section 2
+  re-measured (`who.tags` / `who.showTags` on bio layouts 2, 3 and 4; `who.location` on
+  calendar layout 4 alone; `who.kicker` on form layouts 1 and 2). Nothing moved. `media.cta`
+  and `calendar.heading` carry no probe, as layout 2's sweep found.
+- **The docs' claims went further than the list again.** Beyond the named sites: CLAUDE.md's
+  JP-039 fit table (seven seeded names at 768 under Grunge layout 3, beside layout 2's eight),
+  Minimal's triple and the 768 fit-gate parentheticals (both now "Grunge's two" / "layouts 2
+  and 3"), the header `in` note's "fitted cards 1 and 2", the bio's tag-chip reach ("Lime's and
+  Grunge's 3"), the file table's line counts, and README's refused-box parenthetical; comments
+  in `data.js` (the header-family block and the `in` note), `photos.js` (layouts 2 and 3 owe no
+  export — the bio's crop is an `objectPosition`) and `sectionVm`'s `grunge` flag. Two stale
+  ones the grep for "flat" caught: `EncoreSection`'s **§10.3 heading still named Grunge in the
+  flat family**, and its §10.2 heading named only Lime's four fitted headers.
+- **Two named diffs are raised rather than fixed, both for a Lime-and-Grunge pass**: the
+  calendar's desktop foot is `vm.padY`'s 80 against the frame's 45.9 (section 5's
+  *Conventions* bullet), and the repertoire's top pad is the shared `padY` where the frame's
+  instance pads 56 / 60 / 60, which is what puts the media-to-repertoire gap +19 at desktop
+  and −11 / −16 narrow (section 4). Moving either would move Lime's page, so neither is a
+  Grunge-only arm. Open question 4 — the bio well's covered `fa453f7d` leak — is still the
+  designer's to hear, with layout 2's two.
+- **The two-build digest** (repo root on `127.0.0.1:8931`, the old build digested **before**
+  the `cp`): the seeded page is **zero rows at all five themes and three widths**, and
+  `modal.txt` is identical (four Grunge cards in both). With `CARD=2`, card 3's page is
+  byte-identical under Retro, Lime, Editorial and Pop, and under Grunge differs at all three
+  widths **from the first row on** — the header root's ground `#1A1A1A` → `#000000`, and the
+  390 header 954.6 → 606.4, the fitted master's own height. String tells, all new-only:
+  `rgb(23, 23, 22)` (the gallery's `#171716` sheet) ×3, `rgb(255, 0, 0)` (`s.stroke2`) ×15,
+  `rgb(158, 31, 23)` (Scheme 3's `box/1`) ×6, `rgb(245, 46, 52)` (its `box/2`, the map panel)
+  ×8. The standalone file is 7,928,921 bytes (was 7,924,585).
 
 ## Open questions
 

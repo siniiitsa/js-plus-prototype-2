@@ -1287,9 +1287,11 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour }) {
 /* ------------------------------------------------------------------ *
  * §10.2 The six photographic header compositions (Retro)
  *
- * Lime's header family is the first four of them in its own tokens
- * (`headerFamily()`), because header card N lays out the whole page as
- * layout N. All four, HeaderV0–V3, are fitted to Lime's frames.
+ * Lime's and Grunge's header families are the first four of them in their own
+ * tokens (`headerFamily()`), because header card N lays out the whole page as
+ * layout N. All four, HeaderV0–V3, are fitted to Lime's frames; Grunge's
+ * HeaderV0, V1 and V2 are fitted and its V3 is the placeholder its own layout
+ * pass will fit.
  * ------------------------------------------------------------------ */
 
 // v0 — Header layout 1 · Hero (§10.2 reference design)
@@ -3153,7 +3155,7 @@ function HeaderV5({ s }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §10.3 Header, flat family (Grunge, Editorial, Pop — 3 layouts)
+ * §10.3 Header, flat family (Editorial and Pop — 3 layouts)
  * ------------------------------------------------------------------ */
 
 function FlatNav({ s }) {
