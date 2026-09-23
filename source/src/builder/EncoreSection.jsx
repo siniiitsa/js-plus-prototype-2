@@ -18138,10 +18138,36 @@ function EventsMap({ s }) {
     // 100 with `justify-end` at every width). The panel's left rule is desktop
     // only, Retro's reading: the narrow masters carry the same 1px left stroke
     // under the card's own ring, where it paints nothing.
-    if (s.lime) {
+    //
+    // Grunge (964:73019 / 971:8136 / 977:12363) is this tree again, node for
+    // node — 64 / 63 / 63 in a paired diff of the two `Frame 319`s — on the
+    // same schemes, with no Device override, and every box and inset Lime's
+    // but the cells' 1px (227.5 / 140 against 226.5 / 139.5). What moves is
+    // the dress, in `G`, whose Lime arm is the block's own literals:
+    // - the card, the cells and the ticker are radius **15** (Lime 50 / 25 /
+    //   50); the cells' ring is still `sem/stroke/2`, **`#FF0000`** here, and
+    //   the ticker's is `sem/stroke/2` too where Lime's is `sem/stroke/1`;
+    // - **the numerals are `sem/text/1`, red** (`s.ac`) — a moved binding,
+    //   Lime's are `sem/text/2` — in Stones Crush 50 / 40 / 26, so `faced` /
+    //   `facedLh` and uppercase like the head;
+    // - inside the Scheme 3 viewport `sem/text/2` is **white**, so the ring
+    //   labels, the marker's ring and glyph and the zoom glyphs are `s.tx`
+    //   where Lime inks them `s.bg`; the zoom squares are `sem/box/2`
+    //   `#F52E34` in Scheme 3's black 15% hairline. Rings, labels and the
+    //   marker's head stay `s.ac`, which is `#DF262C` here. The lit pin's ring
+    //   follows the marker's, white — layout 3's Grunge call.
+    // The 1440 `Vector 2` is Lime's no-op leftover again and is not drawn.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const G = grunge
+        ? { r: 15, cellR: 15, cellRing: s.stroke2, tickRing: s.stroke2, num: s.ac, vpInk: s.tx,
+            lift: '#F52E34', inkHair: '#00000026', cellMin: desk ? 227.5 : 140 }
+        : { r: 50, cellR: 25, cellRing: s.ac, tickRing: s.stroke1, num: s.tx, vpInk: s.bg,
+            lift: '#D9FF7F', inkHair: '#15180F26', cellMin: desk ? 226.5 : 139.5 }
+      const upper = grunge ? { textTransform: 'uppercase' } : null
       const ink = s.tx // sem/text/2 on the card, the cells and the ticker
-      const lift = '#D9FF7F' // Scheme 3 sem/box/2 — the zoom buttons
-      const inkHair = '#15180F26' // Scheme 3 sem/stroke/1, 15% — the zoom buttons' ring
+      const lift = G.lift // Scheme 3 sem/box/2 — the zoom buttons
+      const inkHair = G.inkHair // Scheme 3 sem/stroke/1, 15% — the zoom buttons' ring
       const ring = (c) => `inset 0 0 0 1px ${c}`
       const chipL = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -18149,8 +18175,8 @@ function EventsMap({ s }) {
       }
       const bodySmL = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
       const numeral = s.mob
-        ? { fontSize: '26px', lineHeight: 1.1 }
-        : { fontSize: s.dispSm, lineHeight: 1 }
+        ? { fontSize: faced(s, '26px'), lineHeight: facedLh(s, 1.1) }
+        : { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1) }
       // Outer first: diameter, inside stroke, opacity.
       const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
 
@@ -18184,7 +18210,7 @@ function EventsMap({ s }) {
             {s.mapRings.slice(0, ringW.length).map((label, k) => (
               <span key={k} aria-hidden style={{
                 position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
-                transform: 'translate(-50%, -50%)', background: s.ac, color: s.bg,
+                transform: 'translate(-50%, -50%)', background: s.ac, color: G.vpInk,
                 borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
               }}>{label}</span>
             ))}
@@ -18195,7 +18221,7 @@ function EventsMap({ s }) {
                   position: 'absolute', left: p.x, top: p.y,
                   width: on ? u(14) : u(8), height: on ? u(14) : u(8),
                   borderRadius: '999px', background: on ? s.ac : s.tx,
-                  boxShadow: on ? `0 0 0 2px ${s.bg}` : undefined,
+                  boxShadow: on ? `0 0 0 2px ${G.vpInk}` : undefined,
                   transform: 'translate(-50%, -50%)',
                 }} />
               )
@@ -18208,8 +18234,8 @@ function EventsMap({ s }) {
               alignItems: 'center', transform: 'translate(-50%, -50%)',
             })}>
               <span style={row(0, {
-                background: s.ac, color: s.bg, padding: u(4),
-                boxShadow: `inset 0 0 0 2px ${s.bg}`, borderRadius: '999px',
+                background: s.ac, color: G.vpInk, padding: u(4),
+                boxShadow: `inset 0 0 0 2px ${G.vpInk}`, borderRadius: '999px',
               })}>
                 <User size={Math.round(16 * z)} />
               </span>
@@ -18224,7 +18250,7 @@ function EventsMap({ s }) {
               const onClick = s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined
               return (
                 <span key={glyph} onClick={onClick} style={{
-                  width: u(30), height: u(40), borderRadius: u(8), background: lift, color: s.bg,
+                  width: u(30), height: u(40), borderRadius: u(8), background: lift, color: G.vpInk,
                   boxShadow: ring(inkHair), boxSizing: 'border-box',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
@@ -18252,16 +18278,17 @@ function EventsMap({ s }) {
           }}>
             {stats.map((st, i) => (
               <div key={i} style={col(u(8), {
-                background: s.box1, boxShadow: ring(s.ac), borderRadius: u(25),
+                background: s.box1, boxShadow: ring(G.cellRing), borderRadius: u(G.cellR),
                 padding: `${u(18)} ${u(20)}`, alignItems: 'flex-start', minWidth: 0,
                 ...(s.mob
                   ? { justifyContent: 'space-between' }
-                  : { justifyContent: 'flex-end', minHeight: u(desk ? 226.5 : 139.5) }),
+                  : { justifyContent: 'flex-end', minHeight: u(G.cellMin) }),
               })}>
                 {!!st.label && <span style={chipL}>{st.label}</span>}
                 {!!st.value && (
                   <span style={{
                     fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
+                    color: G.num, ...upper,
                   }}>{st.value}</span>
                 )}
                 {!!st.sub && <span style={bodySmL}>{st.sub}</span>}
@@ -18282,14 +18309,14 @@ function EventsMap({ s }) {
       return (
         <div style={col(desk ? u(56) : '30px')}>
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg,
-            lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+            lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...upper,
           }}>{s.title}</h2>
 
           <div style={col(u(16))}>
             <div style={{
               background: s.box1, color: ink, position: 'relative',
-              borderRadius: u(50), overflow: 'hidden', display: 'grid', alignItems: 'stretch',
+              borderRadius: u(G.r), overflow: 'hidden', display: 'grid', alignItems: 'stretch',
               gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
               rowGap: tab ? '32px' : 0,
             }}>
@@ -18308,8 +18335,8 @@ function EventsMap({ s }) {
 
             {!!gig && (
               <div style={row(u(14), {
-                background: s.box1, color: ink, boxShadow: ring(s.stroke1),
-                borderRadius: u(50), overflow: 'hidden', padding: `${u(12)} ${u(16)}`,
+                background: s.box1, color: ink, boxShadow: ring(G.tickRing),
+                borderRadius: u(G.r), overflow: 'hidden', padding: `${u(12)} ${u(16)}`,
               })}>
                 {nGigs > 1 && <span onClick={step(-1)} style={arrowL}>‹</span>}
                 <GigTagL {...gigLinkL} style={col(u(2), {
