@@ -702,7 +702,12 @@ harness renders sections, not `PublishedPage`.
   - Gigs scrolls `#map` to top 0;
   - the gallery viewer covers the window, locks the scroll and closes on Escape.
 
-  `EncoreSection` has no vw / vh unit.
+  `EncoreSection` has no vw / vh unit. Odd widths (1181 … 1555) leave `scrollWidth` equal to
+  `clientWidth`.
+- **Named consequence.** Every photograph on the published desktop page is now drawn up to
+  1.22× the canvas's size, so a low-resolution upload reads softer at 1440 than it did.
+- **Editor, walked:** at Lime layout 2 the *Navigation links* select shows Minimal. Picking
+  *Follow my sections* and republishing gives the burger at 768 again.
 - **Reply to the tester.** Fixed: from 1180 to 1440 the published page now scales to the
   design, so at 1440 the gutter is 78px and the column is about 1275px. Only wider windows
   widen the gutters.

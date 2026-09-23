@@ -221,8 +221,10 @@ That distinction is the whole design, and it buys two things:
   breakpoints are the `narrow` / `mob` booleans and the fixed px of `SIZES`, resolved into the
   view-model. Serialised HTML would be frozen at whatever width the editor happened to show.
   `PublishedPage` picks its own `Z` from its own window's width, at 390 / 768 / 1180+.
-- **…and it holds its measure.** Past the canvas its frame was drawn at, the design does not get
-  wider: `PublishedPage` puts the surplus into `padX`, so the content column stays the width the
+- **…and it holds its measure.** At desktop the canvas is the 1440 frame at 0.82, so between
+  1180 and 1440 `PublishedPage` first zooms the whole page back up (`zoom: min(width, 1440) /
+  1180` on a wrapper, laid out at `width / k`), and a 1440 window is the frame at 1:1. Past
+  that, the design does not get wider: `PublishedPage` puts the surplus into `padX`, so the content column stays the width the
   type ramp was tuned for and the window keeps the rest. It does that through the gutter rather
   than with a centred wrapper because `padX` is also what `bleedTo()` and `TornEdge` offset
   against — so each section's background, its torn edges and its checker ribbons still run to both
