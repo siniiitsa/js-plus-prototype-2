@@ -463,6 +463,9 @@ export const TRACK_AUDIO = [
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
 ]
+// What `blankRow()` asks of a TracksField row (the JP-051 sweep): a track with
+// only a photograph, or only a sound file, is still a track.
+export const TRACK_KEYS = ['title', 'sub', 'image', 'audio']
 
 // The clock on the "now playing" card beside the track stack — a player caught
 // mid-song, which is what the Figma frame draws. Only the editor canvas shows
@@ -541,6 +544,8 @@ export const QUOTES = [
   { quote: '"Booking again next year, no question."',
     who: 'Olivia B.', role: 'Wedding planner', when: 'Reviewed 3 months ago' },
 ]
+// What `blankRow()` asks of a QuotesField row (the JP-051 sweep).
+export const QUOTE_KEYS = ['quote', 'who', 'role', 'when']
 
 export const CITIES = [
   { date: '14 Aug', city: 'Manchester', venue: 'Albert Hall',         status: 'Tickets'  },
@@ -583,6 +588,8 @@ export const SONGS = [
   { title: 'Rather Be',         artist: 'Clean Bandit',      tags: 'Weddings' },
   { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Pubs' },
 ]
+// What `blankRow()` asks of a SongsField row (the JP-051 sweep).
+export const SONG_KEYS = ['title', 'artist', 'tags']
 
 // The chip that clears the filter. It is index 0 of the row and carries a null
 // tag; repChips() skips a tag of the same name so an artist who writes "All" on
@@ -604,6 +611,8 @@ export const GIGS = [
   { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', link: '' },
   { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', link: '' },
 ]
+// What `blankRow()` asks of a GigsField row (the JP-051 sweep).
+export const GIG_KEYS = ['venue', 'city', 'time', 'month', 'day', 'link']
 export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
@@ -652,6 +661,16 @@ export const FORM_FIELDS = [
   { label: 'Event date', placeholder: 'dd / mm / yyyy', kind: 'text' },
   { label: 'Guests',     placeholder: 'approx.',        kind: 'number' },
 ]
+// What `blankRow()` asks of a box (JP-051): the two strings it can print. Not
+// `kind`, which is a select that always holds a value, so asking it too would
+// make no row blank. A box with only a placeholder is still a box; in layouts
+// 2 and 3, which print the label alone, it falls back to the placeholder.
+export const FORM_FIELD_KEYS = ['label', 'placeholder']
+// The word the guarded email row — the form's only reply box, FormFieldsField's
+// `lastEmail` — is labelled by when the artist empties its label. It never
+// drops, or the form would have nowhere to be replied to; the seed's own word,
+// so a box and its mailto body line read the same.
+export const FORM_EMAIL_LABEL = 'Email'
 // The three kinds a row can be, in the { v, l } shape EditPanel's own select
 // branch reads. Anything else sectionVm resolves to 'text'.
 export const FORM_KINDS = [
@@ -682,6 +701,12 @@ export const FORM_MESSAGE = 'Tell me about your event…'
 // draw these eight, and a ninth would unbalance the two columns of four.
 export const FOOTER_LINKS = ['bio', 'media', 'gallery', 'repertoire', 'map', 'pricing', 'form', 'testimonials']
   .map((to) => ({ label: navLabel(to), to }))
+// What `blankRow()` asks of a LinksField row (the JP-051 sweep): the two strings
+// it can print or follow. Not `to`, a select that always holds a value — 'none'
+// on a new row — which is FORM_FIELD_KEYS' reason for leaving out `kind`. A row
+// aimed at a section with its label emptied is therefore blank too: it prints
+// nothing to click.
+export const LINK_KEYS = ['label', 'url']
 
 // The per-row target select, in the { v, l } shape EditPanel's own select
 // branch reads — FORM_KINDS' shape.

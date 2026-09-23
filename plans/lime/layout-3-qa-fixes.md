@@ -31,7 +31,7 @@ so Retro, Grunge and the flat two move with them. The tester happened to be on L
 |---|---|---|---|---|---|---|
 | 1 | JP-049 | Enquiry Form's Email address takes `not-an-email` and the submit mails it | **Confirmed**: every other address box validates, this one does not | S | no | **done** |
 | 2 | JP-048 | Three *Add package* clicks publish three blank cards, the last one lime and FEATURED | **Confirmed**; the FEATURED seat is working as documented, the defect is that a blank row renders | M | **yes** — what counts as blank | **done** |
-| 3 | JP-051 | An empty form-field row publishes an unlabelled box | **Confirmed**; JP-048's family, applied to the form | S | **yes** — the guarded email row | open |
+| 3 | JP-051 | An empty form-field row publishes an unlabelled box | **Confirmed**; JP-048's family, applied to the form | S | **yes** — the guarded email row | **done** |
 | 4 | JP-050 | Emptying the header Title publishes the sample name in eight slots and nothing in the h1 | **Half documented, half defect**: the fallback is CLAUDE.md's rule; the h1 disagreeing with it is a bug | M | **yes** — what an empty name means | open |
 | 5 | — | End-of-pass sweep | — | S | — | open |
 
@@ -276,6 +276,10 @@ visitor cannot send the form without typing something into a box that names noth
    falls back to "Email" (the layout-2 `cta` → `button` precedent), resolved in `sectionVm` so the
    mailto body prints the same word.
 
+**Decided (user, 2026-09-23): 1 → A**, `blankRow` over `label` + `placeholder`, one rule for
+every layout; **2 → the recommendation**: the guarded email row never drops, and an emptied label
+falls back to "Email" in `sectionVm`, so the box and the mailto body print the same word.
+
 **Fix.** Filter in `sectionVm` with `blankRow`, the email exception applied first. `FormFieldsField`
 says under a blank row "Empty fields aren't shown." and under an emptied email label "Shown as
 Email." Then **sweep the family**: songs, tracks, gigs, quotes and links — for each, what a blank
@@ -291,7 +295,52 @@ byte-identical.
 
 **Docs.** CLAUDE.md's enquiry-form and structured-editor bullets, `FormFieldsField`'s comment.
 
-**Settled.**
+**Settled** (2026-09-23). Evidence lines had drifted with JP-049 / JP-048: at `fe3e34c`
+`vm.formFields` was `EncoreBuilder.jsx:1353`, `formErrors` `data.js:1535`, `FormFieldsField`
+`:2573`.
+
+- **The form.** `FORM_FIELD_KEYS = ['label', 'placeholder']` beside `FORM_FIELDS` — not `kind`, a
+  select that always holds a value. `sectionVm` filters `formList` before the map, so `formRows`,
+  `formMailto` and `formCheck` stay index-aligned. **The exception is the same test as the
+  editor's guard**: `kind === 'email'` with exactly one email row in the *raw* list
+  (`FormFieldsField`'s `lastEmail`), so the panel never says "Shown as Email." under a row the vm
+  drops; that row is never blank, and an emptied label resolves to `FORM_EMAIL_LABEL` ("Email",
+  the seed's own word, in `data.js`). With two email rows neither is guarded and a blank one drops
+  like any other. `FormFieldsField` prints "Empty fields aren’t shown." under a blank unguarded row
+  and "Shown as Email." under the guarded row's emptied label (beneath the guard's own hint).
+- **The sweep: all five families qualified, so all five take `blankRow`, filter-first.** Measured
+  pre-fix with the seed + one wholly blank row (the repeater's own *Add* shape), each layout ×
+  themes 0, 1 × 1440 / 390 × both surfaces, counting nodes, `cursor: pointer` and `a[href]`:
+  **songs** — an empty row in layouts 1, 3 and 4 (pointer-live in the published tab) and one more
+  song in the heading's count; **tracks** — a card in all four layouts, clickable live, loading
+  nothing, and a seat the fan and transport step through; **gigs** — a row in layouts 1–3 that
+  lights a pin live (layout 4's ticker pages to it); **quotes** — layout 2's rail gains a numbered
+  tile that pages to an empty card, layout 3's wall an empty cell counted in the stat, layouts 1
+  and 4's arrows page to an empty card; **links** — an empty pointer span on both surfaces that
+  also skews the halving. Keys beside each seed: `SONG_KEYS`, `TRACK_KEYS` (art and sound
+  included — a track with only a sound file is a track), `GIG_KEYS`, `QUOTE_KEYS`, `LINK_KEYS`
+  (`label` + `url`, not `to`, `FORM_FIELD_KEYS`' reason — so a section-aimed row with its label
+  emptied drops too: it prints nothing to click). Each repeater prints its own "Empty … aren’t
+  shown."; the repertoire heading's `EditPanel` fallback counts the filtered list, sectionVm's
+  twin. After: all 136 sweep cells zero.
+- **Not this entry's:** a *non-blank* row that still prints an invisible control (a footer `link`
+  row with an address and no label; a form row with only a placeholder, which layouts 2 and 3 fall
+  back to — Decision A's named cost) and JP-045's refused-link split.
+- **Harness:** `digest.mjs` now strips `&cj=…` from the file name (ENAMETOOLONG otherwise); the
+  override's content lives in the label. Documented in the file's usage lines.
+- **Verified.** Seeded digest themes 0, 1, 2, canvas and `live=1`: 387 + 387 byte-identical
+  before/after. `cat=form` × layouts 1–4 × themes 0, 1, 2 × three widths: the seed + one `{}`
+  row, and the seed with the email label emptied, are each byte-identical to the seed on 36/36
+  canvas and 36/36 live (pre-fix: 36 + 36 and 36 + 18 differed). Synthetic submit (every labelled
+  box filled, a capture listener swallowing the mailto navigation), 4 layouts × 3 themes: pre-fix
+  0/12 sent — the unlabelled fifth box blocked it; after, 12/12 sent, `href` composed as
+  `…?subject=…&body=Name: …\r\nEmail: fan@example.com\r\n…`. The emptied email label drew
+  `EMAIL` / `you@email.com` boxes and an `Email:` body line (pre-fix: an unlabelled box in layouts
+  2 and 3 and a `Detail:` line). In the editor (one-off puppeteer, deleted): each of the six
+  repeaters' *Add* shows its hint; clearing the email label shows "Shown as Email.". Retro, Lime
+  and Grunge moved together; nothing is template-gated.
+- Docs: CLAUDE.md's guarded-row sentence and the structured-editor bullet (all seven repeaters,
+  the `*_KEYS`), README's enquiry-form paragraph, `FormFieldsField`'s header comment.
 
 ---
 

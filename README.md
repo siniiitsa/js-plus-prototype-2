@@ -395,7 +395,11 @@ That distinction is the whole design, and it buys two things:
   validation derivable rather than guessed: with a label and a placeholder alone there is no way
   to know which box holds the address a reply goes to. For the same reason the last `email` row
   cannot be removed or retyped in the editor: its trash button and its other kinds are disabled,
-  with a hint that says why.
+  with a hint that says why. A box with neither a label nor a placeholder names nothing yet would
+  be required, so `sectionVm` drops it on both surfaces (`blankRow()` over `FORM_FIELD_KEYS`) —
+  except that guarded email row, which always shows and reads "Email" when its label is emptied.
+  The same blank-row drop covers every repeater: songs, tracks, gigs, packages, reviews and
+  footer links.
 
   **The submit is a `mailto:`**, and `email` is what it is addressed to. There is no backend and
   never will be, so handing the enquiry to the visitor's own mail app is the one delivery that is

@@ -40,7 +40,7 @@ import {
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE,
-  FORM_PROMISES, FORM_FIELDS, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
+  FORM_PROMISES, FORM_FIELDS, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, CAL_SLOT_CTA, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
@@ -48,7 +48,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, blankRow, enquiryMailto, formErrors,
+  tierFeats, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -650,6 +650,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the seeds are already absolute. It follows the
   // artwork's rule about re-seeding by index, for the same reason.
   //
+  // A row with nothing in it — no title, subline, art or sound — is dropped
+  // before anything indexes the list (`blankRow()`, the JP-051 sweep, JP-048's
+  // filter-first order), or it would be a card the published player loads
+  // nothing into and a seat the fan and the transport step through.
+  //
   // `sub` is the one subline the fitted layout 1 sets; `rel` is the same line
   // with the duration taken off it, for a design that columns the release and
   // the running time apart (media layout 2). The seeded shape is the only one
@@ -657,7 +662,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // is just the row's own subtitle and equals `dur`.
   const seedArt = defaultTrackArt(cat, T.name) ?? []
   if (Array.isArray(c.tracks)) {
-    vm.tracks = c.tracks.map((t, i) => {
+    vm.tracks = c.tracks.filter((t) => !blankRow(t, TRACK_KEYS)).map((t, i) => {
       const sub = (t?.sub ?? '').trim()
       return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
                img: t?.image ?? null, src: extUrl(t?.audio ?? '', true) || null }
@@ -823,7 +828,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // repertoire — the artist's own list, else the seeded one. The semantics are
   // `images`, not `image`: an emptied array is already distinguishable from an
   // absent key, so only an absent key falls back and no null sentinel is needed.
-  const songList = Array.isArray(c.songs) ? c.songs : SONGS
+  // A row with nothing in it is dropped first (`blankRow()`, the JP-051 sweep),
+  // or it would be an empty clickable row the heading's count claims as a song.
+  const songList = (Array.isArray(c.songs) ? c.songs : SONGS).filter((t) => !blankRow(t, SONG_KEYS))
   vm.songs = songList.map((t, i) => ({
     n: i + 1,
     title: String((t && t.title) ?? '').trim(),
@@ -1172,7 +1179,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // lights on the map, paired by index because PINS is a fixed five over a fixed
   // raster. The hue is computed over the *whole* list, never a page of it, or a
   // gig would change colour as the pager turned.
-  const gigList = Array.isArray(c.gigs) ? c.gigs : GIGS
+  //
+  // A gig with nothing in it is dropped first (`blankRow()`, the JP-051 sweep),
+  // so the pins, the hues, the pager and the chips all follow the rendered
+  // list: otherwise it is a blank row that lights a pin.
+  const gigList = (Array.isArray(c.gigs) ? c.gigs : GIGS).filter((g) => !blankRow(g, GIG_KEYS))
   vm.gigs = gigList.map((g, i) => {
     const h = T.tags[i % T.tags.length]
     return {
@@ -1264,7 +1275,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // means the seeded QUOTES, an emptied array means no reviews at all, and
   // there is no null sentinel. It was three flat keys over a fixed three rows,
   // which reached one review and could not add a fourth.
-  const quoteList = Array.isArray(c.quotes) ? c.quotes : QUOTES
+  // A review with nothing in it is dropped first (`blankRow()`, the JP-051
+  // sweep): it would page to an empty card, add a numbered tile to layout 2's
+  // rail and an empty cell — counted in the stat — to layout 3's wall.
+  const quoteList = (Array.isArray(c.quotes) ? c.quotes : QUOTES).filter((r) => !blankRow(r, QUOTE_KEYS))
   vm.quotes = quoteList.map((r, i) => {
     const who = String(r?.who ?? '').trim()
     const role = String(r?.role ?? '').trim()
@@ -1349,9 +1363,18 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // seed, emptied array means none, no null sentinel. Every row is normalised
   // here so EncoreSection can switch on `kind` without a default of its own;
   // anything unrecognised is a text box.
+  //
+  // A box with neither a label nor a placeholder names nothing and would still
+  // be required, so it is dropped here, on both surfaces, before anything
+  // indexes the list (JP-051, `blankRow()` — JP-048's filter-first order), which
+  // keeps formRows, formMailto and formCheck index-aligned. The exception comes
+  // first: the guarded email row — FormFieldsField's `lastEmail`, the same test
+  // over the same raw list — never drops, and an emptied label reads Email.
   const formList = Array.isArray(c.fields) ? c.fields : FORM_FIELDS
-  vm.formFields = formList.map((f) => ({
-    label: String((f && f.label) ?? '').trim(),
+  const formEmails = formList.filter((f) => f?.kind === 'email').length
+  const formGuarded = (f) => f?.kind === 'email' && formEmails === 1
+  vm.formFields = formList.filter((f) => formGuarded(f) || !blankRow(f, FORM_FIELD_KEYS)).map((f) => ({
+    label: String((f && f.label) ?? '').trim() || (formGuarded(f) ? FORM_EMAIL_LABEL : ''),
     placeholder: String((f && f.placeholder) ?? '').trim(),
     kind: (f && (f.kind === 'email' || f.kind === 'number')) ? f.kind : 'text',
   }))
@@ -1415,7 +1438,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // rule. Only a *missing section* is dropped. A 'none' row is a plain label the
   // artist chose, and a 'link' row whose address extUrl refuses stays a
   // picture, the Soundcloud rule, with UrlInput already saying why.
-  const linkRows = Array.isArray(c.links) ? c.links : FOOTER_LINKS
+  //
+  // A row with neither a label nor an address prints nothing to click, so it is
+  // dropped on both surfaces, before the halving below (`blankRow()`, the
+  // JP-051 sweep) — unlike a missing section, which the canvas keeps.
+  const linkRows = (Array.isArray(c.links) ? c.links : FOOTER_LINKS).filter((r) => !blankRow(r, LINK_KEYS))
   vm.footerLinks = linkRows.flatMap((r) => {
     // No target reads as 'none', which is what LinksField's select shows for it.
     const to = String(r?.to ?? '').trim() || 'none'
@@ -2019,6 +2046,8 @@ function UrlInput({ value, onChange, style, className, placeholder, web = false,
 
 const SONG_ROW_INPUT = { ...FIELD_BOX, padding: '6px 8px', fontSize: '12px' }
 
+const BLANK_SONG_HINT = 'Empty songs aren’t shown.'
+
 function SongsField({ value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
 
@@ -2072,6 +2101,9 @@ function SongsField({ value, max, onChange }) {
           onChange={(e) => setAt(i, 'tags', e.target.value)}
           className="h-auto" style={SONG_ROW_INPUT}
         />
+        {blankRow(sg, SONG_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_SONG_HINT}</p>
+        )}
       </div>
     </div>
   )
@@ -2186,6 +2218,8 @@ function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
   )
 }
 
+const BLANK_TRACK_HINT = 'Empty tracks aren’t shown.'
+
 function TracksField({ value, max, onChange, onToast }) {
   const list = Array.isArray(value) ? value : []
 
@@ -2256,6 +2290,9 @@ function TracksField({ value, max, onChange, onToast }) {
       {refused?.i === i && (
         <p role="alert" style={{ ...ERR_LINE, flexBasis: '100%', paddingLeft: '20px', marginTop: '-2px' }}>{refused.msg}</p>
       )}
+      {blankRow(t, TRACK_KEYS) && (
+        <p style={{ margin: '-2px 0 0', flexBasis: '100%', paddingLeft: '20px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_TRACK_HINT}</p>
+      )}
     </div>
   )
 
@@ -2307,6 +2344,8 @@ function TracksField({ value, max, onChange, onToast }) {
  * a whole set of pins in layouts 1–3, except layout 3 on a phone, and one
  * gig in layout 4's ticker. Change a layout's `perPage`, change it here.
  * ------------------------------------------------------------------- */
+
+const BLANK_GIG_HINT = 'Empty gigs aren’t shown.'
 
 function GigsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
@@ -2381,6 +2420,9 @@ function GigsField({ value, max, design, onChange }) {
           onChange={(v) => setAt(i, 'link', v)}
           className="h-auto" style={SONG_ROW_INPUT}
         />
+        {blankRow(g, GIG_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_GIG_HINT}</p>
+        )}
       </div>
     </div>
   )
@@ -2566,9 +2608,17 @@ function TiersField({ value, max, onChange }) {
  * under the row says why. Nothing else is guarded — an emptied list renders in
  * every layout — but the seed carries an email row and a new row is `text`, so
  * the editor never reaches a list without one.
+ *
+ * A row with neither a label nor a placeholder stays here — the artist is
+ * mid-edit — but is no box: `sectionVm` drops it on both surfaces (`blankRow()`,
+ * JP-051, TiersField's rule) and the line under it says so. The guarded row is
+ * the exception, since dropping it would leave nowhere to reply to: it always
+ * shows, and an emptied label is shown as Email, which the line under it says.
  * ------------------------------------------------------------------- */
 
 const FORM_EMAIL_HINT = 'Visitors need somewhere to leave an address.'
+const BLANK_FIELD_HINT = 'Empty fields aren’t shown.'
+const EMAIL_LABEL_HINT = `Shown as ${FORM_EMAIL_LABEL}.`
 
 function FormFieldsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
@@ -2631,6 +2681,12 @@ function FormFieldsField({ value, max, design, onChange }) {
         </Select>
         {lastEmail(f) && (
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{FORM_EMAIL_HINT}</p>
+        )}
+        {lastEmail(f) && !String(f.label ?? '').trim() && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{EMAIL_LABEL_HINT}</p>
+        )}
+        {!lastEmail(f) && blankRow(f, FORM_FIELD_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_FIELD_HINT}</p>
         )}
       </div>
     </div>
@@ -2799,6 +2855,8 @@ function BookedField({ value, open, onChange }) {
  * and it is the order the published card pages through.
  * ------------------------------------------------------------------- */
 
+const BLANK_QUOTE_HINT = 'Empty reviews aren’t shown.'
+
 function QuotesField({ value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
 
@@ -2861,6 +2919,9 @@ function QuotesField({ value, max, onChange }) {
             className="h-auto" style={SONG_ROW_INPUT}
           />,
         )}
+        {blankRow(r, QUOTE_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_QUOTE_HINT}</p>
+        )}
       </div>
     </div>
   )
@@ -2920,6 +2981,8 @@ function QuotesField({ value, max, onChange }) {
 const LINK_GONE_HINT = 'Section not on the page — left off the published footer.'
 const navGoneHint = (labels) =>
   `${labels.join(', ')}: section not on the page — left off the published nav.`
+
+const BLANK_LINK_HINT = 'Empty links aren’t shown.'
 
 function LinksField({ value, max, navSections = [], onChange }) {
   const list = Array.isArray(value) ? value : []
@@ -2987,6 +3050,9 @@ function LinksField({ value, max, navSections = [], onChange }) {
             onChange={(v) => setAt(i, 'url', v)}
             className="h-auto" style={SONG_ROW_INPUT}
           />
+        )}
+        {blankRow(r, LINK_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_LINK_HINT}</p>
         )}
       </div>
     </div>
@@ -3109,7 +3175,7 @@ function EditPanel({ sec, vm, api, artistName, identity, themeIdx, navSections }
                   // sectionVm resolves, so panel and canvas never disagree.
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
                     : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
-                    : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').length} Songs`
+                    : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)

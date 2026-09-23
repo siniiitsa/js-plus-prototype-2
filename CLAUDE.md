@@ -880,7 +880,10 @@ mutated through a single `patch()` helper.
   removed nor retyped — its trash button is disabled and its select disables Text and Number
   rather than dropping them (a Radix value naming no item blanks the trigger), under the hint
   "Visitors need somewhere to leave an address." — so the editor never reaches a list without an
-  email row, since the seed carries one and a new row is `text`. Nothing else is guarded: an
+  email row, since the seed carries one and a new row is `text`. The guard reaches `sectionVm`
+  too (JP-051): that row is never dropped as blank, and an emptied label reads
+  `FORM_EMAIL_LABEL` ("Email") on the box and in the mailto body alike, under the hint "Shown as
+  Email.". Nothing else is guarded: an
   emptied list renders in all four layouts, the published form still sending the bare body.
   `pricing`'s `c.tiers` is an array of
   `{ name, price, tags, blurb, feats }`, maintained by `TiersField`, and it replaced a **flattened
@@ -914,7 +917,15 @@ mutated through a single `patch()` helper.
   (over `TIER_KEYS`, all five) before the hue walk and `n`, so on both surfaces the page is the
   page without it — the canvas included, JP-045's rule. `TiersField` keeps the row, the artist
   being mid-edit, and says "Empty packages aren't shown." under it. The test is every key and
-  never the ones a layout prints, so it cannot discard a word the artist typed. The chips are derived from the tags, so nothing sets them directly, and the
+  never the ones a layout prints, so it cannot discard a word the artist typed. **All seven
+  repeaters take it** (JP-051 and its sweep), each over a `*_KEYS` beside its seed — `SONG_KEYS`,
+  `TRACK_KEYS` (art and sound included), `GIG_KEYS`, `TIER_KEYS`, `QUOTE_KEYS`, and two that
+  leave a select out because a select always holds a value: `FORM_FIELD_KEYS` (label and
+  placeholder, not `kind`) and `LINK_KEYS` (label and url, not `to`). Each list is filtered
+  *before* anything indexes it (pins, hues, fan seats, marks, the footer's halving,
+  `formRows` / `formMailto` / `formCheck`), each repeater prints its own "Empty … aren't shown."
+  under a blank row, and the repertoire's song-count heading counts the filtered list in both
+  places. The one exception is the form's guarded email row, above. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
   both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
