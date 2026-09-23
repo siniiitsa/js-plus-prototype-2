@@ -203,7 +203,7 @@ the block); it is the gate this session widens.
 | 6 | `gallery` | `964:68711` | 1440 × 789 | `984:13924` | 768 × 884 | `984:13955` | 390 × 585 | `964:68679` / `984:10764` / `984:10795` | `964:68647` / `977:23131` / `982:10257` | **no block** — `s.lime` ternaries through `Gallery`'s `if (s.v2)` | done a4c6869 |
 | 7 | `pricing` | `964:68712` | 1440 × 1138 | `984:13925` | 768 × 993 | `984:13956` | 390 × 1393 | `964:68680` / `984:10765` / `984:10796` | `964:68648` / `977:23149` / `982:10274` | `if (s.lime)` inside `Pricing`'s `if (s.v2)`, after `shown` | done ec1c994 |
 | 8 | `map` | `964:68713` | 1440 × 818 | `984:13926` | 768 × 828 | `984:13957` | 390 × 887 | `964:68681` / `984:10766` / `984:10797` | `964:68649` / `977:23264` / `982:10389` | `if (s.lime)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | done 627849a |
-| 9 | `form` | `964:68714` | 1440 × 562 | `984:13927` | 768 × 728 | `984:13958` | 390 × 741 | `964:68682` / `984:10767` / `984:10798` | `964:68650` / `977:23406` / `982:10472` | `if (s.lime)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | — |
+| 9 | `form` | `964:68714` | 1440 × 562 | `984:13927` | 768 × 728 | `984:13958` | 390 × 741 | `964:68682` / `984:10767` / `984:10798` | `964:68650` / `977:23406` / `982:10472` | `if (s.lime)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | done fdc9c25 |
 | 10 | `testimonials` | `964:68715` | 1440 × 790 | `984:13928` | 768 × 789 | `984:13959` | 390 × **1248** | `964:68683` / `984:10768` / `984:10799` | `964:68651` / `982:8584` / `982:10499` | `if (s.lime)` inside `Testimonials`' `if (s.v2)`, after `template` | — |
 | — | `footer` | `964:68716` | 1440 × 479.5 | `984:13929` | 768 × 647.4 | `984:13960` | 390 × 619.4 | `964:68684` | — | — | **out of scope**: Grunge's own layout-1 footer, tree for tree (above); `NVAR.footer` is 1 |
 | — | `tags` | `964:68696` | 858 × 75 | `984:13909` | 708 × 67 | `984:13940` | 370 × 97 | `964:68664` | — | — | **not in the project** (`d734992`); its Genres row is drawn inside the bio's Lime block, under the card |
@@ -571,7 +571,8 @@ Written now from what the plan can see; the sections add to it. One session, in 
    `HeaderV3` in its tokens … each its own layout pass's to fit"); every layout-3 paragraph that
    names a Lime-only state — the gallery viewer's re-inked scrim ("under Lime its scrim is the page
    ink at .94"), pricing's "**Lime's stack reads no `vm.tierRow`**", the form's `vm.titleWordEms`
-   ("a Lime-only key"), the map's layout-2 block reading layout 3's `zoom` — owes a Grunge clause
+   (**"a Lime-only key" stands as written** — section 9 measured the head at 484 against the 501
+   column and left the key Lime's, so this one owes *no* Grunge clause), the map's layout-2 block reading layout 3's `zoom` — owes a Grunge clause
    where the session found the same or another state; README's "Grunge is designed at layouts 1
    and 2"; `data.js`'s `headerFamily` comment; `photos.js`'s header; `sectionVm`'s `grunge` flag
    comment; `EncoreBuilder.jsx`'s "Its layout 3 has no arm yet". Grep both files and the four
@@ -642,6 +643,13 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   joined, the Lime half and the Grunge half are one condition again
   (`(T.name === 'Lime' || T.name === 'Grunge') && (bio || calendar || media)`) and the three
   heads stand together at 41.
+- **A widened block can need no `G` at all, and `boundVariables` is what says so in one call**
+  (section 9). Every trap this pass has met was a *key that lands on the wrong value* — a moved
+  scheme, a moved binding, a literal with no key. The form is the other outcome: all five of
+  its bindings (`sem/text/1`, `sem/text/2`, `sem/bg`, `sem/box/1`, `sem/stroke/1`) are the ones
+  the Lime block already reads, so the mode swaps every value and the widening is the face and
+  two numbers. Read the bindings **before** reaching for a `G`: a lookup written over keys that
+  already resolve is a Lime arm restating itself.
 - **The calendar's foot is `vm.padY`, not the frame's 56, and that is Lime's arm.** The
   `d === 2` arm gives the calendar `vm.padY` under its card — 80 at desktop against the
   frame's 45.9 (56 × 0.82), exact at 768 and 4 over at 390. Section 4's repertoire-gap rule:
@@ -1244,6 +1252,90 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Digest**: themes 0, 1, 3 and 4 zero files over all 645 renders, canvas and `live=1`; theme
   2 exactly map arch 2 at three widths on both surfaces.
 
+### Settled in section 9 (the enquiry form)
+
+- **No Grunge block, no `G` lookup, and not one named hue: Lime's `if (s.lime)` inside
+  `EnquiryForm`'s `if (s.v2)`, after `up`, is `(s.lime || s.grunge)`**, with `const grunge =
+  s.grunge` naming two numbers and a `disp(size, lh, extra)` spread (`faced` / `facedLh` /
+  uppercase behind `grunge`) for the display sites. The walk was a **paired diff** against the
+  Lime twin, one call per master: **27 = 27** at all three widths, every box, gap and inset
+  Lime's, **no Device override** and **no effect on any node** — the seventh pass running. The
+  hooks sit above the branch, so the boxes, the submit, the sent card and *Write another* needed
+  nothing new; `desk`, `z`, `u`, `up` and the hoisted `vals` / `errs` / `sent` / `href` /
+  `onSubmit` / `Pill` / `pillLink` are read unchanged, and Retro's `T`, `cream`, `ink`,
+  `cardAc`, the pill quartet, `chipType` and `boxShell` stay unread, as under Lime.
+- **This is the pass's one section where every colour key already landed.** `boundVariables`
+  read beside every fill and stroke says the tree is `sem/text/1`, `sem/text/2`, `sem/bg`,
+  `sem/box/1` and `sem/stroke/1` throughout — the five keys Lime's block reads — so the mode
+  changes each value and nothing else: `s.ac` `#DF262C` (head, price, stars, submit fill, disc
+  arrow), `s.tx` white (eyebrow, paragraph, unit, count, note, box labels), `s.bg` `#000000`
+  (page, submit ink, disc fill), `s.box1` `#1A1A1A` (card and boxes), `s.stroke1` white 15%
+  (every ring). **Scheme 1 on the instance root and no nested scheme anywhere** — the first
+  master of this pass with neither a scheme trap nor a literal to name, and the reason the
+  block gained no `G`.
+- **The deltas are three, and two are the type.** The card's radius is a **raw 15 at every
+  width** (Lime 50), `u(15)` = 12.3 at desktop and 15 narrow; the boxes are **42 / 38 / 37**
+  (Lime 44 / 39 / 37), the same 12px of padding over `size/label-sm`'s 1.1 line box two sizes
+  down at the wide widths and level at 390; and every Stones Crush site takes `disp()`. The
+  sites are **five**, not the head alone: the h2, the price, the submit label (through
+  `pill()`), the sent card's title, and the box labels through `box()` — which take `faced` /
+  `facedLh` but no `textTransform`, since `up()` has already uppercased the string the live
+  placeholder carries.
+- **No `T` table, for the fourth section running.** `get_variable_defs` against the walk: the
+  frame's 130 / 81 / 46 head, 16 / 13 / 12 box labels, 24 / 19 / 18 submit, 36 / 28 / 26 price,
+  14 / 13 / 13 paragraph, 12 / 12 / 12 body and 12 / 11 / 11 eyebrow are `s.dispLg`,
+  `s.labelSm`, `s.list`, the shared Display/Title literal, `s.bodyMd`, `s.bodySm` and `s.chip`
+  under Static Youth to the pixel. Not one size is written out.
+- **`vm.titleWordEms` stays Lime-only, measured rather than assumed.** Under Grunge the head
+  renders at `faced(s.dispLg)` = 80.25px, and the seed's UNFORGETTABLE. is **6.025 Anton ems**
+  (`antonEms` at track 0) = **484** against the **501** half column, so it fits and the key is
+  not widened — the plan's own instruction. The arithmetic a widening would have needed is
+  named for whoever meets it: the em value is per *nominal* size, so the block would compute
+  `faced(min(dispLg, col / ems))`, not `min(faced(dispLg), …)`. It stays a CLAUDE.md sweep item
+  ("a Lime-only key") either way.
+- **The refused box keeps Lime's 2px of `s.tx`, and CONVENTIONS' rule does not bite.** "A
+  refused box changes colour, not weight alone, when the idle ring is already full ink" was
+  written for Lime's layout 4 and Grunge's layout 2; here the idle ring is the 15% hairline, so
+  2px of full white is already colour *and* weight, and the stated heights hold (34.4 / 37
+  measured refused and idle alike).
+- **No grain, and the walk proves it rather than a scan**: there is **no image fill on any node
+  of any of the three masters**, so the plan's "nothing else carries grain" needed no stddev
+  sample here.
+- **Measured against the masters' content edges**: desktop section 509.5, head column 501.4 at
+  x 124, h2 80.25px in a 95.23 line box, card 501.4 × 355.5 at radius **12.3** in its 1px
+  hairline, price 22.125px / 32.45, boxes **34.4** (42 × 0.82) at radius 999, pill 44.3 round a
+  37.7 disc, foot 74 (90 × 0.82); 768 section 771, head 144.2, card 688 × 408.4 at radius
+  **15**, boxes **38**, pill 54, foot 60; 390 section 694.1, head 81.9 at 34.5px, card 346 ×
+  402.2 at radius 15, boxes **37**, pill 54.
+- **Named diffs, Lime's and Retro's**: the seed's four boxes against the frame's three and its
+  three-line heading against the frame's two ("Let's make / your night unforgettable." against
+  "Book Kai for your event"), so the section runs 509.5 / 771 / 694.1 against 562 × 0.82 = 460.8
+  / 728 / 741 — over at the wide widths on the fourth box and the third head line, under at 390
+  where the frame's own 60 + 30 insets are `padY`'s 44 (Lime's "390 is under the frames", the
+  same tree on both); the top inset is `padY` 80 / 56 against the frame's 90 / 60, Lime's arm
+  setting only the foot; the prompt line stays after the boxes are corrected, until the next
+  submit, the shared seam's behaviour.
+- **`vm.pad`'s layout-3 arm takes the form under Grunge alone** — foot 90 / 60, Lime's numbers,
+  which the Grunge masters state to the pixel — split from Lime's two-section arm so the
+  testimonials do not move this session; section 10 rejoins them, the bio's rule in section 2.
+- **`live=1` at desktop and 390** (puppeteer, capture-phase `preventDefault` on the mailto;
+  probes deleted): a refused submit rings all four boxes in 2px white at unchanged heights and
+  prints *Add the missing details and try again.* in 10px Inter, centred; typing clears each
+  ring; the mailto sends the bare **`Enquiry`** subject with the four values in the body; a
+  valid submit swaps in the sent card, whose title is `faced` Anton uppercase (22.125 / 19.5)
+  and whose *Write another* is the red pill; *Write another* restores what was typed. `n=0`
+  draws the card with its pill alone (499) and `n=8` grows it (680). No page errors or warnings.
+- **`FIELDS.form` holds**: every `in` row is a flat array — no template-keyed row, so nothing
+  here could be template-specific, the map's finding for a second time — and `reach.mjs 2`
+  (2,784 renders) reports only `who.kicker` reaching form layouts **1 and 2**, so this layout
+  reads no identity key and no row moves.
+- **Verified in the builder**: `scripts/page-check.mjs Grunge 2` — four modal cards, bio and
+  calendar composed at top 738, media under the bio at 1761, the form at **5430 · 510** between
+  the map's floor and the testimonials' head, every nav link, footer link and anchor scrolling,
+  no errors or warnings, the 390 burger 1 → 11 with no overflow.
+- **Digest**: themes 0, 1, 3 and 4 zero files over all 645 renders, canvas and `live=1`; theme
+  2 exactly form arch 2 at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's or 2's or
@@ -1324,6 +1416,19 @@ Lime's Conventions, with the plan it came from — the running list for the swee
   stand-in face is scaled*; *casing stays the theme's; uppercase per site*; *`vm.title` shadows
   the ramp's `title` size*; *field reach is measured*; *the whole-page published check is one
   puppeteer script*; *theme 1 is the digest at risk*.
+- Section 9: *the paired diff walk* (grunge/layout-2, section 8) — a 27-node tree, the pass's
+  smallest; *a section whose live seam is hoisted above its branches can always take a block*
+  (lime/layout-1 — here the block is *inside* the branch but every hook is above it, so the
+  four handlers were read unchanged); *every glow is a guess until `effects` confirm it*
+  (none here, for the seventh pass running); *a stand-in face is scaled* (`faced`,
+  grunge/layout-1); *casing stays the theme's; uppercase per site* (grunge/layout-1); *a
+  refused box changes colour, not weight alone, when the idle ring is already full ink*
+  (CLAUDE.md — read and found **not** to apply, the hairline idle ring making Lime's 2px both);
+  *field reach is measured* (none owed); *the whole-page published check is one puppeteer
+  script*; *theme 1 is the digest at risk*. **What this section did not need** is as much the
+  finding: no `G` lookup, no named literal, no scheme reading — *a section on another scheme
+  writes that scheme's values as named literals* had nothing to bite on, for the first time in
+  the pass.
 
 ## Open questions
 
