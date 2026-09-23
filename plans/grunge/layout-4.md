@@ -444,7 +444,7 @@ Everything here is behind `s.grunge` (or a named pair), and replaces what the Li
   - **header**: `image 1`, a 1440 square at (0, −270) at 1440 and **390 × 850** at 390 — narrow is
     not a square (layout 3's header lesson) — `LIGHTEN` at **.3**, its second paint hidden.
   - **bio**: `image 1`, 640 × 720.5 at (12, −0.5) inside the card, **`CROP`** under a black
-    gradient, `LIGHTEN` at **.5**, at 1440 and 768.
+    gradient, `LIGHTEN` at **.5**, ~~at 1440 and 768~~ at all three widths (`FILL` at 390; section 2).
   - **gallery**: `image 1`, a 550.5 square over the 551 × 494 spotlight, `LIGHTEN` at **.3**, its
     second paint hidden.
   - The walker prints a hidden paint as its own `hid` entry, so each of the three shows one
@@ -882,8 +882,9 @@ them.
   - The seeded two paragraphs make the panel content-tall: 282.8 / 305.5 / 383.
   - The 390 photo stage is 400 tall (Lime's user call), so the sheet is 942 against the frame's
     778.
-- **`live=1`**: only Listen changes (span → `<a href="#media">`) at three widths. `&noimage=1`:
-  the red / black well under the grain with the initials. `page-check.mjs Grunge 3`: four cards,
+- **`live=1`**: only Listen changes (span → `<a href="#media">`) at three widths. `&noimage=1`
+  (looked at, 390): the red well under the grain, the 400 stage band a shade lighter (`Photo`'s
+  placeholder), `KM` in white. `page-check.mjs Grunge 3`: four cards,
   no errors or warnings, About → `#bio` and Listen → `#media` scroll, the 390 burger 1 → 11.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `bio_arch_3` at three widths on both surfaces.
