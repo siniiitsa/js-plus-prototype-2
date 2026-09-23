@@ -183,7 +183,12 @@ mutated through a single `patch()` helper.
   **never `document.write`** (it implies `document.open()`, which rewrites the popup's URL to the
   opener's, so the tab would claim to be the builder and reload into it); and set the page
   background on `documentElement`, not `body`, because the cloned reset already paints `html`.
-  The tab is a child of the editor and freezes if the editor reloads. Accepted.
+  The tab is a child of the editor and freezes if the editor reloads. Accepted. **Its desktop
+  page zooms** (JP-038 reopened, user call, 2026-09-23): the canvas is the 1440 frame at 0.82,
+  so between 1180 and 1440 `PublishedPage` wraps the rows in a CSS `zoom` of
+  `min(w, 1440) / 1180` and lays them out at `w / k` — a 1440 window is the frame at 1:1 — and
+  only width past 1440 goes into the gutters (`padX`, as before). Tablet and mobile never zoom,
+  and nothing in `EncoreSection` knows; it has no vw / vh unit for the zoom to disagree with.
 - **`s.live` is false everywhere except the published tab.** It is the seam for making a control
   real, and **sixteen things read it**: `Repertoire` — its search field, its filter chips and
   its pager, and in layout 3 the set cards' *View full set* reveal, which is the one control
@@ -436,8 +441,12 @@ mutated through a single `patch()` helper.
   again, 2026-09-21). **Minimal's triple is the frames' own** (JP-033, second pass): layouts 2
   and 3 draw Music / Gigs / About in Retro and Lime alike (Grunge's layouts 2 and 3 too), so `NAV_MINIMAL` is those three —
   Gigs on the map or the calendar, About on the bio, Book gone because its pill already stands
-  beside the links — while `navMode` still defaults to `sections` at every layout, so the seeded
-  header is its frame's picture at layouts 1 and 4 only (user call, 2026-09-21). **The flat two's header reads
+  beside the links — and **`navMode`'s default follows the layout** (`navModeDefault()` in
+  `data.js`, JP-039 reopened, user call, 2026-09-23): Minimal at layouts 2 and 3 of the three
+  designed templates, *Follow my sections* everywhere else, and in `EditPanel`'s fallback chain
+  too, so the panel names what the canvas draws. A stored value always wins, so the seeded
+  header is its frame's picture at all four layouts and moves with the layout until the artist
+  picks. **The flat two's header reads
   none of this**: `FlatNav` hardcodes Music / Shows / Book. **At 768 the links are
   fit-gated in layouts 2 and 3, and folded everywhere else** (JP-039, user call, 2026-09-21).
   The 768 masters of layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and
@@ -451,7 +460,7 @@ mutated through a single `patch()` helper.
   three fit under the seeded name (the wordmark is in the sum, so a long one can fold them too); *Follow my sections* on the seeded names fits up to four links in Retro
   layout 2, five in Retro layout 3 six in Lime's two, eight in Grunge's layout 2 and seven in its
   layout 3 (it is the words' width that counts, not
-  their number), so the seeded header is still the burger. It is a vm boolean
+  their number), so a page switched to *Follow my sections* is still the burger. It is a vm boolean
   because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
   `navNameEms` / `navCtaEms` (Bebas, `bebasEms()`), Retro's is `antonEms()` in `data.js`, its
   0.02em tracking folded in (Grunge's arm is the same table at a tracking of 0, its mode stating none). It is set at tablet only — desktop never reads it and always draws

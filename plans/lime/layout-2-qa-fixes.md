@@ -587,6 +587,23 @@ burger. `vm.navEms` is Lime-only, so Retro gets an Anton advance table beside `b
   the bar's one row — Minimal does under the seeded name (the wordmark is in the sum); *Follow my sections* does on a short page. The
   seeded nine cannot (720px of row in a 688px bar), so that state keeps the burger, by design.
 
+**Reopened (2026-09-23).** The tester re-filed it against layouts 1 and 2: the seeded 768
+header is still a burger. **Decision (user):** the default follows the layout. A header with no
+stored `navMode` is Minimal at layouts 2 and 3 of Retro, Lime and Grunge (`navModeDefault()`,
+`data.js`), and *Follow my sections* everywhere else. `sectionVm` and `EditPanel`'s fallback
+both read it, and a stored value always wins. Layout 1's 768 master draws the burger itself
+(`986:39876`), so it stays.
+- **Digest** (`header`, themes 0–4, canvas and `live=1`): the only diffs are arch 1 and 2 of
+  themes 0, 1 and 2 at desktop and tablet, plus arch 5 of Lime and Grunge (layout 2 folded).
+  390 is byte-identical and the flat two are zero. All six tablet files draw Music / Gigs /
+  About where they drew none before.
+- The setup modal's cards 2 and 3 now preview the triple. In the published tab at 768, Lime
+  layout 3 draws Music → `#media`, Gigs → `#map`, About → `#bio` in one row, with `scrollWidth`
+  768.
+- **Reply to the tester.** Fixed: layouts 2 and 3 now open on the design's Music / Gigs / About,
+  which fit inline at 768. Layout 1's design draws a burger at 768. *Follow my sections* on a
+  full page still folds to the burger, since nine links do not fit the bar.
+
 ---
 
 ## JP-038 — the desktop side gutter is 189px where the frame has ~55
@@ -669,6 +686,31 @@ ticket, no app code.
 - README *Scope boundaries* has the bullet; `headless-shell.mjs` gained `chromeForTesting()`
   for the script. No file under `src/` changed, so every digest is byte-identical by
   construction.
+
+**Reopened (2026-09-23).** The tester re-filed it. **Decision (user): scale up.** In the
+published tab only, `PublishedPage` wraps the rows in a CSS `zoom` of `k = min(w, 1440) / 1180`
+at desktop and lays them out at `w / k`, so the surplus is 0 up to 1440 and only width past
+1440 goes to the gutters. The editor canvas and every harness digest are untouched: the
+harness renders sections, not `PublishedPage`.
+- **`gutter.mjs`** now reports screen pixels (`padding × currentCSSZoom`), since the padding
+  stays 64 under the zoom. It also waits for the picker to render. Measured in the foreground
+  and after a hidden resize alike: 1170 → 241 (tablet, unchanged), 1280 → 69.4, 1440 → 78.1,
+  1600 → 158.6, 1760 → 238.0, 1910 → 313.6, each exactly as expected. The frame has 55 at
+  1440. The remaining 23 is the desktop `padX` rounding (45 up to 64), which was not chosen.
+- **Published tab at 1440, Lime layout 3:**
+  - no horizontal scroll;
+  - Gigs scrolls `#map` to top 0;
+  - the gallery viewer covers the window, locks the scroll and closes on Escape.
+
+  `EncoreSection` has no vw / vh unit. Odd widths (1181 … 1555) leave `scrollWidth` equal to
+  `clientWidth`.
+- **Named consequence.** Every photograph on the published desktop page is now drawn up to
+  1.22× the canvas's size, so a low-resolution upload reads softer at 1440 than it did.
+- **Editor, walked:** at Lime layout 2 the *Navigation links* select shows Minimal. Picking
+  *Follow my sections* and republishing gives the burger at 768 again.
+- **Reply to the tester.** Fixed: from 1180 to 1440 the published page now scales to the
+  design, so at 1440 the gutter is 78px and the column is about 1275px. Only wider windows
+  widen the gutters.
 
 ---
 
@@ -822,9 +864,11 @@ because a fix and a retest crossed, the layout-1 pass's own lesson.
 - **JP-039 — fixed.** At 768 layouts 2 and 3 draw the links whenever they fit the bar's one row:
   Minimal does; the seeded nine under *Follow my sections* cannot (720px in a 688px bar), so
   that state keeps the burger, by design.
+  **Reopened 2026-09-23:** layouts 2 and 3 now default to Minimal (entry above).
 - **JP-038 — by design.** Past 1180 the page is a centred 1180 column, so the gutter grows with
   the window (64 + (width − 1180) / 2); the constant 189 did not reproduce and there is no
   stale-width bug (`scripts/gutter.mjs`).
+  **Reopened 2026-09-23: fixed.** The published desktop page zooms to the frame up to 1440 (entry above).
 - **JP-040 — fixed; the PO chose A.** Events Map layout 2 draws the *In transit* tag, *Updated
   2m ago*, the ring labels and *Expand view*, each an editable field that drops when emptied, in
   Retro and Lime together — which closes the tester's Retro "#4" as well.
