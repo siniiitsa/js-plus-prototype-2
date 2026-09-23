@@ -333,7 +333,8 @@ That distinction is the whole design, and it buys two things:
   chip that clears the filter. That extra chip is the intended diff from the Figma frame, the way
   the events map losing its pager was; the row is not drawn at all when the packages carry no
   tags, since a filter with nothing to filter is the pager's case again. The cards key on the
-  package's index in the *whole* list, not its place in the filtered one — they cross-fade their
+  package's index in the *whole* list (a package left wholly empty is not in it: `blankRow()`
+  drops it in `sectionVm`, so it draws no card on either surface), not its place in the filtered one — they cross-fade their
   background, and a positional key would animate one card's hue into another's on every chip
   click — while the tilt and the mobile deck's 18px overlap keep the rendered index, so the deck
   reads as a deck at any count. Three columns stay three: a fourth package wraps to a second row

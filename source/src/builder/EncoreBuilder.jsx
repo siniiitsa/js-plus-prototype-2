@@ -34,7 +34,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import EncoreSection from './EncoreSection.jsx'
 import {
-  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, PRICE_UNIT, QUOTES,
+  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -48,7 +48,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, enquiryMailto, formErrors,
+  tierFeats, blankRow, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -745,7 +745,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       badge: rgba(ink, 0.11),
     }
   }
-  const tierList = Array.isArray(c.tiers) ? c.tiers : TIERS
+  // A package the artist added and left empty is not a package (JP-048): it is
+  // dropped here, before the hue walk and `n`, on both surfaces, so the page is
+  // exactly the page without it — the cards keep their hues, the chip row its
+  // chips, and layout 3's FEATURED seat lands on the last real package.
+  const tierList = (Array.isArray(c.tiers) ? c.tiers : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
   vm.tiers = tierList.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
@@ -2425,11 +2429,18 @@ function GigsField({ value, max, design, onChange }) {
  * keystroke, numbered rows, a round X, a dashed add, an "n of max"
  * footnote, no reordering — order is entry order, and it is the order
  * the cards take their palette hues in.
+ *
+ * A row left wholly empty stays here — the artist is mid-edit — but is
+ * no package: `sectionVm` drops it on both surfaces (`blankRow()`,
+ * JP-048), and the line under it says so, LinksField's gone-section
+ * precedent. Any one filled field makes it a package again.
  * ------------------------------------------------------------------- */
 
 // The two multi-line fields. A card's blurb is a sentence and its features are
 // a list, so neither fits the single-line Input the other repeaters use.
 const TIER_AREA = { ...SONG_ROW_INPUT, resize: 'vertical', lineHeight: 1.45 }
+
+const BLANK_TIER_HINT = 'Empty packages aren’t shown.'
 
 function TiersField({ value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
@@ -2498,6 +2509,11 @@ function TiersField({ value, max, onChange }) {
           onChange={(e) => setAt(i, 'feats', e.target.value)}
           style={TIER_AREA}
         />
+        {blankRow(t, TIER_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+            {BLANK_TIER_HINT}
+          </p>
+        )}
       </div>
     </div>
   )

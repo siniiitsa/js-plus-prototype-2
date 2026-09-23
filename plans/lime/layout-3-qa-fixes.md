@@ -30,7 +30,7 @@ so Retro, Grunge and the flat two move with them. The tester happened to be on L
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-049 | Enquiry Form's Email address takes `not-an-email` and the submit mails it | **Confirmed**: every other address box validates, this one does not | S | no | **done** |
-| 2 | JP-048 | Three *Add package* clicks publish three blank cards, the last one lime and FEATURED | **Confirmed**; the FEATURED seat is working as documented, the defect is that a blank row renders | M | **yes** — what counts as blank | open |
+| 2 | JP-048 | Three *Add package* clicks publish three blank cards, the last one lime and FEATURED | **Confirmed**; the FEATURED seat is working as documented, the defect is that a blank row renders | M | **yes** — what counts as blank | **done** |
 | 3 | JP-051 | An empty form-field row publishes an unlabelled box | **Confirmed**; JP-048's family, applied to the form | S | **yes** — the guarded email row | open |
 | 4 | JP-050 | Emptying the header Title publishes the sample name in eight slots and nothing in the h1 | **Half documented, half defect**: the fallback is CLAUDE.md's rule; the h1 disagreeing with it is a bug | M | **yes** — what an empty name means | open |
 | 5 | — | End-of-pass sweep | — | S | — | open |
@@ -182,6 +182,8 @@ renders a card, a Book pill and a hue on both surfaces, in every pricing layout 
   one" cue (the footer's missing-section rule). Not recommended: it is exactly JP-045's
   complaint.
 
+**Decided (user, 2026-09-23): A** — a row with every field empty.
+
 **Fix (on A).**
 - `blankRow(row, keys)` in `data.js` — every named key trims to empty. JP-051 and the sweep reuse
   it.
@@ -206,7 +208,39 @@ themes 0, 1, 2 × three widths × both surfaces: byte-identical to the seed. The
 sentence ("an emptied array means none" gains "and a blank row is not a row"), `TiersField`'s
 comment.
 
-**Settled.**
+**Settled** (2026-09-23). Evidence lines had not drifted, except `TiersField` (its
+add row was `:2440` at `90a661f`, `:2450` after this commit; `tierList` is now `:752`).
+
+- **The helper is `blankRow(row, keys)` in `data.js`, beside `tierFeats`**: true when every
+  named key trims to empty — a missing key, a `null` row and a lone newline in `feats`
+  included. Not package-specific: the package's keys are a separate `TIER_KEYS` (all five, next
+  to `TIERS`), so JP-051 passes its own list.
+- **Filter first, then map.** `tierList` is `(c.tiers ?? TIERS).filter(!blankRow)`, so `n`, the
+  `(3 - i)` hue walk and `vm.tierChips` (which reads `tierList`) all follow the rendered list. It
+  is the only order under which a blank row *anywhere* — not just appended — leaves the page
+  byte-identical to the page without it; map-then-filter would have kept the hues of the rows
+  after a mid-list blank but shifted nothing else, while making the canvas depend on a row it
+  does not draw. Nothing but the card key reads `t.n`. The seat rule is untouched: FEATURED lands
+  back on the last real package by construction.
+- **Both surfaces drop it** (the plan's rule 4); the canvas no longer draws the blank card, which
+  is the JP-045 complaint not repeated. `tiersVal` in `EditPanel` is unchanged — the repeater
+  must still list the row — and `TiersField` prints "Empty packages aren't shown." under a blank
+  row (`BLANK_TIER_HINT`), gone as soon as any field has a character. The "n of max" footnote
+  still counts it, since the row still spends a slot.
+- **Verified.** Digest themes 0, 1, 2, all cats × layouts × widths, canvas and `live=1`: 387 +
+  387 renders byte-identical before/after. With a scratch copy of `digest.mjs` that names files
+  without the `&cj=` part, `cat=pricing` × layouts 1–4 × themes 0, 1, 2 × three widths (36 per
+  surface), after the fix: the seed + three blank rows (`{}`, all-`''`, and `'  '` / `'\n'`) is
+  byte-identical to the seed on 36/36 canvas and 36/36 live; a blank row *between* seed rows 1
+  and 2 likewise 36/36 + 36/36; before the fix all 144 differed (Lime layout 3 live: 6 pills
+  where the seed has 3). A row with only `price: '£99'` still renders a fourth package (differs
+  from the seed, 36/36 each surface, and identical to its pre-fix rendering). End to end (one-off
+  puppeteer, deleted): Lime card 3 → Pricing → *Add package* ×3 → three hints, footnote "6 of
+  6" → Publish → Open: the published stack names the three seeded packages only, FEATURED on
+  The Festival Set, no page errors. Retro, Lime and Grunge all moved together; nothing is
+  template-gated.
+- Docs: CLAUDE.md's pricing layout-3 seat sentence and the structured-editor bullet ("a blank
+  row is not a row"), README's pricing paragraph, `TiersField`'s header comment.
 
 ---
 

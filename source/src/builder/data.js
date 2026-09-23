@@ -515,6 +515,10 @@ export const TIERS = [
             'Extended encore', 'Festival-grade PA'].join('\n') },
 ]
 
+// Every key a package row carries — what `blankRow()` asks of it. A row is
+// blank only when all five are, whichever of them a layout prints.
+export const TIER_KEYS = ['name', 'price', 'tags', 'blurb', 'feats']
+
 // The suffix beside every card's price. A field rather than the literal the
 // frame draws, because /event is one booking model among several.
 export const PRICE_UNIT = '/event'
@@ -1557,6 +1561,16 @@ export function songTags(str) {
 // promises are the same shape and go through it too.
 export function tierFeats(str) {
   return String(str ?? '').split('\n').map((t) => t.trim()).filter(Boolean)
+}
+
+// A repeater row the artist added and never filled in: every one of `keys`
+// trims to empty (a missing key, a null row and a lone newline included). Such a
+// row is not content, so `sectionVm` drops it before anything indexes the list
+// and both surfaces render the page it would be without it (JP-048). The test is
+// *every* key, never the ones a layout prints, so it cannot discard a word the
+// artist typed: a package with only a price is still a package.
+export function blankRow(row, keys) {
+  return keys.every((k) => !String(row?.[k] ?? '').trim())
 }
 
 export function repChips(songs) {

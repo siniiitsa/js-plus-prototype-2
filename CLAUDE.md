@@ -510,7 +510,9 @@ mutated through a single `patch()` helper.
   — the same `chip`, in the frame's segmented capsule instead of a loose chip row — but what it
   adds is a **seat that the filter moves**: the last row *on show* is filled in `vm.tierRow`'s
   hue where the others are merely outlined in it, and carries the frame's FEATURED badge, so
-  hiding the artist's last package promotes whatever now ends the stack. That is the deck's own
+  hiding the artist's last package promotes whatever now ends the stack — though never onto a
+  package the artist added and left empty, since `sectionVm` drops those first (JP-048, below).
+  That is the deck's own
   rule that the tilt and the mobile overlap take the **rendered** index while `t.n` keys the
   card, and it is not drawn at one row. `vm.tierRow` is `tierHero`'s shape with one extra
   constraint — it has to read against the **page** rather than on a card, so it walks `T.tags`
@@ -907,7 +909,12 @@ mutated through a single `patch()` helper.
   `images`, not
   `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS`, an emptied array
   means none, and there is no
-  `null` sentinel. The chips are derived from the tags, so nothing sets them directly, and the
+  `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
+  is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package
+  (over `TIER_KEYS`, all five) before the hue walk and `n`, so on both surfaces the page is the
+  page without it — the canvas included, JP-045's rule. `TiersField` keeps the row, the artist
+  being mid-edit, and says "Empty packages aren't shown." under it. The test is every key and
+  never the ones a layout prints, so it cannot discard a word the artist typed. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
   both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
