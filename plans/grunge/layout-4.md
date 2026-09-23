@@ -237,7 +237,7 @@ it is the gate this session widens.
 | 3 | `media` | `964:72959` *(band `964:72953`, head `964:72954`)* | 1440 × 671 | `971:7955` *(band `971:9533`, head `971:10395`)* | 768 × 501 | `977:12182` *(band `977:12176`, head `977:12177`)* | 390 × 834 | `964:72864` / `971:5431` / `977:9005` | `964:72526` / `971:15190` / `971:14834` | `if (s.v3 && s.lime)` ahead of `Media`'s `if (s.v3)` | done `3c6eae4` |
 | 4 | `gallery` | `964:73004` *(wrapper `964:72969`, head `964:72970`)* | 874 × 646 | `971:8121` *(wrapper `971:8086`, head `971:8087`)* | 768 × 594 | `977:12348` *(wrapper `977:12313`, head `977:12314`)* | 390 × 586.3 | `964:72909` / `971:5597` / `977:9171` | `964:72815` / `964:78491` / `977:8142` | `if (s.lime)` inside `Gallery`'s `if (s.v3)`, after `from` | done `68d23ba` |
 | 5 | `repertoire` | `964:73011` *(Section `964:73006`, panel `964:73007`)* | 1208 × **600** | `971:8128` *(Section `971:8123`, panel `971:8124`)* | 608 × 582 | `977:12355` *(Section `977:12350`, panel `977:12351`)* | 310 × 650 | `964:72916` / `971:5604` / `977:9178` | `964:72822` / `964:78509` / `977:8166` | `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump` | done `5b6eac4` |
-| 6 | `map` | `964:73019` *(Frame 319 `964:73013`, head `964:73014`)* | 1440 × 747 | `971:8136` *(Frame 319 `971:8130`, head `971:8131`)* | 768 × 870 | `977:12363` *(Frame 319 `977:12357`, head `977:12358`)* | 390 × 680 | `964:72924` / `971:5612` / `977:9186` | `964:72830` / `964:78599` / `977:8322` | `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | — |
+| 6 | `map` | `964:73019` *(Frame 319 `964:73013`, head `964:73014`)* | 1440 × 747 | `971:8136` *(Frame 319 `971:8130`, head `971:8131`)* | 768 × 870 | `977:12363` *(Frame 319 `977:12357`, head `977:12358`)* | 390 × 680 | `964:72924` / `971:5612` / `977:9186` | `964:72830` / `964:78599` / `977:8322` | `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | done `2125c9c` |
 | 7 | `pricing` | `964:73021` | 1440 × 542 | `971:8137` | 768 × 806 | `977:12364` | 390 × 829 | `964:72926` / `971:5613` / `977:9187` | `964:72831` / `964:78656` / `977:8440` | `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | — |
 | 8 | `calendar` | `964:73034` + wizard `964:73033` *(Section `964:73022`, Frame 324 `964:73023`)* | 478 × 533 + 680 × 533 | `971:8150` + `971:8149` *(Section `971:8138`, Frame 324 `971:8139`)* | 608 × 502 + 608 × 476 | `977:12377` + `977:12376` *(Section `977:12365`, Frame 324 `977:12366`)* | 350 × 496 + 350 × 474 | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | `if (s.lime)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | — |
 | 9 | `form` | **`725:2990`** *(the main component — no page instance at 1440)* | 1440 × 795 | `971:8151` | 768 × 1024 | `977:12378` | 390 × 964 | `964:72940` / `971:5627` / `977:9201` | `964:72845` / `964:79477` / `977:8663` | `if (s.v3 && s.lime)` ahead of `EnquiryForm`'s `if (s.v3)` | — |
@@ -1085,6 +1085,66 @@ them.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `repertoire_arch_3` at three widths on both surfaces.
 
+### Settled in section 6 (the events map)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale`, is
+  `(s.lime || s.grunge)`**, with a nine-key `G` at its head (`r`, `cellR`, `cellRing`, `tickRing`,
+  `num`, `vpInk`, `lift`, `inkHair`, `cellMin`) whose Lime arm is the block's own literals, and an
+  `upper` spread. The paired diff of the two `Frame 319`s (`964:73013` / `971:8130` / `977:12357`
+  against `964:72918` / `971:5606` / `977:9180`) was the whole read: **64 = 64 / 63 = 63 / 63 =
+  63 nodes**, the same schemes (the instance Static Youth, the viewport Scheme 3), no Device
+  override, no effect. The ticker's seam is shared whole, so the wrapping arrows, the by-identity
+  lit pin, the zoom and the `extLink` needed nothing new.
+- **Every box is Lime's but the cells' 1px**: 227.5 / 140 against 226.5 / 139.5 (`G.cellMin`), so
+  the desktop card is 555 against 554. `Frame 319`'s paddings are Lime's at every width (30 over
+  the head, 30 head to card, 40 under). **The 390 frame's 811 against 866 is the head alone**: 41
+  tall on one line (Stones 46) where Lime's is 96 on two (Bebas 54), which `s.dispLg` already
+  carries. The 56 / 30 / 10 inset is JP-038's, every theme's.
+- **What moves, read off the fills and their bindings**:
+  - the card, the cells and the ticker are radius **15** (Lime 50 / 25 / 50);
+  - the cells' ring is `sem/stroke/2`, **`#FF0000`** (`s.stroke2`, Lime `s.ac`), and so is the
+    ticker's, where Lime's is `sem/stroke/1`. The card keeps `s.stroke1`, white 15% here;
+  - **the numerals' binding moved**: `sem/text/1`, **red** (`s.ac`), where Lime's are
+    `sem/text/2` (pale, inherited from the panel's `ink`). They are Stones Crush 50 / 40 / 26, so
+    `faced` / `facedLh` and uppercase; `s.dispSm` is 41 / 40 in `THEME_RAMP.Grunge` already;
+  - **inside the Scheme 3 viewport `sem/text/2` is white**: the ring labels, the marker's 2px ring
+    and its glyph, and the zoom glyphs are `s.tx` (`G.vpInk`), where Lime inks them `s.bg`. Rings,
+    label chips, the marker's head and tail stay `s.ac`, which is `#DF262C` here;
+  - the zoom squares are `sem/box/2` **`#F52E34`** in Scheme 3's black 15% hairline
+    (`#00000026`), radius 8 (Lime's `u(8)` already).
+  Every Inter string is the ramp's: chip 12 / 11 / 11, body-sm 12, body-md 14 / 13 / 13, body-lg
+  16 / 15 / 15 (Lime's 13 / 12 / 11 and 13 / 13 / 12 are `THEME_RAMP.Lime`'s), so no `T` table.
+  The card and every panel text are `s.box1` / `s.tx` on both templates and needed no key.
+- **The lit pin's ring is white**, `G.vpInk`, following the marker's ring as layout 3's Grunge
+  session did; under Lime it stays `s.bg`. The idle dots stay `s.tx` at full strength where the
+  frame's are white at 60% (Lime's redraw, inherited, named). The 1440 `Vector 2` (Scheme 5,
+  1437.8 × 44.24) is Lime's no-op leftover and is not drawn.
+- **Measured** (content edges): desktop h2 95.2 tall at 80.25px, card 1088.2 × 455.2 at 221.1
+  (555 × 0.82 = 455.1) at radius 12.3, ticker 51.7 (64 × 0.82 = 52.5); 768 h2 72.1 at 60.75px,
+  card 708 × 731 (731) at 158.1, ticker 62.3 (63); 390 h2 40.9 at 34.5px (41), card 370 × 567.6,
+  ticker 62.3 (63). `scrollWidth` holds.
+- **Named diffs, all Lime's**: the seeded stats (COVERAGE "12 mile radius", CITIES 2, GIGS 5,
+  "Based in Manchester" with no label) against the frame's RADIUS 120 / 21 / GIGS YTD 48 / BASE,
+  so the 390 cells hug to 567.6 against the frame's 581; the viewport follows our 1052 column, so
+  the rings cover less of it; the ticker drops "Next:" and takes `›` in the `×`'s seat; the
+  canvas lights gig 0's pin; Anton at 0.75 against Stones Crush. The head is `s.title`'s
+  "Distances we'll Travel" fallback, as the frame writes it; the 390 root's 44 top padding
+  against the frame's 30 is the root's `padY`, Lime's.
+- **`live=1`, red on red (open question 5)**, desktop and 390 at `n=8` (puppeteer, probe deleted):
+  `›` steps Venue 1 → Venue 2 and the lit pin moves with it; `‹‹` wraps 2 → 1 → 8; `++` scales
+  the layer to 1.5625; a linked gig's text block is `<a href="https://example.com/tickets">` and
+  an unlinked one a `div`; the only pointers are `+ − ‹ ›` and the linked block. `n=0` drops the
+  ticker (the zoom's two pointers alone), and `n=1` draws it with no arrows. No page errors. The
+  frame's red on red is the lit pin on the red rings and the `#F52E34` squares on the raster.
+  Both read: the lit pin's white ring parts it from a ring it lands on, and the squares stand on
+  the dark plate. `page-check.mjs Grunge 3`: four cards, no errors or warnings, every link
+  scrolls (Shows/Coverage → `#map`), the 390 burger 1 → 11, overflow 0 (run after the digests
+  had finished).
+- **`FIELDS.map` holds**: every `in` row is a flat array, so nothing here is template-keyed, and
+  the fit moved no field's reach.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `map_arch_3` at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -1120,6 +1180,12 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   binding can lie — trust the render* (this plan, section 3: the 1440 foot is bound
   `sem/tag/2/bg`); *`faced` / `facedLh` and uppercase per site* (grunge/layout-1); *the lens,
   checked in the editor* (lime/layout-4, section 4 — here one ground, not a lens).
+- Map: *the paired diff walk* (grunge/layout-2); *read `boundVariables`* (grunge/layout-3, the
+  numerals' `sem/text/1`); *the `G` lookup whose Lime arm is today's literals* (grunge/layout-1);
+  *a section on another scheme writes that scheme's values as named literals* (grunge/layout-1,
+  Scheme 3's `#F52E34` / `#00000026`); *Retro's live states vanish under Lime; redraw them*
+  (lime/layout-1, the lit pin's white ring — layout 3's Grunge call); *`faced` / `facedLh` and
+  uppercase per site* (grunge/layout-1).
 
 ## Open questions
 
