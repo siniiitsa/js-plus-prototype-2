@@ -11159,12 +11159,40 @@ function Repertoire({ s }) {
     //
     // And one box: the 390 Section pads **100** below, not Retro's 60 — 948 =
     // 30 + 818 + 100 — so the foot inset is 150 / 150 / 100.
-    if (s.lime) {
-      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the panel
-      const ink = s.bg        // Scheme 3 `sem/text/1` = `sem/text/2`
+    //
+    // Grunge (964:73011 · 971:8128 · 977:12355) widens the block: the paired
+    // diff against the Lime twin's Sections is 96 = 96 nodes at every width,
+    // Scheme 3 on the Section as under Lime, so the band (`s.ac`), the head,
+    // the titles, the rail's rings and letters, the lit cell (`s.bg` filled,
+    // lettered `s.ac`) and the ink-at-.15 rules all resolve through Lime's
+    // keys. What moves, read off the nodes and their `boundVariables`:
+    //
+    //  · **The panel's binding moved**: `sem/box/2`, `#F52E34`, where Lime's
+    //    is `sem/box/1` (`lime3`).
+    //  · **`sem/text/2` is white on Grunge's Scheme 3** where Lime's is its
+    //    ink, so the sub, the group letters and the artist are `s.tx` and only
+    //    the `sem/text/1` nodes stay `s.bg` (`ink2`).
+    //  · **The desktop instance pads 32 all round** (Scheme 3 stated on it,
+    //    Lime's pads 0), which is the frame's 600 against Lime's 536 and its
+    //    872 list against 936. The narrow instances pad nothing.
+    //  · **The 390 Section pads 60 below** (901 = 30 + 811 + 60), not Lime's
+    //    100; the 811 panel is the smaller Grunge head (46 against 54).
+    //  · **The foot is layout 1's torn vector** in black (`s.bg`; bound
+    //    `sem/tag/2/bg` at 1440 and `sem/text/1` narrow, black on all three),
+    //    1554 / 882 / 1541.3 wide — leaked — and its depth the node
+    //    arithmetic, 52.8 / 44 / 43, the media's and the gallery's convention.
+    //  · Stones Crush stands in as Anton: the head, the titles and the artists
+    //    are `faced` / `facedLh` and uppercase. The rail's radius (4) and its
+    //    Inter 12 are `s.radiusChip` and `s.bodySm` already.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const lime3 = grunge ? '#F52E34' : '#CCFA61' // Scheme 3 `sem/box/2` / `sem/box/1` — the panel
+      const ink = s.bg        // Scheme 3 `sem/text/1` (= `sem/text/2` under Lime)
+      const ink2 = grunge ? s.tx : ink // Scheme 3 `sem/text/2`
       const rule = `${ink}26` // `sem/stroke/1` — the ink at .15
-      const titleSize = desk ? u(36) : tab ? '28px' : '26px' // Display/Title
-      const bodyLg = { fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls, color: ink }
+      const upper = grunge ? { textTransform: 'uppercase' } : null
+      const titleSize = faced(s, desk ? u(36) : tab ? '28px' : '26px') // Display/Title
+      const bodyLg = { fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls, color: ink2 }
 
       const railCell = (l) => {
         const on = letters.has(l)
@@ -11219,14 +11247,16 @@ function Repertoire({ s }) {
                   overflow: 'hidden',
                 })}>
                   <span style={{
-                    fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1,
+                    fontFamily: s.display, fontSize: titleSize, lineHeight: facedLh(s, 1.1),
                     letterSpacing: s.dls, color: ink, minWidth: 0,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    ...upper,
                   }}>{sg.title}</span>
                   {sg.artist && (
                     <span style={{
-                      fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
-                      letterSpacing: s.dls, color: ink, flex: 'none', whiteSpace: 'nowrap',
+                      fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
+                      letterSpacing: s.dls, color: ink2, flex: 'none', whiteSpace: 'nowrap',
+                      ...upper,
                     }}>· {sg.artist}</span>
                   )}
                 </div>
@@ -11242,18 +11272,21 @@ function Repertoire({ s }) {
           background: s.ac, color: ink, position: 'relative',
           padding: `${u(s.mob ? 30 : 100)} `
                  + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
-                 + `${u(s.mob ? 100 : 150)}`,
+                 + `${u(s.mob ? (grunge ? 60 : 100) : 150)}`,
         }}>
-          <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />
+          {grunge
+            ? <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 52.8 * z : tab ? 44 : 43} colour={s.bg} />
+            : <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />}
           <div style={col(u(40), {
             background: lime3, borderRadius: u(60),
             padding: s.mob ? `${u(40)} ${u(30)}` : u(tab ? 50 : 60),
           })}>
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispLg,
-              lineHeight: 0.89, letterSpacing: s.dls, color: ink,
+              margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+              lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: ink,
+              ...upper,
             }}>{s.title}</h2>
-            <div style={col(u(24))}>
+            <div style={col(u(24), grunge && desk ? { padding: u(32) } : undefined)}>
               <span style={bodyLg}>All songs · A–Z</span>
               {desk ? (
                 <div style={row(u(40), { alignItems: 'flex-start' })}>{list}{rail}</div>
