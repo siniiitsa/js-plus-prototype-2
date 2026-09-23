@@ -857,6 +857,10 @@ export const TESTI_HEADING_4 = 'Client success stories'
 export const FORM_HEADING_4 = 'Contact Us'
 export const FORM_BTN_4 = 'Check Availability'
 export const FORM_SUB_4 = 'Enquire'
+// The address every enquiry is mailed to, as the enquiry form seeds it. Named
+// because two sections resolve it (JP-053): the form's own sectionVm, and the
+// booking calendar's layout-4 wizard through pageEmail() below.
+export const FORM_EMAIL = 'bookings@kaimercer.co.uk'
 export const TESTI_STARS = '★★★★★'
 // Booking calendar layout 4's wizard (964:72843): the event types its first
 // step offers, the frame's own four. The calendar's own list rather than the
@@ -1340,8 +1344,8 @@ export const FIELDS = {
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Dead until the submit was made real — this is now what the form is for.
-    { k: 'email',    l: 'Email address', type: 'email', d: 'bookings@kaimercer.co.uk',
-      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
+    { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
+      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
@@ -1439,6 +1443,19 @@ export const pageTiers = (sections) => {
   const p = sections.find((s) => s.cat === 'pricing')
   if (!p) return []
   return (Array.isArray(p.c?.tiers) ? p.c.tiers : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
+}
+
+// JP-053 — the address the page's enquiries go to, as the enquiry form holds
+// it, for the booking calendar's layout-4 wizard, whose Send Enquiry mails the
+// visitor's answers there: pageTiers()' cross-section read again. Resolved
+// exactly as the form's own sectionVm resolves `vm.formEmail` — an absent key
+// is the seed, and emailAddr() folds an empty or refused address to '' — and
+// '' with no form section on the page, so the wizard's pills stay spans in
+// both cases, the form's own no-address state.
+export const pageEmail = (sections) => {
+  const f = sections.find((s) => s.cat === 'form')
+  if (!f) return ''
+  return emailAddr(f.c?.email !== undefined ? f.c.email : FORM_EMAIL)
 }
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }

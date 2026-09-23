@@ -80,8 +80,8 @@ properties set per section at runtime.
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
 rendering, so `EncoreSection` does zero colour maths. The enquiry form and the calendar's
-layout-4 wizard are the exceptions to "fully-resolved": `vm.formMailto`, `vm.formCheck` and
-`vm.calWizard.dateOf` are closures rather than values, because their inputs are the visitor's
+layout-4 wizard are the exceptions to "fully-resolved": `vm.formMailto`, `vm.formCheck`,
+`vm.calWizard.dateOf`, `vm.calMailto` and `vm.calCheck` are closures rather than values, because their inputs are the visitor's
 keystrokes and `sectionVm` never sees those. Every address, label
 and case decision is still bound in `sectionVm`, so the renderer composes nothing.
 
@@ -392,7 +392,11 @@ That distinction is the whole design, and it buys two things:
   page the visitor's answers or a faint "e.g." placeholder), a date card that shows the typed
   date and refuses a booked or past one, a package card naming the **Pricing section's**
   packages (read across sections, the header identity's way; *Package ›* steps through them),
-  and Send Enquiry. No date or price on it is one the artist did not type.
+  and Send Enquiry. No date or price on it is one the artist did not type. Send Enquiry, there
+  and on the wizard's last step, **mails the answers like the enquiry form does** (JP-053): a
+  `mailto:` to the form section's own address, read across sections the same way, refused until
+  the name and email pass the form's checks, then a confirmation in the wizard card with *Start
+  again*. With no form section, or an address the form refuses, both pills stay pictures.
 
   **The enquiry form, which fills in and sends.** It was the last §10.2 section whose every
   control was a picture — and the one the rest of the page points at, since `CTA_TARGETS.book`

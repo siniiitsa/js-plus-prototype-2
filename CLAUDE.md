@@ -70,12 +70,12 @@ Every section is projected through **`sectionVm()`** into a flat, fully-resolved
 before rendering, so `EncoreSection` does zero colour maths. `sectionVm` takes `themeIdx` as an
 argument rather than reading state, so previews can render a theme that is not the active one.
 The **enquiry form and the calendar's layout-4 wizard are the exceptions to "fully-resolved"**:
-the form's `vm.formMailto` and `vm.formCheck`, and the wizard's `vm.calWizard.dateOf` (JP-052), are
-*closures*, not values, because their inputs are the visitor's keystrokes and `sectionVm` never
-sees those. Everything else about them — the address, the labels, the casing, the date parse and
-the booked and past tests — is still bound in `sectionVm`, so `EncoreSection` hands over indexes
-and raw strings and composes nothing. They are the only function-valued keys on the whole
-view-model.
+the form's `vm.formMailto` and `vm.formCheck`, and the wizard's `vm.calWizard.dateOf` (JP-052),
+`vm.calMailto` and `vm.calCheck` (JP-053), are *closures*, not values, because their inputs are
+the visitor's keystrokes and `sectionVm` never sees those. Everything else about them — the
+address, the labels, the casing, the date parse and the booked and past tests — is still bound in
+`sectionVm`, so `EncoreSection` hands over indexes and raw strings and composes nothing. They are
+the only function-valued keys on the whole view-model.
 
 ## Navigation and state
 
@@ -635,7 +635,7 @@ mutated through a single `patch()` helper.
   chevron and the handler go, and with no pricing section the card is not drawn. `sel` and
   `mi` reach nothing in this design, `booked` reaches it only through a typed date, and `cta`
   not at all. Its foot is `BookPill` at layout 3's own numbers labelled `vm.calWizard.send`, on
-  the same `calBookTo` as the wizard's last step; and it is
+  the same mailto as the wizard's last step (below); and it is
   the one calendar layout that paints a **sheet** — the Figma wrapper's tan panel, which
   carries the page's own "Book Us" head (`CAL_HEADING_4`) and would otherwise leave that head on
   a ground no master draws. That panel also holds the page's **enquiry wizard** (QA,
@@ -643,8 +643,24 @@ mutated through a single `patch()` helper.
   narrow, since `form` took the editorial band and the wizard has no section of its own. Its
   hooks (`wStep`, `wType`, `wVals`, `wPkg`) are appended after `sel`; only step 1 is designed, so
   steps 2 and 3 take the summary card's own labels and a name and email, every string resolved
-  onto `vm.calWizard`; its inputs exist only when `s.live`, there is no `<form>`, and the last
-  step's Send Enquiry is a fragment link to `calBookTo` — the section has no address to mail.
+  onto `vm.calWizard`; its inputs exist only when `s.live`, and there is no `<form>`. **Send
+  Enquiry mails, like the form** (JP-053, user call, 2026-09-23 — it was a fragment link to
+  `calBookTo`, which lost every answer): both pills are an `<a href="mailto:">` composed by
+  `vm.calMailto` over the type, the date as typed, step 2's four answers, the package and the
+  contact boxes, with the body's labels raw. The address is the **enquiry form section's
+  `email`**, read across sections through `sectionVm({ email })` (`pageEmail(sections)` in
+  `data.js`, `tiers`' precedent, threaded through the same five call sites; the harness takes
+  `&email=<address>`, `&email=` or `&email=none`), and with no form section or an address
+  `emailProblem()` refuses both pills stay spans, the form's no-address state. The click asks
+  `vm.calCheck` — step 3's name and email by `formErrors()`' rules — and a refusal marks the boxes
+  (`wErrs`, appended, cleared per box: Retro's hairline doubled inside, Lime's 2px of `s.tx`),
+  prints `vm.calWizard.prompt` and, from the foot pill, walks to step 3. A valid send (`wSent`)
+  swaps the wizard card's parts for a confirmation printing the address in plain text, with
+  *Start again*, which keeps every answer and opens step 1; the pills are spans until then. The
+  summary column does not change — though at 768 and 390, where it stacks under the card, the
+  shorter card lets it ride up. `extLink()` gives a `mailto:` / `tel:` no `target`, so the foot
+  pill takes `BookPill`'s `ext` (and an additive `onClick`), and a footer row or a gig's tickets
+  link holding a mailto no longer leaves an empty tab behind.
   Its summary card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
   token, and `deep` is the page ground on two palettes and collides with the panel on the same
   two. The cost, named: on Grunge `tx` and `paper` are one value, so the card and the

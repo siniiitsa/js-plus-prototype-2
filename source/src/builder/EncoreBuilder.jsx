@@ -42,7 +42,7 @@ import {
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE,
   FORM_PROMISES, FORM_FIELDS, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
@@ -229,7 +229,7 @@ export const pageDesignOf = (sections, themeName) => {
   return ((h.arch % n) + n) % n
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
   const T = THEMES[themeIdx]
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -1147,6 +1147,49 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     vm.calPackages = tiers.map((t) => ({
       name: cased(String(t?.name ?? '').trim()), price: String(t?.price ?? '').trim(),
     }))
+    // JP-053 — Send Enquiry mails the wizard's answers, as the enquiry form's
+    // submit does, to the form's own address: read across sections through
+    // sectionVm's `email` argument (pageEmail(), `tiers`' precedent), '' with
+    // no form section or an address emailAddr() refuses, which leaves both
+    // Send pills spans — the form's no-address state. The confirmation that
+    // replaces the wizard card prints it in plain text, the form's rule.
+    vm.calEmail = email
+    Object.assign(vm.calWizard, {
+      sentTitle: cased('Check your mail app'),
+      sentBody: 'Your enquiry should be open in it, ready to send. If nothing happened, write to:',
+      again: 'Start again',
+      prompt: 'Add your name and a valid email, then send again.',
+    })
+    // The wizard's two closures beside `dateOf`, and the form's formMailto /
+    // formCheck rule: their inputs are the visitor's keystrokes, so
+    // EncoreSection hands over the type's and the package's indexes and the
+    // raw box values, and gets an href and a verdict back. The body's labels
+    // are the raw ones (`wizSteps`' own), not the cased ones the wizard
+    // prints — the form's labels stay raw for the same reason, the body wants
+    // them as written — and so is the package, read off `tiers` rather than
+    // the cased card. The date goes as typed: it is the visitor's own words,
+    // and the date card has already said whether the artist can take it.
+    const wizBoxes = wizSteps.flatMap(([, , boxes]) => boxes)
+    const rawPkg = (pi) => {
+      const t = tiers.length ? tiers[((pi % tiers.length) + tiers.length) % tiers.length] : null
+      return t ? [t.name, t.price].map((x) => String(x ?? '').trim()).filter(Boolean).join(' · ') : ''
+    }
+    vm.calMailto = ({ ti, vals, pi }) => enquiryMailto(email, {
+      type: vm.calTypes[ti] ?? '',
+      fields: [
+        { label: 'Approx. date', value: (vals || {}).date },
+        ...wizBoxes.slice(0, 4).map(([key, label]) => ({ label, value: (vals || {})[key] })),
+        { label: 'Package', value: rawPkg(pi) },
+        ...wizBoxes.slice(4).map(([key, label]) => ({ label, value: (vals || {})[key] })),
+      ],
+    })
+    // Step 3's two boxes, by formErrors()' rules — the name required, the
+    // email required and checked by emailProblem() — keyed by box so the
+    // section can mark them without working anything out.
+    vm.calCheck = ({ vals }) => {
+      const { f, any } = formErrors([{ kind: 'text' }, { kind: 'email' }], [(vals || {}).name, (vals || {}).email])
+      return { f: { name: f[0], email: f[1] }, any }
+    }
     // The bare hour, beside the composed lines that already carry it: layout
     // 4's date card prints it on its own. Raw rather than cased: it is a clock
     // format, vm.calSlots[].mark's rule.
@@ -1395,7 +1438,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // emailAddr() refuses folds to '' (JP-049), the empty address's own state, so
   // the submit stays a span on both surfaces and the confirmation panel can
   // never print it; a pasted mailto: is taken off.
-  vm.formEmail = emailAddr(cv('email', 'bookings@kaimercer.co.uk'))
+  vm.formEmail = emailAddr(cv('email', FORM_EMAIL))
   // Layout 4's frame types "Check Availability" (JP-054); EditPanel mirrors it.
   vm.formBtn = cv('button', d === 3 ? FORM_BTN_4 : 'Book Now')
   // Layout 4's small-caps line under the head, the frame's "Enquire". Emptied,
@@ -1473,8 +1516,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formSentTitle = cased('Check your mail app')
   vm.formSentBody = 'Your enquiry should be open in it, ready to send. If nothing happened, write to:'
   vm.formAgain = 'Write another'
-  // The only two function-valued keys on the whole view-model, and they are
-  // here for the reason enquiryLine() is not: their inputs are the visitor's
+  // Two of the view-model's five function-valued keys — the calendar's
+  // layout-4 wizard carries the other three (`calWizard.dateOf`, `calMailto`,
+  // `calCheck`) — and they are here for the reason enquiryLine() is not: their inputs are the visitor's
   // keystrokes, which sectionVm never sees, so neither can be resolved to a
   // string ahead of time. EncoreSection hands over indexes and raw strings and
   // gets an href and a verdict back — every label, address and case decision
@@ -3282,7 +3326,7 @@ function LinksField({ value, max, navSections = [], onChange }) {
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, api, artistName, identity, tiers, themeIdx, navSections }) {
+function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx, navSections }) {
   const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
 
@@ -3355,7 +3399,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, themeIdx, navSec
             <Label style={groupLabel}>Layout</Label>
             <LayoutPicker
               cat={sec.cat} arch={sec.arch} content={sec.c}
-              themeIdx={themeIdx} artistName={artistName} identity={identity} tiers={tiers} navSections={navSections}
+              themeIdx={themeIdx} artistName={artistName} identity={identity} tiers={tiers} email={email} navSections={navSections}
               onPick={(i) => api.setSection(sec.id, { arch: i })}
             />
           </div>
@@ -3519,7 +3563,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, themeIdx, navSec
  * designs (§4.4), so some rows render identically. That is on purpose.
  * ------------------------------------------------------------------ */
 
-function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, navSections, content = {}, onPick }) {
+function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email, navSections, content = {}, onPick }) {
   const [open, setOpen] = useState(false)
   const themeName = THEMES[themeIdx].name
   const n = layoutCount(cat, themeName)
@@ -3582,7 +3626,7 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, navSec
                   autoMax={210} radius={6}
                   vm={sectionVm({
                     themeIdx, cat, arch: i, c: content,
-                    artistName, identity, tiers, Z: SIZES.desktop, mob: false, navSections,
+                    artistName, identity, tiers, email, Z: SIZES.desktop, mob: false, navSections,
                   })}
                 />
               </span>
@@ -3613,7 +3657,7 @@ const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
 const firstFreeCat = (present) =>
   (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
 
-function AddComposer({ add, present, removed, themeIdx, artistName, identity, tiers, navSections, onChange, onAdd, onCancel }) {
+function AddComposer({ add, present, removed, themeIdx, artistName, identity, tiers, email, navSections, onChange, onAdd, onCancel }) {
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
   const taken = present.includes(add.cat)
   // A category deleted earlier restores its content on add; Start fresh opts
@@ -3646,7 +3690,7 @@ function AddComposer({ add, present, removed, themeIdx, artistName, identity, ti
         <Label style={groupLabel}>Layout</Label>
         <LayoutPicker
           cat={add.cat} arch={add.arch}
-          themeIdx={themeIdx} artistName={artistName} identity={identity} tiers={tiers} navSections={navSections}
+          themeIdx={themeIdx} artistName={artistName} identity={identity} tiers={tiers} email={email} navSections={navSections}
           onPick={(i) => onChange({ ...add, arch: i })}
         />
       </div>
@@ -4082,6 +4126,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const navSections = navSectionsOf(sections.map((s) => s.cat))
   const identity = headerIdentity(sections)
   const tiers = pageTiers(sections)
+  const email = pageEmail(sections)
 
   const T = THEMES[themeIdx]
   const rows = pageRows(sections, T.name, key === 'desktop')
@@ -4090,7 +4135,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const page = arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
-      artistName, identity, tiers, Z, mob: key === 'mobile', live: true, navSections,
+      artistName, identity, tiers, email, Z, mob: key === 'mobile', live: true, navSections,
       column: inColumns.get(i), today, page: pageDesignOf(sections, T.name),
     })} />
   )))
@@ -4284,6 +4329,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // hands them to every other section that prints a role or a home town.
   const identity = headerIdentity(sections)
   const tiers = pageTiers(sections)
+  const email = pageEmail(sections)
   const present = sections.map((s) => s.cat)
 
   // §5.5 — a real phone forces mobile canvas sizing at full width.
@@ -4451,7 +4497,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
@@ -4581,7 +4627,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const addComposer = st.add && (
     <AddComposer
       add={st.add} present={present} removed={st.removed}
-      themeIdx={st.theme} artistName={artistName} identity={identity} tiers={tiers} navSections={navSections}
+      themeIdx={st.theme} artistName={artistName} identity={identity} tiers={tiers} email={email} navSections={navSections}
       onChange={(next) => patch({ add: next })}
       onAdd={addSection}
       onCancel={closeAdd}
@@ -4852,7 +4898,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                       inherited by the same field of the next section opened. */}
                   <EditPanel
                     key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
-                    artistName={artistName} identity={identity} tiers={tiers} themeIdx={st.theme} navSections={navSections}
+                    artistName={artistName} identity={identity} tiers={tiers} email={email} themeIdx={st.theme} navSections={navSections}
                   />
                 </>
               ) : (
@@ -5027,7 +5073,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             {selectedSec && (
               <EditPanel
                 key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
-                artistName={artistName} identity={identity} tiers={tiers} themeIdx={st.theme} navSections={navSections}
+                artistName={artistName} identity={identity} tiers={tiers} email={email} themeIdx={st.theme} navSections={navSections}
               />
             )}
           </DrawerContent>

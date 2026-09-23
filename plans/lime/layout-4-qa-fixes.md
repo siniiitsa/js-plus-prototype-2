@@ -48,7 +48,7 @@ does. Verify themes 0, 1 and 2.
 | 2 | JP-054 | Form layout 4's copy is not the frame's (head, sub-line, boxes, button, two-line steps) | **Named diffs of the fit** (L4 §9 Settled). The tester is right that nothing picks a side | S–M | **yes** (PO call): **A** | **done** |
 | 3 | JP-038 (layout 4) | Adjacent sections disagree on their side inset: 189 vs 171 at desktop, 22 vs 10 at 390 | **Confirmed, and not the gutter question already settled**: page-ground sections keep `padX`, while sheets put the frame's own inset back | M | **yes** (user call): **B** | **done** |
 | 4 | JP-052 | Book Us' right column prints dates and prices no field edits, and ignores the wizard | **Confirmed. It is a misreading of the frame**: the card is the wizard's summary, and the fit read it as `CAL_SLOTS` | L | **yes**: **1 A (Package › cycle), 2 (i)**; JP-053 **A** | **done** |
-| 5 | JP-053 | The wizard's Send Enquiry is `#form`: the answers go nowhere, and there is no confirmation | **Confirmed.** Documented as a fragment link, but the tester is right that it loses everything | M | decided in entry 4: **A** | open |
+| 5 | JP-053 | The wizard's Send Enquiry is `#form`: the answers go nowhere, and there is no confirmation | **Confirmed.** Documented as a fragment link, but the tester is right that it loses everything | M | decided in entry 4: **A** | **done** |
 | 6 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:** JP-055 is a check with no decision. JP-054 and JP-038 are single questions
@@ -618,7 +618,71 @@ emptied, the pill is a span. Canvas unchanged except where JP-052 already moved 
 **Docs.** CLAUDE.md's calendar layout-4 wizard sentences and the architectural rule's "only
 function-valued keys" sentence, README's matching passage.
 
-**Settled.** —
+**Settled** (2026-09-23). The Evidence lines had drifted with JP-052: `sendLink` was at
+`EncoreSection.jsx:14663`, the Lime block's foot `BookPill` at `:14939` and Retro's at `:15031`,
+`vm.formMailto` / `vm.formCheck` at `EncoreBuilder.jsx:1483`–`1489`, and `enquiryMailto()` /
+`emailProblem()` / `formErrors()` at `data.js:1582` / `:1528` / `:1606`.
+- **Expected after-diff, named before the code: zero digest files** on both surfaces. The digest
+  records no `href`, the canvas's `sendLink` is null, and live both Send pills were already `<a>`
+  (to `#form`), so the tag does not change either.
+- **Code.** In `data.js`: `FORM_EMAIL` (the seed, now also `FIELDS.form.email`'s `d`, whose hint
+  names the wizard) and `pageEmail(sections)` beside `pageTiers`, which resolves exactly what the
+  form's `vm.formEmail` does and is `''` with no form section. In `sectionVm`: an `email` argument
+  threaded beside `tiers` through the same five call sites, plus `&email=<address>` / `&email=` /
+  `&email=none` in `preview.jsx`. `vm.calEmail`, and `sentTitle` / `sentBody` / `again` (*Start
+  again*) / `prompt` on `vm.calWizard`. `vm.calMailto({ ti, vals, pi })` composes through
+  `enquiryMailto()` with the **raw** labels (`wizSteps`' own, as the form's labels stay raw) and the
+  raw package off `tiers` (`name · price`). The date goes as typed. `vm.calCheck({ vals })` is
+  `formErrors()` over name (text) and email (email), keyed `{ name, email }`. In `EncoreSection`:
+  `wErrs` / `wSent` appended after `wPkg`, and one send seam in the shared body (`sendHref`,
+  `onSend`, `onAgain`, `setBox`, `refused`, `wPrompt`) that Retro's body and Lime's block both paint.
+  The wizard's `NextTag` and the foot `BookPill` share `sendHref`. The foot pill sends from any
+  step, and a refusal there walks to step 3. A refused box is Retro's hairline doubled inside, or
+  Lime's `inset 0 0 0 2px s.tx`. The prompt stands under the buttons while a box is still marked.
+  The confirmation replaces the card's parts: the title, the line, the address in plain text and
+  *Start again* on the Back pill. **Two shared seams moved, both additive in effect**: `extLink()`
+  gives a `mailto:` / `tel:` no `target` (the form's rule, since a mailto in a new tab leaves an
+  empty tab behind), which is what lets the foot pill take `BookPill`'s `ext`. A footer mailto row
+  gets the same fix, and so does a gig's tickets link. `BookPill` also gained `onClick`. Both were
+  chosen over a second href prop on `BookPill`, so a mailto has one rule wherever it is linked.
+- **Digest** (a HEAD `240d0aa` worktree on :5174 against the edit on :5173, themes 0, 1, 2, all
+  categories, three widths, port normalised): **0 of 387 files differ on the canvas, and 0 of 387
+  with `&live=1`**, as named.
+- **Live run** (puppeteer in the `live=1` harness, themes 0, 1, 2 at 1440 and 390, capture-phase
+  `preventDefault` on mailto). Festival, then `14/11/2026`, then 300 / 5 hrs / £3,000 / Needed,
+  then *Package ›*, then Ana Lopes / `ana@example.com` gives `mailto:bookings@kaimercer.co.uk`,
+  subject *Festival enquiry*, and the body *Approx. date: 14/11/2026 / Guests: 300 / Set length:
+  5 hrs / Budget: £3,000 / Sound: Needed / Package: The Wedding Set · £650 / Name: Ana Lopes /
+  Email: ana@example.com*. Both pills carry the same href, with no `target`. An empty send is
+  refused in place: both boxes are ringed, the prompt shows, and the wizard stays on step 3.
+  Typing the name clears its ring alone. `not-an-email` is refused, with the email ring kept.
+  A valid send shows the confirmation with the address. The summary keeps 300 / £3,000, and the
+  foot pill turns to a span. *Start again* returns to step 1 with `14/11/2026` still typed. The
+  foot pill clicked on step 1 walks to step 3 and marks the boxes. `&email=none`, `&email=` and
+  `&email=not-an-email` leave both pills spans at every theme. There were no page errors.
+  Screenshots of the refused and sent states (Lime 1440, Retro 390) read right.
+- **Real app** (Lime card 4, then Retro card 4, at a 1600 window: *Publish*, *Open*, the run in the
+  popup). The first paint's foot pill is `mailto:bookings@kaimercer.co.uk`. The run composes the
+  body above, with the real Pricing section's *The House Party · £450*. After the confirmation and
+  *Start again* the pills are links again. Then the form's email: emptied, the pills are spans.
+  `not-an-email` gives spans. `me@band.co` gives `mailto:me@band.co`. Deleting the form section
+  gives spans. There were no errors. One trap: the popup keeps its React state across a
+  republish, so a wizard left in its sent state reads as spans. Press *Start again* before the
+  next check.
+- **Named diffs.** At 768 and 390 the summary column stacks under the wizard card, so it rides up
+  while the shorter confirmation card shows. At 1440 the grid holds it still. `reach.mjs` was not
+  re-run, because no `in` moved (`email` has none; only its hint changed).
+- **Docs.** CLAUDE.md: the closures sentence gains `calMailto` / `calCheck`. The layout-4 wizard
+  passage loses "the section has no address to mail", gains the send paragraph, and the foot
+  pill is now "on the same mailto". README: the closures sentence and the summary paragraph.
+  The comments on `vm.formMailto`, the calendar's `v3` head and the foot pill are rewritten.
+
+Reply: **fixed.** The wizard's Send Enquiry (on the last step, and the pill under the summary)
+now opens the visitor's mail app with the enquiry addressed to the Enquiry Form's email. It
+carries the event type, the date, guests, set length, budget, sound, the package, the name and
+the email. It is refused until a name and a valid email are in, and then it confirms in place,
+with *Start again*. With no Enquiry Form on the page, or no valid address in it, the pill is not a
+link.
 
 ---
 

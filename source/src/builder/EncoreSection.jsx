@@ -495,8 +495,12 @@ const navHref = (s, to) => (s.live && to ? `#${to}` : undefined)
 // dressPublishedWindow's delegated listener swallows fragments and nothing
 // else, so a same-tab click would take the published page with it. Returns the
 // props to spread, or null, so the caller picks its tag the way BookPill does.
+//
+// Except a mailto: or a tel: (JP-053), which hands the address to an app and
+// never loads a page: in a new tab it only leaves an empty one behind, so it
+// takes no target — the enquiry form's own submit rule.
 const extLink = (s, url) => (s.live && url
-  ? { href: url, target: '_blank', rel: 'noopener noreferrer' }
+  ? (/^(mailto|tel):/i.test(url) ? { href: url } : { href: url, target: '_blank', rel: 'noopener noreferrer' })
   : null)
 
 // Seconds → mm:ss, for the media player's two clock labels. A track over an
@@ -614,7 +618,10 @@ function NavLinks({ s, color, pills = false }) {
 // for the calendar's layout 3, whose frame draws this pill at the card's full
 // width with the label at one end and the disc at the other. No caller written
 // before it passes one, so it is a no-op by inspection.
-function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg, size: sizeProp, style }) {
+// `onClick` is the booking calendar's layout-4 foot pill (JP-053), which is a
+// mailto that checks the wizard's contact boxes before it lets the click
+// through — the enquiry form's submit rule. Additive, like `style`.
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg, size: sizeProp, style, onClick }) {
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
@@ -637,7 +644,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
     const face = fg ?? s.bg
     const dw = discSize ?? 46 * k
     return (
-      <Tag {...link} style={{
+      <Tag {...link} onClick={onClick} style={{
         ...row(px(10)), background: bg ?? s.pillBg, color: face,
         padding: `${px(5)} ${px(5)} ${px(5)} ${px(21)}`,
         borderRadius: s.btnR, cursor: 'pointer',
@@ -670,7 +677,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
     const disc = glyph === 'arrow'
     const dia = discSize ?? pick(27, 22, 17)
     return (
-      <Tag {...link} style={{
+      <Tag {...link} onClick={onClick} style={{
         ...row(pick('10px', '8px', '6.2px')),
         background: bg ?? s.pillBg, color: face,
         padding: disc
@@ -710,7 +717,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
   // the accent — the pricing deck's third card already drew an accent pill on
   // an accent card with only its type showing.
   return (
-    <Tag {...link} style={{
+    <Tag {...link} onClick={onClick} style={{
       ...row('8px'), background: bg ?? s.ac, color: fg ?? s.acFg, fontSize: '10px', fontWeight: 700,
       letterSpacing: '1.2px', textTransform: 'uppercase', padding: '9px 18px',
       borderRadius: s.btnR, cursor: 'pointer', whiteSpace: 'nowrap',
@@ -13026,6 +13033,12 @@ function Calendar({ s }) {
   // `s.calPackages` that *Package ›* steps and wraps. Appended, like the three
   // above, and read live only — the canvas names the first package.
   const [wPkg, setWPkg] = useState(0)
+  // Send Enquiry's own state (JP-053), the enquiry form's `errs` and `sent`:
+  // null until a send is refused, then { f: { name, email }, any }, cleared
+  // per box as it is corrected; and whether the wizard card shows its
+  // confirmation. Appended, like the four above, and set live only.
+  const [wErrs, setWErrs] = useState(null)
+  const [wSent, setWSent] = useState(false)
   // Whether a day or a slot is shut to the visitor: blocked by the artist, or
   // — live only — already past. One test, so the two behave identically
   // everywhere a pick is resolved or a handler given; only `booked` is struck
@@ -14294,9 +14307,12 @@ function Calendar({ s }) {
   // designed, so steps 2 and 3 reuse its parts over content the page itself
   // names: the summary card's GUESTS / SET LENGTH / BUDGET / SOUND as Details,
   // a name and an email as Contact. The last Next Step is the frame's own "Send
-  // Enquiry" pill's label and scrolls to `calBookTo`, as does the column's foot
-  // pill under the same label; the section has no address to mail, so the
-  // answers are the visitor's notes on the way to the form.
+  // Enquiry" pill's label, and it and the column's foot pill under the same
+  // label **mail the answers** (JP-053, user call, 2026-09-23 — they scrolled
+  // to `calBookTo` until then, and everything typed was lost): a `mailto:`
+  // composed by the vm's `calMailto` to the enquiry form's own address, which
+  // `calCheck` lets through once step 3's name and email pass, the form's
+  // submit seam whole. A valid send swaps the wizard card for a confirmation.
   // No `<form>`, the enquiry form's rule: Enter in a box must post nowhere.
   //
   // **What this design is: the wizard's summary** (JP-052, user call,
@@ -14416,6 +14432,34 @@ function Calendar({ s }) {
     const pkgAt = s.live && nPkg ? ((wPkg % nPkg) + nPkg) % nPkg : 0
     const pkg = nPkg ? s.calPackages[pkgAt] : null
     const onPkg = s.live && nPkg > 1 ? () => setWPkg(pkgAt + 1) : undefined
+
+    // ── Send Enquiry (JP-053) ────────────────────────────────────────────
+    // The enquiry form's submit seam, whole: the href is composed on every
+    // render by the vm's closure over the type and package indexes and the raw
+    // boxes, so it always carries what is typed, and the click only decides
+    // whether to let it through. '' — so both pills are spans — on the canvas,
+    // after a send, and with no address to mail (no form section on the page,
+    // or one emailProblem() refuses): the Soundcloud rule. Both pills share
+    // it, so the foot pill can send from any step; a refusal then walks the
+    // visitor to step 3, where the boxes it marks are.
+    const lastStep = W.steps.length - 1
+    const sendHref = s.live && !wSent
+      ? s.calMailto({ ti: nTypes ? typeAt : -1, vals: wVals, pi: pkgAt }) : ''
+    const onSend = sendHref ? (e) => {
+      const bad = s.calCheck({ vals: wVals })
+      if (bad.any) { e.preventDefault(); setWErrs(bad); setWStep(lastStep) } else { setWErrs(null); setWSent(true) }
+    } : undefined
+    // *Start again* keeps every answer — the form's *Write another* — and
+    // opens on step 1, where the next enquiry starts.
+    const onAgain = () => { setWSent(false); setWStep(0) }
+    // One box typed: the value, and that box's mark cleared, the form's setAt.
+    const setBox = (key, v) => {
+      setWVals((o) => ({ ...o, [key]: v }))
+      setWErrs((e) => (e && e.f[key] ? { ...e, f: { ...e.f, [key]: false } } : e))
+    }
+    const refused = (key) => !!(wErrs && wErrs.f[key])
+    // The prompt stands while a box is still marked.
+    const wPrompt = !!wErrs && (wErrs.f.name || wErrs.f.email)
 
     // One stat cell. The frame styles the **first** label in Display/Title 24
     // and the other three in Body/Chip 12 Bold at −6% — present in all three
@@ -14539,18 +14583,21 @@ function Calendar({ s }) {
     // APPROX. DATE. A real input live, the placeholder as a span on the canvas —
     // the enquiry form's accepted diff, where the published placeholder draws
     // at `::placeholder`'s own strength.
+    // A refused box (JP-053) doubles its hairline inside, the enquiry form's
+    // layout-2 ring: no palette has a red, and inset keeps the pill's height.
     const field = ({ key, label, ph }) => (
       <div key={key} style={col(u(6), { alignItems: 'stretch', minWidth: 0 })}>
         <span style={smallCaps}>{label}</span>
         <div style={row(0, {
           background: panel, color: sheetInk, border: `1px solid ${hair}`, borderRadius: '999px',
+          boxShadow: refused(key) ? `inset 0 0 0 1px ${hair}` : undefined,
           padding: `calc(${u(12)} - 1px) calc(${u(14)} - 1px)`, ...bodyMd,
         })}>
           {s.live ? (
             <input value={wVals[key] ?? ''} placeholder={ph}
                    type={key === 'email' ? 'email' : 'text'}
                    inputMode={key === 'guests' ? 'numeric' : undefined}
-                   onChange={(e) => { const v = e.target.value; setWVals((o) => ({ ...o, [key]: v })) }}
+                   onChange={(e) => setBox(key, e.target.value)}
                    style={{
                      flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
                      padding: 0, margin: 0, font: 'inherit', color: 'inherit',
@@ -14660,8 +14707,9 @@ function Calendar({ s }) {
     const last = wAt === nSteps - 1
     const onBack = s.live && wAt > 0 ? () => setWStep(wAt - 1) : undefined
     const onNext = s.live && !last ? () => setWStep(wAt + 1) : undefined
-    const sendLink = s.live && last && s.calBookTo ? { href: `#${s.calBookTo}` } : null
+    const sendLink = last && sendHref ? { href: sendHref } : null
     const NextTag = sendLink ? 'a' : 'span'
+    const onNextTag = last ? onSend : onNext
 
     // ── Lime ─────────────────────────────────────────────────────────────
     // Lime's layout-4 Book Us block (calendar 964:72939 · 971:5626 · 977:9200,
@@ -14670,7 +14718,8 @@ function Calendar({ s }) {
     // dress. It sits here, after the whole seam — the summary column's
     // `sumHead` / `sumCells` / `dc` / `pkg` / `onPkg` (JP-052), and the
     // wizard's `wAt` / `wCur` / `typeAt` / `last` /
-    // `onBack` / `onNext` / `sendLink` / `NextTag` — because every one of
+    // `onBack` / `onNext` / `sendLink` / `NextTag`, and JP-053's `sendHref` /
+    // `onSend` / `onAgain` / `setBox` / `refused` / `wPrompt` — because every one of
     // those is content, not paint, and is shared whole; `panelPad`, the 60 / 30
     // corner and the 50 / 20 gaps are Lime's Frame 324 to the number, so they
     // are read too. Retro's `T`, `panel` / `sheet` / `sheetInk` / `gone` /
@@ -14787,15 +14836,19 @@ function Calendar({ s }) {
       const field = ({ key, label, ph }) => (
         <div key={key} style={col(u(6), { alignItems: 'stretch', minWidth: 0 })}>
           <span style={smallCaps}>{label}</span>
+          {/* A refused box is 2px of `s.tx` (JP-053) — colour, not weight
+              alone, since the idle ring is already `stroke1`: the enquiry
+              form's Lime layout-4 rule. */}
           <div style={row(0, {
-            background: s.box2, color: s.tx, boxShadow: hair, borderRadius: '999px',
+            background: s.box2, color: s.tx, borderRadius: '999px',
+            boxShadow: refused(key) ? `inset 0 0 0 2px ${s.tx}` : hair,
             padding: `${u(12)} ${u(14)}`, ...body(s.bodyMd, 1.5),
           })}>
             {s.live ? (
               <input value={wVals[key] ?? ''} placeholder={ph}
                      type={key === 'email' ? 'email' : 'text'}
                      inputMode={key === 'guests' ? 'numeric' : undefined}
-                     onChange={(e) => { const v = e.target.value; setWVals((o) => ({ ...o, [key]: v })) }}
+                     onChange={(e) => setBox(key, e.target.value)}
                      style={{
                        flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
                        padding: 0, margin: 0, font: 'inherit', color: 'inherit',
@@ -14895,8 +14948,8 @@ function Calendar({ s }) {
             {disc(s.ac, s.bg, ArrowLeft)}
             {W.back}
           </span>
-          <NextTag {...sendLink} onClick={onNext} style={{
-            ...pill(true), background: s.ac, color: s.bg, cursor: onNext || sendLink ? 'pointer' : undefined,
+          <NextTag {...sendLink} onClick={onNextTag} style={{
+            ...pill(true), background: s.ac, color: s.bg, cursor: onNextTag ? 'pointer' : undefined,
           }}>
             {last ? W.send : W.next}
             {disc(s.bg, s.ac, ArrowRight)}
@@ -14904,17 +14957,41 @@ function Calendar({ s }) {
         </div>
       )
 
+      // The confirmation (JP-053) replaces the card's five parts and nothing
+      // else: the card, the panel and the summary column beside it stand
+      // still. The address is plain text, not a second mailto — it is the
+      // fallback for a browser that opened nothing, the enquiry form's rule —
+      // and *Start again* is the Back pill, since it returns to step 1.
       const wizard = (
         <div style={col(u(20), {
           background: s.box1, color: s.tx, boxShadow: hair, borderRadius: u(desk ? 50 : 16),
           padding: desk ? `${u(40)} ${u(48)}` : '30px',
-          justifyContent: 'space-between', alignItems: 'stretch', minWidth: 0,
+          justifyContent: wSent ? 'center' : 'space-between', alignItems: 'stretch', minWidth: 0,
         })}>
-          {stepper}
-          <p style={{ margin: 0, textAlign: 'center', ...disp(titleSize, 1.1) }}>{wCur.title}</p>
-          <p style={{ margin: 0, textAlign: 'center', ...body(s.bodySm, 1.4) }}>{wCur.line}</p>
-          {stepBody}
-          {buttons}
+          {wSent ? (
+            <>
+              <p style={{ margin: 0, ...disp(titleSize, 1.1) }}>{W.sentTitle}</p>
+              <p style={{ margin: 0, ...body(s.bodyMd, 1.5) }}>{W.sentBody}</p>
+              <span style={body(s.bodyLg, 1.5, { fontWeight: 700, overflowWrap: 'anywhere' })}>{s.calEmail}</span>
+              <span onClick={onAgain} style={{
+                ...pill(false), alignSelf: 'flex-start', background: s.bg, color: s.ac, cursor: 'pointer',
+              }}>
+                {disc(s.ac, s.bg, ArrowLeft)}
+                {W.again}
+              </span>
+            </>
+          ) : (
+            <>
+              {stepper}
+              <p style={{ margin: 0, textAlign: 'center', ...disp(titleSize, 1.1) }}>{wCur.title}</p>
+              <p style={{ margin: 0, textAlign: 'center', ...body(s.bodySm, 1.4) }}>{wCur.line}</p>
+              {stepBody}
+              {buttons}
+              {wPrompt && (
+                <span style={body(s.bodySm, 1.4, { textAlign: 'center' })}>{W.prompt}</span>
+              )}
+            </>
+          )}
         </div>
       )
 
@@ -14936,7 +15013,7 @@ function Calendar({ s }) {
               {pkg && infoRow({
                 key: 'pkg', big: pkg.name, sub: pkg.price, end: nPkg > 1 ? W.pkg : '', onClick: onPkg,
               })}
-              <BookPill s={s} to={s.calBookTo} label={W.send} fg={s.box1} full={s.mob}
+              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={s.box1} full={s.mob}
                         style={{ width: '100%', justifyContent: 'space-between' }} />
             </div>
           </div>
@@ -14956,9 +15033,9 @@ function Calendar({ s }) {
           {disc(backFg, s.retro ? '#D8A227' : backBg, ArrowLeft)}
           {W.back}
         </span>
-        <NextTag {...sendLink} onClick={onNext} style={{
+        <NextTag {...sendLink} onClick={onNextTag} style={{
           ...pill(true), background: s.tx, color: s.bg, boxShadow: hard(s, s.ac, sh, sh),
-          cursor: onNext || sendLink ? 'pointer' : undefined,
+          cursor: onNextTag ? 'pointer' : undefined,
         }}>
           {last ? W.send : W.next}
           {disc(s.bg, s.ac, ArrowRight)}
@@ -14970,18 +15047,47 @@ function Calendar({ s }) {
       <div style={col(u(desk ? 18.75 : 20), {
         background: sheet, color: sheetInk, border: `1px solid ${hair}`, borderRadius: u(30),
         padding: desk ? `calc(${u(40)} - 1px) calc(${u(48)} - 1px)` : 'calc(30px - 1px)',
-        justifyContent: 'space-between', alignItems: 'stretch', minWidth: 0,
+        justifyContent: wSent ? 'center' : 'space-between', alignItems: 'stretch', minWidth: 0,
       })}>
-        {stepper}
-        <p style={{
-          margin: 0, textAlign: 'center', fontFamily: s.display, fontSize: u(T.title),
-          lineHeight: 1.1, letterSpacing: s.dls, color: s.ac,
-        }}>{wCur.title}</p>
-        <p style={{
-          margin: 0, textAlign: 'center', fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
-        }}>{wCur.line}</p>
-        {stepBody}
-        {buttons}
+        {/* The confirmation (JP-053): the card's parts only, Lime's rule above. */}
+        {wSent ? (
+          <>
+            <p style={{
+              margin: 0, fontFamily: s.display, fontSize: u(T.title),
+              lineHeight: 1.1, letterSpacing: s.dls, color: s.ac,
+            }}>{W.sentTitle}</p>
+            <p style={{ margin: 0, ...bodyMd }}>{W.sentBody}</p>
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: u(T.bodyLg), lineHeight: 1.5,
+              overflowWrap: 'anywhere',
+            }}>{s.calEmail}</span>
+            <span onClick={onAgain} style={{
+              ...pill(false), alignSelf: 'flex-start', background: backBg, color: backFg,
+              boxShadow: hard(s, s.retro ? '#D8A227' : s.pillBg, sh, sh), cursor: 'pointer',
+            }}>
+              {disc(backFg, s.retro ? '#D8A227' : backBg, ArrowLeft)}
+              {W.again}
+            </span>
+          </>
+        ) : (
+          <>
+            {stepper}
+            <p style={{
+              margin: 0, textAlign: 'center', fontFamily: s.display, fontSize: u(T.title),
+              lineHeight: 1.1, letterSpacing: s.dls, color: s.ac,
+            }}>{wCur.title}</p>
+            <p style={{
+              margin: 0, textAlign: 'center', fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
+            }}>{wCur.line}</p>
+            {stepBody}
+            {buttons}
+            {wPrompt && (
+              <span style={{
+                fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, textAlign: 'center',
+              }}>{W.prompt}</span>
+            )}
+          </>
+        )}
       </div>
     )
 
@@ -15020,15 +15126,15 @@ function Calendar({ s }) {
               label and a cream disc carrying a rust arrow, and no offset block.
               What differs is the label: the frame's own Send Enquiry, the
               wizard's last-step label (JP-052 — this was `cta`'s "Check a
-              date" while the column read as a slot list), and `calBookTo` is
-              `bookTo` minus `calendar`
-              itself — with neither a form nor a pricing section on the page it
-              resolves to nothing and the pill goes back to being a span.
+              date" while the column read as a slot list), and its link is the
+              wizard's own mailto (JP-053 — it was `calBookTo`, a scroll that
+              lost every answer): with no form section on the page, or an
+              address the form refuses, the pill goes back to being a span.
               The frame sets that label in Display/List sentence case where
               BookPill's `labelStyle` sets every pill in the label face,
               upper-cased; `size` reaches the size and not the face, so the diff
               is layout 3's, inherited on the identical call rather than new. */}
-          <BookPill s={s} to={s.calBookTo} label={W.send} glyph="arrow"
+          <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} glyph="arrow"
                     disc={desk ? 38 : 46} size={u(T.list)} shadow="transparent"
                     {...(s.mob ? { full: true } : null)}
                     {...(s.retro ? { bg: s.ac, fg: '#FBF6EA', discFg: s.ac } : null)}
