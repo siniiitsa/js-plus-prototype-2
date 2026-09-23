@@ -1065,6 +1065,13 @@ Learned on the booking calendar (section 10):
   Figma tree. **That is the cheapest check in the pass and it turned a decline into a fit** —
   and it generalises: the seeds were written in the row shape a repeater edits *and* with a
   sentence saying what each column is for, so they are a content dictionary as well as data.
+  **Reversed by JP-052** (`plans/lime/layout-4-qa-fixes.md`, user call, 2026-09-23). The first
+  reading was the right one. Step 2 of the wizard fitted beside this card asks exactly
+  GUESTS / SET LENGTH / BUDGET / SOUND, so the dark card is the wizard's answers and the rows are
+  the date asked about and a Pricing package. The slot reading printed dates and prices no field
+  edited, all in 2025, and so all dead on a published page. The lesson that survives: grep the
+  seeds, **and also grep the neighbouring controls' own labels**. A frame's words that match
+  another control's inputs on the same block beat a seed comment written for a different layout.
 - **Two adjacent frames that are structurally identical are one repeating element, whatever
   their copy says.** The date row and the package row disagree about everything visible —
   one holds a date and a time, the other a name and a link — and agree about every number:

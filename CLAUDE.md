@@ -69,11 +69,13 @@ because each reads the per-section `--ac` / `--acFg` custom properties.
 Every section is projected through **`sectionVm()`** into a flat, fully-resolved view-model
 before rendering, so `EncoreSection` does zero colour maths. `sectionVm` takes `themeIdx` as an
 argument rather than reading state, so previews can render a theme that is not the active one.
-The **enquiry form is the one exception to "fully-resolved"**: `vm.formMailto` and `vm.formCheck`
-are *closures*, not values, because their inputs are the visitor's keystrokes and `sectionVm` never
-sees those. Everything else about them — the address, the labels, the casing — is still bound in
-`sectionVm`, so `EncoreSection` hands over indexes and raw strings and composes nothing. They are
-the only function-valued keys on the whole view-model.
+The **enquiry form and the calendar's layout-4 wizard are the exceptions to "fully-resolved"**:
+the form's `vm.formMailto` and `vm.formCheck`, and the wizard's `vm.calWizard.dateOf` (JP-052), are
+*closures*, not values, because their inputs are the visitor's keystrokes and `sectionVm` never
+sees those. Everything else about them — the address, the labels, the casing, the date parse and
+the booked and past tests — is still bound in `sectionVm`, so `EncoreSection` hands over indexes
+and raw strings and composes nothing. They are the only function-valued keys on the whole
+view-model.
 
 ## Navigation and state
 
@@ -214,7 +216,7 @@ mutated through a single `patch()` helper.
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
   which row is featured),
   the **booking calendar's month arrows, its day picking, its foot pill and — in layout 4 — its
-  enquiry wizard** (below),
+  enquiry wizard and the summary column that follows it, *Package ›* included** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
   the **testimonials carousel's arrows** (below — layout 2 pages the same `cur` from a rail of
   initial tiles instead, layout 4 pages it from a pair of arrow discs in its head, and layout 3
@@ -572,8 +574,8 @@ mutated through a single `patch()` helper.
   beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
   strike** (except Lime's layout 2 — and Grunge's, which widens its block — whose past rows keep full ink and only lose the handler —
-  its seeded slots have no editor and are all past; user call, 2026-09-17 — and Lime's layout
-  4, whose rows do the same and whose card still features a past cue, 2×2 and all; 2026-09-18) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
+  user call, 2026-09-17, made while its seeded slots had no editor and were all past; Lime's
+  layout-4 exception went with JP-052) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
   past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
   (`max(open, today)`, `calStart()` in `data.js`, which `BookedField` shares so the artist
   can block every day a visitor can pick; it fades the days before today and takes no click on
@@ -597,9 +599,13 @@ mutated through a single `patch()` helper.
   The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
   none of this.
   **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**: layout 2 is a
-  bold list of named slots — `CAL_SLOTS`, seeded in `data.js` in the row shape a repeater
-  would edit and resolved by the `songs` rule onto `vm.calSlots`, with no editor beside it
-  where `TIERS` has one — and it has no month, so no arrows and no `mi`. Everything else it shares whole:
+  bold list of named slots — `c.slots`, maintained by `SlotsField` (JP-052) and resolved by
+  the `songs` rule onto `vm.calSlots`. Its seed is **not four dates**: `CAL_SLOTS` is four day
+  offsets (`slotSeed()` in `data.js`) from `open` on the canvas and in the editor — which
+  reproduces the frame's Jun 12 / 14 / 20 / Jul 05 from `CAL_OPEN` — and from
+  `max(open, today)` by day on the published page, layout 1's F20 diff, so a published page is
+  never all past; `slotsVal` writes the canvas's dates out on the first edit. It has no month,
+  so no arrows and no `mi`. Everything else it shares whole:
   `sel` is the same ISO date, `open` cues the same day (slot one *is* `CAL_OPEN`, so the
   seeded page opens on the frame's picture), `booked` kills a row there as it strikes a cell
   here (under Lime and Grunge the row is dimmed to .38 with no strike, the same state their cells take), the foot prints the slot's own short line — `vm.calSlots[].line`, "Thursday evening
@@ -608,33 +614,41 @@ mutated through a single `patch()` helper.
   "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
-  reach it at all. And the slot list is the one list-shaped content with **no** editor, so
-  `FIELDS.calendar` still names no `slots`.
-  **Layout 4 is that same slot list a second time, stacked rather than tabled**, and it is the
-  third design to share this section's seam whole rather than grow one: the same `want` /
-  `hit` / `cur`, the same `open` cueing the same slot, the same `booked` killing a row, and
-  `mi` reaching nothing again. What it adds is a **featured** card — the events map's layout-2
-  rule, so the rows are the list *minus* the slot on show and `sel` is therefore **picked, not
-  toggled**, a featured card always holding one. That card is the composed enquiry line taken
-  apart into a 2×2 of the slot's date, its `kind`, its `price` and the section's `time` (a new
-  `vm.calTime`, since this design draws no line at all), over the artist's name, `location`
-  and `image` — which gives `image` a **second** seat, the polaroid stack having been its only
-  one. A blocked cue features nothing and the card prints `calPrompt` instead, which is also
-  the emptied-list state. Its foot is `BookPill` at layout 3's own numbers, but labelled
-  `calCta`, so `cta` is a field again where layout 3 spends the pill on the picked date; and it is
+  reach it at all.
+  **Layout 4's right-hand column is the enquiry wizard's summary** (JP-052, user call,
+  2026-09-23; it was fitted as layout 2's slot list stacked, which printed dates and prices no
+  field edited — Retro L4 section 10's reading, now reversed). The frame's dark card is step 1's
+  type over step 2's four answers — GUESTS / SET LENGTH / BUDGET / SOUND, the very boxes step 2
+  asks — then a date card, a package card and Send Enquiry. So the card's head line is the
+  picked type (the artist's name when the types are emptied) over `location`, beside `image`,
+  and its cells are `vm.calWizard.steps[1].boxes`: the **canvas prints each box's bare `eg`**
+  (the frame's picture of a filled-in wizard), and live an unanswered cell prints its `ph`,
+  "e.g." and all, at .45 — a named canvas/live diff, so nothing published reads as a quote the
+  artist never gave. The date card is `vm.calWizard.dateOf(typed)`, a closure (above): nothing
+  typed shows the section's cue (`vm.calPick`, so *Opens on* moves it and a past or booked
+  `open` shows `calPrompt`), a typed date is parsed day-first (`parseDayFirst()`), and a booked
+  or past one is **refused** there with the date dimmed; `vm.calTime` stands at its end. The
+  package card is the **Pricing section's** packages, read across sections through
+  `sectionVm({ tiers })` (`pageTiers(sections)` in `data.js`, the `identity` precedent; the
+  harness takes `&tiers=<json>` or `&tiers=none`) onto `vm.calPackages`: name over price, and
+  *Package ›* (`wPkg`, appended after `wVals`) steps and wraps, live only; at one package the
+  chevron and the handler go, and with no pricing section the card is not drawn. `sel` and
+  `mi` reach nothing in this design, `booked` reaches it only through a typed date, and `cta`
+  not at all. Its foot is `BookPill` at layout 3's own numbers labelled `vm.calWizard.send`, on
+  the same `calBookTo` as the wizard's last step; and it is
   the one calendar layout that paints a **sheet** — the Figma wrapper's tan panel, which
   carries the page's own "Book Us" head (`CAL_HEADING_4`) and would otherwise leave that head on
   a ground no master draws. That panel also holds the page's **enquiry wizard** (QA,
   2026-09-15) — the frame's "C · Multi-step wizard", beside the stack at desktop and above it
   narrow, since `form` took the editorial band and the wizard has no section of its own. Its
-  hooks (`wStep`, `wType`, `wVals`) are appended after `sel`; only step 1 is designed, so
+  hooks (`wStep`, `wType`, `wVals`, `wPkg`) are appended after `sel`; only step 1 is designed, so
   steps 2 and 3 take the summary card's own labels and a name and email, every string resolved
   onto `vm.calWizard`; its inputs exist only when `s.live`, there is no `<form>`, and the last
   step's Send Enquiry is a fragment link to `calBookTo` — the section has no address to mail.
-  Its card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
+  Its summary card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
   token, and `deep` is the page ground on two palettes and collides with the panel on the same
   two. The cost, named: on Grunge `tx` and `paper` are one value, so the card and the
-  rows share a fill and only the rows' hairline parts them. Lime's own frame restores the
+  date and package rows share a fill and only the rows' hairline parts them. Lime's own frame restores the
   three-level stack — `s.box1` rows under the `s.tx` card on a `s.box2` panel — so under Lime
   the cost does not arise.
 - **The enquiry form fills in and sends, in the published tab only.** It was the last §10.2
@@ -864,9 +878,11 @@ mutated through a single `patch()` helper.
   would upper-case the footer's pill on Pop (Grunge cases `'title'` since its session 0). The footer keeps **no local state**:
   every link is an `<a>` whose href is `navHref()` or `extLink()`, so nothing here needs the
   `useState` the eight sections above it take.
-- **Seven list-shaped contents have a structured editor: the repertoire's songs, the media
+- **Eight list-shaped contents have a structured editor: the repertoire's songs, the media
   player's tracks, the events map's gigs, the pricing section's packages, the enquiry form's
-  boxes, the testimonials' reviews and the footer's links** — and the booking
+  boxes, the testimonials' reviews, the footer's links and the booking calendar's layout-2
+  slots** (`SlotsField`, JP-052: `{ date, kind, price }`, `SLOT_KEYS`, `slotsVal`, the gigs'
+  plain shape but for a seed dated from `open` — above) — and the booking
   calendar's `booked` dates are an **eighth structured field that is not a list**: `BookedField`
   is a month to click, not a repeater, because one row per blocked date is the wrong shape for a
   June with eight of them, and it obeys the same seed-resolver rule as the seven below. `c.songs` is an array of `{ title, artist, tags }`
@@ -923,18 +939,18 @@ mutated through a single `patch()` helper.
   load-bearing the way `FIELDS.form.fields`' is: `sectionVm` halves the list into the two
   columns. The one other repeated field is a
   delimited textarea, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
-  numbers 01 / 02 / 03. All seven follow
+  numbers 01 / 02 / 03. All eight follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package
   (over `TIER_KEYS`, all five) before the hue walk and `n`, so on both surfaces the page is the
   page without it — the canvas included, JP-045's rule. `TiersField` keeps the row, the artist
   being mid-edit, and says "Empty packages aren't shown." under it. The test is every key and
-  never the ones a layout prints, so it cannot discard a word the artist typed. **All seven
-  repeaters take it** (JP-051 and its sweep), each over a `*_KEYS` beside its seed — `SONG_KEYS`,
-  `TRACK_KEYS` (art and sound included), `GIG_KEYS`, `TIER_KEYS`, `QUOTE_KEYS`, and two that
+  never the ones a layout prints, so it cannot discard a word the artist typed. **All eight
+  repeaters take it** (JP-051 and its sweep, and `SlotsField` since JP-052), each over a `*_KEYS` beside its seed — `SONG_KEYS`,
+  `TRACK_KEYS` (art and sound included), `GIG_KEYS`, `TIER_KEYS`, `QUOTE_KEYS`, `SLOT_KEYS`, and two that
   leave a select out because a select always holds a value: `FORM_FIELD_KEYS` (label and
   placeholder, not `kind`) and `LINK_KEYS` (label and url, not `to`). Each list is filtered
   *before* anything indexes it (pins, hues, fan seats, marks, the footer's halving,
@@ -942,7 +958,7 @@ mutated through a single `patch()` helper.
   under a blank row, and the repertoire's song-count heading counts the filtered list in both
   places. The one exception is the form's guarded email row, above. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`) has to
+  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES` and `FOOTER_LINKS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.

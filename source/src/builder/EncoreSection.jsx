@@ -13022,6 +13022,10 @@ function Calendar({ s }) {
   const [wStep, setWStep] = useState(0)
   const [wType, setWType] = useState(0)
   const [wVals, setWVals] = useState({})
+  // The package the summary column names (JP-052), an index into
+  // `s.calPackages` that *Package ›* steps and wraps. Appended, like the three
+  // above, and read live only — the canvas names the first package.
+  const [wPkg, setWPkg] = useState(0)
   // Whether a day or a slot is shut to the visitor: blocked by the artist, or
   // — live only — already past. One test, so the two behave identically
   // everywhere a pick is resolved or a handler given; only `booked` is struck
@@ -14290,35 +14294,27 @@ function Calendar({ s }) {
   // designed, so steps 2 and 3 reuse its parts over content the page itself
   // names: the summary card's GUESTS / SET LENGTH / BUDGET / SOUND as Details,
   // a name and an email as Contact. The last Next Step is the frame's own "Send
-  // Enquiry" pill's label and scrolls to `calBookTo`; the section has no address
-  // to mail, so the answers are the visitor's notes on the way to the form.
+  // Enquiry" pill's label and scrolls to `calBookTo`, as does the column's foot
+  // pill under the same label; the section has no address to mail, so the
+  // answers are the visitor's notes on the way to the form.
   // No `<form>`, the enquiry form's rule: Enter in a box must post nowhere.
   //
-  // **What this design is, and why it is the slot list again.** The Figma page
-  // files this master under the booking calendar and draws it as the right half
-  // of a *Book Us* block whose left half is an enquiry wizard — so the plan's
-  // open question 5 read the dark card's GUESTS / SET LENGTH / BUDGET / SOUND
-  // as the wizard's collected answers and its "Live band — full / 5-piece + DJ"
-  // row as a pricing package, and asked whether this section could honestly
-  // draw any of it. It can, and CAL_SLOTS' own comment is the discriminator:
-  // `kind` is *"what the artist plays that night"*, which is exactly what
-  // "Live band — full / 5-piece + DJ" is. The two cream rows are one repeating
-  // element (identical frames, 81 tall, same inner geometry), and the section
-  // already owns a list of that shape — so this is layout 2's slot table again,
-  // composed as a stack: the card **features** the slot the visitor is on and
-  // the rows are the list *minus* that slot, which is the events map's layout-2
-  // rule taken whole, `feat`'s fallback and all. That also means `sel` is
-  // **picked, not toggled** here: a featured card always holds one and there is
-  // nothing to toggle back to.
-  //
-  // The seam is shared rather than grown, for the third time in this section:
-  // `want` / `hit` / `cur` are layout 2's four lines unchanged, `open` cues the
-  // same slot (slot one *is* CAL_OPEN, so the seeded page opens on the frame's
-  // picture), `booked` kills a row here as it strikes one there, and `mi`
-  // reaches nothing — this design has no month, layout 2's and layout 3's case.
-  // A blocked cue cues nothing and the card prints `calPrompt` rather than
-  // sliding the feature to the next slot: layout 1's rule, and it doubles as
-  // the emptied-list state, since `cur` cannot match a list with nothing in it.
+  // **What this design is: the wizard's summary** (JP-052, user call,
+  // 2026-09-23). Retro's section-10 fit read the column as layout 2's slot list
+  // stacked — a featured slot over the rest, off `CAL_SLOTS`' own "what the
+  // artist plays that night" — and that printed dates and prices no field
+  // edited. The frame's first reading was the right one: the dark card is
+  // step 1's type over step 2's four answers (GUESTS / SET LENGTH / BUDGET /
+  // SOUND, the very boxes step 2 asks), the first cream row is the date the
+  // visitor asked about, and the second is a package — the Pricing section's,
+  // read across sections through `s.calPackages`. So the column follows the
+  // wizard as it is filled: the canvas prints each box's bare example (the
+  // frame's picture of a filled-in wizard), live an unanswered cell prints its
+  // placeholder at .45, the date card reads the typed date through the vm's
+  // `dateOf` closure (the section's cue until one is typed, and a booked or
+  // past date refused there), and *Package ›* steps through the packages.
+  // `sel` and `mi` reach nothing in this design; `open` reaches it only as the
+  // date card's cue, and `booked` only through a typed date.
   //
   // Every box in all three masters is its component's own number — the 16
   // between blocks, the 24 padding, the 30 corner, the 1 hairline, the 48 disc,
@@ -14388,59 +14384,63 @@ function Calendar({ s }) {
     const cardInk = s.retro ? panel : s.bg
     const cardHi = s.bg
 
-    // The pick, exactly as layouts 1 and 2 resolve it. A booked slot is never
-    // featured: publishing again re-renders the open tab, so the artist can
-    // block the date a visitor was on.
-    const want = (s.live && sel) || s.calPick
-    const hit = want ? s.calSlots.find((sl) => sl.iso && sl.iso === want) : null
-    const cur = hit && !blocked(hit) ? hit.iso : ''
-    const feat = cur ? hit : null
+    // ── The summary column (JP-052) ───────────────────────────────────────
+    // The frame's right-hand column is the wizard's summary, not a slot list
+    // (964:72844, Lime's 964:72939): step 1's type over step 2's four answers,
+    // then the date and the package the enquiry is for, then Send Enquiry.
+    // Retro's section-10 fit read it as `CAL_SLOTS`, which printed dates and
+    // prices no field edited. Everything here is content and is shared whole
+    // with the Lime block below; the two only paint it.
+    const W = s.calWizard
+    const nTypes = s.calTypes.length
+    const typeAt = s.live ? Math.min(Math.max(wType, 0), Math.max(nTypes - 1, 0)) : 0
+    // The head line: the event type picked in step 1 (the canvas's is the
+    // first), or the artist's name when the artist has emptied the types.
+    const sumHead = nTypes ? s.calTypes[typeAt] : s.brand
+    // Step 2's boxes are the frame's four cells. The canvas prints each box's
+    // bare example — the frame is a picture of a filled-in wizard — and live,
+    // an unanswered cell prints its placeholder at `::placeholder`'s strength,
+    // "e.g." and all, so no value on the published page reads as a quote.
+    const sumCells = W.steps[1].boxes.map((b, i) => {
+      const v = s.live ? String(wVals[b.key] ?? '').trim() : ''
+      return { key: b.key, label: b.label, value: s.live ? v || b.ph : b.eg, ph: s.live && !v, big: i === 0 }
+    })
+    // The date card, resolved by the vm's closure off what the visitor typed
+    // in step 1 (nothing on the canvas, so the section's own cue).
+    const dc = W.dateOf(s.live ? wVals.date : '')
+    // The package card: the Pricing section's packages. *Package ›* steps and
+    // wraps, live only, and is not a control at one package; with none the
+    // card is not drawn. Clamped by modulo, since a republish can shorten the
+    // list under the visitor.
+    const nPkg = s.calPackages.length
+    const pkgAt = s.live && nPkg ? ((wPkg % nPkg) + nPkg) % nPkg : 0
+    const pkg = nPkg ? s.calPackages[pkgAt] : null
+    const onPkg = s.live && nPkg > 1 ? () => setWPkg(pkgAt + 1) : undefined
 
     // One stat cell. The frame styles the **first** label in Display/Title 24
     // and the other three in Body/Chip 12 Bold at −6% — present in all three
-    // masters, so it is the design and not an authoring slip, and what it makes
-    // is a headline fact with three footnotes. The date takes it: the card is
-    // the enquiry line (`Enquiry for Thursday, June 12 at 9:00pm`) taken apart,
-    // and the date is the half of it the visitor chose.
-    //
-    // A cell whose value is empty is not rendered, the Soundcloud rule, so the
-    // alignment is read off the **rendered** index — the pricing deck's reading
-    // of its own tilt: which side a cell hangs from is decoration, and an odd
-    // count trails one half-width cell.
-    const statCell = (label, value, big) => (value ? { label, value, big } : null)
-    const stats = feat ? [
-      statCell(feat.mark, feat.day, true),
-      statCell('SET', feat.kind),
-      statCell('PRICE', feat.price),
-      statCell('TIME', s.calTime),
-    ].filter(Boolean) : []
-
+    // masters, so it is the design: a headline fact with three footnotes.
+    // GUESTS takes it, as it does in the frame.
     const summary = (
       <div style={col(u(20), {
         background: card, borderRadius: u(30), padding: u(24),
       })}>
-        {/* The frame's own head row, which is layout 2's head row a second
-            time: the artist's name in Body/LG over their location in Body/MD,
-            with the section photo as a 48px disc at the other end. `location`
-            is read the way layout 1's polaroid stamp reads it — through the
-            section's own content, which carries no `location` key, so it is the
-            global default rather than a field this panel can edit. An inherited
-            limit, not a new one. */}
+        {/* The frame's head row: the event over where the artist is based, in
+            Body/LG over Body/MD, with the section photo as a 48px disc at the
+            other end. `location` is the header's, through `identity`. */}
         <div style={row(u(14), { justifyContent: 'space-between' })}>
           <div style={col(u(4))}>
             <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: cardInk }}>
-              {s.brand}
+              {sumHead}
             </span>
             <span style={{ fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: cardInk }}>
               {s.location}
             </span>
           </div>
-          {/* `image` reaches a second layout for the first time since it was
-              fitted — the polaroid stack was its only seat. The disc's ground
-              and its initials are a guaranteed pair rather than the frame's
-              single `sem/box/2`: Photo's placeholder draws `s.soft` over
-              whatever is behind it and its initials in `muted`, both of which
-              vanish on a near-black card (Pager's `idle` precedent). */}
+          {/* The disc's ground and its initials are a guaranteed pair rather
+              than the frame's single `sem/box/2`: Photo's placeholder draws
+              `s.soft` and `muted`, both of which vanish on a near-black card
+              (Pager's `idle` precedent). */}
           <div style={{
             width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
             overflow: 'hidden', background: cardInk,
@@ -14448,107 +14448,85 @@ function Calendar({ s }) {
             <Photo s={s} initialsSize={Math.round(18 * z)} ink={card} />
           </div>
         </div>
-        {stats.length ? (
-          // Two rows of two in the frame, each cell filling half and the second
-          // hanging off the right edge. One grid carries both, which is also
-          // what lets a dropped cell leave a half-width hole rather than
-          // reflowing the pair.
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-            gap: u(12),
-          }}>
-            {stats.map((st, i) => {
-              const right = i % 2 === 1
-              return (
-                <div key={st.label} style={col(u(6), {
-                  alignItems: right ? 'flex-end' : 'flex-start',
-                  textAlign: right ? 'right' : 'left',
-                })}>
-                  <span style={st.big ? {
-                    fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
-                    letterSpacing: s.dls, color: cardHi,
-                  } : {
-                    fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip),
-                    lineHeight: 1, letterSpacing: '-0.06em', color: cardInk,
-                  }}>{st.label}</span>
-                  <span style={{
-                    fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: cardInk,
-                  }}>{st.value}</span>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          /* Nothing cued, the cue blocked, or no slots at all — one message
-             where the frame draws four stats, the pricing deck's rule. The card
-             itself stays: it is the block the stack is built round, and a hole
-             where it stands is not one of this design's states. */
-          <span style={{
-            fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: cardInk,
-          }}>{s.calPrompt}</span>
-        )}
+        {/* Two rows of two, each cell filling half and the second hanging off
+            the right edge; one grid carries both. */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: u(12),
+        }}>
+          {sumCells.map((st, i) => {
+            const right = i % 2 === 1
+            return (
+              <div key={st.key} style={col(u(6), {
+                alignItems: right ? 'flex-end' : 'flex-start',
+                textAlign: right ? 'right' : 'left', minWidth: 0,
+              })}>
+                {/* The frame sets both kinds of label in capitals — the
+                    wizard's own boxes label in small caps the same way. */}
+                <span style={st.big ? {
+                  fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
+                  letterSpacing: s.dls, color: cardHi, textTransform: 'uppercase',
+                } : {
+                  fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip),
+                  lineHeight: 1, letterSpacing: '-0.06em', color: cardInk, textTransform: 'uppercase',
+                }}>{st.label}</span>
+                <span style={{
+                  fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: cardInk,
+                  opacity: st.ph ? 0.45 : undefined, overflowWrap: 'anywhere',
+                }}>{st.value}</span>
+              </div>
+            )
+          })}
+        </div>
       </div>
     )
 
-    // A row is one slot the card is not featuring: its date in Display/Title,
-    // what the artist plays that night under it, and what it starts from at the
-    // other end. Every value is rendered or not rather than printed blank, the
-    // testimonials' rule — an emptied `kind` or `price` costs its own line and
-    // nothing else. The border is `border/hairline` 1 and not `s.bw`: the
-    // frame's stroke here is a hairline where layout 3's outline is 2, and it
-    // is load-bearing on three palettes, whose `paper` sits at 1.2–1.3 against
-    // their own panel. Its `strokeAlign` is INSIDE, so the padding gives the
-    // pixel back — the repertoire's `calc(padding − border)`, and without it a
-    // row measures 68.6 against the frame's own 81 × 0.82 = 66.4. The dark card
-    // above carries a stroke too, in its own fill colour, and that one is not
-    // transcribed: it draws nothing at any width.
-    const slotRow = (sl, i) => {
-      const onClick = s.live && sl.iso && !blocked(sl) ? () => setSel(sl.iso) : undefined
-      return (
-        // Keyed on the date, which is what the row *is*, with the index behind
-        // it for the rows whose date does not parse — they keep their place and
-        // simply do not pick (§4.3a), and two of them would otherwise share a
-        // key. The featured slot leaves the list rather than being marked in
-        // it, so a positional key alone would hand one row's node to another.
-        <div key={sl.iso || `row${i}`} onClick={onClick} style={row(u(14), {
-          background: sheet, borderRadius: u(30),
-          padding: `calc(${u(18)} - 1px) calc(${u(24)} - 1px)`,
-          border: `1px solid ${sheetInk}`, justifyContent: 'space-between',
-          color: blocked(sl) ? gone : sheetInk, cursor: onClick ? 'pointer' : undefined,
-        })}>
-          <span style={col(u(2))}>
+    // The date card and the package card are one repeating element in the
+    // frame — identical shells, the same 81 height, the same display-over-sub
+    // left block — so one builder draws both: a big line over a small one,
+    // with a right-hand end. Every part is rendered or not rather than
+    // printed blank. The border is `border/hairline` 1 and not `s.bw`, and its
+    // `strokeAlign` is INSIDE, so the padding gives the pixel back (the
+    // repertoire's `calc(padding − border)`).
+    const infoRow = ({ key, big, sub, end, dim, onClick }) => (
+      <div key={key} onClick={onClick} style={row(u(14), {
+        background: sheet, borderRadius: u(30),
+        padding: `calc(${u(18)} - 1px) calc(${u(24)} - 1px)`,
+        border: `1px solid ${sheetInk}`, justifyContent: 'space-between',
+        color: sheetInk, cursor: onClick ? 'pointer' : undefined,
+      })}>
+        <span style={col(u(2), { minWidth: 0 })}>
+          {big && (
             <span style={{
               fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
-              letterSpacing: s.dls,
-              textDecoration: sl.booked ? 'line-through' : undefined,
-            }}>{sl.mark}</span>
-            {sl.kind && (
-              <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }}>
-                {sl.kind}
-              </span>
-            )}
-          </span>
-          {sl.price && (
-            <span style={{
-              fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
-              flex: 'none', textAlign: 'right',
-            }}>{sl.price}</span>
+              letterSpacing: s.dls, color: dim ? gone : undefined,
+            }}>{big}</span>
           )}
-        </div>
-      )
-    }
+          {sub && (
+            <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }}>{sub}</span>
+          )}
+        </span>
+        {end && (
+          <span style={{
+            fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
+            flex: 'none', textAlign: 'right',
+          }}>{end}</span>
+        )}
+      </div>
+    )
+    const dateRow = infoRow({ key: 'date', big: dc.mark, sub: dc.sub, end: dc.time, dim: dc.refused })
+    const pkgRow = pkg && infoRow({
+      key: 'pkg', big: pkg.name, sub: pkg.price, end: nPkg > 1 ? W.pkg : '', onClick: onPkg,
+    })
 
     // ── The wizard ───────────────────────────────────────────────────────
     // The card is `sem/box/1` on a `stroke/1` hairline at radius 30, padded
     // 40/48 at 1440 and 30 at both narrow masters. Its five parts are a
     // `justify-between` column whose residue is 18.75 at 1440 and 20 at 768 and
     // 390, so that is the minimum gap and a taller stack beside it spreads them.
-    const W = s.calWizard
     const nSteps = W.steps.length
     const wAt = s.live ? Math.min(Math.max(wStep, 0), nSteps - 1) : 0
     const wCur = W.steps[wAt]
-    const nTypes = s.calTypes.length
-    const typeAt = s.live ? Math.min(Math.max(wType, 0), Math.max(nTypes - 1, 0)) : 0
     const hair = s.retro ? '#111111' : sheetInk
     const chipType = {
       fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
@@ -14689,8 +14667,9 @@ function Calendar({ s }) {
     // Lime's layout-4 Book Us block (calendar 964:72939 · 971:5626 · 977:9200,
     // wizard 964:72938 · 971:5625 · 977:9199, in Frame 324 964:72928 ·
     // 971:5615 · 977:9189): Retro's twin's tree node for node, in Lime's
-    // dress. It sits here, after the whole seam — `want` / `hit` / `cur` /
-    // `feat`, `stats`, and the wizard's `wAt` / `wCur` / `typeAt` / `last` /
+    // dress. It sits here, after the whole seam — the summary column's
+    // `sumHead` / `sumCells` / `dc` / `pkg` / `onPkg` (JP-052), and the
+    // wizard's `wAt` / `wCur` / `typeAt` / `last` /
     // `onBack` / `onNext` / `sendLink` / `NextTag` — because every one of
     // those is content, not paint, and is shared whole; `panelPad`, the 60 / 30
     // corner and the 50 / 20 gaps are Lime's Frame 324 to the number, so they
@@ -14735,24 +14714,6 @@ function Calendar({ s }) {
     // too (its first group stands at x −32), so Retro's clip-about-the-centre
     // mechanism is kept. No node carries an effect at any width.
     if (s.lime) {
-      // Past (`dead`) is not blocked here, layout 2's Lime rule (user call,
-      // 2026-09-18): the seeded slots have no editor and are all past on a
-      // published page, so the shared seam would feature nothing and dim every
-      // row — the card losing the frame's whole 2×2. Only a *booked* slot is
-      // refused the card and dimmed; a past one is featured and drawn at full
-      // ink, and stays handlerless (the click test below still reads
-      // `blocked`), so a visitor cannot pick one.
-      // `calCue` is `calPick` with the past let through (the vm's `calPick`
-      // is '' for a past cue, so `hit` above would be null).
-      const limeWant = (s.live && sel) || s.calCue
-      const limeHit = limeWant ? s.calSlots.find((sl) => sl.iso && sl.iso === limeWant) : null
-      const limeCur = limeHit && !limeHit.booked ? limeHit : null
-      const limeStats = limeCur ? [
-        statCell(limeCur.mark, limeCur.day, true),
-        statCell('SET', limeCur.kind),
-        statCell('PRICE', limeCur.price),
-        statCell('TIME', s.calTime),
-      ].filter(Boolean) : []
       const hair = `inset 0 0 0 1px ${s.stroke1}`
       const titleSize = u(desk ? 36 : s.mob ? 26 : 28)
       const body = (size, lh, extra) => ({
@@ -14767,13 +14728,15 @@ function Calendar({ s }) {
       }
       const smallCaps = { ...chipType, textTransform: 'uppercase' }
 
+      // The summary card, the date card and the package card paint the
+      // shared seam's `sumHead` / `sumCells` / `dc` / `pkg` (JP-052).
       const summary = (
         <div style={col(u(20), {
           background: s.tx, color: s.box2, borderRadius: u(50), padding: `${u(24)} ${u(34)}`,
         })}>
           <div style={row(u(14), { justifyContent: 'space-between' })}>
             <div style={col(u(4))}>
-              <span style={body(s.bodyLg, 1.5)}>{s.brand}</span>
+              <span style={body(s.bodyLg, 1.5)}>{sumHead}</span>
               <span style={body(s.bodyMd, 1.5)}>{s.location}</span>
             </div>
             <div style={{
@@ -14783,48 +14746,43 @@ function Calendar({ s }) {
               <Photo s={s} initialsSize={Math.round(18 * z)} ink={s.tx} />
             </div>
           </div>
-          {limeStats.length ? (
-            <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: u(12),
-            }}>
-              {limeStats.map((st, i) => {
-                const right = i % 2 === 1
-                return (
-                  <div key={st.label} style={col(u(6), {
-                    alignItems: right ? 'flex-end' : 'flex-start',
-                    textAlign: right ? 'right' : 'left',
-                  })}>
-                    <span style={st.big ? disp(titleSize, 1.1, { color: s.bg }) : chipType}>{st.label}</span>
-                    <span style={body(s.bodyLg, 1.5)}>{st.value}</span>
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <span style={body(s.bodyLg, 1.5)}>{s.calPrompt}</span>
-          )}
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: u(12),
+          }}>
+            {sumCells.map((st, i) => {
+              const right = i % 2 === 1
+              return (
+                <div key={st.key} style={col(u(6), {
+                  alignItems: right ? 'flex-end' : 'flex-start',
+                  textAlign: right ? 'right' : 'left', minWidth: 0,
+                })}>
+                  <span style={st.big ? disp(titleSize, 1.1, { color: s.bg, textTransform: 'uppercase' }) : smallCaps}>{st.label}</span>
+                  <span style={body(s.bodyLg, 1.5, {
+                    opacity: st.ph ? 0.45 : undefined, overflowWrap: 'anywhere',
+                  })}>{st.value}</span>
+                </div>
+              )
+            })}
+          </div>
         </div>
       )
 
-      const slotRow = (sl, i) => {
-        const onClick = s.live && sl.iso && !blocked(sl) ? () => setSel(sl.iso) : undefined
-        const dim = sl.booked ? { opacity: 0.38 } : null
-        return (
-          <div key={sl.iso || `row${i}`} onClick={onClick} style={row(u(14), {
-            background: s.box1, color: s.tx, borderRadius: u(50), boxShadow: hair,
-            padding: `${u(18)} ${u(34)}`, justifyContent: 'space-between',
-            cursor: onClick ? 'pointer' : undefined,
-          })}>
-            <span style={col(u(2), dim)}>
-              <span style={disp(titleSize, 1.1)}>{sl.mark}</span>
-              {sl.kind && <span style={body(s.bodySm, 1.4)}>{sl.kind}</span>}
-            </span>
-            {sl.price && (
-              <span style={body(s.bodyLg, 1.5, { flex: 'none', textAlign: 'right', ...dim })}>{sl.price}</span>
-            )}
-          </div>
-        )
-      }
+      // A refused date takes Lime's blocked state, its parts at .38.
+      const infoRow = ({ key, big, sub, end, dim, onClick }) => (
+        <div key={key} onClick={onClick} style={row(u(14), {
+          background: s.box1, color: s.tx, borderRadius: u(50), boxShadow: hair,
+          padding: `${u(18)} ${u(34)}`, justifyContent: 'space-between',
+          cursor: onClick ? 'pointer' : undefined,
+        })}>
+          <span style={col(u(2), { minWidth: 0 })}>
+            {big && <span style={disp(titleSize, 1.1, dim ? { opacity: 0.38 } : null)}>{big}</span>}
+            {sub && <span style={body(s.bodySm, 1.4)}>{sub}</span>}
+          </span>
+          {end && (
+            <span style={body(s.bodyLg, 1.5, { flex: 'none', textAlign: 'right' })}>{end}</span>
+          )}
+        </div>
+      )
 
       const field = ({ key, label, ph }) => (
         <div key={key} style={col(u(6), { alignItems: 'stretch', minWidth: 0 })}>
@@ -14974,8 +14932,11 @@ function Calendar({ s }) {
             {wizard}
             <div style={col(u(16))}>
               {summary}
-              {s.calSlots.filter((sl) => !limeCur || sl !== limeCur).map(slotRow)}
-              <BookPill s={s} to={s.calBookTo} label={s.calCta} fg={s.box1} full={s.mob}
+              {infoRow({ key: 'date', big: dc.mark, sub: dc.sub, end: dc.time, dim: dc.refused })}
+              {pkg && infoRow({
+                key: 'pkg', big: pkg.name, sub: pkg.price, end: nPkg > 1 ? W.pkg : '', onClick: onPkg,
+              })}
+              <BookPill s={s} to={s.calBookTo} label={W.send} fg={s.box1} full={s.mob}
                         style={{ width: '100%', justifyContent: 'space-between' }} />
             </div>
           </div>
@@ -15052,20 +15013,22 @@ function Calendar({ s }) {
         {wizard}
         <div style={col(u(16))}>
           {summary}
-          {s.calSlots.filter((sl) => !cur || sl.iso !== cur).map(slotRow)}
+          {dateRow}
+          {pkgRow}
           {/* The frame's foot is BookPill at the very numbers layout 3 already
               passes it — 54 on a 46 disc inset 5, the rust bar with a cream
               label and a cream disc carrying a rust arrow, and no offset block.
-              What differs is the label: this frame writes a two-word control
-              where layout 3's carries the whole composed line, so `cta` is a
-              field again here, and `calBookTo` is `bookTo` minus `calendar`
+              What differs is the label: the frame's own Send Enquiry, the
+              wizard's last-step label (JP-052 — this was `cta`'s "Check a
+              date" while the column read as a slot list), and `calBookTo` is
+              `bookTo` minus `calendar`
               itself — with neither a form nor a pricing section on the page it
               resolves to nothing and the pill goes back to being a span.
               The frame sets that label in Display/List sentence case where
               BookPill's `labelStyle` sets every pill in the label face,
               upper-cased; `size` reaches the size and not the face, so the diff
               is layout 3's, inherited on the identical call rather than new. */}
-          <BookPill s={s} to={s.calBookTo} label={s.calCta} glyph="arrow"
+          <BookPill s={s} to={s.calBookTo} label={W.send} glyph="arrow"
                     disc={desk ? 38 : 46} size={u(T.list)} shadow="transparent"
                     {...(s.mob ? { full: true } : null)}
                     {...(s.retro ? { bg: s.ac, fg: '#FBF6EA', discFg: s.ac } : null)}

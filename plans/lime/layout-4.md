@@ -1337,6 +1337,15 @@ Settled in section 8 (the calendar):
   no cursor and the hairline whole. `n=0`: the prompt and no rows; `n=1`: featured, no rows;
   `n=8`: seven rows. No page errors. Digest at themes 0, 2, 3 and 4: zero differing files;
   theme 1: exactly calendar arch 3 at three widths (calendar has no fold partner).
+- **Reversed** (JP-052, `plans/lime/layout-4-qa-fixes.md`, user call, 2026-09-23): the right-hand
+  column is the **wizard's summary**, not the slot list stacked. The summary card prints the picked
+  type over `location` and step 2's four answers (the canvas prints each box's bare example, and
+  the published page prints the visitor's answers or a .45 "e.g." placeholder). The first row is a
+  **date card** (the typed date, or the `open` cue, refused when booked or past, with `vm.calTime`),
+  and the second a **package card** on the Pricing section's packages (*Package ›* cycles). The
+  foot pill is Send Enquiry. The Lime-only past-cue exception (`vm.calCue`, 2026-09-18) went with
+  the slots. The block's paint above (radii, pads, `s.tx` card, `s.box1` rows, the hairline) is
+  unchanged: the rows are the same element, and only their content moved.
 
 Settled in section 9 (the enquiry form):
 

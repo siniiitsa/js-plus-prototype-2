@@ -6,7 +6,7 @@
 //
 //   node scripts/reach.mjs [themes=0,1,2]
 //
-// A probe is { name, cats, param: 'cj' | 'who', value, base? }: `cj` types into
+// A probe is { name, cats, param: 'cj' | 'who' | 'tiers', value, base? }: `cj` types into
 // the section's own content, `who` into the header's identity as every other
 // section reads it. `base` is the comparison's other side, where an absent key
 // is not it (showTags hidden against shown). A hit is reported as the renders
@@ -44,6 +44,15 @@ const PROBES = [
   // JP-054: layout 4's small-caps line, and the button whose default moved there.
   { name: 'form.sub', cats: ['form'], param: 'cj', value: { sub: Z } },
   { name: 'form.button', cats: ['form'], param: 'cj', value: { button: Z } },
+  // JP-052: the calendar keys whose seats moved when layout 4's column became
+  // the wizard's summary, and the Pricing packages it reads across sections.
+  { name: 'calendar.cta', cats: ['calendar'], param: 'cj', value: { cta: Z } },
+  { name: 'calendar.time', cats: ['calendar'], param: 'cj', value: { time: Z } },
+  { name: 'calendar.open', cats: ['calendar'], param: 'cj', value: { open: '2026-11-05' } },
+  { name: 'calendar.image', cats: ['calendar'], param: 'cj', value: { image: 'https://example.test/zz.jpg' } },
+  { name: 'calendar.types', cats: ['calendar'], param: 'cj', value: { types: Z } },
+  { name: 'calendar.slots', cats: ['calendar'], param: 'cj', value: { slots: [{ date: '2025-06-12', kind: Z, price: Z }] } },
+  { name: 'tiers', cats: ['calendar'], param: 'tiers', value: [{ name: Z, price: Z }] },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

@@ -47,8 +47,8 @@ does. Verify themes 0, 1 and 2.
 | 1 | JP-055 | A blank track and a blank gig render in media / map layout 4 | **Expected fixed on `main`** (the JP-051 sweep, `0b7e497`). Verify, and fix only if it reproduces | S | no | **done** (does not reproduce) |
 | 2 | JP-054 | Form layout 4's copy is not the frame's (head, sub-line, boxes, button, two-line steps) | **Named diffs of the fit** (L4 §9 Settled). The tester is right that nothing picks a side | S–M | **yes** (PO call): **A** | **done** |
 | 3 | JP-038 (layout 4) | Adjacent sections disagree on their side inset: 189 vs 171 at desktop, 22 vs 10 at 390 | **Confirmed, and not the gutter question already settled**: page-ground sections keep `padX`, while sheets put the frame's own inset back | M | **yes** (user call): **B** | **done** |
-| 4 | JP-052 | Book Us' right column prints dates and prices no field edits, and ignores the wizard | **Confirmed. It is a misreading of the frame**: the card is the wizard's summary, and the fit read it as `CAL_SLOTS` | L | **yes** | open |
-| 5 | JP-053 | The wizard's Send Enquiry is `#form`: the answers go nowhere, and there is no confirmation | **Confirmed.** Documented as a fragment link, but the tester is right that it loses everything | M | decided in entry 4 | open |
+| 4 | JP-052 | Book Us' right column prints dates and prices no field edits, and ignores the wizard | **Confirmed. It is a misreading of the frame**: the card is the wizard's summary, and the fit read it as `CAL_SLOTS` | L | **yes**: **1 A (Package › cycle), 2 (i)**; JP-053 **A** | **done** |
+| 5 | JP-053 | The wizard's Send Enquiry is `#form`: the answers go nowhere, and there is no confirmation | **Confirmed.** Documented as a fragment link, but the tester is right that it loses everything | M | decided in entry 4: **A** | open |
 | 6 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:** JP-055 is a check with no decision. JP-054 and JP-038 are single questions
@@ -432,6 +432,57 @@ Each of the tester's controls follows from that reading:
    `max(open, today)`, rather than hardcoding 2025. Or **(ii)** leave layout 2 and say in the reply that its slots
    still have no editor. Under B, (i) is the fix itself.
 
+**Decided** (2026-09-23, user call): **1 A, the package picked by a *Package ›* cycle on the
+card, 2 (i)**, and JP-053 **A** (the wizard mails, like the form). The frames were re-read
+first: Lime's `964:72939` and Retro's `964:72844` carry the same content at 1440 — *Summer
+wedding / Lake District · Outdoor / GUESTS 120 / SET LENGTH 4 hrs / BUDGET £1,200 / SOUND
+Provided*, then *Sat, June 12 · Arrival 6pm · 9pm*, then *Live band — full · 5-piece + DJ ·
+Package ›*, then *Send Enquiry* — and the wizard `964:72938` is step 1 of the same three steps
+(`Event / Details / Contact`, `Wedding · Birthday · Corporate · Festival`, `dd / mm / yyyy`).
+So the four summary cells are step 2's four boxes, and the head line is step 1's type.
+
+Settled before the code (each changes what gets built):
+- **The summary card.** Head line: the picked event type (step 1's chip; the canvas's is chip 0,
+  *Wedding*). Under it: the artist's `location` (through `identity`, as today), and the disc
+  keeps `image`. The four cells are step 2's boxes. **The canvas prints the frame's bare
+  examples** (`120`, `4 hrs`, `£1,200`, `Provided`: each box carries `ph` and a new `eg`). **Live, an
+  unanswered cell prints its placeholder with the `e.g.`** (*e.g. £1,200*) at `::placeholder`'s
+  .45, so it cannot be read as a quote. That is a named canvas/live diff (rule 5): the canvas
+  is the frame's picture of a filled-in wizard, and the live page is an empty one.
+- **The date card** reads the wizard's typed date through a **`sectionVm` closure**
+  (`vm.calWizard.dateOf(raw)`). It is the form's `formMailto` rule, because the input is the visitor's
+  keystrokes. `parseDate` is ISO-only, so `data.js` gains a day-first `parseDayFirst()`
+  (`dd / mm / yyyy`, `dd/mm/yyyy`, ISO too). With nothing typed the card shows the section's cue
+  (`vm.calPick`, which is `open`, blank when `open` is booked or past), so the canvas reads *Thu, June 12* and
+  *Opens on* moves it. Typed but unparseable: the card prints the format hint. Booked or past
+  (`dead`, live only): the date shows, and the line under it is refused, reading `calPrompt`. The
+  right-hand slot is `vm.calTime`. The frame's *Arrival 6pm* has no source; the line under the
+  date is the year.
+- **The package card** is the Pricing section's packages, read across sections
+  (`pageTiers(sections)` in `data.js`, beside `headerIdentity`, passed as `sectionVm({ tiers })`
+  on the canvas, the published tab, `LayoutPicker`, `AddComposer` and `EditPanel`'s previews,
+  plus `&tiers=` in the harness, defaulting to the seed). It prints the package's name and **its
+  price**. The frame's second line is a line-up (*5-piece + DJ*), but the tester's control is
+  "Pricing prices replaced with markers show on the card", and the price is the artist's own.
+  That is a named diff. *Package ›* steps and wraps, live only. At one package the card stays and
+  the chevron and the handler go (the pager's not-at-one rule). With no packages it is not drawn.
+- **One Send.** The column's foot pill is `BookPill` labelled `vm.calWizard.send` on
+  `calBookTo`, the same target as the wizard's last-step Send, so JP-053 changes one link.
+  `cta` loses its layout-4 seat (`in: [0]`).
+- **Layout 2's slots** get `SlotsField` (`{ date, kind, price }`, `SLOT_KEYS`, `blankRow`,
+  `slotsVal`, "Empty slots aren't shown."). An absent key resolves as the seed's **day offsets
+  from the base date** (0 / +2 / +8 / +23). The base is `open` on the canvas and in the editor, and
+  `max(open, today)` by day on the published page, which is layout 1's F20 diff, already accepted. The
+  offsets reproduce Jun 12 / 14 / 20 / Jul 05 from `CAL_OPEN`. `slotsVal` materialises the
+  canvas's dates on the first edit. Layout 4 no longer reads the slots, so `vm.calCue` goes.
+- **`booked` at layout 4** is now read only through a typed date, live. Its hint says so.
+
+**Expected after-diff (named before the code).** Calendar `arch 3` × themes 0, 1, 2 × three
+widths × canvas and `live=1` = **18 files**, nothing else. Calendar `arch 1` stays
+**byte-identical on both surfaces**: the offsets reproduce the seed's dates, and `&today=` is
+opt-in. If `arch 1` moves, the seed resolution is wrong. Base: a HEAD (`4d92ffe`) worktree on
+:5174.
+
 **Fix.** Per the decision. Things any version must get right:
 - The summary, date and package cards read **only** hoisted state (`wType`, `wVals`, `sel`) and
   vm values. Every string, date format and join is composed in `sectionVm` (`vm.calWizard` grows
@@ -456,7 +507,60 @@ pricing section, no types, an emptied `time`. Digest: calendar `arch 3` (and `ar
 has no editor" sentence under 2(i)), README's matching passage, Lime L4 §8 Settled and Retro L4
 section 10 (append the reversal with the date, and leave the old text), `CAL_SLOTS`' comment.
 
-**Settled.** —
+**Settled** (2026-09-23). The Evidence lines had drifted by the JP-054 / JP-038 commits
+(`vm.calWizard` was at `EncoreBuilder.jsx:1099`, `vm.calSlots` at `:1129`, and the Lime block at
+`EncoreSection.jsx:14737`). The frames were re-read at 1440 and agree, Lime's and Retro's.
+- **Code.** In `data.js`: `CAL_SLOTS` is four day offsets, and `slotSeed(base)` dates them. `SLOT_KEYS`,
+  `parseDayFirst()`, `pageTiers(sections)` (beside `headerIdentity`), `FIELDS.calendar.slots`
+  (`in: [1]`), and `cta` down to `in: [0]` as *Button (layout 1)*; the `booked` / `time` hints name
+  the new seats. In `sectionVm`: a new `tiers` argument threaded through all five call sites
+  (canvas, `PublishedPage`, `LayoutPicker`, `AddComposer`, `EditPanel`); step 2's boxes carry
+  `eg`; `vm.calWizard.dateOf(raw)`, a closure, and `.pkg` (*Package ›*); `vm.calPackages`;
+  `vm.calCue` gone; and `vm.calSlots` from `c.slots ?? slotSeed(max(open, today-if-live))`,
+  blank rows dropped. `SlotsField` + `slotsVal` (the canvas's `open`), with "Empty slots aren’t
+  shown.". The harness takes `&tiers=<json>` / `&tiers=none`, defaulting to the seed. In
+  `EncoreSection`: `wPkg` appended after `wVals`, and the summary column's content (`sumHead`,
+  `sumCells`, `dc`, `pkg`, `onPkg`) resolved once in the shared seam, then painted by Retro's
+  body and Lime's block. One `infoRow` each draws the date card and the package card, the frame's
+  one repeating element. The foot pill is `W.send`. The slot rows, the featured stat cells,
+  `want` / `hit` / `cur` / `feat` and Lime's `limeWant` / `limeHit` are gone from layout 4.
+- **Digest** (a HEAD `4d92ffe` worktree on :5174 against the edit on :5173, themes 0, 1, 2, all
+  categories, canvas and `live=1`, port normalised): **exactly the 18 named files differ**,
+  calendar `arch 3` × three themes × three widths × both surfaces. Calendar `arch 1` is
+  byte-identical on both surfaces, so the offset seed reproduces the frame's dates. Retro, Lime
+  and Grunge's flat card 4 all moved, as named.
+- **Reach** (new `PROBES` rows, themes 0–4): `cta` → layout 1; `time` and `image` → 1 and 4;
+  `slots` → 2; `types` and `&tiers` → 4; `open` → all four; `who.location` unchanged. Every row
+  matches its `in`.
+- **The tester's controls** (puppeteer, harness and real app, Lime card 4 at 1440 and 390, Retro
+  and Grunge at 1440). Published first paint: *Pick a date to enquire* (the seeded `open` is past),
+  the cells at .45 *e.g.* placeholders, *The House Party £450 Package ›*, and Send Enquiry →
+  `#form`. The run: Festival + `14/11/2026` gives *Festival* and *Sat, November 14 · 2026 ·
+  9:00pm*. Next, then 300 / 5 hrs / £3,000 / Needed, gives exactly those four in the card. *Package ›*
+  gives *The Wedding Set £650*. `01/01/2020` gives *Not available. Pick another date*, dimmed. `next week`
+  gives the format hint. `2026-11-14` is accepted. Harness: `&booked=2026-11-14` refuses it. `open=2026-11-05` gives
+  *Thu, November 5* on the canvas and live. `&tiers` markers show on the card. One package drops the
+  chevron and the pointer. `&tiers=none` drops the card. Emptied `types` heads the card with the name,
+  and emptied `time` drops the end. The only `£` in the column is the visitor's, the placeholder's
+  *e.g.*, or the Pricing section's. Real editor: a Pricing price set to `ZZ£450` reaches the
+  canvas card and the republished card. On Lime card 2, *Dates on offer* lists 2025-06-12 / 14
+  / 20 / 07-05, an edited price reaches the canvas, and *Add slot* prints the blank hint.
+  `scrollWidth` holds, and there are no page errors anywhere.
+- **Named diffs.** The canvas prints the frame's examples where live prints *e.g.* placeholders.
+  The package card's second line is the price, where the frame's is a line-up. The date card's
+  line is the year, where the frame's *Arrival 6pm* has no source. Published slots and the
+  published date card follow `max(open, today)`, layout 1's F20 diff.
+- **Docs.** CLAUDE.md (the closures sentence, the `s.live` list, the calendar paragraph's layout-2
+  seed and the whole layout-4 half, the Lime past-row exception, and the repeater counts to eight
+  with `SLOT_KEYS` / `slotsVal`). README (the closures sentence, a slots-and-summary paragraph,
+  the blank-row list). Lime L4 §8 and Retro L4 section 10 have *Reversed* notes, and `CAL_SLOTS`
+  has a new comment.
+
+Reply: **fixed.** Book Us' right column is now the wizard's summary, as the frame reads. It shows
+the visitor's event type and answers as they type them, the date they asked about (a booked or
+past date is refused), and a package from the artist's own Pricing section (*Package ›* cycles).
+No date or price appears that the artist did not type. Layout 2's slots now have an editor
+(*Dates on offer*) and a seed that is never all past. Sending the enquiry is JP-053.
 
 ---
 
@@ -492,6 +596,12 @@ form's `vm.formMailto` / `vm.formCheck` closures, which are the only function-va
   recommended.
 - **C. Give the calendar its own `email` field.** That is a second copy of the one address the
   whole page points at. Not recommended.
+
+**Decided** (2026-09-23, user call, asked in entry 4): **A.** JP-052 left both Send Enquiry
+pills (the wizard's last step and the column's foot) on the one `calBookTo` fragment, so this
+entry changes one link. `vm.calWizard.dateOf` already made the calendar the second section
+with a function-valued vm key, and CLAUDE.md's sentence already names it, so this entry adds
+`calMailto` / `calCheck` to it.
 
 **Fix (on A).** `<a href>`, never a `<form>` (CLAUDE.md's load-bearing rule: Enter in a box would
 post to `<base href>`). Errors are `useState`, cleared per box. There is no effect, as in the rest

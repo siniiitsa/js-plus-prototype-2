@@ -79,9 +79,10 @@ Do not try to unify them. Only three hand-written CSS classes cross the boundary
 properties set per section at runtime.
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
-rendering, so `EncoreSection` does zero colour maths. The enquiry form is the one exception to
-"fully-resolved": `vm.formMailto` and `vm.formCheck` are closures rather than values, because
-their inputs are the visitor's keystrokes and `sectionVm` never sees those. Every address, label
+rendering, so `EncoreSection` does zero colour maths. The enquiry form and the calendar's
+layout-4 wizard are the exceptions to "fully-resolved": `vm.formMailto`, `vm.formCheck` and
+`vm.calWizard.dateOf` are closures rather than values, because their inputs are the visitor's
+keystrokes and `sectionVm` never sees those. Every address, label
 and case decision is still bound in `sectionVm`, so the renderer composes nothing.
 
 ## Deviations from SPEC.md
@@ -382,6 +383,17 @@ That distinction is the whole design, and it buys two things:
   unless already blocked — which makes it the editor's one reader of the clock. `para` went
   with `DEFS.calPara` — it rendered in neither calendar layout.
 
+  Layout 2's named slots are the artist's too since JP-052 (`FIELDS.calendar.slots`, a
+  `SlotsField` repeater of `{ date, kind, price }`). Their seed is four day offsets from `open`
+  rather than four 2025 dates, and on the published page from today when `open` has passed, so a
+  published slot list is never all past. Layout 4's right-hand column, which had been fitted as
+  those same slots stacked, is the **enquiry wizard's summary**, which is how its frame reads: the
+  event type over the four step-2 answers (the canvas prints the frame's examples, the published
+  page the visitor's answers or a faint "e.g." placeholder), a date card that shows the typed
+  date and refuses a booked or past one, a package card naming the **Pricing section's**
+  packages (read across sections, the header identity's way; *Package ›* steps through them),
+  and Send Enquiry. No date or price on it is one the artist did not type.
+
   **The enquiry form, which fills in and sends.** It was the last §10.2 section whose every
   control was a picture — and the one the rest of the page points at, since `CTA_TARGETS.book`
   starts at `form`, so the header's *Book Now*, the pricing pills and the calendar's foot pill all
@@ -398,8 +410,8 @@ That distinction is the whole design, and it buys two things:
   with a hint that says why. A box with neither a label nor a placeholder names nothing yet would
   be required, so `sectionVm` drops it on both surfaces (`blankRow()` over `FORM_FIELD_KEYS`) —
   except that guarded email row, which always shows and reads "Email" when its label is emptied.
-  The same blank-row drop covers every repeater: songs, tracks, gigs, packages, reviews and
-  footer links.
+  The same blank-row drop covers every repeater: songs, tracks, gigs, packages, reviews,
+  footer links and calendar slots.
 
   **The submit is a `mailto:`**, and `email` is what it is addressed to. There is no backend and
   never will be, so handing the enquiry to the visitor's own mail app is the one delivery that is
