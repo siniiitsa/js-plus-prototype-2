@@ -59,7 +59,7 @@ and 2.
 | 5 | JP-048 | FEATURED follows position | **Confirmed**: the seat is `i === shown.length - 1` | M | **user: a Featured tick, layout 3 only** | **done** |
 | 6 | JP-054 | Form layout 4 lacks Event type and Location | **Named diff**, kept on 2026-09-23 | S | **user: seed `FORM_FIELDS_4`** (reverses 2026-09-23) | **done** |
 | 7 | JP-043 | The composed page's right column does not stick | **Confirmed**: nothing is sticky; `align-items: start` leaves ground under the calendar | S | **user: sticky, published** | **done** |
-| 8 | JP-038 | Sections disagree on their side inset (78 vs 56, footer 78 / 22) | **Confirmed**: the remaining gap is `padX` itself | L | **user: `padX` becomes the frame's inset, footer included** | open |
+| 8 | JP-038 | Sections disagree on their side inset (78 vs 56, footer 78 / 22) | **Confirmed**: the remaining gap is `padX` itself | L | **user: `padX` becomes the frame's inset, footer included** | **done** |
 | — | JP-047 | Map chips are cities, not Upcoming / Past | **By design**: a gig has no year, so nothing can place it against `today` | — | **user: reply only** | reply in the sweep |
 | 9 | — | End-of-pass sweep | — | S | — | open |
 
@@ -464,7 +464,96 @@ screenshots. `scrollWidth` holds at 390.
 **Docs.** README's desktop-page bullet, CLAUDE.md's pricing layout-4 and footer "keeps `padX`"
 sentences, the `bleedX` comment.
 
-**Settled.** —
+**Settled** (2026-09-24). The Evidence lines had moved as the prompt said. `contentWidth()` was
+at `EncoreBuilder.jsx:4203`. The layout-4 arm was in `sectionVm` (its comment at `:422`), not in
+`data.js`. The footer's `calc(10px - padX)` was at `EncoreSection.jsx:23273` and its bottom bar at
+`:23348`.
+- **Frames.** Read with `get_metadata`: every 1440 master insets **56** and every 768 master
+  **30**, Lime and Retro alike (map and pricing at layouts 1–3). The 390 masters **part**:
+  - **20:** layout 1's bio, media, repertoire and pricing, and layout 3's pricing.
+  - **10:** layout 1's map, calendar, form and footer; layout 2's pricing, map and form; layout 3's
+    map and form.
+
+  Lime and Retro agree at every node. Asked; **user: 10 everywhere**, so neighbours always agree.
+  The 20s are a named 10px diff at 390.
+- **Baseline** (`inset.mjs Lime,Retro,Grunge 1…4`, published): the root pads **78.1 / 40 / 22**
+  everywhere but layout 4's map, pricing, calendar and form (56 / 30 / 10). The sheets that re-pad
+  `u(56)` read 56 / 30 / 10 (layout 2's repertoire and form, layout 3's gallery and map, layout
+  4's sheets). The footer read 78 / 40 / 22 on every page.
+- **Code.**
+  - `RAMP.*.padX` is **45.92 / 30 / 10** and `SIZES.*.pad` follows. `preview.jsx`'s hand copy
+    matches.
+  - `PublishedPage` and `contentWidth()` read `padX` with `parseFloat`, since `parseInt` would
+    have given 45. `contentW` is now 1088.16 / 708 / 370 (columns 709 / 335).
+  - The `d === 3` arm is deleted, because `padX` is now what it set.
+  - The literal audit:
+    - Every `calc(-1 * padX)` bleed follows on its own: `bleedTo`, `TornEdge`, `ArcEdge`,
+      `bleedX` and each sheet's `calc(surplus + gPad | u(56))` re-pad. Each re-pad is now a
+      horizontal no-op, and each is kept as its frame's own number.
+    - The Lime footer's 390 `marginRight: calc(10px - padX)` is gone. It computed to 0, and the
+      line's 354.8 fits the 370 column.
+    - Its 768 bottom bar is now the frame's 30 + 56.
+    - Testimonials layout 1's `calc(13px - padX)` now pads 3 in. It still lands the frame's 13.
+  - Two decorations placed against the old column keep their page position rather than move
+    with it:
+    - **Grunge's media layout-1 star** at 390: `−18` → `−8`. It was the one `scrollWidth`
+      overflow, 398 against 390.
+    - **Retro and the flat two's bio layout-1 seal**: `−20` → `−8` at 390 and `−50` → `−40` at 768.
+      It would otherwise hang 12 / 10 further off the page's left edge.
+  - `navFits`' layout-2 bar is **708** (was 688). The layout-3 bar keeps 684 (its card's own
+    10 + 32).
+- **Measure after** (same runs). Every root pads **56 / 30 / 10** at 1440 / 768 / 390 and
+  136.6 at 1600, on all four cards and all three templates, footer included. Text edges that
+  stand further in are the same inner panels as before, shifted with their roots:
+  - the form's card at layout 1;
+  - the testimonials card;
+  - the calendar panel (layouts 1, 2, 4);
+  - layout 2's bio / media / gallery cards;
+  - layout 4's repertoire panel;
+  - the header's own compositions: layout 2's nav capsule (74 at 1440), and layout 3's and 4's
+    card at 390 (20);
+  - **layout 3's gallery at 390 (20).** This one is not an inner panel. The section is a sheet
+    (the one full-bleed band on Grunge's page) that bleeds and re-pads its own 20. Its master
+    (`984:10795`, Lime) stands the head and grid at x 20, so the 20 is the frame's and is kept.
+    It stood 2 in from a 22 column before and now 10 in from its neighbours' 10. It is a named
+    step, and it can follow `padX` in one line if the user wants the column.
+- **`scrollWidth`** holds at 390: a one-off sweep of every category × layout × five themes, canvas
+  and `live=1`, finds no overflow. A second sweep compared each render's farthest unclipped
+  element against HEAD: nothing moved further off either page edge. Pop's footer, which
+  overflowed 6.1 at 390, now fits.
+- **Digest** (HEAD `7fee85f` worktree on :5174, themes 0, 1, 2, all categories, three widths, port
+  normalised): **234 of 387 files differ on each surface**, as named.
+  - **Unchanged, as predicted:**
+    - layout 4's map, pricing, calendar and form;
+    - every sheet that already re-padded (layout 2's repertoire, form and Retro pricing; layout
+      3's gallery and map; layout 4's bio, media, gallery, repertoire and testimonials);
+    - HeaderV0 (header layouts 1, 3, 4, 5).
+  - **Every changed row is x / y / width / height**, except three named consequences of the
+    wider column:
+    - media layout 3's bar meter draws more bars (`contentW`; 1–3 rows);
+    - map layout 2's rings are a `translate(-50%)` of a wider box;
+    - Lime's layout-3 form head grows 97 → 100 (`titleWordEms` against `contentW`).
+- **Screenshots** before / after at 390, 768 and 1180, all read clean:
+  - Lime pricing and footer at 390; the footer head holds two lines without the old margin.
+  - Retro testimonials at 390: the card at the frame's 13, the two pills now on one line as the
+    frame sets them.
+  - Retro header layout 2 at 768.
+  - Grunge map layout 1 at 1180.
+  - Retro bio layout 1 at 390.
+- **Tablet links** (`&nav=n`, *Follow my sections*): Lime layout 2 now fits **seven** links where
+  it fitted six. Retro 4 / 5, Lime layout 3's 6 and Grunge 8 / 7 are unchanged. The seeded page
+  still shows the burger.
+- **Docs.**
+  - README's desktop-page bullet.
+  - CLAUDE.md's pricing layout-4 sentence ("keeps `padX`" is gone).
+  - CLAUDE.md's `navFits` paragraph: 708, and the new Lime count.
+  - The `bleedX`, `contentWidth` and `RAMP` comments, and the repertoire's `gPad` comment.
+
+Reply: **fixed.** Every section on every page, the footer included, now starts its content at
+the design's own side inset: 56 at 1440, 30 at 768 and 10 at 390. Neighbouring sections no
+longer disagree. At 390 a few designs (layout 1's bio, media, repertoire and pricing, and layout
+3's pricing) are drawn at 20 in Figma. They now use 10 like their neighbours, by choice, so the
+page reads as one column.
 
 ---
 
