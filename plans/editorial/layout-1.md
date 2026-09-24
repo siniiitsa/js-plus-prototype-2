@@ -134,7 +134,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 6 | `map` | `964:58617` | Events Map — D · Compact tile | 1440 × 1191.2 | `986:48244` | 768 × 1308.6 | `986:48256` | 390 × 1132.5 | 1 | `964:58593` | `964:58605` | done `5f9fa4e` |
 | 7 | `pricing` | `964:58618` | Pricing — B · 3-col in soft panel | 1440 × 880 | `986:48245` | 768 × 793 | `986:48257` | 390 × 1486 | 2 | `964:58594` | `964:58606` | done `73e7307` |
 | 8 | `calendar` | `964:58619` | Booking Calendar — A · Scheduler | 1440 × 911 | `986:48246` | 768 × 1371 | `986:48258` | 390 × 995 | 1 | `964:58595` | `964:58607` | done `7ed5a57` |
-| 9 | `form` | `964:58620` | Enquiry Forms — B · Split context+form | 1440 × 891 | `986:48247` | 768 × 1075 | `986:48259` | 390 × 1165 | 3 | `964:58596` | `964:58608` | todo |
+| 9 | `form` | `964:58620` | Enquiry Forms — B · Split context+form | 1440 × 891 | `986:48247` | 768 × 1075 | `986:48259` | 390 × 1165 | 3 | `964:58596` | `964:58608` | done `8c540f2` |
 | 10 | `testimonials` | `964:58621` | Testimonials H — Stacked tag card | 1440 × 730 | `986:48248` | 768 × 730 | `986:48260` | 390 × 730 | 1 | `964:58597` | `964:58609` | todo |
 | 11 | `footer` | `964:58622` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:48249` | 768 × 692.3 | `986:48261` | 390 × 736.3 | 3 | `964:58598` | `964:58610` | todo |
 
@@ -691,6 +691,16 @@ Append as the pass goes. Do not repeat Lime's, Grunge's or Retro's bullets; name
   `box/2` border round a photograph is `padding` on an `s.box2` div round an inner clip, so the
   outer box keeps no `overflow: hidden` and the tape can ride over it. A centred print owes no
   rotated-box margin — check the walk's `y` against (parent − rotated height) / 2.
+- **A hand-scaled Bold statement is fitted to its widest word** (section 9): `min(frame size,
+  calc(100cqi / s.titleWordEms))` on an `inline-size` container, `vm.titleWordEms` in Noto Bold
+  ems (`notoBoldEms`, the 540 table × 1.045), the line height as the frame's ratio, and the frame's
+  fixed box as `max-width` over `min-width: min-content`. The testimonials' quote (57.84 / 52.42)
+  and the footer's statement (57.84 / 47.9) meet the same demo-face measure — measure their
+  widest words in Bold before choosing, and check `titleWordEms` is the key their text reads
+  (the testimonials' quote is not `vm.title`).
+- **A dashed rule under an `<input>` goes on the field's column** (section 9): the box is the
+  column's last child, so `DashRule` at the column's foot is the box's, and a refusal swaps it for
+  a solid inset rule on the input.
 
 ### Seen at planning time, per section
 
@@ -1408,6 +1418,99 @@ four ink ones are its own register.
 - **Moved, theme 3 only** (digest: exactly `calendar` arch 0 at three widths, static and live —
   3 of 645 each; zero at themes 0, 1, 2 and 4). No shared helper changed.
 
+### Settled in section 9 (the enquiry form)
+
+- **No Editorial block: Lime's `if (s.v0 && (s.lime || s.grunge))` ahead of `EnquiryForm`'s
+  `if (s.v0)` is `s.limeTree`**, with `const ed = s.editorial` and a third arm at the head of `G`
+  (Lime's and Grunge's arms untouched; the new leaf `boxH` falls back through `??`). The tree is
+  Grunge's less its grain sheet and two tears (the walker, all three masters, bindings resolved),
+  on Scheme 3 at every width, no Device override. The live seam is hoisted above the block, so the
+  published boxes, chips, submit and sent state needed nothing. Session 0's *the submit has lost
+  its fill* closes by construction — Retro's branch, whose shell painted it, is no longer reached
+  (the calendar seal's precedent).
+- **The form half carries no nested scheme**, where both twins' is Scheme 3 (`187:8`) — the root
+  is already Scheme 3, and the only `explicitVariableModes` on all three masters are the root's.
+  So route A resolves every read and the block owes **no literal but `SIENNA_MEDIA`** (the
+  avatar's `sem/media` backdrop). **Trap 3 did not bite, the fifth section running**: nothing binds
+  `inactive/bg`; the idle chips are simply unfilled.
+- **The deltas, all off `boundVariables`:**
+  - **every string binds `sem/text/2`** (paper, `s.tx`) — brand, kicker, statement, ✓, promises,
+    labels, placeholders — but the picked chip's type and the pill's label, which bind `text/1`
+    (`s.ac`);
+  - the **shell** is unfilled (its `sem/bg` fill is hidden), **radius 0**, dashed **16, 16** in
+    `stroke/1` (`DashRule side="all"`, × 0.82 on desktop) and **padded 20** round both halves —
+    the twins' shell pads nothing;
+  - the **context half** is unfilled; the **form half** `active/bg` (`s.ac`), square;
+  - **each box is no box**: two fills whose top one is the half's own `active/bg`, no radius, no
+    padding, over a **dashed 7, 7 bottom rule** in `stroke/1` — a `DashRule` on the field's
+    column, whose foot is the box's (the box is its last child), so an `<input>` needs no overlay
+    of its own. **60 / 60 / 40 tall**; the message 134 / 134 / 100, its placeholder at the
+    top-left;
+  - the **pair stands 62 apart** at 1440 and 768 (the twins' 12); stacked at 390, 10;
+  - **two label sizes**: the boxes' labels are Display/List (24 / 19 / 18 at 1.2, the twins'
+    `label()`), but **EVENT TYPE and MESSAGE are Label/MD** (20 / 14 / 13 at 1.1, `UPPER`) — the
+    block's new `minor()`, `labelStyle` with wrapping allowed;
+  - the **chips**: the picked one `tag/1/bg` (paper, `s.chips[0].bg`) at a raw radius **5** under
+    `text/1`; the idle ones unfilled inside a **dashed 5, 5 at a raw radius 3**, under paper;
+    Body/MD at 1.5 (Grunge's `small`); pad 5 / 11, 8 apart, wrapping at 390 as the frame does;
+  - the **pill** is `sem/bg` ink under a `text/1` terracotta label, the disc `active/bg` round a
+    `tag/1/bg` paper arrow — `pillBg` / `pillFg` / `discFg` in `G`, `BookPill`'s Lime numbers
+    unchanged;
+  - the **brand** is Label/MD `UPPER` (Grunge's arm, `grunge || ed`); the avatar sits on
+    `sem/media` blush.
+- **The statement stands centred in its half at 1440.** The desktop head block (`Frame 205`) is a
+  fixed 210 box with no layout, and its heading hangs at y 176 — which puts the heading's middle at
+  **305.5 of the 611 half, the half's own middle** to the pixel. So under `ed` the desktop context
+  half is a **`1fr auto 1fr` grid**, the head block `display: contents`: the credit row at the top
+  of the first track, the promises at the foot of the third, and a longer statement eating both
+  tracks evenly. Narrow, the head block is laid out (`V/10`: the statement 10 under the credit)
+  and the promises stand 20 below — the twins' 768 `0` gap and 210 minimum are theirs.
+- **The statement is fitted to its widest word, not broken inside it.** It is the mode's first
+  hand-scaled Bold (trap 4): **50.36 on a 42.75 line at every width** — the same size on the
+  narrow masters, so the desktop is × 0.82 and the narrow ones verbatim — in a FIXED 262.7 box,
+  where Fisterra breaks **UNFORGETT / ABLE** inside the word. Noto Bold (700, from the pinned
+  entry) sets UNFORGETTABLE. at **386.9** at that size, past the 1440 column (340) and the 390
+  one (270 on the master, 290 here), and "YOUR NIGHT" at 270.5, past the box itself. Breaking
+  inside the word would reproduce the demo face's measure rather than the design, so the size is
+  **`min(frame size, calc(100cqi / s.titleWordEms))`** on an `inline-size` context column — the
+  header title's recipe — and the box is `max-width: 262.7` with `min-width: min-content`, so it
+  grows to the widest word. `vm.titleWordEms` gained an Editorial arm in **Noto Bold ems**:
+  `notoBoldEms()` in `data.js` is `notoEms()` × **1.045**, the largest Bold / 540 ratio measured
+  on the seed's lines (LET'S MAKE 1.045, YOUR NIGHT 1.041, UNFORGETTABLE. 1.040). Its only other
+  reader is Lime's layout-3 form, gated on `s.lime || s.grunge`. The line height keeps the frame's
+  ratio (0.849) so it follows the fit. The frame's typed break after "Let's make" is Grunge's
+  positional split, shared (`grunge || ed`).
+  - **So any statement fits**: more words take more lines, a longer word a smaller size, and the
+    frame's size is the ceiling. Seeded, it sets **36.1 on three lines at 1440** (the frame's
+    41.3 on four), **50.4 on three lines at 768** (the column is wide enough; 128 tall against
+    the frame's 171, so the stacked context half is 43 shorter), **37.6 on three lines at 390**.
+    Open question 11.
+- **The refused box is redrawn** (Lime's rule): the idle mark is a 56% dashed hairline, so a
+  refusal changes colour, weight and dash at once — the dashes go and a **solid 2px inset rule of
+  full paper** (`inset 0 -2px 0 s.tx`) takes their place, under the twins' prompt line in paper.
+  A rule under a square box does not smear, so no ring. The brief's "must read on ink": the boxes
+  stand on the terracotta half, not the ink, and it reads there.
+- **Named diffs**: the frame's submit types *Enquire* where `vm.formBtn` seeds *Book Now* (the
+  twins' diff, a third time); the root's vertical insets are the inherited diff (80 / 56 / 44
+  against the masters' 120, 30 over 60, 24 over 40), with no seam to justify Grunge's `G.pad`, so
+  the shell stands 18.4 higher on the desktop canvas than the frame's × 0.82.
+- **Measured** (harness, against the section root): desktop shell 1088.2 × 532.7 (1328 / 651 ×
+  0.82 = 1089 × 533.8), context 344.4 wide, form half 711 × 499.9 (868 / 611 × 0.82 = 711.8 ×
+  501), boxes 297.3 × 49.2 (363 / 60 × 0.82), pair gap 50.8, chips 24.7 (the ramp's `bodyMd` 11,
+  Grunge's figure), message 109.9, pill 44.3, the statement's centre on the half's (346.3 both);
+  768 shell 708, form half 555.9 (556), context 344.8 (389 less the statement's lost line); 390
+  shell 370 (the page inset's 10 against 20), form half 670 (672), boxes 40, message 100, pill 54,
+  *Other* on the chip row's second line as in the frame.
+- **Function** (`theme=3&live=1`, puppeteer clicks and typing, 1440 and 390): an empty submit
+  marks all four boxes with the solid rule and prints the prompt; typing clears each; *Party*
+  moves the mailto subject to *Party enquiry* with the four answers in the body (read off
+  `getAttribute('href')`); a valid submit under a capture-phase `preventDefault` swaps in the sent
+  block; *Write another* restores the values; the pill is `<a href="mailto:…">` with a pointer.
+- **`FIELDS.form` has no template-keyed `in` row**, so nothing was owed.
+- **Moved, theme 3 only** (digest: exactly `form` arch 0 at three widths, static and live — 3 of
+  645 each; zero at themes 0, 1, 2 and 4). No shared helper changed; `titleWordEms`' new arm has
+  no other reader under Editorial.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1608,6 +1711,30 @@ Section 8:
   session 0) — the heading and the month.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
+Section 9:
+- *A section whose live seam is hoisted above its branches can always take a block* (Lime 1,
+  section 3) — the published form needed nothing.
+- *The `G` lookup at the block's head, whose twin's arm is today's literals* (Grunge 1, sections
+  4–10) — a third arm; `boxH` falls back through `??`.
+- *The node walker* and *the paired diff walk* (Grunge 2) — all three masters and the Grunge twin,
+  by traversal order, bindings resolved.
+- *`get_variable_defs` mixes nested schemes in one list; the `use_figma` fills settle which node is
+  on which* (Lime 1, section 9) — turned round: the walk found no nested scheme at all.
+- *A scheme that did not move can still move the binding* (Grunge 3) — every string on `text/2`,
+  the picked chip and the pill on `text/1`, the avatar on `media`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — none on any node.
+- *A refused box changes colour, not weight alone, when the idle ring is already full ink*
+  (CLAUDE.md, Lime's layout 4) — here the idle mark is a faint dash, and the refusal changes all
+  three.
+- *`BookPill` has a Lime branch* (Lime 1, section 1; D1) — its numbers, drawn inline as the twins'
+  are.
+- *A hand-scaled instance is not the ramp* (Lime 2, bio) — 50.36 at every width.
+- *The desktop head shrinks to fit its widest word* (Lime 3, section 9; D3) — `vm.titleWordEms`
+  widened to Editorial in Noto Bold ems, applied through the header's `100cqi` recipe.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the statement, labels, pill, sent head.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -1655,3 +1782,11 @@ Section 8:
 10. **The calendar's stacked divider** (section 8) — at 768 and 390 the grid half keeps the
     desktop's right `stroke/2`, which with no panel ring draws a terracotta line down the panel's
     right edge that stops at the grid's foot. Not drawn. Worth telling the designer.
+11. **The form's statement** (section 9) — the frame sets it at 50.36 in a 262.7 box at every
+    width, and the demo face breaks UNFORGETT / ABLE inside the word. Noto Bold's
+    UNFORGETTABLE. is 386.9 at that size, so the statement is fitted to its widest word instead
+    (36.1 on the 1440 canvas against the frame's 41.3, 37.6 at 390, the frame's 50.4 at 768) and
+    sets three lines where the frame sets four. The alternative — the frame's size with the word
+    broken wherever it overflows — is one line to turn (`min(…)` → `u(50.36)`). Worth telling
+    the designer with 1 and 6, and a design call for the testimonials' and the footer's
+    statements, which will meet the same measure.
