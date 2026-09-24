@@ -52,7 +52,7 @@ and 2.
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-049 | A stored bad enquiry address shows no warning under the box | **Confirmed**: `UrlInput`'s error is blur-only local state, lost on remount | S | no | open |
+| 1 | JP-049 | A stored bad enquiry address shows no warning under the box | **Confirmed**: `UrlInput`'s error is blur-only local state, lost on remount | S | no | **done** |
 | 2 | JP-045 | Tickets → / ↗ on the canvas for gigs with no link | **Confirmed**: map layouts 2 and 3 split canvas from live on purpose | S | **user: drop on both** | open |
 | 3 | JP-044 | Repertoire layout-3 titles cut off at 768 | **Confirmed, Lime/Grunge only**: a 19px title beside a `flex: none` artist in a ~148px card | S–M | no (named diff) | open |
 | 4 | JP-046 | *Save 15% on bundles* missing, no field | **A named diff of the fit** (dropped in Retro L3, inherited) | S | **user: add the field** (by the plan) | open |
@@ -108,7 +108,22 @@ correct it → gone. The same for a Soundcloud address `foo`. Digest: zero chang
 
 **Docs.** CLAUDE.md's `UrlInput` clause ("prints that reason under the box on blur").
 
-**Settled.** —
+**Settled** (2026-09-24). The Evidence lines held.
+- **Code.** `UrlInput` keeps one `editing` flag (set on focus, cleared on blur) in place of the
+  blurred `err`, and the line is `check(value)` whenever the box is not focused. The `onChange`
+  clear-on-correction branch went with it: a passing value simply has no reason.
+- **Real app** (one-off puppeteer, Lime card 3, deleted): Enquiry Form's email typed
+  `not-an-email` shows nothing while focused; blur → *That email address looks incomplete.*;
+  Pricing and back (a remount) → **still there**, which is the ticket; `me@band.co` → gone. The
+  seeded Media Player, Events Map, Gallery and Footer panels print no alert (the seeded track
+  audio addresses pass). No page errors.
+- **Digest.** Not run: the change is in `EditPanel`'s chrome, which the section harness never
+  renders, so it is byte-identical by construction.
+- **Docs.** CLAUDE.md's `UrlInput` clause.
+
+Reply: **fixed.** A bad address now shows its warning under the box whenever the box is not
+being typed in, including after switching sections and coming back. This reaches every address
+box, not only the enquiry email.
 
 ---
 

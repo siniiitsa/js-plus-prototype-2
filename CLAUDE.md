@@ -232,7 +232,8 @@ mutated through a single `patch()` helper.
   outside http / https / mailto / tel, whitespace inside, a schemeless host with no dot, `//host`
   — comes out `''`, which is each seam's existing no-link state, and a track's audio also refuses
   mailto / tel. Every address input in `EditPanel` is a `UrlInput`, which prints that reason under
-  the box on blur). Do **not** make `EncoreSection` interactive
+  the box whenever it is not being typed in — derived from the stored value, so a remount shows
+  a bad address at once (JP-049, retest)). Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
   would both filter and select the section. `EncoreSection` therefore imports `useState` and
   `useRef` as well as `useId`; that is the whole of its React surface and it stays that way —

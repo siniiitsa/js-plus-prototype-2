@@ -2124,22 +2124,20 @@ const FIELD_BOX = {
 // value it was worked out for, so a repeater row deleted above this one (rows
 // key on index) cannot hand its line to the row that moves up.
 function UrlInput({ value, onChange, style, className, placeholder, web = false, check = urlProblem }) {
-  const [err, setErr] = useState(null)
-  const msg = err && err.v === value ? err.msg : null
+  // The reason is derived from the stored value, not kept from a blur (JP-049,
+  // retest): a remount — another section, the panel reopened — shows a bad
+  // address at once. It waits while the box has focus, so typing is not
+  // scolded, and clears the moment the value passes.
+  const [editing, setEditing] = useState(false)
+  const msg = editing ? null : check(value ?? '', web) || null
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
       <Input
         value={value} placeholder={placeholder} onClick={stopE}
         aria-invalid={msg ? true : undefined}
-        onChange={(e) => {
-          const v = e.target.value
-          if (msg && !check(v, web)) setErr(null)
-          onChange(v)
-        }}
-        onBlur={() => {
-          const p = check(value, web)
-          setErr(p ? { v: value, msg: p } : null)
-        }}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setEditing(true)}
+        onBlur={() => setEditing(false)}
         className={className}
         style={{ ...style, ...(msg ? { borderColor: '#B3261E' } : null) }}
       />
