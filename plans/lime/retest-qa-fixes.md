@@ -60,8 +60,8 @@ and 2.
 | 6 | JP-054 | Form layout 4 lacks Event type and Location | **Named diff**, kept on 2026-09-23 | S | **user: seed `FORM_FIELDS_4`** (reverses 2026-09-23) | **done** |
 | 7 | JP-043 | The composed page's right column does not stick | **Confirmed**: nothing is sticky; `align-items: start` leaves ground under the calendar | S | **user: sticky, published** | **done** |
 | 8 | JP-038 | Sections disagree on their side inset (78 vs 56, footer 78 / 22) | **Confirmed**: the remaining gap is `padX` itself | L | **user: `padX` becomes the frame's inset, footer included** | **done** |
-| — | JP-047 | Map chips are cities, not Upcoming / Past | **By design**: a gig has no year, so nothing can place it against `today` | — | **user: reply only** | reply in the sweep |
-| 9 | — | End-of-pass sweep | — | S | — | open |
+| — | JP-047 | Map chips are cities, not Upcoming / Past | **By design**: a gig has no year, so nothing can place it against `today` | — | **user: reply only** | **replied** |
+| 9 | — | End-of-pass sweep | — | S | — | **done** |
 
 **Why this order:** the chrome-only and single-seam entries first, each with a small named
 after-diff. JP-038 last, because it moves every digest of every template and every earlier entry
@@ -577,4 +577,97 @@ repeater change, offered separately.
 5. `plans/README.md`'s row, and a reply line per ticket (fixed / by design), headed by the
    retest-against-the-stamp line.
 
-**Settled.** —
+**Settled** (2026-09-24, all five steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **Digest against `main`**, split in two, since JP-038 alone moves 234 of 387 files per surface.
+  Three dev servers: HEAD on :5173, a `main` (`a0baef8`) worktree on :5174, a `7fee85f` worktree
+  on :5175, `node_modules` symlinked. Themes 0, 1, 2, all categories, three widths, canvas and
+  `live=1`, port normalised.
+  - **`main` → `7fee85f` (entries 1–7): exactly the named files, 38 canvas and 20 live.**
+    - Map `arch 1` and `arch 2`, 3 themes × 3 widths, **canvas only** (JP-045, 18).
+    - Repertoire `arch 2` at 768, themes 1 and 2, both surfaces (JP-044, 2 + 2).
+    - Pricing `arch 2`, 3 × 3, both surfaces (JP-046, 9 + 9).
+    - Form `arch 3`, 3 × 3, both surfaces (JP-054, 9 + 9).
+    - JP-049, JP-048 and JP-043 move nothing, as their Settled say.
+  - **`7fee85f` → HEAD (JP-038): 234 of 387 on each surface**, as its Settled counts. Row counts
+    move only in media `arch 2`'s bar meter (+3 / +1 / +2 at 1440 / 768 / 390, all three themes).
+    With x / y / width / height stripped, the only other differences are map `arch 1`'s ring
+    `translate` and form `arch 2`'s head, 97 → 100px, under Lime at desktop alone. Nothing else.
+  - The whole of `main` → HEAD is 252 canvas and 243 live files; the halves overlap on 20 and 11.
+- **Reach.** `reach.mjs 0,1,2` (9,792 renders), then every `cat.key` row, the three `=value`
+  probes included, checked against `fieldReach(f, theme, arch % designCount(cat, theme))`: 25
+  probes over 360 cells, **0 mismatches**. `pricing.offer` reaches layout 3 only. The identity rows agree with CLAUDE.md
+  (`tiers` → calendar 4, `who.location` → calendar 1 under Retro only, and 4). The only partial
+  rows are header `cta2`'s, as before.
+- **Insets** (`inset.mjs Lime,Retro,Grunge` × cards 1–4, published): every section root pads
+  **56 / 30 / 10** at 1440 / 768 / 390 and **136.6** at 1600, on every card and template, the
+  footer included, with two exceptions that pad 0 by construction:
+  - **Card 1's header**, at every width. `HeaderV0` sets its own inset, as JP-038's Settled
+    reads it. The headers of cards 2–4 pad 56 / 30 / 10 like their neighbours.
+  - **Card 3's composed row at desktop** (bio, media, calendar). They are built with
+    `column: true` and the row stands inside the page gutter: 865 + 55 + 408 = 1328 = 1440 −
+    2 × 56, so their text still starts at 56.
+
+  That is 129 of 132 roots at 768 and 390, and 120 of 132 at 1440 and 1600. `scrollWidth`
+  equals the width in all 48 renders.
+- **Real app** (one-off puppeteer, deleted; Chrome for Testing at 1600; template → setup card →
+  *Use this header*, then *Publish* → *Open*, the popup at 1440 / 768 / 390). Lime cards 1–4
+  and Retro card 3. No page errors in either window, on any run.
+  - **JP-049, every card.** The enquiry email typed `not-an-email` shows nothing while focused.
+    Blurred, it shows *That email address looks incomplete.* After Pricing and back, the line is
+    still there. The seeded address restored, it is gone.
+  - **JP-045, every card.** No *Tickets* and no ↗ on the map, canvas or published, at any width.
+  - **JP-044, card 3.** No ellipsis node in `#repertoire` overflows, at any width.
+  - **JP-046, card 3.** *Save 15% on bundles* is on the canvas and on the published page at every
+    width, and the panel's *Offer line* holds it. Cards 1, 2 and 4 draw no line.
+  - **JP-048, card 3.** A name-only *The Late Set* added in the panel takes FEATURED on the
+    canvas, which is the report. Ticking *Featured* on The Festival Set takes it back. The
+    published page shows it on The Festival Set at all three widths.
+  - **JP-054, card 4.** The canvas form carries Event type and Location. The published page has
+    five boxes: *Full name / you@email.com / dd / mm / yyyy / Wedding, party… / Town / city*.
+    Cards 1–3 keep the four.
+  - **JP-043, card 3 at 1440.** The calendar's cell computes `sticky`. At ¼, ½ and ¾ of the
+    row's travel its top reads 0. Past the row's end it is released, with its bottom on the
+    row's bottom (a gap of 0.0). Cards 1, 2 and 4 compose no row; the cell there is `static`.
+  - **Retro card 3.** The same walk gives the same results.
+  - **JP-047** was read off the `live=1` digest, not the popup, whose chip probe missed its
+    nodes. Unchanged, by design: map layout 3's chips read *All / Manchester · 4 / Lake District
+    · 1*.
+- **`index.html`** refreshed in `551811f` (7,945,147 bytes, from `npm run build:standalone`).
+  Both files were served from one origin (`127.0.0.1:8931`) and Lime card 3 was opened in each.
+  The old file shows no offer line and prints *Tickets* on the canvas. The new one shows the
+  line and prints no *Tickets*. Both have 11 roots and no page errors.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified`
+is past `<stamp — filled in after the PR merges>`, or later**
+(`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or cached build will
+still show every one of these.
+- **JP-038 — fixed.** Every section on every page, the footer included, now starts its content
+  at the design's side inset: 56 at 1440, 30 at 768 and 10 at 390. At 390 a few designs are
+  drawn at 20 in Figma (layout 1's bio, media, repertoire and pricing, and layout 3's pricing).
+  They now use 10 like their neighbours, by choice, so the page reads as one column.
+- **JP-048 — fixed.** Each package in the Pricing panel now has a *Featured* tick. Tick one to
+  give it the FEATURED badge in layout 3; ticking another moves it. With none ticked, the badge
+  goes to the last package on show, as before. A package with only a name no longer takes it
+  from the one you ticked.
+- **JP-049 — fixed.** A bad address now shows its warning under the box whenever you are not
+  typing in it, including after switching sections and coming back. This reaches every address
+  box, not only the enquiry email.
+- **JP-043 — fixed.** On the published page at desktop, the booking calendar beside the bio and
+  media column now stays in view while that column scrolls. It moves on with the page once the
+  column ends. The editor's canvas still shows it in place, since the canvas is a picture of the
+  page.
+- **JP-044 — fixed.** At tablet width the artist now sits under the song title in the
+  Repertoire's set cards, so every title shows in full, in the editor and on the published page.
+- **JP-045 — fixed.** A gig with no tickets link, or one the address check refuses, no longer
+  draws Tickets → (map layout 3) or ↗ (map layout 2), in the editor or on the published page. A
+  gig with a link shows it on both.
+- **JP-046 — fixed.** Pricing layout 3 now shows *Save 15% on bundles* beside the Duo / Trio /
+  Band selector at every width, and the Pricing panel has an *Offer line* field for it. Empty
+  the field to remove the line.
+- **JP-047 — by design.** The chips filter by city because a gig has only a day and a month,
+  with no year, so nothing can place it before or after today. Upcoming / Past needs a real date
+  per gig. That is a change to the gig editor, and we can offer it separately.
+- **JP-054 — fixed.** Layout 4 now opens with the design's five boxes (Your name, Email, Event
+  date, Event type and Location) above the Message box. Once you change the list, your list is
+  used in every layout.
