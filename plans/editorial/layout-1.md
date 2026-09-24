@@ -131,7 +131,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 3 | `media` | `964:58614` | Media Player — D · Floating cards stack | 1440 × 1140.2 | `986:48241` *(in `986:48240`)* | 768 × 1629.6 | `986:48253` | 390 × 1211.8 | 2 | `964:58590` | `964:58602` | done `83c499b` |
 | 4 | `gallery` | `964:58615` | Gallery Sections — Component 1 | 1440 × 818 | `986:48242` | 768 × 1123 | `989:22410` | 390 × 791.7 | 1 | `964:58591` | `964:58603` | done `1f4b606` |
 | 5 | `repertoire` | `964:58616` | Repertoire — A · Two-column dense | 1440 × 1055 | `986:48243` | 768 × 897 | `986:48255` | 390 × 896 | 3 | `964:58592` | `964:58604` | done `f4e8f0a` |
-| 6 | `map` | `964:58617` | Events Map — D · Compact tile | 1440 × 1191.2 | `986:48244` | 768 × 1308.6 | `986:48256` | 390 × 1132.5 | 1 | `964:58593` | `964:58605` | todo |
+| 6 | `map` | `964:58617` | Events Map — D · Compact tile | 1440 × 1191.2 | `986:48244` | 768 × 1308.6 | `986:48256` | 390 × 1132.5 | 1 | `964:58593` | `964:58605` | done `5f9fa4e` |
 | 7 | `pricing` | `964:58618` | Pricing — B · 3-col in soft panel | 1440 × 880 | `986:48245` | 768 × 793 | `986:48257` | 390 × 1486 | 2 | `964:58594` | `964:58606` | todo |
 | 8 | `calendar` | `964:58619` | Booking Calendar — A · Scheduler | 1440 × 911 | `986:48246` | 768 × 1371 | `986:48258` | 390 × 995 | 1 | `964:58595` | `964:58607` | todo |
 | 9 | `form` | `964:58620` | Enquiry Forms — B · Split context+form | 1440 × 891 | `986:48247` | 768 × 1075 | `986:48259` | 390 × 1165 | 3 | `964:58596` | `964:58608` | todo |
@@ -679,6 +679,14 @@ Append as the pass goes. Do not repeat Lime's, Grunge's or Retro's bullets; name
 - **A leant print in a stack gives back its rotated box** (section 3): Figma's auto-layout spaces a
   rotated child by its bounding box, so a mount standing under a list takes a block margin of
   W·sin θ / 2 a side (`1.745% 0` at 2°). Beside a list, centred, it needs none.
+- **…unless the row is sized by it** (section 6): the map's desktop row hugs the leant panel's
+  rotated box, so the panel's column *is* that box (658.57 of 1328) and the panel gives back both
+  halves as a margin; the tile beside it stretches to the box's height. Read the parent's size
+  against the rotated box before choosing.
+- **A tape inside a leant print is seated in the print's own frame** (section 6): its local `x`/`y`
+  and `rotation` give the centre as `(x + cos θ·w/2 + sin θ·h/2, y − sin θ·w/2 + cos θ·h/2)` (θ
+  Figma's), and nested CSS transforms compose as Figma's do — no un-rotation. Pass the tape's own
+  binding: `Tape`'s default `s.activeBg` is terracotta under Scheme 1, the ground it lies on there.
 
 ### Seen at planning time, per section
 
@@ -1194,6 +1202,72 @@ four ink ones are its own register.
   and drops the pager; every chip hit-tests to itself, and the point under the star is the heading
   or the section (it takes no pointer).
 
+### Settled in section 6 (the events map)
+
+- **No Editorial block: `EventsMap`'s `if (s.lime || s.grunge)` inside `if (s.v0)` is
+  `s.limeTree`**, after the seam, with `const ed = s.editorial` and a third arm at the head of `G`
+  (Lime's and Grunge's arms untouched; the new leaves `kicker`, `globe`, `ring` and `venue` fall
+  back through `??`). The tree is Grunge's plus the tape (the walker, all three masters), on
+  Scheme 1 at every width, no Device override, no nested scheme — so the root paints it with no
+  flag (route A) and `limeLight` stays Lime's. `ink` (`s.bg`) is paper here, so every site outside
+  the Lime arm that read it takes an `ed` branch: the wrapper's `color`, the radius label, `disp()`'s
+  uppercase, the tile ring.
+- **The deltas, all off `boundVariables`:**
+  - the **head**: kicker and radius label `text/2` ink (`s.tx`), the heading `text/1` terracotta,
+    uppercase; the radius label Display/Title through `labelStyle`, Grunge's call at Sienna Vale's
+    **32 / 25 / 23** (`titleSize` now picks per template);
+  - the **tile**: `box/3` ink in a 1px INSIDE **`stroke/2`** ring (terracotta, Lime's overlay with
+    `G.ring`), unradiused, padded **10 at every width**, gap 0; the map on `box/2` under the raster,
+    unradiused, 218.84 at 768 and 298 at 390, the "pink tint" is Lime's own mechanism — a
+    MULTIPLY `active/bg` layer at .6, so terracotta over the raster (`FILL`, hash `8cd103b8`); the
+    globe `active/bg`, the base line and the terms `active/text` paper;
+  - the **panel**: `active/bg`, unradiused, padding **40 / 40 / `30 20 20`**, gap 20, a **7px
+    INSIDE `box/2`** ring and a **`DROP_SHADOW` #000 25% at 3, 8 blur 9** (read off `effects`, the
+    calendar's blur-9 twin), both in one `boxShadow` × 0.82 on desktop; **Figma −1 → CSS
+    `rotate(1deg)`**; no clip. Its head flush and unfilled (no rule — Lime's case);
+  - the **rows**: unfilled, unradiused, ruled by `DashRule` **7, 7** in **`s.stroke1`** — opaque ink
+    under Scheme 1, trap 1 followed: the frame's dashes on terracotta are black; padding **20 / 0**
+    at 1440 and 390, and at 768 the master's fixed 79.48 row with its 57 box centred
+    (`11.24px 10px 11.24px 0`). A 0.18° rotation on the 768 rows is a slip, dropped. The venue is
+    **Display/Title 32 / 25 / 23 at 1.1** (Lime's and Grunge's Display/List); the date box 56 × 57,
+    **square**, `tag/1/text` — `s.chips[0].fg`, the binding's own seat — under `active/text`.
+- **Figma spaces the leant panel by its rotated box at every width**, not only at 390 as the
+  gallery's is: Frame 190 is 737.16 at 1440 (the panel's box height, which the tile stretches to),
+  404 + 657.57 at 768, 425.16 + 50 + 479.39 at 390. So the desktop columns are the frame's
+  **633.43 : 658.57** (the panel's box, not two halves) and the panel gives back
+  `u(5.58) u(6.29)`; stacked, `0.873% 0` (W·sin 1° / 2). The 390 stack gap is **50** (the twins'
+  10), room for the tape.
+- **The tape** is the panel's last child: `sem/media` blush (`colour={SIENNA_MEDIA}` — `Tape`'s
+  default `s.activeBg` is the panel's own terracotta), Figma −2 → `rotate(2deg)` **inside** the
+  leant panel (−3 on the page), seated by centre in the panel's own frame off its local `x`/`y` —
+  **(316.71, −7.75)** at 1440 and 768, **(182.77, −5.41)** at 390 — so no un-rotation. Measured:
+  (259.5, −6) against the frame × 0.82 (259.7, −6.4); (317, −8); (183, −5).
+- **`Pager` needed no edit**: `frame.lime` overrides the Editorial arm to `{ ring: s.stroke1, ink:
+  s.bg, idle: s.activeFg, on: s.tx, onEdge: s.stroke1, pill: 87 }` — every button ringed in
+  opaque ink (so `onEdge` is the ring, not the repertoire's terracotta), the pills **87** (Lime's;
+  the repertoire's are 54), the arrows' glyph `bg` paper, and the page **marked by its numeral
+  alone**, `text/2` ink among `active/text` paper ones — the frame's own mark, followed. Lime's
+  `grow: !tab` is inherited: the desktop frame's seven buttons overflow its 566 by 12 a side.
+- **gigDark is not widened** (session 0's hand-over, closed): the block reads no `g.hue`, `mapBg` or
+  `mapFg`. `deep` / `mapBg` (terracotta under Scheme 1) reach nothing here.
+- **Two live states the frames do not draw, redrawn** (Lime's rule): the **pin** is Grunge's keys,
+  which resolve to paper in a 3px ink ring, lit ink in a 5px paper ring at 16 — a terracotta pin
+  would vanish in the tint; the **lit row is paper under ink**, the ink date box still reading on
+  it, and since the row is flush the fill **bleeds 12 either side as two offset shadows**
+  (`±u(12) 0 0 0`), so the row's box and its dashed rule stay the frame's. The global
+  `a:hover { opacity: .72 }` dims a linked lit row under the pointer — app-wide, left alone.
+- **Measured** (harness, against the section root): heading 97 / 73 / 48; desktop panel 529 wide
+  (646 × 0.82 = 529.7), tile 519 (633.43 × 0.82 = 519.4), rows 79.5 once the 1° lean is taken off
+  the box; 768 tile 371.6 (372), map 218.8, rows 79.5; 390 tile 425.6 (425.16), map 298, rows 96.9.
+  The seeded page is five gigs at every width (the twins' inherited 390 diff), so no pager is drawn
+  seeded.
+- **Function** (`theme=3&live=1&n=30`, puppeteer mouse clicks, three widths): a row lights its pin,
+  a pin lights its row, Next moves the ink numeral 1 → 2 and the list to venue 6, Prev back finds
+  the lit gig still lit; linked rows are `<a>`; every click hit-tests to its target (the tape takes
+  no pointer); `scrollWidth` 390 at 390.
+- **Moved, theme 3 only** (digest: exactly `map` arch 0 at three widths, static and live — 3 of 645
+  each; zero at themes 0, 1, 2 and 4). No shared helper changed.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1319,6 +1393,31 @@ Section 5:
   `Pager`, 645 renders static and live.
 - *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
   session 0) — the heading, the songs, the artists, the page numerals.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
+Section 6:
+- *Where the seam lives inside the branch, the block goes after the seam* (Lime 1, section 4) —
+  `perPage`, `pg`, `shown`, `lit`, `onPick` shared whole.
+- *The `G` lookup at the block's head, whose twin's arm is today's literals* (Grunge 1, sections
+  4–10) — a third arm; new leaves fall back through `??`.
+- *The node walker* (Grunge 2) — all three masters, with parent-relative `x`/`y`, rotation,
+  `dashPattern`, per-side weights and binding names.
+- *A scheme that did not move can still move the binding* (Grunge 3) — the kicker and radius label
+  on `text/2`, the date box on `tag/1/text`, the tape on `media`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — one effect, the panel's
+  real drop shadow.
+- *A frame's inside stroke is an inset `boxShadow`, on an overlay* (Lime 2, section 1) — the tile's
+  1px ring, the panel's 7px one.
+- *Retro's live states vanish under Lime; redraw them, never inherit them* (Lime 1, section 6) —
+  the pin and the lit row.
+- *`vm.title` shadows the ramp's `title` size* (Lime 1, section 6) — 32 / 25 / 23.
+- *`Pager` has a Lime branch, `BookPill`'s shape* (Lime 1, section 5; D1) — overridden through
+  `frame.lime`, no edit.
+- *The 390 page is five gigs* and *the compact `pageWindow` at every width* (Lime 1, section 6; D1).
+- *Figma auto-layout spaces a rotated child by its rotated bounding box* (memory
+  `figma-frame-reading`) — at all three widths here, read per master.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the heading, the radius label, the venues.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
 ## Open questions
