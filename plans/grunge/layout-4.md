@@ -239,7 +239,7 @@ it is the gate this session widens.
 | 5 | `repertoire` | `964:73011` *(Section `964:73006`, panel `964:73007`)* | 1208 × **600** | `971:8128` *(Section `971:8123`, panel `971:8124`)* | 608 × 582 | `977:12355` *(Section `977:12350`, panel `977:12351`)* | 310 × 650 | `964:72916` / `971:5604` / `977:9178` | `964:72822` / `964:78509` / `977:8166` | `if (s.lime)` inside `Repertoire`'s `if (s.v3)`, after `jump` | done `5b6eac4` |
 | 6 | `map` | `964:73019` *(Frame 319 `964:73013`, head `964:73014`)* | 1440 × 747 | `971:8136` *(Frame 319 `971:8130`, head `971:8131`)* | 768 × 870 | `977:12363` *(Frame 319 `977:12357`, head `977:12358`)* | 390 × 680 | `964:72924` / `971:5612` / `977:9186` | `964:72830` / `964:78599` / `977:8322` | `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | done `2125c9c` |
 | 7 | `pricing` | `964:73021` | 1440 × 542 | `971:8137` | 768 × 806 | `977:12364` | 390 × 829 | `964:72926` / `971:5613` / `977:9187` | `964:72831` / `964:78656` / `977:8440` | `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | done `e88a917` |
-| 8 | `calendar` | `964:73034` + wizard `964:73033` *(Section `964:73022`, Frame 324 `964:73023`)* | 478 × 533 + 680 × 533 | `971:8150` + `971:8149` *(Section `971:8138`, Frame 324 `971:8139`)* | 608 × 502 + 608 × 476 | `977:12377` + `977:12376` *(Section `977:12365`, Frame 324 `977:12366`)* | 350 × 496 + 350 × 474 | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | `if (s.lime)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | — |
+| 8 | `calendar` | `964:73034` + wizard `964:73033` *(Section `964:73022`, Frame 324 `964:73023`)* | 478 × 533 + 680 × 533 | `971:8150` + `971:8149` *(Section `971:8138`, Frame 324 `971:8139`)* | 608 × 502 + 608 × 476 | `977:12377` + `977:12376` *(Section `977:12365`, Frame 324 `977:12366`)* | 350 × 496 + 350 × 474 | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | `if (s.lime)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | done `86227e7` |
 | 9 | `form` | **`725:2990`** *(the main component — no page instance at 1440)* | 1440 × 795 | `971:8151` | 768 × 1024 | `977:12378` | 390 × 964 | `964:72940` / `971:5627` / `977:9201` | `964:72845` / `964:79477` / `977:8663` | `if (s.v3 && s.lime)` ahead of `EnquiryForm`'s `if (s.v3)` | — |
 | 10 | `testimonials` | `964:73035` | 1440 × 716 | `971:8152` | 768 × 642.4 | `977:12379` | 390 × 603.4 | `964:72941` / `971:5628` / `977:9202` | `964:72846` / `964:79536` / `977:8764` | `if (s.lime)` inside `Testimonials`' `if (s.v3)`, after `padBot` | — |
 | — | `footer` | `964:73036` | 1440 × 479.5 | `971:8153` | 768 × 647.4 | `977:12380` | 390 × 619.4 | `964:72942` | — | — | **out of scope**: Grunge's own layout-1 footer family at layout 1's sizes; `NVAR.footer` is 1 |
@@ -1211,6 +1211,85 @@ them.
   `pricing_arch_3` at three widths on both surfaces. No `_arch_7_` file exists: `digest.mjs`
   caps pricing at 4.
 
+### Settled in section 8 (the calendar)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `Calendar`'s `if (s.v3)`, after `onNextTag`, is
+  `(s.lime || s.grunge)`**, with `const grunge = s.grunge` naming six deltas and one `r15()`
+  helper for the three radius-15 cards. There is no `G`. `disp()` now faces, re-leads and
+  uppercases under Grunge, so every Stones Crush site goes through it: the head, the wizard's
+  title, the GUESTS label, the date and package lines, and Back / Next Step. The paired diff of the
+  two `Frame 324`s (`964:73023` / `971:8139` / `977:12366` against `964:72928` / `971:5615` /
+  `977:9189`) was the whole read. It found **98 = 98 nodes at every width**, the wizard on Static
+  Youth's Scheme 1 as Lime's is on Lime's, no Device override and no effect. The seam is shared
+  whole, so the wizard's steps, chips, boxes, *Package ›*, the summary column, the mailto and the
+  refusal needed nothing new.
+- **Two bindings moved, and one of them only at 1440.**
+  - **The panel** is `sem/box/3`, `s.box3` `#0E0E0E`, where Lime's is `sem/box/2`. Its raw
+    radius is **15 at 1440 alone**. The 768 and 390 panels are 60 and 30, Lime's own, so the
+    plan's and the prompt's "radius 15" held for the desktop master only.
+  - **The summary card** is `s.tx` white in a 1px inside **`sem/stroke/2`** ring (`#FF0000`,
+    `s.stroke2`), drawn as an inset shadow. Lime's card binds `stroke/1` and leaves it undrawn.
+  - Everything else resolves through Lime's keys: the `s.ac` head, chips and Next Step; the
+    `s.bg` Back pill with its `s.ac` disc and label; the `s.box2` (`#383838`) rules, date box,
+    idle chips and card ink; the `s.box1` (`#1A1A1A`) wizard card and rows in `stroke1`; and the
+    lit step disc in `s.stroke2`.
+- **The three-level stack is restored, so CLAUDE.md's cost reverses.** The rows are `#1A1A1A`
+  under the white card on the `#0E0E0E` panel. CLAUDE.md's "on Grunge `tx` and `paper` are one
+  value, so the card and the date and package rows share a fill" described the flat Retro body
+  Grunge's card 4 read until now. The block comment's "now Grunge's alone" is rewritten to say
+  that it is no template's. CLAUDE.md's sentence is left for the sweep (item 1 names it).
+- **Boxes**: the wizard card, the summary card and the two rows are radius **15** at 1440, and
+  the wizard card is 16 narrow (Lime's narrow component, unchanged). The summary card and the
+  rows pad **24** at the sides (Lime 34), with 24 / 18 top and bottom as Lime's. The panel
+  paddings, the 50 / 20 gaps, the 680 : 478 columns and the 16 column gap are Lime's to the
+  number.
+- **Send Enquiry is Scheme 2 again**: `fg="#171716"`, layout 3's calendar literal, since Lime's
+  `s.box1` is `#1A1A1A` here. The arrow follows `bg`, so it stays red, as the frame draws it.
+- **Measured** (canvas, content edges):
+  - desktop: panel 1088.2 × 669.6 at radius 12.3 (1328 × 819 × 0.82 = 1089 × 671.6); h2 95.2
+    tall at 80.25px; wizard 557.2 × 435 at radius 12.3; title 22.1px; summary card 196.2
+    (241 × 0.82 = 197.6); rows 77.6 (95 × 0.82 = 77.9); pill 44.3;
+  - 768: panel 1266.2 (1270), wizard 474.1 (476), card 226.8 (228), rows 85.6 (86), pill 54;
+  - 390: panel 1106.2 (1111), h2 40.9 at 34.5px (41), wizard 471.9 (474), card 224.6 (226),
+    rows 83.4 (84), pill 54.
+  Each narrow shortfall is the rows' and cards' 1–2px line boxes (Anton against Stones Crush).
+- **Named diffs, all Lime's and JP-052's**:
+  - *Package ›* at body-lg where the frame's is 12;
+  - the date card's year line where the frame reads *Arrival 6pm*;
+  - the package card's price where the frame has a line-up;
+  - the canvas prints the seeded Manchester location and The House Party;
+  - Anton at 0.75 against Stones Crush.
+- **`live=1`, red on red (open question 5)**, desktop and 390 (puppeteer, probe deleted):
+  - the first paint is `e.g.` placeholders over *THU, JUNE 12 · 2025 · 9:00pm* and *THE HOUSE
+    PARTY £450 Package ›*, and the foot pill is already a `mailto:`;
+  - Festival plus `14/11/2026` gives *SAT, NOVEMBER 14 · 2026*;
+  - Next, then 300 / 5 hrs / £3,000 / Needed and *Package ›*, gives those four values and *THE
+    WEDDING SET £650*;
+  - an empty send on step 3 rings both boxes in **2px of white** (`s.tx`) inside the `#383838`
+    box on the `#1A1A1A` card, with the prompt under the buttons, and it reads. The idle ring is
+    white at 15%, so the refusal is colour and weight at once (Lime's rule) and needed no Grunge
+    arm;
+  - a valid send composes exactly JP-053's body and shows the confirmation, and the pill turns to
+    a span.
+
+  Flags, at desktop:
+  - `&tiers=none` drops the package card;
+  - a one-package `&tiers` drops the chevron and the pointer;
+  - `&email=` and `&email=none` leave the pills spans;
+  - `&today=2026-09-24` prints *Pick a date to enquire*;
+  - `&open=2026-11-05` gives *THU, NOVEMBER 5*;
+  - `&booked=2026-11-14&today=…` refuses a typed 14/11/2026 with *Not available. Pick another
+    date* and the date at .38.
+
+  There were no page errors. `page-check.mjs Grunge 3` (run after the digests had finished) found
+  four cards, no errors or warnings, every link scrolling (Availability → `#calendar`), the 390
+  burger going 1 → 11, and overflow 0. Pricing's black meets the calendar's black with no line.
+- **`reach.mjs 2`**: the calendar rows are JP-052's unchanged. `cta` reaches layout 1, `image`
+  and `time` 1 and 4, `open` all four, `slots` 2, and `types`, `&tiers` and `who.location` 4.
+  `FIELDS.calendar` did not move.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `calendar_arch_3` at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -1257,6 +1336,12 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   dropped where they don't* (lime/layout-1, the chips' `#F2FFD0` hairline as `s.stroke1`);
   *`faced` / `facedLh` and uppercase per site* (grunge/layout-1); the header's *chips are
   `vm.tagChips`' own seats* (this plan, section 1).
+- Calendar: *the paired diff walk* (grunge/layout-2); *read `boundVariables`* (grunge/layout-3,
+  the panel's `sem/box/3` and the card's `sem/stroke/2`); *a widened block can need no `G` at all*
+  (grunge/layout-3, section 9 — six deltas); *a section on another scheme writes that scheme's
+  values as named literals* (grunge/layout-3, Scheme 2's `#171716`); *a refused box changes colour,
+  not weight alone* (CLAUDE.md — met by Lime's 2px white already); *`faced` / `facedLh` and
+  uppercase per site* (grunge/layout-1, folded into the block's `disp`).
 
 ## Open questions
 
