@@ -57,7 +57,7 @@ and 2.
 | 3 | JP-044 | Repertoire layout-3 titles cut off at 768 | **Confirmed, Lime/Grunge only**: a 19px title beside a `flex: none` artist in a ~148px card | S–M | no (named diff) | **done** |
 | 4 | JP-046 | *Save 15% on bundles* missing, no field | **A named diff of the fit** (dropped in Retro L3, inherited) | S | **user: add the field** (by the plan) | **done** |
 | 5 | JP-048 | FEATURED follows position | **Confirmed**: the seat is `i === shown.length - 1` | M | **user: a Featured tick, layout 3 only** | **done** |
-| 6 | JP-054 | Form layout 4 lacks Event type and Location | **Named diff**, kept on 2026-09-23 | S | **user: seed `FORM_FIELDS_4`** (reverses 2026-09-23) | open |
+| 6 | JP-054 | Form layout 4 lacks Event type and Location | **Named diff**, kept on 2026-09-23 | S | **user: seed `FORM_FIELDS_4`** (reverses 2026-09-23) | **done** |
 | 7 | JP-043 | The composed page's right column does not stick | **Confirmed**: nothing is sticky; `align-items: start` leaves ground under the calendar | S | **user: sticky, published** | open |
 | 8 | JP-038 | Sections disagree on their side inset (78 vs 56, footer 78 / 22) | **Confirmed**: the remaining gap is `padX` itself | L | **user: `padX` becomes the frame's inset, footer included** | open |
 | — | JP-047 | Map chips are cities, not Upcoming / Past | **By design**: a gig has no year, so nothing can place it against `today` | — | **user: reply only** | reply in the sweep |
@@ -345,7 +345,39 @@ artist edits the list it applies at every layout (the heading and button default
 **Docs.** CLAUDE.md's form layout-4 sentences; a *Reversed* note on JP-054's Settled in
 `layout-4-qa-fixes.md`.
 
-**Settled.** —
+**Settled** (2026-09-24, `87b69c6`). The entry named no Evidence lines; the two resolvers were
+`formList` at `EncoreBuilder.jsx:1500` and `formFieldsVal` at `:3392`, as triaged.
+- **Frame.** `get_design_context` on `964:72940` (the layer names are not trusted — the head's
+  layer is "KAI MERCER" and reads *Contact Us*): YOUR NAME *Full name*, EMAIL *you@email.com*,
+  EVENT DATE *dd / mm / yyyy*, EVENT TYPE *Wedding, party…*, LOCATION *Town / city* (full
+  measure), MESSAGE *Tell me about your event…*. Both layout-4 blocks upper-case the label in
+  CSS, so the seed is title case.
+- **Code.** `FORM_FIELDS_4` in `data.js` under `FORM_FIELDS`, five rows, one `email`.
+  `formList` falls back to it at `d === 3` and `formFieldsVal` at `design === 3`; the gate is on
+  the absent key only. The `fields` hint says layout 4 starts on its own five until edited.
+- **Digest** (HEAD `f51c3d1` worktree on :5174, themes 0, 1, 2, all categories, three widths,
+  port normalised): **exactly the 18 named files** — form arch 3 × three themes × three widths ×
+  canvas and `live=1` — and nothing else. The rows: *Name* → *Your name*, *Guests / approx.* →
+  *Event type / Wedding, party…*, and a new full-measure *Location / Town / city* row, which
+  pushes Message and the pill down 78.9 at desktop.
+- **Real app** (one-off puppeteer, deleted; Retro, Lime, Grunge, setup card 4): the Form fields
+  repeater lists the five at layout 4, the old four at layout 1, the five again back at 4;
+  editing the first label at 4 and switching to 1 keeps the five (and the canvas prints
+  Location) — the list is the artist's. Published at 1440: five inputs with the frame's
+  placeholders (`type=email` on Email). With boxes 3 and 4 empty, the submit refused and marked
+  **those two alone** (Retro an inset `rgb(200, 70, 28)` rule, Lime 2px pale, Grunge 2px white)
+  and printed the prompt; filling them cleared both. The href: `mailto:bookings@kaimercer.co.uk
+  ?subject=Enquiry&body=Your full name: Ann Lee / Email: ann@x.co / Event date: 12 / 06 / 2027 /
+  Event type: Wedding / Location: York` (CRLF between lines). No page errors.
+- **Docs.** CLAUDE.md's form layout-4 sentences (the boxes, and the fifth box is now the seed's
+  Location) and — folded in — the repeaters paragraph (`TIER_KEYS` leaves out `featured`);
+  *Reversed* bullets on JP-054's Settled and reply in `layout-4-qa-fixes.md` and on Lime L4 §9
+  in `layout-4.md`. Grunge's "KAI MERCER" head stays a named diff. No `reach.mjs` row (no new
+  key).
+
+Reply: **fixed.** Layout 4 now opens with the design's five boxes (Your name, Email, Event
+date, Event type and Location) above the Message box. Once you change the list, your list is
+used in every layout.
 
 ---
 

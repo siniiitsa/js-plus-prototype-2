@@ -996,7 +996,7 @@ mutated through a single `patch()` helper.
   delimited textarea, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
   numbers 01 / 02 / 03. All eight follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_4` at form layout 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package
