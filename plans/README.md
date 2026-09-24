@@ -31,7 +31,8 @@ plans/
     layout-2.md
     layout-3.md
     layout-4.md
-  editorial/   ← not started
+  editorial/
+    layout-1.md
   pop/         ← not started
 ```
 
@@ -90,10 +91,21 @@ layout 4's *Conventions*, the section's *Settled* bullet and its entry in the Li
 fixes where it has one (the block it widens, as QA left it), and Retro layout 4's *Conventions*
 and 2026-09-15 Addendum.
 
+## Editorial
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`editorial/layout-1.md`](./editorial/layout-1.md) | `editorial-layout-1`, forked from `main` (planned, not started) | Retro, Lime and Grunge layout 1's eleven component sets in their fourth variant, `Theme=Editorial`, in the Figma mode **Sienna Vale**: a token foundation (session 0, which opens on two user calls — the display face, Fisterra Fora, is a Fontspring demo, and six of the eleven sections stand on another scheme, four of them on ink), then Editorial decoration inside Lime's layout-1 blocks, widened under a new group flag `s.limeTree` with the deltas behind `s.editorial`, the header's four modal cards, plus the end-of-pass sweep. Written as deltas against Lime and Grunge layout 1. The planning walk found the first **light** page (paper, taupe and ink bands on straight edges — no seams, no band grain), a decorative language of its own (dashed rules, tape, tilted polaroids with real drop shadows, sparkles, a terracotta seal), and Editorial frames on all four layout pages, so card 1 is fitted and cards 2–4 are placeholders. Inherits `CONVENTIONS.md` A, B, C and D1. |
+
+**Reading order in an Editorial session:** `CLAUDE.md`, then the plan, then
+[`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C and D1 and the bullets they point at, the
+section's *Settled* bullets in both Lime layout 1 and Grunge layout 1 (the block it widens, and the
+one widening already done), and Lime layout 1's *Per-session procedure*.
+
 ## Other templates
 
-Editorial and Pop work, but they render flat (see CLAUDE.md, *Retro, Lime and Grunge are designed*). When one
-of them gets its first plan:
+Pop works, but it renders flat (see CLAUDE.md, *Retro, Lime and Grunge are designed*). When it gets
+its first plan:
 
 - Start its folder here, and add a table to this file.
 - Say which groups of [`CONVENTIONS.md`](./CONVENTIONS.md) it inherits — the file Grunge's sweep
