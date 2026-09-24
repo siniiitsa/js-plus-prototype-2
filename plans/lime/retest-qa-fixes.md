@@ -55,7 +55,7 @@ and 2.
 | 1 | JP-049 | A stored bad enquiry address shows no warning under the box | **Confirmed**: `UrlInput`'s error is blur-only local state, lost on remount | S | no | **done** |
 | 2 | JP-045 | Tickets → / ↗ on the canvas for gigs with no link | **Confirmed**: map layouts 2 and 3 split canvas from live on purpose | S | **user: drop on both** | **done** |
 | 3 | JP-044 | Repertoire layout-3 titles cut off at 768 | **Confirmed, Lime/Grunge only**: a 19px title beside a `flex: none` artist in a ~148px card | S–M | no (named diff) | **done** |
-| 4 | JP-046 | *Save 15% on bundles* missing, no field | **A named diff of the fit** (dropped in Retro L3, inherited) | S | **user: add the field** (by the plan) | open |
+| 4 | JP-046 | *Save 15% on bundles* missing, no field | **A named diff of the fit** (dropped in Retro L3, inherited) | S | **user: add the field** (by the plan) | **done** |
 | 5 | JP-048 | FEATURED follows position | **Confirmed**: the seat is `i === shown.length - 1` | M | **user: a Featured tick, layout 3 only** | open |
 | 6 | JP-054 | Form layout 4 lacks Event type and Location | **Named diff**, kept on 2026-09-23 | S | **user: seed `FORM_FIELDS_4`** (reverses 2026-09-23) | open |
 | 7 | JP-043 | The composed page's right column does not stick | **Confirmed**: nothing is sticky; `align-items: start` leaves ground under the calendar | S | **user: sticky, published** | open |
@@ -243,7 +243,35 @@ surfaces.
 **Docs.** The two "stays dropped" comments; *Reversed* notes in Lime L3 and Grunge L3's pricing
 Settled; CLAUDE.md's pricing layout-3 sentence.
 
-**Settled.** —
+**Settled** (2026-09-24, `1f18574`). The Evidence lines held (8502 Retro's comment, 8756 Lime's).
+- **Frame.** All six masters draw it, at every width: Retro `964:68648` / `977:23149` /
+  `982:10274`, Lime `964:68680` / `984:10765` / `984:10796`, Grunge `964:68712` / `984:13925` /
+  `984:13956`. One `toggle-row`: the capsule, then the text, gap 14, `items-center`, no wrap;
+  `Body/SM` (Inter 400, lh 1.4, the capsule labels' own size — Lime 13 at 1440 and 768, 12
+  elsewhere) in `sem/text/2` (`#111` / `#F2FFD0` / white), sentence case.
+- **Code.** `PRICING_OFFER` and `FIELDS.pricing.offer` ("Offer line", `d`, `in: [2]`, beside
+  `intro`), `vm.pricingOffer = cv('offer', PRICING_OFFER)`, uncased; `EditPanel` resolves it
+  through `fieldDefault`'s `d` like every seeded key. Both branches wrap the capsule in
+  `row(u(14), { flexWrap: 'wrap' })` with the span after it, the span in the capsule's own type.
+  The row stands on either half: packages with no tags draw no capsule but keep the line.
+- **Reach** (`reach.mjs` row `pricing.offer`, themes 0–2): layout 3 only, 6/6 renders each.
+- **Digest** (HEAD `f8f2ccf` worktree on :5174, themes 0, 1, 2, all categories, three widths,
+  port normalised): **exactly pricing arch 2 × three widths × three themes**, 9 of 387 files on
+  the canvas and 9 of 387 live. Each gains two rows (the row, the span) and nothing moves: the
+  row is the capsule's own height. Span boxes: Lime 131 × 18 at 768 and 121 × 17 at 390, Retro
+  and Grunge 121 × 17 — the masters' 130 × 18 / 120 × 17 — offset 9 down, as the frame's.
+- **Emptied** (`&cj={"offer":""}`, pricing, themes 0–2, both surfaces): no render carries the
+  text; the only row left over HEAD is the wrapper, at the capsule's own box. Packages without
+  tags: the line alone, and with it emptied no row at all.
+- **Real app** (one-off puppeteer, deleted; Retro, Lime, Grunge, setup card 3): the panel's
+  *Offer line* holds the seeded copy with no "Not shown" note; canvas and published tab show the
+  line; emptied, it is gone from the canvas and from the republished tab. No page errors.
+- **Docs.** Both code comments; *Reversed* notes on Lime L3's and Grunge L3's pricing named
+  diffs; a sentence in CLAUDE.md's pricing layout-3 paragraph.
+
+Reply: **fixed.** Pricing layout 3 now shows *Save 15% on bundles* beside the Duo / Trio / Band
+selector at every width, and the Pricing panel has an *Offer line* field for it. Empty the field
+to remove the line.
 
 ---
 
