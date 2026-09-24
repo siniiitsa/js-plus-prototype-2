@@ -1,8 +1,9 @@
 // The seeded mock photography of the designed templates, exported from their
 // Figma frames — Retro's §10.2 page, Lime's four layout pages and Grunge's
-// layout-1 page. Grunge's layout-2 and layout-3 frames drew nothing new: every
-// photograph they carry is already seeded here, the layout-3 bio's crop taken
-// as an objectPosition on grungeStage rather than as a second export.
+// layout-1 page. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
+// new: every photograph they carry is already seeded here, the layout-3 bio's
+// crop taken as an objectPosition on grungeStage rather than as a second
+// export, and the layout-4 bio's a centred cover of the same file.
 //
 // These are *imports*, never fetched: §8.6 forbids a network request anywhere in
 // the render path, and vite-plugin-singlefile forces `assetsInlineLimit = () => true`,

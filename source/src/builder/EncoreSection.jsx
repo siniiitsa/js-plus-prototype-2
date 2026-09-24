@@ -4740,8 +4740,9 @@ function Bio({ s }) {
             it outside the header. At .75 a stacked line of caps collides in
             every display face taller than Fraunces (Titan One and Bebas Neue
             both overlap outright), so every template but Retro degrades to
-            .89 — the flat three, since Lime's own block above takes its
-            frames' .75 in Bebas Neue — which is the leading every other
+            .89 — the flat two, since the Lime block above takes its
+            frames' .75 (Bebas Neue, and Anton under Grunge, which widens
+            it) — which is the leading every other
             display head in this file already sets — the page's own ramp
             rather than an invented number. */}
         <h2 style={{
@@ -14987,9 +14988,9 @@ function Calendar({ s }) {
     // exactly. **That restores the three-level stack Retro's note said Lime
     // flattens**: `box1` rows under a `tx` card on a `box2` panel, where the
     // Retro path's `paper` rows and `tx` card are one colour on Lime.
-    // CLAUDE.md's "on Lime and Grunge the card and the rows share a fill" is
-    // no template's now: Grunge's own frame restores the same stack (below) —
-    // for the sweep. The card's own `stroke/1` (pale at
+    // So the flat body's shared card-and-row fill (CLAUDE.md's calendar
+    // paragraph) is no template's: Grunge's own frame restores the same stack
+    // (below). The card's own `stroke/1` (pale at
     // .15 on pale) is not drawn, Retro's reading of the same stroke; no child
     // reaches a card's edge, so the rings are plain inset shadows. The Back
     // pill nests **Scheme 3** — `sem/text/1` there is `#15180F` = `s.bg`, its

@@ -337,9 +337,8 @@ export const NVAR = {
 // header card N lays out the whole page as layout N, and Lime's page N is
 // Retro's page-N components re-skinned — so its family is those four and
 // no more. Grunge is the same four in a third mode (Static Youth), all four
-// pages confirmed in the Figma file; Hero spread, Feature spread and Inset
-// Hero are fitted, and card 4 renders HeaderV3 in its tokens until its
-// layout pass.
+// pages confirmed in the Figma file and all four fitted — Stacked last, in
+// HeaderV3's widened Lime block — so its family is closed too.
 // Editorial and Pop offer three flat layouts (§10.3); their designs do not
 // exist yet.
 export const headerFamily = (themeName) =>
@@ -1011,8 +1010,8 @@ export const FIELDS = {
   //
   // The header's `in` is always an object naming Retro, Lime and Grunge alone:
   // they have different header families (six designs against four and four —
-  // Grunge's row is measured over its fitted cards 1, 2 and 3 and its
-  // placeholder card 4, so each layout pass re-measures it), and the flat two have a family
+  // Grunge's row is measured over its four fitted cards, none a
+  // placeholder since its layout-4 pass), and the flat two have a family
   // of their own that is not designed, so they are left unmarked rather than
   // folded onto any list.
   header: [

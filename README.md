@@ -442,7 +442,7 @@ That distinction is the whole design, and it buys two things:
   visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
   out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
   box does not grow — under one prompt line. (Lime's boxes are pills, and a rule under a pill
-  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1 and the white 15% at layouts 2 and 3, so its refused box is a 2px white one in all three.) Errors are `useState`, set on a refused submit and
+  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four.) Errors are `useState`, set on a refused submit and
   cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
   valid submit swaps the mustard half alone for a confirmation that prints the address in plain
   text, since a browser that opened no mail app must still show one, and *Write another* comes
@@ -562,7 +562,7 @@ These are intentional limits, not oversights — see §12 for the full list. The
   each category's last deleted `{ arch, c }`, uploads included, so adding that category again
   brings its content back and the add composer opens on its old layout; a *Start fresh* tick
   in the composer opts out. It lives only as long as the session, like everything else.
-- **Retro and Lime are designed, and Grunge is at layouts 1, 2 and 3; Editorial and Pop are not.** Retro ships six
+- **Retro, Lime and Grunge are designed; Editorial and Pop are not.** Retro ships six
   photographic header layouts. Editorial and Pop are fully selectable and functional but
   render flat-colour sections and a three-layout flat header family — whose nav is still the
   hardcoded `Music · Shows · Book` triple in `FlatNav`, ignoring the artist's sections and never
@@ -577,15 +577,18 @@ These are intentional limits, not oversights — see §12 for the full list. The
   different compositions from Retro's: an upright glass card where Retro tilts a polaroid, and a
   glass nav capsule over an identity panel where Retro stands on a checker floor), so every card
   in the setup modal lays out a whole Lime page and the Lime family is closed. At layouts 2, 3
-  and 4 the footer is layout 1's. **Grunge is designed at layouts 1, 2 and 3**: its pages are Lime's
-  layout-1, layout-2 and layout-3 pages in a third Figma mode (*Static Youth*), so its treatment — at layout
+  and 4 the footer is layout 1's. **Grunge is designed at all four of its layouts**: its pages are Lime's
+  four pages in a third Figma mode (*Static Youth*), so its treatment — at layout
   1 torn black seams round the three textured bands, grain as a lighten layer and the red seal; at
   layouts 2 and 3 a black page whose every card and photograph is ringed in red or a white hairline where
   Lime's glows — layout 3 keeping one full-bleed sheet, the gallery's `#171716` band, and standing
   the map on the page where Lime paints one, since its Scheme 4 is its Scheme 1 byte for byte;
+  at layout 4 a black page with four red bands and one `#171716` band, torn seams again where
+  Lime draws arcs, and the testimonials standing on the page where Lime paints a sheet;
   Anton at 0.75 standing in for Stones Crush throughout — is `s.grunge` arms inside
-  Lime's blocks, widened to `(s.lime || s.grunge)`. Its header family is the same first four; Hero
-  spread, Feature spread and Inset Hero are fitted, and card 4 is a placeholder that renders and publishes. One piece of Retro's treatment is placed
+  Lime's blocks, widened to `(s.lime || s.grunge)`. Its header family is the same first four, all
+  four fitted (its Stacked header is Lime's glass capsule, black over a red floor), so every card
+  in the setup modal lays out a whole Grunge page and the Grunge family is closed. One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's

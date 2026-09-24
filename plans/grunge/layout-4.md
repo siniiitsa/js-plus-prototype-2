@@ -684,6 +684,10 @@ at `live=1` — check the lit and idle discs read on black, since Lime's read on
 
 ## The end-of-pass sweep
 
+**Done, 2026-09-24** (the docs and comments commit, then the `index.html` refresh). What each
+item came to is under *Learned on the end-of-pass sweep* at the foot of *Conventions*; the list is
+kept as it was run.
+
 Written now from what the plan can see; the sections add to it. One session, in this order:
 
 1. **CLAUDE.md and README.md**, wherever they describe Grunge as designed at layouts 1, 2 and 3, or
@@ -1517,6 +1521,89 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   master, never remap the twin's register* (grunge/layout-3, section 10); *`faced` is for a glyph
   the frame states* (grunge/layout-3, section 10 — here applied, the marks being stated).
 
+### Learned on the end-of-pass sweep
+
+- **The claim sites, one layout on again.** CLAUDE.md's designed-templates heading now reads
+  "Retro, Lime and Grunge are designed", its Grunge paragraph "all four of its layouts" with a
+  layout-4 sentence (the black page's four red grounds and one `#171716` band, the torn seams,
+  the collapsed testimonials sheet, Scheme 3's four literals, the two moved panel bindings, the
+  missing desktop form and its "KAI MERCER" head) and the family closed, and it names the three
+  additive helper props the header grew (`SealBadge`'s `scheme` 4, `NavBar`'s `links` and
+  `mark`, `Wordmark`'s `gap`). The six layout-4 paragraphs gained a Grunge clause each — the
+  media's two rings and its torn band, the gallery's black ring, `#0E0E0E` discs and shadowless
+  radius-5 pills, the map's `#1A1A1A` ticker in `#FF0000` with red numerals, pricing's
+  `s.stroke2` rule, the form's `s.stroke2` rules and white pill (and JP-054's "KAI MERCER" diff),
+  the testimonials' missing sheet and outline-less red fourth cell — and the calendar's cost
+  was reversed to "no template's", with its block comment. README took the same three claims
+  and its refused-box parenthetical (1px red idle at layout 4). Comments: `photos.js`'s header
+  (layout 4 drew nothing new either), `headerFamily`'s, `sectionVm`'s `grunge` flag, and the
+  header `in` note in both `data.js` and CLAUDE.md.
+- **The grep for "flat" caught one more**: bio layout 4's Retro branch said "every template but
+  Retro degrades to .89 — the flat three". Grunge takes the Lime block now, so it is the flat two.
+  The two "flat four" hits are in `s.v2` branches (layout 3) and stay.
+- **`page-check.mjs Grunge 3,0,1,2`**: four cards, no console error or warning in either window
+  on any card, none across the resize walk. Card 4's full walk: ten header fragment links (nine
+  nav, Book Now → `#form`) and nine footer links scroll to their sections; Listen and the three
+  Start Enquiry pills reach `#media` / `#form`; the player plays (`SoundHelix-Song-5`,
+  `paused: false`); the form's five boxes go from 1px `#FF0000` to 2px white on a refused submit
+  (the message box keeps its red, being optional), and the filled one composes the mailto and
+  swaps in *Check your mail app*; the 390 burger opens 1 → 11; overflow 0. The pages run in the
+  seeded order at 1440 and 390 with no composed row.
+- **The layout-4 controls page-check does not reach** (one throwaway script, deleted):
+  - **media**: Next plays, the disc pauses, Prev plays, and each of the five tiles loads its own
+    track;
+  - **gallery**: all seven thumbs and both discs change the section; at 390 the three-tile window
+    slides with the pills and wraps back to slot 0;
+  - **repertoire**: I lights (a black cell lettered `#DF262C`), calls `scrollIntoView` on its
+    group, and the rail is `sticky` at viewport top 0 in the popup at 1440;
+  - **map**: `+ − ‹ ›` each change the section;
+  - **wizard**: 1 / 4 / 2 inputs over the three steps; Festival plus `14/11/2026`, four answers
+    and *Package ›* give *SAT, NOVEMBER 14 2026* and *THE WEDDING SET £650*; an empty Send
+    Enquiry rings both contact boxes in 2px white and prints the prompt; a filled one composes
+    JP-053's body (subject *Festival enquiry*) and swaps in the confirmation;
+  - **testimonials**: → and ← step the leading review;
+  - **burger at 820** (a fresh tab): 1 → 11, a panel link scrolls `#pricing`, overflow 0.
+  No page error in any of it.
+- **Seams, viewport shots after scrolling** (not beyond-viewport clips), 1440 and 390: the
+  header's grained red floor meets the red bio square; the bio's red runs into the media's red
+  head tear; the media's black foot and the gallery's black head read as one dark torn band
+  between `#171716` and red (the named reading of the missing video band); the gallery and the
+  repertoire are one red ground; the repertoire's black foot tears into the page above the map;
+  map → pricing → calendar → form → testimonials is unbroken black, the testimonials on the page
+  with no sheet. At 390 the bio's `#171716` foot tear lands on the band with no hairline, and the
+  band meets the gallery's tear on the named straight edge. Nothing to fix.
+- **Thumbnails (deliverable 4)**: from the page list, each row's picker reads *<Section> layout
+  4* (the header's *Header layout 4 · Stacked*, the footer's *Footer layout 1*), and the fourth
+  row of every picker renders the fitted Grunge section — the header's red floor under the black
+  capsule, no checker anywhere.
+- **Cards 1, 2 and 3** render and publish in `pageOrder(i)`'s own orders, eleven roots each, no
+  error or warning; no Grunge card draws the checker any more.
+- **`reach.mjs 2`** (3,216 renders, the first with no placeholder card): the header's `Grunge`
+  rows hold exactly — kicker, tags and showTags `[0, 2, 3]`, location all four, showBadge and
+  badgeText `[0, 3]`, cta2 `[1, 2]`, subtitle and heroCta `[1]`, align `[0]` (arches 4 and 5
+  fold onto 0 and 1) — and so do the flat rows the other probes touch (bio `credit` / `cta`,
+  calendar `cta` / `image` / `open` / `slots` / `time` / `types`, form `button` / `sub`, map
+  `status` / `updated` / `expand` / `rings`) and the identity rows. `FIELDS` did not move.
+- **CONVENTIONS.md**: the *L4* markers where *Inherited and used* confirmed a row (the one row it
+  did not evidence, `get_variable_defs`, left unmarked), group D4, and four new rows, each leaned
+  on three times or more across the passes: *a widened block can need no `G`* (C; repertoire,
+  pricing, calendar, form), *Scheme 4 ≡ Scheme 1 collapses a sheet onto the page* (C; layout 2's
+  form, layout 3's map, this page's header seal and testimonials), *a seam's binding can lie —
+  trust the render* (A; layout 1's media foot, this page's media and repertoire feet) and — not
+  among the sweep's named candidates, but met on media, gallery and repertoire here and on layout 1's media,
+  map and form — *the black-run depth method* (B).
+- **`build-digest.mjs` now emulates reduced motion**, the Lime sweep's throwaway fix for the
+  seal's spin, so two walks of one build digest identically without it being remembered.
+- **Two-build digest** (repo root on `127.0.0.1:8931`, the old build digested **before** the
+  `cp`, reduced motion on): the seeded page is **zero differing files at all five themes and
+  three widths**, and `modal.txt` is identical (four Grunge cards in both). With `CARD=3`, card
+  4's page is byte-identical under Retro, Lime, Editorial and Pop, and under Grunge differs at
+  all three widths (1255 / 1217 / 1185 diff lines). The shipped-it tell: the old build's Grunge
+  card 4 carries a `conic` gradient (the checker floor) and the new one's does not, drawing
+  Scheme 3's `#9E1F17` and `#F52E34` instead — the red floor under the black capsule, looked at.
+  String tell: `#82211B` (Scheme 3's `box/3`) is new-only. The standalone file is 7,943,604
+  bytes (was 7,939,415).
+
 ## Open questions
 
 1. **The desktop form master is missing from the page.** The 1440 page frame has no form instance
@@ -1538,7 +1625,7 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
 4. **Two covered pictures to tell the designer**: `000ea835`, an image no earlier walk has named,
    under the bio's photograph, and Lime's `e3790c2c` under the header's avatar tile — both painted
    over, both invisible, with layout 3's `fa453f7d` and layout 2's two.
-5. **Red on red, live.** The likely states: the repertoire rail's lit cell (black) and hover on the
+5. **Red on red, live.** *Closed by the sections*: every lit, idle and refused state read. The likely states: the repertoire rail's lit cell (black) and hover on the
    `#F52E34` panel, the gallery's 3px black thumb ring on the red wrapper, the map's lit ticker and
    zoom squares on `#F52E34`, and a refused wizard box on the `#1A1A1A` card. Each session samples
    its own at `theme=2&live=1`.
