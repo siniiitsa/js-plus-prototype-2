@@ -126,7 +126,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | # | Cat | Desktop node | Composition | Size | Tablet node | Size | Mobile node | Size | Scheme | Lime twin | Grunge twin | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:58611` *(page)* | Sienna Vale → `THEMES[3]`, face, ramp, schemes, flags, photos | — | `986:48237` | — | `986:48250` | — | — | — | — | done `0ac93b2` · `2297e8c` |
-| 1 | `header` | `964:58612` | Headers — hero | 1440 × 750 | `986:48238` | 768 × 1024 | `986:48251` | 390 × 844 | 3 | `964:58588` | `964:58600` | todo |
+| 1 | `header` | `964:58612` | Headers — hero | 1440 × 750 | `986:48238` | 768 × 1024 | `986:48251` | 390 × 844 | 3 | `964:58588` | `964:58600` | done `e47847d` |
 | 2 | `bio` | `964:58613` | Bios — A · Flanked portrait | 1440 × 769 | `986:48239` | 768 × 1135 | `986:48252` | 390 × 731 | 1 | `964:58589` | `964:58601` | todo |
 | 3 | `media` | `964:58614` | Media Player — D · Floating cards stack | 1440 × 1140.2 | `986:48241` *(in `986:48240`)* | 768 × 1629.6 | `986:48253` | 390 × 1211.8 | 2 | `964:58590` | `964:58602` | todo |
 | 4 | `gallery` | `964:58615` | Gallery Sections — Component 1 | 1440 × 818 | `986:48242` | 768 × 1123 | `989:22410` | 390 × 791.7 | 1 | `964:58591` | `964:58603` | todo |
@@ -817,6 +817,100 @@ four ink ones are its own register.
 - **`preview.jsx` needed nothing**: its `Z` copies `SIZES` + `RAMP` + `RAMP_REST` + `WIDE`, and
   `sectionVm` lays `THEME_RAMP` over it by `dev`.
 
+### Settled in section 1 (the header)
+
+- **The hero is Lime's composition node for node a third time**, so there is no Editorial block:
+  `HeaderV0` and `NavBar` read `lime = s.limeTree`, `BookPill`'s branch, `TagChips`' desktop
+  padding and `labelStyle`'s tracking read `s.limeTree`, `Wordmark`'s Display/Title arm and
+  `Title`'s transform are Grunge's widened to `s.editorial`, `LogoMark` gains an `s.editorial` arm,
+  and `const ed = s.editorial` names the deltas. `headerFamily('Editorial')` is `'editorial'`, four
+  layouts, `HEADER_NAMES.editorial` sliced; `editorial-header.jpg` and its import are gone and
+  `TEMPLATE_STILLS` is Pop's alone. `labelStyle` was widened first, as session 0 asked.
+- **The deltas, read off all three masters with the node walker** (every other box, gap and
+  padding is Lime's to the pixel):
+  - the capsule's fill is **`sem/box/3`** (`#0E0E0E` under Scheme 3, a step below the header's
+    `sem/bg`) → `s.box3`; its `BACKGROUND_BLUR` 44 is dropped for Lime's reason (opaque fill);
+  - the links are **Label/SM 16 at lh 1.1**, UPPER, still 23 apart, where Lime's are Display/List
+    24 at 1.2 — so the row's gap is `23/16` em (NavBar *and* `navGapEm`) and its cap `s.labelSm`;
+  - the name is Grunge's Display/Title node — 32 × 0.82 = `26.2px`, `25px` on both narrow masters —
+    in `sem/active/text` (paper, the links' ink, so no `nameColour`);
+  - the mark is the **sparkle**, 44.93 × 45.35: × 0.82 at 1440 and the full 44.93 on both narrow
+    masters (followed: it fits the 370 capsule); the 390 capsule closes its gap to 10, Grunge's;
+  - the kicker is **`sem/text/2`** (paper) where Lime's is `text/1`, and the title **one tone** in
+    `sem/text/2` — `ink`, which is `s.paper` = `#F6F0E8` under Scheme 3;
+  - the card is an **arch**: 213 × 262 (174.66 × 214.84) and **144 × 219 on both narrow masters**
+    (not Lime's squares), radius 140 / 140 / 0 / 0 — CSS clamps it to a semicircle as Figma does —
+    on `sem/box/3` in 1px of `sem/stroke/2` (blush under Scheme 3);
+  - the scrim is Lime's full-height fade in `#141414` (`SCRIM.editorial`);
+  - the pill needed **nothing**: every paint is bound to the tokens `BookPill`'s Lime branch
+    already reads (`active/bg`, `sem/bg`, `text/1`), and route A resolves them to terracotta / ink.
+- **Route A carried the whole header.** Every `s.*` read is Scheme 3's, so the one literal is
+  **`SIENNA_MEDIA` `#E6B6A0`** — `sem/media`, which resolves to that blush in all five Sienna Vale
+  schemes (read off the file), and which no vm key holds (`s.stroke2` is blush under Schemes 2 and
+  3 but terracotta under 1). The mark, the corner sparkle and the chips' second seat use it.
+- **The chips are not the tag seats** (session 0's flag, settled by `boundVariables`): they bind
+  `active/bg` · `active/text` then `media` · `tag/1/text` — terracotta under paper, blush under ink
+  — where Scheme 3's seats are paper under ink and terracotta under paper, so both halves move.
+  `TagChips` gained **`inks`** beside `hues` (additive, by seat); the header passes
+  `hues={[s.activeBg, SIENNA_MEDIA]}` and `inks={[s.activeFg, s.bg]}`. Five chips, not the frame's
+  six: `TAG_LABELS`, as under Lime and Grunge.
+- **The sparkle is `GrungeStar`'s silhouette**: the corner star is that path × 0.75 point for point
+  (61.56 → 82.07, 108 → 144), the mark the same at 44.93 / 144. `GrungeStar` takes an additive
+  `fill` (the media heading passes none); `LogoMark`'s arm draws it in flow through `style`. The
+  corner seat, on `showBadge` like Lime's reticle (so `badgeText` edits nothing under this header):
+  88.56 at `right 5%` / `top 22.93%` at 1440 (the reticle's seat); **108 at `right −5.21%` /
+  `top 16.8%` at 768**, where the master runs it 40 past the frame's right edge and the hero's
+  `overflow: hidden` clips it — the 768 master's own position, not a desktop leak, so followed;
+  108 at `right 1.54%` / `top 13.03%` at 390.
+- **Device modes**: the 390 hero `986:48251` is `Device: Tablet` (as are both narrow masters):
+  `tk` is `{ list 19, dispXl 107, labelXs 14 }` and the name 25.
+- **The nav's advance table is `notoEms`** (`NOTO_EM` in `data.js`), read off the rendered DOM in
+  the harness — spans at 100px in the loaded face, weight unnamed so the served face clamps to 540
+  as every site does — never canvas. Summed per character it lands within 2.1% of each measured
+  label, and over ("Availability", the most kerned, is the 2.1%). `navFace` is `notoEms` and
+  `navGapEm` 23/16 under Editorial at every layout. The seeded nine set at 12.8px on the canvas
+  (cap 13).
+- **The title is fitted to its column at 1440 and 768 — a head that must fit a measure** (session
+  0's warning, met): Noto sets "KAI MERCER" at 5.068 em, 542 at 107px against the 768 column's 540,
+  and Lime's identity row is `flexWrap: 'wrap'` with a max-content text column, so the **whole
+  column would drop under the card**. Under `ed` the column is
+  `flex: 1 1 0` with `containerType: 'inline-size'`, and the title is
+  `min(tk.dispXl, calc(100cqi / s.navNameEms))` — the nav's recipe, `navNameEms` being the name in
+  Noto ems since the display face is the label face. 1440 keeps its 147 (745 of 880); 768 sets
+  106.4 on one line; 390 wraps to two at 107 as its frame does (`inline` at every width, the
+  frame's one wrapping run). A long name shrinks at 1440 and 768 without floor. The division
+  assumes a non-empty name — `navNameEms` is not floored the way `navEms` is — which `nameOf()`
+  guarantees: a Title that trims to nothing falls back to `artistName`, in the app and the harness.
+- **Measured** (harness, `getBoundingClientRect`): at 768 the title stands at (198, 776.4) against
+  the frame's (198, 776), the card at (30, 677), the sparkle at (700, 172) and the mark at
+  (50, 44.3) — all the frame's; at 390 the title at (10, 540.3) against (10, 540), the card at
+  (10, 238), the sparkle at (276, 110); at 1440 the mark at (62.4, 34.7) against 62.3 / 34.7 and the
+  sparkle at (1032.5, 140.8) against 1033.2 / 141.
+- **Moved with the shared helpers, theme 3 only** (digest: 80 of 129 theme-3 renders, zero at
+  themes 0, 1, 2 and 4, static and live): every label at every layout (`labelStyle` untracked);
+  every pill (`BookPill`'s branch) — the bio, calendar, form, map, media, pricing and testimonials
+  renders listed by the digest; the footer's wordmark and mark; card 4's bar (`NavBar`); cards 2–4's
+  titles uppercased. Media's and pricing's pills under Scheme 2 are **blush with taupe type**
+  (`BookPill`'s face is `s.bg`) — sections 3 and 7's to fit.
+- **Cards 2–4 render and publish**, after three `s.editorial`-gated fixes, each *Under Lime
+  `pillBg` IS the accent* again (Sienna Vale's `active/bg` is its terracotta): `HeaderV1`'s and
+  `HeaderV2`'s `mustard` stand-in is **`s.box3`, ink** — Editorial's own layout-2 frame
+  (`964:64599`) paints the place card ink and its layout-3 frame (`964:68718`) the sheet ink —
+  where card 2's pill label and place-card title and card 3's links had gone accent on accent;
+  card 2's place-card body takes paper on it; and card 4's pill keeps the capsule's own scale
+  (`size` undefined), since Retro's 390 14.24 ran it over the name. What each still needs is under
+  open question 4.
+- **The burger panel under Editorial is `sem/box/3` under paper** (`NavMenu`, every Editorial
+  header card): `mapBg` derives from the darkest tag, which is Sienna Vale's terracotta, so the
+  panel came out the accent and swallowed its own Book Now pill — the light-on-light risk *What
+  already works* named, in a live state. `box3` is near-black and `paper` paper in Schemes 1 and 3
+  alike.
+- **Harness.** `page-check.mjs Editorial` failed once, before the footer walk, on
+  `window.__scrolled` being undefined (the popup's document had been replaced); a checkpointed copy
+  run straight after passed every phase, and the four-card rerun passed — not reproduced, recorded
+  in case it returns. The advance table was measured with a one-off script in `source/scripts/`,
+  deleted.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -836,6 +930,26 @@ Session 0:
   calendar's `CROP`, the page's only one.
 - *Read a section node, never the desktop page, for variables* (Grunge 1) — the scheme walk.
 
+Section 1:
+- *The gates are the template's flag, the named pairs, and `s.designed`* (Grunge 1, decision 2) —
+  `s.limeTree` at six sites, `s.editorial` for the deltas; nothing else widened.
+- *Check a narrow master's Device mode before trusting `s.*` on it* (Lime 1, section 1) — the 390
+  hero is Tablet: `tk`, and the name's 25.
+- *The node walker* and *the paired diff walk* (Grunge 2) — all three masters, by traversal order.
+- *A scheme that did not move can still move the binding* (Grunge 3) — the chips' `boundVariables`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — the one effect is the
+  capsule's `BACKGROUND_BLUR`, dropped: its fill is opaque.
+- *`BookPill` has a Lime branch* (Lime 1, section 1; D1) — no props needed under Scheme 3.
+- *Under Lime `pillBg` IS the accent* (Lime 1, section 1) — cards 2 and 3's `mustard`, and the
+  burger panel.
+- *`vm.title` shadows the ramp's `title` size* (Lime 1, section 6) — the wordmark's `26.2px` / `25px`.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — `Title`, `Wordmark`.
+- *One five-theme digest is the whole proof for a shared-helper change* (Lime 1, sweep) — static
+  and live, 645 renders each.
+- *The whole-page published check is one puppeteer script* (Lime 1, sweep) — `page-check.mjs
+  Editorial 0,1,2,3`.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -844,7 +958,22 @@ Session 0:
 2. **Per-section schemes** — *settled in session 0:* route A, by user call.
 3. **The gallery strip** — the frame repeats one thumbnail and borrows Retro's colour spotlight;
    seeded as seven distinct pictures of Editorial's shoot (session 0). Worth telling the designer.
-4. **Header cards 2–4 under Editorial** — recorded in section 1.
+4. **Header cards 2–4 under Editorial** — *recorded in section 1.* All three render Retro's
+   `HeaderV1`–`V3` branches in Scheme 1 tokens (no `SCHEMES_OF.Editorial` row for layouts 2–4) and
+   publish; all three still draw Retro's **checker ribbon** (`Checkerboard` is ungated), which
+   neither Editorial frame read draws. `navModeDefault` does not list Editorial, so cards 2 and 3
+   show the artist's sections where their frames draw Music / Gigs / About (JP-039's rule; `navFits`
+   has no Editorial arm either). What each frame draws, read off its desktop render only:
+   - **Card 2, Feature spread (`964:64599`)**: an arch photograph in a terracotta rule — no mount,
+     rail, tilt or seal; a one-tone ink title; an "Enquire about a date" pill in terracotta under
+     paper type; a dashed paper face card and an **ink place card** under paper type with an
+     outlined pin tile; the links in an outlined terracotta capsule. `mustard` is ink for now.
+   - **Card 3, Inset Hero (`964:68718`)**: an **ink sheet** (the stand-in matches), the links in a
+     **blush** capsule under ink type, a blush Book Now with an ink disc, a one-tone paper title
+     over a paper location line, chips alternating blush / terracotta, and an arch portrait card
+     with the name and "Performing since 2021" where Retro stands a polaroid.
+   - **Card 4, Stacked**: its frame not read. It draws card 1's capsule (`NavBar`), Retro's seal in
+     terracotta, the two-line title and the checker ribbon.
 5. **The demo glyphs** — the frames ship Fontspring's DEMO mark for `'`, `&` and `"`, patched by
    hand in Playfair Display in two sections. Worth telling the designer with 1.
 6. **The three hand-scaled Bold statements** (form, testimonials, footer) — off the ramp, at three
