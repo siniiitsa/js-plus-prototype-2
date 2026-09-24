@@ -3502,9 +3502,13 @@ function Bio({ s }) {
           </div>
           <Grain s={s} exact blend="screen" opacity={0.5} radius={s.radius} />
         </div>
+        {/* Off the card's left edge, placed against the page: -20 / -50 were
+            fitted on the 22 / 40 column, so on the frame's 10 / 30 (JP-038)
+            the narrow two give the difference back and the seal keeps the
+            page position it had. */}
         <SealBadge s={s} hue={s.retro ? '#CEB081' : s.pillBg} ink={s.chips[3]?.bg}
                    mark={s.ac} nameInk={s.ac} glyph="globe" size={s.mob ? 68 : 103} tilt={32}
-                   style={{ left: s.mob ? '-20px' : '-50px', bottom: s.mob ? '30px' : '20px' }} />
+                   style={{ left: s.mob ? '-8px' : s.narrow ? '-40px' : '-50px', bottom: s.mob ? '30px' : '20px' }} />
       </div>
     )
 
@@ -5310,10 +5314,11 @@ function Media({ s }) {
         </div>
         {/* 144 × 145.33 at every width, off the content's top-right corner: 42
             in and 25 down at 1440, 9.7 / 11.7 at 768, and at 390 18 *past* the
-            edge and 47.7 down (the wrapper's 24 is in the 71.7). */}
+            master's 20-inset column and 47.7 down (the wrapper's 24 is in the
+            71.7) — 2 in from the page edge, which is 8 past our 10 column. */}
         {grunge && <GrungeStar s={s} style={{
           width: u(144), height: u(145.33),
-          right: desk ? u(42) : tab ? '9.7px' : '-18px',
+          right: desk ? u(42) : tab ? '9.7px' : '-8px',
           top: desk ? u(25) : tab ? '11.7px' : '71.7px',
         }} />}
       </div>
@@ -9116,9 +9121,9 @@ function Pricing({ s }) {
     // The rule runs to the page's edges in all three masters, where everything
     // it divides sits inside the frame's own 56 / 30 / 10 — so the row cancels
     // the root's padding and puts the identical value straight back as its own.
-    // Only the border bleeds; the content keeps the section's column, and at
-    // layout 4 `sectionVm` sets `padX` to that same frame inset (JP-038) — so
-    // the column is the frame's 1088 / 708 / 370, as it is in the sheets.
+    // Only the border bleeds; the content keeps the section's column, and
+    // `padX` is that same frame inset (JP-038) — so the column is the frame's
+    // 1088 / 708 / 370, as it is in the sheets.
     //
     // `sem/stroke/2` is #5B5E2E, which is `s.tierRow.card` exactly: layout 3's
     // seat, resolved in the view-model as the first palette tag that clears
@@ -10145,8 +10150,8 @@ function Repertoire({ s }) {
   // The desktop inset is `s.gPad` all round (+ `s.surplus` horizontally),
   // which is HeaderV0's rule for the same reason: past the canvas the frame was
   // drawn at, the sheet keeps bleeding while its content stays on the page's
-  // measure. At desktop `gPad` is 46, which is exactly the frame's own 56 ×
-  // 0.82 — the two agree there, unlike `padX`'s 64, and they stop agreeing at
+  // measure. At desktop `gPad` is 46, which is the frame's own 56 × 0.82 to
+  // within 0.08 — `padX`'s value too since JP-038 — and they stop agreeing at
   // both narrow widths (see `padH` below).
   //
   // Everything else is the frame being drawn × `z` through `u()` — 0.82 on the
@@ -18859,9 +18864,8 @@ function Testimonials({ s }) {
 
       // Desktop states the card at 720 × 420 with its pills on the floor; both
       // narrow masters hug the content at a 50 gap. 390's 364 card stands 13 off
-      // the page edge, wider than the 346 our padX leaves, and Retro's column
-      // wraps the quote to four lines where the frame sets three. So here the
-      // card bleeds into the padding to the frame's own 13.
+      // the page edge, 3 inside the root's 10, so the margin puts the frame's
+      // own 13 back rather than let the card take the whole 370.
       const card = (
         <div style={{
           position: 'relative', flex: 'none', minWidth: 0,
@@ -19002,8 +19006,8 @@ function Testimonials({ s }) {
             // it renders through a Display/MD token that resolves to another
             // template's Bebas Neue at leading 1 — the §5.5 leak, not a
             // decision. Its 40 is that condensed face's measure, and none of
-            // the five display faces holds it inside the 246 this page's own
-            // padX leaves: Fraunces breaks "Professional" mid-word. Mobile
+            // the five display faces held it inside the 246 the card left
+            // before JP-038 (270 since): Fraunces broke "Professional" mid-word. Mobile
             // therefore takes the ramp's own display step, the same fallback
             // the enquiry form makes for its 390 heading, which puts the quote
             // on four lines and the card within a few px of the frame's 430.
@@ -19036,8 +19040,8 @@ function Testimonials({ s }) {
       }}>No reviews yet.</span>
     )
 
-    // The mobile frame's card is 364 wide in a 390 canvas — wider than the 346
-    // this page's own padX leaves — so there it takes the column instead.
+    // The mobile frame's card is 364 wide in a 390 canvas; there it takes the
+    // column instead, which is the frame's 370.
     const card = (
       <div style={{
         position: 'relative', flex: 'none', minWidth: 0,
@@ -23259,18 +23263,17 @@ function Footer({ s }) {
     // its 439.59 box. That box holds the frame's picture only at 1440, where it
     // makes three lines: at 768 "YOUR NIGHT UNFORGETTABLE." is 8.87em in our
     // Bebas measure, 443.5 against the box, so the cap is 9em (the seal's disc
-    // starts past 500); and at 390 the same line is 354.8 against our 346
-    // column, so the heading takes back 12 of the root's padding on its right —
-    // the frame's own 10 inset — rather than grow a third line. Anton at 0.75
-    // needs neither: the same line is 10.48em of the faced size, 393 in the 768
-    // box and 299 at 390, so Grunge keeps the box and the column as stated.
+    // starts past 500); and at 390 the same line is 354.8 against the 370
+    // column the frame's own 10 inset leaves, so it holds two lines there with
+    // no box at all. Anton at 0.75 needs neither: the same line is 10.48em of
+    // the faced size, 393 in the 768 box and 299 at 390, so Grunge keeps the
+    // box and the column as stated.
     const statement = (
       <h2 style={{
         margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd), lineHeight: facedLh(s, 1),
         letterSpacing: s.dls, color: s.ac, whiteSpace: 'pre-wrap',
         ...(grunge ? { textTransform: 'uppercase' } : null),
         maxWidth: s.mob ? 'none' : s.narrow ? (grunge ? '439.59px' : '9em') : u(439.59),
-        marginRight: s.mob && !grunge ? `calc(10px - ${s.padX})` : undefined,
       }}>{s.footerStatement}</h2>
     )
 

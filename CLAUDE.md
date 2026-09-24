@@ -478,13 +478,13 @@ mutated through a single `patch()` helper.
   The 768 masters of layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and
   Lime alike (and Grunge's two); those of layouts 1 and 4 hide all eight link nodes beside a burger. But `navLinks`
   is the artist's page, and the seeded eleven sections give nine — 576px of type at the master's
-  own 16px, 720 with the capsule's eight 18px gaps, in a 688px bar that also seats the wordmark,
+  own 16px, 720 with the capsule's eight 18px gaps, in a 708px bar that also seats the wordmark,
   Listen and the pill. So `sectionVm` sums the bar's one row at the master's own sizes — the
-  capsule, the name, Listen and the pill, against 688 in layout 2 and 684 in layout 3 — and
+  capsule, the name, Listen and the pill, against 708 in layout 2 (the root's column since JP-038) and 684 in layout 3 — and
   **`vm.navFits`** is the answer: the links draw when it is true and `NavMenu`'s burger stands
   otherwise, in the same bordered capsule, which the 390 masters draw the burger in. Minimal's
   three fit under the seeded name (the wordmark is in the sum, so a long one can fold them too); *Follow my sections* on the seeded names fits up to four links in Retro
-  layout 2, five in Retro layout 3 six in Lime's two, eight in Grunge's layout 2 and seven in its
+  layout 2, five in Retro layout 3, seven in Lime's layout 2 and six in its layout 3, eight in Grunge's layout 2 and seven in its
   layout 3 (it is the words' width that counts, not
   their number), so a page switched to *Follow my sections* is still the burger. It is a vm boolean
   because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
@@ -567,10 +567,9 @@ mutated through a single `patch()` helper.
   rather than a border so the frame's row height holds) — and
   that rule is the one thing in the branch that **bleeds**: the row cancels the root's padding and
   puts the identical value straight back, so the border reaches the page edges and the content
-  keeps the section's column. That column is the frame's 56 / 30 / 10 inset and not `padX`
-  (JP-038, layout 4, user call, 2026-09-23): at layout 4, `sectionVm` gives map, pricing, calendar
-  and form the inset the sheets beside them already put back, so no page-ground section stands
-  in from its neighbours. The footer is layout 1's and keeps `padX`. It is
+  keeps the section's column, which is the frame's 56 / 30 / 10 inset because `padX` is now that
+  inset on every section and layout (JP-038, user call, 2026-09-24; the layout-4-only arm it
+  replaced is gone), the footer included. It is
   the first pricing layout to draw **no heading at all**, so `heading` reaches layouts 1, 2 and 3
   alone; and the only one to read a package's **tags and its features together** — the tags as the
   frame's small hairline chips, cased in `sectionVm` as `vm.tiers[].tagLabels` because `t.tags`

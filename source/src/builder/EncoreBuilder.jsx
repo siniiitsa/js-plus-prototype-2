@@ -61,9 +61,9 @@ import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_S
 // `dev` names the row, so sectionVm can pick a theme's ramp for it: `canvasW` is
 // no key for that, since PublishedPage overwrites it with '100%' on a phone.
 const SIZES = {
-  mobile:  { dev: 'mobile',  h1: '42px', h1b: '50px',  h2: '29px', pad: '44px 22px', navGap: '36px', split: '1fr',         g3: '1fr',           g2: '1fr',       canvasW: '390px'  },
-  tablet:  { dev: 'tablet',  h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 40px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
-  desktop: { dev: 'desktop', h1: '86px', h1b: '118px', h2: '46px', pad: '80px 64px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
+  mobile:  { dev: 'mobile',  h1: '42px', h1b: '50px',  h2: '29px', pad: '44px 10px', navGap: '36px', split: '1fr',         g3: '1fr',           g2: '1fr',       canvasW: '390px'  },
+  tablet:  { dev: 'tablet',  h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 30px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
+  desktop: { dev: 'desktop', h1: '86px', h1b: '118px', h2: '46px', pad: '80px 45.92px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
 }
 
 // §10.2 — the Figma type ramp, layered on top of SIZES rather than replacing it:
@@ -75,10 +75,18 @@ const SIZES = {
 // `narrow` is the second responsive switch the Figma layouts need: the nav
 // collapses to a hamburger on tablet as well as mobile, while `mob` (mobile
 // only) still drives the single-column collapses.
+//
+// `padX` is the frames' own side inset — 56 × 0.82, 30 and 10 — which every
+// 1440 and 768 master draws (JP-038; user call, 2026-09-24). At 390 the masters
+// part: layout 1's bio, media, repertoire and pricing and layout 3's pricing
+// stand at 20, the rest at 10, and 10 was chosen so neighbours always agree. It
+// is the value the sheets' `u(56)` puts back after bleeding, so a page-ground
+// section and a sheet beside it start their type on one line. It is not whole
+// at desktop, so every reader takes it with `parseFloat`, never `parseInt`.
 const RAMP = {
-  mobile:  { dispXl: '77px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '14px', labelXs: '14px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '22px', narrow: true },
-  tablet:  { dispXl: '77px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
-  desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '64px', narrow: false },
+  mobile:  { dispXl: '77px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '14px', labelXs: '14px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '10px', narrow: true },
+  tablet:  { dispXl: '77px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '30px', narrow: true },
+  desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '45.92px', narrow: false },
 }
 
 // The rest of the Figma file's size tokens, which RAMP never carried because
@@ -418,22 +426,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       ? `${vm.padY} ${vm.padX} ${px(desk ? 90 : 60)}`
       : `${px(desk ? 56 : 30)} ${vm.padX} ${px(56)}`
   }
-  // Layout 4's page-ground sections take the frame's side inset, not `padX`
-  // (JP-038, layout 4; user call, 2026-09-23). Every layout-4 master stands
-  // its content 56 / 30 / 10 in from the page edge, and the sheets beside
-  // these four (media, gallery, repertoire, testimonials, the header, the bio)
-  // already bleed and put that inset back as `u(56)`, so a root at `padX`'s
-  // 64 / 40 / 22 read 22 / 10 / 12 in from its neighbours. `padX` is what
-  // pricing's `bleedX` and the root both read, so the rule still reaches the
-  // page edges and the calendar's panel lands at the frame's 56 / 30 / 10.
-  // Every theme: the sheets' `u(56)` is not theme-gated either. The footer is
-  // layout 1's on every page and keeps `padX`.
-  if (d === 3 && !column && (cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form')) {
-    const inset = { desktop: Math.round(56 * 0.82 * 100) / 100, tablet: 30, mobile: 10 }[Z.dev]
-    vm.padX = `${inset + parseInt(vm.surplus, 10)}px`
-    vm.pad = `${vm.padY} ${vm.padX}`
-    vm.contentW = parseInt(SIZES[Z.dev].canvasW, 10) - 2 * inset
-  }
 
   // ---- content -----------------------------------------------------
   // One resolved name for every slot that prints it (JP-050). The header
@@ -552,8 +544,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // `navLinks` is the artist's page, and the seeded nine come to more type
   // than the bar is wide. So the links draw when the bar's one row holds them
   // and the burger stands otherwise: the capsule, the wordmark, Listen and the
-  // pill, summed at the master's own sizes against the bar (688 in layout 2;
-  // 684 in layout 3, whose card insets it 10 + 32 a side). `other` is every
+  // pill, summed at the master's own sizes against the bar (708 in layout 2,
+  // the root's column since JP-038 took `padX` to the frame's 30; 684 in
+  // layout 3, whose card insets it 10 + 32 a side). `other` is every
   // fixed box beside the type — Lime's is HeaderV1's desktop `reserve` unscaled
   // (138.32, the capsule's 36 in it), Retro's the capsule's 36 + 2 of border,
   // four 16 gaps, Listen's 12 and the pill's 59 of padding, gap and disc. An
@@ -566,7 +559,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Label/SM, and the same fixed 18 gaps.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
-    const row = d === 1 ? 688 : 684
+    const row = d === 1 ? 708 : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
@@ -4143,7 +4136,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const canvasW = parseInt(base.canvasW, 10)
   const k = key === 'desktop' ? Math.min(w, 1440) / canvasW : 1
   const surplus = Math.max(0, Math.round((w / k - canvasW) / 2))
-  const padX = `${parseInt(base.padX, 10) + surplus}px`
+  const padX = `${parseFloat(base.padX) + surplus}px`
   const Z = {
     ...base, surplus: `${surplus}px`,
     padX, pad: `${base.padY} ${padX}`,
@@ -4196,13 +4189,14 @@ function columnSides(rows) {
 }
 
 // The content column a section's children get, in CSS px: `canvasW − 2·padX`
-// at the device's own frame — 1052 / 688 / 346, which the published tab keeps
-// too, its surplus folding into `padX` — or one of the two columns
-// `arrangeRows` cuts from it (684 / 323 at desktop). EncoreSection cannot
+// at the device's own frame — 1088.16 / 708 / 370, the frames' 1328 × 0.82,
+// 708 and 370, which the published tab keeps too, its surplus folding into
+// `padX` — or one of the two columns `arrangeRows` cuts from it (709 / 335 at
+// desktop). EncoreSection cannot
 // measure, so a design whose count comes off a width reads this.
 function contentWidth(dev, column) {
   const base = SIZES[dev]
-  const full = parseInt(base.canvasW, 10) - 2 * parseInt(base.padX, 10)
+  const full = parseInt(base.canvasW, 10) - 2 * parseFloat(base.padX)
   if (!column) return full
   const { left, right, gap } = COLUMN_SPLIT
   return Math.round((full - Math.round(gap * 0.82)) * (column === 'left' ? left : right) / (left + right))
