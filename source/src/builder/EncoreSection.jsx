@@ -10863,6 +10863,13 @@ function Repertoire({ s }) {
       // Retro's reason: our card has no height to divide. The rows' own
       // `py-6` is therefore inert.
       const limeRowH = u(G.rowH)
+      // JP-044 (2026-09-24): the frame's row is a title beside a four-glyph
+      // duration, and ours puts the artist in that seat — beside a 19px title
+      // in the 768 card's 148 (Grunge 168) that cut most seeded titles to an
+      // ellipsis. So at 768 the artist stands under the title, a named diff
+      // from the frame's one row; the pinned 57 / 62.5 holds both lines. The
+      // desktop and 390 rows fit and keep the frame's.
+      const stack = tab
       const disp = (lh) => grunge ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, ...extra,
@@ -10884,16 +10891,18 @@ function Repertoire({ s }) {
               color: k.acc, whiteSpace: 'nowrap', overflow: 'hidden',
             })}>{st.meta}</span>
             {rows.map((sg) => (
-              <div key={sg.n} style={row(u(10), {
-                flex: 'none', height: limeRowH, justifyContent: 'space-between',
+              <div key={sg.n} style={(stack ? col : row)(u(stack ? 2 : 10), {
+                flex: 'none', height: limeRowH, justifyContent: stack ? 'center' : 'space-between',
                 boxShadow: `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
               })}>
                 <span style={{
                   fontFamily: s.display, fontSize: faced(s, s.list), ...disp(1.2),
-                  letterSpacing: s.dls, minWidth: 0,
+                  letterSpacing: s.dls, minWidth: 0, maxWidth: '100%',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{sg.title}</span>
-                <span style={body(s.bodySm, 1.4, { flex: 'none', whiteSpace: 'nowrap' })}>{sg.artist}</span>
+                <span style={body(s.bodySm, 1.4, stack ? {
+                  maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                } : { flex: 'none', whiteSpace: 'nowrap' })}>{sg.artist}</span>
               </div>
             ))}
             {more && (

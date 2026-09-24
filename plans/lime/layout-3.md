@@ -767,6 +767,11 @@ Settled in section 4 (the repertoire):
   where the frame has a mood and a running time. The right-hand column is the artist, not a
   duration. At 390, page 0 centres set 0 where the master centres its second card. At 768 the
   cards are 216 wide against the frame's 222.7, because our column is 688 and the frame's is 708.
+  *Reversed in part* (JP-044, 2026-09-24, `plans/lime/retest-qa-fixes.md`): that substitution
+  left the 768 title ~40–100px beside a `flex: none` artist in the card's 148, and nine of the
+  twelve seeded titles ended in an ellipsis. **At 768 the artist now stands under the title**
+  (`stack` in the block: a column of 2, centred in the pinned 57, each line its own ellipsis as
+  a last resort), a named diff from the frame's one row. Desktop and 390 fit and keep it.
 - **Measured against the masters** (seeded page): desktop head 95.2 (116 × 0.82), grid 19.7 under it
   (24 × 0.82), cards **303.4** tall (369 × 0.82 = 302.6) at radius 41, title line 19.5, meta 11,
   rows 32, view block 40; 768 head 72.1 (72), cards **438.7** (439), rows 57, view 48.2 (48); 390
