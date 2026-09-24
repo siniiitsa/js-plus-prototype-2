@@ -125,7 +125,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 
 | # | Cat | Desktop node | Composition | Size | Tablet node | Size | Mobile node | Size | Scheme | Lime twin | Grunge twin | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:58611` *(page)* | Sienna Vale → `THEMES[3]`, face, ramp, schemes, flags, photos | — | `986:48237` | — | `986:48250` | — | — | — | — | todo |
+| 0 | *foundation* | `964:58611` *(page)* | Sienna Vale → `THEMES[3]`, face, ramp, schemes, flags, photos | — | `986:48237` | — | `986:48250` | — | — | — | — | done `0ac93b2` · `2297e8c` |
 | 1 | `header` | `964:58612` | Headers — hero | 1440 × 750 | `986:48238` | 768 × 1024 | `986:48251` | 390 × 844 | 3 | `964:58588` | `964:58600` | todo |
 | 2 | `bio` | `964:58613` | Bios — A · Flanked portrait | 1440 × 769 | `986:48239` | 768 × 1135 | `986:48252` | 390 × 731 | 1 | `964:58589` | `964:58601` | todo |
 | 3 | `media` | `964:58614` | Media Player — D · Floating cards stack | 1440 × 1140.2 | `986:48241` *(in `986:48240`)* | 768 × 1629.6 | `986:48253` | 390 × 1211.8 | 2 | `964:58590` | `964:58602` | todo |
@@ -257,7 +257,12 @@ Five traps in those tables:
 
 ## The decisions this plan makes or hands over
 
-### 1. Fisterra Fora is a Fontspring demo — **user call; session 0 opens on it**
+### 1. Fisterra Fora is a Fontspring demo — **settled: answer B, Noto Serif Display at wdth 62.5**
+
+*Settled in session 0 (2026-09-24):* the user chose a free substitute and delegated the pick
+("you pick"). It is **Noto Serif Display, pinned to wdth 62.5 and wght 540–700**, with `faceK` 1 —
+see *Conventions → Settled in session 0* for the measurements. The rest of this heading is kept as
+the record of the question.
 
 `fonts.googleapis.com/css2?family=Fisterra+Fora` answers 400, and the family's own name says the
 frames were drawn under a **demo licence**. What the frames show, for the user: a condensed,
@@ -322,7 +327,12 @@ third name spelled out at each of them is noise. So:
   the shared helpers, theme 2 only* (its section 1). Expected, theme 3 only: record which layouts
   moved rather than chasing it as a regression.
 
-### 3. Six sections stand on another scheme — **recommended: resolve it in `sectionVm`; user call in session 0**
+### 3. Six sections stand on another scheme — **settled: route A, resolved in `sectionVm`**
+
+*Settled in session 0 (2026-09-24):* the user chose route A. `THEMES[3].schemes` carries Schemes 2
+and 3, `SCHEMES_OF.Editorial[0]` seats the six sections, and `sectionVm` lays the scheme over the
+theme at its head — see *Conventions → Settled in session 0*. The rest of this heading is kept as
+the record of the question.
 
 Lime's and Grunge's rule for a section off Scheme 1 is named literals behind the flag (CONVENTIONS
 C, *a section on another scheme writes that scheme's values as named literals*). Lime had one such
@@ -696,16 +706,142 @@ four ink ones are its own register.
     with an ink disc. The 768 and 390 masters are taller than the twins' (692 / 736 against
     647 / 619) — find out why before fitting.
 
+### Settled in session 0 (the foundation)
+
+- **The display and label face is Noto Serif Display at wdth 62.5**, standing in for Fisterra Fora
+  (user call, 2026-09-24: substitute, "you pick"). Measured off the frame's ink bounds
+  (`absoluteRenderBounds` of `964:58612`'s text nodes) and a pixel scan of its render, against each
+  candidate's render in the headless shell at matched cap height:
+
+  | Face | cap / em | title width vs frame | stem / cap | hairline / cap |
+  |---|---|---|---|---|
+  | **Fisterra Fora** (the frame) | .725 | 1 (4.875 em) | .154 | .038 |
+  | **Noto Serif Display, wdth 62.5, wght 540** | .715 | 1.108 | **.154** | .014 |
+  | Oranienbaum | .705 | 1.049 | .121 | .028 |
+  | Instrument Serif | .725 | 0.907 | .097 | .041 |
+  | Gloock | .755 | 1.191 | .205 | .026 |
+  | Noto Serif (the text cut), wdth 62.5, wght 500 | .715 | 1.103 | .147 | .077 |
+  | Playfair Display 400 (the frames' own patch face) | .710 | 1.258 | .134 | .035 |
+  | DM Serif Display | .665 | 1.266 | .226 | .030 |
+
+  Only the condensed Noto matches the frame's weight: every other narrow face is light, and every
+  face with the heft is 19–27% wide (Playfair Display would set "SIENNA VALE" past the 1440 edge).
+  Its hairlines are thinner than Fisterra's; the text cut's are twice as thick, and the frame sits
+  between them — the Display cut is the high-contrast one the brief names, and it holds at the
+  13px nav. It has `'`, `"` and `&` (trap 5 is moot) and a real Bold. The choice is final: every
+  width from section 1 on is this face's.
+- **`faceK` is 1.** The cap height is the frame's within 1.4%, and across the header's twelve
+  strings (the eight nav labels, Book Now, the location row, the role line, the title) the width
+  ratio runs 0.94–1.09 and averages **0.997**. Only the big title runs wide (×1.09): Fisterra's
+  S, A, V and E are narrower at display size. Grunge's rule of cap and width agreeing to 2% does not
+  hold here, and cap wins, since it is what fills the frames' stated line boxes; a head that must
+  fit a measure is its section's to check. `faced` / `facedLh` are the identity under Editorial.
+- **The link is one pinned entry: `family=Noto+Serif+Display:wdth,wght@62.5,540..700`**, in
+  `index.html` and `preview.html`. Google serves it as one variable face declared `font-stretch:
+  62.5%` and `font-weight: 540 700`, so a site that names no weight is clamped to 540 — the frame's
+  stem to the pixel, verified on the render — and the three hand-scaled Bold statements get 700
+  (stem / cap .189). **Never add a second Noto Serif Display entry** (Retro's Fraunces rule): the
+  default 400 would then find a face of its own and the display would go wide and thin. A browser
+  Google deems pre-variable gets static 500 / 600 / 700 instead — accepted. Playfair Display and
+  Lora left the `index.html` link; nothing else named them.
+- **The nav's advance table is the header session's.** `navFace` needs this face's widths in ems
+  (the `bebasEms` / `antonEms` shape). Canvas `measureText` sees neither the width axis nor an
+  unloaded webfont — the first attempt measured the fallback for every candidate — so measure the
+  rendered DOM, or canvas after `document.fonts.load()` with `ctx.fontStretch = 'extra-condensed'`
+  and a numeric 540 in the font string, and confirm one label against the DOM.
+- **`labelStyle` still tracks `0.02em` under Editorial**: its tracking is gated `s.lime || s.grunge`
+  (`EncoreSection.jsx` ~105), so every label in the after-shots is tracked. It is the site Grunge's
+  section 1 widened (*`labelStyle` tracks `s.dls` (0)*), and the header session's first `s.limeTree`
+  widening — measure no label width before it.
+- **Casing stays `'title'`**; the display and label strings take `textTransform: 'uppercase'` per
+  site, Grunge's rule. After session 0 every head renders mixed case in Noto ("Reads the room.") —
+  expected; each section session owes its own heads the transform.
+- **Route A is in `sectionVm`'s head**: `d` is computed first, then `theme.schemes?.[SCHEMES_OF[
+  theme.name]?.[d]?.[cat]]` is spread over the theme as `T`, so every `T.palette` / `T.sem` /
+  `T.tags` read below it is the section's ground's. The reads outside `sectionVm` — the page
+  gutter in `arrangeRows`, the published `documentElement`, the picker's dots — stay the theme's,
+  which is the page, Scheme 1. `SCHEMES_OF` is keyed by the section's **design**, so the footer
+  (one design) reads its row 0 at every page layout: a later pass that finds the footer on another
+  scheme at layouts 2–4 keys it on `page` instead (`footerBand`'s precedent). Layouts 2–4 have no
+  row yet, so every other section there stands on Scheme 1.
+- **The plan's scheme table was wrong in one cell, read off the file** (one `use_figma` resolving
+  `2 · Scheme` through the Sienna Vale primitives): **Scheme 2's tag 1 is blush `#E6B6A0` and its
+  tag 2 paper `#F6F0E8`**, both inked `#141414` — the other way round from the table. Tags 3–7 do
+  not strictly alternate in Schemes 2 and 3 (Scheme 2's 6 and 7 are both paper; Scheme 3's 6 is
+  paper, 7 terracotta); the two-seat system ignores that, as Lime's does. `inactive/bg` in Schemes
+  2 and 3 is the scheme's own ground at alpha 0, written `rgba(170, 149, 138, 0)` and
+  `rgba(20, 20, 20, 0)`. Nothing in `EncoreSection` reads `inactiveBg` today (grepped), so the
+  transparent value feeds no colour maths. Every other cell of Schemes 1–3 matched.
+- **The header's chips are not Scheme 3's tag seats.** The frame alternates terracotta and blush on
+  the ink header, where Scheme 3's tag 1 / tag 2 are paper / terracotta and it has no blush at all:
+  section 1 reads the chips' `boundVariables` (CONVENTIONS A, *a scheme that did not move can still
+  move the binding*). The after-render's chips are paper / terracotta.
+- **Two derived keys route A does not fix, both on taupe.** `paper` — `paperOf(#AA958A, #141414)`
+  falls to Retro's `#FBF6EA`, since neither the taupe nor the ink clears 0.6 luminance — and
+  `deep`, which is the darkest *tag*, and Scheme 2's two tags are both light, so it is blush. The
+  after-render shows it: **pricing's flat deck is blush on blush in its middle card and blush type
+  on paper in the outer two.** Sections 3 and 7 meet both; the frames' cards there are dashed
+  outlines on the taupe, so neither key need survive them. Under Schemes 1 and 3 `deep` is
+  terracotta (`#141414` before), `deepFg` its contrast.
+- **`pillBg` is `sem.activeBg`**: terracotta under Schemes 1 and 3 (the accent — *Under Lime
+  `pillBg` IS the accent*), blush under Scheme 2. **The enquiry form's submit has lost its fill**
+  (its v0 shell paints the contact half in `pillBg`, the submit accent on it), Lime's session-0 note
+  again; the frame's submit is an ink pill, so section 9 owes it anyway.
+- **`s.designed` reaches** the root's `bleed` (inert until the header session, `!s.flatHeader`),
+  `TagChips`' designed branch and `vm.mapSrc` / `mapRadialSrc` — the flat map now draws the raster.
+  **`vm.grainSrc` is widened and inert**: the tape clips hash `b74be8bc` (the 740² texture on media,
+  gallery, map and calendar), and `Grain` stays gated; the tape is its own helper (section 3).
+- **Photographs** (`SEEDS.Editorial`, seven `editorial-*.jpg`, ~825 KB): hero `ae069c14` the garden
+  wedding (1536 × 1024, as served), the portrait card `488cc3d7` the singer — a 1122 × 1402
+  portrait source nearly the arch's own 0.813, so it is the whole source at 480 × 600 rather than a
+  centre square, and the frame's form draws it as its 48px avatar too — the bio `9d20fe0d`
+  (820 × 1025, `FILL`), the gallery spotlight `90514a32` (900 × 1125, `FILL`), and the calendar
+  `47176057`, **the page's one `CROP`**: the full width over 8.9–70.0% of a portrait source,
+  exported at that crop (1000 × 764, the frame's 1.309). **In colour**: no fill filter, and the
+  one effect (the calendar's `DROP_SHADOW`) is the polaroid's. `photo` is the hero, since the
+  layout-2 form's stage slot fills with it (`964:64598`). **The gallery strip departs from the
+  frame**: its thumbnails are Retro's Basement shoot (`3f0c98b4` Retro's own spotlight in the
+  ringed seat, `b35b6507` three times), and Editorial's layout 2–4 pages carry no picture of this
+  shoot beyond the five — so the seven slots are the five and two square crops of the hero (the
+  singer at the mic, the dancing couples), the spotlight in `galActive()`'s slot.
+- **The standalone build is 9.05 MB** (the committed root is 7.95 MB): the seven JPEGs, inlined.
+  The still `editorial-header.jpg` (242 KB) goes in section 1.
+- **After-render, theme 3 only** (shots in the session scratchpad; themes 0, 1, 2 and 4 digested to
+  zero rows static and live, 1290 renders per commit): every layout-1 section renders — the header
+  ink and still `FlatHeader`, media and pricing taupe, repertoire, form and footer ink. Bar pricing
+  and the form's submit (above), everything is legible. **Layouts 2–4 moved with `deep` / `mapBg`
+  and the schemes**: the map plates at layouts 2–4, media 2 and 3, bio 4, form 2 and pricing 2 and 4
+  went from ink grounds to terracotta, and the footer is ink on every page. The layout-4 `deep`
+  sheets now set a terracotta head on a terracotta ground (the bio's, the gallery's, the
+  repertoire's) — the layout-4 pass's, named here rather than chased.
+- **`preview.jsx` needed nothing**: its `Z` copies `SIZES` + `RAMP` + `RAMP_REST` + `WIDE`, and
+  `sectionVm` lays `THEME_RAMP` over it by `dev`.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
 Conventions, naming the plan it came from, a blank line between sections. The sweep folds it into
 [`../CONVENTIONS.md`](../CONVENTIONS.md).)*
 
+Session 0:
+- *Load a Google Font the frames name; substitute only on a user call* (memory `load-figma-fonts`;
+  Grunge 1, decision 1) — asked, and the user delegated the pick.
+- *A stand-in face is scaled to the frame's glyph size* (Grunge 1, section 1) — measured, and it came
+  out 1; `faced` became per-template (`s.faceK`) rather than Grunge-gated.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0).
+- *Under Lime `pillBg` IS the accent* (Lime 1, session 0) — Scheme 1's `activeBg`, the form's submit.
+- *The digest is committed* (Lime 1, session 0) — five themes, static and live, for both commits.
+- *Read a fill's `scaleMode` before believing its `imageTransform`* (Grunge 2, section 1) — the
+  calendar's `CROP`, the page's only one.
+- *Read a section node, never the desktop page, for variables* (Grunge 1) — the scheme walk.
+
 ## Open questions
 
-1. **Fisterra Fora** — decision 1, the user's call in session 0.
-2. **Per-section schemes** — decision 3, the user's call in session 0.
+1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
+   ("you pick"). Worth telling the designer the shipped face is a free stand-in, and that its title
+   sets about 9% wider than the frame's.
+2. **Per-section schemes** — *settled in session 0:* route A, by user call.
 3. **The gallery strip** — the frame repeats one thumbnail and borrows Retro's colour spotlight;
    seeded as seven distinct pictures of Editorial's shoot (session 0). Worth telling the designer.
 4. **Header cards 2–4 under Editorial** — recorded in section 1.
