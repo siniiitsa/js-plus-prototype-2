@@ -528,11 +528,15 @@ mutated through a single `patch()` helper.
   line its span, and both the row.
   **Layout 3 is a stack of full-width rows on the page ground**, and it filters as layout 1 does
   — the same `chip`, in the frame's segmented capsule instead of a loose chip row — but what it
-  adds is a **seat that the filter moves**: the last row *on show* is filled in `vm.tierRow`'s
-  hue where the others are merely outlined in it, and carries the frame's FEATURED badge, so
-  hiding the artist's last package promotes whatever now ends the stack — though never onto a
-  package the artist added and left empty, since `sectionVm` drops those first (JP-048, below).
-  That is the deck's own
+  adds is a **seat that the filter moves**: one row *on show* is filled in `vm.tierRow`'s
+  hue where the others are merely outlined in it, and carries the frame's FEATURED badge. It is
+  the package the artist **ticked Featured** (JP-048, user call, 2026-09-24: a raw checkbox per
+  `TiersField` row, the *Start fresh* precedent, acting as a radio that can be emptied —
+  `vm.tiers[].featured`, not in `TIER_KEYS`, so `blankRow` ignores it) while the filter leaves
+  it on show, and otherwise the last row on show — so the seed, which ticks nothing, keeps its
+  picture, and hiding the ticked or the last package promotes whatever now ends the stack,
+  though never onto a package the artist added and left empty, since `sectionVm` drops those
+  first (JP-048, below). Layout 1's glow reads no tick and stays positional. That is the deck's own
   rule that the tilt and the mobile overlap take the **rendered** index while `t.n` keys the
   card, and it is not drawn at one row. `vm.tierRow` is `tierHero`'s shape with one extra
   constraint — it has to read against the **page** rather than on a card, so it walks `T.tags`

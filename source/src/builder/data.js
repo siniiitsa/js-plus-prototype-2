@@ -518,7 +518,10 @@ export const TIERS = [
 ]
 
 // Every key a package row carries — what `blankRow()` asks of it. A row is
-// blank only when all five are, whichever of them a layout prints.
+// blank only when all five are, whichever of them a layout prints. The
+// Featured tick (`featured`, JP-048) is left out, as FORM_FIELD_KEYS leaves out
+// `kind`: it is a flag on a package, not content, so a ticked empty row is
+// still blank.
 export const TIER_KEYS = ['name', 'price', 'tags', 'blurb', 'feats']
 
 // The suffix beside every card's price. A field rather than the literal the
@@ -1144,7 +1147,9 @@ export const FIELDS = {
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Features are one to a line. Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
-          + 'filter: it prints the tags and the features on the package itself.' },
+          + 'filter: it prints the tags and the features on the package itself. Tick Featured '
+          + 'to give a package layout 3’s FEATURED badge; with none ticked, it goes to the last '
+          + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },

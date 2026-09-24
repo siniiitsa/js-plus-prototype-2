@@ -8563,6 +8563,12 @@ function Pricing({ s }) {
     const shown = s.live
       ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
+    // The FEATURED seat (JP-048): the package the artist ticked, while the
+    // filter leaves it on show, and otherwise the last row on show — the seat
+    // the filter moves, which is also the whole picture of a page that ticks
+    // nothing, the seed included. Not drawn at one row, in either case.
+    const flagged = shown.findIndex((t) => t.featured)
+    const featAt = shown.length > 1 ? (flagged >= 0 ? flagged : shown.length - 1) : -1
 
     // Lime — the same component in Lime's mode (964:68680 at 1440, 984:10765 at
     // 768, 984:10796 at 390), placed after the seam as layout 1's and layout 2's
@@ -8648,8 +8654,8 @@ function Pricing({ s }) {
       const rowBox = { width: '100%', borderRadius: u(G.radius), padding: u(G.pad) }
 
       const packRow = (t, i) => {
-        // The seat, Retro's rule whole: the last row on show, not at one row.
-        const feat = shown.length > 1 && i === shown.length - 1
+        // The seat, Retro's rule whole: `featAt`, above.
+        const feat = i === featAt
         const ink = feat ? G.featInk : s.tx
         const money = t.price
         const symbol = /^[^\d]/.test(money) ? money[0] : ''
@@ -8868,14 +8874,16 @@ function Pricing({ s }) {
     )
 
     // One package. `feat` is the *rendered* index, not the package's place in
-    // the whole list: the fill and the badge are the composition's climax and
-    // belong to the last seat on show, so a filter that hides the artist's last
-    // package promotes whatever now ends the stack — the pricing deck's own
-    // rule that its tilt and its overlap take the rendered index because they
-    // are decoration. It is not drawn at one row, the pager's and the chip
-    // row's rule: a distinction that distinguishes nothing is not a design.
+    // the whole list: the fill and the badge are the composition's climax, so
+    // they sit on the package the artist ticked Featured while it is on show
+    // (JP-048), and otherwise on the last seat on show, so a filter that hides
+    // the ticked package or the artist's last one promotes whatever now ends
+    // the stack — the pricing deck's own rule that its tilt and its overlap
+    // take the rendered index because they are decoration. It is not drawn at
+    // one row, the pager's and the chip row's rule: a distinction that
+    // distinguishes nothing is not a design. `featAt` is computed above.
     const packRow = (t, i) => {
-      const feat = shown.length > 1 && i === shown.length - 1
+      const feat = i === featAt
       const ink = feat ? h.cardFg : s.tx
       // The frame's `sem/text/1`: the accent on a plain row, the featured row's
       // own second hue on that one — which under Retro is the mustard, since

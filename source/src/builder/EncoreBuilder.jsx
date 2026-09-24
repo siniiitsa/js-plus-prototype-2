@@ -786,7 +786,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // A package the artist added and left empty is not a package (JP-048): it is
   // dropped here, before the hue walk and `n`, on both surfaces, so the page is
   // exactly the page without it — the cards keep their hues, the chip row its
-  // chips, and layout 3's FEATURED seat lands on the last real package.
+  // chips, and layout 3's FEATURED seat, with nothing ticked, lands on the last
+  // real package.
   const tierList = (Array.isArray(c.tiers) ? c.tiers : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
   vm.tiers = tierList.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
@@ -811,6 +812,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // from them, and `vm.tierChips` — the only other place they are ever
       // shown — is cased too. Composed here, since the renderer does no casing.
       tagLabels: tags.map(cased),
+      // The artist's Featured tick (JP-048), which layout 3 seats its FEATURED
+      // badge on while the filter leaves it on show. Not in TIER_KEYS, so a
+      // ticked package with nothing else in it is still blank and dropped.
+      featured: !!t?.featured,
       ...tierHues(card),
     }
   })
@@ -2701,7 +2706,9 @@ function SlotsField({ value, max, onChange }) {
  * The fourth structured repeater, and the first to replace a flattened
  * key set rather than a textarea: t1n/t1p/… reached two of the five
  * things a card prints, and nothing at all could add a fourth package.
- * Row shape is { name, price, tags, blurb, feats }.
+ * Row shape is { name, price, tags, blurb, feats }, plus an optional
+ * `featured: true` on at most one row — layout 3's FEATURED seat (JP-048),
+ * a flag rather than content, so it is not in TIER_KEYS.
  *
  * Two of those are delimited strings rather than arrays, and they are
  * delimited differently on purpose: `tags` is comma-separated, exactly
@@ -2733,6 +2740,14 @@ function TiersField({ value, max, onChange }) {
   const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
   const add = () => onChange([...list, { name: '', price: '', tags: '', blurb: '', feats: '' }])
+  // The Featured tick is a radio that can be emptied (JP-048): ticking one row
+  // clears every other, unticking leaves none, and none is layout 3's own
+  // picture — the last package on show. The key is dropped rather than written
+  // false, so a list that never ticked anything stays the seed's shape.
+  const feature = (i, on) => onChange(list.map((t, j) => {
+    const { featured, ...rest } = t || {}
+    return on && j === i ? { ...rest, featured: true } : rest
+  }))
 
   // The price and the tags share a line, as the gigs' city and time do: both
   // are short, and stacking them would push the two textareas below the fold of
@@ -2794,6 +2809,15 @@ function TiersField({ value, max, onChange }) {
           onChange={(e) => setAt(i, 'feats', e.target.value)}
           style={TIER_AREA}
         />
+        {/* A raw checkbox, the add composer's Start fresh precedent. */}
+        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#5B5850', cursor: 'pointer' }}>
+          <input
+            type="checkbox" checked={!!t.featured} onClick={stopE}
+            onChange={(e) => feature(i, e.target.checked)}
+            style={{ margin: 0, accentColor: '#1B1A17', cursor: 'pointer' }}
+          />
+          <span style={{ fontWeight: 600 }}>Featured</span>
+        </label>
         {blankRow(t, TIER_KEYS) && (
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
             {BLANK_TIER_HINT}
