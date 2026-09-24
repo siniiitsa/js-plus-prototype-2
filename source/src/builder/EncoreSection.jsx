@@ -715,7 +715,10 @@ function NavLinks({ s, color, pills = false }) {
 // `onClick` is the booking calendar's layout-4 foot pill (JP-053), which is a
 // mailto that checks the wizard's contact boxes before it lets the click
 // through — the enquiry form's submit rule. Additive, like `style`.
-function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg, size: sizeProp, style, onClick }) {
+// `discBg` parts the disc's fill from the label's ink, in the Lime branch only:
+// Editorial's pricing pills (964:58618 "Frame") set terracotta type beside a
+// blush disc, where every other frame fills the disc in the type's own ink.
+function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'star', disc: discSize, discFg, discBg, size: sizeProp, style, onClick }) {
   const text = label ?? s.cta1
   const link = ext ? extLink(s, ext) : (s.live && to ? { href: `#${to}` } : null)
   const Tag = link ? 'a' : 'span'
@@ -750,7 +753,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
         {text}
         <span style={{
           width: dw, height: dw * 44 / 46, borderRadius: '999px', flex: 'none',
-          background: face, color: discFg ?? (bg ?? s.pillBg),
+          background: discBg ?? face, color: discFg ?? (bg ?? s.pillBg),
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         }}><ArrowRight size={dw * 0.6} strokeWidth={1.5} /></span>
       </Tag>
@@ -7881,14 +7884,37 @@ function Pricing({ s }) {
     // `s.tx`. Two things the twins do not draw: the seal off the panel's
     // foot-right corner, and the instance's own 1px inside stroke, which is the
     // root's (`grungeRule`) since this block stands inside its padding.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial — the same component a fourth time (964:58618 at 1440,
+    // 986:48245 at 768, 986:48257 at 390), Lime's tree node for node on
+    // Scheme 2, taupe, which route A resolves `s.*` to. `ink` is the one
+    // switch: every string binds `sem/text/1`, paper here, where the twins'
+    // copy reads `text/2` — the ico turns round with it. The card is
+    // `sem/box/3` at radius 0 under a dashed 8, 8 `sem/stroke/1` rule
+    // (`DashRule`), and the featured seat draws nothing: the three cards are
+    // one card. The idle chips are `sem/bg` in a 1px `stroke/1` ring, the
+    // heading one tone, and the Book pills are the page's one nested scheme
+    // (Scheme 1), named literals below. The frame's third card binds its name,
+    // price, blurb and features `text/2` — the twins' binding, an override
+    // the designer applied to the first two cards and missed — and is drawn
+    // paper like its neighbours. The instance's own blush stroke is the
+    // root's (`editorialRule`), Grunge's reason.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
+      const ink = ed ? s.ac : s.tx
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
-      const G = grunge ? {
+      // Scheme 1 inside Scheme 2: the pill's `box/3`, `text/1` and `tag/1/bg`
+      // (the disc) as Sienna Vale's paper scheme resolves them. No vm key holds
+      // them here, since route A resolves this section to the taupe.
+      const PILL = { bg: '#141414', type: '#C86E52', disc: '#E6B6A0' }
+      const G = ed ? {
+        headW: u(578.4), card: s.box3, cardR: 0, icoR: u(4), ring: undefined, lit: undefined,
+      } : grunge ? {
         headW: u(597.53), card: s.box1, cardR: u(13), icoR: s.radiusChip,
         ring: `inset 0 0 0 1px ${s.stroke1}`, lit: `inset 0 0 0 1px ${s.stroke2}`,
       } : {
@@ -7917,15 +7943,19 @@ function Pricing({ s }) {
       return (
         <div style={col(u(32), grunge ? { position: 'relative' } : undefined)}>
           {/* Desktop centres the chips against the heading at the row's far
-              end; both narrow masters stack them 24 under it. */}
+              end; both narrow masters stack them 24 under it — except
+              Editorial's 390, whose head is SPACE_BETWEEN on a hugging
+              column, so its 24 is auto and the chips sit flush under. */}
           <div style={s.narrow
-            ? col('24px', { alignItems: 'flex-start' })
+            ? col(ed && s.mob ? '0px' : '24px', { alignItems: 'flex-start' })
             : row(u(24), { justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' })}>
-            {/* Display/SM at lh 1, held to the frame's 640 on desktop. */}
+            {/* Display/SM at lh 1, held to the frame's 640 on desktop.
+                Editorial's box is a FIXED 578.4 at 768 as well. */}
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
-              letterSpacing: s.dls, color: s.ac, maxWidth: s.narrow ? '100%' : G.headW,
-              textTransform: grunge ? 'uppercase' : undefined,
+              letterSpacing: s.dls, color: s.ac,
+              maxWidth: s.mob || (s.narrow && !ed) ? '100%' : G.headW,
+              textTransform: grunge || ed ? 'uppercase' : undefined,
             }}>{grunge
               ? <><span style={{ color: s.tx }}>{words.slice(0, 4).join(' ')}</span>{words.length > 4 && ` ${words.slice(4).join(' ')}`}</>
               : s.title}</h2>
@@ -7941,7 +7971,11 @@ function Pricing({ s }) {
                     onClick={s.live ? () => setChip(i) : undefined}
                     style={ui({
                       padding: `${u(9)} ${u(15)}`, borderRadius: u(56), whiteSpace: 'nowrap',
-                      background: i === active ? s.pillBg : s.box1,
+                      // Editorial's idle chip is the page's `sem/bg` in a 1px
+                      // inside `stroke/1` ring; its lit one binds `tag/1/bg`,
+                      // which is `s.pillBg`'s blush under Scheme 2.
+                      background: i === active ? s.pillBg : ed ? s.bg : s.box1,
+                      boxShadow: ed && i !== active ? `inset 0 0 0 1px ${s.stroke1}` : undefined,
                       color: i === active ? s.activeFg : s.ac,
                       cursor: s.live ? 'pointer' : undefined,
                     })}
@@ -7978,6 +8012,7 @@ function Pricing({ s }) {
                   // inset shadows, ring first, and the padding stays the frame's.
                   // Grunge's featured seat swaps the hairline's colour instead.
                   boxShadow: featured ? G.lit : G.ring,
+                  position: ed ? 'relative' : undefined,
                   padding: tab ? '30px 20px' : u(44),
                   // The pill stands at the card's foot at 1440 and 768, at least
                   // 40 under the content; the 390 card hugs it 30 down.
@@ -7993,11 +8028,12 @@ function Pricing({ s }) {
                       : row(u(10), { alignItems: 'center' })}>
                       <span style={body(s.eyebrow, 1.3, {
                         fontWeight: 700, padding: `${u(4)} ${u(6)}`, borderRadius: G.icoR,
-                        background: s.pillBg, color: s.activeFg, whiteSpace: 'nowrap', flex: 'none',
+                        background: ed ? s.tx : s.pillBg, color: ed ? s.ac : s.activeFg,
+                        whiteSpace: 'nowrap', flex: 'none',
                       })}>[ico]</span>
                       <span style={{
                         fontFamily: s.label, fontSize: faced(s, tab ? s.labelMd : s.labelSm), lineHeight: facedLh(s, 1.1),
-                        letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
+                        letterSpacing: s.dls, color: ink, textTransform: 'uppercase',
                       }}>{t.name}</span>
                     </span>
 
@@ -8008,7 +8044,7 @@ function Pricing({ s }) {
                       alignItems: 'flex-end', alignSelf: s.narrow ? 'stretch' : 'flex-start',
                     })}>
                       {!!symbol && (
-                        <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{symbol}</span>
+                        <span style={body(s.bodyLg, 1.5, { color: ink })}>{symbol}</span>
                       )}
                       <span style={{
                         fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
@@ -8016,11 +8052,11 @@ function Pricing({ s }) {
                         flex: s.narrow ? '1 1 auto' : 'none',
                       }}>{amount}</span>
                       {!!s.tierUnit && (
-                        <span style={ui({ color: s.tx, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
+                        <span style={ui({ color: ink, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
                       )}
                     </span>
 
-                    {!!t.blurb && <p style={ui({ margin: 0, color: s.tx })}>{t.blurb}</p>}
+                    {!!t.blurb && <p style={ui({ margin: 0, color: ink })}>{t.blurb}</p>}
 
                     {/* The tick is the frame's typed ✓ in Body/SM, not Retro's
                         lucide Check; no live state here wants another glyph. */}
@@ -8029,7 +8065,7 @@ function Pricing({ s }) {
                         {t.feats.map((f, j) => (
                           <span key={j} style={row(u(8), { alignItems: 'center' })}>
                             <span style={body(s.bodySm, 1.4, { color: s.ac, flex: 'none' })}>✓</span>
-                            <span style={ui({ color: s.tx })}>{f}</span>
+                            <span style={ui({ color: ink })}>{f}</span>
                           </span>
                         ))}
                       </div>
@@ -8040,8 +8076,12 @@ function Pricing({ s }) {
                       the branch defaults to `sem/bg`; the 390 master keeps it at
                       full size, as Retro's does. */}
                   <span style={{ alignSelf: 'flex-start' }}>
-                    <BookPill s={s} to={s.tierBookTo} bg={s.pillBg} fg={s.activeFg} full={s.mob} />
+                    {ed
+                      ? <BookPill s={s} to={s.tierBookTo} bg={PILL.bg} fg={PILL.type} discBg={PILL.disc} full={s.mob} />
+                      : <BookPill s={s} to={s.tierBookTo} bg={s.pillBg} fg={s.activeFg} full={s.mob} />}
                   </span>
+                  {/* Editorial's card is dashed 8, 8 on all four sides, inside. */}
+                  {ed && <DashRule side="all" dash={8 * z} colour={s.stroke1} />}
                 </div>
               )
             })}
@@ -8055,7 +8095,7 @@ function Pricing({ s }) {
               print is a warm grey. An emptied field drops the line. */}
           {!!s.pricingSub && (
             <span style={body(s.eyebrow, 1.3, {
-              fontWeight: 700, color: s.tx,
+              fontWeight: 700, color: ink,
               paddingRight: grunge && s.mob && s.showBadge === 'show' ? '150px' : undefined,
             })}>{s.pricingSub}</span>
           )}
@@ -24181,6 +24221,9 @@ export default function EncoreSection({ s }) {
   // Pricing (964:58606) is the one Static Youth instance whose own stroke is
   // visible: 1px of `sem/state/inactive/border`, inside, at all three widths.
   const grungeRule = s.pr && s.v0 && s.grunge
+  // …and Sienna Vale's (964:58618) the one of its eleven: 1px of
+  // `sem/stroke/2`, inside, at all three widths — blush under Scheme 2.
+  const editorialRule = s.pr && s.v0 && s.editorial
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
@@ -24190,7 +24233,7 @@ export default function EncoreSection({ s }) {
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',
-      boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : undefined,
+      boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}` : undefined,
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,
     }}>
