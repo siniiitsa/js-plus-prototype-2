@@ -108,6 +108,10 @@ export const THEMES = [
     // "Full name"), which is why casing is 'title' and not 'upper'.
     display: "'Anton', sans-serif",
     label: "'Anton', sans-serif",
+    // Anton's glyphs against Stones Crush's: set at 0.75 of the token, line
+    // height divided back out (`faced` / `facedLh` in EncoreSection). A theme
+    // with no key sets its face at the token (1).
+    faceK: 0.75,
     ui: "'Chakra Petch', sans-serif",
     body: "'Inter', sans-serif",
     casing: 'title',
@@ -178,6 +182,16 @@ export const THEMES = [
     tags: ['#C6F200', '#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600'],
   },
 ]
+
+// Which Figma colour scheme a section stands on, where its frames stand it on
+// one other than Scheme 1 — by template, then design index (`arch %
+// designCount`), then category. The number names an entry of that template's
+// `schemes` ({ palette, sem, tags }, Scheme 1's own shape), which sectionVm
+// lays over the theme before it reads a colour, so every derived key follows
+// the section's ground. A section with no entry stands on Scheme 1, the
+// theme's own `palette` / `sem` / `tags`. The footer has one design, so its
+// row is read at every page layout.
+export const SCHEMES_OF = {}
 
 /* ------------------------------------------------------------------ *
  * §4.3 CATS — 11 section categories.

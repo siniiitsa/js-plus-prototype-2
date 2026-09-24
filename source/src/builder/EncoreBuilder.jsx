@@ -34,7 +34,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import EncoreSection from './EncoreSection.jsx'
 import {
-  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
+  THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -238,14 +238,19 @@ export const pageDesignOf = (sections, themeName) => {
 }
 
 export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
-  const T = THEMES[themeIdx]
+  const theme = THEMES[themeIdx]
+  const nDesign = designCount(cat, theme.name)
+  const d = ((arch % nDesign) + nDesign) % nDesign
+  // The section's own scheme (SCHEMES_OF, data.js), laid over the theme before
+  // any colour is read, so everything derived below — `muted`, `paper`, the
+  // pill pair, `legible()`, the chip seats, the `sem` keys — is the section's
+  // ground's and not the page's. `T` is the theme everywhere else.
+  const scheme = theme.schemes?.[SCHEMES_OF[theme.name]?.[d]?.[cat]]
+  const T = scheme ? { ...theme, ...scheme } : theme
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
   const cased = (t) => caseText(t, T.casing)
   const cv = (k, fb) => (c[k] !== undefined ? c[k] : fb)
-
-  const nDesign = designCount(cat, T.name)
-  const d = ((arch % nDesign) + nDesign) % nDesign
 
   // §10.2 sets several labels in a palette hue rather than the text colour.
   // That reads only while the hue separates from the background — in a palette
@@ -290,6 +295,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
 
     // theme typography
     display: T.display, label: T.label, body: T.body, dls: T.dls,
+    // A stand-in display face's glyphs against the frame's (`faced` in
+    // EncoreSection); 1, the identity, wherever the theme states none.
+    faceK: T.faceK ?? 1,
     // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
     // carry one; the flat two fall back to their body face.
     ui: T.ui ?? T.body,
@@ -372,6 +380,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // the pair: `(s.retro || s.grunge)` for grain and torn edges,
     // `(s.lime || s.grunge)` for the `sem` reads and the capsule nav.
     grunge: T.name === 'Grunge',
+    // Editorial's four layout pages are the same components in a fourth mode,
+    // Sienna Vale, so what only Editorial draws goes behind this flag, the way
+    // Lime's and Grunge's does.
+    editorial: T.name === 'Editorial',
+    // The templates whose layout-1 page is Lime's component tree, so a Lime
+    // layout-1 block that Editorial's frame shares is gated on this rather than
+    // on a third name at every site. Widened per site, from the frame, as each
+    // block is fitted (plans/editorial/layout-1.md, decision 2); a block
+    // Editorial does not share keeps `(s.lime || s.grunge)`.
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc follows. `page` is the header's design.

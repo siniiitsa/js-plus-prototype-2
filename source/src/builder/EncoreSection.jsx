@@ -96,15 +96,17 @@ const isTablet = (s) => !!s.narrow && !s.mob
 // the token (`faced`) and its line height divided back out (`facedLh`), which
 // lands the frame's glyphs in the frame's own line box. Every display- or
 // label-face site under Grunge owes both; the ramp itself stays the mode's.
-const FACE_K = 0.75
-const faced = (s, size) => (!s.grunge ? size : typeof size === 'number' ? size * FACE_K : `calc(${size} * ${FACE_K})`)
-const facedLh = (s, lh) => (s.grunge && typeof lh === 'number' ? +(lh / FACE_K).toFixed(4) : lh)
+// The ratio is the template's (`THEMES[].faceK`, `s.faceK`), 1 wherever the
+// face is the frame's own or measured to its glyph size, and both helpers are
+// the identity there — a string size gains no `calc(… * 1)`.
+const faced = (s, size) => (s.faceK === 1 ? size : typeof size === 'number' ? size * s.faceK : `calc(${size} * ${s.faceK})`)
+const facedLh = (s, lh) => (s.faceK !== 1 && typeof lh === 'number' ? +(lh / s.faceK).toFixed(4) : lh)
 const labelStyle = (s, size, extra) => {
   const st = {
     fontFamily: s.label, fontSize: size || s.labelMd, lineHeight: 1.1,
     textTransform: 'uppercase', letterSpacing: s.lime || s.grunge ? s.dls : '0.02em', whiteSpace: 'nowrap', ...extra,
   }
-  if (s.grunge) { st.fontSize = faced(s, st.fontSize); st.lineHeight = facedLh(s, st.lineHeight) }
+  if (s.faceK !== 1) { st.fontSize = faced(s, st.fontSize); st.lineHeight = facedLh(s, st.lineHeight) }
   return st
 }
 
