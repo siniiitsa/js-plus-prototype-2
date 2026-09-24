@@ -56,7 +56,7 @@ and 2.
 | 2 | JP-045 | Tickets → / ↗ on the canvas for gigs with no link | **Confirmed**: map layouts 2 and 3 split canvas from live on purpose | S | **user: drop on both** | **done** |
 | 3 | JP-044 | Repertoire layout-3 titles cut off at 768 | **Confirmed, Lime/Grunge only**: a 19px title beside a `flex: none` artist in a ~148px card | S–M | no (named diff) | **done** |
 | 4 | JP-046 | *Save 15% on bundles* missing, no field | **A named diff of the fit** (dropped in Retro L3, inherited) | S | **user: add the field** (by the plan) | **done** |
-| 5 | JP-048 | FEATURED follows position | **Confirmed**: the seat is `i === shown.length - 1` | M | **user: a Featured tick, layout 3 only** | open |
+| 5 | JP-048 | FEATURED follows position | **Confirmed**: the seat is `i === shown.length - 1` | M | **user: a Featured tick, layout 3 only** | **done** |
 | 6 | JP-054 | Form layout 4 lacks Event type and Location | **Named diff**, kept on 2026-09-23 | S | **user: seed `FORM_FIELDS_4`** (reverses 2026-09-23) | open |
 | 7 | JP-043 | The composed page's right column does not stick | **Confirmed**: nothing is sticky; `align-items: start` leaves ground under the calendar | S | **user: sticky, published** | open |
 | 8 | JP-038 | Sections disagree on their side inset (78 vs 56, footer 78 / 22) | **Confirmed**: the remaining gap is `padX` itself | L | **user: `padX` becomes the frame's inset, footer included** | open |
@@ -297,7 +297,35 @@ name-only fourth package: FEATURED stays on The Festival Set, both surfaces.
 
 **Docs.** CLAUDE.md's pricing layout-3 sentences (the seat the filter moves); the field's hint.
 
-**Settled.** —
+**Settled** (2026-09-24, `6a01d4f`). The Evidence lines had moved with JP-046: the seat was at
+8652 (Lime/Grunge) and 8878 (Retro); `shown` is computed once at 8563 for both.
+- **Code.** One `featAt` beside `shown` — the index of the first ticked package on show, else
+  `shown.length - 1`, and -1 at one row — read by both `packRow`s as `i === featAt`.
+  `sectionVm` adds `featured: !!t.featured` to `vm.tiers[]`; `TIER_KEYS` is unchanged (a
+  comment says why), so a ticked empty row is still blank and dropped. `TiersField` gains a raw
+  checkbox labelled *Featured* under the features box; `feature(i, on)` rewrites the list with
+  the key on row `i` alone, or on none, and drops it rather than writing `false`, so an
+  untouched list keeps the seed's shape. `tiersVal` needed nothing: the flag rides on the row.
+  Layout 1's glow and layouts 2 and 4 read no tick.
+- **Digest** (HEAD `4b5c0b2` worktree on :5174, themes 0, 1, 2, all categories, three widths,
+  port normalised): **0 of 387 on the canvas and 0 of 387 live**, as named.
+- **`&cj=`** (the seeded tiers, The Festival Set ticked, plus a name-only *The Late Set*;
+  pricing arch 2, themes 0–2, three widths, both surfaces): FEATURED on The Festival Set in all
+  18 renders, where HEAD puts it on The Late Set. Live, the Solo chip (House Party, Wedding Set)
+  moves it to The Wedding Set; Trio keeps it on The Festival Set.
+- **Real app** (one-off puppeteer, deleted; Retro, Lime, Grunge, setup card 3): opened with no
+  ticks and FEATURED on The Festival Set; a name-only fourth package took it (the report);
+  ticking The Festival Set took it back; ticking The House Party cleared The Festival Set's tick
+  and moved the seat; unticking left none ticked and the seat on the last row; the published
+  tab showed it on the ticked package and the Solo chip moved it to The Wedding Set. No page
+  errors.
+- **Docs.** CLAUDE.md's pricing layout-3 sentences; the Packages hint; `TIER_KEYS`' and
+  `TiersField`'s comments; a *Retired* line on Retro L3's open question 12.
+
+Reply: **fixed.** Each package in the Pricing panel now has a *Featured* tick. Tick one to give
+it the FEATURED badge in layout 3 (ticking another moves it); with none ticked, the badge goes
+to the last package on show, as before. A package with only a name no longer takes it from the
+one you ticked.
 
 ---
 
