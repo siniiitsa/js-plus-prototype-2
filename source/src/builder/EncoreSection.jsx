@@ -22492,22 +22492,45 @@ function EnquiryForm({ s }) {
   // trailing box runs the full measure, and the head's `whitespace-nowrap` is
   // dropped for an artist's sentence at 130. The head, the ENQUIRE line and
   // the pill seed the frame's own copy at this layout (JP-054).
-  if (s.v3 && s.lime) {
+  //
+  // ── Grunge: the same block, widened (Grunge layout 4, section 9) ───────
+  // The desktop master is the main component `725:2990` (the 1440 page
+  // carries no instance), with `971:8151` / `977:12378` narrow: 59 = 59
+  // nodes against Lime's at all three widths, Static Youth's Scheme 1, no
+  // nested scheme, no Device override, no effect. Every fill is bound to the
+  // key this block already reads, so the mode swaps the values — red head,
+  // white labels, black boxes with red placeholders, red step squares
+  // lettered black, the pale pill turned white round a black disc and a
+  // white arrow. Two bindings land on another value: the head's rule is
+  // `sem/stroke/2` where Lime's is `sem/stroke/1`, and the boxes' ring is
+  // `sem/stroke/2`, which is Lime's accent but `#FF0000` here, not `s.ac`
+  // — so both read `s.stroke2` (`ring`). Every Stones Crush site goes
+  // through `disp()`. The refused box keeps Lime's 2px of `s.tx`: white
+  // against the idle red, colour and weight at once. The narrow masters'
+  // and the component's "KAI MERCER" is the component's default text, the
+  // reading Retro's twin made; the head stays JP-054's shared seed.
+  if (s.v3 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     const type = (family, size, lh, extra) => ({
       fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
     })
+    // Anton at the frame's glyph size, in capitals; a no-op under Lime.
+    const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
+      ...(grunge && { textTransform: 'uppercase' }), ...extra,
+    })
+    const ring = grunge ? s.stroke2 : s.ac
     const title = desk ? u(36) : s.mob ? '26px' : '28px'
     // Display/List in `s.tx`, typed in caps.
-    const caps = type(s.display, s.list, 1.2, { color: s.tx, textTransform: 'uppercase' })
+    const caps = disp(s.list, 1.2, { color: s.tx, textTransform: 'uppercase' })
     // 1px, unramped, drawn inside the frame on all three masters.
     const hairline = `inset 0 -1px 0 ${s.stroke1}`
 
     const box = (bad) => type(s.body, s.bodyMd, 1.5, {
       background: s.bg, color: s.ac, border: 'none', borderRadius: s.btnR,
-      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.ac}`,
+      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : ring}`,
       height: desk ? u(45) : '44px', padding: `0 ${u(12)}`,
       width: '100%', margin: 0, boxSizing: 'border-box',
     })
@@ -22518,7 +22541,7 @@ function EnquiryForm({ s }) {
       ...box(false), display: 'block', height: u(90), borderRadius: u(24), padding: u(12),
     }
     // The frame's 67 radius on a 54 pill is `radius/pill`.
-    const pill = (extra) => type(s.display, s.list, 1.2, {
+    const pill = (extra) => disp(s.list, 1.2, {
       ...row(u(10), { justifyContent: 'space-between' }),
       background: s.tx, color: s.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
       padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
@@ -22574,7 +22597,7 @@ function EnquiryForm({ s }) {
           // s.live. No frame draws this state: the title is Display/Title in
           // the accent and the address Body/LG, Retro's inventions.
           <>
-            <h3 style={type(s.display, title, 1.1, {
+            <h3 style={disp(title, 1.1, {
               margin: 0, color: s.ac, overflowWrap: 'break-word',
             })}>{s.formSentTitle}</h3>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formSentBody}</p>
@@ -22646,13 +22669,15 @@ function EnquiryForm({ s }) {
       <div style={col(u(24), {
         color: s.tx, marginTop: `calc(${desk ? u(40) : s.mob ? '24px' : '30px'} - ${s.padY})`,
       })}>
-        <div style={{ boxShadow: hairline, paddingBottom: u(12), width: '100%' }}>
-          <h2 style={type(s.display, s.dispLg, 0.89, {
+        <div style={{
+          boxShadow: grunge ? `inset 0 -1px 0 ${ring}` : hairline, paddingBottom: u(12), width: '100%',
+        }}>
+          <h2 style={disp(s.dispLg, 0.89, {
             margin: 0, color: s.ac, overflowWrap: 'break-word',
           })}>{s.title}</h2>
         </div>
         {s.formSub && (
-          <span style={type(s.display, title, 1.1, { textTransform: 'uppercase' })}>{s.formSub}</span>
+          <span style={disp(title, 1.1, { textTransform: 'uppercase' })}>{s.formSub}</span>
         )}
         <div style={{
           display: 'grid', width: '100%', gap: u(desk ? 40 : 32),
