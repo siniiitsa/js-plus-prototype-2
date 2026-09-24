@@ -431,6 +431,13 @@ const NOTO_EM = {
 export const notoEms = (text) =>
   [...String(text).toUpperCase()].reduce((w, ch) => w + (NOTO_EM[ch] ?? 0.448), 0)
 
+// The same face at 700, which the served variable face reaches and the three
+// hand-scaled Bold statements set (the form's, the testimonials', the
+// footer's): the 540 table widened by the largest ratio measured in the
+// harness on the seeded form statement's lines — LET'S MAKE 1.045, YOUR NIGHT
+// 1.041, UNFORGETTABLE. 1.040 — so over, never under.
+export const notoBoldEms = (text) => notoEms(text) * 1.045
+
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has

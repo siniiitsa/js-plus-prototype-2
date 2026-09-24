@@ -49,7 +49,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
@@ -925,12 +925,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Layout 4's heads, the composed page's own (QA, 2026-09-15). EditPanel
   // mirrors all four.
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
-  // The widest word of the heading, in Bebas ems, after every fallback above.
-  // Lime's layout-3 form sets Display/LG in a half column its longest word can
-  // outrun at desktop, so it shrinks the head until that word fits rather than
-  // break it (the nav's `navEms` rule). Undefined off Lime.
-  vm.titleWordEms = T.name === 'Lime'
-    ? +Math.max(0, ...vm.title.split(/\s+/).map(bebasEms)).toFixed(3)
+  // The widest word of the heading, in the display face's ems, after every
+  // fallback above. Lime's layout-3 form sets Display/LG in a half column its
+  // longest word can outrun at desktop, so it shrinks the head until that word
+  // fits rather than break it (the nav's `navEms` rule); in Bebas ems. So does
+  // Editorial's layout-1 form statement, a hand-scaled Bold whose frame breaks
+  // UNFORGETT / ABLE inside the word in the demo face's measure; in Noto Bold
+  // ems. Undefined off those two.
+  vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial'
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:

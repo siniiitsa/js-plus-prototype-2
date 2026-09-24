@@ -21422,8 +21422,9 @@ function EnquiryForm({ s }) {
   // *Book Now*; and the context half is the frame's fixed 420 × 0.82 beside a
   // form half that takes the rest of our 1052 content width, so the form half
   // is 707.6 where the frame's is 908 × 0.82 = 744.6.
-  if (s.v0 && (s.lime || s.grunge)) {
+  if (s.v0 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const tab = isTablet(s)
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -21443,7 +21444,30 @@ function EnquiryForm({ s }) {
     // inside the shell's clip; its `box/2`, `box/1` and `stroke/1` are on no
     // palette key and are named. Labels and placeholders are `sem/text/2`.
     // The submit alone is back on Scheme 1: `box/1` lettered in the accent.
-    const G = grunge ? {
+    //
+    // Editorial — 964:58620 / 986:48247 / 986:48259, Grunge's tree less its
+    // grain and tears, on **Scheme 3** (ink) with **no nested scheme**: route A
+    // resolves every `s.*` read to the ink scheme, so the form half's
+    // `active/bg` is `s.ac` again and nothing here is a literal. Every string
+    // binds `sem/text/2` (paper, `s.tx`) but the picked chip's and the pill's,
+    // which bind `text/1`. The shell is unfilled, unradiused and dashed 16, 16
+    // in `stroke/1` (paper 56%), padded 20 round both halves; the context half
+    // is unfilled, the form half square. Each box is no box at all — the
+    // half's own fill, no radius, no padding — over a dashed 7, 7 bottom rule,
+    // 60 / 60 / 40 tall; the idle chips are dashed 5, 5 at a raw radius 3 and
+    // the picked one paper at 5. The pair stands 62 apart where the twins'
+    // stand 12. The submit is an ink `sem/bg` pill. No node carries an effect.
+    const G = ed ? {
+      shell: undefined, shellR: undefined, halfR: undefined, ctx: s.tx, on: s.tx,
+      box: 'transparent', boxH: s.mob ? 40 : 60,
+      // The idle mark is a 56% dashed hairline, so a refused box changes
+      // colour, weight and dash at once: a solid 2px rule of full paper.
+      badRing: s.tx,
+      chipOn: s.chips[0].bg, chipOnFg: s.ac, chipFg: s.tx, // `tag/1/bg` under `text/1`
+      small: [s.bodyMd, 1.5], // the chips and the ✓ are Body/MD, Grunge's
+      pillBg: s.bg, pillFg: s.ac, discFg: s.chips[0].bg,
+      msgH: s.mob ? 100 : 134, pairGap: s.mob ? 10 : 62,
+    } : grunge ? {
       shell: s.bg, shellR: u(13), halfR: undefined, ctx: s.ac, on: s.tx,
       box: '#F52E34', // Scheme 3 `sem/box/2`
       boxRing: s.bg, // Scheme 3 `sem/active/bg`, 1px inside
@@ -21476,7 +21500,7 @@ function EnquiryForm({ s }) {
     // Anton at the frame's glyph size, in capitals: every direct display site
     // here owes both under Grunge (section 1's `faced`).
     const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
-      ...(grunge ? { textTransform: 'uppercase' } : null), ...extra,
+      ...(grunge || ed ? { textTransform: 'uppercase' } : null), ...extra,
     })
     const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
     // 44/40 on the 1440 frame, 30 on the 768 one, 30/20 on the 390 one: the
@@ -21488,18 +21512,30 @@ function EnquiryForm({ s }) {
     // a refused box thickens that ring to 2px of full ink — an inset *ring*,
     // layout 2's rule for a fully rounded box, since a rule under a pill reads
     // as a smear — and the stated 60 does not grow.
+    // Under Editorial the box is bare and its rule is the field's `DashRule`
+    // (below), which a refusal swaps for a solid inset one.
     const box = (bad, extra) => type(s.body, s.bodyMd, 1.5, {
-      background: G.box, color: G.on, border: 'none', borderRadius: s.btnR,
-      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? G.badRing : G.boxRing}`,
-      height: u(60), padding: `0 ${u(24)}`, margin: 0, width: '100%', ...extra,
+      background: G.box, color: G.on, border: 'none', borderRadius: ed ? 0 : s.btnR,
+      boxShadow: ed ? (bad ? `inset 0 -2px 0 ${G.badRing}` : undefined)
+        : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? G.badRing : G.boxRing}`,
+      height: u(G.boxH ?? 60), padding: ed ? 0 : `0 ${u(24)}`, margin: 0, width: '100%', ...extra,
     })
     // Display/List over every control — the frame's typed caps are Bebas's own.
     const label = (t) => <span style={disp(s.list, 1.2, { color: G.on })}>{t}</span>
+    // …but Editorial's EVENT TYPE and MESSAGE are Label/MD, a size under the
+    // boxes' Display/List labels, where the twins set all four alike.
+    const minor = (t) => (ed
+      ? <span style={labelStyle(s, s.labelMd, { color: G.on, whiteSpace: 'normal', overflowWrap: 'break-word' })}>{t}</span>
+      : label(t))
+    // Editorial's dashed 7, 7 rule under a box, in `stroke/1`: an overlay on
+    // the field's foot, which is the box's (it is the last child), so the
+    // input keeps the frame's stated height. A refused box draws its own.
+    const foot = (bad) => ed && !bad && <DashRule dash={7 * z} colour={s.stroke1} />
 
     const field = (f, i) => {
       const bad = !!(errs && errs.f[i])
       return (
-        <div key={i} style={col(u(6), { minWidth: 0 })}>
+        <div key={i} style={col(u(6), { minWidth: 0, ...(ed && { position: 'relative' }) })}>
           {label(f.label)}
           {s.live ? (
             <input
@@ -21514,6 +21550,7 @@ function EnquiryForm({ s }) {
           ) : (
             <span style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>{f.placeholder}</span>
           )}
+          {foot(bad)}
         </div>
       )
     }
@@ -21547,24 +21584,38 @@ function EnquiryForm({ s }) {
       }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
     )
 
+    // Editorial's context half. At 1440 the statement stands **centred in the
+    // half** — the frame's head block is a fixed, un-laid-out 210 box whose
+    // heading hangs at y 176, which puts its middle at 305.5 of the 611 half,
+    // the half's own middle — so the half is a `1fr auto 1fr` grid: the credit
+    // row at the top of the first track, the promises at the foot of the third,
+    // and a longer statement eating both tracks evenly. Narrow, the head block
+    // is laid out (credit, then the statement 10 under it) and the promises
+    // stand 20 below. `inline-size` containment is for the statement's fit.
+    const edDesk = ed && !s.narrow
     const context = (
-      <div style={col(tab ? '0px' : u(20), {
+      <div style={ed ? {
+        padding: inset, minWidth: 0, containerType: 'inline-size',
+        ...(s.narrow ? col(u(20)) : { display: 'grid', gridTemplateRows: '1fr auto 1fr', width: u(420), flex: 'none' }),
+      } : col(tab ? '0px' : u(20), {
         padding: inset, minWidth: 0,
         // A fixed 420 beside the form at 1440, promises pinned to the foot of
         // the stretched half. Stacked, the 768 master's head block is a fixed
         // 210 with the promises straight under it, and the 390 one hugs at 20.
         ...(s.narrow ? null : { width: u(420), flex: 'none', justifyContent: 'space-between' }),
       })}>
-        <div style={col('0px', { minHeight: s.mob ? undefined : u(210) })}>
-          <span style={row(u(14))}>
-            {/* The artist's portrait, on `sem/bg` under the photograph. */}
+        <div style={ed ? (s.narrow ? col('10px') : { display: 'contents' }) : col('0px', { minHeight: s.mob ? undefined : u(210) })}>
+          <span style={row(u(14), edDesk ? { alignSelf: 'start' } : undefined)}>
+            {/* The artist's portrait, on `sem/bg` under the photograph —
+                Editorial's on `sem/media`, blush. */}
             <span style={{
               width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
-              overflow: 'hidden', background: s.tx,
+              overflow: 'hidden', background: ed ? SIENNA_MEDIA : s.tx,
             }}><Photo s={s} ink={ink} initialsSize={Math.round(15 * z)} /></span>
             <span style={col(u(2), { minWidth: 0 })}>
-              {/* Label/MD, `UPPER`, under Grunge — Lime's is Display/List. */}
-              <span style={grunge ? labelStyle(s, s.labelMd, { color: G.ctx }) : type(s.display, s.list, 1.2, { color: ink })}>{s.brand}</span>
+              {/* Label/MD, `UPPER`, under Grunge and Editorial — Lime's is
+                  Display/List. */}
+              <span style={grunge || ed ? labelStyle(s, s.labelMd, { color: G.ctx }) : type(s.display, s.list, 1.2, { color: ink })}>{s.brand}</span>
               <span style={type(s.ui, s.labelXs, 1.26, { color: G.ctx })}>{s.kicker}</span>
             </span>
           </span>
@@ -21576,11 +21627,26 @@ function EnquiryForm({ s }) {
               frame's three lines need a cap of at least UNFORGETTABLE.'s
               5.158em and under LET'S MAKE YOUR's 5.266em (`bebasEms()`), so it
               is 5.2em. The 390 master fills, and its own break (after MAKE,
-              then 8.87em on one line) is out of any cap's reach. */}
-          <h2 style={disp(s.dispSm, 1, {
+              then 8.87em on one line) is out of any cap's reach.
+
+              Editorial's is one of the mode's three hand-scaled Bold sites
+              (trap 4): 50.36 on a 42.75 line at every width, in a FIXED 262.7
+              box, where the demo face breaks UNFORGETT / ABLE inside the word —
+              its measure, not a design. Noto Bold sets UNFORGETTABLE. at 386.9,
+              past the 1440 and 390 columns, so the statement shrinks until its
+              widest word fits the column (`s.titleWordEms`, in Noto Bold ems,
+              over `100cqi` — the header title's recipe), the frame's size
+              being the ceiling, and the box grows to that word where it is
+              wider (`min-content`). Any statement then fits: more words take
+              more lines, a longer word a smaller size. The line height keeps
+              the frame's ratio so it follows the fit. */}
+          <h2 style={ed ? disp(s.titleWordEms ? `min(${u(50.36)}, calc(100cqi / ${s.titleWordEms}))` : u(50.36), 0.849, {
+            margin: 0, color: G.ctx, fontWeight: 700, overflowWrap: 'break-word',
+            maxWidth: u(262.7), minWidth: 'min-content',
+          }) : disp(s.dispSm, 1, {
             margin: `${s.narrow ? '20px' : u(grunge ? 20 : 12)} 0 0`, color: G.ctx, overflowWrap: 'break-word',
             maxWidth: s.mob ? '100%' : G.cap,
-          })}>{grunge && titleWords.length > 2 ? (
+          })}>{(grunge || ed) && titleWords.length > 2 ? (
             // The frame's typed break after "Let's make", kept at every width
             // by position (the media heading's rule, one tone here): the 390
             // master then sets the rest on one line, as ours does.
@@ -21593,7 +21659,7 @@ function EnquiryForm({ s }) {
         {/* The ticked promises: the frame's typed ✓ in Body/SM, the line in
             Label/XS (Chakra Petch). An emptied list drops the node. */}
         {s.formPromises.length > 0 && (
-          <div style={col(u(10))}>
+          <div style={col(u(10), edDesk ? { alignSelf: 'end' } : undefined)}>
             {s.formPromises.map((p, i) => (
               <span key={i} style={row(u(10))}>
                 <span style={type(s.body, G.small[0], G.small[1], { color: G.ctx, flex: 'none' })}>✓</span>
@@ -21634,7 +21700,7 @@ function EnquiryForm({ s }) {
             {s.formRows.map(fieldRow)}
             {showTypes && (
               <div style={col(u(8))}>
-                {label(s.formTypeLabel)}
+                {minor(s.formTypeLabel)}
                 <div style={row(u(8), { flexWrap: 'wrap' })}>
                   {s.formTypes.map((t, i) => {
                     const on = i === ti
@@ -21642,36 +21708,40 @@ function EnquiryForm({ s }) {
                     // Body/SM at 5/11: the picked chip is `sem/active` with no
                     // stroke, the idle ones `sem/inactive` inside the hairline,
                     // so both stand the frame's 28 (27 at 390) with no border.
+                    // Editorial's idle ones are unfilled inside a dashed 5, 5 at
+                    // a raw radius 3, the picked one filled at 5 — no token.
                     return (
                       <span key={i} onClick={onClick} style={type(s.body, G.small[0], G.small[1], {
                         display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
-                        padding: `${u(5)} ${u(11)}`, borderRadius: s.btnR,
+                        padding: `${u(5)} ${u(11)}`, borderRadius: ed ? u(on ? 5 : 3) : s.btnR,
                         background: on ? G.chipOn : G.chip, color: on ? G.chipOnFg : G.chipFg,
-                        boxShadow: on ? undefined : `inset 0 0 0 1px ${G.chipRing}`,
+                        boxShadow: on || ed ? undefined : `inset 0 0 0 1px ${G.chipRing}`,
                         cursor: onClick ? 'pointer' : undefined,
-                      })}>{t}</span>
+                        ...(ed && { position: 'relative' }),
+                      })}>{t}{ed && !on && <DashRule side="all" dash={5 * z} radius={3 * z} colour={s.stroke1} />}</span>
                     )
                   })}
                 </div>
               </div>
             )}
-            <div style={col(u(6))}>
-              {label(s.formMsgLabel)}
+            <div style={col(u(6), ed ? { position: 'relative' } : undefined)}>
+              {minor(s.formMsgLabel)}
               {/* 134 at every width — Retro's 390 master closes it to 100. */}
               {s.live ? (
                 <textarea
                   value={msg} placeholder={s.formMessage}
                   onChange={(e) => setMsg(e.target.value)}
                   style={box(false, {
-                    display: 'block', height: u(G.msgH), borderRadius: u(20),
-                    padding: `${u(20)} ${u(24)}`, resize: 'none', outline: 'none',
+                    display: 'block', height: u(G.msgH), borderRadius: ed ? 0 : u(20),
+                    padding: ed ? 0 : `${u(20)} ${u(24)}`, resize: 'none', outline: 'none',
                   })}
                 />
               ) : (
                 <span style={box(false, {
-                  display: 'block', height: u(G.msgH), borderRadius: u(20), padding: `${u(20)} ${u(24)}`,
+                  display: 'block', height: u(G.msgH), borderRadius: ed ? 0 : u(20), padding: ed ? 0 : `${u(20)} ${u(24)}`,
                 })}>{s.formMessage}</span>
               )}
+              {foot(false)}
             </div>
             <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
               {s.formBtn}{disc}
@@ -21694,7 +21764,7 @@ function EnquiryForm({ s }) {
     // the wrapper and leave the seams inside the section's edges.
     return (
       <div style={{
-        position: 'relative', color: grunge ? s.tx : ink,
+        position: 'relative', color: grunge || ed ? s.tx : ink,
         padding: G.pad,
       }}>
         {/* Grunge's band sheet, the media player's: `image 1` at .29 LIGHTEN
@@ -21708,11 +21778,15 @@ function EnquiryForm({ s }) {
         <ArcEdge s={s} side="bottom" height={44.24 * z} colour={s.box1} />
         <TornEdge s={s} grunge side="top" height={s.mob ? 40 : tab ? 60 : 40 * z} />
         <TornEdge s={s} grunge side="bottom" height={s.mob ? 38 : tab ? 16 : 90 * z} />
+        {/* Editorial's shell pads 20 round both halves inside its dashed
+            16, 16 rule, which is the shell's one mark (its fill is hidden). */}
         <div style={{
-          ...(grunge ? { position: 'relative' } : null),
+          ...(grunge || ed ? { position: 'relative' } : null),
           background: G.shell, borderRadius: G.shellR, overflow: 'hidden',
           display: 'flex', flexDirection: s.narrow ? 'column' : 'row',
+          ...(ed && { padding: u(20) }),
         }}>
+          {ed && <DashRule side="all" dash={16 * z} colour={s.stroke1} />}
           {context}
           {form}
         </div>
