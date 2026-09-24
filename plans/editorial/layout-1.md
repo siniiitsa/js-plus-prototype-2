@@ -135,7 +135,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 7 | `pricing` | `964:58618` | Pricing — B · 3-col in soft panel | 1440 × 880 | `986:48245` | 768 × 793 | `986:48257` | 390 × 1486 | 2 | `964:58594` | `964:58606` | done `73e7307` |
 | 8 | `calendar` | `964:58619` | Booking Calendar — A · Scheduler | 1440 × 911 | `986:48246` | 768 × 1371 | `986:48258` | 390 × 995 | 1 | `964:58595` | `964:58607` | done `7ed5a57` |
 | 9 | `form` | `964:58620` | Enquiry Forms — B · Split context+form | 1440 × 891 | `986:48247` | 768 × 1075 | `986:48259` | 390 × 1165 | 3 | `964:58596` | `964:58608` | done `8c540f2` |
-| 10 | `testimonials` | `964:58621` | Testimonials H — Stacked tag card | 1440 × 730 | `986:48248` | 768 × 730 | `986:48260` | 390 × 730 | 1 | `964:58597` | `964:58609` | todo |
+| 10 | `testimonials` | `964:58621` | Testimonials H — Stacked tag card | 1440 × 730 | `986:48248` | 768 × 730 | `986:48260` | 390 × 730 | 1 | `964:58597` | `964:58609` | done `3f61ffe` |
 | 11 | `footer` | `964:58622` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:48249` | 768 × 692.3 | `986:48261` | 390 × 736.3 | 3 | `964:58598` | `964:58610` | todo |
 
 Both twins' fit comments in `EncoreSection.jsx` cite their node ids; grep for either to find the
@@ -697,7 +697,9 @@ Append as the pass goes. Do not repeat Lime's, Grunge's or Retro's bullets; name
   fixed box as `max-width` over `min-width: min-content`. The testimonials' quote (57.84 / 52.42)
   and the footer's statement (57.84 / 47.9) meet the same demo-face measure — measure their
   widest words in Bold before choosing, and check `titleWordEms` is the key their text reads
-  (the testimonials' quote is not `vm.title`).
+  (the testimonials' quote is not `vm.title`). **A string that is not `vm.title` carries its own
+  key** (section 10): `vm.quotes[].wordEms`, the same `notoBoldEms` maximum per review, Editorial
+  only — so a third reader (the footer's `vm.footerStatement`) takes its own key the same way.
 - **A dashed rule under an `<input>` goes on the field's column** (section 9): the box is the
   column's last child, so `DashRule` at the column's foot is the box's, and a refusal swaps it for
   a solid inset rule on the input.
@@ -1511,6 +1513,78 @@ four ink ones are its own register.
   645 each; zero at themes 0, 1, 2 and 4). No shared helper changed; `titleWordEms`' new arm has
   no other reader under Editorial.
 
+### Settled in section 10 (the testimonials)
+
+- **No Editorial block: `Testimonials`' `if (s.lime || s.grunge)` inside `if (s.v0)` is
+  `s.limeTree`**, still after the seam, with `const ed = s.editorial` and a third arm at the head of
+  `G` (Lime's and Grunge's arms untouched). The tree is the twins' node for node at all three widths
+  (the walker, all three masters and the Grunge twin): two backs, a card, an arrow row, `Layer_1`
+  hidden. Scheme 1 at every width, the 390 master in **Device: Mobile** (`770:2`), no nested scheme
+  — Grunge's card and dark back carried Scheme 9 / 7 overrides, Editorial's carry none. `n`, `at`,
+  `q`, `go`, `paging` and `step` are shared whole, so the published arrows needed nothing.
+- **The deltas, all off `boundVariables`:**
+  - **no radius and no effect on any node** — the card and both backs are square (`G.r` 0) and the
+    twins' `DROP_SHADOW` 0 / 4 / 4 is gone (`shadow` undefined under `ed`);
+  - **all three are dashed 9, 9 all round in `stroke/1`**, opaque ink (trap 1, followed — the
+    brief's worry that the backs' ink might not be `stroke/1` is closed): one `DashRule side="all"`
+    per box, × 0.82 on desktop, radius 0;
+  - the **card is `sem/bg`** — the page itself, so the dash is the only thing parting it from the
+    ground, as the frame draws it; the first back `active/bg` (`s.ac`, the twins' seat), the second
+    **`tag/1/bg`** blush (`s.chips[0].bg`) where Lime's is Scheme 2's `box/2` and Grunge's `#353535`;
+  - **every string binds `text/2`** — eyebrow and quote ink (`s.tx`), one tone, uppercase (`grunge
+    || ed`);
+  - the **reviewer pill** is `active/bg` under **`text/2`** ink (`[s.activeBg, s.tx]`; Grunge's
+    `s.activeFg` would be paper here), the **role pill `box/3`** ink under `text/1` terracotta
+    (`[s.box3, s.ac]`; Grunge's `s.bg` would be paper on paper); both Display/Title **32 / 25 / 23**
+    through `labelStyle`, radius 12 and pad 6 / 12 kept;
+  - **the arrows needed nothing**: a 1px `stroke/1` ring (ink) round a `box/3` glyph, which is
+    `s.tx`'s value — Lime's `ring()` as it stands.
+- **The narrow backs and the card's place are the masters' own** (desktop is the twins' exactly):
+  `[top, left, right, bottom]` off the card — 768 terracotta −46 / 31 / 35 / 137, blush −27 / 14 /
+  14 / 85; 390 terracotta −45.66 / 36 / 39 / 122.66, blush −24.66 / 24 / 24 / 78.66. The card
+  stands 146.5 down and 100.5 up the 768 band, 146.16 down at 390 with the arrows 32.84 under it
+  and 138 over the foot — the wrap centred in the fixed 730. The bottom insets run large because
+  the frames' Bold-quote cards are tall; on the shortest seeded review they stay positive. The 390
+  bleed to x 13 and the arrows' `marginBottom` (20 / 46, centring on the wrap) are Lime's.
+- **The quote is the second hand-scaled Bold, fitted to its widest word** (section 9's recipe,
+  open question 11): **57.84 Bold on a 52.42 line at 1440 and 768, but the ramp's Display/MD
+  Regular 36 at 1 at 390** — the 390 master is not hand-scaled (and prints the DEMO marks for its
+  `"`, trap 5; Noto prints real ones). So the size is `min(ceiling, calc(100cqi / q.wordEms))` on an
+  `inline-size` column, `fontWeight: 700` and the 0.906 ratio at 1440 and 768 only, and at desktop
+  the frame's FIXED **560.33** box as `max-width` over `min-width: min-content`. **`vm.titleWordEms`
+  does not reach it** — the quote is `vm.quotes[].quote`, not `vm.title` — so `sectionVm` gained
+  **`vm.quotes[].wordEms`**, `notoBoldEms`' maximum per review, Editorial only (undefined for the
+  others, whose DOM it never reaches). The ems are Bold's at 390 too (over, never under), and `"`
+  is not in `NOTO_EM`, so it counts at the 0.448 default — over again.
+  - **Seeded, the fit bites at 768 alone**: `"PROFESSIONAL` is 6.975 em, 403.4 at 57.84 against
+    the 364 column, so the quote sets **52.19 on the frame's own five lines** (the breaks match,
+    the size does not). The card is 455.6 against 483, the band **702.6 against 730**, and the
+    arrows centre 13.7 higher, on the shorter wrap. At 1440 it is the ceiling (47.4, 330.8 of
+    459.5), three lines as the frame breaks them; at 390 the ceiling (36, 251 of 264), four lines.
+  - A long word (`INCOMPREHENSIBILITIES`) pulls it to 46.7 / 33.5 / 24.3 with the desktop box
+    grown to the 508 column, and nothing overflows at any width.
+- **Named diff: the 390 pills wrap to two rows.** The frame's `tag-row` is a no-wrap row hugging
+  **277 in a 264 slot** — it overflows the card's content box by 13, into the padding — and Noto
+  sets the seed's "HANNAH L." at 130.3 (Fisterra's "Hannah L", no period, 116) and "PRIVATE HOST"
+  at 157.7 (153), 296 in all. The twins' row is `flexWrap: 'wrap'` (content), kept: the frame's
+  overflow is followed by wrapping, not reproduced. The card is 404.9 against 359 and the band
+  **775.9 against 730**; the backs follow the card.
+- **Measured** (harness, against the section root): desktop band 598.6 (730 × 0.82), card 590.4 ×
+  344.4 at (294.8, 135.3), backs 511.7 × 321.4 and 556 × 348.5 at −37.7 / −22.1 above it, quote
+  459.5 wide on three lines, pills 38.6 (47 × 0.82) at 26.2px, arrows 45.1 × 44.3 centred at 299.3
+  (365 × 0.82); 768 card at (152, 146.5), backs at 31 / 14 in, pills 39.5 at 25px; 390 card 364 at
+  (13, 146.2), backs at 36 / 24 in, quote 264 on four lines, pills 37.3 at 23px, arrows 32.84 under
+  the card. Every x and y is the frame's (× 0.82 at desktop): `pad()` already takes `padY` off, so
+  no inherited root-inset diff this time.
+- **Function** (`theme=3&live=1`, puppeteer mouse clicks, 1440 and 390): Next walks all five reviews
+  and wraps 5 → 1, Back wraps 1 → 5, both arrows carry a pointer and hit-test to themselves; at 390
+  the arrow row rides up and down with each review's card, so a click must re-read its position
+  (the twins' behaviour). `n=1` draws no arrows, `n=0` prints *No reviews yet.* in ink.
+- **`FIELDS.testimonials` has no template-keyed `in` row**, so nothing was owed.
+- **Moved, theme 3 only** (digest: exactly `testimonials` arch 0 at three widths, static and live —
+  3 of 645 each; zero at themes 0, 1, 2 and 4). No shared helper changed; `wordEms` is read by
+  this block alone.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1735,6 +1809,27 @@ Section 9:
   session 0) — the statement, labels, pill, sent head.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
+Section 10:
+- *Where the seam lives inside the branch, the block goes after the seam* (Lime 1, section 4) —
+  `n`, `at`, `q`, `go`, `paging` and `step` shared whole.
+- *The `G` lookup at the block's head, whose twin's arm is today's literals* (Grunge 1, sections
+  4–10) — a third arm; Lime's and Grunge's untouched.
+- *The node walker* and *the paired diff walk* (Grunge 2) — all three masters and the Grunge twin,
+  bindings resolved.
+- *A scheme that did not move can still move the binding* (Grunge 3) — every string on `text/2`,
+  the who pill's ink on `text/2`, the role pill on `box/3`, the second back on `tag/1/bg`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — none on any node; the
+  twins' drop shadow dropped.
+- *The backs are insets off the card*, *the 390 card bleeds into the root's padding* and *the wide
+  arrows centre on the wrap* (Lime 1, section 10; D1) — all three kept, the insets re-read.
+- *A hand-scaled instance is not the ramp* (Lime 2, bio) — 57.84 at 1440 and 768; and turned round
+  at 390, where the master is the ramp's 36.
+- *The desktop head shrinks to fit its widest word* (Lime 3, section 9; D3) — through section 9's
+  recipe, on a new per-review key.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the quote; the pills through `labelStyle`.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -1790,3 +1885,11 @@ Section 9:
     broken wherever it overflows — is one line to turn (`min(…)` → `u(50.36)`). Worth telling
     the designer with 1 and 6, and a design call for the testimonials' and the footer's
     statements, which will meet the same measure.
+    **The testimonials' quote took the same fit** (section 10): seeded, it bites at 768 alone, where
+    `"PROFESSIONAL` sets 403 at the frame's 57.84 in a 364 column, so the quote is 52.19 on the
+    frame's five lines and the band 702.6 against 730. One line to turn there too (`min(…)` →
+    `u(57.84)`). The footer's statement is the last to meet it.
+12. **The testimonials' 390 pills** (section 10) — the frame's no-wrap row hugs 277 in a 264 slot,
+    overflowing its own card's padding by 13; Noto's 296 wraps to two rows instead, and the 390
+    band is 775.9 against 730. Worth telling the designer: the row has no room for a longer name
+    even in the demo face.
