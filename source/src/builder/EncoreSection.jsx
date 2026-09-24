@@ -942,6 +942,53 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // `sem/bg` disc with its marks and name in `sem/text/1` red. So under Grunge
   // `scheme={4}` asks for that pair — the one caller that passes it — and
   // every other scheme keeps the red disc.
+  //
+  // Editorial's seal (964:58613 "Frame 179", the bio's; the footer's is the
+  // same component) is this geometry once more — the 125.37 disc, a 120 ring,
+  // the name twice round the 109.3 circle, the equator marks at the same x —
+  // with Sienna Vale's own marks, every one a scheme key, so the footer's
+  // Scheme 3 reads its own inks through the same arm: a `sem/active/bg` disc,
+  // the ring and both equator marks 1px inside strokes of `sem/stroke/1` (Lime's
+  // are 2 and 3), no "Group 9" reticle but the page's sparkle — GrungeStar's
+  // path at 57.78 × 58.32, centred, in `sem/active/text` — and the name in
+  // Space Mono at 10.61 tracked 30%, in `sem/bg`. The face is named here rather
+  // than through `s.mono`: Sienna Vale states no mono token, and giving the
+  // theme one would move the pricing, gallery and map readers of `s.mono`,
+  // which no Editorial session has read yet. `scheme`, `line` and the ignored
+  // colour props stay ignored.
+  if (s.editorial && !classic) {
+    const name = String(s.badgeText || '').toUpperCase()
+    const k = 57.78 / 125.37 * 100 / 144
+    return (
+      <div style={{
+        position: 'absolute', width: size, height: size,
+        transform: `rotate(${tiltDeg}deg)`, ...style,
+      }}>
+        <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true"
+             style={{ display: 'block', overflow: 'visible' }}>
+          <defs>
+            <path id={`seal-${id}`} d="M 50,50 m -43.6,0 a 43.6,43.6 0 1,0 87.2,0 a 43.6,43.6 0 1,0 -87.2,0" />
+          </defs>
+          <circle cx="50" cy="50" r="50" fill={s.activeBg} />
+          <g fill="none" stroke={s.stroke1} strokeWidth="0.8">
+            <circle cx="50" cy="50" r="47.46" />
+            <circle cx="12.26" cy="50.33" r="5.18" />
+            <circle cx="88.41" cy="50.33" r="5.18" />
+          </g>
+          <path d={GRUNGE_STAR_D} fill={s.activeFg}
+                transform={`translate(${(50 - 72 * k).toFixed(3)} ${(50 - 72.667 * k).toFixed(3)}) scale(${k.toFixed(5)})`} />
+          <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+            <text fill={s.bg} textAnchor="middle" style={{
+              fontSize: '8.46px', letterSpacing: '2.54px', fontFamily: "'Space Mono', monospace",
+            }}>
+              <textPath href={`#seal-${id}`} startOffset="25%">{name}</textPath>
+              <textPath href={`#seal-${id}`} startOffset="75%">{name}</textPath>
+            </text>
+          </g>
+        </svg>
+      </div>
+    )
+  }
   if ((s.lime || s.grunge) && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
     const [disc, mk] = s.grunge ? (line ? [s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
@@ -3473,12 +3520,24 @@ function Bio({ s }) {
   // `faced` / `facedLh` and the capitals Stones Crush has and Anton does not.
   // And the left flank's foot line is Body/Eyebrow, bold, where Lime's is
   // Body/SM. Neither narrow master overrides its Device mode.
-  if (s.v0 && (s.lime || s.grunge)) {
+  //
+  // Editorial layout 1 (964:58613 · 986:48239 at 768 · 986:48252 at 390) is
+  // the tree a third time, node for node, on paper — so `ed` names its
+  // deltas. Every string binds `sem/text/1`, the terracotta accent, where
+  // Lime's copy is `text/2`; the head is one tone in it and owes the capitals
+  // Fisterra Fora has and Noto does not; the foot line is Grunge's eyebrow.
+  // The photograph is an arch with square feet (361 / 361 / 0 / 0, which CSS
+  // clamps to the semicircle Figma draws) on `sem/box/3`, with no glow and no
+  // effect of any kind — just a `sem/tag/1/bg` inside stroke, 1px at 1440 and
+  // 768 and 3px at 390, the blush ring the 390 render shows. The seal is
+  // SealBadge's Editorial arm, tilted 25.03 and hung on its own centres.
+  if (s.v0 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const tab = isTablet(s)
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
-    const ink = { color: s.tx, letterSpacing: s.dls }
+    const ink = { color: ed ? s.ac : s.tx, letterSpacing: s.dls }
     // Body/Eyebrow — Inter bold, the frame's "About" and its credit line.
     const eyebrow = (t, extra) => (
       <span style={{ fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3, ...ink, ...extra }}>{t}</span>
@@ -3496,14 +3555,15 @@ function Bio({ s }) {
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
           letterSpacing: s.dls, color: grunge ? s.tx : s.ac,
-          textTransform: grunge ? 'uppercase' : undefined,
+          textTransform: grunge || ed ? 'uppercase' : undefined,
         }}>{grunge
           ? String(s.title || '').split(' ').map((w, i) => (
             <span key={i} style={i === 1 ? { color: s.ac } : undefined}>{i ? ' ' : ''}{w}</span>
           ))
           : s.title}</h2>
-        {/* Body/SM — Inter regular, not the eyebrow; Grunge's is the eyebrow. */}
-        {grunge
+        {/* Body/SM — Inter regular, not the eyebrow; Grunge's and Editorial's
+            are the eyebrow. */}
+        {grunge || ed
           ? eyebrow('[ 001 ] Structure · Bio_01', { textTransform: 'uppercase', whiteSpace: 'nowrap' })
           : (
             <span style={{
@@ -3529,13 +3589,22 @@ function Bio({ s }) {
     // Grunge's narrow masters hang it on the same x but 23.15 above the foot at
     // 768 and 5.65 below it at 390 — its shorter foot line lifts the card under
     // a seal the section places absolutely.
+    // Editorial's hangs lower on desktop and higher at 768: 15.73 outside the
+    // left edge and 137.73 above the foot, 16.34 past the right edge and 16.68
+    // above it, and at 390 5.1 inside the right edge and 5.12 below the foot.
     const disc = s.mob ? 63.94 : 125.37
     const half = disc / 2
-    const seal = s.mob
-      ? { right: `${-(-5.58 + half).toFixed(2)}px`, bottom: `${-((grunge ? 5.65 : 0.65) + half).toFixed(2)}px` }
-      : tab
-        ? { right: `${-(16.87 + half).toFixed(2)}px`, bottom: `${((grunge ? 23.15 : 25.15) - half).toFixed(2)}px` }
-        : { left: u(-11.5 - half), bottom: u(166.35 - half) }
+    const seal = ed
+      ? s.mob
+        ? { right: `${-(-5.1 + half).toFixed(2)}px`, bottom: `${-(5.12 + half).toFixed(2)}px` }
+        : tab
+          ? { right: `${-(16.34 + half).toFixed(2)}px`, bottom: `${(16.68 - half).toFixed(2)}px` }
+          : { left: u(-15.73 - half), bottom: u(137.73 - half) }
+      : s.mob
+        ? { right: `${-(-5.58 + half).toFixed(2)}px`, bottom: `${-((grunge ? 5.65 : 0.65) + half).toFixed(2)}px` }
+        : tab
+          ? { right: `${-(16.87 + half).toFixed(2)}px`, bottom: `${((grunge ? 23.15 : 25.15) - half).toFixed(2)}px` }
+          : { left: u(-11.5 - half), bottom: u(166.35 - half) }
     const card = (
       <div style={row('0', {
         justifyContent: 'center', padding: s.narrow ? '0 60px' : `${u(4.5)} 0`,
@@ -3545,14 +3614,17 @@ function Bio({ s }) {
           width: s.mob ? undefined : u(488), height: s.mob ? '311px' : u(648),
         }}>
           <div style={{
-            position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: u(grunge ? 13 : 151),
-            background: grunge ? s.box3 : s.bg,
+            position: 'absolute', inset: 0, overflow: 'hidden',
+            borderRadius: ed ? `${u(361)} ${u(361)} 0 0` : u(grunge ? 13 : 151),
+            background: grunge || ed ? s.box3 : s.bg,
           }}>
             <Photo s={s} initialsSize={54} />
             {!grunge && (
               <div style={{
                 position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                boxShadow: `inset 0 0 ${u(64)} ${s.glow}`,
+                boxShadow: ed
+                  ? `inset 0 0 0 ${s.mob ? 3 : 1}px ${s.chips[0].bg}`
+                  : `inset 0 0 ${u(64)} ${s.glow}`,
               }} />
             )}
             <Grain s={s} exact grunge blend="lighten" opacity={0.5} style={{
@@ -3560,7 +3632,7 @@ function Bio({ s }) {
               maskImage: 'linear-gradient(0deg, transparent 0%, #000 16.3%)',
             }} />
           </div>
-          <SealBadge s={s} size={s.mob ? disc : Math.round(disc * z * 10) / 10} tilt={26.06} style={seal} />
+          <SealBadge s={s} size={s.mob ? disc : Math.round(disc * z * 10) / 10} tilt={ed ? 25.03 : 26.06} style={seal} />
         </div>
       </div>
     )
