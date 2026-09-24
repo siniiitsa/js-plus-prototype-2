@@ -47,6 +47,8 @@ const PROBES = [
   // JP-052: the calendar keys whose seats moved when layout 4's column became
   // the wizard's summary, and the Pricing packages it reads across sections.
   { name: 'calendar.cta', cats: ['calendar'], param: 'cj', value: { cta: Z } },
+  // Editorial layout 1, section 8: the scheduler's head, under each template.
+  { name: 'calendar.heading', cats: ['calendar'], param: 'cj', value: { heading: Z } },
   { name: 'calendar.time', cats: ['calendar'], param: 'cj', value: { time: Z } },
   { name: 'calendar.open', cats: ['calendar'], param: 'cj', value: { open: '2026-11-05' } },
   { name: 'calendar.image', cats: ['calendar'], param: 'cj', value: { image: 'https://example.test/zz.jpg' } },

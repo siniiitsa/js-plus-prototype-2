@@ -13936,14 +13936,29 @@ function Calendar({ s }) {
     // numbers is the accent, and the picked day is the active pair — a red
     // fill under the leaked dark ink, with no effect on any node. The
     // photograph takes a sheet of the band grain.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:58619 1440 × 911, 986:48246 768 × 1371, 986:48258 390 ×
+    // 995) is this tree again plus the tape, on Scheme 1 — paper. Its arm
+    // unfills everything: no panel ring and no radius anywhere, unfilled month
+    // discs in an ink `stroke/1` ring, unfilled cells in a terracotta
+    // `stroke/2` one, every string `text/1` terracotta but the arrows, and the
+    // picked day the active pair in an ink ring. The halves' and the foot's
+    // rules are `stroke/2` too. The photograph is a leant print (below).
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
-      const G = grunge ? {
+      // The new leaves (`num`, `cellRing`, `rule`, `headW`, `photoPad`) fall
+      // back through `??` to the twins' values, so their arms are unchanged.
+      const G = ed ? {
+        panelR: 0, ring: null, disc: 'transparent', arrow: s.tx, names: s.ac, line: s.ac,
+        cell: 'transparent', cellR: 0, on: s.activeBg, onFg: s.activeFg, onGlow: '', round: false, photoR: 0,
+        num: s.ac, cellRing: s.stroke2, rule: s.stroke2, headW: s.mob ? '100%' : u(578.4), photoPad: u(40),
+      } : grunge ? {
         panelR: u(13), ring: s.stroke1, disc: s.bg, arrow: s.ac, names: s.ac, line: s.ac,
         cell: s.bg, cellR: u(10), on: s.pillBg, onFg: s.activeFg, onGlow: '', round: false, photoR: u(12),
       } : {
@@ -13951,8 +13966,9 @@ function Calendar({ s }) {
         cell: s.box2, cellR: u(26), on: s.box2, onFg: s.tx, onGlow: `, inset 0 0 20px 0 ${s.glow}`, round: s.mob, photoR: u(35),
       }
       // Anton at the frame's glyph size, in capitals: the heading and the
-      // month are direct display sites (section 1's `faced`).
-      const disp = (size, extra) => (grunge
+      // month are direct display sites (section 1's `faced`). Editorial's
+      // Noto takes the capitals too; its `faced` is the identity.
+      const disp = (size, extra) => (grunge || ed
         ? type(s.display, faced(s, size), facedLh(s, 1), { textTransform: 'uppercase', ...extra })
         : type(s.display, size, 1, extra))
       // The 390 master closes the grid's gaps to 2 and its padding to 20 / 10.
@@ -13986,7 +14002,10 @@ function Calendar({ s }) {
       // master's stated 50.49 stands on a ~45 column, which the 26 corner
       // draws as a lozenge; there the cell is square and fully round instead
       // (user call, 2026-09-17), so every day is a circle. Grunge's raw 10
-      // draws no lozenge, so its 390 cell keeps the master's 50.49.
+      // draws no lozenge, so its 390 cell keeps the master's 50.49. Editorial's
+      // cell is square and unfilled in `stroke/2`, its numeral `text/1`; only
+      // the picked day turns its ring to the ink `stroke/1`. Its frame dims
+      // Lime's own six days at .38, no strike, so the booked state is shared.
       const day = (c, i) => {
         if (c.iso === undefined) return <span key={i} />
         const on = c.iso === cur
@@ -13999,8 +14018,8 @@ function Calendar({ s }) {
             ...(G.round
               ? { aspectRatio: '1', borderRadius: '999px' }
               : { height: s.mob ? '50.49px' : u(55.89), borderRadius: G.cellR }),
-            background: on ? G.on : G.cell, color: on ? G.onFg : s.tx, opacity: blocked(c) ? 0.38 : undefined,
-            boxShadow: `inset 0 0 0 1px ${s.stroke1}${on ? G.onGlow : ''}`,
+            background: on ? G.on : G.cell, color: on ? G.onFg : G.num ?? s.tx, opacity: blocked(c) ? 0.38 : undefined,
+            boxShadow: `inset 0 0 0 1px ${on ? s.stroke1 : G.cellRing ?? s.stroke1}${on ? G.onGlow : ''}`,
             cursor: onClick ? 'pointer' : undefined,
           })}>{c.d}</span>
         )
@@ -14011,7 +14030,10 @@ function Calendar({ s }) {
           padding: s.mob ? '20px 10px' : u(40),
           // The frame's rule between the halves; stacked, it lies under the
           // panel's ring, so the narrow masters draw no rule there at all.
-          boxShadow: s.narrow ? undefined : `inset -1px 0 0 ${s.stroke1}`,
+          // Editorial's panel has no ring, so its narrow masters show that
+          // right stroke running down the panel's edge and stopping at the
+          // grid's foot — the desktop divider leaking, and not drawn.
+          boxShadow: s.narrow ? undefined : `inset -1px 0 0 ${G.rule ?? s.stroke1}`,
         })}>
           <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center' })}>
             {disc(true, -1)}
@@ -14037,10 +14059,11 @@ function Calendar({ s }) {
 
       return (
         <div style={col(u(24))}>
-          {/* Display/MD at lh 1, held to the frame's 640 on desktop. The frame
-              types BOOK NOW; the seed's heading stays `TITLES.calendar`. */}
+          {/* Display/MD at lh 1, held to the frame's 640 on desktop (Editorial's
+              FIXED 578.4, at 768 too). The frame types BOOK NOW; the seed's
+              heading stays `TITLES.calendar`. */}
           <h2 style={disp(s.dispMd, {
-            margin: 0, color: s.ac, maxWidth: s.narrow ? '100%' : u(640),
+            margin: 0, color: s.ac, maxWidth: G.headW ?? (s.narrow ? '100%' : u(640)),
           })}>{s.title}</h2>
           <div style={{
             position: 'relative', background: s.box1, borderRadius: G.panelR, overflow: 'hidden',
@@ -14053,10 +14076,39 @@ function Calendar({ s }) {
                   the photograph with it; stacked, the half states the frame's
                   526 / 308. */}
               <div style={{
-                display: 'flex', padding: u(20),
+                display: 'flex', padding: G.photoPad ?? u(20),
                 height: s.narrow ? (s.mob ? '308px' : '526px') : undefined,
+                ...(ed ? { alignItems: 'center' } : null),
               }}>
-                <div style={{
+                {ed ? (
+                  // Editorial's `Frame 204`, a leant print: the half's content
+                  // width by a stated 446 (228 at 390), centred in the half —
+                  // the frame centres its rotated box, which is the same
+                  // centre, so no margin is owed. Figma −2 → CSS +2; its 10px
+                  // INSIDE `box/2` stroke is the print's border, drawn as
+                  // padding on a `box/2` ground; one DROP_SHADOW 4, 5 blur 9
+                  // at .25; no radius and no clip, so the tape rides over the
+                  // top edge. The photograph is the page's one CROP, seeded at
+                  // the desktop crop and covered into the wider 768 box.
+                  <div style={{
+                    position: 'relative', flex: 'none', width: '100%', height: s.mob ? '228px' : u(446),
+                    padding: u(10), background: s.box2, transform: 'rotate(2deg)',
+                    boxShadow: `${u(4)} ${u(5)} ${u(9)} rgba(0, 0, 0, 0.25)`,
+                  }}>
+                    <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+                      <Photo s={s} initialsSize={Math.round(44 * z)} />
+                    </div>
+                    {/* The tape, the print's last child: `active/bg` —
+                        terracotta, `Tape`'s own default — at Figma −1 inside
+                        the print (−3 on the page), seated by its centre in the
+                        print's frame: (302.67, 3.45) on the 1440 and 768
+                        masters, the same x on both, and (140.84, −4.92) at 390. */}
+                    <Tape s={s} z={z} style={{
+                      left: s.mob ? '37.84px' : u(199.67), top: s.mob ? '-32.92px' : u(-24.55),
+                      transform: 'rotate(1deg)',
+                    }} />
+                  </div>
+                ) : <div style={{
                   flex: 1, minWidth: 0, borderRadius: G.photoR, overflow: 'hidden',
                   position: grunge ? 'relative' : undefined,
                 }}>
@@ -14070,11 +14122,11 @@ function Calendar({ s }) {
                     inset: s.mob ? '-217.5px auto auto 0' : '0 auto auto 0',
                     width: s.mob ? '624px' : '100%', aspectRatio: '1',
                   }} />
-                </div>
+                </div>}
               </div>
             </div>
             <div style={{
-              padding: u(40), boxShadow: `inset 0 1px 0 ${s.stroke1}`,
+              padding: u(40), boxShadow: `inset 0 1px 0 ${G.rule ?? s.stroke1}`,
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               flexWrap: 'wrap', gap: u(16),
             }}>
@@ -14086,11 +14138,13 @@ function Calendar({ s }) {
             {/* The panel's 3px `sem/stroke/2` ring, which Figma strokes inside
                 and paints over the halves. An inset shadow on the panel itself
                 would sit under the children, so it is an overlay. No glow: the
-                panel's `effects` are empty. */}
-            <span aria-hidden style={{
-              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: `inset 0 0 0 3px ${G.ring}`,
-            }} />
+                panel's `effects` are empty. Editorial's panel has no stroke. */}
+            {G.ring && (
+              <span aria-hidden style={{
+                position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                boxShadow: `inset 0 0 0 3px ${G.ring}`,
+              }} />
+            )}
           </div>
         </div>
       )
