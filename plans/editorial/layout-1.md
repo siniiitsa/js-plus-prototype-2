@@ -136,7 +136,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 8 | `calendar` | `964:58619` | Booking Calendar — A · Scheduler | 1440 × 911 | `986:48246` | 768 × 1371 | `986:48258` | 390 × 995 | 1 | `964:58595` | `964:58607` | done `7ed5a57` |
 | 9 | `form` | `964:58620` | Enquiry Forms — B · Split context+form | 1440 × 891 | `986:48247` | 768 × 1075 | `986:48259` | 390 × 1165 | 3 | `964:58596` | `964:58608` | done `8c540f2` |
 | 10 | `testimonials` | `964:58621` | Testimonials H — Stacked tag card | 1440 × 730 | `986:48248` | 768 × 730 | `986:48260` | 390 × 730 | 1 | `964:58597` | `964:58609` | done `3f61ffe` |
-| 11 | `footer` | `964:58622` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:48249` | 768 × 692.3 | `986:48261` | 390 × 736.3 | 3 | `964:58598` | `964:58610` | todo |
+| 11 | `footer` | `964:58622` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:48249` | 768 × 692.3 | `986:48261` | 390 × 736.3 | 3 | `964:58598` | `964:58610` | done `b3ddf8b` |
 
 Both twins' fit comments in `EncoreSection.jsx` cite their node ids; grep for either to find the
 branch and its block. **Re-measure from the Editorial frame; never reuse Lime's or Grunge's block
@@ -673,9 +673,10 @@ Append as the pass goes. Do not repeat Lime's, Grunge's or Retro's bullets; name
   through the rotation, then un-rotate the offset from the mount's centre.
 - **A sparkle is `GrungeStar` with `fill={SIENNA_MEDIA}`** at the node's own width (every
   Editorial sparkle read so far is the path at its own ratio, unrotated) — the header's two, the
-  repertoire's (section 5); next the footer wordmark's. Seat it off what it decorates, not the
-  frame's absolute x, and keep its box inside the decorated node's layout (padding) so nothing
-  live can flow under it.
+  repertoire's (section 5). Seat it off what it decorates, not the frame's absolute x, and keep
+  its box inside the decorated node's layout (padding) so nothing live can flow under it.
+  **The footer wordmark's is the exception** (section 11): it binds `sem/tag/1/bg`, paper under
+  Scheme 3, so `fill={s.chips[0].bg}` — read each sparkle's binding, never assume the blush.
 - **A leant print in a stack gives back its rotated box** (section 3): Figma's auto-layout spaces a
   rotated child by its bounding box, so a mount standing under a list takes a block margin of
   W·sin θ / 2 a side (`1.745% 0` at 2°). Beside a list, centred, it needs none.
@@ -1585,6 +1586,75 @@ four ink ones are its own register.
   3 of 645 each; zero at themes 0, 1, 2 and 4). No shared helper changed; `wordEms` is read by
   this block alone.
 
+### Settled in section 11 (the footer)
+
+- **No Editorial block: Lime's `if (s.lime || s.grunge)` at the head of `Footer` is `s.limeTree`**,
+  with `const ed = s.editorial` beside `grunge` (too few deltas for a `G`). There is no `s.v0` and no
+  hoisted state, so the seam — `extLink` / `navHref` per row, the pill on `bookTo`, dropped with an
+  empty `footerCta` — is the twins' restatement, shared whole. The tree is the twins' node for node at
+  all three widths (the walker, all three masters), on Scheme 3, no Device override, no nested scheme,
+  **no effect on any node**. Route A resolves every `s.*` read: the edge, Line 19 and the small
+  print's rule are `sem/stroke/1`, paper at 56%, the twins' `s.stroke1` already.
+- **Why the narrow masters stand taller** (the brief's question): the statement is the hand-scaled
+  Bold **57.84 on a 47.9 line at every width** — three lines (144) at 768 and four (192) at 390, where
+  the demo face breaks UNFORGETTAB / LE — against the twins' Display/MD on two lines (100 / 80); the
+  wordmark row is the **40.24** sparkle against the 27.37 globe; the link column is 12 shorter (gap 12
+  against 23). +44 + 12.87 − 12 = the 768's 44.87; +112 + 12.87 − 8 = the 390's 116.87.
+- **The deltas, all off `boundVariables`:**
+  - the **wordmark's mark is the sparkle** at 39.87 × 40.24 (`GrungeStar`, in flow), bound
+    **`sem/tag/1/bg`** — paper under Scheme 3, as the render shows — so `fill={s.chips[0].bg}`, **not
+    the brief's `SIENNA_MEDIA`** (the convention above now says so); the name is **Label/MD `UPPER`**
+    (Grunge's arm, `grunge || ed`) in `text/2`; the bar `tag/1/bg`, whose value is `s.tx`'s;
+  - the **left column is 690** (the twins' 743), so Line 19 lands at 825 through the unchanged 79s;
+  - the **links are Display/List** 24 / 19 / 18 at 1.2, uppercase — the twins' `face` — in `text/2`,
+    **12 apart** and 12 before the pill (pitch 41 / 35 / 34);
+  - the **pill** is `BookPill`'s Lime branch but for its disc, **`sem/box/3`** `#0E0E0E` (`discBg`);
+    the label `tag/1/text` and the arrow `active/bg` are its defaults' values;
+  - the **small print is Label/MD `UPPER`** (the twins' is Display/List), allowed to wrap; the 768's
+    leaked 56 inset and the 390 halves are the twins';
+  - the **statement** — below.
+- **The seal's name binds `sem/tag/1/bg`**, where the bio's binds `sem/bg` — paper on the terracotta
+  disc, not the ink `s.bg` resolves to under Scheme 3 (section 2's hand-over, closed). Every other
+  ratio is the bio's to three decimals (ring 1.2357 / 154.91 = 0.8 units, sparkle, marks, Space Mono
+  13.11 / 154.91 = 8.46), so `SealBadge`'s Editorial arm reads **`line`** — the flag the footer
+  already passes, Grunge's "the footer's frame draws another" — as `fill={line ? s.chips[0].bg :
+  s.bg}`. Not `nameInk`: `SealBadge`'s one `nameInk` caller passes the accent with no `classic`, and
+  under a placeholder card it would set terracotta on the terracotta disc. Disc **154.91** (× 0.82 /
+  verbatim) and **76.64** at 390, tilt **25.03** (Figma −25.03).
+- **Placed by the disc's centre**, Grunge's corner sum at 25.03° — corner + (0.2415a, 0.6646a):
+  **49.95 in from the 690 column's right and 53.96 down** (the dropped 56 out) on desktop, **105.04 /
+  66.95** off the content at 768, **65.02 / 9.06** at 390. Measured with the spin stopped: 40.96 /
+  44.24 (the frame × 0.82: 40.96 / 44.25), 105.03 / 66.95, 65.0 / 9.06. At 390 the bar runs under the
+  disc, as the master draws it.
+- **The statement is the third hand-scaled Bold, fitted to its widest word** (section 9's recipe,
+  open question 11): `min(px(57.84), calc(100cqi / s.footerWordEms))` at 700 on the frame's 0.828
+  ratio, uppercase, on an `inline-size` column (the desktop 690 column; the narrow statement column),
+  the frame's FIXED **397.28** box as `max-width` over `min-width: min-content` at 1440 and 768, the
+  column at 390. **`vm.footerWordEms`** is new in `sectionVm`, beside `footerStatement`: `notoBoldEms`'
+  maximum over its words, Editorial only (section 10's *a string that is not `vm.title` carries its
+  own key*). Seeded, UNFORGETTABLE. is 7.683 em:
+  - **1440 and 768 do not bite** — the ceiling, 47.43 and 57.84, on the frames' three lines, the box
+    grown past 397.28 to the word (364.4 / 444.4); the desktop disc's left edge (461.5) stays clear of
+    it;
+  - **390 bites**: 47.93 on **three lines** where the master sets four, so the statement is 119.1
+    against 192 and the band **650.7 against 736.3**. Named diff, open question 11.
+  - A long word (`INCOMPREHENSIBILITIES.`) holds the ceiling at 1440 and 768 (527 of 566, 643 of 708)
+    and takes 390 to 33.3; nothing overflows.
+- **Measured** (harness, against the content edges): desktop wordmark star 32.7 × 33, bar at 137.8
+  (167.87 × 0.82 = 137.65), statement at 126.2 (153.71 × 0.82 = 126.04) and 117.8 tall (118.1), links
+  pitch 33.8 (33.62) at 697 (695.4 — the rule's pixel, the twins' too), column 2 at +221.4 (220.6),
+  pill 159.4 × 44.3 at 135.3 (134.5), small print 56, full width; **768 section 692.1 against the
+  master's 692.28** — statement at 60.2 (60.24) on three lines 143.7, links at 316.9, pitch 34.8, column
+  2 at 245.6 (246), pill 169.6 × 54 (170), small print at 568.1 (568.28); 390 links pitch 33.6 (34),
+  column 2 at 191, pill 165 × 54, halves 185.
+- **Function** (`theme=3&live=1`, three widths): `n=8` rows are `<a href="#cat">` with the address
+  row `target="_blank"`, the pill `<a href="#form">`; `n=5` splits 4 / 2; `n=0` is the pill alone; on
+  the canvas every anchor is href-less with a pointer and the pill a span.
+- **`FIELDS.footer` has no template-keyed `in` row**, so nothing was owed.
+- **Moved, theme 3 only** (digest: exactly `footer` arch 0 at three widths, static and live — 3 of
+  645 each; zero at themes 0, 1, 2 and 4). `SealBadge`'s `line` read moved nothing else: the footer is
+  its only caller.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1830,6 +1900,28 @@ Section 10:
   session 0) — the quote; the pills through `labelStyle`.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
+Section 11:
+- *The tenth Lime block, at the head of `Footer`* and *the link cursor is not live-gated* (Lime 1,
+  section 11; D1) — widened to `s.limeTree`, the seam shared whole.
+- *Three rules the twin does not draw* and *the 768 small print's 56 inset is a leak, and it is
+  followed* (Lime 1, section 11; D1) — all kept, in `s.stroke1`.
+- *The node walker* (Grunge 2) — all three masters, bindings resolved; the sparkle's and the seal
+  name's `tag/1/bg` found there.
+- *A scheme that did not move can still move the binding* (Grunge 3) — the seal's name, the sparkle,
+  the pill's disc on `box/3`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — none on any node.
+- *Place a seal by its disc's centre* and *measure anything under `.seal-spin` with the animation
+  stopped* (Lime 1, section 2) — Grunge's corner sum at 25.03°, reduced motion.
+- *A rotated group's metadata x/y is a bounding box* (memory `figma-frame-reading`) — the 205.9
+  box is a 154.91 disc.
+- *`BookPill` has a Lime branch* (Lime 1, section 1; D1) — `discBg` only.
+- *A hand-scaled instance is not the ramp* (Lime 2, bio) — 57.84 at every width.
+- *The desktop head shrinks to fit its widest word* (Lime 3, section 9; D3) — section 9's recipe on
+  a new key, `vm.footerWordEms`.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the statement, the links; the name and the small print through `labelStyle`.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -1888,7 +1980,11 @@ Section 10:
     **The testimonials' quote took the same fit** (section 10): seeded, it bites at 768 alone, where
     `"PROFESSIONAL` sets 403 at the frame's 57.84 in a 364 column, so the quote is 52.19 on the
     frame's five lines and the band 702.6 against 730. One line to turn there too (`min(…)` →
-    `u(57.84)`). The footer's statement is the last to meet it.
+    `u(57.84)`). **The footer's statement took it too** (section 11): the frame's 57.84 at every
+    width, in a 397.28 box, and the demo face breaks UNFORGETTAB / LE at 390. Seeded, only 390 bites
+    — 47.9 on three lines where the master sets four, the band 650.7 against 736.3; 1440 and 768
+    keep the frame's size and lines, the box grown to the word. One line to turn (`min(…)` →
+    `px(57.84)`). All three statements are now fitted; worth telling the designer together.
 12. **The testimonials' 390 pills** (section 10) — the frame's no-wrap row hugs 277 in a 264 slot,
     overflowing its own card's padding by 13; Noto's 296 wraps to two rows instead, and the 390
     band is 775.9 against 730. Worth telling the designer: the row has no room for a longer name
