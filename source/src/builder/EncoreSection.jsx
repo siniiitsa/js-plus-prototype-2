@@ -996,7 +996,8 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // (964:58610 "Frame 178") is the frame that draws another: a `sem/bg` disc
   // with its rings and ticks in `sem/stroke/2` and the name in `sem/active/bg`
   // — the two reds the mode states, both followed. `line` asks for it; it is
-  // additive and Grunge's alone, so every caller written before it, and every
+  // additive and the footer's alone (Editorial's arm below reads it too, for
+  // its footer's paper name), so every caller written before it, and every
   // layout this pass has not fitted, keeps the red disc.
   //
   // Grunge's layout-4 header (964:72944's "Frame 247") nests the seal in
@@ -24069,7 +24070,7 @@ function Footer({ s }) {
         ...(grunge || ed ? { textTransform: 'uppercase' } : null),
         maxWidth: s.mob ? 'none' : s.narrow ? (grunge ? '439.59px' : '9em') : u(439.59),
         ...(ed ? {
-          fontSize: `min(${px(57.84)}, calc(100cqi / ${s.footerWordEms}))`,
+          fontSize: s.footerWordEms ? `min(${px(57.84)}, calc(100cqi / ${s.footerWordEms}))` : px(57.84),
           fontWeight: 700, lineHeight: 47.9 / 57.84,
           maxWidth: s.mob ? 'none' : px(397.28), minWidth: 'min-content',
         } : null),
