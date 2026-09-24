@@ -16050,8 +16050,24 @@ function EventsMap({ s }) {
     // white ring, since the accent vanishes on a raster tinted with it, and the
     // lit row takes the frame's own current-page pair from its pager, black
     // under white type.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:58617 1440 × 1191, 986:48244 768 × 1309, 986:48256 390 ×
+    // 1133) is Grunge's tree plus the tape, on **Scheme 1** — paper, so the
+    // root paints it and the `s.*` sem keys are its own. It is Lime's light
+    // band in another order: an ink tile in a 1px terracotta ring round the
+    // raster multiplied terracotta at .6, and the gig panel terracotta,
+    // unradiused, leant Figma −1 (CSS +1) in a 7px `box/2` inside ring under a
+    // real drop shadow, taped. Its rows are unfilled and ruled by `DashRule`
+    // (7, 7 in the opaque `stroke/1` — the frames' dashes on terracotta are
+    // black), its date boxes square ink. Figma spaces the leant panel by its
+    // rotated box at every width, so it takes that box back as a margin. The
+    // pin and the lit row are redrawn once more: the tint is the accent, so the
+    // pin is paper in an ink ring (Grunge's keys, which resolve so here), and
+    // the lit row is filled paper under ink, bled 12 either side of the flush
+    // row so its type does not stand on the fill's edge.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const tab = isTablet(s)
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -16060,7 +16076,24 @@ function EventsMap({ s }) {
       const hair = '#15180F26' // sem/stroke/1 — the rows' hairline, 15%
       const litInk = '#C7FF3C' // sem/active/text, on sem/active/bg (`ink`)
       const box2 = '#222222' // Scheme 2's sem/box/2 — map ground, date box, idle page pill
-      const G = grunge ? {
+      // `vm.title` is the heading string and overwrites the ramp's `title` key
+      // in sectionVm, so Display/Title is the frames' own 36 / 28 / 26 — and
+      // Sienna Vale's 32 / 25 / 23.
+      const titleSize = ed ? (s.mob ? '23px' : tab ? '25px' : u(32)) : s.mob ? '26px' : tab ? '28px' : u(36)
+      const G = ed ? {
+        head: s.ac, kicker: s.tx, tile: s.box3, panel: s.activeBg, onTile: s.activeFg, globe: s.activeBg,
+        terms: s.activeFg, onPanel: s.activeFg, ring: s.stroke2,
+        radius: '0px', tilePad: u(10), tileGap: '0px', mapR: '0px', mapH: '218.84px', mapBg: s.box2, tint: s.activeBg,
+        pin: s.bg, pinRing: s.tx, pinOn: s.tx, pinOnRing: s.bg,
+        rowBg: 'transparent', rowOn: s.bg, rowFg: s.activeFg, rowOnFg: s.tx, rowR: '0px',
+        date: s.chips[0].fg, dateFg: s.activeFg, dateR: '0px',
+        panelPad: s.mob ? '30px 20px 20px' : u(40),
+        venue: [titleSize, 1.1],
+        // Every button ringed in the opaque `stroke/1`, the pills Lime's 87;
+        // the frame marks the page by its numeral alone, `text/2` ink where
+        // the rest are `active/text` paper, and the arrows bind `bg`.
+        pager: { ring: s.stroke1, ink: s.bg, idle: s.activeFg, on: s.tx, onEdge: s.stroke1, pill: 87 },
+      } : grunge ? {
         head: s.ac, tile: s.bg, panel: s.ac, onTile: s.ac, terms: s.tx, onPanel: s.tx,
         radius: u(13), tilePad: s.mob ? '10px' : u(20), tileGap: '0px', mapR: u(8), mapH: '214.84px', mapBg: box2, tint: s.ac,
         pin: s.bg, pinRing: s.tx, pinOn: s.tx, pinOnRing: s.bg,
@@ -16082,11 +16115,8 @@ function EventsMap({ s }) {
       // site here owes both under Grunge (section 1's `faced`).
       const disp = (size, lh) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
-        ...(grunge ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
       })
-      // `vm.title` is the heading string and overwrites the ramp's `title` key
-      // in sectionVm, so Display/Title is the frames' own 36 / 28 / 26.
-      const titleSize = s.mob ? '26px' : tab ? '28px' : u(36)
       // Body/Eyebrow — Inter bold: the kicker, the panel head, the rows'
       // city line and their month.
       const eyebrow = (extra) => ({
@@ -16096,14 +16126,15 @@ function EventsMap({ s }) {
 
       const head = (
         <div style={col(u(16))}>
-          <span style={eyebrow({ color: G.head })}>Shows/coverage</span>
+          <span style={eyebrow({ color: G.kicker ?? G.head })}>Shows/coverage</span>
           {/* Display/LG over Label/LG, which stands at the row's right on
               desktop and 768 and stacks 10 under the heading at 390. */}
           <div style={s.mob ? col('10px', { alignItems: 'flex-start' }) : row(u(10), { justifyContent: 'space-between' })}>
             <h2 style={{ margin: 0, ...disp(s.dispLg, 0.89), color: G.head, minWidth: 0 }}>{s.title}</h2>
-            {/* Label/LG under Lime; Grunge's frame sets it in Display/Title. */}
-            <span style={grunge
-              ? labelStyle(s, titleSize, { color: G.head, flex: 'none' })
+            {/* Label/LG under Lime; Grunge's frame sets it in Display/Title,
+                and Editorial's in `text/2` ink. */}
+            <span style={grunge || ed
+              ? labelStyle(s, titleSize, { color: G.kicker ?? G.head, flex: 'none' })
               : {
                 fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
                 color: ink, whiteSpace: 'nowrap', flex: 'none',
@@ -16154,7 +16185,7 @@ function EventsMap({ s }) {
           </div>
           <div style={col(u(4), { padding: s.mob ? '10px' : `${u(38)} ${u(30)}` })}>
             <span style={s.mob ? col('8px', { alignItems: 'flex-start' }) : row(u(8))}>
-              <LimeGlobeFill size={35.16 * z} color={G.onTile} />
+              <LimeGlobeFill size={35.16 * z} color={G.globe ?? G.onTile} />
               <span style={{ ...disp(titleSize, 1.1), color: G.onTile }}>{s.mapBase}</span>
             </span>
             {/* Label/XS — Chakra Petch, this section's `s.ui` site. */}
@@ -16162,11 +16193,11 @@ function EventsMap({ s }) {
               fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, color: G.terms,
             }}>{s.mapTerms}</span>
           </div>
-          {/* Grunge's tile carries no stroke. */}
+          {/* Grunge's tile carries no stroke; Editorial's is `stroke/2`. */}
           {!grunge && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: `inset 0 0 0 1px ${s.tx}`,
+              boxShadow: `inset 0 0 0 1px ${G.ring ?? s.tx}`,
             }} />
           )}
         </div>
@@ -16186,15 +16217,26 @@ function EventsMap({ s }) {
         return (
           <Tag key={i} {...link} onClick={onPick(i)} style={{
             ...row(u(12), { justifyContent: 'space-between' }),
-            background: on ? G.rowOn : G.rowBg, boxShadow: `inset 0 0 0 1px ${G.rowRule}`, borderRadius: G.rowR,
-            padding: tab ? '11px 10px 11px 33px' : `${u(20)} ${u(20)} ${u(20)} ${u(33)}`,
+            background: on ? G.rowOn : G.rowBg, borderRadius: G.rowR,
+            ...(ed ? {
+              // Flush in the frame: 20 above and below (the 768 row a fixed
+              // 79.48, its 57 box centred, and 10 clear at the right). The lit
+              // fill bleeds 12 each side as two offset shadows, so the row's
+              // box — and the dashed rule under it — stay the frame's.
+              position: 'relative', padding: tab ? '11.24px 10px 11.24px 0' : `${u(20)} 0`,
+              boxShadow: on ? `${u(12)} 0 0 0 ${G.rowOn}, -${u(12)} 0 0 0 ${G.rowOn}` : undefined,
+            } : {
+              boxShadow: `inset 0 0 0 1px ${G.rowRule}`,
+              padding: tab ? '11px 10px 11px 33px' : `${u(20)} ${u(20)} ${u(20)} ${u(33)}`,
+            }),
             textDecoration: 'none', color: fg,
             cursor: s.live ? 'pointer' : undefined,
           }}>
+            {ed && <DashRule dash={7 * z} colour={s.stroke1} />}
             <span style={col(u(2), { minWidth: 0 })}>
-              {/* Display/List. */}
+              {/* Display/List; Editorial's is Display/Title. */}
               <span style={{
-                ...disp(s.list, 1.2), color: fg,
+                ...disp(...(G.venue ?? [s.list, 1.2])), color: fg,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{g.venue}</span>
               <span style={eyebrow({ color: fg, overflow: 'hidden', textOverflow: 'ellipsis' })}>
@@ -16236,10 +16278,23 @@ function EventsMap({ s }) {
         <div style={col(u(20), {
           background: G.panel, borderRadius: G.radius, padding: G.panelPad, minWidth: 0,
           ...(grunge ? { position: 'relative', overflow: 'hidden' } : null),
+          // Editorial's panel is a leant print: Figma −1 → CSS +1, a 7px
+          // `box/2` INSIDE ring under a DROP_SHADOW 3, 8 blur 9 at .25, and no
+          // clip, so the tape rides over its top edge. Every master spaces it
+          // by its rotated box — the desktop column is that box (658.57 of
+          // 1328, the tile the 633.43 left), and the margin gives back
+          // H·sin 1° / 2 across and W·sin 1° / 2 down (0.873% of the column
+          // when it stands alone).
+          ...(ed ? {
+            position: 'relative', transform: 'rotate(1deg)',
+            boxShadow: `inset 0 0 0 ${u(7)} ${s.box2}, ${u(3)} ${u(8)} ${u(9)} rgba(0, 0, 0, 0.25)`,
+            margin: s.narrow ? '0.873% 0' : `${u(5.58)} ${u(6.29)}`,
+          } : null),
         })}>
           {/* Grunge's head is flush with the rows and its 1px rule is filled
-              (`box/1`), 30 from the count, where Lime's carries no fill. */}
-          <span style={row(grunge ? u(30) : '0px', { padding: grunge ? 0 : `0 ${u(20)}` })}>
+              (`box/1`), 30 from the count, where Lime's carries no fill;
+              Editorial's is flush and unfilled. */}
+          <span style={row(grunge ? u(30) : '0px', { padding: grunge || ed ? 0 : `0 ${u(20)}` })}>
             <span style={eyebrow({ color: G.onPanel, textTransform: 'uppercase' })}>
               Upcoming gigs · {s.gigs.length}
             </span>
@@ -16262,6 +16317,13 @@ function EventsMap({ s }) {
           <Grain s={s} exact grunge blend="hard-light" opacity={0.19} style={{
             inset: 'auto auto 0 0', width: u(682.5), height: u(682.5),
           }} />
+          {/* Editorial's tape, the panel's last child, `sem/media` blush at
+              Figma −2 inside the leant panel (−3 on the page), seated by its
+              centre in the panel's own frame: (316.71, −7.75) on the 1440 and
+              768 masters — left of centre on both — and (182.77, −5.41) at 390. */}
+          <Tape s={s} z={z} colour={SIENNA_MEDIA} style={{
+            left: s.mob ? '79.77px' : u(213.71), top: s.mob ? '-33.41px' : u(-35.75), transform: 'rotate(2deg)',
+          }} />
         </div>
       )
 
@@ -16273,8 +16335,9 @@ function EventsMap({ s }) {
       // player's fix.
       return (
         <div style={{
-          position: 'relative', color: grunge ? s.tx : ink, ...col(s.narrow ? '30px' : u(32)),
-          padding: s.mob ? '24px 0' : undefined,
+          position: 'relative', color: grunge || ed ? s.tx : ink, ...col(s.narrow ? '30px' : u(32)),
+          // Editorial draws no seam, so it needs no clearance.
+          padding: s.mob && !ed ? '24px 0' : undefined,
         }}>
           {/* Grunge's band sheet, the media player's: `image 1` at .29 LIGHTEN
               under everything and out over the root's padding, so the head and
@@ -16289,8 +16352,11 @@ function EventsMap({ s }) {
           {grunge ? <div style={{ position: 'relative' }}>{head}</div> : head}
           <div style={{
             ...(grunge ? { position: 'relative' } : null),
-            display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
-            gap: s.mob ? '10px' : tab ? '32px' : u(36), alignItems: 'stretch',
+            display: 'grid',
+            gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)'
+              : ed ? 'minmax(0, 633.43fr) minmax(0, 658.57fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
+            // Editorial's 390 stack keeps 50 clear for the tape.
+            gap: s.mob ? (ed ? '50px' : '10px') : tab ? '32px' : u(36), alignItems: 'stretch',
           }}>
             {tileL}{listL}
           </div>
