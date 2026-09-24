@@ -40,7 +40,7 @@ import {
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
-  FORM_PROMISES, FORM_FIELDS, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
+  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
@@ -1497,7 +1497,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // keeps formRows, formMailto and formCheck index-aligned. The exception comes
   // first: the guarded email row — FormFieldsField's `lastEmail`, the same test
   // over the same raw list — never drops, and an emptied label reads Email.
-  const formList = Array.isArray(c.fields) ? c.fields : FORM_FIELDS
+  // Layout 4 seeds the frame's own five boxes (JP-054), FORM_BTN_4's rule: the
+  // gate is on the absent key alone, and EditPanel's formFieldsVal mirrors it.
+  const formList = Array.isArray(c.fields) ? c.fields : d === 3 ? FORM_FIELDS_4 : FORM_FIELDS
   const formEmails = formList.filter((f) => f?.kind === 'email').length
   const formGuarded = (f) => f?.kind === 'email' && formEmails === 1
   vm.formFields = formList.filter((f) => formGuarded(f) || !blankRow(f, FORM_FIELD_KEYS)).map((f) => ({
@@ -3388,8 +3390,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : TIERS)
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
-  // FormFieldsField edits and sectionVm reads.
-  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FORM_FIELDS)
+  // FormFieldsField edits and sectionVm reads — FORM_FIELDS_4 at layout 4
+  // (JP-054), sectionVm's own `d === 3` gate, so the two resolve one list.
+  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : design === 3 ? FORM_FIELDS_4 : FORM_FIELDS)
   // And for the testimonials' reviews: QUOTES is written as the
   // { quote, who, role, when } row QuotesField edits, so this is the gigs' and
   // the packages' one-liner rather than the tracks' dressing.

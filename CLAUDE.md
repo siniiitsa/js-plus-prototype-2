@@ -784,12 +784,18 @@ mutated through a single `patch()` helper.
   `FORM_HEADING_4` "Contact Us" joins `HEADING_4`, `sub` defaults to `FORM_SUB_4` "Enquire"
   (the line printed `s.brand` until then), and `button` falls back to `FORM_BTN_4` "Check
   Availability" at this layout and "Book Now" at the others — each resolved in `sectionVm`
-  **and** in `EditPanel`'s fallback chain. The boxes stay the artist's one list and the steps
-  stay one line. Three things it does that no other layout here does. It draws
+  **and** in `EditPanel`'s fallback chain. **So do its boxes** (JP-054 again, user call,
+  2026-09-24, reversing the 2026-09-23 "the boxes stay the artist's one list"): with `fields`
+  absent, layout 4 seeds `FORM_FIELDS_4`, the frame's five — Your name, Email, Event date,
+  Event type, Location over its own placeholders, one `email` row so the guard holds, and the
+  frame's Message being the `message` textarea — where layouts 1–3 seed `FORM_FIELDS`'
+  four; `sectionVm`'s `formList` at `d === 3` and `formFieldsVal` at `design === 3`, the
+  seed-resolver rule. The gate is on the absent key alone, `FORM_BTN_4`'s: once the artist
+  edits the list it is theirs at every layout. The steps stay one line. Three things it does that no other layout here does. It draws
   a **label above a box *and* a placeholder inside it**, which is layout 1's pair and
   brings both `message` and the rows' `placeholder` column back after two layouts that
   spend their one slot on the label; a **trailing odd field runs the full measure** where
-  layout 1 trails a half-width cell, the frame's own fifth box at all three widths
+  layout 1 trails a half-width cell, the frame's own fifth box (the seed's Location) at all three widths
   (`vm.formRows` is unchanged — the pairing is the vm's and what a row of one does is the
   branch's); and it **reorders its two columns**, the form leading at 1440 and the
   promises leading at 768 and 390. Its promises are `vm.formSteps`, the same list layout
@@ -1001,7 +1007,8 @@ mutated through a single `patch()` helper.
   repeaters take it** (JP-051 and its sweep, and `SlotsField` since JP-052), each over a `*_KEYS` beside its seed — `SONG_KEYS`,
   `TRACK_KEYS` (art and sound included), `GIG_KEYS`, `TIER_KEYS`, `QUOTE_KEYS`, `SLOT_KEYS`, and two that
   leave a select out because a select always holds a value: `FORM_FIELD_KEYS` (label and
-  placeholder, not `kind`) and `LINK_KEYS` (label and url, not `to`). Each list is filtered
+  placeholder, not `kind`) and `LINK_KEYS` (label and url, not `to`) — and `TIER_KEYS` leaves
+  out a tick the same way, `featured` (JP-048), so a ticked empty package is still blank. Each list is filtered
   *before* anything indexes it (pins, hues, fan seats, marks, the footer's halving,
   `formRows` / `formMailto` / `formCheck`), each repeater prints its own "Empty … aren't shown."
   under a blank row, and the repertoire's song-count heading counts the filtered list in both

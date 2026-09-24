@@ -667,6 +667,20 @@ export const FORM_FIELDS = [
   { label: 'Event date', placeholder: 'dd / mm / yyyy', kind: 'text' },
   { label: 'Guests',     placeholder: 'approx.',        kind: 'number' },
 ]
+// Layout 4's own seed (JP-054, user call, 2026-09-24, reversing the 2026-09-23
+// shared list): the editorial frame's five boxes, labels as the frame prints
+// them (the branch upper-cases them) over the placeholders Lime's 964:72940
+// types. Its sixth box, Message, is the `message` textarea and not a row. One
+// `email` row, so FormFieldsField's guard holds. Chosen by layout only while the
+// key is absent — FORM_BTN_4's rule, in sectionVm and EditPanel's formFieldsVal
+// alike — so a list the artist has edited is theirs at every layout.
+export const FORM_FIELDS_4 = [
+  { label: 'Your name',  placeholder: 'Full name',       kind: 'text' },
+  { label: 'Email',      placeholder: 'you@email.com',   kind: 'email' },
+  { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'text' },
+  { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
+  { label: 'Location',   placeholder: 'Town / city',     kind: 'text' },
+]
 // What `blankRow()` asks of a box (JP-051): the two strings it can print. Not
 // `kind`, which is a select that always holds a value, so asking it too would
 // make no row blank. A box with only a placeholder is still a box; in layouts
@@ -1343,14 +1357,16 @@ export const FIELDS = {
       hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
           + 'right-hand column, and with none it draws no column at all.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
-    // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
-    // no boxes at all, and there is no null sentinel.
+    // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_4 at layout
+    // 4, JP-054), an emptied array means no boxes at all, and there is no null
+    // sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
           + 'which set the label inside the box and draw no placeholder. An odd last box '
           + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
-          + 'form emails you what the visitor types.' },
+          + 'form emails you what the visitor types. Layout 4 starts on its own five boxes '
+          + 'until you edit them; after that your list shows in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },

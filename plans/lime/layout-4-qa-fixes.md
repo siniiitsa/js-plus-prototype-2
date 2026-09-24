@@ -241,6 +241,10 @@ block at `:22122`.
   `mailto:bookings@…?subject=Enquiry&body=…` and swaps in the sent block. No page errors.
 - **Docs.** CLAUDE.md's form layout-4 sentences, and Lime L4 §9 Settled (a *Reversed* bullet).
   README has no layout-4 form passage and no per-layout heading defaults, so it is unchanged.
+- **Reversed** (2026-09-24, the retest, user call; `retest-qa-fixes.md` entry 6): *"the boxes stay
+  the artist's one list"* no longer holds. The tester found Event type and Location still
+  missing, so layout 4 now seeds the frame's five boxes (`FORM_FIELDS_4`) while `fields` is
+  absent. Grunge's "KAI MERCER" head stays the named diff it was.
 
 Reply: **fixed.** Layout 4 now opens on the frame's *Contact Us / ENQUIRE / Check Availability*
 under every template. The small-caps line is a new field ("Line under the heading"). The boxes
@@ -808,7 +812,8 @@ still show every one of these.
 - **JP-054 — fixed (PO call A).** Form layout 4 now opens on the frame's *Contact Us* /
   *ENQUIRE* / *Check Availability*, under every template. The small-caps line is a new field,
   "Line under the heading". **By design:** the boxes stay the artist's one list (Location is one
-  *Add field* away), and the steps stay one line.
+  *Add field* away), and the steps stay one line. *(Boxes reversed 2026-09-24: layout 4 now
+  seeds the frame's five — see the retest plan.)*
 - **JP-038 (layout 4) — fixed, and it is not the gutter ticket.**
   - **The page gutter** (JP-038 as first filed, reopened 2026-09-23) was decided and shipped
     earlier: the published desktop page zooms to the 1440 frame. The report's 189 / 171 are
