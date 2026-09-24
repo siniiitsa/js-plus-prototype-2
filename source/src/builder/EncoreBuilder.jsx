@@ -1436,10 +1436,19 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.quotes = quoteList.map((r, i) => {
     const who = String(r?.who ?? '').trim()
     const role = String(r?.role ?? '').trim()
+    // Cased, as the featured quote always was — but now every row rather than
+    // only the first, which is what closes the three-up layout's old seam.
+    const quote = cased(String(r?.quote ?? '').trim())
     return {
-      // Cased, as the featured quote always was — but now every row rather than
-      // only the first, which is what closes the three-up layout's old seam.
-      quote: cased(String(r?.quote ?? '').trim()),
+      quote,
+      // The review's widest word in Noto Bold ems — `titleWordEms`' rule, per
+      // row, since the quote is not `vm.title`. Editorial's layout-1 card sets
+      // it as a hand-scaled Bold whose frame breaks nothing inside a word only
+      // because the demo face is narrower; the card fits the size to this
+      // word instead. Undefined off Editorial.
+      wordEms: T.name === 'Editorial'
+        ? +Math.max(0, ...quote.split(/\s+/).map(notoBoldEms)).toFixed(3)
+        : undefined,
       who,
       role,
       when: String(r?.when ?? '').trim(),

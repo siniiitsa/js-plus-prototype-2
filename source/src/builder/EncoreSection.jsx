@@ -19420,8 +19420,19 @@ function Testimonials({ s }) {
     // `G2.box3`); the reviewer pill is the active pair, the role pill `sem/bg`
     // lettered in the accent, both Display/Title; and the narrow backs and the
     // card's place in the band are the masters' own.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:58621 · 986:48248 · 986:48260) is the tree a third time,
+    // on Scheme 1 (paper), so route A resolves every key and the one arm is
+    // `G`'s. No radius and no effect on any node: the card and both backs are
+    // square, each dashed 9, 9 all round in `stroke/1` (opaque ink) — the card
+    // `sem/bg`, the page itself, the backs terracotta and blush. Every string
+    // is `text/2` ink; the reviewer pill is `active/bg` under ink, the role
+    // pill `box/3` under the accent, Display/Title 32 / 25 / 23. The quote is
+    // a hand-scaled Bold (57.84 on a 52.42 line) at 1440 and 768 and the
+    // ramp's Display/MD Regular at 390.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       // Scheme 2's `box/2`, which no Scheme 1 key carries (its `box2` is
@@ -19432,9 +19443,19 @@ function Testimonials({ s }) {
       const litInk = '#C7FF3C'
       // DROP_SHADOW 0 / 4 / 4 at 25% black on both backs and the card. Not the
       // bio's invisible one: a pixel scan of the 1440 render darkens the ground
-      // for 7px under the card's foot.
-      const shadow = `0 ${u(4)} ${u(4)} #00000040`
-      const G = grunge ? {
+      // for 7px under the card's foot. Editorial's nodes carry none.
+      const shadow = ed ? undefined : `0 ${u(4)} ${u(4)} #00000040`
+      const G = ed ? {
+        r: 0, back: s.chips[0].bg, card: s.bg, ink: s.tx, quote: undefined,
+        who: [s.activeBg, s.tx], role: [s.box3, s.ac],
+        // The narrow backs stand off the frames' taller Bold-quote cards, so
+        // their bottom insets run large; they stay positive on the shortest
+        // seeded review.
+        backs: s.mob
+          ? [[-45.66, 36, 39, 122.66], [-24.66, 24, 24, 78.66]]
+          : tab ? [[-46, 31, 35, 137], [-27, 14, 14, 85]] : [[-46, 46, 50, 74], [-27, 21, 21, 22]],
+        pad: s.mob ? [146.16, 138] : tab ? [146.5, 100.5] : [165, 145], gap: 32.84,
+      } : grunge ? {
         r: u(13), back: '#353535', card: s.box1, ink: s.tx, quote: s.ac,
         who: [s.pillBg, s.activeFg], role: [s.bg, s.ac],
         backs: s.mob
@@ -19455,11 +19476,13 @@ function Testimonials({ s }) {
       // −27 at every width; the sides are what the three masters settle. The
       // lime one is drawn first, which is what stands it behind the dark one.
       const backs = [[s.ac, ...G.backs[0]], [G.back, ...G.backs[1]]]
+      // Editorial's 9, 9 dash, 1px INSIDE, on the backs and the card alike.
+      const dashed = ed && <DashRule side="all" dash={9 * z} colour={s.stroke1} />
       const backing = ([fill, top, left, right, bottom], i) => (
         <div key={i} style={{
           position: 'absolute', top: u(top), left: u(left), right: u(right), bottom: u(bottom),
           background: fill, borderRadius: G.r, boxShadow: shadow,
-        }} />
+        }}>{dashed}</div>
       )
 
       // Label/LG in the frame's 12-radius box — neither `radiusChip` (6) nor
@@ -19468,9 +19491,12 @@ function Testimonials({ s }) {
       const tag = (label, i, bg, fg) => (
         <span key={i} style={{
           background: bg, color: fg, borderRadius: u(12), padding: `${u(6)} ${u(12)}`,
-          // Display/Title 36 / 28 / 26 under Grunge, a literal because
-          // `s.title` is the heading string; content, so it may wrap.
-          ...(grunge
+          // Display/Title 36 / 28 / 26 under Grunge (32 / 25 / 23 under
+          // Editorial), a literal because `s.title` is the heading string;
+          // content, so it may wrap.
+          ...(ed
+            ? labelStyle(s, s.mob ? '23px' : tab ? '25px' : u(32), { whiteSpace: 'normal' })
+            : grunge
             ? labelStyle(s, s.mob ? '26px' : tab ? '28px' : u(36), { whiteSpace: 'normal' })
             : { fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls }),
           maxWidth: '100%', overflowWrap: 'break-word',
@@ -19481,7 +19507,7 @@ function Testimonials({ s }) {
         <>
           {/* Body/Eyebrow over Display/MD at the frame's 14. Each is the
               artist's and each can be empty, so each is rendered or not. */}
-          <div style={col(u(14))}>
+          <div style={col(u(14), ed ? { containerType: 'inline-size' } : null)}>
             {!!q.when && (
               <span style={{
                 fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
@@ -19492,7 +19518,20 @@ function Testimonials({ s }) {
               <p style={{
                 margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd),
                 lineHeight: facedLh(s, 1), letterSpacing: s.dls, overflowWrap: 'break-word',
-                color: G.quote, textTransform: grunge ? 'uppercase' : undefined,
+                color: G.quote, textTransform: grunge || ed ? 'uppercase' : undefined,
+                // Editorial's quote is fitted to its widest word, the form
+                // statement's recipe (section 9): the frame's size is the
+                // ceiling — 57.84 Bold on a 52.42 line at 1440 and 768, the
+                // ramp's 36 Regular at 390 — and `100cqi / wordEms` the floor
+                // a long word pulls it to, so Noto, wider than the demo face,
+                // never breaks inside one. The ems are Bold's at every width
+                // (over, never under, at 390). The desktop box is the frame's
+                // FIXED 560.33, widened to a word that outruns it.
+                ...(ed ? {
+                  fontSize: `min(${s.mob ? s.dispMd : u(57.84)}, calc(100cqi / ${q.wordEms}))`,
+                  ...(s.mob ? null : { fontWeight: 700, lineHeight: 52.42 / 57.84 }),
+                  ...(s.narrow ? null : { maxWidth: u(560.33), minWidth: 'min-content' }),
+                } : null),
               }}>{q.quote}</p>
             )}
           </div>
@@ -19527,6 +19566,7 @@ function Testimonials({ s }) {
             display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
           }}>
             {body}
+            {dashed}
           </div>
         </div>
       )
