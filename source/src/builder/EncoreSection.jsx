@@ -20262,10 +20262,36 @@ function Testimonials({ s }) {
     // stroked by nothing — is ringed like its neighbours, in `stroke1` (pale at
     // .15, all but invisible on ink), which is layout 3's Lime call and Retro's
     // own normalisation of the same cell one frame family over.
-    if (s.lime) {
+    //
+    // Grunge (964:73035 · 971:8152 · 977:12379) widens the block: the paired
+    // diff against the Lime twin is 41 = 41 / 33 = 33 / 41 = 41 nodes with every
+    // box, radius and gap Lime's, no Device override, and the discs' blur 24
+    // behind an opaque fill again. **Scheme 4 is Scheme 1 here, so the sheet is
+    // the page**: `sem/bg` is black and `sem/text/1` red, which is `G.sheet` /
+    // `G.ink` below — the wrapper keeps its bleed and its insets (the frames'
+    // own, not the root's) and paints the ground it stands on. The register is
+    // Grunge's own, read off each cell's fill and binding rather than remapped
+    // from Lime's (below), and the marks are a stated Stones Crush 24 / 16 / 14
+    // — `s.labelLg` to the token — so here `faced` applies, the reverse of
+    // layout 3's face-stack disc, whose seat held photographs and no glyph.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const mist = '#D5E3B2'   // Scheme 4 `sem/box/1` — the two light cells
       const hair = '#15180F26' // `sem/stroke/1` on a light scheme, 15% ink
       const ring = (c) => `inset 0 0 0 1px ${c}`
+      // Scheme 4's `sem/bg` and `sem/text/1`, which Lime's block wrote as the
+      // resolved `s.tx` / `s.bg`: pale and ink under Lime, the page's black and
+      // red under Grunge.
+      const G = grunge
+        ? { sheet: s.bg, ink: s.ac }
+        : { sheet: s.tx, ink: s.bg }
+      // The display face, Grunge's three moves behind one flag (a no-op under
+      // Lime): Anton scaled to Stones Crush's glyph, its leading divided back
+      // out, uppercase.
+      const disp = (size, lh) => ({
+        fontSize: faced(s, size), lineHeight: facedLh(s, lh),
+        ...(grunge ? { textTransform: 'uppercase' } : {}),
+      })
       // The frame's four cells by scheme, read off the nodes' fills: Scheme 4's
       // mist in a 15% ink hairline with an ink disc lettered pale; Scheme 1's
       // `box/3` in `stroke1` with a lime disc lettered ink; mist again; and
@@ -20273,7 +20299,22 @@ function Testimonials({ s }) {
       // the same 15% hairline. The disc's ring follows the *cell's* stroke on
       // the first two seats and stays `hair` on the pale disc of the third,
       // which is what the nodes state.
-      const REG = [
+      //
+      // Grunge's wall is dark / darker / dark / red: `sem/box/1` `#1A1A1A`, a
+      // nested Scheme 1's `sem/box/3` `#0E0E0E` (the one register that is
+      // Lime's key for key), and Scheme 4's `sem/text/1` — the red — lettered
+      // in `sem/bg`, black. Every dark cell and every disc is ringed in
+      // `sem/stroke/1`, white at 15%, where Lime's light scheme rings in ink;
+      // the discs are red lettered black, and the red cell's is the pair
+      // inverted, a black disc lettered red. **The red cell is left bare**, as
+      // the frame draws it: Lime's normalising ring was all but invisible on
+      // ink, and white at 15% on `#DF262C` is a visible pink hairline the
+      // frame does not have.
+      const REG = grunge ? [
+        { bg: s.box1, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
+        { bg: s.box3, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
+        { bg: s.ac, fg: s.bg, edge: 'transparent', av: s.bg, avFg: s.ac, avEdge: s.stroke1 },
+      ] : [
         { bg: mist, fg: s.bg, edge: hair, av: s.bg, avFg: s.tx, avEdge: hair },
         { bg: s.box3, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
         { bg: s.bg, fg: s.tx, edge: s.stroke1, av: s.tx, avFg: s.bg, avEdge: hair },
@@ -20296,12 +20337,13 @@ function Testimonials({ s }) {
         </svg>
       )
       // Scheme 4's `text/1` disc with a `sem/bg` glyph: ink on the pale sheet
-      // with a pale arrow. 73.6 at `radius/pill`, 5 apart, read off the handler
+      // with a pale arrow (a red disc with a black arrow on the black page
+      // under Grunge). 73.6 at `radius/pill`, 5 apart, read off the handler
       // for the cursor — Pager's rule.
       const disc = (back, onClick, key) => (
         <span key={key} onClick={onClick} style={{
           width: u(73.6), height: u(73.6), flex: 'none', borderRadius: '999px',
-          background: s.bg, color: s.tx,
+          background: G.ink, color: G.sheet,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: onClick ? 'pointer' : undefined,
         }}>{glyph(back)}</span>
@@ -20330,7 +20372,7 @@ function Testimonials({ s }) {
                 background: r.av, color: r.avFg, boxShadow: ring(r.avEdge),
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 overflow: 'hidden',
-                fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
+                fontFamily: s.label, ...disp(s.labelLg, 1.1), letterSpacing: s.dls,
               }}>{q.mark}</span>
             )}
             {!!q.quote && (
@@ -20377,8 +20419,9 @@ function Testimonials({ s }) {
         <div style={{
           // The sheet: Scheme 4's pale `sem/bg`, out to the section's own
           // edges past the root's padding, with the frames' own insets back.
+          // Under Grunge `sem/bg` is the page itself, so it paints nothing new.
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-          background: s.tx, color: s.bg,
+          background: G.sheet, color: G.ink,
           padding: `${padTop} ${padH} ${padBot}`,
           ...col(u(28)),
         }}>
@@ -20391,8 +20434,8 @@ function Testimonials({ s }) {
             {!!s.title && (
               <h2 style={{
                 margin: 0, flex: '1 1 0', minWidth: 0,
-                fontFamily: s.display, fontSize: s.dispLg,
-                lineHeight: 0.89, letterSpacing: s.dls, color: s.bg,
+                fontFamily: s.display, ...disp(s.dispLg, 0.89),
+                letterSpacing: s.dls, color: G.ink,
                 overflowWrap: 'break-word',
               }}>{s.title}</h2>
             )}
