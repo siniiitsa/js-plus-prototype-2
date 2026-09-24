@@ -277,6 +277,51 @@ function GrungeStar({ s, style, fill }) {
 // under Scheme 1.
 const SIENNA_MEDIA = '#E6B6A0'
 
+// Editorial's dashed rule (964:58614's track rows: 1px, INSIDE, cap NONE,
+// bottom-only, `dashPattern` 9, 9). CSS `border-style: dashed` cannot set a
+// dash length and an inset `boxShadow` cannot dash, so it is an SVG overlay on
+// the row's edge — the inside-stroke-is-an-overlay rule, so the row's stated
+// height holds and nothing reflows. The caller is `position: relative` and
+// passes the frame's dash (× 0.82 on the desktop canvas; the weight stays a
+// hairline). A line starts on a dash at x 0, as Figma's does. `side` is 'top'
+// or 'bottom'; a card dashed on all four sides is a later section's to add.
+function DashRule({ dash, colour, weight = 1, side = 'bottom' }) {
+  return (
+    <svg aria-hidden style={{
+      position: 'absolute', left: 0, [side]: 0, width: '100%', height: weight,
+      display: 'block', overflow: 'visible', pointerEvents: 'none',
+    }}>
+      <line x1="0" x2="100%" y1={weight / 2} y2={weight / 2}
+            stroke={colour} strokeWidth={weight} strokeDasharray={`${dash} ${dash}`} />
+    </svg>
+  )
+}
+
+// Editorial's tape ("Frame 210"): a 206 × 56 strip in `sem/active/bg`,
+// clipping a 213.09² `image 1` — the grain raster, `s.grainSrc`, at FILL —
+// set at SCREEN from (−2.93, 0.15), laid across the top edge of a polaroid.
+// The same strip stands on media, the gallery, the map and the calendar, so
+// the caller places it (`style`: a seat and a rotation) and passes `colour`
+// where its binding is not `active/bg`; `z` is the canvas scale. Decoration
+// over a print, so it takes no pointer and hides nothing live underneath.
+function Tape({ s, z = 1, colour, style }) {
+  if (!s.editorial) return null
+  const px = (v) => `${Math.round(v * z * 100) / 100}px`
+  return (
+    <div aria-hidden style={{
+      position: 'absolute', width: px(206), height: px(56), overflow: 'hidden', isolation: 'isolate',
+      background: colour ?? s.activeBg, pointerEvents: 'none', ...style,
+    }}>
+      {s.grainSrc && (
+        <div style={{
+          position: 'absolute', left: px(-2.93), top: px(0.15), width: px(213.09), height: px(213.09),
+          backgroundImage: `url(${s.grainSrc})`, backgroundSize: 'cover', mixBlendMode: 'screen',
+        }} />
+      )}
+    </div>
+  )
+}
+
 // Lime's skip glyph (964:58590 "Group 2"), transcribed from the frame's own
 // vector: two triangles running into a bar, 16.03 × 8.39. The frame draws the
 // back button as the same group turned 180°, hence `back`.
@@ -5259,13 +5304,29 @@ function Media({ s }) {
   // white polaroid leant 2°, the heading is two-tone beside a four-point star,
   // and the band is Scheme 2's `#171716` (the root's `grungeBand`) under the
   // grain sheet at .29 lighten between two torn seams.
-  if (s.v0 && (s.lime || s.grunge)) {
+  //
+  // Editorial layout 1 (964:58614 · 986:48241 at 768 · 986:48253 at 390) is
+  // Grunge's tree again, 75 of 79 nodes, so `ed` names a third set of deltas.
+  // The band is Scheme 2 (taupe, which the root paints as `s.bg` under route
+  // A), and its accent is paper: every string but the clocks binds
+  // `sem/text/1`, which is `s.ac` here where the twins' copy reads `s.tx`
+  // (ink under Scheme 2) — so `ink` is the one switch. The rows are 112 / 96 /
+  // 76.8 under Display/Title, ruled in a dashed paper line (`DashRule`, 9, 9)
+  // rather than a hairline; the card is square-cornered in a blush polaroid
+  // (`sem/tag/1/bg`, 10 all round) leant 2° under a real drop shadow and the
+  // tape; the transport is blush; the heading is one tone; and the pill is
+  // Retro's Soundcloud seat (JP-034's per-template call — Lime's and Grunge's
+  // frames draw Book Now, Editorial's does not). No seams, no grain sheet, no
+  // star, no glow.
+  if (s.v0 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
-    const txt = { color: s.tx, letterSpacing: s.dls }
+    const ink = ed ? s.ac : s.tx
+    const txt = { color: ink, letterSpacing: s.dls }
     // Body/Eyebrow — Inter bold, the kicker, the counter and the two clocks.
     const eyebrow = (t, extra) => (
       <span style={{
@@ -5288,14 +5349,16 @@ function Media({ s }) {
             the artist's, so the rule is positional — the first two words are
             one line and the rest another, in the accent — which keeps the
             break and the colour on one seam at any size (a product call,
-            the bio's accent word again). */}
-        {grunge ? (
+            the bio's accent word again). Editorial's frame types the same
+            break in one tone, `sem/text/1`, so it takes the same two lines —
+            the break without the colour. */}
+        {grunge || ed ? (
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
-            letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
+            letterSpacing: s.dls, color: ink, textTransform: 'uppercase',
           }}>
             <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
-            {titleWords.length > 2 && <span style={{ display: 'block', color: s.ac }}>{titleWords.slice(2).join(' ')}</span>}
+            {titleWords.length > 2 && <span style={{ display: 'block', color: grunge ? s.ac : undefined }}>{titleWords.slice(2).join(' ')}</span>}
           </h2>
         ) : (
           <h2 style={{
@@ -5322,11 +5385,20 @@ function Media({ s }) {
     // its 390 row seats the same inert inset at 13.8. Its track name is
     // Display/Title — 36 / 28 / 26, written out because `s.title` is the
     // heading string — where Lime's is Label/LG.
-    const padT = s.mob ? (grunge ? 13.8 : 7) : 16
-    const rowTitle = desk ? u(36) : tab ? '28px' : '26px'
+    //
+    // Editorial's divide the polaroid's 560 (480 at 768, 384 at 390, where
+    // the list stacks over it), its 390 row seats the inert inset at 8.4, and
+    // its track name is Display/Title again, 32 / 25 / 23. The 1px rule is a
+    // dashed overlay, so the row takes its whole inset back.
+    const padT = s.mob ? (grunge ? 13.8 : ed ? 8.4 : 7) : 16
+    const rowTitle = ed
+      ? (desk ? u(32) : tab ? '25px' : '23px')
+      : (desk ? u(36) : tab ? '28px' : '26px')
     const listMin = grunge
       ? (desk ? u(640) : tab ? '548px' : '438px')
-      : (desk ? u(540) : tab ? '462px' : '370px')
+      : ed
+        ? (desk ? u(560) : tab ? '480px' : '384px')
+        : (desk ? u(540) : tab ? '462px' : '370px')
     const list = (
       <div style={col('0', {
         alignItems: 'stretch', alignSelf: 'stretch',
@@ -5339,15 +5411,17 @@ function Media({ s }) {
           return (
             <div key={i} onClick={onPick(i)} style={{
               ...row(u(20)), flex: '1 1 auto',
-              padding: `${u(padT)} 0 calc(${u(padT)} - 1px)`,
-              borderBottom: `1px solid ${s.stroke1}`,
+              ...(ed
+                ? { padding: `${u(padT)} 0`, position: 'relative' }
+                : { padding: `${u(padT)} 0 calc(${u(padT)} - 1px)`, borderBottom: `1px solid ${s.stroke1}` }),
               cursor: s.live ? 'pointer' : undefined,
             }}>
+              {ed && <DashRule dash={9 * z} colour={s.stroke1} />}
               {/* Body/LG, in `sem/text/1`. */}
               <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none', color: s.ac, letterSpacing: s.dls }}>{t.n}</span>
               <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch', ...txt })}>
                 {/* Label/LG over Body/SM, both clipped on one line like the frame's. */}
-                <span style={grunge ? labelStyle(s, rowTitle, { overflow: 'hidden', textOverflow: 'ellipsis' }) : {
+                <span style={grunge || ed ? labelStyle(s, rowTitle, { overflow: 'hidden', textOverflow: 'ellipsis' }) : {
                   fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}>{t.name}</span>
@@ -5358,7 +5432,7 @@ function Media({ s }) {
               </span>
               <span style={{
                 width: u(35.487), height: u(35.487), borderRadius: '999px', flex: 'none',
-                border: `1px solid ${s.stroke1}`, color: s.tx,
+                border: `1px solid ${s.stroke1}`, color: ink,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               }}>{on && playing
                 ? <Pause size={parseFloat(s.bodySm)} fill="currentColor" strokeWidth={0} />
@@ -5366,7 +5440,7 @@ function Media({ s }) {
               <span style={{
                 width: u(60), height: u(60), flex: 'none', position: 'relative',
                 borderRadius: u(13), overflow: 'hidden',
-              }}><Photo s={s} initialsSize={14} src={t.img} ink={s.tx} /></span>
+              }}><Photo s={s} initialsSize={14} src={t.img} ink={ink} /></span>
             </div>
           )
         })}
@@ -5387,7 +5461,7 @@ function Media({ s }) {
       <span onClick={s.live ? fn : undefined} style={{
         padding: `${u(11)} ${u(7)}`, margin: `-${u(11)} -${u(7)}`,
         cursor: s.live ? 'pointer' : undefined, position: 'relative',
-      }}><LimeSkip width={16.028 * z} color={s.tx} back={back} /></span>
+      }}><LimeSkip width={16.028 * z} color={ed ? s.chips[0].bg : s.tx} back={back} /></span>
     )
     //
     // Grunge's card is the same stack at radius 13 on Scheme 2's `sem/box/2`,
@@ -5397,11 +5471,22 @@ function Media({ s }) {
     // all but vanishes on the sleeve, as it does in the render), and its
     // progress track is solid `sem/text/2` under the accent fill, which reads,
     // so Lime's departure is not needed.
+    //
+    // Editorial's card is square, 540 at desktop and 768 and 334.6 at 390,
+    // with the same fade and no effect. Under the sleeve it is `sem/text/2`,
+    // its opacity-0 disc's own fill (ink). Its title and artist are Body/LG
+    // over Body/MD and the `<` paper; the transport is `sem/tag/1/bg` blush,
+    // the ▶ ink; the clocks `sem/text/2`, ink on the fade, as the frame draws
+    // them. The 390 spacer is the frame's stated 66.6, not the remainder: the
+    // master's content runs 9 into the card's foot padding, and so does this.
+    // The progress bar's track and fill are both `sem/bg` there — Lime's
+    // invisible playhead again — so the fill is `s.pillBg`, blush, over the
+    // frame's taupe track: Lime's departure, named.
     const card = (
       <div style={{
         position: 'relative', overflow: 'hidden', width: '100%',
-        background: grunge ? '#222222' : s.box2, color: s.tx, borderRadius: u(grunge ? 13 : 80), padding: u(32),
-        height: desk ? u(540) : s.mob ? (grunge ? '313.3px' : '343px') : grunge ? '540px' : undefined,
+        background: grunge ? '#222222' : ed ? s.tx : s.box2, color: ink, borderRadius: ed ? 0 : u(grunge ? 13 : 80), padding: u(32),
+        height: desk ? u(540) : s.mob ? (grunge ? '313.3px' : ed ? '334.6px' : '343px') : grunge || ed ? '540px' : undefined,
         ...col(u(18), { alignItems: 'center' }),
       }}>
         <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
@@ -5409,12 +5494,12 @@ function Media({ s }) {
         </div>
         <div aria-hidden style={{ position: 'absolute', inset: 0, background: SCRIM.limeSleeve }} />
         <span style={{ position: 'relative', fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: grunge ? s.activeFg : undefined }}>{'<'}</span>
-        <span style={s.mob ? { flex: '1 1 0', minHeight: 0 } : { height: u(252), flex: 'none' }} />
+        <span style={s.mob && !ed ? { flex: '1 1 0', minHeight: 0 } : { height: u(ed && s.mob ? 66.6 : 252), flex: 'none' }} />
         <div style={col(u(4), { alignItems: 'stretch', position: 'relative', width: '100%', textAlign: 'center' })}>
           <span style={grunge
             ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' })
             : { fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls }}>{now.track}</span>
-          <span style={grunge
+          <span style={grunge || ed
             ? { fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls }
             : { fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }}>{now.by}</span>
         </div>
@@ -5422,7 +5507,7 @@ function Media({ s }) {
           {skip(true, () => goTo(at - 1))}
           <span onClick={s.live ? toggle : undefined} style={{
             width: u(48), height: u(48), borderRadius: '999px', flex: 'none',
-            background: s.tx, color: grunge ? s.activeFg : s.bg,
+            background: ed ? s.chips[0].bg : s.tx, color: grunge ? s.activeFg : ed ? s.tx : s.bg,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: s.live ? 'pointer' : undefined,
           }}>{playing
@@ -5431,15 +5516,15 @@ function Media({ s }) {
           {skip(false, () => goTo(at + 1))}
         </div>
         <div style={row(u(10), { width: '100%', position: 'relative' })}>
-          {eyebrow(now.at)}
-          <span style={{ flex: 1, height: '3px', background: grunge ? s.tx : s.stroke1, borderRadius: '2px', overflow: 'hidden' }}>
+          {eyebrow(now.at, ed ? { color: s.tx } : undefined)}
+          <span style={{ flex: 1, height: '3px', background: grunge ? s.tx : ed ? s.bg : s.stroke1, borderRadius: '2px', overflow: 'hidden' }}>
             <span style={{ display: 'block', width: `${now.pct}%`, height: '100%', background: s.pillBg, borderRadius: '2px' }} />
           </span>
-          {eyebrow(now.of)}
+          {eyebrow(now.of, ed ? { color: s.tx } : undefined)}
         </div>
         {audio}
         {/* INNER_SHADOW 64, spread 0, `sem/glow` — over the photograph, the bio's arch. */}
-        {!grunge && (
+        {!grunge && !ed && (
           <div aria-hidden style={{
             position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
             boxShadow: `inset 0 0 ${u(64)} ${s.glow}`,
@@ -5455,7 +5540,37 @@ function Media({ s }) {
     // foot, so the ramp is cut there at .45, and wholly past the 390 one. CSS
     // reserves no room for the lean where Figma's auto-layout does, so the
     // print stands a few px left of the frame's.
-    const player = !grunge ? card : (
+    //
+    // Editorial's "Frame 209" is the same mount re-inked: `sem/tag/1/bg`
+    // blush, square, 10 on every side at every width, leant the same 2°, with
+    // a real DROP_SHADOW (`#000` 25% at 6, 6, blur 6) where Grunge's carries
+    // none — and no grain and no clip, since the tape rides over its top edge.
+    // The tape is placed by its centre off the mount's top edge, in the
+    // mount's own (leant) frame, from the walk's boxes: 3.3 right of the
+    // middle and 17.2 down at 1440, 1.6 left and 8.5 down at 768, 4.1 right
+    // and 9.2 *above* at 390. Its own −3° is the page's, so inside the mount
+    // it turns the remaining 1° (Figma −1 → CSS +1) — which is how the two
+    // narrow masters nest it, inside the card. Where the list stacks over it
+    // (768, 390) Figma's auto-layout spaces the mount by its leant bounding
+    // box — 584.4 for a 560 print at 768 — and a CSS transform reserves
+    // nothing, so the mount gives the difference back as a block margin,
+    // W·sin 2° / 2 a side (a percentage margin is the column's width); the
+    // H·(1 − cos 2°) term is under 0.2px and dropped. Beside the list it is
+    // centred on the row, as the frame's overflows its 560, and needs none.
+    const tapeAt = desk ? [3.3, 17.2] : tab ? [-1.6, 8.5] : [4.1, -9.2]
+    const player = ed ? (
+      <div style={{
+        position: 'relative', width: '100%', background: s.chips[0].bg, padding: u(10),
+        transform: 'rotate(2deg)', boxShadow: `${u(6)} ${u(6)} ${u(6)} rgba(0,0,0,.25)`,
+        margin: desk ? undefined : '1.745% 0',
+      }}>
+        {card}
+        <Tape s={s} z={z} style={{
+          left: `calc(50% + ${u(tapeAt[0])})`, top: u(tapeAt[1]),
+          transform: 'translate(-50%, -50%) rotate(1deg)',
+        }} />
+      </div>
+    ) : !grunge ? card : (
       <div style={{
         position: 'relative', overflow: 'hidden', width: '100%',
         background: s.tx, borderRadius: u(15), transform: 'rotate(2deg)',
@@ -5472,9 +5587,10 @@ function Media({ s }) {
     // At 390 the root's 44 `padY` is the 44 seam exactly, so the kicker sat
     // flush under the top arc and the pill flush over the bottom one; the
     // wrapper pads a further 24 at each end there (user call, 2026-09-17) —
-    // padding, so the arcs stay on the section's edges.
+    // padding, so the arcs stay on the section's edges. Editorial draws no
+    // seam, so its 390 band takes the root's padding alone.
     return (
-      <div style={{ position: 'relative', padding: s.mob ? '24px 0' : undefined }}>
+      <div style={{ position: 'relative', padding: s.mob && !ed ? '24px 0' : undefined }}>
         {/* Grunge's band sheet: `image 1` at .29 LIGHTEN under everything, out
             over the root's padding, so the content is lifted over it below. Its
             seams are the frame's two `#000000` vectors, read off the renders:
@@ -5493,7 +5609,9 @@ function Media({ s }) {
             // Retro's `1.27fr 1fr` at 49 is this same 710 / 558 at 60, × 0.82.
             display: 'grid',
             gridTemplateColumns: desk ? 'minmax(0, 710fr) minmax(0, 558fr)' : 'minmax(0, 1fr)',
-            gap: desk ? u(60) : '32px', alignItems: 'center',
+            // Editorial's narrow masters stand the list 92 over the mount,
+            // room for the tape that rides above its top edge at 390.
+            gap: desk ? u(60) : ed ? '92px' : '32px', alignItems: 'center',
           }}>
             {list}
             {player}
@@ -5504,7 +5622,18 @@ function Media({ s }) {
               Soundcloud one, and with neither the row is not drawn — `col`
               would spend its gap on it. It wraps: two `full` pills do not
               always share a 390 line. */}
-          {(s.mediaCta || s.soundcloud) && (
+          {/* Editorial's frame draws Soundcloud, not Book Now, so its seat is
+              Retro's: the `soundcloud` link, a picture while its address is
+              empty. `FIELDS.media.cta` reaches nothing here. The pill is
+              `BookPill`'s branch hand-scaled to 0.8 at every width — 4 / 4 /
+              4 / 16.8 round a 36.8 × 35.2 disc, 8 apart, 43.2 tall — with
+              Label/MD at 1.1, and its paints bound as the branch binds them
+              but for the ink: `sem/tag/2/text` type and disc, not `sem/bg`. */}
+          {ed ? (
+            <BookPill s={s} label="Soundcloud" ext={s.soundcloud} fg={s.tx} disc={36.8 * z} size={s.labelMd} style={{
+              gap: u(8), padding: `${u(4)} ${u(4)} ${u(4)} ${u(16.8)}`, lineHeight: 1.1, alignSelf: 'flex-start',
+            }} />
+          ) : (s.mediaCta || s.soundcloud) && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignSelf: 'flex-start' }}>
               {/* Grunge's pill is lettered `sem/text/2` beside a `#000000` disc
                   with the accent arrow, so the disc's ink and the type's part. */}
