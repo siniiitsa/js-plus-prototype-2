@@ -88,7 +88,13 @@ mutated through a single `patch()` helper.
   `arrangeRows()` in `EncoreBuilder.jsx` draws that row as a 858fr : 405fr grid inside the
   page gutter. Both the editor canvas and `PublishedPage` go through the pair, and the
   sections in it are built with `sectionVm({ column: true })`, which drops their horizontal
-  padding. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
+  padding. **The right cell is sticky** (JP-043, user call, 2026-09-24; no Frame 300 declares
+  it): `position: sticky; top: 0; alignSelf: start` on the cell div, not the calendar's root,
+  so in the published tab the calendar stays in view while the left column scrolls and the
+  one-row grid area releases it at the row's end. On the canvas it is inert, since the card's
+  `overflow: hidden` makes the card, which never scrolls, the cell's scroll container — a
+  named, accepted diff; and a window shorter than the cell (~680 at 1440) pins it with its
+  foot below the fold until the row ends. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
   media, repertoire, calendar — and at desktop `pageRows` looks past that one layout-3
   repertoire, composing the columns and standing the repertoire after them; moving a section
   out of the run undoes it.
@@ -232,7 +238,8 @@ mutated through a single `patch()` helper.
   outside http / https / mailto / tel, whitespace inside, a schemeless host with no dot, `//host`
   — comes out `''`, which is each seam's existing no-link state, and a track's audio also refuses
   mailto / tel. Every address input in `EditPanel` is a `UrlInput`, which prints that reason under
-  the box on blur). Do **not** make `EncoreSection` interactive
+  the box whenever it is not being typed in — derived from the stored value, so a remount shows
+  a bad address at once (JP-049, retest)). Do **not** make `EncoreSection` interactive
   without gating on it: the editor canvas is a picture of a website, and a live filter chip there
   would both filter and select the section. `EncoreSection` therefore imports `useState` and
   `useRef` as well as `useId`; that is the whole of its React surface and it stays that way —
@@ -402,7 +409,12 @@ mutated through a single `patch()` helper.
   whole row, layout 2's ↗ and Venue Link pill (beside which its Get Directions pill takes
   `vm.gigs[].directions`, a Google Maps route composed from the venue and city), layout 3's
   Tickets → column — and layout 3 drops
-  the frame's second `↗` beside the venue, the same address marked twice. **Layouts 2 and 3
+  the frame's second `↗` beside the venue, the same address marked twice. An empty or refused
+  `link` draws **no ↗ and no Tickets →, on either surface** (JP-045, user call, 2026-09-24):
+  they read `vm.gigs[].url`, which is resolved on both, never `extLink()`, which is null on the
+  whole canvas — so the canvas no longer promises a link the published row cannot keep. That is
+  the gallery's hide-the-row rule for an affordance; layout 1's row and layout 4's ticker have
+  no mark of their own and stay pictures. **Layouts 2 and 3
   share the frame's four claims as fields** (JP-040, PO call, 2026-09-21; layout 2's fit had
   dropped them and layout 3's QA re-seated them): `status` is the panel's tab and `updated` the
   note beside it, `rings` labels each ring's right edge at the midline (layout 4 too), and
@@ -466,13 +478,13 @@ mutated through a single `patch()` helper.
   The 768 masters of layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and
   Lime alike (and Grunge's two); those of layouts 1 and 4 hide all eight link nodes beside a burger. But `navLinks`
   is the artist's page, and the seeded eleven sections give nine — 576px of type at the master's
-  own 16px, 720 with the capsule's eight 18px gaps, in a 688px bar that also seats the wordmark,
+  own 16px, 720 with the capsule's eight 18px gaps, in a 708px bar that also seats the wordmark,
   Listen and the pill. So `sectionVm` sums the bar's one row at the master's own sizes — the
-  capsule, the name, Listen and the pill, against 688 in layout 2 and 684 in layout 3 — and
+  capsule, the name, Listen and the pill, against 708 in layout 2 (the root's column since JP-038) and 684 in layout 3 — and
   **`vm.navFits`** is the answer: the links draw when it is true and `NavMenu`'s burger stands
   otherwise, in the same bordered capsule, which the 390 masters draw the burger in. Minimal's
   three fit under the seeded name (the wordmark is in the sum, so a long one can fold them too); *Follow my sections* on the seeded names fits up to four links in Retro
-  layout 2, five in Retro layout 3 six in Lime's two, eight in Grunge's layout 2 and seven in its
+  layout 2, five in Retro layout 3, seven in Lime's layout 2 and six in its layout 3, eight in Grunge's layout 2 and seven in its
   layout 3 (it is the words' width that counts, not
   their number), so a page switched to *Follow my sections* is still the burger. It is a vm boolean
   because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
@@ -522,17 +534,25 @@ mutated through a single `patch()` helper.
   line its span, and both the row.
   **Layout 3 is a stack of full-width rows on the page ground**, and it filters as layout 1 does
   — the same `chip`, in the frame's segmented capsule instead of a loose chip row — but what it
-  adds is a **seat that the filter moves**: the last row *on show* is filled in `vm.tierRow`'s
-  hue where the others are merely outlined in it, and carries the frame's FEATURED badge, so
-  hiding the artist's last package promotes whatever now ends the stack — though never onto a
-  package the artist added and left empty, since `sectionVm` drops those first (JP-048, below).
-  That is the deck's own
+  adds is a **seat that the filter moves**: one row *on show* is filled in `vm.tierRow`'s
+  hue where the others are merely outlined in it, and carries the frame's FEATURED badge. It is
+  the package the artist **ticked Featured** (JP-048, user call, 2026-09-24: a raw checkbox per
+  `TiersField` row, the *Start fresh* precedent, acting as a radio that can be emptied —
+  `vm.tiers[].featured`, not in `TIER_KEYS`, so `blankRow` ignores it) while the filter leaves
+  it on show, and otherwise the last row on show — so the seed, which ticks nothing, keeps its
+  picture, and hiding the ticked or the last package promotes whatever now ends the stack,
+  though never onto a package the artist added and left empty, since `sectionVm` drops those
+  first (JP-048, below). Layout 1's glow reads no tick and stays positional. That is the deck's own
   rule that the tilt and the mobile overlap take the **rendered** index while `t.n` keys the
   card, and it is not drawn at one row. `vm.tierRow` is `tierHero`'s shape with one extra
   constraint — it has to read against the **page** rather than on a card, so it walks `T.tags`
   from the frame's own index to the first hue that clears `tierHues`' 0.22 against `bg`, since a tag
   can be the page ground itself (Grunge's fourth was its black, before Static Youth left it two tags). Its selector is the one thing in that branch
   not standing on the page ground, so its outline and idle labels take `paperFg` and not `tx`.
+  Beside it stands the frame's "Save 15% on bundles", **`FIELDS.pricing.offer`** (JP-046, user
+  call, 2026-09-24; the fit had dropped it as a discount no field states): seeded with the
+  frame's copy, emptiable, `in: [2]`, in every template's block, and the capsule's row stands
+  on either half — an offer is not a filter, so it outlives a page whose packages carry no tags.
   **Lime's and Grunge's stacks read no `vm.tierRow`**: Lime's frame outlines the rows in the
   accent and fills the moving seat with it, ringed and lettered in the page ink, and Grunge's
   names Scheme 3's own three literals, so the walk (which reaches pale lime under Lime and the
@@ -547,10 +567,9 @@ mutated through a single `patch()` helper.
   rather than a border so the frame's row height holds) — and
   that rule is the one thing in the branch that **bleeds**: the row cancels the root's padding and
   puts the identical value straight back, so the border reaches the page edges and the content
-  keeps the section's column. That column is the frame's 56 / 30 / 10 inset and not `padX`
-  (JP-038, layout 4, user call, 2026-09-23): at layout 4, `sectionVm` gives map, pricing, calendar
-  and form the inset the sheets beside them already put back, so no page-ground section stands
-  in from its neighbours. The footer is layout 1's and keeps `padX`. It is
+  keeps the section's column, which is the frame's 56 / 30 / 10 inset because `padX` is now that
+  inset on every section and layout (JP-038, user call, 2026-09-24; the layout-4-only arm it
+  replaced is gone), the footer included. It is
   the first pricing layout to draw **no heading at all**, so `heading` reaches layouts 1, 2 and 3
   alone; and the only one to read a package's **tags and its features together** — the tags as the
   frame's small hairline chips, cased in `sectionVm` as `vm.tiers[].tagLabels` because `t.tags`
@@ -770,12 +789,18 @@ mutated through a single `patch()` helper.
   `FORM_HEADING_4` "Contact Us" joins `HEADING_4`, `sub` defaults to `FORM_SUB_4` "Enquire"
   (the line printed `s.brand` until then), and `button` falls back to `FORM_BTN_4` "Check
   Availability" at this layout and "Book Now" at the others — each resolved in `sectionVm`
-  **and** in `EditPanel`'s fallback chain. The boxes stay the artist's one list and the steps
-  stay one line. Three things it does that no other layout here does. It draws
+  **and** in `EditPanel`'s fallback chain. **So do its boxes** (JP-054 again, user call,
+  2026-09-24, reversing the 2026-09-23 "the boxes stay the artist's one list"): with `fields`
+  absent, layout 4 seeds `FORM_FIELDS_4`, the frame's five — Your name, Email, Event date,
+  Event type, Location over its own placeholders, one `email` row so the guard holds, and the
+  frame's Message being the `message` textarea — where layouts 1–3 seed `FORM_FIELDS`'
+  four; `sectionVm`'s `formList` at `d === 3` and `formFieldsVal` at `design === 3`, the
+  seed-resolver rule. The gate is on the absent key alone, `FORM_BTN_4`'s: once the artist
+  edits the list it is theirs at every layout. The steps stay one line. Three things it does that no other layout here does. It draws
   a **label above a box *and* a placeholder inside it**, which is layout 1's pair and
   brings both `message` and the rows' `placeholder` column back after two layouts that
   spend their one slot on the label; a **trailing odd field runs the full measure** where
-  layout 1 trails a half-width cell, the frame's own fifth box at all three widths
+  layout 1 trails a half-width cell, the frame's own fifth box (the seed's Location) at all three widths
   (`vm.formRows` is unchanged — the pairing is the vm's and what a row of one does is the
   branch's); and it **reorders its two columns**, the form leading at 1440 and the
   promises leading at 768 and 390. Its promises are `vm.formSteps`, the same list layout
@@ -976,7 +1001,7 @@ mutated through a single `patch()` helper.
   delimited textarea, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
   numbers 01 / 02 / 03. All eight follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_4` at form layout 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package
@@ -987,7 +1012,8 @@ mutated through a single `patch()` helper.
   repeaters take it** (JP-051 and its sweep, and `SlotsField` since JP-052), each over a `*_KEYS` beside its seed — `SONG_KEYS`,
   `TRACK_KEYS` (art and sound included), `GIG_KEYS`, `TIER_KEYS`, `QUOTE_KEYS`, `SLOT_KEYS`, and two that
   leave a select out because a select always holds a value: `FORM_FIELD_KEYS` (label and
-  placeholder, not `kind`) and `LINK_KEYS` (label and url, not `to`). Each list is filtered
+  placeholder, not `kind`) and `LINK_KEYS` (label and url, not `to`) — and `TIER_KEYS` leaves
+  out a tick the same way, `featured` (JP-048), so a ticked empty package is still blank. Each list is filtered
   *before* anything indexes it (pins, hues, fan seats, marks, the footer's halving,
   `formRows` / `formMailto` / `formCheck`), each repeater prints its own "Empty … aren't shown."
   under a blank row, and the repertoire's song-count heading counts the filtered list in both

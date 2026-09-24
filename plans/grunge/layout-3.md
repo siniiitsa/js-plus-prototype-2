@@ -917,6 +917,10 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   cards are 216 against 222.7 (a 688 column against 708); the section's own 80 / 56 / 44 top
   pad is the shared `padY`, not the frame's 56 / 60 / 60 (the plan's `vm.pad` arms never
   carried a repertoire row, under Lime either).
+  *Since* (JP-044, 2026-09-24): the 768 row stacks the artist under the title, Lime's fix in
+  the shared block. Grunge's reading differs — its 168 measure and Anton at 0.75 fit every
+  seeded title in one row — but it moves with Lime's rather than splitting the block, since a
+  longer title clips here as it did there. The pinned 62.5 holds both lines.
 - **The gap under the media section — the re-check section 3 owed — is Lime's, and off the
   frame.** Measured last media content → repertoire head: the frame's (glyph bounds, so a few
   px generous to us) **109.3** (133.3 × 0.82) / **128.2** / **109.2**; ours **128.5 / 117 /
@@ -1139,7 +1143,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   where the frame's wraps, and the seeded heading is the artist's copy, not "Pricing"; the
   pill reads *Book Now* (`cta1`) where the frame types *Book*; the unit is `/event`
   (`tierUnit`) where the frame types "— £1,400"; the capsule carries the extra leading `All`
-  chip, layout 1's intended diff; "Save 15% on bundles" stays dropped; the 768 featured row
+  chip, layout 1's intended diff; "Save 15% on bundles" stays dropped (**reversed** by JP-046, 2026-09-24: it is
+  `FIELDS.pricing.offer`, the frame's copy beside the capsule at every width, white `sem/text/2`,
+  one widened block with Lime's); the 768 featured row
   runs 248 against the plain rows' 230.4 because the seeded festival blurb wraps to two lines
   in the 364 left column, Lime's own 268-against-250 case.
 - **`live=1` at desktop and 390** (puppeteer, probes deleted): every chip filters and moves

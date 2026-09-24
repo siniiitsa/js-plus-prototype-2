@@ -53,6 +53,8 @@ const PROBES = [
   { name: 'calendar.types', cats: ['calendar'], param: 'cj', value: { types: Z } },
   { name: 'calendar.slots', cats: ['calendar'], param: 'cj', value: { slots: [{ date: '2025-06-12', kind: Z, price: Z }] } },
   { name: 'tiers', cats: ['calendar'], param: 'tiers', value: [{ name: Z, price: Z }] },
+  // JP-046: layout 3's offer line beside the pricing capsule.
+  { name: 'pricing.offer', cats: ['pricing'], param: 'cj', value: { offer: Z } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

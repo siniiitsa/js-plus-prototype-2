@@ -767,6 +767,11 @@ Settled in section 4 (the repertoire):
   where the frame has a mood and a running time. The right-hand column is the artist, not a
   duration. At 390, page 0 centres set 0 where the master centres its second card. At 768 the
   cards are 216 wide against the frame's 222.7, because our column is 688 and the frame's is 708.
+  *Reversed in part* (JP-044, 2026-09-24, `plans/lime/retest-qa-fixes.md`): that substitution
+  left the 768 title ~40–100px beside a `flex: none` artist in the card's 148, and nine of the
+  twelve seeded titles ended in an ellipsis. **At 768 the artist now stands under the title**
+  (`stack` in the block: a column of 2, centred in the pinned 57, each line its own ellipsis as
+  a last resort), a named diff from the frame's one row. Desktop and 390 fit and keep it.
 - **Measured against the masters** (seeded page): desktop head 95.2 (116 × 0.82), grid 19.7 under it
   (24 × 0.82), cards **303.4** tall (369 × 0.82 = 302.6) at radius 41, title line 19.5, meta 11,
   rows 32, view block 40; 768 head 72.1 (72), cards **438.7** (439), rows 57, view 48.2 (48); 390
@@ -880,7 +885,9 @@ Settled in section 7 (pricing):
   wide against 121 × 0.82 / 113 / 111. The rest are this pass's:
   - The desktop left column is 478.4 against 606 × 0.82, because of our 1052 content width.
   - The 768 pairs are normalised to one grid at 8, where the frame spaces a pair's two items 9 apart.
-  - "Save 15% on bundles" stays dropped.
+  - "Save 15% on bundles" stays dropped. **Reversed** (JP-046, 2026-09-24, `plans/lime/retest-qa-fixes.md`):
+    it is `FIELDS.pricing.offer` (`vm.pricingOffer`), seeded with the frame's copy and emptiable, 14
+    right of the capsule in its `Body/SM` / `sem/text/2` at all three widths; `in: [2]`, measured.
   - **The 390 third row is 391.3 against 376**: "Visual sync available" wraps in our 123 cell, while
     the frame's 113 text box overflows its 125 item without wrapping. Rows 1 and 2 land exactly.
 - **Measured against the masters' content edges.**

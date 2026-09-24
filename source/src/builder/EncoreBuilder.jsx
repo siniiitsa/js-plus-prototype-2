@@ -39,8 +39,8 @@ import {
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
-  PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE,
-  FORM_PROMISES, FORM_FIELDS, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
+  PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
+  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
@@ -61,9 +61,9 @@ import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_S
 // `dev` names the row, so sectionVm can pick a theme's ramp for it: `canvasW` is
 // no key for that, since PublishedPage overwrites it with '100%' on a phone.
 const SIZES = {
-  mobile:  { dev: 'mobile',  h1: '42px', h1b: '50px',  h2: '29px', pad: '44px 22px', navGap: '36px', split: '1fr',         g3: '1fr',           g2: '1fr',       canvasW: '390px'  },
-  tablet:  { dev: 'tablet',  h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 40px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
-  desktop: { dev: 'desktop', h1: '86px', h1b: '118px', h2: '46px', pad: '80px 64px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
+  mobile:  { dev: 'mobile',  h1: '42px', h1b: '50px',  h2: '29px', pad: '44px 10px', navGap: '36px', split: '1fr',         g3: '1fr',           g2: '1fr',       canvasW: '390px'  },
+  tablet:  { dev: 'tablet',  h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 30px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
+  desktop: { dev: 'desktop', h1: '86px', h1b: '118px', h2: '46px', pad: '80px 45.92px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
 }
 
 // §10.2 — the Figma type ramp, layered on top of SIZES rather than replacing it:
@@ -75,10 +75,18 @@ const SIZES = {
 // `narrow` is the second responsive switch the Figma layouts need: the nav
 // collapses to a hamburger on tablet as well as mobile, while `mob` (mobile
 // only) still drives the single-column collapses.
+//
+// `padX` is the frames' own side inset — 56 × 0.82, 30 and 10 — which every
+// 1440 and 768 master draws (JP-038; user call, 2026-09-24). At 390 the masters
+// part: layout 1's bio, media, repertoire and pricing and layout 3's pricing
+// stand at 20, the rest at 10, and 10 was chosen so neighbours always agree. It
+// is the value the sheets' `u(56)` puts back after bleeding, so a page-ground
+// section and a sheet beside it start their type on one line. It is not whole
+// at desktop, so every reader takes it with `parseFloat`, never `parseInt`.
 const RAMP = {
-  mobile:  { dispXl: '77px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '14px', labelXs: '14px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '22px', narrow: true },
-  tablet:  { dispXl: '77px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '40px', narrow: true },
-  desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '64px', narrow: false },
+  mobile:  { dispXl: '77px',  dispLg: '40px', dispSm: '26px', title: '18px', labelMd: '14px', labelXs: '14px', eyebrow: '11px', gPad: '20px', gGap: '18px', padY: '44px', padX: '10px', narrow: true },
+  tablet:  { dispXl: '77px',  dispLg: '64px', dispSm: '34px', title: '22px', labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px', padY: '56px', padX: '30px', narrow: true },
+  desktop: { dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px', labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px', padY: '80px', padX: '45.92px', narrow: false },
 }
 
 // The rest of the Figma file's size tokens, which RAMP never carried because
@@ -418,22 +426,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       ? `${vm.padY} ${vm.padX} ${px(desk ? 90 : 60)}`
       : `${px(desk ? 56 : 30)} ${vm.padX} ${px(56)}`
   }
-  // Layout 4's page-ground sections take the frame's side inset, not `padX`
-  // (JP-038, layout 4; user call, 2026-09-23). Every layout-4 master stands
-  // its content 56 / 30 / 10 in from the page edge, and the sheets beside
-  // these four (media, gallery, repertoire, testimonials, the header, the bio)
-  // already bleed and put that inset back as `u(56)`, so a root at `padX`'s
-  // 64 / 40 / 22 read 22 / 10 / 12 in from its neighbours. `padX` is what
-  // pricing's `bleedX` and the root both read, so the rule still reaches the
-  // page edges and the calendar's panel lands at the frame's 56 / 30 / 10.
-  // Every theme: the sheets' `u(56)` is not theme-gated either. The footer is
-  // layout 1's on every page and keeps `padX`.
-  if (d === 3 && !column && (cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form')) {
-    const inset = { desktop: Math.round(56 * 0.82 * 100) / 100, tablet: 30, mobile: 10 }[Z.dev]
-    vm.padX = `${inset + parseInt(vm.surplus, 10)}px`
-    vm.pad = `${vm.padY} ${vm.padX}`
-    vm.contentW = parseInt(SIZES[Z.dev].canvasW, 10) - 2 * inset
-  }
 
   // ---- content -----------------------------------------------------
   // One resolved name for every slot that prints it (JP-050). The header
@@ -552,8 +544,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // `navLinks` is the artist's page, and the seeded nine come to more type
   // than the bar is wide. So the links draw when the bar's one row holds them
   // and the burger stands otherwise: the capsule, the wordmark, Listen and the
-  // pill, summed at the master's own sizes against the bar (688 in layout 2;
-  // 684 in layout 3, whose card insets it 10 + 32 a side). `other` is every
+  // pill, summed at the master's own sizes against the bar (708 in layout 2,
+  // the root's column since JP-038 took `padX` to the frame's 30; 684 in
+  // layout 3, whose card insets it 10 + 32 a side). `other` is every
   // fixed box beside the type — Lime's is HeaderV1's desktop `reserve` unscaled
   // (138.32, the capsule's 36 in it), Retro's the capsule's 36 + 2 of border,
   // four 16 gaps, Listen's 12 and the pill's 59 of padding, gap and disc. An
@@ -566,7 +559,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Label/SM, and the same fixed 18 gaps.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
-    const row = d === 1 ? 688 : 684
+    const row = d === 1 ? 708 : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
@@ -737,6 +730,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // row with the title alone and layout 2 puts its kicker above it. Layout 3
   // only, so an emptied field drops the line — the Soundcloud rule.
   vm.pricingIntro = cv('intro', DEFS.pricingIntro)
+  // Layout 3's line beside the filter capsule (JP-046): the frame's own copy,
+  // uncased like the intro above it, and an emptied field drops it.
+  vm.pricingOffer = cv('offer', PRICING_OFFER)
   // §10.2 layout 2 stands a line of praise beside the plan. Layout 1 draws no
   // such line, so an emptied field simply drops it — the Soundcloud rule.
   vm.pricingQuote = cv('quote', DEFS.pricingQuote)
@@ -783,7 +779,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // A package the artist added and left empty is not a package (JP-048): it is
   // dropped here, before the hue walk and `n`, on both surfaces, so the page is
   // exactly the page without it — the cards keep their hues, the chip row its
-  // chips, and layout 3's FEATURED seat lands on the last real package.
+  // chips, and layout 3's FEATURED seat, with nothing ticked, lands on the last
+  // real package.
   const tierList = (Array.isArray(c.tiers) ? c.tiers : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
   vm.tiers = tierList.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
@@ -808,6 +805,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // from them, and `vm.tierChips` — the only other place they are ever
       // shown — is cased too. Composed here, since the renderer does no casing.
       tagLabels: tags.map(cased),
+      // The artist's Featured tick (JP-048), which layout 3 seats its FEATURED
+      // badge on while the filter leaves it on show. Not in TIER_KEYS, so a
+      // ticked package with nothing else in it is still blank and dropped.
+      featured: !!t?.featured,
       ...tierHues(card),
     }
   })
@@ -1489,7 +1490,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // keeps formRows, formMailto and formCheck index-aligned. The exception comes
   // first: the guarded email row — FormFieldsField's `lastEmail`, the same test
   // over the same raw list — never drops, and an emptied label reads Email.
-  const formList = Array.isArray(c.fields) ? c.fields : FORM_FIELDS
+  // Layout 4 seeds the frame's own five boxes (JP-054), FORM_BTN_4's rule: the
+  // gate is on the absent key alone, and EditPanel's formFieldsVal mirrors it.
+  const formList = Array.isArray(c.fields) ? c.fields : d === 3 ? FORM_FIELDS_4 : FORM_FIELDS
   const formEmails = formList.filter((f) => f?.kind === 'email').length
   const formGuarded = (f) => f?.kind === 'email' && formEmails === 1
   vm.formFields = formList.filter((f) => formGuarded(f) || !blankRow(f, FORM_FIELD_KEYS)).map((f) => ({
@@ -2124,22 +2127,20 @@ const FIELD_BOX = {
 // value it was worked out for, so a repeater row deleted above this one (rows
 // key on index) cannot hand its line to the row that moves up.
 function UrlInput({ value, onChange, style, className, placeholder, web = false, check = urlProblem }) {
-  const [err, setErr] = useState(null)
-  const msg = err && err.v === value ? err.msg : null
+  // The reason is derived from the stored value, not kept from a blur (JP-049,
+  // retest): a remount — another section, the panel reopened — shows a bad
+  // address at once. It waits while the box has focus, so typing is not
+  // scolded, and clears the moment the value passes.
+  const [editing, setEditing] = useState(false)
+  const msg = editing ? null : check(value ?? '', web) || null
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
       <Input
         value={value} placeholder={placeholder} onClick={stopE}
         aria-invalid={msg ? true : undefined}
-        onChange={(e) => {
-          const v = e.target.value
-          if (msg && !check(v, web)) setErr(null)
-          onChange(v)
-        }}
-        onBlur={() => {
-          const p = check(value, web)
-          setErr(p ? { v: value, msg: p } : null)
-        }}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setEditing(true)}
+        onBlur={() => setEditing(false)}
         className={className}
         style={{ ...style, ...(msg ? { borderColor: '#B3261E' } : null) }}
       />
@@ -2700,7 +2701,9 @@ function SlotsField({ value, max, onChange }) {
  * The fourth structured repeater, and the first to replace a flattened
  * key set rather than a textarea: t1n/t1p/… reached two of the five
  * things a card prints, and nothing at all could add a fourth package.
- * Row shape is { name, price, tags, blurb, feats }.
+ * Row shape is { name, price, tags, blurb, feats }, plus an optional
+ * `featured: true` on at most one row — layout 3's FEATURED seat (JP-048),
+ * a flag rather than content, so it is not in TIER_KEYS.
  *
  * Two of those are delimited strings rather than arrays, and they are
  * delimited differently on purpose: `tags` is comma-separated, exactly
@@ -2732,6 +2735,14 @@ function TiersField({ value, max, onChange }) {
   const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
   const add = () => onChange([...list, { name: '', price: '', tags: '', blurb: '', feats: '' }])
+  // The Featured tick is a radio that can be emptied (JP-048): ticking one row
+  // clears every other, unticking leaves none, and none is layout 3's own
+  // picture — the last package on show. The key is dropped rather than written
+  // false, so a list that never ticked anything stays the seed's shape.
+  const feature = (i, on) => onChange(list.map((t, j) => {
+    const { featured, ...rest } = t || {}
+    return on && j === i ? { ...rest, featured: true } : rest
+  }))
 
   // The price and the tags share a line, as the gigs' city and time do: both
   // are short, and stacking them would push the two textareas below the fold of
@@ -2793,6 +2804,15 @@ function TiersField({ value, max, onChange }) {
           onChange={(e) => setAt(i, 'feats', e.target.value)}
           style={TIER_AREA}
         />
+        {/* A raw checkbox, the add composer's Start fresh precedent. */}
+        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#5B5850', cursor: 'pointer' }}>
+          <input
+            type="checkbox" checked={!!t.featured} onClick={stopE}
+            onChange={(e) => feature(i, e.target.checked)}
+            style={{ margin: 0, accentColor: '#1B1A17', cursor: 'pointer' }}
+          />
+          <span style={{ fontWeight: 600 }}>Featured</span>
+        </label>
         {blankRow(t, TIER_KEYS) && (
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
             {BLANK_TIER_HINT}
@@ -3363,8 +3383,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : TIERS)
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
-  // FormFieldsField edits and sectionVm reads.
-  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FORM_FIELDS)
+  // FormFieldsField edits and sectionVm reads — FORM_FIELDS_4 at layout 4
+  // (JP-054), sectionVm's own `d === 3` gate, so the two resolve one list.
+  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : design === 3 ? FORM_FIELDS_4 : FORM_FIELDS)
   // And for the testimonials' reviews: QUOTES is written as the
   // { quote, who, role, when } row QuotesField edits, so this is the gigs' and
   // the packages' one-liner rather than the tracks' dressing.
@@ -4115,7 +4136,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const canvasW = parseInt(base.canvasW, 10)
   const k = key === 'desktop' ? Math.min(w, 1440) / canvasW : 1
   const surplus = Math.max(0, Math.round((w / k - canvasW) / 2))
-  const padX = `${parseInt(base.padX, 10) + surplus}px`
+  const padX = `${parseFloat(base.padX) + surplus}px`
   const Z = {
     ...base, surplus: `${surplus}px`,
     padX, pad: `${base.padY} ${padX}`,
@@ -4149,8 +4170,16 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
 // frame's 858 : 405, 55 apart × 0.82, on the page ground, inside the page's own
 // gutter. Its sections were built with `column`, so they bring their vertical
 // padding and no horizontal one, and a right column shorter than the left
-// leaves the ground showing under it, as the frame does. Shared by the editor
-// canvas and the published tab, which is what keeps the two one page.
+// leaves the ground showing under it, as the frame does. In the published tab
+// that cell rides the row instead (JP-043, user call, 2026-09-24): it is
+// sticky at the window's top — the cell div, not the calendar's root, and
+// `alignSelf: start` so it is only as tall as its section — and the grid
+// area, one row, is what releases it at the row's end. Neither Frame 300
+// declares a sticky; the ground under the cell is still the frame's. On the
+// canvas it is inert, and on purpose: the card's `overflow: hidden` makes the
+// card the cell's scroll container, and the card never scrolls — take that
+// overflow away and the canvas would stick too. Shared by the editor canvas
+// and the published tab, which is what keeps the two one page.
 // Which column each composed section stands in, by page index — 'left' or
 // 'right' — so `sectionVm({ column })` can say how wide it is.
 function columnSides(rows) {
@@ -4160,13 +4189,14 @@ function columnSides(rows) {
 }
 
 // The content column a section's children get, in CSS px: `canvasW − 2·padX`
-// at the device's own frame — 1052 / 688 / 346, which the published tab keeps
-// too, its surplus folding into `padX` — or one of the two columns
-// `arrangeRows` cuts from it (684 / 323 at desktop). EncoreSection cannot
+// at the device's own frame — 1088.16 / 708 / 370, the frames' 1328 × 0.82,
+// 708 and 370, which the published tab keeps too, its surplus folding into
+// `padX` — or one of the two columns `arrangeRows` cuts from it (709 / 335 at
+// desktop). EncoreSection cannot
 // measure, so a design whose count comes off a width reads this.
 function contentWidth(dev, column) {
   const base = SIZES[dev]
-  const full = parseInt(base.canvasW, 10) - 2 * parseInt(base.padX, 10)
+  const full = parseInt(base.canvasW, 10) - 2 * parseFloat(base.padX)
   if (!column) return full
   const { left, right, gap } = COLUMN_SPLIT
   return Math.round((full - Math.round(gap * 0.82)) * (column === 'left' ? left : right) / (left + right))
@@ -4181,7 +4211,7 @@ function arrangeRows(rows, { gutter, bg }, els) {
       transition: 'background-color .45s ease',
     }}>
       <div style={{ minWidth: 0 }}>{row.left.map((i) => els[i])}</div>
-      <div style={{ minWidth: 0 }}>{els[row.right]}</div>
+      <div style={{ minWidth: 0, position: 'sticky', top: 0, alignSelf: 'start' }}>{els[row.right]}</div>
     </div>
   ) : els[row.i]))
 }

@@ -1246,6 +1246,9 @@ Learned on the testimonials (section 12):
     honour or ignore. Worth watching if the remaining three sections meet the same shape —
     and worth revisiting if `TiersField` ever grows a column for another reason, since a
     checkbox there would retire the whole question.
+    **Retired by JP-048** (2026-09-24, user call): `TiersField` gained that checkbox — a
+    Featured tick acting as a radio, read by layout 3 alone; with none ticked the seat is
+    still the last row on show (`plans/lime/retest-qa-fixes.md`).
 13. **`FIELDS.pricing` now has two fields reaching exactly one layout each and a third
     reaching two** — `quote` (layout 2), `intro` (layout 3) and the tags inside `tiers`
     (layouts 1 and 3, so layout 2 reads none of them). That is

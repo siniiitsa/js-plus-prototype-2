@@ -597,13 +597,16 @@ These are intentional limits, not oversights — see §12 for the full list. The
   there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
   keeping their own labels. The header, the footer, the gallery and the map are level.
 - **The desktop page is the 1440 frame at 0.82.** The editor draws it 1180 wide beside the
-  sidebar — a 64px gutter and a 1052px column. The published tab zooms that page back up
-  towards the frame: between 1180 and 1440 it is drawn `min(width, 1440) / 1180` times larger,
-  so a 1440 window shows the frame at 1:1 (a 78px gutter), and only a window past 1440 widens
-  the gutters (`PublishedPage`; `scripts/gutter.mjs` measures it). At layout 4 every section
-  but the footer insets its content at the frame's own 56 / 30 / 10 rather than the gutter: the
-  sheets did already, and the page-ground map, pricing, calendar and form now match them
-  (JP-038, layout 4; `scripts/inset.mjs` measures each section's edges).
+  sidebar — a 45.92px gutter (the frame's 56 × 0.82) and a 1088px column. The published tab
+  zooms that page back up towards the frame: between 1180 and 1440 it is drawn
+  `min(width, 1440) / 1180` times larger, so a 1440 window shows the frame at 1:1 (a 56px
+  gutter), and only a window past 1440 widens the gutters (`PublishedPage`; `scripts/gutter.mjs`
+  measures it). The gutter, `padX`, *is* the frames' side inset — 56 / 30 / 10 at 1440 / 768 /
+  390 — so every section on every layout, the footer included, starts its type on the same
+  line, and a sheet that bleeds and puts `u(56)` back lands where the page-ground section
+  beside it does (JP-038, user call, 2026-09-24; `scripts/inset.mjs` measures each section's
+  edges). The 390 masters themselves part — layout 1's bio, media, repertoire and pricing and
+  layout 3's pricing draw 20 — and 10 was chosen so neighbours always agree.
 - **Fields a layout does not read stay editable.** Each section's panel lists every field any
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and

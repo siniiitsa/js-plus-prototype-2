@@ -3502,9 +3502,13 @@ function Bio({ s }) {
           </div>
           <Grain s={s} exact blend="screen" opacity={0.5} radius={s.radius} />
         </div>
+        {/* Off the card's left edge, placed against the page: -20 / -50 were
+            fitted on the 22 / 40 column, so on the frame's 10 / 30 (JP-038)
+            the narrow two give the difference back and the seal keeps the
+            page position it had. */}
         <SealBadge s={s} hue={s.retro ? '#CEB081' : s.pillBg} ink={s.chips[3]?.bg}
                    mark={s.ac} nameInk={s.ac} glyph="globe" size={s.mob ? 68 : 103} tilt={32}
-                   style={{ left: s.mob ? '-20px' : '-50px', bottom: s.mob ? '30px' : '20px' }} />
+                   style={{ left: s.mob ? '-8px' : s.narrow ? '-40px' : '-50px', bottom: s.mob ? '30px' : '20px' }} />
       </div>
     )
 
@@ -5310,10 +5314,11 @@ function Media({ s }) {
         </div>
         {/* 144 × 145.33 at every width, off the content's top-right corner: 42
             in and 25 down at 1440, 9.7 / 11.7 at 768, and at 390 18 *past* the
-            edge and 47.7 down (the wrapper's 24 is in the 71.7). */}
+            master's 20-inset column and 47.7 down (the wrapper's 24 is in the
+            71.7) — 2 in from the page edge, which is 8 past our 10 column. */}
         {grunge && <GrungeStar s={s} style={{
           width: u(144), height: u(145.33),
-          right: desk ? u(42) : tab ? '9.7px' : '-18px',
+          right: desk ? u(42) : tab ? '9.7px' : '-8px',
           top: desk ? u(25) : tab ? '11.7px' : '71.7px',
         }} />}
       </div>
@@ -8499,8 +8504,11 @@ function Pricing({ s }) {
   //    same clamp, the same pinned 0 on the canvas and the same not-drawn-at-one
   //    (a filter with nothing to filter is the pager's case). The extra `All`
   //    that leads it is layout 1's intended diff, unchanged.
-  //  - "Save 15% on bundles" beside the capsule is **dropped**: a discount no
-  //    field states, which is the frame's own `★★★★★ 42 bookings` again.
+  //  - "Save 15% on bundles" beside the capsule is `s.pricingOffer`, a field
+  //    added for it (JP-046, reversing this fit's "a discount no field
+  //    states"): seeded with the frame's copy, emptiable, drawn 14 from the
+  //    capsule in its own `Body/SM` at all three widths, as all three masters
+  //    draw it. The row stands on either half, since an offer is not a filter.
   //  - "— £1,400" is `s.tierUnit`, exactly as layout 2 reads the frame's second
   //    price. The small "£" before the numeral is layout 1's and layout 2's own
   //    `symbol` / `amount` split, copied verbatim — and it splits on the price's
@@ -8560,6 +8568,12 @@ function Pricing({ s }) {
     const shown = s.live
       ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
+    // The FEATURED seat (JP-048): the package the artist ticked, while the
+    // filter leaves it on show, and otherwise the last row on show — the seat
+    // the filter moves, which is also the whole picture of a page that ticks
+    // nothing, the seed included. Not drawn at one row, in either case.
+    const flagged = shown.findIndex((t) => t.featured)
+    const featAt = shown.length > 1 ? (flagged >= 0 ? flagged : shown.length - 1) : -1
 
     // Lime — the same component in Lime's mode (964:68680 at 1440, 984:10765 at
     // 768, 984:10796 at 390), placed after the seam as layout 1's and layout 2's
@@ -8645,8 +8659,8 @@ function Pricing({ s }) {
       const rowBox = { width: '100%', borderRadius: u(G.radius), padding: u(G.pad) }
 
       const packRow = (t, i) => {
-        // The seat, Retro's rule whole: the last row on show, not at one row.
-        const feat = shown.length > 1 && i === shown.length - 1
+        // The seat, Retro's rule whole: `featAt`, above.
+        const feat = i === featAt
         const ink = feat ? G.featInk : s.tx
         const money = t.price
         const symbol = /^[^\d]/.test(money) ? money[0] : ''
@@ -8753,27 +8767,40 @@ function Pricing({ s }) {
             )}
           </div>
           {/* The capsule, Retro's filter in Lime's dress; not drawn at one chip.
-              "Save 15% on bundles" stays dropped (Retro's reading). */}
-          {s.tierChips.length > 1 && (
-            <div style={{
-              ...row('0', { flexWrap: 'wrap' }),
-              background: s.box1, boxShadow: ring(s.stroke1),
-              borderRadius: s.btnR, padding: u(3),
-            }}>
-              {s.tierChips.map((f, i) => (
-                <span
-                  key={i}
-                  onClick={s.live ? () => setChip(i) : undefined}
-                  style={{
-                    padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
-                    background: i === active ? s.ac : 'transparent',
-                    color: i === active ? s.bg : s.tx,
-                    cursor: s.live ? 'pointer' : undefined,
-                    fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
-                    letterSpacing: s.dls, whiteSpace: 'nowrap',
-                  }}
-                >{f.label}</span>
-              ))}
+              Beside it the offer line (JP-046), the frame's `toggle-row` whole:
+              14 apart and centred at every width, in the capsule's own
+              `Body/SM` and `sem/text/2`. The row stands on either half, since
+              an offer is not a filter and outlives the capsule. */}
+          {(s.tierChips.length > 1 || !!s.pricingOffer) && (
+            <div style={row(u(14), { flexWrap: 'wrap' })}>
+              {s.tierChips.length > 1 && (
+                <div style={{
+                  ...row('0', { flexWrap: 'wrap' }),
+                  background: s.box1, boxShadow: ring(s.stroke1),
+                  borderRadius: s.btnR, padding: u(3),
+                }}>
+                  {s.tierChips.map((f, i) => (
+                    <span
+                      key={i}
+                      onClick={s.live ? () => setChip(i) : undefined}
+                      style={{
+                        padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
+                        background: i === active ? s.ac : 'transparent',
+                        color: i === active ? s.bg : s.tx,
+                        cursor: s.live ? 'pointer' : undefined,
+                        fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+                        letterSpacing: s.dls, whiteSpace: 'nowrap',
+                      }}
+                    >{f.label}</span>
+                  ))}
+                </div>
+              )}
+              {!!s.pricingOffer && (
+                <span style={{
+                  fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+                  letterSpacing: s.dls, color: s.tx,
+                }}>{s.pricingOffer}</span>
+              )}
             </div>
           )}
           <div style={col(u(16), { width: '100%' })}>
@@ -8852,14 +8879,16 @@ function Pricing({ s }) {
     )
 
     // One package. `feat` is the *rendered* index, not the package's place in
-    // the whole list: the fill and the badge are the composition's climax and
-    // belong to the last seat on show, so a filter that hides the artist's last
-    // package promotes whatever now ends the stack — the pricing deck's own
-    // rule that its tilt and its overlap take the rendered index because they
-    // are decoration. It is not drawn at one row, the pager's and the chip
-    // row's rule: a distinction that distinguishes nothing is not a design.
+    // the whole list: the fill and the badge are the composition's climax, so
+    // they sit on the package the artist ticked Featured while it is on show
+    // (JP-048), and otherwise on the last seat on show, so a filter that hides
+    // the ticked package or the artist's last one promotes whatever now ends
+    // the stack — the pricing deck's own rule that its tilt and its overlap
+    // take the rendered index because they are decoration. It is not drawn at
+    // one row, the pager's and the chip row's rule: a distinction that
+    // distinguishes nothing is not a design. `featAt` is computed above.
     const packRow = (t, i) => {
-      const feat = shown.length > 1 && i === shown.length - 1
+      const feat = i === featAt
       const ink = feat ? h.cardFg : s.tx
       // The frame's `sem/text/1`: the accent on a plain row, the featured row's
       // own second hue on that one — which under Retro is the mustard, since
@@ -8996,7 +9025,16 @@ function Pricing({ s }) {
             }}>{s.pricingIntro}</p>
           )}
         </div>
-        {selector}
+        {(selector || !!s.pricingOffer) && (
+          <div style={row(u(14), { flexWrap: 'wrap' })}>
+            {selector}
+            {!!s.pricingOffer && (
+              <span style={{
+                fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, color: s.tx,
+              }}>{s.pricingOffer}</span>
+            )}
+          </div>
+        )}
         <div style={col(u(16), { width: '100%' })}>
           {shown.length === 0 ? (
             // Layout 1's one message, in a row of its own: the section here is a
@@ -9083,9 +9121,9 @@ function Pricing({ s }) {
     // The rule runs to the page's edges in all three masters, where everything
     // it divides sits inside the frame's own 56 / 30 / 10 — so the row cancels
     // the root's padding and puts the identical value straight back as its own.
-    // Only the border bleeds; the content keeps the section's column, and at
-    // layout 4 `sectionVm` sets `padX` to that same frame inset (JP-038) — so
-    // the column is the frame's 1088 / 708 / 370, as it is in the sheets.
+    // Only the border bleeds; the content keeps the section's column, and
+    // `padX` is that same frame inset (JP-038) — so the column is the frame's
+    // 1088 / 708 / 370, as it is in the sheets.
     //
     // `sem/stroke/2` is #5B5E2E, which is `s.tierRow.card` exactly: layout 3's
     // seat, resolved in the view-model as the first palette tag that clears
@@ -10112,8 +10150,8 @@ function Repertoire({ s }) {
   // The desktop inset is `s.gPad` all round (+ `s.surplus` horizontally),
   // which is HeaderV0's rule for the same reason: past the canvas the frame was
   // drawn at, the sheet keeps bleeding while its content stays on the page's
-  // measure. At desktop `gPad` is 46, which is exactly the frame's own 56 ×
-  // 0.82 — the two agree there, unlike `padX`'s 64, and they stop agreeing at
+  // measure. At desktop `gPad` is 46, which is the frame's own 56 × 0.82 to
+  // within 0.08 — `padX`'s value too since JP-038 — and they stop agreeing at
   // both narrow widths (see `padH` below).
   //
   // Everything else is the frame being drawn × `z` through `u()` — 0.82 on the
@@ -10863,6 +10901,13 @@ function Repertoire({ s }) {
       // Retro's reason: our card has no height to divide. The rows' own
       // `py-6` is therefore inert.
       const limeRowH = u(G.rowH)
+      // JP-044 (2026-09-24): the frame's row is a title beside a four-glyph
+      // duration, and ours puts the artist in that seat — beside a 19px title
+      // in the 768 card's 148 (Grunge 168) that cut most seeded titles to an
+      // ellipsis. So at 768 the artist stands under the title, a named diff
+      // from the frame's one row; the pinned 57 / 62.5 holds both lines. The
+      // desktop and 390 rows fit and keep the frame's.
+      const stack = tab
       const disp = (lh) => grunge ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, ...extra,
@@ -10884,16 +10929,18 @@ function Repertoire({ s }) {
               color: k.acc, whiteSpace: 'nowrap', overflow: 'hidden',
             })}>{st.meta}</span>
             {rows.map((sg) => (
-              <div key={sg.n} style={row(u(10), {
-                flex: 'none', height: limeRowH, justifyContent: 'space-between',
+              <div key={sg.n} style={(stack ? col : row)(u(stack ? 2 : 10), {
+                flex: 'none', height: limeRowH, justifyContent: stack ? 'center' : 'space-between',
                 boxShadow: `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
               })}>
                 <span style={{
                   fontFamily: s.display, fontSize: faced(s, s.list), ...disp(1.2),
-                  letterSpacing: s.dls, minWidth: 0,
+                  letterSpacing: s.dls, minWidth: 0, maxWidth: '100%',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{sg.title}</span>
-                <span style={body(s.bodySm, 1.4, { flex: 'none', whiteSpace: 'nowrap' })}>{sg.artist}</span>
+                <span style={body(s.bodySm, 1.4, stack ? {
+                  maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                } : { flex: 'none', whiteSpace: 'nowrap' })}>{sg.artist}</span>
               </div>
             ))}
             {more && (
@@ -16273,7 +16320,7 @@ function EventsMap({ s }) {
                   ...display(titleSize, 1.1),
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{gg.venue}</span>
-                {(tix || !s.live) && (
+                {!!gg.url && (
                   <Tix {...tix} style={{
                     ...bodySm, flex: 'none', color: 'inherit', textDecoration: 'none',
                     cursor: tix ? 'pointer' : undefined,
@@ -16690,7 +16737,7 @@ function EventsMap({ s }) {
                 fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1, letterSpacing: s.dls,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{gg.venue}</span>
-              {(tix || !s.live) && (
+              {!!gg.url && (
                 <Tix {...tix} style={{
                   ...label12, flex: 'none', color: 'inherit', textDecoration: 'none',
                   cursor: tix ? 'pointer' : undefined,
@@ -17242,7 +17289,7 @@ function EventsMap({ s }) {
         const fg = on ? G.litFg : ink
         const tix = extLink(s, gg.url)
         const Tix = tix ? 'a' : 'span'
-        const showTix = !!tix || !s.live
+        const showTix = !!gg.url
         // The 390 master sets the hour after the city — "Manchester · 22:00" —
         // with no hour chip, and stands Tickets → alone under the row (user
         // call, 2026-09-18). The wide rows keep the chip.
@@ -17583,12 +17630,14 @@ function EventsMap({ s }) {
       const on = litRow(i)
       const next = shown[k + 1]
       // The gallery's hide-the-empty-row rule for a link affordance, which is
-      // what layout 2's ↗ already does here: live, the row is a link only where
-      // there is somewhere to go; the canvas keeps the label on every row,
-      // that being the reference design.
+      // what layout 2's ↗ does too: the row is a link only where there is
+      // somewhere to go, and a gig with no address — or one `extUrl()`
+      // refused — draws no Tickets → on either surface (JP-045, user call,
+      // 2026-09-24). The test is `gg.url`, which is resolved on both, not
+      // `tix`, which is null on the whole canvas.
       const tix = extLink(s, gg.url)
       const Tix = tix ? 'a' : 'span'
-      const showTix = !!tix || !s.live
+      const showTix = !!gg.url
       const mark = (
         <span style={col(0, {
           width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
@@ -18815,9 +18864,8 @@ function Testimonials({ s }) {
 
       // Desktop states the card at 720 × 420 with its pills on the floor; both
       // narrow masters hug the content at a 50 gap. 390's 364 card stands 13 off
-      // the page edge, wider than the 346 our padX leaves, and Retro's column
-      // wraps the quote to four lines where the frame sets three. So here the
-      // card bleeds into the padding to the frame's own 13.
+      // the page edge, 3 inside the root's 10, so the margin puts the frame's
+      // own 13 back rather than let the card take the whole 370.
       const card = (
         <div style={{
           position: 'relative', flex: 'none', minWidth: 0,
@@ -18958,8 +19006,8 @@ function Testimonials({ s }) {
             // it renders through a Display/MD token that resolves to another
             // template's Bebas Neue at leading 1 — the §5.5 leak, not a
             // decision. Its 40 is that condensed face's measure, and none of
-            // the five display faces holds it inside the 246 this page's own
-            // padX leaves: Fraunces breaks "Professional" mid-word. Mobile
+            // the five display faces held it inside the 246 the card left
+            // before JP-038 (270 since): Fraunces broke "Professional" mid-word. Mobile
             // therefore takes the ramp's own display step, the same fallback
             // the enquiry form makes for its 390 heading, which puts the quote
             // on four lines and the card within a few px of the frame's 430.
@@ -18992,8 +19040,8 @@ function Testimonials({ s }) {
       }}>No reviews yet.</span>
     )
 
-    // The mobile frame's card is 364 wide in a 390 canvas — wider than the 346
-    // this page's own padX leaves — so there it takes the column instead.
+    // The mobile frame's card is 364 wide in a 390 canvas; there it takes the
+    // column instead, which is the frame's 370.
     const card = (
       <div style={{
         position: 'relative', flex: 'none', minWidth: 0,
@@ -23215,18 +23263,17 @@ function Footer({ s }) {
     // its 439.59 box. That box holds the frame's picture only at 1440, where it
     // makes three lines: at 768 "YOUR NIGHT UNFORGETTABLE." is 8.87em in our
     // Bebas measure, 443.5 against the box, so the cap is 9em (the seal's disc
-    // starts past 500); and at 390 the same line is 354.8 against our 346
-    // column, so the heading takes back 12 of the root's padding on its right —
-    // the frame's own 10 inset — rather than grow a third line. Anton at 0.75
-    // needs neither: the same line is 10.48em of the faced size, 393 in the 768
-    // box and 299 at 390, so Grunge keeps the box and the column as stated.
+    // starts past 500); and at 390 the same line is 354.8 against the 370
+    // column the frame's own 10 inset leaves, so it holds two lines there with
+    // no box at all. Anton at 0.75 needs neither: the same line is 10.48em of
+    // the faced size, 393 in the 768 box and 299 at 390, so Grunge keeps the
+    // box and the column as stated.
     const statement = (
       <h2 style={{
         margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd), lineHeight: facedLh(s, 1),
         letterSpacing: s.dls, color: s.ac, whiteSpace: 'pre-wrap',
         ...(grunge ? { textTransform: 'uppercase' } : null),
         maxWidth: s.mob ? 'none' : s.narrow ? (grunge ? '439.59px' : '9em') : u(439.59),
-        marginRight: s.mob && !grunge ? `calc(10px - ${s.padX})` : undefined,
       }}>{s.footerStatement}</h2>
     )
 

@@ -518,7 +518,10 @@ export const TIERS = [
 ]
 
 // Every key a package row carries — what `blankRow()` asks of it. A row is
-// blank only when all five are, whichever of them a layout prints.
+// blank only when all five are, whichever of them a layout prints. The
+// Featured tick (`featured`, JP-048) is left out, as FORM_FIELD_KEYS leaves out
+// `kind`: it is a flag on a package, not content, so a ticked empty row is
+// still blank.
 export const TIER_KEYS = ['name', 'price', 'tags', 'blurb', 'feats']
 
 // The suffix beside every card's price. A field rather than the literal the
@@ -629,6 +632,10 @@ export const PRICING_REVIEWS = '32 reviews'
 export const PRICING_RATING = '4.9'
 export const PRICING_CTA = 'Enquire about a date'
 export const PRICING_NOTE = "3 dates open for Sept '26"
+// Pricing layout 3's line beside the filter capsule, the frame's own copy
+// (964:68648, and at 768 and 390 too). Dropped in Retro's fit as "a discount no
+// field states"; a field states it now (JP-046), seeded and emptiable.
+export const PRICING_OFFER = 'Save 15% on bundles'
 export const MAP_TRAVEL_TIME = '~2 hrs'
 export const MAP_FEE = '£1,200'
 
@@ -659,6 +666,20 @@ export const FORM_FIELDS = [
   // more. `number` likewise never becomes type="number" — see EncoreSection.
   { label: 'Event date', placeholder: 'dd / mm / yyyy', kind: 'text' },
   { label: 'Guests',     placeholder: 'approx.',        kind: 'number' },
+]
+// Layout 4's own seed (JP-054, user call, 2026-09-24, reversing the 2026-09-23
+// shared list): the editorial frame's five boxes, labels as the frame prints
+// them (the branch upper-cases them) over the placeholders Lime's 964:72940
+// types. Its sixth box, Message, is the `message` textarea and not a row. One
+// `email` row, so FormFieldsField's guard holds. Chosen by layout only while the
+// key is absent — FORM_BTN_4's rule, in sectionVm and EditPanel's formFieldsVal
+// alike — so a list the artist has edited is theirs at every layout.
+export const FORM_FIELDS_4 = [
+  { label: 'Your name',  placeholder: 'Full name',       kind: 'text' },
+  { label: 'Email',      placeholder: 'you@email.com',   kind: 'email' },
+  { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'text' },
+  { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
+  { label: 'Location',   placeholder: 'Town / city',     kind: 'text' },
 ]
 // What `blankRow()` asks of a box (JP-051): the two strings it can print. Not
 // `kind`, which is a select that always holds a value, so asking it too would
@@ -1140,12 +1161,17 @@ export const FIELDS = {
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Features are one to a line. Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
-          + 'filter: it prints the tags and the features on the package itself.' },
+          + 'filter: it prints the tags and the features on the package itself. Tick Featured '
+          + 'to give a package layout 3’s FEATURED badge; with none ticked, it goes to the last '
+          + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro', in: [2],
       hint: 'A line under the heading. Layout 3 only.' },
+    { k: 'offer',   l: 'Offer line', d: PRICING_OFFER, in: [2],
+      hint: 'A short line beside the filter chips, such as a discount. Layout 3 only. '
+          + 'Empty it to drop the line.' },
     { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote', in: [1],
       hint: 'A line of praise beside the plan. Layout 2 only.' },
     // Layout 2's credit row under the quote and the line beside its pill, all
@@ -1331,14 +1357,16 @@ export const FIELDS = {
       hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
           + 'right-hand column, and with none it draws no column at all.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
-    // rule: an absent key means the seeded FORM_FIELDS, an emptied array means
-    // no boxes at all, and there is no null sentinel.
+    // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_4 at layout
+    // 4, JP-054), an emptied array means no boxes at all, and there is no null
+    // sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
           + 'which set the label inside the box and draw no placeholder. An odd last box '
           + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
-          + 'form emails you what the visitor types.' },
+          + 'form emails you what the visitor types. Layout 4 starts on its own five boxes '
+          + 'until you edit them; after that your list shows in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },

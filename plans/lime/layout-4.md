@@ -1428,6 +1428,10 @@ Settled in section 9 (the enquiry form):
   *Check Availability* (`FORM_BTN_4`). All three apply at layout 4 on every theme, because Retro's
   frame carries the same copy. The desktop head is now 95.2 against the frame's 95.1. The boxes
   and the one-line steps still stand as named.
+- **Reversed again 2026-09-24 (JP-054 retest, user call, `plans/lime/retest-qa-fixes.md`).** The
+  boxes no longer stand: with `fields` absent, layout 4 seeds the frame's five (`FORM_FIELDS_4`:
+  Your name, Email, Event date, Event type, Location), so the fifth box that runs the full
+  measure is the frame's Location. The one-line steps still stand.
 
 Settled in section 10 (the testimonials — the last body section):
 
