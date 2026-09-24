@@ -240,7 +240,7 @@ it is the gate this session widens.
 | 6 | `map` | `964:73019` *(Frame 319 `964:73013`, head `964:73014`)* | 1440 × 747 | `971:8136` *(Frame 319 `971:8130`, head `971:8131`)* | 768 × 870 | `977:12363` *(Frame 319 `977:12357`, head `977:12358`)* | 390 × 680 | `964:72924` / `971:5612` / `977:9186` | `964:72830` / `964:78599` / `977:8322` | `if (s.lime)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | done `2125c9c` |
 | 7 | `pricing` | `964:73021` | 1440 × 542 | `971:8137` | 768 × 806 | `977:12364` | 390 × 829 | `964:72926` / `971:5613` / `977:9187` | `964:72831` / `964:78656` / `977:8440` | `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | done `e88a917` |
 | 8 | `calendar` | `964:73034` + wizard `964:73033` *(Section `964:73022`, Frame 324 `964:73023`)* | 478 × 533 + 680 × 533 | `971:8150` + `971:8149` *(Section `971:8138`, Frame 324 `971:8139`)* | 608 × 502 + 608 × 476 | `977:12377` + `977:12376` *(Section `977:12365`, Frame 324 `977:12366`)* | 350 × 496 + 350 × 474 | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | `if (s.lime)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | done `86227e7` |
-| 9 | `form` | **`725:2990`** *(the main component — no page instance at 1440)* | 1440 × 795 | `971:8151` | 768 × 1024 | `977:12378` | 390 × 964 | `964:72940` / `971:5627` / `977:9201` | `964:72845` / `964:79477` / `977:8663` | `if (s.v3 && s.lime)` ahead of `EnquiryForm`'s `if (s.v3)` | — |
+| 9 | `form` | **`725:2990`** *(the main component — no page instance at 1440)* | 1440 × 795 | `971:8151` | 768 × 1024 | `977:12378` | 390 × 964 | `964:72940` / `971:5627` / `977:9201` | `964:72845` / `964:79477` / `977:8663` | `if (s.v3 && s.lime)` ahead of `EnquiryForm`'s `if (s.v3)` | done `4fc0be4` |
 | 10 | `testimonials` | `964:73035` | 1440 × 716 | `971:8152` | 768 × 642.4 | `977:12379` | 390 × 603.4 | `964:72941` / `971:5628` / `977:9202` | `964:72846` / `964:79536` / `977:8764` | `if (s.lime)` inside `Testimonials`' `if (s.v3)`, after `padBot` | — |
 | — | `footer` | `964:73036` | 1440 × 479.5 | `971:8153` | 768 × 647.4 | `977:12380` | 390 × 619.4 | `964:72942` | — | — | **out of scope**: Grunge's own layout-1 footer family at layout 1's sizes; `NVAR.footer` is 1 |
 | — | `video` | `964:72962` | 1440 × 1186 | `971:7956` | 768 × 654 | `977:12183` | 390 × 380 | — | — | — | **not in the project** (`d734992`); Retro's QA and Lime's pass declined restoring it on layout 4, and this pass does the same |
@@ -1290,6 +1290,100 @@ them.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `calendar_arch_3` at three widths on both surfaces.
 
+### Settled in section 9 (the enquiry form)
+
+- **No Grunge block: Lime's `if (s.v3 && s.lime)` ahead of `EnquiryForm`'s `if (s.v3)` is
+  `if (s.v3 && (s.lime || s.grunge))`**. It adds `const grunge = s.grunge`, a `disp()` spread
+  (`faced` / `facedLh` / uppercase behind `grunge`, a no-op under Lime) and one `ring`. There is
+  no `G`.
+  - The desktop master is the **main component `725:2990`** at its defaults (open question 1:
+    the 1440 page has no instance).
+  - The paired diff against the Lime twin (`964:72940` / `971:5627` / `977:9201`) was the whole
+    read. It found **59 = 59 nodes at every width**: Static Youth's Scheme 1 (`187:4`) on the
+    root, no nested scheme, no Device override, no effect and no image fill.
+  - The live seam is hoisted above the block, so the boxes, the submit, the sent block and
+    *Write another* needed nothing new.
+- **Every fill binds a key Lime's block already reads, except two `sem/stroke/2` sites.** The
+  keys are `sem/text/1` (`s.ac`), `sem/text/2` (`s.tx`), `sem/bg` (`s.bg`) and `sem/stroke/1`
+  (`s.stroke1`). So the mode swaps the values:
+  - the head, the placeholders, the step squares and the ↘ are red;
+  - ENQUIRE, the labels and the step lines are white;
+  - the boxes are black, with the numerals black on red;
+  - the pill is `s.tx` white under an `s.bg` label, round an `s.bg` disc with an `s.tx` arrow.
+    That is the prompt's "black disc round a **white** arrow" through Lime's own four seats,
+    read off `boundVariables`.
+
+  The two sites that move:
+  - **the head rule is `sem/stroke/2`**, where Lime's is `sem/stroke/1`. This is a moved binding,
+    layout 3's rule. It is 1px INSIDE on the foot at every width.
+  - **the boxes' ring is `sem/stroke/2` on both templates**. Lime's `stroke2` equals its accent,
+    so the block wrote `s.ac`. Here it is `#FF0000`, not `#DF262C`.
+
+  Both read `ring` (`grunge ? s.stroke2 : s.ac`). Pixel-sampled on the head rule: frame
+  `(222, 0, 0)` at its 1/1.2 render, ours `(255, 0, 0)`. The step rules stay `s.stroke1`,
+  white at 15%.
+- **Type is the ramp to the token; there is no `T` table.** The frame's sizes:
+  - head Stones 130 / 81 / 46 (`s.dispLg`);
+  - ENQUIRE 36 / 28 / 26 (the block's `title` literal);
+  - labels, the steps' head and the pill 24 / 19 / 18 (`s.list`);
+  - placeholders Inter 14 / 13 / 13, numerals 16.
+
+  Every Stones Crush site goes through `disp()`: the h2, the sub, `caps` (labels and steps
+  head), the pill and the sent h3. Rendered: h2 80.25 / 60.75 / 34.5px, sub 22.125 / 21 /
+  19.5, labels 15 / 14.25 / 13.5, all Anton uppercase. The frame's dropped second step line is
+  Inter **12** here (Lime 13), `s.bodySm`'s own; the fit draws no second line.
+- **The refused box needed no arm.** Lime's 2px of `s.tx` is **white against the idle red**,
+  colour and weight at once, so CONVENTIONS' "colour, not weight alone" is met by the Lime rule.
+  It reads on black (`refused_390`, looked at). Heights hold refused and idle alike: boxes 36.9
+  / 44 / 44, message 73.8 / 90 / 90.
+- **The grey pill under the pointer is the shared hover** (opacity .72). Lime's pill does the
+  same, so it is not a Grunge state.
+- **Measured** (canvas, content edges, against the masters × 0.82 at desktop). Every value is
+  within a pixel:
+
+  | Width | h2 | head block | sub | labels | first step square |
+  |---|---|---|---|---|---|
+  | desktop | 32.8 (40 × 0.82) | 105 (128) | 157.5 | 209.6 (256) | 606.4 · 246.7 (740 · 301) |
+  | 768 | 30 | 84.1 (84) | 138.1 | — | 231.7 |
+  | 390 | 24, 40.9 tall (41) | 52.9 (53) | 100.9 (101) | 471.1 | 191.1 |
+
+  The sections come to 607.5 / 934.1 / 877.9 against the frames' 651.9 / 1024 / 964.
+- **Named diffs, Lime's**:
+  - the seed's four boxes (Name / Email / Event date / Guests) against the frame's five;
+  - one-line steps against two;
+  - the foot is `padY`, against the instance's 56 / 56 / 40;
+  - Anton at 0.75 against Stones Crush;
+  - **the head prints JP-054's "Contact Us" where every Grunge master prints "KAI MERCER"**.
+    The masters show the component's default text, unoverridden at 768, 390 and on the
+    component, which is the reading Retro's twin made of its narrow masters. The default is
+    taken and **open question 2 stays open**: a theme-gated copy default is the user's call.
+- **`live=1`, desktop and 390** (puppeteer, capture-phase `preventDefault` on the mailto, probe
+  deleted):
+  - the idle rings are 1px `#FF0000`;
+  - an empty submit rings the four boxes in 2px white and prints *Add the missing details and
+    try again.*;
+  - typing a name clears its ring alone;
+  - a filled form composes `subject=Enquiry` with the four values and the message in the body;
+  - the valid submit swaps in the sent block (its h3 Anton, uppercase);
+  - *Write another* restores all five values.
+
+  No page errors or warnings. The canvas has no input, no anchor and no pointer cursor.
+  `page-check.mjs Grunge 3` (run after the digests had finished) found:
+  - four cards, no errors or warnings;
+  - every nav link scrolling, with Enquiries, Book Now and the three Start Enquiry pills
+    reaching `#form`;
+  - the published rings red when idle and 2px white when refused;
+  - the 390 burger going 1 → 11, and overflow 0.
+
+  The calendar's black meets the form's black with no line.
+- **`FIELDS.form` has no template-keyed `in` row** (every row a flat array), so no `reach.mjs`
+  run was owed.
+- **The sweep owes CLAUDE.md** a Grunge clause for the form's layout-4 rule ("1px of
+  `s.stroke1` under Lime"; under Grunge the head rule and the boxes are 1px `s.stroke2`, red)
+  and its pill ("pale `s.tx` under Lime"; white under Grunge).
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `form_arch_3` at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -1342,6 +1436,11 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   values as named literals* (grunge/layout-3, Scheme 2's `#171716`); *a refused box changes colour,
   not weight alone* (CLAUDE.md — met by Lime's 2px white already); *`faced` / `facedLh` and
   uppercase per site* (grunge/layout-1, folded into the block's `disp`).
+- Form: *the paired diff walk* (grunge/layout-2); *read `boundVariables`* (grunge/layout-3, the
+  head rule's `sem/stroke/2`); *a widened block can need no `G` at all* (grunge/layout-3, section
+  9 — one `ring` and the face); *a refused box changes colour, not weight alone* (CLAUDE.md — met
+  by Lime's 2px white on the idle red); *`faced` / `facedLh` and uppercase per site*
+  (grunge/layout-1).
 
 ## Open questions
 
