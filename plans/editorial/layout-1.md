@@ -133,7 +133,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 5 | `repertoire` | `964:58616` | Repertoire — A · Two-column dense | 1440 × 1055 | `986:48243` | 768 × 897 | `986:48255` | 390 × 896 | 3 | `964:58592` | `964:58604` | done `f4e8f0a` |
 | 6 | `map` | `964:58617` | Events Map — D · Compact tile | 1440 × 1191.2 | `986:48244` | 768 × 1308.6 | `986:48256` | 390 × 1132.5 | 1 | `964:58593` | `964:58605` | done `5f9fa4e` |
 | 7 | `pricing` | `964:58618` | Pricing — B · 3-col in soft panel | 1440 × 880 | `986:48245` | 768 × 793 | `986:48257` | 390 × 1486 | 2 | `964:58594` | `964:58606` | done `73e7307` |
-| 8 | `calendar` | `964:58619` | Booking Calendar — A · Scheduler | 1440 × 911 | `986:48246` | 768 × 1371 | `986:48258` | 390 × 995 | 1 | `964:58595` | `964:58607` | todo |
+| 8 | `calendar` | `964:58619` | Booking Calendar — A · Scheduler | 1440 × 911 | `986:48246` | 768 × 1371 | `986:48258` | 390 × 995 | 1 | `964:58595` | `964:58607` | done `7ed5a57` |
 | 9 | `form` | `964:58620` | Enquiry Forms — B · Split context+form | 1440 × 891 | `986:48247` | 768 × 1075 | `986:48259` | 390 × 1165 | 3 | `964:58596` | `964:58608` | todo |
 | 10 | `testimonials` | `964:58621` | Testimonials H — Stacked tag card | 1440 × 730 | `986:48248` | 768 × 730 | `986:48260` | 390 × 730 | 1 | `964:58597` | `964:58609` | todo |
 | 11 | `footer` | `964:58622` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:48249` | 768 × 692.3 | `986:48261` | 390 × 736.3 | 3 | `964:58598` | `964:58610` | todo |
@@ -687,6 +687,10 @@ Append as the pass goes. Do not repeat Lime's, Grunge's or Retro's bullets; name
   and `rotation` give the centre as `(x + cos θ·w/2 + sin θ·h/2, y − sin θ·w/2 + cos θ·h/2)` (θ
   Figma's), and nested CSS transforms compose as Figma's do — no un-rotation. Pass the tape's own
   binding: `Tape`'s default `s.activeBg` is terracotta under Scheme 1, the ground it lies on there.
+- **A print's thick INSIDE stroke is padding on its own ground** (section 8): the calendar's 10px
+  `box/2` border round a photograph is `padding` on an `s.box2` div round an inner clip, so the
+  outer box keeps no `overflow: hidden` and the tape can ride over it. A centred print owes no
+  rotated-box margin — check the walk's `y` against (parent − rotated height) / 2.
 
 ### Seen at planning time, per section
 
@@ -1331,6 +1335,79 @@ four ink ones are its own register.
 - **`FIELDS.pricing` has no Lime- or Grunge-keyed `in` row**, so nothing was owed (Grunge's section 7
   line, true again).
 
+### Settled in section 8 (the booking calendar)
+
+- **No Editorial block: `Calendar`'s `if (s.lime || s.grunge)` inside `if (s.v0)` is
+  `s.limeTree`**, after the seam, with `const ed = s.editorial` and a third arm at the head of `G`
+  (Lime's and Grunge's arms untouched; the new leaves `num`, `cellRing`, `rule`, `headW` and
+  `photoPad` fall back through `??`). The tree is the twins' plus the tape (the walker, all three
+  masters), on Scheme 1 at every width, the narrow masters in their page's Device mode (`770:1`,
+  `770:2`), no nested scheme. Every size is the ramp's — Display/MD 64 / 45 / 36, Display/SM
+  45 / 36 / 30, Inter `bodyLg` 16 / 15 / 15 and `bodyMd` 14 / 13 / 13, Chakra Petch `labelXs`
+  20 / 14 / 12 — so colours, rings, radii, the print and the tape are the whole diff. `at`,
+  `month`, `cur`, `line` and `step` are shared whole, so the published controls needed nothing.
+- **The seal is gone by construction**, closing section 2's hand-over: Editorial fell through to
+  Retro's branch, whose `stack` draws `SealBadge` at `!s.mob`; once the Lime block returns for
+  Editorial, `stack` is never reached. No `ed` gate was needed. The frame draws no seal.
+- **Trap 1 is per node here** — five `stroke` reads, split by binding:
+  - the **panel has no stroke and no radius** (`G.ring` null gates the overlay span off,
+    `panelR` 0) — the twins' 3px ring is theirs;
+  - the **month discs** are unfilled in 1px `stroke/1` — **ink**, trap 1 followed — round the
+    arrow in `text/2` (`s.tx`);
+  - the **idle cells** are unfilled, square, in 1px **`stroke/2`** (terracotta, `G.cellRing`),
+    the numeral `text/1` (`G.num`, `s.ac`) where the twins' is `s.tx`;
+  - the **picked day** is `active/bg` under `active/text` — `s.activeBg` / `s.activeFg`,
+    terracotta under paper — and its ring turns to **`stroke/1` ink**; no effect;
+  - the **halves' divider and the foot's top rule** are `stroke/2` (`G.rule`), the twins'
+    `stroke/1`. Day names, the month, the heading and the foot line are all `text/1`.
+- **One named departure: the divider at 768 and 390.** The twins' stacked divider lay under their
+  panel ring; Editorial's panel has none, so both narrow masters show the grid half's right stroke
+  running down the panel's right edge and stopping at the grid's foot — the desktop divider
+  leaking. Read as a defect and not drawn (Lime's `s.narrow ? undefined` kept). One line to
+  reverse.
+- **The photograph is a leant print (`Frame 204`), not the twins' stretched well**: the half pads
+  **40** (Lime 20) and centres a fixed box — the content width (584 / 628 / 290) by a stated
+  **446 / 446 / 228** — at Figma −2 → `rotate(2deg)`. Its 10px INSIDE `box/2` stroke (`#EDE6DC`)
+  is drawn as `padding` on an `s.box2` ground round an inner clip; one **`DROP_SHADOW` 4, 5 blur
+  9 at .25** (`effects`, × 0.82 on desktop — the map panel's blur-9 twin, but offset 4, 5 where
+  the map's is 3, 8); no radius and no clip, so the tape rides over. **No rotated-box margin is
+  owed**: the half centres the print's rotated box, whose centre is the unrotated box's — the
+  walk's `y` 29.95 / 29.18 / 35.01 are exactly (half − rotated height) / 2. The CROP source is
+  seeded at the desktop crop (1.309); the 768 box (1.408) covers it, where Figma's CROP would
+  stretch — invisible at this ratio.
+- **The tape is `Tape`'s default** — `active/bg`, terracotta under Scheme 1 — so no `colour`
+  (the brief's question: confirmed off the binding). It is the print's last child at Figma −1 →
+  `rotate(1deg)` inside the print (−3 on the page), seated by centre in the print's frame with
+  section 6's formula: **(302.67, 3.45)** on the 1440 and 768 masters (the same x, so right of
+  centre at 1440 and left at 768, as both renders show) and **(140.84, −4.92)** at 390.
+- **The head** is `disp()` widened to `grunge || ed` — `faced` is the identity, so the heading and
+  the month only gain the capitals — and held to the frame's **FIXED 578.4 at 1440 and 768**
+  (`G.headW`, pricing's finding again), `100%` at 390, where the master's 578.4 box overruns its
+  370.
+- **The foot keeps Retro's `BookPill`** in the Lime branch's defaults, terracotta under paper with
+  a paper disc; the frame draws none (the twins' diff). Foot 109.9 / 134 / 149 against the
+  frames' 101 / 100 / 100.
+- **Measured** (harness, against the section root): desktop heading 474.3 wide (578.4 × 0.82),
+  cells 61.3 × 45.8 (74.86 / 55.89 × 0.82), print 479 × 366 (478.9 × 365.7) centred 32.6 into a
+  431.3 half (the frame's 40 × 0.82), tape at (163.7, −20.1) in the print (u(199.67), u(−24.55));
+  768 cells 81.1 × 55.9, print 628 × 446 at 40 into the 526 half, tape (200, −24); 390 cells
+  **48.3 × 50.5 — the frame's exactly** (our 10 inset is the master's here, so the twins' "346
+  panel against 370" note does not apply), print 290 × 228, tape (38, −33). The root's top insets
+  (80 / 56 / 44 against the masters' 98 / 100 / 60) are the inherited diff.
+- **Function** (`theme=3&live=1&today=2025-06-10&booked=2025-06-14,2025-06-24`, puppeteer clicks,
+  1440 and 390): a pick moves the fill and the line ("Enquiry for Friday, June 20…"), a re-click
+  falls back to the cued 12th, the booked 14th and the past 5th take no click; **booked and past
+  both dim to .38 with no strike** — Lime's state is the frame's (it dims Lime's own six days, 2,
+  6, 14, 24, 27, 28) and reads on `#FFF9F2`; 19 cells carry a pointer (30 − 9 past − 2 booked);
+  both discs hit-test to themselves, Next goes to July, Back wraps to May 2026 and twelve more
+  come round to it; the pill is `<a href="#form">`. A six-row month grows the grid, never the 308
+  photo half at 390.
+- **`FIELDS.calendar.heading`'s `in` gained `Editorial: [0, 1, 2, 3]`**, measured, not copied:
+  `scripts/reach.mjs` gained a `calendar.heading` probe, which reports all four layouts under
+  themes 1, 2 and 3. The `image` hint's "polaroid stack" is Retro's wording (the sweep's).
+- **Moved, theme 3 only** (digest: exactly `calendar` arch 0 at three widths, static and live —
+  3 of 645 each; zero at themes 0, 1, 2 and 4). No shared helper changed.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1508,6 +1585,29 @@ Section 7:
   `BookPill`'s `discBg`, 645 renders static and live.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
+Section 8:
+- *Where the seam lives inside the branch, the block goes after the seam* (Lime 1, section 4) —
+  `at`, `month`, `cur`, `line` and `step` shared whole.
+- *The `G` lookup at the block's head, whose twin's arm is today's literals* (Grunge 1, sections
+  4–10) — a third arm; new leaves fall back through `??`.
+- *The node walker* (Grunge 2) — all three masters, with parent-relative `x`/`y`, rotation,
+  per-side weights and binding names.
+- *A scheme that did not move can still move the binding* (Grunge 3) — the cells and rules on
+  `stroke/2`, the numerals on `text/1`, the picked ring on `stroke/1`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — one effect, the print's
+  drop shadow; no glow on the picked day.
+- *The panel's ring is an overlay* and *booked is the frame's own state: .38, no strike* (Lime 1,
+  section 8; D1) — the overlay gated off (no ring); the state kept, the frame agreeing.
+- *The foot keeps Retro's BookPill* (Lime 1, section 8; D1).
+- *A leak that shows and reads as a defect is overridden* (Grunge 1, section 4) — the narrow
+  masters' divider.
+- *Figma auto-layout spaces a rotated child by its rotated bounding box* (memory
+  `figma-frame-reading`) — read, and owed nothing: the half centres it.
+- *Field reach is measured, not read off the prose* (CLAUDE.md) — a new `calendar.heading` probe.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the heading and the month.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -1552,3 +1652,6 @@ Section 7:
    bind `text/2` on all three, so it reads as an override applied to two cards of three. Drawn
    paper on all three. One line to reverse if the designer meant a third-seat mark. Worth telling
    the designer.
+10. **The calendar's stacked divider** (section 8) — at 768 and 390 the grid half keeps the
+    desktop's right `stroke/2`, which with no panel ring draws a terracotta line down the panel's
+    right edge that stops at the grid's foot. Not drawn. Worth telling the designer.
