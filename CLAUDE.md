@@ -539,6 +539,10 @@ mutated through a single `patch()` helper.
   from the frame's own index to the first hue that clears `tierHues`' 0.22 against `bg`, since a tag
   can be the page ground itself (Grunge's fourth was its black, before Static Youth left it two tags). Its selector is the one thing in that branch
   not standing on the page ground, so its outline and idle labels take `paperFg` and not `tx`.
+  Beside it stands the frame's "Save 15% on bundles", **`FIELDS.pricing.offer`** (JP-046, user
+  call, 2026-09-24; the fit had dropped it as a discount no field states): seeded with the
+  frame's copy, emptiable, `in: [2]`, in every template's block, and the capsule's row stands
+  on either half — an offer is not a filter, so it outlives a page whose packages carry no tags.
   **Lime's and Grunge's stacks read no `vm.tierRow`**: Lime's frame outlines the rows in the
   accent and fills the moving seat with it, ringed and lettered in the page ink, and Grunge's
   names Scheme 3's own three literals, so the walk (which reaches pale lime under Lime and the

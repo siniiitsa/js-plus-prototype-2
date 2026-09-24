@@ -885,7 +885,9 @@ Settled in section 7 (pricing):
   wide against 121 × 0.82 / 113 / 111. The rest are this pass's:
   - The desktop left column is 478.4 against 606 × 0.82, because of our 1052 content width.
   - The 768 pairs are normalised to one grid at 8, where the frame spaces a pair's two items 9 apart.
-  - "Save 15% on bundles" stays dropped.
+  - "Save 15% on bundles" stays dropped. **Reversed** (JP-046, 2026-09-24, `plans/lime/retest-qa-fixes.md`):
+    it is `FIELDS.pricing.offer` (`vm.pricingOffer`), seeded with the frame's copy and emptiable, 14
+    right of the capsule in its `Body/SM` / `sem/text/2` at all three widths; `in: [2]`, measured.
   - **The 390 third row is 391.3 against 376**: "Visual sync available" wraps in our 123 cell, while
     the frame's 113 text box overflows its 125 item without wrapping. Rows 1 and 2 land exactly.
 - **Measured against the masters' content edges.**

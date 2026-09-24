@@ -8499,8 +8499,11 @@ function Pricing({ s }) {
   //    same clamp, the same pinned 0 on the canvas and the same not-drawn-at-one
   //    (a filter with nothing to filter is the pager's case). The extra `All`
   //    that leads it is layout 1's intended diff, unchanged.
-  //  - "Save 15% on bundles" beside the capsule is **dropped**: a discount no
-  //    field states, which is the frame's own `★★★★★ 42 bookings` again.
+  //  - "Save 15% on bundles" beside the capsule is `s.pricingOffer`, a field
+  //    added for it (JP-046, reversing this fit's "a discount no field
+  //    states"): seeded with the frame's copy, emptiable, drawn 14 from the
+  //    capsule in its own `Body/SM` at all three widths, as all three masters
+  //    draw it. The row stands on either half, since an offer is not a filter.
   //  - "— £1,400" is `s.tierUnit`, exactly as layout 2 reads the frame's second
   //    price. The small "£" before the numeral is layout 1's and layout 2's own
   //    `symbol` / `amount` split, copied verbatim — and it splits on the price's
@@ -8753,27 +8756,40 @@ function Pricing({ s }) {
             )}
           </div>
           {/* The capsule, Retro's filter in Lime's dress; not drawn at one chip.
-              "Save 15% on bundles" stays dropped (Retro's reading). */}
-          {s.tierChips.length > 1 && (
-            <div style={{
-              ...row('0', { flexWrap: 'wrap' }),
-              background: s.box1, boxShadow: ring(s.stroke1),
-              borderRadius: s.btnR, padding: u(3),
-            }}>
-              {s.tierChips.map((f, i) => (
-                <span
-                  key={i}
-                  onClick={s.live ? () => setChip(i) : undefined}
-                  style={{
-                    padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
-                    background: i === active ? s.ac : 'transparent',
-                    color: i === active ? s.bg : s.tx,
-                    cursor: s.live ? 'pointer' : undefined,
-                    fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
-                    letterSpacing: s.dls, whiteSpace: 'nowrap',
-                  }}
-                >{f.label}</span>
-              ))}
+              Beside it the offer line (JP-046), the frame's `toggle-row` whole:
+              14 apart and centred at every width, in the capsule's own
+              `Body/SM` and `sem/text/2`. The row stands on either half, since
+              an offer is not a filter and outlives the capsule. */}
+          {(s.tierChips.length > 1 || !!s.pricingOffer) && (
+            <div style={row(u(14), { flexWrap: 'wrap' })}>
+              {s.tierChips.length > 1 && (
+                <div style={{
+                  ...row('0', { flexWrap: 'wrap' }),
+                  background: s.box1, boxShadow: ring(s.stroke1),
+                  borderRadius: s.btnR, padding: u(3),
+                }}>
+                  {s.tierChips.map((f, i) => (
+                    <span
+                      key={i}
+                      onClick={s.live ? () => setChip(i) : undefined}
+                      style={{
+                        padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
+                        background: i === active ? s.ac : 'transparent',
+                        color: i === active ? s.bg : s.tx,
+                        cursor: s.live ? 'pointer' : undefined,
+                        fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+                        letterSpacing: s.dls, whiteSpace: 'nowrap',
+                      }}
+                    >{f.label}</span>
+                  ))}
+                </div>
+              )}
+              {!!s.pricingOffer && (
+                <span style={{
+                  fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+                  letterSpacing: s.dls, color: s.tx,
+                }}>{s.pricingOffer}</span>
+              )}
             </div>
           )}
           <div style={col(u(16), { width: '100%' })}>
@@ -8996,7 +9012,16 @@ function Pricing({ s }) {
             }}>{s.pricingIntro}</p>
           )}
         </div>
-        {selector}
+        {(selector || !!s.pricingOffer) && (
+          <div style={row(u(14), { flexWrap: 'wrap' })}>
+            {selector}
+            {!!s.pricingOffer && (
+              <span style={{
+                fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, color: s.tx,
+              }}>{s.pricingOffer}</span>
+            )}
+          </div>
+        )}
         <div style={col(u(16), { width: '100%' })}>
           {shown.length === 0 ? (
             // Layout 1's one message, in a row of its own: the section here is a

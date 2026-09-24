@@ -629,6 +629,10 @@ export const PRICING_REVIEWS = '32 reviews'
 export const PRICING_RATING = '4.9'
 export const PRICING_CTA = 'Enquire about a date'
 export const PRICING_NOTE = "3 dates open for Sept '26"
+// Pricing layout 3's line beside the filter capsule, the frame's own copy
+// (964:68648, and at 768 and 390 too). Dropped in Retro's fit as "a discount no
+// field states"; a field states it now (JP-046), seeded and emptiable.
+export const PRICING_OFFER = 'Save 15% on bundles'
 export const MAP_TRAVEL_TIME = '~2 hrs'
 export const MAP_FEE = '£1,200'
 
@@ -1146,6 +1150,9 @@ export const FIELDS = {
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro', in: [2],
       hint: 'A line under the heading. Layout 3 only.' },
+    { k: 'offer',   l: 'Offer line', d: PRICING_OFFER, in: [2],
+      hint: 'A short line beside the filter chips, such as a discount. Layout 3 only. '
+          + 'Empty it to drop the line.' },
     { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote', in: [1],
       hint: 'A line of praise beside the plan. Layout 2 only.' },
     // Layout 2's credit row under the quote and the line beside its pill, all

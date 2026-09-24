@@ -39,7 +39,7 @@ import {
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
-  PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE,
+  PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_FIELDS, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
@@ -737,6 +737,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // row with the title alone and layout 2 puts its kicker above it. Layout 3
   // only, so an emptied field drops the line — the Soundcloud rule.
   vm.pricingIntro = cv('intro', DEFS.pricingIntro)
+  // Layout 3's line beside the filter capsule (JP-046): the frame's own copy,
+  // uncased like the intro above it, and an emptied field drops it.
+  vm.pricingOffer = cv('offer', PRICING_OFFER)
   // §10.2 layout 2 stands a line of praise beside the plan. Layout 1 draws no
   // such line, so an emptied field simply drops it — the Soundcloud rule.
   vm.pricingQuote = cv('quote', DEFS.pricingQuote)
