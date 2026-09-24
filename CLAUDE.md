@@ -1098,12 +1098,13 @@ mutated through a single `patch()` helper.
   is the master, and every Grunge form master prints the component's "KAI MERCER" where ours
   keeps JP-054's shared "Contact Us" — a named diff, the user's call. Its header family is
   `'grunge'`: four cards, Hero spread, Feature spread, Inset Hero and Stacked, all four fitted
-  (`HeaderV3`'s Lime block, widened: a black capsule over the red floor, no checker), so every
+  (`HeaderV3`'s Lime block, widened: a black capsule over the red floor, no checker, and the
+  desktop photograph **not** mirrored — Grunge's fill is `FILL`), so every
   card in the setup modal lays out a whole Grunge page and the family is closed
-  (`plans/grunge/`). At layouts 2, 3 and 4 the footer is layout 1's. Layout 4 grew three shared
-  helpers an additive prop each: `SealBadge`'s `scheme` 4 gives Grunge a black disc with red
-  marks, `NavBar` takes `links={{ gap, cap }}` (the capsule's fixed 23 gaps, the type clamped to
-  fit) and `mark`, and `Wordmark` takes `gap`.
+  (`plans/grunge/`). At layouts 2, 3 and 4 the footer is layout 1's. Layout 4 grew two shared
+  helpers additive props — `NavBar` takes `links={{ gap, cap }}` (the capsule's fixed 23 gaps,
+  the type clamped to fit) and `mark`, and `Wordmark` takes `gap` — and `SealBadge`'s Lime
+  `scheme` a Grunge arm at 4, a black disc with red marks.
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
   designs, and seven of the eleven offer more — Pricing layouts 1 and 5 render identically on
   purpose. The other four are level: the header and the footer always were, and the layout-4 pass

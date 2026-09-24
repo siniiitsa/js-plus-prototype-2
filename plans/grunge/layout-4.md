@@ -1527,9 +1527,9 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   "Retro, Lime and Grunge are designed", its Grunge paragraph "all four of its layouts" with a
   layout-4 sentence (the black page's four red grounds and one `#171716` band, the torn seams,
   the collapsed testimonials sheet, Scheme 3's four literals, the two moved panel bindings, the
-  missing desktop form and its "KAI MERCER" head) and the family closed, and it names the three
-  additive helper props the header grew (`SealBadge`'s `scheme` 4, `NavBar`'s `links` and
-  `mark`, `Wordmark`'s `gap`). The six layout-4 paragraphs gained a Grunge clause each — the
+  missing desktop form and its "KAI MERCER" head) and the family closed (the Stacked photograph
+  unmirrored, unlike Lime's), and it names what the header grew (`NavBar`'s `links` and `mark`,
+  `Wordmark`'s `gap`, a Grunge arm on `SealBadge`'s `scheme` at 4). The six layout-4 paragraphs gained a Grunge clause each — the
   media's two rings and its torn band, the gallery's black ring, `#0E0E0E` discs and shadowless
   radius-5 pills, the map's `#1A1A1A` ticker in `#FF0000` with red numerals, pricing's
   `s.stroke2` rule, the form's `s.stroke2` rules and white pill (and JP-054's "KAI MERCER" diff),
@@ -1589,7 +1589,7 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   on three times or more across the passes: *a widened block can need no `G`* (C; repertoire,
   pricing, calendar, form), *Scheme 4 ≡ Scheme 1 collapses a sheet onto the page* (C; layout 2's
   form, layout 3's map, this page's header seal and testimonials), *a seam's binding can lie —
-  trust the render* (A; layout 1's media foot, this page's media and repertoire feet) and — not
+  trust the render* (A; this page's media and repertoire feet) and — not
   among the sweep's named candidates, but met on media, gallery and repertoire here and on layout 1's media,
   map and form — *the black-run depth method* (B).
 - **`build-digest.mjs` now emulates reduced motion**, the Lime sweep's throwaway fix for the
