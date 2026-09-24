@@ -241,7 +241,7 @@ it is the gate this session widens.
 | 7 | `pricing` | `964:73021` | 1440 × 542 | `971:8137` | 768 × 806 | `977:12364` | 390 × 829 | `964:72926` / `971:5613` / `977:9187` | `964:72831` / `964:78656` / `977:8440` | `if (s.lime)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | done `e88a917` |
 | 8 | `calendar` | `964:73034` + wizard `964:73033` *(Section `964:73022`, Frame 324 `964:73023`)* | 478 × 533 + 680 × 533 | `971:8150` + `971:8149` *(Section `971:8138`, Frame 324 `971:8139`)* | 608 × 502 + 608 × 476 | `977:12377` + `977:12376` *(Section `977:12365`, Frame 324 `977:12366`)* | 350 × 496 + 350 × 474 | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:72844` + `964:72843` / `964:79434` + `964:79037` / `977:8514` + `977:8513` | `if (s.lime)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | done `86227e7` |
 | 9 | `form` | **`725:2990`** *(the main component — no page instance at 1440)* | 1440 × 795 | `971:8151` | 768 × 1024 | `977:12378` | 390 × 964 | `964:72940` / `971:5627` / `977:9201` | `964:72845` / `964:79477` / `977:8663` | `if (s.v3 && s.lime)` ahead of `EnquiryForm`'s `if (s.v3)` | done `4fc0be4` |
-| 10 | `testimonials` | `964:73035` | 1440 × 716 | `971:8152` | 768 × 642.4 | `977:12379` | 390 × 603.4 | `964:72941` / `971:5628` / `977:9202` | `964:72846` / `964:79536` / `977:8764` | `if (s.lime)` inside `Testimonials`' `if (s.v3)`, after `padBot` | — |
+| 10 | `testimonials` | `964:73035` | 1440 × 716 | `971:8152` | 768 × 642.4 | `977:12379` | 390 × 603.4 | `964:72941` / `971:5628` / `977:9202` | `964:72846` / `964:79536` / `977:8764` | `if (s.lime)` inside `Testimonials`' `if (s.v3)`, after `padBot` | done `a662b2d` |
 | — | `footer` | `964:73036` | 1440 × 479.5 | `971:8153` | 768 × 647.4 | `977:12380` | 390 × 619.4 | `964:72942` | — | — | **out of scope**: Grunge's own layout-1 footer family at layout 1's sizes; `NVAR.footer` is 1 |
 | — | `video` | `964:72962` | 1440 × 1186 | `971:7956` | 768 × 654 | `977:12183` | 390 × 380 | — | — | — | **not in the project** (`d734992`); Retro's QA and Lime's pass declined restoring it on layout 4, and this pass does the same |
 
@@ -1384,6 +1384,75 @@ them.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `form_arch_3` at three widths on both surfaces.
 
+### Settled in section 10 (the testimonials)
+
+- **No Grunge block: Lime's `if (s.lime)` inside `Testimonials`' `if (s.v3)`, after `padBot`, is
+  `(s.lime || s.grunge)`**, with `const grunge = s.grunge`, a two-key `G` (`sheet`, `ink`) whose
+  Lime arm is the block's own `s.tx` / `s.bg`, a Grunge arm on `REG`, and a `disp(size, lh)`
+  spread (`faced` / `facedLh` / uppercase behind `grunge`, a no-op under Lime). The paired diff
+  against the Lime twin was the whole read: **41 = 41 / 33 = 33 / 41 = 41 nodes**, every box,
+  radius (cells 30, discs 41.48, i.e. round) and gap Lime's, no Device override, and no effect but
+  the two discs' blur 24 behind an opaque fill (dropped). The seam is shared whole, so the
+  published discs needed nothing new.
+- **The plan's biggest trap, closed: no sheet.** The root states Scheme 4, which is Scheme 1, so
+  its fill is `sem/bg` **`#000000`** and the head `sem/text/1` red. Lime's block wrote those two
+  bindings as resolved values (`s.tx` pale, `s.bg` ink), so they needed a `G` even though the
+  bindings did not move: `G.sheet` is `s.bg` and `G.ink` `s.ac` under Grunge. The wrapper keeps
+  its bleed and the frames' own insets (56 / 30·30·48·30 / 30·10, which the root's padding is
+  not). It now paints the page's own black, so the form's black runs into it with no edge
+  (`seam_1440_testimonials`).
+- **The register is Grunge's own, not a remap of Lime's.** Read off each cell's fill and binding
+  at all three widths, over Lime's `SEATS = [0, 1, 0, 2]`:
+  - seat 0 (and 2): `sem/box/1` `#1A1A1A` (`s.box1`) in `sem/stroke/1`, white at 15%
+    (`s.stroke1`), lettered white;
+  - seat 1: a nested Scheme 1 `sem/box/3` `#0E0E0E` (`s.box3`) in `s.stroke1`, lettered white.
+    This is Lime's `REG[1]` key for key;
+  - seat 3: `sem/text/1` `#DF262C` (`s.ac`), **unstroked**, lettered black (`s.bg`).
+  Every disc is ringed in `s.stroke1`, where Lime's light scheme rings two of them in its `hair`.
+  The discs are red lettered black, and the red cell's is the pair inverted: a black disc
+  lettered red. **The red cell is left bare, as the frame draws it.** Retro, Lime and Grunge
+  layout 3 all ringed the frame's one bare cell like its neighbours. Here that ring would be
+  white at 15% on `#DF262C`, a visible pink hairline the frame does not have, where Lime's was
+  all but invisible on ink. So the normalisation is declined under Grunge (`edge:
+  'transparent'`), named in the block. `mist` and `hair` stay Lime's, unread.
+- **The arrow discs** are `sem/text/1` red (`G.ink`) with `sem/bg` black arrows (`G.sheet`). Their
+  1px `sem/bg` stroke is the page's black on a disc standing on the page, so it is not drawn:
+  Lime's reading, one scheme over.
+- **The marks are a stated glyph, so `faced` applies**, the reverse of layout 3's face-stack
+  exception (that seat held photographs and stated no type). They are Stones Crush 24 / 16 / 14,
+  which is `THEME_RAMP.Grunge`'s `s.labelLg` (20 / 16 / 14) to the token, rendered 15 / 12 /
+  10.5px Anton, uppercase. The head is `s.dispLg` at .89, rendered 80.25 / 60.75 / 34.5px.
+  There is no `T` table: quote 16 (`bodyLg`), who 14 (`bodyMd`) and role **12** (`bodySm`, Lime
+  13) are the ramp's.
+- **Measured** (canvas, content edges):
+  - desktop: section 492.3; h2 95.2 tall at 46 · 46; discs 60.4 at y 80.8; four cells 262.2 ×
+    282.1 (320 × 344 × 0.82) from 164.2 at radius 24.6; marks 45.9;
+  - 768: section **642.5** (642.4); h2 144.2 (144); discs at 100.6; three cells 225.3 × 392.4
+    from 202.2 (202);
+  - 390: section **603.2** (603.4); h2 122.8 (123) on three lines, 187.8 wide (187.8); discs at
+    79.2 (79.4); cells 300 × 392.4 from 180.8 (181).
+  `scrollWidth` holds.
+- **Named diffs, Lime's**: the desktop head holds the seeded heading on one line where the frame
+  authors two, so the section is 492.3 against 716 × 0.82 = 587.1; the fourth seat (here the red
+  cell) is unreachable at 768 and 390 at any count; the 390 peek is 54 against the frame's 64;
+  the seeded reviews against the frame's repeated filler; Anton at 0.75 against Stones Crush.
+- **`live=1`, red on black** (puppeteer, desktop and 390, probe deleted): both discs carry a
+  pointer (the canvas's carry none); → steps the leading review 1 → 2 → 3, and ← steps 3 → 2 → 1
+  → 5 (wraps). The seat colours hold after paging: dark / darker / dark / red at desktop, dark /
+  darker at 390. `n=0` prints *No reviews yet.* in one `#1A1A1A` card with no discs; `n=1` draws
+  one card and no discs; `n=8` draws four / two cells with the discs. No page errors. **This
+  layout has no lit or idle disc state**: both are the same red disc with a black arrow, and they
+  read on the black page. `page-check.mjs Grunge 3`: four cards, no errors or warnings, every nav
+  and footer link scrolling (Reviews → `#testimonials`), both testimonials discs changing the
+  section, the 390 burger 1 → 11, overflow 0.
+- **`FIELDS.testimonials` has no template-keyed `in` row** (layout 3's `reach.mjs` finding), so no
+  run was owed.
+- **The sweep owes CLAUDE.md** a Grunge clause on the testimonials' layout-4 sheet ("under Lime the
+  sheet is Scheme 4's pale `s.tx` … the head `s.dispLg`"): under Grunge there is no sheet, since
+  Scheme 4 is the page, and the fourth seat is the red cell.
+- **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
+  `testimonials_arch_3` at three widths on both surfaces.
+
 ### Inherited and used
 
 *(One line each time a session leans on a bullet from `CONVENTIONS.md`, layouts 1's, 2's or 3's
@@ -1441,6 +1510,12 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
   9 — one `ring` and the face); *a refused box changes colour, not weight alone* (CLAUDE.md — met
   by Lime's 2px white on the idle red); *`faced` / `facedLh` and uppercase per site*
   (grunge/layout-1).
+- Testimonials: *the paired diff walk* (grunge/layout-2); *read `boundVariables`* (grunge/layout-3,
+  Scheme 4's `sem/bg` and `sem/text/1`, which Lime's block had written resolved); *the `G` lookup
+  whose Lime arm is today's literals* (grunge/layout-1); *Scheme 4 ≡ Scheme 1, so a Scheme 4 sheet
+  collapses onto the page* (grunge/layout-1; grunge/layout-3's map); *seat the schemes off the
+  master, never remap the twin's register* (grunge/layout-3, section 10); *`faced` is for a glyph
+  the frame states* (grunge/layout-3, section 10 — here applied, the marks being stated).
 
 ## Open questions
 
