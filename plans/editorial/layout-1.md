@@ -127,7 +127,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:58611` *(page)* | Sienna Vale → `THEMES[3]`, face, ramp, schemes, flags, photos | — | `986:48237` | — | `986:48250` | — | — | — | — | done `0ac93b2` · `2297e8c` |
 | 1 | `header` | `964:58612` | Headers — hero | 1440 × 750 | `986:48238` | 768 × 1024 | `986:48251` | 390 × 844 | 3 | `964:58588` | `964:58600` | done `e47847d` |
-| 2 | `bio` | `964:58613` | Bios — A · Flanked portrait | 1440 × 769 | `986:48239` | 768 × 1135 | `986:48252` | 390 × 731 | 1 | `964:58589` | `964:58601` | todo |
+| 2 | `bio` | `964:58613` | Bios — A · Flanked portrait | 1440 × 769 | `986:48239` | 768 × 1135 | `986:48252` | 390 × 731 | 1 | `964:58589` | `964:58601` | done `28b668c` |
 | 3 | `media` | `964:58614` | Media Player — D · Floating cards stack | 1440 × 1140.2 | `986:48241` *(in `986:48240`)* | 768 × 1629.6 | `986:48253` | 390 × 1211.8 | 2 | `964:58590` | `964:58602` | todo |
 | 4 | `gallery` | `964:58615` | Gallery Sections — Component 1 | 1440 × 818 | `986:48242` | 768 × 1123 | `989:22410` | 390 × 791.7 | 1 | `964:58591` | `964:58603` | todo |
 | 5 | `repertoire` | `964:58616` | Repertoire — A · Two-column dense | 1440 × 1055 | `986:48243` | 768 × 897 | `986:48255` | 390 × 896 | 3 | `964:58592` | `964:58604` | todo |
@@ -911,6 +911,67 @@ four ink ones are its own register.
   in case it returns. The advance table was measured with a one-off script in `source/scripts/`,
   deleted.
 
+### Settled in section 2 (the bio)
+
+- **No Editorial block: Lime's `if (s.v0 && (s.lime || s.grunge))` is `s.limeTree`**, with
+  `const ed = s.editorial` naming the deltas. The tree is Lime's node for node at all three widths
+  (the walker, all three masters): the flanks, the 29 stacked head, the 14-gap prose with its
+  spacer and rule, the 488 × 648 frame (230 × 311 at 390), every size the ramp's (`labelXs`
+  20 / 14 / 12, `dispLg` 118 / 73 / 48, `eyebrow` 15 / 12 / 11, `bodyMd` 14 / 13 / 13). Neither
+  narrow master overrides its Device mode, and there is no nested scheme.
+- **The deltas, all read off `boundVariables`:**
+  - **every string binds `sem/text/1`** — KM BIO, the head, the foot line, About, the paragraph
+    and the role line — which is the terracotta `s.ac` where Lime's copy reads `s.tx`. The first
+    paper section's first trap was the binding, not the scheme: `ink` is `ed ? s.ac : s.tx`;
+  - the head is **one tone** in it, `textTransform: 'uppercase'`;
+  - the foot line is **Inter Bold 15**, Grunge's eyebrow arm (`grunge || ed`);
+  - the photograph is an **arch with square feet** — radius 361 / 361 / 0 / 0, which CSS clamps
+    to the semicircle as Figma does — on `sem/box/3` (`s.box3`, Grunge's), with **no effect at
+    all**: Lime's inset glow is gone, and the 1440 frame's outer radius-15 clip draws nothing.
+    What it has instead is a **`sem/tag/1/bg` INSIDE stroke, 1px at 1440 and 768 and 3px at
+    390** (read off the 390 master, not a leak), drawn on the glow's own overlay as
+    `inset 0 0 0 Npx s.chips[0].bg` — `chips[0]` is `T.tags[0]`, the seat the binding names.
+    Its hidden lime gradient (`visible: false`) is the twins';
+  - `Grain` needed nothing: its `grunge && s.grunge` gate returns null under Editorial.
+- **`SealBadge` has an Editorial arm**, `if (s.editorial && !classic)` ahead of the Lime branch,
+  so every Editorial caller draws it. `Frame 179` is Lime's geometry once more (the 125.37 disc,
+  the 120 ring, the 109.3 name circle, the equator marks at x 12.26 / 88.41) with its own marks,
+  every one a scheme key so the footer's Scheme 3 reads its own through the same arm: a
+  `sem/active/bg` disc, the ring and both marks **1px** inside strokes of `sem/stroke/1` (opaque
+  ink here — trap 1, and what the frame draws), no reticle but the **sparkle** (`GRUNGE_STAR_D` at
+  57.78 × 58.32, centred, in `sem/active/text`, drawn as a `<path transform>` inside the seal's
+  own SVG rather than a nested `GrungeStar`), and the name in **Space Mono** 10.61 at 30% in
+  `sem/bg`, running as Lime's does (lower upright, upper inverted). The marks sit 0.33 units
+  below the equator, as the walk puts them. **Space Mono is named in the arm, not through
+  `s.mono`**: Sienna Vale states no mono token, and giving `THEMES[3]` one would move the nine
+  `s.mono` readers in the pricing, gallery and map, which no session has read under Editorial —
+  a later session that finds its frame naming Space Mono can promote it.
+- **The seal hangs on Editorial's own centres**, from the walk's `absoluteBoundingBox` (a rotated
+  square's box centre is the disc's): **15.73 outside the arch's left edge and 137.73 above its
+  foot** on desktop (Lime 11.5 / 166.35), **16.34 past the right edge and 16.68 above the foot**
+  at 768 (Lime 16.87 / 25.15), **5.1 inside the right edge and 5.12 below the foot** at 390 (Lime
+  5.58 / 0.65), at `tilt` 25.03 (Figma −25.03). Measured in the harness with the spin stopped:
+  12.89 / 112.92 at desktop (the frame's × 0.82: 12.90 / 112.94), 16.32 / 16.71 at 768,
+  5.11 / 5.13 at 390; a side-by-side crop at 768 matches the frame mark for mark.
+- **The head fits its measure**: at 97px "READS" sets 262.7 and "ROOM." 268.1 in the 273.5 flank
+  (the frame's flank is 273.9 now that `padX` is the frame's inset, JP-038 — Lime's "255.4" note
+  predates it), on three lines at 1440 as the frame breaks it; one line at 768 (547 of 708) and
+  at 390 (359.8 of 370) — **but the master's column there is 350**, so the 390 head fits only
+  by the inherited pad diff below; a change to `padX` or a longer seeded head wraps it. No
+  `titleWordEms` arm was needed. A longer artist's head is unguarded
+  at desktop, Lime's case too.
+- **Inherited diffs, not Editorial's**: the 390 root pads 10 (JP-038's page inset) where the
+  master pads 20, so the arch is 250 wide against 230 (Lime's `0 60px`); the 768 root's 56 top
+  against the master's 60.
+- **Moved with `SealBadge`, theme 3 only** (digest: 20 of 129 theme-3 renders, zero at themes
+  0, 1, 2 and 4, static and live): the bio at layouts 1 and 3, the calendar a0 (desktop and
+  768), the footer, and header cards 2 and 4 (arch 5 folds onto 1) — each drew the flat starburst
+  and now draws this seal, placed where its branch places it. The footer's reads Scheme 3's keys
+  (ink name, paper-56% ring); it and the calendar's (which the plan says the frame does not draw)
+  are sections 11 and 8's. **Section 11: read the footer seal's `TEXT_PATH` fill** — the arm
+  assumes `sem/bg`, the bio's binding, which under Scheme 3 is ink on the terracotta disc.
+- **No live control**: `live=1` digests identical to the canvas at all three widths.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -949,6 +1010,26 @@ Section 1:
   and live, 645 renders each.
 - *The whole-page published check is one puppeteer script* (Lime 1, sweep) — `page-check.mjs
   Editorial 0,1,2,3`.
+
+Section 2:
+- *The gates are the template's flag, the named pairs, and `s.designed`* (Grunge 1, decision 2) —
+  `Bio`'s block to `s.limeTree`, `SealBadge` an `s.editorial` arm ahead of Lime's.
+- *The node walker* (Grunge 2) — all three masters, with bound-variable names added.
+- *A scheme that did not move can still move the binding* (Grunge 3) — every string on
+  `sem/text/1`, not Lime's `text/2`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — none: the arch's glow
+  is gone, a 1px / 3px inside ring in its place.
+- *A frame's inside stroke is an inset `boxShadow`, on an overlay* (Lime 2, section 1) — the
+  arch's ring on the glow's overlay.
+- *Place a seal by its disc's centre* and *measure anything under `.seal-spin` with the animation
+  stopped* (Lime 1, section 2) — `absoluteBoundingBox` centres, reduced motion.
+- *A rotated group's metadata x/y is a bounding box* (memory `figma-frame-reading`) — the
+  metadata's 614.07 at 768 against the walk's 561.02.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the head.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+- *One five-theme digest is the whole proof for a shared-helper change* (Lime 1, sweep) —
+  `SealBadge`.
 
 ## Open questions
 
