@@ -132,7 +132,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 4 | `gallery` | `964:58615` | Gallery Sections — Component 1 | 1440 × 818 | `986:48242` | 768 × 1123 | `989:22410` | 390 × 791.7 | 1 | `964:58591` | `964:58603` | done `1f4b606` |
 | 5 | `repertoire` | `964:58616` | Repertoire — A · Two-column dense | 1440 × 1055 | `986:48243` | 768 × 897 | `986:48255` | 390 × 896 | 3 | `964:58592` | `964:58604` | done `f4e8f0a` |
 | 6 | `map` | `964:58617` | Events Map — D · Compact tile | 1440 × 1191.2 | `986:48244` | 768 × 1308.6 | `986:48256` | 390 × 1132.5 | 1 | `964:58593` | `964:58605` | done `5f9fa4e` |
-| 7 | `pricing` | `964:58618` | Pricing — B · 3-col in soft panel | 1440 × 880 | `986:48245` | 768 × 793 | `986:48257` | 390 × 1486 | 2 | `964:58594` | `964:58606` | todo |
+| 7 | `pricing` | `964:58618` | Pricing — B · 3-col in soft panel | 1440 × 880 | `986:48245` | 768 × 793 | `986:48257` | 390 × 1486 | 2 | `964:58594` | `964:58606` | done `73e7307` |
 | 8 | `calendar` | `964:58619` | Booking Calendar — A · Scheduler | 1440 × 911 | `986:48246` | 768 × 1371 | `986:48258` | 390 × 995 | 1 | `964:58595` | `964:58607` | todo |
 | 9 | `form` | `964:58620` | Enquiry Forms — B · Split context+form | 1440 × 891 | `986:48247` | 768 × 1075 | `986:48259` | 390 × 1165 | 3 | `964:58596` | `964:58608` | todo |
 | 10 | `testimonials` | `964:58621` | Testimonials H — Stacked tag card | 1440 × 730 | `986:48248` | 768 × 730 | `986:48260` | 390 × 730 | 1 | `964:58597` | `964:58609` | todo |
@@ -1272,6 +1272,65 @@ four ink ones are its own register.
 - **Moved, theme 3 only** (digest: exactly `map` arch 0 at three widths, static and live — 3 of 645
   each; zero at themes 0, 1, 2 and 4). No shared helper changed.
 
+### Settled in section 7 (pricing)
+
+- **No Editorial block: `Pricing`'s `if (s.lime || s.grunge)` inside `if (s.v0)` is
+  `s.limeTree`**, after the seam, with `const ed = s.editorial`, `ink = ed ? s.ac : s.tx` (media's
+  switch) and a third arm at the head of `G`. The tree is Lime's node for node at all three widths
+  (the walker, all three masters, and the twins' bindings read beside it), on Scheme 2, **no
+  effect and no rotation on any node**, no Device override. `tab`, `active`, `shown` and the
+  hoisted `chip` are shared whole, so the published filter needed nothing.
+- **The deltas, all off `boundVariables`:**
+  - **every string binds `sem/text/1`** — paper, `s.ac` — where the twins' copy binds `text/2`: the
+    name, £, unit, blurb, features and small print take `ink`; the ✓, numeral and heading already
+    read `s.ac`. The **ico turns round**: `text/2` box (`s.tx`, ink) under `text/1` type, at a raw
+    radius **4** (Lime's leaf; Editorial's `radiusChip` is 6, Grunge's reading of it not shared);
+  - the **card is filled** — `sem/box/3`, `#A18A7E`, a step under the taupe — at **radius 0**, under
+    `DashRule side="all"` **8, 8** in `stroke/1` paper (× 0.82 on desktop). The panel's radius 12
+    has no fill and draws nothing;
+  - **the featured seat draws nothing** (D1's *the glow is a seat*): the three cards are one card
+    in walk and render, so `G.ring` and `G.lit` are both `undefined` and `i % 3 === 1` reaches
+    nothing under Editorial;
+  - the **idle chips bind `sem/bg`**, the taupe itself, in a 1px INSIDE `stroke/1` ring (an inset
+    `boxShadow`) under `text/1` paper; the lit one binds `tag/1/bg` under `text/2`, which is
+    `s.pillBg` / `s.activeFg`'s blush and ink already — the binding differs from the twins', the
+    value does not. **The brief's trap 3 did not apply**, the repertoire's finding again: nothing
+    binds `inactive/bg`;
+  - the **heading** one tone in `text/1`, uppercase, in a **FIXED 578.4 box at 1440 and 768**
+    (Lime 640, Grunge 597.53; the twins' 768 is `100%`), so `maxWidth` is `G.headW` at both. Noto
+    breaks the 768 and 390 heads as the frames do, and the desktop one a word later ("…THAT'S RIGHT
+    / FOR YOUR NIGHT" against "…THAT'S / RIGHT FOR…") — the face's measure, `faceK` 1;
+  - **the 390 head has no gap**: its column is `SPACE_BETWEEN` on a hugging height, so Figma's 24
+    is auto and the chips sit flush under the heading (the master's 60 + 33 = 93). Under `ed && s.mob`
+    the column's gap is 0; the twins keep 24.
+- **The Book pills are Scheme 1 inside Scheme 2** (the page's one nested scheme): `box/3` `#141414`
+  fill, `text/1` `#C86E52` type, `tag/1/bg` `#E6B6A0` disc, the arrow `box/3` — named literals
+  (`PILL` in the block). Every box is `BookPill`'s Lime branch at every scale (5/5/5/21, 46 × 44,
+  `s.list` 24 / 19 / 18, `full` at 390); only the disc's fill parts from the type, so **`BookPill`
+  gained `discBg`** (Lime branch, additive; no other caller passes it). The arrow is `bg` already.
+- **The root draws the instance's own stroke: `editorialRule`** (`s.pr && s.v0 && s.editorial`,
+  beside `grungeRule`), an inset 1px `s.stroke2`, blush under Scheme 2. Of Editorial's eleven
+  layout-1 roots only pricing's carries a visible all-round stroke, at all three widths (the
+  footer's is a top-only paper rule, section 11's); both twins' are hidden or Grunge's own.
+- **One named departure: the third card's ink.** The frame binds card 3's name, £, unit, blurb and
+  features `text/2` — ink — at all three widths, which is the twins' binding on **all three** of
+  their cards: the designer overrode cards 1 and 2 to `text/1` and missed the third. Drawing it
+  would make the ink a seat (a filter moves it onto whatever stands third) for a mark no frame
+  means, so every card is paper. Open question 9.
+- **Measured** (harness, against the section's content edges): desktop heading 474.3 wide (578.4 ×
+  0.82) on two lines at 74 (90 × 0.82), deck 100.2 under the head (122 × 0.82), cards 338.7 ×
+  413.7 (338.9 × 415.7), pill 44.3; 768 heading 578.4 on two lines, chips at 96 (96), deck at 163.6
+  (164), cards 222.7 × 458 (the panel is FIXED 461 there); 390 chips at 60 (60), deck at 125.1
+  (125), cards 376.6 / 401.4 / 416.5 (377 / 417 / 417) — the second card's blurb fits one line in
+  our 282 content width against the master's 262, the 10-against-20 page inset inherited again.
+- **Function** (`theme=3&live=1&n=8`, puppeteer clicks, 1440 and 390): All / Solo / Band filter
+  8 → 4 → 4 → 8, the lit chip reads blush under ink and the idle ones taupe under paper, every chip's
+  cursor is live, every pill is `<a href="#form">`; `n=0` prints *No packages yet.*
+- **Moved, theme 3 only** (digest: exactly `pricing` arch 0 at three widths, static and live — 3 of
+  645 each; zero at themes 0, 1, 2 and 4). `discBg` moved nothing else.
+- **`FIELDS.pricing` has no Lime- or Grunge-keyed `in` row**, so nothing was owed (Grunge's section 7
+  line, true again).
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1424,6 +1483,31 @@ Section 6:
   session 0) — the heading, the radius label, the venues.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
+Section 7:
+- *Where the seam lives inside the branch, the block goes after the seam* (Lime 1, section 4) —
+  `tab`, `active`, `shown` and `chip` shared whole.
+- *The `G` lookup at the block's head, whose twin's arm is today's literals* (Grunge 1, sections
+  4–10) — a third arm; Lime's and Grunge's untouched.
+- *The node walker* and *the paired diff walk* (Grunge 2) — all three masters, the twins' card
+  bindings read beside them, which is what named card 3's ink a missed override.
+- *A scheme that did not move can still move the binding* (Grunge 3) — every string on `text/1`,
+  the idle chips on `sem/bg`, the lit one on `tag/1/bg`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — none on any node; the
+  featured seat draws nothing.
+- *The glow is a seat: rendered index `i % 3 === 1`* (Lime 1, section 7; D1) — kept, reaching
+  nothing under Editorial.
+- *A frame's inside stroke is an inset `boxShadow`* (Lime 2, section 1) — the idle chips' ring and
+  the root's; the cards' dashes through `DashRule`.
+- *`BookPill` has a Lime branch* (Lime 1, section 1; D1) — a nested scheme's literals, and an
+  additive `discBg`.
+- *A leak that shows and reads as a defect is overridden* (Grunge 1, section 4) — card 3's ink.
+- *Emptied content drops its node* (Lime 1, section 7) — inherited whole.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the heading.
+- *One five-theme digest is the whole proof for a shared-helper change* (Lime 1, sweep) —
+  `BookPill`'s `discBg`, 645 renders static and live.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -1463,3 +1547,8 @@ Section 6:
    Grunge's draw a window of four, and hangs its left arrow disc 10.88 off its own page. Followed
    the seven, overrode the disc to the wider masters' 0.69. Worth telling the designer: the 390
    frame also spaces the leant card by its rotated box where the 1440 and 768 frames do not.
+9. **Pricing's third card** (section 7) — the frame binds its name, £, unit, blurb and features
+   `text/2` (ink) where the first two cards bind `text/1` (paper), at all three widths; the twins
+   bind `text/2` on all three, so it reads as an override applied to two cards of three. Drawn
+   paper on all three. One line to reverse if the designer meant a third-seat mark. Worth telling
+   the designer.
