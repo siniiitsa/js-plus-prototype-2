@@ -129,7 +129,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 1 | `header` | `964:58612` | Headers — hero | 1440 × 750 | `986:48238` | 768 × 1024 | `986:48251` | 390 × 844 | 3 | `964:58588` | `964:58600` | done `e47847d` |
 | 2 | `bio` | `964:58613` | Bios — A · Flanked portrait | 1440 × 769 | `986:48239` | 768 × 1135 | `986:48252` | 390 × 731 | 1 | `964:58589` | `964:58601` | done `28b668c` |
 | 3 | `media` | `964:58614` | Media Player — D · Floating cards stack | 1440 × 1140.2 | `986:48241` *(in `986:48240`)* | 768 × 1629.6 | `986:48253` | 390 × 1211.8 | 2 | `964:58590` | `964:58602` | done `83c499b` |
-| 4 | `gallery` | `964:58615` | Gallery Sections — Component 1 | 1440 × 818 | `986:48242` | 768 × 1123 | `989:22410` | 390 × 791.7 | 1 | `964:58591` | `964:58603` | todo |
+| 4 | `gallery` | `964:58615` | Gallery Sections — Component 1 | 1440 × 818 | `986:48242` | 768 × 1123 | `989:22410` | 390 × 791.7 | 1 | `964:58591` | `964:58603` | done `1f4b606` |
 | 5 | `repertoire` | `964:58616` | Repertoire — A · Two-column dense | 1440 × 1055 | `986:48243` | 768 × 897 | `986:48255` | 390 × 896 | 3 | `964:58592` | `964:58604` | todo |
 | 6 | `map` | `964:58617` | Events Map — D · Compact tile | 1440 × 1191.2 | `986:48244` | 768 × 1308.6 | `986:48256` | 390 × 1132.5 | 1 | `964:58593` | `964:58605` | todo |
 | 7 | `pricing` | `964:58618` | Pricing — B · 3-col in soft panel | 1440 × 880 | `986:48245` | 768 × 793 | `986:48257` | 390 × 1486 | 2 | `964:58594` | `964:58606` | todo |
@@ -657,10 +657,12 @@ Append as the pass goes. Do not repeat Lime's, Grunge's or Retro's bullets; name
   `strokeDasharray`, `overflow: visible`, no pointer. The caller is `position: relative`, passes
   the node's own `dashPattern` (× 0.82 on desktop; the 1px weight stays 1) and its stroke's scheme
   key, and pads its whole inset back — the overlay takes no height, which is what an INSIDE
-  stroke is. It draws `side` 'top' or 'bottom'; **the four-sided card** (the gallery's 5, 5, the
-  pricing cards' 8, 8, the form's shell, the testimonials) is the gallery session's to add — a
-  `<rect>` inset half the weight with `rx`, and its `width` / `height` as CSS `calc(100% - w)`
-  (SVG attributes take no `calc`), checked in the render before it is trusted.
+  stroke is. It draws `side` 'top' or 'bottom', or **`side="all"` for the four-sided card**
+  (section 4; next the pricing cards' 8, 8, the form's shell and the testimonials): the *svg* is
+  inset half the weight and sized `calc(100% - w)` in CSS, and one `<rect width="100%"
+  height="100%">` fills it with `rx` = `radius` − w/2 — so no `calc` sits on an SVG attribute.
+  The caller passes `radius` (× 0.82 on desktop) and is `position: relative`. Checked at 3× in
+  the render: dashes on all four sides, wholly inside.
 - **The tape is `Tape`** (section 3): `if (!s.editorial) return null`, a 206 × 56 `overflow:
   hidden` strip in `colour ?? s.activeBg` (media's binding; pass the node's own elsewhere — the
   calendar's terracotta), clipping the 213.09² grain raster at SCREEN from (−2.93, 0.15), × `z`.
@@ -1056,6 +1058,71 @@ four ink ones are its own register.
 - **Moved, theme 3 only** (digest: exactly `media` arch 0 at three widths, static and live — 3 of
   645 each; zero at themes 0, 1, 2 and 4). No shared helper changed.
 
+### Settled in section 4 (the gallery)
+
+- **No Editorial block: `Gallery`'s `if (s.lime || s.grunge)` inside `if (s.v0)` is `s.limeTree`**,
+  still after the seam, with `const ed = s.editorial` and a third arm at the head of `G`
+  (Lime's and Grunge's arms untouched). The tree is Lime's node for node at all three widths (68
+  / 68 / 68, walked with parent-relative `x`/`y`, `dashPattern`, per-side weights and binding
+  names). No nested scheme; the 390 master carries a third mode, `770:2`, which is **Device:
+  Mobile** (`get_variable_defs`: 48 / 11 / 13), so every size is an `s.*` read.
+- **The deltas, all off `boundVariables`:**
+  - **rows** gap **11** (Lime 5, Grunge 4), radius **2**, dashed **5, 5** on all four sides, 1px
+    INSIDE — `box/3` on the open row, `stroke/1` on the closed, both opaque ink (trap 1, followed);
+    the open row `active/bg` under an **`INNER_SHADOW` 0, 0 blur 4 at .25**, the closed rows'
+    drop shadow hidden; the glyph seat an **unradiused** square in 1px of `stroke/1`, the vectors
+    at stroke 1 in `stroke/1` (open) and `box/3` (closed) — all ink; the label **Label/MD** (20 at
+    1.1, `s.labelMd`), UPPER; the inks and the pluses are Lime's `ink` already;
+  - the **heading** one tone in `text/1` across Grunge's positional split, uppercase; the kicker,
+    ←, Back link and brand `text/1` (`s.ac`), GALLERY `tag/2/bg` (the same terracotta);
+  - the **viewer is a polaroid**: `Frame 183` leans **Figma +1 → CSS `rotate(-1deg)`** (the other
+    way from the tape) and carries **one effect, a `DROP_SHADOW` 5, 4 blur 4 at .25** — the "inner
+    shadow and a drop shadow" the brief named are the open row's and the card's, one each. Inside
+    it a `box/1` card, **padding 20**, radius 0, round a `sem/bg` photograph (545 × 496 / 668 × 485
+    / 330 × 305.28); card 536 / 525 / 345.28. The brackets (`14` / `512` at `388`) and the desktop
+    counter (`410, 380`, `box/3` chip, `text/1`) keep Lime's numbers, **in the photograph's box**;
+  - the **arrow row is a sibling of the polaroid on the lean card**, so it leans with it and is
+    not clipped: discs `active/bg` in 1px of `stroke/1` round Lime's own arrow vector in
+    `active/text`; 73.6 tall at **238.94** down at 1440 and 768 and **149.14** at 390; flush at
+    1440 (0.69 / 0.7), **6.86 past the card's right edge at 768** and 5.29 at 390, followed;
+  - the **strip**: square tiles on `sem/bg`, 1px of `stroke/2` idle and **8** on the viewer's tile
+    (`u(8)`, 6.6 on the canvas) — the seat mechanism, so the canvas rings slot 3 by
+    construction; gap 30 from the card (Lime 10);
+  - the **tape** is `tag/1/bg` (`s.chips[0].bg`, blush), SCREEN grain, Figma −3 → CSS +3, a
+    sibling of the card in the card-and-strip column, seated by centre off that column's
+    top-left: **(299.67, 7.28)** at 1440 and 768 — the same x on both masters, so left of centre
+    at 768, as its render shows — and **(177.43, 8.94)** at 390. No un-rotation: its parent is
+    upright.
+- **The 390 strip is seven tiles, not the seam's window of four.** Lime's and Grunge's 390
+  masters draw four 85-wide tiles (read off `989:22110` / `989:22292`); Editorial's draws all
+  seven at 44.29. So under `ed` the strip maps the whole `strip` and `shown` / `from` go unread —
+  every slot reachable without sliding. One line to reverse, and CLAUDE.md's "Mobile draws four
+  of the seven" becomes layout 1's rule under Retro, Lime and Grunge only (the sweep's).
+- **Only the 390 master spaces the lean card by its rotated box**: its strip stands at 351.69 +
+  30, not 345.28 + 30, and the card's centre is 3.2 below its slot's; the 1440 and 768 masters
+  stack the unrotated slot (566 = 536 + 30, 555 = 525 + 30). So at 390 alone the card takes
+  `margin: 0.873% 0` — W·sin 1° / 2 a side, section 3's rule.
+- **One named departure: the 390 left disc.** The master hangs it 20.88 past the card, which at
+  our 10 inset is 10.88 off the page — the 412 render's other overhang, and a live control half
+  under the screen edge. It takes the other two masters' **0.69**; the right disc keeps its 5.29.
+  `scrollWidth` at 390 live is 390.
+- **Measured** (harness, against the section root): desktop card 479 × 440 and well 447 × 407
+  (the frame × 0.82: 479.7 × 439.5, 446.9 × 406.7), card box (651, 128.3) against the frame's
+  94.2 + the root's 34.1, discs and tape off the card's centre at (−208.75, 10.0) / (6, −213.7)
+  against (−209.0, 10.1) / (5.8, −213.8), strip 61.5 × 62.3 at 464.4 below the slot's top
+  (464.1); at 768 every box — card, discs, strip, tape — sits on the master's to 0.1 once the
+  root's **56 against the master's 30** top inset is taken off (+24.7, inherited, the twins'
+  too); at 390 the right disc and tape land on the frame's centre offsets exactly and the strip
+  at 381.8 against 381.7, under the same kind of root offset.
+- **Function** (`theme=3&live=1`, puppeteer mouse clicks, 1440 and 390): both discs hit-test to
+  themselves (the tape covers neither); next steps 3 → 4 and wraps 6 → 0, back 0 → 6, a thumb
+  pick moves the 8px ring and the counter, Back to beginning goes to 0; with
+  `&cj={"youtube":…}` the YouTube row is a dashed `<a target="_blank">` and the two empty rows
+  are gone.
+- **Moved, theme 3 only** (digest: exactly `gallery` arch 0 at three widths, static and live — 3
+  of 645 each; zero at themes 0, 1, 2 and 4). `DashRule`'s new branch is additive: media's
+  caller is unchanged.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1139,6 +1206,28 @@ Section 3:
   session 0) — the heading.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
+Section 4:
+- *Where the seam lives inside the branch, the block goes after the seam* (Lime 1, section 4) —
+  `strip`, `active`, `go`, `srcRows` shared whole; `shown` / `from` unread under `ed`.
+- *The `G` lookup at the block's head, whose twin's arm is today's literals* (Grunge 1, sections
+  4–10) — a third arm ahead of Grunge's.
+- *The node walker* and *the paired diff walk* (Grunge 2) — all three masters, with
+  parent-relative `x`/`y`, `dashPattern`, per-side weights and binding names.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — one effect on the card,
+  one on the open row; the brief's "two on the card" was two nodes.
+- *A frame's inside stroke is an inset `boxShadow`, on an overlay* (Lime 2, section 1) — the
+  strip's 1 / 8 ring; the dashed rows through `DashRule` instead.
+- *Leaked tops are followed where they show* and *a leak that shows and reads as a defect is
+  overridden* (Lime 1, section 4; Grunge 1, section 4) — the 768 disc's 6.86 followed, the 390
+  left disc's 20.88 overridden.
+- *Figma auto-layout spaces a rotated child by its rotated bounding box* (memory
+  `figma-frame-reading`) — at 390 only; read per master, not assumed.
+- *A rotated group's metadata x/y is a bounding box* (memory `figma-frame-reading`) — the card's
+  and the tape's centres from their own origin and rotation.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the heading, the labels.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -1174,3 +1263,7 @@ Section 3:
    `sem/bg`) was redrawn as Lime's was, because a playhead is the player's function; the clocks
    were not, being a label beside it. One line to turn (`{ color: s.tx }` → `s.ac`) if the user
    or the designer wants them read. Worth telling the designer with the bar.
+8. **The gallery at 390** (section 4) — the master draws seven 44.29 tiles where Lime's and
+   Grunge's draw a window of four, and hangs its left arrow disc 10.88 off its own page. Followed
+   the seven, overrode the disc to the wider masters' 0.69. Worth telling the designer: the 390
+   frame also spaces the leant card by its rotated box where the 1440 and 768 frames do not.
