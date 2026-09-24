@@ -284,8 +284,22 @@ const SIENNA_MEDIA = '#E6B6A0'
 // height holds and nothing reflows. The caller is `position: relative` and
 // passes the frame's dash (× 0.82 on the desktop canvas; the weight stays a
 // hairline). A line starts on a dash at x 0, as Figma's does. `side` is 'top'
-// or 'bottom'; a card dashed on all four sides is a later section's to add.
-function DashRule({ dash, colour, weight = 1, side = 'bottom' }) {
+// or 'bottom', or 'all' for a card dashed on all four sides (964:58615's
+// source rows, 5, 5): one `<rect>` whose svg is inset half the weight, so the
+// stroke, centred on the rect's edge, lies wholly inside the box. SVG
+// attributes take no `calc`, so the svg is sized in CSS and the rect fills it;
+// `radius` is the card's own, and the rect's is that less the inset.
+function DashRule({ dash, colour, weight = 1, side = 'bottom', radius = 0 }) {
+  if (side === 'all') return (
+    <svg aria-hidden style={{
+      position: 'absolute', left: weight / 2, top: weight / 2,
+      width: `calc(100% - ${weight}px)`, height: `calc(100% - ${weight}px)`,
+      display: 'block', overflow: 'visible', pointerEvents: 'none',
+    }}>
+      <rect width="100%" height="100%" rx={Math.max(radius - weight / 2, 0)} fill="none"
+            stroke={colour} strokeWidth={weight} strokeDasharray={`${dash} ${dash}`} />
+    </svg>
+  )
   return (
     <svg aria-hidden style={{
       position: 'absolute', left: 0, [side]: 0, width: '100%', height: weight,
@@ -12029,11 +12043,39 @@ function Gallery({ s }) {
     // desktop master's arrow row is 545 wide in a 636 card — Lime's 585 − 40,
     // leaked — which stands the right disc 71 in from the edge. Drawn 20 in on
     // both sides, as the 768 master draws it.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial layout 1 (964:58615 · 986:48242 at 768 · 989:22410 at 390) is
+    // the block a third time, the tree Lime's node for node, on Sienna Vale's
+    // Scheme 1 (paper). `ed` names the deltas: the rows are radius-2 boards
+    // dashed 5, 5 on all four sides in ink (`DashRule`), the open one in
+    // terracotta under the frame's INNER_SHADOW 4, the glyph in an unradiused
+    // ruled square; the label is Label/MD; the heading one tone, uppercase,
+    // across Grunge's typed break; and the viewer is a **polaroid** — a paper
+    // card round the photograph, leaning 1° (Figma +1 → CSS −1), under a real
+    // DROP_SHADOW 5, 4 blur 4 (its one effect) and blush tape (Figma −3 → CSS
+    // +3), with the arrow discs on the lean card rather than inside its clip.
+    // The strip is square-cornered and rings its viewer tile at 8 where the
+    // rest take 1, and **the 390 master draws all seven tiles** (44.29 each)
+    // where Lime's and Grunge's draw four, so there is no window to slide.
+    // One named departure: the 390 master hangs its left disc 20.88 past the
+    // card, 10.88 off its own page (the 412 render); it takes the other two
+    // masters' 0.69, and the right disc keeps its own 5.29 overhang.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const z = desk ? 0.82 : 1
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
-      const G = grunge ? {
+      const G = ed ? {
+        rowGap: 11, rowR: u(2), cardR: 0,
+        cardH: desk ? u(536) : tab ? '525px' : '345.3px',
+        cardShadow: `${u(5)} ${u(4)} ${u(4)} rgba(0,0,0,.25)`,
+        // The open row's INNER_SHADOW 4; its ink ring is the dashed overlay,
+        // and the closed rows' drop shadow is hidden.
+        rowOn: `inset 0 0 ${u(4)} rgba(0,0,0,.25)`, rowOff: 'none',
+        top: s.ac, chip: s.box3, discRing: s.stroke1, discInk: s.activeFg,
+        // An idle tile's own fill is `sem/bg`, paper.
+        thumbBg: s.bg, thumbInk: s.tx,
+      } : grunge ? {
         rowGap: 4, rowR: u(10), cardR: u(13),
         cardH: desk ? u(557) : tab ? '524px' : '344px',
         cardShadow: `${u(4)} ${u(4)} ${u(9)} rgba(0,0,0,.16)`,
@@ -12058,24 +12100,25 @@ function Gallery({ s }) {
       const eyebrow = (t, extra) => (
         <span style={{
           fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
-          letterSpacing: s.dls, whiteSpace: 'nowrap', color: s.tx, textTransform: 'uppercase', ...extra,
+          letterSpacing: s.dls, whiteSpace: 'nowrap', color: ed ? s.ac : s.tx, textTransform: 'uppercase', ...extra,
         }}>{t}</span>
       )
 
       // Grunge's frame types Lime's break and colours across it — "See us" in
       // `sem/text/2`, "in action" in `sem/text/1` — so its heading is the media
       // player's: words one and two a block line, the rest a second in the accent.
+      // Editorial's types the same break in one tone, `sem/text/1`.
       const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
       const head = (
         <div style={col(s.mob ? '10px' : u(36))}>
           {eyebrow('Media')}
-          {grunge ? (
+          {grunge || ed ? (
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
-              letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
+              letterSpacing: s.dls, color: ed ? s.ac : s.tx, textTransform: 'uppercase',
             }}>
               <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
-              {titleWords.length > 2 && <span style={{ display: 'block', color: s.ac }}>{titleWords.slice(2).join(' ')}</span>}
+              {titleWords.length > 2 && <span style={{ display: 'block', color: ed ? undefined : s.ac }}>{titleWords.slice(2).join(' ')}</span>}
             </h2>
           ) : (
             <h2 style={{
@@ -12107,18 +12150,21 @@ function Gallery({ s }) {
                 background: g.on ? s.pillBg : s.box1,
                 boxShadow: g.on ? G.rowOn : G.rowOff,
                 cursor: link ? 'pointer' : undefined,
+                ...(ed ? { position: 'relative' } : {}),
               }}>
                 {/* The open disc is `sem/tag/2/text` in a 2px `sem/glow` ring
                     stroked inside; the closed ones are `sem/glow` with the
                     glyph in `sem/box/3`. */}
                 {/* Grunge's seat is an empty radius-6 square in a 1px rule —
                     `sem/box/1` open, the accent closed — round the same vectors
-                    as 1px hairlines, `sem/bg` open and `sem/stroke/2` closed. */}
-                {grunge ? (
+                    as 1px hairlines, `sem/bg` open and `sem/stroke/2` closed.
+                    Editorial's is unradiused, and its rule (`sem/stroke/1`) and
+                    glyph (`stroke/1` open, `box/3` closed) are all ink. */}
+                {grunge || ed ? (
                   <span style={{
-                    width: u(60), height: u(60), flex: 'none', borderRadius: u(6),
-                    boxShadow: `inset 0 0 0 1px ${g.on ? s.box1 : s.ac}`,
-                  }}><LimeSourceGlyph i={i} size={60 * z} color={g.on ? s.bg : s.stroke2} stroke={1} /></span>
+                    width: u(60), height: u(60), flex: 'none', borderRadius: ed ? undefined : u(6),
+                    boxShadow: `inset 0 0 0 1px ${ed ? s.stroke1 : g.on ? s.box1 : s.ac}`,
+                  }}><LimeSourceGlyph i={i} size={60 * z} color={ed ? (g.on ? s.stroke1 : s.box3) : g.on ? s.bg : s.stroke2} stroke={1} /></span>
                 ) : (
                   <span style={{
                     width: u(60), height: u(60), flex: 'none', borderRadius: '999px',
@@ -12127,12 +12173,13 @@ function Gallery({ s }) {
                   }}><LimeSourceGlyph i={i} size={60 * z} color={g.on ? s.ac : s.box3} /></span>
                 )}
                 {desk && (
-                  // Display/List.
+                  // Display/List; Editorial's is Label/MD.
                   <span style={{
-                    flex: 1, minWidth: 0, fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
+                    flex: 1, minWidth: 0, fontFamily: s.display,
+                    fontSize: ed ? s.labelMd : faced(s, s.list), lineHeight: ed ? 1.1 : facedLh(s, 1.2),
                     letterSpacing: s.dls, color: ink,
                     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                    ...(grunge ? { textTransform: 'uppercase' } : {}),
+                    ...(grunge || ed ? { textTransform: 'uppercase' } : {}),
                   }}>{g.label}</span>
                 )}
                 {(g.on || desk) && (
@@ -12141,6 +12188,9 @@ function Gallery({ s }) {
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   }}><LimePlus size={30.248 * z} color={ink} cross={g.on} /></span>
                 )}
+                {/* The frame's INSIDE rule, dashed 5, 5: `sem/box/3` on the
+                    open row, `sem/stroke/1` on the closed — both opaque ink. */}
+                {ed && <DashRule side="all" dash={5 * z} radius={2 * z} colour={g.on ? s.box3 : s.stroke1} />}
               </Tag>
             )
           })}
@@ -12165,7 +12215,8 @@ function Gallery({ s }) {
       // The arrow discs: `#D5E3B2` is Scheme 4's `sem/box/1`, which the gallery's
       // own Scheme 1 does not carry, in a 1px `sem/text/2` ring stroked inside,
       // round the frame's own arrow vector in `sem/bg`. Grunge's are `sem/box/3`
-      // in a `sem/stroke/1` ring round an accent arrow.
+      // in a `sem/stroke/1` ring round an accent arrow; Editorial's are
+      // `sem/active/bg` in the same ring round a `sem/active/text` arrow.
       const mist = '#D5E3B2'
       const arrowPath = (back) => (back
         ? 'M35.2703 27.5863L36.8853 29.1256L30.4633 35.7758L47.3912 35.4804L47.4308 37.7484L30.5029 38.0439L37.1527 44.4453L35.5928 46.0607L26.1944 36.9847L35.2703 27.5863Z'
@@ -12173,7 +12224,7 @@ function Gallery({ s }) {
       const arrow = (back) => (
         <span onClick={s.live ? () => go(active + (back ? -1 : 1)) : undefined} style={{
           width: u(73.605), height: u(73.605), flex: 'none', borderRadius: '999px',
-          background: grunge ? s.box3 : mist, boxShadow: `inset 0 0 0 1px ${G.discRing}`,
+          background: ed ? s.activeBg : grunge ? s.box3 : mist, boxShadow: `inset 0 0 0 1px ${G.discRing}`,
           cursor: s.live ? 'pointer' : undefined,
         }}>
           <svg viewBox="0 0 73.6051 73.5989" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
@@ -12190,13 +12241,19 @@ function Gallery({ s }) {
       // absolute tops of a 420 box, so they float above the foot as the frame
       // draws them; the 390 card is too short to show either, and only the
       // desktop master carries the counter.
-      const card = (
-        <div style={{
-          position: 'relative', overflow: 'hidden', width: '100%',
-          height: G.cardH,
-          borderRadius: G.cardR, background: s.bg,
-          boxShadow: G.cardShadow,
-        }}>
+      //
+      // Editorial's photograph is inset 20 in a paper polaroid, so the
+      // brackets and counter (the same numbers) stand in the photograph's
+      // box, not the card's. The arrow row is a sibling of the polaroid on
+      // the lean card, so it leans with it and is not clipped by it: 73.6
+      // tall at 238.94 down at 1440 and 768 and 149.14 at 390, over the
+      // card's width at 1440, 6.86 past its right edge at 768 and 5.29 at 390.
+      // Only the 390 master spaces the lean card by its rotated box (the
+      // strip at 351.69 + 30, not 345.28 + 30), so only there does the card
+      // give it back: W·sin 1° / 2 a side, a percentage margin being the
+      // column's width. The other two stack the unrotated slot.
+      const well = (
+        <>
           <div style={{ position: 'absolute', inset: 0 }}>
             <Photo s={s} initialsSize={52} src={s.images[active]} ink={s.tx} />
           </div>
@@ -12218,26 +12275,54 @@ function Gallery({ s }) {
           <Grain s={s} exact grunge blend="lighten" opacity={0.29} style={desk
             ? { inset: `${u(6.5)} auto auto 0`, width: '100%', aspectRatio: '1' }
             : { inset: `${tab ? -195.5 : -375.5}px auto auto -132.8px`, width: '973.64px', height: '973.64px' }} />
+        </>
+      )
+      const arrowRow = (
+        <div style={{
+          position: 'absolute',
+          ...(ed ? { left: u(0.69), right: u(desk ? 0.7 : tab ? -6.86 : -5.29), top: u(s.mob ? 149.14 : 238.94), height: u(73.6) }
+            : s.mob ? { inset: 0 } : { left: u(20), right: u(20), top: u(20), height: u(469) }),
+          ...row('0', { justifyContent: 'space-between' }),
+        }}>
+          {arrow(true)}
+          {arrow(false)}
+        </div>
+      )
+      const card = ed ? (
+        <div style={{
+          position: 'relative', width: '100%', height: G.cardH, transform: 'rotate(-1deg)',
+          margin: s.mob ? '0.873% 0' : undefined,
+        }}>
           <div style={{
-            position: 'absolute',
-            ...(s.mob ? { inset: 0 } : { left: u(20), right: u(20), top: u(20), height: u(469) }),
-            ...row('0', { justifyContent: 'space-between' }),
+            height: '100%', boxSizing: 'border-box', padding: u(20),
+            background: s.box1, boxShadow: G.cardShadow,
           }}>
-            {arrow(true)}
-            {arrow(false)}
+            <div style={{ position: 'relative', overflow: 'hidden', height: '100%', background: s.bg }}>{well}</div>
           </div>
+          {arrowRow}
+        </div>
+      ) : (
+        <div style={{
+          position: 'relative', overflow: 'hidden', width: '100%',
+          height: G.cardH,
+          borderRadius: G.cardR, background: s.bg,
+          boxShadow: G.cardShadow,
+        }}>
+          {well}
+          {arrowRow}
         </div>
       )
 
       // Seven tiles across on desktop and at 768, the mobile window of four at
       // 390, each 76 tall at radius 20 in a 1px `sem/stroke/2` ring; the tile the
       // viewer is on trades its ring for the frame's INNER_SHADOW 18 in `sem/glow`.
+      // Editorial's are square, seven at every width, the viewer's ringed at 8.
       const thumbs = (
         <div style={row(u(10), { alignItems: 'stretch' })}>
-          {strip.slice(from, from + shown).map((i) => (
+          {(ed ? strip : strip.slice(from, from + shown)).map((i) => (
             <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
               flex: '1 1 0', minWidth: 0, height: u(76), position: 'relative', overflow: 'hidden',
-              borderRadius: u(20), background: G.thumbBg, cursor: s.live ? 'pointer' : undefined,
+              borderRadius: ed ? undefined : u(20), background: G.thumbBg, cursor: s.live ? 'pointer' : undefined,
             }}>
               {/* An empty tile stands on the frame's own `sem/text/2` fill, so
                   its initials take the ground's ink. */}
@@ -12248,7 +12333,9 @@ function Gallery({ s }) {
                   in nothing — `effects: []`, so no glow here either. */}
               <span aria-hidden style={{
                 position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                boxShadow: grunge
+                boxShadow: ed
+                  ? `inset 0 0 0 ${i === active ? u(8) : '1px'} ${s.stroke2}`
+                  : grunge
                   ? (i === active ? `inset 0 0 0 1px ${s.ac}` : 'none')
                   : i === active ? `inset 0 0 ${u(18)} ${s.glow}` : `inset 0 0 0 1px ${s.stroke2}`,
               }} />
@@ -12257,10 +12344,20 @@ function Gallery({ s }) {
         </div>
       )
 
+      // Editorial's card and strip stand 30 apart, and the tape (`tag/1/bg`)
+      // rides over both from the column, by its centre: (299.67, 7.28) off the
+      // card's top-left at 1440 and 768 — the same x on both masters, so left
+      // of centre at 768, as its render shows — and (177.43, 8.94) at 390.
       const viewer = (
         <div style={col(u(24), { minWidth: 0 })}>
           {top}
-          <div style={col(u(10))}>{card}{thumbs}</div>
+          <div style={col(u(ed ? 30 : 10), ed ? { position: 'relative' } : undefined)}>
+            {card}{thumbs}
+            {ed && <Tape s={s} z={z} colour={s.chips[0].bg} style={{
+              left: u(s.mob ? 177.43 : 299.67), top: u(s.mob ? 8.94 : 7.28),
+              transform: 'translate(-50%, -50%) rotate(3deg)',
+            }} />}
+          </div>
         </div>
       )
 
