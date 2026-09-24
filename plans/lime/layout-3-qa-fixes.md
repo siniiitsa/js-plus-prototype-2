@@ -524,5 +524,6 @@ still show every one of these.
   page on the last name, the h1 included, with a "Your name is required" line, and leaving the
   box puts the name back. Nothing can publish an empty name or the sample one.
 - **JP-045 was not in this batch.** Its complaint (the canvas draws Tickets → on map rows whose
-  link is empty or refused) is still open. JP-048, JP-051 and JP-050 were each held to "canvas
+  link is empty or refused) is still open. *(Fixed since, in `retest-qa-fixes.md`: an empty or
+  refused link now draws no Tickets → and no ↗ on either surface.)* JP-048, JP-051 and JP-050 were each held to "canvas
   and published agree" in their own section.

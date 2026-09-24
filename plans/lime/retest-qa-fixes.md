@@ -53,7 +53,7 @@ and 2.
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-049 | A stored bad enquiry address shows no warning under the box | **Confirmed**: `UrlInput`'s error is blur-only local state, lost on remount | S | no | **done** |
-| 2 | JP-045 | Tickets → / ↗ on the canvas for gigs with no link | **Confirmed**: map layouts 2 and 3 split canvas from live on purpose | S | **user: drop on both** | open |
+| 2 | JP-045 | Tickets → / ↗ on the canvas for gigs with no link | **Confirmed**: map layouts 2 and 3 split canvas from live on purpose | S | **user: drop on both** | **done** |
 | 3 | JP-044 | Repertoire layout-3 titles cut off at 768 | **Confirmed, Lime/Grunge only**: a 19px title beside a `flex: none` artist in a ~148px card | S–M | no (named diff) | open |
 | 4 | JP-046 | *Save 15% on bundles* missing, no field | **A named diff of the fit** (dropped in Retro L3, inherited) | S | **user: add the field** (by the plan) | open |
 | 5 | JP-048 | FEATURED follows position | **Confirmed**: the seat is `i === shown.length - 1` | M | **user: a Featured tick, layout 3 only** | open |
@@ -150,7 +150,29 @@ links must show them on both surfaces.
 **Docs.** CLAUDE.md's map paragraph; the JP-048 Settled note in `layout-3-qa-fixes.md` that cites
 "JP-045's rule".
 
-**Settled.** —
+**Settled** (2026-09-24). The Evidence lines held (16276 / 16693 for the ↗, 17245 / 17591 for
+`showTix`).
+- **Code.** Four tests, one shape: layout 2's ↗ (Lime/Grunge and Retro) is `!!gg.url && …`, and
+  layout 3's `showTix` (Lime/Grunge `gigRowL` and Retro `gigRow`) is `!!gg.url`. `tix` still picks
+  the tag, so a linked row is a span on the canvas and an `<a>` live, as before. Retro's layout-3
+  comment rewritten to say so.
+- **Digest** (a HEAD `e0562c1` worktree on :5174 against the edit on :5173, themes 0, 1, 2, all
+  categories, three widths, port normalised): **exactly the 18 named files differ on the canvas**
+  (map arch 1 and 2 × three themes × three widths), **0 of 387 live**. Inside them: arch 1 loses
+  its four ↗ rows, arch 2 its Tickets → (five wide, one at 390), and the rest is the room freed —
+  venue lines widening (Lime's 768 "Hidden Warehouse" unwraps) and, at 390 under Lime and Grunge,
+  the row's second line going, so the column shortens.
+- **Links still show** (`&cj=` of three gigs — `tix.example.com/a`, `''` and the refused `foo` —
+  map arch 1 and 2, themes 0, 1, 2, three widths, both surfaces): exactly **one** mark per render,
+  a `SPAN` on the canvas and an `A` live, on the linked gig. Layout 2 needed the linked gig
+  second, since its list is the page minus the featured one.
+- **Docs.** CLAUDE.md's map paragraph (the "A gig's `link` reaches all three" sentence); a
+  *fixed since* line on `layout-3-qa-fixes.md`'s "JP-045 was not in this batch". Its JP-048 note's
+  "the JP-045 complaint not repeated" and CLAUDE.md's "JP-045's rule" still read true.
+
+Reply: **fixed.** A gig with no tickets link — or one the address check refuses — no longer draws
+Tickets → (map layout 3) or ↗ (map layout 2), in the editor or on the published page. A gig with a
+link shows it on both.
 
 ---
 

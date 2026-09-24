@@ -16273,7 +16273,7 @@ function EventsMap({ s }) {
                   ...display(titleSize, 1.1),
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{gg.venue}</span>
-                {(tix || !s.live) && (
+                {!!gg.url && (
                   <Tix {...tix} style={{
                     ...bodySm, flex: 'none', color: 'inherit', textDecoration: 'none',
                     cursor: tix ? 'pointer' : undefined,
@@ -16690,7 +16690,7 @@ function EventsMap({ s }) {
                 fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1, letterSpacing: s.dls,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{gg.venue}</span>
-              {(tix || !s.live) && (
+              {!!gg.url && (
                 <Tix {...tix} style={{
                   ...label12, flex: 'none', color: 'inherit', textDecoration: 'none',
                   cursor: tix ? 'pointer' : undefined,
@@ -17242,7 +17242,7 @@ function EventsMap({ s }) {
         const fg = on ? G.litFg : ink
         const tix = extLink(s, gg.url)
         const Tix = tix ? 'a' : 'span'
-        const showTix = !!tix || !s.live
+        const showTix = !!gg.url
         // The 390 master sets the hour after the city — "Manchester · 22:00" —
         // with no hour chip, and stands Tickets → alone under the row (user
         // call, 2026-09-18). The wide rows keep the chip.
@@ -17583,12 +17583,14 @@ function EventsMap({ s }) {
       const on = litRow(i)
       const next = shown[k + 1]
       // The gallery's hide-the-empty-row rule for a link affordance, which is
-      // what layout 2's ↗ already does here: live, the row is a link only where
-      // there is somewhere to go; the canvas keeps the label on every row,
-      // that being the reference design.
+      // what layout 2's ↗ does too: the row is a link only where there is
+      // somewhere to go, and a gig with no address — or one `extUrl()`
+      // refused — draws no Tickets → on either surface (JP-045, user call,
+      // 2026-09-24). The test is `gg.url`, which is resolved on both, not
+      // `tix`, which is null on the whole canvas.
       const tix = extLink(s, gg.url)
       const Tix = tix ? 'a' : 'span'
-      const showTix = !!tix || !s.live
+      const showTix = !!gg.url
       const mark = (
         <span style={col(0, {
           width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',

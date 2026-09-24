@@ -403,7 +403,12 @@ mutated through a single `patch()` helper.
   whole row, layout 2's ↗ and Venue Link pill (beside which its Get Directions pill takes
   `vm.gigs[].directions`, a Google Maps route composed from the venue and city), layout 3's
   Tickets → column — and layout 3 drops
-  the frame's second `↗` beside the venue, the same address marked twice. **Layouts 2 and 3
+  the frame's second `↗` beside the venue, the same address marked twice. An empty or refused
+  `link` draws **no ↗ and no Tickets →, on either surface** (JP-045, user call, 2026-09-24):
+  they read `vm.gigs[].url`, which is resolved on both, never `extLink()`, which is null on the
+  whole canvas — so the canvas no longer promises a link the published row cannot keep. That is
+  the gallery's hide-the-row rule for an affordance; layout 1's row and layout 4's ticker have
+  no mark of their own and stay pictures. **Layouts 2 and 3
   share the frame's four claims as fields** (JP-040, PO call, 2026-09-21; layout 2's fit had
   dropped them and layout 3's QA re-seated them): `status` is the panel's tab and `updated` the
   note beside it, `rings` labels each ring's right edge at the midline (layout 4 too), and
