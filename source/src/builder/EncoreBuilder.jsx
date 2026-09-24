@@ -49,7 +49,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
@@ -551,8 +551,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // a fixed box beside the capsule's padding. Its layout-4 capsule (964:72944)
   // gaps them a fixed 23 at 20px type, and NavBar's `links` takes them off the
   // row the same way.
-  const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75 : null
-  const navGapEm = T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+  // Editorial's capsule (964:58612 "Frame 50") is Lime's again, in Noto Serif
+  // Display (`notoEms`, the face standing in for Fisterra Fora, at its own
+  // glyph size), but its links are Label/SM 16 where Lime's are Display/List
+  // 24, still 23 apart — so its gap is 23/16 of the row's size.
+  const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
+    : T.name === 'Editorial' ? notoEms : null
+  const navGapEm = T.name === 'Editorial' ? 23 / 16 : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -563,6 +568,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // its links against the whole row less these rather than against one cell,
   // which the seeded nine could only fill on two rows. Grunge's layout 2 is
   // that bar in Anton at 0.75, so it takes the same two off `navFace`.
+  // Editorial's display face is its label face, so `navNameEms` is also the
+  // hero title's width in ems: HeaderV0 fits the title to its column with it.
   vm.navNameEms = navFace ? +navFace(vm.brand).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // Whether the tablet header draws its links (JP-039). The 768 masters of
@@ -3817,8 +3824,9 @@ const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.he
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
-  // The flat two show their Figma header as a still (photos.js). It is
-  // SPOT_ASPECT already, so `cover` crops nothing — not `contain`.
+  // Pop, the one flat template left, shows its Figma header as a still
+  // (photos.js). It is SPOT_ASPECT already, so `cover` crops nothing — not
+  // `contain`.
   const { name } = THEMES[themeIdx]
   const still = TEMPLATE_STILLS[name]
   if (still) {

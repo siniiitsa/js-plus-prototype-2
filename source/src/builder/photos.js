@@ -66,7 +66,6 @@ import editorialCalendar from './photos/editorial-calendar.jpg'
 import editorialGallery4 from './photos/editorial-gallery-4.jpg'
 import editorialGallery6 from './photos/editorial-gallery-6.jpg'
 import editorialGallery7 from './photos/editorial-gallery-7.jpg'
-import editorialHeader from './photos/editorial-header.jpg'
 import popHeader from './photos/pop-header.jpg'
 
 const REVIEWERS = [review1, review2, review3]
@@ -213,15 +212,15 @@ export const EDITORIAL_HEADER_AVATAR = editorialHeaderAvatar
 // where `map` is inverted onto a dark plate.
 export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 
-// The template picker's picture of each flat template: a flattened render of its
-// Figma header instance (Editorial 964:58612, Pop 964:58624; Grunge's went when
-// its hero was fitted, and its card is a live HeaderV0 like Retro's and Lime's),
-// shown in place of the flat header until the template is designed. A still
-// because the frames set their type in demo faces this app cannot load, so it
-// carries Figma's mock copy rather than the artist's name. 1440×750 is the
+// The template picker's picture of the flat template: a flattened render of its
+// Figma header instance (Pop 964:58624; Grunge's and Editorial's went when their
+// heroes were fitted, and their cards are a live HeaderV0 like Retro's and
+// Lime's), shown in place of the flat header until the template is designed. A
+// still because the frames set their type in demo faces this app cannot load,
+// so it carries Figma's mock copy rather than the artist's name. 1440×750 is the
 // picker frame's own 1180×614 aspect to within a pixel. Picker only — nothing
 // the editor renders reads this.
-export const TEMPLATE_STILLS = { Editorial: editorialHeader, Pop: popHeader }
+export const TEMPLATE_STILLS = { Pop: popHeader }
 
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
 // nothing, which is what leaves Pop rendering exactly as it did.

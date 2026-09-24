@@ -411,6 +411,26 @@ const ANTON_EM = {
 export const antonEms = (text, track = 0.02) =>
   [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + track, 0)
 
+// Noto Serif Display's, at the one instance index.html serves (wdth 62.5, a
+// site naming no weight clamped to 540) — Editorial's display and label face,
+// standing in for the caps-only Fisterra Fora, so set in caps as well. Read
+// off the rendered DOM in the harness, not canvas measureText, which sees
+// neither the width axis nor an unloaded webfont. Untracked (Sienna Vale
+// states 0). Summed a character at a time they land within 2.1% of each
+// measured label ("Availability", the most kerned), and over, never under.
+const NOTO_EM = {
+  A: 0.588, B: 0.546, C: 0.52, D: 0.602, E: 0.513, F: 0.488, G: 0.599, H: 0.648, I: 0.311,
+  J: 0.313, K: 0.587, L: 0.513, M: 0.758, N: 0.623, O: 0.617, P: 0.501, Q: 0.617, R: 0.554,
+  S: 0.451, T: 0.511, U: 0.589, V: 0.552, W: 0.848, X: 0.565, Y: 0.534, Z: 0.51,
+  ' ': 0.175, '&': 0.623, '·': 0.222, '/': 0.191, '-': 0.249, "'": 0.148, '.': 0.222,
+  ',': 0.222, '!': 0.291, '?': 0.43, ':': 0.231, '(': 0.304, ')': 0.304, '+': 0.425,
+}
+
+// A label's width in ems of Noto Serif Display; digits and anything unlisted
+// take 0.448, the digits' own advance.
+export const notoEms = (text) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (NOTO_EM[ch] ?? 0.448), 0)
+
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has
@@ -433,14 +453,17 @@ export const NVAR = {
 // Retro's page-N components re-skinned — so its family is those four and
 // no more. Grunge is the same four in a third mode (Static Youth), all four
 // pages confirmed in the Figma file and all four fitted — Stacked last, in
-// HeaderV3's widened Lime block — so its family is closed too.
-// Editorial and Pop offer three flat layouts (§10.3); their designs do not
-// exist yet.
+// HeaderV3's widened Lime block — so its family is closed too. Editorial is
+// the same four in a fourth mode (Sienna Vale), its four pages found in the
+// file (plans/editorial/layout-1.md, *The Figma source*); Hero is fitted, in
+// HeaderV0's Lime block widened, and the other three render Retro's
+// compositions in its tokens until their own passes.
+// Pop offers three flat layouts (§10.3); its designs do not exist yet.
 export const headerFamily = (themeName) =>
   themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
-    : themeName === 'Grunge' ? 'grunge' : 'flat'
+    : themeName === 'Grunge' ? 'grunge' : themeName === 'Editorial' ? 'editorial' : 'flat'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, flat: 3 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, flat: 3 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -502,9 +525,10 @@ const PHOTOGRAPHIC_NAMES = [
 const HEADER_NAMES = {
   photographic: PHOTOGRAPHIC_NAMES,
   // The same HeaderV0…V3, so the same names — sliced, not copied, so a rename
-  // reaches both templates.
+  // reaches every template.
   lime: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lime),
   grunge: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.grunge),
+  editorial: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.editorial),
   flat: [
     ['Centred', 'Title, tags and buttons'],
     ['Split', 'Text beside an image'],
