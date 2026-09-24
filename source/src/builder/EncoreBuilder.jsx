@@ -356,11 +356,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // names. A site only some of them share stays a named pair, widened per
     // site from the frame.
     designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge',
-    // Grunge's layout-1, layout-2 and layout-3 pages are the same components in
-    // a third mode, Static Youth, so its decoration — at layout 1 torn black
-    // seams round its textured bands, grain and the red seal, at layouts 2 and 3
-    // rings where Lime glows — goes behind this flag in the shared branches, the way
-    // Lime's does. A value two templates share is written as
+    // Grunge's four layout pages are the same components in a third mode,
+    // Static Youth, so its decoration — at layout 1 torn black seams round its
+    // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
+    // Lime glows, and at layout 4 torn seams again where Lime draws arcs — goes
+    // behind this flag in the shared branches, the way Lime's does. A value two templates share is written as
     // the pair: `(s.retro || s.grunge)` for grain and torn edges,
     // `(s.lime || s.grunge)` for the `sem` reads and the capsule nav.
     grunge: T.name === 'Grunge',
@@ -529,9 +529,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Grunge's layout-2 capsule (964:64618) gaps its links a fixed 18 at 16px
   // type and again at 13, and its layout-3 one (964:68686) at 20 and 14, so
   // there the sum is the labels alone and HeaderV1 / HeaderV2 add the gaps as
-  // a fixed box beside the capsule's padding.
+  // a fixed box beside the capsule's padding. Its layout-4 capsule (964:72944)
+  // gaps them a fixed 23 at 20px type, and NavBar's `links` takes them off the
+  // row the same way.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75 : null
-  const navGapEm = T.name === 'Grunge' && (d === 1 || d === 2) ? 0 : 23 / 24
+  const navGapEm = T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))

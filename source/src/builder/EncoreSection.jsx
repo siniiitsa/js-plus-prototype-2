@@ -440,7 +440,7 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // `size` overrides the name's type — additive, `BookPill`'s `size` precedent,
 // and read under Lime alone: its 390 hero master is set in the Tablet device
 // mode, so the name there is the 768 ramp's 21 where `s.labelLg` is 14.
-function Wordmark({ s, logo = false, color, glyph, size }) {
+function Wordmark({ s, logo = false, color, glyph, size, gap }) {
   if (s.lime) {
     // Lime's frame: Label/LG, letterSpacing 0, 13.15 from the globe (× 0.82).
     return (
@@ -455,9 +455,10 @@ function Wordmark({ s, logo = false, color, glyph, size }) {
     // 28 on both narrow masters — at 13.15 × 0.82 from the globe, 10 narrow.
     // A literal, since `s.title` is the heading string (`vm.title` shadows the
     // ramp's size). Anton stands in for the all-caps Stones Crush, so the
-    // capitals are a transform.
+    // capitals are a transform. `gap` is the layout-4 capsule's 13.15, which
+    // its narrow masters keep where the hero's close it to 10 — additive.
     return (
-      <span style={row(s.narrow ? '10px' : '11px')}>
+      <span style={row(gap ?? (s.narrow ? '10px' : '11px'))}>
         {logo && <LogoMark s={s} color={color} glyph={glyph} />}
         <span style={{
           fontFamily: s.display, fontSize: faced(s, size ?? (s.narrow ? '28px' : '29.5px')), lineHeight: facedLh(s, 1.1),
@@ -887,15 +888,21 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // Grunge's seal (964:58600 "Frame 178") is the same component again — the
   // same 125.37 / 120 / 109.3 / 14 and the same "Group 9" — as a `sem/active/bg`
   // disc with black marks, which is this branch's Scheme 3 pair on Grunge's
-  // own palette, so it takes that pair whatever `scheme` says. The footer's
+  // own palette, so it takes that pair unless `scheme` is 4 (below). The footer's
   // (964:58610 "Frame 178") is the frame that draws another: a `sem/bg` disc
   // with its rings and ticks in `sem/stroke/2` and the name in `sem/active/bg`
   // — the two reds the mode states, both followed. `line` asks for it; it is
   // additive and Grunge's alone, so every caller written before it, and every
   // layout this pass has not fitted, keeps the red disc.
+  //
+  // Grunge's layout-4 header (964:72944's "Frame 247") nests the seal in
+  // Scheme 4, which in Static Youth is Scheme 1 byte for byte: a black
+  // `sem/bg` disc with its marks and name in `sem/text/1` red. So under Grunge
+  // `scheme={4}` asks for that pair — the one caller that passes it — and
+  // every other scheme keeps the red disc.
   if ((s.lime || s.grunge) && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
-    const [disc, mk] = s.grunge ? (line ? [s.bg, s.stroke2] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
+    const [disc, mk] = s.grunge ? (line ? [s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
     const nameMk = s.grunge && line ? s.ac : mk
     return (
       <div style={{
@@ -1214,7 +1221,13 @@ function LimePin({ s, width, height, radius }) {
 // narrow masters; and the 390 master closes the capsule's gap to 10, which a
 // 28px name needs to hold one row. That master is in the Tablet device mode
 // too, so its name is the 768 ramp's 28.
-function NavBar({ s, colour, rule, pill, nameSize, nameColour }) {
+// `mark` ({ glyph, gap }) and `links` ({ gap, cap }) are Grunge's layout-4
+// capsule (964:72944 "Frame 49"), additive like `nameSize`: its narrow masters
+// keep the desktop globe (36, 13.15 from the name) where the hero's shrink it,
+// and its links sit a fixed 23 apart at Label/MD rather than 23/24 em at the
+// row's size — so the gaps come off `100cqi` and `s.navEms` counts the labels
+// alone (sectionVm's `navGapEm`). Every earlier caller passes neither.
+function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links }) {
   const c = colour || s.tx
   const bar = rule || c
   const tab = isTablet(s)
@@ -1233,8 +1246,9 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour }) {
       } : null),
     })}>
       <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
-        <Wordmark s={s} logo glyph={lime ? (!s.narrow ? 29.5 : s.grunge ? 27.37 : 36) : s.narrow ? 27 : undefined}
-                  size={lime && s.mob ? (nameSize ?? (s.grunge ? '28px' : '21px')) : undefined} color={nameColour || c} />
+        <Wordmark s={s} logo glyph={mark?.glyph ?? (lime ? (!s.narrow ? 29.5 : s.grunge ? 27.37 : 36) : s.narrow ? 27 : undefined)}
+                  size={lime && s.mob ? (nameSize ?? (s.grunge ? '28px' : '21px')) : mark ? nameSize : undefined}
+                  gap={mark?.gap} color={nameColour || c} />
         {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
             123px on the 1180 canvas. It has to yield rather than push the Book
             Now pill onto a second line: the nav carries the page's own section
@@ -1266,7 +1280,10 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour }) {
           <nav style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size' }}>
             <div style={{
               display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end',
-              gap: `${23 / 24}em`, fontSize: `clamp(${s.grunge ? 16 : 12}px, calc(100cqi / ${s.navEms}), ${s.list})`,
+              ...(links ? {
+                gap: links.gap,
+                fontSize: `clamp(12px, calc((100cqi - ${links.gap} * ${Math.max(0, s.navLinks.length - 1)}) / ${s.navEms}), ${links.cap})`,
+              } : { gap: `${23 / 24}em`, fontSize: `clamp(${s.grunge ? 16 : 12}px, calc(100cqi / ${s.navEms}), ${s.list})` }),
             }}>
               {s.navLinks.map((l) => (
                 <a key={l.label} href={navHref(s, l.to)}
@@ -1296,9 +1313,8 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour }) {
  *
  * Lime's and Grunge's header families are the first four of them in their own
  * tokens (`headerFamily()`), because header card N lays out the whole page as
- * layout N. All four, HeaderV0–V3, are fitted to Lime's frames; Grunge's
- * HeaderV0, V1 and V2 are fitted and its V3 is the placeholder its own layout
- * pass will fit.
+ * layout N. All four, HeaderV0–V3, are fitted to Lime's frames and to
+ * Grunge's.
  * ------------------------------------------------------------------ */
 
 // v0 — Header layout 1 · Hero (§10.2 reference design)
@@ -2704,7 +2720,7 @@ function HeaderV3({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
-  if (s.lime) {
+  if (s.lime || s.grunge) {
     // Lime's Stacked header (964:72849 at 1440, 971:5299 at 768, 977:8867 at
     // 390). Retro's skeleton node for node — the nav on the top edge, the
     // avatar tile over the identity panel on the floor, the chips at the
@@ -2729,8 +2745,19 @@ function HeaderV3({ s }) {
     // is `sem/box/2` (the location's square). Its `sem/bg` is `s.ac` and its
     // `sem/text/1` is `s.bg`, which is why the location and the seal's marks
     // are ink on this header where every other Lime header inks them pale.
-    const lime3 = '#CCFA61'
-    const lift = '#D9FF7F'
+    //
+    // Grunge's (964:72944 / 971:7823 / 977:12044) is this tree node for node
+    // in Static Youth, Scheme 3, and `grunge` names what it draws otherwise
+    // (plans/grunge/layout-4.md, section 1). Scheme 3's `sem/text/1` is black,
+    // so the kicker, the location and the name's second word are `s.bg`; its
+    // `box/1` `#9E1F17` is the avatar's well in a 1px white `stroke/2` at a raw
+    // 12, and its `box/2` `#F52E34` the location's square. The name holds one
+    // line at 1440 as well (no hand-break), two-tone white / black; the chips
+    // are `vm.tagChips`' own seats; the photograph is FILL, so not mirrored;
+    // and the frame's last child is the grain sheet, over everything.
+    const grunge = s.grunge
+    const lime3 = grunge ? '#9E1F17' : '#CCFA61'
+    const lift = grunge ? '#F52E34' : '#D9FF7F'
     const kicker = desk ? u(36) : tab ? '28px' : '26px'
     // The frames' page inset — 56 / 30 / 10 round the nav, 56 / 30 / 20 round
     // the block below it — plus `s.surplus`, Retro's reading of the same
@@ -2747,9 +2774,14 @@ function HeaderV3({ s }) {
       <div style={{
         width: avW, height: desk ? u(118.68) : '119px', flex: 'none',
         position: 'relative', overflow: 'hidden', background: lime3,
-        border: `${u(3.04)} solid ${s.mob ? s.bg : lime3}`, borderRadius: u(26.95),
+        border: grunge ? undefined : `${u(3.04)} solid ${s.mob ? s.bg : lime3}`, borderRadius: u(grunge ? 12 : 26.95),
       }}>
-        <Photo s={s} avatar initialsSize={Math.round(parseFloat(avW) * 0.3)} ink={s.bg} />
+        <Photo s={s} avatar initialsSize={Math.round(parseFloat(avW) * 0.3)} ink={grunge ? s.tx : s.bg} />
+        {/* Grunge's ring is 1px inside, over the photograph: an overlay. */}
+        {grunge && <div aria-hidden style={{
+          position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+          boxShadow: `inset 0 0 0 ${u(1)} #FFFFFF`,
+        }} />}
       </div>
     )
 
@@ -2761,15 +2793,16 @@ function HeaderV3({ s }) {
         {/* Display/Title in `scheme/1/text2`, pale — the frame types
             "DJ · LIVE ACT", so the caps are the CSS's (Retro's reading). */}
         <span style={{
-          fontFamily: s.display, fontSize: kicker, lineHeight: 1.1,
-          letterSpacing: s.dls, color: s.tx, textTransform: 'uppercase',
+          fontFamily: s.display, fontSize: faced(s, kicker), lineHeight: facedLh(s, 1.1),
+          letterSpacing: s.dls, color: grunge ? s.bg : s.tx, textTransform: 'uppercase',
         }}>{s.kicker}</span>
         {/* The 1440 master hand-breaks the name after its first word; both
             narrow masters set it `w-[min-content] min-w-full`, one line at
             their own sizes. `inline` at narrow only, Retro's reading. The .75
             leading is the frame's own at all three widths (read off the text
             nodes), not Retro's alone. */}
-        <Title s={s} size={s.dispXl} lh={0.75} color={s.tx} inline={s.narrow} />
+        <Title s={s} size={s.dispXl} lh={0.75} color={s.tx} inline={s.narrow || grunge}
+               twoTone={grunge} toneA={s.tx} toneB={s.bg} />
         <span style={row(u(8), { minWidth: 0 })}>
           {/* A 14 square at `radius/chip` in Scheme 3's `sem/box/2`, and the
               location in Display/List inked `sem/text/1` — ink on the lime. */}
@@ -2777,8 +2810,9 @@ function HeaderV3({ s }) {
             width: u(14), height: u(14), borderRadius: s.radiusChip, background: lift, flex: 'none',
           }} />
           <span style={{
-            fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
+            fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
             letterSpacing: s.dls, color: s.bg, whiteSpace: 'nowrap',
+            textTransform: grunge ? 'uppercase' : undefined,
           }}>{s.location}</span>
         </span>
       </div>
@@ -2802,7 +2836,7 @@ function HeaderV3({ s }) {
       }}>
         {s.tagChips.map((c, i) => (
           <span key={i} style={{
-            background: i % 2 ? s.tx : s.box1, color: i % 2 ? s.activeFg : s.ac,
+            background: grunge ? c.bg : i % 2 ? s.tx : s.box1, color: grunge ? c.fg : i % 2 ? s.activeFg : s.ac,
             borderRadius: s.radiusChip, padding: `${u(5)} ${u(11)}`,
             fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
             letterSpacing: s.dls, whiteSpace: 'nowrap',
@@ -2834,7 +2868,7 @@ function HeaderV3({ s }) {
             the right, clear of the name. Its cost is a mirrored upload at
             desktop alone, named here rather than declined. */}
         <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} backdrop style={desk ? { transform: 'scaleX(-1)' } : undefined} />
+          <Photo s={s} backdrop style={desk && !grunge ? { transform: 'scaleX(-1)' } : undefined} />
         </div>
         {/* Scheme 3's `sem/bg` — `s.ac` — off the floor to a transparent stop
             in Scheme 1's `sem/bg` at the top, the frame's own two stops. */}
@@ -2855,7 +2889,12 @@ function HeaderV3({ s }) {
             Bebas Neue, disc 32.75, padding 3.56 / 14.95, gap 7.12 — where
             BookPill's `small` is × 0.62. Both go through additive props. */}
         <div style={{ position: 'relative', padding: `0 ${navPad}` }}>
-          <NavBar s={s} colour={s.tx} nameSize={s.mob ? s.labelLg : undefined}
+          {/* Grunge's capsule names itself at Label/LG at every width, keeps
+              the 36 globe 13.15 off it narrow, and spaces its Label/MD links
+              a fixed 23 (NavBar's `mark` / `links`). */}
+          <NavBar s={s} colour={s.tx} nameSize={s.mob || grunge ? s.labelLg : undefined}
+                  mark={grunge ? { glyph: desk ? 29.5 : 36, gap: desk ? '11px' : '13.15px' } : undefined}
+                  links={grunge ? { gap: u(23), cap: s.labelMd } : undefined}
                   pill={s.mob ? {
                     size: '11.39px', disc: 32.75,
                     style: { padding: '3.56px 3.56px 3.56px 14.95px', gap: '7.12px' },
@@ -2884,12 +2923,26 @@ function HeaderV3({ s }) {
             scan of the renders (1316.5 / 230.5 at 1440): 768 and 390 land on
             Retro's own numbers, and 1440 sits 8 further right and 31 lower.
             768 anchors from the floor for Retro's reason. */}
-        <SealBadge s={s} scheme={s.mob ? 3 : 4} tilt={26.06}
+        {/* Grunge's seal: `Frame 247` nests Scheme 4 (≡ 1) at 1440 — a black
+            disc, red marks — but states no scheme at 768, so it inherits the
+            header's Scheme 3 there, and `Frame 248` is Scheme 3 at 390: red
+            with black marks at both. Same boxes as Lime's at all three. */}
+        <SealBadge s={s} scheme={grunge ? (desk ? 4 : 3) : s.mob ? 3 : 4} tilt={26.06}
                    size={desk ? +(125.37 * z).toFixed(2) : tab ? 125.37 : 85}
                    style={{
                      ...(tab ? { bottom: '185.46px' } : { top: desk ? u(168.46) : '134.35px' }),
                      right: `calc(${s.surplus} + ${desk ? u(60.11) : tab ? '51.17px' : '20.65px'})`,
                    }} />
+        {/* Grunge's `image 1` is the frame's last child, so it lies over the
+            whole header — nav, type and seal included — at lighten .29, its
+            gradient paint hidden: a 1440 square hung 270 above the top at
+            1440, the header's own width 1030 / 850 tall from 6 above it
+            narrow. Grain returns nothing under Lime. */}
+        <Grain s={s} exact grunge blend="lighten" opacity={0.29} style={{
+          inset: `${desk ? u(-270) : '-6px'} 0 auto 0`,
+          height: desk ? undefined : tab ? '1030px' : '850px',
+          aspectRatio: desk ? '1' : undefined,
+        }} />
       </div>
     )
   }
@@ -4454,15 +4507,42 @@ function Bio({ s }) {
   // padding, landing the box ~6 low at 1440. The desktop card itself lands on
   // the frame's own half: 544.1 × 590.4 against 664 × 720 × 0.82, since the
   // sheet bleeds and hands the section the frame's 1328 measure.
-  if (s.v3 && s.lime) {
+  //
+  // ── Grunge ─────────────────────────────────────────────────────────────
+  // Grunge's layout-4 bio (964:72952 · 971:7831 · 977:12052) is Lime's tree
+  // plus three nodes, so it widens this block (plans/grunge/layout-4.md,
+  // section 2). The band is Scheme 3's red with the head in black and "KM BIO"
+  // white; the instance is Scheme 1 at 1440 and Scheme 3 narrow, so the well is
+  // #0E0E0E / #82211B and the prose box #1A1A1A / #9E1F17. The new nodes: the
+  // photograph's `image 1` grain, a `Frame 255` dimmer over the glass, and at
+  // 390 a torn foot. Radii 15 / 7.5 / 2.5. The photograph is a plain `FILL` of
+  // `grungeStage`, a centred cover (0.958 against the render), so no seed.
+  if (s.v3 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     // Scheme 2's `box/3` and `box/2` — the media card's and the testimonials'
     // literals — on the two narrow instances alone; Scheme 1's keys at 1440.
-    const well = desk ? s.box3 : '#263020'
-    const dusk = desk ? s.box2 : '#43523B'
+    const well = desk ? s.box3 : grunge ? '#82211B' : '#263020'
+    // Grunge's instance is Scheme 1 at 1440 and Scheme 3 narrow, and its prose
+    // box is bound to `sem/box/1` where Lime's is `sem/box/2` (a moved binding).
+    const dusk = desk ? (grunge ? s.box1 : s.box2) : grunge ? '#9E1F17' : '#43523B'
+    // Grunge's glass is Lime's #2E3928 at 1% (a leak, invisible) under
+    // `Frame 255`, a `sem/bg` dimmer at .5 over the whole panel and under the
+    // text — #000000 at 1440, Scheme 3's #DF262C narrow — drawn as the panel's
+    // own fill, one layer.
+    const glass = grunge ? `${desk ? s.bg : s.ac}80` : `${s.box1}B5`
+    const upper = grunge ? { textTransform: 'uppercase' } : null
+    // Grunge's name is `sem/text/2` then `text/1` at the first space: white /
+    // red on Scheme 1 at 1440, white / black on Scheme 3 narrow.
+    const brand = () => {
+      if (!grunge) return s.brand
+      const i = s.brand.indexOf(' ')
+      if (i === -1) return s.brand
+      return <>{s.brand.slice(0, i)} <span style={{ color: desk ? s.ac : s.bg }}>{s.brand.slice(i + 1)}</span></>
+    }
     const panelPad = u(s.mob ? 20 : 30)
     // The phone's photo stage (below): its height, and how far the panel
     // stands up into it.
@@ -4476,14 +4556,14 @@ function Bio({ s }) {
         : col(u(s.mob ? 15 : 30), { alignItems: 'flex-start' })}>
         <span style={{
           fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
-          letterSpacing: s.dls, textTransform: 'uppercase', color: s.bg,
+          letterSpacing: s.dls, textTransform: 'uppercase', color: grunge ? s.tx : s.bg,
         }}>{s.initials} Bio</span>
         {/* The 572.9 measure is on the text node at 1440 and 768 and is what
             breaks the head — three lines at 1440, two at 768; the 390 master
             states the full 370. */}
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: s.dispXl, lineHeight: 0.75,
-          letterSpacing: s.dls, color: s.bg,
+          margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispXl), lineHeight: facedLh(s, 0.75),
+          letterSpacing: s.dls, color: s.bg, ...upper,
           maxWidth: s.mob ? undefined : u(572.9), wordBreak: 'break-word',
         }}>{s.title}</h2>
         {/* The Tags instance's own 457 at 1440 and 768 (six chips wrap to two
@@ -4513,24 +4593,29 @@ function Bio({ s }) {
       </div>
     )
 
+    // Grunge's 390 Section pads its foot 60 where Lime's pads 30: the room for
+    // the torn seam it owns there (below).
+    const padV = u(desk ? 116 : tab ? 60 : 30)
+    const padB = grunge && s.mob ? '60px' : padV
     return (
       <div style={{
         // The sheet: out to the section's own edges, past the root's padding.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
         background: s.ac, color: s.bg,
-        padding: `${u(desk ? 116 : tab ? 60 : 30)} calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'})`,
+        ...(grunge ? { position: 'relative' } : null),
+        padding: `${padV} calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) ${padB}`,
         // Two `minmax(0, 1fr)` columns rather than two `flex: 1 1 0` halves:
         // a zero basis resolves against the content box, so the padded card
         // came out 24.6 wider than the head (the enquiry form's layout-3 trap).
         ...(desk
           ? { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'stretch' }
-          : col(u(tab ? 40 : 15))),
+          : col(u(tab ? 40 : grunge ? 10 : 15))),
       }}>
         {head}
         <div style={{
           ...(desk ? { minWidth: 0 } : null),
           position: 'relative', overflow: 'hidden', background: well,
-          borderRadius: u(55),
+          borderRadius: u(grunge ? 15 : 55),
           // The frame's own height as a floor, HeaderV3's rule: the panel is
           // content-tall, so a second paragraph grows the card.
           minHeight: u(s.mob ? 536 : 720),
@@ -4548,12 +4633,19 @@ function Bio({ s }) {
             : { position: 'absolute', inset: 0 }}>
             <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={s.tx} />
           </div>
+          {/* Grunge's `image 1`: a 640-wide sheet centred on the card at every
+              width, card-tall, lighten .5, under a #0B0B0B foot paint to 16.3%
+              that is a mask under `lighten` (the layout-1 bio's recipe). */}
+          <Grain s={s} exact grunge blend="lighten" opacity={0.5} style={{
+            left: '50%', width: u(640), transform: 'translateX(-50%)',
+            maskImage: 'linear-gradient(0deg, transparent 0%, #000 16.3%)',
+          }} />
           <div style={{
             position: 'relative', width: '100%', overflow: 'hidden',
-            borderRadius: u(27), padding: panelPad,
+            borderRadius: u(grunge ? 7.5 : 27), padding: panelPad,
             // `s.box1` at .71 as an 8-digit hex (no `rgba()` in the file),
             // over the frame's 54 backdrop blur, emitted as CSS 27.
-            background: `${s.box1}B5`,
+            background: glass,
             backdropFilter: `blur(${u(27)})`, WebkitBackdropFilter: `blur(${u(27)})`,
             ...col(panelPad, { alignItems: 'stretch' }),
           }}>
@@ -4561,13 +4653,13 @@ function Bio({ s }) {
               {/* Wraps, the layout-3 card's call: at leading 1 a clip would cut
                   the descenders off at the baseline. */}
               <p style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
-                letterSpacing: s.dls, color: s.ac, wordBreak: 'break-word',
-              }}>{s.brand}</p>
+                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
+                letterSpacing: s.dls, color: grunge ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
+              }}>{brand()}</p>
               {meta}
             </div>
             <div style={{
-              background: dusk, color: s.tx, borderRadius: u(13.5), padding: u(20),
+              background: dusk, color: s.tx, borderRadius: u(grunge ? 2.5 : 13.5), padding: u(20),
               ...col(u(10), { alignItems: 'stretch' }),
             }}>
               <p style={{ margin: 0, ...body, fontSize: s.bodyLg }}>{s.bioP1}</p>
@@ -4583,6 +4675,12 @@ function Bio({ s }) {
             }} />
           )}
         </div>
+        {/* Grunge's 390 master gives the bio the tear between it and the
+            media band (977:16058, #1A1A1A); drawn in the band's own #171716,
+            layout 1's neighbour's-ground rule — 3 in 255 off the frame. */}
+        {grunge && s.mob && (
+          <TornEdge s={s} grunge side="bottom" bleed={false} height={40} colour="#171716" />
+        )}
       </div>
     )
   }
@@ -4642,8 +4740,9 @@ function Bio({ s }) {
             it outside the header. At .75 a stacked line of caps collides in
             every display face taller than Fraunces (Titan One and Bebas Neue
             both overlap outright), so every template but Retro degrades to
-            .89 — the flat three, since Lime's own block above takes its
-            frames' .75 in Bebas Neue — which is the leading every other
+            .89 — the flat two, since the Lime block above takes its
+            frames' .75 (Bebas Neue, and Anton under Grunge, which widens
+            it) — which is the leading every other
             display head in this file already sets — the page's own ramp
             rather than an invented number. */}
         <h2 style={{
@@ -6742,18 +6841,55 @@ function Media({ s }) {
   // not the root's 346 that wrapped it in layout 3. The one named diff is
   // Retro's: the frame's bar is a hand-set 140 of 218 where ours is the
   // element's.
-  if (s.v3 && s.lime) {
+  //
+  // ── Grunge (964:72959 · 971:7955 at 768 · 977:12182 at 390, in the band
+  // 964:72953 · 971:9533 · 977:12176) ───────────────────────────────────────
+  // Lime's tree node for node (the paired diff at all three widths), in
+  // Static Youth's Scheme 2, so this block is widened and `G` names the
+  // deltas. Three moved values: the band, the tiles' well and the play glyph
+  // are Scheme 2's `sem/bg` #171716 (Lime reads `s.box1`, #1A1A1A here), and
+  // the bar's track is bound to `sem/box/2` #222222 where Lime's is
+  // `sem/box/1` (a moved binding; `s.box2` is #383838 here). Every other ink
+  // resolves through the same keys: `s.ac` is the frame's #DF262C, `s.tx`
+  // its white. The two glows are **rings in two reds** (no effect on any
+  // master): the sleeve 1px inside `scheme/1/stroke/2` #FF0000 (`s.stroke2`),
+  // tile one 1px inside `sem/text/1` #DF262C (`s.ac`), both still inset
+  // shadows on an overlay so no photograph is inset. Radii are a raw 15 (Lime
+  // 50), tile padding 20 (Lime 30). The 768 and 390 instances carry
+  // `Device: Tablet` as Lime's 390 does; the body sizes are Grunge's own,
+  // 12 / 12 at 1440 and 12 / 11 narrow (Lime 13 / 13 and 13 / 12).
+  // The boxes move at the two narrow widths, which is the 68 the 768
+  // instance lost: its band pads 100 / 100 with a 10 gap and the instance
+  // pads 0 at its foot, so the sheet's foot is 100 and head-to-player 66, and
+  // the tiles are 136 × 135 (three rows of them are the left column's 445);
+  // the 768 head frame pads 30 where the instance pads 56, so the head stands
+  // 26 left of the player, followed. The 390 band pads 60 / 60 (Lime 100), so
+  // 60 over the head and 70 under the player. The seams are Grunge's torn
+  // vector (`TornEdge grunge`), not arcs: a red `#DF262C` head (the bio's
+  // ground) and a black foot at 1440 and 768, 70 / 83 and 62 / 52 deep — the
+  // black-run per column off the renders, which matches the node arithmetic.
+  // The foot's paint is bound to `sem/tag/2/bg` (red in Scheme 2) but fills
+  // #000000, and the render is black: it is the page below, `s.bg`. At 390
+  // the band draws none; the bio owns the tear between them, in this band's
+  // #171716 (its section 2).
+  if (s.v3 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     const un = (v) => Math.round(v * z * 10) / 10
+    const G = grunge
+      ? { band: '#171716', track: '#222222', radius: 15, pad: 20, body: 12, chip: desk ? 12 : 11 }
+      : { band: s.box1, track: s.box2, radius: 50, pad: 30, body: 13, chip: desk ? 13 : 12 }
     const tk = desk
-      ? { title: 36, list: 24, body: 13, chip: 13 }
-      : { title: 28, list: 19, body: 13, chip: 12 }
+      ? { title: 36, list: 24, body: G.body, chip: G.chip }
+      : { title: 28, list: 19, body: G.body, chip: G.chip }
+    const disp = grunge ? { textTransform: 'uppercase' } : null
     // The tiles' foot fade, the twin's own gradient (0 → black at 88.942%).
     const scrim = 'linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 88.942%)'
-    const glow = `inset 0 0 ${u(34)} ${s.ac}`
+    const glow = grunge ? `inset 0 0 0 1px ${s.stroke2}` : `inset 0 0 ${u(34)} ${s.ac}`
+    const mark = grunge ? `inset 0 0 0 1px ${s.ac}` : glow
     const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
 
     // Body/Chip: Inter Bold at lh 1, tracked −6% of its own size.
@@ -6776,7 +6912,7 @@ function Media({ s }) {
     // outright at 390), on a pale `sem/text/3` well under the lime glow.
     const sleeveBox = (
       <div style={{
-        borderRadius: u(50), overflow: 'hidden', position: 'relative', background: s.tx,
+        borderRadius: u(G.radius), overflow: 'hidden', position: 'relative', background: s.tx,
         ...(s.mob
           ? { aspectRatio: '370 / 302', flex: 'none', width: '100%' }
           : { flex: '1 0 0', minHeight: u(308 * 302 / 370), width: '100%' }),
@@ -6794,8 +6930,8 @@ function Media({ s }) {
       <div style={row('0', { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
         <span style={col(u(4), { flex: '1 1 auto', minWidth: 0 })}>
           <span style={{
-            fontFamily: s.display, fontSize: u(tk.title), lineHeight: 1.1,
-            letterSpacing: s.dls, color: s.ac, ...clip,
+            fontFamily: s.display, fontSize: u(faced(s, tk.title)), lineHeight: facedLh(s, 1.1),
+            letterSpacing: s.dls, color: s.ac, ...clip, ...disp,
           }}>{now.track}</span>
           <span style={{
             fontFamily: s.body, fontSize: u(tk.body), lineHeight: 1.4,
@@ -6806,7 +6942,7 @@ function Media({ s }) {
           {skip(true, () => goTo(at - 1))}
           <span style={{
             width: u(48), height: u(48), borderRadius: '999px', flex: 'none',
-            background: s.ac, color: s.box1,
+            background: s.ac, color: G.band,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: s.live ? 'pointer' : undefined,
           }} onClick={s.live ? toggle : undefined}>
@@ -6822,7 +6958,7 @@ function Media({ s }) {
     const progress = (
       <div style={row(u(10), { width: '100%', flex: 'none' })}>
         <span style={clockType}>{now.at}</span>
-        <span style={{ flex: 1, minWidth: 0, height: u(3), background: s.box2, borderRadius: u(2) }}>
+        <span style={{ flex: 1, minWidth: 0, height: u(3), background: G.track, borderRadius: u(2) }}>
           <span style={{
             display: 'block', position: 'relative', height: '100%',
             width: `${now.pct}%`, background: s.tx, borderRadius: u(2),
@@ -6848,25 +6984,26 @@ function Media({ s }) {
       }}>
         {s.tracks.map((t, i) => (
           <div key={i} onClick={onPick(i)} style={{
-            position: 'relative', overflow: 'hidden', borderRadius: u(50), background: s.box1,
-            aspectRatio: desk ? '289.33 / 269.5' : tab ? '136 / 139' : '180 / 123.33',
-            padding: u(30), cursor: s.live ? 'pointer' : undefined,
+            position: 'relative', overflow: 'hidden', borderRadius: u(G.radius), background: G.band,
+            aspectRatio: desk ? '289.33 / 269.5' : tab ? (grunge ? '136 / 135' : '136 / 139') : '180 / 123.33',
+            padding: u(G.pad), cursor: s.live ? 'pointer' : undefined,
             ...col(u(4), { alignItems: 'flex-start', justifyContent: 'flex-end' }),
           }}>
             <span style={{ position: 'absolute', inset: 0 }}>
-              <Photo s={s} initialsSize={un(26)} src={t.img} ink={s.tx} style={{ background: s.box1 }} />
+              <Photo s={s} initialsSize={un(26)} src={t.img} ink={s.tx} style={{ background: G.band }} />
             </span>
             {/* The scrim, carrying the seat's glow: `at` is 0 until the visitor
                 picks, so the canvas draws the frame's own glowing first tile.
                 The radius is repeated here, or the parent's clip squares the
                 glow's inner corners (Retro's ring note). */}
             <span style={{
-              position: 'absolute', inset: 0, background: scrim, borderRadius: u(50),
-              boxShadow: i === at ? glow : undefined,
+              position: 'absolute', inset: 0, background: scrim, borderRadius: u(G.radius),
+              boxShadow: i === at ? mark : undefined,
             }} />
             <span style={{
               position: 'relative', width: '100%', fontFamily: s.display,
-              fontSize: u(tk.list), lineHeight: 1.2, letterSpacing: s.dls, color: '#FFFFFF', ...clip,
+              fontSize: u(faced(s, tk.list)), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, color: '#FFFFFF',
+              ...clip, ...disp,
             }}>{t.name}</span>
             {t.rel && (
               <span style={{
@@ -6884,16 +7021,23 @@ function Media({ s }) {
         // The sheet: out to the section's own edges, past the root's padding,
         // in Scheme 2's `sem/bg`. `position: relative` seats the two arcs.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-        background: s.box1, color: s.tx, position: 'relative', ...col('0'),
+        background: G.band, color: s.tx, position: 'relative', ...col('0'),
       }}>
-        <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />
+        {grunge
+          ? !s.mob && (<>
+              <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 70 * z : 62} colour={s.ac} />
+              <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 83 * z : 52} colour={s.bg} />
+            </>)
+          : <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />}
         <div style={{
-          padding: `${u(desk ? 156 : 100)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 156 : tab ? 106 : 110)}`,
-          ...col(u(s.mob ? 20 : 56)),
+          padding: grunge && !desk
+            ? `${u(tab ? 100 : 60)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(tab ? 100 : 70)}`
+            : `${u(desk ? 156 : 100)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 156 : tab ? 106 : 110)}`,
+          ...col(u(s.mob ? 20 : grunge && tab ? 66 : 56)),
         }}>
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg,
-            lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+            margin: grunge && tab ? `0 0 0 ${u(-26)}` : 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+            lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...disp,
           }}>{s.title}</h2>
           <div style={{
             ...(s.mob ? col(u(20)) : row(u(desk ? 112 : 56), { alignItems: 'stretch' })),
@@ -9010,8 +9154,40 @@ function Pricing({ s }) {
     // draws one on its second row alone (Retro's reading, inherited);
     // `tierKind` prints one word on every row; the pill reads "Start Enquiry"
     // against the frame's "Star Enquiry", so it is a few px wider.
-    if (s.lime) {
-      const featSeats = [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
+    //
+    // Grunge (964:73021 at 1440 × 542; 971:8137 at 768 × 806; 977:12364 at 390
+    // × 829) is this tree node for node at all three widths (61 = 61; the 768
+    // master merely stacks its three 1px divs in row order where Lime's pile
+    // after the rows), on Static Youth's Scheme 1 with no Device override and
+    // no effect. Every text is `sem/text/1`, red — `s.ac`, Lime's key — and
+    // every size is `THEME_RAMP.Grunge`'s `s.*` (label-sm 16 / 13 / 12, chip
+    // 12 / 11 / 11, display-sm 50 / 40 / 30), so what moves is:
+    //   · the rule, `sem/stroke/2` **#FF0000** (`s.stroke2`), where Lime's
+    //     resolves to its accent — 4px INSIDE the foot, the same weights on
+    //     every row;
+    //   · the feature pills, `vm.chips`' own seats by index (#1A1A1A lettered
+    //     white, #DF262C lettered the leaked #0D1F03), the layout-4 header's
+    //     reading of the same Tags component — the frame letters its third
+    //     and fourth seats white through `scheme/3` / `scheme/4` tokens, the
+    //     override the header named and did not model; `radius/chip` 4 is
+    //     `s.radiusChip` already;
+    //   · the tag chips' hairline is the frame's unbound #F2FFD0 at 15%, Lime's
+    //     literal leaked onto black, where it reads as Scheme 1's white 15%
+    //     `sem/stroke/1` — so it stays `s.stroke1`, named;
+    //   · the price column hugs at **177** (Lime 184): Stones Crush's narrower
+    //     "Star Enquiry" pill is the column's widest child;
+    //   · the name and the numeral are Stones Crush, so `faced` / `facedLh`
+    //     and uppercase; the kind and the pill's label go through
+    //     `labelStyle`, which faces them already.
+    // The pill is the same turned-round pair: white under a black label, a
+    // black disc round a red arrow — BookPill's shared branch draws exactly
+    // that from `bg={s.tx} fg={s.bg} discFg={s.ac}`.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const featSeats = grunge ? s.chips : [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
+      const disp = grunge
+        ? { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1), textTransform: 'uppercase' }
+        : { fontSize: s.dispSm, lineHeight: 1 }
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
         letterSpacing: '-0.06em',
@@ -9019,7 +9195,7 @@ function Pricing({ s }) {
       const limeRow = (last) => ({
         ...(desk ? row(u(40), { alignItems: 'flex-start' }) : col('32px', { alignItems: 'flex-start' })),
         ...bleedX, paddingTop: pad, paddingBottom: pad,
-        boxShadow: last ? undefined : `inset 0 ${u(-4)} 0 0 ${s.ac}`,
+        boxShadow: last ? undefined : `inset 0 ${u(-4)} 0 0 ${grunge ? s.stroke2 : s.ac}`,
         color: s.ac,
       })
 
@@ -9027,7 +9203,7 @@ function Pricing({ s }) {
         <div key={t.n} style={limeRow(i === s.tiers.length - 1)}>
           {!!t.name && (
             <span style={{
-              fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+              fontFamily: s.display, ...disp,
               letterSpacing: s.dls, overflowWrap: 'break-word', textTransform: 'uppercase',
               ...(desk ? { width: u(409), flex: 'none' } : { width: '100%' }),
             }}>{t.name}</span>
@@ -9073,7 +9249,7 @@ function Pricing({ s }) {
 
           <div style={col(u(12), {
             alignItems: 'flex-start',
-            ...(desk ? { flex: 'none', minWidth: u(184) } : { width: '100%' }),
+            ...(desk ? { flex: 'none', minWidth: u(grunge ? 177 : 184) } : { width: '100%' }),
           })}>
             {!!s.tierKind && <span style={labelStyle(s, s.labelSm)}>{s.tierKind}</span>}
             {!!t.price && (
@@ -9082,7 +9258,7 @@ function Pricing({ s }) {
                   fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
                 }}>from</span>
                 <span style={{
-                  fontFamily: s.display, fontSize: s.dispSm, lineHeight: 1,
+                  fontFamily: s.display, ...disp,
                   letterSpacing: s.dls, overflowWrap: 'break-word', minWidth: 0,
                 }}>{t.price}</span>
               </span>
@@ -11016,12 +11192,40 @@ function Repertoire({ s }) {
     //
     // And one box: the 390 Section pads **100** below, not Retro's 60 — 948 =
     // 30 + 818 + 100 — so the foot inset is 150 / 150 / 100.
-    if (s.lime) {
-      const lime3 = '#CCFA61' // Scheme 3 `sem/box/1` — the panel
-      const ink = s.bg        // Scheme 3 `sem/text/1` = `sem/text/2`
+    //
+    // Grunge (964:73011 · 971:8128 · 977:12355) widens the block: the paired
+    // diff against the Lime twin's Sections is 96 = 96 nodes at every width,
+    // Scheme 3 on the Section as under Lime, so the band (`s.ac`), the head,
+    // the titles, the rail's rings and letters, the lit cell (`s.bg` filled,
+    // lettered `s.ac`) and the ink-at-.15 rules all resolve through Lime's
+    // keys. What moves, read off the nodes and their `boundVariables`:
+    //
+    //  · **The panel's binding moved**: `sem/box/2`, `#F52E34`, where Lime's
+    //    is `sem/box/1` (`lime3`).
+    //  · **`sem/text/2` is white on Grunge's Scheme 3** where Lime's is its
+    //    ink, so the sub, the group letters and the artist are `s.tx` and only
+    //    the `sem/text/1` nodes stay `s.bg` (`ink2`).
+    //  · **The desktop instance pads 32 all round** (Scheme 3 stated on it,
+    //    Lime's pads 0), which is the frame's 600 against Lime's 536 and its
+    //    872 list against 936. The narrow instances pad nothing.
+    //  · **The 390 Section pads 60 below** (901 = 30 + 811 + 60), not Lime's
+    //    100; the 811 panel is the smaller Grunge head (46 against 54).
+    //  · **The foot is layout 1's torn vector** in black (`s.bg`; bound
+    //    `sem/tag/2/bg` at 1440 and `sem/text/1` narrow, black on all three),
+    //    1554 / 882 / 1541.3 wide — leaked — and its depth the node
+    //    arithmetic, 52.8 / 44 / 43, the media's and the gallery's convention.
+    //  · Stones Crush stands in as Anton: the head, the titles and the artists
+    //    are `faced` / `facedLh` and uppercase. The rail's radius (4) and its
+    //    Inter 12 are `s.radiusChip` and `s.bodySm` already.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const lime3 = grunge ? '#F52E34' : '#CCFA61' // Scheme 3 `sem/box/2` / `sem/box/1` — the panel
+      const ink = s.bg        // Scheme 3 `sem/text/1` (= `sem/text/2` under Lime)
+      const ink2 = grunge ? s.tx : ink // Scheme 3 `sem/text/2`
       const rule = `${ink}26` // `sem/stroke/1` — the ink at .15
-      const titleSize = desk ? u(36) : tab ? '28px' : '26px' // Display/Title
-      const bodyLg = { fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls, color: ink }
+      const upper = grunge ? { textTransform: 'uppercase' } : null
+      const titleSize = faced(s, desk ? u(36) : tab ? '28px' : '26px') // Display/Title
+      const bodyLg = { fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls, color: ink2 }
 
       const railCell = (l) => {
         const on = letters.has(l)
@@ -11076,14 +11280,16 @@ function Repertoire({ s }) {
                   overflow: 'hidden',
                 })}>
                   <span style={{
-                    fontFamily: s.display, fontSize: titleSize, lineHeight: 1.1,
+                    fontFamily: s.display, fontSize: titleSize, lineHeight: facedLh(s, 1.1),
                     letterSpacing: s.dls, color: ink, minWidth: 0,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    ...upper,
                   }}>{sg.title}</span>
                   {sg.artist && (
                     <span style={{
-                      fontFamily: s.display, fontSize: s.list, lineHeight: 1.2,
-                      letterSpacing: s.dls, color: ink, flex: 'none', whiteSpace: 'nowrap',
+                      fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
+                      letterSpacing: s.dls, color: ink2, flex: 'none', whiteSpace: 'nowrap',
+                      ...upper,
                     }}>· {sg.artist}</span>
                   )}
                 </div>
@@ -11099,18 +11305,21 @@ function Repertoire({ s }) {
           background: s.ac, color: ink, position: 'relative',
           padding: `${u(s.mob ? 30 : 100)} `
                  + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
-                 + `${u(s.mob ? 100 : 150)}`,
+                 + `${u(s.mob ? (grunge ? 60 : 100) : 150)}`,
         }}>
-          <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />
+          {grunge
+            ? <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 52.8 * z : tab ? 44 : 43} colour={s.bg} />
+            : <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />}
           <div style={col(u(40), {
             background: lime3, borderRadius: u(60),
             padding: s.mob ? `${u(40)} ${u(30)}` : u(tab ? 50 : 60),
           })}>
             <h2 style={{
-              margin: 0, fontFamily: s.display, fontSize: s.dispLg,
-              lineHeight: 0.89, letterSpacing: s.dls, color: ink,
+              margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+              lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: ink,
+              ...upper,
             }}>{s.title}</h2>
-            <div style={col(u(24))}>
+            <div style={col(u(24), grunge && desk ? { padding: u(32) } : undefined)}>
               <span style={bodyLg}>All songs · A–Z</span>
               {desk ? (
                 <div style={row(u(40), { alignItems: 'flex-start' })}>{list}{rail}</div>
@@ -12695,23 +12904,59 @@ function Gallery({ s }) {
     // 60), so the insets are 156 / 130 / 100 over and 56 / 30 / 40 under; the
     // 390 card is **337** tall (Retro's 343.14). Every other number is the
     // twin's, through `u()`.
-    if (s.lime) {
+    //
+    // ── Grunge ─────────────────────────────────────────────────────────────
+    // Grunge layout 4 (964:73004 · 971:8121 · 977:12348, in the 964:72969 /
+    // 971:8086 / 977:12313 wrappers) is this block in Static Youth's mode:
+    // the paired diff against Lime's wrappers found every box the same but
+    // the 390 wrapper's head pad, **60** where Lime's is 100. The wrapper and
+    // instance are Scheme 3, so the band `s.ac` and the head's `s.bg` already
+    // resolve to #DF262C and black; the deltas are the dress, in `G`:
+    //  · the MEDIA eyebrow is `sem/text/2`, **white** under Scheme 3, and the
+    //    head is Stones Crush, so `faced` / `facedLh` / uppercase;
+    //  · the spotlight's well is Scheme 3's `box/3` #82211B at radius **15 /
+    //    4 / 4** (Lime 50 / 50 / 4 — the 768 node says 4), under grain `image
+    //    1`: a 550.5 square hung 0.5 in from the photograph's top-left, clipped
+    //    by it, LIGHTEN at .29, its gradient paint hidden;
+    //  · the thumbs' well is `sem/tag/1/bg` #9E1F17 (`box/1`), ringed in black —
+    //    `s.bg` again, so the 1 / 3 / 4 ring is Lime's mechanism unchanged;
+    //  · the discs are Scheme 4 ≡ 1's `box/3` `s.box3` #0E0E0E in a 0.754
+    //    black ring, the arrow `stroke/2` #FF0000 at the wide widths and
+    //    `sem/text/1` **#DF262C** on the 390 pills, which are radius **5** and
+    //    carry **no** shadow. The blur 18.1 stands behind an opaque fill.
+    // The head seam is layout 1's torn vector, `TornEdge grunge`: 1554 × 581
+    // at y −513.18 / −514.67 / −544.67, so 67.8 / 66.3 / 36.3 deep by node
+    // arithmetic (black-run max off the renders 67 / 65 / 33 — the 390 frame
+    // shows a slice of the vector's middle, the bio's 390 case). It is the
+    // frame's black (`sem/bg`), not the media band's #171716: the media owns a
+    // black foot tear at 1440 and 768, so the two meet as one black tear
+    // where the frame's video band stood (named, plans/grunge/layout-4.md).
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const un = (v) => Math.round(v * z * 10) / 10
-      const well3 = '#9CCF23'
-      const mist = '#D5E3B2'
+      const G = grunge
+        ? { well3: '#82211B', well1: '#9E1F17', mist: s.box3, ring: s.bg,
+            arrow: s.mob ? s.ac : s.stroke2, eyebrow: s.tx, photoR: desk ? 15 : 4,
+            pillR: 5, initials: s.tx }
+        : { well3: '#9CCF23', well1: s.bg, mist: '#D5E3B2', ring: s.tx,
+            arrow: s.bg, eyebrow: s.bg, photoR: s.mob ? 4 : 50,
+            pillR: 60, initials: s.bg }
+      const well3 = G.well3
+      const mist = G.mist
+      const disp = grunge ? { textTransform: 'uppercase' } : null
       const ringW = (i) => (s.mob ? 4 : i === active ? 3 : 1)
 
       const glyph = (turn) => (
         <svg viewBox="0 0 16.02 13.94" width={un(16.02)} height={un(13.94)} aria-hidden
              style={{ display: 'block', flex: 'none', transform: turn ? `rotate(${turn}deg)` : undefined }}>
-          <path fill={s.bg} d="M9.17262 13.9348L7.95447 12.7737L12.7985 7.7576L0.0301014 7.98047L0.000240302 6.26973L12.7686 6.04686L7.75277 1.21842L8.92939 -6.17033e-06L16.0184 6.84576L9.17262 13.9348Z" />
+          <path fill={G.arrow} d="M9.17262 13.9348L7.95447 12.7737L12.7985 7.7576L0.0301014 7.98047L0.000240302 6.26973L12.7686 6.04686L7.75277 1.21842L8.92939 -6.17033e-06L16.0184 6.84576L9.17262 13.9348Z" />
         </svg>
       )
 
       const thumb = (i) => (
         <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
           position: 'relative', overflow: 'hidden', minWidth: 0, minHeight: 0,
-          borderRadius: u(s.mob ? 25 : 10), background: s.bg,
+          borderRadius: u(s.mob ? 25 : 10), background: G.well1,
           cursor: s.live ? 'pointer' : undefined,
         }}>
           <span style={{ position: 'absolute', inset: 0 }}>
@@ -12720,7 +12965,7 @@ function Gallery({ s }) {
                 crops where ours are the tall strip photographs, and a centred
                 cover of those into a 121 × 68 pill is a torso with no head. */}
             <Photo s={s} src={s.images[i]} initialsSize={un(26)} ink={s.tx}
-                   style={{ background: s.bg, objectPosition: '50% 0%' }} />
+                   style={{ background: G.well1, objectPosition: '50% 0%' }} />
           </span>
           {/* The ring, over the photograph as Figma strokes it: 1px, the
               active slot's 3px, or the 390 master's 4px on every tile.
@@ -12734,8 +12979,8 @@ function Gallery({ s }) {
 
       const arrowBtn = (key, turn, step) => (
         <span key={key} onClick={s.live ? () => go(active + step) : undefined} style={{
-          height: u(55.514), borderRadius: u(s.mob ? 60 : 10), background: mist,
-          boxShadow: `inset 0 0 0 ${u(0.754)} ${s.tx}${s.mob ? `, 5px 5px 0 ${s.bg}` : ''}`,
+          height: u(55.514), borderRadius: u(s.mob ? G.pillR : 10), background: mist,
+          boxShadow: `inset 0 0 0 ${u(0.754)} ${G.ring}${s.mob && !grunge ? `, 5px 5px 0 ${s.bg}` : ''}`,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: s.live ? 'pointer' : undefined,
           ...(s.mob ? { flex: '1 1 0', minWidth: 0 } : { width: u(55.514), flex: 'none' }),
@@ -12786,13 +13031,18 @@ function Gallery({ s }) {
         }}>
           <div style={{
             width: '100%', height: '100%', position: 'relative', overflow: 'hidden',
-            borderRadius: u(s.mob ? 4 : 50), background: well3,
+            borderRadius: u(G.photoR), background: well3,
           }}>
             {/* Top-anchored as well: the seeded slot 3 is a 1200 × 800 the
                 cover crops sideways, so this is a no-op on the frame's own
                 picture and keeps the heads of the six portrait slots. */}
-            <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={s.bg}
+            <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={G.initials}
                    style={{ background: well3, objectPosition: '50% 0%' }} />
+            {/* Grunge's `image 1`, clipped by the photograph (Grain draws
+                nothing on the other templates). */}
+            <Grain s={s} exact grunge blend="lighten" opacity={0.29} style={{
+              inset: `0 auto auto ${u(0.5)}`, width: u(550.5), height: u(550.5),
+            }} />
           </div>
           {bracket('tl', { top: 0, left: 0, borderTop: edge, borderLeft: edge })}
           {bracket('tr', { top: 0, right: 0, borderTop: edge, borderRight: edge })}
@@ -12808,23 +13058,25 @@ function Gallery({ s }) {
           // seats the arc.
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
           background: s.ac, color: s.bg, position: 'relative',
-          padding: `${u(desk ? 156 : tab ? 130 : 100)} `
+          padding: `${u(desk ? 156 : tab ? 130 : grunge ? 60 : 100)} `
                  + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
                  + `${u(desk ? 56 : tab ? 30 : 40)}`,
           ...col(u(desk ? 112 : tab ? 60 : 24)),
         }}>
-          <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />
+          {grunge
+            ? <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 67.8 * z : tab ? 66.3 : 36.3} colour={s.bg} />
+            : <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />}
           <div style={desk ? row(u(112), { alignItems: 'center' }) : col(u(tab ? 60 : 24))}>
             <div style={col(u(s.mob ? 10 : 36), {
               alignItems: 'flex-start', ...(desk ? { width: u(454), flex: 'none' } : null),
             })}>
               <span style={{
                 fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
-                letterSpacing: s.dls, textTransform: 'uppercase', color: s.bg,
+                letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow,
               }}>Media</span>
               <h2 style={{
-                margin: 0, fontFamily: s.display, fontSize: s.dispLg,
-                lineHeight: 0.89, letterSpacing: s.dls, color: s.bg,
+                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+                lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.bg, ...disp,
               }}>{s.title}</h2>
             </div>
             {s.mob
@@ -14736,8 +14988,9 @@ function Calendar({ s }) {
     // exactly. **That restores the three-level stack Retro's note said Lime
     // flattens**: `box1` rows under a `tx` card on a `box2` panel, where the
     // Retro path's `paper` rows and `tx` card are one colour on Lime.
-    // CLAUDE.md's "on Lime and Grunge the card and the rows share a fill" is
-    // now Grunge's alone — for the sweep. The card's own `stroke/1` (pale at
+    // So the flat body's shared card-and-row fill (CLAUDE.md's calendar
+    // paragraph) is no template's: Grunge's own frame restores the same stack
+    // (below). The card's own `stroke/1` (pale at
     // .15 on pale) is not drawn, Retro's reading of the same stroke; no child
     // reaches a card's edge, so the rings are plain inset shadows. The Back
     // pill nests **Scheme 3** — `sem/text/1` there is `#15180F` = `s.bg`, its
@@ -14762,14 +15015,37 @@ function Calendar({ s }) {
     // full strength. The 390 stepper row is wider than its card in the frame
     // too (its first group stands at x −32), so Retro's clip-about-the-centre
     // mechanism is kept. No node carries an effect at any width.
-    if (s.lime) {
+    //
+    // **Grunge (964:73034 + 964:73033 · 971:8150 + 971:8149 · 977:12377 +
+    // 977:12376, in Frame 324 964:73023 · 971:8139 · 977:12366) is this block
+    // again**: the paired diff against Lime's Frame 324s is 98 = 98 nodes at
+    // every width, Static Youth's Scheme 1 with the same nested schemes, no
+    // Device override and no effect, and every fill binds the key Lime's does
+    // but two. **Two bindings moved**: the panel is `sem/box/3` (`s.box3`,
+    // #0E0E0E) where Lime's is `sem/box/2`, at a raw **15** at 1440 alone (60 /
+    // 30 narrow, Lime's own); and the summary card carries a 1px inside
+    // `sem/stroke/2` ring (#FF0000) that Lime's `stroke/1` card leaves
+    // undrawn. So Grunge keeps the three-level stack too: #1A1A1A rows under
+    // the white `s.tx` card on a #0E0E0E panel. Boxes: the wizard card, the
+    // summary card and the rows are radius **15** (the wizard's 16 narrow is
+    // Lime's), and the card and rows pad **24** at the sides (Lime 34). The
+    // Send Enquiry pill's Scheme 2 `sem/bg` is **#171716**, a named literal
+    // (layout 3's calendar), where Lime's `s.box1` is #1A1A1A here. Every
+    // Stones Crush string goes through `disp`, faced and uppercased. The rest
+    // — `s.ac` chips, heads and Next Step, `s.bg` Back pill, `s.box2` rules,
+    // date box and card ink, the `stroke2` step disc — resolves through
+    // Lime's keys.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const hair = `inset 0 0 0 1px ${s.stroke1}`
       const titleSize = u(desk ? 36 : s.mob ? 26 : 28)
+      const r15 = (lime) => u(grunge ? 15 : lime)
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       const disp = (size, lh, extra) => ({
-        fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+        fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
+        ...(grunge ? { textTransform: 'uppercase' } : null), ...extra,
       })
       const chipType = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -14781,7 +15057,8 @@ function Calendar({ s }) {
       // shared seam's `sumHead` / `sumCells` / `dc` / `pkg` (JP-052).
       const summary = (
         <div style={col(u(20), {
-          background: s.tx, color: s.box2, borderRadius: u(50), padding: `${u(24)} ${u(34)}`,
+          background: s.tx, color: s.box2, borderRadius: r15(50), padding: `${u(24)} ${u(grunge ? 24 : 34)}`,
+          boxShadow: grunge ? `inset 0 0 0 1px ${s.stroke2}` : undefined,
         })}>
           <div style={row(u(14), { justifyContent: 'space-between' })}>
             <div style={col(u(4))}>
@@ -14819,8 +15096,8 @@ function Calendar({ s }) {
       // A refused date takes Lime's blocked state, its parts at .38.
       const infoRow = ({ key, big, sub, end, dim, onClick }) => (
         <div key={key} onClick={onClick} style={row(u(14), {
-          background: s.box1, color: s.tx, borderRadius: u(50), boxShadow: hair,
-          padding: `${u(18)} ${u(34)}`, justifyContent: 'space-between',
+          background: s.box1, color: s.tx, borderRadius: r15(50), boxShadow: hair,
+          padding: `${u(18)} ${u(grunge ? 24 : 34)}`, justifyContent: 'space-between',
           cursor: onClick ? 'pointer' : undefined,
         })}>
           <span style={col(u(2), { minWidth: 0 })}>
@@ -14964,7 +15241,7 @@ function Calendar({ s }) {
       // and *Start again* is the Back pill, since it returns to step 1.
       const wizard = (
         <div style={col(u(20), {
-          background: s.box1, color: s.tx, boxShadow: hair, borderRadius: u(desk ? 50 : 16),
+          background: s.box1, color: s.tx, boxShadow: hair, borderRadius: u(desk ? (grunge ? 15 : 50) : 16),
           padding: desk ? `${u(40)} ${u(48)}` : '30px',
           justifyContent: wSent ? 'center' : 'space-between', alignItems: 'stretch', minWidth: 0,
         })}>
@@ -14997,7 +15274,8 @@ function Calendar({ s }) {
 
       return (
         <div style={col(u(s.mob ? 20 : 50), {
-          background: s.box2, borderRadius: u(s.mob ? 30 : 60), padding: panelPad,
+          background: grunge ? s.box3 : s.box2,
+          borderRadius: u(grunge && desk ? 15 : s.mob ? 30 : 60), padding: panelPad,
         })}>
           <h2 style={{ margin: 0, ...disp(s.dispLg, 0.89, { color: s.ac }) }}>{s.title}</h2>
           <div style={desk
@@ -15013,7 +15291,7 @@ function Calendar({ s }) {
               {pkg && infoRow({
                 key: 'pkg', big: pkg.name, sub: pkg.price, end: nPkg > 1 ? W.pkg : '', onClick: onPkg,
               })}
-              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={s.box1} full={s.mob}
+              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={grunge ? '#171716' : s.box1} full={s.mob}
                         style={{ width: '100%', justifyContent: 'space-between' }} />
             </div>
           </div>
@@ -17919,10 +18197,36 @@ function EventsMap({ s }) {
     // 100 with `justify-end` at every width). The panel's left rule is desktop
     // only, Retro's reading: the narrow masters carry the same 1px left stroke
     // under the card's own ring, where it paints nothing.
-    if (s.lime) {
+    //
+    // Grunge (964:73019 / 971:8136 / 977:12363) is this tree again, node for
+    // node — 64 / 63 / 63 in a paired diff of the two `Frame 319`s — on the
+    // same schemes, with no Device override, and every box and inset Lime's
+    // but the cells' 1px (227.5 / 140 against 226.5 / 139.5). What moves is
+    // the dress, in `G`, whose Lime arm is the block's own literals:
+    // - the card, the cells and the ticker are radius **15** (Lime 50 / 25 /
+    //   50); the cells' ring is still `sem/stroke/2`, **`#FF0000`** here, and
+    //   the ticker's is `sem/stroke/2` too where Lime's is `sem/stroke/1`;
+    // - **the numerals are `sem/text/1`, red** (`s.ac`) — a moved binding,
+    //   Lime's are `sem/text/2` — in Stones Crush 50 / 40 / 26, so `faced` /
+    //   `facedLh` and uppercase like the head;
+    // - inside the Scheme 3 viewport `sem/text/2` is **white**, so the ring
+    //   labels, the marker's ring and glyph and the zoom glyphs are `s.tx`
+    //   where Lime inks them `s.bg`; the zoom squares are `sem/box/2`
+    //   `#F52E34` in Scheme 3's black 15% hairline. Rings, labels and the
+    //   marker's head stay `s.ac`, which is `#DF262C` here. The lit pin's ring
+    //   follows the marker's, white — layout 3's Grunge call.
+    // The 1440 `Vector 2` is Lime's no-op leftover again and is not drawn.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
+      const G = grunge
+        ? { r: 15, cellR: 15, cellRing: s.stroke2, tickRing: s.stroke2, num: s.ac, vpInk: s.tx,
+            lift: '#F52E34', inkHair: '#00000026', cellMin: desk ? 227.5 : 140 }
+        : { r: 50, cellR: 25, cellRing: s.ac, tickRing: s.stroke1, num: s.tx, vpInk: s.bg,
+            lift: '#D9FF7F', inkHair: '#15180F26', cellMin: desk ? 226.5 : 139.5 }
+      const upper = grunge ? { textTransform: 'uppercase' } : null
       const ink = s.tx // sem/text/2 on the card, the cells and the ticker
-      const lift = '#D9FF7F' // Scheme 3 sem/box/2 — the zoom buttons
-      const inkHair = '#15180F26' // Scheme 3 sem/stroke/1, 15% — the zoom buttons' ring
+      const lift = G.lift // Scheme 3 sem/box/2 — the zoom buttons
+      const inkHair = G.inkHair // Scheme 3 sem/stroke/1, 15% — the zoom buttons' ring
       const ring = (c) => `inset 0 0 0 1px ${c}`
       const chipL = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -17930,8 +18234,8 @@ function EventsMap({ s }) {
       }
       const bodySmL = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
       const numeral = s.mob
-        ? { fontSize: '26px', lineHeight: 1.1 }
-        : { fontSize: s.dispSm, lineHeight: 1 }
+        ? { fontSize: faced(s, '26px'), lineHeight: facedLh(s, 1.1) }
+        : { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1) }
       // Outer first: diameter, inside stroke, opacity.
       const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
 
@@ -17965,7 +18269,7 @@ function EventsMap({ s }) {
             {s.mapRings.slice(0, ringW.length).map((label, k) => (
               <span key={k} aria-hidden style={{
                 position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
-                transform: 'translate(-50%, -50%)', background: s.ac, color: s.bg,
+                transform: 'translate(-50%, -50%)', background: s.ac, color: G.vpInk,
                 borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
               }}>{label}</span>
             ))}
@@ -17976,7 +18280,7 @@ function EventsMap({ s }) {
                   position: 'absolute', left: p.x, top: p.y,
                   width: on ? u(14) : u(8), height: on ? u(14) : u(8),
                   borderRadius: '999px', background: on ? s.ac : s.tx,
-                  boxShadow: on ? `0 0 0 2px ${s.bg}` : undefined,
+                  boxShadow: on ? `0 0 0 2px ${G.vpInk}` : undefined,
                   transform: 'translate(-50%, -50%)',
                 }} />
               )
@@ -17989,8 +18293,8 @@ function EventsMap({ s }) {
               alignItems: 'center', transform: 'translate(-50%, -50%)',
             })}>
               <span style={row(0, {
-                background: s.ac, color: s.bg, padding: u(4),
-                boxShadow: `inset 0 0 0 2px ${s.bg}`, borderRadius: '999px',
+                background: s.ac, color: G.vpInk, padding: u(4),
+                boxShadow: `inset 0 0 0 2px ${G.vpInk}`, borderRadius: '999px',
               })}>
                 <User size={Math.round(16 * z)} />
               </span>
@@ -18005,7 +18309,7 @@ function EventsMap({ s }) {
               const onClick = s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined
               return (
                 <span key={glyph} onClick={onClick} style={{
-                  width: u(30), height: u(40), borderRadius: u(8), background: lift, color: s.bg,
+                  width: u(30), height: u(40), borderRadius: u(8), background: lift, color: G.vpInk,
                   boxShadow: ring(inkHair), boxSizing: 'border-box',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
@@ -18033,16 +18337,17 @@ function EventsMap({ s }) {
           }}>
             {stats.map((st, i) => (
               <div key={i} style={col(u(8), {
-                background: s.box1, boxShadow: ring(s.ac), borderRadius: u(25),
+                background: s.box1, boxShadow: ring(G.cellRing), borderRadius: u(G.cellR),
                 padding: `${u(18)} ${u(20)}`, alignItems: 'flex-start', minWidth: 0,
                 ...(s.mob
                   ? { justifyContent: 'space-between' }
-                  : { justifyContent: 'flex-end', minHeight: u(desk ? 226.5 : 139.5) }),
+                  : { justifyContent: 'flex-end', minHeight: u(G.cellMin) }),
               })}>
                 {!!st.label && <span style={chipL}>{st.label}</span>}
                 {!!st.value && (
                   <span style={{
                     fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
+                    color: G.num, ...upper,
                   }}>{st.value}</span>
                 )}
                 {!!st.sub && <span style={bodySmL}>{st.sub}</span>}
@@ -18063,14 +18368,14 @@ function EventsMap({ s }) {
       return (
         <div style={col(desk ? u(56) : '30px')}>
           <h2 style={{
-            margin: 0, fontFamily: s.display, fontSize: s.dispLg,
-            lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+            lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...upper,
           }}>{s.title}</h2>
 
           <div style={col(u(16))}>
             <div style={{
               background: s.box1, color: ink, position: 'relative',
-              borderRadius: u(50), overflow: 'hidden', display: 'grid', alignItems: 'stretch',
+              borderRadius: u(G.r), overflow: 'hidden', display: 'grid', alignItems: 'stretch',
               gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
               rowGap: tab ? '32px' : 0,
             }}>
@@ -18089,8 +18394,8 @@ function EventsMap({ s }) {
 
             {!!gig && (
               <div style={row(u(14), {
-                background: s.box1, color: ink, boxShadow: ring(s.stroke1),
-                borderRadius: u(50), overflow: 'hidden', padding: `${u(12)} ${u(16)}`,
+                background: s.box1, color: ink, boxShadow: ring(G.tickRing),
+                borderRadius: u(G.r), overflow: 'hidden', padding: `${u(12)} ${u(16)}`,
               })}>
                 {nGigs > 1 && <span onClick={step(-1)} style={arrowL}>‹</span>}
                 <GigTagL {...gigLinkL} style={col(u(2), {
@@ -19958,10 +20263,36 @@ function Testimonials({ s }) {
     // stroked by nothing — is ringed like its neighbours, in `stroke1` (pale at
     // .15, all but invisible on ink), which is layout 3's Lime call and Retro's
     // own normalisation of the same cell one frame family over.
-    if (s.lime) {
+    //
+    // Grunge (964:73035 · 971:8152 · 977:12379) widens the block: the paired
+    // diff against the Lime twin is 41 = 41 / 33 = 33 / 41 = 41 nodes with every
+    // box, radius and gap Lime's, no Device override, and the discs' blur 24
+    // behind an opaque fill again. **Scheme 4 is Scheme 1 here, so the sheet is
+    // the page**: `sem/bg` is black and `sem/text/1` red, which is `G.sheet` /
+    // `G.ink` below — the wrapper keeps its bleed and its insets (the frames'
+    // own, not the root's) and paints the ground it stands on. The register is
+    // Grunge's own, read off each cell's fill and binding rather than remapped
+    // from Lime's (below), and the marks are a stated Stones Crush 24 / 16 / 14
+    // — `s.labelLg` to the token — so here `faced` applies, the reverse of
+    // layout 3's face-stack disc, whose seat held photographs and no glyph.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const mist = '#D5E3B2'   // Scheme 4 `sem/box/1` — the two light cells
       const hair = '#15180F26' // `sem/stroke/1` on a light scheme, 15% ink
       const ring = (c) => `inset 0 0 0 1px ${c}`
+      // Scheme 4's `sem/bg` and `sem/text/1`, which Lime's block wrote as the
+      // resolved `s.tx` / `s.bg`: pale and ink under Lime, the page's black and
+      // red under Grunge.
+      const G = grunge
+        ? { sheet: s.bg, ink: s.ac }
+        : { sheet: s.tx, ink: s.bg }
+      // The display face, Grunge's three moves behind one flag (a no-op under
+      // Lime): Anton scaled to Stones Crush's glyph, its leading divided back
+      // out, uppercase.
+      const disp = (size, lh) => ({
+        fontSize: faced(s, size), lineHeight: facedLh(s, lh),
+        ...(grunge ? { textTransform: 'uppercase' } : {}),
+      })
       // The frame's four cells by scheme, read off the nodes' fills: Scheme 4's
       // mist in a 15% ink hairline with an ink disc lettered pale; Scheme 1's
       // `box/3` in `stroke1` with a lime disc lettered ink; mist again; and
@@ -19969,7 +20300,22 @@ function Testimonials({ s }) {
       // the same 15% hairline. The disc's ring follows the *cell's* stroke on
       // the first two seats and stays `hair` on the pale disc of the third,
       // which is what the nodes state.
-      const REG = [
+      //
+      // Grunge's wall is dark / darker / dark / red: `sem/box/1` `#1A1A1A`, a
+      // nested Scheme 1's `sem/box/3` `#0E0E0E` (the one register that is
+      // Lime's key for key), and Scheme 4's `sem/text/1` — the red — lettered
+      // in `sem/bg`, black. Every dark cell and every disc is ringed in
+      // `sem/stroke/1`, white at 15%, where Lime's light scheme rings in ink;
+      // the discs are red lettered black, and the red cell's is the pair
+      // inverted, a black disc lettered red. **The red cell is left bare**, as
+      // the frame draws it: Lime's normalising ring was all but invisible on
+      // ink, and white at 15% on `#DF262C` is a visible pink hairline the
+      // frame does not have.
+      const REG = grunge ? [
+        { bg: s.box1, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
+        { bg: s.box3, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
+        { bg: s.ac, fg: s.bg, edge: 'transparent', av: s.bg, avFg: s.ac, avEdge: s.stroke1 },
+      ] : [
         { bg: mist, fg: s.bg, edge: hair, av: s.bg, avFg: s.tx, avEdge: hair },
         { bg: s.box3, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
         { bg: s.bg, fg: s.tx, edge: s.stroke1, av: s.tx, avFg: s.bg, avEdge: hair },
@@ -19992,12 +20338,13 @@ function Testimonials({ s }) {
         </svg>
       )
       // Scheme 4's `text/1` disc with a `sem/bg` glyph: ink on the pale sheet
-      // with a pale arrow. 73.6 at `radius/pill`, 5 apart, read off the handler
+      // with a pale arrow (a red disc with a black arrow on the black page
+      // under Grunge). 73.6 at `radius/pill`, 5 apart, read off the handler
       // for the cursor — Pager's rule.
       const disc = (back, onClick, key) => (
         <span key={key} onClick={onClick} style={{
           width: u(73.6), height: u(73.6), flex: 'none', borderRadius: '999px',
-          background: s.bg, color: s.tx,
+          background: G.ink, color: G.sheet,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: onClick ? 'pointer' : undefined,
         }}>{glyph(back)}</span>
@@ -20026,7 +20373,7 @@ function Testimonials({ s }) {
                 background: r.av, color: r.avFg, boxShadow: ring(r.avEdge),
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 overflow: 'hidden',
-                fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
+                fontFamily: s.label, ...disp(s.labelLg, 1.1), letterSpacing: s.dls,
               }}>{q.mark}</span>
             )}
             {!!q.quote && (
@@ -20073,8 +20420,9 @@ function Testimonials({ s }) {
         <div style={{
           // The sheet: Scheme 4's pale `sem/bg`, out to the section's own
           // edges past the root's padding, with the frames' own insets back.
+          // Under Grunge `sem/bg` is the page itself, so it paints nothing new.
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-          background: s.tx, color: s.bg,
+          background: G.sheet, color: G.ink,
           padding: `${padTop} ${padH} ${padBot}`,
           ...col(u(28)),
         }}>
@@ -20087,8 +20435,8 @@ function Testimonials({ s }) {
             {!!s.title && (
               <h2 style={{
                 margin: 0, flex: '1 1 0', minWidth: 0,
-                fontFamily: s.display, fontSize: s.dispLg,
-                lineHeight: 0.89, letterSpacing: s.dls, color: s.bg,
+                fontFamily: s.display, ...disp(s.dispLg, 0.89),
+                letterSpacing: s.dls, color: G.ink,
                 overflowWrap: 'break-word',
               }}>{s.title}</h2>
             )}
@@ -22188,22 +22536,45 @@ function EnquiryForm({ s }) {
   // trailing box runs the full measure, and the head's `whitespace-nowrap` is
   // dropped for an artist's sentence at 130. The head, the ENQUIRE line and
   // the pill seed the frame's own copy at this layout (JP-054).
-  if (s.v3 && s.lime) {
+  //
+  // ── Grunge: the same block, widened (Grunge layout 4, section 9) ───────
+  // The desktop master is the main component `725:2990` (the 1440 page
+  // carries no instance), with `971:8151` / `977:12378` narrow: 59 = 59
+  // nodes against Lime's at all three widths, Static Youth's Scheme 1, no
+  // nested scheme, no Device override, no effect. Every fill is bound to the
+  // key this block already reads, so the mode swaps the values — red head,
+  // white labels, black boxes with red placeholders, red step squares
+  // lettered black, the pale pill turned white round a black disc and a
+  // white arrow. Two bindings land on another value: the head's rule is
+  // `sem/stroke/2` where Lime's is `sem/stroke/1`, and the boxes' ring is
+  // `sem/stroke/2`, which is Lime's accent but `#FF0000` here, not `s.ac`
+  // — so both read `s.stroke2` (`ring`). Every Stones Crush site goes
+  // through `disp()`. The refused box keeps Lime's 2px of `s.tx`: white
+  // against the idle red, colour and weight at once. The narrow masters'
+  // and the component's "KAI MERCER" is the component's default text, the
+  // reading Retro's twin made; the head stays JP-054's shared seed.
+  if (s.v3 && (s.lime || s.grunge)) {
+    const grunge = s.grunge
     const desk = !s.narrow
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     const type = (family, size, lh, extra) => ({
       fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
     })
+    // Anton at the frame's glyph size, in capitals; a no-op under Lime.
+    const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
+      ...(grunge && { textTransform: 'uppercase' }), ...extra,
+    })
+    const ring = grunge ? s.stroke2 : s.ac
     const title = desk ? u(36) : s.mob ? '26px' : '28px'
     // Display/List in `s.tx`, typed in caps.
-    const caps = type(s.display, s.list, 1.2, { color: s.tx, textTransform: 'uppercase' })
+    const caps = disp(s.list, 1.2, { color: s.tx, textTransform: 'uppercase' })
     // 1px, unramped, drawn inside the frame on all three masters.
     const hairline = `inset 0 -1px 0 ${s.stroke1}`
 
     const box = (bad) => type(s.body, s.bodyMd, 1.5, {
       background: s.bg, color: s.ac, border: 'none', borderRadius: s.btnR,
-      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.ac}`,
+      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : ring}`,
       height: desk ? u(45) : '44px', padding: `0 ${u(12)}`,
       width: '100%', margin: 0, boxSizing: 'border-box',
     })
@@ -22214,7 +22585,7 @@ function EnquiryForm({ s }) {
       ...box(false), display: 'block', height: u(90), borderRadius: u(24), padding: u(12),
     }
     // The frame's 67 radius on a 54 pill is `radius/pill`.
-    const pill = (extra) => type(s.display, s.list, 1.2, {
+    const pill = (extra) => disp(s.list, 1.2, {
       ...row(u(10), { justifyContent: 'space-between' }),
       background: s.tx, color: s.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
       padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
@@ -22270,7 +22641,7 @@ function EnquiryForm({ s }) {
           // s.live. No frame draws this state: the title is Display/Title in
           // the accent and the address Body/LG, Retro's inventions.
           <>
-            <h3 style={type(s.display, title, 1.1, {
+            <h3 style={disp(title, 1.1, {
               margin: 0, color: s.ac, overflowWrap: 'break-word',
             })}>{s.formSentTitle}</h3>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formSentBody}</p>
@@ -22342,13 +22713,15 @@ function EnquiryForm({ s }) {
       <div style={col(u(24), {
         color: s.tx, marginTop: `calc(${desk ? u(40) : s.mob ? '24px' : '30px'} - ${s.padY})`,
       })}>
-        <div style={{ boxShadow: hairline, paddingBottom: u(12), width: '100%' }}>
-          <h2 style={type(s.display, s.dispLg, 0.89, {
+        <div style={{
+          boxShadow: grunge ? `inset 0 -1px 0 ${ring}` : hairline, paddingBottom: u(12), width: '100%',
+        }}>
+          <h2 style={disp(s.dispLg, 0.89, {
             margin: 0, color: s.ac, overflowWrap: 'break-word',
           })}>{s.title}</h2>
         </div>
         {s.formSub && (
-          <span style={type(s.display, title, 1.1, { textTransform: 'uppercase' })}>{s.formSub}</span>
+          <span style={disp(title, 1.1, { textTransform: 'uppercase' })}>{s.formSub}</span>
         )}
         <div style={{
           display: 'grid', width: '100%', gap: u(desk ? 40 : 32),

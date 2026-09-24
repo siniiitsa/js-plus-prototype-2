@@ -54,6 +54,9 @@ const modal = []
 for (let t = 0; ; t++) {
   const page = await browser.newPage()
   await page.setViewport({ width: 1440, height: 900 })
+  // The seal's spin is the digest's only noise between two walks of one build
+  // (plans/lime/layout-4.md, the sweep); index.css stops it under reduced motion.
+  await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }])
   await page.goto(url, { waitUntil: 'load' })
   await page.waitForSelector('button[aria-label][aria-pressed]')
   const thumbs = await page.$$('button[aria-label][aria-pressed]')

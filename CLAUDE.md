@@ -40,9 +40,9 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 4745 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 23170 | Presentational renderer for all 11 section types |
-| `src/builder/data.js` | 1600 | `THEMES`, all static data, colour helpers |
+| `src/builder/EncoreBuilder.jsx` | 5100 | All state, all chrome, both stages, publish |
+| `src/builder/EncoreSection.jsx` | 23620 | Presentational renderer for all 11 section types |
+| `src/builder/data.js` | 1760 | `THEMES`, all static data, colour helpers |
 | `src/builder/photos.js` | 250 | Retro's, Lime's and Grunge's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
@@ -172,8 +172,8 @@ mutated through a single `patch()` helper.
   finds the template's row empty). The field stays editable — switching layouts
   never discards copy. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
-  `in` names Retro, Lime and Grunge only (Grunge's row measured over its fitted cards 1, 2 and 3 and its
-  placeholder card 4, so each layout pass re-measures it), so the flat two's undesigned header family carries no
+  `in` names Retro, Lime and Grunge only (Grunge's row measured over its four fitted cards, 2026-09-24 — the
+  first measurement with no placeholder card), so the flat two's undesigned header family carries no
   note. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
   sections still end in one after `v3`, which `arch % designCount` never reaches).
@@ -291,11 +291,14 @@ mutated through a single `patch()` helper.
   border: `inset: 0` resolves against the padding box, so a border (even a transparent one on
   the unmarked tiles) would inset every photograph and widen the frame's own gutter. Under
   Lime the mark on both the sleeve and the tile is the frame's inset **glow** (a 34px `s.ac`
-  inner shadow) rather than a ring, still a shadow on the scrim for the same reason. It is also
+  inner shadow) rather than a ring, still a shadow on the scrim for the same reason; under
+  Grunge it is a ring again, two reds on the same overlays — 1px of `s.ac` on the tile and 1px
+  of `s.stroke2` on the sleeve. It is also
   the one layout whose section paints the page's whole band — Retro's cream with a
   checkerboard strip at each end, Lime's olive `s.box1` with a lime arc seam at its head and a square foot (the
-  frame's dark foot arc met the gallery's head arc as a lens; user call, 2026-09-18) — and the
-  only one to draw those strips or arcs.
+  frame's dark foot arc met the gallery's head arc as a lens; user call, 2026-09-18), Grunge's
+  `#171716` with a red torn head and a black torn foot at 1440 and 768 and neither at 390 — and
+  the only one to draw those strips, arcs or tears.
 - **The gallery browses, in the published tab only, and its three social rows leave the page.**
   Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" rewinds, and the
   tile counter and viewer follow. `pick` starts at **-1** for the same reason `cur` does: nothing
@@ -347,7 +350,9 @@ mutated through a single `patch()` helper.
   thumbnail. Lime's wide masters *do* mark it — the fourth thumbnail is ringed at 3px where the
   others are 1px, so under Lime the ring follows `active` on the wide rail (an inset-shadow
   overlay, not a border, so no photograph is inset) and is 4px on every 390 tile, not live-gated
-  because the canvas draws the frame's own ringed fourth thumb. Its
+  because the canvas draws the frame's own ringed fourth thumb. Grunge widens that block whole:
+  its ring is black (Lime's own `s.bg`, so the 1 / 3 / 4 mechanism is unchanged), its discs are
+  `#0E0E0E`, and its 390 pills are radius 5 with no shadow. Its
   **390 master runs its strip off its own page** (six fixed 121px tiles in a 370 frame, so three
   and a sliver show and the one its spotlight is on does not), so there the three visible tiles are
   a **sliding window** on layout 1's formula, `from = clamp(active - 2, 0, 4)` — not live-gated, so
@@ -408,7 +413,8 @@ mutated through a single `patch()` helper.
   hour, which held that seat, moved into the meta line. Each drops when emptied. Layout 2's
   Lime block (Grunge's too, widened) reads layout 3's `zoom`; Retro's layout 2 draws no zoom controls. **Layout 4 is the
   pager alone**: its whole gig list is one ticker (mustard under Retro, an olive `s.box1`
-  capsule in a `s.stroke1` hairline under Lime) at a `perPage` of **1**, so `page` is
+  capsule in a `s.stroke1` hairline under Lime, `#1A1A1A` in a 1px `#FF0000` ring with red
+  numerals under Grunge) at a `perPage` of **1**, so `page` is
   the only list state it reads — `sel` reaches nothing there, the way the testimonials' `cur`
   reaches nothing in their wall; its other state is layout 3's `zoom`, on the same radial
   raster, ring labels and zoom controls (QA, 2026-09-15) — and the arrows **wrap** at both ends
@@ -536,7 +542,8 @@ mutated through a single `patch()` helper.
   pricing design with no chip row, no state and no control but the Book pill, so `chip` is
   untouched there. One row per package, divided by a 4px rule in **`vm.tierRow.card`** — layout
   3's own seat, reused because a rule has that outline's job of reading against the page (under
-  Lime the rule is `s.ac` read directly, layout 3's `tierRow`-not-read rule, and an inset shadow
+  Lime the rule is `s.ac` read directly, layout 3's `tierRow`-not-read rule, and under Grunge
+  `s.stroke2`, `#FF0000`, in the same widened block; an inset shadow
   rather than a border so the frame's row height holds) — and
   that rule is the one thing in the branch that **bleeds**: the row cancels the root's padding and
   puts the identical value straight back, so the border reaches the page edges and the content
@@ -663,10 +670,11 @@ mutated through a single `patch()` helper.
   link holding a mailto no longer leaves an empty tab behind.
   Its summary card is `s.tx`, **not `s.deep`** — the frame binds the fill to the *text*
   token, and `deep` is the page ground on two palettes and collides with the panel on the same
-  two. The cost, named: on Grunge `tx` and `paper` are one value, so the card and the
-  date and package rows share a fill and only the rows' hairline parts them. Lime's own frame restores the
-  three-level stack — `s.box1` rows under the `s.tx` card on a `s.box2` panel — so under Lime
-  the cost does not arise.
+  two. The cost it would carry — on Grunge `tx` and `paper` are one value, so a card and rows
+  in the flat body's `paper` would share a fill — is no template's: Lime's own frame restores
+  the three-level stack — `s.box1` rows under the `s.tx` card on a `s.box2` panel — and
+  Grunge's, which widens that block, is the same stack one binding over: `#1A1A1A` `s.box1`
+  rows under the white card (ringed 1px in `s.stroke2`) on a `#0E0E0E` `s.box3` panel.
 - **The enquiry form fills in and sends, in the published tab only.** It was the last §10.2
   section whose every control was a picture, and the one the whole page points at:
   `CTA_TARGETS.book` starts at `form`, so the header's Book Now, the pricing pills and the
@@ -750,11 +758,15 @@ mutated through a single `patch()` helper.
   **Layout 4 is the editorial band, and it shares the seam whole for the third time** —
   the same `vals`, `errs`, `sent`, `<a href="mailto:">` and *Write another*, so its whole
   live surface is four handlers and the only line outside the branch is one comment. It
-  is a display head over a 4px mustard rule (1px of `s.stroke1` under Lime), a small-caps
+  is a display head over a 4px mustard rule (1px of `s.stroke1` under Lime, 1px of
+  `s.stroke2` under Grunge), a small-caps
   line under it (`FIELDS.form.sub`, layout 4 alone, emptiable),
-  and then two columns: the boxes over a mustard submit pill (pale `s.tx` under Lime), and the promises numbered
+  and then two columns: the boxes over a mustard submit pill (pale `s.tx` under Lime, white
+  under Grunge), and the promises numbered
   01 / 02 / 03 beside them. **Its head, that line and its pill seed the frame's own copy**
-  (JP-054, user call, 2026-09-23; Retro's frame and Lime's agree, so no theme gate):
+  (JP-054, user call, 2026-09-23; Retro's frame and Lime's agree, so no theme gate — Grunge's
+  masters print the component's unoverridden "KAI MERCER" and keep the shared seed, a named
+  diff and the user's call):
   `FORM_HEADING_4` "Contact Us" joins `HEADING_4`, `sub` defaults to `FORM_SUB_4` "Enquire"
   (the line printed `s.brand` until then), and `button` falls back to `FORM_BTN_4` "Check
   Availability" at this layout and "Book Now" at the others — each resolved in `sectionVm`
@@ -776,7 +788,10 @@ mutated through a single `patch()` helper.
   form block rather than read across sections, because an outline standing on the page
   ground is exactly what that walk was written for. Under Lime none of that is read: the
   step rules are 1px of `s.stroke1`, the box ring is `s.ac`, and a refused box changes
-  colour rather than weight alone — 2px of `s.tx`, since the idle ring is already lime.
+  colour rather than weight alone — 2px of `s.tx`, since the idle ring is already lime. Grunge
+  widens that block: the head rule and the box ring are 1px of `s.stroke2` (`#FF0000`, the
+  box ring's binding on both templates, Lime's `stroke2` being its accent), and Lime's 2px of
+  `s.tx` is white against the idle red, so the refusal needed no arm.
 - **The testimonials carousel pages, in the published tab only, and the reviews are the
   artist's.** It was the last §10.2 section that was a picture on *both* sides: its two arrows
   carried a pointer cursor and no handler, and layout 1 drew `QUOTES[0]` and nothing else, so
@@ -845,12 +860,16 @@ mutated through a single `patch()` helper.
   **leading the row** where layouts 1 and 2 read it as the single card on show. The row is one
   card per review as everywhere else; the arrows are derived from the list and **not drawn at
   one page**, which the seeded five never are. The hue is the **seat's** and not the review's, the media player's fan
-  rule, and its cost is that the fourth seat (Retro's rust card, Lime's page-ink card) is
+  rule, and its cost is that the fourth seat (Retro's rust card, Lime's page-ink card,
+  Grunge's red one) is
   unreachable at 768 and 390 at any
   count, and needing four reviews at 1440. It is the section's second full-bleed sheet and its
   first mustard one — `s.pillBg` with a `pillFg` head, the enquiry form's layout-2 pair on the
   identical ground; under Lime the sheet is Scheme 4's pale `s.tx` with `s.bg` ink and the head
-  `s.dispLg` at every width — so the root's `cream` flag stays layout 1's for the fourth time. `when`,
+  `s.dispLg` at every width, and under Grunge there is no sheet at all — Scheme 4 is the page,
+  so the widened block paints the page's own black under a red head, and its red fourth cell is
+  drawn **without** the outline its neighbours carry, as the frame draws it (a white-15% ring
+  on red would be a pink hairline; reversible in one line) — so the root's `cream` flag stays layout 1's for the fourth time. `when`,
   `sub` and `cta` reach none of it, which leaves `when` a layout-1 column and `cta`
   layout 2 alone.
 - **The footer is the artist's sitemap, and the published one navigates.** It was the last
@@ -1004,7 +1023,7 @@ mutated through a single `patch()` helper.
   source of truth and the `drag` state only mirrors it for rendering, so pointerup commits
   what it can see rather than what the last render observed. Rows are a uniform height, so
   the drop index is the pointer delta in row-heights, not a hit test.
-- **Retro and Lime are designed, and Grunge is at layouts 1, 2 and 3; Editorial and Pop are not.** The flat
+- **Retro, Lime and Grunge are designed; Editorial and Pop are not.** The flat
   two are fully functional but render flat. Retro's decorative language is gated on `s.retro`, and
   it gets six photographic header layouts where the flat two get three. **Lime is designed at all four of
   its layouts**: each of its Figma pages is the same components as Retro's page of that number
@@ -1027,14 +1046,12 @@ mutated through a single `patch()` helper.
   (`false` inside a sheet the branch has already bled), and `SealBadge`'s Lime disc takes a
   `scheme` (3 = lime disc with ink marks, 4 = pale disc with ink marks) because the layout-4
   header's seal changes colour between widths.
-  **Grunge is designed at layouts 1, 2 and 3** (`plans/grunge/layout-1.md`, `layout-2.md` and
-  `layout-3.md`; the
-  Figma mode is called *Static Youth*, and nothing in the file says Grunge). Its pages are Lime's
-  layout-1, layout-2 and layout-3 pages in a third mode, so it has **no blocks of its own**: each
-  of the
-  eleven Lime layout-1 blocks, the ten layout-2 ones and the ten layout-3 ones (the gallery's,
-  which has no
-  block at either layout, as seven and then eleven ternaries) is widened to `(s.lime || s.grunge)` and Grunge's differences are `s.grunge` arms inside it —
+  **Grunge is designed at all four of its layouts** (`plans/grunge/layout-1.md` … `layout-4.md`;
+  the Figma mode is called *Static Youth*, and nothing in the file says Grunge). Its pages are
+  Lime's four pages in a third mode, so it has **no blocks of its own**: each of the eleven Lime
+  layout-1 blocks, the ten layout-2 ones, the ten layout-3 ones (the gallery's, which has no
+  block at either layout, as seven and then eleven ternaries) and the ten layout-4 ones is
+  widened to `(s.lime || s.grunge)` and Grunge's differences are `s.grunge` arms inside it —
   or, past a handful, a `G` lookup at the block's head whose Lime arm is the block's own literals. The
   gates are `s.grunge`, the named pairs — `(s.retro || s.grunge)` for grain and torn edges,
   `(s.lime || s.grunge)` for the `sem` reads and the capsule nav — and **`s.designed`** for what
@@ -1066,10 +1083,28 @@ mutated through a single `patch()` helper.
   `#F52E34` its `box/2` on the map panel), and inside a Scheme 3 node `stroke2` is **white**,
   `stroke1` black 15% and `text1` black — so a Lime block reading those keys lands on the wrong
   value. Its live states are redrawn for the third time where the frames draw none: the
-  gallery viewer's scrim and controls, and the map's pin and lit row. Its header family is `'grunge'`:
-  four cards, Hero spread, Feature spread and Inset Hero fitted — card 4 renders `HeaderV3` in
-  its tokens (Retro's checker floor and all) and publishes, its own layout pass's to fit — and
-  at layout 4 every other section still renders its shared branch flat.
+  gallery viewer's scrim and controls, and the map's pin and lit row. **Layout 4 is a black
+  page with four red grounds and one dark band, and its seams are torn again**: the header's
+  floor, the bio, the gallery and the repertoire stand on Scheme 3's `#DF262C` with black heads,
+  the media on Scheme 2's `#171716`, and everything else on the page — the testimonials
+  included, since Scheme 4 is the page, so the sheet Lime paints there collapses onto it. The
+  seams are layout 1's `TornEdge` path, not Lime's arcs (`ArcEdge` stays Lime's): the media owns
+  a red head tear and a black foot at 1440 and 768, the bio a `#171716` foot at 390, the gallery
+  a black head and the repertoire a black foot. Effects are back, and every one is a backdrop
+  blur (four a page, three of them behind opaque fills); every Lime glow is a ring. Its Scheme 3
+  is **four** literals here (`#DF262C` `bg`, `#9E1F17` `box/1`, `#F52E34` `box/2`, `#82211B`
+  `box/3`), and two panels moved their binding (the repertoire's to `box/2`, Book Us' to
+  `box/3`). The desktop form has no instance on its page, so its main component (`725:2990`)
+  is the master, and every Grunge form master prints the component's "KAI MERCER" where ours
+  keeps JP-054's shared "Contact Us" — a named diff, the user's call. Its header family is
+  `'grunge'`: four cards, Hero spread, Feature spread, Inset Hero and Stacked, all four fitted
+  (`HeaderV3`'s Lime block, widened: a black capsule over the red floor, no checker, and the
+  desktop photograph **not** mirrored — Grunge's fill is `FILL`), so every
+  card in the setup modal lays out a whole Grunge page and the family is closed
+  (`plans/grunge/`). At layouts 2, 3 and 4 the footer is layout 1's. Layout 4 grew two shared
+  helpers additive props — `NavBar` takes `links={{ gap, cap }}` (the capsule's fixed 23 gaps,
+  the type clamped to fit) and `mark`, and `Wordmark` takes `gap` — and `SealBadge`'s Lime
+  `scheme` a Grunge arm at 4, a black disc with red marks.
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
   designs, and seven of the eleven offer more — Pricing layouts 1 and 5 render identically on
   purpose. The other four are level: the header and the footer always were, and the layout-4 pass
