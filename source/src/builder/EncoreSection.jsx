@@ -1018,6 +1018,12 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // theme one would move the pricing, gallery and map readers of `s.mono`,
   // which no Editorial session has read yet. `scheme`, `line` and the ignored
   // colour props stay ignored.
+  //
+  // The footer's (964:58622 "Frame 179") is the same component at 154.91, and
+  // the frame that draws another name: `sem/tag/1/bg` where the bio's binds
+  // `sem/bg` — paper on the terracotta disc under Scheme 3, where `s.bg` would
+  // be ink. `line` asks for it, Grunge's footer flag again, so the footer is
+  // still the only caller that moves.
   if (s.editorial && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
     const k = 57.78 / 125.37 * 100 / 144
@@ -1040,7 +1046,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           <path d={GRUNGE_STAR_D} fill={s.activeFg}
                 transform={`translate(${(50 - 72 * k).toFixed(3)} ${(50 - 72.667 * k).toFixed(3)}) scale(${k.toFixed(5)})`} />
           <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
-            <text fill={s.bg} textAnchor="middle" style={{
+            <text fill={line ? s.chips[0].bg : s.bg} textAnchor="middle" style={{
               fontSize: '8.46px', letterSpacing: '2.54px', fontFamily: "'Space Mono', monospace",
             }}>
               <textPath href={`#seal-${id}`} startOffset="25%">{name}</textPath>
@@ -23987,13 +23993,26 @@ function Footer({ s }) {
   // factor and the capitals Stones Crush has and Anton has not, the statement
   // keeps the frame's own 439.59 box at both wide widths (Lime's 9em and its
   // 390 margin are Bebas fits), and the seal is a smaller disc drawn in line.
-  if (s.lime || s.grunge) {
+  //
+  // Editorial's (964:58622 at 1440, 986:48249 at 768, 986:48261 at 390) is the
+  // tree once more, on Scheme 3 — route A resolves every `s.*` read to the ink
+  // scheme, so the rules, the edge and the small print's row are the twins'
+  // `s.stroke1` (paper at 56%) — and `ed` names the deltas: the globe is the
+  // page's sparkle in `sem/tag/1/bg` (paper, not the blush every other
+  // Editorial sparkle is), the name and the small print are Label/MD, the
+  // links Display/List 12 apart, the pill's disc `sem/box/3`, the left column
+  // 690 where the twins' is 743, the seal the bio's arm with its name in paper,
+  // and the statement the page's third hand-scaled Bold (57.84 on a 47.9 line
+  // at every width, which is why the narrow masters stand 45 and 117 taller
+  // than the twins': three lines at 768 and four at 390 where theirs set two).
+  if (s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const hair = `1px solid ${s.stroke1}`
     const px = (v) => `${Math.round(v * scale * 100) / 100}px`
     const face = {
       fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls,
-      ...(grunge ? { textTransform: 'uppercase' } : null),
+      ...(grunge || ed ? { textTransform: 'uppercase' } : null),
     }
 
     // The instance's own top stroke (inside, 1px, full width at all three
@@ -24007,12 +24026,18 @@ function Footer({ s }) {
     )
 
     // "Group 6" is LimeGlobeMark's own drawing at 27.37, inked in the 15%
-    // hairline — it stands dim beside the name.
+    // hairline — it stands dim beside the name. Editorial's is the sparkle
+    // (39.87 × 40.24, GrungeStar's path at its own ratio) in `sem/tag/1/bg`,
+    // seated in flow, and it sets the row's 40.24.
     const wordmark = (
       <span style={row(u(20))}>
         <span style={row(u(10))}>
-          <LimeGlobeMark size={27.37 * scale} color={s.stroke1} />
-          <span style={grunge
+          {ed
+            ? <GrungeStar s={s} fill={s.chips[0].bg} style={{
+                position: 'relative', flex: 'none', width: px(39.87), height: px(40.24),
+              }} />
+            : <LimeGlobeMark size={27.37 * scale} color={s.stroke1} />}
+          <span style={grunge || ed
             ? labelStyle(s, s.labelMd, { color: s.tx })
             : { ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
         </span>
@@ -24029,12 +24054,25 @@ function Footer({ s }) {
     // no box at all. Anton at 0.75 needs neither: the same line is 10.48em of
     // the faced size, 393 in the 768 box and 299 at 390, so Grunge keeps the
     // box and the column as stated.
+    //
+    // Editorial's is the third hand-scaled Bold (trap 4 of its plan): 57.84 on
+    // a 47.9 line at all three widths, in a FIXED 397.28 box at 1440 and 768
+    // and the column at 390, where the demo face breaks UNFORGETTAB / LE inside
+    // the word. So it takes the form statement's fit (section 9): the frame's
+    // size is the ceiling and `100cqi / footerWordEms` — the widest word in
+    // Noto Bold ems — the floor a long word pulls it to, on an `inline-size`
+    // column; the box grows to a word that outruns it rather than breaking it.
     const statement = (
       <h2 style={{
         margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd), lineHeight: facedLh(s, 1),
         letterSpacing: s.dls, color: s.ac, whiteSpace: 'pre-wrap',
-        ...(grunge ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
         maxWidth: s.mob ? 'none' : s.narrow ? (grunge ? '439.59px' : '9em') : u(439.59),
+        ...(ed ? {
+          fontSize: `min(${px(57.84)}, calc(100cqi / ${s.footerWordEms}))`,
+          fontWeight: 700, lineHeight: 47.9 / 57.84,
+          maxWidth: s.mob ? 'none' : px(397.28), minWidth: 'min-content',
+        } : null),
       }}>{s.footerStatement}</h2>
     )
 
@@ -24050,12 +24088,20 @@ function Footer({ s }) {
     // the centre is that plus the half-diagonal turned with it — a sum that
     // gives Lime's three pairs back exactly: 96.41 / 37.95, 107.42 / 64.57 and
     // 68.6 / 8.14.
-    const disc = grunge ? (s.mob ? 74.4 : 150.37 * scale) : s.mob ? 78.5 : 158.67 * scale
-    const [inX, downY] = grunge
-      ? (s.mob ? [68.6, 8.14] : s.narrow ? [107.42, 64.57] : [96.41, 37.95])
-      : s.mob ? [60.25, 12.73] : s.narrow ? [101.87, 70.13] : [85.18, 49.62]
+    //
+    // Editorial's "Frame 179" is a 154.91 disc (76.64 at 390) at Figma
+    // −25.03, where the same sum is corner + (0.2415a, 0.6646a): 49.95 / 53.96
+    // off the 690 column on desktop, 105.04 / 66.95 off the content at 768,
+    // 65.02 / 9.06 at 390.
+    const disc = ed ? (s.mob ? 76.64 : 154.91 * scale)
+      : grunge ? (s.mob ? 74.4 : 150.37 * scale) : s.mob ? 78.5 : 158.67 * scale
+    const [inX, downY] = ed
+      ? (s.mob ? [65.02, 9.06] : s.narrow ? [105.04, 66.95] : [49.95, 53.96])
+      : grunge
+        ? (s.mob ? [68.6, 8.14] : s.narrow ? [107.42, 64.57] : [96.41, 37.95])
+        : s.mob ? [60.25, 12.73] : s.narrow ? [101.87, 70.13] : [85.18, 49.62]
     const seal = (
-      <SealBadge s={s} size={disc} tilt={26.06} scheme={s.footerBand ? 2 : 1} line style={{
+      <SealBadge s={s} size={disc} tilt={ed ? 25.03 : 26.06} scheme={s.footerBand ? 2 : 1} line style={{
         right: `${Math.round((inX * scale - disc / 2) * 100) / 100}px`,
         top: `${Math.round((downY * scale - disc / 2) * 100) / 100}px`,
         zIndex: 2,
@@ -24065,19 +24111,21 @@ function Footer({ s }) {
     // Label/SM, 23 between the line boxes and the same 23 before the pill,
     // which is BookPill's Lime default exactly — `full` at 390, where the frame
     // keeps it 54 tall.
+    // Editorial's links are Display/List at 1.2 — the small print's `face`
+    // under Lime — 12 apart and 12 before the pill, whose disc is
+    // `sem/box/3` rather than the label's own ink.
     const linkCol = (colLinks, i) => (
-      <nav key={i} style={col(px(23), { alignItems: 'flex-start' })}>
+      <nav key={i} style={col(px(ed ? 12 : 23), { alignItems: 'flex-start' })}>
         {colLinks.map((l, j) => {
           const ext = extLink(s, l.url)
+          const look = { color: s.tx, letterSpacing: s.dls, cursor: 'pointer', textDecoration: 'none' }
           return (
             <a key={j} {...(ext || { href: navHref(s, l.to) })}
-               style={labelStyle(s, grunge ? s.labelMd : s.labelSm, {
-                 color: s.tx, letterSpacing: s.dls, cursor: 'pointer', textDecoration: 'none',
-               })}>{l.label}</a>
+               style={ed ? { ...face, ...look, whiteSpace: 'nowrap' } : labelStyle(s, grunge ? s.labelMd : s.labelSm, look)}>{l.label}</a>
           )
         })}
         {i === 0 && s.footerCta && (
-          <BookPill s={s} to={s.bookTo} label={s.footerCta} full={s.mob} />
+          <BookPill s={s} to={s.bookTo} label={s.footerCta} full={s.mob} discBg={ed ? s.box3 : undefined} />
         )}
       </nav>
     )
@@ -24098,7 +24146,10 @@ function Footer({ s }) {
     const smallPrint = (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: s.mob ? 0 : u(16), borderTop: hair, ...face, color: s.tx,
+        gap: s.mob ? 0 : u(16), borderTop: hair,
+        // Editorial's small print is Label/MD, uppercase, where the twins' is
+        // Display/List; it may still wrap, as theirs does.
+        ...(ed ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' }) : face), color: s.tx,
         // The row is the instance's floor at every width — nothing under it —
         // so it takes back the root's bottom `padY`, as Line 19 does the top.
         // Being the page's last line, the published row also grows by the
@@ -24124,7 +24175,10 @@ function Footer({ s }) {
         <div style={col('2px')}>
           {edge}
           <div style={col(0)}>
-            <div style={col(u(20), { position: 'relative', paddingBottom: u(56) })}>
+            <div style={col(u(20), {
+              position: 'relative', paddingBottom: u(56),
+              ...(ed ? { containerType: 'inline-size' } : null),
+            })}>
               {wordmark}
               {statement}
               {seal}
@@ -24144,7 +24198,8 @@ function Footer({ s }) {
           {/* 409.71 tall less the dropped 56: the wordmark and the statement
               pushed to its ends, the seal absolute over it. */}
           <div style={{
-            position: 'relative', width: u(743), flex: '0 1 auto',
+            position: 'relative', width: u(ed ? 690 : 743), flex: '0 1 auto',
+            ...(ed ? { containerType: 'inline-size' } : null),
             display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
             minHeight: u(353.71), paddingBottom: u(56),
           }}>

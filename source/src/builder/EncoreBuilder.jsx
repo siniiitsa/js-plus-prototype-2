@@ -1592,6 +1592,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // display face narrower than the frame's. Kept in step with FIELDS.footer's
   // own default, and rendered `pre-wrap` so an edited statement can break too.
   vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
+  // The statement's widest word in Noto Bold ems — `wordEms`' rule, for a
+  // third hand-scaled Bold that is not `vm.title`: Editorial's footer fits the
+  // frame's 57.84 to it rather than breaking inside a word. Editorial only;
+  // no other template's footer reads it.
+  vm.footerWordEms = T.name === 'Editorial'
+    ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(notoBoldEms)).toFixed(3)
+    : undefined
   // The sitemap is the artist's now, so a row carries where it goes as well as
   // what it says — and it goes to one of two kinds of place, which is BookPill's
   // own `ext ? … : to` seam moved down to the row. 'link' takes the row's own
