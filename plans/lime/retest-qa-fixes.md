@@ -54,7 +54,7 @@ and 2.
 |---|---|---|---|---|---|---|
 | 1 | JP-049 | A stored bad enquiry address shows no warning under the box | **Confirmed**: `UrlInput`'s error is blur-only local state, lost on remount | S | no | **done** |
 | 2 | JP-045 | Tickets → / ↗ on the canvas for gigs with no link | **Confirmed**: map layouts 2 and 3 split canvas from live on purpose | S | **user: drop on both** | **done** |
-| 3 | JP-044 | Repertoire layout-3 titles cut off at 768 | **Confirmed, Lime/Grunge only**: a 19px title beside a `flex: none` artist in a ~148px card | S–M | no (named diff) | open |
+| 3 | JP-044 | Repertoire layout-3 titles cut off at 768 | **Confirmed, Lime/Grunge only**: a 19px title beside a `flex: none` artist in a ~148px card | S–M | no (named diff) | **done** |
 | 4 | JP-046 | *Save 15% on bundles* missing, no field | **A named diff of the fit** (dropped in Retro L3, inherited) | S | **user: add the field** (by the plan) | open |
 | 5 | JP-048 | FEATURED follows position | **Confirmed**: the seat is `i === shown.length - 1` | M | **user: a Featured tick, layout 3 only** | open |
 | 6 | JP-054 | Form layout 4 lacks Event type and Location | **Named diff**, kept on 2026-09-23 | S | **user: seed `FORM_FIELDS_4`** (reverses 2026-09-23) | open |
@@ -199,7 +199,30 @@ clientWidth` on none of the title nodes).
 
 **Docs.** Lime L3's repertoire Settled (a *Reversed* note); Grunge L3 if its reading differs.
 
-**Settled.** —
+**Settled** (2026-09-24). The Evidence lines held (10847 the block, 10891–10896 the title and
+artist, 10936 the grid).
+- **Frame.** `984:10760` has room because its right column is a duration ("3:54"): every title
+  sits on one row with no truncation. Ours seats the artist there — the substitution, not the
+  frame, is what ran out of room.
+- **Measured first** (harness, every width, themes 0–2, both surfaces, `scrollWidth >
+  clientWidth` on ellipsis spans): only **Lime at 768** cut anything — nine of twelve titles,
+  the tester's list exactly. Grunge (168 measure, Anton × 0.75) and 390 cut none.
+- **Code.** A `stack = tab` in the `(s.lime || s.grunge)` block: at 768 the row is a column of 2,
+  centred in the pinned 57 / 62.5, title over artist, each line `nowrap` with its own ellipsis as
+  a last resort. Desktop and 390 keep the frame's row. Grunge moves with it — one block, and a
+  longer title clips there as it did under Lime. Retro untouched.
+- **Digest** (HEAD `b3d3910` worktree on :5174 against the edit, themes 0, 1, 2, all categories,
+  three widths, port normalised): **exactly repertoire arch 2 at 768, themes 1 and 2**, canvas
+  and `live=1` — 2 of 387 files each. Card heights unchanged.
+- **Published tab** (puppeteer: template → setup card 3 → Publish → Open, the popup at 1440 / 768 /
+  390, Retro, Lime, Grunge): no ellipsis span in `#repertoire` has `scrollWidth > clientWidth`
+  at any width. The same script on HEAD reproduces Lime's nine at 768. No page errors.
+- **Docs.** A *Reversed in part* note on Lime L3's repertoire Settled; a *Since* note on Grunge
+  L3's (its reading differs: it fit). CLAUDE.md states nothing about the row.
+
+Reply: **fixed.** At tablet width the artist now sits under the song title in the Repertoire's
+set cards, so every title shows in full, in the editor and on the published page.
+
 
 ---
 
