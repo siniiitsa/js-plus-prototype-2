@@ -58,7 +58,7 @@ and 2.
 | 4 | JP-046 | *Save 15% on bundles* missing, no field | **A named diff of the fit** (dropped in Retro L3, inherited) | S | **user: add the field** (by the plan) | **done** |
 | 5 | JP-048 | FEATURED follows position | **Confirmed**: the seat is `i === shown.length - 1` | M | **user: a Featured tick, layout 3 only** | **done** |
 | 6 | JP-054 | Form layout 4 lacks Event type and Location | **Named diff**, kept on 2026-09-23 | S | **user: seed `FORM_FIELDS_4`** (reverses 2026-09-23) | **done** |
-| 7 | JP-043 | The composed page's right column does not stick | **Confirmed**: nothing is sticky; `align-items: start` leaves ground under the calendar | S | **user: sticky, published** | open |
+| 7 | JP-043 | The composed page's right column does not stick | **Confirmed**: nothing is sticky; `align-items: start` leaves ground under the calendar | S | **user: sticky, published** | **done** |
 | 8 | JP-038 | Sections disagree on their side inset (78 vs 56, footer 78 / 22) | **Confirmed**: the remaining gap is `padX` itself | L | **user: `padX` becomes the frame's inset, footer included** | open |
 | — | JP-047 | Map chips are cities, not Upcoming / Past | **By design**: a gig has no year, so nothing can place it against `today` | — | **user: reply only** | reply in the sweep |
 | 9 | — | End-of-pass sweep | — | S | — | open |
@@ -400,7 +400,39 @@ while the left column scrolls and stops at the row's end, overlapping nothing. D
 
 **Docs.** CLAUDE.md's composed-page bullet; the `:4150` comment.
 
-**Settled.** —
+**Settled** (2026-09-24). The Evidence lines had moved by +28 as expected: `arrangeRows()` at
+`EncoreBuilder.jsx:4203`, its comment (which sits above `columnSides`) at `:4178`.
+- **Frame.** Neither Frame 300 declares a sticky. Lime `964:68675` and Retro `964:68643` are both
+  a plain `relative` flex column (`gap 30`, `pt 50`, `pb 56`: "Book Me" over the calendar
+  instance), with no scroll behaviour on it or its children. So sticky is the user's call and not
+  the frame's, and the comment says so.
+- **Code.** The right cell div in `arrangeRows` takes `position: sticky; top: 0; alignSelf:
+  start`. The calendar root is untouched. It is unconditional, and the comment names why the canvas
+  is inert: the card's `overflow: hidden` makes the card, which never scrolls, the cell's scroll
+  container.
+- **Wrappers.** Walked in the popup: no ancestor of the cell has non-`visible` overflow (row grid,
+  the `zoom` div, `#root`, `body`, `html`). Nothing is `fixed`; the only `sticky` is the cell.
+- **Published** (one-off puppeteer, deleted; Retro, Lime, Grunge, setup card 3, popup at 1300 /
+  1440 / 1600 × 900, dispatched `resize`). Before the fix the cell was `static` and gone within
+  the first quarter of the row. After it, at scroll offsets 0, ¼, ½, ¾ and 1 of `rowH − cellH`
+  past the row's top, the cell's `top` reads **0** (±0.4 zoom rounding) at all nine renders. That
+  includes 1300, where `k` = 1.10, so sticky under `zoom` is right. At 1.1 it is released: `top` is
+  −159 … −182 and **`bottom` equals the row's bottom exactly**, so it overlaps nothing below. Cells
+  are 612–707 tall against rows of 2200–2532. `elementFromPoint` at the cell's top edge hits the
+  cell.
+- **Canvas.** The cell computes `sticky` but scrolling the editor's canvas leaves it at offset 0 in
+  its row at every step (0 / 400 / 800 / 1200), so it is inert, as decided.
+- **Named limit.** In a window shorter than the cell (1440 × 600 against 679), the cell pins with
+  its foot, the Enquiry pill, below the fold until the row ends. The user's `top: 0` decision
+  stands; a bottom-anchored variant would need a measured height, which is an effect.
+- **Digest** (HEAD `fd8807d` worktree on :5174, themes 0, 1, 2, all categories, three widths,
+  canvas and `live=1`, port normalised): **0 of 387 files differ on either surface**, as named.
+  The harness renders sections, not rows.
+- **Docs.** CLAUDE.md's composed-page bullet; the `arrangeRows` comment.
+
+Reply: **fixed.** On the published page at desktop, the booking calendar beside the bio and media
+column now stays in view while that column scrolls, and moves on with the page once the column
+ends. The editor's canvas still shows it in place, since the canvas is a picture of the page.
 
 ---
 
