@@ -130,7 +130,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 2 | `bio` | `964:58613` | Bios — A · Flanked portrait | 1440 × 769 | `986:48239` | 768 × 1135 | `986:48252` | 390 × 731 | 1 | `964:58589` | `964:58601` | done `28b668c` |
 | 3 | `media` | `964:58614` | Media Player — D · Floating cards stack | 1440 × 1140.2 | `986:48241` *(in `986:48240`)* | 768 × 1629.6 | `986:48253` | 390 × 1211.8 | 2 | `964:58590` | `964:58602` | done `83c499b` |
 | 4 | `gallery` | `964:58615` | Gallery Sections — Component 1 | 1440 × 818 | `986:48242` | 768 × 1123 | `989:22410` | 390 × 791.7 | 1 | `964:58591` | `964:58603` | done `1f4b606` |
-| 5 | `repertoire` | `964:58616` | Repertoire — A · Two-column dense | 1440 × 1055 | `986:48243` | 768 × 897 | `986:48255` | 390 × 896 | 3 | `964:58592` | `964:58604` | todo |
+| 5 | `repertoire` | `964:58616` | Repertoire — A · Two-column dense | 1440 × 1055 | `986:48243` | 768 × 897 | `986:48255` | 390 × 896 | 3 | `964:58592` | `964:58604` | done `f4e8f0a` |
 | 6 | `map` | `964:58617` | Events Map — D · Compact tile | 1440 × 1191.2 | `986:48244` | 768 × 1308.6 | `986:48256` | 390 × 1132.5 | 1 | `964:58593` | `964:58605` | todo |
 | 7 | `pricing` | `964:58618` | Pricing — B · 3-col in soft panel | 1440 × 880 | `986:48245` | 768 × 793 | `986:48257` | 390 × 1486 | 2 | `964:58594` | `964:58606` | todo |
 | 8 | `calendar` | `964:58619` | Booking Calendar — A · Scheduler | 1440 × 911 | `986:48246` | 768 × 1371 | `986:48258` | 390 × 995 | 1 | `964:58595` | `964:58607` | todo |
@@ -671,6 +671,11 @@ Append as the pass goes. Do not repeat Lime's, Grunge's or Retro's bullets; name
   are the same page angle (−3); inside a leant mount it turns the difference. Walk the tape's
   `x`, `y`, `rotation` (a rotated node's `x`/`y` is its unrotated origin) and add the half-size
   through the rotation, then un-rotate the offset from the mount's centre.
+- **A sparkle is `GrungeStar` with `fill={SIENNA_MEDIA}`** at the node's own width (every
+  Editorial sparkle read so far is the path at its own ratio, unrotated) — the header's two, the
+  repertoire's (section 5); next the footer wordmark's. Seat it off what it decorates, not the
+  frame's absolute x, and keep its box inside the decorated node's layout (padding) so nothing
+  live can flow under it.
 - **A leant print in a stack gives back its rotated box** (section 3): Figma's auto-layout spaces a
   rotated child by its bounding box, so a mount standing under a list takes a block margin of
   W·sin θ / 2 a side (`1.745% 0` at 2°). Beside a list, centred, it needs none.
@@ -1123,6 +1128,72 @@ four ink ones are its own register.
   of 645 each; zero at themes 0, 1, 2 and 4). `DashRule`'s new branch is additive: media's
   caller is unchanged.
 
+### Settled in section 5 (the repertoire)
+
+- **No Editorial block: `Repertoire`'s `if (s.lime || s.grunge)` inside `if (s.v0)` is
+  `s.limeTree`**, still after the seam, with `const ed = s.editorial` and a third arm at the head
+  of `G` (Lime's and Grunge's arms untouched; the two new leaves, `chipOff` / `chipOffInk` and
+  `tileW`, fall back to the twins' values through `??`). The tree is Grunge's in traversal order
+  (109 / 109 / 109 visible nodes, the sparkle aside — the paired diff walk against both twins),
+  Scheme 3 at all three widths, no nested scheme, no rotation, **no effect on any node**, and
+  `Layer_1` an empty frame. Route A resolves every `s.*` read to the ink scheme, so no literal is
+  owed but `SIENNA_MEDIA`.
+- **The deltas, all off `boundVariables`:**
+  - the **search is no box**: no fill, radius 0, and in place of Lime's ring a **dashed 9, 9
+    bottom rule** in `sem/stroke/1` (`rgba(246, 240, 232, 0.56)`, passed as the scheme writes it)
+    through `DashRule`, the field padded `0 0 14` rather than 10 all round (61 tall, so the tile
+    is the content's 47); the tile **49.94 wide, unradiused, unfilled**, in a 1px inset
+    `sem/text/1` rule, the glyph `sem/active/bg` — both terracotta; the hint `sem/text/2` (paper,
+    `s.tx`), Body/MD, as Lime's;
+  - the **chips are filled, not outlined**: All `active/bg` under `text/2`, the idle ones
+    **`sem/tag/1/bg`** — Scheme 3's first seat, paper, `s.chips[0].bg` — under **`sem/bg`** ink
+    (`s.bg`), Body/MD at 1.5 (Grunge's). **The brief's "trap 3" did not apply here**: nothing in
+    the section binds `inactive/bg`, so its transparency never reaches a chip; all three renders
+    and the walk agree on paper pills;
+  - the **song** is Display/Title **32 / 25 / 23** (the media rows' sizes; Grunge's 36 / 28 / 26
+    are Static Youth's) through `labelStyle`, so uppercase, as is the artist (`bebas` is
+    `grunge || ed`); the rows are ruled by the same **dashed 9, 9** in `stroke/1`, an overlay, so
+    the row pads 27 at its foot too (89 / 82 / 79, the frame's);
+  - the **heading** one tone in `text/1`, uppercase — Grunge's two-tone split stays Grunge's;
+  - eyebrow, numbers, artist ink, gaps, the 70 column gap and the pager's 8 top are the twins'.
+- **The sparkle** is `GrungeStar` at **80.67 × 81.42** (the path's own ratio, 0.56 of it), in
+  `SIENNA_MEDIA`, unrotated. **At 1440 it is a child of `headL`**, 63.07 past the heading's box and
+  0.13 below its top — so it hangs off the **heading's own end** (the `h2` pads `63.07 + 80.67`
+  × 0.82 on its right and the star sits at `right: 0`) rather than at the frame's x: Noto sets the
+  harness's "12 SONGS" at 370 where Fisterra's "250 SONGS" is 430, and a longer count carries the
+  star along; the padding keeps it in the heading's box, so the search yields to both.
+  **At 768 and 390 it is absolute on the section**, centred on the chip row's foot at its right
+  end, so it is seated on the chip row (`top` −10.71 / −11, which is the frame's to the pixel
+  once the root's top inset is taken off: (657.3, 173.9) against (657.33, 178.29) at 768 under
+  our 56 against the master's 60; (305, 219) against (305, 215) at 390 under 44 against 40). The
+  row **keeps the star's width free** (`paddingRight` 80.67 / 65), so a chip wraps rather than
+  going under it. **One named departure at 390**: the master hangs it 15.67 past its own 20
+  inset, which off our 10 would cross the page, so it keeps the frame's **4.33 from the page
+  edge** (`right: calc(4.33px - padX)`); `scrollWidth` is 390 live.
+- **`Pager`'s Lime branch is `s.limeTree`**, with an Editorial arm: every button unfilled in a 1px
+  `sem/stroke/1` ring, the page pills **54 wide** (Lime's and Grunge's 87), and the frame **marks
+  its page** — the current pill's ring and numeral `sem/text/1`, terracotta, 1px like the rest —
+  where Grunge's marks none (the map's `onBox` precedent: the frame's own mark, followed). The
+  numerals are `labelStyle(s, s.labelSm)`, Grunge's; the arrow glyph binds `tag/1/bg`, paper,
+  which `LimeArrow`'s `currentColor` (`s.tx`) already is. Two additive keys, `onEdge` and `pill`,
+  so the twins' `t` objects are byte-identical.
+- **Moved with `Pager`, theme 3 only** (digest: 7 of 645 renders static and 7 live — repertoire a0
+  at three widths, the fit, and **repertoire a1 at three widths and map a2 at 390**, exactly Lime's
+  and Grunge's spread; zero at themes 0, 1, 2 and 4). Both read: repertoire a1's pills stretch
+  across its paper sheet in opaque ink rings (Scheme 1's `stroke1`), the terracotta page marked;
+  map a2's arrows are ink rings on its terracotta sheet. Their layout passes'. **The map session
+  (a0) inherits the arm** on the terracotta gig panel, where `stroke1` resolves to Scheme 1's ink —
+  pass `frame.lime` if the frame's outlined pager pills bind otherwise.
+- **Measured** (harness, against the section root): desktop search 319 × 50 (389 / 61 × 0.82),
+  tile 41 × 38.5, heading 97px, star 66.1 × 66.8, chips 24.7; 768 search 354 × 61, tile
+  49.9 × 47, pills 55 / 54 / 54; 390 search 370 × 61 and the pager spread at 86.5 a button (four
+  buttons at the seeded two pages; the master draws five over its twenty).
+- **Function** (`theme=3&live=1&n=240`, puppeteer mouse clicks, three widths): Next moves the
+  terracotta ring 1 → 2 and the list to 13 (7 narrow); a chip re-derives the pager (20 → 7 pages at
+  1440, 40 → 14 narrow) and resets to page 1; a search with no match prints "No songs match that."
+  and drops the pager; every chip hit-tests to itself, and the point under the star is the heading
+  or the section (it takes no pointer).
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1226,6 +1297,28 @@ Section 4:
   and the tape's centres from their own origin and rotation.
 - *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
   session 0) — the heading, the labels.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
+Section 5:
+- *Where the seam lives inside the branch, the block goes after the seam* (Lime 1, section 4) —
+  `active`, `filtered`, `pg`, `shown`, `columns`, `labels` shared whole.
+- *The `G` lookup at the block's head, whose twin's arm is today's literals* (Grunge 1, sections
+  4–10) — a third arm; new leaves fall back through `??`.
+- *The paired diff walk* (Grunge 2) — against both twins, by traversal order, bindings resolved.
+- *A scheme that did not move can still move the binding* (Grunge 3) — the idle chips on
+  `tag/1/bg` under `sem/bg`, which the brief had read off `inactive/bg`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — none on any node.
+- *`Pager` has a Lime branch, `BookPill`'s shape* (Lime 1, section 5; D1) — an Editorial arm,
+  the map's `onBox` precedent for marking the page the frame marks.
+- *The 768 halves take `flex: 1 1 50%`* and *the search pill's ring is an inset `boxShadow`* (Lime
+  1, section 5; D1) — the first kept, the second replaced by `DashRule` under `ed`.
+- *`vm.title` shadows the ramp's `title` size* (Lime 1, section 6) — the song's 32 / 25 / 23.
+- *Leaked tops are followed where they show* / *a leak that shows and reads as a defect is
+  overridden* (Lime 1, section 4; Grunge 1, section 4) — the 390 sparkle kept on the page.
+- *One five-theme digest is the whole proof for a shared-helper change* (Lime 1, sweep) —
+  `Pager`, 645 renders static and live.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the heading, the songs, the artists, the page numerals.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
 ## Open questions
