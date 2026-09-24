@@ -14988,7 +14988,8 @@ function Calendar({ s }) {
     // flattens**: `box1` rows under a `tx` card on a `box2` panel, where the
     // Retro path's `paper` rows and `tx` card are one colour on Lime.
     // CLAUDE.md's "on Lime and Grunge the card and the rows share a fill" is
-    // now Grunge's alone — for the sweep. The card's own `stroke/1` (pale at
+    // no template's now: Grunge's own frame restores the same stack (below) —
+    // for the sweep. The card's own `stroke/1` (pale at
     // .15 on pale) is not drawn, Retro's reading of the same stroke; no child
     // reaches a card's edge, so the rings are plain inset shadows. The Back
     // pill nests **Scheme 3** — `sem/text/1` there is `#15180F` = `s.bg`, its
@@ -15013,14 +15014,37 @@ function Calendar({ s }) {
     // full strength. The 390 stepper row is wider than its card in the frame
     // too (its first group stands at x −32), so Retro's clip-about-the-centre
     // mechanism is kept. No node carries an effect at any width.
-    if (s.lime) {
+    //
+    // **Grunge (964:73034 + 964:73033 · 971:8150 + 971:8149 · 977:12377 +
+    // 977:12376, in Frame 324 964:73023 · 971:8139 · 977:12366) is this block
+    // again**: the paired diff against Lime's Frame 324s is 98 = 98 nodes at
+    // every width, Static Youth's Scheme 1 with the same nested schemes, no
+    // Device override and no effect, and every fill binds the key Lime's does
+    // but two. **Two bindings moved**: the panel is `sem/box/3` (`s.box3`,
+    // #0E0E0E) where Lime's is `sem/box/2`, at a raw **15** at 1440 alone (60 /
+    // 30 narrow, Lime's own); and the summary card carries a 1px inside
+    // `sem/stroke/2` ring (#FF0000) that Lime's `stroke/1` card leaves
+    // undrawn. So Grunge keeps the three-level stack too: #1A1A1A rows under
+    // the white `s.tx` card on a #0E0E0E panel. Boxes: the wizard card, the
+    // summary card and the rows are radius **15** (the wizard's 16 narrow is
+    // Lime's), and the card and rows pad **24** at the sides (Lime 34). The
+    // Send Enquiry pill's Scheme 2 `sem/bg` is **#171716**, a named literal
+    // (layout 3's calendar), where Lime's `s.box1` is #1A1A1A here. Every
+    // Stones Crush string goes through `disp`, faced and uppercased. The rest
+    // — `s.ac` chips, heads and Next Step, `s.bg` Back pill, `s.box2` rules,
+    // date box and card ink, the `stroke2` step disc — resolves through
+    // Lime's keys.
+    if (s.lime || s.grunge) {
+      const grunge = s.grunge
       const hair = `inset 0 0 0 1px ${s.stroke1}`
       const titleSize = u(desk ? 36 : s.mob ? 26 : 28)
+      const r15 = (lime) => u(grunge ? 15 : lime)
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       const disp = (size, lh, extra) => ({
-        fontFamily: s.display, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
+        fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
+        ...(grunge ? { textTransform: 'uppercase' } : null), ...extra,
       })
       const chipType = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -15032,7 +15056,8 @@ function Calendar({ s }) {
       // shared seam's `sumHead` / `sumCells` / `dc` / `pkg` (JP-052).
       const summary = (
         <div style={col(u(20), {
-          background: s.tx, color: s.box2, borderRadius: u(50), padding: `${u(24)} ${u(34)}`,
+          background: s.tx, color: s.box2, borderRadius: r15(50), padding: `${u(24)} ${u(grunge ? 24 : 34)}`,
+          boxShadow: grunge ? `inset 0 0 0 1px ${s.stroke2}` : undefined,
         })}>
           <div style={row(u(14), { justifyContent: 'space-between' })}>
             <div style={col(u(4))}>
@@ -15070,8 +15095,8 @@ function Calendar({ s }) {
       // A refused date takes Lime's blocked state, its parts at .38.
       const infoRow = ({ key, big, sub, end, dim, onClick }) => (
         <div key={key} onClick={onClick} style={row(u(14), {
-          background: s.box1, color: s.tx, borderRadius: u(50), boxShadow: hair,
-          padding: `${u(18)} ${u(34)}`, justifyContent: 'space-between',
+          background: s.box1, color: s.tx, borderRadius: r15(50), boxShadow: hair,
+          padding: `${u(18)} ${u(grunge ? 24 : 34)}`, justifyContent: 'space-between',
           cursor: onClick ? 'pointer' : undefined,
         })}>
           <span style={col(u(2), { minWidth: 0 })}>
@@ -15215,7 +15240,7 @@ function Calendar({ s }) {
       // and *Start again* is the Back pill, since it returns to step 1.
       const wizard = (
         <div style={col(u(20), {
-          background: s.box1, color: s.tx, boxShadow: hair, borderRadius: u(desk ? 50 : 16),
+          background: s.box1, color: s.tx, boxShadow: hair, borderRadius: u(desk ? (grunge ? 15 : 50) : 16),
           padding: desk ? `${u(40)} ${u(48)}` : '30px',
           justifyContent: wSent ? 'center' : 'space-between', alignItems: 'stretch', minWidth: 0,
         })}>
@@ -15248,7 +15273,8 @@ function Calendar({ s }) {
 
       return (
         <div style={col(u(s.mob ? 20 : 50), {
-          background: s.box2, borderRadius: u(s.mob ? 30 : 60), padding: panelPad,
+          background: grunge ? s.box3 : s.box2,
+          borderRadius: u(grunge && desk ? 15 : s.mob ? 30 : 60), padding: panelPad,
         })}>
           <h2 style={{ margin: 0, ...disp(s.dispLg, 0.89, { color: s.ac }) }}>{s.title}</h2>
           <div style={desk
@@ -15264,7 +15290,7 @@ function Calendar({ s }) {
               {pkg && infoRow({
                 key: 'pkg', big: pkg.name, sub: pkg.price, end: nPkg > 1 ? W.pkg : '', onClick: onPkg,
               })}
-              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={s.box1} full={s.mob}
+              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={grunge ? '#171716' : s.box1} full={s.mob}
                         style={{ width: '100%', justifyContent: 'space-between' }} />
             </div>
           </div>
