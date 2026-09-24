@@ -128,7 +128,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 0 | *foundation* | `964:58611` *(page)* | Sienna Vale → `THEMES[3]`, face, ramp, schemes, flags, photos | — | `986:48237` | — | `986:48250` | — | — | — | — | done `0ac93b2` · `2297e8c` |
 | 1 | `header` | `964:58612` | Headers — hero | 1440 × 750 | `986:48238` | 768 × 1024 | `986:48251` | 390 × 844 | 3 | `964:58588` | `964:58600` | done `e47847d` |
 | 2 | `bio` | `964:58613` | Bios — A · Flanked portrait | 1440 × 769 | `986:48239` | 768 × 1135 | `986:48252` | 390 × 731 | 1 | `964:58589` | `964:58601` | done `28b668c` |
-| 3 | `media` | `964:58614` | Media Player — D · Floating cards stack | 1440 × 1140.2 | `986:48241` *(in `986:48240`)* | 768 × 1629.6 | `986:48253` | 390 × 1211.8 | 2 | `964:58590` | `964:58602` | todo |
+| 3 | `media` | `964:58614` | Media Player — D · Floating cards stack | 1440 × 1140.2 | `986:48241` *(in `986:48240`)* | 768 × 1629.6 | `986:48253` | 390 × 1211.8 | 2 | `964:58590` | `964:58602` | done `83c499b` |
 | 4 | `gallery` | `964:58615` | Gallery Sections — Component 1 | 1440 × 818 | `986:48242` | 768 × 1123 | `989:22410` | 390 × 791.7 | 1 | `964:58591` | `964:58603` | todo |
 | 5 | `repertoire` | `964:58616` | Repertoire — A · Two-column dense | 1440 × 1055 | `986:48243` | 768 × 897 | `986:48255` | 390 × 896 | 3 | `964:58592` | `964:58604` | todo |
 | 6 | `map` | `964:58617` | Events Map — D · Compact tile | 1440 × 1191.2 | `986:48244` | 768 × 1308.6 | `986:48256` | 390 × 1132.5 | 1 | `964:58593` | `964:58605` | todo |
@@ -652,6 +652,26 @@ Append as the pass goes. Do not repeat Lime's, Grunge's or Retro's bullets; name
 - **Every head on this page is one tone.** The planning read found no two-colour heading, so
   Grunge's positional two-tone rules (its open questions 7–9, 11 and 14) are Grunge's and do not
   widen.
+- **A dashed rule is `DashRule`** (section 3, beside `SIENNA_MEDIA` in `EncoreSection.jsx`): an
+  absolutely positioned inline `<svg>` on the row's edge, one `<line x2="100%">` with
+  `strokeDasharray`, `overflow: visible`, no pointer. The caller is `position: relative`, passes
+  the node's own `dashPattern` (× 0.82 on desktop; the 1px weight stays 1) and its stroke's scheme
+  key, and pads its whole inset back — the overlay takes no height, which is what an INSIDE
+  stroke is. It draws `side` 'top' or 'bottom'; **the four-sided card** (the gallery's 5, 5, the
+  pricing cards' 8, 8, the form's shell, the testimonials) is the gallery session's to add — a
+  `<rect>` inset half the weight with `rx`, and its `width` / `height` as CSS `calc(100% - w)`
+  (SVG attributes take no `calc`), checked in the render before it is trusted.
+- **The tape is `Tape`** (section 3): `if (!s.editorial) return null`, a 206 × 56 `overflow:
+  hidden` strip in `colour ?? s.activeBg` (media's binding; pass the node's own elsewhere — the
+  calendar's terracotta), clipping the 213.09² grain raster at SCREEN from (−2.93, 0.15), × `z`.
+  The caller seats it with `style`. **Place it by its centre in the frame it is nested in**: the
+  narrow masters nest media's inside the leant card, the desktop one on the section, and all three
+  are the same page angle (−3); inside a leant mount it turns the difference. Walk the tape's
+  `x`, `y`, `rotation` (a rotated node's `x`/`y` is its unrotated origin) and add the half-size
+  through the rotation, then un-rotate the offset from the mount's centre.
+- **A leant print in a stack gives back its rotated box** (section 3): Figma's auto-layout spaces a
+  rotated child by its bounding box, so a mount standing under a list takes a block margin of
+  W·sin θ / 2 a side (`1.745% 0` at 2°). Beside a list, centred, it needs none.
 
 ### Seen at planning time, per section
 
@@ -972,6 +992,70 @@ four ink ones are its own register.
   assumes `sem/bg`, the bio's binding, which under Scheme 3 is ink on the terracotta disc.
 - **No live control**: `live=1` digests identical to the canvas at all three widths.
 
+### Settled in section 3 (the media player)
+
+- **No Editorial block: `Media`'s `if (s.v0 && (s.lime || s.grunge))` is `s.limeTree`**, with
+  `const ed = s.editorial` naming the deltas beside Grunge's `grunge`. The tree is Grunge's at all
+  three widths (the walker, all three masters): the heading row, the five flush rows, the 710 /
+  558 grid at 60, the opacity-0 disc spacer, `LimeSkip`, the mount round the card. Its hooks sit
+  above the block, so the published player needed nothing (below). Both twins' arms are
+  byte-identical: the one shared edit is the heading's `color`, now `ink`, which is `s.tx` under
+  both.
+- **`ink` is the one switch**: every string but the clocks binds `sem/text/1`, which under Scheme 2
+  is paper — `s.ac` — where the twins' copy reads `s.tx` (ink here). So `ink = ed ? s.ac : s.tx`
+  feeds `txt`, the heading, the row glyph, the placeholder ink and the card's `color`; the clocks
+  bind `sem/text/2` and pass `{ color: s.tx }` — ink on the fade, faint, as the frame draws them.
+- **The deltas, all read off the walk** (`boundVariables` resolved to names):
+  - rows **112 / 96 / 76.8** (the mount's 560, 480, 384 divided by five), Display/Title **32 / 25 /
+    23** through `labelStyle` (Grunge's call, `s.title` being the heading string), the 390 inert
+    inset **8.4**; every other row box is the twins';
+  - the heading one tone in `sem/text/1`, uppercase — Grunge's two block lines, so the typed break
+    after "worth" holds in Noto at every size without an em measure; the second line takes no
+    colour of its own;
+  - the card **square**, 540 / 540 / 334.6, `s.tx` under the sleeve (the opacity-0 disc's own
+    `sem/text/2`), `SCRIM.limeSleeve` (the gradient's transform and its .91 are the twins'), no
+    effect; Body/LG over Body/MD; the 390 spacer the frame's **66.6**, not the remainder — the
+    master's content runs 9 into the card's foot padding, and so does ours;
+  - the transport `sem/tag/1/bg` → `s.chips[0].bg` (blush), the ▶ `s.tx`;
+  - the progress bar's track and fill are **both `sem/bg`** — Lime's invisible playhead again — so
+    the track is `s.bg` (taupe, the frame's) under `s.pillBg` (blush): Lime's departure, named;
+  - the narrow grid gap is **92**, not 32 (room for the 390 tape above the mount);
+  - no seams, no grain sheet, no star, no glow; the 390 wrapper's extra `24px 0` is dropped (it
+    cleared Lime's arcs and Grunge's tears, and Editorial draws neither).
+- **The mount (`Frame 209`)**: `s.chips[0].bg` blush, square, padding **10 on every side at every
+  width**, `rotate(2deg)` (Figma −2), and a real **`DROP_SHADOW` `#000` 25% at 6, 6 blur 6** — read
+  off `effects`, not inherited from Grunge's empty list — as `boxShadow`, × 0.82 on desktop. No
+  clip and no grain: the tape rides over its top edge.
+- **Figma spaces the leant mount by its rotated box where it stacks** (memory `figma-frame-reading`,
+  the pricing deck's rule, met again): at 768 the frame reserves 584.4 for a 560 print, so
+  everything below rode 24 high. The mount takes `margin: 1.745% 0` at 768 and 390 — W·sin 2° / 2
+  a side, a percentage margin being the column's width — and the H·(1 − cos 2°) term (under 0.2)
+  is dropped. At desktop it is centred beside the list, as the frame's overflows its 560, and
+  needs none.
+- **The pill is Retro's Soundcloud seat**: `<BookPill label="Soundcloud" ext={s.soundcloud}>`, a
+  span while the address is empty, and no `mediaCta` pill — `FIELDS.media.cta`'s `'*': []` row
+  already reads "Not shown in this template" here, and the `soundcloud` hint ("in the other
+  templates an empty one stays a picture") is right as written. Section 1's "blush with taupe
+  type" was the frame's blush with the wrong ink: the label and the disc bind `sem/tag/2/text`
+  (ink) and the arrow `sem/active/bg`, so it is `fg={s.tx}`. The instance is **`BookPill`'s branch
+  hand-scaled to 0.8 at every width** (4 / 4 / 4 / 16.8, a 36.8 × 35.2 disc, gap 8, 43.2 tall, the
+  same box at 1440 as at 390), Label/MD at 1.1 — passed through `disc`, `size` and `style`, no new
+  prop.
+- **Measured** (harness, `getBoundingClientRect`, against the section root): desktop rows 91.8
+  (112 × 0.82), the mount's box (669, 317) against the frame × 0.82 (669.4, 316.8), 457 × 459 with
+  a 441 × 443 card, the tape's box (830.1, 311.8) against (830.7, 311.7), the heading 172.7 against
+  172.2; at 768 and 390 every box sits off the frame by the root-padding diff alone (−4.9 at 768,
+  the root's 56 against the master's 60; +20.5 at 390, 44 against 24) — rows, mount (92 under the
+  list), tape and pill alike. The pill runs 145.5 wide against 157.2 (Noto's "SOUNDCLOUD" is
+  narrower than Fisterra's; `faceK` 1).
+- **Function** (`theme=3&live=1`, puppeteer with `--autoplay-policy=no-user-gesture-required`, at
+  1440 and 390): a row click plays its track and marks it Pause, a second click pauses, the disc
+  toggles, Next wraps 5 → 1 and Back 1 → 5, the card names the track; with `&cj={"soundcloud":…}`
+  the pill is an `<a href="https://soundcloud.com/kai" target="_blank">` live and still a span on
+  the canvas. The tape takes no pointer and covers only the card's `<` glyph, which has no handler.
+- **Moved, theme 3 only** (digest: exactly `media` arch 0 at three widths, static and live — 3 of
+  645 each; zero at themes 0, 1, 2 and 4). No shared helper changed.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
@@ -1031,6 +1115,30 @@ Section 2:
 - *One five-theme digest is the whole proof for a shared-helper change* (Lime 1, sweep) —
   `SealBadge`.
 
+Section 3:
+- *The gates are the template's flag, the named pairs, and `s.designed`* (Grunge 1, decision 2) —
+  `Media`'s block to `s.limeTree`, `ed` beside `grunge`.
+- *The node walker* and *the paired diff walk* (Grunge 2) — all three masters, with `dashPattern`,
+  per-side stroke weights and bound-variable names added.
+- *A scheme that did not move can still move the binding* (Grunge 3) — every string on
+  `sem/text/1`, the pill's ink on `sem/tag/2/text`.
+- *Every glow is a guess until the node's `effects` confirm it* (Lime 1) — the mount's real drop
+  shadow; the card's glow gone.
+- *A section whose live seam is hoisted above its branches can always take a block* (Lime 1,
+  section 3) — the player needed nothing.
+- *An opacity-0 node is a spacer* and *a stated list height is a column minimum* (Lime 1, section
+  3) — 252 / 252 / 66.6, and 560 / 480 / 384.
+- *`vm.title` shadows the ramp's `title` size* (Lime 1, section 6) — the row names 32 / 25 / 23.
+- *Figma auto-layout spaces a rotated child by its rotated bounding box* (memory
+  `figma-frame-reading`) — the stacked mount's margin.
+- *A rotated group's metadata x/y is a bounding box* (memory `figma-frame-reading`) — the tape and
+  the mount from `absoluteBoundingBox` and the node's own origin.
+- *`BookPill` has a Lime branch* (Lime 1, section 1; D1) — hand-scaled through `disc`, `size`,
+  `style`.
+- *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* (Grunge 1,
+  session 0) — the heading.
+- *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -1060,3 +1168,9 @@ Section 2:
 6. **The three hand-scaled Bold statements** (form, testimonials, footer) — off the ramp, at three
    different ratios; each session follows its frame's glyph size (Lime layout 2's rule) and says
    whether a real artist's longer statement still fits. Worth telling the designer.
+7. **The media player's clocks are ink on the fade** (section 3). `sem/text/2` under Scheme 2 is
+   `#141414`, set on the card's foot where the scrim is near-black, so "02:28" / "04:22" all but
+   vanish — in the frame's render and in ours, followed. Its progress bar (track and fill both
+   `sem/bg`) was redrawn as Lime's was, because a playhead is the player's function; the clocks
+   were not, being a label beside it. One line to turn (`{ color: s.tx }` → `s.ac`) if the user
+   or the designer wants them read. Worth telling the designer with the bar.
