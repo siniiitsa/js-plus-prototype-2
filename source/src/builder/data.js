@@ -153,18 +153,92 @@ export const THEMES = [
   },
   {
     name: 'Editorial',
-    sub: 'Playfair Display · refined',
-    display: "'Playfair Display', serif",
-    label: "'Lora', serif",
-    body: "'Lora', serif",
+    sub: 'Noto Serif Display · paper & ink',
+    // Editorial is the fourth template with a Figma variable mode ("1 ·
+    // Primitives" → Sienna Vale, "2 · Scheme" → Scheme 1), so every value below
+    // is that mode's. The exception is the display and label face: the mode
+    // names FONTSPRING DEMO - Fisterra Fora, a demo-licence caps-only condensed
+    // display serif that cannot ship, so it is set in Noto Serif Display at its
+    // narrowest width (user call, 2026-09-24: substitute, "pick the closest").
+    // index.html asks Google for exactly one instance — `wdth,wght@62.5,540..700`
+    // — so the single face it serves is condensed whatever a site asks, and a
+    // site that names no weight gets 540, the frame's stem to the pixel (.154
+    // of the cap); the three Bold statements get 700. Its cap height is the
+    // frame's within 1.4% (.715 against .725 of the em), so it takes no
+    // `faceK`. Do NOT add a second Noto Serif Display entry to that link: the
+    // default 400 would find a face of its own and the display would go wide
+    // and thin (Retro's Fraunces rule). It has a lowercase where Fisterra Fora
+    // is all capitals, so an Editorial block sets its display and label strings
+    // `textTransform: 'uppercase'` per site, Grunge's rule; Chakra Petch and
+    // Inter set mixed case ("Sold Out", "Full name"), hence casing 'title'.
+    display: "'Noto Serif Display', serif",
+    label: "'Noto Serif Display', serif",
+    ui: "'Chakra Petch', sans-serif",
+    body: "'Inter', sans-serif",
     casing: 'title',
-    dls: '-0.01em',
-    radius: '2px',
-    radiusSm: '2px',
-    btnR: '2px',
-    bw: '1.5px',
+    // Every Sienna Vale text style states letterSpacing 0.
+    dls: '0px',
+    // radius/card, radius/control, radius/pill, border/thin, radius/chip.
+    radius: '16px',
+    radiusSm: '6px',
+    btnR: '999px',
+    bw: '2px',
+    radiusChip: '6px',
+    // Scheme 1's bg / text1 / text2.
     palette: ['#F6F0E8', '#C86E52', '#141414'], // warm paper · terracotta · near-black
-    tags: ['#C86E52', '#141414', '#AA958A', '#E6B6A0'],
+    // Scheme 1's tag1…tag7 alternate between exactly these two — Lime's
+    // two-seat system — with their inks in `sem.tagFg`.
+    tags: ['#E6B6A0', '#C86E52'],
+    // Scheme 1, paper — the scheme five of the eleven layout-1 sections stand
+    // on. Its stroke1 is opaque ink, not a 15% hairline: the frames' dashed
+    // rules on paper are black.
+    sem: {
+      box1: '#FFF9F2',                      // sem/box/1
+      box2: '#EDE6DC',                      // sem/box/2
+      box3: '#141414',                      // sem/box/3
+      glow: '#C86E52',                      // sem/glow
+      activeBg: '#C86E52',                  // sem/active/bg
+      activeFg: '#F6F0E8',                  // sem/active/text
+      inactiveBg: '#F6F0E8',                // sem/inactive/bg
+      inactiveFg: '#C86E52',                // sem/inactive/text
+      inactiveLine: '#141414',              // sem/state/inactive/border
+      stroke1: '#141414',                   // sem/stroke/1 — opaque
+      stroke2: '#C86E52',                   // sem/stroke/2
+      hl: '#141414',                        // sem/box/1/text
+      tagFg: ['#141414', '#F6F0E8'],        // sem/tag/1/text, sem/tag/2/text — parallel to `tags`
+    },
+    // The other schemes the frames stand a whole section on (SCHEMES_OF), in
+    // Scheme 1's shape: `palette` is [bg, text1, text2]. Scheme 2's accent is
+    // paper, so its heads are paper on taupe; Schemes 2's and 3's inactive
+    // ground is transparent, so an idle chip there is an outline only.
+    schemes: {
+      // Scheme 2, taupe — the media player and pricing.
+      2: {
+        palette: ['#AA958A', '#F6F0E8', '#141414'],
+        // tag1 blush, tag2 paper, both inked black — read off the file; the
+        // plan's table had the two seats the other way round.
+        tags: ['#E6B6A0', '#F6F0E8'],
+        sem: {
+          box1: '#BAA499', box2: '#D0BCB2', box3: '#A18A7E', glow: '#E6B6A0',
+          activeBg: '#E6B6A0', activeFg: '#141414',
+          inactiveBg: 'rgba(170, 149, 138, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
+          stroke1: '#F6F0E8', stroke2: '#E6B6A0', hl: '#FFFFFF',
+          tagFg: ['#141414', '#141414'],
+        },
+      },
+      // Scheme 3, ink — the header, repertoire, the enquiry form and the footer.
+      3: {
+        palette: ['#141414', '#C86E52', '#F6F0E8'],
+        tags: ['#F6F0E8', '#C86E52'],
+        sem: {
+          box1: '#1D1D1D', box2: '#2A2A2A', box3: '#0E0E0E', glow: '#C86E52',
+          activeBg: '#C86E52', activeFg: '#F6F0E8',
+          inactiveBg: 'rgba(20, 20, 20, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
+          stroke1: 'rgba(246, 240, 232, 0.56)', stroke2: '#E6B6A0', hl: '#FFFFFF',
+          tagFg: ['#141414', '#F6F0E8'],
+        },
+      },
+    },
   },
   {
     name: 'Pop',
@@ -191,7 +265,14 @@ export const THEMES = [
 // the section's ground. A section with no entry stands on Scheme 1, the
 // theme's own `palette` / `sem` / `tags`. The footer has one design, so its
 // row is read at every page layout.
-export const SCHEMES_OF = {}
+export const SCHEMES_OF = {
+  // Sienna Vale's layout-1 page (964:58612…22), read off each section's
+  // `explicitVariableModes`, identical at all three widths. Layouts 2–4 are
+  // later passes' to fill from their own walks.
+  Editorial: {
+    0: { header: 3, media: 2, repertoire: 3, pricing: 2, form: 3, footer: 3 },
+  },
+}
 
 /* ------------------------------------------------------------------ *
  * §4.3 CATS — 11 section categories.

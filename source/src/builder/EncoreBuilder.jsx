@@ -121,6 +121,13 @@ const THEME_RAMP = {
     tablet:  { dispXl: '95px',  dispLg: '81px',  dispMd: '50px', dispSm: '40px', title: '28px', list: '19px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
     desktop: { dispXl: '162px', dispLg: '107px', dispMd: '59px', dispSm: '41px', title: '30px', list: '20px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
   },
+  // Sienna Vale, Editorial's mode: Grunge's ramp but for the four display
+  // sizes and title.
+  Editorial: {
+    mobile:  { dispXl: '64px',  dispLg: '48px',  dispMd: '36px', dispSm: '30px', title: '23px', list: '18px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
+    tablet:  { dispXl: '107px', dispLg: '73px',  dispMd: '45px', dispSm: '36px', title: '25px', list: '19px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
+    desktop: { dispXl: '147px', dispLg: '97px',  dispMd: '52px', dispSm: '37px', title: '26px', list: '20px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
+  },
 }
 
 // The two keys that only matter once a window is wider than the canvas its
@@ -371,7 +378,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // TagChips' sentence-case chips — is gated on this rather than on a list of
     // names. A site only some of them share stays a named pair, widened per
     // site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -507,7 +514,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Grunge's frames lay the very raster grain.jpg was cut from (image hash
   // b74be8bc, a 3/255 re-encode apart) over their bands and photographs, as a
   // LIGHTEN layer where Retro's is a multiply; the sections pass the blend.
-  vm.grainSrc = T.name === 'Retro' || T.name === 'Grunge' ? RETRO_TEXTURE.grain : undefined
+  // Editorial's frames clip the same raster inside their tape strips, at
+  // SCREEN; the tape is its own helper, so `Grain` stays unwidened.
+  vm.grainSrc = T.name === 'Retro' || T.name === 'Grunge' || T.name === 'Editorial' ? RETRO_TEXTURE.grain : undefined
   vm.mapSrc = vm.designed ? RETRO_TEXTURE.map : undefined
   vm.mapRadialSrc = vm.designed ? RETRO_TEXTURE.mapRadial : undefined
 
@@ -778,8 +787,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       card,
       // Same caveat as `legible()` above: the second hue only reads while it
       // separates from the card it sits on. Retro's three clear it; a mid-tone
-      // card in a pale palette (Editorial's warm grey) does not, and there the
-      // card's own ink stands in.
+      // card in a pale palette does not, and there the card's own ink stands
+      // in.
       acc: Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink,
       cardFg: ink,
       // Only the light card drops its blurb and the price unit off full strength
@@ -863,8 +872,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Static Youth tokens left it two). So the walk starts at 3 and
   // takes the first tag that clears `tierHues`' own 0.22 — olive on Retro and
   // pale lime on Lime (both index 3), the stamp red on Grunge and the
-  // terracotta on Editorial, whose index 3 is a wash only a shade off its
-  // paper. `ac` is the last resort and no palette reaches it.
+  // terracotta on Editorial (index 3 of two seats is the second, and its
+  // first, blush, is the one a shade off the paper). `ac` is the last resort
+  // and no palette reaches it.
   const rowSeat = T.tags
     .map((_, i) => T.tags[(3 + i) % T.tags.length])
     .find((h) => Math.abs(lum(h) - lum(bg)) > 0.22) ?? ac

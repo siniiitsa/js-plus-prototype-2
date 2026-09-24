@@ -1,6 +1,6 @@
 // The seeded mock photography of the designed templates, exported from their
-// Figma frames — Retro's §10.2 page, Lime's four layout pages and Grunge's
-// layout-1 page. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
+// Figma frames — Retro's §10.2 page, Lime's four layout pages and Grunge's and
+// Editorial's layout-1 pages. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
 // new: every photograph they carry is already seeded here, the layout-3 bio's
 // crop taken as an objectPosition on grungeStage rather than as a second
 // export, and the layout-4 bio's a centred cover of the same file.
@@ -14,9 +14,9 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// Retro, Lime and Grunge are the templates with Figma frames of their own, so
-// they are the ones that seed photography. The other two keep the initials
-// placeholder.
+// Retro, Lime, Grunge and Editorial are the templates with Figma frames of
+// their own, so they are the ones that seed photography. Pop keeps the
+// initials placeholder.
 
 import hero from './photos/hero.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
@@ -59,6 +59,13 @@ import grungeAvatar from './photos/grunge-avatar.jpg'
 import grungeGallery4 from './photos/grunge-gallery-4.jpg'
 import grungeGallery7 from './photos/grunge-gallery-7.jpg'
 import grungeFormPhoto from './photos/grunge-form-photo.jpg'
+import editorialHero from './photos/editorial-hero.jpg'
+import editorialHeaderAvatar from './photos/editorial-header-avatar.jpg'
+import editorialStage from './photos/editorial-stage.jpg'
+import editorialCalendar from './photos/editorial-calendar.jpg'
+import editorialGallery4 from './photos/editorial-gallery-4.jpg'
+import editorialGallery6 from './photos/editorial-gallery-6.jpg'
+import editorialGallery7 from './photos/editorial-gallery-7.jpg'
 import editorialHeader from './photos/editorial-header.jpg'
 import popHeader from './photos/pop-header.jpg'
 
@@ -137,6 +144,32 @@ export const GRUNGE_PHOTOS = {
   pricing: REVIEWERS,
 }
 
+// Editorial's layout-1 frames (964:58612…22, the mode "Sienna Vale") are a
+// fourth shoot, in colour — no fill filter, no node effect. Own: the hero
+// (hash ae069c14, the garden wedding), the portrait card (488cc3d7, the
+// singer), which the frame's form also draws as its avatar — one image in two
+// slots — the bio's arch (9d20fe0d), the gallery's spotlight (90514a32) and
+// the calendar's photograph (47176057), the one CROP on the page, exported at
+// that crop: the full width over 8.9–70.0% of a portrait source, the frame's
+// own 1.309. The rest are FILL and exported whole. Shared: the five track
+// covers and the map raster. Its layout-2 form fills its stage slot with the
+// hero, so that is `photo` too.
+//
+// The gallery strip departs from the frame, Grunge's call again: the frame's
+// thumbnails are Retro's shoot (the Basement singer, Retro's spotlight in the
+// ringed fourth seat, one of them three times). The seven slots are this
+// shoot's five pictures and two square crops of the hero — the singer at the
+// mic and the dancing couples — with the frame's spotlight in galActive()'s
+// slot, so every thumbnail is a different picture of the one wedding.
+export const EDITORIAL_PHOTOS = {
+  header: editorialHero,
+  bio: editorialStage,
+  calendar: editorialCalendar,
+  form: editorialHeaderAvatar,
+  gallery: [editorialStage, editorialHeaderAvatar, editorialCalendar, editorialGallery4, editorialHero, editorialGallery6, editorialGallery7],
+  pricing: REVIEWERS,
+}
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
@@ -168,9 +201,12 @@ const ROW_ART = { media: RETRO_TRACK_ART }
 export const RETRO_HEADER_AVATAR = headerAvatar
 export const LIME_HEADER_AVATAR = limeHeaderAvatar
 export const GRUNGE_HEADER_AVATAR = grungeHeaderAvatar
+// Editorial's card is an arch (213 × 262) over a portrait source of nearly its
+// own aspect, so it is the whole source at 480 × 600, not a centre square.
+export const EDITORIAL_HEADER_AVATAR = editorialHeaderAvatar
 
 // Fixed decoration rather than user content, so these are not in FIELDS. The
-// grain is Retro's and Grunge's; the map raster is every designed template's
+// grain is Retro's, Grunge's and Editorial's (its tape); the map raster is every designed template's
 // (sectionVm decides).
 // `mapRadial` is the events map's layout-3 plate, the frame's own radial street
 // raster (964:68649's Map Texture), re-encoded at 900px; it is drawn as it is,
@@ -188,7 +224,7 @@ export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 export const TEMPLATE_STILLS = { Editorial: editorialHeader, Pop: popHeader }
 
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
-// nothing, which is what leaves Editorial and Pop rendering exactly as they did.
+// nothing, which is what leaves Pop rendering exactly as it did.
 //   photos — the section photographs above
 //   avatar — the header's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
@@ -218,6 +254,7 @@ const SEEDS = {
   Retro: { photos: RETRO_PHOTOS, avatar: RETRO_HEADER_AVATAR, photo: formStage, layouts: { 2: { bio: bioStage } } },
   Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto, layouts: { 2: { bio: limeBioStage }, 3: { bio: limeBioStage } } },
   Grunge: { photos: GRUNGE_PHOTOS, avatar: GRUNGE_HEADER_AVATAR, photo: grungeFormPhoto },
+  Editorial: { photos: EDITORIAL_PHOTOS, avatar: EDITORIAL_HEADER_AVATAR, photo: editorialHero },
 }
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
@@ -248,6 +285,6 @@ export const defaultImages = (cat, themeName) => {
 }
 
 // The third shape: artwork that belongs to a row of a list rather than to the
-// section. The media player's tracks have some, under both seeded themes.
+// section. The media player's tracks have some, under every seeded theme.
 export const defaultTrackArt = (cat, themeName) =>
   (SEEDS[themeName] ? ROW_ART[cat] : undefined)
