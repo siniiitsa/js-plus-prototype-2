@@ -1260,7 +1260,11 @@ four ink ones are its own register.
   (646 × 0.82 = 529.7), tile 519 (633.43 × 0.82 = 519.4), rows 79.5 once the 1° lean is taken off
   the box; 768 tile 371.6 (372), map 218.8, rows 79.5; 390 tile 425.6 (425.16), map 298, rows 96.9.
   The seeded page is five gigs at every width (the twins' inherited 390 diff), so no pager is drawn
-  seeded.
+  seeded — and the desktop tile, stretched to the shorter panel, is 543 tall against the frame's
+  737.16 × 0.82 = 604.5 (Lime's "the frame's 686 less its 74 of pager" case). At 768 the tape
+  stands left of centre and grazes the tile's ink foot, as the master's does.
+- **`FIELDS.map` has no Lime- or Grunge-keyed `in` row**, so nothing was owed (Grunge's section 6
+  line, true again).
 - **Function** (`theme=3&live=1&n=30`, puppeteer mouse clicks, three widths): a row lights its pin,
   a pin lights its row, Next moves the ink numeral 1 → 2 and the list to venue 6, Prev back finds
   the lit gig still lit; linked rows are `<a>`; every click hit-tests to its target (the tape takes
