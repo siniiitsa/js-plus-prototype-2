@@ -88,7 +88,13 @@ mutated through a single `patch()` helper.
   `arrangeRows()` in `EncoreBuilder.jsx` draws that row as a 858fr : 405fr grid inside the
   page gutter. Both the editor canvas and `PublishedPage` go through the pair, and the
   sections in it are built with `sectionVm({ column: true })`, which drops their horizontal
-  padding. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
+  padding. **The right cell is sticky** (JP-043, user call, 2026-09-24; no Frame 300 declares
+  it): `position: sticky; top: 0; alignSelf: start` on the cell div, not the calendar's root,
+  so in the published tab the calendar stays in view while the left column scrolls and the
+  one-row grid area releases it at the row's end. On the canvas it is inert, since the card's
+  `overflow: hidden` makes the card, which never scrolls, the cell's scroll container — a
+  named, accepted diff; and a window shorter than the cell (~680 at 1440) pins it with its
+  foot below the fold until the row ends. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
   media, repertoire, calendar — and at desktop `pageRows` looks past that one layout-3
   repertoire, composing the columns and standing the repertoire after them; moving a section
   out of the run undoes it.

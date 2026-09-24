@@ -4177,8 +4177,16 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
 // frame's 858 : 405, 55 apart × 0.82, on the page ground, inside the page's own
 // gutter. Its sections were built with `column`, so they bring their vertical
 // padding and no horizontal one, and a right column shorter than the left
-// leaves the ground showing under it, as the frame does. Shared by the editor
-// canvas and the published tab, which is what keeps the two one page.
+// leaves the ground showing under it, as the frame does. In the published tab
+// that cell rides the row instead (JP-043, user call, 2026-09-24): it is
+// sticky at the window's top — the cell div, not the calendar's root, and
+// `alignSelf: start` so it is only as tall as its section — and the grid
+// area, one row, is what releases it at the row's end. Neither Frame 300
+// declares a sticky; the ground under the cell is still the frame's. On the
+// canvas it is inert, and on purpose: the card's `overflow: hidden` makes the
+// card the cell's scroll container, and the card never scrolls — take that
+// overflow away and the canvas would stick too. Shared by the editor canvas
+// and the published tab, which is what keeps the two one page.
 // Which column each composed section stands in, by page index — 'left' or
 // 'right' — so `sectionVm({ column })` can say how wide it is.
 function columnSides(rows) {
@@ -4209,7 +4217,7 @@ function arrangeRows(rows, { gutter, bg }, els) {
       transition: 'background-color .45s ease',
     }}>
       <div style={{ minWidth: 0 }}>{row.left.map((i) => els[i])}</div>
-      <div style={{ minWidth: 0 }}>{els[row.right]}</div>
+      <div style={{ minWidth: 0, position: 'sticky', top: 0, alignSelf: 'start' }}>{els[row.right]}</div>
     </div>
   ) : els[row.i]))
 }
