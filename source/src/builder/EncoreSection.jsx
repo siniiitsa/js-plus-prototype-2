@@ -9941,23 +9941,35 @@ function Pager({ s, colour, fill, frame = {} }) {
   // The events map's frame (964:58605) does draw one — a `box/1` pill among
   // `box/2` ones — so `frame.lime` takes an additive `onBox`, the current
   // pill's own fill, which no other caller passes.
-  if (s.lime || s.grunge) {
+  //
+  // Editorial's (964:58616 / 986:48243 / 986:48255) is outlines on the ink:
+  // every button, arrows and pages alike, is unfilled in a 1px `sem/stroke/1`
+  // ring (paper at 56% under Scheme 3), the page pills are 54 wide — circles,
+  // not Lime's 87 pills — and the frame does mark its page, where Grunge's
+  // does not: the current pill's ring and numeral are `sem/text/1`, the
+  // terracotta, 1px like the rest. The numerals are Grunge's Label/SM.
+  if (s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
-    const t = grunge
+    const t = ed
+      ? { box: 'transparent', ring: s.stroke1, ink: s.tx, idle: s.tx, on: s.ac, onEdge: s.ac, pill: 54, ...frame.lime }
+      : grunge
       ? { box: s.pillBg, ring: s.stroke1, ink: s.tx, idle: s.tx, on: s.activeFg, onRing: s.tx, ...frame.lime }
       : { box: s.box2, ring: s.stroke1, ink: s.tx, idle: s.ac, glow: s.glow, ...frame.lime }
     const arrow = (back) => <LimeArrow back={back} z={z} />
     const btn = (key, child, on, end, onClick) => (
       <span key={key} onClick={onClick} style={{
-        minWidth: u(end ? 55 : 87), height: u(54), flex: 'none', borderRadius: '999px',
+        minWidth: u(end ? 55 : t.pill ?? 87), height: u(54), flex: 'none', borderRadius: '999px',
         background: end ? 'transparent' : on && t.onBox ? t.onBox : t.box,
-        boxShadow: end ? `inset 0 0 0 1px ${t.ring}` : on && t.onRing ? `inset 0 0 0 2px ${t.onRing}` : on && t.glow ? `inset 0 0 ${u(17)} ${t.glow}` : 'none',
+        boxShadow: end ? `inset 0 0 0 1px ${t.ring}`
+          : t.onEdge ? `inset 0 0 0 1px ${on ? t.onEdge : t.ring}`
+          : on && t.onRing ? `inset 0 0 0 2px ${t.onRing}` : on && t.glow ? `inset 0 0 ${u(17)} ${t.glow}` : 'none',
         color: on && t.on ? t.on : end || on ? t.ink : t.idle,
         cursor: onClick ? 'pointer' : undefined,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        ...(grunge
+        ...(grunge || ed
           ? labelStyle(s, s.labelSm)
           : { fontFamily: s.label, fontSize: s.labelSm, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap' }),
         // The 390 master spreads every button to one width across the measure.
@@ -10125,17 +10137,35 @@ function Repertoire({ s }) {
     // Label/SM; and the heading is two-tone, "240" `sem/text/1` and "Songs"
     // `sem/text/2`. The string is the artist's, so that rule is positional:
     // word one is the accent, the rest `s.tx`, inline.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial — the fourth time (964:58616 at 1440, 986:48243 at 768,
+    // 986:48255 at 390): Grunge's tree node for node, on Scheme 3 (ink), which
+    // route A resolves into every `s.*` read, so its arm in `G` is the leaves
+    // that bind differently. The field is no box at all — a dashed 9, 9 rule
+    // under it in `sem/stroke/1` (paper at 56%), padded 14 above it — round an
+    // unradiused 49.94 tile in a 1px `sem/text/1` rule; idle chips are filled
+    // paper (`sem/tag/1/bg`, the tag seat) under `sem/bg` ink; the song is
+    // Display/Title 32 / 25 / 23, the media rows' size; the rows are ruled by
+    // the same dashed 9, 9; the heading is one tone. Beside the heading stands
+    // the sparkle (`GrungeStar`, 80.67 wide, `sem/media`), which only this
+    // template draws.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
-      const bebas = (size, extra) => (grunge ? labelStyle(s, size, extra) : {
+      const bebas = (size, extra) => (grunge || ed ? labelStyle(s, size, extra) : {
         fontFamily: s.label, fontSize: size, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap', ...extra,
       })
-      const G = grunge ? {
+      const G = ed ? {
+        field: 'transparent', fieldR: 0, tile: 'transparent', tileR: 0, tileW: 49.94,
+        tileRule: `inset 0 0 0 1px ${s.ac}`, glyph: s.activeBg, hintInk: s.tx,
+        chipSize: s.bodyMd, chipLh: 1.5, chipOn: s.activeFg, chipOff: s.chips[0].bg, chipOffInk: s.bg,
+        song: s.narrow ? (tab ? '25px' : '23px') : u(32),
+      } : grunge ? {
         field: 'transparent', fieldR: u(9), tile: 'transparent', tileR: u(5),
         tileRule: `inset 0 0 0 1px ${s.ac}`, glyph: s.ac, hintInk: s.ac,
         chipSize: s.bodyMd, chipLh: 1.5, chipOn: s.activeFg,
@@ -10165,25 +10195,36 @@ function Repertoire({ s }) {
               <span style={body(s.eyebrow, 1.3, {
                 fontWeight: 700, color: s.tx, textTransform: 'uppercase', whiteSpace: 'nowrap',
               })}>Repertoire</span>
-              {/* Display/LG. */}
+              {/* Display/LG. Editorial's desktop sparkle hangs off the
+                  heading's own end, 63.07 past it and level with its top —
+                  seated off the string rather than the frame's x, so a longer
+                  count carries it along; the heading's box keeps its room, so
+                  the search yields to both before either can cover it. */}
               <h2 style={{
                 margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
-                letterSpacing: s.dls, color: s.ac, textTransform: grunge ? 'uppercase' : undefined,
+                letterSpacing: s.dls, color: s.ac, textTransform: grunge || ed ? 'uppercase' : undefined,
+                ...(ed && !s.narrow ? { position: 'relative', paddingRight: u(63.07 + 80.67) } : null),
               }}>{grunge && words.length > 1
                 ? <>{words[0]} <span style={{ color: s.tx }}>{words.slice(1).join(' ')}</span></>
-                : s.title}</h2>
+                : s.title}
+                {ed && !s.narrow && (
+                  <GrungeStar s={s} fill={SIENNA_MEDIA} style={{ right: 0, top: u(0.13), width: u(80.67), height: u(81.42) }} />
+                )}</h2>
             </div>
             {/* The pill: `sem/box/2` in a 1px `sem/stroke/1` ring stroked
                 inside, round a `sem/active` tile carrying the frame's own
                 glyph in `sem/bg`. It yields to the heading on desktop, the
                 layout-1 rule; the 768 master grows it to half the row. */}
             <div style={row(u(10), {
-              background: G.field, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, borderRadius: G.fieldR,
-              padding: u(10), height: u(61), minWidth: 0, overflow: 'hidden',
+              background: G.field, borderRadius: G.fieldR, height: u(61), minWidth: 0, overflow: 'hidden',
+              ...(ed
+                ? { position: 'relative', padding: `0 0 ${u(14)}` }
+                : { boxShadow: `inset 0 0 0 1px ${s.stroke1}`, padding: u(10) }),
               ...(s.mob ? { width: '100%' } : tab ? { flex: '1 1 50%' } : { flex: `0 1 ${u(389)}` }),
             })}>
+              {ed && <DashRule dash={9 * z} colour={s.stroke1} />}
               <span style={{
-                width: u(43.562), height: '100%', flex: 'none', borderRadius: G.tileR,
+                width: u(G.tileW ?? 43.562), height: '100%', flex: 'none', borderRadius: G.tileR,
                 background: G.tile, boxShadow: G.tileRule,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               }}>
@@ -10214,18 +10255,35 @@ function Repertoire({ s }) {
 
           {/* Filled pills in Body/SM, mixed case: `sem/active` for the chip on
               show, `sem/box/2` with lime type for the rest. */}
-          <div style={row(u(8), { flexWrap: 'wrap' })}>
+          {/* Editorial's narrow masters stand the sparkle on this row's right
+              end instead, centred on its foot — absolute on the section in the
+              frame, seated here so it moves with the row. The row keeps the
+              sparkle's width free, so a chip wraps rather than going under it.
+              At 390 the frame hangs it 15.67 past its own 20 inset, 4.33 short
+              of the page edge; off our narrower inset that would cross the
+              page, so it keeps the 4.33 from the page edge instead. */}
+          <div style={row(u(8), {
+            flexWrap: 'wrap',
+            ...(ed && s.narrow ? { position: 'relative', paddingRight: tab ? '80.67px' : '65px' } : null),
+          })}>
             {s.repChips.map((f, i) => (
               <span
                 key={i}
                 onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
                 style={body(G.chipSize, G.chipLh, {
                   padding: `${u(5)} ${u(11)}`, borderRadius: '999px', whiteSpace: 'nowrap',
-                  background: i === active ? s.pillBg : s.box2, color: i === active ? G.chipOn : s.ac,
+                  background: i === active ? s.pillBg : G.chipOff ?? s.box2,
+                  color: i === active ? G.chipOn : G.chipOffInk ?? s.ac,
                   cursor: s.live ? 'pointer' : undefined,
                 })}
               >{f.label}</span>
             ))}
+            {ed && s.narrow && (
+              <GrungeStar s={s} fill={SIENNA_MEDIA} style={{
+                top: tab ? '-10.71px' : '-11px', right: tab ? 0 : `calc(4.33px - ${s.padX})`,
+                width: '80.67px', height: '81.42px',
+              }} />
+            )}
           </div>
 
           {shown.length === 0 ? (
@@ -10242,10 +10300,12 @@ function Repertoire({ s }) {
                   {colSongs.map((t) => (
                     // 27 above and below, the rule stroked inside the row's
                     // height as Figma strokes it, so the foot gives back its 1px.
-                    <div key={t.n} style={row('0px', {
-                      padding: `${u(27)} 0 calc(${u(27)} - 1px)`,
-                      borderBottom: `1px solid ${s.stroke1}`,
-                    })}>
+                    // Editorial's rule is dashed, an overlay taking no height,
+                    // so its foot keeps the whole 27.
+                    <div key={t.n} style={row('0px', ed
+                      ? { position: 'relative', padding: `${u(27)} 0` }
+                      : { padding: `${u(27)} 0 calc(${u(27)} - 1px)`, borderBottom: `1px solid ${s.stroke1}` })}>
+                      {ed && <DashRule dash={9 * z} colour={s.stroke1} />}
                       {/* Label/XS in Chakra Petch, pinned at the frame's 24 so
                           "10" does not shunt its own title. */}
                       <span style={{
