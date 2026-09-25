@@ -14804,11 +14804,35 @@ function Calendar({ s }) {
     // 178 at 768's 81 — the frame's 350 would clear it at 1440, but it is the
     // same leaked number at 768, so it is measured at both, Lime's call; at
     // 390 Anton's `JUN 12` is 86.2 against the master's own 91 hug.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial — the same tree a fourth time (964:64612 at 1440, 986:15671 at
+    // 768, 986:15690 at 390), seated on Scheme 2 as a card on the page's paper
+    // (the root's `editorialCard`), so the panel, the chip's label and the
+    // pill's type and disc — every `sem/bg` the twins read as `G.bg2` — are
+    // `s.bg`, the card's taupe, and the chip, the pill and its paper 5 / 5
+    // block are the twins' own keys. The card is square. The head band is the
+    // one node on another scheme: Scheme 1 at 1440 and Scheme 3 narrow, its
+    // fill `sem/text/1` (terracotta in both) and its type `sem/bg` — paper at
+    // 1440, ink at 768 and 390 — so `band` / `bandInk` read `s.onScheme` by
+    // width. Its heading rule is that scheme's `sem/stroke/2`, drawn as bound:
+    // terracotta on the terracotta band at 1440, where it paints nothing, and
+    // blush narrow, where the renders show it. Every hairline below the band
+    // is a 10, 10 dash in `sem/stroke/1` (paper), `DashRule` for the inset
+    // shadow. The pin is re-measured for Noto, and at 1440 it is the frame's
+    // own column: `MAR 01` is 288.3 at 1440's 118 × 0.82 (so 352, which puts
+    // the column head's second cell at the frame's 458), and 217.0 at 768's
+    // 73, where the frame's 350 is the leaked desktop number again.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
+      const band = ed ? s.onScheme[desk ? 1 : 3] : null
       const G = grunge ? {
         panelR: u(15), bg2: '#171716', pin: desk ? 287 : 179,
         headRule: `inset 0 -1px 0 ${s.stroke2}`,
+      } : ed ? {
+        panelR: 0, bg2: s.bg, pin: desk ? 352 : 217,
+        headRule: `inset 0 -1px 0 ${band.stroke2}`,
+        band: band.ac, bandInk: band.bg,
       } : {
         panelR: u(50), bg2: s.box1, pin: desk ? 301 : 187,
         headRule: undefined,
@@ -14820,13 +14844,17 @@ function Calendar({ s }) {
       // and our 608 column would leave the weekday 46. The 390 master stacks
       // the two, so there is no second column and no pin.
       const pin = s.mob ? undefined : u(G.pin)
-      const rule = `inset 0 -1px 0 ${s.stroke1}`
+      // Editorial dashes every hairline the twins draw as an inset shadow, on
+      // a row that is `position: relative`, the last row included.
+      const rule = ed ? undefined : `inset 0 -1px 0 ${s.stroke1}`
+      const dash = ed ? <DashRule dash={10 * z} colour={s.stroke1} /> : null
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       // The two display sites — the heading and the marks — faced and
-      // uppercase under Grunge (identity off it).
-      const disp = (size, lh, extra) => (grunge
+      // uppercase under Grunge and Editorial (faced is the identity under
+      // Editorial, and both are the identity under Lime).
+      const disp = (size, lh, extra) => (grunge || ed
         ? type(s.display, faced(s, size), facedLh(s, lh), { textTransform: 'uppercase', ...extra })
         : type(s.display, size, lh, extra))
       // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
@@ -14843,7 +14871,7 @@ function Calendar({ s }) {
             const Tag = href ? 'a' : 'span'
             return (
               <Tag key={n.label} {...(href ? { href } : null)} style={type(s.body, s.bodySm, 1.4, {
-                color: G.bg2, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
+                color: G.bandInk ?? G.bg2, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
               })}>{n.on ? `● ${n.label}` : n.label}</Tag>
             )
           })}
@@ -14854,9 +14882,19 @@ function Calendar({ s }) {
         const onClick = s.live && sl.iso && !blocked(sl)
           ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
           : undefined
+        // Noto sets its baseline 0.09em lower in the 0.89 line box than the
+        // frames' face does (0.05–0.07em above the box's foot against
+        // Fisterra's 0.14–0.16, sampled at all three widths), so under
+        // Editorial the mark is lifted by the difference, which moves no box.
+        // It is also what keeps Noto's descending J — 0.24em, where Fisterra's
+        // sits on the line — off the row's dash. At 390, where the weekday
+        // stacks under the mark at no gap, the tail would still graze its
+        // capitals, so the stack keeps the same 0.09em under the mark (the
+        // rows 94 against the master's 90).
         const mark = (
           <span style={disp(s.dispLg, 0.89, {
             whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(sl.booked),
+            ...(ed ? { position: 'relative', top: '-0.09em', marginBottom: s.mob ? '0.09em' : undefined } : null),
           })}>{sl.mark}</span>
         )
         const day = (
@@ -14868,7 +14906,9 @@ function Calendar({ s }) {
           <div key={i} onClick={onClick} style={row(gap, {
             padding: `${u(16)} ${padX}`, boxShadow: rule,
             cursor: onClick ? 'pointer' : undefined,
+            ...(ed ? { position: 'relative' } : null),
           })}>
+            {dash}
             {/* The 390 master stacks the mark over its weekday at no gap. */}
             {s.mob
               ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
@@ -14895,7 +14935,7 @@ function Calendar({ s }) {
           ...(desk ? { margin: `calc(${u(56)} - ${s.padY}) 0` } : null),
         }}>
           <div style={col(u(28), {
-            background: s.ac, color: G.bg2, padding: `${u(28)} ${padX} ${u(36)}`,
+            background: G.band ?? s.ac, color: G.bandInk ?? G.bg2, padding: `${u(28)} ${padX} ${u(36)}`,
           })}>
             <div style={row(u(24), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
               <span style={type(s.body, s.bodyLg, 1.5)}>{s.brand}</span>
@@ -14904,7 +14944,8 @@ function Calendar({ s }) {
             {/* Display/MD at lh 1, held to the 571.1 both wider masters state
                 (it binds inside the 768 column too); 390 states the full width.
                 Grunge draws the frame's 1px inside `sem/stroke/2` rule under
-                the 20 (inset, so the stated 164 / 120 / 96 hold). */}
+                the 20 (inset, so the stated 164 / 120 / 96 hold), and so does
+                Editorial, in its band's scheme. */}
             <div style={{ paddingBottom: u(20), boxShadow: G.headRule }}>
               <h2 style={disp(s.dispMd, 1, {
                 margin: 0, maxWidth: s.mob ? undefined : u(571),
@@ -14914,14 +14955,17 @@ function Calendar({ s }) {
           <div style={row(gap, type(s.ui, s.labelXs, 1.26, {
             padding: `${u(18)} ${padX}`, boxShadow: rule, color: s.ac,
             justifyContent: s.mob ? 'space-between' : undefined,
+            ...(ed ? { position: 'relative' } : null),
           }))}>
+            {dash}
             <span style={{ flex: 'none', minWidth: pin }}>Date ↓</span>
             <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
           </div>
           {s.calSlots.length === 0 ? (
             <div style={type(s.body, s.bodyMd, 1.5, {
               padding: `${u(16)} ${padX}`, boxShadow: rule, opacity: 0.38,
-            })}>No dates yet.</div>
+              ...(ed ? { position: 'relative' } : null),
+            })}>{dash}No dates yet.</div>
           ) : s.calSlots.map(slotRow)}
           {/* The 390 master keeps the pill beside the line and leaves the line
               63px — a break inside "Thursday," for our composed sentence — so
@@ -14947,7 +14991,8 @@ function Calendar({ s }) {
                 question 2's route. 54 tall at every width, so `full` at 390.
                 Grunge's is the same pill with Scheme 2's `#171716` for its
                 type and disc, and the same red block (`sem/text/1` is the
-                accent on both). */}
+                accent on both); Editorial's is ink under the card's taupe,
+                a paper arrow and a paper block. */}
             <BookPill s={s} to={s.calBookTo} label={s.calSlotCta}
                       bg={s.tx} fg={G.bg2} discFg={s.ac} full={s.mob}
                       style={{ boxShadow: `${u(5)} ${u(5)} 0 ${s.ac}` }} />
