@@ -219,6 +219,11 @@ if (q.get('cj')) Object.assign(c, JSON.parse(q.get('cj')))
 // which drops its horizontal padding, in a wrapper the column's own width
 // (684 / 323). Desktop only — the narrow frames never compose.
 const column = device === 'desktop' ? q.get('column') || undefined : undefined
+// &page=2 is the page's layout — the header's design, which the canvas and
+// PublishedPage pass as `pageDesignOf()` — for the one section that reads it:
+// the footer, whose seat (SCHEMES_OF) and Lime's `footerBand` follow the page
+// it stands on, having no design of its own. Absent is sectionVm's -1, row 0.
+const page = q.get('page') === null ? undefined : Number(q.get('page'))
 // &today=2026-09-17 is the date PublishedPage reads off the clock, which is how
 // the calendar's past days are seen dead. Opt-in, so a live digest never moves
 // with the calendar, and ignored without &live=1, as sectionVm ignores it.
@@ -247,6 +252,7 @@ const s = sectionVm({
   themeIdx, cat, arch, c, artistName: q.get('name') || 'Kai Mercer',
   identity, tiers, email, Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections, today,
   ...(column ? { column } : null),
+  ...(page !== undefined ? { page } : null),
 })
 
 createRoot(document.getElementById('root')).render(

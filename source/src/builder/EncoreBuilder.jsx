@@ -267,8 +267,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // ground's and not the page's. `T` is the theme everywhere else. A seat may
   // be a [desktop, tablet, mobile] triple where the frames move the section
   // between widths; every caller's `Z` names its width, the thumbnails and
-  // modal cards the desktop.
-  const seat = SCHEMES_OF[theme.name]?.[d]?.[cat]
+  // modal cards the desktop. The footer has one design, so its own `d` is
+  // always 0: its seat is read off the page's design (`page`, the header's)
+  // where that page's row names a footer, and off row 0 otherwise — so a
+  // page row's `footer: 1` would stand it on Scheme 1, not fall through.
+  // Callers that pass no `page` (the layout picker, the modal's cards, the
+  // harness without `&page=`) read row 0.
+  const seat = (cat === 'footer' ? SCHEMES_OF[theme.name]?.[page]?.footer : undefined)
+    ?? SCHEMES_OF[theme.name]?.[d]?.[cat]
   const scheme = theme.schemes?.[Array.isArray(seat) ? seat[DEV_SEAT[Z.dev]] : seat]
   const T = scheme ? { ...theme, ...scheme } : theme
   const [bg, ac, tx] = T.palette
