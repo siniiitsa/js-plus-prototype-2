@@ -237,7 +237,7 @@ session widens.
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme (every width) | Lime twin (1440 / 768 / 390) | Grunge twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:68717` *(page)* | — | `984:16811` | — | `984:16842` | — | — | — | — | Scheme 5, `SCHEMES_OF.Editorial[2]`, the footer's seat by page (decision 1) | |
+| 0 | *foundation* | `964:68717` *(page)* | — | `984:16811` | — | `984:16842` | — | — | — | — | Scheme 5, `SCHEMES_OF.Editorial[2]`, the footer's seat by page (decision 1) | **done** (`0198910`, `dcb1cc5`) |
 | 1 | `header` | `964:68718` | 1440 × 900 | `984:16812` | 768 × 1024 | `984:16843` | 390 × **663.5** | **8** (≡ 3; nav **5**; chips and two rings name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68686` / `984:13900` / `984:13931` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV2` | |
 | 2 | `bio` | `964:68728` *(head `964:68722`, in `Frame 302` `964:68727`, in Section `964:68721`)* | 858 × 882 | `984:16820` *(head `984:16815`)* | 708 × 912 | `984:16851` *(head `984:16846`)* | 370 × **811** | 1 | `964:68663` / `984:10748` / `984:10779` | `964:68695` / `984:13908` / `984:13939` | `if (s.v2 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v2)` | |
 | 3 | `media` | `964:68739` list + `964:68738` card *(head `964:68731`)* | 858 × 424 + 858 × 243 | `984:16831` + `984:16830` *(head `984:16823`)* | 708 × 647 + 708 × 243 | `984:16862` + `984:16861` *(head `984:16854`)* | 370 × 647 + 370 × 243 | 1 (card **2**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68706` + `964:68705` / `984:13919` + `984:13918` / `984:13950` + `984:13949` | `if (s.lime \|\| s.grunge)` inside `Media`'s `if (s.v2)`, after `nHot` | |
@@ -395,7 +395,13 @@ that paints its own sheet (the gallery's `s.box1`, the map's `s.tx`) paints noth
 
 ## The decisions this plan hands over
 
-### 1. Schemes this page's route A cannot yet say — **session 0 asks**
+### 1. Schemes this page's route A cannot yet say — **settled: all three recommendations**
+
+*Settled in session 0 (2026-09-25):* the user took the recommendation on all three parts: (a) the
+header seated on Scheme 3 for its frame's Scheme 8, (b) `THEMES[3].schemes[5]` read through
+`s.onScheme[5]`, and (c) the footer's seat read off `page`, with `&page=` in the harness and a
+`page=2` footer render in the digest. See *Conventions → Settled in session 0* for the mechanisms.
+The rest of this heading is kept as the record of the question.
 
 Layout 2's three mechanisms (the per-width seat, the card seated on the page, `vm.onScheme`) cover
 most of this page with no new code: no section moves between widths, so the triple has no row; no
@@ -850,16 +856,98 @@ sections are where the twins' dark-ground assumptions break (trap 6).
     sparkle, the statement paper (layout 1's fitted Bold; at 390 the frame breaks UNFORGETTAB / LE),
     the links and the foot ink, the Book pill blush. See *The eleventh session*.
 
+### Settled in session 0 (the schemes)
+
+- **Decision 1 is the three recommendations** (user call, 2026-09-25), built as two commits:
+  `0198910` the mechanisms — all five themes at zero rows over the 645 files both labels carry,
+  canvas and live — and `dcb1cc5` the data, themes 0, 1, 2 and 4 at zero rows canvas and live.
+- **(c) The footer's seat is read off the page**, at `sectionVm`'s head: `const seat = (cat ===
+  'footer' ? SCHEMES_OF[theme.name]?.[page]?.footer : undefined) ?? SCHEMES_OF[theme.name]?.[d]?.
+  [cat]`. `??`, so a page row's `footer: 1` would stand the footer on Scheme 1 — an override, not a
+  fallthrough. Callers that pass no `page` read row 0: the layout picker, `TemplatePreview`,
+  `HeaderChoices` and the harness without `&page=`. **`preview.jsx` takes `&page=<design>`**
+  (absent is `sectionVm`'s −1) and **`digest.mjs` renders the footer once more per theme and
+  width at `cat=footer&arch=0&page=2`**, as `cat_footer_arch_0_page_2_theme_N_w_W.txt`: 660
+  renders a label where there were 645. Inert by construction, and proved so. In `0198910` each
+  `page_2` file equals its no-page twin at themes 0, 2, 3 and 4. At theme 1 it differs in one
+  row, the root, which is `#2E3928`: Lime's `footerBand` reads `page === 2`. So the digest now
+  reaches Lime's layout-3 footer band, which no render did before, and the footer session's
+  zero-row check at theme 1 covers it.
+- **(a) The header is seated on 3**, the equivalence named in `SCHEMES_OF`'s comment.
+  `get_variable_defs` on the header instance (`964:68718`) corroborates both schemes in one mixed
+  list: `sem/bg` `#e6b6a0` and `text/1` `#141414` are the nav's Scheme 5, and `box/1` `#1d1d1d`,
+  `box/2` `#2a2a2a` and `stroke/2` `#e6b6a0` are Scheme 8's, which are Scheme 3's. **The tool
+  takes top-level ids only** (`\d+:\d+`), so the nav (`I964:68718;…`) cannot be read alone; the
+  rest of Scheme 5 is the planning read of the collection.
+- **(b) `THEMES[3].schemes[5]` is the plan's literal, verbatim**, with no section seated on it.
+  `vm.onScheme` now keys 1–5 under Editorial, and `onScheme[5]` resolves as the table says:
+  `bg` blush, `ac` ink, `tx` paper, `stroke1` terracotta, `pillBg` `#000000` / `pillFg`
+  terracotta, chips terracotta · ink and `#000000` · terracotta. Lime's `onScheme` stays undefined.
+- **Proved.** In the harness, the footer at `theme=3` is taupe `rgb(170, 149, 138)` at `&page=2`
+  and ink at `&page=0`, `1`, `3` and with no `page`, at all three widths. In the page, an
+  in-page `sectionVm` call (data.js imported at the URL the transformed `EncoreBuilder.jsx` names,
+  `/src/builder/data.js?t=…`) gives header ink, gallery taupe, map terracotta with a paper accent,
+  bio paper, and the footer taupe at `page` 2 alone. In the builder, **card 3's footer is taupe on
+  the canvas and in the published tab**, its header ink, gallery taupe and map terracotta, its
+  page in `PAGE_ORDERS[2]` (header, bio, media, repertoire, calendar, gallery, pricing, map, form,
+  testimonials, footer); cards 1, 2 and 4 publish an ink footer. **A bare `sectionVm` call throws
+  on `split`**: it needs `artistName`.
+- **What moved: 24 files, theme 3** — header, gallery and map at `arch_2` and the footer's
+  `page_2`, at every width, canvas and live; nothing else. The pictures (`shots.mjs` before /
+  after in the session scratchpad, per width, and the footer at `&page=2` by hand):
+  - **The header's placeholder half** (Retro's `HeaderV2`) keeps its ink ground, checker ribbon
+    and photograph, and four leaves move. The chips turn from blush / terracotta to Scheme 3's
+    paper / terracotta; the frame binds Scheme 1's blush / terracotta, trap 4. The Book pill's
+    disc turns from paper to ink. The capsule gains a paper hairline. **The card's name vanishes**:
+    `s.tx` is paper now, on the card's paper, at every width. The header session makes this half
+    unreachable.
+  - **The gallery is the whole band taupe** with its head in paper (`s.ac` under Scheme 2), which
+    are already the frame's ground and head. Its tiles and their dark rings are unchanged; the
+    frame's rings are `onScheme[1].stroke1` ink.
+  - **The map band reads ink, as predicted**: the flat arm's full sheet is `pillBg`, Scheme 4's
+    `activeBg`, over a terracotta root. On it the head, the venues, the All chip, the lit row and
+    the See all gigs disc are terracotta, the in-transit chip dark, and the viewport's labels and
+    markers ink and paper. **At 390 the pager's two arrows are ink glyphs on the ink sheet,
+    invisible** (they were ink on terracotta): the control still works but cannot be seen until
+    section 8's block replaces the arm.
+  - **The footer at `&page=2` already stands on the frame's ground**: a taupe band ringed paper,
+    the statement paper, the links and the foot ink, the seal disc blush round an ink sparkle.
+    Three leaves do not follow the seat, as *The eleventh session* foresaw: the seal's ring name
+    (blush on the blush disc, invisible), the Book pill's paper label (weak on blush) and the
+    wordmark's sparkle (blush, `tag/1/bg` under Scheme 2). Section 11's.
+  Every other section's files are at zero; none of the above is chased here.
+- **`shots.mjs` for three widths**: it writes `<label>/<cat>.jpg`, so a second width under the
+  same label overwrites the first — run each width with its own `OUT`. It has no retry on a Vite
+  reload (the first run died on "Execution context was destroyed"; rerun), and it passes no
+  `page`, so its footer is row 0's.
+- **For the sweep's CLAUDE.md pass**: the per-section scheme bullet (*A page section is*) owes
+  Scheme 5 on `onScheme`, the header on 3 for its Scheme 8, and the footer's seat by `page`.
+  `SCHEMES_OF`'s head comment already reads "Layout 4 is a later pass's".
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
 session leans on a bullet from Editorial layout 1's or 2's, Lime's, Grunge's or Retro's
 Conventions, name it here in one line, with the plan it came from, a blank line between sessions.)*
 
+- Session 0: *A section's colour scheme is resolved in `sectionVm`, not restated in its block*
+  (editorial/layout-1, *decision 3* and *Settled in session 0*) — extended by a seat read off the
+  page for the footer.
+- Session 0: *A nested node or a card on another scheme reads that scheme's keys*
+  (editorial/layout-2, *Settled in session 0*) — Scheme 5 added for the nav, with no section on it.
+- Session 0: *`get_variable_defs` resolves a node's mode* (memory: `figma-frame-reading`) — and
+  *mixes nested schemes in one list* (lime/layout-1, *Settled in section 9*): Scheme 5 and Scheme
+  8 corroborated off the header instance together.
+- Session 0: *The digest is committed* (lime/layout-1, *Settled in session 0*) — five themes
+  canvas and live for (a), plus the new `page_2` footer against its no-page twin; for (b), the
+  theme-3 filter by `_arch_2_`, category and the `page_2` file.
+- Session 0: *Probing a vm key no section reads yet* (editorial/layout-2, *Settled in session 0*)
+  — `onScheme[5]` and the page-keyed footer seat, through `sectionVm` in the page.
+
 ## Open questions
 
 1. **Decision 1** — the header's Scheme 8, the nav's Scheme 5, the footer's scheme by page.
-   *Session 0 asks.*
+   *Settled in session 0: all three recommendations.*
 2. **The bio well's covered leak** is Lime's `fa453f7d` under Editorial's own photograph, painted
    over — Grunge's layout-3 open question 4 again. Worth telling the designer.
 3. **The gallery's twelve tiles** are Retro's layout-3 placeholders with Grunge's two and
