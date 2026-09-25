@@ -13624,6 +13624,21 @@ function Gallery({ s }) {
   // `sem/active/bg` under its photograph, as Lime's is — it paints nothing and
   // is not drawn. No grain anywhere: unlike layout 2's gallery hero, no master
   // here carries the raster.
+  //
+  // **Editorial (964:68744 · 984:16836 · 984:16867) is that tree a fourth
+  // time**, so it widens the same ternaries under `ed`. Sienna Vale · Scheme 2
+  // on all three roots, no Device override, no effect and no dash on any node,
+  // so the seat does the paint: the sheet is `sem/bg` (`s.bg`, taupe), the
+  // head `sem/text/1` (`s.ac`, paper) at `size/display-lg` 118 / 73 / 48 —
+  // `s.dispLg` at every width, uppercased — and each well `sem/box/3` (`s.box3`,
+  // #A18A7E). The one binding the seat does not carry is the ring: it names
+  // **`scheme/1/stroke/1`** outright, as Lime's does, and inside the Scheme 2
+  // seat `s.stroke1` is paper, so it reads `s.onScheme[1].stroke1`, ink. Every
+  // tile is **square**. The desktop tile is **326 / 174.667**, the residue rule
+  // over this page's 105 head, 118 × 0.89 ((789 − 112 − 105 − 32 − 16) / 3), and
+  // the 390 one Grunge's 83 again ((587 − 120 − 43 − 32 − 60) / 4); 768 states
+  // the same 660 grid. The tiles keep the twins' centred cover: the frame's own
+  // FILL on our stage shot (its third tile) is centred at every width.
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -13634,22 +13649,27 @@ function Gallery({ s }) {
     // real second paper and take it with `paperFg` for the ink — `s.tx` is
     // chosen against the page and need not read on the sheet.
     const grunge = s.grunge
-    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : grunge ? '#171716' : s.paper
-    const ink = s.retro ? '#111111' : s.lime || grunge ? s.tx : s.paperFg
+    const ed = s.editorial
+    // Editorial's sheet is its seat's own ground, the root's `s.bg`.
+    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : grunge ? '#171716' : ed ? s.bg : s.paper
+    const ink = s.retro ? '#111111' : s.limeTree ? s.tx : s.paperFg
     const bw = s.retro ? '1px' : s.bw
     // Scheme 2's `box/3` on both designed pages, and a different value in each
     // mode: neither theme has a key for it (Lime layout 3's open question 5).
-    const well = grunge ? '#353535' : '#263020'
-    // The tiles' ring: `scheme/1/stroke/2` under Grunge, `sem/stroke/1` under
-    // Lime — 1px INSIDE at every width on both, so it is never scaled.
-    const ring = grunge ? s.stroke2 : s.stroke1
+    // Under Editorial the section is seated on Scheme 2, so it is `s.box3`.
+    const well = ed ? s.box3 : grunge ? '#353535' : '#263020'
+    // The tiles' ring: `scheme/1/stroke/2` under Grunge, `scheme/1/stroke/1`
+    // under Lime and Editorial — 1px INSIDE at every width, so it is never
+    // scaled. Editorial's names Scheme 1 from inside its Scheme 2 seat, so it is
+    // `onScheme[1]`'s ink, not the seat's paper `s.stroke1`.
+    const ring = ed ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1
     const slots = [0, 1, 2, 3, 4, 5, 6]
     const cols = desk ? 4 : 3
     // Each master's own tile, as a ratio: 326 / 181.333, 230.667 / 150 and
     // 111.333 / 107.5. See the note above — these are what each page's stated
     // height left over, so they travel as a shape rather than as a number.
-    const ratio = desk ? 326 / (s.lime || grunge ? 171 : 181.3333)
-      : tab ? 230.6667 / 150 : 111.3333 / (grunge ? 83 : s.lime ? 82.75 : 107.5)
+    const ratio = desk ? 326 / (ed ? 174.6667 : s.lime || grunge ? 171 : 181.3333)
+      : tab ? 230.6667 / 150 : 111.3333 / (grunge || ed ? 83 : s.lime ? 82.75 : 107.5)
     const padH = `calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 20)})`
     const padV = u(desk ? 56 : 60)
 
@@ -13665,10 +13685,15 @@ function Gallery({ s }) {
     // and under Grunge the page ground already *is* near-black, so the same
     // reading gives the scrim #000000 at .94 and the controls white on white
     // 14%. The frames draw no viewer at all, so on both templates this is the
-    // palette's reading of a QA-added control, not a fit.
-    const cream = s.lime || grunge ? s.tx : '#FBF6EA'
-    const ctlBg = s.lime ? 'rgba(242,255,208,.14)' : grunge ? 'rgba(255,255,255,.14)' : 'rgba(251,246,234,.14)'
-    const scrim = s.lime ? 'rgba(21,24,15,.94)' : grunge ? 'rgba(0,0,0,.94)' : 'rgba(17,17,17,.94)'
+    // palette's reading of a QA-added control, not a fit. Editorial's page is
+    // paper, so its `s.tx` is ink and the twins' reading would put ink controls
+    // on an ink scrim: its scrim is the page ink #141414 at .94 (Grunge's
+    // reading) and its controls the head's own paper, `s.ac` under the seat.
+    const cream = ed ? s.ac : s.lime || grunge ? s.tx : '#FBF6EA'
+    const ctlBg = s.lime ? 'rgba(242,255,208,.14)' : grunge ? 'rgba(255,255,255,.14)'
+      : ed ? 'rgba(246,240,232,.14)' : 'rgba(251,246,234,.14)'
+    const scrim = s.lime ? 'rgba(21,24,15,.94)' : grunge ? 'rgba(0,0,0,.94)'
+      : ed ? 'rgba(20,20,20,.94)' : 'rgba(17,17,17,.94)'
     const ctl = (label, act, Icon, pos) => (
       <button
         type="button" aria-label={label}
@@ -13759,9 +13784,9 @@ function Gallery({ s }) {
             and nothing in any master's layout depends on the leak, so it wraps
             here (the testimonials' rule). */}
         <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !s.lime && !grunge ? s.h1 : s.dispLg),
+          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !s.limeTree ? s.h1 : s.dispLg),
           lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac,
-          ...(grunge ? { textTransform: 'uppercase' } : null),
+          ...(grunge || ed ? { textTransform: 'uppercase' } : null),
         }}>{s.title}</h2>
         <div style={{
           display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`,
@@ -13774,7 +13799,7 @@ function Gallery({ s }) {
               onClick={s.live && s.images[i] ? () => setPick(i) : undefined}
               style={{
                 aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
-                border: s.lime || grunge ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : 30),
+                border: s.limeTree ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : ed ? 0 : 30),
                 cursor: s.live && s.images[i] ? 'zoom-in' : undefined,
               }}>
               <span style={{ position: 'absolute', inset: 0 }}>
@@ -13787,11 +13812,11 @@ function Gallery({ s }) {
                 <Photo
                   s={s} src={s.images[i]}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
-                  ink={s.retro ? undefined : s.lime || grunge ? s.tx : s.paperFg}
-                  style={s.lime || grunge ? { background: well } : undefined}
+                  ink={s.retro ? undefined : s.limeTree ? s.tx : s.paperFg}
+                  style={s.limeTree ? { background: well } : undefined}
                 />
               </span>
-              {(s.lime || grunge) && (
+              {s.limeTree && (
                 <span style={{
                   position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
                   boxShadow: `inset 0 0 0 1px ${ring}`,
