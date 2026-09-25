@@ -325,7 +325,9 @@ Sampled off the three renders. **The sequence differs by width** (trap 1):
 
 At 768 and 390 the repertoire, gallery and pricing are one paper run, and with straight edges they
 merge — the frames' own picture, accepted as layout 1's merged neighbours were. *(Section 4: the
-repertoire does not — its sheet is `box1` `#FFF9F2` closed by a solid ink ring.)* **No root flag
+repertoire does not — its sheet is `box1` `#FFF9F2` closed by a solid ink ring. Section 6: nor
+does pricing — the instance's own `stroke/1` closes it in an ink ring too, so at 768 and 390 the
+run is two ringed paper boxes with the gallery's bare paper between.)* **No root flag
 widens**: `bleed`, `darkMap`, `cream`, `limeBand`, `limeLight`, `grungeBand`, `grungeRule` and
 `editorialRule` all gate on `s.v0`. Under route A a whole-band section needs no flag (the root
 paints `s.bg`); a card section needs decision 1(b)'s.
@@ -1355,6 +1357,10 @@ the twins' dark-ground assumptions break (trap 6).
   flat `[1]`), so no `reach.mjs` run was owed.
 - **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly
   pricing arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For the sweep's CLAUDE.md pass**: the pricing paragraph's layout-2 sentence ("…stacked under
+  it at 390, in Retro's card, Lime's and Grunge's alike") owes Editorial's card; and its picked
+  chip, where Retro's and the twins' are named, is the frame's `tag/1/bg` under Editorial. Not
+  written here.
 - **For the calendar**: it is seated on Scheme 2, the card's, with the root painting the page's
   paper round it (`editorialCard`), and its Lime block (inside `Calendar`'s `if (s.v1)`, after
   `want` / `hit` / `cur` / `line`) has Grunge's `G` at its head, so a third arm again. Its head
