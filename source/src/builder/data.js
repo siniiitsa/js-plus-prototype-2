@@ -255,6 +255,23 @@ export const THEMES = [
           tagFg: ['#C86E52', '#141414'],
         },
       },
+      // Scheme 5, blush — layout 3's header nav capsule, read through
+      // `s.onScheme[5]`; no section is seated on it. The first Sienna Vale
+      // scheme with a pure black (its active ground and second tag seat); its
+      // accent is ink and its stroke1 opaque terracotta. Its tags 3–7 do not
+      // strictly alternate (tag 4 is terracotta again), which the two-seat
+      // system ignores, as in Schemes 2 and 3.
+      5: {
+        palette: ['#E6B6A0', '#141414', '#F6F0E8'],
+        tags: ['#C86E52', '#000000'],
+        sem: {
+          box1: '#F7C7B1', box2: '#FFD9C7', box3: '#D8A994', glow: '#C86E52',
+          activeBg: '#000000', activeFg: '#C86E52',
+          inactiveBg: 'rgba(230, 182, 160, 0)', inactiveFg: '#F6F0E8', inactiveLine: 'rgba(246, 240, 232, 0.56)',
+          stroke1: '#C86E52', stroke2: '#141414', hl: '#FFFFFF',
+          tagFg: ['#141414', '#C86E52'],
+        },
+      },
     },
   },
   {
@@ -282,18 +299,25 @@ export const THEMES = [
 // the section's ground. A section with no entry stands on Scheme 1, the
 // theme's own `palette` / `sem` / `tags`. An entry is a number at every width,
 // or a [desktop, tablet, mobile] triple where the frames move the section
-// between widths. The footer has one design, so its row is read at every page
-// layout.
+// between widths. The footer has one design, so its seat is read off the
+// page's design (the header's) where that page's row names a footer, and off
+// row 0 otherwise (sectionVm's head).
 export const SCHEMES_OF = {
   // Sienna Vale's layout-1 page (964:58612…22), read off each section's
-  // `explicitVariableModes`, identical at all three widths. Layouts 3 and 4
-  // are later passes' to fill from their own walks.
+  // `explicitVariableModes`, identical at all three widths. Layout 4 is a
+  // later pass's to fill from its own walk.
   Editorial: {
     0: { header: 3, media: 2, repertoire: 3, pricing: 2, form: 3, footer: 3 },
     // Its layout-2 page (964:64598 · 986:15657 · 986:15676). The repertoire
     // and pricing move between widths; media and the calendar are Scheme 2
     // cards on the page's paper, which the root paints round them (`pageBg`).
     1: { media: 2, repertoire: [4, 1, 1], pricing: [3, 1, 1], calendar: 2, form: 4 },
+    // Its layout-3 page (964:68717 · 984:16811 · 984:16842), every seat the
+    // same at all three widths. The header's frame is Scheme 8, which differs
+    // from Scheme 3 only in tags 6 and 7 — seats the two-seat system never
+    // reads — so it is seated on 3. The footer is layout 1's tree on taupe
+    // here, where layouts 1 and 2 stand it on ink (row 0's 3).
+    2: { header: 3, gallery: 2, map: 4, footer: 2 },
   },
 }
 
