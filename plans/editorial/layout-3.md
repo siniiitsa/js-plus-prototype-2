@@ -2019,6 +2019,11 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    the twins' dropped cap stays dropped. Worth telling the designer.
 8. **Header card 4** stays a placeholder: Retro's `HeaderV3` in Scheme 1 tokens, the checker
    ribbon, its footer ink by row 0. Its own pass's.
+9. **The map's five dots are invisible on the frame's own render.** They bind `text/2` at .6,
+   which the viewport's Scheme 4 resolves to ink — (28, 29, 23) on the raster's (41, 42, 27) —
+   where layout 2's Scheme 3 viewport made the same node paper. *Settled in section 8:
+   redrawn in `text/1` paper at the frame's .6.* Worth telling the designer, with open
+   question 4's chips: the same class, a binding that reads in one scheme and not the next.
 
 ## Notes for the designer
 
