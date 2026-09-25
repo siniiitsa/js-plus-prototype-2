@@ -181,7 +181,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 4 | `repertoire` | `964:64608` | 1440 × 792 | `986:15667` | 768 × 792 | `986:15686` | 390 × 594 | **4 / 1 / 1** | `964:64589` | `964:64627` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | **done** `f592f45` |
 | 5 | `gallery` | `964:64609` | 1440 × 675 | `986:15668` | 768 × 468 | `986:15687` | 390 × 364 | 1 | `964:64590` | `964:64628` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v1)` | **done** `a888524` |
 | 6 | `pricing` | `964:64610` | 1440 × 715 | `986:15669` | 768 × 924 | `986:15688` | 390 × 865 | **3 / 1 / 1** | `964:64591` | `964:64629` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | **done** `4fd0b57` |
-| 7 | `calendar` | `964:64612` *(in `964:64611`)* | 1328 × 1072 *(1440 × 1184)* | `986:15671` *(in `986:15670`)* | 708 × 803 *(915)* | `986:15690` *(in `986:15689`)* | 370 × 774 *(854)* | page 1, **card 2** (head band **1 / 3 / 3**) | `964:64593` | `964:64631` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | — |
+| 7 | `calendar` | `964:64612` *(in `964:64611`)* | 1328 × 1072 *(1440 × 1184)* | `986:15671` *(in `986:15670`)* | 708 × 803 *(915)* | `986:15690` *(in `986:15689`)* | 370 × 774 *(854)* | page 1, **card 2** (head band **1 / 3 / 3**) | `964:64593` | `964:64631` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | **done** `7133b13` |
 | 8 | `map` | `964:64613` | 1440 × 833 | `986:15672` | 768 × 823 | `986:15691` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64632` | inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
 | 9 | `form` | `964:64614` | 1440 × 802 | `986:15673` | 768 × 877 | `986:15692` | 390 × 925 | **4** | `964:64595` | `964:64633` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v1)` | — |
 | 10 | `testimonials` | `964:64615` | 1440 × 831.9 | `986:15674` | 768 × 863 | `986:15693` | 390 × 939 | 1 (card and picked tile **3**) | `964:64596` | `964:64634` | inside `Testimonials`' `if (s.v1)`, after `rail` | — |
@@ -691,6 +691,14 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
   card's own colour; Editorial's `toggle-a` is visible, so its binding is followed and the
   redraw is not. Where a twin's *Settled* says "invisible, so redrawn", read the Editorial
   node's paint first.
+- **Noto sits its glyphs 0.09em lower in a tight line box than the frames' face; measure the
+  baseline, and mind its J** (section 7). At the calendar marks' lh 0.89 Fisterra's baseline is
+  0.14–0.16em above the box's foot and Noto's 0.05–0.07em, the same at all three widths; a
+  pixel scan of the render (the lowest ink row of the non-J glyphs against the box) settles it,
+  and `position: relative; top: -0.09em` moves the glyphs and no box. **Noto's J descends
+  0.24em** where Fisterra's sits on the line (no `ss`, `salt` or `cv` alternate changes it), so
+  a display "JUN" / "JUL" / "JAN" in a tight box hangs into whatever is under it — a rule, or a
+  stacked line. The map's dates and any other display month are the next places to look.
 
 ### Seen at planning time, per section
 
@@ -737,6 +745,9 @@ the twins' dark-ground assumptions break (trap 6).
    Petch; rows dashed paper; the slot marks ink at 118; the foot's paper "JUN 12" chip, the ink
    line, and an ink "Star Enquiry" pill with a paper disc over the paper 5 / 5 block. The 390 master
    has four more nodes than the other two (the stacked foot; Lime's *the 390 foot stacks*).
+   *Settled in section 7: the disc is the card's taupe round a paper arrow, so the pill is the
+   twins' keys with `G.bg2` = `s.bg`; the four extra 390 nodes are the mark-over-weekday stacks
+   (`Frame 313`–`316`), not the foot, which is a row on the master and our inherited stack.*
 8. **map** — paper: the travel card **ink (Scheme 3)** with paper type, an outlined paper
    "Confirmed" chip, dashed blush rules, a terracotta Venue Link pill with an ink disc and an
    outlined terracotta Get Directions; "Other upcoming · 4" ink over four `box1` rows dashed
@@ -1371,6 +1382,105 @@ the twins' dark-ground assumptions break (trap 6).
   "JUN 14" renders "JUN 1"), and the foot pill's paper 5 / 5 block goes through the caller's
   `style`.
 
+### Settled in section 7 (the booking calendar)
+
+- **The block widened: `if (s.limeTree)` inside `Calendar`'s `if (s.v1)`, after `want` / `hit` /
+  `cur` / `line`, `const ed = s.editorial` and a third arm at the head of `G`** — Lime's and
+  Grunge's arms byte-identical — plus `band` (off `s.onScheme`), a `dash` helper and a handful of
+  `ed` sites (the rule, `disp()`'s uppercase, the rows' `position`, the mark's lift). The tree is
+  the twins' node for node at all three widths (the head band, the column head, four rows, the
+  foot, the 390 rows' `Frame 313`–`316` stacks), on **Scheme 2** with no Device override
+  (`resolvedVariableModes` Desktop / Tablet / Mobile), the head band nested **Scheme 1 at 1440
+  and Scheme 3 at 768 and 390**. `get_variable_defs` is `THEME_RAMP.Editorial` at all three
+  (display-md 64 / 45 / 36, display-lg 118 / 73 / 48, label-xs 20 / 14 / 12, body-lg 16 / 15 /
+  15, body-md 14 / 13 / 13, body-sm 12, chip 12 / 11 / 11, list 24 / 19 / 18), so every size
+  reads `s.*`; no effect on any node but the pill's. The hooks sit above the block, so the
+  published row picking, the flow links and the pill needed nothing.
+- **The seat does the card's colour work: `G.bg2` is `s.bg`.** Every `sem/bg` the twins read as
+  `G.bg2` — the panel, the chip's label, the pill's label and its disc — is the card's taupe
+  `#AA958A` under the Scheme 2 seat (the twins' `s.box1` is `#BAA499` here; section 3's
+  convention). The column heads and the chip are `sem/text/1` (`s.ac`, paper), the rows
+  `sem/text/2` (`s.tx`), and the pill a `sem/text/2` ground round a `sem/bg` disc with a
+  `sem/text/1` arrow, under the `Retro/Poster` 5 / 5 block bound to `sem/text/1` — so the chip
+  and the `BookPill` call are the twins' keys unchanged, and the planning read's "paper disc" is
+  the taupe disc round a paper arrow. The block is paper at 4.1 / 5 / 5 and shows on the taupe
+  in every shot.
+- **The card is square**: the root states no radius at any width (Lime 50, Grunge 15), so
+  `G.panelR` is 0; no stroke on the root, so no ring.
+- **The head band is the nested scheme, read by width**: `band = s.onScheme[desk ? 1 : 3]`,
+  `G.band` its `ac` (terracotta in both) and `G.bandInk` its `bg` (paper at 1440, ink narrow),
+  read through `??` at the band's `background` and `color` — the brand and the heading inherit
+  it — and at the flow links. Its heading rule is that scheme's `sem/stroke/2`, solid, drawn as
+  bound at every width through Grunge's inset (`G.headRule`): terracotta on the terracotta band
+  at 1440, where it paints nothing (Lime's case), and blush at 768 and 390, where the renders
+  show it and ours now does.
+- **Every hairline below the band is a 10, 10 paper dash**: the column head and all four rows
+  are stroked `0/0/1/0` INSIDE in `sem/stroke/1` (`#F6F0E8`, opaque under Scheme 2), so under
+  `ed` `rule` is undefined and each row — the empty-state row included — carries `DashRule
+  side="bottom"` at `10 * z` and is `position: relative`. The last row keeps its dash, as the
+  frame's does. The empty row keeps Lime's whole-row .38, dash and all.
+- **The pin is re-measured for Noto, and at 1440 it is the frame's own column.** `MAR 01`, the
+  widest of all 12 × 31 marks swapped through a rendered mark span, is 288.3 at 1440's 97
+  (`u(352)`) and 217.0 at 768's 73 (`217`); re-run off the fitted spans, 288.6 / 217. At 1440 that
+  stands the column head's second cell at 40 + 352 + 66 = **458, the frame's own x** (375.5 on
+  the canvas against 375.6) — the first face on this tree whose widest mark is the frame's 350
+  box to within 2. At 768 the frame's 350 is the leaked desktop number again, so the weekday
+  stands at 323 against 456 (the twins' diff). No pin at 390, where the mark stacks.
+- **The marks are lifted to the frame's baseline, and that is what keeps Noto's J off the dash**
+  (*Conventions*). Scans of the renders put Fisterra's baseline 0.140 / 0.158 / 0.156em above the
+  foot of the 0.89 line box and Noto's 0.052 / 0.068 / 0.063em; under `ed` the mark takes
+  `position: relative; top: -0.09em`, which moves no box, and scans 0.134 / 0.164 / 0.167. Noto's
+  J descends 0.24em where Fisterra's sits on the line, so unlifted the tails of JUN / JUL crossed
+  the row's dash by about 5px at 1440 and landed on the stacked weekday at 390; lifted, they
+  clear the dash at 1440 and 768. **At 390 the tail still grazed the weekday's capitals** (the
+  master stacks the two at no gap), so the 390 mark keeps the same 0.09em under it as a
+  `marginBottom`: rows **94.1 against the master's 90**, named.
+- **Type**: `disp()` uppercases under `grunge || ed` (the heading and the marks; `faced` is the
+  identity); the pill's label is `labelStyle`'s, uppercase already. Every Inter and Chakra
+  Petch string is the twins'.
+- **Inherited whole**: the blocked row (Lime's .38 on the row's three children, no strike, no
+  handler — layout 1's Editorial calendar took the same state, and it reads on the taupe); the
+  390 foot stack (the master gives its line 60 beside a 184 pill); and **the desktop vertical
+  inset** — the Lime block's `calc(u(56) - padY)` margin stands the card in Frame 298's own 56 ×
+  0.82 at 1440 (user call, 2026-09-17), so this section answers media's "named, not fitted"
+  question the other way by inheritance; at 768 the root's `padY` is the wrapper's 56, and at 390
+  it is 44 against 40 (named, the twins').
+- **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
+  section root): desktop panel (45.9, 45.9) 1088.2 wide (1328 × 0.82 = 1089), the h2 94.6 into the
+  panel (115 × 0.82 = 94.3) at 52px, column head 49.8 (50), rows 112.5 (112.3), foot 82, chip 49.8
+  × 19.8 (50.8 × 19.7), disc 37.7 × 36.1 (37.7 × 36.1); 768 panel 708 at (30, 56), h2 114.4 in
+  (115), column head 53.6 (54), rows 97 (97), foot 100, chip 57.2 × 23 (58 × 23), disc 46 × 44;
+  390 panel 370 at (10, 44), h2 114.4 in (115), column head 51.1 (51) with *Availability ↓*
+  flush right at the panel's 360, rows 94.1 (90, above), foot 113 (the stack). **Named diffs,
+  the twins'**: the seed prints AVAILABILITY on one line where the frame sets a three / two /
+  three-line sentence, so the band is 192.5 / 215.4 / 206.4 against 297.7 / 261 / 279; the pill
+  is `slotCta`'s "START ENQUIRY" in Noto against Fisterra's "Star Enquiry", 196.1 / 204.4 / 198
+  wide against 178.8 / 189 / 184; the flow prints the page's own labels (JP-041).
+- **`live=1`** (puppeteer clicks, 1440 and 390): row 2 moves the chip and the line to JUN 14 /
+  "Saturday full day selected", a second click falls back to the cued JUN 12, row 4 features
+  JUL 05; the pill is `<a href="#form">` and the flow a span plus `#pricing` / `#form` links;
+  `&booked=2025-06-12,2025-06-14` dims both rows to .38 with `cursor: auto` and no state change
+  on click, drops the chip and prints *Pick a date to enquire*; `n=0` prints *No dates yet.* at
+  .38 over its dash; `n=8` draws eight rows with no overflow; `&today=2026-09-25` seeds the slots
+  from today (SEP 25 …), every row live. No page errors or warnings.
+- **`FIELDS.calendar` under Editorial** (`scripts/reach.mjs 3`, 3,312 renders): `heading` reaches
+  all four layouts, so the `Editorial: [0, 1, 2, 3]` row holds over the fitted card; `cta`
+  `[0]`, `slots` `[1]`, `image` and `time` `[0, 3]`, `types` and `tiers` `[3]`, `open` all four
+  — each its flat row. `slotCta` has no probe; the fitted pill prints it. Nothing in `FIELDS`
+  moved.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly
+  calendar arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For the sweep's CLAUDE.md pass**: the calendar paragraph's layout-2 clause ("under Lime and
+  Grunge the row is dimmed to .38 with no strike") owes Editorial; not written here.
+- **For the map**: it stands on Scheme 1 (paper), with **three nested schemes** — the travel card
+  Scheme 3, `radius-map` Scheme 2 and the `Map Viewport` Scheme 3 — so it is `s.onScheme`'s
+  third and busiest reader (read each leaf's binding: a card on Scheme 3 reads `onScheme[3]`,
+  not `s.*`). Its Lime block (inside `EventsMap`'s `if (s.v1)`, after `stats`) has Grunge's `G`
+  at its head, so a third arm again. The planning table dashes the travel card's rules 10, 10
+  blush, the four gig rows 10, 10 terracotta **all round** (`side="all"`), and the 120 mi ring
+  **4, 4** ink; the raster sits on the twins' `#292A1C` plate (read it). Any display month
+  there ("JUN") meets Noto's J (*Conventions*).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1495,6 +1605,26 @@ it here in one line, with the plan it came from, a blank line between sessions.)
   narrow, one binding set.
 - Pricing: *The paired diff walk* (grunge/layout-2, A) — both twins in one call, 67 = 67 = 67;
   and *the node walker, kept* with the binding names — three walks.
+
+- Calendar: *The sixth block, after `want` / `hit` / `cur` / `line`* (lime/layout-2, D2) —
+  widened to `s.limeTree`, a third `G` arm (two new leaves read through `??`) and a handful of
+  `ed` sites.
+- Calendar: *The `G` lookup at the block's head* (grunge/layout-1, C) — the pass's second.
+- Calendar: *A card seated on its own scheme is `s.bg`* (this plan, section 3) — `G.bg2` is
+  `s.bg`, and the chip and pill fall out as the twins' keys.
+- Calendar: *The pin is re-measured per face* (lime/layout-2, D2; retro/layout-2, *measure the
+  pin, never transcribe it*) — 12 × 31 marks through a rendered span, 352 / 217.
+- Calendar: *A blocked slot takes layout 1's Lime state* and *the 390 foot stacks*
+  (lime/layout-2, D2) — both kept whole.
+- Calendar: *Read every nested node's scheme off the master* (grunge/layout-3, A) — the band,
+  Scheme 1 / 3 / 3, read by width off session 0's `s.onScheme`, its first by-width reader.
+- Calendar: *A frame's inside stroke is an inset `boxShadow`* (lime/layout-2, C) — the band's
+  solid heading rule as Grunge draws it; the dashed ones are `DashRule` (editorial/layout-1,
+  *Conventions*).
+- Calendar: *A hard offset shadow goes through the caller's `style`* (lime/layout-2, C) — the
+  twins' own `style`, unchanged: paper under the seat.
+- Calendar: *The node walker, kept* (grunge/layout-2) with the binding names — three walks — and
+  *field reach is measured* (`reach.mjs 3`).
 
 ## Open questions
 
