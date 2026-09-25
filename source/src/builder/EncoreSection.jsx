@@ -18576,8 +18576,37 @@ function EventsMap({ s }) {
     // (`#9E1F17`), its data bar with it. The zoom buttons are `box/2` again,
     // and the container's corner is `radius/control` where Lime's is raw.
     // No node carries an effect, on either template.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:68746 / 984:16838 / 984:16869) is the same tree again —
+    // 141 / 142 / 83 against Grunge's, by traversal order — on **Scheme 4**, a
+    // terracotta band the root paints (so `G.sheet` is undefined, Grunge's),
+    // with the panel nested **Scheme 3** and its `Map Viewport` Scheme 4 once
+    // more, explicitly. Under that seat `s.ac` is paper and `s.stroke2` ink,
+    // so Grunge's five-way split lands on the frame's own bindings key for
+    // key: the lit chip and the lit row fill `text/1` paper under `sem/bg`
+    // terracotta type, the date box keeps `box/1` and letters `text/1` on the
+    // lit row, and its hour chip fills `sem/bg`. What the frame adds is read
+    // below through `??`: the head and the idle venues are `text/1` paper over
+    // `text/2` ink copy; the panel is `S3` — `box/1` `#1D1D1D`, its type
+    // paper, the status pill `sem/bg` ink lettered and dotted `text/1`
+    // terracotta, EXPAND VIEW's arrow `sem/bg` ink (faint on the panel, the
+    // frame's own, followed as layout 2 followed its taupe one); inside the
+    // viewport everything the twins draw in the accent binds Scheme 4's
+    // `sem/bg`, terracotta (`G.acc`). Every card, row and box is square but the
+    // capsules; the lit row is the frame's own — `text/1` paper dashed 10, 10
+    // all round in `stroke/1` paper 56%, which shows nothing on the paper —
+    // not a redraw; the rows' foot rules are `stroke/2` ink dashed 10, 10 and
+    // the container's ring and the data bar's rule Scheme 3's `stroke/1`
+    // dashed, all `DashRule`. The frame's five dots are `text/2` at .6 — ink
+    // under the Scheme 4 viewport, (28, 29, 23) on the (41, 42, 27) plate — so
+    // they are redrawn in `text/1` paper at the frame's .6, what the same node
+    // resolved to under layout 2's Scheme 3 viewport; the lit pin, which no
+    // frame draws, is Grunge's keys: the paper accent in a 2px `s.tx` ring,
+    // the lit row's own paper.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
+      const S3 = ed ? s.onScheme[3] : null
       // Lime's arm is this block's own literals, so theme 1 digests to zero.
       const G = grunge
         ? {
@@ -18587,6 +18616,21 @@ function EventsMap({ s }) {
           pinRing: s.tx, pillBg: s.ac, pillFg: s.bg, pagerInk: s.ac,
           panelR: desk ? u(15) : '15px', boxR: desk ? u(8) : '20px',
           ratio: desk ? '570 / 472' : tab ? '315 / 514' : '350 / 157',
+        }
+        : ed ? {
+          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBox: s.bg, litBoxFg: s.ac,
+          // The zoom buttons' ring is Scheme 4's `stroke/1`, the container's
+          // Scheme 3's: one value, paper at 56%, so `hairP` serves both.
+          disc: s.box1, hair: s.stroke1, hairP: S3.stroke1,
+          panel: S3.box1, mapBox: S3.box1, zoom: s.box2,
+          pinRing: s.tx, pillBg: s.ac, pillFg: s.bg, pagerInk: s.ac,
+          panelR: 0, boxR: desk ? 0 : '20px',
+          ratio: desk ? '570 / 472' : tab ? '315 / 517' : '350 / 161',
+          // Editorial's own leaves, each read through `??` below.
+          title: desk ? u(32) : tab ? '25px' : '23px',
+          head: s.ac, venue: s.ac, rule: s.stroke2,
+          panelInk: S3.tx, statusBg: S3.bg, statusFg: S3.ac, arrow: S3.bg,
+          acc: s.bg, dot: s.ac, dotOp: 0.6,
         }
         : {
           sheet: s.tx, ink: s.bg, lit: s.bg, litFg: s.tx, litBox: s.tx, litBoxFg: s.bg,
@@ -18600,13 +18644,16 @@ function EventsMap({ s }) {
       const mist = G.disc // Scheme 4 sem/box/1 — the date discs
       const hair = G.hair // sem/stroke/1 at 15%, on the page ground
       const lift = G.zoom // Scheme 3 sem/box/2 — the zoom buttons
-      const titleSize = s.mob ? '26px' : tab ? '28px' : u(36)
+      // Display/Title: `vm.title` shadows the ramp, so the literal (Sienna
+      // Vale's 32 / 25 / 23 under Editorial).
+      const titleSize = G.title ?? (s.mob ? '26px' : tab ? '28px' : u(36))
       const ring = (c) => `inset 0 0 0 1px ${c}`
       // Anton stands in for Stones Crush, so every display site is scaled and
-      // its line height divided back out; the casing is the site's.
+      // its line height divided back out; the casing is the site's (Editorial's
+      // `faced` is the identity).
       const disp = (size, lh) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh),
-        letterSpacing: s.dls, ...(grunge ? { textTransform: 'uppercase' } : null),
+        letterSpacing: s.dls, ...(grunge || ed ? { textTransform: 'uppercase' } : null),
       })
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
       const chipL = {
@@ -18617,7 +18664,7 @@ function EventsMap({ s }) {
       const headL = (
         <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
           <span style={bodySm}>Gigs &amp; travel</span>
-          <h2 style={{ margin: 0, ...disp(titleSize, 1.1) }}>{s.title}</h2>
+          <h2 style={{ margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null) }}>{s.title}</h2>
         </div>
       )
 
@@ -18650,9 +18697,12 @@ function EventsMap({ s }) {
       // Under Grunge the pill is the accent under black type, and the two boxes
       // standing on it — the date disc, still `box/1`, and the hour chip, now
       // black — letter the accent back, which is the frame's own reading.
+      // Under Editorial the pill is a square paper row, dashed all round, the
+      // date disc a square box, and the rules dashed ink.
       const gigRowL = ({ g: gg, i }, k) => {
         const on = litRow(i)
         const next = shown[k + 1]
+        const aboveLit = next && litRow(next.i)
         const fg = on ? G.litFg : ink
         const tix = extLink(s, gg.url)
         const Tix = tix ? 'a' : 'span'
@@ -18664,7 +18714,7 @@ function EventsMap({ s }) {
         const mark = (
           <span style={col(0, {
             width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
-            borderRadius: '999px', background: mist, boxShadow: ring(hair),
+            borderRadius: ed ? 0 : '999px', background: mist, boxShadow: ring(hair),
             color: on ? G.litBoxFg : ink,
           })}>
             {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation. */}
@@ -18676,7 +18726,10 @@ function EventsMap({ s }) {
         )
         const lines = (
           <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
-            <span style={{ ...disp(s.list, 1.2), overflowWrap: 'anywhere' }}>{gg.venue}</span>
+            <span style={{
+              ...disp(s.list, 1.2), overflowWrap: 'anywhere',
+              ...(G.venue && !on ? { color: G.venue } : null),
+            }}>{gg.venue}</span>
             {!!place && (
               <span style={on
                 ? { fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3, letterSpacing: s.dls }
@@ -18702,11 +18755,12 @@ function EventsMap({ s }) {
             width: '100%', boxSizing: 'border-box', color: fg,
             cursor: s.live ? 'pointer' : undefined,
             ...(on
-              ? { background: G.lit, borderRadius: '999px', padding: `${u(14)} ${u(29)} ${u(14)} ${u(10)}` }
+              ? { background: G.lit, borderRadius: ed ? 0 : '999px', padding: `${u(14)} ${u(ed ? 10 : 29)} ${u(14)} ${u(10)}` }
               : {
                 padding: `${u(14)} 0`,
-                ...(next && litRow(next.i) ? null : { boxShadow: `inset 0 -1px 0 ${hair}` }),
+                ...(aboveLit || ed ? null : { boxShadow: `inset 0 -1px 0 ${hair}` }),
               }),
+            ...(ed ? { position: 'relative' } : null),
             ...(s.mob ? col(u(14), { alignItems: 'flex-start' }) : row(u(14))),
           }}>
             {s.mob ? (
@@ -18715,6 +18769,9 @@ function EventsMap({ s }) {
                 {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
               </>
             ) : <>{mark}{lines}{when}{tickets}</>}
+            {ed && (on
+              ? <DashRule side="all" dash={10 * z} colour={hair} />
+              : !aboveLit && <DashRule dash={10 * z} colour={G.rule} />)}
           </div>
         )
       }
@@ -18751,7 +18808,8 @@ function EventsMap({ s }) {
           <span key={i} onClick={onPick(i)} style={{
             position: 'absolute', left: gg.pin.x, top: gg.pin.y,
             width: on ? u(14) : u(8), height: on ? u(14) : u(8),
-            borderRadius: '999px', background: on ? s.ac : s.tx,
+            borderRadius: '999px', background: on ? s.ac : G.dot ?? s.tx,
+            opacity: on ? undefined : G.dotOp,
             boxShadow: on ? `0 0 0 2px ${G.pinRing}` : undefined,
             transform: 'translate(-50%, -50%)', cursor: s.live ? 'pointer' : undefined,
           }} />
@@ -18763,10 +18821,12 @@ function EventsMap({ s }) {
       // ring's 4 / 4 dash (`dashPattern`, all three masters) × 0.82 on desktop,
       // which neither a border nor an inset shadow can draw.
       const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
+      // The data bar's top rule: an inset hairline, or Editorial's dash.
+      const barRule = ed ? { position: 'relative' } : { boxShadow: `inset 0 1px 0 ${G.hairP}` }
 
       const panelL = (
         <div style={col(u(24), {
-          background: G.panel, color: ink, borderRadius: G.panelR, alignItems: 'flex-start',
+          background: G.panel, color: G.panelInk ?? ink, borderRadius: G.panelR, alignItems: 'flex-start',
           padding: desk ? u(32) : tab ? u(12) : `${u(12)} ${u(10)}`,
         })}>
           <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
@@ -18777,14 +18837,15 @@ function EventsMap({ s }) {
               {/* The status pill is the one node on this panel whose ink is not
                   the panel's: both templates letter the accent in `sem/bg`,
                   which under Lime is `ink` and under Grunge is the page's own
-                  black. */}
+                  black. Editorial's is the other way round in Scheme 3: a
+                  `sem/bg` ink pill lettered and dotted `text/1` terracotta. */}
               {!!s.mapStatus && (
                 <span style={row(u(8), {
-                  background: s.ac, color: s.bg, borderRadius: '999px', flex: 'none',
+                  background: G.statusBg ?? s.ac, color: G.statusFg ?? s.bg, borderRadius: '999px', flex: 'none',
                   padding: `${u(6)} ${u(12)}`, ...chipL,
                 })}>
                   <span style={{
-                    width: u(6), height: u(6), borderRadius: '999px', background: s.bg, flex: 'none',
+                    width: u(6), height: u(6), borderRadius: '999px', background: G.statusFg ?? s.bg, flex: 'none',
                   }} />
                   {s.mapStatus}
                 </span>
@@ -18795,7 +18856,14 @@ function EventsMap({ s }) {
             </div>
             {feature ? (
               <div style={col(u(4), { width: '100%', minWidth: 0 })}>
-                <h3 style={{ margin: 0, ...disp(titleSize, 1.1), overflowWrap: 'anywhere' }}>{feature.venue}</h3>
+                {/* Noto stands this title's glyphs 0.07em lower than the
+                    frame's face at lh 1.1, 3.3–4 over the city line, so under
+                    Editorial they are lifted by that much; the row venues, at
+                    lh 1.2, sit level with the frame's and are not. */}
+                <h3 style={{
+                  margin: 0, ...disp(titleSize, 1.1), overflowWrap: 'anywhere',
+                  ...(ed ? { position: 'relative', top: '-0.07em' } : null),
+                }}>{feature.venue}</h3>
                 {!!feature.city && (
                   <span style={{
                     fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, opacity: 0.7,
@@ -18811,13 +18879,15 @@ function EventsMap({ s }) {
 
           {/* The container's corner is 25 / 42 / 24 (Grunge 8 / 20 / 20), its
               hairline an overlay over the raster it clips. Under Grunge it is
-              the panel's *other* red, Scheme 3's `box/1` on its `box/2`. */}
+              the panel's *other* red, Scheme 3's `box/1` on its `box/2`.
+              Editorial's is 0 / 20 / 20, the panel's own `box/1`, dashed. */}
           <div style={col(0, {
             position: 'relative', width: '100%', background: G.mapBox, overflow: 'hidden',
             borderRadius: G.boxR,
           })}>
             {/* The viewport's aspect is each master's own residue: 570 × 471,
-                315 × 512 and 350 × 157 (Grunge 472 / 514 / 157). */}
+                315 × 512 and 350 × 157 (Grunge 472 / 514 / 157, Editorial
+                472 / 517 / 161). */}
             <div style={{
               position: 'relative', width: '100%', overflow: 'hidden',
               aspectRatio: G.ratio,
@@ -18839,7 +18909,7 @@ function EventsMap({ s }) {
                       position: 'absolute', left: '50%', top: '50%', width: `${w}%`, height: 'auto',
                       opacity: op, transform: 'translate(-50%, -50%)', overflow: 'visible',
                     }}>
-                      <circle cx={d / 2} cy={d / 2} r={(d - wt) / 2} fill="none" stroke={s.ac}
+                      <circle cx={d / 2} cy={d / 2} r={(d - wt) / 2} fill="none" stroke={G.acc ?? s.ac}
                               strokeWidth={wt} strokeDasharray={i === 0 ? '4 4' : undefined} />
                     </svg>
                   )
@@ -18847,7 +18917,7 @@ function EventsMap({ s }) {
                 {s.mapRings.slice(0, ringW.length).map((label, k) => (
                   <span key={k} aria-hidden style={{
                     position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
-                    transform: 'translate(-50%, -50%)', background: s.ac, color: ink,
+                    transform: 'translate(-50%, -50%)', background: G.acc ?? s.ac, color: ink,
                     borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
                   }}>{label}</span>
                 ))}
@@ -18860,14 +18930,14 @@ function EventsMap({ s }) {
                   transform: 'translate(-50%, -100%)',
                 })}>
                   <span style={row(0, {
-                    background: s.ac, color: ink, padding: u(4),
+                    background: G.acc ?? s.ac, color: ink, padding: u(4),
                     boxShadow: `inset 0 0 0 2px ${ink}`, borderRadius: '999px',
                   })}>
                     <User size={Math.round(16 * z)} />
                   </span>
                   <span style={{
                     width: 0, height: 0, borderLeft: `${u(5)} solid transparent`,
-                    borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${s.ac}`,
+                    borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${G.acc ?? s.ac}`,
                   }} />
                 </span>
               </div>
@@ -18888,29 +18958,33 @@ function EventsMap({ s }) {
             <div style={s.mob
               ? col(u(10), {
                 width: '100%', alignItems: 'flex-start', padding: `${u(14)} ${u(10)}`,
-                boxShadow: `inset 0 1px 0 ${G.hairP}`,
+                ...barRule,
               })
               : row(u(12), {
                 width: '100%', justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
-                boxShadow: `inset 0 1px 0 ${G.hairP}`,
+                ...barRule,
               })}>
               <span style={bodySm}>
                 {[s.mapBase, `${s.gigs.length} pins`, s.mapRadius].filter(Boolean).join(' · ')}
               </span>
               {/* The frame strokes the arrow in the accent, faint on `lime3` —
-                  and on Grunge's `#9E1F17`, where it is red on red. The
-                  master's own call, kept. */}
+                  and on Grunge's `#9E1F17`, where it is red on red, and on
+                  Editorial's `#1D1D1D`, ink on ink. The master's own call,
+                  kept. */}
               {!!s.mapExpand && (
                 <Expand {...expand} style={row(u(4), {
                   ...chipL, flex: 'none', color: 'inherit', textDecoration: 'none',
                   cursor: expand ? 'pointer' : undefined,
-                })}>{s.mapExpand}<span aria-hidden style={{ color: s.ac }}>→</span></Expand>
+                })}>{s.mapExpand}<span aria-hidden style={{ color: G.arrow ?? s.ac }}>→</span></Expand>
               )}
+              {ed && <DashRule side="top" dash={10 * z} colour={G.hairP} />}
             </div>
-            <span aria-hidden style={{
-              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: ring(G.hairP),
-            }} />
+            {ed ? <DashRule side="all" dash={10 * z} colour={G.hairP} radius={desk ? 0 : 20} /> : (
+              <span aria-hidden style={{
+                position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                boxShadow: ring(G.hairP),
+              }} />
+            )}
           </div>
         </div>
       )
@@ -18931,7 +19005,9 @@ function EventsMap({ s }) {
                 with an ink arrow — `BookPill`'s Lime branch with the pair
                 turned round. Under Grunge the pair is turned back, which is
                 `BookPill`'s own Grunge default: red under black type, a black
-                disc round a red arrow, the frame's node for node. Live it
+                disc round a red arrow, the frame's node for node — and under
+                Editorial the same two keys give its own: paper under
+                terracotta type, a terracotta disc round a paper arrow. Live it
                 lifts the pager, as Retro's does. */}
             {!!s.mapCta && (
               <span onClick={canReveal ? () => { setAllGigs(true); setPage(0) } : undefined}
