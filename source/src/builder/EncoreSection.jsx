@@ -15505,13 +15505,41 @@ function Calendar({ s }) {
     // Stones Crush, so each takes `faced` / `facedLh` / uppercase through
     // `disp()`. Everything else is Lime's, including the pill's own
     // `labelStyle`, which faces and cases its label already.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:68742 / 984:16835 / 984:16866, in `Frame 300`s padded
+    // 50 / 56 above and below at 1440 and 768 and 40 / 40 at 390, a 30 head
+    // gap) is the same tree node for node at all three widths, on **Scheme 1**
+    // — the foot pill's own Scheme 1 is the identity — with no Device override
+    // and no effect on any node. Every size is the ramp (display-lg 118 / 73 /
+    // 48, display-sm 45 / 36 / 30, body-lg 16 / 15 / 15, body-md 14 / 13 / 13,
+    // body-sm 12, label-md 20 / 14 / 13) and every ink the key Lime's block
+    // already reads, so the deltas are four, each behind `ed`:
+    //
+    //   · the card is square, dashed 10, 10 in `sem/stroke/2` terracotta at
+    //     1px inside, with no `border/thin` ring (`DashRule side="all"`);
+    //   · the free dot's ring is `border/hairline`, 1px of `sem/stroke/1` ink
+    //     (Lime's raw 2.559);
+    //   · "Book Me" is Display/Title at 32 / 25 / 23 (Lime's literal 36 / 28 /
+    //     26), and the three display strings are uppercased, Grunge's rule;
+    //   · the pill is Scheme 1's own `text/1` terracotta lettered and disced in
+    //     `sem/bg` paper — `BookPill`'s defaults exactly, so Lime's `fg` is not
+    //     passed — and its label is **Label/MD** 20 / 14 / 13 (`s.labelMd`) at
+    //     lh 1.1, where Lime's is `size/list`.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const lz = desk ? 0.82 : 1
       const lu = (v) => `${Math.round(v * lz * 10) / 10}px`
-      const disp = (lh) => (grunge
+      const disp = (lh) => (grunge || ed
         ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' }
         : { lineHeight: lh })
+      // Noto sits its glyphs ~0.09em lower in these tight boxes than the
+      // frames' Fisterra (scanned: the numeral's baseline 0.053em above its
+      // box's foot against 0.144, the month's 0.097 against 0.200), and its J
+      // descends 0.24em where Fisterra's sits on the line — so unlifted, the J
+      // of JUNE ended a pixel above "2025". The lift moves the glyphs and no
+      // box (plans/editorial/layout-2.md, *Noto's J*).
+      const lift = ed ? { position: 'relative', top: '-0.09em' } : null
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
@@ -15522,26 +15550,30 @@ function Calendar({ s }) {
           ? () => setSel((v) => (v === c.iso ? '' : c.iso))
           : undefined
         // The free dot's ring is the frame's raw 2.559, stroked inside, so it
-        // is an inset shadow and the 30.713 stands.
+        // is an inset shadow and the 30.713 stands. Editorial's is
+        // `border/hairline`, 1px unscaled.
         return (
           <span key={i} onClick={onClick} style={{
             width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
             background: on ? s.ac : blocked(c) ? s.box2 : s.box1,
-            boxShadow: on || blocked(c) ? undefined : `inset 0 0 0 ${lu(2.559)} ${s.stroke1}`,
+            boxShadow: on || blocked(c) ? undefined : `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
             cursor: onClick ? 'pointer' : undefined,
           }} />
         )
       }
       return (
         <div style={col(lu(30))}>
-          {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 —
-              `s.title` is the heading string, not the ramp's size. */}
+          {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 (32 /
+              25 / 23 under Editorial) — `s.title` is the heading string, not
+              the ramp's size. */}
           <h2 style={{
             margin: 0, fontFamily: s.display,
-            fontSize: faced(s, lu(desk ? 36 : s.mob ? 26 : 28)), ...disp(1.1),
+            fontSize: faced(s, lu(ed ? (desk ? 32 : s.mob ? 23 : 25) : desk ? 36 : s.mob ? 26 : 28)), ...disp(1.1),
             letterSpacing: s.dls, color: s.tx,
           }}>{s.title}</h2>
-          <div style={col(lu(18), {
+          <div style={col(lu(18), ed ? {
+            position: 'relative', background: s.box1, color: s.tx, padding: lu(20), overflow: 'hidden',
+          } : {
             background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(grunge ? 15 : 50),
             boxShadow: `inset 0 0 0 ${s.bw} ${s.stroke1}`, overflow: 'hidden',
           })}>
@@ -15549,14 +15581,14 @@ function Calendar({ s }) {
               {!!hit && (
                 <span style={{
                   fontFamily: s.display, fontSize: faced(s, s.dispLg), ...disp(0.89),
-                  letterSpacing: s.dls,
+                  letterSpacing: s.dls, ...lift,
                 }}>{hit.d}</span>
               )}
               <div style={row(lu(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
                 <div style={col(lu(2.745), { alignItems: 'flex-start' })}>
                   <span style={{
                     fontFamily: s.display, fontSize: faced(s, s.dispSm), ...disp(1),
-                    letterSpacing: s.dls,
+                    letterSpacing: s.dls, ...lift,
                   }}>{month.name}</span>
                   <span style={body(s.bodyMd, 1.5)}>{month.year}</span>
                 </div>
@@ -15589,9 +15621,13 @@ function Calendar({ s }) {
                 Grunge the literal `#171716` — so `fg` is the one override, and
                 the disc's arrow follows the `bg`.
                 BookPill's own scale gives the 54 box and `s.list` label, with
-                `full` opting the 390 canvas back up. */}
-            <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : s.box1} full={s.mob}
-                      style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal' }} />
+                `full` opting the 390 canvas back up. Editorial's is Scheme 1,
+                the defaults, with its Label/MD size. */}
+            <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : ed ? undefined : s.box1} full={s.mob}
+                      size={ed ? s.labelMd : undefined}
+                      style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
+                        ...(ed ? { lineHeight: 1.1 } : null) }} />
+            {ed && <DashRule dash={10 * lz} colour={s.stroke2} side="all" />}
           </div>
         </div>
       )

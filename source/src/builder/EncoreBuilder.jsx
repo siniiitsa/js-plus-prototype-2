@@ -456,10 +456,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // feet carry: every template's repertoire head stands at the shared `padY`.
   // Re-measured at Editorial's repertoire (plans/editorial/layout-3.md,
   // section 4), the canvas gives 117 / 103 / 79 box to box under all three
-  // against the frames' 100 / 90 / 70 — a named diff for the sweep.
-  if (d === 2 && (((T.name === 'Lime' || T.name === 'Grunge')
-    && (cat === 'bio' || cat === 'calendar' || cat === 'media'))
-    || (T.name === 'Editorial' && (cat === 'bio' || cat === 'media')))) {
+  // against the frames' 100 / 90 / 70 — a named diff for the sweep. The
+  // calendar closes Editorial's row as it closed Grunge's (its `Frame 300`
+  // pads 50 / 56 at 1440 and 768, 40 / 40 at 390), so the three templates are
+  // one condition again.
+  if (d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+    && (cat === 'bio' || cat === 'calendar' || cat === 'media')) {
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)
     const foot = cat === 'bio' ? z(30)
