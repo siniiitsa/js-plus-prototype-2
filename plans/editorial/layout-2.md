@@ -177,7 +177,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 0 | *foundation* | `964:64598` *(page)* | — | `986:15657` | — | `986:15676` | — | — | — | — | Scheme 4, `SCHEMES_OF.Editorial[1]`, decision 1's mechanisms | **done** (`e0526e7`, `088845d`) |
 | 1 | `header` | `964:64599` | 1440 × 900 | `986:15658` | 768 × 1024 | `986:15677` | 390 × 932 | 1 (nav pill **4**) | `964:64580` | `964:64618` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV1` | **done** `41ca390` |
 | 2 | `bio` | `964:64600` | 1440 × 760 | `986:15659` | 768 × 1217.8 | `986:15678` | 390 × 880.3 | 1 (pill **4**) | `964:64581` | `964:64619` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v1)` | **done** `cbff882` |
-| 3 | `media` | `964:64601` *(Section; panel `964:64602`)* | 1440 × 965 | `986:15660` *(Frame 299; `986:15661`)* | 768 × 1626 | `986:15679` *(Frame 299; `986:15680`)* | 390 × 1442 | page 1, **panel 2** | `964:64582` | `964:64620` | inside `Media`'s `if (s.v1)`, after `nowArt` | — |
+| 3 | `media` | `964:64601` *(Section; panel `964:64602`)* | 1440 × 965 | `986:15660` *(Frame 299; `986:15661`)* | 768 × 1626 | `986:15679` *(Frame 299; `986:15680`)* | 390 × 1442 | page 1, **panel 2** | `964:64582` | `964:64620` | inside `Media`'s `if (s.v1)`, after `nowArt` | **done** `0118702` |
 | 4 | `repertoire` | `964:64608` | 1440 × 792 | `986:15667` | 768 × 792 | `986:15686` | 390 × 594 | **4 / 1 / 1** | `964:64589` | `964:64627` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | — |
 | 5 | `gallery` | `964:64609` | 1440 × 675 | `986:15668` | 768 × 468 | `986:15687` | 390 × 364 | 1 | `964:64590` | `964:64628` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v1)` | — |
 | 6 | `pricing` | `964:64610` | 1440 × 715 | `986:15669` | 768 × 924 | `986:15688` | 390 × 865 | **3 / 1 / 1** | `964:64591` | `964:64629` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | — |
@@ -666,6 +666,10 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
   at DPR 2 it is full ink. A `side` 'top' / 'bottom' rule is crisp at both.
 - **A dash's pattern can be uneven, and `DashRule` takes it** (section 2): `gap` beside `dash`,
   defaulting to it. Read the `dashPattern` pair, never assume it repeats.
+- **A card seated on its own scheme is `s.bg`** (section 3): under decision 1(b) the section's
+  `s.*` is the card's scheme, so the card's `sem/bg` is `s.bg` — where the twins paint the same
+  panel `s.box1` (Lime's Scheme 2 `sem/bg` *is* its Scheme 1 `box/1`). Every twin read of `box1`,
+  `stroke1` or `s.ac` in such a block names a different node here; resolve each binding.
 
 ### Seen at planning time, per section
 
@@ -991,6 +995,84 @@ the twins' dark-ground assumptions break (trap 6).
 - **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly bio
   arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
 
+### Settled in section 3 (the media player)
+
+- **The block widened whole: `if (s.limeTree)` inside `Media`'s `if (s.v1)`, after `nowArt`,
+  `const ed = s.editorial`** (a dozen arms, a `barBg` and a `dash` helper, no `G`). The tree is the
+  twins' node for node at all three widths — Section / Frame 297 / Frame 296 / the two instances,
+  the five cards at the twins' sizes, angles (±5.33 / ±10.66) and opacities (.82 / .64), the 108
+  bar, the 44 / 43 counter row and the 125.8 / 110.6 rows — on **Scheme 1 with Frame 297 on
+  Scheme 2** and no Device override (Desktop / Tablet / Mobile). `get_variable_defs` is the ramp
+  (display-lg 118 / 73 / 48, list 24 / 19 / 18, body-lg 16 / 15 / 15, body-md 14 / 13 / 13,
+  body-sm 12, chip 12 / 11 / 11) but for Display/Title, **32 / 25 / 23** in `tk` (`s.title` is the
+  heading string). The hooks sit above the branches, so the published player needed nothing.
+- **Decision 1(b)'s seat does all the colour work — no `G`, no `onScheme`.** Seated on Scheme 2,
+  every binding is a key: the panel `sem/bg` → **`s.bg`** (the twins read `s.box1`, which is
+  `#BAA499` here); the cards `box/1` → `s.box1`; the wells `box/2` → `s.box2`; every ink but the
+  heading `sem/text/2` → `s.tx`; the card rings `sem/stroke/2` → `s.stroke2` (the twins'
+  `stroke1` is paper here); the Featured chip `sem/tag/1/bg` → `s.chips[0].bg`, blush, lettered
+  `s.tx` (the twins' `s.ac` is paper). "Translucent taupe" is solid `#BAA499` at the nodes' own
+  .82 / .64 — `CARD[].op`, no delta.
+- **The heading is `sem/text/1`, paper, at every width**, where Lime flips `s.tx` / `s.ac` by
+  width, and it **takes no cap**: Lime's 4.6em would break Noto's "FIVE WORTH" (5.22 ems) itself,
+  and the column alone breaks each master's way — after "worth" at 1440 (506 of 516 at 97) and 390
+  (250 of 330 at 48), after "your" at 768 (561 of 648 at 73). Measured: 172.7 / 129.9 / 85.4
+  tall against 172.2 / 130 / 86, two lines each.
+- **Radii**: the panel **0 at 1440** and 30 narrow (Frame 297 states no radius at desktop); the
+  cards 0; the bar 0; the wells 4 and the sleeve a circle, unchanged.
+- **The bar is an outline on the panel's own ground**: `sem/bg` (`barBg`, the panel's taupe, not
+  the cards' `box/1`), dashed 10, 10 all round in `sem/stroke/2`, INSIDE 1 — `DashRule
+  side="all"` in place of the twins' ring overlay — and its inner pill carries **no fill**. At
+  DPR 2 the dash samples `#E6B6A0` full ink. No glow, no effect on any node.
+- **The list's rules are the other way up**: the counter row and **all five** track rows are
+  stroked `0/0/1/0` INSIDE, dashed 10, 10 in `sem/stroke/2` — so a rule stands under the counter
+  and under the last row, where Lime's top-only rules leave the last row open. `DashRule
+  side="bottom"` in each, the row `position: relative` under `ed`.
+- **One named departure, for the bar's title at 1440**: Noto's "SLOW BURN" is 128 wide at 32 ×
+  0.82 and the twins' desktop box left it 112 ("SLOW B…"). The inner pill is unfilled, so its 10
+  and 12 sides are spacing alone; both go at 1440 and the box is 130.4. 768 (140.2 for 140) and
+  390 (115.5 for 116, through the twins' override) needed nothing. The frame's own bar clips its
+  longer "Slow Burn (Edit)" at every width.
+- **The 390 bar leak is overridden by the twins' shared override** (open question 7): the master
+  seats the transport and a sliver of sleeve and runs the title off at x 293; ours drops the clock
+  and icons and closes the padding, so the track the player is on is named.
+- **No pill**: none of the three masters has a pill node (the twins' finding), so `FIELDS.media`
+  moves nothing — `cta`'s `'*': []` row already reads "Not shown in this template" here and
+  `soundcloud` reaches layout 1 alone. No `reach.mjs` run was owed. The 1440 Section's 5px
+  `scheme/1/stroke/2` top and bottom stroke is `visible: false` (the twins' hidden stroke) and is
+  not drawn.
+- **The wrapper's vertical inset is named, not fitted**: `padX` is the frames' 56 / 30 / 10
+  already, so the panel's sides are the frame's; above and below, the root's `padY` 80 / 56 / 44
+  stands against the wrapper's 86 × 0.82 / 60 / 40 (70.5 / 60 / 40) — the page gutter every
+  section here keeps (the bio's *roots' `padY`* diff), and a `sectionVm` arm for one section would
+  part it from its neighbours. The calendar's card meets the same question (56 · 56 / 30 · 56 /
+  10 · 40).
+- **Measured against the masters** (harness, `getBoundingClientRect`, from the section root):
+  desktop panel (45.9, 80) 1088.2 × 650.3 (1089 × 650.3), heading at the panel's 49.2, the fan
+  band 271 (271.4), the centre card 180.4 × 233.7 at 256.4 under the panel's top (256.7), its chip
+  at 21.7 / 21.3 (26.5 / 26 × 0.82), bar at 512.5 (512.5) 88.6 tall, list at x 606 (606), counter
+  36.2 (36.1), rows 103.1 (103.2); 768 panel 708 × 1505.9 (1506), fan at 199.9 (200), bar at 692
+  (692), list at 850 (850), counter 43, rows 110.6; 390 panel 370 × 1361.4 (1362), fan at 75.4
+  (76, the −50), bar at 567.4 (568), list at 725.4 (726), rows 110.6. **Named diffs**: the top
+  inset above; the centre card 3.4 / 3.6 left of the frame's at every width (the frames stand it
+  ~4 right of the band's centre; the shared seats centre it — not checked against the twins); the
+  canvas clock is the shared `02:28 / 04:22` against "1:38 / 4:55"; the frame's fan art is its own
+  mock (the Who sleeve on "Slow Burn", which its list puts on "Late Lights") and ours follows the
+  list.
+- **`live=1`** (puppeteer, `--autoplay-policy=no-user-gesture-required`, 1440 and 390): the
+  outermost card clicked on its visible edge deals Slow Burn to the centre and plays it; a row
+  plays and a second click pauses it (the glyph goes pause → play, ink on taupe); back from track
+  one wraps to Roomtone and next wraps to Late Lights; the centre card, the bar's title and the
+  row's glyph follow together. No page errors. `n=8`: the fan clips at the column, the desktop
+  rows share it at 64.5, the "KM" wells read ink on `box/2`, 390 grows to 1632. `n=0`: the
+  counter alone over its rule; 390 is 896.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly media
+  arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For the repertoire**: it is seated on the triple `[4, 1, 1]`, so `s.stroke1` is already each
+  width's dash ink — Scheme 4's paper 56% at 1440, Scheme 1's opaque ink narrow — and the flat
+  arm's cream `s.paper` sheet (session 0) is the Lime block's to replace. Under Scheme 4 `pillBg`
+  is ink and `s.ac` paper (trap 5): read the pager's bindings before trusting `Pager`'s Lime arm.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1046,6 +1128,24 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Bio: *Emptied content drops its node* (lime/layout-1, C) — the divider with an emptied foot.
 - Bio: *The node walker, kept* (grunge/layout-2) and *field reach is measured* (`reach.mjs 3`).
 
+- Media: *The third block, after `nowArt`* (lime/layout-2, D2) — widened to `s.limeTree`, a dozen
+  `ed` arms, no `G`.
+- Media: *A widened block can need no `G` at all* (grunge/layout-3, C) — the section seated on
+  Scheme 2, every leaf a key.
+- Media: *`tilt()` is Retro's alone, so a Lime fan writes its angle out* and *the featured tag sits
+  at the frame's 26.5 / 26* (lime/layout-2, D2) — both kept whole.
+- Media: *Row rules are top-only* (lime/layout-2, D2) — turned round: bottom-only on the head and
+  all five rows, so a rule stands under the last.
+- Media: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — `side="all"` on the
+  bar, `bottom` on six rules; ink judged at DPR 2 (this plan).
+- Media: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, C) — 32 × 0.82 / 25 / 23 in
+  `tk`.
+- Media: *A leak that shows and reads as a defect is overridden* (grunge/layout-1, A) — the 390
+  bar, through the twins' shared override.
+- Media: *A section's colour scheme is resolved in `sectionVm`* (editorial/layout-1, C) with
+  session 0's `pageBg` / `editorialCard` — the first block to stand on it.
+- Media: *The node walker, kept* (grunge/layout-2) with the binding names — three walks.
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
@@ -1074,7 +1174,10 @@ it here in one line, with the plan it came from, a blank line between sessions.)
      *section 2: `c.fg` stands, one chip*;
    - the 390 header's nav pill label in Anton 12.07 — *overridden in section 1*: `s.labelSm` 12
      in Noto, Lime's precedent;
-   - the 390 media bar's title and byline, 184 wide from x 293 — off the master;
+   - the 390 media bar's title and byline, 184 wide from x 293 — off the master (its inner pill
+     is 22.9 wide, the title column 1). *Section 3: overridden by the shared 390 override the
+     twins already run* (clock and icons dropped, padding 16, gaps 14, the inner pill's sides
+     0), so "SLOW BURN" is whole at 23;
    - the 768 gallery's two 1px tiles;
    - the 390 testimonials' sub, a 431-wide no-wrap line clipped by the card;
    - the map's ring labels past the 768 and 390 masters, clipped by the viewport.
