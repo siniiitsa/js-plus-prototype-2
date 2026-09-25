@@ -180,7 +180,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 3 | `media` | `964:64601` *(Section; panel `964:64602`)* | 1440 × 965 | `986:15660` *(Frame 299; `986:15661`)* | 768 × 1626 | `986:15679` *(Frame 299; `986:15680`)* | 390 × 1442 | page 1, **panel 2** | `964:64582` | `964:64620` | inside `Media`'s `if (s.v1)`, after `nowArt` | **done** `0118702` |
 | 4 | `repertoire` | `964:64608` | 1440 × 792 | `986:15667` | 768 × 792 | `986:15686` | 390 × 594 | **4 / 1 / 1** | `964:64589` | `964:64627` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | **done** `f592f45` |
 | 5 | `gallery` | `964:64609` | 1440 × 675 | `986:15668` | 768 × 468 | `986:15687` | 390 × 364 | 1 | `964:64590` | `964:64628` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v1)` | **done** `a888524` |
-| 6 | `pricing` | `964:64610` | 1440 × 715 | `986:15669` | 768 × 924 | `986:15688` | 390 × 865 | **3 / 1 / 1** | `964:64591` | `964:64629` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | — |
+| 6 | `pricing` | `964:64610` | 1440 × 715 | `986:15669` | 768 × 924 | `986:15688` | 390 × 865 | **3 / 1 / 1** | `964:64591` | `964:64629` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | **done** `4fd0b57` |
 | 7 | `calendar` | `964:64612` *(in `964:64611`)* | 1328 × 1072 *(1440 × 1184)* | `986:15671` *(in `986:15670`)* | 708 × 803 *(915)* | `986:15690` *(in `986:15689`)* | 370 × 774 *(854)* | page 1, **card 2** (head band **1 / 3 / 3**) | `964:64593` | `964:64631` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | — |
 | 8 | `map` | `964:64613` | 1440 × 833 | `986:15672` | 768 × 823 | `986:15691` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64632` | inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
 | 9 | `form` | `964:64614` | 1440 × 802 | `986:15673` | 768 × 877 | `986:15692` | 390 × 925 | **4** | `964:64595` | `964:64633` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v1)` | — |
@@ -684,6 +684,11 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
   the minimum; where it holds a placeholder, keep the anchor that serves our seeds, and name it.
 - **On this paper page `s.muted` is ink, so an empty slot on a dark well needs `Photo`'s `ink`**
   (section 5): check `&n=0` wherever a Lime block's well is `s.box3` or another ink fill.
+- **A twin's redrawn state is read against this frame before it is inherited** (section 6):
+  the twins redrew pricing's picked chip in `sem/active` because their frames' pick was the
+  card's own colour; Editorial's `toggle-a` is visible, so its binding is followed and the
+  redraw is not. Where a twin's *Settled* says "invisible, so redrawn", read the Editorial
+  node's paint first.
 
 ### Seen at planning time, per section
 
@@ -722,7 +727,9 @@ the twins' dark-ground assumptions break (trap 6).
    paper-56 on a slightly lighter fill, a paper "Per event" chip and an outlined blush "Custom
    brief" one, the name paper, the price terracotta, the pill terracotta with ink type and an ink
    disc, the features Chakra Petch paper behind terracotta `+`s; the small print paper. At 768 and
-   390 all of it on paper, dashed ink.
+   390 all of it on paper, dashed ink. *Settled in section 6: the hairline is the instance's own
+   `stroke/1` ring on all four sides at every width, drawn; the "Per event" chip is the frame's
+   visible pick, followed rather than redrawn.*
 7. **calendar** — the taupe card, square, under a terracotta head band: "Book Kai®", the flow
    list and the head **paper at 1440 and ink at 768 and 390** (trap 4); column heads in Chakra
    Petch; rows dashed paper; the slot marks ink at 118; the foot's paper "JUN 12" chip, the ink
@@ -1268,6 +1275,96 @@ the twins' dark-ground assumptions break (trap 6).
   convention names pricing's chips as the next case). Session 0 found the flat arm paints no sheet at 1440, so the root
   shows through; read the planning table's "hairline root ring" off the node before drawing it.
 
+### Settled in section 6 (pricing)
+
+- **The block widened: `if (s.limeTree)` inside `Pricing`'s `if (s.v1)`, after `sel` / `t`,
+  `const ed = s.editorial` and a third arm at the head of `G`** — the pass's first `G`, Lime's and
+  Grunge's arms byte-identical — plus six `ed` sites (the display sites' uppercase, the picked
+  chip's three leaves, the card's and the divider's `DashRule`, the ring overlay, the foot rule).
+  The tree is the twins' node for node at all three widths: one paired diff by traversal order
+  against both desktop twins came back 67 = 67 = 67, with no binding difference but the card's
+  stroke, dash, radius and padding, the faces' and chips' radii and the divider. **Scheme 3 at
+  1440, Scheme 1 at 768 and 390** (`resolvedVariableModes` Desktop / Tablet / Mobile), no Device
+  override, no nested scheme, no effect, no rotation. `get_variable_defs` is
+  `THEME_RAMP.Editorial` exactly at all three (display-md 64 / 45 / 36, display-sm 45 / 36 / 30,
+  body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12, chip 12 / 11 / 11, label-xs 20 / 14 /
+  12, eyebrow 15 / 12 / 11, list 24 / 19 / 18), so every size reads `s.*`. The hooks sit above
+  the block, so the published package toggle needed nothing.
+- **The triple did all the colour work — no `onScheme`, no literal.** Every paint binds the twins'
+  token and each resolves through the seat: the root `sem/bg` (ink / paper), the card `sem/box/1`
+  (`#1D1D1D` / `#FFF9F2`), the heading, numeral, `+`s, stars and rating `text/1` (terracotta in
+  both), everything else `text/2` (paper / ink), the faces' ground `box/1`. Read per master:
+  `s.stroke1` is Scheme 3's paper 56% at 1440 and Scheme 1's opaque ink narrow, `s.stroke2` blush
+  at 1440 and terracotta narrow.
+- **The pill is `BookPill`'s Lime defaults in both schemes**: fill `text/1`, label and disc
+  `sem/bg`, arrow `text/1`. Scheme 3's `activeBg` is terracotta as Scheme 1's is, so `pillBg` /
+  `bg` is the frame's pair at every width — ink on terracotta at 1440, paper on terracotta
+  narrow. The prompt's worry that the active pair is "another ink" is Scheme 4's (trap 5), not
+  Scheme 3's. JP-036's label and line carry.
+- **The frame's picked chip is visible, so it is followed, not redrawn** — the twins' *the
+  frame's selected chip is invisible, so it is redrawn* turned round. `toggle-a` binds
+  `sem/tag/1/bg` (`s.chips[0].bg`: paper on the `#1D1D1D` card at 1440, blush on `#FFF9F2`
+  narrow), `toggle-b` no fill, and both a 1px INSIDE `sem/stroke/2` ring under `text/1` type. So
+  under `ed` the picked chip keeps its ring and its `s.ac` type and only the fill moves, and the
+  canvas's pinned chip 0 is the frame's own picture — no intended chip diff, unlike the twins'.
+  The three leaves are `G.chipOn` / `chipOnFg` / `chipOnRing`, in the Editorial arm alone and
+  read `G.chipOn ?? s.pillBg` (CONVENTIONS C: new leaves fall back through `??`). Terracotta on
+  blush is about 2 : 1 at 768 and 390 — the frame's pair; the fill, not the type, marks the pick.
+- **The card is square `s.box1` dashed 10, 10 in `s.stroke1`** — `DashRule side="all"`, the card
+  `position: relative` under `ed` and `G.ring` undefined — padded Lime's 42 (30 / 20 at 390).
+  **The divider is a stroked 1px frame, not a fill** (the twins fill theirs
+  `scheme/6/stroke/1`): 10, 10 INSIDE on all four sides, which on a 1px frame is one dashed line,
+  so `DashRule side="top"` in the span, its fill transparent under `ed` (the bio's divider
+  recipe, without the bio's 8px weight slip). **The faces are circles** (999, where the twins'
+  are 13 / 8) in Grunge's `2px solid ${s.stroke1}`, `faceR` `'999px'`. The chips keep
+  `s.radiusChip`, 6 unscaled at desktop (Lime's reading of `radius/chip`).
+- **The instance ring is drawn: Grunge's overlay, widened to `grunge || ed`.** The root binds
+  `sem/stroke/1` 1px INSIDE, solid, and every render samples it on all four edges —
+  `(147, 143, 139)` round the 1440 ink band (paper at 56%, to the unit) and `(20, 20, 20)` round
+  the narrow paper. The desktop foot rule keeps its box and paints transparent under `ed` too, or
+  the 56% would stack under the overlay. Pricing stands between the gallery's bare paper and the
+  calendar's wrapper at every width, so nothing doubles; at 768 and 390 the section is a paper
+  box closed by an ink ring on the paper page (the frame's picture), as the repertoire's narrow
+  sheet is two sections up. Lime alone declines the ring (its user call, 2026-09-17).
+- **Type**: `disp()` uppercases under `grunge || ed` (the heading, the name, the numeral);
+  `faced` is the identity. Every Inter and Chakra Petch string is the twins'.
+- **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
+  section root, DPR 2): desktop card 558.8 × 406.2 at (575.3, 80), chips 23.2 tall (28 × 0.82 =
+  23) 34.4 in, name 37px at 149.1, pill 263.8 × 44.3 (304 × 0.82 = 249.3), divider 490 wide,
+  faces 23² circles, small print 12px; 768 card 708 × 450.8 at 307.5 (the left block 219.5
+  against 220), chips 27 at x 72 (72), name 36px, pill 268.8 × 54 (258 × 54), divider 624 (624),
+  faces 28²; 390 card 370 × 474.5, chips 27 with the seeded third on a second row, name 30px,
+  pill 258.9 × 54 `full` (249 × 54) with the line stacked under it, divider 330 at x 30 (30),
+  small print 11px. **Named diffs, the twins'**: the desktop card is 558.8 wide against 524.8,
+  since `flex: 1 1 0` counts the card's padding into its basis (Lime's head column is 490 today
+  as well; it read 540.7 before JP-038 moved `padX`); the seeded three chips against the frame's
+  two, wrapping at 390; the seeded two feature rows against four, so the cards stand 406.2 /
+  450.8 / 474.5 against 478.9 / 512 / 510; the seeded heading 3 / 2 / 2 lines against the frame's
+  typed 2 / 2 / 2; the roots' `padY` 80 / 56 / 44 against 56 × 0.82 / 60 / 30; Noto's pill 4–6%
+  wider than Fisterra's (the header's diff).
+- **`live=1`** (puppeteer clicks, 1440 and 390): chips 2, 1 and 0 each move the fill (paper at
+  1440, blush at 390) and swap the name and price (1,200 / 650 / 450); cursors are live-gated;
+  the pill is `<a href="#form">`. `n=0` keeps the dashed card with *No packages yet.* (`s.muted`,
+  paper or ink at 64%) and drops the divider; `n=1` draws no chips; `n=8` wraps the chips to three
+  rows at 390. No page errors or warnings.
+- **Open question 4 is closed**: the credit row is the block's (`hasCredit`), and
+  `EDITORIAL_PHOTOS.pricing` is `REVIEWERS` — the frame's own three faces (`fbe69d03`,
+  `ef14e35b`, `2de917bf`) — so the canvas draws the frame's avatars, stars and "32 reviews ·
+  4.9 ★".
+- **`FIELDS.pricing` has no template-keyed `in` row** (`PRICING_CARD` and `PRICING_CREDIT` are a
+  flat `[1]`), so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly
+  pricing arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For the calendar**: it is seated on Scheme 2, the card's, with the root painting the page's
+  paper round it (`editorialCard`), and its Lime block (inside `Calendar`'s `if (s.v1)`, after
+  `want` / `hit` / `cur` / `line`) has Grunge's `G` at its head, so a third arm again. Its head
+  band is this route's one nested scheme left: fill `sem/text/1` (terracotta at every width) but
+  type `sem/bg`, **paper at 1440 and ink narrow** (trap 4), picked per width off `s.onScheme` as
+  session 0 set out — but resolve every band leaf's binding first. The slot marks' pin is
+  re-measured in Noto with `&open=` looping every month (the frame cannot be the ruler: its
+  "JUN 14" renders "JUN 1"), and the foot pill's paper 5 / 5 block goes through the caller's
+  `style`.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1375,6 +1472,24 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Gallery: *The paired diff walk* (grunge/layout-2, A) — by traversal order, all three widths,
   both twins in one call.
 
+- Pricing: *The fifth block, after `sel` / `t`* (lime/layout-2, D2) — widened to `s.limeTree`,
+  a third `G` arm and six `ed` sites.
+- Pricing: *The `G` lookup at the block's head* (grunge/layout-1, C) — the pass's first; the
+  Editorial-only leaves (`chipOn`, `chipOnFg`, `chipOnRing`) sit in its arm alone, read through
+  `??`.
+- Pricing: *The frame's selected chip is invisible, so it is redrawn* (lime/layout-2, D2) —
+  turned round: visible here, so its binding is followed.
+- Pricing: *The pill is `BookPill`'s defaults exactly* (lime/layout-2, D2) — in both of the
+  section's schemes.
+- Pricing: *The instance ring is drawn* (grunge/layout-2, *Settled in section 6*) — the overlay
+  widened, sampled on every edge at every width.
+- Pricing: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — `side="all"` on the
+  card, `top` on the divider (section 2's divider recipe).
+- Pricing: *Read a scheme per master, never per section* (this plan) — Scheme 3 at 1440, Scheme 1
+  narrow, one binding set.
+- Pricing: *The paired diff walk* (grunge/layout-2, A) — both twins in one call, 67 = 67 = 67;
+  and *the node walker, kept* with the binding names — three walks.
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
@@ -1385,6 +1500,8 @@ it here in one line, with the plan it came from, a blank line between sessions.)
    open question 3). Worth telling the designer with it.
 4. **The pricing credit row** — the frame draws the three avatars, the stars and "32 reviews ·
    4.9"; Lime's block draws the row (Grunge section 6's correction), so the widened one does too.
+   *Settled in section 6: drawn, and `EDITORIAL_PHOTOS.pricing` is `REVIEWERS`, the frame's own
+   three faces.*
 5. **The demo glyphs** — layout 1's open question 5, with one addition: the calendar's "JUN 14" row
    renders as "JUN 1" and a DEMO mark, so the slot-mark pin cannot be read off the frame. Worth
    telling the designer with layout 1's note.
