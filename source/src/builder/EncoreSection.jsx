@@ -13052,10 +13052,28 @@ function Gallery({ s }) {
     // are 30 (the 390 rail keeps its 10), read off the nodes and confirmed on
     // the render — the ring crosses a corner's diagonal 4px in, which is 15,
     // and 9px in on the two seats below. The grain is the header's recipe.
+    //
+    // Editorial (964:64609, 986:15668, 986:15687) is Lime's tree node for node
+    // at all three widths, on Scheme 1 — paper — with no Device override and
+    // no effect or dash on any node, so it widens the same ternaries under
+    // `ed`: `s.bw` is 2 and the frame strokes 1 inside; the wells are
+    // `sem/box/3`, ink `s.box3`; the chip type is `size/chip` 12 / 11 / 11,
+    // `s.chip` exactly. What moves is the shape. The hero's frame is square in
+    // a 1px `scheme/1/stroke/1` ring (its image frame's own 4 lands under the
+    // ring — sampled, the render's corners are ink to the pixel — and is not
+    // drawn), and every tile rounds whole at a raw 3, first and last in each
+    // column included, where the twins square off the corners their dropped
+    // borders ran through (the 390 rail keeps its 10). The caption stands on
+    // `sem/tag/1/bg`, blush, which is Retro's own `s.chips[0].bg` arm.
     const grunge = s.grunge
-    const bw = (s.retro || s.lime || grunge) ? '1px' : s.bw
-    const well = (s.lime || grunge) ? { background: s.box3 } : undefined
-    const r = u(s.mob ? 10 : grunge ? 15 : 30)
+    const ed = s.editorial
+    const bw = (s.retro || s.limeTree) ? '1px' : s.bw
+    const well = s.limeTree ? { background: s.box3 } : undefined
+    // The initials an empty slot shows sit on that well, and Editorial's
+    // `s.muted` is ink at a lower alpha — ink on ink — so its placeholder
+    // takes the page's paper. `Photo` falls back to `s.muted` on undefined.
+    const wellInk = ed ? s.bg : undefined
+    const r = u(s.mob ? 10 : grunge ? 15 : ed ? 3 : 30)
     // The last tile in each column keeps a 30 on its top corners under
     // Grunge, where every other corner in the rail is 15: `[30, 30, 0, 0]` on
     // both of those nodes at 1440 and 768, Lime's component value the mode did
@@ -13131,8 +13149,9 @@ function Gallery({ s }) {
                     borderBottom: last ? 'none' : edge,
                     // The 390 rail rounds every tile whole; the two wider
                     // masters square off the corners the dropped border would
-                    // have run through.
-                    borderRadius: s.mob ? r : first ? `0 0 ${r} ${r}` : last ? `${rTop} ${rTop} 0 0` : r,
+                    // have run through — except Editorial's, whose every tile
+                    // is a whole 3.
+                    borderRadius: (s.mob || ed) ? r : first ? `0 0 ${r} ${r}` : last ? `${rTop} ${rTop} 0 0` : r,
                     cursor: s.live ? 'pointer' : undefined,
                   }}
                 >
@@ -13143,8 +13162,12 @@ function Gallery({ s }) {
                     {/* The hero's top anchor, for the wide short tiles (the
                         first in the left column is 208 × 123 over a square
                         photograph); a tall tile crops the sides, where it is
-                        inert. */}
-                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[at]} style={{ ...well, objectPosition: '50% 0%' }} />
+                        inert. Editorial's frames fill the tiles centred, but
+                        over Retro's placeholder strip, not its seeds — and a
+                        centred stage portrait loses the singer's head in the
+                        right column's first tile, so the anchor stays. */}
+                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[at]} ink={wellInk}
+                      style={{ ...well, objectPosition: '50% 0%' }} />
                   </span>
                   {/* An inset ring over the photograph rather than a thicker
                       border, which would inset the photo and move the masonry. */}
@@ -13169,8 +13192,8 @@ function Gallery({ s }) {
     const head = tab && s.title ? (
       <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <span style={{
-          fontFamily: s.body, fontWeight: 700, fontSize: (s.lime || grunge) ? s.chip : u(11), lineHeight: 1,
-          letterSpacing: (s.lime || grunge) ? '-0.06em' : u(-0.66), color: s.tx,
+          fontFamily: s.body, fontWeight: 700, fontSize: s.limeTree ? s.chip : u(11), lineHeight: 1,
+          letterSpacing: s.limeTree ? '-0.06em' : u(-0.66), color: s.tx,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{s.title}</span>
       </div>
@@ -13189,12 +13212,15 @@ function Gallery({ s }) {
         // line, so a long heading ends in an ellipsis inside the hero rather
         // than running out under its own clip.
         maxWidth: `calc(100% - ${u(80)})`,
+        // Editorial takes the else-arm by its binding, not by default: its
+        // chip is `sem/tag/1/bg`, the blush `s.chips[0].bg` Retro's purple is.
         background: (s.lime || grunge) ? s.box1 : s.chips[0].bg,
         // Ink on the purple, which is what the frame sets and what the bio's
         // "Retro's chips are cream on every hue" note does not cover — the
         // repertoire's frame already contradicted it once. The flat four take
         // the chip's own computed foreground, which is guaranteed against it.
-        color: (s.retro || s.lime || grunge) ? s.tx : s.chips[0].fg,
+        // Editorial's is `sem/text/2`, ink on the blush.
+        color: (s.retro || s.limeTree) ? s.tx : s.chips[0].fg,
         borderRadius: u(4), padding: `${u(10)} ${u(14)}`,
         ...col(u(4), { alignItems: 'flex-start' }),
       }}>
@@ -13206,8 +13232,8 @@ function Gallery({ s }) {
             // `size/chip` is 12 on the 1440 master and 11 on both narrow ones —
             // the one token here that is not the desktop number verbatim, so it
             // is read off `get_variable_defs` rather than left to `z`.
-            fontFamily: s.body, fontWeight: 700, fontSize: (s.lime || grunge) ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
-            textTransform: 'uppercase', letterSpacing: (s.lime || grunge) ? '-0.06em' : u(desk ? -0.72 : -0.66),
+            fontFamily: s.body, fontWeight: 700, fontSize: s.limeTree ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
+            textTransform: 'uppercase', letterSpacing: s.limeTree ? '-0.06em' : u(desk ? -0.72 : -0.66),
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>{t}</span>
         ))}
@@ -13220,17 +13246,27 @@ function Gallery({ s }) {
       })}>
         <div style={{
           position: 'relative', overflow: 'hidden', minWidth: 0,
-          // The hero rounds at 30 on all three masters (15 on Grunge's three);
-          // only the 390 rail's tiles drop to 10, so this is not `r`.
-          border: `${bw} solid ${grunge ? s.stroke2 : s.lime ? s.ac : s.tx}`, borderRadius: u(grunge ? 15 : 30),
+          // The hero rounds at 30 on all three masters (15 on Grunge's three,
+          // square on Editorial's); only the 390 rail's tiles drop to 10, so
+          // this is not `r`. Editorial's ring binds `scheme/1/stroke/1`, which
+          // is opaque ink on Scheme 1.
+          border: `${bw} solid ${grunge ? s.stroke2 : s.lime ? s.ac : ed ? s.stroke1 : s.tx}`,
+          borderRadius: ed ? 0 : u(grunge ? 15 : 30),
           flex: '1 1 0', height: '100%',
         }}>
           <span style={{ position: 'absolute', inset: 0 }}>
             {/* Top-anchored: the hero is wider than gallery-4 (596 × 478 at
                 1180 against 1200 × 1320), so cover crops its height, and a
                 centred crop took the singer's head off. Every seeded slot that
-                rotates into this seat frames its face in the top half. */}
-            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} style={{ ...well, objectPosition: '50% 0%' }} />
+                rotates into this seat frames its face in the top half.
+                Editorial's frames state the anchor for their own photograph,
+                which is the seed on this seat: a `CROP` at 1440 that is a
+                cover 18.5% down (not a stretch — its window is the box's
+                aspect to 0.1%), and a centred `FILL` at 768 and 390. The seed
+                matches each render there and nowhere else, and the other six
+                seeds, each picked into the seat, keep their faces. */}
+            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} ink={wellInk}
+              style={{ ...well, objectPosition: ed ? (desk ? '50% 18.5%' : '50% 50%') : '50% 0%' }} />
           </span>
           {caption}
           {/* Lime's INNER_SHADOW 34 in `s.ac` (not `s.glow`), read off the
