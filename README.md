@@ -66,7 +66,7 @@ This is the one architectural rule worth knowing before editing anything (§12.9
   utilities and shadcn/ui** on the design tokens in `src/index.css`.
 - **`EncoreSection.jsx`** uses **neither** — every value is an inline `style={{}}`. Sections are
   painted with arbitrary hex values taken at runtime from the active theme's palette (under
-  Editorial, the colour scheme its frame stands that section on), plus six
+  Editorial, the colour scheme its frame stands that section on, at that width), plus six
   derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
   `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
   inherit `currentColor` and so stay theme-driven; from React it takes `useId`, `useState` — for
@@ -372,7 +372,7 @@ That distinction is the whole design, and it buys two things:
   today's month when `open` is earlier.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
   blocked it. Booked days are muted and struck through and take no handler (Lime dims them to .38
-  with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid; Grunge shares it in both, and Editorial's layout-1 grid, whose frame dims them the same way), which is a **content** state rather than a
+  with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid; Grunge and Editorial share it in both, Editorial's layout-1 frame dimming them the same way), which is a **content** state rather than a
   live one — it renders on the canvas too, and since the seed blocks nothing
   the reference picture does not move. Two intended diffs from the Figma frame: the foot row gains
   the Book pill (`vm.calBookTo`, `bookTo` minus `calendar` itself, the tier pills' rule), which is
@@ -445,7 +445,7 @@ That distinction is the whole design, and it buys two things:
   visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
   out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
   box does not grow — under one prompt line. (Lime's boxes are pills, and a rule under a pill
-  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four. Editorial's layout-1 box is a 56% dashed rule on the terracotta half, so a refusal drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once.) Errors are `useState`, set on a refused submit and
+  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four. Editorial's layout-1 box is a 56% dashed rule on the terracotta half, so a refusal drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once; its layout-2 box is square and dashed all round in full ink on the terracotta band, and a refusal there is the same solid 2px of paper, as a ring.) Errors are `useState`, set on a refused submit and
   cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
   valid submit swaps the mustard half alone for a confirmation that prints the address in plain
   text, since a browser that opened no mail app must still show one, and *Write another* comes
@@ -592,15 +592,21 @@ These are intentional limits, not oversights — see §12 for the full list. The
   Lime's blocks, widened to `(s.lime || s.grunge)`. Its header family is the same first four, all
   four fitted (its Stacked header is Lime's glass capsule, black over a red floor), so every card
   in the setup modal lays out a whole Grunge page and the Grunge family is closed. **Editorial is
-  designed at layout 1**: its page is the fourth variant of the same component sets, in the mode
-  *Sienna Vale* — the first **light** page, paper, taupe and ink bands meeting on straight edges,
-  with dashed rules, blush tape strips, tilted prints under real drop shadows, sparkles and a
-  terracotta seal, and Noto Serif Display at width 62.5 standing in for the frames' Fontspring
-  demo face. Six of its eleven sections stand on another colour scheme than the page, so
-  `sectionVm` resolves each section's scheme (`SCHEMES_OF` in `data.js`) before anything reads
-  the palette. Its treatment is `s.editorial` arms inside Lime's layout-1 blocks, widened to
-  `s.limeTree` (Lime, Grunge and Editorial). Its header family is the same first four; Hero is
-  fitted, and the other three render Retro's compositions in its tokens until their own passes.
+  designed at layouts 1 and 2**: its pages are the fourth variant of the same component sets, in
+  the mode *Sienna Vale* — the first **light** pages, paper, taupe, ink and terracotta grounds
+  meeting on straight edges, with Noto Serif Display at width 62.5 standing in for the frames'
+  Fontspring demo face. Layout 1 draws dashed rules, blush tape strips, tilted prints under real
+  drop shadows, sparkles and a terracotta seal; layout 2 draws the dashed rules alone, on square
+  cards. Six of layout 1's sections stand on another colour scheme than the page, so `sectionVm`
+  resolves each section's scheme (`SCHEMES_OF` in `data.js`) before anything reads the palette;
+  layout 2's frames go further — the repertoire and pricing change scheme between 1440 and the
+  narrow widths, media and the calendar are taupe cards on the paper page, and eight nodes
+  inside sections stand on a scheme of their own — so a scheme can be a per-width triple, the
+  root can paint the page's ground round a card, and `vm.onScheme` hands a nested node any
+  scheme's colours. Its treatment is `s.editorial` arms inside Lime's layout-1 and layout-2
+  blocks, widened to `s.limeTree` (Lime, Grunge and Editorial). Its header family is the same
+  first four; Hero and Feature spread are fitted, and the other two render Retro's compositions
+  in its tokens until their own passes.
   One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed

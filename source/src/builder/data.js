@@ -212,7 +212,8 @@ export const THEMES = [
     // paper, so its heads are paper on taupe; Schemes 2's and 3's inactive
     // ground is transparent, so an idle chip there is an outline only.
     schemes: {
-      // Scheme 2, taupe — the media player and pricing.
+      // Scheme 2, taupe — layout 1's media player and pricing, and layout 2's
+      // media panel and calendar card.
       2: {
         palette: ['#AA958A', '#F6F0E8', '#141414'],
         // tag1 blush, tag2 paper, both inked black — read off the file; the
@@ -226,7 +227,8 @@ export const THEMES = [
           tagFg: ['#141414', '#141414'],
         },
       },
-      // Scheme 3, ink — the header, repertoire, the enquiry form and the footer.
+      // Scheme 3, ink — layout 1's header, repertoire, enquiry form and
+      // footer, and layout 2's pricing at 1440.
       3: {
         palette: ['#141414', '#C86E52', '#F6F0E8'],
         tags: ['#F6F0E8', '#C86E52'],
@@ -236,6 +238,21 @@ export const THEMES = [
           inactiveBg: 'rgba(20, 20, 20, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
           stroke1: 'rgba(246, 240, 232, 0.56)', stroke2: '#E6B6A0', hl: '#FFFFFF',
           tagFg: ['#141414', '#F6F0E8'],
+        },
+      },
+      // Scheme 4, terracotta — layout 2's repertoire at 1440 and its enquiry
+      // form. Its accent is paper and its active pair ink under terracotta, so
+      // `pillBg` is ink here. tag1 ink, tag2 salmon — read off the file; layout
+      // 1's plan had the two seats the other way round.
+      4: {
+        palette: ['#C86E52', '#F6F0E8', '#141414'],
+        tags: ['#141414', '#EF9173'],
+        sem: {
+          box1: '#DA7C5E', box2: '#EF9173', box3: '#BE6346', glow: '#C86E52',
+          activeBg: '#141414', activeFg: '#C86E52',
+          inactiveBg: 'rgba(200, 110, 82, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
+          stroke1: 'rgba(246, 240, 232, 0.56)', stroke2: '#141414', hl: '#FFFFFF',
+          tagFg: ['#C86E52', '#141414'],
         },
       },
     },
@@ -263,14 +280,20 @@ export const THEMES = [
 // `schemes` ({ palette, sem, tags }, Scheme 1's own shape), which sectionVm
 // lays over the theme before it reads a colour, so every derived key follows
 // the section's ground. A section with no entry stands on Scheme 1, the
-// theme's own `palette` / `sem` / `tags`. The footer has one design, so its
-// row is read at every page layout.
+// theme's own `palette` / `sem` / `tags`. An entry is a number at every width,
+// or a [desktop, tablet, mobile] triple where the frames move the section
+// between widths. The footer has one design, so its row is read at every page
+// layout.
 export const SCHEMES_OF = {
   // Sienna Vale's layout-1 page (964:58612…22), read off each section's
-  // `explicitVariableModes`, identical at all three widths. Layouts 2–4 are
-  // later passes' to fill from their own walks.
+  // `explicitVariableModes`, identical at all three widths. Layouts 3 and 4
+  // are later passes' to fill from their own walks.
   Editorial: {
     0: { header: 3, media: 2, repertoire: 3, pricing: 2, form: 3, footer: 3 },
+    // Its layout-2 page (964:64598 · 986:15657 · 986:15676). The repertoire
+    // and pricing move between widths; media and the calendar are Scheme 2
+    // cards on the page's paper, which the root paints round them (`pageBg`).
+    1: { media: 2, repertoire: [4, 1, 1], pricing: [3, 1, 1], calendar: 2, form: 4 },
   },
 }
 
@@ -369,11 +392,12 @@ export const minimalNav = (navSections) =>
 // burger. Everywhere else it follows the sections. `d` is the design index,
 // `arch % designCount`. A stored value always wins, so a header moved back
 // to layout 1 returns to its sections unless the artist picked Minimal.
-// Editorial's cards 2 and 3 are placeholders, so they follow the sections
-// until their passes fit them (plans/editorial/layout-1.md, open question 4).
+// Editorial's layout 2 draws the three too (964:64599, 986:15658); its card 3
+// is a placeholder, so it follows the sections until its pass fits it
+// (plans/editorial/layout-1.md, open question 4).
 export const navModeDefault = (themeName, d) =>
-  (themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
-    && (d === 1 || d === 2) ? 'minimal' : 'sections'
+  ((themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
+    && (d === 1 || d === 2)) || (themeName === 'Editorial' && d === 1) ? 'minimal' : 'sections'
 
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas
@@ -1160,8 +1184,8 @@ export const FIELDS = {
   // The header's `in` is always an object naming Retro, Lime, Grunge and
   // Editorial alone: they have different header families (six designs against
   // four, four and four — Grunge's row is measured over its four fitted cards,
-  // none a placeholder since its layout-4 pass; Editorial's over one fitted
-  // card and three placeholders, so each of its layout passes re-measures its
+  // none a placeholder since its layout-4 pass; Editorial's over two fitted
+  // cards and two placeholders, so each of its layout passes re-measures its
   // card), and Pop has a family of its own that is not designed, so it is left
   // unmarked rather than folded onto any list.
   header: [
@@ -1210,9 +1234,9 @@ export const FIELDS = {
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 1, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [1, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },

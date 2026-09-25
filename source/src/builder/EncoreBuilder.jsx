@@ -225,6 +225,19 @@ function canMove(sections, id, dir) {
 const paperOf = (bg, tx) =>
   (lum(bg) > lum(tx) ? (lum(bg) > 0.6 ? bg : '#FBF6EA') : (lum(tx) > 0.6 ? tx : '#FBF6EA'))
 
+// A SCHEMES_OF triple's index for each width.
+const DEV_SEAT = { desktop: 0, tablet: 1, mobile: 2 }
+
+// One scheme as the flat keys a block reads, for `vm.onScheme`: a node the
+// frames stand on another scheme than its section's. `S` is the theme, or the
+// theme with one of its `schemes` laid over it, the way sectionVm's head lays
+// the section's own.
+const flatScheme = ({ palette: [bg, ac, tx], sem: { tagFg, ...sem }, tags }) => ({
+  bg, ac, tx, acFg: contrast(ac), ...sem,
+  pillBg: sem.activeBg, pillFg: sem.activeFg,
+  chips: tags.map((h, i) => ({ bg: h, fg: tagFg?.[i] ?? contrast(h) })),
+})
+
 // Layout 4's heading fallbacks, per category — the composed page's own heads
 // (QA, 2026-09-15; the form's, JP-054). sectionVm and EditPanel both read this.
 const HEADING_4 = {
@@ -251,8 +264,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The section's own scheme (SCHEMES_OF, data.js), laid over the theme before
   // any colour is read, so everything derived below — `muted`, `paper`, the
   // pill pair, `legible()`, the chip seats, the `sem` keys — is the section's
-  // ground's and not the page's. `T` is the theme everywhere else.
-  const scheme = theme.schemes?.[SCHEMES_OF[theme.name]?.[d]?.[cat]]
+  // ground's and not the page's. `T` is the theme everywhere else. A seat may
+  // be a [desktop, tablet, mobile] triple where the frames move the section
+  // between widths; every caller's `Z` names its width, the thumbnails and
+  // modal cards the desktop.
+  const seat = SCHEMES_OF[theme.name]?.[d]?.[cat]
+  const scheme = theme.schemes?.[Array.isArray(seat) ? seat[DEV_SEAT[Z.dev]] : seat]
   const T = scheme ? { ...theme, ...scheme } : theme
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
@@ -322,6 +339,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     activeBg: T.sem?.activeBg, activeFg: T.sem?.activeFg,
     inactiveBg: T.sem?.inactiveBg, inactiveFg: T.sem?.inactiveFg, inactiveLine: T.sem?.inactiveLine,
     stroke1: T.sem?.stroke1, stroke2: T.sem?.stroke2, hl: T.sem?.hl,
+    // The page's own ground, whatever scheme the section is seated on: a
+    // section whose frames stand a card on another scheme is seated on the
+    // card's, and the root paints this round it.
+    pageBg: theme.palette[0],
+    // Every scheme of a theme that carries `schemes`, flat and keyed by number
+    // (1 is the theme's own), for a node nested on another scheme than its
+    // section: `s.onScheme[4].bg`. Undefined under every other theme.
+    onScheme: theme.schemes && Object.fromEntries([[1, flatScheme(theme)],
+      ...Object.entries(theme.schemes).map(([n, S]) => [n, flatScheme({ ...theme, ...S })])]),
 
     // device sizing — and over it a designed template's own ramp, if it has one
     ...Z, ...THEME_RAMP[T.name]?.[Z.dev], mob: !!mob,
@@ -554,10 +580,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Editorial's capsule (964:58612 "Frame 50") is Lime's again, in Noto Serif
   // Display (`notoEms`, the face standing in for Fisterra Fora, at its own
   // glyph size), but its links are Label/SM 16 where Lime's are Display/List
-  // 24, still 23 apart — so its gap is 23/16 of the row's size.
+  // 24, still 23 apart — so its gap is 23/16 of the row's size. Its layout-2
+  // capsule (964:64599) is Grunge's instead, a fixed 18 at 16px type and at
+  // 13, so there the sum is the labels alone. Cards 3 and 4 are placeholders
+  // and keep layout 1's until their passes.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? notoEms : null
-  const navGapEm = T.name === 'Editorial' ? 23 / 16 : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+  const navGapEm = T.name === 'Editorial' ? (d === 1 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -590,14 +619,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // fixed 18 gaps, which its `navEms` leaves out (above). Its layout 3
   // (984:13900) is Lime's layout-3 bar box for box, the same 138.32 against
   // the same 684, with the links at Label/MD (14 at 768) where Lime's are
-  // Label/SM, and the same fixed 18 gaps.
+  // Label/SM, and the same fixed 18 gaps. Editorial's layout 2 (986:15658) is
+  // Grunge's layout-2 bar box for box — the same 138.32, the same fixed 18
+  // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Noto
+  // (`navFace`). Its layout 3 is a placeholder, and keeps the burger.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
     const row = d === 1 ? 708 : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge') {
+    } else if (T.name === 'Grunge' || (T.name === 'Editorial' && d === 1)) {
       vm.navFits = vm.navEms * px(d === 1 ? vm.labelSm : vm.labelMd) + (vm.navLinks.length - 1) * 18
         + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {
