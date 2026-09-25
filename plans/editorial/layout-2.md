@@ -146,9 +146,9 @@ to Lime) — but read a section node, never the page, all the same.
 - The 390 header (`986:15677`) is called "— **Tablet**" and resolves `Device: Mobile`.
 - The 768 calendar (`986:15671`) is called "— **Desktop**"; the 390 one (`986:15690`) "— Mobile".
 - The footers are "Component 2" at 1440 and "Footer — Component 3 / 4 — **Desktop**" at 768 and 390.
-- **The 390 page renders 667 wide**: the 390 bio's chip row (`Frame 6`, inside `Frame 260`) is a
-  637-wide no-wrap row in a 330 column. `TagChips` wraps, so it does not reproduce; the bio session
-  names it (open question 7).
+- **The 390 page renders 667 wide**: the 390 bio's credit box (`Frame 6`, inside `Frame 260` — the
+  planning read called it the chip row; section 2 corrected it) is a 637-wide no-wrap box in a 330
+  column. The block follows its height, never its width, so it does not reproduce (open question 7).
 
 **Two sections are wrapped**, exactly as on the twins' pages:
 - **media** is a `Section` (1440, `964:64601`) or `Frame 299` (narrow) holding **`Frame 297`, the
@@ -176,7 +176,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:64598` *(page)* | — | `986:15657` | — | `986:15676` | — | — | — | — | Scheme 4, `SCHEMES_OF.Editorial[1]`, decision 1's mechanisms | **done** (`e0526e7`, `088845d`) |
 | 1 | `header` | `964:64599` | 1440 × 900 | `986:15658` | 768 × 1024 | `986:15677` | 390 × 932 | 1 (nav pill **4**) | `964:64580` | `964:64618` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV1` | **done** `41ca390` |
-| 2 | `bio` | `964:64600` | 1440 × 760 | `986:15659` | 768 × 1217.8 | `986:15678` | 390 × 880.3 | 1 (pill **4**) | `964:64581` | `964:64619` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v1)` | — |
+| 2 | `bio` | `964:64600` | 1440 × 760 | `986:15659` | 768 × 1217.8 | `986:15678` | 390 × 880.3 | 1 (pill **4**) | `964:64581` | `964:64619` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v1)` | **done** `cbff882` |
 | 3 | `media` | `964:64601` *(Section; panel `964:64602`)* | 1440 × 965 | `986:15660` *(Frame 299; `986:15661`)* | 768 × 1626 | `986:15679` *(Frame 299; `986:15680`)* | 390 × 1442 | page 1, **panel 2** | `964:64582` | `964:64620` | inside `Media`'s `if (s.v1)`, after `nowArt` | — |
 | 4 | `repertoire` | `964:64608` | 1440 × 792 | `986:15667` | 768 × 792 | `986:15686` | 390 × 594 | **4 / 1 / 1** | `964:64589` | `964:64627` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | — |
 | 5 | `gallery` | `964:64609` | 1440 × 675 | `986:15668` | 768 × 468 | `986:15687` | 390 × 364 | 1 | `964:64590` | `964:64628` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v1)` | — |
@@ -636,9 +636,13 @@ Written now from what the plan can see; the sections add to it. One session, in 
 5. **`scripts/reach.mjs 3`** over the whole template.
 6. **Every `(s.lime || s.grunge)` left in layout-2 code**, listed with why Editorial does not share
    it (layout 1's item 3).
-7. **`plans/README.md`**: mark the pass closed; **`CONVENTIONS.md`** (decision 3).
-8. **Notes for the designer**, gathered from the open questions, layout 1's shape.
-9. **Refresh the root `index.html`** with the two-build digest: zero rows at every theme on the
+7. **`DashRule side="all"` at DPR 1** (section 2): its svg's 0.5 inset is pixel-snapped, so a
+   four-sided dash is two 50% rows on a DPR-1 screen. Moving the inset onto the rect's `x` / `y`
+   (the svg at 0, 0) would make it crisp, but it moves every layout-1 four-sided caller's digest
+   rows at theme 3 — decide, and if taken, prove it is the svg rows alone.
+8. **`plans/README.md`**: mark the pass closed; **`CONVENTIONS.md`** (decision 3).
+9. **Notes for the designer**, gathered from the open questions, layout 1's shape.
+10. **Refresh the root `index.html`** with the two-build digest: zero rows at every theme on the
    seeded page; the shipped-it tell is card 2 in the two builds' setup modals (the old one's
    checker ribbon and Retro's composition in Scheme 1 tokens; the new one's arch photograph and
    dashed cards).
@@ -657,6 +661,11 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
 - **Diff by traversal order, never by id**: each template is its own variant.
 - **Every head on this page is one tone and on the ramp.** Grunge's positional two-tone rules and
   layout 1's three fitted Bold statements have no site here but the footer, which is layout 1's.
+- **Judge a dash's ink in a DPR-2 shot** (section 2): `DashRule side="all"` insets its svg 0.5,
+  which Chrome pixel-snaps at DPR 1, so a crisp 1px card edge lands as two 50% rows and reads pale;
+  at DPR 2 it is full ink. A `side` 'top' / 'bottom' rule is crisp at both.
+- **A dash's pattern can be uneven, and `DashRule` takes it** (section 2): `gap` beside `dash`,
+  defaulting to it. Read the `dashPattern` pair, never assume it repeats.
 
 ### Seen at planning time, per section
 
@@ -669,8 +678,8 @@ the twins' dark-ground assumptions break (trap 6).
    holding an outlined "Featured" chip, the paragraph in ink, a dashed divider, the tag chips in
    Chakra Petch alternating blush and terracotta, the credit row ("five years of" terracotta, the
    rest ink) and a **nested Scheme 4** Book pill; beside it a light mount under the twins' soft
-   shadow, the photograph, and a paper name plate with a blush disc. The 390 chip row is the 637-wide
-   leak (open question 7).
+   shadow, the photograph, and a paper name plate with a blush disc. The 390 credit box (not the
+   chip row) is the 637-wide leak (open question 7). *Settled in section 2.*
 3. **media** — the taupe panel, square: the head in paper, one tone, two lines at 118; the fan's
    five cards translucent with the Featured tab in ink; the bar dashed blush with an ink transport,
    the sleeve disc and the title in the display face; the list's "● POPULAR" and "5 FEATURED /
@@ -894,6 +903,94 @@ the twins' dark-ground assumptions break (trap 6).
   only, and it stands on the card's `box1` (`#FFF9F2`), not the page — sample whether paper on
   `box1` shows.
 
+### Settled in section 2 (the bio)
+
+- **The block widened whole: `if (s.v1 && s.limeTree)` ahead of `Bio`'s `if (s.v1)`, `const ed =
+  s.editorial`**, plus `const mount = grunge || ed` for the photo card's 10 mount (about a dozen
+  arms, no `G`). The tree is Lime's node for node at all three widths (the walker, all three
+  masters, and a traversal-order compact walk against `964:64581`) but for **one node only
+  Editorial draws, the divider** (below); on **Scheme 1 with no Device override** (Desktop /
+  Tablet / Mobile), the pill's `Frame` nested **Scheme 4** (`187:9`) at every width. Every size is
+  the ramp's (label-sm 16 / 13 / 12, label-lg 24 / 16 / 14, body-lg 16 / 15 / 15, body-sm 12) and
+  the Tags instance the twins' hand-scaled 264.4 (15.37 / 10.76 / 9.22, radius 4.61 — Sienna
+  Vale's chip 6 × 0.7686, so Lime's number, not Grunge's 3.07).
+- **Trap 6 did not bite, a second time**: on paper every ink the block reads is the binding — the
+  `/featured` chip `sem/text/2` in a `scheme/1/stroke/2` ring (`s.tx` in `s.stroke2`), the
+  paragraph, the credit (`scheme/1/text1` lead over `text2`), the name and role line, all `s.tx` /
+  `s.ac` already. The deltas are fills, radii, dashes and one node.
+- **The text card is square `s.box1` dashed 10, 11** in `sem/stroke/2` all round, INSIDE 1 — a
+  `DashRule side="all"`, which took an **additive `gap`** (default `dash`, so layout 1's even
+  callers are untouched; `gap={11 * z}`). Sampled: 10 on, 11 off on both edges, a 5 at the
+  corner (ours starts on a full dash — phase, named). No `s.stroke1` ring. The desktop card
+  clips its content (`clipsContent`, not the narrow ones) and ours does not: inert, since nothing
+  in it overflows — not a rule for a panel whose contents do.
+- **The divider is the node the twins do not draw**: a 1px frame between the prose and the foot,
+  `scheme/1/stroke/2`, dash 10, 10 — and **its stroke weight is 8 INSIDE on a 1px clipped frame**,
+  which the render draws as a 1px 10, 10 rule with a ~7px solid cap at each end (the side strokes).
+  The cap is the weight's slip and is not drawn; `DashRule side="top"` in a 1px relative div.
+  **Its width follows the padding, which turns round at 390**: at 1440 and 768 the card pads
+  nothing and its two groups pad 30, so the rule runs the card's full width (sampled edge to
+  edge); at 390 the card pads 20 and the groups nothing, so it is inset 20. Written as the frame
+  is — card `padding` 0 / 0 / 20, `gpad` `u(30)` on both groups at 1440 and 768 — which also drops
+  Lime's `'10px 0'` 390 foot padding under `ed` (the Editorial foot pads 0).
+  `space-between` with gap 18 centres the divider in the desktop gap as the frame does.
+- **An emptied foot drops with its divider, under Editorial only** (chips hidden, `credit` and
+  `cta` emptied): otherwise a dashed rule stands over 60 of padding (seen, 768). The twins keep
+  their empty foot element, as they always have — theme 1 and 2 unchanged. **For the sweep's
+  CLAUDE.md pass**: the *role and town* paragraph's bio foot row ("each drops when emptied and the
+  row with both") owes a clause — under Editorial the divider goes with an emptied foot.
+- **Every chip sits on its own tag**: the instance binds `scheme/1/tagN/bg` for all five
+  (blush, terracotta by parity), so `ed || i % 2 ? c.bg` — no dark seat (Lime's `s.box2` is taupe
+  here). The fourth chip's type binds `scheme/4/text1` (paper) at 1440 but `scheme/4/tag1/text`
+  (**ink**) at 768 and 390 — the twins' leak again; `c.fg` stands, a named one-chip diff at two
+  widths.
+- **The pill is its Scheme 4 node on the bio's box**: `bg={s.onScheme[4].bg}
+  fg={s.onScheme[4].ac}` (fill `sem/bg`, label and disc `text/1`, arrow `sem/bg`) — the header's
+  pair, the key's second reader — with Lime's bio recipe unchanged (27.6 disc, 4.27 / 17.92, `k`
+  0.82 / 1 / 1: the 390 box is full size, 119.32 = 17.92 + 61 + 8.53 + 27.6 + 4.27). Its label is
+  Fisterra label-sm 12 at 390, not the header's Anton leak. **The paper block shows**: the
+  `Retro/Poster` 5 / 5 at 768 and 390 (none at 1440) samples `#F6F0E8` for 4–5px beside and
+  under the pill on the card's `#FFF9F2`, so `boxShadow: 5px 5px 0 ${s.onScheme[4].ac}` on `nar`
+  (route 1; `BookPill` untouched).
+- **The photo card is Grunge's 10 mount, square**: the outer frame `sem/tag/4/text` (paper,
+  `s.chips[3].fg` — the seat the binding names) padded 10, no radius, under the twins' soft
+  `1.25 / 1.25 / 10.81` black 16%; the inner clip `sem/tag/5/bg` (blush, `s.chips[4].bg`, seen only
+  under `&noimage=1`), no radius, no effect, no grain; the caption block's 30 / 30 / 31.88 and the
+  648 / 648 / 362 heights are Grunge's arithmetic exactly. So `mount` replaces `grunge` at those
+  five sites and at the glow's gate. The caption card is square `s.box1`; its disc binds
+  `sem/tag/1/bg`, **blush** (`s.chips[0].bg`), where the twins' is `box1`.
+- **The photograph is a centred cover** — `scaleMode: FILL` under an `imageTransform` it ignores,
+  Grunge's rule: the render's photo region correlates **0.996 / 1.0 / 0.993** with ours (0.016
+  mirrored), `objectPosition` 50% 50%. The ⏵⏵ glyph is missing from the 1440 render's disc and
+  present narrow (Figma's fallback face); ours types it, the twins' rule.
+- **Open question 7's "390 chip row" is the credit box**: the 637.5 × 39 no-wrap node that renders
+  the 390 master 667 wide is `Frame 6`, **the credit line's** leaked desktop box (in the 390 credit
+  column, beside the Tags instance, which wraps at 264.4 as everywhere). Lime's block already
+  follows it as a `minHeight: u(39)` and never its width, so ours stays 390 — corrected below.
+- **Measured against the masters' content edges** (harness, `getBoundingClientRect`): desktop card
+  708.5 × 531.4 at 45.9 (865 × 648 × 0.82), chips at 479.1 (479.6), credit at 555.8 (554.8), pill
+  107.7 × 28.6 at 556.5 (556.4) with its right edge at 729.8 (730.6), `/Featured` 81.7 × 23.6
+  (86.4 × 24.1), the well 338.7 × 515 at 787.2 (788.0), the disc 29.5²; 768 `/Featured` 30 in
+  (30), 86.8 × 25.6 (91.35 × 25.34), pill 118.2 × 34.9 (124.32 × 34.93) flush right at 708, the
+  well 688 × 628 30 under the card, the disc 570.5 under the photo card's top (570.13); 390 the
+  divider 330 wide at x 30, `/Featured` 82.3 × 24.5 (86.35 × 24.34), pill 113.6 × 34.9 (119.32 ×
+  34.93) 47.7 under the credit (48.65), the well 350 × 342 10 under the card, the disc 285.6
+  under its top (285.62). **Named diffs**: the seeded paragraph is 2 / 2 / 3 lines against the
+  frame's 3 / 3 / 6, so the narrow cards are 395.1 / 377.1 against 419.75 / 448.33 and the desktop
+  divider sits 10.6 high (space-between centres it); the pill and chip are Noto against Fisterra,
+  4–6% narrower; the roots' `padY` (80 / 56 / 44 against 46 / 60 / 30) is inherited.
+- **`DashRule side="all"` is soft at DPR 1**: its svg's 0.5 inset is pixel-snapped, so the 1px
+  edge lands as two 50% rows (the dashes read pale in a DPR-1 shot); at DPR 2 it is two full
+  device rows, crisp. Layout 1's four-sided callers share it; a sweep item, not chased here.
+- **`live=1`**: the pill is `<a href="#form">` at all three widths, carrying the paper block at
+  768 and 390 only; nothing else in the section is live. Emptied `credit` keeps the pill in its
+  right-hand seat; `&noimage=1` shows the initials on the Photo placeholder inside the mount.
+- **`FIELDS.bio` under Editorial** (`scripts/reach.mjs 3`, 3,312 renders, confirm-only):
+  `bio.credit` and `bio.cta` reach bio layout 2 alone; `who.tags` / `who.showTags` bio 2 and 4,
+  `who.kicker` all four, `who.location` 1–3 — Grunge's table. Nothing in `FIELDS` moved.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly bio
+  arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -932,6 +1029,23 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Header: *The whole-page published check is one puppeteer script* (lime/layout-1) —
   `page-check.mjs Editorial 1,0,2,3`.
 
+- Bio: *The second layout-2 block, ahead of `Bio`'s `if (s.v1)`* (lime/layout-2, D2) — widened to
+  `s.limeTree`, a dozen `ed` arms and a `mount` pair, no `G`.
+- Bio: *The 115 × 35 pale pill is not always hand-shrunk at 390* (lime/layout-2, D2) — `k` 0.82 /
+  1 / 1, the box read off each master (139.32 / 124.32 / 119.32).
+- Bio: *A hard offset shadow goes through the caller's `style`* (lime/layout-2, C) — the paper
+  block, sampled to show on `box1`.
+- Bio: *A chip standing on `s.box1` takes a darker seat* (lime/layout-2, D2) — turned round: the
+  binding is each chip's own tag, so no dark seat.
+- Bio: *The photo card keeps the frame's 10 mount* (grunge/layout-2, *Settled in section 2*) —
+  Grunge's arithmetic whole, square and re-inked.
+- Bio: *Read a fill's `scaleMode` before believing its `imageTransform`; correlate the render with
+  the seed* (grunge/layout-2, A) — `FILL`, 0.996 / 1.0 / 0.993.
+- Bio: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — `side="all"` for the
+  card with an additive `gap` for the 10, 11, and `side="top"` for the divider.
+- Bio: *Emptied content drops its node* (lime/layout-1, C) — the divider with an emptied foot.
+- Bio: *The node walker, kept* (grunge/layout-2) and *field reach is measured* (`reach.mjs 3`).
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
@@ -951,7 +1065,13 @@ it here in one line, with the plan it came from, a blank line between sessions.)
    is a line). Worth telling the designer.
 7. **The narrow masters' leaks**, each for its session to follow or override (CONVENTIONS A, *leaked
    tops are followed where they show*, *a leak that shows and reads as a defect is overridden*):
-   - the 390 bio's chip row, 637 wide in a 330 column — the reason the 390 page renders 667 wide;
+   - the 390 bio's ~~chip row~~ **credit box** (`Frame 6`, the credit line's leaked desktop 637.5
+     × 39), 637 wide in a 330 column — the reason the 390 page renders 667 wide. *Settled in
+     section 2: followed as Lime's `minHeight` only, never its width, so ours stays 390*;
+   - the bio's divider stroked **8** INSIDE on a 1px frame, drawn by Figma with a ~7px solid cap at
+     each end — *section 2: not drawn, the rule alone*;
+   - the 768 and 390 bio's fourth chip in ink (`scheme/4/tag1/text`) where 1440's is paper —
+     *section 2: `c.fg` stands, one chip*;
    - the 390 header's nav pill label in Anton 12.07 — *overridden in section 1*: `s.labelSm` 12
      in Noto, Lime's precedent;
    - the 390 media bar's title and byline, 184 wide from x 293 — off the master;
