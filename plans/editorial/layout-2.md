@@ -2073,7 +2073,10 @@ it here in one line, with the plan it came from, a blank line between sessions.)
   every one a section with a four-sided dash — and **all 219 differing rows are `svg` rows whose
   x and y moved by −0.5 and nothing else**. The section-4 DPR-2 case (the repertoire head's dash
   one device pixel inside the sheet's ring) should close with it, both now snapping from the same
-  origin; not re-measured.
+  origin; not re-measured. **Items 2 and 3 ran before this change**, and the published walk was
+  not repeated over it: the edit is paint alone (the overlay is `pointerEvents: 'none'` and the
+  rect's box is unchanged), the five-theme `live=1` digest covers the published surface, and
+  item 10 walked the new build's editor.
 - **Item 10: the two-build digest** (repo root on `127.0.0.1:8931`, the committed build digested
   before the `cp`). The seeded page is byte-identical under Retro, Lime, Grunge and Pop at all
   three widths and `modal.txt` is identical (four Editorial cards in both); under Editorial it
