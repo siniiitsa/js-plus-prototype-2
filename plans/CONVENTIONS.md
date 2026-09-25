@@ -1,6 +1,6 @@
 # Shared conventions
 
-The conventions a **third** template leaned on. `plans/README.md` asked for this file "once a
+The conventions a **third** template leaned on, tested by a **fourth**. `plans/README.md` asked for this file "once a
 second template shows which is which"; Lime showed it, and Grunge's layout-1 pass tested it:
 every bullet below is one a Grunge session actually used (its running lists are *Conventions →
 Inherited and used* in [`grunge/layout-1.md`](./grunge/layout-1.md),
@@ -8,7 +8,11 @@ Inherited and used* in [`grunge/layout-1.md`](./grunge/layout-1.md),
 [`grunge/layout-4.md`](./grunge/layout-4.md)), not one that merely reads as general. The
 layout-2, layout-3 and layout-4 passes each added the rows they leaned on three times or more
 that the file did not name, and their sections are listed after the layout-1 ones as *L2:*,
-*L3:* and *L4:*.
+*L3:* and *L4:*. Editorial's layout-1 pass leaned on it a second time and has a column of its own
+(its running list is *Inherited and used* in [`editorial/layout-1.md`](./editorial/layout-1.md));
+the four rows it leaned on three times or more that the file did not name are added with a
+Grunge cell of *not recorded*, *—* or the D group Grunge met them in. Its decorative language —
+the dashed rule, the tape, the sparkle — stays in its plan, by this file's own rule below.
 
 This file **names and locates; it does not restate.** Each line is the bullet's own bold title,
 the plan and heading it lives under, and the Grunge sections that leaned on it. Read the bullet
@@ -16,8 +20,8 @@ where it was written — its numbers and its reasons are there. Line numbers dri
 title.
 
 A new template's first plan says which group it inherits: **A** and **B** always; **C** if it
-is another variable mode of a page already fitted (Editorial and Pop will say, from the Figma
-file, whose twin they are); **D** only if its blocks are widened Lime blocks, as Grunge's are —
+is another variable mode of a page already fitted (Editorial's layout-1 page is Lime's tree;
+Pop will say, from the Figma file, whose twin it is); **D** only if its blocks are widened Lime blocks, as Grunge's and Editorial's are —
 D1 for Lime's layout-1 blocks, D2 for its layout-2 ones, D3 for its layout-3 ones, D4 for its
 layout-4 ones.
 
@@ -26,93 +30,98 @@ layout-4 ones.
 Sources: the `figma-frame-reading` memory note, [`retro/layout-2.md`](./retro/layout-2.md) and
 [`lime/layout-1.md`](./lime/layout-1.md).
 
-| Convention | Where | Leaned on in Grunge |
-|---|---|---|
-| *`get_variable_defs` resolves a node's mode; the emitted tokens are the desktop default* | memory: `figma-frame-reading` | every section; L2: every section; L3: every section |
-| *Read a section node, never the desktop page, for variables* (the page frame is set to another template's mode) | grunge/layout-1, *Conventions* | every section; L3: every section |
-| *A rotated group's metadata x/y is a bounding box* | memory: `figma-frame-reading` | header (the seal); L3: bio (the seal) |
-| *The emitted DOM order is the frame's paint order* | memory: `figma-frame-reading` | media, map |
-| *The emitted `var(--token, #hex)` fallback is the component's default, not the instance's* | retro/layout-2, *Conventions* (media) | header, bio; L2: header (a node's font too), bio, testimonials |
-| *Check a narrow master's Device mode before trusting `s.*` on it* | lime/layout-1, *Settled in section 1* | header; L2: every section; L3: every section (none carried one); L4: every section (the media's 768 and 390 instances carry `Device: Tablet`) |
-| *Leaked tops are followed where they show, dropped where they don't* | lime/layout-1, *Settled in section 4* | gallery, footer; L2: gallery; L4: pricing (the tag chips' `#F2FFD0` hairline) |
-| *A leak that shows and reads as a defect is overridden* | grunge/layout-1, *Settled in section 4* | pricing, calendar; L2: gallery, calendar (turned round: a rule the twin declined, drawn) |
-| *An opacity-0 node is a spacer* | lime/layout-1, *Settled in section 3* | media |
-| *A stated list height is a column minimum* | lime/layout-1, *Settled in section 3* | media |
-| *`get_variable_defs` mixes nested schemes in one list; the `use_figma` fills settle which node is on which* | lime/layout-1, *Settled in section 9* | form; L2: header, media, calendar, map; L3: calendar, map |
-| *Every glow is a guess until the node's `effects` confirm it; scan before deciding on a drop shadow* | lime/layout-1, *Lime's decorative language* and *Settled in section 10* | bio, gallery, pricing, calendar (every guess wrong: each ring was a plain stroke); L2: every section (no Lime glow survived on any Grunge node); L3: every section — no node of the 39 masters carries an effect at all; L4: every section — effects are back, and all four are backdrop blurs, three behind opaque fills; every Lime glow is a ring |
-| *The node walker, kept* — one `use_figma` call per master returning every box, paint, stroke, effect, radius and text segment | grunge/layout-2, *Conventions* | L2: sections 2–7; L3: header, bio, calendar, gallery, pricing |
-| *The paired diff walk* — flatten the master and its twin in traversal order and return only what differs; keep per-node fields short, since a return truncates at 20 KB | grunge/layout-2, *Settled in section 8* | L2: map, form, testimonials; L3: media, repertoire, map, form, testimonials; L4: every section — the whole read, ten times |
-| *Read a fill's `scaleMode` before believing its `imageTransform`; correlate the render with the seed when in doubt* | grunge/layout-2, *Settled in section 1* | L2: header, bio; L3: header, bio (the pass's one `CROP`); L4: header (the unmirrored photo), bio (the cover) |
-| *Read every nested node's scheme off the master, never off the twin's row* — a widened page can put the same node on a different **scheme**, not only a different value | grunge/layout-3, *Conventions* | L3: repertoire, gallery, pricing, map, testimonials (five sites, eight nodes); L4: header (the seal, 4 / 3 / 3), bio (1 / 3 / 3), testimonials (*seat the schemes off the master, never remap the twin's register*) |
-| *A scheme that did not move can still move the **binding**, and `explicitVariableModes` will not say so* — read `boundVariables` and resolve the variable's name | grunge/layout-3, *Conventions* (section 8) | L3: calendar, gallery, pricing, map, form; L4: header, bio, media, repertoire, map, calendar, form, testimonials (two panels and a media track moved binding) |
-| *A seam's binding can lie — trust the render* — a torn seam's paint can be bound to a token that resolves red and still fill and render black; the seam is the neighbour's ground | grunge/layout-4, *Grunge's layout-4 mode* ("The media foot's binding lies") | L4: media (the 1440 foot, `sem/tag/2/bg`), repertoire (the 1440 foot, the same token), and the seam colour of every other layout-4 tear, read off the render |
-| *Load a Google Font the frames name; substitute only on a user call* | memory: `load-figma-fonts`; grunge/layout-1, *decision 1* | session 0 |
+| Convention | Where | Leaned on in Grunge | Leaned on in Editorial (layout 1) |
+|---|---|---|---|
+| *`get_variable_defs` resolves a node's mode; the emitted tokens are the desktop default* | memory: `figma-frame-reading` | every section; L2: every section; L3: every section | every section (the procedure's step 4) |
+| *Read a section node, never the desktop page, for variables* (the page frame is set to another template's mode) | grunge/layout-1, *Conventions* | every section; L3: every section | session 0 (the scheme walk); every section — the desktop page is set to Lime again |
+| *A rotated group's metadata x/y is a bounding box* | memory: `figma-frame-reading` | header (the seal); L3: bio (the seal) | bio (the seal), media (the tape and the mount), gallery (the card and the tape), footer (the seal) |
+| *The emitted DOM order is the frame's paint order* | memory: `figma-frame-reading` | media, map | — |
+| *The emitted `var(--token, #hex)` fallback is the component's default, not the instance's* | retro/layout-2, *Conventions* (media) | header, bio; L2: header (a node's font too), bio, testimonials | — |
+| *Check a narrow master's Device mode before trusting `s.*` on it* | lime/layout-1, *Settled in section 1* | header; L2: every section; L3: every section (none carried one); L4: every section (the media's 768 and 390 instances carry `Device: Tablet`) | header (the 390 hero is `Device: Tablet`), gallery and testimonials (the 390s are `Device: Mobile`), calendar; bio, map and footer carry none |
+| *Leaked tops are followed where they show, dropped where they don't* | lime/layout-1, *Settled in section 4* | gallery, footer; L2: gallery; L4: pricing (the tag chips' `#F2FFD0` hairline) | gallery (the 768 disc's 6.86), repertoire (the 390 sparkle, kept on the page) |
+| *A leak that shows and reads as a defect is overridden* | grunge/layout-1, *Settled in section 4* | pricing, calendar; L2: gallery, calendar (turned round: a rule the twin declined, drawn) | gallery (the 390 left disc), pricing (the third card's ink), calendar (the narrow masters' divider) |
+| *An opacity-0 node is a spacer* | lime/layout-1, *Settled in section 3* | media | media |
+| *A stated list height is a column minimum* | lime/layout-1, *Settled in section 3* | media | media |
+| *`get_variable_defs` mixes nested schemes in one list; the `use_figma` fills settle which node is on which* | lime/layout-1, *Settled in section 9* | form; L2: header, media, calendar, map; L3: calendar, map | form — turned round: the walk found no nested scheme where both twins nest one |
+| *Every glow is a guess until the node's `effects` confirm it; scan before deciding on a drop shadow* | lime/layout-1, *Lime's decorative language* and *Settled in section 10* | bio, gallery, pricing, calendar (every guess wrong: each ring was a plain stroke); L2: every section (no Lime glow survived on any Grunge node); L3: every section — no node of the 39 masters carries an effect at all; L4: every section — effects are back, and all four are backdrop blurs, three behind opaque fills; every Lime glow is a ring | every section — and it cut the other way: the page's effects are **real drop shadows** (media's mount, the gallery's card and open row, the map's panel, the calendar's print) and one opaque capsule's blur; no glow survived |
+| *The node walker, kept* — one `use_figma` call per master returning every box, paint, stroke, effect, radius and text segment | grunge/layout-2, *Conventions* | L2: sections 2–7; L3: header, bio, calendar, gallery, pricing | every section, with `dashPattern`, per-side weights and resolved binding names added |
+| *The paired diff walk* — flatten the master and its twin in traversal order and return only what differs; keep per-node fields short, since a return truncates at 20 KB | grunge/layout-2, *Settled in section 8* | L2: map, form, testimonials; L3: media, repertoire, map, form, testimonials; L4: every section — the whole read, ten times | header, media, gallery, repertoire, pricing, form, testimonials — **by traversal order**, since each template is its own variant of the set and no id matches (editorial/layout-1, *What this pass actually is*) |
+| *Read a fill's `scaleMode` before believing its `imageTransform`; correlate the render with the seed when in doubt* | grunge/layout-2, *Settled in section 1* | L2: header, bio; L3: header, bio (the pass's one `CROP`); L4: header (the unmirrored photo), bio (the cover) | session 0 (the calendar's `CROP`, the page's only one) |
+| *Read every nested node's scheme off the master, never off the twin's row* — a widened page can put the same node on a different **scheme**, not only a different value | grunge/layout-3, *Conventions* | L3: repertoire, gallery, pricing, map, testimonials (five sites, eight nodes); L4: header (the seal, 4 / 3 / 3), bio (1 / 3 / 3), testimonials (*seat the schemes off the master, never remap the twin's register*) | session 0 (the page's one nested site, pricing's Book pills), form (none where both twins nest one) |
+| *A scheme that did not move can still move the **binding**, and `explicitVariableModes` will not say so* — read `boundVariables` and resolve the variable's name | grunge/layout-3, *Conventions* (section 8) | L3: calendar, gallery, pricing, map, form; L4: header, bio, media, repertoire, map, calendar, form, testimonials (two panels and a media track moved binding) | every section — bindings resolved to names were the whole of most sessions' deltas |
+| *A seam's binding can lie — trust the render* — a torn seam's paint can be bound to a token that resolves red and still fill and render black; the seam is the neighbour's ground | grunge/layout-4, *Grunge's layout-4 mode* ("The media foot's binding lies") | L4: media (the 1440 foot, `sem/tag/2/bg`), repertoire (the 1440 foot, the same token), and the seam colour of every other layout-4 tear, read off the render | — (no seams) |
+| *Figma auto-layout spaces a rotated child by its rotated bounding box — read it per master* (a stack gives the print's rotated box back as a margin; a row sized by it takes the box as a column; a centred print owes nothing) | memory: `figma-frame-reading`; editorial/layout-1, *Conventions* | not recorded | media, gallery (at 390 only), map (at every width), calendar (read, and owed nothing) |
+| *Load a Google Font the frames name; substitute only on a user call* | memory: `load-figma-fonts`; grunge/layout-1, *decision 1* | session 0 | session 0 (asked; the user delegated the pick — Noto Serif Display at wdth 62.5) |
 
 ## B. Measuring and proving
 
 Sources: [`retro/layout-2.md`](./retro/layout-2.md), [`lime/layout-1.md`](./lime/layout-1.md),
 and the `verifying-the-published-tab` and `browser-tool-choice` memory notes.
 
-| Convention | Where | Leaned on in Grunge |
-|---|---|---|
-| *The digest is committed: `source/scripts/digest.mjs`* — before / after, `cmp` per file, the other four themes at zero rows every session | lime/layout-1, *Settled in session 0* | every section; L2: every section; L3: every section; L4: every section |
-| *Theme 1 is the digest at risk in a widened block* — every edit sits inside a block the twin renders | grunge/layout-1, *Settled in section 2* | L2: every section (zero nine times); L3: every section (zero ten times); L4: every section (zero ten times) |
-| *One five-theme digest is the whole proof for a shared-helper change*; filter on `_theme_N_` | lime/layout-1, *Learned on the end-of-pass sweep* | repertoire (`Pager`), the sweep (`Photo`) |
-| *`textTransform` is a digest column* | grunge/layout-1, *Settled in section 5* | repertoire, footer |
-| *A seeded page cannot show an empty slot* — `&noimage=1` | lime/layout-1, *Learned on the end-of-pass sweep* | the sweep; L3: bio |
-| *Divide the face out before comparing any width* | retro/layout-2, *Learned on the header's narrow masters* | header (it became `faced()`) |
-| *Place a seal by its disc's centre, off the edges of what it hangs on* | lime/layout-1, *Settled in section 2* | bio, pricing, footer; L3: bio |
-| *Measure anything under `.seal-spin` with the animation stopped* | lime/layout-1, *Settled in section 2* | bio; L3: bio |
-| *The popup is `about:blank`: drive it from the opener* | memory: `verifying-the-published-tab` | every live check |
-| *The whole-page published check is one puppeteer script* — now committed, `source/scripts/page-check.mjs <Template> [cards]`, the first card listed getting the full walk | lime/layout-1, *Learned on the end-of-pass sweep* | the sweep; L2: header, the sweep; L3: every section and the sweep; L4: every section and the sweep (`Grunge 3,0,1,2`) |
-| *The two-build digest walks the editor* — old build digested **before** the `cp` | lime/layout-1, *Learned on the end-of-pass sweep* | the sweep; L2: the sweep; L3: the sweep; L4: the sweep (`CARD=3`, reduced motion on) |
-| *Field reach is measured, not read off the prose* — `source/scripts/reach.mjs` | CLAUDE.md, the `FIELDS` bullet | the sweep (the header's `Grunge` rows); L2: header, map, form, the sweep; L3: header, bio, the sweep; L4: header, calendar, the sweep — the first measurement with no placeholder card |
-| *The black-run depth method* — a torn seam's depth is the maximum per-column run of its colour off the render, checked against the node arithmetic | grunge/layout-1, *Settled in section 3* | media, map, form; L4: media, gallery, repertoire |
+| Convention | Where | Leaned on in Grunge | Leaned on in Editorial (layout 1) |
+|---|---|---|---|
+| *The digest is committed: `source/scripts/digest.mjs`* — before / after, `cmp` per file, the other four themes at zero rows every session | lime/layout-1, *Settled in session 0* | every section; L2: every section; L3: every section; L4: every section | every section |
+| *Theme 1 is the digest at risk in a widened block* — every edit sits inside a block the twin renders | grunge/layout-1, *Settled in section 2* | L2: every section (zero nine times); L3: every section (zero ten times); L4: every section (zero ten times) | every section (themes 0, 1, 2 and 4 at zero, eleven times) |
+| *One five-theme digest is the whole proof for a shared-helper change*; filter on `_theme_N_` | lime/layout-1, *Learned on the end-of-pass sweep* | repertoire (`Pager`), the sweep (`Photo`) | header (six helpers), bio (`SealBadge`), repertoire (`Pager`), pricing (`BookPill`'s `discBg`), the sweep (`Photo`) |
+| *`textTransform` is a digest column* | grunge/layout-1, *Settled in section 5* | repertoire, footer | — |
+| *A seeded page cannot show an empty slot* — `&noimage=1` | lime/layout-1, *Learned on the end-of-pass sweep* | the sweep; L3: bio | the sweep |
+| *Divide the face out before comparing any width* | retro/layout-2, *Learned on the header's narrow masters* | header (it became `faced()`) | — (`faceK` came out 1) |
+| *Place a seal by its disc's centre, off the edges of what it hangs on* | lime/layout-1, *Settled in section 2* | bio, pricing, footer; L3: bio | bio, footer |
+| *Measure anything under `.seal-spin` with the animation stopped* | lime/layout-1, *Settled in section 2* | bio; L3: bio | bio, footer |
+| *The popup is `about:blank`: drive it from the opener* | memory: `verifying-the-published-tab` | every live check | every live check |
+| *The whole-page published check is one puppeteer script* — now committed, `source/scripts/page-check.mjs <Template> [cards]`, the first card listed getting the full walk | lime/layout-1, *Learned on the end-of-pass sweep* | the sweep; L2: header, the sweep; L3: every section and the sweep; L4: every section and the sweep (`Grunge 3,0,1,2`) | header, the sweep (`Editorial 0,1,2,3`) |
+| *The two-build digest walks the editor* — old build digested **before** the `cp` | lime/layout-1, *Learned on the end-of-pass sweep* | the sweep; L2: the sweep; L3: the sweep; L4: the sweep (`CARD=3`, reduced motion on) | the sweep |
+| *Field reach is measured, not read off the prose* — `source/scripts/reach.mjs` | CLAUDE.md, the `FIELDS` bullet | the sweep (the header's `Grunge` rows); L2: header, map, form, the sweep; L3: header, bio, the sweep; L4: header, calendar, the sweep — the first measurement with no placeholder card | calendar (a new `calendar.heading` probe), the sweep (the header's Editorial row) |
+| *The black-run depth method* — a torn seam's depth is the maximum per-column run of its colour off the render, checked against the node arithmetic | grunge/layout-1, *Settled in section 3* | media, map, form; L4: media, gallery, repertoire | — (no seams) |
 
 ## C. Dressing a shared branch in a second mode
 
 Sources: [`lime/layout-1.md`](./lime/layout-1.md); the gate idiom is
 [`grunge/layout-1.md`](./grunge/layout-1.md), *decision 2*.
 
-| Convention | Where | Leaned on in Grunge |
-|---|---|---|
-| *The gates are the template's flag, the named pairs, and `s.designed`*; widen per site from the frame, never by grep; never edit another template's literal | grunge/layout-1, *decision 2* and *Conventions* | every section; L3: every section; L4: every section |
-| *A section whose live seam is hoisted above its branches can always take a block* | lime/layout-1, *Settled in section 3* | media, form; L2: bio, form; L3: form; L4: bio, media, form |
-| *Where the seam lives inside the branch, the block goes after the seam* | lime/layout-1, *Settled in section 4* | gallery, repertoire, map; L2: repertoire, gallery, calendar, map, testimonials; L3: media, repertoire, calendar, pricing, map, form, testimonials; L4: gallery, repertoire, map, pricing, calendar, testimonials |
-| *The `G` lookup at the block's head, whose twin's arm is today's literals* — so the twin digests to zero | grunge/layout-1, *Settled in sections 4–10* | L2: pricing, calendar, map, form, testimonials; L3: media, repertoire, pricing, map, testimonials; L4: media, gallery, map, testimonials |
-| *A widened block can need no `G` at all* — when every leaf resolves through the twin's keys, a `const grunge` and a handful of arms is the whole block, and `boundVariables` says so in one call | grunge/layout-3, *Settled in section 9* | L3: form; L4: repertoire, pricing, calendar, form |
-| *A section on another scheme writes that scheme's values as named literals*, since no vm key holds them — and one twin literal can map to two (Grunge's two Scheme 3 reds) | grunge/layout-1, *Settled in section 1* (`HeaderV0`'s `G2`); grunge/layout-2, *Conventions* | L2: media, calendar, map, testimonials; L3: media, repertoire, calendar, gallery, pricing, map, testimonials; L4: media (Scheme 2's `#171716` / `#222222`), gallery (Scheme 3's `#82211B` / `#9E1F17`), map (`#F52E34` / `#00000026`), calendar (`#171716`) |
-| *Scheme 4 ≡ Scheme 1 collapses a sheet onto the page* — a Lime block that paints a Scheme 4 sheet paints the page's own ground under Grunge; a twin that wrote the sheet's bindings resolved still needs a `G` | grunge/layout-1, *Conventions* ("Scheme 4 ≡ Scheme 1"); grunge/layout-2, *Conventions* ("Scheme 4 ≡ Scheme 1, so the form has no band") | L2: form; L3: map; L4: header (the seal's black disc), testimonials (no sheet) |
-| *A frame's inside stroke is an inset `boxShadow`, on an overlay where an image or a child paints over it*, so every stated height holds | lime/layout-2, *Settled in section 1* (the `sem/stroke/2` bullet) | L2: header, repertoire, pricing, calendar; L3: header, media, repertoire, gallery, pricing, map, testimonials; L4: header (the avatar), media (the two rings) |
-| *A hard offset shadow goes through the caller's `style`, never a shared pill's props* | lime/layout-2, *Settled in section 2* (open question 2's route 1) | L2: header, bio, calendar |
-| *Retro's live states vanish under Lime; redraw them, never inherit them* | lime/layout-1, *Settled in section 6* | repertoire, map, calendar, form (four redrawn states); L3: the gallery's viewer, the map's pin and lit row; L4: the map's lit pin (a white ring) |
-| *A refused box changes colour, not weight alone, when the idle ring is already full ink* | CLAUDE.md, the enquiry form (Lime's layout 4) | form; L2: form; L3: form — read and found **not** to apply, the hairline idle ring making Lime's 2px both at once; L4: calendar, form — met by Lime's 2px white against a 15% or red idle ring, no arm |
-| *`vm.title` shadows the ramp's `title` size* — write the size as a literal | lime/layout-1, *Settled in section 6* | header, media, map, testimonials; L3: calendar, map, testimonials; L4: header (the kicker) |
-| *Under Lime `pillBg` IS the accent* — a second hue on an accent sheet needs a named stand-in | lime/layout-1, *Settled in session 0* / *section 1* | header cards 2 and 3; L2: header |
-| *Emptied content drops its node* | lime/layout-1, *Settled in section 7* | pricing |
-| *A stand-in face is scaled to the frame's glyph size, its line height divided back out* (`faced`, `facedLh`) | grunge/layout-1, *Settled in section 1* | every display string; L2: every display string; L3: every display string **but one** — `faced` is for a glyph the frame states, and the testimonials' 24px face-stack disc has none (section 10), so its 11px mark was left where it is; L4: every display string, the testimonials' marks included — a stated glyph, so `faced` applies |
-| *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* | grunge/layout-1, *Settled in session 0* | every display string; L3: every display string; L4: every display string |
-| *Do not refresh the root `index.html` per section; it is the sweep's last step* | lime/layout-1, *Per-session procedure* | the pass; L2: the pass; L3: the pass; L4: the pass |
+| Convention | Where | Leaned on in Grunge | Leaned on in Editorial (layout 1) |
+|---|---|---|---|
+| *The gates are the template's flag, the named pairs, and `s.designed`*; widen per site from the frame, never by grep; never edit another template's literal | grunge/layout-1, *decision 2* and *Conventions* | every section; L3: every section; L4: every section | every section — with a group flag, `s.limeTree`, so a block names no third template (editorial/layout-1, *decision 2*) |
+| *A section whose live seam is hoisted above its branches can always take a block* | lime/layout-1, *Settled in section 3* | media, form; L2: bio, form; L3: form; L4: bio, media, form | media, form |
+| *Where the seam lives inside the branch, the block goes after the seam* | lime/layout-1, *Settled in section 4* | gallery, repertoire, map; L2: repertoire, gallery, calendar, map, testimonials; L3: media, repertoire, calendar, pricing, map, form, testimonials; L4: gallery, repertoire, map, pricing, calendar, testimonials | gallery, repertoire, map, pricing, calendar, testimonials |
+| *The `G` lookup at the block's head, whose twin's arm is today's literals* — so the twin digests to zero | grunge/layout-1, *Settled in sections 4–10* | L2: pricing, calendar, map, form, testimonials; L3: media, repertoire, pricing, map, testimonials; L4: media, gallery, map, testimonials | gallery, repertoire, map, pricing, calendar, form, testimonials (a third arm; new leaves fall back through `??`) |
+| *A widened block can need no `G` at all* — when every leaf resolves through the twin's keys, a `const grunge` and a handful of arms is the whole block, and `boundVariables` says so in one call | grunge/layout-3, *Settled in section 9* | L3: form; L4: repertoire, pricing, calendar, form | header, bio, media, footer |
+| *A section on another scheme writes that scheme's values as named literals*, since no vm key holds them — and one twin literal can map to two (Grunge's two Scheme 3 reds) | grunge/layout-1, *Settled in section 1* (`HeaderV0`'s `G2`); grunge/layout-2, *Conventions* | L2: media, calendar, map, testimonials; L3: media, repertoire, calendar, gallery, pricing, map, testimonials; L4: media (Scheme 2's `#171716` / `#222222`), gallery (Scheme 3's `#82211B` / `#9E1F17`), map (`#F52E34` / `#00000026`), calendar (`#171716`) | pricing's nested Book pills only — whole sections went through the scheme resolution below |
+| *Scheme 4 ≡ Scheme 1 collapses a sheet onto the page* — a Lime block that paints a Scheme 4 sheet paints the page's own ground under Grunge; a twin that wrote the sheet's bindings resolved still needs a `G` | grunge/layout-1, *Conventions* ("Scheme 4 ≡ Scheme 1"); grunge/layout-2, *Conventions* ("Scheme 4 ≡ Scheme 1, so the form has no band") | L2: form; L3: map; L4: header (the seal's black disc), testimonials (no sheet) | — (Sienna Vale's Scheme 4 is terracotta) |
+| *A frame's inside stroke is an inset `boxShadow`, on an overlay where an image or a child paints over it*, so every stated height holds | lime/layout-2, *Settled in section 1* (the `sem/stroke/2` bullet) | L2: header, repertoire, pricing, calendar; L3: header, media, repertoire, gallery, pricing, map, testimonials; L4: header (the avatar), media (the two rings) | bio, gallery, map, pricing; a dashed stroke is `DashRule` instead (editorial/layout-1, *Conventions*) |
+| *A hard offset shadow goes through the caller's `style`, never a shared pill's props* | lime/layout-2, *Settled in section 2* (open question 2's route 1) | L2: header, bio, calendar | — |
+| *Retro's live states vanish under Lime; redraw them, never inherit them* | lime/layout-1, *Settled in section 6* | repertoire, map, calendar, form (four redrawn states); L3: the gallery's viewer, the map's pin and lit row; L4: the map's lit pin (a white ring) | map (the pin and the lit row), form (the refused box) |
+| *A refused box changes colour, not weight alone, when the idle ring is already full ink* | CLAUDE.md, the enquiry form (Lime's layout 4) | form; L2: form; L3: form — read and found **not** to apply, the hairline idle ring making Lime's 2px both at once; L4: calendar, form — met by Lime's 2px white against a 15% or red idle ring, no arm | form — the idle mark a faint dash, so the refusal changes colour, weight and dash at once |
+| *`vm.title` shadows the ramp's `title` size* — write the size as a literal | lime/layout-1, *Settled in section 6* | header, media, map, testimonials; L3: calendar, map, testimonials; L4: header (the kicker) | header, media, repertoire, map |
+| *Under Lime `pillBg` IS the accent* — a second hue on an accent sheet needs a named stand-in | lime/layout-1, *Settled in session 0* / *section 1* | header cards 2 and 3; L2: header | session 0, header (cards 2 and 3, the burger panel) |
+| *Emptied content drops its node* | lime/layout-1, *Settled in section 7* | pricing | pricing |
+| *A stand-in face is scaled to the frame's glyph size, its line height divided back out* (`faced`, `facedLh`) | grunge/layout-1, *Settled in section 1* | every display string; L2: every display string; L3: every display string **but one** — `faced` is for a glyph the frame states, and the testimonials' 24px face-stack disc has none (section 10), so its 11px mark was left where it is; L4: every display string, the testimonials' marks included — a stated glyph, so `faced` applies | session 0 — measured, and it came out 1; `faced` became per-template (`s.faceK`) |
+| *Casing stays the theme's; an all-caps face's strings take `textTransform` per site* | grunge/layout-1, *Settled in session 0* | every display string; L3: every display string; L4: every display string | every display string |
+| *A section's colour scheme is resolved in `sectionVm`, not restated in its block* — `THEMES[i].schemes` and `SCHEMES_OF`, spread over the theme at `sectionVm`'s head, so every derived key follows | editorial/layout-1, *decision 3* and *Settled in session 0* | — (Grunge wrote literals) | header, media, repertoire, pricing, form, footer (the six off Scheme 1) |
+| *A hand-scaled instance is not the ramp* | lime/layout-2, *Settled in section 2* | (D2) | form, testimonials (turned round at 390, where the master is the ramp's), footer |
+| *A head that must fit its measure is fitted to its widest word* — `min(frame size, calc(100cqi / ems))` on an `inline-size` container, a string that is not `vm.title` carrying its own key | lime/layout-3, *Settled in section 9* (D3); editorial/layout-1, *Conventions* | (D3) | header (the title, on `navNameEms`), form (`vm.titleWordEms`), testimonials (`vm.quotes[].wordEms`), footer (`vm.footerWordEms`) |
+| *Do not refresh the root `index.html` per section; it is the sweep's last step* | lime/layout-1, *Per-session procedure* | the pass; L2: the pass; L3: the pass; L4: the pass | the pass |
 
 ## D. Lime's blocks, inherited by a template that widens them
 
 These are facts about particular blocks, not conventions a new composition would meet. Grunge
-inherited each unchanged because its pages *are* those blocks.
+inherited each unchanged because its pages *are* those blocks; Editorial's layout-1 page is them
+again, and its column says which it kept and which a delta replaced.
 
 ### D1. Lime's layout-1 blocks
 
 All are in [`lime/layout-1.md`](./lime/layout-1.md) under the section named.
 
-| Section | Bullets |
-|---|---|
-| 1 header | *`BookPill` has a Lime branch* (`Pager` took its shape in section 5) |
-| 4 gallery | *Transcribed glyphs share one viewBox when they share a container* |
-| 5 repertoire | *The 768 halves take `flex: 1 1 50%`*; *the search pill's ring is an inset `boxShadow`* |
-| 6 map | *The 390 page is five gigs*; the compact `pageWindow` at every width; *the 390 band sheet is drawn full* (grunge/layout-1, section 6) |
-| 7 pricing | *The glow is a seat: rendered index `i % 3 === 1`* (under Grunge the seat carries a rule) |
-| 8 calendar | *The panel's ring is an overlay*; *booked is the frame's own state: opacity .38, no strike*; *the foot keeps Retro's BookPill* |
-| 10 testimonials | *The backs are insets off the card*; *the 390 card bleeds into the root's padding*; *the wide arrows centre on the wrap* |
-| 11 footer | *The tenth Lime block, at the head of `Footer`*; *three rules the twin does not draw*; *the 768 small print's 56 inset is a leak, and it is followed*; *the link cursor is not live-gated* |
+| Section | Bullets | Leaned on in Editorial |
+|---|---|---|
+| 1 header | *`BookPill` has a Lime branch* (`Pager` took its shape in section 5) | header (no props under Scheme 3), media (hand-scaled through `disc` / `size` / `style`), pricing and footer (an additive `discBg`), form (its numbers inline) |
+| 4 gallery | *Transcribed glyphs share one viewBox when they share a container* | — |
+| 5 repertoire | *The 768 halves take `flex: 1 1 50%`*; *the search pill's ring is an inset `boxShadow`* | the first kept; the second replaced by `DashRule` under Editorial |
+| 6 map | *The 390 page is five gigs*; the compact `pageWindow` at every width; *the 390 band sheet is drawn full* (grunge/layout-1, section 6) | the first two kept; the band sheet does not arise (no band grain) |
+| 7 pricing | *The glow is a seat: rendered index `i % 3 === 1`* (under Grunge the seat carries a rule) | kept, reaching nothing: the three cards are one card |
+| 8 calendar | *The panel's ring is an overlay*; *booked is the frame's own state: opacity .38, no strike*; *the foot keeps Retro's BookPill* | the overlay gated off (no ring); the booked state kept, the frame agreeing; the pill kept |
+| 10 testimonials | *The backs are insets off the card*; *the 390 card bleeds into the root's padding*; *the wide arrows centre on the wrap* | all three kept, the insets re-read off each master |
+| 11 footer | *The tenth Lime block, at the head of `Footer`*; *three rules the twin does not draw*; *the 768 small print's 56 inset is a leak, and it is followed*; *the link cursor is not live-gated* | all four kept — the block widened to `s.limeTree`, the rules in `s.stroke1` |
 
 ### D2. Lime's layout-2 blocks
 

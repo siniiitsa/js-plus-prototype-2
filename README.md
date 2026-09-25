@@ -65,7 +65,8 @@ This is the one architectural rule worth knowing before editing anything (§12.9
 - **The builder chrome** (top bar, sidebar, edit panel, dropdowns, drawers, toast) uses **Tailwind
   utilities and shadcn/ui** on the design tokens in `src/index.css`.
 - **`EncoreSection.jsx`** uses **neither** — every value is an inline `style={{}}`. Sections are
-  painted with arbitrary hex values taken at runtime from the active theme's palette, plus six
+  painted with arbitrary hex values taken at runtime from the active theme's palette (under
+  Editorial, the colour scheme its frame stands that section on), plus six
   derived `rgba()` values, and a static utility class cannot express `background: s.bg` where
   `s.bg` is `#7A58A7` picked at runtime. Its only library import is `lucide-react`, whose icons
   inherit `currentColor` and so stay theme-driven; from React it takes `useId`, `useState` — for
@@ -164,7 +165,7 @@ Four things about it are load-bearing:
   over a page that has just been built and not yet touched.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Stacked,
-  Overlay card, Stage wide (Lime's and Grunge's family is the first four, and Editorial and Pop's is
+  Overlay card, Stage wide (Lime's, Grunge's and Editorial's family is the first four, and Pop's is
   Centred / Split / Rule) — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
@@ -173,23 +174,23 @@ The `startTheme` prop skips the template picker, and skips the onboarding with i
 
 ## Seeded photography
 
-Retro, Lime and Grunge — the three designed templates — open with their Figma mock photography already in
-place.
+Retro, Lime, Grunge and Editorial — the four designed templates — open with their Figma mock photography
+already in place.
 The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
 the only module that imports them.
 
-- **Retro, Lime and Grunge only.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` resolve
+- **Every template but Pop.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` resolve
   through `SEEDS` in `photos.js`, one row per seeded theme, and return `undefined` for
-  Editorial and Pop, so those two render the initials placeholder exactly as before. Lime's row
+  Pop, so it renders the initials placeholder exactly as before. Lime's row
   is a different shoot for the artist's own pictures (the hero, its portrait card, the bio and
   its layout-3 landscape shot, the calendar, the form avatar, the form's layout-2 stage photograph and the gallery spotlight) and
-  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload). The photography is Retro's art direction, not the user's content, so switching template
+  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload); Editorial's is a fourth, in colour (`editorial-*.jpg`), whose gallery strip is the five pictures of its shoot and two crops of its hero, since its frame's strip repeats one thumbnail and borrows Retro's. The photography is Retro's art direction, not the user's content, so switching template
   drops it — with one exception: the media player's track art is materialised into `c.tracks` the
   moment the artist edits the list (it has to be, or renaming track one would delete five
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
-  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all forty-three files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~7.9 MB.
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all forty-nine files are
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~8.7 MB.
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
@@ -281,9 +282,10 @@ That distinction is the whole design, and it buys two things:
   single `pick`, starting at `-1` — nothing chosen — so both sides open on `galActive()` and the
   published tab's first paint is the canvas's picture by construction. Every slot is navigable,
   not just the filled ones, so the count never shifts under the visitor as photos are added or
-  removed. The mobile frame draws four of the seven tiles; rather than stranding photos 5–7 where
-  no phone can reach them, that window of four slides once the visitor walks past the fourth — and
-  it is anchored at 0 for the first four, so the canvas's mobile picture is unchanged.
+  removed. Retro's, Lime's and Grunge's mobile frames draw four of the seven tiles; rather than
+  stranding photos 5–7 where no phone can reach them, that window of four slides once the visitor
+  walks past the fourth — and it is anchored at 0 for the first four, so the canvas's mobile
+  picture is unchanged. Editorial's mobile frame draws all seven, smaller, so there is no window.
 
   **The gallery's three social rows, and the media player's Soundcloud button.** The page's
   *outbound* links. `FIELDS.gallery` grew `youtube`, `instagram` and `tiktok` beside
@@ -296,8 +298,9 @@ That distinction is the whole design, and it buys two things:
   empty field, and the editor says why under the input once the artist leaves it
   (`urlProblem()`, shared with every other address field: a track's audio, a gig's tickets link,
   a footer link's url). An empty field leaves the
-  Soundcloud pill the picture it always was (under Lime, whose layout-1 frame draws Book Now in
-  that seat, the seat is the `cta` Book pill and the Soundcloud pill is drawn only when filled)
+  Soundcloud pill the picture it always was (under Lime and Grunge, whose layout-1 frames draw Book
+  Now in that seat, the seat is the `cta` Book pill and the Soundcloud pill is drawn only when
+  filled; Editorial's frame draws Soundcloud there, as Retro's does)
   — but an empty *gallery* row is not published at all.
   A tile that promises a destination it cannot go to is worse than no tile, and unlike the pill,
   which sits alone, these sit in a row that reads as a list of where to follow the artist. The
@@ -369,7 +372,7 @@ That distinction is the whole design, and it buys two things:
   today's month when `open` is earlier.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
   blocked it. Booked days are muted and struck through and take no handler (Lime dims them to .38
-  with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid, and Grunge shares it in both), which is a **content** state rather than a
+  with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid; Grunge shares it in both, and Editorial's layout-1 grid, whose frame dims them the same way), which is a **content** state rather than a
   live one — it renders on the canvas too, and since the seed blocks nothing
   the reference picture does not move. Two intended diffs from the Figma frame: the foot row gains
   the Book pill (`vm.calBookTo`, `bookTo` minus `calendar` itself, the tier pills' rule), which is
@@ -442,7 +445,7 @@ That distinction is the whole design, and it buys two things:
   visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
   out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
   box does not grow — under one prompt line. (Lime's boxes are pills, and a rule under a pill
-  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four.) Errors are `useState`, set on a refused submit and
+  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four. Editorial's layout-1 box is a 56% dashed rule on the terracotta half, so a refusal drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once.) Errors are `useState`, set on a refused submit and
   cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
   valid submit swaps the mustard half alone for a confirmation that prints the address in plain
   text, since a browser that opened no mail app must still show one, and *Write another* comes
@@ -562,9 +565,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
   each category's last deleted `{ arch, c }`, uploads included, so adding that category again
   brings its content back and the add composer opens on its old layout; a *Start fresh* tick
   in the composer opts out. It lives only as long as the session, like everything else.
-- **Retro, Lime and Grunge are designed; Editorial and Pop are not.** Retro ships six
-  photographic header layouts. Editorial and Pop are fully selectable and functional but
-  render flat-colour sections and a three-layout flat header family — whose nav is still the
+- **Retro, Lime, Grunge and Editorial are designed; Pop is not.** Retro ships six
+  photographic header layouts. Pop is fully selectable and functional but
+  renders flat-colour sections and a three-layout flat header family — whose nav is still the
   hardcoded `Music · Shows · Book` triple in `FlatNav`, ignoring the artist's sections and never
   collapsing to a burger. Deliberate: the live navigation was scoped to the designed templates.
   The §10.2 *layouts* are shared by all five templates; Retro's decorative treatment — paper
@@ -588,7 +591,17 @@ These are intentional limits, not oversights — see §12 for the full list. The
   Anton at 0.75 standing in for Stones Crush throughout — is `s.grunge` arms inside
   Lime's blocks, widened to `(s.lime || s.grunge)`. Its header family is the same first four, all
   four fitted (its Stacked header is Lime's glass capsule, black over a red floor), so every card
-  in the setup modal lays out a whole Grunge page and the Grunge family is closed. One piece of Retro's treatment is placed
+  in the setup modal lays out a whole Grunge page and the Grunge family is closed. **Editorial is
+  designed at layout 1**: its page is the fourth variant of the same component sets, in the mode
+  *Sienna Vale* — the first **light** page, paper, taupe and ink bands meeting on straight edges,
+  with dashed rules, blush tape strips, tilted prints under real drop shadows, sparkles and a
+  terracotta seal, and Noto Serif Display at width 62.5 standing in for the frames' Fontspring
+  demo face. Six of its eleven sections stand on another colour scheme than the page, so
+  `sectionVm` resolves each section's scheme (`SCHEMES_OF` in `data.js`) before anything reads
+  the palette. Its treatment is `s.editorial` arms inside Lime's layout-1 blocks, widened to
+  `s.limeTree` (Lime, Grunge and Editorial). Its header family is the same first four; Hero is
+  fitted, and the other three render Retro's compositions in its tokens until their own passes.
+  One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
@@ -611,8 +624,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and
   `fieldReach()` in `data.js` — or "Not shown in this template" where no layout of the active
-  template reads it (`fieldNowhere()`). The flat two's header carries no such note: its family is not
-  designed, and `in` names Retro's, Lime's and Grunge's header layouts only.
+  template reads it (`fieldNowhere()`). Pop's header carries no such note: its family is not
+  designed, and `in` names Retro's, Lime's, Grunge's and Editorial's header layouts only.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

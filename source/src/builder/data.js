@@ -362,13 +362,15 @@ export const minimalNav = (navSections) =>
   NAV_MINIMAL.map(([label, prefs]) => ({ label, to: firstPresent(prefs, navSections) }))
 
 // The header's navigation mode when the artist has not chosen one (JP-039,
-// reopened; user call, 2026-09-23). Layouts 2 and 3 of the three designed
-// templates draw Music / Gigs / About at every width (986:11848, 984:34438,
+// reopened; user call, 2026-09-23). Layouts 2 and 3 of Retro, Lime and Grunge
+// draw Music / Gigs / About at every width (986:11848, 984:34438,
 // 984:10740, 977:22532), so there the seeded header is Minimal and its frame's
 // picture — at 768 the three fit the bar where the seeded nine fold to the
 // burger. Everywhere else it follows the sections. `d` is the design index,
 // `arch % designCount`. A stored value always wins, so a header moved back
 // to layout 1 returns to its sections unless the artist picked Minimal.
+// Editorial's cards 2 and 3 are placeholders, so they follow the sections
+// until their passes fit them (plans/editorial/layout-1.md, open question 4).
 export const navModeDefault = (themeName, d) =>
   (themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
     && (d === 1 || d === 2) ? 'minimal' : 'sections'
@@ -1155,12 +1157,13 @@ export const FIELDS = {
   // does not consume a key simply ignores it, so swapping layouts never
   // silently discards copy the user typed — and the panel says so, off `in`.
   //
-  // The header's `in` is always an object naming Retro, Lime and Grunge alone:
-  // they have different header families (six designs against four and four —
-  // Grunge's row is measured over its four fitted cards, none a
-  // placeholder since its layout-4 pass), and the flat two have a family
-  // of their own that is not designed, so they are left unmarked rather than
-  // folded onto any list.
+  // The header's `in` is always an object naming Retro, Lime, Grunge and
+  // Editorial alone: they have different header families (six designs against
+  // four, four and four — Grunge's row is measured over its four fitted cards,
+  // none a placeholder since its layout-4 pass; Editorial's over one fitted
+  // card and three placeholders, so each of its layout passes re-measures its
+  // card), and Pop has a family of its own that is not designed, so it is left
+  // unmarked rather than folded onto any list.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
@@ -1172,48 +1175,49 @@ export const FIELDS = {
     // Their hints name where else each prints, and that reach is measured
     // (JP-042: a sentinel in `&who=`, every design × width × surface): the
     // kicker in all four bios and the form's credit row (layouts 1 and 2); the
-    // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's
-    // and Grunge's calendar layout 1, a block of its own with no polaroid stamp.
+    // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's,
+    // Grunge's and Editorial's calendar layout 1, a block of its own with no
+    // polaroid stamp.
     // Change a reader, change the hint.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
-      in: { Retro: [1, 4], Lime: [1], Grunge: [1] } },
+      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
-      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3] },
+      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, and the booking '
-          + 'calendar in layouts 1 and 4 (in Lime and Grunge, layout 4 only).' },
+          + 'calendar in layouts 1 and 4 (in Lime, Grunge and Editorial, layout 4 only).' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1], Grunge: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
       hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // Bio layout 4's Listen reads this key too; `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
-      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2] } },
+      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2] } },
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
           + '(in Lime and Grunge, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 1, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [1, 3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0] }, opts: [
+    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -1257,9 +1261,10 @@ export const FIELDS = {
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
-    // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, so there and
-    // on the flat two an empty address leaves it a picture — the rule the
-    // rest of the file calls the Soundcloud rule. Lime's frame draws Book Now in
+    // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
+    // Editorial's (964:58614), so there and on Pop an empty address leaves it a
+    // picture — the rule the rest of the file calls the Soundcloud rule. Lime's
+    // frame draws Book Now in
     // that seat (JP-034), and Grunge's does too (it shares Lime's block), so
     // under those two the seat is `cta` and the Soundcloud pill is drawn only
     // once it has somewhere to go.
@@ -1616,7 +1621,7 @@ export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.
 // Whether a section's current design reads field `f` — `design` being
 // `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
 // its `'*'` standing for any template it does not name; a template it does not
-// cover at all is left unmarked (true), which is how the flat two's header
+// cover at all is left unmarked (true), which is how Pop's header
 // stays silent. Read by EditPanel alone: nothing on the canvas consults it,
 // so a field the design ignores keeps its copy for the next layout.
 const reachOf = (f, themeName) => (

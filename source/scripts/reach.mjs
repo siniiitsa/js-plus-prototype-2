@@ -4,7 +4,7 @@
 // written from (CLAUDE.md, the FIELDS bullet; JP-042, JP-037). Needs
 // `npm run dev` on :5173.
 //
-//   node scripts/reach.mjs [themes=0,1,2]
+//   node scripts/reach.mjs [themes=0,1,2]    (theme 3 is Editorial)
 //
 // A probe is { name, cats, param: 'cj' | 'who' | 'tiers', value, base? }: `cj` types into
 // the section's own content, `who` into the header's identity as every other
@@ -23,8 +23,8 @@ const PROBES = [
   { name: 'who.location', cats: OTHERS, param: 'who', value: { location: Z } },
   { name: 'who.tags', cats: OTHERS, param: 'who', value: { tags: Z } },
   { name: 'who.showTags=hide', cats: OTHERS, param: 'who', value: { showTags: 'hide' } },
-  // The header's own `in` rows (the sweep of Grunge layout 1 measured its
-  // Grunge row with these; each layout pass re-measures its card).
+  // The header's own `in` rows (the sweeps of Grunge and Editorial layout 1
+  // measured their rows with these; each layout pass re-measures its card).
   { name: 'header.kicker', cats: ['header'], param: 'cj', value: { kicker: Z } },
   { name: 'header.subtitle', cats: ['header'], param: 'cj', value: { subtitle: Z } },
   { name: 'header.location', cats: ['header'], param: 'cj', value: { location: Z } },

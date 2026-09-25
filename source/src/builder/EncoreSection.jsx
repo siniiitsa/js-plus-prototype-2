@@ -76,11 +76,12 @@ const isTablet = (s) => !!s.narrow && !s.mob
  *
  * The Figma page's decoration — grain, torn paper, checkerboard, hard
  * offset shadows, rotated cards — belongs to Retro alone. Every helper
- * below no-ops when `s.retro` is false, so Grunge, Editorial and Pop get
- * the identical structure rendered flat. They no-op under Lime as well:
- * Lime's own decoration (arc seams, glows, the arch portrait) is drawn by
- * its `if (s.lime)` blocks inside the shared `v0` branches, never by these
- * helpers. Same split as headerFamily().
+ * below no-ops when `s.retro` is false, so Pop gets the identical
+ * structure rendered flat. They no-op under Lime, Grunge and Editorial as
+ * well: Lime's own decoration (arc seams, glows, the arch portrait) is drawn
+ * by its `if (s.lime)` blocks inside the shared `v0` branches, and Grunge's
+ * and Editorial's by their arms inside those blocks, never by these helpers
+ * (bar the few a named pair widens). Same split as headerFamily().
  * ------------------------------------------------------------------ */
 
 // Anton (or the theme's label face): uppercase, tight, used for nav, eyebrows,
@@ -1216,7 +1217,12 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // the way it does over a real photograph. Its browns are Retro's; Lime's well
 // is the same ramp in its Scheme 1 greens (`box/1` → `bg` → `box/3`), or a
 // removed hero would leave a brown panel under a lime nav. Grunge takes the
-// same three tokens, which in Static Youth are neutral near-blacks.
+// same three tokens, which in Static Youth are neutral near-blacks, and so does
+// Editorial's fitted hero (layout 1): it stands on Scheme 3, where they are
+// `#1D1D1D` → `#141414` → `#0E0E0E` under the ink capsule. Its placeholder
+// cards 3 and 4 stand on Scheme 1, where the same ramp opens on paper under
+// their pale wordmark, so they keep the browns of the Retro compositions they
+// draw until their layout passes seat them.
 // `src` lets a layout address one slot of a multi-photo section; it falls back
 // to the section's single photo, then to the initials placeholder.
 // `avatar` reads the header's second photo slot, and reads it strictly: an empty
@@ -1242,7 +1248,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
     return (
       <div style={{
         width: '100%', height: '100%',
-        background: (s.lime || s.grunge)
+        background: (s.lime || s.grunge || (s.editorial && s.v0))
           ? `linear-gradient(150deg, ${s.box1}, ${s.bg} 55%, ${s.box3})`
           : `linear-gradient(150deg, ${s.edge}, #2A2622 55%, #14110E)`,
         ...style,
@@ -3460,7 +3466,7 @@ function HeaderV5({ s }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §10.3 Header, flat family (Editorial and Pop — 3 layouts)
+ * §10.3 Header, flat family (Pop — 3 layouts)
  * ------------------------------------------------------------------ */
 
 function FlatNav({ s }) {

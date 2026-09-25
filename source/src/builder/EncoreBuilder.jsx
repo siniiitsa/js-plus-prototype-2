@@ -306,7 +306,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // EncoreSection); 1, the identity, wherever the theme states none.
     faceK: T.faceK ?? 1,
     // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
-    // carry one; the flat two fall back to their body face.
+    // carry one; Pop falls back to its body face.
     ui: T.ui ?? T.body,
     // Space Mono, the frames' typewriter face; only Retro names it so far.
     mono: T.mono ?? T.body,
@@ -364,9 +364,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // §10.2 — the layouts are shared by every template, but the Figma page's
     // decorative treatment (grain, torn edges, checkerboard, hard offset
     // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
-    // Editorial and Pop render the identical structure, flat, and Lime and
-    // Grunge each draw a decoration of their own behind `lime` and `grunge`
-    // below.
+    // Pop renders the identical structure, flat, and Lime, Grunge and
+    // Editorial each draw a decoration of their own behind `lime`, `grunge`
+    // and `editorial` below.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
@@ -490,8 +490,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.badgeText = cv('badgeText', name)
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
-  // Retro, Lime and Grunge seed their Figma pages' mock photography (photos.js); the
-  // flat two resolve to undefined and keep the initials placeholder. `undefined` already means "key
+  // Retro, Lime, Grunge and Editorial seed their Figma pages' mock photography
+  // (photos.js); Pop resolves to undefined and keeps the initials placeholder. `undefined` already means "key
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
@@ -4025,8 +4025,8 @@ function ThemePicker({ themeIdx, artistName, onPick }) {
  *
  * The grid the setup modal (§6.2) is built around: the template's header
  * designs, up to four — `setupHeaderCount()`, since only layouts 1–4 are
- * a whole page — so four for Retro, Lime and Grunge and three for the flat
- * templates (§4.4). Three up on a desktop, two around 720px, one below
+ * a whole page — so four for Retro, Lime, Grunge and Editorial and three
+ * for Pop (§4.4). Three up on a desktop, two around 720px, one below
  * ~560.
  *
  * The cards share one frame so the set reads as a set and the labels sit

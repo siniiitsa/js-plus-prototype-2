@@ -95,7 +95,7 @@ and 2026-09-15 Addendum.
 
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
-| Layout 1 | [`editorial/layout-1.md`](./editorial/layout-1.md) | `editorial-layout-1`, forked from `main` (in progress: session 0 done — Noto Serif Display at wdth 62.5 for the demo face, per-section schemes resolved in `sectionVm`) | Retro, Lime and Grunge layout 1's eleven component sets in their fourth variant, `Theme=Editorial`, in the Figma mode **Sienna Vale**: a token foundation (session 0, which opens on two user calls — the display face, Fisterra Fora, is a Fontspring demo, and six of the eleven sections stand on another scheme, four of them on ink), then Editorial decoration inside Lime's layout-1 blocks, widened under a new group flag `s.limeTree` with the deltas behind `s.editorial`, the header's four modal cards, plus the end-of-pass sweep. Written as deltas against Lime and Grunge layout 1. The planning walk found the first **light** page (paper, taupe and ink bands on straight edges — no seams, no band grain), a decorative language of its own (dashed rules, tape, tilted polaroids with real drop shadows, sparkles, a terracotta seal), and Editorial frames on all four layout pages, so card 1 is fitted and cards 2–4 are placeholders. Inherits `CONVENTIONS.md` A, B, C and D1. |
+| Layout 1 | [`editorial/layout-1.md`](./editorial/layout-1.md) | `editorial-layout-1`, forked from `main` (closed, with the root `index.html` refreshed; push, PR and merge still open) | Retro, Lime and Grunge layout 1's eleven component sets in their fourth variant, `Theme=Editorial`, in the Figma mode **Sienna Vale**: a token foundation (session 0, which opens on two user calls — the display face, Fisterra Fora, is a Fontspring demo, and six of the eleven sections stand on another scheme, four of them on ink), then Editorial decoration inside Lime's layout-1 blocks, widened under a new group flag `s.limeTree` with the deltas behind `s.editorial`, the header's four modal cards, plus the end-of-pass sweep. Written as deltas against Lime and Grunge layout 1. The planning walk found the first **light** page (paper, taupe and ink bands on straight edges — no seams, no band grain), a decorative language of its own (dashed rules, tape, tilted polaroids with real drop shadows, sparkles, a terracotta seal), and Editorial frames on all four layout pages, so card 1 is fitted and cards 2–4 are placeholders. Inherits `CONVENTIONS.md` A, B, C and D1. Session 0 settled both calls — Noto Serif Display at wdth 62.5 for the demo face, and each section's scheme resolved in `sectionVm` — and every section widened its Lime block to `s.limeTree` with no Editorial branch of its own. The sweep widened `Photo`'s empty backdrop to the fitted card, gave the header's `in` an Editorial row, folded the pass into [`CONVENTIONS.md`](./CONVENTIONS.md) as a *Leaned on in Editorial* column with four new rows, and gathered what is worth telling the designer into one note at the plan's foot. |
 
 **Reading order in an Editorial session:** `CLAUDE.md`, then the plan, then
 [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C and D1 and the bullets they point at, the
@@ -104,14 +104,14 @@ one widening already done), and Lime layout 1's *Per-session procedure*.
 
 ## Other templates
 
-Pop works, but it renders flat (see CLAUDE.md, *Retro, Lime and Grunge are designed*). When it gets
+Pop works, but it renders flat (see CLAUDE.md, *Retro, Lime, Grunge and Editorial are designed*). When it gets
 its first plan:
 
 - Start its folder here, and add a table to this file.
 - Say which groups of [`CONVENTIONS.md`](./CONVENTIONS.md) it inherits — the file Grunge's sweep
   extracted, from the bullets a third template actually leaned on. Reading Figma, and measuring and
   proving, always carry over; a template's decorative language (`s.retro`'s grain and torn edges,
-  Lime's arcs, Grunge's tears) never does. Keep a running *Inherited and used* list as Grunge's plan
+  Lime's arcs, Grunge's tears, Editorial's dashed rules and tape) never does. Keep a running *Inherited and used* list as Grunge's plan
   did, and fold what it confirms back into that file in the sweep.
 
 `SPEC.md`, which the plans number against, lives in git history: `git show 8fa8ff4:SPEC.md`.

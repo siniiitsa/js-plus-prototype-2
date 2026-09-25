@@ -607,6 +607,9 @@ Do **not** refresh the root `index.html` per section; it is the sweep's last ste
 
 ## The end-of-pass sweep
 
+**Done** (2026-09-25). What each item came to is under *Learned on the end-of-pass sweep* at the
+foot of *Conventions*; the list is kept as it was written.
+
 One session after section 11. Lime's list and Grunge's apply item for item (their *The end-of-pass
 sweep* and *Learned on the end-of-pass sweep*); what is Editorial's own:
 
@@ -1657,9 +1660,10 @@ four ink ones are its own register.
 
 ### Inherited and used
 
-*(Append one line each time a session leans on a bullet from Lime's, Grunge's or Retro's
-Conventions, naming the plan it came from, a blank line between sections. The sweep folds it into
-[`../CONVENTIONS.md`](../CONVENTIONS.md).)*
+*(The running list the sweep folded into [`../CONVENTIONS.md`](../CONVENTIONS.md) as its
+*Leaned on in Editorial* column: each time a session leaned on a bullet from Lime's, Grunge's or
+Retro's Conventions, it was named here in one line, with the plan it came from. Kept as the pass
+wrote it, a blank line between sections.)*
 
 Session 0:
 - *Load a Google Font the frames name; substitute only on a user call* (memory `load-figma-fonts`;
@@ -1922,6 +1926,103 @@ Section 11:
   session 0) — the statement, the links; the name and the small print through `labelStyle`.
 - *Theme 1 is the digest at risk in a widened block* (Grunge 1, section 2) — zero at 0, 1, 2 and 4.
 
+The sweep:
+- *A seeded page cannot show an empty slot* (Lime 1, sweep) — `&noimage=1`, which is what showed
+  the backdrop's placeholder cards.
+- *One five-theme digest is the whole proof for a shared-helper change* (Lime 1, sweep) — `Photo`.
+- *Field reach is measured, not read off the prose* (CLAUDE.md) — the header's Editorial row.
+- *The whole-page published check is one puppeteer script* (Lime 1, sweep; Grunge 1, sweep) —
+  `page-check.mjs Editorial 0,1,2,3`.
+- *The two-build digest walks the editor* (Lime 1, sweep) — the old build before the `cp`.
+- *CONVENTIONS.md came out as four groups* (Grunge 1, sweep) — kept; Editorial is a column.
+
+### Learned on the end-of-pass sweep
+
+- **`Photo`'s empty backdrop is widened to the fitted card alone**, `(s.lime || s.grunge ||
+  (s.editorial && s.v0))`. Under Scheme 3 the Lime arm's `box1` → `bg` → `box3` is `#1D1D1D` →
+  `#141414` → `#0E0E0E`, an ink well under the ink capsule. The plan's `s.limeTree` was tried
+  first and `&noimage=1` showed what it cost: it also moved cards 3 and 4 (`HeaderV2` / `V3`'s
+  backdrops), which stand on Scheme 1, where the same ramp opens on paper `#FFF9F2` — and card 3's
+  pale wordmark and *Listen* all but vanished on it. So the placeholders keep Retro's browns, the
+  compositions they draw, until their passes seat them. Digest: the seeded page zero at all five
+  themes; `&noimage=1` moves `_theme_3_` header arch 0 and 4 (4 folds onto design 0) at three
+  widths, six files, nothing else.
+- **Item 3: every `(s.lime || s.grunge)` left in layout-1 code**, three sites, none an oversight:
+  - `LogoMark`'s globe — Editorial's mark is the sparkle, an `s.editorial` arm ahead of it
+    (section 1);
+  - `SealBadge`'s Lime disc — Editorial's seal is its own arm ahead of it (section 2), with its
+    own marks;
+  - `Photo`'s backdrop — widened to Editorial's fitted card only (above).
+
+  Every other line still spelling the pair is layout-2–4 code (43 of them: `HeaderV1`–`V3`'s
+  heads, the blocks ahead of `Bio`'s, `Media`'s and `EnquiryForm`'s `s.v1`–`s.v3` branches, and
+  the blocks — the gallery's layout-2 and -3 ternaries — inside the `s.v1`–`s.v3` branches of
+  `Media`, `Pricing`, `Repertoire`, `Gallery`, `Calendar`, `EventsMap`, `Testimonials` and
+  `EnquiryForm`), each a later pass's. In `EncoreBuilder.jsx` and `data.js`
+  every name gate listing Lime and Grunge without Editorial is layout 2's or 3's too: the four
+  `d === 2` arms in `sectionVm` (the composed row's insets, pricing's footnote, the form's and
+  testimonials' insets, `KICKER_3`) and `EditPanel`'s `KICKER_3` mirror, `navFits`' 768 arms, and
+  `navModeDefault` (Editorial's cards 2 and 3 follow the sections; open question 4). One gate
+  names Lime and Editorial without Grunge, on purpose: `titleWordEms` (Grunge's Anton was
+  measured and left out).
+- **The header's `in` gained its Editorial row**, measured with `reach.mjs 1,3` (6624 renders,
+  Lime beside it) and folded onto designs: kicker, tags and showTags `[0, 2, 3]`, subtitle and
+  heroCta `[1]`, location all four, cta2 `[1, 2]`, align `[0]` — Lime's — but **showBadge
+  `[0, 1, 3]` and badgeText `[1, 3]`**: card 1's corner sparkle rides `showBadge` and prints no
+  text (section 1), and placeholder card 2 draws Retro's seal where Lime's fitted card 2 draws
+  none. Cards 2–4 are placeholders, so each layout pass re-measures its card. The identity probes
+  under theme 3 agree with Lime's but twice — the bio's layout 3 prints no tags (Retro's branch)
+  and the calendar's location reaches layout 4 alone (layout 1's block draws no stamp) — so the
+  location hint now names Editorial and the tags hint stands. Every other probe, theme 3 against
+  theme 1, is identical.
+- **The whole-page published check passed first time.** Card 1's full walk: nine nav links and
+  Book Now scroll to their sections, the four in-page anchors (the three pricing pills and the
+  calendar's foot pill) reach `#form`, the player plays (`paused: false`, 0.9 s after one trusted
+  click), gallery, repertoire, map, pricing, calendar and testimonials answer the generic probe
+  (the `false`s are the All chips already lit and the gallery's current slot), the form refuses
+  with the four boxes' solid 2px paper rule (the message is not required), composes *Wedding
+  enquiry* with the answers and swaps to the sent block, all nine footer links scroll, the 390
+  burger opens (1 → 11 links), overflow at 390 is 0, and neither window logs an error, a warning or
+  a resize warning. Cards 2–4 publish all eleven sections in `pageOrder(i)`'s order with no error;
+  open question 4's record stands. Section 1's `window.__scrolled` flake did not recur.
+- **The band edges, against their real neighbours**: the 180px clips at 1440 and a crop of the
+  full 390 page at every section top. All ten edges are straight and no two neighbours share a
+  ground; pricing's `editorialRule` hairline reads blush on the taupe at both widths; the map's
+  leant panel and its shadow stay inside the map at 390; the footer seal sits over the wordmark bar
+  at 390, as its master draws it. The tape, `DashRule`, the sparkle and the seal are all
+  `pointerEvents: 'none'`, and every probe click reached its control. **A trap of reading, not of
+  the page**: a contact sheet of the clips read at first as garbled — "SEE US" over the strip,
+  "12 SONGS" over the pager — until the joins were read as joins: each clip is its own section top,
+  so the band above a join is the previous section's foot. The memory note's garbled-clip trap
+  was not met.
+- **The template-list grep** returned 26 hits. The ones making a claim about the list were fixed:
+  `data.js`'s header-`in` comment, the Soundcloud comment and `reachOf`'s, `navModeDefault`'s;
+  `EncoreBuilder.jsx`'s `ui`, `retro`, seeding and §6-picker comments; `EncoreSection.jsx`'s §10.2
+  banner and the flat header banner; five README passages. Three are branch-local truths and stay:
+  bio layout 4's ".89 — the flat two", map layout 2's "under Retro and the flat two", testimonials
+  layout 3's "the flat four" — Editorial is flat on those layouts until their passes.
+- **CLAUDE.md** took the per-section scheme rule in place of "Colours are not per-section", an
+  Editorial paragraph under *designed* (`s.limeTree` / `s.editorial`, the three layout-1 sites
+  left on the pair, the face, the decoration, `SIENNA_MEDIA`, the three fitted statements and their
+  keys, the redrawn and followed live states, the `'editorial'` family), `faced()`'s `s.faceK`,
+  the Soundcloud seat, the gallery's seven-tile 390 strip, the booked day, the refused box, the
+  photography row, the nav mode default, `notoEms`, `titleWordEms`' second arm, the identity and
+  header-`in` sentences, and the sizes and line counts.
+- **The two-build digest**: the old build digested before the `cp`. Themes 0, 1, 2 and 4
+  byte-identical at Desktop, Tablet and Mobile; theme 3 moved 1531 / 1422 / 1436 lines (736 → 797,
+  696 → 742, 683 → 741 rows); `modal.txt` reads `Editorial: 3 cards` → `4 cards`. The picker's
+  Editorial thumbnail went from no live root (the still) to one, and its big card from the still —
+  Fisterra's "SIENNA VALE" — to a live "KAI MERCER" in Noto.
+- **Sizes after the pass**: 49 photograph files, 5.77 MB (43 and 5.19 after Grunge's pass: the
+  seven `editorial-*.jpg` in, the still out); the standalone `index.html` is **8.74 MB** (was
+  7.95). Noto Serif Display is a Google Fonts link, not self-hosted, so no face was inlined.
+- **`CONVENTIONS.md` took a column, not markers**: *Leaned on in Editorial (layout 1)* on groups
+  A, B, C and D1, and four rows this pass leaned on three times or more that the file did not name
+  — Figma spacing a rotated child by its rotated box (A), a section's scheme resolved in
+  `sectionVm` (C), *a hand-scaled instance is not the ramp* and *a head fitted to its widest word*
+  (C, both met by Grunge only through D2 / D3). The dashed rule and the tape stay in this plan: the
+  file keeps no template's decorative language.
+
 ## Open questions
 
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
@@ -1946,6 +2047,13 @@ Section 11:
      with the name and "Performing since 2021" where Retro stands a polaroid.
    - **Card 4, Stacked**: its frame not read. It draws card 1's capsule (`NavBar`), Retro's seal in
      terracotta, the two-line title and the checker ribbon.
+
+   *Checked in the sweep, after sections 2–11 moved `SealBadge`, `BookPill` and `Pager`:* all
+   four cards publish with no error. Cards 2 and 4 draw Editorial's seal (section 2) where they
+   drew the flat starburst. With the hero photograph removed, cards 3 and 4 keep Retro's brown
+   well (the sweep's backdrop call). Card 4's layout-4 bio still sets a terracotta head on a
+   terracotta sheet (session 0's). The header's `in` row for cards 2–4 is a placeholder's
+   measurement.
 5. **The demo glyphs** — the frames ship Fontspring's DEMO mark for `'`, `&` and `"`, patched by
    hand in Playfair Display in two sections. Worth telling the designer with 1.
 6. **The three hand-scaled Bold statements** (form, testimonials, footer) — off the ramp, at three
@@ -1984,8 +2092,54 @@ Section 11:
     width, in a 397.28 box, and the demo face breaks UNFORGETTAB / LE at 390. Seeded, only 390 bites
     — 47.9 on three lines where the master sets four, the band 650.7 against 736.3; 1440 and 768
     keep the frame's size and lines, the box grown to the word. One line to turn (`min(…)` →
-    `px(57.84)`). All three statements are now fitted; worth telling the designer together.
+    `px(57.84)`). All three statements are now fitted; worth telling the designer together —
+    *Notes for the designer*, 3.
 12. **The testimonials' 390 pills** (section 10) — the frame's no-wrap row hugs 277 in a 264 slot,
     overflowing its own card's padding by 13; Noto's 296 wraps to two rows instead, and the 390
     band is 775.9 against 730. Worth telling the designer: the row has no room for a longer name
     even in the demo face.
+
+## Notes for the designer
+
+*(The open questions above that end "worth telling the designer", gathered by the sweep into one
+note to forward. Each is shipped as described; where it says "one line", the other answer is a
+one-line change.)*
+
+1. **The display face is a free stand-in.** The frames set Fisterra Fora, a Fontspring demo; the
+   page sets Noto Serif Display at width 62.5 (weight 540, and Bold 700 for the three statements
+   in 3). Its cap height is the frame's within 1.4% and the header's strings average the frame's
+   widths, but the big title sets about 9% wider. A licensed Fisterra Fora could be self-hosted in
+   its place. *(Open question 1.)*
+2. **The demo face drops its punctuation.** The frames print Fontspring's DEMO mark for `'`, `&`
+   and `"`, patched by hand in Playfair Display in two sections; Noto has real ones, so nothing is
+   patched. *(5.)*
+3. **The three Bold statements are fitted to their widest word.** The form's statement (50.36),
+   the testimonials' quote (57.84; the ramp's 36 at 390) and the footer's statement (57.84) are
+   hand-scaled off the type ramp, each at its own line ratio, in fixed boxes where the demo face
+   breaks inside a word (UNFORGETT / ABLE, UNFORGETTAB / LE). The page never breaks a word: each
+   shrinks until its longest word fits its column, the frame's size being the ceiling. Seeded,
+   that sets the form at 36 on the 1440 canvas (the frame's 41) on three lines where the frame sets
+   four; the testimonials at 52 at 768 on the frame's five lines, the band 703 against 730; and
+   the footer at 48 on three lines at 390, the band 651 against 736. An artist's longer word
+   shrinks further but never overflows. Each is one line to turn back to the frame's size with
+   the word broken wherever it overflows. Worth a call on whether these belong on the ramp.
+   *(6, 11.)*
+4. **The gallery strip** repeats one thumbnail three times and seats Retro's colour spotlight in
+   the ringed fourth tile; the page's strip is seven distinct pictures of Editorial's shoot (its
+   five and two crops of the hero). *(3.)*
+5. **The media player's clocks** are ink (`text/2`) on the card's near-black fade — invisible in
+   the frame's render and in ours, followed; one line to turn them paper. Its progress bar's track
+   and fill are both `sem/bg`, so there is no playhead; redrawn, as Lime's was, blush on taupe.
+   *(7.)*
+6. **The gallery at 390** draws seven 44px tiles where Lime and Grunge draw four (followed), hangs
+   its left arrow 10.88 off its own page (moved in to the other widths' 0.69), and alone spaces the
+   leant card by its rotated box. *(8.)*
+7. **Pricing's third card** binds its text `text/2` (ink) where the first two bind `text/1`
+   (paper), at all three widths — read as an override missed on one card of three, and drawn paper
+   on all three; one line to reverse. *(9.)*
+8. **The calendar's stacked divider**: at 768 and 390 the grid half keeps the desktop's right
+   rule, which with no panel ring draws a terracotta line down the panel's right edge that stops
+   at the grid's foot. Not drawn. *(10.)*
+9. **The testimonials' 390 pills** hug 277 in a 264 slot, overflowing the card's padding by 13
+   even in the demo face; ours wrap to two rows, and the 390 band is 776 against 730. The row has
+   no room for a longer name. *(12.)*
