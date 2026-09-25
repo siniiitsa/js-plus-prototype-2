@@ -174,7 +174,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme 1440 / 768 / 390 | Lime twin | Grunge twin | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:64598` *(page)* | — | `986:15657` | — | `986:15676` | — | — | — | — | Scheme 4, `SCHEMES_OF.Editorial[1]`, decision 1's mechanisms | — |
+| 0 | *foundation* | `964:64598` *(page)* | — | `986:15657` | — | `986:15676` | — | — | — | — | Scheme 4, `SCHEMES_OF.Editorial[1]`, decision 1's mechanisms | **done** (`e0526e7`, `088845d`) |
 | 1 | `header` | `964:64599` | 1440 × 900 | `986:15658` | 768 × 1024 | `986:15677` | 390 × 932 | 1 (nav pill **4**) | `964:64580` | `964:64618` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV1` | — |
 | 2 | `bio` | `964:64600` | 1440 × 760 | `986:15659` | 768 × 1217.8 | `986:15678` | 390 × 880.3 | 1 (pill **4**) | `964:64581` | `964:64619` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v1)` | — |
 | 3 | `media` | `964:64601` *(Section; panel `964:64602`)* | 1440 × 965 | `986:15660` *(Frame 299; `986:15661`)* | 768 × 1626 | `986:15679` *(Frame 299; `986:15680`)* | 390 × 1442 | page 1, **panel 2** | `964:64582` | `964:64620` | inside `Media`'s `if (s.v1)`, after `nowArt` | — |
@@ -331,7 +331,13 @@ paints `s.bg`); a card section needs decision 1(b)'s.
 
 ## The decisions this plan hands over
 
-### 1. Schemes this page's route A cannot yet say — **session 0 asks**
+### 1. Schemes this page's route A cannot yet say — **settled: all three recommendations**
+
+*Settled in session 0 (2026-09-25):* the user took the recommendation on all three parts: (a) a
+`SCHEMES_OF` triple read off `Z.dev`, (b) media and the calendar seated on their cards' Scheme 2
+with the root painting the page's paper round them, and (c) a flat `vm.onScheme[n]`. See
+*Conventions → Settled in session 0* for the mechanisms. The rest of this heading is kept as the
+record of the question.
 
 Layout 1's route A (its decision 3) seats a section on a scheme by design; this page needs three
 things it does not do. Each has a recommendation, and each part can be answered on its own.
@@ -713,16 +719,89 @@ the twins' dark-ground assumptions break (trap 6).
     and stars; the Book pill terracotta. At 390 the sub is a 431-wide no-wrap line clipped by the
     card (open question 7), and the rail stands under the card.
 
+### Settled in session 0 (the schemes)
+
+- **Decision 1 is the three recommendations** (user call, 2026-09-25), built as two commits:
+  `e0526e7` the mechanisms, all five themes at zero rows canvas and live (1290 renders), and
+  `088845d` the data, themes 0, 1, 2 and 4 at zero rows canvas and live.
+- **(a) A seat by width is a triple read at `sectionVm`'s head**: `const seat =
+  SCHEMES_OF[theme.name]?.[d]?.[cat]`, then `theme.schemes?.[Array.isArray(seat) ?
+  seat[DEV_SEAT[Z.dev]] : seat]`, `DEV_SEAT` being `{ desktop: 0, tablet: 1, mobile: 2 }` beside
+  `paperOf`. A 1 in a triple needs no entry: `schemes` has no key 1, so it falls through to the
+  theme, which is Scheme 1. Proved in the page (below) with a temporary `[3, 1, 2]`: ink, paper,
+  taupe. Every caller's `Z` names its width — `PublishedPage` `SIZES[key]`, `LayoutPicker`,
+  `TemplatePreview` and `HeaderChoices` `SIZES.desktop`, `preview.jsx` `Z[device]` — so no
+  fallback was owed and **`preview.jsx` needed nothing** (step 5: the digest's root row is
+  terracotta at `w=desktop` and paper at `w=tablet` and `w=mobile`).
+- **(b) A card on another scheme: `vm.pageBg` and the root's `editorialCard`.** `pageBg` is
+  `theme.palette[0]` — the **theme's**, not `T`'s, so it is the page's paper whatever the section
+  is seated on. The root reads it through `const editorialCard = (s.me || s.ca) && s.v1 &&
+  s.editorial`, beside `editorialRule`, ahead of `s.footerBand || s.bg`. It went in with (a),
+  inert by construction — with nothing seated, `pageBg` and `bg` were the same paper — so (b)
+  was data alone. The root's `color` stays `s.tx`, the card's; Scheme 2's `text2` is Scheme 1's
+  ink anyway. **The block paints the card**, and the flat `s.v1` arms already paint a panel in
+  `s.bg`: media and the calendar are taupe cards on paper today, each filling the root's padding
+  box (46 · 80 at desktop, 30 · 56 at 768, 10 · 44 at 390). The frames' insets are 56·86 / 30·60 /
+  10·40 (media) and 56·56 / 30·56 / 10·40 (calendar) — the media and calendar sessions'.
+- **(c) `vm.onScheme[n]`** is `flatScheme()` beside `paperOf` over the theme (`1`) and over each of
+  its `schemes` laid on the theme: `bg`, `ac`, `tx`, `acFg`, the twelve `sem` keys (`box1` …
+  `hl`), `pillBg` / `pillFg` (the scheme's `activeBg` / `activeFg`) and `chips` — **the scheme's
+  own two tag seats** with their inks, not `vm.chips`' six. No `muted`, `line`, `paper` or `deep`:
+  additive when a session needs one. It is undefined under every other theme, so a reader sits
+  behind `s.editorial` (or inside a block already gated on it). The calendar's head band picks
+  its scheme per width in its block, off `s.dev` (`1` at desktop, `3` narrow) — no second triple
+  in the data.
+- **Scheme 4 is the plan's table.** `get_variable_defs` on the form (`964:64614`) and the
+  repertoire (`964:64608`), both Scheme 4 at 1440, agreed on every token they read: `sem/bg`
+  `#c86e52`, `text/1` `#f6f0e8`, `text/2` `#141414`, `box/1` `#da7c5e`, `box/2` `#ef9173`,
+  `stroke/1` `#f6f0e88f` (56%), `stroke/2` `#141414`. Neither reads a tag seat, so those — ink /
+  salmon — are the planning walk's.
+- **What moved: 22 files, theme 3, arch 1, the five categories** — media, calendar and form at
+  all three widths, the repertoire and pricing at desktop only; none in an `arch_0` file. The
+  pictures (`shots.mjs` before / after in the session scratchpad) differ from step 4's prediction
+  in two places, because **the flat `s.v1` arms paint a full-size sheet over the root**:
+  - **The repertoire reads cream, not terracotta, at 1440.** The root is `#C86E52`, but the flat
+    arm's sheet is `s.paper` (`s.retro ? '#FAECD5' : s.paper`), and `paperOf(#C86E52, #141414)`
+    finds neither colour above 0.6 luminance and falls back to Retro's `#FBF6EA`. Its head, in
+    `s.ac` — Scheme 4's paper — nearly vanishes on it, and the pager's pills lose their fill.
+  - **The form reads ink, not terracotta.** Its flat sheet is `ground = s.pillBg`, and Scheme 4's
+    `activeBg` is `#141414` (trap 5); the root under it is terracotta. Its submit pill is now ink
+    on the paper card.
+  - **Pricing is the ink band at 1440** — its flat arm paints no sheet, so the root shows.
+  - **Media and the calendar are taupe cards inside paper.** The media list's terracotta rows
+    turned paper and its featured fan card pale; the calendar's head band, terracotta before, is
+    now paper, and its foot pill's label no longer reads. Neither was traced to its key — the
+    sections' blocks replace them.
+  All of it is the flat arms' `paper` / `deep` / `pillBg` readings on a new ground, which each
+  section's widened block replaces; none of it is chased here.
+- **The header and footer shots differ while their digests do not**: each carries a `.seal-spin`
+  seal, which `shots.mjs` does not stop and `digest.mjs` skips.
+- **Probing a vm key no section reads yet**: the digest cannot see one, so `sectionVm` was called
+  in the page through `import()`. After an HMR edit `EncoreBuilder.jsx` imports `data.js` under a
+  `?t=` stamp, so a bare `import('/src/builder/data.js')` is **another module instance** and a
+  mutation of its `SCHEMES_OF` changes nothing; fetch `/src/builder/EncoreBuilder.jsx`, take the
+  `data.js` URL out of its transformed source, and import that.
+- **For the sweep's CLAUDE.md pass**: the per-section scheme paragraph (the *A page section is*
+  bullet) now owes the triple, `pageBg` / `editorialCard` and `onScheme`; not written here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
 session leans on a bullet from Editorial layout 1's, Lime's, Grunge's or Retro's Conventions, name
 it here in one line, with the plan it came from, a blank line between sessions.)*
 
+- Session 0: *A section's colour scheme is resolved in `sectionVm`, not restated in its block*
+  (editorial/layout-1, *decision 3* and *Settled in session 0*) — extended by a width triple, a
+  page ground and a nested-scheme key.
+- Session 0: *`get_variable_defs` resolves a node's mode* (memory: `figma-frame-reading`) — Scheme
+  4 confirmed off the form's and the repertoire's desktop masters.
+- Session 0: *The digest is committed* (lime/layout-1, *Settled in session 0*) — five themes
+  canvas and live for (a), and the theme-3 filter by `_arch_1_` and category for (b).
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
-   *Session 0 asks.*
+   *Settled in session 0: all three recommendations.*
 2. **The form's credit avatar** is Lime's `f821adc2`, the component's default picture through an
    Editorial instance; the seed (`editorialHeaderAvatar`) stands. Worth telling the designer.
 3. **The gallery strip** repeats Retro's placeholder thumbnails again; the seeds stand (layout 1,
