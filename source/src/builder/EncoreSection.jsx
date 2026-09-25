@@ -9409,18 +9409,48 @@ function Pricing({ s }) {
     // and the featured one is Lime's pair turned round, `bg={s.bg} fg={s.ac}`,
     // which on Scheme 3 is the frame's black pill with a red label and a red
     // disc round a black arrow.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial — the same three masters in Sienna Vale's mode (964:68745 at
+    // 1440, 984:16837 at 768, 984:16868 at 390). The paired diff against
+    // Grunge's, by traversal order, is 115 nodes a side and three leaves: the
+    // rows are **square** (Grunge 15), their 1px inside stroke is **dashed
+    // 10, 10** (`DashRule side="all"`, the row `position: relative`), and the
+    // type is Sienna Vale's ramp — so the 28 padding and the 248 includes
+    // panel are Grunge's, and every binding is Grunge's name. On Scheme 1, no
+    // Device override, no effect on any node. Two of Grunge's names resolve
+    // to what Grunge wrote as literals: a plain row is the page's paper
+    // dashed in `sem/stroke/2` terracotta (`s.stroke2`); the featured row
+    // nests **Scheme 3**, and every one of its leaves reads `s.onScheme[3]` —
+    // its fill `sem/bg` ink (`featBg`, where both twins fill `s.ac`), its
+    // dash `stroke/2` blush, its inks `text/2` paper, its numeral `text/1`
+    // terracotta, its badge `box/1` #1D1D1D lettered paper, and its pill
+    // `text/1` lettered and disced in `sem/bg` — terracotta round ink
+    // (`featPillBg` / `featPillFg`, where the twins turn the section's pair
+    // round). The capsule is the twins' five keys to the node, and the plain
+    // row's pill is `BookPill`'s defaults. The heading is Display/Title,
+    // Sienna Vale's 32 × 0.82 / 25 / 23. The instance's 1px `sem/stroke/1`
+    // ring is on all three masters, ink on the paper page, so Grunge's
+    // overlay draws it.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
+      const S3 = ed ? s.onScheme[3] : null
       const ring = (c) => `inset 0 0 0 1px ${c}`
       // Lime's arm is this block's own literals, so theme 1 digests to zero.
+      // Editorial's three extra leaves fall back to the twins' reading.
       const G = grunge
         ? { radius: 15, pad: 28, incW: 248, rowRing: s.stroke2, featRing: '#FFFFFF',
             featInk: s.tx, featNum: '#000000', badgeBg: '#9E1F17', badgeFg: '#FFFFFF' }
-        : { radius: 50, pad: 38, incW: 240, rowRing: s.ac, featRing: s.bg,
-            featInk: s.bg, featNum: s.bg, badgeBg: '#CCFA61', badgeFg: s.bg }
+        : ed
+          ? { radius: 0, pad: 28, incW: 248, rowRing: s.stroke2, featRing: S3.stroke2,
+              featInk: S3.tx, featNum: S3.ac, badgeBg: S3.box1, badgeFg: S3.tx,
+              featBg: S3.bg, featPillBg: S3.ac, featPillFg: S3.bg }
+          : { radius: 50, pad: 38, incW: 240, rowRing: s.ac, featRing: s.bg,
+              featInk: s.bg, featNum: s.bg, badgeBg: '#CCFA61', badgeFg: s.bg }
       // Anton stands in for Stones Crush, which is all capitals: every display
-      // site scales and cases at its own site (layout 1, session 0).
-      const disp = (lh) => (grunge
+      // site scales and cases at its own site (layout 1, session 0). Noto's
+      // `faceK` is 1, so under Editorial `facedLh` is the identity.
+      const disp = (lh) => (grunge || ed
         ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' }
         : { lineHeight: lh })
       const chip = {
@@ -9444,8 +9474,8 @@ function Pricing({ s }) {
               ? col(u(40), { alignItems: 'flex-start' })
               : row(u(40), { alignItems: 'flex-start' })),
             ...rowBox, color: ink,
-            background: feat ? s.ac : 'transparent',
-            boxShadow: ring(feat ? G.featRing : G.rowRing),
+            background: feat ? G.featBg ?? s.ac : 'transparent',
+            ...(ed ? { position: 'relative' } : { boxShadow: ring(feat ? G.featRing : G.rowRing) }),
           }}>
             <div style={col(u(10), {
               alignItems: 'flex-start',
@@ -9474,10 +9504,14 @@ function Pricing({ s }) {
                       fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
                     }}>{symbol}</span>
                   )}
+                  {/* Noto sits 0.09em lower than the frame's face (the
+                      calendar's lift): the frame stands the numeral's foot 7
+                      above the `£`'s at 1440, and unlifted the two were level. */}
                   <span style={{
                     fontFamily: s.display, fontSize: faced(s, s.dispMd), ...disp(1),
                     letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
                     ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
+                    ...(ed ? { position: 'relative', top: '-0.09em' } : {}),
                   }}>{amount}</span>
                   {!!s.tierUnit && (
                     <span style={{
@@ -9492,7 +9526,7 @@ function Pricing({ s }) {
                   and disc, lime arrow). Featured: the pair turned round, a
                   lime disc round an ink arrow — the frame's two disc SVGs. */}
               <BookPill s={s} to={s.tierBookTo} full={s.mob}
-                        {...(feat ? { bg: s.bg, fg: s.ac } : {})} />
+                        {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac } : {})} />
             </div>
 
             {t.feats.length > 0 && (
@@ -9518,6 +9552,7 @@ function Pricing({ s }) {
                 </div>
               </div>
             )}
+            {ed && <DashRule side="all" dash={10 * z} colour={feat ? G.featRing : G.rowRing} />}
           </div>
         )
       }
@@ -9528,7 +9563,7 @@ function Pricing({ s }) {
             {!!s.title && (
               <h2 style={{
                 margin: 0, fontFamily: s.display,
-                fontSize: faced(s, desk ? u(36) : tab ? '28px' : '26px'),
+                fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
                 ...disp(1.1), letterSpacing: s.dls, color: s.tx,
               }}>{s.title}</h2>
             )}
@@ -9578,8 +9613,12 @@ function Pricing({ s }) {
           )}
           <div style={col(u(16), { width: '100%' })}>
             {shown.length === 0 ? (
-              <div style={{ ...rowBox, ...ui, boxShadow: ring(G.rowRing), color: s.tx }}>
+              <div style={{
+                ...rowBox, ...ui, color: s.tx,
+                ...(ed ? { position: 'relative' } : { boxShadow: ring(G.rowRing) }),
+              }}>
                 No packages yet.
+                {ed && <DashRule side="all" dash={10 * z} colour={G.rowRing} />}
               </div>
             ) : shown.map(packRow)}
           </div>
@@ -9594,8 +9633,9 @@ function Pricing({ s }) {
               all three widths (the desktop render samples 38 on every edge).
               The section root is the nearest positioned ancestor, so `inset: 0`
               is its box; `pointerEvents` off, or the published capsule would
-              click the overlay. Lime's masters carry no such stroke. */}
-          {grunge && (
+              click the overlay. Lime's masters carry no such stroke;
+              Editorial's do, ink on the paper page. */}
+          {(grunge || ed) && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, pointerEvents: 'none',
               boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
