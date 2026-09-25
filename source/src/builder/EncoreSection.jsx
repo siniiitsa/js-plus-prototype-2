@@ -1345,11 +1345,14 @@ function Reticle({ s, size, style }) {
 // not lucide's MapPin but a pin with a ring cut out of it. Transcribed in the
 // tile's own viewBox, so the caller sizes the tile and the glyph follows it
 // (`LimeSourceGlyph`'s rule).
-function LimePin({ s, width, height, radius }) {
+// `fill` is the tile's ground, defaulting to the accent every Lime and Grunge
+// caller draws; Editorial's layout-2 place card (964:64599) outlines the same
+// pin tile with no fill at all — additive, `BookPill`'s `discBg` precedent.
+function LimePin({ s, width, height, radius, fill }) {
   return (
     <span style={{
       position: 'relative', display: 'block', flex: 'none', width, height,
-      borderRadius: radius, background: s.ac, boxShadow: `inset 0 0 0 1px ${s.bg}`,
+      borderRadius: radius, background: fill ?? s.ac, boxShadow: `inset 0 0 0 1px ${s.bg}`,
     }}>
       <svg viewBox="0 0 88 89" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
         <path fill={s.bg} d="M44 44.5C44.94 44.5 45.75 44.16 46.42 43.49C47.09 42.82 47.43 42.01 47.43 41.07C47.43 40.13 47.09 39.32 46.42 38.65C45.75 37.98 44.94 37.64 44 37.64C43.06 37.64 42.25 37.98 41.58 38.65C40.91 39.32 40.57 40.13 40.57 41.07C40.57 42.01 40.91 42.82 41.58 43.49C42.25 44.16 43.06 44.5 44 44.5ZM44 57.1C47.49 53.9 50.07 50.99 51.76 48.38C53.44 45.76 54.29 43.44 54.29 41.41C54.29 38.3 53.29 35.75 51.31 33.77C49.32 31.78 46.89 30.79 44 30.79C41.11 30.79 38.68 31.78 36.69 33.77C34.71 35.75 33.72 38.3 33.72 41.41C33.72 43.44 34.56 45.76 36.24 48.38C37.93 50.99 40.51 53.9 44 57.1ZM44 61.64C39.4 57.73 35.96 54.09 33.69 50.74C31.42 47.38 30.29 44.27 30.29 41.41C30.29 37.13 31.67 33.72 34.42 31.17C37.18 28.63 40.37 27.36 44 27.36C47.63 27.36 50.82 28.63 53.58 31.17C56.33 33.72 57.71 37.13 57.71 41.41C57.71 44.27 56.58 47.38 54.31 50.74C52.04 54.09 48.6 57.73 44 61.64Z" />
@@ -1790,7 +1793,7 @@ function HeaderV0({ s }) {
 // and both hand the links to NavMenu — the way every Retro header collapses
 // below desktop, and for the reason the nav's own comment gives.
 function HeaderV1({ s }) {
-  if (s.lime || s.grunge) {
+  if (s.limeTree) {
     // Lime's Feature spread (964:64580 at 1440, 986:11848 at 768, 986:11867 at
     // 390). The same skeleton as Retro's frame — a nav over two columns, the
     // identity block over two sub-cards — with every piece of Retro's dress
@@ -1819,7 +1822,22 @@ function HeaderV1({ s }) {
     // type, with a red 3.77 offset block); the title is two-tone; and the
     // place card's ring is white on white. Nothing on any of the three masters
     // carries an inner shadow — `effects` read off every node.
+    //
+    // Editorial's Feature spread (964:64599 at 1440, 986:15658 at 768,
+    // 986:15677 at 390) is the tree a third time, in Sienna Vale's Scheme 1 at
+    // every width with no Device override, so `ed` names its deltas. It is the
+    // first of the three to stand on paper, and every `s.*` the block reads
+    // resolves there: the capsule, links, name, chip, title (one tone, in ink),
+    // subtitle and hero pill needed nothing. What moves: the nav is Grunge's
+    // box — 1176 centred at 1440, 350 at 390, the capsule gapped a fixed 18 —
+    // though its 390 row sits 20 lower; the photograph is an arch (340 / 340 /
+    // 0 / 0, clamped by CSS as by Figma) in a 3px `sem/stroke/2` ring, with no
+    // glow and no grain; the cards are square and dashed 10, 10 in
+    // `sem/text/1` rather than ringed, their tiles square at 89; the place
+    // card's pin tile is outlined in paper, not filled; and the nav pill is its
+    // Scheme 4 node's pair, `s.onScheme[4]`.
     const grunge = s.grunge
+    const ed = s.editorial
     const tab = isTablet(s)
     const nar = s.narrow
     const z = nar ? 1 : 0.82
@@ -1839,14 +1857,18 @@ function HeaderV1({ s }) {
     // Grunge's row tops are its tallest child's: the pill at nav y 10 under a
     // nav at 30 / 20 (40 / 30), the capsule at y 10 under a nav at 2 (12) —
     // and its spreads start at the same 156 / 100 / 90.
-    const navTop = grunge ? (s.mob ? 12 : tab ? 30 : 40) : s.mob ? 11 : tab ? 36 : 39.47
-    const navH = grunge ? (s.mob ? 34 : 34.93) : s.mob ? 34 : tab ? 34.93 : 36
-    const navGap = grunge ? (s.mob ? 44 : tab ? 35.07 : 81.07) : s.mob ? 45 : tab ? 29.07 : 80.53
+    // Editorial's are Grunge's at 1440 and 768; its 390 nav stands at y 22,
+    // padded 10, so the capsule's top is 32 (sampled) and the spread at 90
+    // is 24 under it.
+    const navTop = ed && s.mob ? 32 : grunge || ed ? (s.mob ? 12 : tab ? 30 : 40) : s.mob ? 11 : tab ? 36 : 39.47
+    const navH = grunge || ed ? (s.mob ? 34 : 34.93) : s.mob ? 34 : tab ? 34.93 : 36
+    const navGap = ed && s.mob ? 24 : grunge || ed ? (s.mob ? 44 : tab ? 35.07 : 81.07) : s.mob ? 45 : tab ? 29.07 : 80.53
     // Grunge's nav is narrower than its spread: a 1176 box centred in the 1440
     // frame (x 132 against the spread's 56) and 350 in the 390 one (x 20
     // against 10); at 768 both are 708. The row is the query container, so
     // the inset comes off its margin and the links' `100cqi` budget with it.
-    const navInset = grunge ? (s.mob ? '10px' : tab ? '0px' : u(76)) : '0px'
+    // Editorial's is the same box at all three widths.
+    const navInset = grunge || ed ? (s.mob ? '10px' : tab ? '0px' : u(76)) : '0px'
 
     // `sem/stroke/2` rules throughout are *inside* strokes, drawn as inset
     // shadows so every stated box keeps the frame's own height.
@@ -1858,8 +1880,10 @@ function HeaderV1({ s }) {
     // 1440, 13 at 768), where Lime's block carries the gap in ems of the row.
     // So under Grunge `s.navEms` is the labels alone (sectionVm strips the em
     // gap term for this layout) and the gaps are a fixed box in the budget
-    // beside the capsule's padding.
-    const navGaps = grunge ? u(18 * Math.max(0, s.navLinks.length - 1)) : '0px'
+    // beside the capsule's padding. Editorial's capsule is gapped the same
+    // fixed 18 (at 16px type at 1440, 13 at 768), and sectionVm strips its em
+    // gap at this layout alone.
+    const navGaps = grunge || ed ? u(18 * Math.max(0, s.navLinks.length - 1)) : '0px'
     // The desktop links' budget: the whole row (the query container) less the
     // name, Listen and the pill's label (their Bebas ems at their own sizes,
     // resolved in sectionVm beside `s.navEms`) and every fixed box beside them —
@@ -1906,7 +1930,7 @@ function HeaderV1({ s }) {
           ) : (
             <nav style={{
               ...capsule, borderRadius: u(18), maxWidth: '100%',
-              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: grunge ? u(18) : `${23 / 24}em`,
+              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: grunge || ed ? u(18) : `${23 / 24}em`,
               fontSize: nar ? s.labelSm : linkSize,
             }}>
               {s.navLinks.map((l) => (
@@ -1936,8 +1960,17 @@ function HeaderV1({ s }) {
               one on the page set in Anton itself — Retro's component default
               leaking, 12.07 = 16 × 0.7547 — so its label is taken at that
               size undivided: `faced` divides out a face that is not there. */}
+          {/* Editorial's is its Scheme 4 node at all three widths — fill
+              `sem/bg`, label and disc `text/1`, arrow `sem/bg`, which Scheme 4
+              resolves to terracotta under paper — so it reads `s.onScheme[4]`,
+              the one key that holds another scheme's pair. Its paper 5 / 5
+              block (3.77 at 390) draws nothing on the paper page and is not
+              drawn. Its 390 label is the same Anton 12.07 leak, and Lime's
+              `s.labelSm` stands in: Noto is the face here, and its 12 is the
+              leak's 16 × 0.7547 to within 0.6%. */}
           <BookPill s={s} to={s.bookTo} size={s.labelSm} disc={27.6 * pk}
-                    bg={grunge ? (s.mob ? s.bg : s.pillBg) : s.tx} fg={grunge && s.mob ? s.ac : s.bg}
+                    bg={ed ? s.onScheme[4].bg : grunge ? (s.mob ? s.bg : s.pillBg) : s.tx}
+                    fg={ed ? s.onScheme[4].ac : grunge && s.mob ? s.ac : s.bg}
                     style={{
                       padding: `${pp(4.27)} ${pp(4.27)} ${pp(4.27)} ${pp(17.92)}`,
                       gap: pp(8.53), lineHeight: 1.1,
@@ -1959,20 +1992,31 @@ function HeaderV1({ s }) {
     // `image 1` is the hero's grain sheet — a 733.18 square hung off the
     // photo's top-left at (−48.59, −22.59) / (−12.59, −99.09) / (−181.59,
     // −235.09), lighten at .29, its gradient paint hidden — under the ring.
+    // Editorial's is an arch — 340 / 340 / 0 / 0 on the same `sem/box/3` well,
+    // which CSS clamps to a semicircle at 1440 and 390 as Figma does, and
+    // leaves 28px of flat top at 768 — in a 3px `sem/stroke/2` ring, 495 / 227
+    // tall on the narrow masters, with no glow and no grain. Its 1440 fill is
+    // a CROP that stretches the photograph 14% wide (53.9% of the width into
+    // a box whose cover needs 61.6%; the render correlates 0.997 with that
+    // stretch), which an artist's upload must not take: the cover is anchored
+    // on the crop's own centre, 0.674 of the width, which is `95%` — inside
+    // the 92–100% plateau a sweep against the render found. The narrow fills
+    // are FILL, a centred cover.
     const grainAt = s.mob ? [-235.09, -181.59] : tab ? [-99.09, -12.59] : [-22.59, -48.59]
     const photo = (
       <div style={{
-        position: 'relative', overflow: 'hidden', borderRadius: u(grunge ? 15 : 50), background: s.box3,
-        ...(nar ? { height: s.mob ? (grunge ? '263px' : '236px') : grunge ? '535px' : '511px' } : { flex: '1 1 0', minWidth: 0 }),
+        position: 'relative', overflow: 'hidden', background: s.box3,
+        borderRadius: ed ? `${u(340)} ${u(340)} 0 0` : u(grunge ? 15 : 50),
+        ...(nar ? { height: s.mob ? (ed ? '227px' : grunge ? '263px' : '236px') : ed ? '495px' : grunge ? '535px' : '511px' } : { flex: '1 1 0', minWidth: 0 }),
       }}>
-        <Photo s={s} initialsSize={72} style={nar || grunge ? undefined : { objectPosition: '22% 50%' }} />
+        <Photo s={s} initialsSize={72} style={nar || grunge ? undefined : { objectPosition: ed ? '95% 50%' : '22% 50%' }} />
         {grunge && (
           <Grain s={s} exact grunge blend="lighten" opacity={0.29}
                  style={{ inset: `${u(grainAt[0])} auto auto ${u(grainAt[1])}`, width: u(733.18), height: u(733.18) }} />
         )}
         <span style={{
           position: 'absolute', inset: 0, borderRadius: 'inherit',
-          boxShadow: grunge ? ring(s.stroke2) : `inset 0 0 ${u(34)} ${s.ac}`,
+          boxShadow: ed ? `inset 0 0 0 ${u(3)} ${s.stroke2}` : grunge ? ring(s.stroke2) : `inset 0 0 ${u(34)} ${s.ac}`,
         }} />
       </div>
     )
@@ -2004,23 +2048,43 @@ function HeaderV1({ s }) {
     // text on the floor; both narrow masters turn each on its side.
     // Grunge's cards are a raw 15 at every width, padded 20 (10 at 390) where
     // Lime's are 50 / 30 padded 28·26 / 26 / 16; its tile is a raw 6.
-    const card = (fill, line) => ({
-      background: fill, boxShadow: ring(line), overflow: 'hidden',
-      ...(nar
-        ? { width: '100%', borderRadius: grunge ? '15px' : '30px', padding: grunge ? (tab ? '20px' : '10px') : tab ? '26px' : '16px', ...row('20px') }
-        : {
-            flex: '1 1 0', minWidth: 0, borderRadius: u(grunge ? 15 : 50), padding: grunge ? u(20) : `${u(28)} ${u(26)}`,
-            ...col('0', { alignItems: 'flex-start', justifyContent: 'space-between' }),
-          }),
-    })
-    const tile = nar ? 88 : 107
+    // Editorial's are square, padded 18 · 16 (8 · 10 at 390), and dashed 10, 10
+    // in `sem/text/1` — terracotta, the accent — round both cards where the
+    // twins ring them, so the rule is a `DashRule` overlay and the card is its
+    // `position: relative`. Its tiles are square too, 89 at every width. Both
+    // narrow masters state each card 148.5 tall (the pair a fixed 313 column
+    // at 390, where nothing beside it can stretch it), their content centred;
+    // the stated height is a minimum, so a long town still grows the card.
+    const card = (fill, line) => (ed
+      ? {
+          position: 'relative', background: fill, overflow: 'hidden',
+          ...(nar
+            ? { width: '100%', minHeight: '148.5px', padding: tab ? '18px 16px' : '8px 10px', ...row('20px') }
+            : {
+                flex: '1 1 0', minWidth: 0, padding: `${u(18)} ${u(16)}`,
+                ...col('0', { alignItems: 'flex-start', justifyContent: 'space-between' }),
+              }),
+        }
+      : {
+          background: fill, boxShadow: ring(line), overflow: 'hidden',
+          ...(nar
+            ? { width: '100%', borderRadius: grunge ? '15px' : '30px', padding: grunge ? (tab ? '20px' : '10px') : tab ? '26px' : '16px', ...row('20px') }
+            : {
+                flex: '1 1 0', minWidth: 0, borderRadius: u(grunge ? 15 : 50), padding: grunge ? u(20) : `${u(28)} ${u(26)}`,
+                ...col('0', { alignItems: 'flex-start', justifyContent: 'space-between' }),
+              }),
+        })
+    const dashed = ed && <DashRule side="all" dash={10 * z} colour={s.ac} />
+    const tile = ed ? 89 : nar ? 88 : 107
     // The title is a direct `s.display` site, so under Grunge it is `faced`
-    // (identity off Grunge) and uppercase, Stones Crush being all capitals.
+    // (identity off Grunge) and uppercase, Stones Crush being all capitals —
+    // and uppercase under Editorial, Noto standing in for the caps-only
+    // Fisterra Fora.
     const cardText = (title, body, ink, bodyInk) => (
       <div style={col(u(8), { alignItems: 'flex-start', ...(nar ? { flex: 1, minWidth: 0 } : { width: '100%' }) })}>
         <span style={{
           fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, color: ink,
-          textTransform: grunge ? 'uppercase' : undefined,
+          textTransform: grunge || ed ? 'uppercase' : undefined,
         }}>{title}</span>
         <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: bodyInk }}>{body}</span>
       </div>
@@ -2029,22 +2093,28 @@ function HeaderV1({ s }) {
       <div style={card(s.box1, s.stroke2)}>
         <div style={{
           position: 'relative', width: u(tile), height: u(tile), flex: 'none',
-          borderRadius: u(grunge ? 6 : 20), overflow: 'hidden', background: s.box2,
+          borderRadius: ed ? 0 : u(grunge ? 6 : 20), overflow: 'hidden', background: s.box2,
         }}>
           <Photo s={s} avatar initialsSize={34} />
           <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring(s.stroke2) }} />
         </div>
         {cardText('The face of the act', "Same person you'll meet on the night. Performing since 2021.", s.tx, s.ac)}
+        {dashed}
       </div>
     )
     // The place card is `sem/box/1/text` on Scheme 1, `#C7FF3C` — `s.hl` — in a
     // `sem/bg` rule, and inked in `sem/bg` throughout. Grunge's is the same key
     // (white) in a *white* rule — `scheme/3/stroke/2`, white on white, which
     // the render confirms draws nothing — so the ring is the fill's own.
+    // Editorial's `s.hl` is ink under paper type, and its pin tile is
+    // 89 × 90.65 with no fill, only the `sem/bg` ring round the paper pin.
     const placeCard = (
       <div style={card(s.hl, grunge ? s.hl : s.bg)}>
-        <LimePin s={s} width={u(88)} height={u(89)} radius={u(20)} />
+        {ed
+          ? <LimePin s={s} width={u(89)} height={u(90.65)} radius={0} fill="transparent" />
+          : <LimePin s={s} width={u(88)} height={u(89)} radius={u(20)} />}
         {cardText(s.location, 'Available across the UK · 120 mi standard travel radius.', s.bg, s.bg)}
+        {dashed}
       </div>
     )
 
@@ -2062,7 +2132,9 @@ function HeaderV1({ s }) {
         ) : tab ? (
           <div style={col('56px')}>
             {photo}
-            <div style={row('60px')}>
+            {/* Editorial's 768 row tops its two halves (`MIN`) where the
+                twins' centre them. */}
+            <div style={row('60px', ed ? { alignItems: 'flex-start' } : undefined)}>
               <div style={{ flex: '1 1 0', minWidth: 0 }}>{identity}</div>
               <div style={col('16px', { flex: '1 1 0', minWidth: 0 })}>{faceCard}{placeCard}</div>
             </div>
@@ -2082,11 +2154,7 @@ function HeaderV1({ s }) {
     )
   }
   const olive = (s.retro && s.chips[3]?.bg) || s.line2
-  // Under Editorial `pillBg` IS the accent (Sienna Vale's `active/bg` is its
-  // terracotta), so the pill's label and the place card's title went accent
-  // on accent. Its own layout-2 frame (964:64599) paints the place card ink,
-  // so ink (`sem/box/3` in Scheme 1) stands in until that pass fits the card.
-  const mustard = s.editorial ? s.box3 : s.pillBg
+  const mustard = s.pillBg
   // Three creams, all literal under Retro, whose `paper` IS the page ground:
   // the mount is a shade deeper than the sub-card (Figma tag/6/text vs box/1).
   const mount = s.retro ? '#F3E3C8' : s.paper
@@ -2309,7 +2377,7 @@ function HeaderV1({ s }) {
       }}><MapPin size={nar ? 46 : 38} /></div>
       {cardText(
         cardTitle(s.location, s.ac),
-        cardBody('Available across the UK · 120 mi standard travel radius.', s.editorial ? cream : ink),
+        cardBody('Available across the UK · 120 mi standard travel radius.', ink),
       )}
     </div>
   )

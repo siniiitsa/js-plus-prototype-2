@@ -580,10 +580,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Editorial's capsule (964:58612 "Frame 50") is Lime's again, in Noto Serif
   // Display (`notoEms`, the face standing in for Fisterra Fora, at its own
   // glyph size), but its links are Label/SM 16 where Lime's are Display/List
-  // 24, still 23 apart — so its gap is 23/16 of the row's size.
+  // 24, still 23 apart — so its gap is 23/16 of the row's size. Its layout-2
+  // capsule (964:64599) is Grunge's instead, a fixed 18 at 16px type and at
+  // 13, so there the sum is the labels alone. Cards 3 and 4 are placeholders
+  // and keep layout 1's until their passes.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? notoEms : null
-  const navGapEm = T.name === 'Editorial' ? 23 / 16 : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+  const navGapEm = T.name === 'Editorial' ? (d === 1 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -616,14 +619,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // fixed 18 gaps, which its `navEms` leaves out (above). Its layout 3
   // (984:13900) is Lime's layout-3 bar box for box, the same 138.32 against
   // the same 684, with the links at Label/MD (14 at 768) where Lime's are
-  // Label/SM, and the same fixed 18 gaps.
+  // Label/SM, and the same fixed 18 gaps. Editorial's layout 2 (986:15658) is
+  // Grunge's layout-2 bar box for box — the same 138.32, the same fixed 18
+  // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Noto
+  // (`navFace`). Its layout 3 is a placeholder, and keeps the burger.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
     const row = d === 1 ? 708 : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge') {
+    } else if (T.name === 'Grunge' || (T.name === 'Editorial' && d === 1)) {
       vm.navFits = vm.navEms * px(d === 1 ? vm.labelSm : vm.labelMd) + (vm.navLinks.length - 1) * 18
         + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {

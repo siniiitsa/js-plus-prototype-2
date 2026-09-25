@@ -392,11 +392,12 @@ export const minimalNav = (navSections) =>
 // burger. Everywhere else it follows the sections. `d` is the design index,
 // `arch % designCount`. A stored value always wins, so a header moved back
 // to layout 1 returns to its sections unless the artist picked Minimal.
-// Editorial's cards 2 and 3 are placeholders, so they follow the sections
-// until their passes fit them (plans/editorial/layout-1.md, open question 4).
+// Editorial's layout 2 draws the three too (964:64599, 986:15658); its card 3
+// is a placeholder, so it follows the sections until its pass fits it
+// (plans/editorial/layout-1.md, open question 4).
 export const navModeDefault = (themeName, d) =>
-  (themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
-    && (d === 1 || d === 2) ? 'minimal' : 'sections'
+  ((themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
+    && (d === 1 || d === 2)) || (themeName === 'Editorial' && d === 1) ? 'minimal' : 'sections'
 
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas
@@ -1233,9 +1234,9 @@ export const FIELDS = {
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 1, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [1, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
