@@ -212,7 +212,8 @@ export const THEMES = [
     // paper, so its heads are paper on taupe; Schemes 2's and 3's inactive
     // ground is transparent, so an idle chip there is an outline only.
     schemes: {
-      // Scheme 2, taupe — the media player and pricing.
+      // Scheme 2, taupe — layout 1's media player and pricing, and layout 2's
+      // media panel and calendar card.
       2: {
         palette: ['#AA958A', '#F6F0E8', '#141414'],
         // tag1 blush, tag2 paper, both inked black — read off the file; the
@@ -226,7 +227,8 @@ export const THEMES = [
           tagFg: ['#141414', '#141414'],
         },
       },
-      // Scheme 3, ink — the header, repertoire, the enquiry form and the footer.
+      // Scheme 3, ink — layout 1's header, repertoire, enquiry form and
+      // footer, and layout 2's pricing at 1440.
       3: {
         palette: ['#141414', '#C86E52', '#F6F0E8'],
         tags: ['#F6F0E8', '#C86E52'],
@@ -236,6 +238,21 @@ export const THEMES = [
           inactiveBg: 'rgba(20, 20, 20, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
           stroke1: 'rgba(246, 240, 232, 0.56)', stroke2: '#E6B6A0', hl: '#FFFFFF',
           tagFg: ['#141414', '#F6F0E8'],
+        },
+      },
+      // Scheme 4, terracotta — layout 2's repertoire at 1440 and its enquiry
+      // form. Its accent is paper and its active pair ink under terracotta, so
+      // `pillBg` is ink here. tag1 ink, tag2 salmon — read off the file; layout
+      // 1's plan had the two seats the other way round.
+      4: {
+        palette: ['#C86E52', '#F6F0E8', '#141414'],
+        tags: ['#141414', '#EF9173'],
+        sem: {
+          box1: '#DA7C5E', box2: '#EF9173', box3: '#BE6346', glow: '#C86E52',
+          activeBg: '#141414', activeFg: '#C86E52',
+          inactiveBg: 'rgba(200, 110, 82, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
+          stroke1: 'rgba(246, 240, 232, 0.56)', stroke2: '#141414', hl: '#FFFFFF',
+          tagFg: ['#C86E52', '#141414'],
         },
       },
     },
@@ -269,10 +286,14 @@ export const THEMES = [
 // layout.
 export const SCHEMES_OF = {
   // Sienna Vale's layout-1 page (964:58612…22), read off each section's
-  // `explicitVariableModes`, identical at all three widths. Layouts 2–4 are
-  // later passes' to fill from their own walks.
+  // `explicitVariableModes`, identical at all three widths. Layouts 3 and 4
+  // are later passes' to fill from their own walks.
   Editorial: {
     0: { header: 3, media: 2, repertoire: 3, pricing: 2, form: 3, footer: 3 },
+    // Its layout-2 page (964:64598 · 986:15657 · 986:15676). The repertoire
+    // and pricing move between widths; media and the calendar are Scheme 2
+    // cards on the page's paper, which the root paints round them (`pageBg`).
+    1: { media: 2, repertoire: [4, 1, 1], pricing: [3, 1, 1], calendar: 2, form: 4 },
   },
 }
 
