@@ -616,6 +616,9 @@ difference at any theme; the proof that this pass shipped is card 2 in both buil
 
 ## The end-of-pass sweep
 
+*Done (2026-09-25): all ten items, item 7 taken — see* Learned on the end-of-pass sweep *and*
+Notes for the designer *at the foot.*
+
 Written now from what the plan can see; the sections add to it. One session, in this order:
 
 1. **CLAUDE.md and README.md**, wherever they describe Editorial as designed at layout 1 only, or a
@@ -666,9 +669,11 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
 - **Diff by traversal order, never by id**: each template is its own variant.
 - **Every head on this page is one tone and on the ramp.** Grunge's positional two-tone rules and
   layout 1's three fitted Bold statements have no site here but the footer, which is layout 1's.
-- **Judge a dash's ink in a DPR-2 shot** (section 2): `DashRule side="all"` insets its svg 0.5,
+- ~~**Judge a dash's ink in a DPR-2 shot** (section 2): `DashRule side="all"` insets its svg 0.5,
   which Chrome pixel-snaps at DPR 1, so a crisp 1px card edge lands as two 50% rows and reads pale;
-  at DPR 2 it is full ink. A `side` 'top' / 'bottom' rule is crisp at both.
+  at DPR 2 it is full ink. A `side` 'top' / 'bottom' rule is crisp at both.~~ *Retired by the
+  sweep (`b37c85a`)*: the inset is the rect's own `x` / `y` now, so a four-sided dash is one row of
+  full ink at DPR 1 too.
 - **A dash's pattern can be uneven, and `DashRule` takes it** (section 2): `gap` beside `dash`,
   defaulting to it. Read the `dashPattern` pair, never assume it repeats.
 - **A card seated on its own scheme is `s.bg`** (section 3): under decision 1(b) the section's
@@ -1999,6 +2004,93 @@ it here in one line, with the plan it came from, a blank line between sessions.)
   call, 26 = 26 = 26, the `layoutSizing` column the finding; and *the node walker, kept* with the
   binding names — three walks.
 
+- Sweep: *The whole-page published check is one puppeteer script* (lime/layout-1) —
+  `page-check.mjs Editorial 1,0,2,3`, its seam clips standing in for item 2's.
+- Sweep: *One five-theme digest is the whole proof for a shared-helper change* (lime/layout-1) —
+  `DashRule`'s inset, filtered to the rows that moved.
+- Sweep: *Field reach is measured* (`reach.mjs 3`) and *the two-build digest walks the editor*
+  (lime/layout-1), `CARD=1`.
+
+### Learned on the end-of-pass sweep (`b37c85a`, `2afa5c5`, `a3632f2`)
+
+- **Item 1, the docs.** CLAUDE.md's per-section scheme bullet now carries Scheme 4, the
+  `SCHEMES_OF` triple read through `DEV_SEAT`, a card seated on its own scheme with the root
+  painting `vm.pageBg` round it (`editorialCard`), and `vm.onScheme` with every layout-2 reader
+  named; the *Editorial is designed* paragraph is layouts 1 and 2, card 2 fitted and cards 3 and 4
+  the placeholders (only card 3 keeps the `mustard`-as-`s.box3` arm — `HeaderV3`'s Retro half
+  never had one). Every layout-2 clause that named a Lime-and-Grunge state gained Editorial's:
+  Minimal at `d === 1` and the 768 fit (five links), `navFits`' Grunge arm, the bio's divider,
+  the map's compact pager, plate and `zoom`, pricing's pill and its followed chip, the calendar's
+  dimmed and full-ink past rows (the Lime block's `dim` reads no template, so Editorial inherits
+  both), the form's terracotta sheet, 6, 6 refusal and two-tone stars, and the testimonials'
+  filling tiles and `pre-wrap` head. README took the same at its four Editorial sites. Two code
+  comments were stale — `FIELDS`' header-`in` note ("one fitted card and three placeholders")
+  and `photos.js`' head (Grunge's later frames only) — and were fixed; `navModeDefault`'s and
+  `navFits`' comments were already the header session's.
+- **Item 2: the published page passed first time.** Card 2's full walk under Editorial: Music,
+  Gigs, About, Listen, Book Now and the hero pill scroll to `#media` / `#map` / `#bio` / `#form`;
+  the bio, pricing and testimonials pills and the calendar's Pricing, Enquiries and Start Enquiry
+  reach their ids; the player plays from a card (`paused: false` at 1.0 s); every section answers
+  the generic probe (the calendar's rows live, the published slots seeded from today); the form
+  refuses with all four boxes at `inset 2px` paper and heights unchanged (42), composes the bare
+  *Enquiry* mailto with the four values and swaps to *Check your mail*; all nine footer links
+  scroll; the 390 burger opens (2 → 6); overflow at 390 is 0; no console error or warning in
+  either window or across the resize walk. Cards 1, 3 and 4 publish all eleven sections in
+  `pageOrder(i)`'s order with no error or warning.
+- **The seams are straight at both widths** (`page-check`'s 180px clips, read as joins: each clip
+  is its own section's top under the previous section's foot). At 1440 the terracotta repertoire
+  sheet, the ink pricing band and the terracotta form band meet paper square, and the media and
+  calendar cards stand inside their paper gutters. At 390 no desktop ground leaks: the
+  repertoire is its `#FFF9F2` sheet in the solid ink ring, the gallery bare paper, pricing a paper
+  box in its instance's ink ring — the run sections 4 and 6 predicted.
+- **Item 3: the thumbnails** (a throwaway puppeteer walk, deleted): all ten arch-1 rows of the
+  layout picker render one live root each and read as their fitted sections on the desktop seats
+  — the repertoire terracotta, pricing ink, media and the calendar taupe cards on paper, the form
+  terracotta. Rows are picked by their exact names, Grunge's trap; the footer has one layout.
+- **Item 4**: cards 3 and 4 draw Retro's checker ribbon (full-page shots), card 1 is unchanged.
+- **Item 5: `reach.mjs 3`** (3,312 renders) matches every Editorial row in `FIELDS.header`
+  folded onto designs — `showBadge` `[0, 3]` and `badgeText` `[3]` (card 2 draws no seal), the rest
+  as the header session left them — and every other probe matches its row (`calendar.heading`'s
+  `Editorial: [0, 1, 2, 3]` included). Nothing in `FIELDS` moved.
+- **Item 6: one pair gate is left in layout-2 code**, the gallery caption's fill, `(s.lime ||
+  grunge) ? s.box1 : s.chips[0].bg` — its other arm *is* Editorial's binding (`sem/tag/1/bg`,
+  section 5), so it stays. Of the other 31 lines spelling the pair in `EncoreSection`, three are
+  layout 1's known sites (`LogoMark`, `SealBadge`, `Photo`'s backdrop), one is a false match
+  (`HeaderV0`'s local `lime`), and the rest are layout 3's (`HeaderV2`, the blocks ahead of or
+  inside the `s.v2` branches, the gallery's seven layout-3 ternaries) and layout 4's. In
+  `EncoreBuilder.jsx` and `data.js` every name gate listing Lime and Grunge without Editorial is at
+  `d === 2`: the composed row's insets, pricing's footnote, the form's and testimonials' insets,
+  `KICKER_3` and its `EditPanel` mirror, and `navModeDefault`'s layout-3 half.
+- **Item 7: taken.** `DashRule side="all"` now stands its svg at the box's origin, a weight short,
+  with the rect at `x` / `y` = half the weight — plain attributes, no CSS geometry, since SVG
+  attributes take no `calc`. Chrome snaps a replaced element's box to whole pixels, so the old
+  0.5 offset centred the stroke on a pixel seam. Sampled at DPR 1 before and after: the bio's
+  terracotta edge `(228, 180, 162)` × 2 rows → `(200, 110, 82)` × 1, pricing's ink `(138, 135,
+  131)` × 2 → `(20, 20, 20)` × 1, the same on the map rows and layout 1's testimonials card; the
+  rect's own box unchanged in every case. Five-theme digest, canvas and live: themes 0, 1, 2 and
+  4 zero; theme 3 moves 39 + 39 files — layout 1's form, gallery, pricing and testimonials and
+  layout 2's header (arch 1 and 5), bio, media, repertoire, pricing, map, form and testimonials,
+  every one a section with a four-sided dash — and **all 219 differing rows are `svg` rows whose
+  x and y moved by −0.5 and nothing else**. The section-4 DPR-2 case (the repertoire head's dash
+  one device pixel inside the sheet's ring) should close with it, both now snapping from the same
+  origin; not re-measured.
+- **Item 10: the two-build digest** (repo root on `127.0.0.1:8931`, the committed build digested
+  before the `cp`). The seeded page is byte-identical under Retro, Lime, Grunge and Pop at all
+  three widths and `modal.txt` is identical (four Editorial cards in both); under Editorial it
+  moves **15 svg rows a width, each x and y by −0.5** — item 7, and nothing else, which is the
+  plan's "zero rows at every theme" with that fork taken. With `CARD=1`, card 2's page is
+  identical under the other four templates and rebuilt under Editorial (~1,380 lines a width):
+  the tell is `repeating-conic` (the checker ribbon) old-only and the arch's `278.8px 278.8px
+  0px 0px` and 25 dashed `rect`s new-only. The standalone file is 8,743,201 bytes (was
+  8,737,185); only `EncoreSection.jsx`, `EncoreBuilder.jsx`, `data.js` and `photos.js` changed in
+  `src` since the last refresh (`eae1fd5`), all named in the pass's sessions.
+- **Item 8** took a second *Leaned on in Editorial* column on A, B and C, an Editorial column on
+  D2, and four rows leaned on three times or more — *read a scheme per master* (A); *a nested
+  node or a card on another scheme reads that scheme's keys*, *a twin's width-bound call is
+  re-measured in the new face* and *a twin's redrawn state or live mechanism is read against
+  this frame* (C). `DashRule`'s radius and inset rules stay here: the file keeps no template's
+  decorative language. `plans/README.md`'s layout-1 row was also stale (PR #35 merged it).
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
@@ -2049,6 +2141,67 @@ it here in one line, with the plan it came from, a blank line between sessions.)
    - the map's 768 and 390 Venue Link pills, 171 in 146 and 166 in 160, clipped by Figma under
      their discs — *section 8: overridden*; under Editorial the pill row wraps, at 768 alone.
 8. **Header cards 3 and 4** stay placeholders (layout 1, open question 4): `HeaderV2` / `V3` in
-   Scheme 1 tokens, Retro's checker ribbon, `mustard` as `s.box3`. Each is its own pass's.
+   Scheme 1 tokens, Retro's checker ribbon, card 3's `mustard` as `s.box3`. Each is its own
+   pass's. *Checked in the sweep: both publish with no error, ribbon and all.*
 9. **The footer** is layout 1's, closed at planning time: the desktop instance's main component
    (`446:8698`) is not layout 1's (`907:11924`), but the trees are identical.
+
+## Notes for the designer
+
+*(The open questions above that are worth telling the designer, gathered by the sweep into one
+note to forward, in layout 1's shape. Each is shipped as described; where it says "one line", the
+other answer is a one-line change. Layout 1's nine notes — the stand-in face first — still stand.)*
+
+1. **The form's credit avatar is the component's default picture.** All three Editorial masters
+   show Lime's colour portrait (`f821adc2`) in the 48px credit circle, through an Editorial
+   instance; the page shows Editorial's own portrait there. *(2)*
+2. **The gallery strip is Retro's placeholders again.** The hero is Editorial's own photograph,
+   but the six thumbnails beside it are five of Retro's pictures; the page's strip is the other
+   pictures of Editorial's shoot. *(3)*
+3. **The demo face drops a digit as well as punctuation.** Beyond layout 1's `'`, `&` and `"`,
+   the calendar's "JUN 14" renders as "JUN 1" and a DEMO mark, so no frame could be the ruler for
+   the slot marks' column — it was measured in Noto instead, and happens to land on the frame's
+   own column at 1440. Two smaller things with it: the calendar pill reads "Star Enquiry" (the page
+   says "Start Enquiry"), and Noto's J hangs 0.24em below the line where Fisterra's sits on it,
+   so the page lifts the calendar's month marks 0.09em — a licensed Fisterra would need neither.
+   *(5)*
+4. **Two heads are wider than their frames allow.** The testimonials' "Honest feedback / from
+   people who booked" is a 1333-wide line in a 1328 column at 1440, over even in the demo face;
+   in Noto it is 46 over on the page, so it wraps to three lines where the frame sets two. The
+   form's "Let's make / your night unforgettable." fits the 390 column in the demo face but is
+   9 over in Noto, so it sets three lines where the frame sets two. Both stay on the type ramp
+   rather than shrink; one line each to fit them instead (the testimonials' at about 93px on the
+   1180 canvas). *(6)*
+5. **The 1440 header photograph is stretched.** Its `CROP` maps 54% of the image's width into a
+   box whose cover needs 62%, a 14% horizontal stretch. The page draws an undistorted cover
+   anchored at the crop's own centre (`95% 50%`), since an artist's upload must never be
+   distorted.
+6. **The narrow masters leak desktop values in several places**, each followed or overridden as
+   noted *(7)*:
+   - the 390 bio's credit line keeps its desktop box (637.5 × 39, no wrap), which is why the whole
+     390 page renders 667 wide; the page takes its height, not its width;
+   - the bio's divider is a 1px frame stroked **8** inside, which Figma draws with a ~7px solid cap
+     at each end; the page draws the dashed rule alone;
+   - the 768 and 390 bio's fourth tag chip is inked from Scheme 4 (ink) where 1440's is paper;
+     followed, one chip;
+   - the 390 header's Book Now label is set in **Anton** 12.07, the only Anton on the page; the page
+     sets it in the display face at 12;
+   - the 390 media bar's title and byline run off the master (from x 293); the page drops the
+     clock and icons there so the track is named;
+   - the 768 gallery's last tile in each column is 1px tall; the page divides the band in the
+     frame's proportions so all six show;
+   - the 390 gallery's right-column first tile is rounded `0 0 40 40`, one tile of ten; not followed;
+   - the map's Venue Link pill is wider than its half at 768 and 390 (171 in 146, 166 in 160), and
+     Figma clips "VENUE LIN" under its disc; the page wraps the pill row at 768;
+   - the map's ring labels run past the 768 and 390 viewports and clip; followed;
+   - the 390 testimonials' subline is a 431-wide unwrapped line in a 350 card; the page wraps it.
+7. **Two 390 masters pad 20 where the page pads 10.** The testimonials' 390 masters (and the
+   gallery's) pad their sides 20; the page's gutter is 10 at 390 on every section, so neighbours
+   agree (README, *the desktop page is the 1440 frame at 0.82*). Their columns are 370 wide
+   against the masters' 350 — the testimonials' three rail tiles 115 against 109, the gallery's
+   hero 273 against 253.
+8. **Three states the frames do not draw, drawn by the page.** The repertoire's pager marks no
+   current page (the page rings it in ink); the map has no lit pin (the page uses the centre
+   marker's own ink disc and paper ring); and the map's EXPAND VIEW arrow is taupe on the taupe
+   card, faint but followed — one line to turn it terracotta.
+
