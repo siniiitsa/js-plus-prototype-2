@@ -244,7 +244,7 @@ session widens.
 | 4 | `repertoire` | `964:68743` | 1440 × 621 | `984:16832` *(in `984:16829`)* | 708 × **648** | `984:16863` | 390 × **704** | 1 (sets **4 / 2 / 3**) | `964:68678` / `984:10760` / `984:10791` | `964:68710` / `984:13920` / `984:13951` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | **done** (`5ce944d`) |
 | 5 | `calendar` | `964:68742` *(in `964:68740`; "Book Me" `964:68741`)* | 405 × **521.6** | `984:16835` *(in `984:16833`; `984:16834`)* | 708 × **471.6** | `984:16866` *(in `984:16864`; `984:16865`)* | 370 × 443.6 | 1 (the pill names Scheme 1) | `964:68677` / `984:10763` / `984:10794` | `964:68709` / `984:13923` / `984:13954` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v2)`, after `line` | **done** (`0409063`) |
 | 6 | `gallery` | `964:68744` | 1440 × 789 | `984:16836` | 768 × **877** | `984:16867` | 390 × **587** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68711` / `984:13924` / `984:13955` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v2)` | **done** (`5616c03`) |
-| 7 | `pricing` | `964:68745` | 1440 × **1109** | `984:16837` | 768 × **975** | `984:16868` | 390 × **1383** | 1 (featured row **3**) | `964:68680` / `984:10765` / `984:10796` | `964:68712` / `984:13925` / `984:13956` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v2)`, after `shown` | |
+| 7 | `pricing` | `964:68745` | 1440 × **1109** | `984:16837` | 768 × **975** | `984:16868` | 390 × **1383** | 1 (featured row **3**) | `964:68680` / `984:10765` / `984:10796` | `964:68712` / `984:13925` / `984:13956` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v2)`, after `shown` | **done** (`005af79`) |
 | 8 | `map` | `964:68746` | 1440 × **813** | `984:16838` | 768 × **858** | `984:16869` | 390 × 883 | **4** (panel **3**, viewport 4) | `964:68681` / `984:10766` / `984:10797` | `964:68713` / `984:13926` / `984:13957` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | |
 | 9 | `form` | `964:68747` | 1440 × **589** | `984:16839` | 768 × **711** | `984:16870` | 390 × 741 | 1 | `964:68682` / `984:10767` / `984:10798` | `964:68714` / `984:13927` / `984:13958` | `if (s.lime \|\| s.grunge)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | |
 | 10 | `testimonials` | `964:68748` | 1440 × 790 | `984:16840` | 768 × **784** | `984:16871` | 390 × **1044** | 1 (cells **3 / 3 / 4 / 3**, two on 1) | `964:68683` / `984:10768` / `984:10799` | `964:68715` / `984:13928` / `984:13959` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v2)`, after `template` | |
@@ -816,13 +816,20 @@ name them.
   Lift with `position: relative; top: -0.09em` wherever a display string's neighbour is close
   enough to show it: a J over a line of type, or a numeral over a stacked label. The lift moves
   `getBoundingClientRect` with the glyphs, so measure a lifted box against its unlifted twin.
+  **A numeral beside a bottom-aligned Inter glyph is such a site too** (section 7): pricing's
+  price row stands `£`, numeral and unit on one floor, and unlifted Noto set the numeral level
+  with the `£` (768 and 390: below it) where the frame stands it 7 above at 1440 — measure the
+  pair's lowest ink rows, frame and ours, not the boxes.
 - **A twin's frame-less control inked `s.tx` inverts on this paper page** (section 6). The twins
   ink their QA-added and redrawn states in `s.tx`, which is pale on their dark pages and ink
   here: widened as written, the gallery viewer put ink controls on an ink scrim. Check every
   control no frame draws against its own surround, not the twins' key. Layout 2's *a twin's
   redrawn state is read against this frame* covers the states a frame does draw; this covers the
   ones it does not. The next sites are pricing's moving FEATURED seat, the map's lit pin and
-  zoom buttons, and the refused boxes of the form.
+  zoom buttons, and the refused boxes of the form. *Pricing's seat needed nothing* (section 7):
+  it is the frame's own featured row moved, every leaf read off `s.onScheme[3]`, so it reads
+  wherever the filter stands it; the one frame-less box, *No packages yet.*, is `s.tx` ink on
+  the paper page in a terracotta dash.
 
 ### Seen at planning time, per section
 
@@ -1497,6 +1504,112 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   frame's number; and check the toggle's pick against the frame before inheriting the twins'
   redraw (layout 2's *a twin's redrawn state is read against this frame*).
 
+### Settled in section 7 (pricing)
+
+- **The block widened: `if (s.limeTree)` inside `Pricing`'s `if (s.v2)`, after `shown`, `const
+  ed = s.editorial` and a third arm in Grunge's nine-key `G`**, the twins' arms byte-identical,
+  plus five `ed` sites (the rows' and the empty box's `DashRule` in place of the inset ring, the
+  heading's size, `disp()`'s uppercase, the numeral's lift, the instance ring). The walk (three
+  masters, bindings with their collections) found Grunge's tree node for node, **115 / 115 /
+  115**, on **Scheme 1** with the featured `row` nested **Scheme 3**, the page's Device at every
+  width, no effect and no rotation on any node. **The paired diff against Grunge's 1440 master
+  was three leaves**: the rows' radius (0 against 15), their stroke (1px INSIDE, dashed 10, 10,
+  against solid), and the ramp's sizes (display-md 64 / 45 / 36, title 32 / 25 / 23) — every
+  binding *name* the same. So the 28 padding and the 248 includes panel are Grunge's, the
+  capsule, the 24 / 12 / 14 / 16 / 40 / 10 / 6 boxes and the badge's 3 / 8 on a 4 corner too.
+  `get_variable_defs` is Sienna Vale's ramp at all three (body-md 14 / 13 / 13, body-sm 12,
+  body-lg 16 / 15 / 15, list 24 / 19 / 18, label-xs 20 / 14 / 12, chip 12 / 11 / 11, eyebrow
+  15 / 12 / 11), so every size reads `s.*` but Display/Title, the literal `u(32)` / 25 / 23
+  (`vm.title` shadows the ramp). The hooks sit above the block, so the published filter, the
+  moving FEATURED seat and the Book pills needed nothing.
+- **The featured row is `s.onScheme[3]` leaf by leaf** (`S3`, null off Editorial), where the
+  twins wrote Scheme 3 as `s.ac` and literals: its fill `sem/bg` **ink** (`featBg`, a new key
+  read `G.featBg ?? s.ac`), its dash `stroke/2` **blush**, every ink on it `text/2` **paper**
+  (the name, the `£`, the unit, the blurb, the includes column), the numeral `text/1`
+  **terracotta**, the badge `box/1` `#1D1D1D` lettered `text/2` paper. No leaf names another
+  scheme's variable, so trap 4 had no site here. A plain row is the page's `sem/bg` paper dashed
+  in `sem/stroke/2` terracotta — `s.stroke2`, the seat's own.
+- **The pills, off the bindings.** A plain row's is `text/1` terracotta lettered and disced in
+  `sem/bg` paper round a terracotta arrow — `BookPill`'s Lime-branch defaults exactly. The
+  featured row's is the same three bindings in Scheme 3: terracotta lettered and disced in
+  **ink**, so `bg={S3.ac} fg={S3.bg}` through two new keys (`featPillBg` / `featPillFg`, read
+  `?? s.bg` / `?? s.ac`), where the twins turn the section's pair round.
+- **The capsule needed nothing**: `sem/box/1` `#FFF9F2` in a 1px `sem/stroke/1` **solid** ink
+  ring at `radius/pill`, the pick `sem/text/1` lettered `sem/bg`, the idle options `text/2` —
+  the twins' five keys to the node. The prompt's worry was layout 2's: the twins' *layout-3*
+  capsule never redrew its pick in `sem/active`, and the frame's pick is visible and identical.
+  It carries no dash, so no capsule radius was owed.
+- **The instance ring is drawn**: the root binds `sem/stroke/1` 1px INSIDE, solid, on all three
+  masters, and the render shows it round the whole section, ink on the paper page — Grunge's
+  overlay, widened to `grunge || ed` (Lime alone still declines it). It stands between the
+  gallery's taupe and the map's band, so nothing doubles.
+- **The numeral is lifted 0.09em** (*Conventions*, extended). Lowest ink rows, `£` against
+  numeral: the frames stand the numeral **7 / 3 / 1** above the `£` (1440, 768, 390; 5.7 on
+  the canvas); unlifted, ours stood it −0.5 / −2.5 / −1.2 (level at desktop, below narrow);
+  lifted, **4.5 / 1.5 / 2.0**. The name beside the FEATURED badge (centred, 1.8px at
+  desktop) and the pills' display labels were not lifted.
+- **`vm.pad`'s `d === 2` pricing foot takes Editorial**: the three masters pad 56 / 30 / 60 at
+  the head and **32 / 32 / 60** at the foot, the twins' own, so the arm is three templates'.
+  390 keeps its `padY` 44 under the master's 60, the twins' named diff.
+- **Measured against the masters' content edges** (harness, DPR 2; the frame × 0.82 in
+  brackets): **desktop** heading 26.2px, 28.8 tall (28.7); rows **1088.2 × 211** (1089 × 211.6)
+  13 apart (13.1), padding 23 (23), radius 0, dashed 8.2, 8.2; includes 560.5 into the row
+  (560.9), 504.7 wide (505.1); badge **60.8 × 15** (60.7 × 14.8); numeral 52px; pill 44.3 tall;
+  foot 26 (26.2); the offer 11.5 right of the capsule (11.5). **768** rows 708 × **225.4**
+  (226), includes at 432 (432) and **248** wide; the numeral fills, standing the unit at the
+  column's edge; foot 32. **390** rows 370 × **313.9** (314) / 352.1 / 337, the pill 54 `full`.
+- **Named diffs**:
+  - **the 390 rows are 370 wide against the frame's 350** (JP-038's `padX` of 10 against the
+    root's 20), so the second row's *Peak-time dance floor* and the featured blurb hold one
+    line in our 314 column where the frame's 294 wraps them: 352.1 / 337 against 367 / 352.
+    The twins' 390 carries the same width now; Grunge's "exact" 346-wide rows predate JP-038;
+  - the twins': the section's top pad is the shared `padY` 80 / 56 / 44, not 56 × 0.82 / 30 /
+    60; the seeded intro is one line and the heading is the artist's; the pill reads *Book Now*
+    (`cta1`), 159.4 wide against *Book*'s 114.8; the unit is `/event` where the frame types
+    "— £1,400"; the capsule carries the leading *All* (172 against 135 wide); sections **923.7
+    / 977.7 / 1326.3** against 909.4 / 975 / 1383;
+  - the frame's "450" renders "£ ✱50" in the demo face (open question 6); the seed prints
+    £450 in Noto;
+  - the display renders at Noto's 540 against Fisterra Bold (layout 1's decision 1).
+- **`live=1`** (puppeteer clicks, desktop and 390): every chip filters and moves the pick
+  (terracotta lettered paper); **the FEATURED seat follows the filter** — Solo seats The
+  Wedding Set, Trio and Band The Festival Set, All back to The Festival Set — ink dashed blush
+  wherever it lands; the pills are `<a href="#form">` live and spans on the canvas. **JP-048**
+  (`&cj=`, the seed with The Festival Set ticked plus a name-only *The Late Set*): FEATURED
+  stays on The Festival Set, Solo moves it to The Wedding Set (the tick filtered out), and
+  without the tick The Late Set takes it. **JP-046**: `offer` stands 14 right of the capsule;
+  emptied, it drops alone; with untagged packages the capsule goes and the line stays. `n=0`
+  prints *No packages yet.* in ink in a terracotta-dashed row, no capsule; `n=1` seats
+  nothing; `n=8` seats row 8. No page errors or warnings.
+- **`FIELDS.pricing` has no template-keyed `in` row** (`heading` `[0, 1, 2]`, `intro` and
+  `offer` `[2]`, `quote` `[1]`, `rowCta` `[3]`, `PRICING_CARD` / `PRICING_CREDIT` flat), so no
+  `reach.mjs` run was owed — the twins' finding, re-checked.
+- **Verified in the builder** (`page-check.mjs Editorial 2`): four modal cards; the published
+  1440 tab stands pricing at **4796 · 1127** under the gallery (4189 · 607) and over the map
+  (5923); all three Book Now pills scroll to `#form`, the chips are live; every nav, fragment
+  and footer link scrolls to its id (Pricing → `#pricing`); no errors or warnings;
+  `overflow390` 0; the 390 burger opens 1 → 5. The seam clips show straight edges, taupe onto
+  the ink-ringed paper and the ring onto the map band (still the flat arm's ink sheet, section
+  8's).
+- **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly
+  pricing arch 2 at three widths on both surfaces (6 files).
+- **For the sweep's CLAUDE.md pass**: the pricing paragraph's "**Lime's and Grunge's stacks
+  read no `vm.tierRow`**" is now three templates' (the widened block reads Retro's `T`,
+  `chipType`, `h`, `panelFg` and `selector` not at all); and its picked-chip sentence ("redrawn
+  in `sem/active` under Lime and Grunge") is layout 2's, which layout 3 does not share. Not
+  written here.
+- **For the map**: its block (inside `EventsMap`'s `if (s.v2)`, after `litRow`) carries Grunge's
+  `G` of some twenty keys, **Lime's one `ink` split five ways** (idle type, lit fill, the type
+  on it, a box on it, its ink) — read each against Sienna Vale's Scheme 4, where `s.ac` is
+  **paper** and `s.stroke2` **ink** (trap 5). The band is the seat's (`G.sheet` undefined, the
+  root paints terracotta). **The lit row is the frame's own** — `text/1` paper, dashed 10, 10
+  all round in `stroke/1` paper 56%, its type `sem/bg` terracotta — so it is followed, not
+  redrawn; the panel is `s.onScheme[3]`, square, its container dashed paper 56% (r20 narrow),
+  and **the viewport is Scheme 4, the seat's own** (terracotta rings and labels, ink idle
+  dots). The date boxes carry display months — mind Noto's J (`&cj=` with a June gig). And
+  session 0 found the 390 pager's arrows ink on the flat arm's ink sheet: the block replaces
+  it.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1655,6 +1768,31 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 - Section 6: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
   at zero; `page-check.mjs Editorial 2`.
 
+- Section 7: *After `shown`*, *a plain row is the page ground in a 1px `sem/stroke/2`* and *the
+  featured row's pill is the pair* (lime/layout-3, *Settled in section 7*; D3) and Grunge's
+  nine-key widening (grunge/layout-3, *Settled in section 7*) — widened to `s.limeTree`; the
+  ring a dash; the pair read off Scheme 3 rather than turned round.
+- Section 7: *The `G` lookup at the block's head, whose twin's arm is today's literals*
+  (grunge/layout-1; C) — a third arm, three new leaves falling back through `??`.
+- Section 7: *A nested node or a card on another scheme reads that scheme's keys*
+  (editorial/layout-2, *Settled in session 0*) — the featured row on `s.onScheme[3]`, where both
+  twins wrote Scheme 3 as `s.ac` and literals.
+- Section 7: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section 8*)
+  — 115 against Grunge's 115; three leaves, every binding name the same.
+- Section 7: *A twin's redrawn state is read against this frame before it is inherited*
+  (editorial/layout-2, *Conventions*) — the capsule's pick, read and found to be the twins' own
+  binding (no redraw to decline at layout 3); and this plan's frame-less-control bullet — the
+  FEATURED seat needed nothing.
+- Section 7: *Noto's 0.09em is a face fact* (this plan, *Conventions*, section 5) — extended to
+  a numeral beside a bottom-aligned `£`, measured on lowest ink rows.
+- Section 7: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, *Settled in section 6*)
+  — the heading at the literal 32 / 25 / 23.
+- Section 7: *A frame's inside stroke is an inset `boxShadow`… a dashed stroke is `DashRule`*
+  (lime/layout-2; editorial/layout-1, *Conventions*) — the rows and the empty box all round; the
+  instance's solid ring Grunge's overlay.
+- Section 7: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
+  at zero; `page-check.mjs Editorial 2`.
+
 ## Open questions
 
 1. **Decision 1** — the header's Scheme 8, the nav's Scheme 5, the footer's scheme by page.
@@ -1682,7 +1820,9 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    - the 390 header 57 taller than the twins' on their tree. *Settled in section 1: not a leak —
      the band states 418.52 against 370.52 and the card is 136 against 127, both followed.*
 6. **The demo glyphs** — layout 1's open question 5 and layout 2's "JUN 1", with pricing's "£350"
-   rendering "£ ✱50". Worth telling the designer with layout 1's note.
+   rendering "£ ✱50". Worth telling the designer with layout 1's note. *Section 7: the text node
+   reads "450" (the first package, £450), the 4 drawn as the demo's ✱; the seed prints it in
+   Noto.*
 7. **The testimonials' head breaks inside the word** at 1440 ("EXPERIENC / ES.") in its capped box;
    the twins' dropped cap stays dropped. Worth telling the designer.
 8. **Header card 4** stays a placeholder: Retro's `HeaderV3` in Scheme 1 tokens, the checker
