@@ -673,6 +673,12 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
   `s.*` is the card's scheme, so the card's `sem/bg` is `s.bg` — where the twins paint the same
   panel `s.box1` (Lime's Scheme 2 `sem/bg` *is* its Scheme 1 `box/1`). Every twin read of `box1`,
   `stroke1` or `s.ac` in such a block names a different node here; resolve each binding.
+- **A dashed capsule's `DashRule` radius is half its height, never 999** (section 4): SVG sets
+  `ry` to `rx` and clamps each to its own half-side, so the CSS box's `999px` on a wide pill draws
+  an ellipse. Compute the one-row height off the same rounded `u()` values the box renders at
+  (the repertoire's `togR`). Pricing's chips and the form's boxes are the next pill-shaped dashes.
+- **`DashRule` takes an upright `side`, 'left' or 'right'** (section 4), for a column's inside
+  edge; the caller is `position: relative` and stretches to the column's height.
 
 ### Seen at planning time, per section
 
