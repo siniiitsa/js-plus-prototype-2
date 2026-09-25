@@ -24454,12 +24454,17 @@ export default function EncoreSection({ s }) {
   // …and Sienna Vale's (964:58618) the one of its eleven: 1px of
   // `sem/stroke/2`, inside, at all three widths — blush under Scheme 2.
   const editorialRule = s.pr && s.v0 && s.editorial
+  // Sienna Vale's layout-2 media panel (964:64602) and calendar (964:64612)
+  // are Scheme 2 cards inset on the page's Scheme 1 paper. Each section is
+  // seated on its card's scheme (SCHEMES_OF), so `s.bg` is the card's taupe and
+  // the block paints the card; the root paints the page's own ground round it.
+  const editorialCard = (s.me || s.ca) && s.v1 && s.editorial
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
     // and HeaderChoices, which would all claim id="header".
     <div id={s.live ? s.anchor : undefined} style={{
-      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : grungeBand ? '#171716' : s.footerBand || s.bg,
+      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : grungeBand ? '#171716' : editorialCard ? s.pageBg : s.footerBand || s.bg,
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative',

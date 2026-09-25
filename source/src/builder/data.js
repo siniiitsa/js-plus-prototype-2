@@ -263,8 +263,10 @@ export const THEMES = [
 // `schemes` ({ palette, sem, tags }, Scheme 1's own shape), which sectionVm
 // lays over the theme before it reads a colour, so every derived key follows
 // the section's ground. A section with no entry stands on Scheme 1, the
-// theme's own `palette` / `sem` / `tags`. The footer has one design, so its
-// row is read at every page layout.
+// theme's own `palette` / `sem` / `tags`. An entry is a number at every width,
+// or a [desktop, tablet, mobile] triple where the frames move the section
+// between widths. The footer has one design, so its row is read at every page
+// layout.
 export const SCHEMES_OF = {
   // Sienna Vale's layout-1 page (964:58612…22), read off each section's
   // `explicitVariableModes`, identical at all three widths. Layouts 2–4 are
