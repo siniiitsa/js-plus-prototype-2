@@ -243,7 +243,7 @@ session widens.
 | 3 | `media` | `964:68739` list + `964:68738` card *(head `964:68731`)* | 858 × 424 + 858 × 243 | `984:16831` + `984:16830` *(head `984:16823`)* | 708 × 647 + 708 × 243 | `984:16862` + `984:16861` *(head `984:16854`)* | 370 × 647 + 370 × 243 | 1 (card **2**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68706` + `964:68705` / `984:13919` + `984:13918` / `984:13950` + `984:13949` | `if (s.lime \|\| s.grunge)` inside `Media`'s `if (s.v2)`, after `nHot` | **done** (`484f029`) |
 | 4 | `repertoire` | `964:68743` | 1440 × 621 | `984:16832` *(in `984:16829`)* | 708 × **648** | `984:16863` | 390 × **704** | 1 (sets **4 / 2 / 3**) | `964:68678` / `984:10760` / `984:10791` | `964:68710` / `984:13920` / `984:13951` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | **done** (`5ce944d`) |
 | 5 | `calendar` | `964:68742` *(in `964:68740`; "Book Me" `964:68741`)* | 405 × **521.6** | `984:16835` *(in `984:16833`; `984:16834`)* | 708 × **471.6** | `984:16866` *(in `984:16864`; `984:16865`)* | 370 × 443.6 | 1 (the pill names Scheme 1) | `964:68677` / `984:10763` / `984:10794` | `964:68709` / `984:13923` / `984:13954` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v2)`, after `line` | **done** (`0409063`) |
-| 6 | `gallery` | `964:68744` | 1440 × 789 | `984:16836` | 768 × **877** | `984:16867` | 390 × **587** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68711` / `984:13924` / `984:13955` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v2)` | |
+| 6 | `gallery` | `964:68744` | 1440 × 789 | `984:16836` | 768 × **877** | `984:16867` | 390 × **587** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68711` / `984:13924` / `984:13955` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v2)` | **done** (`5616c03`) |
 | 7 | `pricing` | `964:68745` | 1440 × **1109** | `984:16837` | 768 × **975** | `984:16868` | 390 × **1383** | 1 (featured row **3**) | `964:68680` / `984:10765` / `984:10796` | `964:68712` / `984:13925` / `984:13956` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v2)`, after `shown` | |
 | 8 | `map` | `964:68746` | 1440 × **813** | `984:16838` | 768 × **858** | `984:16869` | 390 × 883 | **4** (panel **3**, viewport 4) | `964:68681` / `984:10766` / `984:10797` | `964:68713` / `984:13926` / `984:13957` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | |
 | 9 | `form` | `964:68747` | 1440 × **589** | `984:16839` | 768 × **711** | `984:16870` | 390 × 741 | 1 | `964:68682` / `984:10767` / `984:10798` | `964:68714` / `984:13927` / `984:13958` | `if (s.lime \|\| s.grunge)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | |
@@ -1403,6 +1403,92 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   or radius, and the composed-row paragraph states no template list; the `vm.pad` code comment
   is already updated.
 
+### Settled in section 6 (the gallery)
+
+- **No block, for the third time: the twins' ternaries through `Gallery`'s `if (s.v2)` widen
+  one by one**, `const ed = s.editorial` beside `const grunge`, at the eleven sites Grunge
+  named — `sheet`, `ink`, `well`, `ring`, the desktop and 390 halves of `ratio`, the viewer's
+  `cream` / `ctlBg` / `scrim`, the head's size and casing, and the tile's border / radius /
+  `Photo` ink and well / overlay. The twins' arms are byte-identical. The tree is theirs node
+  for node (**17 / 17 / 17** against both, by traversal order: the 56 / 60·30 / 60·20 insets,
+  the 32 head gap, `columnGap` 8 with `rowGap` 8 / 20 / 20, the 1px INSIDE ring), on
+  **Scheme 2** at every root with no Device override, **no effect and no dash on any node**.
+  One walker call and one paired diff were the whole read, and the diff was four leaves: the
+  head's size, the tile's height at 1440, its radius and the ring's binding (every fill binds
+  the twins' names). The hooks sit above the branch, so the published viewer needed nothing.
+- **The seat does the paint** (`get_variable_defs`, all three widths): the sheet is `sem/bg`
+  `#AA958A`, so `ed ? s.bg` ahead of the flat four's `s.paper` (which read the same taupe
+  through `paperOf`, by accident); the head `sem/text/1` paper (`s.ac`); each well `sem/box/3`
+  **`#A18A7E`**, which is `s.box3` under the seat — a vm key, where both twins wrote a literal.
+  The seventh tile's well is `sem/active/bg` blush under its photograph and paints nothing, so
+  it is not drawn, the twins' call on the identical slot.
+- **Trap 4, the ring.** It names **`scheme/1/stroke/1`** outright, as Lime's does (Grunge's is
+  `scheme/1/stroke/2`). Inside the Scheme 2 seat `s.stroke1` is paper, so the ring reads
+  **`s.onScheme[1].stroke1`**, ink `#141414`. Kept on the twins' mechanism (a 1px inset
+  `boxShadow` on a last-child overlay), unscaled.
+- **The deltas**: every tile **square** (Lime 30, Grunge 15); the head **`s.dispLg` at every
+  width**, 97 / 73 / 48 in a 86.3 / 65 / 42.7 line box, uppercased (the flat arm stood 768 on
+  Retro's `s.h1`, 60); the desktop tile **326 / 174.667** — the residue rule over this page's
+  105 head, (789 − 112 − 105 − 32 − 16) / 3 — and the 390 one **111.333 / 83**, Grunge's number
+  over this page's own 587, (587 − 120 − 43 − 32 − 60) / 4. 768 states the same 660 grid.
+- **The tiles keep the twins' centred cover.** The frame's third tile holds our stage shot
+  (`9d20fe0d`) at `FILL` — centred at every width, its stale `imageTransform` ignored — and our
+  first slot, the same photograph in the same box, is that picture exactly. Its one `CROP` is
+  our hero (`ae069c14`) at 1440 alone, top-anchored and within 2.8% of a cover, in its eighth
+  tile, a seat we do not draw, and `FILL` centred at 768 and 390. Not followed: the seven
+  seeded slots stand (open question 3), and an anchor keyed on a slot index would bind the
+  artist's uploads to a crop meant for one photograph.
+- **The viewer is re-inked a third time.** The twins' reading — the page ground at .94 under
+  its pale ink — inverts here, where `s.tx` is ink: widened as written it would put ink
+  controls on an ink scrim. So the scrim is **the page ink `#141414` at .94** (Grunge's
+  reading) and the controls and counter **`s.ac`**, the head's own paper under the seat, on
+  paper at 14% — not Retro's `#FBF6EA` fallthrough. No frame draws a viewer, so this is the
+  palette's reading of a QA-added control, as it was for Lime and Grunge.
+- **Measured against the masters' content edges** (harness; the frame's number × 0.82 in
+  brackets): **desktop** inset 45.9 (45.9), h2 at 45.9, 86.3 tall at 97px (86.1), grid top
+  158.4 (158.3), tiles **267.1 × 143.1** (267.3 × 143.2) on a 273.7 / 149.7 pitch (273.9 /
+  149.8), radius 0, ring `inset 0 0 0 1px #141414`, wells `#A18A7E`; **768** h2 at 60, 65 tall
+  (65), grid top 157 (157), tiles 230.7 × 150 on a 170 row pitch — exact; **390** h2 at 60
+  (60), 42.7 (43), grid top 134.7 (135), tiles 111.3 × 83 on a 103 pitch — exact. The seeded
+  head "SEE US IN ACTION" holds one line at every width (1088 / 708 / 350).
+- **Named diffs, the twins'**: the sections are **497.1 / 707 / 483.7** against 647 (789 ×
+  0.82) / 877 / 587, the frame's twelve tiles against our seven (`FIELDS.gallery.images` is
+  `max: 7`); the head prints `heading`'s "See us in action" where the frame writes "Gallery";
+  the display renders at Noto's 540 where the frame names Fisterra Bold (layout 1's decision 1,
+  every Editorial head).
+- **`live=1`** (puppeteer clicks, desktop and 390, DPR 2): a tile click opens the viewer at
+  3 / 7 with focus inside, `overflow: hidden` on the popup's `<html>` and `<body>` and a stable
+  gutter; Next steps to 4 / 7, → to 5 / 7, ← back to 4 / 7; Escape closes and restores all
+  three styles; reopened on slot 1, a click on the scrim closes it. Scrim `rgba(20, 20, 20,
+  .94)`, the three controls `rgb(246, 240, 232)` on `rgba(246, 240, 232, .14)`, the counter
+  paper — reading on the ink surround over the taupe band. Every seeded tile takes `zoom-in`.
+  **`&n=0`** at all three widths: seven `#A18A7E` wells in ink rings with **ink `KM`** initials
+  at 32 / 28 / 14 (`Photo`'s `ink` is `s.tx`, the twins' key, which is ink here — 5.6:1 on the
+  well, where paper would be 2.9:1), `cursor: auto`, no viewer. No page errors or warnings.
+- **`FIELDS.gallery` has no template-keyed `in` row** (`youtube` / `instagram` / `tiktok`
+  `[0]` for every template), so no `reach.mjs` run was owed — layout 2's and Grunge's finding,
+  re-checked.
+- **Verified in the builder** (`page-check.mjs Editorial 2`): four modal cards; the published
+  1440 tab stands the gallery at 4189, 607 tall, under the repertoire (3484 · 705) and over
+  pricing (4796); every nav, fragment and footer link scrolls to its id (the footer's Media →
+  `#gallery`), Book Now to `#form`; no errors or warnings; `overflow390` 0; the 390 burger
+  opens 1 → 5. The seam clips show straight edges paper → taupe → paper at 1440 and 390, the
+  sheet bled to the page's edges.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly
+  gallery arch 2 at three widths on both surfaces (6 files).
+- **For the sweep's CLAUDE.md pass**: the layout-3 viewer sentence ("under Lime and Grunge
+  alike its scrim is the page ink at .94 and its controls pale") holds for Editorial too — the
+  page ink `#141414`, the controls paper — so it reads "under Lime, Grunge and Editorial".
+- **For pricing**: it stands on the page's paper in the instance's own 1px `stroke/1` ink ring
+  (Grunge's overlay, gated `grunge &&` in the block today — widen it from the frame), with
+  plain rows dashed 10, 10 terracotta and
+  **square**, and the featured row a nested **Scheme 3** node — `s.onScheme[3]`, never the
+  seat's keys, and read each of its leaves' bindings with their collections (trap 4 twice now:
+  the header's and this ring). Its block has Grunge's nine-key `G` at its head, so Editorial is
+  a third arm; `vm.pad`'s `d === 2` pricing foot of 32 is Lime's and Grunge's and waits for the
+  frame's number; and check the toggle's pick against the frame before inheriting the twins'
+  redraw (layout 2's *a twin's redrawn state is read against this frame*).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1536,6 +1622,30 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 - Section 5: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
   at zero; `page-check.mjs Editorial 2`, plus a one-off (deleted) for the composed heads on the
   canvas and in the published tab.
+
+- Section 6: *No block: `s.lime` ternaries through `Gallery`'s `if (s.v2)`* (lime/layout-3,
+  *Settled in section 6*; D3) and its Grunge widening (grunge/layout-3, *Settled in section 6*)
+  — the same eleven sites under `ed`.
+- Section 6: *The tile ratio is re-derived, not inherited* (lime/layout-3, *Settled in section
+  6*; Retro's residue rule) — 174.667 at 1440, 83 at 390, over this page's own heights.
+- Section 6: *The viewer is re-inked, not restructured* (lime/layout-3, *Settled in section 6*)
+  — turned round: the twins' `s.tx` is ink here, so the scrim is the page ink and the controls
+  paper.
+- Section 6: *A node can name another scheme's variable outright* (this plan, *Conventions*;
+  trap 4) — the ring's `scheme/1/stroke/1` through `s.onScheme[1]`, where the seat's key is
+  paper.
+- Section 6: *A section's colour scheme is resolved in `sectionVm`* (editorial/layout-1,
+  *decision 3*) — the sheet, head and wells are the Scheme 2 seat's `s.bg` / `s.ac` / `s.box3`,
+  where the twins wrote literals.
+- Section 6: *A frame's image anchor is evidence for its own photograph only* (editorial/layout-2,
+  *Conventions*) — the stage shot's `FILL` confirms the centred cover; the hero's one `CROP` sits
+  in a seat we do not draw, and is not followed.
+- Section 6: *On this paper page `s.muted` is ink, so an empty slot on a dark well needs `Photo`'s
+  `ink`* (editorial/layout-2, *Conventions*) — `&n=0`, and here ink reads on the mid-taupe well.
+- Section 6: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section 8*)
+  — 17 / 17 / 17 against both twins; the diff was four leaves.
+- Section 6: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
+  at zero; `page-check.mjs Editorial 2`.
 
 ## Open questions
 
