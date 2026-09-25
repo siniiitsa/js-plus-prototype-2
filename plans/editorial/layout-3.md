@@ -238,7 +238,7 @@ session widens.
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme (every width) | Lime twin (1440 / 768 / 390) | Grunge twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:68717` *(page)* | — | `984:16811` | — | `984:16842` | — | — | — | — | Scheme 5, `SCHEMES_OF.Editorial[2]`, the footer's seat by page (decision 1) | **done** (`0198910`, `dcb1cc5`) |
-| 1 | `header` | `964:68718` | 1440 × 900 | `984:16812` | 768 × 1024 | `984:16843` | 390 × **663.5** | **8** (≡ 3; nav **5**; chips and two rings name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68686` / `984:13900` / `984:13931` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV2` | |
+| 1 | `header` | `964:68718` | 1440 × 900 | `984:16812` | 768 × 1024 | `984:16843` | 390 × **663.5** | **8** (≡ 3; nav **5**; chips and two rings name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68686` / `984:13900` / `984:13931` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV2` | **done** (`0cd6c64`) |
 | 2 | `bio` | `964:68728` *(head `964:68722`, in `Frame 302` `964:68727`, in Section `964:68721`)* | 858 × 882 | `984:16820` *(head `984:16815`)* | 708 × 912 | `984:16851` *(head `984:16846`)* | 370 × **811** | 1 | `964:68663` / `984:10748` / `984:10779` | `964:68695` / `984:13908` / `984:13939` | `if (s.v2 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v2)` | |
 | 3 | `media` | `964:68739` list + `964:68738` card *(head `964:68731`)* | 858 × 424 + 858 × 243 | `984:16831` + `984:16830` *(head `984:16823`)* | 708 × 647 + 708 × 243 | `984:16862` + `984:16861` *(head `984:16854`)* | 370 × 647 + 370 × 243 | 1 (card **2**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68706` + `964:68705` / `984:13919` + `984:13918` / `984:13950` + `984:13949` | `if (s.lime \|\| s.grunge)` inside `Media`'s `if (s.v2)`, after `nHot` | |
 | 4 | `repertoire` | `964:68743` | 1440 × 621 | `984:16832` *(in `984:16829`)* | 708 × **648** | `984:16863` | 390 × **704** | 1 (sets **4 / 2 / 3**) | `964:68678` / `984:10760` / `984:10791` | `964:68710` / `984:13920` / `984:13951` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | |
@@ -924,6 +924,106 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   Scheme 5 on `onScheme`, the header on 3 for its Scheme 8, and the footer's seat by `page`.
   `SCHEMES_OF`'s head comment already reads "Layout 4 is a later pass's".
 
+### Settled in section 1 (the header)
+
+- **The block widened whole: `if (s.limeTree) { … return }` at the head of `HeaderV2`, `const ed =
+  s.editorial`** (about fifteen arms and two portrait sizes, no `G`). The tree is Lime's **node
+  for node at 1440 and 390** — the paired traversal-order diff, 44 nodes against 44 at both, the
+  390 included (the plan's "Lime's, not Grunge's" held) — on Scheme 8 (seated 3) with the nav
+  on Scheme 5 and no Device override at any width. Retro's half lost the `mustard` placeholder
+  arm and its four-line comment (`const mustard = s.pillBg`) and nothing else; the theme-0
+  digest is zero.
+- **Every delta is a binding, read off three walks** (node walker with bound names and their
+  collections, plus the paired diff):
+  - **the well is square** at every width (the twins' 50 / 50 / 20, Grunge's 15); its fade's
+    opaque stop is bound **`sem/bg`** `#141414` where the twins' is `sem/media`, so the
+    gradient reads `ed ? s.bg : s.box1` (Scheme 3's `box1` is `#1D1D1D`); its ring names
+    **`scheme/1/stroke/1`**, ink on the ink page, drawn by its binding through
+    `s.onScheme[1].stroke1` (Scheme 3's `stroke1` is paper 56%);
+  - **the nav is Scheme 5**: the capsule `onScheme[5].bg` blush, ringed `onScheme[1].stroke1`
+    ink, its links `onScheme[5].ac` ink at **Label/SM** 16 / 13 (bound `size/label-sm` — Lime's
+    size, not Grunge's Label/MD) gapped a **fixed 18** (`grunge || ed` on `navGaps` and the
+    `<nav>`'s gap); the name, Listen and the burger's bars are Scheme 5's `text/2`, which is
+    Scheme 3's paper `s.tx`, so they read nothing new. The pill is `bg={s.onScheme[5].bg}
+    fg={s.onScheme[5].ac}` on Lime's box — `BookPill`'s Lime branch then discs it in the label's
+    ink round a blush arrow, the frame's `Frame 174` exactly; its box is 139.32 / 124.32 /
+    119.32 with the label at every width, so the 390 pill is not hand-shrunk;
+  - **the chips name Scheme 1's tag seats** (`scheme/1/tag1…6/bg`, blush / terracotta), so
+    they read `s.onScheme[1].chips[i % 2]`, each seat in its own ink — the frame's fourth and
+    sixth labels (`sem/tag/6/bg`, terracotta on terracotta) and its third and fifth
+    (`scheme/3` and `scheme/5` inks that happen to be ink) are not followed, open question 4.
+    Lime's hand-scaled numbers hold exactly (15.04 / 10.53 / 9.02, 3.76 / 8.27, gap 6.01,
+    **radius 4.51** — bound `radius/chip` in the Tokens collection);
+  - **the title is one tone** (`Title`'s `twoTone={grunge}` needed nothing); the location's
+    **dot is `sem/text/2`** paper where the twins' is `text/1`, so `ed ? s.tx : s.ac`; its line
+    uppercased (`grunge || ed`);
+  - **the card is an arch**: `sem/bg` ink (`s.bg`) in a 1px ring naming
+    **`scheme/1/stroke/2`** (`s.onScheme[1].stroke2` — terracotta, which Scheme 3's `s.ac`
+    happens to equal), radius `u(145) u(145) 0 0` (CSS clamps it to the 220 card's semicircle,
+    118.9 on the canvas) and **70 / 70 / 0 / 0** on its side at 390, padding 40 / 20, no glow;
+    its portrait an arch too, `u(81) u(81) 0 0` on `s.box1` in the section's own blush
+    `sem/stroke/2` (`grunge || ed ? s.stroke2 : s.ac` — the twins bind the same token), at
+    **136 × 128 / 136 × 135 / 96 × 96**; its name Display/Title at the literal 32 / 25 / 23
+    (CONVENTIONS C, `vm.title` shadows the ramp), uppercased;
+  - **the 390 band states 418.52** (the twins' 370.52): with the card's 136 against 127 that
+    is the whole of the 57 (open question 5's last bullet, answered as arithmetic).
+- **`Photo`'s backdrop ramp widened to card 3** (`s.editorial && (s.v0 || s.v2)`): the only
+  `backdrop` callers are the headers' wells, and under Editorial `s.v2` reaches `HeaderV2`'s
+  block alone. `&noimage=1` draws Scheme 3's `#1D1D1D → #141414 → #0E0E0E` under the blush
+  capsule, not Retro's brown. Its comment now names card 4 as the one placeholder (card 2's
+  photograph is an arch on `box/3`, not a backdrop).
+- **Decision 2, done.** `navModeDefault` is Minimal at Editorial `d === 1 || d === 2` (one
+  four-template condition now); `navGapEm` is 0 at Editorial `d === 1 || d === 2`; `vm.navFits`
+  serves Grunge and Editorial on one arm, its link size `T.name === 'Grunge' && d === 2 ?
+  labelMd : labelSm` (caught in review: the old `d === 1 ? labelSm : labelMd` would have
+  summed Editorial's layout-3 links at Label/MD) against 684; `KICKER_3` widened in `sectionVm`
+  and `EditPanel` together. **The 768 fold, walked** (harness, `navMode: 'sections'`, `&nav=`
+  0–9): *Follow my sections* draws **up to four** seeded links on one row (the name slides to
+  392.8 at four, Lime's rule), five and more fold to the burger; Minimal's three draw at 168.8
+  against the master's 175 with the name centred at 384; no state past the 768 edge.
+- **Measured against the masters' content edges** (harness): desktop section 738 (900 × 0.82),
+  capsule (42.6, 43.2) 155.8 × 27.4 against (42.6, 43.1) 162.4 × 27.9, the links 13px, pill
+  right edge 1137.3 against 1138.2 and 28.6 tall, h1 at 528.9 (529.3) 86.3 tall at 97px, card
+  (957, 461.5) 180.4 × 233.9 against (957.8, 461.7) 180.4 × 233.7, portrait 111.5 × 105, card
+  name at 616.4 (616.6); 768 capsule (42, 44.3) against (42, 44.5), pill right edge 726 (726.02),
+  h1 at **831.5** (exact), card (506, 697.7) 220 × 284.3 against 220 × 285, portrait 136 × 135;
+  390 section 663.4 (663.45), pill right edge 370 (370.02), h1 at 358.3 (357.9), card (20,
+  507.4) 350 × 136 (exact), portrait 96 × 96. **Named diffs**: Noto's labels are narrower than
+  Fisterra's, so the capsule is 155.8 / 168.8 against 162.4 / 175 and the pill 107.7 / 118.2 /
+  113.6 against 114.2 / 124.32 / 119.32, flush right — layout 2's numbers; five chips where the
+  frame draws six (`TAG_LABELS`).
+- **Verified in the builder** (`page-check.mjs Editorial 2,0,1,3`): four modal cards; card 3
+  opens every section at arch 2 in `PAGE_ORDERS[2]`, the calendar composed beside the bio (both
+  at top 901 in the published 1440 tab); Music → `#media`, Gigs → `#map`, About → `#bio`,
+  Listen → `#media`, Book Now → `#form`, every other anchor and footer link on its id; the 390
+  burger opens (1 → 5 anchors); `overflow390` 0; no console error or warning on any card. A
+  one-off script (deleted) proved session 0's footer seats still hold — **card 3 taupe**
+  `rgb(170, 149, 138)` on the canvas and in the published tab, **cards 1, 2 and 4 ink** — and
+  the published tab at **820**: tablet, so Minimal's three draw inline (JP-039's fit, no
+  burger at that width now), each scrolling to its id, `scrollWidth` 820, header 1024. The
+  tablet burger still opens where *Follow my sections* folds it (harness `live=1`: 2 → 12
+  anchors at 768, 1 → 11 at 390, on the `#0E0E0E` panel).
+- **`FIELDS.header` needed no change**: `scripts/reach.mjs 3` (3,312 renders) over the fitted
+  card gives kicker / tags / showTags `[0, 2, 3]`, location all four, cta2 `[1, 2]` (4/6: Listen
+  is dropped at 390), showBadge `[0, 3]`, badgeText `[3]`, subtitle / heroCta `[1]`, align `[0]`
+  — the rows the placeholder measured. Its code comment (and `headerFamily`'s, stale since
+  layout 2) now name three fitted cards and one placeholder.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly
+  header arch 2 at three widths on both surfaces (6 files).
+- **Named, not this session's**: `headerIdentity()` reads the header's raw `kicker`, so under
+  card 3 the bio (and the form's credit) print "DJ · Live Act" where the header's card prints
+  `KICKER_3` — the state Lime's and Grunge's layout 3 already have.
+- **For the sweep's CLAUDE.md pass**: the *Editorial is designed at layouts 1 and 2* paragraph
+  ("cards 3 and 4 are placeholders" → card 4; Inset Hero is `HeaderV2`'s Lime block, widened —
+  a square well, a Scheme 5 capsule, an ink arch card); the `navModeDefault` sentence (Minimal
+  at layouts 2 and 3 of Editorial); the JP-039 fit counts (*Follow my sections* fits four in
+  Editorial's layout 3 at 768); the header's `in` sentence ("Editorial's over two fitted cards
+  and two placeholders" → three and one). Not written here.
+- **For the bio**: the composed row's `vm.pad` arm at `d === 2` still names Lime and Grunge;
+  the bio joins it first (Grunge's *the composed row's pad arm moves per section*), so until
+  the calendar closes the row the heads part on the 1440 page. The header's arch card is the
+  page's first arch; the bio's photograph is not one (*decorative language*).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -944,6 +1044,28 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 - Session 0: *Probing a vm key no section reads yet* (editorial/layout-2, *Settled in session 0*)
   — `onScheme[5]` and the page-keyed footer seat, through `sectionVm` in the page.
 
+- Section 1: *The first layout-3 block: `if (s.lime) { … return }` at the head of `HeaderV2`*
+  (lime/layout-3, *Settled in section 1*; D3) — widened to `s.limeTree`, no `G`.
+- Section 1: *A widened block can need no `G` at all* (grunge/layout-3, *Settled in section 9*) —
+  every delta a binding, fifteen arms.
+- Section 1: *A nested node or a card on another scheme reads that scheme's keys*
+  (editorial/layout-2, *Settled in session 0*) — `onScheme[5]` for the nav, its first reader,
+  and `onScheme[1]` for four nodes naming Scheme 1 under the Scheme 3 seat (this plan's trap 4).
+- Section 1: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section 8*;
+  editorial/layout-1) — 44 against 44 at 1440 and 390; the diff was the whole delta list.
+- Section 1: *A scheme that did not move can still move the binding* (grunge/layout-3,
+  *Conventions*) — the well's fade (`sem/bg` for `sem/media`) and the location's dot (`text/2`
+  for `text/1`).
+- Section 1: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, *Settled in section 6*)
+  — the card's name at the literal 32 / 25 / 23.
+- Section 1: *A twin's width-bound call is re-measured in the new face* (editorial/layout-2,
+  *Conventions*) — the 768 fold walked in Noto with `&nav=`: four links, not Grunge's seven.
+- Section 1: *A seeded page cannot show an empty slot* (lime/layout-1, *Learned on the end-of-pass
+  sweep*) — `&noimage=1` for the widened backdrop ramp.
+- Section 1: *Field reach is measured* (CLAUDE.md) and *the whole-page published check*
+  (lime/layout-1, *Learned on the end-of-pass sweep*) — `reach.mjs 3`, `page-check.mjs Editorial
+  2,0,1,3`.
+
 ## Open questions
 
 1. **Decision 1** — the header's Scheme 8, the nav's Scheme 5, the footer's scheme by page.
@@ -955,7 +1077,8 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    Worth telling the designer with it.
 4. **The header's chips 4 and 6 are lettered terracotta on terracotta** (`tag/6/bg` as their text
    fill), invisible at every width; the other three name `scheme/3` and `scheme/5` inks. The header
-   session draws each seat's own ink. Worth telling the designer.
+   session draws each seat's own ink. Worth telling the designer. *Settled in section 1: each
+   chip reads `s.onScheme[1].chips[i % 2]`, blush in ink and terracotta in paper.*
 5. **The narrow masters' leaks**, each for its session to follow or override (CONVENTIONS A, *leaked
    tops are followed where they show*, *a leak that shows and reads as a defect is overridden*):
    - the 768 `Tags — Frame` instance is **`Theme=Lime`** in Primitives: Lime — an olive-and-lime
@@ -964,7 +1087,8 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
      foot;
    - the bio's divider stroked **8** inside on a 1px frame (layout 2's slip), and 390 wide at 390;
    - the 390 bio card 390 wide at x −10 in its 370 instance;
-   - the 390 header 57 taller than the twins' on their tree.
+   - the 390 header 57 taller than the twins' on their tree. *Settled in section 1: not a leak —
+     the band states 418.52 against 370.52 and the card is 136 against 127, both followed.*
 6. **The demo glyphs** — layout 1's open question 5 and layout 2's "JUN 1", with pricing's "£350"
    rendering "£ ✱50". Worth telling the designer with layout 1's note.
 7. **The testimonials' head breaks inside the word** at 1440 ("EXPERIENC / ES.") in its capped box;
