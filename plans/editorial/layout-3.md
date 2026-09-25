@@ -1285,6 +1285,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   the frames' 122 / 90 / 70 (100 on the canvas) all three templates run **+17 / +13 / +9** box to
   box. Under Editorial the glyph adds more: Noto's cap top stands 11 / 7 / 4.5 below its box, and
   Fisterra's 3.3 / 2 / 2 in the frames (pixel scans), so the visible gap is **+25 / +18 / +11.5**.
+  Grunge's section 4 names the same gap as +19 / −11 / −16 against 133.3 / 128.2 / 109.2: that
+  was glyph to glyph (the last list glyph, with the 768 row's ~38 under it, to the head's glyph)
+  and before Lime's feet moved; this is box to box. One diff, two referents.
   The `vm.pad` comment's "37 / 47 / 35, measured against the seeded page" therefore no longer
   meets 122 / 90 / 70 for any template; what moved since `7fc68af` was not traced. Named, not
   fixed: a repertoire row in the `d === 2` arm moves all three templates' pages, which makes it
