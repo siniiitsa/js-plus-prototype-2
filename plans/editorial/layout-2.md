@@ -179,7 +179,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 2 | `bio` | `964:64600` | 1440 × 760 | `986:15659` | 768 × 1217.8 | `986:15678` | 390 × 880.3 | 1 (pill **4**) | `964:64581` | `964:64619` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v1)` | **done** `cbff882` |
 | 3 | `media` | `964:64601` *(Section; panel `964:64602`)* | 1440 × 965 | `986:15660` *(Frame 299; `986:15661`)* | 768 × 1626 | `986:15679` *(Frame 299; `986:15680`)* | 390 × 1442 | page 1, **panel 2** | `964:64582` | `964:64620` | inside `Media`'s `if (s.v1)`, after `nowArt` | **done** `0118702` |
 | 4 | `repertoire` | `964:64608` | 1440 × 792 | `986:15667` | 768 × 792 | `986:15686` | 390 × 594 | **4 / 1 / 1** | `964:64589` | `964:64627` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | **done** `f592f45` |
-| 5 | `gallery` | `964:64609` | 1440 × 675 | `986:15668` | 768 × 468 | `986:15687` | 390 × 364 | 1 | `964:64590` | `964:64628` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v1)` | — |
+| 5 | `gallery` | `964:64609` | 1440 × 675 | `986:15668` | 768 × 468 | `986:15687` | 390 × 364 | 1 | `964:64590` | `964:64628` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v1)` | **done** `a888524` |
 | 6 | `pricing` | `964:64610` | 1440 × 715 | `986:15669` | 768 × 924 | `986:15688` | 390 × 865 | **3 / 1 / 1** | `964:64591` | `964:64629` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | — |
 | 7 | `calendar` | `964:64612` *(in `964:64611`)* | 1328 × 1072 *(1440 × 1184)* | `986:15671` *(in `986:15670`)* | 708 × 803 *(915)* | `986:15690` *(in `986:15689`)* | 370 × 774 *(854)* | page 1, **card 2** (head band **1 / 3 / 3**) | `964:64593` | `964:64631` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | — |
 | 8 | `map` | `964:64613` | 1440 × 833 | `986:15672` | 768 × 823 | `986:15691` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64632` | inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
@@ -679,6 +679,11 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
   (the repertoire's `togR`). Pricing's chips and the form's boxes are the next pill-shaped dashes.
 - **`DashRule` takes an upright `side`, 'left' or 'right'** (section 4), for a column's inside
   edge; the caller is `position: relative` and stretches to the column's height.
+- **A frame's image anchor is evidence for its own photograph only** (section 5): where the node
+  holds our seed (its hash in *Photography*), sweep cover anchors against the render and follow
+  the minimum; where it holds a placeholder, keep the anchor that serves our seeds, and name it.
+- **On this paper page `s.muted` is ink, so an empty slot on a dark well needs `Photo`'s `ink`**
+  (section 5): check `&n=0` wherever a Lime block's well is `s.box3` or another ink fill.
 
 ### Seen at planning time, per section
 
@@ -708,7 +713,9 @@ the twins' dark-ground assumptions break (trap 6).
 5. **gallery** — paper: the hero (784 × 583) in what reads as a thin ink ring, six masonry tiles
    unringed, a blush caption chip in Inter Bold ink; no dash. 768 adds a head row ("Gallery",
    "View (4)"); 390 is the hero over ten small tiles, the loop. The 768 master has **two tiles at 1px
-   tall** (`8f69a4a6`, `b35b6507`) — open question 7.
+   tall** (`8f69a4a6`, `b35b6507`) — open question 7. *Settled in section 5: the tiles are edged
+   1px terracotta, not unringed; the head row reads "View list" and ✕, both dropped as the twins
+   drop them.*
 6. **pricing** — at 1440 a full-bleed ink band in what reads as a hairline root ring (Lime and
    Grunge: *the pricing instance's hairline ring*; read it): "[ PRICING ]" paper, the head in
    terracotta, the review quote paper with the avatars and terracotta stars; the plan card dashed
@@ -1173,6 +1180,94 @@ the twins' dark-ground assumptions break (trap 6).
   it nothing. It has no block — `(s.lime || grunge)` ternaries through `Gallery`'s `if (s.v1)` —
   so each widens from the frame, one ternary at a time.
 
+### Settled in section 5 (the gallery)
+
+- **No block, for the second time: Lime's and Grunge's ternaries through `Gallery`'s `if (s.v1)`
+  widen one by one**, `const ed = s.editorial` beside `const grunge`, at eight sites — `bw`, the
+  well, `r`, the tiles' corner rule, the two chip-type sites (the 768 head and the caption), the
+  caption's ink gate, and the hero's ring and radius — plus one new `wellInk`. The tree is Lime's
+  node for node at all three widths (18 / 23 / 22; Grunge carries one more, its grain rect), on
+  **Scheme 1 with no Device override** (`resolvedVariableModes` Desktop / Tablet / Mobile), **no
+  effect and no dash on any node**, so Lime's `s.lime &&` glow and Grunge's `Grain` both drop by
+  construction and `DashRule` has no seat. `size/chip` is 12 / 11 / 11 — `THEME_RAMP.Editorial`'s
+  chip 10 / 11 / 11, so `s.chip` exactly, as under Grunge. One walker call over the three masters
+  and one paired diff (by traversal order, all three widths, against both twins) were the whole
+  read. The hooks sit above the branches, so the published picks needed nothing.
+- **Trap 6 did not bite, a third time: on paper every ink is the binding.** The wells are
+  `sem/box/3` (`s.box3`, `#141414`), the tiles' edge `sem/text/1` (`s.ac`, terracotta — the `edge`
+  already drawn), the caption `sem/tag/1/bg` (blush, `s.chips[0].bg`) lettered `sem/text/2`
+  (`s.tx`), the 768 head `sem/text/2`. **The caption's fill is Retro's own arm**: `(s.lime ||
+  grunge) ? s.box1 : s.chips[0].bg` already reads the binding under Editorial, so that ternary is
+  left as it is with a comment saying the else-arm is the binding and not a default; the ink gate
+  widens to `(s.retro || s.limeTree)` only to name `s.tx` (`s.chips[0].fg` is the same ink).
+- **What moves is the shape.** The hero's outer frame states **no radius** — a square in a 1px
+  INSIDE `scheme/1/stroke/1` ring (`s.stroke1`, opaque ink; the same value as Retro's `s.tx`
+  fallthrough, named for the binding) — and its image frame's own radius 4 lands under the ring:
+  the render samples `#141414` to the corner pixel and no paper wedge, so it is not drawn (in CSS
+  the photo sits inside the border's padding box, where a 4 *would* show). **Every tile rounds
+  whole at a raw 3** at 1440 and 768 (`u(3)`, 2.5 on the canvas) — the first and last in each
+  column included, where Lime's frames square off the corners their dropped borders run through
+  (`0 0 30 30` / `30 30 0 0`) — so the tile's corner rule takes `(s.mob || ed)`. The render shows
+  it: the first tile's top corners round with no top stroke. The 390 rail keeps its 10.
+- **The 1440 hero photograph is a `CROP` that is a cover, and it is followed.** The fill maps full
+  width × 0.5954 of the 900 × 1125 seed (`editorialGallery4`, the frame's own `90514a32`) into the
+  784 × 583 box, whose cover needs 0.8 / 1.3448 = 0.5949 — the window is the box's aspect to
+  0.1%, so no stretch (the header's `CROP` was one), and its 0.0749 offset is **18.5%** of the
+  slack. A sweep of cover anchors against the render bottoms out there (mean |Δ| 2.96 against
+  30.3 top-anchored); the narrow `FILL`s bottom out at **50%** (1.73 at 768, 1.52 at 390). So the
+  hero takes `ed ? (desk ? '50% 18.5%' : '50% 50%') : '50% 0%'`, and each of the other six seeds,
+  picked into the seat, keeps its face at 18.5% (the stage portrait and the avatar included).
+- **The tiles keep the twins' top anchor — a named departure from the frame's `FILL`.** The
+  frames fill their strip centred, but the strip is Retro's placeholders (open question 3), so
+  the anchor says nothing about our seeds; centred, the stage portrait in the right column's
+  first tile lost the singer's head above the mouth (tried and seen at 1440 and 768). Reversible
+  in one line at the tile's `Photo`.
+- **An empty well's initials take the page's paper.** `Photo` draws them in `ink ?? s.muted`, and
+  Editorial's `muted` is ink at a lower alpha — ink on the `#141414` well, invisible, where the
+  twins' pale `muted` reads (Grunge's `n=0` passed on that). `wellInk` is `ed ? s.bg : undefined`
+  on both `Photo`s, so every other theme still resolves to `s.muted`; `&n=0` at DPR 2 shows paper
+  `KM` on ink at all three widths. The hero's ink ring on the ink well disappears there, as the
+  frame's would.
+- **Open question 7's 768 tiles are overridden, as the twins' are**: the master's last tile in
+  each column is 1px tall (its siblings keep their desktop 123 / 215 and 194 / 242 in a 358
+  band), and the inherited `flex: h 1 auto` divides the band in the frame's proportions so all six
+  show — Retro's *honouring a squeeze costs content*. **The 390 right column's first-tile wrapper
+  carries Grunge's `[0, 0, 40, 40]` stray again** (`880:19258`; its own image frame says 10, as
+  Lime's wrapper does), and the render shows its capsule foot on that one tile. Not followed, on
+  Grunge's reasoning — one seat of ten. And **the right column's first-tile wrapper at 1440 and
+  768 is square** (`710:2633` / `860:13848`) round an image frame of 3: its stroke lands over the
+  arc, so the tile reads as every other; not a delta.
+- **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
+  section root): desktop hero 642.1 × 478.1 (784 × 583 × 0.82 = 642.9 × 478.1) at (45.9, 80),
+  ring 1px `#141414` at radius 0; caption 102.8 × 39.7 at (33.8, 33.8) inside the hero (40 × 0.82
+  plus the ring), 10px Inter 700 at −0.6px, `#E6B6A0` under `#141414`; tiles 209.1 wide (255 ×
+  0.82) at 100.9 / 176.3 / 184.5 and 159.1 / 198.5 / 104.1, radius 2.5, edge 1px `#C86E52` —
+  Grunge's numbers, the rail at x 707.7 against 708.5 (the hero's flex share, the twins'); 768
+  hero 343 × 392 (342 × 392), head *See us in action* at 11px / −0.66px in ink, caption 89.4 × 31
+  at (41, 41), tiles 165.5 wide (166) at 73.9 / 129.3 / 134.8 and 116.3 / 145.4 / 76.3; 390 ten
+  tiles 36.5 × 48.8 at radius 10, caption 115.7 × 46 at (41, 41). **Named diffs**: the roots'
+  `padY` 80 / 56 / 44 against the masters' 46 / 30 / 40 (every section's); and **at 390 the hero
+  is 273 wide against 253** — the master pads its own sides 20 where the root's `padX` is 10
+  (JP-038's page inset), so the hero takes the 20 and the rail stands 10 right of the frame's.
+  The twins render the same since JP-038; a `sectionVm` arm for one section would part it from
+  the page, the media session's reasoning.
+- **`live=1`** (puppeteer mouse clicks, 1440 and 390): each of six tiles moves the hero to its
+  slot and rings itself (`s.ac` inset, 2.5 at desktop and 2 at 390, one ring — two at 390, where
+  the ten tiles repeat six slots and a pick rings its twin), reading at DPR 2 as a terracotta ring
+  inside the 1px edge; a second click on the ringed tile hands the hero back to `galActive()`'s
+  slot with no ring; a hero click changes nothing. No page errors or warnings.
+- **`FIELDS.gallery` has no template-keyed `in` row**, so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly gallery
+  arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For pricing**: it is seated on the triple `[3, 1, 1]` — the full-bleed ink band at 1440 and
+  paper at 768 and 390 — so read the scheme per master (the repertoire's lesson), and every
+  `s.stroke1` is each width's dash ink (Scheme 3's paper 56% at 1440, ink narrow), dash 10, 10
+  on the plan card and its divider. Its Lime block (after `sel` / `t`) has Grunge's `G` at its
+  head, so Editorial is a third arm there. The planning table dashes only the card and its
+  divider; if a chip's outline turns out dashed too, its radius is half its height (section 4's
+  convention names pricing's chips as the next case). Session 0 found the flat arm paints no sheet at 1440, so the root
+  shows through; read the planning table's "hairline root ring" off the node before drawing it.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1264,6 +1359,22 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Repertoire: *The node walker, kept* (grunge/layout-2) with the binding names — three walks, and
   one stroke tally across all three masters.
 
+- Gallery: *The first layout-2 section with no block: `s.lime` ternaries through `Gallery`'s
+  `if (s.v1)`* (lime/layout-2, D2) and Grunge's widening of them (grunge/layout-2, *Settled in
+  section 5*) — eight sites under `ed`, one caption ternary left on its Retro arm by binding.
+- Gallery: *`size/chip` is `s.chip` exactly* (lime/layout-2, D2) — 12 / 11 / 11, Editorial's chip
+  10 / 11 / 11.
+- Gallery: *Read a fill's `scaleMode` before believing its `imageTransform`; correlate the render
+  with the seed* (grunge/layout-2, A) — the 1440 `CROP` proved a cover at 18.5%, the narrow `FILL`s
+  centred, by an anchor sweep.
+- Gallery: *A leak that shows and reads as a defect is overridden* (grunge/layout-1, A) — the 390
+  wrapper's `[0, 0, 40, 40]`, Grunge's call again; and Retro's *honouring a squeeze costs content*
+  (retro/layout-2, the gallery's narrow masters) for the 768 1px tiles.
+- Gallery: *A seeded page cannot show an empty slot* — `&n=0` (lime/layout-1, B) — which is what
+  found the ink-on-ink initials.
+- Gallery: *The paired diff walk* (grunge/layout-2, A) — by traversal order, all three widths,
+  both twins in one call.
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
@@ -1296,7 +1407,10 @@ it here in one line, with the plan it came from, a blank line between sessions.)
      is 22.9 wide, the title column 1). *Section 3: overridden by the shared 390 override the
      twins already run* (clock and icons dropped, padding 16, gaps 14, the inner pill's sides
      0), so "SLOW BURN" is whole at 23;
-   - the 768 gallery's two 1px tiles;
+   - the 768 gallery's two 1px tiles — *section 5: overridden, as the twins' are*: the inherited
+     `flex: h 1 auto` divides the band in the frame's proportions, so all six show;
+   - the 390 gallery's right-column first-tile wrapper at `[0, 0, 40, 40]` (Grunge's stray
+     again), whose capsule foot shows on one tile — *section 5: not followed*, Grunge's call;
    - the 390 testimonials' sub, a 431-wide no-wrap line clipped by the card;
    - the map's ring labels past the 768 and 390 masters, clipped by the viewport.
 8. **Header cards 3 and 4** stay placeholders (layout 1, open question 4): `HeaderV2` / `V3` in
