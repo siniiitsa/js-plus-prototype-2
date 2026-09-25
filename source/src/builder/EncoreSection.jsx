@@ -20304,13 +20304,29 @@ function Testimonials({ s }) {
     // `stroke/1` is a **black** 15%; and every radius is a raw 15 (Lime's 30
     // tiles and 50 card). The idle tiles' `s.box1` and `s.ac` ring, the head's
     // `s.tx` and the whole ramp are the same keys on both templates.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:64615 1440 × 831.9, 986:15674 768 × 863, 986:15693 390 ×
+    // 939) is the same 26 nodes a fourth time, on Scheme 1's paper with the
+    // card and the picked tile on Scheme 3 (`S3`, ink) and no Device override.
+    // Its ramp is `THEME_RAMP.Editorial` to the token. The card is `S3`'s
+    // `box/1` in its solid 56% paper `stroke/1`, lettered `S3`'s `text/2`;
+    // the pill's label and disc are `sem/tag/2/text`, Grunge's key. Every
+    // radius is 0. The tiles are where it parts from the twins: each is dashed
+    // 5, 5 all round in `text/2` — ink on the idle `box/1` tiles, **opaque**
+    // paper on the picked `S3` one (not `stroke/1`'s 56%), 1px on both — and
+    // each FILLs both axes, so the column is the widest padded mark (97 / 92)
+    // with every tile across it, and the 390 row is three equal thirds, not
+    // the twins' widened pick: the fill and the dash are the whole selection.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
+      const S3 = ed ? s.onScheme[3] : null
       // Scheme 3's `box/1` and `stroke/1`, the map block's names for them.
       const lime3 = '#CCFA61'
       const hair = '#15180F26'
       const G = grunge
         ? { card: '#9E1F17', ink: s.tx, hair: '#00000026', tileR: 15, cardR: 15, pillFg: s.chips[1].fg }
+        : ed ? { card: S3.box1, ink: S3.tx, hair: S3.stroke1, tileR: 0, cardR: 0, pillFg: s.chips[1].fg }
         : { card: lime3, ink: s.bg, hair, tileR: 30, cardR: 50, pillFg: s.activeFg }
       // Every stroke is inside, so each is an inset ring: the frame's heights
       // hold, and the picked tile's 2px needs no border arithmetic against its
@@ -20319,10 +20335,12 @@ function Testimonials({ s }) {
       const bodyType = (size, lh) => ({ fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls })
       // Every display site — the head, the marks, the glyph, the reviewer —
       // is Stones Crush on the Grunge masters: Anton at 0.75, and uppercase at
-      // its own site (identity off Grunge).
+      // its own site (identity off Grunge). Fisterra Fora on Editorial's, all
+      // capitals, so Noto is uppercased at the same sites; `faced` is the
+      // identity there.
       const dispType = (size, lh) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
-        ...(grunge ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
       })
 
       // Body/SM, Display/LG and Body/MD, all `sem/text/2`. No measure: the
@@ -20331,13 +20349,18 @@ function Testimonials({ s }) {
       // (`TESTI_HEADING_2`'s, Retro's `pre-wrap` below): Anton at 0.75 breaks
       // greedily after PEOPLE, where all three masters set the typed FEEDBACK /
       // FROM PEOPLE WHO BOOKED — and its longer line fits every width.
+      // Editorial keeps the typed break too, and wraps at the ramp size rather
+      // than shrink off it: Noto's FROM PEOPLE WHO BOOKED is 11.69 ems, 1134 in
+      // the 1088 desktop column, so desktop sets three lines where the 1440
+      // master's no-wrap node sets two (and overruns its own 1328 by 5 in the
+      // demo face); 768 and 390 wrap to the masters' own three and four.
       const limeHead = (
         <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
           <span style={bodyType(s.bodySm, 1.4)}>&#9998; What clients say</span>
           {!!s.title && (
             <h2 style={{
               margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%',
-              ...(grunge ? { whiteSpace: 'pre-wrap' } : null),
+              ...(grunge || ed ? { whiteSpace: 'pre-wrap' } : null),
             }}>
               {s.title}
             </h2>
@@ -20354,11 +20377,24 @@ function Testimonials({ s }) {
       // 390 the 36 of vertical padding is real, since that master states no
       // height (36 + 21.6 + 36 = the frame's 94); in the column it is inert,
       // Retro's division rule.
+      //
+      // Editorial's tiles all FILL both axes, so under `ed` no tile hugs: the
+      // column takes every tile across it and is its widest padded mark, with
+      // the frame's own 97 / 92 as a floor (the seeded marks sit under it), and
+      // the 390 row divides like the column in the other axis — 3 × 108.67 +
+      // 24 is the 350 row, so the widths are the fill share and the 30 of
+      // horizontal padding is inert there (Retro's division rule), while the
+      // 36 above and below is the height. So `1 1 0` on one row, the picked
+      // tile's stated 0 as inert as the others' 30; `overflow: hidden` resolves
+      // the automatic minimum to 0, so `min-content` is written out and the row
+      // wraps only once the marks themselves no longer fit.
       const limeTiles = (
         <div style={{
           display: 'flex', flexDirection: wide ? 'column' : 'row', gap: u(12), flex: 'none',
           ...(wide
-            ? { width: u(desk ? 89 : 85), alignSelf: 'stretch', alignItems: 'center' }
+            ? ed
+              ? { minWidth: u(desk ? 97 : 92), alignSelf: 'stretch' }
+              : { width: u(desk ? 89 : 85), alignSelf: 'stretch', alignItems: 'center' }
             : { flexWrap: 'wrap', justifyContent: 'center' }),
         }}>
           {s.quotes.map((r, i) => {
@@ -20367,13 +20403,19 @@ function Testimonials({ s }) {
               <div key={i} onClick={s.live ? () => setCur(i) : undefined} style={{
                 ...(wide
                   ? { flex: '1 1 0', minHeight: 0, padding: `0 ${u(30)}`, ...(on ? { alignSelf: 'stretch' } : null) }
-                  : { flex: on ? '1 0 auto' : 'none', padding: `${u(36)} ${u(30)}`, minWidth: 0 }),
+                  : ed
+                    ? { flex: '1 1 0', padding: `${u(36)} 0`, minWidth: 'min-content' }
+                    : { flex: on ? '1 0 auto' : 'none', padding: `${u(36)} ${u(30)}`, minWidth: 0 }),
                 background: on ? G.card : s.box1, color: on ? G.ink : s.tx,
-                boxShadow: on ? ring(2, G.hair) : ring(1, s.ac), borderRadius: u(G.tileR),
+                boxShadow: ed ? undefined : on ? ring(2, G.hair) : ring(1, s.ac), borderRadius: u(G.tileR),
                 overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: s.live ? 'pointer' : undefined,
+                ...(ed ? { position: 'relative' } : null),
               }}>
                 <span style={{ ...dispType(s.list, 1.2), whiteSpace: 'nowrap' }}>{r.mark}</span>
+                {/* `text/2` both ways: ink on the idle `box/1` tile, opaque
+                    paper on the picked Scheme 3 one. */}
+                {ed && <DashRule side="all" dash={5 * z} colour={on ? S3.tx : s.tx} />}
               </div>
             )
           })}
