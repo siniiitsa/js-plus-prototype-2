@@ -245,7 +245,7 @@ session widens.
 | 5 | `calendar` | `964:68742` *(in `964:68740`; "Book Me" `964:68741`)* | 405 × **521.6** | `984:16835` *(in `984:16833`; `984:16834`)* | 708 × **471.6** | `984:16866` *(in `984:16864`; `984:16865`)* | 370 × 443.6 | 1 (the pill names Scheme 1) | `964:68677` / `984:10763` / `984:10794` | `964:68709` / `984:13923` / `984:13954` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v2)`, after `line` | **done** (`0409063`) |
 | 6 | `gallery` | `964:68744` | 1440 × 789 | `984:16836` | 768 × **877** | `984:16867` | 390 × **587** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68711` / `984:13924` / `984:13955` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v2)` | **done** (`5616c03`) |
 | 7 | `pricing` | `964:68745` | 1440 × **1109** | `984:16837` | 768 × **975** | `984:16868` | 390 × **1383** | 1 (featured row **3**) | `964:68680` / `984:10765` / `984:10796` | `964:68712` / `984:13925` / `984:13956` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v2)`, after `shown` | **done** (`005af79`) |
-| 8 | `map` | `964:68746` | 1440 × **813** | `984:16838` | 768 × **858** | `984:16869` | 390 × 883 | **4** (panel **3**, viewport 4) | `964:68681` / `984:10766` / `984:10797` | `964:68713` / `984:13926` / `984:13957` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | |
+| 8 | `map` | `964:68746` | 1440 × **813** | `984:16838` | 768 × **858** | `984:16869` | 390 × 883 | **4** (panel **3**, viewport 4) | `964:68681` / `984:10766` / `984:10797` | `964:68713` / `984:13926` / `984:13957` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | **done** (`3582f3d`) |
 | 9 | `form` | `964:68747` | 1440 × **589** | `984:16839` | 768 × **711** | `984:16870` | 390 × 741 | 1 | `964:68682` / `984:10767` / `984:10798` | `964:68714` / `984:13927` / `984:13958` | `if (s.lime \|\| s.grunge)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | |
 | 10 | `testimonials` | `964:68748` | 1440 × 790 | `984:16840` | 768 × **784** | `984:16871` | 390 × **1044** | 1 (cells **3 / 3 / 4 / 3**, two on 1) | `964:68683` / `984:10768` / `984:10799` | `964:68715` / `984:13928` / `984:13959` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v2)`, after `template` | |
 | 11 | `footer` | `964:68749` | 1440 × 479.5 | `984:16841` | 768 × 692.3 | `984:16872` | 390 × 736.3 | **2** (layout 1's frames: 3) | — | — | layout 1's `Footer` block, already `s.limeTree`; the seat is decision 1(c) | |
@@ -829,7 +829,23 @@ name them.
   zoom buttons, and the refused boxes of the form. *Pricing's seat needed nothing* (section 7):
   it is the frame's own featured row moved, every leaf read off `s.onScheme[3]`, so it reads
   wherever the filter stands it; the one frame-less box, *No packages yet.*, is `s.tx` ink on
-  the paper page in a terracotta dash.
+  the paper page in a terracotta dash. *The map's zoom buttons are not frame-less* (section 8):
+  they are nodes, `box/2` salmon in a paper-56 ring; its one frame-less state is the lit pin,
+  the paper accent in a 2px ink ring, which reads on the dark plate.
+- **The lift is measured per site, and it moves with the line height** (section 8), which
+  refines section 5's *not a line-height one*. On the map, where one face stands at two line
+  heights, Noto's glyph floor sits **level** with the frame's at lh 1.2 (the row venues, 0.273
+  against 0.271em up the line box) and **0.07em low** at lh 1.1 (the panel title, 0.17 against
+  0.244), where the calendar's lh 0.89 and 1 gave 0.09–0.10: Figma's baseline moves less with
+  the line height than CSS's. So read the frame's floor per site — **`absoluteRenderBounds`
+  against the text node's box**, one `use_figma` read, is exact where `get_screenshot` caps at
+  1:1 — lift by what it measures, and lift nothing that measures level.
+- **A frame's own state can vanish by the scheme; redraw it in the other text token at the
+  frame's opacity** (section 8). The map's idle dots bind `text/2` at .6, paper under layout
+  2's Scheme 3 viewport and ink under this page's Scheme 4 one — (28, 29, 23) on a (41, 42,
+  27) plate. Sample a followed state on the render before following it; where it has vanished,
+  it is the twins' *invisible, so redrawn* case, and `text/1` at the frame's .6 is what the
+  same node drew on the page where it read.
 
 ### Seen at planning time, per section
 
@@ -1610,6 +1626,151 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   session 0 found the 390 pager's arrows ink on the flat arm's ink sheet: the block replaces
   it.
 
+### Settled in section 8 (the events map)
+
+- **The block widened: `if (s.limeTree)` inside `EventsMap`'s `if (s.v2)`, after `litRow`,
+  `const ed = s.editorial`, `S3` off `s.onScheme[3]` and a third arm in Grunge's `G`**, the
+  twins' arms byte-identical: Grunge's nineteen keys plus eleven Editorial leaves read through
+  `??` (`title`, `head`, `venue`, `rule`, `panelInk`, `statusBg` / `statusFg`, `arrow`, `acc`,
+  `dot` / `dotOp`), and a handful of `ed` sites — `disp()`'s uppercase, the date box's and the
+  lit row's square corners and the lit row's padding, four `DashRule`s, the panel title's
+  lift. The tree is Grunge's node for node, **141 / 142 / 83** by traversal order (one paired
+  diff per width), on **Scheme 4** with `radius-map` nested **Scheme 3** and `Map Viewport`
+  explicitly **Scheme 4**, the seat's own, at every width; no Device override, no effect on any
+  node. `get_variable_defs` is Sienna Vale's ramp at all three (title 32 / 25 / 23, list 24 /
+  19 / 18, label-xs 20 / 14 / 12, body-md 14 / 13 / 13, body-sm 12, chip 12 / 11 / 11, eyebrow
+  15 / 12), so every size reads `s.*` but Display/Title, the literal (`G.title`; `vm.title`
+  shadows the ramp). The hooks sit above the block, so the filter, the featuring, the pager,
+  the zoom and *See all gigs* needed nothing.
+- **Trap 5, read leaf by leaf: under the Scheme 4 seat Grunge's five-way split is the frame's
+  bindings.** The paired diff was leaves: the head and the idle venues bind `text/1` (paper)
+  where Grunge's bind `text/2`; every `stroke/1` is paper at 56% (Grunge's 15%); the rows'
+  foot rule is `stroke/2` **ink dashed 10, 10** where Grunge's is solid `stroke/1`; the date
+  boxes, the lit row, the panel and the container are **square** (Grunge 999 / 999 / 15 / 8);
+  the lit row pads 14 / **10** / 14 / 10 (Grunge's right 29) and is stroked all round, dashed;
+  the panel binds `box/1` (Grunge's `box/2`); the viewport carries its Scheme 4. Every other
+  binding *name* is Grunge's, so its keys land on the frame: the lit chip and the lit row fill
+  `text/1` paper (`lit` = `s.ac`) under `sem/bg` terracotta type (`litFg`); the date box keeps
+  `box/1` `#DA7C5E` in its paper-56 ring (`disc`, `hair`) and letters `text/1` on the lit row
+  (`litBoxFg`), whose hour chip fills `sem/bg` (`litBox`); *See all gigs* is `text/1` paper
+  lettered and disced `sem/bg` round a paper arrow (`pillBg` / `pillFg`, `BookPill`'s Lime
+  branch); the 390 pager's two capsules (radius 60) ring and letter `text/1` (`pagerInk`,
+  through `Pager`'s `frame.lime`). The idle type — the eyebrow, the place lines, the hour
+  chips, the date numerals, *Tickets →* — is `text/2` ink (`ink` = `s.tx`).
+- **The panel is `S3`**: `radius-map` and its container both `box/1` `#1D1D1D` (`panel`,
+  `mapBox` — one value, Lime's case again); its type `text/2` paper (`panelInk`, which the
+  title, the city at .7, *Updated* at .6, the data bar and EXPAND VIEW inherit); the **status
+  pill `sem/bg` ink, lettered and dotted `text/1` terracotta** (`statusBg` / `statusFg` — the
+  twins' `s.ac` / `s.bg` turned round by the scheme); the container's ring and the bar's top
+  rule `stroke/1` paper 56% **dashed 10, 10** (`DashRule side="all"` at radius 0 / 20 / 20, and
+  `side="top"`, 8.2 on the canvas); EXPAND VIEW's arrow `sem/bg` ink on `#1D1D1D`, faint — the
+  frame's own, followed as layout 2 followed its taupe arrow and Grunge its red one (`G.arrow`,
+  reversible in one line).
+- **The viewport is Scheme 4, the seat's own**: everything the twins draw in the accent binds
+  `sem/bg` terracotta — the three rings (1 / 1.5 / 2 at .3 / .5 / .8, the outer dashed 4, 4,
+  unchanged), the ring labels under `text/2` ink type, the centre head and its tail (`G.acc`,
+  layout 2's key) — and the head's 2px ring and glyph are `text/2` ink; the zoom buttons are
+  `box/2` `#EF9173` in a paper-56 ring under ink glyphs (`zoom`, `hairP`: Scheme 4's `stroke/1`
+  and Scheme 3's are one value). The plate stands a fourth time: `e089bd11` at `FILL`,
+  (41, 42, 27) between the roads.
+- **The frame's idle dots vanish by the scheme, so they are redrawn** (*Conventions*, new
+  bullet). They bind `text/2` at .6, which this viewport resolves to ink: (28, 29, 23) on the
+  plate's (41, 42, 27), sampled at all five seats — Lime's *invisible, so redrawn*, not layout
+  2's *follow*. The redraw keeps the frame's .6 and takes `text/1` paper (`dot`, `dotOp`),
+  which is what the same node drew under layout 2's Scheme 3 viewport. **The lit pin**, which
+  no frame draws, is Grunge's keys unchanged: the accent — paper, the lit row's own fill — at
+  14 in a 2px `s.tx` ring, ink here and the centre head's own ring binding. It reads on the
+  plate, and the ring parts it from a terracotta ring it crosses.
+- **The lit row is the frame's, followed**: `text/1` paper, square, dashed 10, 10 all round in
+  `stroke/1` paper 56% — invisible on the paper, drawn anyway (at the canvas's fractional
+  right edge, 1130.8px at DPR 2, its dashes show as a one-device-pixel fringe). The row above it
+  drops its foot rule, as the frame's does and the twins' rule already did.
+- **Noto's J, and the lift, measured.** The prompt's site does not exist: the date box's month
+  is Inter `Label/XXXS` 7 on all three masters, so no display month stands in this section. The
+  display sites are the row venue over its place line (3 apart, lh 1.2) and the panel title over
+  its city (4 apart, lh 1.1). The frame's glyph floors, read off `absoluteRenderBounds` against
+  each text node's box: the venues **0.28em** up the box (0.271 on the line box), the title
+  **0.238** (0.244). Ours, row-profiled at DPR 2: the venue **0.273** (0.252 at 768) — level —
+  and the title **0.170 / 0.172 / 0.178**, 0.07em low at every width, its gap to the city 9.5 /
+  8.3 / 8.1 frame px against 11.6 / 9.7 / 9.7. So **the title alone is lifted, by the measured
+  0.07em**, not the 0.09 the calendar and pricing took: it stands 11.9 / 10.5 / 10.2. With
+  `&cj=` "Jam Jar Joinery" the row's J ends 0.8–1px inside its own box, clear of the place line,
+  and the featured title's J hangs 1–1.5px past its box into the gap, clear of the city.
+- **Measured against the masters' content edges** (harness, DPR 2; the frame × 0.82 in
+  brackets): **desktop** h2 at 64.8 (64.8), 28.8 tall at 26.2px (28.7); chips 108.4 (108.2);
+  rows 68.9 (68.9), the lit row's box 8.2 in (8.2); panel (614.6, 45.9) **519.5 × 574.1**
+  (615, 45.9, 519.9 × 574.8); status pill 82.3 × 19.8 at 72.1 (82 × 19.7 at 72.2); h3 at 101.7
+  (101.7); container 467.1 × 423.8 (467.4 × 423.9) at radius 0; viewport 386.8 (387); bar 37
+  (36.9); section 665.8 (666.7). **768** h2 at 78.8 (79), 27.5 (28) at 25px; chips 124.3 (125);
+  panel at (399, 56); status 94.3 × 23; h3 at 103 (103); container radius 20; viewport **315 ×
+  517**, exact. **390** h2 at 82.8 (83), 25.3 (25) at 23px; chips 126.1 (126); pager 54; pill
+  370 × 54; panel 370 × 358.6 (360); container radius 20; viewport **350 × 161**, exact; bar
+  65.8 (67). The published 1440 tab stands the map at **5923 · 813** — the frame's 813.
+- **Named diffs**:
+  - **768: the frame's own venues wrap** — Fisterra breaks HIDDEN WAREHO / USE in the 107
+    column beside *Upcoming* and *Tickets →*, so its rows run 117 / 94 / 84 / 94 / 84 / 84 and
+    the section 858; ours hold one line (the hour chip is narrower, and no seeded gig carries a
+    link), 84 each, 824.6;
+  - **390: the frame's row carries *Tickets →* and an *Upcoming* chip under it** (123); ours is
+    84 — the hour after the city (the twins' 390 call) and no *Tickets →* on an unlinked gig
+    (JP-045) — so the section is 839.5 against 883;
+  - the twins': the chip row is Retro's normalisation (the lit *All* at Body/SM, 22.2 against
+    the frame's Body/MD 25.4), so the list stands 3 / 4 / 3 higher; the 768 data bar wraps the
+    seeded line (61.6 against 45); the head prints `vm.title`'s "Manchester" where the frame
+    writes "Where I'm playing."; the chips are the gigs' cities, the hour stands in the
+    *Upcoming* chip's seat, and the weekday and the ↗ are dropped (JP-045's *layout 3 drops the
+    frame's second ↗*);
+  - *SEE ALL GIGS* is 175.3 wide in Noto against 169.7; the display renders at Noto's 540
+    against Fisterra Bold (layout 1's decision 1). *Updated 2m ago* at .6 is the frame's own
+    opacity here (Grunge named Lime's .6 against its full-strength frame).
+- **`live=1`** (puppeteer clicks, `n=30`, 1440, 768 and 390): a row click lights its row, moves
+  the lit pin and features its gig (row 3 → *Venue number 3*); a pin click does the same back
+  (pin 1 → row 1); the Leeds chip filters to its ten and All restores the pick; two `+` clicks
+  scale the layer to 1.5625; the pager turns to #6–10 and the panel follows; *See all gigs*
+  lists all 30 with the pager gone (and at 390 the lit row appears, paper, square, once there
+  is more than one row). Lit row `rgb(246, 240, 232)` under terracotta, lit pin paper in a
+  `0 0 0 2px #141414` ring, idle pins paper at .6. `n=0` prints *No dates yet.* in ink on both
+  sides, no chips, pins or pager; `n=1` draws no chip row, no lit row and no pager. No page
+  errors or warnings.
+- **JP-045 and JP-040.** `&cj=` of three gigs — `tix.example.com/a`, `''` and the refused
+  `foo` — draws exactly one *Tickets →*, a `SPAN` on the canvas and an `<a href>` live, on the
+  linked gig; at `n=30` every linked row carries its `<a>` and no other row one; no ↗ anywhere
+  (layout 3 draws none). The four JP-040 seats — the status pill, *Updated*, the ring labels,
+  EXPAND VIEW — are the twins' own reads of `vm.mapStatus` / `mapUpdated` / `mapRings` /
+  `mapExpand`, drawn at every width.
+- **`FIELDS.map` has no template-keyed `in` row** and the block reads only the twins' keys, so
+  no `reach.mjs` run was owed — sections 4, 6 and 7's finding.
+- **Verified in the builder** (`page-check.mjs Editorial 2`): four modal cards; the map at 5923
+  · 813 in the published 1440 tab between pricing (4796 · 1127) and the form (6736), and at
+  5741 · 839 at 390; four of the control probe's six clicks move the section, the other two
+  idempotent (the lit *All* chip and the lit first row's place line); every nav,
+  fragment and footer link scrolls to its id (Gigs and Shows/Coverage → `#map`), Book Now to
+  `#form`; no errors or warnings; `overflow390` 0; the 390 burger opens 1 → 5. The seam clips
+  show straight edges at 1440 and 390: pricing's ink ring onto the terracotta band, the band
+  onto the form's paper.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly map
+  arch 2 at three widths on both surfaces (6 files).
+- **For the sweep's CLAUDE.md pass**: Editorial's paragraph (*Its live states are redrawn where
+  its frames draw none*) owes layout 3's map — the lit row the frame's own and followed, the
+  idle dots redrawn paper at .6 because the scheme hid them, the lit pin paper in an ink ring;
+  and CONVENTIONS C's *Retro's live states vanish… redraw them* row an Editorial layout-3 cell
+  for the dots. The events-map paragraph states no layout-3 template list.
+- **For the form**: its block is `if (s.lime || s.grunge)` inside `EnquiryForm`'s `if (s.v2)`,
+  after `up`, with no `G` (Grunge's section 9: no `G`, not one named hue), so expect `ed` arms,
+  and a `G` only if the leaves pile up. It stands on **Scheme 1, paper, no band**: the card and
+  its three boxes square `#FFF9F2`, dashed 10, 10 and **6, 6** in terracotta (a dashed box's
+  `DashRule` radius is half its height only where the walk finds a capsule — read it); the head
+  terracotta at Display/LG. **`vm.titleWordEms`** (`sectionVm`) is `notoBoldEms` for Editorial
+  at every design — layout 1's Bold statement — and this is a Regular head, so key it by
+  design (`notoEms` at `d === 2`) or it shrinks about 4.5% too far; UNFORGETTABLE. is 7.387
+  Noto ems, ~715 at 97 in a ~501 half column (*Sizes*). **`vm.pad`'s `d === 2` arm** is
+  `(T.name === 'Lime' || T.name === 'Grunge') && (cat === 'form' || cat === 'testimonials')`,
+  the form's 90 / 60 foot an inner inset: Editorial's form is 589 tall round a 634 × 377 card,
+  so measure it, and widen the arm for the form alone (a `cat` split until section 10, the
+  composed row's precedent). The refused box is a state no frame draws: check its ring against
+  the paper, not the twins' key (*Conventions*, the frame-less bullet), and measure any display
+  numeral in the price row for the lift before applying one (*Conventions*, section 8).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1791,6 +1952,37 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   (lime/layout-2; editorial/layout-1, *Conventions*) — the rows and the empty box all round; the
   instance's solid ring Grunge's overlay.
 - Section 7: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
+  at zero; `page-check.mjs Editorial 2`.
+
+- Section 8: *After `litRow`*, *rings are the frame's weights, opacities and dash* and *the
+  raster is drawn as it is* (lime/layout-3, *Settled in section 8*; D3) and Grunge's widening
+  with its split `ink` (grunge/layout-3, *Settled in section 8*) — widened to `s.limeTree`; the
+  rings and the raster kept, the split landing on the frame's bindings.
+- Section 8: *The `G` lookup at the block's head, whose twin's arm is today's literals*
+  (grunge/layout-1; C) — a third arm, eleven new leaves through `??`.
+- Section 8: *A nested node or a card on another scheme reads that scheme's keys*
+  (editorial/layout-2, *Settled in session 0*) — the panel on `s.onScheme[3]`, the viewport's
+  explicit Scheme 4 on the seat's own keys.
+- Section 8: *Read every nested node's scheme off the master, never off the twin's row*
+  (grunge/layout-3, *Conventions*) — `radius-map` 3 and `Map Viewport` 4 at every width.
+- Section 8: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section 8*)
+  — 141 / 142 / 83 against Grunge; leaves only.
+- Section 8: *A twin's redrawn state is read against this frame before it is inherited*
+  (editorial/layout-2, *Conventions*) — the lit row, which this frame draws, followed; and
+  *Retro's live states vanish under Lime; redraw them* (lime/layout-1; C) — turned on the
+  frame's own idle dots, which the scheme hid.
+- Section 8: this plan's *frame-less control* bullet (section 6) — the lit pin; the zoom
+  buttons found to be frame nodes.
+- Section 8: *Noto's 0.09em is a face fact* (this plan, *Conventions*, section 5) — measured
+  per site and refined: 0.07em at lh 1.1, level at lh 1.2.
+- Section 8: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, *Settled in section 6*)
+  — the head and the panel title at the literal 32 / 25 / 23.
+- Section 8: *A frame's inside stroke is an inset `boxShadow`… a dashed stroke is `DashRule`*
+  (lime/layout-2; editorial/layout-1, *Conventions*) — the rows, the lit row, the container and
+  the data bar dashed; the chips', boxes' and zoom buttons' solid rings kept inset.
+- Section 8: JP-045's *no Tickets → without a link, on either surface* (lime/retest-qa-fixes)
+  and JP-040's four seats (lime/layout-2-qa-fixes) — re-driven with `&cj=` and `n=30`.
+- Section 8: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
   at zero; `page-check.mjs Editorial 2`.
 
 ## Open questions
