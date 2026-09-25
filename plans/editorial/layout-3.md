@@ -239,7 +239,7 @@ session widens.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:68717` *(page)* | — | `984:16811` | — | `984:16842` | — | — | — | — | Scheme 5, `SCHEMES_OF.Editorial[2]`, the footer's seat by page (decision 1) | **done** (`0198910`, `dcb1cc5`) |
 | 1 | `header` | `964:68718` | 1440 × 900 | `984:16812` | 768 × 1024 | `984:16843` | 390 × **663.5** | **8** (≡ 3; nav **5**; chips and two rings name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68686` / `984:13900` / `984:13931` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV2` | **done** (`0cd6c64`) |
-| 2 | `bio` | `964:68728` *(head `964:68722`, in `Frame 302` `964:68727`, in Section `964:68721`)* | 858 × 882 | `984:16820` *(head `984:16815`)* | 708 × 912 | `984:16851` *(head `984:16846`)* | 370 × **811** | 1 | `964:68663` / `984:10748` / `984:10779` | `964:68695` / `984:13908` / `984:13939` | `if (s.v2 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v2)` | |
+| 2 | `bio` | `964:68728` *(head `964:68722`, in `Frame 302` `964:68727`, in Section `964:68721`)* | 858 × 882 | `984:16820` *(head `984:16815`)* | 708 × 912 | `984:16851` *(head `984:16846`)* | 370 × **811** | 1 | `964:68663` / `984:10748` / `984:10779` | `964:68695` / `984:13908` / `984:13939` | `if (s.v2 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v2)` | **done** (`f6a1ef5`) |
 | 3 | `media` | `964:68739` list + `964:68738` card *(head `964:68731`)* | 858 × 424 + 858 × 243 | `984:16831` + `984:16830` *(head `984:16823`)* | 708 × 647 + 708 × 243 | `984:16862` + `984:16861` *(head `984:16854`)* | 370 × 647 + 370 × 243 | 1 (card **2**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68706` + `964:68705` / `984:13919` + `984:13918` / `984:13950` + `984:13949` | `if (s.lime \|\| s.grunge)` inside `Media`'s `if (s.v2)`, after `nHot` | |
 | 4 | `repertoire` | `964:68743` | 1440 × 621 | `984:16832` *(in `984:16829`)* | 708 × **648** | `984:16863` | 390 × **704** | 1 (sets **4 / 2 / 3**) | `964:68678` / `984:10760` / `984:10791` | `964:68710` / `984:13920` / `984:13951` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | |
 | 5 | `calendar` | `964:68742` *(in `964:68740`; "Book Me" `964:68741`)* | 405 × **521.6** | `984:16835` *(in `984:16833`; `984:16834`)* | 708 × **471.6** | `984:16866` *(in `984:16864`; `984:16865`)* | 370 × 443.6 | 1 (the pill names Scheme 1) | `964:68677` / `984:10763` / `984:10794` | `964:68709` / `984:13923` / `984:13954` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v2)`, after `line` | |
@@ -801,6 +801,12 @@ name them.
 - **Every head on this page is one tone and on the ramp.** Grunge's two-tone names and positional
   splits have no site here; the footer's fitted Bold statement is layout 1's.
 - **Every card on this page is square.** Read a radius before inheriting the twins' 50 or 15.
+  **Read the instance root's `clipsContent` before believing its radius** (section 2): the bio's
+  root states 50 in paper on the paper page and clips nothing; the card inside it clips at 0.
+- **The composed columns are 709 : 334.5 on the 1180 canvas and 864.8 : 408.2 in the published
+  1440 tab** (section 2, measured), not the 684 : 323 / 621 : 293 this plan's older text
+  carries: JP-038's `padX` of 56 made the gutter 1328 − 55 wide. `&column=left` renders the
+  709. Measure the media and the calendar there.
 
 ### Seen at planning time, per section
 
@@ -1024,6 +1030,114 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   the calendar closes the row the heads part on the 1440 page. The header's arch card is the
   page's first arch; the bio's photograph is not one (*decorative language*).
 
+### Settled in section 2 (the bio)
+
+- **The block widened whole: `if (s.v2 && s.limeTree)` ahead of `Bio`'s `if (s.v2)`, `const ed =
+  s.editorial`**, about fifteen arms and no `G`. The card is lifted into a `const card` so the
+  Editorial path can wrap it with the tape; the Lime and Grunge DOM is unchanged, which the
+  digest proves. The tree, by the paired traversal-order diff against the Lime twin (23 of 28 /
+  45 at 1440 and 768, 23 of 27 / 44 at 390; against Grunge 24 of 28 / 40), is Lime's but for the
+  seal (gone), the tape and the sparkle (added), the photo's inner `CROP` frame, and the second
+  rule (gone); on Scheme 1, no nested scheme, no Device override, no effect on any node.
+- **Every delta, off three walks** (bindings with their collections):
+  - **the card is square.** The instance root is `sem/bg` paper at radius 50 (0 at 390) and
+    does **not** clip; the card `Frame` inside it clips at radius 0. So the 50 paints paper on
+    the paper page, invisible, and the card is square at every width. It is `s.box1` `#FFF9F2`
+    dashed 10, 10 in `scheme/1/stroke/2`, 1px inside, at 1440 and 768 (`DashRule side="all"`
+    after the children, where Lime's ring overlay stood), and unstroked at 390. The binding
+    names Scheme 1, and the section stands on Scheme 1, so `s.stroke2` is the same value;
+    `onScheme[1]` was not needed;
+  - **the 390 card bleeds**: 390 wide at x −10 in the 370 instance, so it runs the page's
+    width through the root's padding (`margin: 0 calc(-1 * padX)`). Its photo row's 10 then
+    puts the photograph and the text on the column's edge. Followed, since it shows;
+  - **the photograph is square** (Lime 55, Grunge 15) on the `box/3` ink well, with no glow and
+    no grain. Its fill is `9d20fe0d` under `CROP` `[[1, 0, 0], [0, 0.3811, 0.1189]]` at 1440
+    and 768, a plain `FILL` at 390, over Lime's covered `fa453f7d` (open question 2).
+    `editorialStage` is 820 × 1025 (4:5), so the band is rows 11.9–50%. The desktop cover at
+    **19.2%** (= 0.1189 / (1 − 0.3811)) correlates **0.9998** with the 1440 render. The 768
+    master keeps the transform in a narrower box and squashes the band, as Grunge's does, so
+    no cover matches it well: the sweep peaks at **16%** (0.679), where the band's centre
+    (14.1%) gives 0.655. Layout 2's *follow the sweep's peak* took it. 390 is the centred cover
+    (0.884). `photos.js` did not move. `&noimage=1` puts paper initials (`s.bg`) on the ink
+    well, since `s.tx` is ink here;
+  - **the head band pads 0 at the top** (Lime 24), so it is 120 / 120 / 160 against Lime's 148
+    / 144 / 186. The name stands on the stats' floor straight under the photo row: Display/SM
+    45 / 36 / 30 in ink (`sem/text/2`, one tone, uppercase). The stat values are Grunge's
+    Label/XS in `font/ui`, Chakra Petch 20 / 14 / 12 at 1.26 with a 2.52em floor (the labels'
+    `size/chip` is 12 / 11 / 11 by the ramp, no arm);
+  - **one dashed rule, 23 apart** (`Frame 258` gap 23 at 1440 and 768, 20 at 390, Lime's 0 /
+    20). The divider is a 1px clipping frame stroked **8** inside, dashed 10, 10 in
+    `scheme/1/stroke/2`; the clip shows a hairline, so a hairline is drawn (layout 2's slip).
+    Lime's foot rule has no node here and is dropped under `ed`;
+  - **the tape** is `Frame 210`, a child of the instance pinned MIN / MIN: `Tape` at
+    `active/bg`, turned CSS `rotate(3deg)` (Figma −3), seated by its centre off the card's left.
+    The centre is the origin plus the half-size turned: (419.67, −11.65) at 1440 and 768,
+    (211.16, 7.43) at 390 in the 370 instance;
+  - **the sparkle** is `GrungeStar fill={s.ac}` (`sem/text/1` terracotta — not `SIENNA_MEDIA`). At
+    1440 and 768 it is the card's (38.28, 713), i.e. 106 down the about band, whose floor keeps
+    it inside the padding (`minHeight` 106 + 109 + 24, the seal's rule). At 390 it is the
+    instance's (280.88, 56.6), 54 × 54.5, over the photograph.
+- **`Frame 302` (desktop) and open question 5's 768 tape, overridden.** At 1440 the card stands
+  50 × 0.82 lower under its head (a `marginTop` on the card's wrapper, inside the block). The
+  768 master has no wrapper, and its tape keeps the desktop −45, which covers the foot of the
+  head's glyphs ("ROOM." in the frame, and more in Noto, whose glyphs sit lower). The designer
+  gave 1440 that wrapper precisely as the tape's clearance, so the 768 overlap is read as a
+  leak that reads as a defect (CONVENTIONS A), and **768 takes the same 50, unscaled**. The
+  cost is a 768 card 50 lower than its master. 390 is its own composition, and its tape clears
+  the head by ~4.
+- **The head wraps on the ramp** (the plan's decision): "READS THE ROOM." is 7.498 Noto ems, 725
+  at 97 in the composed column, which is **709** now (below). Each word fits, so CONVENTIONS
+  C's widest-word fit has nothing to shrink. Layout 2's over-long heads took the same call. Two
+  lines at desktop where the frame's Fisterra sets one; one line at 768 (547 of 708) and 390
+  (359.8 of 370), as the masters.
+- **The Genres row** at 1440 and 390 is Editorial's chips on the frame's seats: blush lettered
+  ink, terracotta lettered paper, radius 6, Chakra Petch. The frame's chips 3–6 name other
+  schemes' inks that happen to be those two. The 768 instance is the `Theme=Lime` leak (olive
+  and lime), not followed; the row is drawn as 1440's. Five chips to the frame's six
+  (`TAG_LABELS`), the named diff every template carries.
+- **`vm.pad`'s layout-3 arm takes the bio under Editorial**: top 50 / 50 / `padY`, foot 30,
+  joined as `|| (T.name === 'Editorial' && cat === 'bio')`. Editorial's `left column` pads
+  50 / 10 with gap 80 at 1440 and 768, Grunge's inset for inset. Media and the calendar join
+  in their sessions; until then the heads part (canvas: the bio's h2 86 below its row top, the
+  calendar's "Book Me" 80).
+- **Measured against the masters' content edges** (harness, `column=left` at desktop; the
+  frame's number × 0.82 in brackets):
+  - **desktop:** the root's top 41 (41). Card top 65.6 under the head (80 × 0.82). Photo 24.6
+    in, 659.8 × 311.6 in the 709 column. Name floor, the first label and the first value at
+    722.5 / 649.9 / 682.2 (722.5 / 649.5 / 681.5). Rule 761 (761.1), about band 780.9 (780.9).
+    Sparkle (31.4, 867.8) 88.6 × 89.4, exact. Tape centre (344.15, 273.45) against (344.1,
+    273.4). Card 726.7 against 723.2, the seeded prose.
+  - **768** (with the override): head 47.6 / 65 tall (48 / 65). Photo 648 × 380. Label and
+    value at 606.3 / 643.3 before the 50 (606 / 643). Rule 725.6 (726), sparkle (38.3, 855.6)
+    (856), tape bbox top 97.6 (98), all before the 50.
+  - **390:** card 117.8 at −10, 390 wide (118). Photo (0, 127.8) 370 × 259 (128). Name 396.8
+    (397). Label 465.6 (466), value 502.6 (503). Rule 576.8 (577), about 597.8 (598). Sparkle
+    (280.9, 174.4) (174.6). Tape bbox (106.8, 91.9) (106.84, 92.08). All 6 higher on the page,
+    `padY` 44 against 50, Lime's arm.
+- **Named diffs**:
+  - "KAI MERCER" wraps in the 179 cap at 768 (186 wide at 36 in Noto), as would the frame's own
+    "SIENNA VALE" (197). Fisterra's is 179. The floor is 96, so nothing moves.
+  - The values run one line where the frame's copy hand-breaks "JUNE\n2021", Grunge's diff.
+  - The cards run 726.7 / 886 / 720 against 723.2 / 912 / 811, short by the seeded prose.
+  - The 768 card stands 50 lower (above).
+- **No live control**: `live=1` digests byte-identical to the canvas at all three widths.
+- **`FIELDS`: one hint moved, no `in` row.** `scripts/reach.mjs 3` (3,312 renders) now has
+  `who.tags` and `who.showTags` reaching bio layouts **2, 3 and 4**, so `FIELDS.header.tags`'
+  hint reads "(in Lime, Grunge and Editorial, layout 3 as well)". Kicker (all four bios) and
+  location (bios 1–3, calendar 4) already said so, and the header's own rows are section 1's.
+  The sweep's CLAUDE.md pass owes the same word in "Lime's and Grunge's 3".
+- **Verified in the builder**:
+  - `scripts/page-check.mjs Editorial 2`: four modal cards. At 1440 the bio and the calendar
+    stand at top 901, media under the bio at 2318. Every nav, fragment and footer link scrolls
+    to its id. No errors or warnings; `overflow390` 0; the 390 burger opens 1 → 5.
+  - A one-off (deleted) measured the composed grid at **708.7 : 334.5 on the 1180 canvas** and
+    **864.8 : 408.2 in the published 1440 tab**. Both are 858 : 405 (2.1185), and 864.8 + 55 +
+    408.2 = 1328 = 1440 − 2 × 56. The plan's 621 : 293 and 684 : 323 predate JP-038's inset.
+  - The bio carries the tape, the sparkle and the square dashed card on both surfaces. The
+    calendar beside it is still Retro's arm in Editorial tokens (section 5's).
+- **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly bio
+  arch 2 at three widths on both surfaces (6 files).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1066,6 +1180,30 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   (lime/layout-1, *Learned on the end-of-pass sweep*) — `reach.mjs 3`, `page-check.mjs Editorial
   2,0,1,3`.
 
+- Section 2: *The first layout-3 block inside a section, ahead of `Bio`'s `if (s.v2)`*
+  (lime/layout-3, *Settled in section 2*; D3) — widened to `s.limeTree`, no `G`.
+- Section 2: *A widened block can need no `G` at all* (grunge/layout-3, *Settled in section 9*) —
+  about fifteen arms, every leaf a binding the block already reads.
+- Section 2: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section 8*)
+  — against Lime and Grunge at 1440, Lime at 768 and 390; the diff was the delta list.
+- Section 2: *`CROP` honours the transform* and *a `CROP` transform does not adapt when an
+  instance is resized* (grunge/layout-3, *Conventions*) — an `objectPosition`, not an export.
+- Section 2: *A frame's image anchor is evidence for its own photograph only … sweep and follow
+  the peak* (editorial/layout-2, *Conventions*) — 19.2% (0.9998) and, on the squashed 768, 16%.
+- Section 2: *On this paper page `s.muted` is ink, so an empty slot on a dark well needs
+  `Photo`'s `ink`* (editorial/layout-2, *Conventions*) — `s.bg` initials, `&noimage=1`.
+- Section 2: *The tape is `Tape`*, *place it by its centre* and *a sparkle is `GrungeStar` …
+  read each sparkle's binding* (editorial/layout-1, *Conventions*) — the bio's is `s.ac`.
+- Section 2: *A leak that shows and reads as a defect is overridden* (grunge/layout-1, *Settled
+  in section 4*) — the 768 tape over the head; and *leaked tops are followed where they show*
+  (lime/layout-1) — the 390 card's bleed; and dropped where they don't — the 768 Tags leak.
+- Section 2: *A head that must fit its measure is fitted to its widest word* (CONVENTIONS C) —
+  read, and nothing to fit: the head wraps on the ramp, layout 2's call.
+- Section 2: *The composed row's pad arm moves per section* (grunge/layout-3, *Conventions*) — the
+  bio joins first.
+- Section 2: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
+  at zero; `page-check.mjs Editorial 2`.
+
 ## Open questions
 
 1. **Decision 1** — the header's Scheme 8, the nav's Scheme 5, the footer's scheme by page.
@@ -1082,11 +1220,14 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 5. **The narrow masters' leaks**, each for its session to follow or override (CONVENTIONS A, *leaked
    tops are followed where they show*, *a leak that shows and reads as a defect is overridden*):
    - the 768 `Tags — Frame` instance is **`Theme=Lime`** in Primitives: Lime — an olive-and-lime
-     Genres row;
+     Genres row; *settled in section 2: not followed, the row is Editorial's at every width;*
    - the 768 bio's tape keeps the desktop `y` −45 without `Frame 302`, so it overlaps the head's
-     foot;
+     foot; *settled in section 2: overridden — 768 takes `Frame 302`'s 50, the card 50 lower
+     than its master;*
    - the bio's divider stroked **8** inside on a 1px frame (layout 2's slip), and 390 wide at 390;
-   - the 390 bio card 390 wide at x −10 in its 370 instance;
+     *settled in section 2: drawn as the 1px it clips to;*
+   - the 390 bio card 390 wide at x −10 in its 370 instance; *settled in section 2: followed —
+     the card bleeds through the root's padding;*
    - the 390 header 57 taller than the twins' on their tree. *Settled in section 1: not a leak —
      the band states 418.52 against 370.52 and the card is 136 against 127, both followed.*
 6. **The demo glyphs** — layout 1's open question 5 and layout 2's "JUN 1", with pricing's "£350"
