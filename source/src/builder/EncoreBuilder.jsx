@@ -453,7 +453,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // composed page*), and it joins the same way, the bio first, then media —
   // whose list ends 122 / 90 / 70 above the repertoire's head on all three
   // templates, the repertoire's root padding the same 56 / 60 / 60, so Lime's
-  // feet carry (the repertoire's session re-checks them against its fit).
+  // feet carry: every template's repertoire head stands at the shared `padY`.
+  // Re-measured at Editorial's repertoire (plans/editorial/layout-3.md,
+  // section 4), the canvas gives 117 / 103 / 79 box to box under all three
+  // against the frames' 100 / 90 / 70 — a named diff for the sweep.
   if (d === 2 && (((T.name === 'Lime' || T.name === 'Grunge')
     && (cat === 'bio' || cat === 'calendar' || cat === 'media'))
     || (T.name === 'Editorial' && (cat === 'bio' || cat === 'media')))) {

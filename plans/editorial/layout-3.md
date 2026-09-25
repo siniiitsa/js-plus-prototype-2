@@ -241,7 +241,7 @@ session widens.
 | 1 | `header` | `964:68718` | 1440 × 900 | `984:16812` | 768 × 1024 | `984:16843` | 390 × **663.5** | **8** (≡ 3; nav **5**; chips and two rings name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68686` / `984:13900` / `984:13931` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV2` | **done** (`0cd6c64`) |
 | 2 | `bio` | `964:68728` *(head `964:68722`, in `Frame 302` `964:68727`, in Section `964:68721`)* | 858 × 882 | `984:16820` *(head `984:16815`)* | 708 × 912 | `984:16851` *(head `984:16846`)* | 370 × **811** | 1 | `964:68663` / `984:10748` / `984:10779` | `964:68695` / `984:13908` / `984:13939` | `if (s.v2 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v2)` | **done** (`f6a1ef5`) |
 | 3 | `media` | `964:68739` list + `964:68738` card *(head `964:68731`)* | 858 × 424 + 858 × 243 | `984:16831` + `984:16830` *(head `984:16823`)* | 708 × 647 + 708 × 243 | `984:16862` + `984:16861` *(head `984:16854`)* | 370 × 647 + 370 × 243 | 1 (card **2**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68706` + `964:68705` / `984:13919` + `984:13918` / `984:13950` + `984:13949` | `if (s.lime \|\| s.grunge)` inside `Media`'s `if (s.v2)`, after `nHot` | **done** (`484f029`) |
-| 4 | `repertoire` | `964:68743` | 1440 × 621 | `984:16832` *(in `984:16829`)* | 708 × **648** | `984:16863` | 390 × **704** | 1 (sets **4 / 2 / 3**) | `964:68678` / `984:10760` / `984:10791` | `964:68710` / `984:13920` / `984:13951` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | |
+| 4 | `repertoire` | `964:68743` | 1440 × 621 | `984:16832` *(in `984:16829`)* | 708 × **648** | `984:16863` | 390 × **704** | 1 (sets **4 / 2 / 3**) | `964:68678` / `984:10760` / `984:10791` | `964:68710` / `984:13920` / `984:13951` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | **done** (`5ce944d`) |
 | 5 | `calendar` | `964:68742` *(in `964:68740`; "Book Me" `964:68741`)* | 405 × **521.6** | `984:16835` *(in `984:16833`; `984:16834`)* | 708 × **471.6** | `984:16866` *(in `984:16864`; `984:16865`)* | 370 × 443.6 | 1 (the pill names Scheme 1) | `964:68677` / `984:10763` / `984:10794` | `964:68709` / `984:13923` / `984:13954` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v2)`, after `line` | |
 | 6 | `gallery` | `964:68744` | 1440 × 789 | `984:16836` | 768 × **877** | `984:16867` | 390 × **587** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68711` / `984:13924` / `984:13955` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v2)` | |
 | 7 | `pricing` | `964:68745` | 1440 × **1109** | `984:16837` | 768 × **975** | `984:16868` | 390 × **1383** | 1 (featured row **3**) | `964:68680` / `984:10765` / `984:10796` | `964:68712` / `984:13925` / `984:13956` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v2)`, after `shown` | |
@@ -776,7 +776,9 @@ Written now from what the plan can see; the sections add to it. One session, in 
    as its placeholder, and its footer stays ink.
 5. **`scripts/reach.mjs 3`** over the whole template.
 6. **Every `(s.lime || s.grunge)` left in layout-3 code**, listed with why Editorial does not share
-   it (layout 2's item 6).
+   it (layout 2's item 6). And raise the one three-template spacing diff section 4 named: the
+   repertoire's head stands at the shared `padY`, so the media foot → head gap is 117 / 103 / 79
+   on the canvas under Lime, Grunge and Editorial against the frames' 100 / 90 / 70.
 7. **`plans/README.md`**: mark the pass closed; **`CONVENTIONS.md`** (decision 3).
 8. **Notes for the designer**, gathered from the open questions, layout 1's shape.
 9. **Refresh the root `index.html`** with the two-build digest, `CARD=2`: zero rows at every theme
@@ -1219,6 +1221,87 @@ sections are where the twins' dark-ground assumptions break (trap 6).
 - **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly media
   arch 2 at three widths on both surfaces (6 files).
 
+### Settled in section 4 (the repertoire)
+
+- **The block widened whole: `if (s.limeTree)` inside `Repertoire`'s `if (s.v2)`, after `arrow`,
+  `const ed = s.editorial`**, with a third `G` arm (`seats`, `pad`, `radius`, `rowH`) and four
+  `ed` arms — the card's and the rows' inset shadows turned into `DashRule`s, the pager's radius
+  and ring, and `disp()`'s uppercase. The twins' arms are byte-identical. The tree is theirs node
+  for node (**57 / 57 / 63** against both), on Scheme 1 with the three `set` cards on **Schemes
+  4 / 2 / 3** at every width, no Device override, no effect on any node. `get_variable_defs` is
+  the ramp (display-lg 118 / 73 / 48, list 24 / 19 / 18, body-lg 16 / 15 / 15, chip 12 / 11 / 11,
+  body-sm 12), so every size reads `s.*`. The hooks sit above the branch, so the reveal and the
+  pager needed nothing.
+- **Every card leaf is a `sem/*` binding in the card's own scheme, so each seat is
+  `s.onScheme[n]`** and no literal is owed, where Grunge wrote `#9E1F17`: `box/1` the card
+  (`#DA7C5E` / `#BAA499` / `#1D1D1D`), `text/2` its title, songs, times and *View full set →*
+  (ink / ink / paper), `text/1` the meta line (paper / paper / terracotta), `stroke/1` its edge
+  (paper 56% / opaque paper / paper 56%). No node names another scheme's variable, so trap 4
+  has no site here. The ring and the row rules are one binding, so the seat carries no `ring`.
+  **Seated by Lime's rendered place, unchanged**: the 390 master centres the taupe card, which is
+  seat 1. Driven live at 390 (next, prev, prev wrapping), the colours stay put while the sets
+  rotate; the grid's lone *All* card on page 2 is column one's terracotta.
+- **The deltas, off the walk**: every card **square** (Lime 50, Grunge 15), padding **24**
+  (Grunge's), its edge **dashed 5, 5 all round** (`DashRule side="all"`) and each of its four rows
+  dashed 5, 5 at the foot, 1px INSIDE, in the seat's `stroke/1`. The rows divide to **47.25** /
+  62.5 / 62.5 (Lime 39 / 57 / 57.5, Grunge 44.5 / 62.5 / 62.5): the desktop card is **380**,
+  because the head above it is Fisterra's 105 (118 × 0.89) where the twins' is 116. The head and
+  the song titles are uppercase (`faceK` 1, so `facedLh` is the identity).
+- **The 390 pager's pills are square, not capsules** — a reversal of the plan (*decorative
+  language*: "the rounded things are the pills") and of this session's prompt ("half the rendered
+  height, never 999"). Both `pg` nodes state `cornerRadius` 0 where both twins' state 60, and the
+  render agrees. So the pills are `DashRule side="all"` at radius 0, dashed 5, 5 in `sem/text/1`
+  terracotta (`s.ac`) round an `s.ac` arrow — layout 2's *read the radius before calling a dash a
+  capsule*, a second time. The block draws its own two spans, not `Pager`, so `endBox` had
+  nothing to say here. The wide pager (a fourth set, `n=20`) is the same square pair.
+- **Measured against the masters** (harness, `getBoundingClientRect` from the section root; the
+  frame's number × 0.82 in brackets):
+  - **desktop:** h2 at 80, 86.3 tall at 97px (86.1); grid 19.7 under it; cards **351.8 × 311.3**
+    (352 × 311.6), radius 0, padding 19.7, rows **38.7** (38.7), dashes 4.1, 4.1; section 577.4
+    against 509.2, the shared `padY` 80 above and below against the frame's 45.9.
+  - **768:** h2 at 56 (60), 65 tall (65); cards **222.7 × 438.3** (222.67 × 439) — the twins'
+    named "216 against 222.7" is gone, the column being 708 since JP-038; rows 62.5; section 639.3
+    against 648, `padY` 56 against 60.
+  - **390:** h2 at 44 (60), 42.7 tall (43); cards 290 × 438.3 at **−260 / 50 / 360** (the master's
+    x); pills **180 × 54** at (10, 573) and (200, 573), square, the master's 590 less the head's
+    16; section 671 against 704.
+- **Named diffs, the twins'**: `s.title` ("12 Songs") where the frame writes "Curated sets"; the
+  meta line is the set's count, not a mood and a running time; the right-hand column is the
+  artist, not a duration; the section pads the shared `padY` (80 / 56 / 44), not the frame's 56 /
+  60 / 60; the card's 438.3 against 439 (its content).
+- **JP-044 holds**: `stack = tab` is the shared block's, so at 768 the artist stands under the
+  title. No seeded title's ellipsis span overflows at any width (`scrollWidth > clientWidth` on
+  none), in the harness and on the published page. The `&n=` rows' deliberate long title still
+  ellipsizes at desktop, Retro's harness row.
+- **`live=1`** (puppeteer clicks, `n=20`, all three widths): *View full set →* reveals the card's
+  seven rows (the link goes); Next turns to the *All* card and Prev back, wrapping both ways; at
+  390 the centre card's reveal grows all three seats to 599; cursors pointer. `n=0` prints *No
+  songs yet.* in `s.muted`. No page errors.
+- **The gap under media, re-measured as section 3 asked — it did not move, and it is not the
+  frame's.** Box to box (the media root's lowest content box → the repertoire's h2) the canvas
+  gives **117 / 103 / 79** under Lime, Grunge and Editorial alike (published 1440: 142.8), because
+  all three repertoire heads stand at the shared `padY` 80 / 56 / 44 and all three media feet are
+  37 / 47 / 35. So Lime's feet carry against the twins, which is what section 3 needed. Against
+  the frames' 122 / 90 / 70 (100 on the canvas) all three templates run **+17 / +13 / +9** box to
+  box. Under Editorial the glyph adds more: Noto's cap top stands 11 / 7 / 4.5 below its box, and
+  Fisterra's 3.3 / 2 / 2 in the frames (pixel scans), so the visible gap is **+25 / +18 / +11.5**.
+  The `vm.pad` comment's "37 / 47 / 35, measured against the seeded page" therefore no longer
+  meets 122 / 90 / 70 for any template; what moved since `7fc68af` was not traced. Named, not
+  fixed: a repertoire row in the `d === 2` arm moves all three templates' pages, which makes it
+  the sweep's to raise (Grunge's section 4 said the same), not an Editorial-only arm. The comment
+  now records the re-check.
+- **Verified in the builder** (`page-check.mjs Editorial 2`): four modal cards; the published 1440
+  tab stands the repertoire at 3484 under media (2318, 1167 tall), 705 tall; both reveals are
+  live; every nav, fragment and footer link scrolls to its id (Repertoire → `#repertoire`); no
+  errors or warnings; `overflow390` 0; the 390 burger opens 1 → 5. The repertoire meets the
+  gallery's taupe on a straight edge.
+- **`FIELDS.repertoire` has no `in` row**, so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly
+  repertoire arch 2 at three widths on both surfaces (6 files).
+- **For the sweep's CLAUDE.md pass**: nothing in CLAUDE.md names the layout-3 repertoire's
+  colours or radii. The plan's *decorative language* radii bullet ("the rounded things are the
+  pills (67)") should say the repertoire's pager pills are square.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1301,6 +1384,32 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 - Section 3: *The composed row's pad arm moves per section* (grunge/layout-3, *Conventions*) —
   media joins second, its feet re-read off the frame as the twins'.
 - Section 3: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
+  at zero; `page-check.mjs Editorial 2`.
+
+- Section 4: *After `arrow`, the seat layouts 1 and 2 used* and *seat the schemes by rendered
+  place, not by index* (lime/layout-3, *Settled in section 4*; D3) — widened to `s.limeTree`,
+  the seating unchanged (the 390 master centres the taupe card).
+- Section 4: *The `G` lookup at the block's head, whose twin's arm is today's literals*
+  (grunge/layout-1; C) — a third arm, no new key.
+- Section 4: *A nested node or a card on another scheme reads that scheme's keys*
+  (editorial/layout-2, *Settled in session 0*) — the three sets on `s.onScheme[4|2|3]`, where
+  Grunge wrote a literal.
+- Section 4: *Read every nested node's scheme off the master, never off the twin's row*
+  (grunge/layout-3, *Conventions*) — 4 / 2 / 3 at every width.
+- Section 4: *Read the radius before calling a dash a capsule* (editorial/layout-2,
+  *Conventions*) — the pager's pills square, against the plan's and the prompt's capsule.
+- Section 4: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section 8*)
+  — 57 / 57 / 63 against both twins; the diff was the radii, the padding, the rows and the
+  bindings.
+- Section 4: *A frame's inside stroke is an inset `boxShadow`… a dashed stroke is `DashRule`*
+  (lime/layout-2; editorial/layout-1, *Conventions*) — the card all round, the rows at the foot,
+  the pills.
+- Section 4: JP-044's *at 768 the artist stands under the title* (lime/retest-qa-fixes) — kept,
+  and checked: no seeded title clips at any width.
+- Section 4: *The composed row's pad arm moves per section* and Grunge's gap re-check
+  (grunge/layout-3, *Conventions* and *Settled in section 4*) — the media foot → repertoire head
+  gap re-measured on all three templates, and named.
+- Section 4: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
   at zero; `page-check.mjs Editorial 2`.
 
 ## Open questions
