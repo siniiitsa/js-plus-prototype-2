@@ -3,7 +3,9 @@
 // Editorial's layout-1 pages. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
 // new: every photograph they carry is already seeded here, the layout-3 bio's
 // crop taken as an objectPosition on grungeStage rather than as a second
-// export, and the layout-4 bio's a centred cover of the same file.
+// export, and the layout-4 bio's a centred cover of the same file. Nor did
+// Editorial's layout-2 frames: every photograph they carry is seeded already,
+// the header's and the gallery's crops taken as objectPositions.
 //
 // These are *imports*, never fetched: §8.6 forbids a network request anywhere in
 // the render path, and vite-plugin-singlefile forces `assetsInlineLimit = () => true`,

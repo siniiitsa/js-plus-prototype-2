@@ -1184,8 +1184,8 @@ export const FIELDS = {
   // The header's `in` is always an object naming Retro, Lime, Grunge and
   // Editorial alone: they have different header families (six designs against
   // four, four and four — Grunge's row is measured over its four fitted cards,
-  // none a placeholder since its layout-4 pass; Editorial's over one fitted
-  // card and three placeholders, so each of its layout passes re-measures its
+  // none a placeholder since its layout-4 pass; Editorial's over two fitted
+  // cards and two placeholders, so each of its layout passes re-measures its
   // card), and Pop has a family of its own that is not designed, so it is left
   // unmarked rather than folded onto any list.
   header: [
