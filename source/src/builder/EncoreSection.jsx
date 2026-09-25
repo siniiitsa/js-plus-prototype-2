@@ -6169,19 +6169,41 @@ function Media({ s }) {
     // break after "worth" holds — a coincidence, named) and the 390 master's
     // own 251 box, which breaks after "your" (see `heading`). The 1440
     // Section's `#FF0000` stroke is `visible: false` and is not drawn.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial layout 2 (964:64601 · 986:15660 at 768 · 986:15679 at 390) is
+    // the same tree a third time, so `ed` names its deltas beside `grunge`.
+    // The section is seated on Scheme 2 (SCHEMES_OF), so every leaf reads a
+    // key: the panel is `sem/bg`, `s.bg`, and the root paints the page's paper
+    // round it (`editorialCard`); the cards are `box/1`, the wells `box/2`,
+    // every ink `sem/text/2`, `s.tx`, and the heading `sem/text/1`, `s.ac`
+    // (paper) at every width. The panel is square at 1440 and 30 narrow, the
+    // cards and the bar square. Rings become Sienna Vale's dashes: the bar is
+    // an outline on the panel's own ground, dashed 10, 10 all round in
+    // `sem/stroke/2` (blush), its inner pill unfilled; the list's head and all
+    // five rows are dashed along their *bottom*, so a rule stands under the
+    // last row too. The cards keep a solid 1px ring, in `sem/stroke/2`. No
+    // glow, no grain, no effect. The heading is one tone at display-lg in two
+    // lines at every width, and Noto's own widths break it where the frames
+    // do — after "worth" at 1440 and 390, after "your" at 768 — so it takes
+    // no cap. Display/Title is 32 × 0.82 / 25 / 23.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       // Scheme 2's `sem/bg`, `box/1` and `box/2` in Static Youth — literals,
       // since under Grunge none of them is a Scheme 1 key's value.
       const G2 = { bg: '#171716', box1: '#000000', box2: '#222222' }
-      const panelBg = grunge ? G2.bg : s.box1
-      const cardBg = grunge ? G2.box1 : s.box2
-      const dusk = grunge ? G2.box2 : '#43523B'
-      const tk = { title: desk ? u(36) : tab ? '28px' : '26px' }
+      const panelBg = ed ? s.bg : grunge ? G2.bg : s.box1
+      const cardBg = ed ? s.box1 : grunge ? G2.box1 : s.box2
+      // Sienna Vale's bar binds the panel's `sem/bg`, not the cards' `box/1`.
+      const barBg = ed ? s.bg : cardBg
+      const dusk = ed ? s.box2 : grunge ? G2.box2 : '#43523B'
+      const tk = { title: ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px' }
       const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
       // The display face's three properties under Grunge (section 1's
-      // `faced`): identity on Lime.
-      const disp = grunge ? { textTransform: 'uppercase' } : null
+      // `faced`): identity on Lime. Noto is uppercased per site too.
+      const disp = grunge || ed ? { textTransform: 'uppercase' } : null
+      // Sienna Vale's 10, 10 dash in `sem/stroke/2`.
+      const dash = (side) => <DashRule dash={10 * z} colour={s.stroke2} side={side} />
       // Body/Chip — Inter bold, tracked in by its own −6%.
       const chipType = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -6208,11 +6230,16 @@ function Media({ s }) {
       // the two lines still come to the master's 82. Desktop keeps the 4.6em:
       // its 629 box breaks Stones Crush after "worth" by a hair Anton would
       // not lose, so the cap is what reproduces the frame's break.
+      // Sienna Vale's heading is paper at every width and needs no cap: the
+      // 4.6em would break Noto's "FIVE WORTH" (5.22em) itself, and the column
+      // alone — 516 / 648 / 330 — breaks after "worth" (506 of 516 at 97,
+      // 250 of 330 at 48) and after "your" at 768 (561 of 648 at 73), the
+      // three frames' own breaks.
       const heading = (
         <h2 style={{
           margin: 0, flex: 'none', fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
-          letterSpacing: s.dls, color: desk ? s.tx : s.ac, ...disp,
-          maxWidth: tab ? undefined : grunge && s.mob ? '251px' : '4.6em',
+          letterSpacing: s.dls, color: desk && !ed ? s.tx : s.ac, ...disp,
+          maxWidth: tab || ed ? undefined : grunge && s.mob ? '251px' : '4.6em',
         }}>{s.title}</h2>
       )
 
@@ -6235,9 +6262,10 @@ function Media({ s }) {
                 transform: `rotate(${k * 5.33}deg)`, opacity: g.op, zIndex: 10 - Math.abs(k),
                 // `sem/stroke/1`, stroked inside: an inset ring, so the 16
                 // padding stays the frame's. Grunge's card is Scheme 2's
-                // `box/1` at the mode's raw 8.
-                background: cardBg, color: s.tx, boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
-                borderRadius: u(grunge ? 8 : 13), padding: u(16), overflow: 'hidden',
+                // `box/1` at the mode's raw 8; Sienna Vale's is square, ringed
+                // in `sem/stroke/2`.
+                background: cardBg, color: s.tx, boxShadow: `inset 0 0 0 1px ${ed ? s.stroke2 : s.stroke1}`,
+                borderRadius: ed ? 0 : u(grunge ? 8 : 13), padding: u(16), overflow: 'hidden',
                 cursor: s.live ? 'pointer' : undefined,
                 ...col(u(12), { alignItems: 'stretch' }),
               }}>
@@ -6253,11 +6281,13 @@ function Media({ s }) {
                 {/* `sem/tag/1/bg` lettered in `sem/text/2`: the frame's own
                     pale-on-lime pair, low as its contrast is. At the frame's
                     26.5 / 26 off the card's edge — Retro's 25.5 / 25 stand
-                    inside its 1px border, and this card's ring is a shadow. */}
+                    inside its 1px border, and this card's ring is a shadow.
+                    Sienna Vale's `tag/1` is the blush seat, not its paper
+                    accent. */}
                 {k === 0 && (
                   <span style={{
                     ...chipType, position: 'absolute', left: u(26.5), top: u(26),
-                    background: s.ac, color: s.tx, borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
+                    background: ed ? s.chips[0].bg : s.ac, color: s.tx, borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
                   }}>● Featured</span>
                 )}
               </div>
@@ -6281,8 +6311,8 @@ function Media({ s }) {
         <div style={{
           flex: 'none', position: 'relative', overflow: 'hidden',
           // Grunge's bar is Scheme 2's `box/1` at the mode's stated 92 — a
-          // full capsule on a 108 bar either way.
-          height: u(108), background: cardBg, color: s.tx, borderRadius: grunge ? u(92) : '999px',
+          // full capsule on a 108 bar either way. Sienna Vale's is square.
+          height: u(108), background: barBg, color: s.tx, borderRadius: ed ? 0 : grunge ? u(92) : '999px',
           padding: `0 ${s.mob ? '16px' : u(40)}`,
           ...row(s.mob ? '14px' : u(24)),
         }}>
@@ -6297,10 +6327,14 @@ function Media({ s }) {
               390, and at 390 its 10 left padding goes too and the bar's own 20
               closes to 16 — Lime's display title is two sizes up on Retro's,
               and those 18px are what keep the seeded "Slow Burn" (90 wide at
-              26) whole instead of "Slow B…". 768 is the frame's own. */}
+              26) whole instead of "Slow B…". 768 is the frame's own.
+              Sienna Vale's inner pill carries no fill at all, so its sides
+              are spacing alone, and at 1440 both go: Noto's "SLOW BURN" is
+              128 wide at 32 × 0.82, and the 12 and the 10 take the title
+              box from 112 to 130. */}
           <span style={row(u(12), {
-            flex: 1, minWidth: 0, background: cardBg, borderRadius: u(80),
-            padding: `${u(10)} ${desk ? u(12) : tab ? '30px' : 0} ${u(10)} ${s.mob ? 0 : u(10)}`,
+            flex: 1, minWidth: 0, background: ed ? undefined : cardBg, borderRadius: u(80),
+            padding: `${u(10)} ${desk ? (ed ? 0 : u(12)) : tab ? '30px' : 0} ${u(10)} ${s.mob || (desk && ed) ? 0 : u(10)}`,
           })}>
             {art(nowArt, u(60), '999px', 16)}
             <span style={col(u(2), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
@@ -6318,13 +6352,16 @@ function Media({ s }) {
           {/* The 1px `sem/stroke/1` rule and the INNER_SHADOW 14 in `s.ac`
               (not `s.glow`), over the children as Figma paints a frame's
               stroke and effects. Grunge's node carries no effect: its ring
-              is `sem/stroke/2`, the pass's `#FF0000`, and nothing else. */}
-          <span aria-hidden style={{
-            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-            boxShadow: grunge
-              ? `inset 0 0 0 1px ${s.stroke2}`
-              : `inset 0 0 0 1px ${s.stroke1}, inset 0 0 ${u(14)} 0 ${s.ac}`,
-          }} />
+              is `sem/stroke/2`, the pass's `#FF0000`, and nothing else.
+              Sienna Vale's is that stroke dashed 10, 10, all round. */}
+          {ed ? dash('all') : (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: grunge
+                ? `inset 0 0 0 1px ${s.stroke2}`
+                : `inset 0 0 0 1px ${s.stroke1}, inset 0 0 ${u(14)} 0 ${s.ac}`,
+            }} />
+          )}
         </div>
       )
 
@@ -6350,6 +6387,8 @@ function Media({ s }) {
       // it is an inset shadow and the 14 padding stays the frame's; the last
       // row has none under it. The number keeps a 21 slot — the widest the
       // frame's hugging numbers get — so the live glyph swap moves nothing.
+      // Sienna Vale's rules are the other way up: dashed along the *bottom*
+      // of the counter row and of every track row, the last included.
       const gap = s.mob ? '14px' : u(20)
       const list = (
         <div style={col('0', {
@@ -6359,9 +6398,11 @@ function Media({ s }) {
           <div style={row('0', {
             flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`,
             color: s.tx, textTransform: 'uppercase',
+            ...(ed ? { position: 'relative' } : null),
           })}>
             <span style={chipType}>● Popular</span>
             <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+            {ed && dash('bottom')}
           </div>
           {s.tracks.map((t, i) => {
             const dur = t.dur && t.dur !== t.rel ? t.dur : ''
@@ -6369,8 +6410,9 @@ function Media({ s }) {
             return (
               <div key={i} onClick={onPick(i)} style={{
                 flex: desk ? '1 1 0' : '1 1 auto', minHeight: 0, overflow: 'hidden',
-                boxShadow: `inset 0 1px 0 ${s.stroke1}`, color: s.tx,
+                boxShadow: ed ? undefined : `inset 0 1px 0 ${s.stroke1}`, color: s.tx,
                 padding: `${u(14)} 0`, cursor: s.live ? 'pointer' : undefined,
+                ...(ed ? { position: 'relative' } : null),
                 ...row(gap),
               }}>
                 <span style={{
@@ -6392,6 +6434,7 @@ function Media({ s }) {
                     flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
                   }}>{dur}</span>
                 )}
+                {ed && dash('bottom')}
               </div>
             )
           })}
@@ -6407,11 +6450,14 @@ function Media({ s }) {
       // 102 of a title box that the split left 86), while the list's title
       // column still has 254 for "Late Lights".
       // Grunge's panel is Scheme 2's `sem/bg` at the mode's raw 15 on desktop;
-      // its narrow masters state Lime's 30.
+      // its narrow masters state Lime's 30. Sienna Vale's is square at 1440
+      // and 30 narrow, on the page's paper (the root's `editorialCard`). Its
+      // wrapper insets it 86 × 0.82 / 60 / 40 above and below where the root
+      // pads `padY`, 80 / 56 / 44 — the page's gutter, as on every section.
       return (
         <div style={{
           background: panelBg, color: s.tx,
-          borderRadius: desk ? u(grunge ? 15 : 50) : '30px',
+          borderRadius: desk ? (ed ? 0 : u(grunge ? 15 : 50)) : '30px',
           padding: desk ? u(60) : tab ? '60px 30px' : '40px 20px',
           ...(desk ? {
             display: 'grid', alignItems: 'stretch',
