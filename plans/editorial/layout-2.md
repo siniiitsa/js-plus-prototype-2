@@ -696,7 +696,8 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
   0.14–0.16em above the box's foot and Noto's 0.05–0.07em, the same at all three widths; a
   pixel scan of the render (the lowest ink row of the non-J glyphs against the box) settles it,
   and `position: relative; top: -0.09em` moves the glyphs and no box. **Noto's J descends
-  0.24em** where Fisterra's sits on the line (no `ss`, `salt` or `cv` alternate changes it), so
+  0.24em** where Fisterra's sits on the line (no `ss`, `salt` or `cv` alternate was found — the
+  probe compared advance widths only), so
   a display "JUN" / "JUL" / "JAN" in a tight box hangs into whatever is under it — a rule, or a
   stacked line. The map's dates and any other display month are the next places to look.
 
