@@ -7150,14 +7150,36 @@ function Media({ s }) {
     // but Lime's 632 box (6.48 Anton ems at 0.75) would hold "FIVE WORTH
     // YOUR" (6.43), so Grunge caps it at layout 2's 4.6em instead, between
     // `antonEms`' "FIVE WORTH" 4.31 and "…YOUR" 6.43. 768 and 390 set one line.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial layout 3 (964:68738 card + 964:68739 list, head 964:68731 ·
+    // 984:16830 + 984:16831 at 708 · 984:16861 + 984:16862 at 370) is the same
+    // tree again, on Scheme 1 with the card's instance on Scheme 2, so the card's
+    // leaves read `s.onScheme[2]` as the `G` arm: its fill binds `sem/box/1`
+    // `#BAA499` (not the twins' `box/3`), square, unringed, no effect; the
+    // played bars `text/1`, paper; the idle bars and the disc both `box/2`
+    // `#D0BCB2`; every ink `text/2`. The list stands on the page: the counter
+    // row and all five rows are dashed 10, 10 in `sem/stroke/2` along their
+    // *foot* (Lime's top hairlines turned round, layout 2's media), so a rule
+    // stands under the counter and under the last row. Display/Title is Sienna
+    // Vale's 32 × 0.82 / 25 / 23, uppercase in Noto. The head keeps the frame's
+    // 632 box at 768 too (the 390 column is narrower than it).
+    if (s.limeTree) {
       const grunge = s.grunge
-      const G = grunge
-        ? { card: '#353535', dusk: '#222222', disc: '#000000', radius: u(15), ring: `inset 0 0 0 1px ${s.stroke2}` }
-        : { card: '#263020', dusk: '#43523B', disc: s.box2, radius: u(50), ring: undefined }
-      const card = G.card // Scheme 2 `sem/box/3`
+      const ed = s.editorial
+      // `onScheme` exists under Editorial alone.
+      const S2 = ed ? s.onScheme[2] : null
+      const G = ed
+        ? { card: S2.box1, dusk: S2.box2, disc: S2.box2, radius: 0, ring: undefined, hot: S2.ac, ink: S2.tx }
+        : grunge
+          ? { card: '#353535', dusk: '#222222', disc: '#000000', radius: u(15), ring: `inset 0 0 0 1px ${s.stroke2}` }
+          : { card: '#263020', dusk: '#43523B', disc: s.box2, radius: u(50), ring: undefined }
+      const card = G.card // Scheme 2 `sem/box/3` (Editorial's `box/1`)
       const dusk = G.dusk // Scheme 2 `sem/box/2` — the idle bars
-      const disp = grunge ? { textTransform: 'uppercase' } : null
+      const hot = G.hot ?? s.ac // the played bars
+      const cardInk = G.ink ?? s.tx
+      const disp = grunge || ed ? { textTransform: 'uppercase' } : null
+      // Sienna Vale's 10, 10 dash in `sem/stroke/2`, at a row's foot.
+      const footDash = ed ? <DashRule dash={10 * z} colour={s.stroke2} /> : null
       const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls, ...clip }
       const listName = { fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, ...disp, ...clip }
@@ -7167,7 +7189,8 @@ function Media({ s }) {
         letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
       }
       const titleType = {
-        fontFamily: s.display, fontSize: faced(s, desk ? u(36) : tab ? '28px' : '26px'),
+        fontFamily: s.display,
+        fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
         lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, ...disp, ...clip,
       }
 
@@ -7182,14 +7205,14 @@ function Media({ s }) {
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: s.ac, ...disp,
-            maxWidth: desk ? (grunge ? '4.6em' : u(632.156)) : undefined,
+            maxWidth: ed ? u(632.156) : desk ? (grunge ? '4.6em' : u(632.156)) : undefined,
           }}>{s.title}</h2>
         </div>
       )
 
       const limeCard = track && (
         <div style={{
-          background: card, color: s.tx, borderRadius: G.radius, padding: u(24), boxShadow: G.ring,
+          background: card, color: cardInk, borderRadius: G.radius, padding: u(24), boxShadow: G.ring,
           overflow: 'hidden', ...col(u(16), { alignItems: 'stretch' }),
         }}>
           <div style={row('0', { justifyContent: 'space-between' })}>
@@ -7200,7 +7223,7 @@ function Media({ s }) {
             {Array.from({ length: nBars }, (_, j) => (
               <span key={j} style={{
                 flex: 'none', width: u(10), borderRadius: u(1),
-                height: u(WAVE[j % WAVE.length]), background: j < nHot ? s.ac : dusk,
+                height: u(WAVE[j % WAVE.length]), background: j < nHot ? hot : dusk,
               }} />
             ))}
           </div>
@@ -7216,7 +7239,7 @@ function Media({ s }) {
                 so both are lucide's, sized off their ink as Retro's are. */}
             <span onClick={s.live ? toggle : undefined} style={{
               width: u(44), height: u(44), borderRadius: '999px',
-              background: G.disc, color: s.tx,
+              background: G.disc, color: cardInk,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               cursor: s.live ? 'pointer' : undefined,
             }}>
@@ -7240,9 +7263,11 @@ function Media({ s }) {
           <div style={col('0', { alignItems: 'stretch' })}>
             <div style={row('0', {
               flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: s.tx,
+              position: ed ? 'relative' : undefined,
             })}>
               <span style={chipType}>● Popular</span>
               <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+              {footDash}
             </div>
             {s.tracks.length === 0 && (
               <span style={{ ...bodySm, fontSize: s.bodyMd, color: s.muted }}>{s.mediaEmpty}</span>
@@ -7253,7 +7278,8 @@ function Media({ s }) {
               return (
                 <div key={i} onClick={onPick(i)} style={{
                   flex: 'none', overflow: 'hidden', color: s.tx,
-                  boxShadow: `inset 0 1px 0 ${s.stroke1}`,
+                  boxShadow: ed ? undefined : `inset 0 1px 0 ${s.stroke1}`,
+                  position: ed ? 'relative' : undefined,
                   padding: `${u(14)} 0`, cursor: s.live ? 'pointer' : undefined,
                   ...row(gap),
                 }}>
@@ -7281,6 +7307,7 @@ function Media({ s }) {
                       flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
                     }}>{dur}</span>
                   )}
+                  {footDash}
                 </div>
               )
             })}
