@@ -1137,6 +1137,12 @@ sections are where the twins' dark-ground assumptions break (trap 6).
     calendar beside it is still Retro's arm in Editorial tokens (section 5's).
 - **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly bio
   arch 2 at three widths on both surfaces (6 files).
+- **For the sweep**: the stale 684 / 323 lives in the plan files alone. That covers this plan's
+  *What the pass must deliver* (item 2) and *The second session*, and CONVENTIONS D3's lead-in
+  ("the composed row's 684 / 323 columns"); CLAUDE.md's composed-row bullet states no width.
+  `contentWidth()` gives 709 / 334.5 at desktop, the columns measured above, so
+  `vm.contentW` (the media meter's bar count) is already right. Correct the prose to 709 : 334.5
+  on the canvas and 864.8 : 408.2 published.
 
 ### Inherited and used
 
