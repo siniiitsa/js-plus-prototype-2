@@ -184,7 +184,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 7 | `calendar` | `964:64612` *(in `964:64611`)* | 1328 × 1072 *(1440 × 1184)* | `986:15671` *(in `986:15670`)* | 708 × 803 *(915)* | `986:15690` *(in `986:15689`)* | 370 × 774 *(854)* | page 1, **card 2** (head band **1 / 3 / 3**) | `964:64593` | `964:64631` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | **done** `7133b13` |
 | 8 | `map` | `964:64613` | 1440 × 833 | `986:15672` | 768 × 823 | `986:15691` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64632` | inside `EventsMap`'s `if (s.v1)`, after `stats` | **done** `301f57b` |
 | 9 | `form` | `964:64614` | 1440 × 802 | `986:15673` | 768 × 877 | `986:15692` | 390 × 925 | **4** | `964:64595` | `964:64633` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v1)` | **done** `a5c2801` |
-| 10 | `testimonials` | `964:64615` | 1440 × 831.9 | `986:15674` | 768 × 863 | `986:15693` | 390 × 939 | 1 (card and picked tile **3**) | `964:64596` | `964:64634` | inside `Testimonials`' `if (s.v1)`, after `rail` | — |
+| 10 | `testimonials` | `964:64615` | 1440 × 831.9 | `986:15674` | 768 × 863 | `986:15693` | 390 × 939 | 1 (card and picked tile **3**) | `964:64596` | `964:64634` | inside `Testimonials`' `if (s.v1)`, after `rail` | **done** `e14c33a` |
 | — | `footer` | `964:64616` | 1440 × 479.5 | `986:15675` | 768 × 692.3 | `986:15694` | 390 × 736.3 | 3 | — | — | — | **out of scope**: layout 1's footer, closed at planning time (above) |
 | — | `video` | `964:64607` | 1440 × 782 | `986:15666` | 768 × 1111.2 | `986:15685` | 390 × 1118.8 | 1 | — | — | — | **not a category** |
 
@@ -709,6 +709,13 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
   twins' pill row and their Display/List venue name fit Bebas and Anton, and Noto broke both at
   768 — the frame's own Fisterra overflowed the same boxes. Where the frame's binding fits, follow
   it; where it overflows too, override the leak.
+- **A twin's live mechanism is a sizing fact, read per child before it is inherited** (section
+  10). The twins' rail tiles hug (idle `HUG`, the pick `FILL`), which is what widens the pick;
+  Editorial's are all `FILL` / `FILL`, so the pick is its fill and its dash alone. Only the paired
+  diff's `layoutSizing` column showed it — a render of three tiles cannot. A `FILL` child's padding
+  is inert in the filled axis (Retro's division rule, in whichever axis fills); in CSS a zero basis
+  divides evenly only when every child is padded alike, and an `overflow: hidden` item's automatic
+  minimum is 0, so `minWidth: 'min-content'` is written out wherever the row must still wrap.
 
 ### Seen at planning time, per section
 
@@ -781,7 +788,9 @@ the twins' dark-ground assumptions break (trap 6).
     the sub ink; the rail's tiles `box1` dashed ink, the picked tile **ink (Scheme 3)** dashed paper
     with paper initials; the big card **ink (Scheme 3)** with paper quote marks, quote, name, role
     and stars; the Book pill terracotta. At 390 the sub is a 431-wide no-wrap line clipped by the
-    card (open question 7), and the rail stands under the card.
+    card (open question 7), and the rail stands under the card. *Settled in section 10: the picked
+    tile's dash binds `text/2`, so it is opaque paper, not 56%; the tiles and the card are square;
+    and every tile FILLs both axes, so there is no widened pick — the 390 row is equal thirds.*
 
 ### Settled in session 0 (the schemes)
 
@@ -1696,6 +1705,99 @@ the twins' dark-ground assumptions break (trap 6).
   73 / 48; `TESTI_HEADING_2` is the fallback at `d === 1`; and the 390 sub's 431-wide no-wrap line
   is open question 7's.
 
+### Settled in section 10 (the testimonials)
+
+- **The block widened: `if (s.limeTree)` inside `Testimonials`' `if (s.v1)`, after `rail`, `const
+  ed = s.editorial`, `S3` off `s.onScheme[3]` and a third arm at the head of `G`** — Lime's and
+  Grunge's arms byte-identical — its six keys and no Editorial-only leaf, plus a handful of `ed`
+  sites: `dispType`'s uppercase and the h2's `pre-wrap` widened to `grunge || ed`, and the tiles
+  (below). The tree is the twins' node for node, **26 = 26 = 26 at all three widths** (one paired
+  diff by traversal order against both twins, all three masters in one call), on **Scheme 1 with
+  the card and the picked tile nested on Scheme 3** (`explicitVariableModes` on all three; root
+  Device Desktop / Tablet / Mobile, no override). The walker's text segments are
+  `THEME_RAMP.Editorial` to the token (display-xl 179 → 147 / 107 / 64, display-lg 97 / 73 / 48,
+  list 20 / 19 / 18, body-lg 13 / 15 / 15, body-md 11 / 13 / 13, body-sm 10 / 12 / 12), so
+  `get_variable_defs` was not run (Grunge's section 10). No node carries an effect. The seam is
+  shared whole, so the published rail and pill needed nothing.
+- **Every leaf is a binding, and `G`'s arm is the whole card.** The card is `S3`'s `box/1`
+  `#1D1D1D` (`G.card`) in its solid 1px 56% paper `stroke/1` (`G.hair`, the twins' `ring(1)`),
+  every string on it `S3`'s `text/2` paper (`G.ink`) — the glyph, the quote, the name, the role,
+  the stars. The pill is `active/bg` terracotta (`s.pillBg`) under a `sem/tag/2/text` paper label
+  and disc — **Grunge's key**, `s.chips[1].fg` (under Scheme 1 it is `s.activeFg`'s value too) —
+  round an `active/bg` arrow, BookPill's Lime branch as it stands. The page leaves are the twins'
+  keys: the eyebrow, head and sub `text/2` ink (`s.tx`), the idle tiles `box/1` `#FFF9F2`
+  (`s.box1`) lettered `s.tx`. **Every radius is 0** (`G.tileR`, `G.cardR`).
+- **The tiles are where Editorial parts from both twins.**
+  - **Dashed, not ringed**: each tile is dashed **5, 5** all round, 1px INSIDE, bound to
+    **`text/2`** — ink on the idle tiles (`s.tx`), and on the picked Scheme 3 tile `S3.tx`,
+    **opaque paper**, not `stroke/1`'s 56% (section 9's "read the binding" closed), and 1px where
+    the twins' pick is a 2px `stroke/1` ring. `DashRule side="all"` at `5 * z`, radius 0, the tile
+    `position: relative` under `ed`; `boxShadow` is `undefined` there.
+  - **Every tile FILLs both axes** (`FILL` / `FILL`, grow 1, at all three widths), where the
+    twins' idle tiles `HUG` and only the pick fills — so there is **no widened pick** at any
+    width, and the pick is its fill and its dash alone. In the column (desktop, 768) every tile
+    stretches across it, and the column hugs its widest padded mark with the frame's own
+    **97 / 92** as a `minWidth` floor (79.5 on the canvas; the seeded marks sit under it at both
+    widths, so the column is the frame's). The frame's third tile pads 35 — the twins' hand,
+    normalised to 30 as they normalise it.
+  - **The 390 row divides**: 3 × 108.67 + 24 is the 350 row, so the widths are the fill share
+    and the 30 of horizontal padding is **inert** — Retro's division rule in the row's axis, as
+    the 36 above and below is in the column's. So under `ed` the row's tiles are `flex: 1 1 0`,
+    padded `36 0` alike (the pick's stated 0 is as inert as the others' 30, and unequal padding
+    would unbalance a zero basis), and **`minWidth: 'min-content'`** — `overflow: hidden` makes
+    each tile a scroll container, whose automatic minimum is 0, so without it the row would
+    squeeze eight marks under their dashes rather than wrap. Seeded, the five tiles sit on one
+    row at 64.4 each; at eight, 35.8, every mark clear of its dash; the row wraps only once the
+    marks themselves no longer fit. An earlier cut kept the 30 and wrapped the seed 4 + 1, the
+    lone fifth tile the whole row wide — the division is what the frame states.
+- **The head wraps at the ramp size (open question 6, decided): it does not fit.** Noto's FROM
+  PEOPLE WHO BOOKED is **11.693 ems** (`notoEms` says 11.695) — 1134.2 at 97 in the 1088.2
+  desktop column, 46 over — so at desktop the typed break holds and the long line wraps at the
+  word: three lines, HONEST FEEDBACK / FROM PEOPLE WHO / BOOKED, 259 tall where the 1440
+  master's `WIDTH_AND_HEIGHT` node sets two at 172 (and overruns its own 1328 by 5 in the demo
+  face). At 768 (73, 853.5 in 708) and 390 (48; HONEST FEEDBACK alone is 377.1 in 370) the
+  ramp's wrap **is** the masters' own three and four lines — their nodes are `HEIGHT`, they
+  wrap. Fitting the widest line would have been 93.06px at desktop (−4%) on a new line-ems key
+  `vm.titleWordEms` does not give (it measures words), and a long single typed line would shrink
+  without floor; the plan's own convention (every head one tone and on the ramp) and section 9's
+  identical call decide it. Named diff, reversible in one `fontSize`.
+- **The 390 sub wraps (open question 7)** — the twins' `<p>` as it stands, Retro's reading of the
+  leak (nothing in the master's layout depends on the 431 no-wrap line). Two lines, 39 tall.
+- **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
+  section root, with the frame's own three reviews through `&cj=`): desktop eyebrow 14 (17 ×
+  0.82 = 13.9), eyebrow to h2 9.8, sub to grid 26.2, column 79.5 (97 × 0.82), tiles 83.6
+  (101.97 × 0.82) 9.8 apart, card 105.7 in from the column's left edge (129 × 0.82 = 105.8) and
+  26.2 past its right, **982.5 × 270.5** (983.2 ×
+  270.5), glyph 54.9 × 45.9 at 147px, card to pill 26.1, pill **159.4 × 44.3** (193 × 54 × 0.82
+  = 158.3 × 44.3); 768 h2 **194.9** on three lines (195), sub 431.6 wide at x 168.2 (431 at
+  168.5), column 92, card 584 × 367.3 (584 × 369 — Figma's whole-pixel line boxes), pill 169.6 ×
+  54 (170 × 54); 390 h2 **170.9** on four lines (172), card 370 wide, tiles **115.3** × 93.6
+  equal (108.67 × 94), pill 165 × 54 (165 × 54). **Named diffs**: the desktop head's third line
+  (+86.3, above); the root's `padY` 80 / 56 / 44 against the masters' 45.9 / 60 / 40, and its 390
+  `padX` 10 against the masters' 20 — **all three masters pad 40 / 20 at 390**, the twins' too
+  (the paired diff's root rows agree), so the column is 370 against 350 and the thirds 115.3
+  against 108.67, an inherited diff; the seed's five reviews to the frame's three and its quote on
+  1 / 1 / 2 lines against 2 / 3 / 5 (cards 251 / 322.3 / 311.4); canvas tile 0 lit where the
+  frame lights the middle (`cur`'s pinned 0); Noto's curly ” where Fisterra draws a slab. So the
+  section is 816.7 / 807.5 / 893.7 seeded against 682.2 / 863 / 939.
+- **`live=1`** (puppeteer, 1440 and 390): tile clicks move the ink fill and the paper dash with
+  the card (reviews 3 and 5, back to 1 — HANNAH L. → AMARA OKAFOR → IMRAN K. at desktop), a
+  repeat click is idempotent, the tiles carry a pointer live and `auto` on the canvas, the pill is
+  `<a href="#form">` live and a span on the canvas. `n=0` prints *No reviews yet.* in paper on the
+  ink card, no rail; `n=1` draws no rail; `n=8` shrinks the desktop tiles to 22.8 (Lime's 23) and
+  the 768 ones to 29.8, and sets the 390 row on one line at 35.8. No page errors or warnings.
+- **`FIELDS.testimonials` has no template-keyed `in` row** (`heading` `[1, 2, 3]`, `sub` `[1, 2]`,
+  `stars` and `cta` `[1]`, every one drawn by the widened block), so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly
+  testimonials arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For the sweep's CLAUDE.md pass**: the testimonials paragraph's layout-2 clause ("The picked
+  tile is also the **wide** one in the 390 row; under Lime and Grunge it widens in the desktop and
+  768 column as well, where the idle tiles hug …") owes Editorial, whose tiles all fill — the 390
+  row equal parts, the column one width, the pick its Scheme 3 fill and paper dash alone; and its
+  head, which keeps the typed break under Grunge and Editorial alike. Not written here.
+- **This was the last section.** The footer is layout 1's and closed at planning time, so the next
+  session is the end-of-pass sweep.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1878,6 +1980,25 @@ it here in one line, with the plan it came from, a blank line between sessions.)
   section 8) — the positional split kept, its 390 line 9.2 over, named.
 - Form: *The node walker, kept* (grunge/layout-2) with the binding names — three walks.
 
+- Testimonials: *The ninth block, after `rail`* (lime/layout-2, D2) — widened to `s.limeTree`, a
+  third `G` arm (no new leaf) and a handful of `ed` sites.
+- Testimonials: *The `G` lookup at the block's head* (grunge/layout-1, C) — the pass's fifth.
+- Testimonials: *The rail's mechanism is the frame's at every width* (lime/layout-2, D2) — turned
+  round: the frame's mechanism here is every tile filling, so no hug and no widened pick.
+- Testimonials: *A frame's padding can be inert* (retro/layout-2, *Learned on the testimonials*)
+  — met again in the 390 row's own axis, where the twins' padding was real.
+- Testimonials: *Read every nested node's scheme off the master* (grunge/layout-3, A) and *a
+  scheme that did not move can still move the binding* (grunge/layout-3, A) — `S3` for the card
+  and the pick; the pick's dash binds `text/2`, opaque, not `stroke/1`.
+- Testimonials: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) and *read the
+  radius before calling a dash a capsule* (this plan, section 9) — `side="all"` per tile, square.
+- Testimonials: *A twin's width-bound call is re-measured in Noto before it is inherited* (this
+  plan, section 8) — Grunge's `pre-wrap` kept, its line 46 over at desktop, wrapped on the ramp
+  (section 9's call).
+- Testimonials: *The paired diff walk* (grunge/layout-2, A) — both twins, all three widths in one
+  call, 26 = 26 = 26, the `layoutSizing` column the finding; and *the node walker, kept* with the
+  binding names — three walks.
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
@@ -1898,7 +2019,9 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 6. **The testimonials' head overruns its own frame** (1333 in 1328 at 118, in the demo face). The
    testimonials session decides between the frame's size wrapping to three lines and fitting the
    widest line to the column (CONVENTIONS C, *a head fitted to its widest word*, which at this size
-   is a line). Worth telling the designer.
+   is a line). Worth telling the designer. *Settled in section 10: wrapped at the ramp size —
+   three lines at desktop (Noto's long line 1134 in 1088), the masters' own three and four at 768
+   and 390; the fit (93px, a new line-ems key, no floor) declined as section 9 declined it.*
 7. **The narrow masters' leaks**, each for its session to follow or override (CONVENTIONS A, *leaked
    tops are followed where they show*, *a leak that shows and reads as a defect is overridden*):
    - the 390 bio's ~~chip row~~ **credit box** (`Frame 6`, the credit line's leaked desktop 637.5
@@ -1918,7 +2041,8 @@ it here in one line, with the plan it came from, a blank line between sessions.)
      `flex: h 1 auto` divides the band in the frame's proportions, so all six show;
    - the 390 gallery's right-column first-tile wrapper at `[0, 0, 40, 40]` (Grunge's stray
      again), whose capsule foot shows on one tile — *section 5: not followed*, Grunge's call;
-   - the 390 testimonials' sub, a 431-wide no-wrap line clipped by the card;
+   - the 390 testimonials' sub, a 431-wide no-wrap line clipped by the card — *section 10: not
+     followed*, the twins' `<p>` wraps to two lines (Retro's reading);
    - the map's ring labels past the 768 and 390 masters, clipped by the viewport — *section 8:
      followed, the twins' JP-040 reading*: each label rides its ring, and the viewport clips 120
      mi at both widths and half of 60 mi at 768, as the masters do;
