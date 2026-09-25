@@ -17194,12 +17194,46 @@ function EventsMap({ s }) {
     // shorter left column (588 × 512, 318 × 520). The raster is the same
     // `e089bd11` and its render samples (42, 44, 29) between the roads, so
     // Retro's plate stands; the display strings are faced and uppercase.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial — the same tree a fourth time (964:64613 1440 × 833, 986:15672
+    // 768 × 823, 986:15691 390 × 1286), on the same three nested schemes and
+    // no Device override, so it is `s.onScheme`'s busiest reader: the section
+    // stands on Scheme 1's paper, the travel card and the viewport on Scheme 3
+    // (`S3`, ink), the map panel on Scheme 2 (`S2`, taupe). Every radius but
+    // the chips', the pills', the day tile's, the zoom buttons' and the ring
+    // labels' is 0. The card is `S3`'s `box/1` in its solid 56% paper ring;
+    // its stats row is ruled 10, 10 in its blush `stroke/2`, top and bottom;
+    // its pill is `text/1` terracotta under `sem/bg` ink and Get Directions a
+    // terracotta outline. The rows are paper `box/1` dashed 10, 10 all round
+    // in `sem/stroke/2` terracotta, their chip still `stroke/1` ink. The panel
+    // is `S2`'s `box/1`, its status pill `S2`'s `sem/bg` under `text/1` paper,
+    // the venue paper, the map container and the foot rule `S2`'s `stroke/1`
+    // paper, and EXPAND VIEW's arrow `S2`'s `sem/bg` — taupe on taupe, faint
+    // but drawn in the render, so followed. Inside the viewport everything the
+    // twins draw in the accent is `S3`'s `sem/bg`, ink — the rings, the ring
+    // labels (paper type), the centre disc (a paper ring round a paper glyph)
+    // and its tail — and the five dots are `S3`'s `text/2` paper at .6, the
+    // frame's own dot, which reads on the plate. Display/Title is Sienna
+    // Vale's 32 / 25 / 23 and uppercase. The plate samples (41, 42, 28), so
+    // Retro's stands a third time.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
+      const S2 = ed ? s.onScheme[2] : null
+      const S3 = ed ? s.onScheme[3] : null
       const G = grunge ? {
         card: '#F52E34', hair: '#00000026', ink: s.tx, zoom: '#F52E34',
         panel: s.box1, status: s.bg, r: u(15), panelR: u(15), mapR: u(8),
         aspect: desk ? '588 / 512' : tab ? '318 / 520' : '346 / 298',
+      } : ed ? {
+        card: S3.box1, hair: S3.stroke1, ink: S3.tx, zoom: S3.box2,
+        panel: S2.box1, status: S2.bg, r: 0, panelR: 0, mapR: 0,
+        aspect: desk ? '588 / 492' : tab ? '318 / 523' : '346 / 302',
+        // Editorial's own leaves, each read through `??` below.
+        title: desk ? u(32) : tab ? '25px' : '23px',
+        pillBg: S3.ac, pillFg: S3.bg, statRule: S3.stroke2,
+        acc: S3.bg, dot: S3.tx, dotOp: 0.6,
+        statusFg: S2.ac, feat: S2.ac, frame: S2.stroke1, arrow: S2.bg,
       } : {
         card: '#CCFA61', hair: '#15180F26', ink: s.bg, zoom: '#D9FF7F',
         panel: s.box2, status: s.box1, r: u(50), panelR: u(s.mob ? 30 : 50),
@@ -17217,13 +17251,15 @@ function EventsMap({ s }) {
       // what the .2 screen lands on.
       const plate = '#292A1C'
       // `vm.title` is the heading string and overwrites the ramp's `title`, so
-      // Display/Title is the frames' own 36 / 28 / 26.
-      const titleSize = desk ? u(36) : tab ? '28px' : '26px'
+      // Display/Title is the frames' own 36 / 28 / 26 (Sienna Vale's 32 / 25 /
+      // 23 under Editorial).
+      const titleSize = G.title ?? (desk ? u(36) : tab ? '28px' : '26px')
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
-      // Faced and uppercase under Grunge; identity off it.
+      // Faced and uppercase under Grunge and Editorial (faced is the identity
+      // under Editorial); identity off them.
       const display = (size, lh) => ({
         margin: 0, fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
-        ...(grunge ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
       })
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -17252,7 +17288,9 @@ function EventsMap({ s }) {
           </div>
 
           {/* Both names in Display/List, Retro's normalisation of the frame's
-              hand-set Body/MD venue location. */}
+              hand-set Body/MD venue location. Editorial keeps the frame's
+              Body/MD for the venue: Noto's MANCHESTER is 107.75 in the 768
+              column's 105, so the normalised name broke inside the word. */}
           <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
             <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
               <span style={display(s.list, 1.2)}>{s.mapBase}</span>
@@ -17268,7 +17306,10 @@ function EventsMap({ s }) {
                   <span style={{ width: u(24), height: '1px', background: ink }} />
                 </span>
                 <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
-                  <span style={{ ...display(s.list, 1.2), overflowWrap: 'anywhere' }}>{g.city}</span>
+                  <span style={{
+                    ...(ed ? { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 } : display(s.list, 1.2)),
+                    overflowWrap: 'anywhere',
+                  }}>{g.city}</span>
                   <span style={bodySm}>Venue location</span>
                 </div>
               </>
@@ -17278,8 +17319,11 @@ function EventsMap({ s }) {
           {stats.length > 0 && (
             <div style={row(0, {
               width: '100%', padding: `${u(12)} 0`, alignItems: 'flex-start',
-              boxShadow: `inset 0 1px 0 ${hair}, inset 0 -1px 0 ${hair}`,
+              ...(ed ? { position: 'relative' } : { boxShadow: `inset 0 1px 0 ${hair}, inset 0 -1px 0 ${hair}` }),
             })}>
+              {/* Editorial's two rules are dashed, in the card's own blush. */}
+              {ed && <DashRule side="top" dash={10 * z} colour={G.statRule} />}
+              {ed && <DashRule side="bottom" dash={10 * z} colour={G.statRule} />}
               {stats.map((st) => (
                 <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
                   <span style={bodySm}>{st.l}</span>
@@ -17296,14 +17340,21 @@ function EventsMap({ s }) {
               at a 10 gap, is the frame's outlined Get Directions (user call,
               2026-09-17): a 1px `sem/text/1` ring lettered in it, Display/List,
               on Retro's `dir` — stretched to the pill's height, Retro's rule,
-              and a picture where the route is empty. */}
+              and a picture where the route is empty. Editorial's pair is the
+              other way up — a terracotta pill lettered in ink — so both read
+              `G.pillBg` / `G.pillFg` first. Its two labels do not fit two to
+              the 768 card's 302 (Noto's pill needs 177 of its 146, and the
+              frame's own Fisterra 171, clipped under the disc), so under
+              Editorial each pill keeps its content width and the row wraps
+              where it must — at 768 alone; 390's 330 holds 329 — with Get
+              Directions held to the frame's 54 box on a line of its own. */}
           {!!g && (
-            <div style={row(u(10), { width: '100%', alignItems: 'stretch' })}>
-              <BookPill s={s} ext={g.url} label="Venue Link" bg={s.bg} fg={s.ac} full={s.mob}
-                        style={{ flex: '1 1 0', minWidth: 0, justifyContent: 'space-between' }} />
+            <div style={row(u(10), { width: '100%', alignItems: 'stretch', ...(ed ? { flexWrap: 'wrap' } : null) })}>
+              <BookPill s={s} ext={g.url} label="Venue Link" bg={G.pillBg ?? s.bg} fg={G.pillFg ?? s.ac} full={s.mob}
+                        style={{ flex: '1 1 0', minWidth: ed ? 'auto' : 0, justifyContent: 'space-between' }} />
               <Dir {...dir} style={row(0, {
-                flex: '1 1 0', minWidth: 0, justifyContent: 'center',
-                boxShadow: ring(s.bg), borderRadius: '999px', color: s.bg,
+                flex: '1 1 0', minWidth: ed ? 'auto' : 0, minHeight: ed ? u(54) : undefined, justifyContent: 'center',
+                boxShadow: ring(G.pillBg ?? s.bg), borderRadius: '999px', color: G.pillBg ?? s.bg,
                 padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'nowrap',
                 textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
               })}>Get Directions</Dir>
@@ -17317,10 +17368,13 @@ function EventsMap({ s }) {
         const Tix = tix ? 'a' : 'span'
         return (
           <div key={i} onClick={onPick(i)} style={row(u(12), {
-            width: '100%', background: s.box1, color: s.tx, boxShadow: ring(s.stroke1),
+            width: '100%', background: s.box1, color: s.tx,
             borderRadius: G.r, padding: `${u(10)} ${u(14)}`,
             cursor: s.live ? 'pointer' : undefined,
+            // Editorial dashes the row all round in `sem/stroke/2`, square.
+            ...(ed ? { position: 'relative' } : { boxShadow: ring(s.stroke1) }),
           })}>
+            {ed && <DashRule side="all" dash={10 * z} colour={s.stroke2} />}
             {/* Label/XS in the frame's first row and hand-set Body/MD in the
                 rest — normalised to the first, Retro's call. */}
             <span style={{
@@ -17333,6 +17387,10 @@ function EventsMap({ s }) {
                 <span style={{
                   ...display(titleSize, 1.1),
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  // Noto's J descends 0.24em, 0.05em past this 1.1 box's foot,
+                  // so under Editorial the clip reaches 0.1em lower and the
+                  // margin gives it back: no box moves.
+                  ...(ed ? { paddingBottom: '0.1em', marginBottom: '-0.1em' } : null),
                 }}>{gg.venue}</span>
                 {!!gg.url && (
                   <Tix {...tix} style={{
@@ -17398,9 +17456,12 @@ function EventsMap({ s }) {
           // The frame's five dots are ink at 60%, which vanishes on the plate;
           // the idle pin is the panel's pale ink instead, and the lit one is the
           // centre marker's own pair. Neither frame pairs a dot with a gig.
+          // Editorial's dots are paper at 60% and read, so they are followed;
+          // its lit pin is the same redraw, ink in a paper ring.
           <span key={i} onClick={onPick(first + i)} style={{
             position: 'absolute', left: gg.pin.x, top: gg.pin.y, width: d, height: d,
-            borderRadius: '999px', background: on ? s.ac : s.tx,
+            borderRadius: '999px', background: on ? G.acc ?? s.ac : G.dot ?? s.tx,
+            opacity: on ? undefined : G.dotOp,
             boxShadow: on ? `0 0 0 2px ${ink}` : undefined,
             transform: 'translate(-50%, -50%)',
             cursor: s.live ? 'pointer' : undefined,
@@ -17427,10 +17488,10 @@ function EventsMap({ s }) {
               })}>
                 {!!s.mapStatus && (
                   <span style={row(u(8), {
-                    background: G.status, color: s.ac, borderRadius: '999px', flex: 'none',
+                    background: G.status, color: G.statusFg ?? s.ac, borderRadius: '999px', flex: 'none',
                     padding: `${u(6)} ${u(12)}`, ...chip,
                   })}>
-                    <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: s.ac, flex: 'none' }} />
+                    <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: G.statusFg ?? s.ac, flex: 'none' }} />
                     {s.mapStatus}
                   </span>
                 )}
@@ -17442,7 +17503,7 @@ function EventsMap({ s }) {
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {g ? (
                 <>
-                  <h3 style={{ ...display(titleSize, 1.1), overflowWrap: 'anywhere' }}>{g.venue}</h3>
+                  <h3 style={{ ...display(titleSize, 1.1), overflowWrap: 'anywhere', color: G.feat }}>{g.venue}</h3>
                   <span style={{
                     fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7, overflowWrap: 'anywhere',
                   }}>{g.city}</span>
@@ -17486,7 +17547,7 @@ function EventsMap({ s }) {
                     aspectRatio: '1', transform: 'translate(-50%, -50%)', overflow: 'visible',
                   }}>
                     <circle cx={r.d / 2} cy={r.d / 2} r={(r.d - r.w) / 2} fill="none"
-                            stroke={s.ac} strokeWidth={r.w} strokeDasharray={r.dash} opacity={r.o} />
+                            stroke={G.acc ?? s.ac} strokeWidth={r.w} strokeDasharray={r.dash} opacity={r.o} />
                   </svg>
                 ))}
                 {/* `rings`, on each ring's right edge at the midline, inner
@@ -17494,7 +17555,7 @@ function EventsMap({ s }) {
                 {s.mapRings.slice(0, rings.length).map((label, k) => (
                   <span key={k} aria-hidden style={{
                     position: 'absolute', left: `${50 + rings[rings.length - 1 - k].d / vw * 50}%`, top: '50%',
-                    transform: 'translate(-50%, -50%)', background: s.ac, color: ink,
+                    transform: 'translate(-50%, -50%)', background: G.acc ?? s.ac, color: ink,
                     borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip, textTransform: 'none',
                   }}>{label}</span>
                 ))}
@@ -17506,7 +17567,7 @@ function EventsMap({ s }) {
                 <span aria-hidden style={{
                   position: 'absolute', left: '50%', top: `calc(50% - ${u(16)})`,
                   transform: 'translate(-50%, -50%)', width: u(24), height: u(24),
-                  borderRadius: '999px', background: s.ac, boxShadow: `inset 0 0 0 ${u(2)} ${ink}`,
+                  borderRadius: '999px', background: G.acc ?? s.ac, boxShadow: `inset 0 0 0 ${u(2)} ${ink}`,
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: ink,
                 }}>
                   <User size={Math.round(16 * z * 10) / 10} strokeWidth={2 * z} absoluteStrokeWidth />
@@ -17515,7 +17576,7 @@ function EventsMap({ s }) {
                   position: 'absolute', left: '50%', top: `calc(50% + ${u(8)})`,
                   width: u(10), height: u(8), transform: 'translate(-50%, -50%)', overflow: 'visible',
                 }}>
-                  <path d="M1 1 H9 L5 7 Z" fill="none" stroke={s.ac} strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M1 1 H9 L5 7 Z" fill="none" stroke={G.acc ?? s.ac} strokeWidth="2" strokeLinejoin="round" />
                 </svg>
               </div>
               {/* The frame's Zoom In / Zoom Out, 4 apart and 16 in from the
@@ -17540,7 +17601,7 @@ function EventsMap({ s }) {
                 the featured gig's route (JP-040). */}
             <div style={row(u(12), {
               justifyContent: 'space-between', padding: `${u(14)} ${u(20)}`,
-              boxShadow: `inset 0 1px 0 ${s.stroke1}`,
+              boxShadow: `inset 0 1px 0 ${G.frame ?? s.stroke1}`,
             })}>
               <span style={{ ...bodySm, minWidth: 0 }}>
                 {[s.mapTerms, `${s.gigs.length} pins`].filter(Boolean).join(' · ')}
@@ -17549,12 +17610,12 @@ function EventsMap({ s }) {
                 <Dir {...dir} style={row(u(4), {
                   ...chip, flex: 'none', color: 'inherit', textDecoration: 'none',
                   cursor: dir ? 'pointer' : undefined,
-                })}>{s.mapExpand}<span aria-hidden style={{ color: s.ac }}>→</span></Dir>
+                })}>{s.mapExpand}<span aria-hidden style={{ color: G.arrow ?? s.ac }}>→</span></Dir>
               )}
             </div>
             <span aria-hidden style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit',
-              boxShadow: ring(s.stroke1), pointerEvents: 'none',
+              boxShadow: ring(G.frame ?? s.stroke1), pointerEvents: 'none',
             }} />
           </div>
         </div>
