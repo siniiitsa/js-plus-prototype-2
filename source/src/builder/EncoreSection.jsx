@@ -286,13 +286,19 @@ const SIENNA_MEDIA = '#E6B6A0'
 // passes the frame's dash (× 0.82 on the desktop canvas; the weight stays a
 // hairline). A line starts on a dash at x 0, as Figma's does. `side` is 'top'
 // or 'bottom', or 'all' for a card dashed on all four sides (964:58615's
-// source rows, 5, 5): one `<rect>` whose svg is inset half the weight, so the
-// stroke, centred on the rect's edge, lies wholly inside the box. SVG
-// attributes take no `calc`, so the svg is sized in CSS and the rect fills it;
-// `radius` is the card's own, and the rect's is that less the inset. `gap` is
-// the pattern's second number where it is not the first — layout 2's bio card
-// (964:64600) is dashed 10, 11 — and defaults to `dash`, so every even caller
-// is untouched. `side` 'left' or 'right' is the same line stood upright, for a
+// source rows, 5, 5): one `<rect>` inset half the weight, so the stroke,
+// centred on the rect's edge, lies wholly inside the box. The inset is the
+// rect's own `x` / `y`, never the svg's offset: Chrome snaps a replaced
+// element's box to the pixel grid, so an svg standing 0.5 in lands on a whole
+// pixel and centres the stroke on the seam between two, a 1px edge drawn as
+// two rows at half strength on a DPR-1 screen (the Editorial layout-2 sweep).
+// SVG attributes take no `calc`, so the svg is sized in CSS, a weight short of
+// the box, and the rect fills it from the inset; its stroke runs past the
+// svg's right and bottom by the half weight it came in by, which `overflow:
+// visible` draws. `radius` is the card's own, and the rect's is that less the
+// inset. `gap` is the pattern's second number where it is not the first —
+// layout 2's bio card (964:64600) is dashed 10, 11 — and defaults to `dash`,
+// so every even caller is untouched. `side` 'left' or 'right' is the same line stood upright, for a
 // column's inside edge (layout 2's repertoire, 964:64608's `Frame 288`); it
 // starts on a dash at the top.
 //
@@ -311,11 +317,12 @@ function DashRule({ dash, gap = dash, colour, weight = 1, side = 'bottom', radiu
   )
   if (side === 'all') return (
     <svg aria-hidden style={{
-      position: 'absolute', left: weight / 2, top: weight / 2,
+      position: 'absolute', left: 0, top: 0,
       width: `calc(100% - ${weight}px)`, height: `calc(100% - ${weight}px)`,
       display: 'block', overflow: 'visible', pointerEvents: 'none',
     }}>
-      <rect width="100%" height="100%" rx={Math.max(radius - weight / 2, 0)} fill="none"
+      <rect x={weight / 2} y={weight / 2} width="100%" height="100%"
+            rx={Math.max(radius - weight / 2, 0)} fill="none"
             stroke={colour} strokeWidth={weight} strokeDasharray={`${dash} ${gap}`} />
     </svg>
   )
