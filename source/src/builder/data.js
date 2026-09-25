@@ -1249,11 +1249,12 @@ export const FIELDS = {
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
-    // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's 3.
+    // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's,
+    // Grunge's and Editorial's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
-          + '(in Lime and Grunge, layout 3 as well).' },
+          + '(in Lime, Grunge and Editorial, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },

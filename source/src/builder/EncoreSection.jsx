@@ -4465,8 +4465,35 @@ function Bio({ s }) {
   // tone, both uppercase in the stand-in face; the stat values are Label/XS
   // in `font/ui` (Chakra Petch 20 / 14 / 12 at 1.26), where Lime's are Label/LG
   // in the label face.
-  if (s.v2 && (s.lime || s.grunge)) {
+  //
+  // Editorial layout 3 (964:68728 · 984:16820 at 768 · 984:16851 at 390; the
+  // head 964:68722 · 984:16815 · 984:16846) is the same tree with the seal
+  // traded for layout 1's tape and a sparkle, and `ed` names what moves
+  // (plans/editorial/layout-3.md, section 2). No effect on any node. The card
+  // is square — the instance's radius-50 root is paper on the paper page and
+  // does not clip, the card inside it does, at 0 — dashed 10, 10 in
+  // `scheme/1/stroke/2` at 1440 and 768 and unstroked at 390, where it runs
+  // 390 wide at x −10 in its 370 instance: the page's width, bled through the
+  // root's padding. The photograph is square on its `box3` well, ungrained;
+  // its head band pads 0 at the top, so the name and the stats stand on its
+  // floor from the card's photo row; one dashed rule divides it from the
+  // about band (the frame's weight 8 on a clipping 1px frame is layout 2's
+  // slip, drawn as the hairline it shows), where Lime's tree ruled both ends,
+  // and the column's two gaps are 23. The name is Display/SM in ink, one
+  // tone; the values Grunge's Chakra Petch. The tape (Frame 210) rides the
+  // card's top edge, a child of the instance pinned MIN / MIN, so it is
+  // seated by its centre off the card's left; the sparkle is the card's own
+  // at 1440 and 768, in the about band's left margin where the seal stood,
+  // and the instance's over the photograph at 390. At 1440 `Frame 302` stands
+  // the card 50 lower under its head, the tape's clearance; the 768 master has
+  // no such wrapper, and its tape, pinned at the desktop's −45, covers the
+  // foot of the head's glyphs — a leak that reads as a defect, so 768 takes
+  // the same 50. 390 is its own composition, the tape clear of the head. The
+  // head wraps at the word on the ramp in the composed column, where the
+  // frame's Fisterra sets it on one line (7.5 Noto ems against 709).
+  if (s.v2 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -4480,15 +4507,20 @@ function Bio({ s }) {
       if (i === -1) return s.brand
       return <>{s.brand.slice(0, i)} <span style={{ color: s.ac }}>{s.brand.slice(i + 1)}</span></>
     }
-    const upper = grunge ? { textTransform: 'uppercase' } : null
+    const upper = grunge || ed ? { textTransform: 'uppercase' } : null
     // Body/Chip, Inter bold at -6%: the stat labels and "[ About ]".
     const chipType = {
       fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
       letterSpacing: '-0.06em', textTransform: 'uppercase',
     }
     // `#F2FFD0` at .32 as an 8-digit hex (no `rgba()` in the file). A hairline
-    // does not ramp.
-    const rule = <div style={{ height: '1px', background: `${s.tx}52`, flex: 'none' }} />
+    // does not ramp. Editorial's is dashed 10, 10 in `scheme/1/stroke/2`, the
+    // card's own ink — the section stands on Scheme 1, so `s.stroke2`.
+    const rule = ed ? (
+      <div style={{ position: 'relative', height: '1px', flex: 'none' }}>
+        <DashRule dash={10 * z} colour={s.stroke2} side="top" />
+      </div>
+    ) : <div style={{ height: '1px', background: `${s.tx}52`, flex: 'none' }} />
 
     const stat = (label, value) => (
       <div key={label} style={col(u(15), {
@@ -4496,8 +4528,9 @@ function Bio({ s }) {
       })}>
         <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
         {/* Two lines reserved either way: 2 × 1.1 in the label face, 2 × 1.26
-            in Chakra Petch (Grunge's 50 box is 2 × 20 × 1.26). */}
-        <span style={grunge ? {
+            in Chakra Petch (Grunge's 50 box is 2 × 20 × 1.26; Editorial's
+            values are the same Label/XS in `font/ui`). */}
+        <span style={grunge || ed ? {
           fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls,
           textTransform: 'uppercase', overflowWrap: 'break-word', minHeight: '2.52em',
         } : labelStyle(s, s.labelLg, { whiteSpace: 'normal', overflowWrap: 'break-word', minHeight: '2.2em' })}>{value}</span>
@@ -4514,7 +4547,7 @@ function Bio({ s }) {
         display: 'flex', flexDirection: s.mob ? 'column' : 'row',
         alignItems: s.mob ? 'flex-start' : 'flex-end',
         gap: u(s.mob ? 10 : 40), overflow: 'hidden',
-        padding: `${u(24)} ${pad}`,
+        padding: ed ? `0 ${pad} ${u(24)}` : `${u(24)} ${pad}`,
       }}>
         {/* Display/SM at 50 wraps "Kai Mercer" in the 179 cap at 1440, as the
             frame does; 40 and 32 hold it on one line. */}
@@ -4524,7 +4557,7 @@ function Bio({ s }) {
         }}>
           <p style={{
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
-            letterSpacing: s.dls, color: grunge ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
+            letterSpacing: s.dls, color: grunge || ed ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
           }}>{brand()}</p>
         </div>
         <div style={row(u(s.mob ? 52 : 100), {
@@ -4552,12 +4585,22 @@ function Bio({ s }) {
                    ? { right: u(30.76), top: u(52.51) }
                    : { left: u(grunge ? 51.17 : 42.9), top: u(sealTop) }} />
     )
+    // Editorial's sparkle, `text/1` terracotta (not layout 1's blush). At 1440
+    // and 768 it is the card's (38.28, 713), 106 down the about band (the
+    // photo row's 440 and the band's 167 above it), so the band keeps its foot
+    // in the padding as it kept the seal's; at 390 it is the instance's, over
+    // the photograph at (280.88, 56.6).
+    const sparkle = ed && (
+      <GrungeStar s={s} fill={s.ac} style={s.mob
+        ? { left: '280.88px', top: '56.6px', width: '54px', height: '54.5px' }
+        : { left: u(38.28), top: u(106), width: u(108), height: u(109) }} />
+    )
 
     const about = (
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: u(40), overflow: 'hidden',
         padding: `${u(24)} ${pad}`, position: 'relative',
-        ...(s.mob ? null : { minHeight: u(sealTop + sealBox + 24) }),
+        ...(s.mob ? null : { minHeight: u(ed ? 106 + 109 + 24 : sealTop + sealBox + 24) }),
       }}>
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
@@ -4567,7 +4610,66 @@ function Bio({ s }) {
             <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP2}</p>
           )}
         </div>
-        {!s.mob && seal}
+        {!s.mob && (ed ? sparkle : seal)}
+      </div>
+    )
+
+    const card = (
+      <div style={{
+        position: 'relative', background: s.box1, color: s.tx, overflow: 'hidden',
+        borderRadius: ed ? 0 : u(s.mob ? (grunge ? 15 : 60) : 50), paddingBottom: u(40),
+        ...col('0', { alignItems: 'stretch' }),
+        ...(ed && s.mob ? { margin: `0 calc(-1 * ${s.padX})` } : null),
+      }}>
+        <div style={{ position: 'relative', padding: u(s.mob ? 10 : 30), ...row('0') }}>
+          <div style={{
+            position: 'relative', flex: '1 0 0', minWidth: 0, overflow: 'hidden',
+            height: u(s.mob ? 259 : 380), borderRadius: ed ? 0 : u(grunge ? 15 : 55), background: s.box3,
+          }}>
+            {/* Grunge's fill is `CROP`, which honours its transform: the
+                drummer's rows 16.9–55%, full width. At desktop that is a
+                cover at 27.3%; the 768 instance squashes the same band into
+                a narrower box, which a cover cannot, so it is centred on
+                the band instead (22.7% in our 628 × 380). 390 is `FILL`, a
+                centred cover. Editorial's is `CROP` too, rows 11.9–50% of
+                `editorialStage` (4:5): a cover at 19.2% at desktop (0.9998
+                against the render). The 768 squashes that band as Grunge's
+                does; a cover sweep peaks at 16% (0.68; the band's centre,
+                14.1%, gives 0.66). 390 centred. The well is ink, so the
+                empty slot's initials are paper. */}
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={ed ? s.bg : s.tx}
+                     style={(grunge || ed) && !s.mob
+                       ? { objectPosition: `50% ${ed ? (tab ? 16 : 19.2) : tab ? 22.7 : 27.3}%` }
+                       : undefined} />
+            </div>
+            {grunge
+              ? <Grain s={s} exact grunge blend="screen" opacity={1} />
+              : !ed && (
+                <span style={{
+                  position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                  boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
+                }} />
+              )}
+          </div>
+          {s.mob && !ed && seal}
+        </div>
+        <div style={col(u(s.mob ? 20 : ed ? 23 : 0), { alignItems: 'stretch' })}>
+          {head}
+          {rule}
+          {about}
+          {!ed && rule}
+        </div>
+        {/* The ring is Figma's inside stroke, so an overlay painted over the
+            children rather than a border that would grow the card. */}
+        {!s.mob && (ed
+          ? <DashRule dash={10 * z} colour={s.stroke2} side="all" />
+          : (
+            <span style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+            }} />
+          ))}
       </div>
     )
 
@@ -4587,58 +4689,27 @@ function Bio({ s }) {
             letterSpacing: s.dls, color: s.ac, ...upper,
           }}>{s.title}</h2>
         </div>
-        <div style={{
-          position: 'relative', background: s.box1, color: s.tx, overflow: 'hidden',
-          borderRadius: u(s.mob ? (grunge ? 15 : 60) : 50), paddingBottom: u(40),
-          ...col('0', { alignItems: 'stretch' }),
-        }}>
-          <div style={{ position: 'relative', padding: u(s.mob ? 10 : 30), ...row('0') }}>
-            <div style={{
-              position: 'relative', flex: '1 0 0', minWidth: 0, overflow: 'hidden',
-              height: u(s.mob ? 259 : 380), borderRadius: u(grunge ? 15 : 55), background: s.box3,
-            }}>
-              {/* Grunge's fill is `CROP`, which honours its transform: the
-                  drummer's rows 16.9–55%, full width. At desktop that is a
-                  cover at 27.3%; the 768 instance squashes the same band into
-                  a narrower box, which a cover cannot, so it is centred on
-                  the band instead (22.7% in our 628 × 380). 390 is `FILL`, a
-                  centred cover. */}
-              <div style={{ position: 'absolute', inset: 0 }}>
-                <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={s.tx}
-                       style={grunge && !s.mob ? { objectPosition: `50% ${tab ? 22.7 : 27.3}%` } : undefined} />
-              </div>
-              {grunge
-                ? <Grain s={s} exact grunge blend="screen" opacity={1} />
-                : (
-                  <span style={{
-                    position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                    boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
-                  }} />
-                )}
-            </div>
-            {s.mob && seal}
-          </div>
-          <div style={col(u(s.mob ? 20 : 0), { alignItems: 'stretch' })}>
-            {head}
-            {rule}
-            {about}
-            {rule}
-          </div>
-          {/* The ring is Figma's inside stroke, so an overlay painted over the
-              children rather than a border that would grow the card. */}
-          {!s.mob && (
-            <span style={{
-              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+        {ed ? (
+          <div style={{ position: 'relative', ...(s.mob ? null : { marginTop: u(50) }) }}>
+            {card}
+            {/* Figma −3° is CSS clockwise; the centre is the node's origin
+                (318.28, −45) / (109.77, −25.92) plus its half-size turned. */}
+            <Tape s={s} z={z} style={{
+              left: s.mob ? '211.16px' : u(419.67), top: s.mob ? '7.43px' : u(-11.65),
+              transform: 'translate(-50%, -50%) rotate(3deg)',
             }} />
-          )}
-        </div>
+            {s.mob && sparkle}
+          </div>
+        ) : card}
         {/* The Genres row: the removed tags section's instance (964:68664 ·
             984:10749 · 984:10780), which this page's Section keeps under the
             card, 30 below it. The layout-4 bio's row — a `body-lg` "Genres"
             line in the accent over TagChips, 16 apart — at the full measure,
             and the line stays at 390 where layout 4's hides, since this 390
-            instance draws it. */}
+            instance draws it. Editorial's 768 instance (984:16821) is the
+            `Theme=Lime` variant, olive and lime, a leak; its row is drawn
+            from Editorial's own chips, as the 1440 and 390 instances draw
+            it. */}
         {s.showTags === 'show' && (
           <div style={col(u(16), { alignItems: 'stretch' })}>
             <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>Genres</span>

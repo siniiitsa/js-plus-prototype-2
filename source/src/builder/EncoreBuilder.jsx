@@ -448,9 +448,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // is Lime's to the pixel (plans/grunge/layout-3.md), so each of its three
   // sections joined the arm in its own session — the bio, then media, then the
   // calendar, which closes the row: its `Frame 300` pads 50 / 50 / 40 above
-  // "Book Me" and 56 / 56 / 40 under the card, Lime's own numbers.
-  if (d === 2 && ((T.name === 'Lime' || T.name === 'Grunge')
-    && (cat === 'bio' || cat === 'calendar' || cat === 'media'))) {
+  // "Book Me" and 56 / 56 / 40 under the card, Lime's own numbers. Editorial's
+  // wrappers are Grunge's inset for inset (plans/editorial/layout-3.md, *The
+  // composed page*), and it joins the same way, the bio first.
+  if (d === 2 && (((T.name === 'Lime' || T.name === 'Grunge')
+    && (cat === 'bio' || cat === 'calendar' || cat === 'media'))
+    || (T.name === 'Editorial' && cat === 'bio'))) {
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)
     const foot = cat === 'bio' ? z(30)
