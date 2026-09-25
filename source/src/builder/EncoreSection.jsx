@@ -9374,8 +9374,8 @@ function Pricing({ s }) {
     //
     // Declined under Lime: the instance's own 1px `stroke1` ring on all four
     // sides — the component frame's stroke, which layout 2's pricing declined
-    // for the same reason (stacked bands would double it). Grunge's masters
-    // draw it, so the Grunge arm below puts it back. The 390 master's 60 top
+    // for the same reason (stacked bands would double it). Grunge's and
+    // Editorial's masters draw it, so their arms below put it back. The 390 master's 60 top
     // and bottom inset is the root's `padY`'s, as everywhere.
     //
     // Grunge — the same three masters in Static Youth's mode (964:68712 at
