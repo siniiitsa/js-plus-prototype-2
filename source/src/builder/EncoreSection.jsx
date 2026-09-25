@@ -22559,8 +22559,9 @@ function EnquiryForm({ s }) {
   // band*; the credit row is narrower for the shorter role, and the card runs
   // shorter than the frames' by the dropped price and stars. The sheet's own
   // `s.gPad` inset makes the desktop photo column 686.2, the frame's 687.2.
-  if (s.v1 && (s.lime || s.grunge)) {
+  if (s.v1 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -22578,7 +22579,30 @@ function EnquiryForm({ s }) {
     // `s.stroke1` hairline, the photograph `s.box2` in a 1px `s.ac` ring with no
     // glow, the pill Scheme 1's own red with black type round a black disc.
     // Radii are a raw 15 where Lime's are 50. No node carries an effect.
-    const G = grunge ? {
+    //
+    // Editorial — 964:64614 / 986:15673 / 986:15692, the twins' tree node for
+    // node, on **Scheme 4** at every width with no nested scheme: a terracotta
+    // band the root already paints, so the sheet is Grunge's `undefined`. Under
+    // it `s.ac` is paper and `s.tx` ink, and the bindings are Grunge's keys but
+    // for three leaves: the heading and the price are `text/1` (`s.ac`), every
+    // other ink `text/2`; the card and the boxes are `box/1` on the band,
+    // **square**, dashed in `stroke/2` ink — 10, 10 round the card and 6, 6 round
+    // each box, `DashRule side="all"` where the twins ring them — and the photo
+    // `box/2` in a 1px `text/1` ring, square. The pill is Grunge's four seats
+    // (paper, a terracotta label and disc, a paper arrow). Display/Title is
+    // this mode's 32 / 25 / 23. No node carries an effect.
+    const G = ed ? {
+      sheet: undefined, ink: s.tx, head: s.ac,
+      mist: s.box1, hair: s.stroke2, r: 0,
+      well: s.box2, photoRing: `inset 0 0 0 1px ${s.ac}`, avatarWell: s.bg,
+      // 12 over Label/SM's own line box, 16 / 13 / 12 — Grunge's numbers.
+      boxH: desk ? u(42) : s.mob ? '37px' : '38px',
+      pillBg: s.ac, pillFg: s.bg, discBg: s.bg, discFg: s.ac,
+      title: desk ? u(32) : s.mob ? '23px' : '25px',
+      // The idle mark is a 1px dash of full ink, so a refused box changes
+      // colour, weight and dash at once: a solid 2px ring of paper.
+      badRing: s.ac,
+    } : grunge ? {
       sheet: undefined, ink: s.tx, head: s.ac,
       mist: s.box1, hair: s.stroke1, r: u(15),
       well: s.box2, photoRing: `inset 0 0 0 1px ${s.ac}`, avatarWell: s.bg,
@@ -22595,7 +22619,7 @@ function EnquiryForm({ s }) {
     // Anton at the frame's glyph size, in capitals: every direct display or
     // label site here owes both under Grunge; identity off it.
     const disp = (family, size, lh, extra) => type(family, faced(s, size), facedLh(s, lh), {
-      ...(grunge ? { textTransform: 'uppercase' } : null), ...extra,
+      ...(grunge || ed ? { textTransform: 'uppercase' } : null), ...extra,
     })
     const ink = G.ink // Lime: Scheme 4 `sem/text/1` and `/2`
     const mist = G.mist // Lime: Scheme 4 `sem/box/1` — the card and every box
@@ -22614,9 +22638,12 @@ function EnquiryForm({ s }) {
     // so the refused one is 2px of full white: colour and weight.
     // Faced but not transformed: `up()` cases the label, and what the visitor
     // types stays as typed.
+    // Under Editorial the box is square and its idle mark is the field's
+    // `DashRule` (below), which a refusal swaps for the solid paper ring.
     const box = (bad) => type(s.label, faced(s, s.labelSm), facedLh(s, 1.1), {
-      background: mist, color: ink, border: 'none', borderRadius: s.btnR,
-      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? ink : hair}`,
+      background: mist, color: ink, border: 'none', borderRadius: ed ? 0 : s.btnR,
+      boxShadow: ed ? (bad ? `inset 0 0 0 2px ${G.badRing}` : undefined)
+        : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? ink : hair}`,
       height: G.boxH,
       padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
     })
@@ -22644,7 +22671,7 @@ function EnquiryForm({ s }) {
     // to `sem/text/1` and the count to `sem/text/2`, and both are ink, so the
     // line is one colour. Not controls, so they stand through the confirmation
     // swap, Retro's rule; each drops when emptied.
-    const title = desk ? u(36) : s.mob ? '26px' : '28px'
+    const title = G.title ?? (desk ? u(36) : s.mob ? '26px' : '28px')
     const priceRow = (!!s.formPrice || !!s.formPriceUnit) && (
       <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
         {!!s.formPrice && <span style={disp(s.display, title, 1.1, { color: G.head })}>{s.formPrice}</span>}
@@ -22652,10 +22679,11 @@ function EnquiryForm({ s }) {
       </div>
     )
     // Under Grunge the line is two-tone: the stars are the accent, the count
-    // `s.tx`. Lime keeps its one text node.
+    // `s.tx`. Lime keeps its one text node. Editorial's stars are `text/1`,
+    // paper, the same key.
     const bookingsLine = !!s.formBookings && (
       <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>
-        {grunge ? <span style={{ color: s.ac }}>★★★★★</span> : '★★★★★'}{'  '}{s.formBookings}
+        {grunge || ed ? <span style={{ color: s.ac }}>★★★★★</span> : '★★★★★'}{'  '}{s.formBookings}
       </span>
     )
 
@@ -22703,11 +22731,13 @@ function EnquiryForm({ s }) {
               broken after MAKE, so it takes layout 1's Grunge rule — words one
               and two a block line, the rest a second — and no cap: YOUR NIGHT
               UNFORGETTABLE. is 7.86em of the faced size, 322 / 314 / 236px
-              against the frames' 332 / 334 / 370 boxes. */}
+              against the frames' 332 / 334 / 370 boxes.
+              Editorial's frames type the same break at every width and let
+              768 wrap the rest, so Grunge's rule again, in paper. */}
           <h2 style={disp(s.display, s.dispSm, 1, {
             margin: 0, color: G.head, overflowWrap: 'break-word',
-            maxWidth: grunge ? undefined : desk ? '9em' : tab ? '5.2em' : undefined,
-          })}>{grunge && titleWords.length > 2 ? (
+            maxWidth: grunge || ed ? undefined : desk ? '9em' : tab ? '5.2em' : undefined,
+          })}>{(grunge || ed) && titleWords.length > 2 ? (
             <>
               <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
               <span style={{ display: 'block' }}>{titleWords.slice(2).join(' ')}</span>
@@ -22763,10 +22793,13 @@ function EnquiryForm({ s }) {
         }}>
           <div style={col(u(14), {
             background: mist, color: ink, borderRadius: G.r,
-            boxShadow: `inset 0 0 0 1px ${hair}`,
+            boxShadow: ed ? undefined : `inset 0 0 0 1px ${hair}`,
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
             position: 'sticky', top: 0,
           })}>
+            {/* Editorial's 10, 10 dash round the card, in `stroke/2`: sticky
+                is positioned, so the overlay needs no wrapper. */}
+            {ed && <DashRule side="all" dash={10 * z} colour={hair} />}
             {priceRow}
             {bookingsLine}
             {sent ? (
@@ -22791,7 +22824,7 @@ function EnquiryForm({ s }) {
                 <div style={col(u(10))}>
                   {s.formFields.map((f, i) => {
                     const bad = !!(errs && errs.f[i])
-                    return s.live ? (
+                    const el = s.live ? (
                       <input
                         key={i} value={at(i)} placeholder={up(f.label)}
                         onChange={(e) => setAt(i, e.target.value)}
@@ -22806,6 +22839,15 @@ function EnquiryForm({ s }) {
                         {up(f.label)}
                       </span>
                     )
+                    // Editorial's 6, 6 dash round each box: an <input> takes no
+                    // child, so the frame's own wrapper carries the overlay — a
+                    // column, so no line box's strut stands under the input.
+                    return ed ? (
+                      <div key={i} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                        {el}
+                        {!bad && <DashRule side="all" dash={6 * z} colour={hair} />}
+                      </div>
+                    ) : el
                   })}
                   <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
                     {s.formCta}{disc}
