@@ -183,7 +183,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 6 | `pricing` | `964:64610` | 1440 × 715 | `986:15669` | 768 × 924 | `986:15688` | 390 × 865 | **3 / 1 / 1** | `964:64591` | `964:64629` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | **done** `4fd0b57` |
 | 7 | `calendar` | `964:64612` *(in `964:64611`)* | 1328 × 1072 *(1440 × 1184)* | `986:15671` *(in `986:15670`)* | 708 × 803 *(915)* | `986:15690` *(in `986:15689`)* | 370 × 774 *(854)* | page 1, **card 2** (head band **1 / 3 / 3**) | `964:64593` | `964:64631` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | **done** `7133b13` |
 | 8 | `map` | `964:64613` | 1440 × 833 | `986:15672` | 768 × 823 | `986:15691` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64632` | inside `EventsMap`'s `if (s.v1)`, after `stats` | **done** `301f57b` |
-| 9 | `form` | `964:64614` | 1440 × 802 | `986:15673` | 768 × 877 | `986:15692` | 390 × 925 | **4** | `964:64595` | `964:64633` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v1)` | — |
+| 9 | `form` | `964:64614` | 1440 × 802 | `986:15673` | 768 × 877 | `986:15692` | 390 × 925 | **4** | `964:64595` | `964:64633` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v1)` | **done** `a5c2801` |
 | 10 | `testimonials` | `964:64615` | 1440 × 831.9 | `986:15674` | 768 × 863 | `986:15693` | 390 × 939 | 1 (card and picked tile **3**) | `964:64596` | `964:64634` | inside `Testimonials`' `if (s.v1)`, after `rail` | — |
 | — | `footer` | `964:64616` | 1440 × 479.5 | `986:15675` | 768 × 692.3 | `986:15694` | 390 × 736.3 | 3 | — | — | — | **out of scope**: layout 1's footer, closed at planning time (above) |
 | — | `video` | `964:64607` | 1440 × 782 | `986:15666` | 768 × 1111.2 | `986:15685` | 390 × 1118.8 | 1 | — | — | — | **not a category** |
@@ -678,7 +678,9 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
 - **A dashed capsule's `DashRule` radius is half its height, never 999** (section 4): SVG sets
   `ry` to `rx` and clamps each to its own half-side, so the CSS box's `999px` on a wide pill draws
   an ellipse. Compute the one-row height off the same rounded `u()` values the box renders at
-  (the repertoire's `togR`). Pricing's chips and the form's boxes are the next pill-shaped dashes.
+  (the repertoire's `togR`). Pricing's chips are the next pill-shaped dashes. **Read the radius
+  before calling a dash a capsule** (section 9): the planning read called the form's boxes pills,
+  and the walk found them square — a render's small dashed box does not show its corners.
 - **`DashRule` takes an upright `side`, 'left' or 'right'** (section 4), for a column's inside
   edge; the caller is `position: relative` and stretches to the column's height.
 - **A frame's image anchor is evidence for its own photograph only** (section 5): where the node
@@ -772,7 +774,9 @@ the twins' dark-ground assumptions break (trap 6).
    sidebar card `box1` dashed ink, its price paper, stars paper, three boxes dashed ink 6, 6 with ink
    labels in the display face, the pill **paper** with a terracotta label and disc, "No charge to
    enquire" ink. Scheme 4's `pillBg` is ink and its `s.ac` paper (trap 5) — the pill's binding will
-   say which keys it reads.
+   say which keys it reads. *Settled in section 9: the card and the boxes are square (no radius
+   on either); the pill is `text/1` paper under a `sem/bg` label and disc, Grunge's four seats;
+   the block reads no `pillBg`, so trap 5 had no site.*
 10. **testimonials** — paper: the eyebrow and the head ink, one tone, at 118 (the overrun above);
     the sub ink; the rail's tiles `box1` dashed ink, the picked tile **ink (Scheme 3)** dashed paper
     with paper initials; the big card **ink (Scheme 3)** with paper quote marks, quote, name, role
@@ -1609,6 +1613,89 @@ the twins' dark-ground assumptions break (trap 6).
   and three boxes **6, 6** in `sem/stroke/2` ink — the boxes are pills, so a dashed capsule's
   radius is half its height (section 4). The credit avatar is the Lime leak (open question 2).
 
+### Settled in section 9 (the enquiry form)
+
+- **The block widened: `if (s.v1 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v1)`, `const ed
+  = s.editorial` and a third arm at the head of `G`** — Lime's and Grunge's arms byte-identical —
+  its fourteen shared keys plus two Editorial-only leaves read through `??` (`title`,
+  `badRing`), and a handful of `ed` sites: the box's radius and idle ring, the card's ring, the
+  two `DashRule` sites, and four Grunge gates widened to `grunge || ed` (`disp()`'s uppercase,
+  the two-tone stars, the heading's positional split and its `maxWidth`). The tree is the twins'
+  node for node (the walker, all three masters: 42 nodes each, the planning LCS's 42 = 42 = 42),
+  on **Scheme 4 at every width with no nested scheme** (`resolvedVariableModes` Desktop / Tablet
+  / Mobile, `187:9`; no `explicitVariableModes` below the root). `get_variable_defs`' sizes are
+  the ramp — display-sm 45 / 36 / 30, list 24 / 19 / 18, label-sm 16 / 13 / 12, label-xs 20 / 14 /
+  12, body-sm 12 — but Display/Title, **32 / 25 / 23** (`G.title`, the map's too). No node
+  carries an effect. The live seam is hoisted above the block, so nothing was owed.
+- **Trap 5 resolved itself: the block reads no `pillBg`, `paper` or `deep`**, so every binding
+  is a key of the Scheme 4 seat and the arm is the whole fix. The root paints `sem/bg`
+  terracotta, so `G.sheet` is Grunge's `undefined` (the sheet keeps its geometry and paints
+  nothing); `G.ink` is `s.tx` (`text/2`, ink — every Inter, Chakra and label string, the ✓, the
+  credit, the note); `G.head` is `s.ac` (`text/1`, paper — the heading and the price); the
+  photograph's well `s.box2` (`#EF9173`) in a 1px `text/1` ring, square; the avatar's well `s.bg`;
+  the pill **Grunge's four seats exactly** — `text/1` paper under a `sem/bg` terracotta label,
+  the disc `sem/bg` round a `text/1` arrow — which the planning render's "paper pill, terracotta
+  label and disc" said. `G.boxH` is Grunge's 42 / 38 / 37 (12 over label-sm's line box).
+- **The boxes are square, not capsules** — the planning table's "pills" was a guess, and the
+  walk found no radius on the card or any box (the only radii are the pill's 67, the disc's 50
+  and the avatar's 24). So both dashes are `DashRule side="all"` at radius 0, and section 4's
+  half-height rule has no site here. **The card** is `box/1` dashed **10, 10** in `stroke/2` ink,
+  its overlay a last child of the sticky card (sticky is positioned, so no wrapper). **Each box**
+  is `box/1` — the card's own fill, so it reads by its dash alone — dashed **6, 6** in `stroke/2`;
+  an `<input>` takes no child, so under `ed` the field sits in a relative column wrapper (the
+  frame's own `Frame` round each box) carrying the overlay — a column, so no line box's strut
+  stands under the input. Dash × 0.82 on desktop.
+- **The refused box drops its dash for a solid 2px ring of paper** (`G.badRing` `s.ac`), inset,
+  so the stated height holds: the idle mark is a 1px dash of **full** ink, so the refusal changes
+  colour, weight and dash at once (CONVENTIONS C, *a refused box changes colour, not weight alone,
+  when the idle ring is already full ink*; layout 1's form, which wrote `s.tx` because there
+  `s.tx` was paper). Paper is also the band's own accent — the heading, the price, the pill.
+  Reversible in one line.
+- **The heading is Grunge's positional split**, words one and two a block, the rest a second, no
+  cap: the frames type the break after "make" at every width. In Noto the second line is **12.64
+  ems** — 467.7 at 37 in the 686.2 desktop column (two lines, the frame's), past 334 at 768 so it
+  wraps at the word (three lines, the frame's own three), and **379.2 at 30 in the 390 column's
+  370**, 9.2 over, so it wraps to three lines where Fisterra's two fit. Named diff, the header
+  subtitle's precedent (Noto is wider): the head stays one tone on the ramp rather than shrink off
+  it, and every line under it at 390 stands 30 lower.
+- **The sent card's title** inherits `G.ink`, uppercased by `disp()` — no frame draws the state;
+  the twins' readings stand.
+- **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
+  section root): desktop section 650.3 (802 × 0.82 = 657.6 less the root's `gPad` 46 against 49.2
+  at both ends), photo 686.2 × 358.3 (687.2 × 358.3), h2 at 428.9 (428.9) on two lines 74 tall
+  (73.8), card 369 wide at x 765, boxes 329.6 × 34.4 (402 / 42 × 0.82) on a 42.6 pitch, pill
+  44.3; 768 section 875.9 (877), photo 334 × 437 at (30, 60), h2 at 527 (527) on three lines 108
+  (108), card at (404, 60) 334 wide, boxes 286 × 38 on 48 (48), pill 54; 390 photo 370 × 262 at
+  (10, 40), h2 at 332 (332) on three lines 90 (the frame's 60 on two), card at 562.4 (533 + the
+  heading's extra 30), boxes 322 × 37 on 47 (47), pill 54. The dashes sit 0.5 inside every box.
+  **Named diffs, the twins'**: the seed's four boxes to the frame's three (the card 351.9 / 405.4
+  / 399.4 against 309.1 / 358 / 352) and its *DJ · Live Act* to the frame's *DJ · Live band*; the
+  credit avatar keeps the seed (open question 2); the 390 section is 1001.8 against 925 (the
+  fourth box's 47, the heading's 30).
+- **`live=1`** (puppeteer, 1440 and 390): an empty submit rings all four boxes in 2px paper with
+  their dashes gone and the heights unchanged (34.4 / 37), and prints the prompt; typing clears
+  each ring and brings its dash back; the mailto's subject is the bare *Enquiry* with the four
+  values in the body (read off `href`); a submit behind a capture-phase intercept swaps in the
+  sent card; *Write another* restores the typed values. `&n=0&promises=` is the card's pill and
+  line with the credit at the row's end; `&n=8` grows the card; nothing overflows at any width.
+  No page errors or console warnings.
+- **`FIELDS.form` has no template-keyed `in` row**, so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly form
+  arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For the sweep's CLAUDE.md pass**: the enquiry form's layout-2 clauses owe Editorial — "a
+  full-bleed mustard sheet (pale under Lime; Grunge's frame paints no sheet at all …)" (the
+  root's terracotta Scheme 4 band, route A's seat), "under Lime the ring is 2px of full ink … and
+  under Grunge 2px of `s.tx`" (square boxes dashed 6, 6, refused as a solid 2px paper ring), and
+  "Lime's card draws all five, the stars in ink" (Editorial's stars paper, two-tone). Not written
+  here.
+- **For the testimonials**: the page is Scheme 1 paper with the big card and the picked rail tile
+  nested **Scheme 3** (`s.onScheme[3]`, the map's precedent); the rail's three tiles are dashed
+  **5, 5** all round (ink, the picked one paper — 56% if it binds Scheme 3's `stroke/1`, so read
+  the binding); the
+  head's 1333-in-1328 overrun is open question 6's, decided there after measuring Noto at 118 /
+  73 / 48; `TESTI_HEADING_2` is the fallback at `d === 1`; and the 390 sub's 431-wide no-wrap line
+  is open question 7's.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1772,12 +1859,33 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Map: *The paired diff walk* (grunge/layout-2, A) — both twins, 123 = 123 = 123; and *the node
   walker, kept* with the binding names — three walks.
 
+- Form: *The layout-2 block ahead of `EnquiryForm`'s `if (s.v1)`* and *the label is uppercased as
+  a string* (lime/layout-2, D2) — widened to `s.limeTree`, a third `G` arm (two new leaves read
+  through `??`) and a handful of `ed` sites; `up()` kept whole.
+- Form: *The `G` lookup at the block's head* (grunge/layout-1, C) — the pass's fourth.
+- Form: *A section whose live seam is hoisted above its branches can always take a block*
+  (lime/layout-1, C) — nothing owed to the published boxes, submit or sent card.
+- Form: *A section's colour scheme is resolved in `sectionVm`* (editorial/layout-1, C) with
+  session 0's Scheme 4 seat — every leaf a key, no literal.
+- Form: *A refused box changes colour, not weight alone, when the idle ring is already full ink*
+  (CLAUDE.md; CONVENTIONS C) — the solid 2px paper ring over a full-ink dash.
+- Form: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, C) — 32 × 0.82 / 25 / 23 in
+  `G.title`.
+- Form: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — `side="all"` on the
+  card and on each box's wrapper (layout 1's *a dashed rule under an `<input>` goes on the field's
+  column*, turned round to all four sides); ink judged at DPR 2 (this plan).
+- Form: *A twin's width-bound call is re-measured in Noto before it is inherited* (this plan,
+  section 8) — the positional split kept, its 390 line 9.2 over, named.
+- Form: *The node walker, kept* (grunge/layout-2) with the binding names — three walks.
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
    *Settled in session 0: all three recommendations.*
 2. **The form's credit avatar** is Lime's `f821adc2`, the component's default picture through an
    Editorial instance; the seed (`editorialHeaderAvatar`) stands. Worth telling the designer.
+   *Settled in section 9: `f821adc2` at `FILL` on `sem/bg` in all three masters; the seed kept,
+   a named departure.*
 3. **The gallery strip** repeats Retro's placeholder thumbnails again; the seeds stand (layout 1,
    open question 3). Worth telling the designer with it.
 4. **The pricing credit row** — the frame draws the three avatars, the stars and "32 reviews ·
