@@ -607,7 +607,8 @@ Do **not** refresh the root `index.html` per section; it is the sweep's last ste
 
 ## The end-of-pass sweep
 
-**Done** (2026-09-25). What each item came to is under *Learned on the end-of-pass sweep* at the
+**Done: `75741ac` (code, CLAUDE.md, README, `CONVENTIONS.md`, the plans) and `eae1fd5` (the
+`index.html` refresh), 2026-09-25.** What each item came to is under *Learned on the end-of-pass sweep* at the
 foot of *Conventions*; the list is kept as it was written.
 
 One session after section 11. Lime's list and Grunge's apply item for item (their *The end-of-pass
@@ -1936,7 +1937,7 @@ The sweep:
 - *The two-build digest walks the editor* (Lime 1, sweep) — the old build before the `cp`.
 - *CONVENTIONS.md came out as four groups* (Grunge 1, sweep) — kept; Editorial is a column.
 
-### Learned on the end-of-pass sweep
+### Learned on the end-of-pass sweep (`75741ac` and `eae1fd5`)
 
 - **`Photo`'s empty backdrop is widened to the fitted card alone**, `(s.lime || s.grunge ||
   (s.editorial && s.v0))`. Under Scheme 3 the Lime arm's `box1` → `bg` → `box3` is `#1D1D1D` →
@@ -1995,7 +1996,8 @@ The sweep:
   "12 SONGS" over the pager — until the joins were read as joins: each clip is its own section top,
   so the band above a join is the previous section's foot. The memory note's garbled-clip trap
   was not met.
-- **The template-list grep** returned 26 hits. The ones making a claim about the list were fixed:
+- **The template-list grep** returned 35 lines, most of them "the other two" meaning widths or
+  cards. The ones making a claim about the template list were fixed:
   `data.js`'s header-`in` comment, the Soundcloud comment and `reachOf`'s, `navModeDefault`'s;
   `EncoreBuilder.jsx`'s `ui`, `retro`, seeding and §6-picker comments; `EncoreSection.jsx`'s §10.2
   banner and the flat header banner; five README passages. Three are branch-local truths and stay:
