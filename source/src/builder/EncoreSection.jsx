@@ -289,8 +289,11 @@ const SIENNA_MEDIA = '#E6B6A0'
 // source rows, 5, 5): one `<rect>` whose svg is inset half the weight, so the
 // stroke, centred on the rect's edge, lies wholly inside the box. SVG
 // attributes take no `calc`, so the svg is sized in CSS and the rect fills it;
-// `radius` is the card's own, and the rect's is that less the inset.
-function DashRule({ dash, colour, weight = 1, side = 'bottom', radius = 0 }) {
+// `radius` is the card's own, and the rect's is that less the inset. `gap` is
+// the pattern's second number where it is not the first — layout 2's bio card
+// (964:64600) is dashed 10, 11 — and defaults to `dash`, so every even caller
+// is untouched.
+function DashRule({ dash, gap = dash, colour, weight = 1, side = 'bottom', radius = 0 }) {
   if (side === 'all') return (
     <svg aria-hidden style={{
       position: 'absolute', left: weight / 2, top: weight / 2,
@@ -298,7 +301,7 @@ function DashRule({ dash, colour, weight = 1, side = 'bottom', radius = 0 }) {
       display: 'block', overflow: 'visible', pointerEvents: 'none',
     }}>
       <rect width="100%" height="100%" rx={Math.max(radius - weight / 2, 0)} fill="none"
-            stroke={colour} strokeWidth={weight} strokeDasharray={`${dash} ${dash}`} />
+            stroke={colour} strokeWidth={weight} strokeDasharray={`${dash} ${gap}`} />
     </svg>
   )
   return (
@@ -307,7 +310,7 @@ function DashRule({ dash, colour, weight = 1, side = 'bottom', radius = 0 }) {
       display: 'block', overflow: 'visible', pointerEvents: 'none',
     }}>
       <line x1="0" x2="100%" y1={weight / 2} y2={weight / 2}
-            stroke={colour} strokeWidth={weight} strokeDasharray={`${dash} ${dash}`} />
+            stroke={colour} strokeWidth={weight} strokeDasharray={`${dash} ${gap}`} />
     </svg>
   )
 }
@@ -3959,8 +3962,29 @@ function Bio({ s }) {
   // plus 2.32, hung 0.2 down the inner clip and overrunning it right and below,
   // `SCREEN` at opacity 1. That lifts the photograph ~30 levels (the render's
   // photo reads 73 against the seed's 42), which is what the node states.
-  if (s.v1 && (s.lime || s.grunge)) {
+  //
+  // Editorial layout 2 (964:64600 · 986:15659 at 768 · 986:15678 at 390) is the
+  // tree a third time on Scheme 1 — paper — with no Device override, and every
+  // leaf the twins share reads the key its binding names, so `ed` names only
+  // the deltas. Nothing is rounded: the text card is `s.box1` dashed 10, 11 in
+  // `sem/stroke/2` all round (the page's one uneven dash) where the twins ring
+  // it, and it gains a divider the twins do not draw — a 10, 10 rule between
+  // the prose and the foot, running the card's full width at 1440 and 768,
+  // where the card pads nothing and its two groups pad 30, and inside the
+  // card's 20 at 390, where that turns round. The chips take every seat off
+  // its own tag (`scheme/1/tagN/bg`, blush and terracotta by parity), so no
+  // dark seat. The pill is its Scheme 4 node, the header's pair off
+  // `s.onScheme[4]`, on the bio's box (0.82 / 1 / 1); its paper 5 / 5 block
+  // is drawn at 768 and 390, where it stands on the card's `box1` and shows.
+  // The photo card is Grunge's 10 mount, square, in paper (`sem/tag/4/text`)
+  // round a blush well (`tag/5/bg`), under the twins' soft shadow and with no
+  // glow and no grain; the caption card is square `s.box1`, its disc blush
+  // (`sem/tag/1/bg`). The photograph is a centred cover (`FILL`).
+  if (s.v1 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
+    // Grunge's and Editorial's frames keep the photo card's 10 mount.
+    const mount = grunge || ed
     const tab = isTablet(s)
     const nar = s.narrow
     const z = nar ? 1 : 0.82
@@ -3975,13 +3999,16 @@ function Bio({ s }) {
     // tokens leaking through the component, and are not a third seat. Grunge's
     // instance seats its dark chips on `sem/box/3` (`#0E0E0E`) and leaks a white
     // `scheme/4/tag1/text` onto its fourth chip the same way — `c.fg` stands.
+    // Editorial's binds every chip to its own `tagN/bg`, so each takes `c.bg`;
+    // its fourth leaks an ink `scheme/4/tag1/text` at 768 and 390, and `c.fg`
+    // stands there too.
     const chipK = s.mob ? 9.22 : tab ? 10.76 : 15.37
     const chips = s.showTags === 'show' && (
       <div style={{ padding: `${u(22.19)} 0` }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.15), maxWidth: u(264.4) }}>
           {s.tagChips.map((c, i) => (
             <span key={i} style={{
-              background: i % 2 ? c.bg : grunge ? s.box3 : s.box2, color: c.fg,
+              background: ed || i % 2 ? c.bg : grunge ? s.box3 : s.box2, color: c.fg,
               borderRadius: u(grunge ? 3.07 : 4.61), padding: `${u(3.84)} ${u(8.45)}`,
               fontFamily: s.ui, fontSize: u(chipK), lineHeight: 1.26, letterSpacing: s.dls,
               whiteSpace: 'nowrap',
@@ -4000,31 +4027,54 @@ function Bio({ s }) {
     // a red disc — and its narrow block is the accent's red, which shows.
     // The label is Stones Crush 12 at 390 (not the header's leaked Anton), so
     // `s.labelSm` is right at every width; `facedLh` keeps the faced line box.
+    // Editorial's is its Scheme 4 node — terracotta under paper type, a paper
+    // disc round a terracotta arrow, the header's `s.onScheme[4]` pair — and
+    // its narrow block is that scheme's paper, which on the card's `box1`
+    // reads 9 levels darker (sampled at both widths), so it is drawn.
     const pill = s.bioCta && (
-      <BookPill s={s} to={s.bookTo} label={s.bioCta} bg={grunge ? s.bg : s.tx} fg={grunge ? s.ac : s.bg}
+      <BookPill s={s} to={s.bookTo} label={s.bioCta}
+                bg={ed ? s.onScheme[4].bg : grunge ? s.bg : s.tx}
+                fg={ed ? s.onScheme[4].ac : grunge ? s.ac : s.bg}
                 size={s.labelSm} disc={27.6 * z}
                 style={{
                   padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
                   gap: u(8.53), lineHeight: facedLh(s, 1.1),
-                  boxShadow: nar ? `5px 5px 0 ${grunge ? s.ac : s.bg}` : undefined,
+                  boxShadow: nar ? `5px 5px 0 ${ed ? s.onScheme[4].ac : grunge ? s.ac : s.bg}` : undefined,
                 }} />
     )
 
+    // Editorial's card pads nothing at 1440 and 768 and its two groups pad 30,
+    // so its divider runs the card's full width; at 390 the card pads 20 and
+    // the groups nothing. Both dashes are `sem/stroke/2`. The divider is a 1px
+    // frame stroked 8 INSIDE, which the render draws as a 1px 10, 10 rule with
+    // a ~7px solid cap at each end — the cap is the weight's slip, not drawn.
+    // An emptied foot (chips hidden, line and pill emptied) drops with its
+    // divider there, or the rule would stand over a band of padding; the
+    // twins keep their empty foot, as they always have.
+    const gpad = ed && !s.mob ? u(30) : undefined
+    const foot = !ed || chips || s.bioCredit.lead || pill
     const textCard = (
       <div style={{
         flex: nar ? 'none' : '1 1 0', minWidth: 0, background: s.box1,
-        boxShadow: ring('1px', s.stroke1), borderRadius: u(30),
-        padding: u(s.mob ? 20 : 30),
+        position: ed ? 'relative' : undefined,
+        boxShadow: ed ? undefined : ring('1px', s.stroke1), borderRadius: ed ? 0 : u(30),
+        padding: ed ? (s.mob ? '20px' : 0) : u(s.mob ? 20 : 30),
         ...col(u(18), { justifyContent: nar ? 'flex-start' : 'space-between' }),
       }}>
-        <div style={col(u(25.51), { alignItems: 'flex-start' })}>
+        {ed && <DashRule side="all" dash={10 * z} gap={11 * z} colour={s.stroke2} />}
+        <div style={col(u(25.51), { alignItems: 'flex-start', padding: gpad })}>
           <span style={labelStyle(s, s.labelSm, {
             color: s.tx, lineHeight: 1.1, boxShadow: ring(u(1.42), s.stroke2),
             borderRadius: s.btnR, padding: `${u(5.67)} ${u(14.17)}`,
           })}>/Featured</span>
           <p style={{ margin: 0, ...text }}>{s.bioP1}</p>
         </div>
-        <div style={col(u(10), { padding: s.mob ? '10px 0' : undefined })}>
+        {ed && foot && (
+          <div style={{ position: 'relative', flex: 'none', height: '1px' }}>
+            <DashRule side="top" dash={10 * z} colour={s.stroke2} />
+          </div>
+        )}
+        {foot && <div style={col(u(10), { padding: ed ? gpad : s.mob ? '10px 0' : undefined })}>
           {chips}
           {/* 390 stands the pill under the line, Retro's reading of the same
               leaked 637.5 row. That box's leaked 39 height is kept, as a
@@ -4046,7 +4096,7 @@ function Bio({ s }) {
               {pill}
             </div>
           )}
-        </div>
+        </div>}
       </div>
     )
 
@@ -4060,19 +4110,20 @@ function Bio({ s }) {
     // Grunge keeps the frame's 10 mount: the photo and its grain sit in an
     // inner clip inset 10 at radius 21.44 inside the 26.25 card, and the
     // caption block's 20 inset is measured from that clip — 30 from the card,
-    // 31.88 at the foot for the clip's own 1.875 padding.
+    // 31.88 at the foot for the clip's own 1.875 padding. Editorial keeps the
+    // same mount, square, in paper round a blush well, with no glow or grain.
     const photoCard = (
       <div style={{
         position: 'relative', flex: 'none', overflow: 'hidden',
         width: nar ? '100%' : u(433),
-        height: s.mob ? (grunge ? '362px' : '390px') : tab ? (grunge ? '648px' : '700px') : undefined,
-        background: s.box1, borderRadius: u(grunge ? 26.25 : 55),
+        height: s.mob ? (mount ? '362px' : '390px') : tab ? (mount ? '648px' : '700px') : undefined,
+        background: ed ? s.chips[3].fg : s.box1, borderRadius: ed ? 0 : u(grunge ? 26.25 : 55),
         boxShadow: `${u(1.25)} ${u(1.25)} ${u(10.81)} #00000029`,
         ...col('0', { justifyContent: 'flex-end' }),
       }}>
         <div style={{
-          position: 'absolute', inset: grunge ? u(10) : 0,
-          ...(grunge ? { overflow: 'hidden', borderRadius: u(21.44), background: s.box1 } : null),
+          position: 'absolute', inset: mount ? u(10) : 0,
+          ...(mount ? { overflow: 'hidden', borderRadius: ed ? 0 : u(21.44), background: ed ? s.chips[4].bg : s.box1 } : null),
         }}>
           <Photo s={s} initialsSize={54} />
           {grunge && (
@@ -4082,16 +4133,16 @@ function Bio({ s }) {
             }} />
           )}
         </div>
-        {!grunge && (
+        {!mount && (
           <span style={{
             position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
             boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
           }} />
         )}
-        <div style={{ position: 'relative', padding: grunge ? `${u(30)} ${u(30)} ${u(31.88)}` : u(20) }}>
+        <div style={{ position: 'relative', padding: mount ? `${u(30)} ${u(30)} ${u(31.88)}` : u(20) }}>
           <div style={{
-            ...row(u(12)), background: grunge ? s.box1 : s.box2, color: s.tx,
-            borderRadius: u(grunge ? 9 : 29), padding: `${u(18)} ${u(20)}`,
+            ...row(u(12)), background: mount ? s.box1 : s.box2, color: s.tx,
+            borderRadius: ed ? 0 : u(grunge ? 9 : 29), padding: `${u(18)} ${u(20)}`,
           }}>
             <div style={col(u(4), { flex: 1, minWidth: 0 })}>
               <span style={labelStyle(s, s.labelLg, { lineHeight: 1.1, whiteSpace: 'normal' })}>{s.brand}</span>
@@ -4102,7 +4153,7 @@ function Bio({ s }) {
                 typed ⏵⏵ (pricing's typed-tick rule). */}
             <span style={{
               width: u(36), height: nar ? undefined : u(36), borderRadius: u(18), flex: 'none',
-              background: s.box1, fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+              background: ed ? s.chips[0].bg : s.box1, fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
               ...row('0', { justifyContent: 'center' }),
             }}>⏵⏵</span>
           </div>
