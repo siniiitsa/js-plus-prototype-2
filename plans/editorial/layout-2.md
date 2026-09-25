@@ -182,7 +182,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 5 | `gallery` | `964:64609` | 1440 × 675 | `986:15668` | 768 × 468 | `986:15687` | 390 × 364 | 1 | `964:64590` | `964:64628` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v1)` | **done** `a888524` |
 | 6 | `pricing` | `964:64610` | 1440 × 715 | `986:15669` | 768 × 924 | `986:15688` | 390 × 865 | **3 / 1 / 1** | `964:64591` | `964:64629` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | **done** `4fd0b57` |
 | 7 | `calendar` | `964:64612` *(in `964:64611`)* | 1328 × 1072 *(1440 × 1184)* | `986:15671` *(in `986:15670`)* | 708 × 803 *(915)* | `986:15690` *(in `986:15689`)* | 370 × 774 *(854)* | page 1, **card 2** (head band **1 / 3 / 3**) | `964:64593` | `964:64631` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | **done** `7133b13` |
-| 8 | `map` | `964:64613` | 1440 × 833 | `986:15672` | 768 × 823 | `986:15691` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64632` | inside `EventsMap`'s `if (s.v1)`, after `stats` | — |
+| 8 | `map` | `964:64613` | 1440 × 833 | `986:15672` | 768 × 823 | `986:15691` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64632` | inside `EventsMap`'s `if (s.v1)`, after `stats` | **done** `301f57b` |
 | 9 | `form` | `964:64614` | 1440 × 802 | `986:15673` | 768 × 877 | `986:15692` | 390 × 925 | **4** | `964:64595` | `964:64633` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v1)` | — |
 | 10 | `testimonials` | `964:64615` | 1440 × 831.9 | `986:15674` | 768 × 863 | `986:15693` | 390 × 939 | 1 (card and picked tile **3**) | `964:64596` | `964:64634` | inside `Testimonials`' `if (s.v1)`, after `rail` | — |
 | — | `footer` | `964:64616` | 1440 × 479.5 | `986:15675` | 768 × 692.3 | `986:15694` | 390 × 736.3 | 3 | — | — | — | **out of scope**: layout 1's footer, closed at planning time (above) |
@@ -700,6 +700,13 @@ Append as the pass goes. Do not repeat layout 1's, Lime's, Grunge's or Retro's b
   probe compared advance widths only), so
   a display "JUN" / "JUL" / "JAN" in a tight box hangs into whatever is under it — a rule, or a
   stacked line. The map's dates and any other display month are the next places to look.
+  **A clipping box cuts it instead** (section 8): an ellipsis span (`overflow: hidden`) at lh 1.1
+  flattens the J's hook by 0.05em; `paddingBottom: 0.1em` and `marginBottom: -0.1em` under `ed`
+  move the clip and no box. Test with a J in the string (`&cj=`), since no seed carries one.
+- **A twin's width-bound call is re-measured in Noto before it is inherited** (section 8): the
+  twins' pill row and their Display/List venue name fit Bebas and Anton, and Noto broke both at
+  768 — the frame's own Fisterra overflowed the same boxes. Where the frame's binding fits, follow
+  it; where it overflows too, override the leak.
 
 ### Seen at planning time, per section
 
@@ -756,7 +763,9 @@ the twins' dark-ground assumptions break (trap 6).
    card **taupe (Scheme 2)** with a paper head over an ink viewport **(Scheme 3)** in a paper ring,
    the raster olive (the twins' plate — read it), ink ring labels, a dashed 4, 4 ink ring, ink zoom
    buttons ringed paper. The ring labels run past the 768 and 390 masters (x 786 / 414), clipped by
-   the viewport.
+   the viewport. *Settled in section 8: the "ink viewport" states no fill — the ink is the twins'
+   plate under the raster, and the Scheme 3 is its rings, labels and centre marker; the zoom
+   buttons are `box/2` `#2A2A2A` in a 56% paper ring; the frame's paper dots at .6 are followed.*
 9. **form** — a full-bleed terracotta band at every width (Scheme 4): the stage photograph in a
    thin paper ring, the head paper and one tone at 45, the promises Chakra Petch paper behind ✓,
    the credit (the leaked avatar, the name in the display face, "DJ · Live band") in ink; the
@@ -1482,6 +1491,124 @@ the twins' dark-ground assumptions break (trap 6).
   **4, 4** ink; the raster sits on the twins' `#292A1C` plate (read it). Any display month
   there ("JUN") meets Noto's J (*Conventions*).
 
+### Settled in section 8 (the events map)
+
+- **The block widened: `if (s.limeTree)` inside `EventsMap`'s `if (s.v1)`, after `stats`, `const
+  ed = s.editorial`, `S2` / `S3` off `s.onScheme[2]` / `[3]` and a third arm at the head of `G`**
+  — Lime's and Grunge's arms byte-identical — its ten shared keys plus eleven Editorial-only
+  leaves read through `??` (`title`, `pillBg` / `pillFg`, `statRule`, `acc`, `dot` / `dotOp`,
+  `statusFg`, `feat`, `frame`, `arrow`), and a handful of `ed` sites (`display()`'s uppercase,
+  the two `DashRule` sites, the venue city's face, the pill row's wrap, the J's clip). The tree is
+  the twins' node for node, **123 = 123 = 123 at all three widths** (one paired diff by
+  traversal order against both twins), on **Scheme 1 with the travel card and the `Map Viewport`
+  on Scheme 3 and `radius-map` on Scheme 2** at every width (`explicitVariableModes` read on all
+  three masters; no Device override). `get_variable_defs` is the ramp but for Display/Title, **32 /
+  25 / 23** (`G.title`; the twins' 36 / 28 / 26). No node carries an effect. The hooks sit above
+  the block, so the published featuring, paging, zoom and links needed nothing.
+- **Every leaf is a binding, and three schemes give three readings of the same token.** The
+  travel card is `S3`: `box/1` `#1D1D1D` (`G.card`) under `text/2` paper (`G.ink`), its ring and
+  the "●" chip's `stroke/1` paper 56% **solid** (`G.hair`); its stats row's two rules are
+  `stroke/2` blush dashed 10, 10 (`G.statRule`, `DashRule` top and bottom in a relative row); its
+  pill is `text/1` terracotta under `sem/bg` ink round an ink disc and a terracotta arrow —
+  BookPill's Lime branch with `bg={G.pillBg} fg={G.pillFg}` — and Get Directions a 1px
+  terracotta ring lettered terracotta (`G.pillBg` again, where the twins' ring is `s.bg`). The
+  rows stand on the page: `box/1` paper, `text/2` ink, and **`sem/stroke/2` terracotta dashed 10,
+  10 all round**, square (`DashRule side="all"` in place of `ring(s.stroke1)`); their "In transit"
+  chip stays `stroke/1`, opaque ink — the twins' key. The panel is `S2`: `box/1` `#BAA499`
+  (`G.panel`), the status pill `S2`'s `sem/bg` `#AA958A` under `text/1` paper (`G.status` /
+  `G.statusFg`, the dot too), the featured venue `text/1` paper (`G.feat` on the h3's `color`),
+  "Updated", the city and the foot `text/2` — Scheme 2's ink, the same `#141414` as `s.tx`, so
+  the panel's inherited `color` stands — and the map container's ring and the foot bar's rule
+  `S2`'s `stroke/1` **paper** (`G.frame`; `s.stroke1` is ink here). Inside the viewport, `S3`:
+  every node the twins draw in the accent binds `sem/bg`, **ink** (`G.acc`) — the three rings
+  (the twins' .3 / .5 / .8 and the outer 4, 4 dash, unchanged), the ring labels (under `text/2`
+  paper type, `G.ink`), the centre disc (in a 2px paper ring round a paper glyph) and its tail;
+  the zoom buttons `box/2` `#2A2A2A` in the 56% ring under paper glyphs (`G.zoom`, `G.hair`,
+  `G.ink`). Every radius is 0 but the chips' 999, the pills' capsule, the day tile's 6
+  (`s.radiusChip`), the zoom's 8 and the labels' 4 — so `G.r`, `G.panelR` and `G.mapR` are 0.
+- **The plate stands, a third time**: the viewport states no fill, the texture is `e089bd11` at
+  `FILL`, and the render samples (41, 42, 28) between the roads — Retro's `#292A1C` to the unit.
+  The viewport's derived shape is **588 × 492, 318 × 523, 346 × 302** (`G.aspect`).
+- **The pins: the frame's own dots are followed, the lit one redrawn.** Editorial's five dots are
+  `S3` `text/2` **paper at 60%** (sampled (164, 160, 150) on the plate) — they read, where the
+  twins' did not, so the idle pin is `G.dot` at `G.dotOp` .6, 8 at every width. The lit pin is
+  Lime's redraw on this viewport's keys: the centre marker's own pair, an ink disc (`G.acc`) in a
+  2px paper ring (`ink`) at 16. Named, the rule for a live state no frame draws.
+- **EXPAND VIEW's arrow is `S2`'s `sem/bg`, taupe on the taupe container, and it is followed.**
+  The render samples the arrow (170, 149, 138) on the panel's (186, 164, 153) — faint but drawn,
+  where Grunge's black-on-`#1A1A1A` arrow sampled nothing and kept Lime's `s.ac`. The terracotta
+  `s.ac` would read better and is not the frame's; reversible in one line at `G.arrow`.
+- **The venue city keeps the frame's Body/MD — a departure from the twins' normalisation.** All
+  three masters set "Lake District" in Inter `size/body-md` `text/2`; Retro normalised it to
+  Display/List beside the home location, and the twins inherited that. Under Editorial Noto's
+  uppercase MANCHESTER is **107.75 in the 768 column's 105**, so the normalised name broke inside
+  the word (`overflowWrap: anywhere`) — seen on the seeded canvas. So under `ed` the venue city
+  takes `s.body` at `s.bodyMd` 1.5, the frame's binding; the home location stays Display/List
+  (the frame's `size/list`), and its MANCHESTER overruns its own column by 2.75 into the 18 gap,
+  unseen. Reversible in one line.
+- **The 768 pill row wraps — an override of the frame's own overflow** (CONVENTIONS A, *a leak
+  that shows and reads as a defect is overridden*). The frame's 768 pill is 21 + 89 + 10 + 46 + 5
+  = 171 in a 146 half and Figma clips "VENUE LIN" under the disc (390: 166 in 160, the same);
+  ours in Noto needs 177 and 147, and BookPill does not clip, so the disc stood over Get
+  Directions. Under `ed` both pills keep their content width (`minWidth: auto`) and the row
+  wraps (`flexWrap`): **at 768 alone** they stack full-width, the card 64 taller (405 against
+  340); 390's 330 holds 172 + 10 + 148; desktop halves at 248 / 246. Get Directions takes the
+  frame's 54 box as a `minHeight` (`u(54)`, 44.3 on desktop), which holds it on a line of its
+  own; at 390 its 122.6 label keeps 12 a side in 148.
+- **No display month here; the J met a venue instead.** The row's month is Inter body-sm, so the
+  calendar's lift has no site. But a row venue is an ellipsis box (`overflow: hidden`, lh 1.1),
+  and Noto's J descends 0.05em past its foot: `&cj=` with "Jam Jar Joinery" cut the J's hook
+  flat by 1.3px at desktop. Under `ed` the box pads 0.1em under and gives it back as a negative
+  margin — the rows' boxes identical to the pixel (61.7 / 67.3 / 65.1), the hook whole. The
+  panel's h3 does not clip; its J hangs 1.5px into the 3.3 gap above the city.
+- **Type**: `display()` uppercases under `grunge || ed` (the heading, the home location, the row
+  and panel venues, Get Directions); `faced` is the identity. Every Inter and Chakra Petch string
+  is the twins'.
+- **Inherited whole**: Lime's field allocation (the chip prints `mapRadius` where the frame says
+  "● Confirmed"; two lines a column where the frame prints three — Retro's "Based in" call); the
+  compact `pageWindow` and `grow` (the pager on paper takes `Pager`'s **Editorial default arm** —
+  unfilled pills ringed `stroke/1` ink, the current page's ring and numeral terracotta — with no
+  `frame.lime`, unlike layout 1's panel; it reads); JP-040's four seats; the zoom; the ring
+  labels' seat, **which follows the frame past the 768 and 390 viewports** (open question 7):
+  120 mi runs off both, 60 mi half off at 768, clipped by the viewport as the masters clip it
+  (the twins' JP-040 reading); the desktop top inset (`calc(u(56) - padY)`).
+- **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
+  section root): desktop card 534.3 wide (652 × 0.82 = 534.6), h2 at (62.3, 78) (62.3, 77.9) at
+  26.2px, rows 61.7 (61.5), panel 534.3 × 590.4 (534.6 × 591.2), status pill 82.3 × 19.8 (82 ×
+  19.7), h3 at 101.7 (101.7), container 481.9 × 440.2 (482.2 × 440.3), viewport 403.2 (403.4),
+  bar 37 (36.9), zoom at (1070.2, 491.2) (1070.9, 492), labels at 908.1 / 973.7 / 1045.7 (908.2 /
+  973.8 / 1045.5); 768 h2 at 94.8 (99 less the root's 4), status 94.3 × 23 (95 × 23), viewport 318
+  × 523, labels 618.5 / 698.5 / 786.6 (618 / 698 / 785.5), zoom at (680, 601); 390 viewport 346 ×
+  302, labels 246.5 / 326.5 / 414.6 (246 / 326 / 413.5). **Named diffs, the twins'**: the card is
+  274.5 / 405 / 336.4 against 290.3 / 340 / 358 (two lines a column; 768's stacked pills); the
+  rows hug at 67.3 / 65.1 where the narrow masters divide the 703 column into 74 / 69.5 (Retro's
+  declined residue); the terms line wraps in the narrow bar (61.6 against 45), so the panel is
+  718.6 / 495.4 against 703 / 479; the root's `padY` at the foot; the 768 row venues ellipsise
+  ("THE DEAF INSTI…") where the master's run under the chip, clipped.
+- **`live=1`** (puppeteer, `n=8`, 1440 and 390): a row click features its gig and the list
+  rebuilds as the page minus it; a pin click features its gig and moves the lit pin; Venue Link
+  flips span ↔ `<a href>` as an unlinked and a linked gig are featured, and the linked rows carry
+  their ↗; `+` scales the layer to 1.25; EXPAND VIEW is an `<a>` on the Maps route. `n=30`: Next
+  moves the list to #7–#10, features #6 and marks page 2 terracotta. `n=0` prints *No dates yet.*
+  in the panel and no rows; `n=1` draws no list and no pager. No page errors.
+- **`FIELDS.map` has no template-keyed `in` row**, so no `reach.mjs` run was owed; a confirm-only
+  `reach.mjs 3` (3,312 renders) reports `status`, `updated` and `expand` in layouts 2 and 3 and
+  `rings` in 2, 3 and 4, every design 6/6 — JP-040's rows exactly over the fitted card. Nothing in
+  `FIELDS` moved, and every other probe reads as the calendar session left it.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly map
+  arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For the sweep's CLAUDE.md pass**: the events-map paragraph's layout-2 clauses ("its pager
+  takes the wide `pageWindow` except at 390; under Lime and Grunge it takes the compact one at
+  every width, layout 1's map recipe, and their map draws the same screened raster on Retro's own
+  dark plate") owe Editorial, which does both. Not written here.
+- **For the form**: it is seated on Scheme 4 at every width (`form: 4`), a full-bleed terracotta
+  band, so `s.bg` is terracotta, `s.tx` ink, `s.ac` paper and **`pillBg` ink** (trap 5) — every
+  twin read of `s.tx` as the sheet (Lime's `G.sheet`) or of `s.bg` as the ink names another node
+  here. Its Lime block (`if (s.v1 && (s.lime || s.grunge))` ahead of `EnquiryForm`'s `if (s.v1)`)
+  has Grunge's `G` at its head, so a third arm. The planning table dashes the sidebar card 10, 10
+  and three boxes **6, 6** in `sem/stroke/2` ink — the boxes are pills, so a dashed capsule's
+  radius is half its height (section 4). The credit avatar is the Lime leak (open question 2).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1627,6 +1754,24 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Calendar: *The node walker, kept* (grunge/layout-2) with the binding names — three walks — and
   *field reach is measured* (`reach.mjs 3`).
 
+- Map: *The seventh block, after `stats`* (lime/layout-2, D2) — widened to `s.limeTree`, a third
+  `G` arm (eleven new leaves read through `??`) and a handful of `ed` sites.
+- Map: *The `G` lookup at the block's head* (grunge/layout-1, C) — the pass's third.
+- Map: *Read every nested node's scheme off the master* (grunge/layout-3, A) — three schemes in
+  one section, `S2` / `S3` off `s.onScheme`, the key's busiest reader.
+- Map: *A scheme that did not move can still move the binding* (grunge/layout-3, A) — `stroke/1`
+  is paper on `S2`'s container, ink on the page's chip; `sem/bg` is ink inside the viewport.
+- Map: *The raster: Retro's call is followed* (lime/layout-2, D2) — the plate sampled a third time.
+- Map: *Retro's live states vanish under Lime; redraw them, never inherit them* (lime/layout-1,
+  C) — the lit pin redrawn; the idle dot, which the frame draws and which reads, followed.
+- Map: *A leak that shows and reads as a defect is overridden* (grunge/layout-1, A) — the 768 pill
+  row, which the frame itself overflows and clips.
+- Map: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — `side="all"` on the
+  rows, `top` / `bottom` on the stats row; ink judged at DPR 2 (this plan).
+- Map: *Noto's J* (this plan, section 7) — met in a clipped venue box rather than a month.
+- Map: *The paired diff walk* (grunge/layout-2, A) — both twins, 123 = 123 = 123; and *the node
+  walker, kept* with the binding names — three walks.
+
 ## Open questions
 
 1. **Decision 1** — schemes by width, a card on the page, a nested node on another scheme.
@@ -1666,7 +1811,11 @@ it here in one line, with the plan it came from, a blank line between sessions.)
    - the 390 gallery's right-column first-tile wrapper at `[0, 0, 40, 40]` (Grunge's stray
      again), whose capsule foot shows on one tile — *section 5: not followed*, Grunge's call;
    - the 390 testimonials' sub, a 431-wide no-wrap line clipped by the card;
-   - the map's ring labels past the 768 and 390 masters, clipped by the viewport.
+   - the map's ring labels past the 768 and 390 masters, clipped by the viewport — *section 8:
+     followed, the twins' JP-040 reading*: each label rides its ring, and the viewport clips 120
+     mi at both widths and half of 60 mi at 768, as the masters do;
+   - the map's 768 and 390 Venue Link pills, 171 in 146 and 166 in 160, clipped by Figma under
+     their discs — *section 8: overridden*; under Editorial the pill row wraps, at 768 alone.
 8. **Header cards 3 and 4** stay placeholders (layout 1, open question 4): `HeaderV2` / `V3` in
    Scheme 1 tokens, Retro's checker ribbon, `mustard` as `s.box3`. Each is its own pass's.
 9. **The footer** is layout 1's, closed at planning time: the desktop instance's main component
