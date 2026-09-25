@@ -8606,19 +8606,42 @@ function Pricing({ s }) {
     // (visible on all four sides at every width, and the section stands
     // between the gallery's bare ground and the calendar's wrapper, so no seam
     // doubles): an overlay on the root's box, since `grungeRule` is layout 1's.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial — the same composition a fourth time (964:64610 at 1440,
+    // 986:15669 at 768, 986:15688 at 390), the twins' tree node for node and
+    // every paint on the twins' own binding, on Scheme 3 at 1440 and Scheme 1
+    // narrow (SCHEMES_OF's [3, 1, 1]) with no Device override. So the section's
+    // `s.*` is each width's scheme and every leaf is a key the block reads —
+    // an ink band at 1440, paper narrow — and `G`'s third arm names only what
+    // Sienna Vale draws differently: the card is square and dashed 10, 10 in
+    // `sem/stroke/1` (`DashRule`, the divider too); the faces are circles in
+    // Grunge's 2px `stroke/1` ring; the chips are ringed in `stroke/2`, as
+    // Grunge's idle one is. And the frame's picked chip is VISIBLE here —
+    // `toggle-a`'s `sem/tag/1/bg` is paper on the `#1D1D1D` card at 1440 and
+    // blush on `#FFF9F2` narrow, keeping its ring and its `text/1` type — so it
+    // is followed, not redrawn in `sem/active`. The instance's own 1px
+    // `stroke/1` ring shows on all four sides at every width (paper 56% on ink,
+    // ink on paper), so Grunge's overlay is drawn. The pill is `BookPill`'s
+    // defaults in both schemes (`pillBg` is terracotta, `text/1`, in both).
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const G = grunge ? {
         cardR: u(15), cardPad: s.mob ? '30px 20px' : u(32), ring: `inset 0 0 0 1px ${s.stroke2}`,
         chipRing: `inset 0 0 0 1px ${s.stroke2}`, faceRing: `2px solid ${s.stroke1}`, faceR: u(8),
+      } : ed ? {
+        cardR: 0, cardPad: s.mob ? '30px 20px' : u(42), ring: undefined,
+        chipRing: `inset 0 0 0 1px ${s.stroke2}`, faceRing: `2px solid ${s.stroke1}`, faceR: '999px',
+        chipOn: s.chips[0].bg, chipOnFg: s.ac, chipOnRing: `inset 0 0 0 1px ${s.stroke2}`,
       } : {
         cardR: u(50), cardPad: s.mob ? '30px 20px' : u(42), ring: `inset 0 0 0 1px ${s.stroke1}`,
         chipRing: `inset 0 0 0 1px ${s.ac}`, faceRing: `2px solid ${s.tx}`, faceR: u(13),
       }
-      // The display sites, `faced` and uppercase under Grunge (identity off it).
+      // The display sites, `faced` and uppercase under Grunge and Editorial
+      // (identity off them; Editorial's `faceK` is 1, so `faced` is too).
       const disp = (size) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, 1),
-        letterSpacing: s.dls, textTransform: grunge ? 'uppercase' : undefined,
+        letterSpacing: s.dls, textTransform: grunge || ed ? 'uppercase' : undefined,
       })
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
@@ -8644,8 +8667,9 @@ function Pricing({ s }) {
           {/* The quote over its credit row, Retro's block and its drop rules.
               All three masters draw the row at the same 28px faces, 12 gap
               and Body/SM. Each face is a 2px `border/thin` ring in
-              `sem/text/2` (`sem/stroke/1` under Grunge) on a `sem/box/1`
-              ground at `radius/control`. */}
+              `sem/text/2` (`sem/stroke/1` under Grunge and Editorial) on a
+              `sem/box/1` ground at `radius/control` (a circle under
+              Editorial). */}
           {(!!s.pricingQuote || hasCredit) && (
             <div style={col(u(16), { paddingTop: u(12), width: '100%', alignItems: 'flex-start' })}>
               {!!s.pricingQuote && (
@@ -8694,10 +8718,10 @@ function Pricing({ s }) {
                     onClick={s.live ? () => setChip(i) : undefined}
                     style={chipFace({
                       padding: `${u(8)} ${u(14)}`, borderRadius: s.radiusChip,
-                      background: i === sel ? s.pillBg : 'transparent',
-                      color: i === sel ? s.activeFg : s.ac,
+                      background: i === sel ? G.chipOn ?? s.pillBg : 'transparent',
+                      color: i === sel ? G.chipOnFg ?? s.activeFg : s.ac,
                       // The 1px `sem/stroke/2` rule, stroked inside.
-                      boxShadow: i === sel ? 'none' : G.chipRing,
+                      boxShadow: i === sel ? G.chipOnRing ?? 'none' : G.chipRing,
                       cursor: s.live ? 'pointer' : undefined,
                     })}
                   >{p.name}</span>
@@ -8740,7 +8764,12 @@ function Pricing({ s }) {
 
           {t.feats.length > 0 && (
             <>
-              <span style={{ alignSelf: 'stretch', height: '1px', background: s.stroke1, flex: 'none' }} />
+              {/* Editorial's `div` is a 1px frame stroked, not filled: dashed
+                  10, 10 in `sem/stroke/1`. */}
+              <span style={{
+                alignSelf: 'stretch', height: '1px', background: ed ? 'transparent' : s.stroke1, flex: 'none',
+                position: ed ? 'relative' : undefined,
+              }}>{ed && <DashRule side="top" dash={10 * z} colour={s.stroke1} />}</span>
               <div style={col(u(12), { alignItems: 'flex-start', alignSelf: 'stretch' })}>
                 <span style={chipFace({ color: s.tx })}>WHAT&rsquo;S INCLUDED</span>
                 {/* Two columns at every width, Retro's grid. The frame's last
@@ -8780,7 +8809,12 @@ function Pricing({ s }) {
               background: s.box1, borderRadius: G.cardR,
               boxShadow: G.ring,
               padding: G.cardPad,
-            }}>{plan}</div>
+              position: ed ? 'relative' : undefined,
+            }}>
+              {plan}
+              {/* Editorial's card: 1px INSIDE, dashed 10, 10, square. */}
+              {ed && <DashRule side="all" dash={10 * z} colour={s.stroke1} />}
+            </div>
           </div>
           {!!s.pricingSub && (
             <span style={body(s.eyebrow, 1.3, { fontWeight: 700, color: s.tx })}>{s.pricingSub}</span>
@@ -8790,12 +8824,13 @@ function Pricing({ s }) {
               between this section and the next, 32 under the small print
               (the column's 24 plus 8). It bleeds to the page edges and stands
               in for the root's bottom `padY`, so the gap below it is the next
-              section's own top inset. Under Grunge the ring overlay below owns
-              that row (two 15% layers would stack to 28%), so the span keeps
-              only its box — the frame's 32 foot. */}
+              section's own top inset. Under Grunge and Editorial the ring
+              overlay below owns that row (two 15% layers would stack to 28%, and
+              Editorial's 56% would darken), so the span keeps only its box —
+              the frame's 32 foot. */}
           {desk && (
             <span style={{
-              display: 'block', height: '1px', background: grunge ? 'transparent' : s.stroke1, flex: 'none',
+              display: 'block', height: '1px', background: grunge || ed ? 'transparent' : s.stroke1, flex: 'none',
               margin: `${u(8)} calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`,
             }} />
           )}
@@ -8803,8 +8838,11 @@ function Pricing({ s }) {
               own box on all four sides, at all three widths (the render samples
               38 on every edge). The root is the nearest positioned ancestor,
               so `inset: 0` is its box; `pointerEvents` off, or the published
-              chips would click the overlay (the repertoire's sheet ring). */}
-          {grunge && (
+              chips would click the overlay (the repertoire's sheet ring).
+              Editorial's is the same node: paper 56% round the 1440 ink band
+              (sampled 147, 143, 139 on every edge), opaque ink round the narrow
+              paper sections. */}
+          {(grunge || ed) && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, pointerEvents: 'none',
               boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
