@@ -178,7 +178,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 1 | `header` | `964:64599` | 1440 × 900 | `986:15658` | 768 × 1024 | `986:15677` | 390 × 932 | 1 (nav pill **4**) | `964:64580` | `964:64618` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV1` | **done** `41ca390` |
 | 2 | `bio` | `964:64600` | 1440 × 760 | `986:15659` | 768 × 1217.8 | `986:15678` | 390 × 880.3 | 1 (pill **4**) | `964:64581` | `964:64619` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v1)` | **done** `cbff882` |
 | 3 | `media` | `964:64601` *(Section; panel `964:64602`)* | 1440 × 965 | `986:15660` *(Frame 299; `986:15661`)* | 768 × 1626 | `986:15679` *(Frame 299; `986:15680`)* | 390 × 1442 | page 1, **panel 2** | `964:64582` | `964:64620` | inside `Media`'s `if (s.v1)`, after `nowArt` | **done** `0118702` |
-| 4 | `repertoire` | `964:64608` | 1440 × 792 | `986:15667` | 768 × 792 | `986:15686` | 390 × 594 | **4 / 1 / 1** | `964:64589` | `964:64627` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | — |
+| 4 | `repertoire` | `964:64608` | 1440 × 792 | `986:15667` | 768 × 792 | `986:15686` | 390 × 594 | **4 / 1 / 1** | `964:64589` | `964:64627` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | **done** `f592f45` |
 | 5 | `gallery` | `964:64609` | 1440 × 675 | `986:15668` | 768 × 468 | `986:15687` | 390 × 364 | 1 | `964:64590` | `964:64628` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v1)` | — |
 | 6 | `pricing` | `964:64610` | 1440 × 715 | `986:15669` | 768 × 924 | `986:15688` | 390 × 865 | **3 / 1 / 1** | `964:64591` | `964:64629` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | — |
 | 7 | `calendar` | `964:64612` *(in `964:64611`)* | 1328 × 1072 *(1440 × 1184)* | `986:15671` *(in `986:15670`)* | 708 × 803 *(915)* | `986:15690` *(in `986:15689`)* | 370 × 774 *(854)* | page 1, **card 2** (head band **1 / 3 / 3**) | `964:64593` | `964:64631` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | — |
@@ -324,7 +324,8 @@ Sampled off the three renders. **The sequence differs by width** (trap 1):
 | — | footer | ink, layout 1's | the same | — |
 
 At 768 and 390 the repertoire, gallery and pricing are one paper run, and with straight edges they
-merge — the frames' own picture, accepted as layout 1's merged neighbours were. **No root flag
+merge — the frames' own picture, accepted as layout 1's merged neighbours were. *(Section 4: the
+repertoire does not — its sheet is `box1` `#FFF9F2` closed by a solid ink ring.)* **No root flag
 widens**: `bleed`, `darkMap`, `cream`, `limeBand`, `limeLight`, `grungeBand`, `grungeRule` and
 `editorialRule` all gate on `s.v0`. Under route A a whole-band section needs no flag (the root
 paints `s.bg`); a card section needs decision 1(b)'s.
@@ -639,7 +640,9 @@ Written now from what the plan can see; the sections add to it. One session, in 
 7. **`DashRule side="all"` at DPR 1** (section 2): its svg's 0.5 inset is pixel-snapped, so a
    four-sided dash is two 50% rows on a DPR-1 screen. Moving the inset onto the rect's `x` / `y`
    (the svg at 0, 0) would make it crisp, but it moves every layout-1 four-sided caller's digest
-   rows at theme 3 — decide, and if taken, prove it is the svg rows alone.
+   rows at theme 3 — decide, and if taken, prove it is the svg rows alone. Section 4 adds a DPR-2
+   case: on the 1440 repertoire the head's four-sided dash lands one device pixel inside the
+   sheet's solid ring (the root's fractional `padX` 45.92), where at 768 and 390 the two coincide.
 8. **`plans/README.md`**: mark the pass closed; **`CONVENTIONS.md`** (decision 3).
 9. **Notes for the designer**, gathered from the open questions, layout 1's shape.
 10. **Refresh the root `index.html`** with the two-build digest: zero rows at every theme on the
@@ -694,7 +697,8 @@ the twins' dark-ground assumptions break (trap 6).
    underline, two columns of dashed rows, songs in the display face and artists in Inter, all ink;
    the pager ink arrow pills (Scheme 4's `active/bg`) and paper page pills with terracotta numerals,
    **no page marked** in the render (read it). At 768 and 390 the same on paper, dashed ink, the
-   pager's pills terracotta.
+   pager's pills terracotta. *Settled in section 4: the sheet is `box1` in a solid ring at every
+   width, so narrow it is a lighter sheet, not the page; the mark is ours, an ink ring.*
 5. **gallery** — paper: the hero (784 × 583) in what reads as a thin ink ring, six masonry tiles
    unringed, a blush caption chip in Inter Bold ink; no dash. 768 adds a head row ("Gallery",
    "View (4)"); 390 is the hero over ten small tiles, the loop. The 768 master has **two tiles at 1px
@@ -1073,6 +1077,96 @@ the twins' dark-ground assumptions break (trap 6).
   arm's cream `s.paper` sheet (session 0) is the Lime block's to replace. Under Scheme 4 `pillBg`
   is ink and `s.ac` paper (trap 5): read the pager's bindings before trusting `Pager`'s Lime arm.
 
+### Settled in section 4 (the repertoire)
+
+- **The block widened whole: `if (s.limeTree)` inside `Repertoire`'s `if (s.v1)`, after
+  `pageWindow()`, `const ed = s.editorial`** (about fifteen arms and a `dash` helper, no `G`). The
+  tree is the twins' node for node at all three widths (`phone` / `sticky-head` / `Frame 286` /
+  `list` / `pagination`, the two columns of five, the seven-slot pager), on **Scheme 4 at 1440
+  and Scheme 1 at 768 and 390** (`resolvedVariableModes` Desktop / Tablet / Mobile, no Device
+  override), no effect on any node, no rotation. `get_variable_defs` is the ramp (display-sm 45 /
+  36 / 30, list 24 / 19 / 18, label-sm 16 / 13 / 12, body-md 14 / 13 / 13, body-sm 12), so every
+  size reads `s.*`. The hooks sit above the branches, so the published search, chips and pager
+  needed nothing.
+- **Trap 5 did not bite the toggle: every fill and ink is a key the block already reads, in
+  either scheme.** The sheet is `sem/box/1` (`#DA7C5E` at 1440, `#FFF9F2` narrow — `s.box1`, as
+  Lime's), the heading, field, numbers, titles and artists `sem/text/2` (`s.tx`, ink at every
+  width), and the toggle's pill `sem/text/1` under `sem/bg` type — Lime's `s.ac` / `s.bg`, which
+  is the frame's paper pill in terracotta at 1440 and its terracotta pill in paper narrow. The
+  session-0 cream sheet was the flat arm's, and the block replaced it.
+- **`s.stroke1` is each width's dash ink, and the 5, 5 is everywhere**: one `use_figma` tally
+  of every stroked node at all three widths found `sticky-head` dashed on all four sides, the
+  toggle all round, the search `0/0/1/0`, `Frame 288` `0/1/0/0` and all ten rows `0/0/1/0`, every
+  one 1 INSIDE dash 5, 5 in `sem/stroke/1` — `rgba(246, 240, 232, 0.56)` under Scheme 4, `#141414`
+  under Scheme 1. So every Lime ring or inset shadow is a `DashRule` under `ed`: `side="all"` on
+  the head and the toggle, `side="bottom"` on the field, every row and the empty-state row.
+- **`DashRule` took an additive `side` 'left' / 'right'** for the column's inside edge — the same
+  line stood upright, starting on a dash at the top; no earlier caller reaches it. **A dashed
+  capsule's `radius` is half its height, never 999**: SVG sets `ry` to `rx` and clamps each to its
+  own half-side, so a 999 on the 224-wide toggle draws an ellipse. `togR` is the toggle's one-row
+  half-height off the same rounded `u()` values the box renders at (14.4 / 17.4 / 17.4); a toggle
+  that wraps rounds one row's worth, named (no frame draws it).
+- **The sheet's own ring is drawn, Grunge's overlay**: `phone` carries a **solid** 1px INSIDE
+  `sem/stroke/1`, visible on Grunge and Editorial and hidden on Lime (the twins' read, both
+  confirmed), so the overlay widens to `grunge || ed`. The render samples it on all four edges,
+  with the head's dashes stacked on it along the top and sides — 241 on 234 in the 1440 render,
+  where the 56% paper doubles. Ours stacks the same at 768 and 390; at 1440 the dash lands one
+  device pixel inside the ring at DPR 2 (the root's fractional `padX` 45.92 snapping the SVG and
+  the box-shadow apart), so the two overlap by half — a sub-pixel diff, named, for sweep item 7.
+- **The field is no box**: no fill of its own worth drawing, radius 0, **padding 0 at the
+  sides** (the glyph at the column's own x 1004 / 358 / 10), ruled along its foot alone; the 36
+  height and Lime's centring stand.
+- **The rows pin at 84.2 / 82.8 / 59.4** — neither twin's at 1440 or 768 (83.2 / 82): Noto's
+  display-sm leaves each master's head at 205 / 204 / 203 against Lime's 210 / 208 / 205, so the
+  list the rows divide is 421 / 414 / 297. The desktop 56 / 56 and 20 / 20 row paddings are the
+  component's on all three templates (read on both twins), so Lime's reading of them stands.
+- **Type**: the heading and the titles uppercase (`grunge || ed`); `faced` is the identity.
+- **The pager is filled, and `Pager` took an additive `endBox`.** All seven `pg` nodes carry a
+  solid 1px `sem/bg` ring: the arrows `sem/text/2` (ink at every width) round a `sem/bg` glyph,
+  the pages `sem/text/1` round `sem/bg` numerals — paper pills in terracotta under Scheme 4, and
+  terracotta pills in paper under Scheme 1. One binding set serves both schemes, so the block
+  passes `frame.lime = { box: s.ac, endBox: s.tx, ring: s.bg, ink: s.bg, idle: s.bg, onEdge:
+  s.tx, on: s.tx }` under `ed`; `Pager`'s layout-1 Editorial arm (unfilled, `stroke1` rings) is
+  that page's frame, not this one. `btn`'s ends read `t.endBox ?? 'transparent'`, so every caller
+  written before it is untouched — the map's layout-1 pager and repertoire a0 digest to zero.
+- **The frame marks no page; the mark is this file's.** Two were tried in the render. **Filling
+  the current page ink failed**: it dresses the page as an arrow, and at the seeded two pages the
+  row reads ink / ink / paper / ink, so the one paper pill looks chosen. What stands is **layout
+  1's own Editorial mark in this frame's ink**: the current pill keeps its fill and takes a
+  `sem/text/2` numeral in a 1px `sem/text/2` ring (`onEdge` / `on` `s.tx`) — ink on paper at 1440,
+  ink on terracotta narrow (about 5 : 1 against the paper numerals' 3 : 1). Named, the rule for a
+  live state no frame draws.
+- **Measured against the masters** (harness, `getBoundingClientRect` from the section root):
+  desktop section 649.6 (792 × 0.82 = 649.4), head 168.3 (168.1), h2 at (46, 46) at 37px, field
+  311.6 × 29.5 at x 822.4 (823.3), rows 69.0 (69.04), pager band 136.3 at 513.3; 768 section 792,
+  head 204 (204), h2 at 60, field 380 × 36 at (358, 108) (the frame's), rows 82.8, pager band 174
+  at 618 (618); 390 section 593.8 (594), head 202.8 (203), field 370 × 36 at 126.8 (127), rows
+  59.4 in 297, pager band 94 at 499.8 (500). **Named diffs, the twins'**: the seeded four chips
+  against the frame's three (toggle 224.2 / 270.6 against 211 × 0.82 / 211); the seeded twelve
+  make two pages, so four buttons divide the measure (267 / 171 / 86.5) where the frames draw a
+  fictional seven; "12 Songs" against "Repertoire"; the title at x 64.9 / 53 / 32 on Lime's
+  pinned number against the frame's 62.3 / 50 / 30.
+- **`live=1`** (puppeteer mouse clicks, `n=240`, all three widths): Next moves the list to 11 and
+  the mark to page 2; the "24" button reaches 231 with the mark on it; Prev steps back to 221; a
+  chip re-derives the pager (24 → 9 pages) and resets to page 1; a no-match search prints *No
+  songs match that.* over its dashed rule and drops the pager; clearing it restores the list.
+  No page errors.
+- **The narrow sheet does not merge with the gallery** — the planning read's *Grounds* table
+  said it would: it is `#FFF9F2` on the `#F6F0E8` page, closed by a solid ink ring on all four
+  sides. The sweep's seam clips at 390 should expect that ring between the repertoire and the
+  gallery.
+- **`FIELDS.repertoire` has no `in` row** (Grunge's finding), so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 645, canvas and `live=1`; theme 3 exactly
+  repertoire arch 1 at three widths on both surfaces (6 files), no `arch_0` file.
+- **For the sweep's CLAUDE.md pass**: the *Editorial is designed* paragraph's "the repertoire's
+  pager marks its page in a terracotta ring (`Pager`'s Editorial arm…)" is layout 1's; layout
+  2's pager is filled and its ink-ring mark is ours. `DashRule`'s description ("on a row's edge
+  or `side="all"` round a card") gains a column's side. Not written here.
+- **For the gallery**: it stands on paper directly under this sheet's solid ring (ink at 768 and
+  390, paper 56% at 1440 on the terracotta), so the seam is the repertoire's and the gallery owes
+  it nothing. It has no block — `(s.lime || grunge)` ternaries through `Gallery`'s `if (s.v1)` —
+  so each widens from the frame, one ternary at a time.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1145,6 +1239,24 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Media: *A section's colour scheme is resolved in `sectionVm`* (editorial/layout-1, C) with
   session 0's `pageBg` / `editorialCard` — the first block to stand on it.
 - Media: *The node walker, kept* (grunge/layout-2) with the binding names — three walks.
+
+- Repertoire: *The fourth block, after the seam* (lime/layout-2, D2) — widened to `s.limeTree`,
+  about fifteen `ed` arms and a `dash` helper, no `G`.
+- Repertoire: *Rows pin at each master's division result* (lime/layout-2, D2) — re-read per
+  master: 84.2 / 82.8 / 59.4, neither twin's at 1440 or 768.
+- Repertoire: *The sheet's ring is drawn* (grunge/layout-2, *Settled in section 4*) — the overlay
+  widened to `grunge || ed`, the head's dashes stacked on it.
+- Repertoire: *A widened block can need no `G` at all* (grunge/layout-3, C) — every fill a key in
+  both of the section's schemes.
+- Repertoire: *Retro's live states vanish under Lime; redraw them, never inherit them*
+  (lime/layout-1, C) — the pager's mark, layout 1's Editorial ring in this frame's ink.
+- Repertoire: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — `side="all"`
+  on the head and the toggle (a capsule's radius is half its height), `bottom` on the field and
+  the rows, and a new upright `right` for the column.
+- Repertoire: *Read a scheme per master, never per section* (this plan) — Scheme 4 at 1440,
+  Scheme 1 narrow, one binding set for the pager across both.
+- Repertoire: *The node walker, kept* (grunge/layout-2) with the binding names — three walks, and
+  one stroke tally across all three masters.
 
 ## Open questions
 
