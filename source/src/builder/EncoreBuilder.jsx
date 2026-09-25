@@ -34,7 +34,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import EncoreSection from './EncoreSection.jsx'
 import {
-  THEMES, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
+  THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -49,7 +49,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
@@ -120,6 +120,13 @@ const THEME_RAMP = {
     mobile:  { dispXl: '52px',  dispLg: '46px',  dispMd: '38px', dispSm: '30px', title: '26px', list: '18px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
     tablet:  { dispXl: '95px',  dispLg: '81px',  dispMd: '50px', dispSm: '40px', title: '28px', list: '19px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
     desktop: { dispXl: '162px', dispLg: '107px', dispMd: '59px', dispSm: '41px', title: '30px', list: '20px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
+  },
+  // Sienna Vale, Editorial's mode: Grunge's ramp but for the four display
+  // sizes and title.
+  Editorial: {
+    mobile:  { dispXl: '64px',  dispLg: '48px',  dispMd: '36px', dispSm: '30px', title: '23px', list: '18px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
+    tablet:  { dispXl: '107px', dispLg: '73px',  dispMd: '45px', dispSm: '36px', title: '25px', list: '19px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
+    desktop: { dispXl: '147px', dispLg: '97px',  dispMd: '52px', dispSm: '37px', title: '26px', list: '20px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
   },
 }
 
@@ -238,14 +245,19 @@ export const pageDesignOf = (sections, themeName) => {
 }
 
 export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
-  const T = THEMES[themeIdx]
+  const theme = THEMES[themeIdx]
+  const nDesign = designCount(cat, theme.name)
+  const d = ((arch % nDesign) + nDesign) % nDesign
+  // The section's own scheme (SCHEMES_OF, data.js), laid over the theme before
+  // any colour is read, so everything derived below — `muted`, `paper`, the
+  // pill pair, `legible()`, the chip seats, the `sem` keys — is the section's
+  // ground's and not the page's. `T` is the theme everywhere else.
+  const scheme = theme.schemes?.[SCHEMES_OF[theme.name]?.[d]?.[cat]]
+  const T = scheme ? { ...theme, ...scheme } : theme
   const [bg, ac, tx] = T.palette
   const acFg = contrast(ac)
   const cased = (t) => caseText(t, T.casing)
   const cv = (k, fb) => (c[k] !== undefined ? c[k] : fb)
-
-  const nDesign = designCount(cat, T.name)
-  const d = ((arch % nDesign) + nDesign) % nDesign
 
   // §10.2 sets several labels in a palette hue rather than the text colour.
   // That reads only while the hue separates from the background — in a palette
@@ -290,8 +302,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
 
     // theme typography
     display: T.display, label: T.label, body: T.body, dls: T.dls,
+    // A stand-in display face's glyphs against the frame's (`faced` in
+    // EncoreSection); 1, the identity, wherever the theme states none.
+    faceK: T.faceK ?? 1,
     // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
-    // carry one; the flat two fall back to their body face.
+    // carry one; Pop falls back to its body face.
     ui: T.ui ?? T.body,
     // Space Mono, the frames' typewriter face; only Retro names it so far.
     mono: T.mono ?? T.body,
@@ -349,9 +364,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // §10.2 — the layouts are shared by every template, but the Figma page's
     // decorative treatment (grain, torn edges, checkerboard, hard offset
     // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
-    // Editorial and Pop render the identical structure, flat, and Lime and
-    // Grunge each draw a decoration of their own behind `lime` and `grunge`
-    // below.
+    // Pop renders the identical structure, flat, and Lime, Grunge and
+    // Editorial each draw a decoration of their own behind `lime`, `grunge`
+    // and `editorial` below.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
@@ -363,7 +378,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // TagChips' sentence-case chips — is gated on this rather than on a list of
     // names. A site only some of them share stays a named pair, widened per
     // site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -372,6 +387,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // the pair: `(s.retro || s.grunge)` for grain and torn edges,
     // `(s.lime || s.grunge)` for the `sem` reads and the capsule nav.
     grunge: T.name === 'Grunge',
+    // Editorial's four layout pages are the same components in a fourth mode,
+    // Sienna Vale, so what only Editorial draws goes behind this flag, the way
+    // Lime's and Grunge's does.
+    editorial: T.name === 'Editorial',
+    // The templates whose layout-1 page is Lime's component tree, so a Lime
+    // layout-1 block that Editorial's frame shares is gated on this rather than
+    // on a third name at every site. Widened per site, from the frame, as each
+    // block is fitted (plans/editorial/layout-1.md, decision 2); a block
+    // Editorial does not share keeps `(s.lime || s.grunge)`.
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc follows. `page` is the header's design.
@@ -465,8 +490,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.badgeText = cv('badgeText', name)
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
-  // Retro, Lime and Grunge seed their Figma pages' mock photography (photos.js); the
-  // flat two resolve to undefined and keep the initials placeholder. `undefined` already means "key
+  // Retro, Lime, Grunge and Editorial seed their Figma pages' mock photography
+  // (photos.js); Pop resolves to undefined and keeps the initials placeholder. `undefined` already means "key
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
@@ -489,7 +514,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Grunge's frames lay the very raster grain.jpg was cut from (image hash
   // b74be8bc, a 3/255 re-encode apart) over their bands and photographs, as a
   // LIGHTEN layer where Retro's is a multiply; the sections pass the blend.
-  vm.grainSrc = T.name === 'Retro' || T.name === 'Grunge' ? RETRO_TEXTURE.grain : undefined
+  // Editorial's frames clip the same raster inside their tape strips, at
+  // SCREEN; the tape is its own helper, so `Grain` stays unwidened.
+  vm.grainSrc = T.name === 'Retro' || T.name === 'Grunge' || T.name === 'Editorial' ? RETRO_TEXTURE.grain : undefined
   vm.mapSrc = vm.designed ? RETRO_TEXTURE.map : undefined
   vm.mapRadialSrc = vm.designed ? RETRO_TEXTURE.mapRadial : undefined
 
@@ -524,8 +551,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // a fixed box beside the capsule's padding. Its layout-4 capsule (964:72944)
   // gaps them a fixed 23 at 20px type, and NavBar's `links` takes them off the
   // row the same way.
-  const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75 : null
-  const navGapEm = T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+  // Editorial's capsule (964:58612 "Frame 50") is Lime's again, in Noto Serif
+  // Display (`notoEms`, the face standing in for Fisterra Fora, at its own
+  // glyph size), but its links are Label/SM 16 where Lime's are Display/List
+  // 24, still 23 apart — so its gap is 23/16 of the row's size.
+  const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
+    : T.name === 'Editorial' ? notoEms : null
+  const navGapEm = T.name === 'Editorial' ? 23 / 16 : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -536,6 +568,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // its links against the whole row less these rather than against one cell,
   // which the seeded nine could only fill on two rows. Grunge's layout 2 is
   // that bar in Anton at 0.75, so it takes the same two off `navFace`.
+  // Editorial's display face is its label face, so `navNameEms` is also the
+  // hero title's width in ems: HeaderV0 fits the title to its column with it.
   vm.navNameEms = navFace ? +navFace(vm.brand).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // Whether the tablet header draws its links (JP-039). The 768 masters of
@@ -760,8 +794,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       card,
       // Same caveat as `legible()` above: the second hue only reads while it
       // separates from the card it sits on. Retro's three clear it; a mid-tone
-      // card in a pale palette (Editorial's warm grey) does not, and there the
-      // card's own ink stands in.
+      // card in a pale palette does not, and there the card's own ink stands
+      // in.
       acc: Math.abs(lum(accHue) - lum(card)) > 0.22 ? accHue : ink,
       cardFg: ink,
       // Only the light card drops its blurb and the price unit off full strength
@@ -845,8 +879,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Static Youth tokens left it two). So the walk starts at 3 and
   // takes the first tag that clears `tierHues`' own 0.22 — olive on Retro and
   // pale lime on Lime (both index 3), the stamp red on Grunge and the
-  // terracotta on Editorial, whose index 3 is a wash only a shade off its
-  // paper. `ac` is the last resort and no palette reaches it.
+  // terracotta on Editorial (index 3 of two seats is the second, and its
+  // first, blush, is the one a shade off the paper). `ac` is the last resort
+  // and no palette reaches it.
   const rowSeat = T.tags
     .map((_, i) => T.tags[(3 + i) % T.tags.length])
     .find((h) => Math.abs(lum(h) - lum(bg)) > 0.22) ?? ac
@@ -890,12 +925,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Layout 4's heads, the composed page's own (QA, 2026-09-15). EditPanel
   // mirrors all four.
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
-  // The widest word of the heading, in Bebas ems, after every fallback above.
-  // Lime's layout-3 form sets Display/LG in a half column its longest word can
-  // outrun at desktop, so it shrinks the head until that word fits rather than
-  // break it (the nav's `navEms` rule). Undefined off Lime.
-  vm.titleWordEms = T.name === 'Lime'
-    ? +Math.max(0, ...vm.title.split(/\s+/).map(bebasEms)).toFixed(3)
+  // The widest word of the heading, in the display face's ems, after every
+  // fallback above. Lime's layout-3 form sets Display/LG in a half column its
+  // longest word can outrun at desktop, so it shrinks the head until that word
+  // fits rather than break it (the nav's `navEms` rule); in Bebas ems. So does
+  // Editorial's layout-1 form statement, a hand-scaled Bold whose frame breaks
+  // UNFORGETT / ABLE inside the word in the demo face's measure; in Noto Bold
+  // ems. Undefined off those two.
+  vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial'
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
@@ -1398,10 +1436,19 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.quotes = quoteList.map((r, i) => {
     const who = String(r?.who ?? '').trim()
     const role = String(r?.role ?? '').trim()
+    // Cased, as the featured quote always was — but now every row rather than
+    // only the first, which is what closes the three-up layout's old seam.
+    const quote = cased(String(r?.quote ?? '').trim())
     return {
-      // Cased, as the featured quote always was — but now every row rather than
-      // only the first, which is what closes the three-up layout's old seam.
-      quote: cased(String(r?.quote ?? '').trim()),
+      quote,
+      // The review's widest word in Noto Bold ems — `titleWordEms`' rule, per
+      // row, since the quote is not `vm.title`. Editorial's layout-1 card sets
+      // it as a hand-scaled Bold whose frame breaks nothing inside a word only
+      // because the demo face is narrower; the card fits the size to this
+      // word instead. Undefined off Editorial.
+      wordEms: T.name === 'Editorial'
+        ? +Math.max(0, ...quote.split(/\s+/).map(notoBoldEms)).toFixed(3)
+        : undefined,
       who,
       role,
       when: String(r?.when ?? '').trim(),
@@ -1545,6 +1592,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // display face narrower than the frame's. Kept in step with FIELDS.footer's
   // own default, and rendered `pre-wrap` so an edited statement can break too.
   vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
+  // The statement's widest word in Noto Bold ems — `wordEms`' rule, for a
+  // third hand-scaled Bold that is not `vm.title`: Editorial's footer fits the
+  // frame's 57.84 to it rather than breaking inside a word. Editorial only;
+  // no other template's footer reads it.
+  vm.footerWordEms = T.name === 'Editorial'
+    ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(notoBoldEms)).toFixed(3)
+    : undefined
   // The sitemap is the artist's now, so a row carries where it goes as well as
   // what it says — and it goes to one of two kinds of place, which is BookPill's
   // own `ext ? … : to` seam moved down to the row. 'link' takes the row's own
@@ -3789,8 +3843,9 @@ const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.he
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
-  // The flat two show their Figma header as a still (photos.js). It is
-  // SPOT_ASPECT already, so `cover` crops nothing — not `contain`.
+  // Pop, the one flat template left, shows its Figma header as a still
+  // (photos.js). It is SPOT_ASPECT already, so `cover` crops nothing — not
+  // `contain`.
   const { name } = THEMES[themeIdx]
   const still = TEMPLATE_STILLS[name]
   if (still) {
@@ -3970,8 +4025,8 @@ function ThemePicker({ themeIdx, artistName, onPick }) {
  *
  * The grid the setup modal (§6.2) is built around: the template's header
  * designs, up to four — `setupHeaderCount()`, since only layouts 1–4 are
- * a whole page — so four for Retro, Lime and Grunge and three for the flat
- * templates (§4.4). Three up on a desktop, two around 720px, one below
+ * a whole page — so four for Retro, Lime, Grunge and Editorial and three
+ * for Pop (§4.4). Three up on a desktop, two around 720px, one below
  * ~560.
  *
  * The cards share one frame so the set reads as a set and the labels sit

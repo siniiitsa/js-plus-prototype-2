@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~7.9 MB — most of it the inlined Retro, Lime and Grunge photography) is the generated
+- **`index.html`** (~8.7 MB — most of it the inlined Retro, Lime, Grunge and Editorial photography) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -40,17 +40,17 @@ cp source/dist-standalone/index.html index.html
 
 | File | ~Lines | Role |
 |---|---|---|
-| `src/builder/EncoreBuilder.jsx` | 5100 | All state, all chrome, both stages, publish |
-| `src/builder/EncoreSection.jsx` | 23620 | Presentational renderer for all 11 section types |
-| `src/builder/data.js` | 1760 | `THEMES`, all static data, colour helpers |
-| `src/builder/photos.js` | 250 | Retro's, Lime's and Grunge's seeded Figma photography + the three resolvers |
+| `src/builder/EncoreBuilder.jsx` | 5190 | All state, all chrome, both stages, publish |
+| `src/builder/EncoreSection.jsx` | 24490 | Presentational renderer for all 11 section types |
+| `src/builder/data.js` | 1920 | `THEMES`, all static data, colour helpers |
+| `src/builder/photos.js` | 290 | Retro's, Lime's, Grunge's and Editorial's seeded Figma photography + the three resolvers |
 | `src/index.css` | 170 | Tailwind v4 entry + design tokens |
 | `src/App.jsx` | 5 | Renders `<EncoreBuilder>` |
 
 Everything else under `src/components/ui/` is stock shadcn.
 
 `photos.js` is the only module that imports the files in `src/builder/photos/`. Keep those
-imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~5.2 MB.
+imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~5.8 MB.
 
 ## The one architectural rule
 
@@ -152,7 +152,7 @@ mutated through a single `patch()` helper.
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
   section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
-  stamp, which Lime's layout-1 block — Grunge's too, since it shares it — does not draw, and layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
+  stamp, which Lime's layout-1 block — Grunge's and Editorial's too, since they share it — does not draw, and layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
@@ -169,7 +169,20 @@ mutated through a single `patch()` helper.
   `cta` — `vm.bioCredit` is `{ lead, rest }`, the first three words taking the accent, split in
   `sectionVm`; each drops when emptied and the row with both.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
-  Colours are not per-section: every section renders in the active theme's single `palette`.
+  Colours are per-section only where a template's frames make them so: every section renders in
+  the active theme's single `palette`, **unless its frames stand it on another colour scheme** —
+  Editorial's do (plans/editorial/layout-1.md, decision 3, user call, 2026-09-24). `THEMES[3]`
+  carries Sienna Vale's Schemes 2 (taupe) and 3 (ink) as `schemes`, `SCHEMES_OF.Editorial[0]` in
+  `data.js` seats media and pricing on 2 and header, repertoire, form and footer on 3 — keyed by
+  the section's *design*, so a design with no row stands on Scheme 1 — and `sectionVm` spreads
+  that scheme over the theme at its head, so every `T.palette` / `T.sem` / `T.tags` read below it,
+  and every key derived from them, is the section's own ground's. The root needs no flag for it;
+  only a theme carrying `schemes` moves. Two consequences: under Editorial `s.bg` is the
+  section's own ground, not the page behind it (inert on layout 1, which has no seams; the
+  layout-4 tears read it as a neighbour's colour, a later pass's trap), and the reads outside
+  `sectionVm` — the page gutter, the published `documentElement`, the picker's dots — stay the
+  theme's, Scheme 1. A one-off node on another scheme (pricing's Book pills, Scheme 1 inside
+  Scheme 2) stays named literals.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
@@ -178,9 +191,10 @@ mutated through a single `patch()` helper.
   finds the template's row empty). The field stays editable — switching layouts
   never discards copy. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
-  `in` names Retro, Lime and Grunge only (Grunge's row measured over its four fitted cards, 2026-09-24 — the
-  first measurement with no placeholder card), so the flat two's undesigned header family carries no
-  note. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
+  `in` names Retro, Lime, Grunge and Editorial only (Grunge's row measured over its four fitted
+  cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over one fitted
+  card and three placeholders, 2026-09-25, so each of its layout passes re-measures its card), so
+  Pop's undesigned header family carries no note. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
   sections still end in one after `v3`, which `arch % designCount` never reaches).
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
@@ -273,8 +287,8 @@ mutated through a single `patch()` helper.
   design plays the whole list, and `s.tracks3` (three) serves only the unreachable fallthrough,
   whose Next must not leave the page.
   **Layout 1's pill is per template, because the frames disagree** (JP-034, user call,
-  2026-09-18): Retro's frame draws a Soundcloud pill, so under Retro and the flat two it is the
-  `soundcloud` link and an empty address leaves it a picture; Lime's draws Book Now — and Grunge's,
+  2026-09-18): Retro's frame draws a Soundcloud pill, and so does Editorial's (`964:58614`), so under those
+  two and Pop it is the `soundcloud` link and an empty address leaves it a picture; Lime's draws Book Now — and Grunge's,
   which shares Lime's block — so under those two the seat is `FIELDS.media.cta` — `vm.mediaCta`, uncased, on `vm.bookTo` with no
   self-exclusion since `media` is not in `CTA_TARGETS.book`, and an emptied label drops it, the
   footer pill's rule — and the Soundcloud pill stands beside it **only when filled**, in a
@@ -312,8 +326,9 @@ mutated through a single `patch()` helper.
   chosen, so both sides open on `galActive()` and the published first paint is the canvas's
   picture by construction. All **seven slots** are navigable, not just the filled ones — an empty
   one shows in the viewer the placeholder it shows in the strip, so the count cannot shift under
-  the visitor. Mobile draws four of the seven, and that window **slides** once the visitor walks
-  past the fourth (`from = clamp(active - 3, 0, 3)`), which leaves the first four anchored at 0 so
+  the visitor. Mobile draws four of the seven under Retro, Lime and Grunge (Editorial's 390 master draws all
+  seven, smaller, so under Editorial the strip maps every slot and nothing slides), and that
+  window **slides** once the visitor walks past the fourth (`from = clamp(active - 3, 0, 3)`), which leaves the first four anchored at 0 so
   the canvas's mobile picture is the Figma frame's, unchanged. The three social rows read
   `youtube` / `instagram` / `tiktok`, whose keys live on `GALLERY_SOURCES` — change the field list
   in `FIELDS.gallery`, change that array. The first row has no key: it *is* the strip. An
@@ -468,11 +483,12 @@ mutated through a single `patch()` helper.
   and 3 draw Music / Gigs / About in Retro and Lime alike (Grunge's layouts 2 and 3 too), so `NAV_MINIMAL` is those three —
   Gigs on the map or the calendar, About on the bio, Book gone because its pill already stands
   beside the links — and **`navMode`'s default follows the layout** (`navModeDefault()` in
-  `data.js`, JP-039 reopened, user call, 2026-09-23): Minimal at layouts 2 and 3 of the three
-  designed templates, *Follow my sections* everywhere else, and in `EditPanel`'s fallback chain
+  `data.js`, JP-039 reopened, user call, 2026-09-23): Minimal at layouts 2 and 3 of Retro, Lime
+  and Grunge (Editorial's cards 2 and 3 are placeholders, so they follow the sections until their
+  passes), *Follow my sections* everywhere else, and in `EditPanel`'s fallback chain
   too, so the panel names what the canvas draws. A stored value always wins, so the seeded
   header is its frame's picture at all four layouts and moves with the layout until the artist
-  picks. **The flat two's header reads
+  picks. **Pop's header reads
   none of this**: `FlatNav` hardcodes Music / Shows / Book. **At 768 the links are
   fit-gated in layouts 2 and 3, and folded everywhere else** (JP-039, user call, 2026-09-21).
   The 768 masters of layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and
@@ -489,7 +505,9 @@ mutated through a single `patch()` helper.
   their number), so a page switched to *Follow my sections* is still the burger. It is a vm boolean
   because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
   `navNameEms` / `navCtaEms` (Bebas, `bebasEms()`), Retro's is `antonEms()` in `data.js`, its
-  0.02em tracking folded in (Grunge's arm is the same table at a tracking of 0, its mode stating none). It is set at tablet only — desktop never reads it and always draws
+  0.02em tracking folded in (Grunge's arm is the same table at a tracking of 0, its mode stating
+  none; Editorial's `navEms` family is `notoEms()`, read off the rendered DOM, though no Editorial
+  layout reads `navFits` yet). It is set at tablet only — desktop never reads it and always draws
   the links — and is undefined, so the burger, at 390, on an empty nav and in layouts 1 and 4;
   layouts 5 and 6 draw `NavLinks`, which
   keeps the (wrapping) link row at 768 and collapses only at 390 (measured in JP-033's digest).
@@ -615,7 +633,8 @@ mutated through a single `patch()` helper.
   the canvas's picture by construction, the clock aside. Blocking the *cued* day cues nothing (`vm.calPick` is
   `''`) and the foot prints `vm.calPrompt`, rather than sliding the pick to the day after — the
   artist blocked it. A booked day is muted, struck through and handlerless (under Lime it is
-  dimmed to .38 with no strike, its frame's own state, and Grunge's layout 1 shares it), which is a **content** state and not a
+  dimmed to .38 with no strike, its frame's own state, and Grunge's and Editorial's layout 1 share
+  it), which is a **content** state and not a
   live one, so it renders on the canvas too; the seed blocks nothing, which is
   what keeps the reference picture. Two **intended diffs from the frame**: the foot row gains the
   Book pill on `vm.calBookTo` — `bookTo` minus `calendar` itself, the tier pills' rule, since
@@ -723,7 +742,9 @@ mutated through a single `patch()` helper.
   `ctlInk` — inset, so the frame's stated 60 does not grow — under a prompt line (Lime's boxes
   are pills, so there its hairline thickens to a 2px inset ring of full ink, layout 2's rule; Grunge's idle
   ring is already full black, so its refused box is 2px of `s.tx` — colour, not weight alone,
-  Lime's layout-4 rule); errors are
+  Lime's layout-4 rule; Editorial's idle mark is a 56% dashed rule under the box, so a refusal
+  drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once);
+  errors are
   `useState`, set on a refused submit and cleared per box as it is corrected, because there is
   still no effect in the file. A valid submit swaps the **mustard half only** for a confirmation
   that prints the address in **plain text**, since a browser that opened no mail app must still
@@ -765,9 +786,10 @@ mutated through a single `patch()` helper.
   because it is the same card component (QA, 2026-09-15). So `promises` skips layout 3
   alone: layouts 1, 2 and 4 read it. Under Lime and Grunge a refused box takes layout 2's 2px ring of full ink, and under
   Lime the desktop
-  head shrinks to fit its widest word in the half column (`vm.titleWordEms`, a Lime-only key
-  beside `navNameEms`) rather than breaking inside it — Grunge's Anton at 0.75 sets the seeded
-  head at 484 against the 501 column, so the key was measured and left Lime's.
+  head shrinks to fit its widest word in the half column (`vm.titleWordEms`, beside
+  `navNameEms`) rather than breaking inside it — Grunge's Anton at 0.75 sets the seeded
+  head at 484 against the 501 column, so the key was measured and left Lime's here (its other
+  arm is Editorial's layout-1 statement, below).
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
   two `minmax(0, 1fr)` grid columns, because a zero flex-basis resolves against the
   *content* box whatever `box-sizing` says and the padded card came out 41 wider than the
@@ -1023,13 +1045,16 @@ mutated through a single `patch()` helper.
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES` and `FOOTER_LINKS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
-- **Retro, Lime and Grunge seed photography; the flat two do not.** `defaultImage()` /
+- **Retro, Lime, Grunge and Editorial seed photography; Pop does not.** `defaultImage()` /
   `defaultImages()` / `defaultTrackArt()` in `photos.js` resolve through `SEEDS`, keyed by
-  `T.name` — the same name-match as `headerFamily()` and the `retro` / `lime` / `grunge` flags — and a theme
-  with no row seeds nothing. Lime's row is its own shoot for the artist's pictures (`lime-*.jpg`)
+  `T.name` — the same name-match as `headerFamily()` and the `retro` / `lime` / `grunge` /
+  `editorial` flags — and a theme with no row seeds nothing. Lime's row is its own shoot for the artist's pictures (`lime-*.jpg`)
   and Retro's files for the gallery strip, the track covers and the map raster; Grunge's row is a
   third shoot (`grunge-*.jpg`), black-and-white in the assets themselves — nothing desaturates, so
-  an artist's upload stays in colour. **Remove** writes `null`, not `undefined` — `undefined`
+  an artist's upload stays in colour. Editorial's row is a fourth shoot, in colour
+  (`editorial-*.jpg`): its hero is also its `photo` slot, its portrait card is also the form's
+  avatar, and its gallery strip departs from the frame — the five pictures of its shoot and two
+  crops of the hero — since the frame repeats one thumbnail and borrows Retro's spotlight. **Remove** writes `null`, not `undefined` — `undefined`
   deletes the key, and an absent key is exactly what selects the seeded photo, so it would come
   straight back. For the same reason `Photo` treats `src={null}` (this slot has no picture) as
   distinct from no `src` prop at all (fall back to `s.image`): an empty gallery slot shows the
@@ -1049,9 +1074,9 @@ mutated through a single `patch()` helper.
   source of truth and the `drag` state only mirrors it for rendering, so pointerup commits
   what it can see rather than what the last render observed. Rows are a uniform height, so
   the drop index is the pointer delta in row-heights, not a hit test.
-- **Retro, Lime and Grunge are designed; Editorial and Pop are not.** The flat
-  two are fully functional but render flat. Retro's decorative language is gated on `s.retro`, and
-  it gets six photographic header layouts where the flat two get three. **Lime is designed at all four of
+- **Retro, Lime, Grunge and Editorial are designed; Pop is not.** Pop is fully
+  functional but renders flat. Retro's decorative language is gated on `s.retro`, and
+  it gets six photographic header layouts where Pop gets three. **Lime is designed at all four of
   its layouts**: each of its Figma pages is the same components as Retro's page of that number
   in another variable mode, so its decoration (arc seams at layouts 1 and 4, glows at every
   layout, the arch portrait) lives in **`s.lime`** blocks inside the shared branches, never in
@@ -1081,11 +1106,14 @@ mutated through a single `patch()` helper.
   or, past a handful, a `G` lookup at the block's head whose Lime arm is the block's own literals. The
   gates are `s.grunge`, the named pairs — `(s.retro || s.grunge)` for grain and torn edges,
   `(s.lime || s.grunge)` for the `sem` reads and the capsule nav — and **`s.designed`** for what
-  all three draw alike (`TagChips`' sentence-case chips, the root's full-bleed hero); a
+  every designed template draws alike (`TagChips`' sentence-case chips, the root's full-bleed
+  hero, the map raster); a
   `(s.retro || s.lime)` site Grunge does not share stays as it is, widened per site from the
   frame and never by grep. Its display face is **Anton standing in for Stones Crush** (not a
   Google Font; user call, 2026-09-21), a third larger per em, so every Grunge size in that face
-  goes through `faced()` (× 0.75) and its line height through `facedLh()`; casing stays
+  goes through `faced()` (× 0.75) and its line height through `facedLh()` — both read `s.faceK`,
+  the theme's `faceK` (1 wherever it states none), with an identity branch so no other theme's
+  size gains a `calc`; casing stays
   `'title'` and each display or label string takes `textTransform: 'uppercase'` in its own arm.
   At layout 1 its decoration is torn black seams owned by the three Scheme-2 bands (media, map, form —
   `TornEdge`'s `grunge` prop), the grain raster as a `lighten` layer (`Grain`'s `grunge` /
@@ -1131,6 +1159,48 @@ mutated through a single `patch()` helper.
   helpers additive props — `NavBar` takes `links={{ gap, cap }}` (the capsule's fixed 23 gaps,
   the type clamped to fit) and `mark`, and `Wordmark` takes `gap` — and `SealBadge`'s Lime
   `scheme` a Grunge arm at 4, a black disc with red marks.
+  **Editorial is designed at layout 1** (`plans/editorial/layout-1.md`; the Figma mode is called
+  *Sienna Vale*, which is also its frames' mock artist). Its page is the fourth variant of the
+  same eleven component sets, Lime's layout-1 tree in every section, so it has **no blocks of its
+  own** either: each Lime layout-1 block is widened to **`s.limeTree`** — Lime, Grunge and
+  Editorial, one group flag so no block spells a third name — and Editorial's deltas sit behind
+  **`s.editorial`**, as a `const ed = s.editorial` and arms or a third arm at the head of the
+  block's `G`, the twins' arms byte-identical. A layout-1 site Editorial does not share keeps
+  `(s.lime || s.grunge)`: `LogoMark`'s globe and `SealBadge`'s Lime disc, each with an
+  `s.editorial` arm ahead of it, and `Photo`'s backdrop on the placeholder cards; the layout-2–4
+  blocks keep their pair, being later passes'. It is **the first light page** — paper, taupe and
+  ink bands meeting on straight edges, no seams, arcs, tears or band grain — and six of its
+  sections stand on another scheme, resolved in `sectionVm` (the per-section scheme rule above).
+  Its display and label face is **Noto Serif Display pinned to wdth 62.5 and wght 540–700**,
+  standing in for Fontspring's demo Fisterra Fora (user call, 2026-09-24): one Google Fonts
+  entry, never a second, or the default 400 finds a face of its own and the display goes wide
+  and thin; `faceK` 1, casing `'title'`, each display or label string uppercased in its own arm
+  (Grunge's rule). Its decoration: **dashed rules** (`DashRule`, an inline-SVG overlay at the
+  node's own `dashPattern`, on a row's edge or `side="all"` round a card, taking no height),
+  **tape** (`Tape`, a blush or terracotta strip clipping the grain raster at SCREEN, seated by
+  its centre), **tilted prints under real drop shadows** (the media mount, the gallery viewer,
+  the map's gig panel, the calendar photograph), **sparkles** (`GrungeStar` with a `fill` — the
+  same silhouette), an **arch** portrait in the header and the bio, and a terracotta **seal** in
+  the bio and the footer (`SealBadge`'s Editorial arm, whose `line` — the footer's flag — inks the
+  name in `tag/1/bg` paper where the bio's is `s.bg`). `SIENNA_MEDIA` (`#E6B6A0`, `sem/media`) is
+  the one literal no vm key holds; pricing's Book pills are named Scheme 1 literals on
+  `BookPill`'s additive `discBg`, and pricing alone draws its instance's stroke
+  (`editorialRule`). **Its three hand-scaled Bold statements** — the form's, the testimonials'
+  quote and the footer's — are fitted to their widest word rather than broken inside it, as the
+  demo face's measure broke them: `min(frame size, calc(100cqi / ems))` on an `inline-size`
+  container, the frame's box a `max-width` over `min-width: min-content`, the ems in Noto Bold
+  (`notoBoldEms()`, `notoEms()` × 1.045) — `vm.titleWordEms`'s Editorial arm for the form,
+  `vm.quotes[].wordEms` per review and `vm.footerWordEms` for the footer, each undefined off
+  Editorial. **Its live states are redrawn where its frames draw none** (Lime's rule): the map's
+  pin and lit row (paper in an ink ring; paper under ink, bled to the row's edges) and the
+  refused box above; and where they draw one it is followed — the repertoire's pager marks its
+  page in a terracotta ring (`Pager`'s Editorial arm; Grunge's frames mark none) and the map's by
+  its ink numeral alone. Its header family is `'editorial'`: four cards, **Hero fitted**
+  (`HeaderV0`'s Lime block, widened: an ink capsule on `s.box3` with the sparkle mark, an arch
+  portrait card, a one-tone title fitted to its column in `notoEms`, chips in terracotta and
+  blush), and **cards 2–4 are placeholders** that render and publish Retro's `HeaderV1`–`V3` in
+  its Scheme 1 tokens, checker ribbon and all, `mustard` standing in as `s.box3` — so its family
+  is not closed. The footer is layout 1's on every page.
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
   designs, and seven of the eleven offer more — Pricing layouts 1 and 5 render identically on
   purpose. The other four are level: the header and the footer always were, and the layout-4 pass

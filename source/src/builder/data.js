@@ -108,6 +108,10 @@ export const THEMES = [
     // "Full name"), which is why casing is 'title' and not 'upper'.
     display: "'Anton', sans-serif",
     label: "'Anton', sans-serif",
+    // Anton's glyphs against Stones Crush's: set at 0.75 of the token, line
+    // height divided back out (`faced` / `facedLh` in EncoreSection). A theme
+    // with no key sets its face at the token (1).
+    faceK: 0.75,
     ui: "'Chakra Petch', sans-serif",
     body: "'Inter', sans-serif",
     casing: 'title',
@@ -149,18 +153,92 @@ export const THEMES = [
   },
   {
     name: 'Editorial',
-    sub: 'Playfair Display · refined',
-    display: "'Playfair Display', serif",
-    label: "'Lora', serif",
-    body: "'Lora', serif",
+    sub: 'Noto Serif Display · paper & ink',
+    // Editorial is the fourth template with a Figma variable mode ("1 ·
+    // Primitives" → Sienna Vale, "2 · Scheme" → Scheme 1), so every value below
+    // is that mode's. The exception is the display and label face: the mode
+    // names FONTSPRING DEMO - Fisterra Fora, a demo-licence caps-only condensed
+    // display serif that cannot ship, so it is set in Noto Serif Display at its
+    // narrowest width (user call, 2026-09-24: substitute, "pick the closest").
+    // index.html asks Google for exactly one instance — `wdth,wght@62.5,540..700`
+    // — so the single face it serves is condensed whatever a site asks, and a
+    // site that names no weight gets 540, the frame's stem to the pixel (.154
+    // of the cap); the three Bold statements get 700. Its cap height is the
+    // frame's within 1.4% (.715 against .725 of the em), so it takes no
+    // `faceK`. Do NOT add a second Noto Serif Display entry to that link: the
+    // default 400 would find a face of its own and the display would go wide
+    // and thin (Retro's Fraunces rule). It has a lowercase where Fisterra Fora
+    // is all capitals, so an Editorial block sets its display and label strings
+    // `textTransform: 'uppercase'` per site, Grunge's rule; Chakra Petch and
+    // Inter set mixed case ("Sold Out", "Full name"), hence casing 'title'.
+    display: "'Noto Serif Display', serif",
+    label: "'Noto Serif Display', serif",
+    ui: "'Chakra Petch', sans-serif",
+    body: "'Inter', sans-serif",
     casing: 'title',
-    dls: '-0.01em',
-    radius: '2px',
-    radiusSm: '2px',
-    btnR: '2px',
-    bw: '1.5px',
+    // Every Sienna Vale text style states letterSpacing 0.
+    dls: '0px',
+    // radius/card, radius/control, radius/pill, border/thin, radius/chip.
+    radius: '16px',
+    radiusSm: '6px',
+    btnR: '999px',
+    bw: '2px',
+    radiusChip: '6px',
+    // Scheme 1's bg / text1 / text2.
     palette: ['#F6F0E8', '#C86E52', '#141414'], // warm paper · terracotta · near-black
-    tags: ['#C86E52', '#141414', '#AA958A', '#E6B6A0'],
+    // Scheme 1's tag1…tag7 alternate between exactly these two — Lime's
+    // two-seat system — with their inks in `sem.tagFg`.
+    tags: ['#E6B6A0', '#C86E52'],
+    // Scheme 1, paper — the scheme five of the eleven layout-1 sections stand
+    // on. Its stroke1 is opaque ink, not a 15% hairline: the frames' dashed
+    // rules on paper are black.
+    sem: {
+      box1: '#FFF9F2',                      // sem/box/1
+      box2: '#EDE6DC',                      // sem/box/2
+      box3: '#141414',                      // sem/box/3
+      glow: '#C86E52',                      // sem/glow
+      activeBg: '#C86E52',                  // sem/active/bg
+      activeFg: '#F6F0E8',                  // sem/active/text
+      inactiveBg: '#F6F0E8',                // sem/inactive/bg
+      inactiveFg: '#C86E52',                // sem/inactive/text
+      inactiveLine: '#141414',              // sem/state/inactive/border
+      stroke1: '#141414',                   // sem/stroke/1 — opaque
+      stroke2: '#C86E52',                   // sem/stroke/2
+      hl: '#141414',                        // sem/box/1/text
+      tagFg: ['#141414', '#F6F0E8'],        // sem/tag/1/text, sem/tag/2/text — parallel to `tags`
+    },
+    // The other schemes the frames stand a whole section on (SCHEMES_OF), in
+    // Scheme 1's shape: `palette` is [bg, text1, text2]. Scheme 2's accent is
+    // paper, so its heads are paper on taupe; Schemes 2's and 3's inactive
+    // ground is transparent, so an idle chip there is an outline only.
+    schemes: {
+      // Scheme 2, taupe — the media player and pricing.
+      2: {
+        palette: ['#AA958A', '#F6F0E8', '#141414'],
+        // tag1 blush, tag2 paper, both inked black — read off the file; the
+        // plan's table had the two seats the other way round.
+        tags: ['#E6B6A0', '#F6F0E8'],
+        sem: {
+          box1: '#BAA499', box2: '#D0BCB2', box3: '#A18A7E', glow: '#E6B6A0',
+          activeBg: '#E6B6A0', activeFg: '#141414',
+          inactiveBg: 'rgba(170, 149, 138, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
+          stroke1: '#F6F0E8', stroke2: '#E6B6A0', hl: '#FFFFFF',
+          tagFg: ['#141414', '#141414'],
+        },
+      },
+      // Scheme 3, ink — the header, repertoire, the enquiry form and the footer.
+      3: {
+        palette: ['#141414', '#C86E52', '#F6F0E8'],
+        tags: ['#F6F0E8', '#C86E52'],
+        sem: {
+          box1: '#1D1D1D', box2: '#2A2A2A', box3: '#0E0E0E', glow: '#C86E52',
+          activeBg: '#C86E52', activeFg: '#F6F0E8',
+          inactiveBg: 'rgba(20, 20, 20, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
+          stroke1: 'rgba(246, 240, 232, 0.56)', stroke2: '#E6B6A0', hl: '#FFFFFF',
+          tagFg: ['#141414', '#F6F0E8'],
+        },
+      },
+    },
   },
   {
     name: 'Pop',
@@ -178,6 +256,23 @@ export const THEMES = [
     tags: ['#C6F200', '#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600'],
   },
 ]
+
+// Which Figma colour scheme a section stands on, where its frames stand it on
+// one other than Scheme 1 — by template, then design index (`arch %
+// designCount`), then category. The number names an entry of that template's
+// `schemes` ({ palette, sem, tags }, Scheme 1's own shape), which sectionVm
+// lays over the theme before it reads a colour, so every derived key follows
+// the section's ground. A section with no entry stands on Scheme 1, the
+// theme's own `palette` / `sem` / `tags`. The footer has one design, so its
+// row is read at every page layout.
+export const SCHEMES_OF = {
+  // Sienna Vale's layout-1 page (964:58612…22), read off each section's
+  // `explicitVariableModes`, identical at all three widths. Layouts 2–4 are
+  // later passes' to fill from their own walks.
+  Editorial: {
+    0: { header: 3, media: 2, repertoire: 3, pricing: 2, form: 3, footer: 3 },
+  },
+}
 
 /* ------------------------------------------------------------------ *
  * §4.3 CATS — 11 section categories.
@@ -267,13 +362,15 @@ export const minimalNav = (navSections) =>
   NAV_MINIMAL.map(([label, prefs]) => ({ label, to: firstPresent(prefs, navSections) }))
 
 // The header's navigation mode when the artist has not chosen one (JP-039,
-// reopened; user call, 2026-09-23). Layouts 2 and 3 of the three designed
-// templates draw Music / Gigs / About at every width (986:11848, 984:34438,
+// reopened; user call, 2026-09-23). Layouts 2 and 3 of Retro, Lime and Grunge
+// draw Music / Gigs / About at every width (986:11848, 984:34438,
 // 984:10740, 977:22532), so there the seeded header is Minimal and its frame's
 // picture — at 768 the three fit the bar where the seeded nine fold to the
 // burger. Everywhere else it follows the sections. `d` is the design index,
 // `arch % designCount`. A stored value always wins, so a header moved back
 // to layout 1 returns to its sections unless the artist picked Minimal.
+// Editorial's cards 2 and 3 are placeholders, so they follow the sections
+// until their passes fit them (plans/editorial/layout-1.md, open question 4).
 export const navModeDefault = (themeName, d) =>
   (themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
     && (d === 1 || d === 2) ? 'minimal' : 'sections'
@@ -316,6 +413,33 @@ const ANTON_EM = {
 export const antonEms = (text, track = 0.02) =>
   [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + track, 0)
 
+// Noto Serif Display's, at the one instance index.html serves (wdth 62.5, a
+// site naming no weight clamped to 540) — Editorial's display and label face,
+// standing in for the caps-only Fisterra Fora, so set in caps as well. Read
+// off the rendered DOM in the harness, not canvas measureText, which sees
+// neither the width axis nor an unloaded webfont. Untracked (Sienna Vale
+// states 0). Summed a character at a time they land within 2.1% of each
+// measured label ("Availability", the most kerned), and over, never under.
+const NOTO_EM = {
+  A: 0.588, B: 0.546, C: 0.52, D: 0.602, E: 0.513, F: 0.488, G: 0.599, H: 0.648, I: 0.311,
+  J: 0.313, K: 0.587, L: 0.513, M: 0.758, N: 0.623, O: 0.617, P: 0.501, Q: 0.617, R: 0.554,
+  S: 0.451, T: 0.511, U: 0.589, V: 0.552, W: 0.848, X: 0.565, Y: 0.534, Z: 0.51,
+  ' ': 0.175, '&': 0.623, '·': 0.222, '/': 0.191, '-': 0.249, "'": 0.148, '.': 0.222,
+  ',': 0.222, '!': 0.291, '?': 0.43, ':': 0.231, '(': 0.304, ')': 0.304, '+': 0.425,
+}
+
+// A label's width in ems of Noto Serif Display; digits and anything unlisted
+// take 0.448, the digits' own advance.
+export const notoEms = (text) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (NOTO_EM[ch] ?? 0.448), 0)
+
+// The same face at 700, which the served variable face reaches and the three
+// hand-scaled Bold statements set (the form's, the testimonials', the
+// footer's): the 540 table widened by the largest ratio measured in the
+// harness on the seeded form statement's lines — LET'S MAKE 1.045, YOUR NIGHT
+// 1.041, UNFORGETTABLE. 1.040 — so over, never under.
+export const notoBoldEms = (text) => notoEms(text) * 1.045
+
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has
@@ -338,14 +462,17 @@ export const NVAR = {
 // Retro's page-N components re-skinned — so its family is those four and
 // no more. Grunge is the same four in a third mode (Static Youth), all four
 // pages confirmed in the Figma file and all four fitted — Stacked last, in
-// HeaderV3's widened Lime block — so its family is closed too.
-// Editorial and Pop offer three flat layouts (§10.3); their designs do not
-// exist yet.
+// HeaderV3's widened Lime block — so its family is closed too. Editorial is
+// the same four in a fourth mode (Sienna Vale), its four pages found in the
+// file (plans/editorial/layout-1.md, *The Figma source*); Hero is fitted, in
+// HeaderV0's Lime block widened, and the other three render Retro's
+// compositions in its tokens until their own passes.
+// Pop offers three flat layouts (§10.3); its designs do not exist yet.
 export const headerFamily = (themeName) =>
   themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
-    : themeName === 'Grunge' ? 'grunge' : 'flat'
+    : themeName === 'Grunge' ? 'grunge' : themeName === 'Editorial' ? 'editorial' : 'flat'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, flat: 3 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, flat: 3 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -407,9 +534,10 @@ const PHOTOGRAPHIC_NAMES = [
 const HEADER_NAMES = {
   photographic: PHOTOGRAPHIC_NAMES,
   // The same HeaderV0…V3, so the same names — sliced, not copied, so a rename
-  // reaches both templates.
+  // reaches every template.
   lime: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lime),
   grunge: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.grunge),
+  editorial: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.editorial),
   flat: [
     ['Centred', 'Title, tags and buttons'],
     ['Split', 'Text beside an image'],
@@ -1029,12 +1157,13 @@ export const FIELDS = {
   // does not consume a key simply ignores it, so swapping layouts never
   // silently discards copy the user typed — and the panel says so, off `in`.
   //
-  // The header's `in` is always an object naming Retro, Lime and Grunge alone:
-  // they have different header families (six designs against four and four —
-  // Grunge's row is measured over its four fitted cards, none a
-  // placeholder since its layout-4 pass), and the flat two have a family
-  // of their own that is not designed, so they are left unmarked rather than
-  // folded onto any list.
+  // The header's `in` is always an object naming Retro, Lime, Grunge and
+  // Editorial alone: they have different header families (six designs against
+  // four, four and four — Grunge's row is measured over its four fitted cards,
+  // none a placeholder since its layout-4 pass; Editorial's over one fitted
+  // card and three placeholders, so each of its layout passes re-measures its
+  // card), and Pop has a family of its own that is not designed, so it is left
+  // unmarked rather than folded onto any list.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
@@ -1046,48 +1175,49 @@ export const FIELDS = {
     // Their hints name where else each prints, and that reach is measured
     // (JP-042: a sentinel in `&who=`, every design × width × surface): the
     // kicker in all four bios and the form's credit row (layouts 1 and 2); the
-    // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's
-    // and Grunge's calendar layout 1, a block of its own with no polaroid stamp.
+    // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's,
+    // Grunge's and Editorial's calendar layout 1, a block of its own with no
+    // polaroid stamp.
     // Change a reader, change the hint.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
-      in: { Retro: [1, 4], Lime: [1], Grunge: [1] } },
+      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
-      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3] },
+      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, and the booking '
-          + 'calendar in layouts 1 and 4 (in Lime and Grunge, layout 4 only).' },
+          + 'calendar in layouts 1 and 4 (in Lime, Grunge and Editorial, layout 4 only).' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1], Grunge: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
       hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // Bio layout 4's Listen reads this key too; `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
-      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2] } },
+      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2] } },
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
           + '(in Lime and Grunge, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 1, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [1, 3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0] }, opts: [
+    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -1131,9 +1261,10 @@ export const FIELDS = {
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
-    // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, so there and
-    // on the flat two an empty address leaves it a picture — the rule the
-    // rest of the file calls the Soundcloud rule. Lime's frame draws Book Now in
+    // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
+    // Editorial's (964:58614), so there and on Pop an empty address leaves it a
+    // picture — the rule the rest of the file calls the Soundcloud rule. Lime's
+    // frame draws Book Now in
     // that seat (JP-034), and Grunge's does too (it shares Lime's block), so
     // under those two the seat is `cta` and the Soundcloud pill is drawn only
     // once it has somewhere to go.
@@ -1242,7 +1373,7 @@ export const FIELDS = {
     { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], '*': [1, 2, 3] } },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], '*': [1, 2, 3] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `It reaches ${CAL_SPAN} months from there. On the published page, days `
@@ -1490,7 +1621,7 @@ export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.
 // Whether a section's current design reads field `f` — `design` being
 // `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
 // its `'*'` standing for any template it does not name; a template it does not
-// cover at all is left unmarked (true), which is how the flat two's header
+// cover at all is left unmarked (true), which is how Pop's header
 // stays silent. Read by EditPanel alone: nothing on the canvas consults it,
 // so a field the design ignores keeps its copy for the next layout.
 const reachOf = (f, themeName) => (
