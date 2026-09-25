@@ -816,6 +816,13 @@ name them.
   Lift with `position: relative; top: -0.09em` wherever a display string's neighbour is close
   enough to show it: a J over a line of type, or a numeral over a stacked label. The lift moves
   `getBoundingClientRect` with the glyphs, so measure a lifted box against its unlifted twin.
+- **A twin's frame-less control inked `s.tx` inverts on this paper page** (section 6). The twins
+  ink their QA-added and redrawn states in `s.tx`, which is pale on their dark pages and ink
+  here: widened as written, the gallery viewer put ink controls on an ink scrim. Check every
+  control no frame draws against its own surround, not the twins' key. Layout 2's *a twin's
+  redrawn state is read against this frame* covers the states a frame does draw; this covers the
+  ones it does not. The next sites are pricing's moving FEATURED seat, the map's lit pin and
+  zoom buttons, and the refused boxes of the form.
 
 ### Seen at planning time, per section
 
@@ -1413,9 +1420,10 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   for node (**17 / 17 / 17** against both, by traversal order: the 56 / 60·30 / 60·20 insets,
   the 32 head gap, `columnGap` 8 with `rowGap` 8 / 20 / 20, the 1px INSIDE ring), on
   **Scheme 2** at every root with no Device override, **no effect and no dash on any node**.
-  One walker call and one paired diff were the whole read, and the diff was four leaves: the
-  head's size, the tile's height at 1440, its radius and the ring's binding (every fill binds
-  the twins' names). The hooks sit above the branch, so the published viewer needed nothing.
+  One walker call and one paired diff were the whole read, and the diff was leaves alone —
+  four against Grunge (the head's size, the tile's height at 1440, its radius and the ring's
+  binding) and three against Lime, whose ring binds the same `scheme/1/stroke/1` (every fill
+  binds the twins' names). The hooks sit above the branch, so the published viewer needed nothing.
 - **The seat does the paint** (`get_variable_defs`, all three widths): the sheet is `sem/bg`
   `#AA958A`, so `ed ? s.bg` ahead of the flat four's `s.paper` (which read the same taupe
   through `paperOf`, by accident); the head `sem/text/1` paper (`s.ac`); each well `sem/box/3`
@@ -1643,7 +1651,7 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 - Section 6: *On this paper page `s.muted` is ink, so an empty slot on a dark well needs `Photo`'s
   `ink`* (editorial/layout-2, *Conventions*) — `&n=0`, and here ink reads on the mid-taupe well.
 - Section 6: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section 8*)
-  — 17 / 17 / 17 against both twins; the diff was four leaves.
+  — 17 / 17 / 17 against both twins; the diff was four leaves against Grunge, three against Lime.
 - Section 6: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
   at zero; `page-check.mjs Editorial 2`.
 
