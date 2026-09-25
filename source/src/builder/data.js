@@ -416,12 +416,11 @@ export const minimalNav = (navSections) =>
 // burger. Everywhere else it follows the sections. `d` is the design index,
 // `arch % designCount`. A stored value always wins, so a header moved back
 // to layout 1 returns to its sections unless the artist picked Minimal.
-// Editorial's layout 2 draws the three too (964:64599, 986:15658); its card 3
-// is a placeholder, so it follows the sections until its pass fits it
-// (plans/editorial/layout-1.md, open question 4).
+// Editorial's layouts 2 and 3 draw the three too (964:64599, 986:15658;
+// 964:68718, 984:16812), so it joins them.
 export const navModeDefault = (themeName, d) =>
-  ((themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
-    && (d === 1 || d === 2)) || (themeName === 'Editorial' && d === 1) ? 'minimal' : 'sections'
+  (themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial')
+    && (d === 1 || d === 2) ? 'minimal' : 'sections'
 
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas
@@ -512,9 +511,10 @@ export const NVAR = {
 // pages confirmed in the Figma file and all four fitted — Stacked last, in
 // HeaderV3's widened Lime block — so its family is closed too. Editorial is
 // the same four in a fourth mode (Sienna Vale), its four pages found in the
-// file (plans/editorial/layout-1.md, *The Figma source*); Hero is fitted, in
-// HeaderV0's Lime block widened, and the other three render Retro's
-// compositions in its tokens until their own passes.
+// file (plans/editorial/layout-1.md, *The Figma source*); Hero, Feature
+// spread and Inset Hero are fitted, in HeaderV0's, HeaderV1's and HeaderV2's
+// Lime blocks widened, and Stacked renders Retro's composition in its tokens
+// until its own pass.
 // Pop offers three flat layouts (§10.3); its designs do not exist yet.
 export const headerFamily = (themeName) =>
   themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
@@ -1208,9 +1208,9 @@ export const FIELDS = {
   // The header's `in` is always an object naming Retro, Lime, Grunge and
   // Editorial alone: they have different header families (six designs against
   // four, four and four — Grunge's row is measured over its four fitted cards,
-  // none a placeholder since its layout-4 pass; Editorial's over two fitted
-  // cards and two placeholders, so each of its layout passes re-measures its
-  // card), and Pop has a family of its own that is not designed, so it is left
+  // none a placeholder since its layout-4 pass; Editorial's over three fitted
+  // cards and one placeholder, so its layout-4 pass re-measures that card),
+  // and Pop has a family of its own that is not designed, so it is left
   // unmarked rather than folded onto any list.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',

@@ -504,11 +504,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // card, the enquiry form's credit — reads the header's through `identity`
   // (`headerIdentity()` in data.js), since only the header has the fields.
   // The header reads its own content, so a preview of a layout the page is not
-  // on still shows what that layout would. Lime's and Grunge's layout-3 card
-  // types its own strapline; EditPanel mirrors it.
+  // on still shows what that layout would. Lime's, Grunge's and Editorial's
+  // layout-3 card types its own strapline; EditPanel mirrors it.
   const own = cat === 'header' ? c : identity
   vm.kicker = own.kicker !== undefined ? own.kicker
-    : cat === 'header' && d === 2 && (T.name === 'Lime' || T.name === 'Grunge') ? KICKER_3 : 'DJ · Live Act'
+    : cat === 'header' && d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial') ? KICKER_3
+    : 'DJ · Live Act'
   vm.subtitle = cv('subtitle', DEFS.heroSub)
   vm.location = own.location !== undefined ? own.location : 'Manchester, UK'
   // "DJ · Live Act · Manchester, UK", composed here so an emptied half drops
@@ -588,11 +589,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // glyph size), but its links are Label/SM 16 where Lime's are Display/List
   // 24, still 23 apart — so its gap is 23/16 of the row's size. Its layout-2
   // capsule (964:64599) is Grunge's instead, a fixed 18 at 16px type and at
-  // 13, so there the sum is the labels alone. Cards 3 and 4 are placeholders
-  // and keep layout 1's until their passes.
+  // 13, so there the sum is the labels alone, and so is its layout-3 one
+  // (964:68718), at the same sizes. Card 4 is a placeholder and keeps layout
+  // 1's until its pass.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? notoEms : null
-  const navGapEm = T.name === 'Editorial' ? (d === 1 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+  const navGapEm = T.name === 'Editorial' ? (d === 1 || d === 2 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -628,15 +630,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Label/SM, and the same fixed 18 gaps. Editorial's layout 2 (986:15658) is
   // Grunge's layout-2 bar box for box — the same 138.32, the same fixed 18
   // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Noto
-  // (`navFace`). Its layout 3 is a placeholder, and keeps the burger.
+  // (`navFace`). Its layout 3 (984:16812) is that bar again against layout
+  // 3's 684: the same 138.32 and fixed 18 gaps, and the links still Label/SM,
+  // where Grunge's layout-3 links are Label/MD.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
     const row = d === 1 ? 708 : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge' || (T.name === 'Editorial' && d === 1)) {
-      vm.navFits = vm.navEms * px(d === 1 ? vm.labelSm : vm.labelMd) + (vm.navLinks.length - 1) * 18
+    } else if (T.name === 'Grunge' || T.name === 'Editorial') {
+      vm.navFits = vm.navEms * px(T.name === 'Grunge' && d === 2 ? vm.labelMd : vm.labelSm) + (vm.navLinks.length - 1) * 18
         + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {
       const [link, name] = d === 1 ? [16, 20] : [13, 16]
@@ -3539,7 +3543,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
                     : f.k === 'kicker' && sec.cat === 'header'
-                      && (themeName === 'Lime' || themeName === 'Grunge') && design === 2 ? KICKER_3
+                      && (themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial') && design === 2 ? KICKER_3
                     : f.k === 'heading' && sec.cat === 'calendar'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
