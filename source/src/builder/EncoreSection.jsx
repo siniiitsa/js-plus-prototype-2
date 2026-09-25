@@ -292,8 +292,23 @@ const SIENNA_MEDIA = '#E6B6A0'
 // `radius` is the card's own, and the rect's is that less the inset. `gap` is
 // the pattern's second number where it is not the first — layout 2's bio card
 // (964:64600) is dashed 10, 11 — and defaults to `dash`, so every even caller
-// is untouched.
+// is untouched. `side` 'left' or 'right' is the same line stood upright, for a
+// column's inside edge (layout 2's repertoire, 964:64608's `Frame 288`); it
+// starts on a dash at the top.
+//
+// A `side="all"` capsule wants `radius` at exactly half its height, never the
+// 999 its CSS box takes: SVG sets `ry` to `rx` and then clamps each to its own
+// half-side, so a 999 on a wide box draws an ellipse.
 function DashRule({ dash, gap = dash, colour, weight = 1, side = 'bottom', radius = 0 }) {
+  if (side === 'left' || side === 'right') return (
+    <svg aria-hidden style={{
+      position: 'absolute', top: 0, [side]: 0, width: weight, height: '100%',
+      display: 'block', overflow: 'visible', pointerEvents: 'none',
+    }}>
+      <line x1={weight / 2} x2={weight / 2} y1="0" y2="100%"
+            stroke={colour} strokeWidth={weight} strokeDasharray={`${dash} ${gap}`} />
+    </svg>
+  )
   if (side === 'all') return (
     <svg aria-hidden style={{
       position: 'absolute', left: weight / 2, top: weight / 2,
@@ -10166,6 +10181,9 @@ function Pager({ s, colour, fill, frame = {} }) {
   // not Lime's 87 pills — and the frame does mark its page, where Grunge's
   // does not: the current pill's ring and numeral are `sem/text/1`, the
   // terracotta, 1px like the rest. The numerals are Grunge's Label/SM.
+  // Editorial's layout-2 repertoire (964:64608) fills its arrows, which no
+  // other frame does, so `frame.lime` takes an additive `endBox`, the two
+  // ends' own fill; without it they stay unfilled, as every caller before it.
   if (s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
@@ -10180,7 +10198,7 @@ function Pager({ s, colour, fill, frame = {} }) {
     const btn = (key, child, on, end, onClick) => (
       <span key={key} onClick={onClick} style={{
         minWidth: u(end ? 55 : t.pill ?? 87), height: u(54), flex: 'none', borderRadius: '999px',
-        background: end ? 'transparent' : on && t.onBox ? t.onBox : t.box,
+        background: end ? t.endBox ?? 'transparent' : on && t.onBox ? t.onBox : t.box,
         boxShadow: end ? `inset 0 0 0 1px ${t.ring}`
           : t.onEdge ? `inset 0 0 0 1px ${on ? t.onEdge : t.ring}`
           : on && t.onRing ? `inset 0 0 0 2px ${t.onRing}` : on && t.glow ? `inset 0 0 ${u(17)} ${t.glow}` : 'none',
@@ -10946,30 +10964,57 @@ function Repertoire({ s }) {
     // stacks on the head's ring. Figma paints a frame's stroke above its
     // children, so it is an overlay after them (`pointerEvents: 'none'`, or
     // it would take every published click), which is what reproduces the 89.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial — the component a fourth time, in Sienna Vale (964:64608 at
+    // 1440, 986:15667 at 768, 986:15686 at 390): the twins' tree node for
+    // node, on **Scheme 4 at 1440 and Scheme 1 narrow** (`SCHEMES_OF`'s
+    // triple), no Device override, no effect on any node. Every size is
+    // `THEME_RAMP.Editorial`'s `s.*` and every fill and ink is a key the
+    // block already reads — the sheet `sem/box/1`, the heading, rows and
+    // field `sem/text/2`, the toggle's pill `sem/text/1` under `sem/bg` — in
+    // either scheme. The deltas: every rule Lime rings is dashed 5, 5 in
+    // `sem/stroke/1` (paper 56% at 1440, opaque ink narrow) through
+    // `DashRule` — the head on all four sides, the toggle round, the field
+    // along its foot alone (no radius, no side padding), the column's inside
+    // edge and every row's foot — under the sheet's own solid ring, which
+    // Editorial's `phone` shows as Grunge's does and Lime's hides, so the
+    // head's dashes stack on it at the top and sides as the render samples;
+    // the rows pin at 84.2 / 82.8 / 59.4 (Noto's shorter head leaves each
+    // master's list 421 / 414 / 297); the display strings are uppercase
+    // (`faceK` 1); and the pager is filled, which `Pager`'s layout-1 arm is
+    // not, so it passes the frame's own bindings (below).
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const ring = `inset 0 0 0 1px ${s.stroke1}`
+      const dash = (side, extra) => <DashRule side={side} dash={5 * z} colour={s.stroke1} {...extra} />
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       const hint = 'Search songs or artists…'
       // Each master's `flex-1` division of its list (416 / 410 / 295 over
-      // five; Grunge's 390 list is 297), pinned for Retro's reason: our list
-      // has no height to divide.
-      const limeRowH = u(desk ? 83.2 : tab ? 82 : grunge ? 59.4 : 59)
+      // five; Grunge's 390 list is 297, Editorial's 421 / 414 / 297), pinned
+      // for Retro's reason: our list has no height to divide.
+      const limeRowH = u(ed ? (desk ? 84.2 : tab ? 82.8 : 59.4) : desk ? 83.2 : tab ? 82 : grunge ? 59.4 : 59)
+      // The toggle's dashed capsule takes its one-row height's half as the
+      // rect's radius (`DashRule`'s rule): 3 + 6 either side of a Body/SM
+      // line at 1.4. A toggle that wraps rounds that one row's worth.
+      const togR = parseFloat(u(3)) + parseFloat(u(6)) + parseFloat(s.bodySm) * 0.7
       return (
         <div style={{
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
           background: s.box1, color: s.tx,
-          position: grunge ? 'relative' : undefined,
+          position: grunge || ed ? 'relative' : undefined,
         }}>
           <div style={col(u(12), {
-            padding: `${headPadY} ${padH}`, boxShadow: ring,
+            padding: `${headPadY} ${padH}`, boxShadow: ed ? undefined : ring,
+            position: ed ? 'relative' : undefined,
           })}>
+            {ed && dash('all')}
             {/* Display/SM in `sem/text/2`, line height 1. */}
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
-              letterSpacing: s.dls, color: s.tx, textTransform: grunge ? 'uppercase' : undefined,
+              letterSpacing: s.dls, color: s.tx, textTransform: grunge || ed ? 'uppercase' : undefined,
             }}>{s.title}</h2>
             <div style={row(u(16), {
               justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(s.mob ? 10 : 12),
@@ -10979,8 +11024,9 @@ function Repertoire({ s }) {
               {/* The toggle: a ringed capsule on the sheet's own fill, 3 in,
                   the chip on show in `sem/text/1` with page-ground type. */}
               <div style={row('0', {
-                background: s.box1, boxShadow: ring, borderRadius: '999px',
+                background: s.box1, boxShadow: ed ? undefined : ring, borderRadius: '999px',
                 padding: u(3), flexWrap: 'wrap', rowGap: u(6), minWidth: 0,
+                position: ed ? 'relative' : undefined,
               })}>
                 {s.repChips.map((f, i) => (
                   <span
@@ -10994,18 +11040,23 @@ function Repertoire({ s }) {
                     })}
                   >{f.label}</span>
                 ))}
+                {ed && dash('all', { radius: togR })}
               </div>
               {/* The field: 36 tall with a 21 line, so the frame's 10 above
                   and below would overflow it — centred instead, Retro's
-                  reading. The glyph is typed in the frame, and typed here. */}
+                  reading. The glyph is typed in the frame, and typed here.
+                  Editorial's is no box: square, unpadded at the sides, and
+                  ruled along its foot alone. */}
               <div style={row(u(8), {
                 ...body(s.bodyMd, 1.5, { color: s.tx }),
-                background: s.box1, boxShadow: ring, borderRadius: '999px',
-                padding: `0 ${u(20)}`, height: u(36),
+                background: s.box1, boxShadow: ed ? undefined : ring, borderRadius: ed ? undefined : '999px',
+                padding: ed ? 0 : `0 ${u(20)}`, height: u(36),
                 width: s.mob ? '100%' : u(380),
                 flex: s.mob ? undefined : `0 1 ${u(380)}`,
                 minWidth: 0, overflow: 'hidden', whiteSpace: 'nowrap',
+                position: ed ? 'relative' : undefined,
               })}>
+                {ed && dash('bottom')}
                 <span style={{ flex: 'none' }}>⌕</span>
                 {s.live ? (
                   <input
@@ -11025,23 +11076,27 @@ function Repertoire({ s }) {
 
           {shown.length === 0 ? (
             <div style={body(s.bodySm, 1.4, {
-              height: limeRowH, padding: `0 ${padH}`, boxShadow: `inset 0 -1px 0 ${s.stroke1}`,
+              height: limeRowH, padding: `0 ${padH}`, boxShadow: ed ? undefined : `inset 0 -1px 0 ${s.stroke1}`,
               display: 'flex', alignItems: 'center', color: s.muted,
-            })}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}</div>
+              position: ed ? 'relative' : undefined,
+            })}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}{ed && dash('bottom')}</div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
               {columns.map((colSongs, ci) => (
                 <div key={ci} style={{
                   minWidth: 0,
-                  boxShadow: ci === 0 && columns[1].length ? `inset -1px 0 0 ${s.stroke1}` : undefined,
+                  boxShadow: !ed && ci === 0 && columns[1].length ? `inset -1px 0 0 ${s.stroke1}` : undefined,
+                  position: ed ? 'relative' : undefined,
                 }}>
                   {colSongs.map((t) => (
                     <div key={t.n} style={row(u(14), {
                       height: limeRowH, overflow: 'hidden',
-                      boxShadow: `inset 0 -1px 0 ${s.stroke1}`,
+                      boxShadow: ed ? undefined : `inset 0 -1px 0 ${s.stroke1}`,
                       paddingLeft: ci === 0 || !desk ? padH : u(20),
                       paddingRight: ci === 0 && desk ? u(20) : padH,
+                      position: ed ? 'relative' : undefined,
                     })}>
+                      {ed && dash('bottom')}
                       {/* Body/SM. The frame lets the number hug; it is pinned
                           at the widest single digit (9, or 8 at 390) so "10" is the only
                           one that moves its title, by a few px. */}
@@ -11051,7 +11106,7 @@ function Repertoire({ s }) {
                         <span style={{
                           fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls,
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          textTransform: grunge ? 'uppercase' : undefined,
+                          textTransform: grunge || ed ? 'uppercase' : undefined,
                         }}>{t.title}</span>
                         <span style={body(s.bodySm, 1.4, {
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -11059,13 +11114,25 @@ function Repertoire({ s }) {
                       </span>
                     </div>
                   ))}
+                  {ed && ci === 0 && columns[1].length > 0 && dash('right')}
                 </div>
               ))}
             </div>
           )}
 
           {/* Seven buttons dividing the measure at every width (182.9 / 94.3
-              / 46), Retro's `grow`; gone at one page, the foot inset kept. */}
+              / 46), Retro's `grow`; gone at one page, the foot inset kept.
+              Editorial's are filled where `Pager`'s layout-1 arm outlines:
+              the arrows `sem/text/2` and the pages `sem/text/1`, each in a
+              1px `sem/bg` ring round a `sem/bg` glyph — ink and paper under
+              terracotta at 1440, ink and terracotta under paper narrow, one
+              binding in both schemes. The frame marks no page, so the mark
+              is this file's (the rule for a live state no frame draws), and
+              it is layout 1's own Editorial mark in this frame's ink: the
+              current pill keeps its fill and takes a `sem/text/2` numeral in
+              a 1px `sem/text/2` ring. Filling it ink instead would dress it
+              as an arrow, and at the seeded two pages the one paper pill left
+              would read as the chosen one. */}
           <div style={{ padding: labels.length > 0 ? `${footPadY} ${padH}` : `0 0 ${footPadY}` }}>
             {labels.length > 0 && (
               <Pager s={s} frame={{
@@ -11074,13 +11141,16 @@ function Repertoire({ s }) {
                 onStep: s.live
                   ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
                   : undefined,
+                lime: ed ? {
+                  box: s.ac, endBox: s.tx, ring: s.bg, ink: s.bg, idle: s.bg, onEdge: s.tx, on: s.tx,
+                } : undefined,
               }} />
             )}
           </div>
           {/* The sheet's own ring, above its children as Figma paints a
               frame's stroke — so it stacks on the head's ring, the render's
               89 over the head against 60 under the pager. */}
-          {grunge && (
+          {(grunge || ed) && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, boxShadow: ring, pointerEvents: 'none',
             }} />
