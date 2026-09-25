@@ -11770,15 +11770,39 @@ function Repertoire({ s }) {
     // The padding is 24 (Lime 34), the corner 15 (50), and the rows divide
     // to 44.5 / 62.5 / 62.5 (Lime 39 / 57 / 57.5). The titles and the head
     // are Stones Crush, so `faced` / `facedLh` and uppercase at their sites.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:68743 / 984:16832 / 984:16863) is the tree a third time,
+    // 57 / 57 / 63 nodes, on the paper page (Scheme 1) with its three cards
+    // on **Schemes 4 / 2 / 3** — terracotta, taupe and ink by the same
+    // rendered place (the 390 master centres the taupe card). Every leaf is
+    // a `sem/*` binding in the card's own scheme, so each seat reads
+    // `s.onScheme[n]` and no literal is owed: `box/1` the card, `text/2` its
+    // title, songs, times and link, `text/1` the meta line, `stroke/1` its
+    // edge. The deltas: the cards are **square**, 24 in (Grunge's), and
+    // their ring and the rows' foot rules are one binding **dashed 5, 5**
+    // (`DashRule`, where the twins draw inset shadows) — paper 56% on the
+    // terracotta and the ink, opaque paper on the taupe. The rows divide to
+    // 47.25 / 62.5 / 62.5 (the card is 380 at 1440, its head being Noto's —
+    // the frame's Fisterra — 105 tall). The head and titles are uppercase at
+    // their sites (`faceK` 1). The 390 pager's two pills are **square** too
+    // (radius 0, where the twins' are 60), dashed 5, 5 in `sem/text/1`.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const mist = '#D5E3B2'  // Scheme 4 `sem/box/1`
       const lime3 = '#CCFA61' // Scheme 3 `sem/box/1`
       const dark = { bg: mist, ink: s.bg, acc: s.bg, edge: '#15180F26' }
       const blk = { bg: s.box1, ink: s.tx, acc: s.ac, edge: s.stroke1, ring: s.stroke2 }
+      const seat = (n) => {
+        const S = s.onScheme[n]
+        return { bg: S.box1, ink: S.tx, acc: S.ac, edge: S.stroke1 }
+      }
       const G = grunge ? {
         seats: [blk, { bg: '#9E1F17', ink: s.tx, acc: '#000000', edge: '#00000026', ring: '#FFFFFF' }, blk],
         pad: 24, radius: 15, rowH: desk ? 44.5 : 62.5,
+      } : ed ? {
+        seats: [seat(4), seat(2), seat(3)],
+        pad: 24, radius: 0, rowH: desk ? 47.25 : 62.5,
       } : {
         seats: [{ bg: s.box1, ink: s.tx, acc: s.ac, edge: s.stroke1 }, dark, { ...dark, bg: lime3 }],
         pad: 34, radius: 50, rowH: desk ? 39 : tab ? 57 : 57.5,
@@ -11796,7 +11820,7 @@ function Repertoire({ s }) {
       // from the frame's one row; the pinned 57 / 62.5 holds both lines. The
       // desktop and 390 rows fit and keep the frame's.
       const stack = tab
-      const disp = (lh) => grunge ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
+      const disp = (lh) => grunge || ed ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, ...extra,
       })
@@ -11807,9 +11831,11 @@ function Repertoire({ s }) {
         const more = st.songs.length > rows.length
         return (
           <div key={st.label} style={col(u(10), {
-            background: k.bg, color: k.ink, boxShadow: `inset 0 0 0 1px ${k.ring || k.edge}`,
+            background: k.bg, color: k.ink, boxShadow: ed ? undefined : `inset 0 0 0 1px ${k.ring || k.edge}`,
             borderRadius: u(G.radius), padding: u(G.pad), overflow: 'hidden', minWidth: 0,
+            position: ed ? 'relative' : undefined,
           })}>
+            {ed && <DashRule side="all" dash={5 * z} colour={k.edge} />}
             <span style={body(s.bodyLg, 1.5)}>{st.label}</span>
             {/* Body/Chip, letter-spaced −6 percent; the caps are a style. */}
             <span style={body(s.chip, 1, {
@@ -11819,8 +11845,10 @@ function Repertoire({ s }) {
             {rows.map((sg) => (
               <div key={sg.n} style={(stack ? col : row)(u(stack ? 2 : 10), {
                 flex: 'none', height: limeRowH, justifyContent: stack ? 'center' : 'space-between',
-                boxShadow: `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
+                boxShadow: ed ? undefined : `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
+                position: ed ? 'relative' : undefined,
               })}>
+                {ed && <DashRule dash={5 * z} colour={k.edge} />}
                 <span style={{
                   fontFamily: s.display, fontSize: faced(s, s.list), ...disp(1.2),
                   letterSpacing: s.dls, minWidth: 0, maxWidth: '100%',
@@ -11848,7 +11876,8 @@ function Repertoire({ s }) {
       }
       return (
         <div style={col(u(24))}>
-          {/* Display/LG in `sem/text/2`: pale, where Retro's head is the accent. */}
+          {/* Display/LG in `sem/text/2`: pale (Editorial's ink), where Retro's
+              head is the accent. */}
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), ...disp(0.89),
             letterSpacing: s.dls, color: s.tx,
@@ -11877,7 +11906,8 @@ function Repertoire({ s }) {
 
           {/* The 390 master's two pills: a 1px `s.ac` ring round an `s.ac`
               arrow, radius 60 — Retro's pager in Lime's accent, redrawn only
-              because its ring reads `hair`. */}
+              because its ring reads `hair`. Editorial's are square, the ring
+              dashed 5, 5 in the same `sem/text/1`. */}
           {pages > 1 && (
             <div style={row(u(10), { justifyContent: 'center' })}>
               {[-1, 1].map((dir) => (
@@ -11886,11 +11916,14 @@ function Repertoire({ s }) {
                   onClick={s.live ? () => setPage(((pg + dir) % pages + pages) % pages) : undefined}
                   style={{
                     flex: `1 1 ${u(180)}`, maxWidth: u(180), height: u(54),
-                    borderRadius: u(60), boxShadow: `inset 0 0 0 1px ${s.ac}`, color: s.ac,
+                    borderRadius: ed ? 0 : u(60), boxShadow: ed ? undefined : `inset 0 0 0 1px ${s.ac}`, color: s.ac,
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: s.live ? 'pointer' : undefined,
+                    cursor: s.live ? 'pointer' : undefined, position: ed ? 'relative' : undefined,
                   }}
-                >{dir < 0 ? <ArrowLeft size={arrow} /> : <ArrowRight size={arrow} />}</span>
+                >
+                  {ed && <DashRule side="all" dash={5 * z} colour={s.ac} />}
+                  {dir < 0 ? <ArrowLeft size={arrow} /> : <ArrowRight size={arrow} />}
+                </span>
               ))}
             </div>
           )}
