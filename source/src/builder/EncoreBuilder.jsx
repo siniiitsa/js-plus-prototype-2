@@ -444,7 +444,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // doubled up with the player's own top. The player's list ends 122 / 90 / 70
   // above the repertoire's head (100 on the 0.82 canvas); the repertoire's own
   // top inset is its fitted one, so the player's foot takes the difference —
-  // 37 / 47 / 35, measured against the seeded page. Grunge's composed region
+  // first 37 / 47 / 35, measured against the seeded page, and 20 / 34 / 26
+  // since the re-measure below. Grunge's composed region
   // is Lime's to the pixel (plans/grunge/layout-3.md), so each of its three
   // sections joined the arm in its own session — the bio, then media, then the
   // calendar, which closes the row: its `Frame 300` pads 50 / 50 / 40 above
@@ -455,8 +456,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // templates, the repertoire's root padding the same 56 / 60 / 60, so Lime's
   // feet carry: every template's repertoire head stands at the shared `padY`.
   // Re-measured at Editorial's repertoire (plans/editorial/layout-3.md,
-  // section 4), the canvas gives 117 / 103 / 79 box to box under all three
-  // against the frames' 100 / 90 / 70 — a named diff for the sweep. The
+  // section 4), the canvas gave 117 / 103 / 79 box to box under all three
+  // against the frames' 100 / 90 / 70: 37 / 47 / 35 plus the head's `padY`
+  // 80 / 56 / 44. So the feet are the difference again, 20 / 34 / 26 (the
+  // Editorial layout-3 sweep, user call, 2026-09-26), and all three templates'
+  // media list ends the frames' 100 / 90 / 70 above the head's box. The
   // calendar closes Editorial's row as it closed Grunge's (its `Frame 300`
   // pads 50 / 56 at 1440 and 768, 40 / 40 at 390), so the three templates are
   // one condition again.
@@ -465,7 +469,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)
     const foot = cat === 'bio' ? z(30)
-      : cat === 'media' ? ({ desktop: '37px', tablet: '47px', mobile: '35px' })[Z.dev]
+      : cat === 'media' ? ({ desktop: '20px', tablet: '34px', mobile: '26px' })[Z.dev]
       : vm.padY
     vm.pad = `${top} ${vm.padX} ${foot}`
   }

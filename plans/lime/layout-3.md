@@ -734,6 +734,13 @@ Settled in section 3 (the media player):
   hold, 8 growing the 390 section to 1305. No page errors. Digest at themes 0–4, all 645 renders:
   exactly media arch 2 at theme 1, three widths. Not checked in the builder; the bio session's
   composed-row check covers the column, and `column=left` is the same `sectionVm({ column })`.
+- **Re-fitted in the Editorial layout-3 sweep (2026-09-26, user call):** media's `vm.pad` foot at
+  `d === 2`, 37 / 47 / 35 since the composed-row QA, left the list 117 / 103 / 79 above the
+  repertoire's head box on the canvas under Lime, Grunge and Editorial alike, against the
+  frames' 122 × 0.82 = 100 / 90 / 70 (plans/editorial/layout-3.md, section 4). The feet are now
+  20 / 34 / 26 and the gap is the frames' at every width on all three templates (122 in the
+  published 1440 tab). Digest: exactly media arch 2 at themes 1, 2 and 3, the roots 17 / 13 / 9
+  shorter and nothing else.
 
 Settled in section 4 (the repertoire):
 

@@ -865,6 +865,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **`vm.pad`'s layout-3 arm takes media under Grunge** (top 50 / 50 / `padY`, foot 37 / 47 / 35,
   Lime's, since the composed region is Lime's to the pixel). The feet were measured by Lime's
   session against Lime's repertoire head; the repertoire session re-checks the gap under Grunge.
+  *Re-fitted in the Editorial layout-3 sweep (2026-09-26, user call): 20 / 34 / 26, so the list
+  ends the frames' 100 / 90 / 70 above the repertoire's head box under all three templates
+  (plans/lime/layout-3.md, section 3's last bullet).*
 - **Measured against the masters' content edges** (`column=left` at desktop): eyebrow 20.2, h2
   190.4 (232 × 0.82) on two lines at 80.25px standing 44.8 under the eyebrow's top, card 197.8
   (243 × 0.82 = 199.3) at radius 12.3; 768 head 120 (eyebrow 17.6 + 30 + h2 72.1 on one line),
