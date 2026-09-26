@@ -763,7 +763,9 @@ Written now from what the plan can see; the sections add to it. One session, in 
    Grunge's 3"), the testimonials' registers, the footer seal's name "in `tag/1/bg` paper" (now
    `active/text`, section 11); the file table's line counts. Grep both files for
    "layout 3", "Editorial" and "placeholder"; and the code comments (`navModeDefault`'s, `navFits`',
-   the `vm.pad` arms', `photos.js`' head, `SCHEMES_OF`'s "Layouts 3 and 4 are later passes'").
+   the `vm.pad` arms', `photos.js`' head, `SCHEMES_OF`'s "Layouts 3 and 4 are later passes'",
+   and `Footer`'s head comment, whose Editorial paragraph still says "on Scheme 3 … the seal …
+   with its name in paper" — Scheme 2 by page on layout 3 now, the name `active/text`).
 2. **One whole-page published check under Editorial at layout 3** — `node scripts/page-check.mjs
    Editorial 2,0,1,3` plus the layout-3 controls the builder walk cannot reach, driven in the
    harness (the gallery viewer — open, arrow, Escape, scroll lock; the repertoire's reveal at
