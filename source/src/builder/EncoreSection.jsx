@@ -1050,7 +1050,11 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // the frame that draws another name: `sem/tag/1/bg` where the bio's binds
   // `sem/bg` — paper on the terracotta disc under Scheme 3, where `s.bg` would
   // be ink. `line` asks for it, Grunge's footer flag again, so the footer is
-  // still the only caller that moves.
+  // still the only caller that moves. It is drawn in `sem/active/text`, the
+  // disc's own pair and the ink its sparkle takes, which is the same paper
+  // under Scheme 3: on layout 3's page (964:68749) the footer stands on
+  // Scheme 2, where `tag/1/bg` is the disc's own blush and the frame's name
+  // vanishes, so the name is redrawn in the ink that reads there.
   if (s.editorial && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
     const k = 57.78 / 125.37 * 100 / 144
@@ -1073,7 +1077,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           <path d={GRUNGE_STAR_D} fill={s.activeFg}
                 transform={`translate(${(50 - 72 * k).toFixed(3)} ${(50 - 72.667 * k).toFixed(3)}) scale(${k.toFixed(5)})`} />
           <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
-            <text fill={line ? s.chips[0].bg : s.bg} textAnchor="middle" style={{
+            <text fill={line ? s.activeFg : s.bg} textAnchor="middle" style={{
               fontSize: '8.46px', letterSpacing: '2.54px', fontFamily: "'Space Mono', monospace",
             }}>
               <textPath href={`#seal-${id}`} startOffset="25%">{name}</textPath>
@@ -25019,7 +25023,10 @@ function Footer({ s }) {
     // "Group 6" is LimeGlobeMark's own drawing at 27.37, inked in the 15%
     // hairline — it stands dim beside the name. Editorial's is the sparkle
     // (39.87 × 40.24, GrungeStar's path at its own ratio) in `sem/tag/1/bg`,
-    // seated in flow, and it sets the row's 40.24.
+    // seated in flow, and it sets the row's 40.24. The bar beside it binds the
+    // same `sem/tag/1/bg`, which is `s.tx`'s paper under layout 1's Scheme 3
+    // and blush under the Scheme 2 layout 3 seats the footer on (the page
+    // row), so Editorial reads the binding rather than the coincidence.
     const wordmark = (
       <span style={row(u(20))}>
         <span style={row(u(10))}>
@@ -25032,7 +25039,7 @@ function Footer({ s }) {
             ? labelStyle(s, s.labelMd, { color: s.tx })
             : { ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
         </span>
-        <span style={{ width: u(150), height: u(2), background: s.tx, flex: 'none' }} />
+        <span style={{ width: u(150), height: u(2), background: ed ? s.chips[0].bg : s.tx, flex: 'none' }} />
       </span>
     )
 
@@ -25104,7 +25111,10 @@ function Footer({ s }) {
     // keeps it 54 tall.
     // Editorial's links are Display/List at 1.2 — the small print's `face`
     // under Lime — 12 apart and 12 before the pill, whose disc is
-    // `sem/box/3` rather than the label's own ink.
+    // `sem/box/3` rather than the label's own ink. Its label binds
+    // `sem/tag/1/text`, ink in Scheme 3 (where it is `s.bg`, the default) and
+    // in the Scheme 2 of layout 3's page (where `s.bg` is the taupe band), so
+    // it is passed as that binding.
     const linkCol = (colLinks, i) => (
       <nav key={i} style={col(px(ed ? 12 : 23), { alignItems: 'flex-start' })}>
         {colLinks.map((l, j) => {
@@ -25116,7 +25126,8 @@ function Footer({ s }) {
           )
         })}
         {i === 0 && s.footerCta && (
-          <BookPill s={s} to={s.bookTo} label={s.footerCta} full={s.mob} discBg={ed ? s.box3 : undefined} />
+          <BookPill s={s} to={s.bookTo} label={s.footerCta} full={s.mob}
+                    fg={ed ? s.chips[0].fg : undefined} discBg={ed ? s.box3 : undefined} />
         )}
       </nav>
     )
