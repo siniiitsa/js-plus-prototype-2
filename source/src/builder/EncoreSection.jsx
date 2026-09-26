@@ -23834,18 +23834,40 @@ function EnquiryForm({ s }) {
     // A refused box keeps Lime's 2px of `s.tx`, which is colour *and* weight
     // here — the idle ring is the 15% hairline, not full ink, so CONVENTIONS'
     // "colour, not weight alone" rule does not bite.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:68747 / 984:16839 / 984:16870) is the same tree again,
+    // 27 = 27 against both twins at every width, on **Scheme 1** with no
+    // nested scheme, no Device override and no effect on any node — a paper
+    // page, no band. Every fill binds the twins' names (the card and boxes
+    // `box/1` `#FFF9F2`, the head, price, stars and pill `text/1` terracotta,
+    // the pill's label and disc `sem/bg`, every other ink `text/2`), so there
+    // is no `G`. The paired diff against Grunge was leaves alone: the card
+    // and the boxes are **square** and their stroke binds `stroke/2`
+    // terracotta, **dashed** — 10, 10 round the card and 6, 6 round each box,
+    // `DashRule side="all"` where the twins ring them in `stroke/1`; the boxes
+    // are Grunge's 42 / 38 / 37 (Sienna Vale's Label/SM is Static Youth's
+    // 16 / 13 / 12); Display/Title is this mode's 32 / 25 / 23. Every display
+    // site is uppercased, Grunge's rule. The desktop head shrinks to its
+    // widest word as Lime's does, in Noto ems (`vm.titleWordEms` keyed by
+    // design: this head is Display/LG Regular, not layout 1's Bold). A refused
+    // box is Lime's 2px of `s.tx`, ink on `#FFF9F2`: the idle mark is a 1px
+    // dash of full terracotta, so the refusal changes colour, weight and dash
+    // at once — no frame draws it, and the twins' key reads on this paper.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       // Every Stones Crush site: Anton at 0.75 of the frame's token with its
       // line box divided back out, and uppercase because Anton has a lowercase
-      // where Stones Crush is all capitals. A no-op under Lime.
+      // where Stones Crush is all capitals. A no-op under Lime; under
+      // Editorial `faced` is the identity and the uppercase is Noto's.
       const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
-        ...(grunge && { textTransform: 'uppercase' }), ...extra,
+        ...((grunge || ed) && { textTransform: 'uppercase' }), ...extra,
       })
-      const title = desk ? u(36) : s.mob ? '26px' : '28px'
+      const title = ed ? (desk ? u(32) : s.mob ? '23px' : '25px')
+        : desk ? u(36) : s.mob ? '26px' : '28px'
       // Half of the content width less the 60 gap, floored to the pixel so the
       // word fits with room rather than to the rounding.
       const headSize = desk && s.titleWordEms
@@ -23855,11 +23877,14 @@ function EnquiryForm({ s }) {
       // overlay. A refused box thickens it to 2px of full ink — layout 1's and
       // layout 2's Lime rule for a pill — and the stated 44 / 39 / 37 (12 over
       // Label/SM's line box) does not grow. Grunge's masters state 42 / 38 / 37
-      // for the same padding over its own two-sizes-smaller Label/SM.
+      // for the same padding over its own two-sizes-smaller Label/SM, and so
+      // do Editorial's. Under Editorial the box is square and its idle mark is
+      // the field wrapper's `DashRule` (below), which a refusal replaces.
       const box = (bad) => type(s.label, faced(s, s.labelSm), facedLh(s, 1.1), {
-        background: s.box1, color: s.tx, border: 'none', borderRadius: s.btnR,
-        boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.stroke1}`,
-        height: grunge
+        background: s.box1, color: s.tx, border: 'none', borderRadius: ed ? 0 : s.btnR,
+        boxShadow: ed ? (bad ? `inset 0 0 0 2px ${s.tx}` : undefined)
+          : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.stroke1}`,
+        height: grunge || ed
           ? (desk ? u(42) : s.mob ? '37px' : '38px')
           : (desk ? u(44) : s.mob ? '37px' : '39px'),
         padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
@@ -23895,23 +23920,41 @@ function EnquiryForm({ s }) {
                 is wider than the half column allows for the seed's
                 UNFORGETTABLE. (5.158em against 4.69), which broke the word, so
                 the size gives way to the column only when the widest word
-                (`s.titleWordEms`) would not fit. 768 and 390 never bite. */}
+                (`s.titleWordEms`) would not fit. 768 and 390 never bite.
+                Under Editorial the head is lifted 0.08em: Noto's glyph floor
+                stood 0.053 / 0.060 / 0.077em above the box's foot where the
+                frames' stands 0.132 / 0.138 / 0.133, and it stands over a
+                line of type — where a J (0.24em of descender in Noto) all but
+                met the paragraph. */}
             <h2 style={disp(headSize, 0.89, {
               margin: 0, color: s.ac, overflowWrap: 'break-word',
+              ...(ed && { position: 'relative', top: '-0.08em' }),
             })}>{s.title}</h2>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formPara}</p>
           </div>
 
           <div style={col(u(14), {
-            background: s.box1, color: s.tx, borderRadius: u(grunge ? 15 : 50),
-            boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
+            background: s.box1, color: s.tx, borderRadius: ed ? 0 : u(grunge ? 15 : 50),
+            boxShadow: ed ? undefined : `inset 0 0 0 1px ${s.stroke1}`,
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
+            ...(ed && { position: 'relative' }),
           })}>
+            {/* Editorial's 10, 10 dash round the square card, in `stroke/2`. */}
+            {ed && <DashRule side="all" dash={10 * z} colour={s.stroke2} />}
             {/* The price in Display/Title and the stars in the accent, the unit
                 and the count in `sem/text/2`. Not controls, so they stand
                 through the confirmation swap; each drops when emptied. */}
+            {/* Under Editorial the row is lifted 0.09em of the price's size:
+                both halves stand on one baseline, in the frame as here, and
+                Noto's sits 0.09em lower in its line box than the frames' face
+                — measured off the three renders (0.83em below the row's top in
+                the frame, 0.92 in ours), so the row moves and the baseline
+                they share holds. An Inter unit alone sits right. */}
             {(!!s.formPrice || !!s.formPriceUnit) && (
-              <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
+              <div style={row(u(8), {
+                alignItems: 'baseline', flexWrap: 'wrap',
+                ...(ed && !!s.formPrice && { position: 'relative', top: `calc(-0.09 * ${title})` }),
+              })}>
                 {!!s.formPrice && <span style={disp(title, 1.1, { color: s.ac })}>{s.formPrice}</span>}
                 {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
               </div>
@@ -23941,7 +23984,7 @@ function EnquiryForm({ s }) {
                 <div style={col(u(10))}>
                   {s.formFields.map((f, i) => {
                     const bad = !!(errs && errs.f[i])
-                    return s.live ? (
+                    const el = s.live ? (
                       <input
                         key={i} value={at(i)} placeholder={up(f.label)}
                         onChange={(e) => setAt(i, e.target.value)}
@@ -23956,6 +23999,16 @@ function EnquiryForm({ s }) {
                         {up(f.label)}
                       </span>
                     )
+                    // Editorial's 6, 6 dash round each box: an <input> takes no
+                    // child, so the frame's own wrapper carries the overlay — a
+                    // column, so no line box's strut stands under the input.
+                    // Layout 2's idiom.
+                    return ed ? (
+                      <div key={i} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                        {el}
+                        {!bad && <DashRule side="all" dash={6 * z} colour={s.stroke2} />}
+                      </div>
+                    ) : el
                   })}
                   <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
                     {s.formCta}{disc}

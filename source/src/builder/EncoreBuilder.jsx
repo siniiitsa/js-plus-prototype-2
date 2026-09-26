@@ -488,8 +488,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 56 / 56 at 1440 and 30 / 56 at 768, Lime's numbers), so both templates are
   // one condition again; the pair was two halves for one session, the composed
   // row's rule (plans/grunge/layout-3.md).
-  if ((T.name === 'Lime' || T.name === 'Grunge')
-    && (cat === 'form' || cat === 'testimonials') && d === 2 && Z.dev !== 'mobile') {
+  //
+  // Editorial's form masters (964:68747 · 984:16839 · 984:16870) pad the same
+  // 90 / 56 and 60 / 30 round the taller half — the head column at 1440, where
+  // the twins' is the card — so the form joins on the twins' numbers; the
+  // testimonials follow in their own session, and the pair is one condition
+  // again then (plans/editorial/layout-3.md, section 9).
+  if (((T.name === 'Lime' || T.name === 'Grunge') && (cat === 'form' || cat === 'testimonials')
+    || (T.name === 'Editorial' && cat === 'form')) && d === 2 && Z.dev !== 'mobile') {
     const desk = Z.dev === 'desktop'
     const px = (v) => `${desk ? Math.round(v * 0.82) : v}px`
     vm.pad = cat === 'form'
@@ -986,9 +992,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // fits rather than break it (the nav's `navEms` rule); in Bebas ems. So does
   // Editorial's layout-1 form statement, a hand-scaled Bold whose frame breaks
   // UNFORGETT / ABLE inside the word in the demo face's measure; in Noto Bold
-  // ems. Undefined off those two.
+  // ems. Editorial's layout-3 form head is Lime's again, Display/LG Regular,
+  // so at design 2 it is Noto's 540 ems — the Bold table would shrink it 4.5%
+  // too far. Undefined off those two templates.
   vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial'
-    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : notoBoldEms)).toFixed(3)
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : d === 2 ? notoEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
