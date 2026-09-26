@@ -248,7 +248,7 @@ session widens.
 | 8 | `map` | `964:68746` | 1440 × **813** | `984:16838` | 768 × **858** | `984:16869` | 390 × 883 | **4** (panel **3**, viewport 4) | `964:68681` / `984:10766` / `984:10797` | `964:68713` / `984:13926` / `984:13957` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | **done** (`3582f3d`) |
 | 9 | `form` | `964:68747` | 1440 × **589** | `984:16839` | 768 × **711** | `984:16870` | 390 × 741 | 1 | `964:68682` / `984:10767` / `984:10798` | `964:68714` / `984:13927` / `984:13958` | `if (s.lime \|\| s.grunge)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | **done** (`174900c`) |
 | 10 | `testimonials` | `964:68748` | 1440 × 790 | `984:16840` | 768 × **784** | `984:16871` | 390 × **1044** | 1 (cells **3 / 3 / 4 / 3**, two on 1) | `964:68683` / `984:10768` / `984:10799` | `964:68715` / `984:13928` / `984:13959` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v2)`, after `template` | **done** (`35ca1f0`) |
-| 11 | `footer` | `964:68749` | 1440 × 479.5 | `984:16841` | 768 × 692.3 | `984:16872` | 390 × 736.3 | **2** (layout 1's frames: 3) | — | — | layout 1's `Footer` block, already `s.limeTree`; the seat is decision 1(c) | |
+| 11 | `footer` | `964:68749` | 1440 × 479.5 | `984:16841` | 768 × 692.3 | `984:16872` | 390 × 736.3 | **2** (layout 1's frames: 3) | — | — | layout 1's `Footer` block, already `s.limeTree`; the seat is decision 1(c) | **done** (`04492d0`) |
 | — | `tags` | `964:68729` | 858 × 75 | `984:16821` (**`Theme=Lime`**) | 708 × 67 | `984:16852` | 370 × 97 | 1 | — | — | — | **not in the project**; its Genres row is drawn inside the bio's block |
 
 **No section changes scheme between widths on this page**: every root and every nested node reads
@@ -760,7 +760,8 @@ Written now from what the plan can see; the sections add to it. One session, in 
    Lime-and-Grunge state — the gallery viewer's scrim ("under Lime and Grunge alike"), pricing's
    "Lime's and Grunge's stacks read no `vm.tierRow`", the form's refused box and `vm.titleWordEms`,
    the map's layout-3 lit row (drawn by this frame), the bio's tag chips' reach ("Lime's and
-   Grunge's 3"), the testimonials' registers; the file table's line counts. Grep both files for
+   Grunge's 3"), the testimonials' registers, the footer seal's name "in `tag/1/bg` paper" (now
+   `active/text`, section 11); the file table's line counts. Grep both files for
    "layout 3", "Editorial" and "placeholder"; and the code comments (`navModeDefault`'s, `navFits`',
    the `vm.pad` arms', `photos.js`' head, `SCHEMES_OF`'s "Layouts 3 and 4 are later passes'").
 2. **One whole-page published check under Editorial at layout 3** — `node scripts/page-check.mjs
@@ -919,7 +920,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
     `text/1`; the numeral row lifted 0.08em.*
 11. **footer** — layout 1's tree on **taupe**: the band ringed paper, the seal blush with an ink
     sparkle, the statement paper (layout 1's fitted Bold; at 390 the frame breaks UNFORGETTAB / LE),
-    the links and the foot ink, the Book pill blush. See *The eleventh session*.
+    the links and the foot ink, the Book pill blush. See *The eleventh session*. *Settled in
+    section 11: bindings-only against layout 1; the bar, the pill's label and the seal's name
+    re-keyed; the sparkle followed.*
 
 ### Settled in session 0 (the schemes)
 
@@ -2040,6 +2043,69 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   `907:12166` / `907:12467` narrow); the harness is `cat=footer&arch=0&theme=3&page=2`, and
   the digest's `page_2` footer files are the only theme-3 files that may move.
 
+### Settled in section 11 (the footer)
+
+- **No block to widen, and the paired diff was bindings alone.** One `use_figma` walk of the
+  three masters against layout 1's own (`964:58622` / `986:48249` / `986:48261`, the instances
+  layout 1's section 11 fitted), by traversal order: **35 = 35 at every width, every node's type,
+  name (the 1440 root's aside), box, text, face, size and case the same, and every binding name
+  the same** — only the
+  resolved values move, Scheme 2's for Scheme 3's (the root states `2 · Scheme = Scheme 2` on
+  all three; the 1440 root is 479.5 against 479.7, a rounding). So the layout-3 footer *is*
+  layout 1's footer on the page-keyed seat (decision 1(c)), and the work was only the leaves
+  the block writes as something other than the frame's binding. No Device override, no nested
+  scheme, no effect on any node.
+- **What follows the seat by itself** (read off the diff against the block): the band
+  `sem/bg` taupe, the edge, Line 19 and the small print's rule `sem/stroke/1` (opaque paper
+  here, 56% under Scheme 3 — the same `s.stroke1`), the statement `text/1` paper (`s.ac`), the
+  name, the links and the small print `text/2` ink (`s.tx`), the seal's disc `active/bg` blush,
+  its ring and equator marks `stroke/1` paper and its sparkle `active/text` ink, the pill's
+  ground `active/bg` blush (`pillBg`), its disc `box/3` `#A18A7E` (`discBg={s.box3}`) and its
+  arrow `active/bg`. **The wordmark sparkle follows too** — session 0 listed it as a leaf that
+  does not, but the frame binds `sem/tag/1/bg`, which is blush under Scheme 2 as ours is
+  (`s.chips[0].bg`): blush on taupe is the frame's own picture. Nothing to do.
+- **Three leaves did not, each re-keyed to a value that is layout 1's under Scheme 3** (so the
+  row-0 files stay at zero — the constraint was never "no `ed` arm" but "no value that moves
+  under Scheme 3"):
+  - **the wordmark bar** (`Frame 48`) — the leaf session 0 missed. It binds `sem/tag/1/bg`,
+    blush here; the block drew `s.tx`, which is that binding's value only under Scheme 3
+    (layout 1's section 11 named the coincidence: "the bar `tag/1/bg`, whose value is
+    `s.tx`'s"). Now `ed ? s.chips[0].bg : s.tx` — paper = paper under Scheme 3;
+  - **the Book pill's label** binds `sem/tag/1/text`, which is **ink in both schemes** (it is
+    absent from the diff for that reason); `BookPill`'s default `s.bg` is ink under Scheme 3 and
+    the taupe band under Scheme 2, so the label was taupe on blush. Now
+    `fg={ed ? s.chips[0].fg : undefined}` — `tagFg[0]`, ink in both. `fg` moves the label alone:
+    the disc takes `discBg`, the arrow `discFg ?? pillBg`;
+  - **the seal's name** followed the seat to the **frame's own invisible blush on the blush
+    disc** (`sem/tag/1/bg` — the frame draws no readable name at any width). It is redrawn in
+    **`s.activeFg`**, the disc's own pair and the ink its sparkle already carries — paper under
+    Scheme 3, identical to `tag/1/bg` there, so the row-0 seal is unchanged. Section 8's *a
+    frame's own state can vanish by the scheme; redraw it*, turned on a content leaf (the
+    artist's name). `SealBadge`'s Editorial `line` arm reads `line ? s.activeFg : s.bg`; the
+    footer is still its only `line` caller. Reversible in one line; open question 11.
+- **Proved.** The harness at `&page=2` (DPR 2, reduced motion): the bar blush, the pill label
+  `#141414` on `#E6B6A0` over the `#A18A7E` disc, the seal's name `#141414`, at all three widths;
+  at no `page` (row 0) the pill label, disc and seal name are layout 1's (`#141414` on
+  terracotta, `#0E0E0E`, `#F6F0E8`). Geometry is layout 1's to the pixel (the diff had no box):
+  428 / 692.1 / 650.7, the 390 still layout 1's three-line statement against the master's four
+  (layout 1's open question 11, a named diff).
+- **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly the
+  three `cat_footer_arch_0_page_2_theme_3_*` files on each surface (the bar's background and
+  the pill's colour, two rows a file) — the no-page footer files at zero. **The seal's change is
+  not in it**: its `<text>` sits inside `.seal-spin`, which the digest skips, so it was proved
+  by the render's `fill` and the shot.
+- **Verified in the builder** (`page-check.mjs Editorial 2,0,1,3`): four modal cards; card 3's
+  published 1440 tab stands the footer at 8094 · 522 taupe with every leaf reading; every footer
+  row scrolls to its id and its Book Now to `#form`; no errors or warnings; `overflow390` 0;
+  the 390 burger 1 → 5. Cards 1, 2 and 4 publish an ink footer, card 1's pictured against card
+  3's and unchanged.
+- **`FIELDS.footer` has no template-keyed `in` row**, so no `reach.mjs` run was owed.
+- **For the sweep's CLAUDE.md pass**: the *Editorial is designed* paragraph says the footer's
+  seal "inks the name in `tag/1/bg` paper" — it is `active/text` now (paper under Scheme 3,
+  ink on the taupe page), and the paragraph owes the footer's seat by page (session 0's note
+  already names it). Layout 1's *Settled in section 11* quotes the old `fill` and stays the
+  record.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -2312,6 +2378,26 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 - Section 10: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2,
   4 at zero; `page-check.mjs Editorial 2`.
 
+- Section 11: *The tenth Lime block, at the head of `Footer`* and its Editorial widening
+  (lime/layout-1, *Settled in section 11*; editorial/layout-1, *Settled in section 11*; D1) —
+  nothing widened: the block was already `s.limeTree`, and three leaves were re-keyed.
+- Section 11: *A section's colour scheme is resolved in `sectionVm`* (editorial/layout-1,
+  *decision 3*), extended by session 0's seat off the page — the whole of the fit but three
+  leaves.
+- Section 11: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section
+  8*) — 35 = 35 against layout 1's own Editorial masters, the first diff taken against the same
+  template's other page; bindings only.
+- Section 11: *A scheme that did not move can still move the binding* (grunge/layout-3,
+  *Conventions*) — turned round: the bindings did not move and the scheme did, so every leaf the
+  block wrote as a Scheme 3 coincidence (`s.tx` for `tag/1/bg`, `s.bg` for `tag/1/text`) showed.
+- Section 11: this plan's *a frame's own state can vanish by the scheme; redraw it* (section 8)
+  — the seal's name, redrawn in the disc's own `active/text`.
+- Section 11: *Measure anything under `.seal-spin` with the animation stopped* (lime/layout-1,
+  *Settled in section 2*) — reduced motion for the shots; and the digest's skip of it, which
+  left the seal's change for the render to prove.
+- Section 11: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2,
+  4 at zero; theme 3 the `page_2` files alone; `page-check.mjs Editorial 2,0,1,3`.
+
 ## Open questions
 
 1. **Decision 1** — the header's Scheme 8, the nav's Scheme 5, the footer's scheme by page.
@@ -2356,6 +2442,12 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     three lines, 315 tall — open question 7's class (the demo face's measure). Ours prints the
     seed and fits it to its widest word, so nothing follows it. Worth telling the designer
     with question 7.
+11. **The footer's seal loses its name on this page.** Layout 1's footer seal binds the name to
+    `sem/tag/1/bg` — paper on the terracotta disc under Scheme 3 — and layout 3 stands the same
+    component on Scheme 2, where that token is the disc's own blush, so the frame draws a seal
+    with no readable name at any width. *Settled in section 11: redrawn in `sem/active/text`,
+    the disc's own pair (ink here, paper under Scheme 3).* Worth telling the designer, with
+    questions 4 and 9: the same class, a binding that reads in one scheme and not the next.
 
 ## Notes for the designer
 
