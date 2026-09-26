@@ -55,7 +55,8 @@ there; session 0 starts on it.
    terracotta, taupe and ink side by side.
 2. **Every layout-3 section looks as close to its Figma frame as possible**, at 1440 (× 0.82 onto
    the 1180 canvas), 768 and 390 — and, for the three composed sections, at the column widths
-   `pageRows` gives them (684 / 323 at desktop).
+   `pageRows` gives them (709 : 334.5 on the 1180 canvas and 864.8 : 408.2 in the published 1440
+   tab — section 2; the 684 / 323 first written here predate JP-038's `padX`).
 3. **The setup modal's card 3, "Inset Hero", lays out a fitted page.** `pickHeader` writes arch 2
    to every section and reorders the page into `PAGE_ORDERS[2]`, so this pass turns card 3 from
    its placeholder (layout 1, open question 4: Retro's `HeaderV2` in Scheme 1 tokens, the checker
@@ -563,7 +564,7 @@ block gates on `s.lime` and Grunge's arms on `s.grunge`.
 - **No seams, no band grain, no effect, no leant print, no seal but the footer's.** Every band meets
   its neighbour on a straight edge. The twins' layout-3 glows (Lime) and plain rings (Grunge) become
   the dashed rule wherever this frame draws one, and nothing where it draws none.
-- **Dashed rules** — the language's main device, on nine sections. All 1px INSIDE; read each node's
+- **Dashed rules** — the language's main device, on eight sections. All 1px INSIDE; read each node's
   per-side weights and binding before drawing:
 
   | Section | Node | Dash | Ink |
@@ -594,6 +595,8 @@ block gates on `s.lime` and Grunge's arms on `s.grunge`.
   testimonials' cells — where Lime draws 50 / 30 and Grunge 15. The rounded things are the pills
   (67), the capsules and chips (999), the discs, the header's arches, the location dot and chips
   (6 / 4.51), the sleeves (4), the zoom buttons (8), the badge (4) and the narrow map container (20).
+  *Corrected by the sections:* the repertoire's two 390 pager pills are **square** (section 4), and
+  so are the map's date boxes and its lit row (section 8).
 - **Type**: every display and label string uppercase at its own site, in Noto (`faceK` 1, so
   `faced` is the identity). **Every head on this page is one tone and on the ramp**, the footer's
   fitted Bold statement aside (layout 1's). The demo face's DEMO marks stand in for `'`, `&`, `(`,
@@ -733,7 +736,8 @@ exception:
   column in Noto (*Sizes*).
 - **The Genres row**: at 768 the frame's is Lime's (the tags leak); draw 1440's and 390's.
 - **The builder**: Editorial → card 3 → *Use this header*; the bio and the calendar in one grid row
-  at 621 : 293 on the canvas and 684 : 323 in the published 1440 tab, media under the bio.
+  at 709 : 334.5 on the canvas and 864.8 : 408.2 in the published 1440 tab (section 2; first
+  written 621 : 293 and 684 : 323, before JP-038's `padX`), media under the bio.
 
 ### The eleventh session: the footer
 
@@ -2400,6 +2404,100 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 - Section 11: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2,
   4 at zero; theme 3 the `page_2` files alone; `page-check.mjs Editorial 2,0,1,3`.
 
+- The sweep: *the whole-page published check*, *the two-build digest walks the editor* (`CARD=2`,
+  reduced motion), *field reach is measured* (`reach.mjs 3`), *one five-theme digest is the whole
+  proof* (media's foot) and the thumbnail recipe (memory: `browser-tool-choice`).
+
+### Learned on the end-of-pass sweep (`3359b11`, `8c71e18`, and the two commits that close the pass)
+
+- **Item 1, the docs.** CLAUDE.md's Editorial paragraph is layouts 1, 2 and 3: card 4 the one
+  placeholder, Inset Hero `HeaderV2`'s block widened, a *Layout 3 is a paper page between four
+  full-bleed grounds* passage (the grounds, every card square, `DashRule` on eight sections, the
+  live states followed and redrawn, the measured lifts), the seal's name in `active/text`, and
+  the pair-gate list (layout 3: none). The per-section scheme bullet carries Scheme 5, the header
+  on 3 for its Scheme 8, the footer's seat by `page` and every layout-3 `s.onScheme` reader. Also:
+  `navModeDefault`, the JP-039 counts (four links at 768), `navFits`' arm, the header's `in`
+  sentence (three fitted cards, one placeholder), the gallery viewer, pricing's stack (three
+  templates read no `vm.tierRow`), the form's refused box and `titleWordEms` (Lime and Editorial,
+  keyed by design), the bio's tag reach, and the file table (5250 / 25500 / 1970). README took its
+  Editorial passage and the refused-box aside. Three code comments were stale and were fixed —
+  `Footer`'s head (Scheme 2 by page, the three re-keyed leaves), `THEMES[3].schemes`' seat notes
+  and `photos.js`' head; `navModeDefault`'s, `navFits`', the `vm.pad` arms', `SCHEMES_OF`'s and
+  `Photo`'s were already the sessions'. **"The flat four"**, some eighty comments in
+  `EncoreSection.jsx`, is Retro-pass prose for the palettes that reach Retro's derivations, not a
+  template list, and was not chased; at layout 3 only Pop reaches them now.
+- **Item 2: the published page passed.** `page-check.mjs Editorial 2,0,1,3`: card 3's walk —
+  Music, Gigs, About, Listen and Book Now to their ids; the calendar's pill and the three pricing
+  pills to `#form`; the player plays; the form refuses with four 2px ink rings at 42 and composes
+  the bare *Enquiry* mailto, swapping to *Check your mail app*; all nine footer links scroll; the
+  390 burger 1 → 5; `overflow390` 0; no error or warning in either window. Cards 1, 2 and 4
+  publish all eleven sections. Card 3's first run died on "Execution context was destroyed" (a
+  Vite reload after the docs commit touched three watched modules); rerun alone, it passed —
+  `page-check` has no retry, `shots.mjs`' trap. Rerun once more after item 6's fit: the same,
+  media 1146 tall at 2318 (1167 before) and the repertoire at 3464.
+  - **The harness controls** (`theme=3&arch=2&live=1`, one puppeteer script, deleted): the
+    gallery viewer opens on a tile at 1 / 7 with focus inside and `overflow: hidden` on `<html>`
+    and `<body>` with a stable gutter; Next → 2 / 7, → 3 / 7, ← 2 / 7; Escape closes and restores
+    all three styles; a scrim click closes. Scrim `rgba(20, 20, 20, .94)`, the three controls
+    paper on paper at 14%, desktop and 390. The repertoire at `n=20`: *View full set →* reveals
+    its card's rows at all three widths (the section 94 / 161 / 1103 taller). Pricing's FEATURED
+    seat: All → The Festival Set, Solo → The Wedding Set, Trio and Band → The Festival Set, ink
+    wherever it lands, desktop and 390. The map at `n=30`: `+` twice scales the layer to 1.5625
+    and `−` back to 1.25; *See all gigs* lists all 30 at every width (its pill stays drawn, a
+    picture, the twins' shared block). No page errors or warnings.
+  - **The seams** (`page-check`'s 180px clips at 1440 and 390, read as joins): the ink header →
+    paper, paper → the taupe gallery, the taupe → pricing's ink-ringed paper, pricing → the
+    terracotta map, the map → the form's paper, the wall's paper → the taupe footer — every edge
+    straight, no two neighbours on one ground. The footer seal reads "KAI MERCER" in ink on the
+    blush disc at both widths.
+- **Item 3: the thumbnails** (`browser-tool-choice`'s recipe, with one trap: the header's and the
+  footer's rows carry a *Required* badge inside the name's `<div>`, so a locked row is matched on
+  its name `<span>`). All ten layout-3 rows and the footer's one render one live root each: the
+  header ink under the blush capsule beside its ink arch card, the gallery taupe, the map
+  terracotta round its ink panel, the rest paper with their cards on their own schemes (the
+  repertoire's terracotta / taupe / ink, the wall's three registers). The footer's thumbnail is
+  row 0's ink, no `page` — the named diff.
+- **Item 4**: cards 1 and 2 publish ink footers whose seal names are paper `#F6F0E8`; card 3 a
+  taupe one, its name ink `#141414`; card 4 keeps Retro's checker ribbon (`repeating-conic` in
+  the header) over an ink footer with a paper name — canvas and published tab alike.
+- **Item 5: `reach.mjs 3`** (3,312 renders): every Editorial `in` row holds — the header's over
+  three fitted cards (kicker / tags / showTags `[0, 2, 3]`, location all four, cta2 `[1, 2]` at
+  4/6, showBadge `[0, 3]`, badgeText `[3]`, subtitle / heroCta `[1]`, align `[0]`),
+  `calendar.heading`'s `[0, 1, 2, 3]`, the map's status / updated / expand `[1, 2]` and rings
+  `[1, 2, 3]`, `pricing.offer` `[2]`, and the identity probes (the bio's tags at 2, 3 and 4).
+  Nothing in `FIELDS` moved.
+- **Item 6: no `(s.lime || s.grunge)` is left in layout-3 code.** Every `s.v2` block is
+  `s.limeTree`, and the gallery's two layout-3 ternaries that still spell the pair (`ratio`'s 171,
+  `cream`'s `s.tx`) stand behind an `ed` arm. The pair's other lines are layout 1's three known
+  sites (`LogoMark`, `SealBadge`, and `Photo`'s backdrop, which also takes `s.editorial && (s.v0
+  || s.v2)`), layout 2's gallery caption, and layout 4's — `HeaderV3`'s head and the blocks in or
+  ahead of every `s.v3` branch. In `EncoreBuilder.jsx` and `data.js` every `d === 2` name gate
+  lists Editorial; `footerBand` is Lime's alone by design (Editorial's footer is seated), and
+  `titleWordEms` names Lime and Editorial (Grunge measured out).
+  **The repertoire gap is fitted** (user call, 2026-09-26): media's composed-row foot 37 / 47 / 35
+  → 20 / 34 / 26, so the list ends the frames' 100 / 90 / 70 above the repertoire's head box
+  under Lime, Grunge and Editorial — measured on card 3's published page under all three: 122 at
+  1440, 100 at 1180, 90 at 768, 70 at 390. Digest: exactly media arch 2 at themes 1, 2 and 3,
+  three widths, canvas and live (18 files), each root 17 / 13 / 9 shorter and nothing else;
+  themes 0 and 4 at zero. Named in Lime's and Grunge's layout-3 plans.
+- **Item 7**: `plans/README.md` closed the pass; `CONVENTIONS.md` took a third Editorial column on
+  A, B and C, an Editorial column on D3 (its lead-in's 684 / 323 corrected to 709 : 334.5 and
+  864.8 : 408.2), and four rows this pass leaned on three times or more: *a node can name another
+  scheme's variable outright* (A), *a stand-in face's glyph floor is measured per site* (B), *the
+  composed row's pad arm moves per section* and *a twin's frame-less control is checked against
+  its own surround* (C). The plan's decorative language stays here. This plan's own 684 / 323 and
+  621 : 293, its "nine" dashed sections and its radii bullet were corrected in place.
+- **Item 9: the two-build digest** (`a3632f2`'s committed build against this branch's, one
+  origin, reduced motion on; the old build digested before the `cp`). The default card: the
+  seeded page byte-identical under all five themes at all three widths, and `modal.txt`
+  identical (four Editorial cards in both). `CARD=2`: Retro and Pop identical; Lime and Grunge
+  move by item 6 alone — one height, the media root's, −17 / −13 / −9, and every row under it
+  that much higher (418–479 rows a width), nothing else; Editorial rebuilt (691 → 779, 675 → 768,
+  639 → 726 rows), and the tell at every width is `repeating-conic` (the checker ribbon) old-only
+  and the ink arch card (`118.9px 118.9px 0px 0px`), twenty dashed `rect`s and five more blush
+  grounds new-only. The standalone file is 8,748,639 bytes (was 8,743,201); no photograph was
+  added (the 49 files are untouched since `a3632f2`).
+
 ## Open questions
 
 1. **Decision 1** — the header's Scheme 8, the nav's Scheme 5, the footer's scheme by page.
@@ -2454,4 +2552,37 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 ## Notes for the designer
 
 *(The open questions above that are worth telling the designer, gathered by the sweep into one note
-to forward, in layout 1's shape. Layouts 1's and 2's notes still stand.)*
+to forward, in layout 1's shape. Each is shipped as described; where it says "one line", the
+other answer is a one-line change. Layouts 1's and 2's notes still stand.)*
+
+1. **Three bindings read in one scheme and vanish in the next.** The same class three times on
+   this page: a node bound to a token that is legible under the scheme the component was drawn
+   in and not under the one this page stands it on.
+   - The header's tag chips 4 and 6 are lettered `tag/6/bg` — terracotta on their terracotta
+     fill — so they are blank at every width (chips 3 and 5 name Scheme 3's and Scheme 5's inks,
+     which happen to be ink). The page letters each chip in its own seat's ink.
+   - The map's five idle dots bind `text/2` at 60%, which the viewport's Scheme 4 resolves to
+     ink on the dark map raster — (28, 29, 23) on (41, 42, 27) — where layout 2's Scheme 3
+     viewport made the same node paper. The page draws them paper at the frame's 60%.
+   - The footer seal's name binds `tag/1/bg`: paper on the terracotta disc under layouts 1 and
+     2's Scheme 3, but the disc's own blush under this page's Scheme 2, so the frame's seal has
+     no readable name at any width. The page inks it in the disc's own `active/text` — ink here,
+     paper on layouts 1 and 2, unchanged there.
+
+   Each is one line to reverse. *(4, 9, 11)*
+2. **The bio's photograph hides another template's.** Under Editorial's own stage photograph (a
+   crop of rows 11.9–50%) the well carries Lime's stage shot (`fa453f7d`) at `FILL`, painted
+   over and invisible — a leak in the component rather than on the page. *(2)*
+3. **The gallery's tiles are Retro's placeholders a third time.** The frame's twelve tiles are
+   Retro's layout-3 set with two of Grunge's pictures and Editorial's hero and stage dealt in;
+   the page's seven are the pictures of Editorial's own shoot (layout 1's note 4, layout 2's
+   note 2). *(3)*
+4. **The demo face drops a digit again.** Pricing's first price, "450", renders "£ ✱50" — the 4
+   drawn as Fontspring's DEMO mark, as layout 2's "JUN 14" rendered "JUN 1". The page prints
+   £450 in Noto. *(6)*
+5. **Two heads break inside their measure in the demo face.** The testimonials' "Experiences."
+   breaks EXPERIENC / ES. at 1440 in its capped 306 box; the page drops the cap, as Lime's and
+   Grunge's do, and prints its own heading on the ramp. The form's "Book Kai for / your event"
+   is two typed lines that the demo face sets on three at 118 in the 634 box (BOOK KAI / FOR /
+   YOUR EVENT). The page fits the form's head to its widest word in the half column instead —
+   70px on three lines at 1440 for the seeded head — and never breaks a word. *(7, 10)*
