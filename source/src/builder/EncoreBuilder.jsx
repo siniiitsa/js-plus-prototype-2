@@ -491,11 +491,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   //
   // Editorial's form masters (964:68747 · 984:16839 · 984:16870) pad the same
   // 90 / 56 and 60 / 30 round the taller half — the head column at 1440, where
-  // the twins' is the card — so the form joins on the twins' numbers; the
-  // testimonials follow in their own session, and the pair is one condition
-  // again then (plans/editorial/layout-3.md, section 9).
-  if (((T.name === 'Lime' || T.name === 'Grunge') && (cat === 'form' || cat === 'testimonials')
-    || (T.name === 'Editorial' && cat === 'form')) && d === 2 && Z.dev !== 'mobile') {
+  // the twins' is the card — so the form joined on the twins' numbers, and the
+  // testimonials' roots (964:68748 · 984:16840) pad the twins' 56 / 56 and
+  // 30 / 56, so the pair is one condition again (plans/editorial/layout-3.md,
+  // sections 9 and 10).
+  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+    && (cat === 'form' || cat === 'testimonials') && d === 2 && Z.dev !== 'mobile') {
     const desk = Z.dev === 'desktop'
     const px = (v) => `${desk ? Math.round(v * 0.82) : v}px`
     vm.pad = cat === 'form'
