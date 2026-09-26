@@ -207,13 +207,15 @@ export const THEMES = [
       hl: '#141414',                        // sem/box/1/text
       tagFg: ['#141414', '#F6F0E8'],        // sem/tag/1/text, sem/tag/2/text — parallel to `tags`
     },
-    // The other schemes the frames stand a whole section on (SCHEMES_OF), in
-    // Scheme 1's shape: `palette` is [bg, text1, text2]. Scheme 2's accent is
-    // paper, so its heads are paper on taupe; Schemes 2's and 3's inactive
-    // ground is transparent, so an idle chip there is an outline only.
+    // The other schemes the frames stand a whole section on (SCHEMES_OF) or a
+    // nested node on (`s.onScheme[n]`), in Scheme 1's shape: `palette` is [bg,
+    // text1, text2]. Scheme 2's accent is paper, so its heads are paper on
+    // taupe; Schemes 2's and 3's inactive ground is transparent, so an idle
+    // chip there is an outline only.
     schemes: {
-      // Scheme 2, taupe — layout 1's media player and pricing, and layout 2's
-      // media panel and calendar card.
+      // Scheme 2, taupe — layout 1's media player and pricing, layout 2's
+      // media panel and calendar card, and layout 3's gallery and footer (and,
+      // nested, its audio card and middle repertoire set).
       2: {
         palette: ['#AA958A', '#F6F0E8', '#141414'],
         // tag1 blush, tag2 paper, both inked black — read off the file; the
@@ -228,7 +230,10 @@ export const THEMES = [
         },
       },
       // Scheme 3, ink — layout 1's header, repertoire, enquiry form and
-      // footer, and layout 2's pricing at 1440.
+      // footer, layout 2's pricing at 1440, and layout 3's header (its frame's
+      // Scheme 8; SCHEMES_OF) — and, nested at layout 3, the third repertoire
+      // set, pricing's featured row, the map's panel and the testimonials'
+      // ink cells.
       3: {
         palette: ['#141414', '#C86E52', '#F6F0E8'],
         tags: ['#F6F0E8', '#C86E52'],
@@ -241,7 +246,8 @@ export const THEMES = [
         },
       },
       // Scheme 4, terracotta — layout 2's repertoire at 1440 and its enquiry
-      // form. Its accent is paper and its active pair ink under terracotta, so
+      // form, and layout 3's map (and, nested, its first repertoire set and
+      // the testimonials' terracotta cell). Its accent is paper and its active pair ink under terracotta, so
       // `pillBg` is ink here. tag1 ink, tag2 salmon — read off the file; layout
       // 1's plan had the two seats the other way round.
       4: {

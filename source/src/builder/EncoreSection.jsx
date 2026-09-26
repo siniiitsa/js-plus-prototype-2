@@ -24996,10 +24996,18 @@ function Footer({ s }) {
   // page's sparkle in `sem/tag/1/bg` (paper, not the blush every other
   // Editorial sparkle is), the name and the small print are Label/MD, the
   // links Display/List 12 apart, the pill's disc `sem/box/3`, the left column
-  // 690 where the twins' is 743, the seal the bio's arm with its name in paper,
-  // and the statement the page's third hand-scaled Bold (57.84 on a 47.9 line
-  // at every width, which is why the narrow masters stand 45 and 117 taller
-  // than the twins': three lines at 768 and four at 390 where theirs set two).
+  // 690 where the twins' is 743, the seal the bio's arm with its name in
+  // `sem/active/text` (paper here), and the statement the page's third
+  // hand-scaled Bold (57.84 on a 47.9 line at every width, which is why the
+  // narrow masters stand 45 and 117 taller than the twins': three lines at 768
+  // and four at 390 where theirs set two). Its layout-3 page (964:68749 ·
+  // 984:16841 · 984:16872) is this tree node for node on Scheme 2, taupe — the
+  // seat read off the page's design (SCHEMES_OF), so layouts 1 and 2 keep
+  // Scheme 3 — and every leaf follows the seat but three, each written as the
+  // frame's binding rather than a Scheme 3 coincidence: the wordmark bar
+  // (`tag/1/bg`, blush there), the pill's label (`tag/1/text`, ink in both) and
+  // the seal's name, which the frame leaves blush on the blush disc and the
+  // page redraws in the disc's own `active/text`, ink.
   if (s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
