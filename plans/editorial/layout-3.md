@@ -246,7 +246,7 @@ session widens.
 | 6 | `gallery` | `964:68744` | 1440 × 789 | `984:16836` | 768 × **877** | `984:16867` | 390 × **587** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68711` / `984:13924` / `984:13955` | **no block** — `(s.lime \|\| grunge)` ternaries through `Gallery`'s `if (s.v2)` | **done** (`5616c03`) |
 | 7 | `pricing` | `964:68745` | 1440 × **1109** | `984:16837` | 768 × **975** | `984:16868` | 390 × **1383** | 1 (featured row **3**) | `964:68680` / `984:10765` / `984:10796` | `964:68712` / `984:13925` / `984:13956` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v2)`, after `shown` | **done** (`005af79`) |
 | 8 | `map` | `964:68746` | 1440 × **813** | `984:16838` | 768 × **858** | `984:16869` | 390 × 883 | **4** (panel **3**, viewport 4) | `964:68681` / `984:10766` / `984:10797` | `964:68713` / `984:13926` / `984:13957` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | **done** (`3582f3d`) |
-| 9 | `form` | `964:68747` | 1440 × **589** | `984:16839` | 768 × **711** | `984:16870` | 390 × 741 | 1 | `964:68682` / `984:10767` / `984:10798` | `964:68714` / `984:13927` / `984:13958` | `if (s.lime \|\| s.grunge)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | |
+| 9 | `form` | `964:68747` | 1440 × **589** | `984:16839` | 768 × **711** | `984:16870` | 390 × 741 | 1 | `964:68682` / `984:10767` / `984:10798` | `964:68714` / `984:13927` / `984:13958` | `if (s.lime \|\| s.grunge)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | **done** (`174900c`) |
 | 10 | `testimonials` | `964:68748` | 1440 × 790 | `984:16840` | 768 × **784** | `984:16871` | 390 × **1044** | 1 (cells **3 / 3 / 4 / 3**, two on 1) | `964:68683` / `984:10768` / `984:10799` | `964:68715` / `984:13928` / `984:13959` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v2)`, after `template` | |
 | 11 | `footer` | `964:68749` | 1440 × 479.5 | `984:16841` | 768 × 692.3 | `984:16872` | 390 × 736.3 | **2** (layout 1's frames: 3) | — | — | layout 1's `Footer` block, already `s.limeTree`; the seat is decision 1(c) | |
 | — | `tags` | `964:68729` | 858 × 75 | `984:16821` (**`Theme=Lime`**) | 708 × 67 | `984:16852` | 370 × 97 | 1 | — | — | — | **not in the project**; its Genres row is drawn inside the bio's block |
@@ -846,6 +846,17 @@ name them.
   27) plate. Sample a followed state on the render before following it; where it has vanished,
   it is the twins' *invisible, so redrawn* case, and `text/1` at the frame's .6 is what the
   same node drew on the page where it read.
+- **A baseline-aligned row lifts as one; a lone numeral would leave its baseline** (section
+  9). The form's `£1,200` and *from / event* share a baseline in the frame (`BASELINE`) and in
+  CSS (`alignItems: 'baseline'`), so a `top` on the price span would pull the digits off the
+  unit's line. The row takes the lift (`position: relative; top: calc(-0.09 * size)`, the
+  price's size), and only when a price is printed — an Inter unit alone sits right. Measure
+  the shared baseline against the row's own top, frame and ours, in the price's ems. **And a
+  Display/LG head over a line of type is a lift site too**: at lh 0.89 the form's head
+  measured 0.08em low (floor 0.053 / 0.060 / 0.077em above the box against the frame's 0.132
+  / 0.138 / 0.133), and with a J in the string it all but met the paragraph 20 below. The
+  bio's and media's heads stand over a card, not prose, and were not lifted; a later head
+  over prose should be measured the same way.
 
 ### Seen at planning time, per section
 
@@ -890,7 +901,8 @@ sections are where the twins' dark-ground assumptions break (trap 6).
 9. **form** — **paper, no band** (Scheme 1; Lime's and Grunge's are page-ground cards too); the card
    and boxes square `#FFF9F2` dashed terracotta 10, 10 and 6, 6; the head terracotta at Display/LG,
    three lines at 1440 (the widest-word fit, *Sizes*); the refused box drops its full-ink dash for a
-   solid 2px ring (layout 2's form rule — which ink on paper is the session's).
+   solid 2px ring (layout 2's form rule — which ink on paper is the session's). *Settled in
+   section 9: 2px of ink (`s.tx`); the head fits at 70px on three lines in a 519.5 column.*
 10. **testimonials** — a three-register wall: **paper / ink / terracotta**, seated **`[0, 1, 2, 1, 0]`**
     over the five quote cells (Lime `[0, 1, 1, 2, 0]`, Grunge `[0, 1, 0, 1, 0]`) — write an Editorial
     `REG` / `SEATS` in `G`, never remap the twins'; the stat card `onScheme[3]` ink with a terracotta
@@ -1771,6 +1783,137 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   the paper, not the twins' key (*Conventions*, the frame-less bullet), and measure any display
   numeral in the price row for the lift before applying one (*Conventions*, section 8).
 
+### Settled in section 9 (the enquiry form)
+
+- **The block widened: `if (s.limeTree)` inside `EnquiryForm`'s `if (s.v2)`, after `up`,
+  `const ed = s.editorial`, and no `G`** — Grunge's section 9 again: every fill binds the
+  twins' names, so the deltas are a handful of `ed` arms and the twins' DOM is untouched (the
+  box wrapper is `ed ? <div>{el}…</div> : el`, `el` keyed as before). The tree is theirs node
+  for node, **27 = 27 at every width against both** (the paired traversal-order diff, six
+  pairs in one call), on **Scheme 1** at every root (`Device` the page's, `Scheme 1` explicit
+  at 1440 and inherited narrow), **no nested scheme, no effect on any node**.
+  `get_variable_defs` is Sienna Vale's ramp at all three (display-lg 118 / 73 / 48, label-sm
+  16 / 13 / 12, list 24 / 19 / 18, body-md 14 / 13 / 13, body-sm 12, chip 12 / 11 / 11) but
+  Display/Title **32 / 25 / 23**, the literal (`vm.title` shadows the ramp). The hooks sit
+  above the branch, so the published boxes, submit, sent card and *Write another* needed
+  nothing.
+- **The paired diff against Grunge was leaves alone**: the card's and each box's stroke binds
+  **`sem/stroke/2`** (Grunge's `stroke/1`), **dashed** — 10, 10 round the card and 6, 6 round
+  each box, 1px INSIDE — and both are **square** (Grunge 15 / 999, Lime 50 / 999); the boxes
+  are Grunge's **42 / 38 / 37** to the pixel (Sienna Vale's Label/SM is Static Youth's 16 /
+  13 / 12); the sizes are the ramp's. Every binding *name* is the twins': the card and boxes
+  `box/1` `#FFF9F2`, the head, price, stars, pill fill and arrow `text/1` terracotta, the
+  pill's label and disc `sem/bg` paper, every other ink `text/2` — so the stars' two-tone,
+  the pill's four seats and the eyebrow's Body/Chip are Lime's block unchanged.
+  - **the card** drops Lime's radius and ring under `ed`, takes `position: relative`, and
+    draws `DashRule side="all"` (8.2, 8.2 on the canvas) in `s.stroke2`;
+  - **each box** is square with no idle ring, its 6, 6 dash on the frame's own wrapper — a
+    relative column round the `<input>` or span, layout 2's idiom (an `<input>` takes no
+    child); a refusal drops the dash;
+  - **`disp()`** uppercases under `grunge || ed` (the head, the price, the submit and
+    *Write another*, the sent card's title); the box labels are `up()`'s string, as before;
+  - **`title`** is `u(32)` / 25 / 23 under `ed` (the price and the sent card's title).
+- **The refused box keeps the twins' key, read against this paper**: 2px of `s.tx`, **ink**
+  on `#FFF9F2`, inset, with the dash gone. The idle mark is a 1px dash of full terracotta, so
+  the refusal changes colour, weight and dash at once (CONVENTIONS C). No frame draws it; ink
+  reads on the paper card where the twins' 2px `s.tx` is pale on their dark ones — the one
+  frame-less state here, checked on its own surround as *Conventions* (section 6) asks.
+- **The desktop head fits its widest word in Noto's 540 ems.** `vm.titleWordEms` was Noto
+  **Bold** ems for Editorial at every design (layout 1's hand-scaled statement); this head is
+  Display/LG Regular, so `sectionVm` keys it by design — `d === 2 ? notoEms : notoBoldEms` —
+  where the Bold table would have shrunk it 4.5% too far (67 against 70). UNFORGETTABLE. is
+  7.387 ems, and the half column is **519.5** now (JP-038's `padX` of 45.9; the plan's ~501
+  predates it), so the head sets at **70px** on three lines — LET'S MAKE YOUR / NIGHT /
+  UNFORGETTABLE. — with the long word rendering 513.4 wide, 6px of room (`notoEms` is a
+  little generous). 768 (73 in 708) and 390 (48 in 370, the word 352 wide) never bite: three
+  lines each, no word broken. The key's only other reader, layout 1's statement, is design 0.
+- **Two lifts, measured** (*Conventions*, new bullet):
+  - **the price row**: the frame's shared baseline stands 0.83em of the price below the
+    row's top (0.828 / 0.86 / 0.804 at 1440 / 768 / 390, whole-pixel boxes), ours 0.92
+    (0.915 / 0.924 / 0.926), so the **row** is lifted 0.09em of the price, only when a price
+    is printed; after it, 0.857 / 0.844 / 0.839 — within a pixel at every width, `£1,200`
+    and *from / event* still on one baseline;
+  - **the head**: its glyph floor stood 0.053 / 0.060 / 0.077em above the box's foot against
+    the frame's 0.132 / 0.138 / 0.133 (`absoluteRenderBounds`, the frame's last line "YOUR
+    EVENT", no descender), so it is lifted **0.08em** and now stands at 0.139 / 0.142 /
+    0.140, cap tops 0.031 / 0.014 / 0.000 against 0.031 / 0.025 / 0.035. With `&cj=` "Join
+    the jam in June" the second line's J cleared the paragraph by ~2.5px unlifted and ~10
+    lifted; the first line's J still meets the second line's J at lh 0.89 — the tight line
+    box's, not the lift's.
+  The pill's and the boxes' Noto labels are centred in their boxes and were not lifted
+  (pricing's section 7 call).
+- **`vm.pad`'s `d === 2` form arm takes Editorial alone**: the masters pad **90 / 56 / 90 / 56**
+  (1440), **60 / 30** (768) and 60 + 30 (390) round the taller half — the head column at 1440
+  (409 against the card's 377), where the twins' is the card — the twins' insets exactly, so
+  the foot is `u(90)` / 60 and 390 keeps its `padY` 44. Joined as `|| (T.name ===
+  'Editorial' && cat === 'form')`, the testimonials untouched; section 10 folds the pair back
+  into one condition.
+- **Measured against the masters' content edges** (harness, DPR 2; the frame × 0.82 in
+  brackets): **desktop** card (614.6, 80) **519.5 × 351.9** (615, 519.9 × 309.1 + one 42.6
+  box pitch = 351.7), radius 0, dash 8.2, 8.2 `#C86E52`; price row 23 into the card (23),
+  stars 63.3 (63.1), boxes 88.8 (88.6), **34.4** on a 42.6 pitch (42 / 52 × 0.82), pill 44.3,
+  note 314.9 (314.8); the eyebrow 10, h2 70px on three lines 186.9 tall, paragraph one line.
+  **768** eyebrow at 56 (60, `padY`), h2 73px on three lines 194.9, card at 353.4, 708 ×
+  **405.4** (358 + 48), price 28 into it (28), stars 69.8 (70), boxes at 100.6 (101), **38**
+  on 48, pill 54. **390** h2 48px on three lines 128.2, card 370 × **399.4** (352 + 47),
+  boxes **37** on 47, pill 54. Sections **505.9 / 818.8 / 737.5**; the published 1440 tab
+  stands the form at **6736 · 617** (589 in the frame).
+- **Named diffs**:
+  - the twins': the seed's four boxes against the frame's three (NAME, EMAIL, EVENT DATE,
+    GUESTS against EVENT DATE, EVENT TYPE, YOUR EMAIL), and its "Let's make your night
+    unforgettable." against "Book Kai for / your event" — so the card is **taller than the
+    head column at 1440** (351.9 against ~246), the frame's reverse, and the head centres on
+    the card; three lines at 768 and 390 where the frame's copy sets two; the top inset is
+    `padY` 80 / 56 / 44 against the frame's 90 / 60 / 90 (Lime's arm sets only the foot);
+  - the head sets at **70px against the ramp's 97** (the frame's 118 × 0.82) at desktop, the
+    widest-word fit — the frame's own Fisterra sets its copy at the full size;
+  - the display renders at Noto's 540 against Fisterra Bold (layout 1's decision 1).
+- **`live=1`** (puppeteer, trusted clicks and typing, 1440 and 390, a capture-phase
+  `preventDefault` on the mailto): the idle boxes carry the 6, 6 dash and no ring; an empty
+  submit rings all four in `inset 0 0 0 2px #141414`, drops their dashes, holds the heights
+  (34.4 / 37) and prints *Add the missing details and try again.*; typing into the first
+  clears its ring and brings its dash back; the filled submit's `href` is
+  `mailto:bookings@kaimercer.co.uk?subject=Enquiry&body=Name%3A%20Ada…` — the bare *Enquiry*
+  subject and the four values; the click swaps in the sent card (*CHECK YOUR MAIL APP*, the
+  address in plain text, *WRITE ANOTHER* the terracotta pill); *Write another* restores the
+  four typed values. `n=0` is the card with its price, stars, pill and note (181.6 at
+  desktop, the head column then the taller); `n=8` grows it to 522.2. No page errors or
+  console warnings.
+- **`FIELDS.form` moves nothing**: every `in` row is a flat array, and the block reads
+  exactly the twins' keys (`available`, `heading`, `para`, `price`, `priceUnit`, `bookings`,
+  `fields`, `cta`, `note`), each already `in` design 2 — no `reach.mjs` run was owed.
+- **Verified in the builder** (`page-check.mjs Editorial 2`): four modal cards; the published
+  1440 tab stands the form at 6736 · 617 under the map (5923 · 813) and over the testimonials
+  (7353); every nav, fragment and footer link scrolls to its id (Book Now, the calendar's and
+  the three pricing pills, Enquiries → `#form`); the refused submit rings all four boxes in
+  2px ink at 42, the filled one composes the mailto and swaps in the sent card; no errors or
+  warnings; `overflow390` 0; the 390 burger opens 1 → 5. The seam clips show straight edges
+  at 1440 and 390, the map's terracotta band onto the form's paper, and paper on into the
+  testimonials.
+- **Digest**: themes 0, 1, 2 and 4 zero files of 660, canvas and `live=1`; theme 3 exactly
+  form arch 2 at three widths on both surfaces (6 files). The `titleWordEms` key is computed
+  for every Editorial design-2 section; the digest proves only the form reads it.
+- **For the sweep's CLAUDE.md pass**: the enquiry form's layout-3 clauses — "Under Lime and
+  Grunge a refused box takes layout 2's 2px ring of full ink" (Editorial's too: square boxes
+  dashed 6, 6 in terracotta, refused as a solid 2px ink ring), and "under Lime the desktop
+  head shrinks to fit its widest word … (`vm.titleWordEms` … its other arm is Editorial's
+  layout-1 statement)" — `titleWordEms` is Lime's and Editorial's at layout 3 now, in Noto's
+  540 ems at design 2 and Bold at design 0. Not written here.
+- **For the testimonials**: the block (inside `Testimonials`' `if (s.v2)`, after `template`)
+  carries Grunge's `G` — `REG`, `SEATS`, `card`, `cardFg`, `hair`, `lift`, `radius`, `pad`,
+  `quote` — so Editorial is a third arm. The wall is **three registers** read off each
+  cell's own scheme: paper `#FFF9F2` dashed 5, 5 in ink (Scheme 1), ink `#1D1D1D` dashed paper
+  56% (Scheme 3), terracotta `#DA7C5E` dashed paper 56% (Scheme 4) — `s.onScheme[1|3|4]`,
+  never a literal — seated **`[0, 1, 2, 1, 0]`** over the five quote cells (write Editorial's
+  own `SEATS`, never remap the twins'); every cell **square** and dashed 5, 5 all round but
+  `quote-cell`, which is unstroked (the twins ring it, Retro's normalisation — decide); the
+  stat card `s.onScheme[3]` with a terracotta numeral; the quote at **Label/LG 24 / 16 / 14**
+  (Lime's token, `s.labelLg` — not Grunge's written-out Display/Title; confirm with
+  `get_variable_defs`); the head ink at Display/MD. **`vm.pad`'s form / testimonials arm**
+  gets its Editorial testimonials half (the roots pad 56 · 30 / 30 / 56 / 30 by the planning
+  read, the twins' numbers — measure), folding the two conditions back into one. The
+  testimonials' "Experiences." head is open question 7's, dropped as the twins drop it.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1985,6 +2128,35 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 - Section 8: *The digest is committed* and *the whole-page published check* — themes 0, 1, 2, 4
   at zero; `page-check.mjs Editorial 2`.
 
+- Section 9: *After `up`* and *the desktop head shrinks to fit its widest word*
+  (lime/layout-3, *Settled in section 9*; D3) and Grunge's widening (grunge/layout-3,
+  *Settled in section 9*) — widened to `s.limeTree`; the fit kept, its ems Noto's 540 by
+  design.
+- Section 9: *A widened block can need no `G` at all* (grunge/layout-3, *Settled in section
+  9*) — a handful of `ed` arms, every fill a twin key.
+- Section 9: *The paired diff walk*, by traversal order (grunge/layout-2, *Settled in section
+  8*) — 27 / 27 / 27 against both twins in one call; leaves only.
+- Section 9: *A dashed stroke is `DashRule`* and *a dashed rule under an `<input>` goes on the
+  field's column* (editorial/layout-1, *Conventions*), in layout 2's wrapper shape
+  (editorial/layout-2, *Settled in section 9*) — the card 10, 10 and each box 6, 6.
+- Section 9: *Read the radius before calling a dash a capsule* (editorial/layout-2,
+  *Conventions*) — the boxes square, as layout 2's.
+- Section 9: *A refused box changes colour, not weight alone, when the idle ring is already
+  full ink* (CONVENTIONS C) and this plan's frame-less-control bullet (section 6) — 2px of
+  ink on the paper card.
+- Section 9: *A head that must fit its measure is fitted to its widest word* (CONVENTIONS C) —
+  the Lime block's column fit, re-keyed in Noto.
+- Section 9: *Noto's 0.09em is a face fact* and *the lift is measured per site* (this plan,
+  *Conventions*, sections 5 and 8) — the price row (lifted whole, a new bullet) and the head
+  over its paragraph.
+- Section 9: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, *Settled in section 6*)
+  — the price and the sent card's title at the literal 32 / 25 / 23.
+- Section 9: *The composed row's pad arm moves per section* (grunge/layout-3, *Conventions*),
+  turned on the form / testimonials pair — the form joins alone.
+- Section 9: *The popup is `about:blank`* and the capture-phase mailto intercept
+  (memory: `verifying-the-published-tab`) — the live drive and `page-check.mjs Editorial 2`.
+- Section 9: *The digest is committed* — themes 0, 1, 2, 4 at zero.
+
 ## Open questions
 
 1. **Decision 1** — the header's Scheme 8, the nav's Scheme 5, the footer's scheme by page.
@@ -2024,6 +2196,11 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    where layout 2's Scheme 3 viewport made the same node paper. *Settled in section 8:
    redrawn in `text/1` paper at the frame's .6.* Worth telling the designer, with open
    question 4's chips: the same class, a binding that reads in one scheme and not the next.
+10. **The form's head breaks its own typed line at 1440.** "Book Kai for\nyour event" is two
+    typed lines, but at 118 in the 634 box the demo face sets BOOK KAI / FOR / YOUR EVENT —
+    three lines, 315 tall — open question 7's class (the demo face's measure). Ours prints the
+    seed and fits it to its widest word, so nothing follows it. Worth telling the designer
+    with question 7.
 
 ## Notes for the designer
 
