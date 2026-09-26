@@ -2408,7 +2408,7 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   reduced motion), *field reach is measured* (`reach.mjs 3`), *one five-theme digest is the whole
   proof* (media's foot) and the thumbnail recipe (memory: `browser-tool-choice`).
 
-### Learned on the end-of-pass sweep (`3359b11`, `8c71e18`, and the two commits that close the pass)
+### Learned on the end-of-pass sweep (`3359b11`, `8c71e18`, `8ec3efd`, `b7e4a8c`)
 
 - **Item 1, the docs.** CLAUDE.md's Editorial paragraph is layouts 1, 2 and 3: card 4 the one
   placeholder, Inset Hero `HeaderV2`'s block widened, a *Layout 3 is a paper page between four
