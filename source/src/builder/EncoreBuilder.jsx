@@ -1147,7 +1147,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // `live`, so the canvas never reads the clock and stays the reference frame's
   // June. With it, every day before today is **dead** — a flag beside `booked`
   // that the section tests as the same `hit`, drawn as a booked day without the
-  // strike — a cued `open` in the past cues nothing, and a past `open` month
+  // strike (at layout 3, whose legend names the booked fill, as the free dot
+  // dimmed) — a cued `open` in the past cues nothing, and a past `open` month
   // gives way to today's as the first month of the window.
   if (cat === 'calendar') {
     const open = parseDate(cv('open', CAL_OPEN)) ?? parseDate(CAL_OPEN)

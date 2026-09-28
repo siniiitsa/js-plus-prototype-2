@@ -135,7 +135,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | **done** (A, Retro kept; `cardLine` seeded `CARD_LINE_3`; after-diff zero) |
 | 5 | JP-062 | The *Inset Hero* card's name spills | **Confirmed, `s.limeTree`**: the card's column is `nowrap`; Editorial's seeded name already runs into the padding | S–M | **yes** — A (wrap, fit the widest word), B, C | **done** (A, at the content box plus half the padding, re-asked mid-session; `overflowWrap` on the line; after-diff zero) |
 | 6 | JP-074 | A price range is all display size | **Confirmed, shared**: `priceParts()` has two parts; every layout-3 frame draws three (`£ \| 450 \| — £1,400`) | S–M | no (a named oddity) | **done** (a `tail`; layout 3's narrow numeral fills from `auto`; JP-058's 768 overflow closed; after-diff zero) |
-| 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | open |
+| 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | **done** (A, past wins over booked; the seed's after-diff zero, the States 15 files, all layout 3) |
 | 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no | open |
 | 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | open |
 | 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | open |
@@ -1250,11 +1250,97 @@ alike (no `&today=`).
 **Docs.** CLAUDE.md's calendar paragraph ("the booked look **without the strike**"): layout 3
 dims instead, and why (its legend).
 
-**Decided.** —
+**Decided** (2026-09-28, user call).
+- **A.** A dead day draws the *free* dot at .38 with no handler: in the `s.limeTree` block,
+  `s.box1` and its ring; in Retro's and Pop's body, the transparent ring. The legend keeps its
+  three states.
+- **A booked past day reads as past.** Past wins, so every day before today looks the same,
+  booked or not. The legend's *Booked* mark then appears only on days a visitor could otherwise
+  pick, and past bookings are not advertised. Layout 1's block already draws the two alike.
 
-**Settled.** —
+**Settled** (2026-09-28).
+- **Re-checked on HEAD** (`ce10c45`). Every line held as the hand-off named it (triage +64):
+  `blocked` at `EncoreSection.jsx:14529`; layout 1's block at `:14678` (.38) and Retro's body at
+  `:14865` (`s.soft`), with the strike on `booked` alone at `:14867`; layout 3's block fill at
+  `:15702`, no ring when blocked at `:15703`, legend `:15759`; Retro's and Pop's body at
+  `:15847`, legend `:15883`. `EncoreBuilder.jsx:1158` (`const now = live ? …`); the triage's
+  `:1143` was stale. `data.js:136`, Grunge's `box2: '#383838'`.
+- **Code.** Both layout-3 dots, in the `s.limeTree` block and in Retro's and Pop's body:
+  - `const took = c.booked && !c.dead` picks the *Booked* fill and drops the ring, where
+    `blocked(c)` did.
+  - `opacity: c.dead ? 0.38 : undefined` dims the rest. A dead day is the free dot at .38
+    whether or not it is booked.
+  - The handler still reads `!blocked(c)`, and so does `hit`. So `on` is never true on a dead
+    day, and nothing else in the branch moved.
+  - Comments: `blocked`'s (`:14525`), the block's dot, and the body's "Three states".
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on
+  :5173, calendar × every arch × themes `0,1,2,3,4` × three widths: **0 of 60** on the canvas
+  and **0 of 60** with `live=1` (port and `?t=` normalised).
+- **After the edit: 0 of 60 and 0 of 60**, as named. :5173 served the edit: its
+  `EncoreSection.jsx` carries `const took` and `c.dead ? .38` (esbuild's) twice each.
+- **The States, as a digest** (layout 1 unchanged). The same 60 renders with
+  `&live=1&today=2025-06-18&booked=2025-06-10,2025-06-24`, on both servers: **15 of 60** differ,
+  **all `arch_2`**, and 17 rows in each, which are days 1–17, the dead days. Layouts 1, 2 and 4
+  do not move. In layout 3 the booked 24th, the legend and every box stay as they were.
+- **The States, read off the DOM** (a one-off puppeteer probe in the scratchpad). Calendar
+  arch 2 × themes 0–4 × three widths, same query. For each render it read five dots: the 5th
+  (past), 10th (past, booked), 18th (today), 24th (future, booked) and 26th (free). It then fired
+  a click on the 5th, 10th and 24th, and one on the 26th.
 
-Reply: —
+  | Check | HEAD | Tree |
+  |---|---|---|
+  | past = the free dot's fill and ring, at .38 | 0 / 15 (the legend's *Booked* colour on every theme) | **15 / 15** |
+  | past booked = past (every style equal) | 15 / 15 | **15 / 15** |
+  | future booked = the legend's *Booked* mark, at 1 | 15 / 15 | **15 / 15** |
+  | no `pointer` on the three, `pointer` on the 18th and 26th | 15 / 15 | **15 / 15** |
+  | the three clicks change no text and no dot | 15 / 15 | **15 / 15** |
+  | the click on the 26th picks it | 15 / 15 | **15 / 15** |
+
+  The second and third rows are the pair that proves *past wins*: on HEAD both held only
+  because every blocked day took the booked fill. The shots (Retro, Lime, Grunge and Editorial)
+  show the rows before the 18th as quiet rings, the 18th onwards at full ink, and only the 24th
+  filled.
+- **The tester's steps in the real app.** A one-off puppeteer script (deleted) ran with the
+  editor at 1600 × 1000. It clicked the card, *Use this header*, *Publish* and *Open*, then read
+  the tab at 1440, 768 and 390. Today was 2026-09-28, past `open`, so the grid opened on
+  September 2026.
+
+  | | canvas | 1440 · 768 · 390 |
+  |---|---|---|
+  | Grunge card 3 | June 2025, 0 of 30 dots dimmed | days 1–27 `#1A1A1A` in the ring at .38, no pointer; 28–30 the same at 1 with a pointer; none in the legend's `#383838` |
+  | Retro card 3 | June 2025, 0 of 30 dots dimmed | days 1–27 transparent in the ink border at .38, no pointer; 28–30 at 1 with a pointer; none in `#E1CAA5` |
+
+  At every width a trusted click on the 1st changed nothing. One on the 29th printed "Enquiry
+  About September 29" on the pill. Neither window logged a page error.
+- **Named, not fixed.** Under Lime and Grunge the free ring is `s.stroke1`, the page ink at 15%,
+  so at .38 a past ring is about 6% ink. That is quiet, but it shows in every shot. Retro's,
+  Pop's and Editorial's rings are full ink and read plainly. The .38 is layout 1's own dim, as
+  decided.
+- **Docs.**
+  - CLAUDE.md's calendar paragraph: layout 3 joins the exceptions to "the booked look without
+    the strike", with the why (its legend) and the past-wins call.
+  - README's calendar paragraph, and `sectionVm`'s calendar comment (`EncoreBuilder.jsx:1149`),
+    say the same in a clause.
+  - A *Reopened by JP-064* pointer in F20's Settled ([`../retro/qa-fixes.md`](../retro/qa-fixes.md)),
+    which listed "the layout 3 dots in both" among the `blocked` fill reads.
+- **For JP-067 onwards.** `EncoreSection.jsx` grew by 11, all inside `Calendar` (from `:14528`).
+  A triage number past the calendar is now **+75**: the footer root's fill at `:25563` and its
+  seal at `:25203`. `:1099` (the Grunge seal's `line` arm) is before it and does not move.
+  `EncoreBuilder.jsx` grew by 1 at `:1150`, so `:436` (`footerBand`) and `:277` (the seat) hold.
+  `data.js` did not change. JP-067's `data.js:334` was already wrong at triage: the Editorial
+  row `2: { …, footer: 2 }` is at `:326` both at `109c293` and now.
+
+Reply: **JP-064 — fixed.** On the published page, calendar layout 3 now draws a day that has
+passed as a dimmed *Free* dot, not in the *Booked* colour, so the days before today no longer
+read as taken.
+- Past days still cannot be picked, as before.
+- The legend keeps its three states. *Booked* now appears only on days the artist blocked that
+  are still ahead.
+- A day that is both booked and past reads as past, like every other day before today.
+- The editor's canvas never shows past days (it doesn't read the clock), so it looks exactly as
+  before. Layouts 1, 2 and 4 are unchanged.
+
+It covers every template at layout 3: Retro, Lime, Grunge, Editorial and Pop.
 
 ---
 

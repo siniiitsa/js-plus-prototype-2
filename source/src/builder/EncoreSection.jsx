@@ -14525,7 +14525,9 @@ function Calendar({ s }) {
   // Whether a day or a slot is shut to the visitor: blocked by the artist, or
   // — live only — already past. One test, so the two behave identically
   // everywhere a pick is resolved or a handler given; only `booked` is struck
-  // through, since a past day is not one the artist took.
+  // through, since a past day is not one the artist took. Layout 3 parts them
+  // further: its legend names the booked fill, so a past day there is the free
+  // dot dimmed, booked or not (JP-064).
   const blocked = (x) => x.booked || x.dead
 
   if (s.v0) {
@@ -15695,12 +15697,15 @@ function Calendar({ s }) {
           : undefined
         // The free dot's ring is the frame's raw 2.559, stroked inside, so it
         // is an inset shadow and the 30.713 stands. Editorial's is
-        // `border/hairline`, 1px unscaled.
+        // `border/hairline`, 1px unscaled. A past day is the free dot at .38
+        // (JP-064), booked or not, since the legend names `box/2` Booked.
+        const took = c.booked && !c.dead
         return (
           <span key={i} onClick={onClick} style={{
             width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
-            background: on ? s.ac : blocked(c) ? s.box2 : s.box1,
-            boxShadow: on || blocked(c) ? undefined : `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            background: on ? s.ac : took ? s.box2 : s.box1,
+            boxShadow: on || took ? undefined : `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            opacity: c.dead ? 0.38 : undefined,
             cursor: onClick ? 'pointer' : undefined,
           }} />
         )
@@ -15835,17 +15840,23 @@ function Calendar({ s }) {
     // frame's 2.559 rather than `border/thin`'s 2 — it is a raw value on the
     // ellipse, not a token, and at 30px it is the whole of the dot's form.
     // Clicking the lit dot unlights it, layout 1's cell and the map's pin.
+    // A past day (live only) is none of the three, so it is the free ring at
+    // Lime's layout-1 .38, booked or not (JP-064, user call, 2026-09-28): drawn in
+    // `taken` it read as the legend's Booked, the whole month before today
+    // claimed as gigs.
     const dot = (c, i) => {
       if (c.iso === undefined) return <span key={i} />
       const on = hit ? c.iso === hit.iso : false
       const onClick = s.live && !blocked(c)
         ? () => setSel((v) => (v === c.iso ? '' : c.iso))
         : undefined
+      const took = c.booked && !c.dead
       return (
         <span key={i} onClick={onClick} style={{
           width: u(30.713), height: u(30.713), borderRadius: '999px', justifySelf: 'center',
-          background: on ? hue : blocked(c) ? taken : 'transparent',
-          border: on || blocked(c) ? 'none' : `${u(2.559)} solid ${ink}`,
+          background: on ? hue : took ? taken : 'transparent',
+          border: on || took ? 'none' : `${u(2.559)} solid ${ink}`,
+          opacity: c.dead ? 0.38 : undefined,
           cursor: onClick ? 'pointer' : undefined,
         }} />
       )

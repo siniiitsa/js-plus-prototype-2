@@ -368,8 +368,9 @@ That distinction is the whole design, and it buys two things:
   a visitor picks something and the published first paint is the canvas's picture by construction
   — up to the clock. The canvas never reads it, so it stays the frame's June; the published tab
   reads today once (in UTC) and, from it, kills every day and slot before today exactly as a
-  booked one is killed but without the strike, drops a cued date that has passed, and opens on
-  today's month when `open` is earlier.
+  booked one is killed but without the strike (layout 3, whose legend names the booked fill,
+  draws a past day as the free dot dimmed instead, booked or not), drops a cued date that has
+  passed, and opens on today's month when `open` is earlier.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
   blocked it. Booked days are muted and struck through and take no handler (Lime dims them to .38
   with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid; Grunge and Editorial share it in both, Editorial's layout-1 frame dimming them the same way), which is a **content** state rather than a

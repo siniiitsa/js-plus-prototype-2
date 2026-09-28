@@ -700,7 +700,9 @@ mutated through a single `patch()` helper.
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
   strike** (except Lime's layout 2 — and Grunge's and Editorial's, which widen its block — whose past rows keep full ink and only lose the handler —
   user call, 2026-09-17, made while its seeded slots had no editor and were all past; Lime's
-  layout-4 exception went with JP-052) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
+  layout-4 exception went with JP-052; and layout 3 on every template, whose legend names the
+  booked fill *Booked*, so a past day there is the *free* dot at .38, booked or not, lest the
+  month before today read as taken — JP-064, user call, 2026-09-28) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
   past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
   (`max(open, today)`, `calStart()` in `data.js`, which `BookedField` shares so the artist
   can block every day a visitor can pick; it fades the days before today and takes no click on

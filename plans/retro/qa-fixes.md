@@ -711,7 +711,10 @@ published grid opens on `max(open, today)`'s month, and the `CAL_SPAN` window co
   It replaces `.booked` at the four `hit` sites (layouts 1–4) and at every handler gate and
   every fill / colour / opacity read: Retro and Lime layout 1's cell, Retro's layout 2 row and
   Lime's `dim`, the layout 3 dots in both, and the layout 4 rows in both. Every `line-through`
-  still reads `booked` alone. **Layout 4's wizard needed nothing**: its date box is free text
+  still reads `booked` alone. *Reopened by JP-064* ([`../grunge/layout-3-qa-fixes.md`](../grunge/layout-3-qa-fixes.md),
+  2026-09-28, user call): layout 3's dots no longer read `blocked` for their look, since its
+  legend names the booked fill; a past day there is the free dot at .38, booked or not, and
+  the handler still reads `blocked`. **Layout 4's wizard needed nothing**: its date box is free text
   with a placeholder, and its *Send Enquiry* is a fragment link. The featured card and the
   stack are layout 4's only date controls, and they follow `hit` (a dead cue features nothing,
   and the card prints `calPrompt`).
