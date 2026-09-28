@@ -51,7 +51,7 @@ HEAD. None is a stale-build echo.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-058 | `From £1,200` prints as a small `F` + `rom £1,200` | **Confirmed, and shared**: `/^[^\d]/` takes the first character of any price that does not start with a digit, in six sites (pricing layouts 1–3, every template) | S | **yes**: what goes in the small seat | open |
+| 1 | JP-058 | `From £1,200` prints as a small `F` + `rom £1,200` | **Confirmed, and shared**: `/^[^\d]/` takes the first character of any price that does not start with a digit, in six sites (pricing layouts 1–3, every template) | S | **user: B, everything before the first digit** | **done** |
 | 2 | JP-057 | The seal's two small circles sit on the name's letters | **Confirmed, and shared**: only the name ring spins (`.seal-spin`, 14 s), and the marks stand still, so the name walks through them. At rotation 0 the picture is the frame's | S–M | **yes**: spin the marks with the name, or stop the spin | open |
 | 3 | JP-056 | Headings set in Anton, not the distressed Stones Crush | **By design so far**: Anton is the named stand-in (user call, 2026-09-21). The tester's licence question is real and is the PO's to carry | — (reply) / L (own plan) | **yes (PO / design)**: reply, licence, or a distress mask | open |
 | 4 | — | End-of-pass sweep | — | S | — | open |
@@ -132,6 +132,9 @@ names no format), and the calendar's own seed prices read `From £1,200` (`CAL_S
 - **C. Never split.** The whole price always sits in the numeral seat. That is the frame's
   picture broken for every seeded price, so it is not recommended.
 
+**Decided** (2026-09-28, user call): **B**, everything before the first digit, trimmed. No digit
+means no split. The `Up to 120 guests: £900` oddity is named and left alone.
+
 **Fix (either A or B).** The split moves out of `EncoreSection`:
 - A pure helper in `data.js` beside `tierFeats()` (for example `priceParts(raw)` →
   `{ lead, amount }`).
@@ -175,9 +178,55 @@ names no format), and the calendar's own seed prices read `From £1,200` (`CAL_S
 - The hint on `FIELDS.pricing.tiers` should say, in one clause, what the small seat takes (for
   example "a currency sign or a word like *From* before the amount prints small").
 
-**Settled.** *(open)*
+**Settled** (2026-09-28). The Evidence held, one line lower throughout: the six sites at `:8353`,
+`:8519`, `:8816`, `:9086`, `:9473` and `:9715`, and the unguarded spans at `:8592` and `:9143`.
+- **Code.** `priceParts()` sits in `data.js` beside `tierFeats()`. `vm.tiers[]` spreads its
+  `lead` and `amount` beside `price`, which stays whole for layout 4, the calendar's package card
+  and its mailto. The six sites read `t.lead` / `t.amount`, and the regex is gone, so
+  `EncoreSection` does no string work here. The two unguarded lead spans (Retro and Pop's shared
+  bodies, layouts 1 and 2) are now `!!lead &&`, like the `s.limeTree` twins.
+- **One layout change beyond the extraction.** In Retro and Pop's layout-1 row the lead is
+  `nowrap` and the row is `flexWrap: 'wrap'`. The 768 card, three to a row, has 218px. There
+  `From £` + `1,200` + `/event` does not fit, and the lead broke to `From` over a dangling `£`.
+  Now the unit takes the second line. `nowrap` alone would push the row past the card.
+- **Docs.** The layout-3 comment that called the first-character split "deliberately not
+  corrected" was rewritten. `FIELDS.pricing.tiers`' hint gained one clause. CLAUDE.md and the
+  README name neither the seat nor the split, so neither changed.
+- **The seed.** The digest ran over pricing × themes 0–4 × three widths × canvas and `live=1`,
+  against a HEAD worktree on :5174. **0 of 120 files differ**, as named. The unedited tree
+  diffed 0 of 60 against HEAD first, which proved the harness.
+- **The repro digest.** Three packages at one price, 60 renders per price per surface:
+  `&cj=` is `{ unit: '/UNIT', tiers: ['A', 'B', 'C'].map((name) => ({ name, price, tags: '' })) }`
+  through `EXTRA` to `digest.mjs … 0,1,2,3,4 pricing` on both servers, one label per price.
+  Canvas and live gave the same counts:
+  - `From £1,200` and `POA`: 45 each, which is arch 0–2 at every theme and width, and arch 3
+    zero.
+  - `£650`: 0.
+  - `450` and an all-spaces price: 12 each, all Retro and Pop at arch 0–1. The empty 0×0 lead
+    span leaves, and the numeral moves into its gap.
+  - `£1,200–£2,000`: 3, from the wrap above (Retro 768 and 390, Pop 768).
+- **Off the DOM.** `From £1,200` reads `From £` + `1,200` in all 105 rows (themes 0–4 × arch 0–2
+  × three widths). No lead or numeral wraps, and nothing passes its card with the seeded unit.
+  HEAD at 768 broke the display numeral `rom £1,200` over two lines under Retro and Pop, and
+  pushed it 6–30px past the card under Lime, Grunge and Editorial. `POA` and `450` stand whole.
+  The all-spaces price draws no lead span. No 390 render overflows the page for either
+  `From £1,200` or the range.
+- **The tester's steps.** Grunge, Lime and Retro card 1: Pricing, the first package's Price =
+  `From £1,200`, Publish, Open. At 1440 and 390 the published row reads `From £` | `1,200` |
+  `/event`, `£650` is unchanged, nothing overflows, and there are no errors.
+- **Named, not fixed.**
+  - A range at Retro and Pop's layout-1 768 card: the numeral is wider than the card, so the `£`
+    now takes the first line alone, above the numeral's two lines. HEAD set the `£` beside them.
+    At Retro 390 the range got better: one line with the unit under it, where HEAD pushed the
+    unit to the right edge.
+  - An empty price still prints an empty numeral before the unit in layouts 1 and 2, on every
+    template, as before. Layout 3 drops the row.
+  - `Up to 120 guests: £900` splits at the `1`, per the decision.
 
-Reply: *(open)*
+Reply: **fixed.** The small seat beside a package's big price now takes everything before the
+price's first digit, so `From £1,200` prints a small `From £` and a big `1,200`. A price with no
+digit (`POA`) or that starts with one (`450`) prints whole in the big seat. This was every
+template's bug at pricing layouts 1–3, not Grunge's, and the fix covers all of them.
 
 ---
 

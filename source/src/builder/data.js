@@ -1347,7 +1347,9 @@ export const FIELDS = {
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Features are one to a line. Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
-          + 'filter: it prints the tags and the features on the package itself. Tick Featured '
+          + 'filter: it prints the tags and the features on the package itself. In layouts 1, 2 '
+          + 'and 3, whatever comes before the price’s first digit — a £, or a word like From — '
+          + 'prints small beside it. Tick Featured '
           + 'to give a package layout 3’s FEATURED badge; with none ticked, it goes to the last '
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
@@ -1862,6 +1864,18 @@ export function songTags(str) {
 // promises are the same shape and go through it too.
 export function tierFeats(str) {
   return String(str ?? '').split('\n').map((t) => t.trim()).filter(Boolean)
+}
+
+// A package's price → the small seat before the big numeral and the numeral
+// itself (JP-058, user call, 2026-09-28). The lead is everything before the
+// first digit, trimmed, so '£650' is '£' + '650' and 'From £1,200' is
+// 'From £' + '1,200'; a price with no digit ('POA') or none before it ('450')
+// has no lead and stands whole. The price is free text, so no currency is
+// assumed. Named and left: 'Up to 120 guests: £900' splits at the 1.
+export function priceParts(str) {
+  const s = String(str ?? '').trim()
+  const at = s.search(/\d/)
+  return at > 0 ? { lead: s.slice(0, at).trim(), amount: s.slice(at) } : { lead: '', amount: s }
 }
 
 // A repeater row the artist added and never filled in: every one of `keys`

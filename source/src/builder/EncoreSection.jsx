@@ -8349,9 +8349,6 @@ function Pricing({ s }) {
             columnGap: tab ? '20px' : u(44), rowGap: s.narrow ? '20px' : u(44),
           }}>
             {shown.map((t, i) => {
-              const money = String(t.price)
-              const symbol = /^[^\d]/.test(money) ? money[0] : ''
-              const amount = symbol ? money.slice(1) : money
               // The frame's glowing card is its second: a *seat*, the rendered
               // index the way Retro's tilt is, so a filter moves the glow onto
               // whatever now stands in the middle column. The cost, named: one
@@ -8398,14 +8395,14 @@ function Pricing({ s }) {
                     <span style={row(u(4), {
                       alignItems: 'flex-end', alignSelf: s.narrow ? 'stretch' : 'flex-start',
                     })}>
-                      {!!symbol && (
-                        <span style={body(s.bodyLg, 1.5, { color: ink })}>{symbol}</span>
+                      {!!t.lead && (
+                        <span style={body(s.bodyLg, 1.5, { color: ink })}>{t.lead}</span>
                       )}
                       <span style={{
                         fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
                         letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
                         flex: s.narrow ? '1 1 auto' : 'none',
-                      }}>{amount}</span>
+                      }}>{t.amount}</span>
                       {!!s.tierUnit && (
                         <span style={ui({ color: ink, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
                       )}
@@ -8515,9 +8512,6 @@ function Pricing({ s }) {
           alignItems: 'stretch',
         }}>
           {shown.map((t, i) => {
-            const money = String(t.price)
-            const symbol = /^[^\d]/.test(money) ? money[0] : ''
-            const amount = symbol ? money.slice(1) : money
             return (
               // Keyed on the package's place in the WHOLE list, not on this
               // page of it: the card cross-fades its background, so a
@@ -8581,20 +8575,25 @@ function Pricing({ s }) {
                 </span>
 
                 <span style={row(s.narrow ? '4px' : '3px', {
-                  alignItems: 'baseline', position: 'relative',
+                  alignItems: 'baseline', position: 'relative', flexWrap: 'wrap',
                 })}>
                   {/* The currency and the unit sit at line-height 1 on the 390
                       card, or their line boxes stand the row past the numeral's
-                      33 and the card grows under its own pill. */}
-                  <span style={{
-                    fontFamily: s.mono, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
-                    lineHeight: s.mob ? 1 : undefined,
-                  }}>{symbol}</span>
+                      33 and the card grows under its own pill. A lead wider than
+                      the £ ("From £", JP-058) holds its line and the row wraps
+                      instead: the 768 card, three to a row, puts the unit on a
+                      second line rather than the £. */}
+                  {!!t.lead && (
+                    <span style={{
+                      fontFamily: s.mono, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
+                      lineHeight: s.mob ? 1 : undefined, whiteSpace: 'nowrap',
+                    }}>{t.lead}</span>
+                  )}
                   <span style={{
                     fontFamily: s.display, fontSize: s.narrow ? '40px' : s.dispSm,
                     lineHeight: s.narrow ? 0.825 : 0.85,
                     letterSpacing: s.dls, color: t.acc,
-                  }}>{amount}</span>
+                  }}>{t.amount}</span>
                   <span style={{
                     fontFamily: s.mono, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
                     lineHeight: s.mob ? 1 : undefined,
@@ -8812,9 +8811,8 @@ function Pricing({ s }) {
       const chipFace = (extra) => body(s.chip, 1, {
         fontWeight: 700, letterSpacing: '-0.06em', whiteSpace: 'nowrap', ...extra,
       })
-      const money = String(t ? t.price : '')
-      const symbol = /^[^\d]/.test(money) ? money[0] : ''
-      const amount = symbol ? money.slice(1) : money
+      const lead = t ? t.lead : ''
+      const amount = t ? t.amount : ''
 
       const head = (
         <div style={col(u(20), {
@@ -8895,7 +8893,7 @@ function Pricing({ s }) {
             {/* Bottom-aligned at 6. The narrow masters FILL the numeral, which
                 stands the unit at the card's right edge; 1440 hugs it. */}
             <span style={row(u(6), { alignItems: 'flex-end', alignSelf: 'stretch' })}>
-              {!!symbol && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{symbol}</span>}
+              {!!lead && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{lead}</span>}
               <span style={{
                 ...disp(s.dispMd), color: s.ac, whiteSpace: 'nowrap',
                 flex: desk ? 'none' : '1 1 auto',
@@ -9082,9 +9080,8 @@ function Pricing({ s }) {
       </div>
     )
 
-    const money = String(t ? t.price : '')
-    const symbol = /^[^\d]/.test(money) ? money[0] : ''
-    const amount = symbol ? money.slice(1) : money
+    const lead = t ? t.lead : ''
+    const amount = t ? t.amount : ''
 
     const card = (
       <div style={{
@@ -9140,7 +9137,7 @@ function Pricing({ s }) {
                     so `— £2,200/event` is `s.tierUnit` — layout 1's own three
                     spans, in the frame's sizes. */}
                 <span style={row(u(6), { alignItems: 'baseline', width: '100%' })}>
-                  <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{symbol}</span>
+                  {!!lead && <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{lead}</span>}
                   <span style={{
                     fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                     letterSpacing: s.dls, color: h.acc,
@@ -9287,16 +9284,12 @@ function Pricing({ s }) {
   //    capsule in its own `Body/SM` at all three widths, as all three masters
   //    draw it. The row stands on either half, since an offer is not a filter.
   //  - "— £1,400" is `s.tierUnit`, exactly as layout 2 reads the frame's second
-  //    price. The small "£" before the numeral is layout 1's and layout 2's own
-  //    `symbol` / `amount` split, copied verbatim — and it splits on the price's
-  //    **first character** rather than on a currency run, so a price that opens
-  //    with a digit ("1,200") prints no symbol and one that opens with a letter
-  //    ("POA") sets its P small and "OA" in the display size. That is what all
-  //    three layouts have always done with such a string, and it is deliberately
-  //    not corrected here: a v2-only split would make one page print the same
-  //    `price` two ways depending on the layout picked, which is the tags row's
-  //    one-chip-everywhere rule from the wrong end. It is one expression in
-  //    `sectionVm` when it is worth fixing, and it fixes all three at once.
+  //    price. The small "£" before the numeral is `t.lead` and the numeral
+  //    `t.amount`, the split layouts 1 and 2 read too (JP-058: `priceParts()`
+  //    in `sectionVm`): everything before the first digit, so "From £1,200"
+  //    sets "From £" small, and a price with no digit ("POA") has no lead and
+  //    stands whole. One split for all three, so a page prints a `price` the
+  //    same way whichever layout is picked.
   //  - "FEATURED" is a literal on a derived seat — see below.
   //
   // Every box number is the desktop component's own at all three widths — the
@@ -9469,9 +9462,6 @@ function Pricing({ s }) {
         // The seat, Retro's rule whole: `featAt`, above.
         const feat = i === featAt
         const ink = feat ? G.featInk : s.tx
-        const money = t.price
-        const symbol = /^[^\d]/.test(money) ? money[0] : ''
-        const amount = symbol ? money.slice(1) : money
         return (
           <div key={t.n} style={{
             ...(s.mob
@@ -9499,14 +9489,14 @@ function Pricing({ s }) {
               </div>
               {/* Desktop hugs; both narrow masters FILL the numeral, which
                   stands the unit at the column's right edge. */}
-              {!!money && (
+              {!!t.price && (
                 <div style={row(u(6), {
                   alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
                 })}>
-                  {!!symbol && (
+                  {!!t.lead && (
                     <span style={{
                       fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
-                    }}>{symbol}</span>
+                    }}>{t.lead}</span>
                   )}
                   {/* Noto sits 0.09em lower than the frame's face (the
                       calendar's lift): the frame stands the numeral's foot 7
@@ -9516,7 +9506,7 @@ function Pricing({ s }) {
                     letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
                     ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
                     ...(ed ? { position: 'relative', top: '-0.09em' } : {}),
-                  }}>{amount}</span>
+                  }}>{t.amount}</span>
                   {!!s.tierUnit && (
                     <span style={{
                       fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5,
@@ -9711,9 +9701,6 @@ function Pricing({ s }) {
       // own second hue on that one — which under Retro is the mustard, since
       // `tierHues` resolves the olive's accent as `pillBg`.
       const acc = feat ? h.acc : s.ac
-      const money = t.price
-      const symbol = /^[^\d]/.test(money) ? money[0] : ''
-      const amount = symbol ? money.slice(1) : money
       return (
         <div key={t.n} style={{
           ...(s.mob
@@ -9742,21 +9729,21 @@ function Pricing({ s }) {
             {/* The narrow masters give this row the column's whole width and let
                 the numeral fill it, which pushes the unit to the right edge; the
                 1440 one hugs. Both are the frame's own declarations. */}
-            {!!money && (
+            {!!t.price && (
               <div style={row(u(6), {
                 alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
               })}>
-                {!!symbol && (
+                {!!t.lead && (
                   <span style={{
                     fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
                     whiteSpace: 'nowrap', flex: 'none',
-                  }}>{symbol}</span>
+                  }}>{t.lead}</span>
                 )}
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                   letterSpacing: s.dls, color: acc,
                   ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
-                }}>{amount}</span>
+                }}>{t.amount}</span>
                 {!!s.tierUnit && (
                   <span style={{
                     fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
