@@ -18508,8 +18508,10 @@ function EventsMap({ s }) {
   //
   // **Five things the frame draws are dropped**, all of them claims or controls
   // with nowhere to go: the row's weekday (no year and no clock, so `SAT` is
-  // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (the row's
-  // own hour takes that seat, layout 2's own words), the 30/60/120mi ring
+  // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (its seat
+  // stays empty: the row's hour sits in the sub line, "Manchester · 22:00",
+  // where every master prints it — JP-069, user call, 2026-09-28; it had
+  // taken that seat as a chip, layout 2's own words), the 30/60/120mi ring
   // labels and the zoom controls (numbers the artist never typed, and a control
   // this file has nothing to do), and
   // "Updated 2m ago", a timestamp nothing here can produce — the labels, the
@@ -18714,7 +18716,7 @@ function EventsMap({ s }) {
       // Lime's arm is this block's own literals, so theme 1 digests to zero.
       const G = grunge
         ? {
-          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBox: s.bg, litBoxFg: s.ac,
+          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBoxFg: s.ac,
           disc: s.box1, hair: s.stroke1, hairP: '#00000026',
           panel: '#F52E34', mapBox: '#9E1F17', zoom: '#F52E34',
           pinRing: s.tx, pillBg: s.ac, pillFg: s.bg, pagerInk: s.ac,
@@ -18722,7 +18724,7 @@ function EventsMap({ s }) {
           ratio: desk ? '570 / 472' : tab ? '315 / 514' : '350 / 157',
         }
         : ed ? {
-          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBox: s.bg, litBoxFg: s.ac,
+          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBoxFg: s.ac,
           // The zoom buttons' ring is Scheme 4's `stroke/1`, the container's
           // Scheme 3's: one value, paper at 56%, so `hairP` serves both.
           disc: s.box1, hair: s.stroke1, hairP: S3.stroke1,
@@ -18737,7 +18739,7 @@ function EventsMap({ s }) {
           acc: s.bg, dot: s.ac, dotOp: 0.6,
         }
         : {
-          sheet: s.tx, ink: s.bg, lit: s.bg, litFg: s.tx, litBox: s.tx, litBoxFg: s.bg,
+          sheet: s.tx, ink: s.bg, lit: s.bg, litFg: s.tx, litBoxFg: s.bg,
           disc: '#D5E3B2', hair: '#15180F26', hairP: '#15180F26',
           panel: '#CCFA61', mapBox: '#CCFA61', zoom: '#D9FF7F',
           pinRing: s.bg, pillBg: s.bg, pillFg: s.tx, pagerInk: s.bg,
@@ -18796,13 +18798,12 @@ function EventsMap({ s }) {
       )
 
       // The lit row is an ink pill with pale type; its disc stays `mist` with
-      // ink type, and its hour chip fills with the sheet. The rule under each
-      // row is the hairline, dropped on the lit pill and the row above it.
-      // Under Grunge the pill is the accent under black type, and the two boxes
-      // standing on it — the date disc, still `box/1`, and the hour chip, now
-      // black — letter the accent back, which is the frame's own reading.
-      // Under Editorial the pill is a square paper row, dashed all round, the
-      // date disc a square box, and the rules dashed ink.
+      // ink type. The rule under each row is the hairline, dropped on the lit
+      // pill and the row above it. Under Grunge the pill is the accent under
+      // black type, and the box standing on it — the date disc, still `box/1` —
+      // letters the accent back, which is the frame's own reading. Under
+      // Editorial the pill is a square paper row, dashed all round, the date
+      // disc a square box, and the rules dashed ink.
       const gigRowL = ({ g: gg, i }, k) => {
         const on = litRow(i)
         const next = shown[k + 1]
@@ -18811,10 +18812,12 @@ function EventsMap({ s }) {
         const tix = extLink(s, gg.url)
         const Tix = tix ? 'a' : 'span'
         const showTix = !!gg.url
-        // The 390 master sets the hour after the city — "Manchester · 22:00" —
-        // with no hour chip, and stands Tickets → alone under the row (user
-        // call, 2026-09-18). The wide rows keep the chip.
-        const place = s.mob ? [gg.city, gg.time].filter(Boolean).join(' · ') : gg.city
+        // Every master sets the hour after the city — "Manchester · 22:00" —
+        // so there is no hour chip at any width (390, user call, 2026-09-18;
+        // the wide rows, JP-069, 2026-09-28, where the chip had taken the
+        // dropped status pill's seat). An emptied half drops with its `·`. The
+        // 390 row stands Tickets → alone under the rest.
+        const place = [gg.city, gg.time].filter(Boolean).join(' · ')
         const mark = (
           <span style={col(0, {
             width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
@@ -18841,13 +18844,6 @@ function EventsMap({ s }) {
             )}
           </div>
         )
-        const when = !!gg.time && (
-          <span style={{
-            ...bodySm, flex: 'none', whiteSpace: 'nowrap', color: on ? G.litBoxFg : ink,
-            boxShadow: ring(hair), borderRadius: '999px', padding: `${u(4)} ${u(10)}`,
-            background: on ? G.litBox : undefined,
-          }}>{gg.time}</span>
-        )
         const tickets = showTix && (
           <Tix {...tix} style={{
             ...bodySm, flex: 'none', whiteSpace: 'nowrap',
@@ -18872,7 +18868,7 @@ function EventsMap({ s }) {
                 <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
                 {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
               </>
-            ) : <>{mark}{lines}{when}{tickets}</>}
+            ) : <>{mark}{lines}{tickets}</>}
             {ed && (on
               ? <DashRule side="all" dash={10 * z} colour={hair} />
               : !aboveLit && <DashRule dash={10 * z} colour={G.rule} />)}
@@ -19185,6 +19181,7 @@ function EventsMap({ s }) {
       const tix = extLink(s, gg.url)
       const Tix = tix ? 'a' : 'span'
       const showTix = !!gg.url
+      const place = [gg.city, gg.time].filter(Boolean).join(' · ')
       const mark = (
         <span style={col(0, {
           width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
@@ -19207,29 +19204,22 @@ function EventsMap({ s }) {
             fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
             color: on ? sheet : hot, overflowWrap: 'anywhere',
           }}>{gg.venue}</span>
-          {/* The city alone, where the frame prints "Manchester · 22:00": the
-              hour has its own chip below, and putting it in both is what makes
-              the 768 master clip its own sub line at 107px of column. The lit
-              row sets it in Body/Eyebrow, which is the frame's own mark of the
+          {/* The frame's own "Manchester · 22:00" at every width (JP-069, user
+              call, 2026-09-28): the hour had a chip of its own in the seat of
+              the frame's "Upcoming"/"Past", a status the section cannot know,
+              and that seat now stays empty. An emptied half drops with its
+              `·`. The line wraps between words rather than clipping, where the
+              768 master clips its own in a 107px column beside that status and
+              Tickets →. With no chip, ours at 768 is 160–270 wide (lit or not,
+              linked or not) and holds every seeded line on one. The lit row
+              sets it in Body/Eyebrow, which is the frame's own mark of the
               featured show and the only place that token is used. */}
-          {!!gg.city && (
+          {!!place && (
             <span style={on
               ? { fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3 }
-              : body12}>{gg.city}</span>
+              : body12}>{place}</span>
           )}
         </div>
-      )
-      // The frame's "Upcoming"/"Past" is a status the section cannot know, and
-      // the row's own hour is what belongs in that chip — layout 2's words, and
-      // its rule that an emptied `time` drops the chip rather than printing an
-      // empty pill.
-      const when = !!gg.time && (
-        <span style={{
-          ...body12, flex: 'none', whiteSpace: 'nowrap',
-          border: `1px solid ${on ? hot : ink}`, borderRadius: '999px',
-          padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`,
-          background: on ? ink : undefined, color: on ? hot : undefined,
-        }}>{gg.time}</span>
       )
       const tickets = showTix && (
         <Tix {...tix} style={{
@@ -19264,18 +19254,14 @@ function EventsMap({ s }) {
           ...(s.mob ? col(u(14), { alignItems: 'flex-start' }) : row(u(14))),
         }}>
           {/* 390 stacks the row: the circle and the lines on one line at the
-              master's own 20 gap, then the tickets link and the hour chip on a
-              second. The two wide masters run all four across. */}
+              master's own 20 gap, then the tickets link alone on a second. The
+              two wide masters run all three across. */}
           {s.mob ? (
             <>
               <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
-              {(showTix || !!gg.time) && (
-                <div style={row(u(10), {
-                  width: '100%', justifyContent: showTix ? 'space-between' : 'flex-end',
-                })}>{tickets}{when}</div>
-              )}
+              {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
             </>
-          ) : <>{mark}{lines}{when}{tickets}</>}
+          ) : <>{mark}{lines}{tickets}</>}
         </div>
       )
     }

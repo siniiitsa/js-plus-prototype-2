@@ -139,7 +139,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | **done** (A, past wins over booked; the seed's after-diff zero, the States 15 files, all layout 3) |
 | 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no (one asked mid-session: Lime's pill) | **done** (`footerBand` widened; root, seal disc, pill label and disc; Lime's pill too; 12 files as named) |
 | 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | **done** (the centre is `(pg + 1) % n`; 10 files as named; the seat's colour under Lime, Grunge and Editorial, the set's under Retro and Pop) |
-| 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | open |
+| 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | **done** (A; no hour chip at any width, in both halves; the weekday a reply; 24 files as named) |
 | 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | open |
 | 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | open |
 | 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | open |
@@ -1650,11 +1650,117 @@ and Editorial at 390 do not move.
 
 **Docs.** The two branch comments; `./layout-3.md`'s map Settled, a pointer.
 
-**Decided.** —
+**Decided: A** (user, 2026-09-28).
+- **`city · time` under the venue at every width, in both halves**: the `s.limeTree` block and
+  Retro's and Pop's body. The sub line is the 390 master's own `[city, time]` joined on ` · `, so
+  an emptied half drops with its separator.
+- **No hour chip at any width.** The wide rows run the date disc, the lines and Tickets →. At 390
+  Retro's and Pop's second row is Tickets → alone, as the block's already is.
+- **The weekday is a reply** (JP-047: a gig has no year). A year on gigs is a data-model question
+  for the BA, and it would also unlock Upcoming / Past.
 
-**Settled.** —
+**Settled** (2026-09-28).
+- **Re-checked on HEAD** (`bb52f83`). Every line held at +82, as JP-075's hand-off named it:
+  - the drops list's weekday and status at `EncoreSection.jsx:18509`–`18512`;
+  - the block head `if (s.limeTree)` at `:18710`, with `G.litBox` in all three arms (`:18717`,
+    `:18725`, `:18740`);
+  - `gigRowL` at `:18806`, 390's `place` at `:18814`–`18817`, the wide `when` chip at
+    `:18844`–`18850`;
+  - in the shared body, the city alone and its comment at `:19210`–`19219`, the chip at
+    `:19222`–`19233`, and the 390 row with the chip beside Tickets at `:19266`–`19276`.
 
-Reply: —
+  Nothing else in the layout-3 branch reads `gg.time`: the panel prints the venue and the city
+  alone.
+- **Code.** Net −14 lines, all inside `EventsMap`.
+  - **The block**: `place = [gg.city, gg.time].filter(Boolean).join(' · ')` at every width
+    (`:18820`), and the wide row is `{mark}{lines}{tickets}` (`:18871`). `when` is gone, and so is
+    `G.litBox` from all three arms, since the chip was its only reader. `litBoxFg` stays because
+    the date disc reads it.
+  - **The body**: the same `place` beside `showTix` (`:19184`), printed under the venue and gated
+    `!!place`. `when` and its comment are gone. The 390 second row is `showTix &&` Tickets → alone
+    (`:19262`), as the block's already was. The row's `justifyContent` ternary went with it.
+  - **Comments**:
+    - the drops list above the seam (`:18511`): the status pill's seat stays empty;
+    - the block's lit-row comment, which no longer names an hour chip;
+    - the block's 390 comment (`:18815`), which now covers every width and keeps the 2026-09-18
+      provenance beside JP-069's;
+    - the body's sub-line comment (`:19207`), rewritten with the 768 measure below;
+    - the body's 390 stack comment (`:19256`).
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on :5173.
+  The map × themes `0,1,2,3,4` × three widths, canvas and `live=1`: **0 of 120** (port and `?t=`
+  normalised).
+- **After the edit: 24 files**, as named. They are map `arch 2` × themes 0–4 × 1440 and 768 × both
+  surfaces, plus themes 0 and 4 at 390 × both surfaces. Before the digest ran, :5173's module
+  carried `const place = [gg.city, gg.time]` twice and no `litBox` key. A rerun after the last
+  comment edits diffed 0 against the first after-digest. By column:
+  - **Every wide file** loses five rows (the chips). The lines column widens, and each sub line
+    gains its ` · HH:MM`. At 768 Retro's column goes from 162.8 to 230 on the lit row and from
+    204 to 269 on the others. At 1440 Lime's goes from 371.8 to 430.1 on the lit row and from 406
+    to 462.1 on the others.
+  - **Retro's and Pop's** colour set loses one tuple, the lit chip's.
+  - **At 390, Retro and Pop** lose the chip's row. The seeded gigs carry no link, so no second
+    row is drawn: the row is 84 against 122.8, and Retro's section is 836.5 against 875.3.
+  - **Lime, Grunge and Editorial at 390** diff by the port alone, 0 once normalised.
+- **The 768 sub line in Retro's body** is not `nowrap`, so it wraps between words and never
+  clips. With no chip, the column at 768 is 160–270 wide:
+  - 230 on the lit row and 269 on the others for the seed;
+  - 159.7 on the lit row and 198.7 on the others when the row is linked (Tickets →).
+
+  Every seeded line holds on one line. The frame's 768 master clips its own sub line in a 107px
+  column beside the status and Tickets →. The comment says both.
+- **Edges** (`&cj=` over six gigs, `live=1`, themes 0–4 × three widths; the 390 pager walked):
+  - **no time**: "Leeds", with no separator;
+  - **no city**: "20:00" alone;
+  - **neither**: no sub line;
+  - **a long venue and city at 768**: "Newcastle upon Tyne and the Wear Metropolitan Borough ·
+    21:30" wraps between words, to two lines (three under Lime), with Tickets → clear of it. At
+    1440 it is one line, and at 390 two.
+  - **The one overflow is older than this entry.** A single unbreakable 58-letter city
+    (Llanfair…) runs past its column at 768 and 390. HEAD does the same with the city alone, and
+    worse: its 768 column beside the chip was 62.8–70, where ours is 129–170. The venue carries
+    `overflowWrap: 'anywhere'` and the sub line does not. It is named here, not fixed.
+- **Live** (the seed, `live=1`, themes 0–4 × three widths):
+  - The *Lake District · 1* chip filters to one row, and *All* brings back five.
+  - A click on *Private wedding* lights it. Its sub line "Lake District · 19:00" is the lit row's
+    bold 12px in the lit ink: black on Grunge's `#DF262C`, mustard on Retro's rust.
+  - The 390 pager walks all five gigs and clamps at the last, layout 3's own rule.
+  - No page errors.
+- **The tester's steps in the real app.** A one-off puppeteer script (deleted), with the editor at
+  1600 × 1000, ran the template, card 3, *Use this header*, the Desktop, Tablet and Mobile tabs,
+  *Publish* and *Open*. The tab was then set to 1440, 768 and 390.
+
+  | | canvas (Desktop / Tablet / Mobile) and the tab (1440 / 768 / 390) |
+  |---|---|
+  | Grunge card 3 | Every row reads "Manchester · 22:00" (…"Lake District · 19:00") under the venue, and no row carries a chip. The lit row is Hidden Warehouse on `#DF262C`. At 390 there is one row and no Tickets → row, since the seeded gigs have no link |
+  | Retro card 3 | The same text, with the lit row on `#C8461C`. The screenshot at 1440 reads as the frame's row, less the status pill |
+
+  No window logged a page error.
+- **Docs.**
+  - CLAUDE.md and README do not describe layout 3's hour chip. A grep for *hour* finds layout 2's
+    status line and the calendar alone, so nothing was added.
+  - *Since* pointers were added in `./layout-3.md`'s map Settled (the "one `ink`" bullet, which
+    named the chip and `litBox`), `../lime/layout-3.md`'s schemes bullet and
+    `../editorial/layout-3.md`'s lit-row bullet.
+  - Retro's `layout-3.md` names no chip.
+- **For JP-063 onwards.** This entry's hunks all sit inside `EventsMap`, after the calendar, so
+  nothing JP-063 reads moved here. Its triage numbers are now:
+  - `EncoreSection.jsx`: +73 at the calendar (+71 at `mi`). The "no arrows" comment is at
+    `:15577`–`15580`, `const month = s.calMonths[0]` at `:15617`, the shared computation at
+    `:15611`–`15621`, the block at `:15681`, `mi` at `:14514`, and layout 1's `reduce` at `:14568`.
+  - `EncoreBuilder.jsx`: `calStart(open, …)` at `:1172`, `vm.calMonths` at `:1174`, `dead` at
+    `:1169` (defined) and `:1186` (used).
+  - `data.js`: `open`'s hint at `:1494`–`1497`, `calStart` at `:2040`.
+
+Reply: **JP-069 — half fixed, half by design.**
+- **The hour: fixed.** Under the venue the Events Map now reads "Manchester · 22:00", as the
+  design does, at every width and on every template. The hour no longer has a pill of its own.
+  - A gig with no time shows the city alone, and one with no city shows the time alone, with no
+    stray "·".
+  - The right-hand seat stays empty. In the design it holds "Upcoming", and the builder cannot
+    know that status (JP-047).
+- **The weekday: by design.** A gig is saved as a month and a day with no year, so "SAT" cannot be
+  worked out from "Jul 12": the same date falls on a different weekday each year. Adding a year to
+  gigs is a data-model question for the BA. It would also allow Upcoming / Past.
 
 ---
 

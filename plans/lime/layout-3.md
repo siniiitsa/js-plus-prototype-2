@@ -940,7 +940,8 @@ Settled in section 8 (the events map):
   the hour chips, the list's top rule and the rows' **1px** bottom rules (Retro draws 2px olive), the
   zoom buttons, the container and the data bar. The discs are `mist` in **both** states; Retro inverts
   the lit one. The lit row is an ink pill with `s.tx` type and no border, and its hour chip fills
-  `s.tx`. `radius-map` is **Scheme 2 at all three widths**, not only at 390 as the plan's table read:
+  `s.tx` (*since* JP-069, 2026-09-28, there is no hour chip: the hour follows the city in the
+  sub line at every width, as at 390). `radius-map` is **Scheme 2 at all three widths**, not only at 390 as the plan's table read:
   `#CCFA61` (`lime3`) for the panel and the container. *(Corrected by Grunge's layout-3 section 8:
   the mode is **Scheme 3**, not Scheme 2 — the fills were read but not the `boundVariables`, and
   `#CCFA61` is Scheme 3's `sem/box/1` under the Lime primitive. The panel and the container share

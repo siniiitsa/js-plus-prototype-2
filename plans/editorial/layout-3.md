@@ -1683,7 +1683,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   binding *name* is Grunge's, so its keys land on the frame: the lit chip and the lit row fill
   `text/1` paper (`lit` = `s.ac`) under `sem/bg` terracotta type (`litFg`); the date box keeps
   `box/1` `#DA7C5E` in its paper-56 ring (`disc`, `hair`) and letters `text/1` on the lit row
-  (`litBoxFg`), whose hour chip fills `sem/bg` (`litBox`); *See all gigs* is `text/1` paper
+  (`litBoxFg`), whose hour chip fills `sem/bg` (`litBox`; *since* JP-069, 2026-09-28, there
+  is no hour chip and no `litBox`: the hour follows the city in the place line at every
+  width); *See all gigs* is `text/1` paper
   lettered and disced `sem/bg` round a paper arrow (`pillBg` / `pillFg`, `BookPill`'s Lime
   branch); the 390 pager's two capsules (radius 60) ring and letter `text/1` (`pagerInk`,
   through `Pager`'s `frame.lime`). The idle type — the eyebrow, the place lines, the hour
@@ -1741,7 +1743,7 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   - **768: the frame's own venues wrap** — Fisterra breaks HIDDEN WAREHO / USE in the 107
     column beside *Upcoming* and *Tickets →*, so its rows run 117 / 94 / 84 / 94 / 84 / 84 and
     the section 858; ours hold one line (the hour chip is narrower, and no seeded gig carries a
-    link), 84 each, 824.6;
+    link), 84 each, 824.6 (*since* JP-069 there is no chip at all, so the column is wider still);
   - **390: the frame's row carries *Tickets →* and an *Upcoming* chip under it** (123); ours is
     84 — the hour after the city (the twins' 390 call) and no *Tickets →* on an unlinked gig
     (JP-045) — so the section is 839.5 against 883;

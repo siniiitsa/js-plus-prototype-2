@@ -1221,6 +1221,10 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   `s.box1` fill in both states, and the hour chip, which fills `s.bg` there. Under Lime every
   one of those is `ink` or `s.tx`, so the Lime arm collapses to today's two values and theme 1
   digests to zero.
+  *Since* (JP-069, 2026-09-28): there is **no hour chip** at any width, on any template. The
+  hour follows the city in the sub line, "Manchester · 22:00", as every master prints it, and
+  the status pill's seat stays empty. `G.litBox` went with the chip, so the lit row's only
+  lettered box is the date disc.
 - **Two hairlines where Lime has one, and two reds where Lime has one.** `hair` is
   `s.stroke1` (white 15%) on everything standing on the page ground — the chips, the date
   discs, the hour chips, the list's top rule and the rows' bottom rules — and Scheme 3's
