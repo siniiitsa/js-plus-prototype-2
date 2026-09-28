@@ -129,7 +129,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | open |
+| 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix) |
 | 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | open |
 | 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | open |
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | open |
@@ -205,8 +205,8 @@ own Evidence, after-diff and Verify.
 **Verdict: by design, and a data-model question.** A song is `{ title, artist, tags }`, and a
 set **is** a tag: the cards are derived, so no field can hold a set's mood or running time.
 - `SONG_KEYS` `data.js:788`, the seed `:773`–`786`. `repSet` / `repSets` at
-  `EncoreBuilder.jsx:1044`–`1076`; the meta line is `"${n} songs"` at `:1052`, whose comment says
-  "a running time is a number the artist never typed".
+  `EncoreBuilder.jsx:1044`–`1076`; the meta line is `"${n} songs"` at `:1057`, whose comment
+  (`:1053`–`1056`) says "a running time is a number the artist never typed".
 - The row's right column is the artist: `EncoreSection.jsx:11656`–`11661` (shared body) and
   `:11914` (the `s.limeTree` block). Every template.
 - The call is Retro layout 3's (`../retro/layout-3.md:674`–`683`, "Look for the derivation before
@@ -268,9 +268,55 @@ exactly these as "Labels, not claims (not this ticket)" (`./layout-2-qa-fixes.md
 - JP-070's pricing pill ("Book Now" for "Book") is a **button**, not a label, and is decided
   there.
 
-**Decided.** —
+**Decided: A, A, A** (user, 2026-09-28). All three are replies, and none becomes a fix, so no entry
+is appended.
+1. **JP-066: by design**, and named for the BA as a data-model question. A per-song length (B) is
+   offered as separate work, not taken here.
+2. **JP-068: the frame's copy is a slip.** The reply points at Media Player → *Kicker*; the seed
+   stays "Top tracks".
+3. **JP-071: by design**, the product's rule for labels. A field per label (B) is a whole-product
+   label sweep and its own plan.
 
-**Settled.** —
+Asked over the evidence, re-checked on HEAD (`485526b`; no source has changed since `109c293`):
+`FIELDS.media.kicker` at `data.js:1357` (`d: 'Top tracks'`, `in: [0, 2]`), `SONG_KEYS` at `:788`,
+the set card's meta at `EncoreBuilder.jsx:1057` (the Evidence line above corrected from `:1052`),
+Retro's "KM BIO" comment at `EncoreSection.jsx:6986`–`6988`, and every label site in the table at
+the line it names. The rule reads as quoted at `../retro/layout-2.md:348`–`350`. The three bio
+stats are each drawn only when their value is non-empty (`:4568`–`4570` and `:4794`–`4796`), and
+`Genres` only while `vm.showTags` is `'show'` (`:4741`: the header's *Tag chips* on Show, over a
+non-empty *Tags*), so each label goes with its value.
+
+**Settled** (2026-09-28, no code).
+- **No entry appended**: every answer is a reply.
+- **JP-068's designer line is already in the sweep** (step 5, "the media head's 'KM BIO'"), so the
+  sweep adds nothing for it.
+- **JP-066's BA question** travels in the reply below. JP-069's weekday reply names the other
+  data-model gap (no year on a gig), so the two can go to the BA together.
+- **The reply lines**, in the sweep's shape so step 6 can lift them as they stand:
+  - **JP-066 — by design; a data-model question for the BA.** A set card is not stored anywhere.
+    Each card is one of the tags on the Repertoire's songs, so its title is the tag ("Weddings")
+    and its line under the title counts the songs that carry it ("6 songs"). A song has a title,
+    an artist and tags, nothing more, so there is nowhere to keep a set's mood, its running time
+    or a track's length, and each row shows the song's artist where the design shows a length.
+    Printing the design's "MELLOW · 45 MIN" or "3:54" would put numbers on the page that the
+    artist never typed. This holds on every template. For a card like the design's, tag songs
+    `Cocktail hour`. Lengths would need a change to the song editor (a length per song, the
+    set's total added up from them), which we can offer separately.
+  - **JP-068 — by design; the design's text is a slip.** The Media Player's small heading is the
+    **Kicker** field (Media Player → Kicker), which starts as "Top tracks". The design's "KM BIO"
+    there is the Bio's own heading copied onto the Media Player (and "KM" is the mock artist's
+    initials, so it would be wrong for any real name). We keep "Top tracks" and have passed the
+    slip to the designer. To match the design anyway, type `KM BIO` into Kicker.
+  - **JP-071 — by design.** These are the design's labels, not the artist's content: the Bio's
+    *Performing since:*, *Current role:*, *Based in:*, *[ About ]* and *Genres*, the Events Map's
+    *Gigs & travel*, the Testimonials' *● Testimonials* and the Media Player's *● Popular* name
+    what stands beside them, so they stay as the design draws them. What they label is editable,
+    and each label goes with its value: *Performing since:* shows only while the Bio's
+    *Performing since* is filled, *Current role:* only while the Header's *Kicker* is (see
+    JP-061), *Based in:* only while the Header's *Location* is, and *Genres* only while the
+    Header's *Tag chips* is set to Show and its *Tags* are not empty. Making labels editable would be a product-wide change, since other
+    labels (the calendar's legend, for one) work the same way; we can plan it as its own piece of
+    work.
 
 ---
 
