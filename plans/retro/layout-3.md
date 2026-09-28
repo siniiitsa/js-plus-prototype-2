@@ -947,7 +947,7 @@ Learned on the events map (section 10):
   in at all three widths.
 - **Render the head and read it — again, and this time it cost a field its first seat.**
   `base` went in the frame's eyebrow on the gallery's prefer-a-field rule and printed
-  "Based in Manchester" over "Manchester", `TITLES.map`'s own default. The eyebrow keeps
+  "Based in Manchester" over "Manchester", `TITLES.map`'s own default (**since JP-070**, 2026-09-28, layout 3's head is the frame's "Where I'm playing.", `HEADING_3`). The eyebrow keeps
   the frame's label (layout 1's call in this very section, "Shows/coverage"), and the frame's
   foot line — "UK · 8 pins · 120 mi radius", a region, a count and a distance — is what
   seats `base` and `radius` instead, split across the bar with the count between them.

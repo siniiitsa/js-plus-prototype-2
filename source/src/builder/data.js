@@ -946,8 +946,8 @@ export const FOOTER_CREDIT = 'A JustPay Product'
 // The frames' own hard break — see sectionVm, which is the other half of it.
 export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
-// No `repertoire` entry: its heading counts the songs (see sectionVm), so a
-// literal here would never be read.
+// No `repertoire` entry: its heading counts the songs (see sectionVm), and at
+// layout 3 starts from REP_HEADING_3, so a literal here would never be read.
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.',
   pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
@@ -1046,9 +1046,20 @@ export function slotSeed(base) {
 // the corner. The shared `heading` default stays TITLES.testimonials for the
 // other layouts; sectionVm and EditPanel both resolve this one for layout 2.
 export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
-// The booking calendar's layout-3 heading, the composed page's "Book Me" over
-// the card (964:68644). Layouts 1, 2 and 4 keep TITLES.calendar.
+// Layout 3's heads, each its page's own (JP-070, user call, 2026-09-28): the
+// booking calendar's "Book Me" over the card (964:68644), and the five its
+// sections print — the repertoire (964:68710), the gallery (964:68711), pricing
+// (964:68712), the map (964:68713) and the testimonials (964:68715). All four
+// templates' masters read the same words, so these are per-layout defaults,
+// not per-theme ones. The other layouts keep the shared TITLES defaults (the
+// repertoire its song count); sectionVm and EditPanel both resolve these at
+// layout 3 alone, the HEADING_4 pattern.
 export const CAL_HEADING_3 = 'Book Me'
+export const REP_HEADING_3 = 'Curated sets'
+export const GALLERY_HEADING_3 = 'Gallery'
+export const PRICING_HEADING_3 = 'Pricing'
+export const MAP_HEADING_3 = "Where I'm playing."
+export const TESTI_HEADING_3 = 'Experiences.'
 // The layout-3 header's portrait card, its second line under the name
 // (964:68654, 964:68686, 964:68718): FIELDS.header.cardLine's seed, which
 // Lime's, Grunge's and Editorial's card reads. It was the kicker's layout-3
@@ -1089,9 +1100,13 @@ export const TESTI_RATING = '4.9'
 // step offers, the frame's own four. The calendar's own list rather than the
 // enquiry form's FORM_TYPES, which is another section's content.
 export const CAL_TYPES = ['Wedding', 'Birthday', 'Corporate', 'Festival']
-// Pricing layout 4's row pill. Its frame reads "Star Enquiry", the typo
-// CAL_SLOT_CTA already reads as this.
+// The package pill's label, FIELDS.pricing.rowCta, per layout (JP-070, user
+// call, 2026-09-28; FORM_BTN_4's shape): layout 1's frame reads "Book Now",
+// layout 3's "Book" (964:68712), and layout 4's "Star Enquiry", the typo
+// CAL_SLOT_CTA already reads as "Start Enquiry". Layout 2's plan card has its
+// own `cta`.
 export const PRICING_ROW_CTA = 'Start Enquiry'
+export const PRICING_ROW_CTA_3 = 'Book'
 // Events map layout 4's panel note, beside "Travel & reach" (964:72830).
 export const MAP_SPAN = 'Live · last 12 months'
 
@@ -1441,13 +1456,17 @@ export const FIELDS = {
     { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CREDIT,
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
-    // the row button below.
+    // the package button below.
     { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD,
       hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
     { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
       hint: 'Layout 2 only. A phone stacks it under the pill.' },
-    { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA, in: [3],
-      hint: 'The pill under the price on every package row.' },
+    // Every package's pill (JP-070): layout 4's row pill until then, and
+    // layouts 1 and 3 printed the section's unfielded "Book Now". `d` is
+    // layout 1's word; sectionVm and EditPanel resolve layouts 3 and 4's.
+    { k: 'rowCta',  l: 'Package button', d: 'Book Now', in: [0, 2, 3],
+      hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
+          + '“Start Enquiry”. Layout 2 has its own plan card button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
   // The other list-shaped content type with a structured editor rather than a
@@ -1457,6 +1476,8 @@ export const FIELDS = {
   repertoire: [
     // No `d`: the heading falls back to the song count, in sectionVm and in
     // the panel alike, so it cannot claim 240 songs over a list of twelve.
+    // Layout 3 starts from its frame's "Curated sets" instead (JP-070), which
+    // counts nothing.
     { k: 'heading', l: 'Heading' },
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead.' },
@@ -1569,7 +1590,8 @@ export const FIELDS = {
   testimonials: [
     // A textarea, because layout 2's default breaks onto a second line.
     { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
-      hint: 'Layout 2 starts from its own two-line heading; a line break you type is kept there.' },
+      hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '
+          + 'kept in layout 2.' },
     // Layout 2 was the first design to head this section, so both of the plain
     // strings below reached it alone — FIELDS.media.soundcloud's case the other
     // way up, hence the layout in each hint. Layout 3's bento wall then gave

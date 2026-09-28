@@ -929,7 +929,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   view block 38.6 (38.5); 768 head 72.1 (72), cards 216 × **438.3** (439), rows 62.5, view 46.8
   (47); 390 head 40.9 (41), cards 290 × 438.3 at −260 / 50 / 360 (the master's x), grid 24
   under the head. **Named diffs, Lime's and Retro's**: the head is `s.title` ("12 Songs")
-  where the frame writes "Curated sets"; the meta line is the set's count where the frame has
+  where the frame writes "Curated sets" (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.); the meta line is the set's count where the frame has
   a mood and a running time; the right-hand column is the artist, not a duration; the 768
   cards are 216 against 222.7 (a 688 column against 708); the section's own 80 / 56 / 44 top
   pad is the shared `padY`, not the frame's 56 / 60 / 60 (the plan's `vm.pad` arms never
@@ -1072,7 +1072,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   1088.96 / 708 / 350.
 - **Named diffs, Lime's and Retro's**: the sections are **500 / 714 / 482** against
   789 / 884 / 585, the frame's twelve tiles against our seven (`FIELDS.gallery.images` is
-  `max: 7`); the head prints `heading`'s "See us in action" where the frame writes "Gallery",
+  `max: 7`); the head prints `heading`'s "See us in action" where the frame writes "Gallery" (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.),
   one line at every width either way, so the copy is the artist's and the word is the
   component's; the seventh tile's well is `sem/active/bg` (`#DF262C`) under its photograph and
   **paints nothing, so it is not drawn** — Lime's identical call on the identical slot of the
@@ -1162,7 +1162,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   shared `padY`, not the frame's 56 × 0.82 / 30 / 60 (section 4's repertoire rule — the
   `vm.pad` arm carries the foot alone); the seeded intro is one line (`DEFS.pricingIntro`)
   where the frame's wraps, and the seeded heading is the artist's copy, not "Pricing"; the
-  pill reads *Book Now* (`cta1`) where the frame types *Book*; the unit is `/event`
+  pill reads *Book Now* (`cta1`) where the frame types *Book* (**since JP-070** (2026-09-28) both are the frame's: the head from `HEADING_3`, the pill from `rowCta`, the *Package button*; see `./layout-3-qa-fixes.md`); the unit is `/event`
   (`tierUnit`) where the frame types "— £1,400" (a range typed into the price now sets its
   second half small in that seat, `t.tail`, before the unit: JP-074, 2026-09-28); the capsule carries the extra leading `All`
   chip, layout 1's intended diff; "Save 15% on bundles" stays dropped (**reversed** by JP-046, 2026-09-24: it is
@@ -1276,7 +1276,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   0.75 sets a shorter line than Bebas Neue, so the list comes to 178.8 where Lime's measured
   186.8 (row 122.8 + pager 54), with the chip row, the head and the panel making up the other 6
   (26.8 / 51.4 / 357.9 against 30 / 52 / 360); the head prints `vm.title`'s "Manchester" where
-  the frame writes "Where I'm playing."; the panel's "Updated 2m ago" keeps Lime's own
+  the frame writes "Where I'm playing." (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.); the panel's "Updated 2m ago" keeps Lime's own
   `opacity: 0.6` where both frames print it at full strength, a diff inherited rather than
   introduced; Retro's five drops still hold (the weekday, the
   status chip, the `↗`, and the frame's Upcoming/Past chips, which `vm.gigChips` replaces with
@@ -1474,7 +1474,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   1328 × 0.82 = 1088.9 and the narrow root paddings are ours, the page gutter — Retro's diff
   through Lime; the rows are **content-tall** where the frame's are `flex-1` residues of a stated
   790, so they run short at 1440 and long at 768 where our quotes wrap further in a 190.5 column;
-  the head prints `vm.title`'s "Word of Mouth" where the frame writes "Experiences."; the
+  the head prints `vm.title`'s "Word of Mouth" where the frame writes "Experiences." (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.); the
   numeral is the review count and the stars, the `®` and the 306 head cap stay dropped, Retro's
   re-seating. (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `./layout-3-qa-fixes.md`.) **The 390 section's 1622.5 against 1248 is the seed, not the fit**: all five seeded
   reviews carry a name and a role, so all five cells are the frame's 233-tall `name-cell`, where

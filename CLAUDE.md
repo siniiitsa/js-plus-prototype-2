@@ -607,6 +607,12 @@ mutated through a single `patch()` helper.
   pill takes `vm.tierBookTo`, which is `vm.bookTo` **minus `pricing` itself** — `CTA_TARGETS.book`
   ends there, so the pill would otherwise scroll the visitor to the section they are reading; with
   neither a form nor a calendar on the page it resolves to nothing and `BookPill` stays a span.
+  Its label is **`rowCta`**, the *Package button*, at layouts 1, 3 and 4 (JP-070, user call,
+  2026-09-28; it had been layout 4's alone, and the other two printed the unfielded `cta1`). Like
+  `FORM_BTN_4`, it seeds per layout: `vm.tierRowCta` is "Book Now", "Book" or "Start Enquiry"
+  (`PRICING_ROW_CTA_3`, `PRICING_ROW_CTA`), resolved in `sectionVm` and `EditPanel`'s chain. An
+  emptied label drops the pill at all three layouts. A long one wraps rather than widening the
+  page, as layout 2's plan card pill (its own `cta`) does.
   **Everything in this paragraph from "The row is *not* rendered at one chip" on is the deck's**
   — layout 1's and, where it says the same thing, layout 3's: layout 2 is a single big plan, and
   its chip row names the
@@ -1154,7 +1160,13 @@ mutated through a single `patch()` helper.
   under a blank row, and the repertoire's song-count heading counts the filtered list in both
   places. The one exception is the form's guarded email row, above. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`) has to
+  both. Layout 3 is the exception: there the frame's "Curated sets" wins over the count
+  (JP-070, user call, 2026-09-28). It comes from **`HEADING_3`**, layout 3's table of heads beside
+  `HEADING_4`, which also carries the gallery's "Gallery", pricing's "Pricing", the map's "Where
+  I'm playing.", the testimonials' "Experiences." and the calendar's "Book Me" (`CAL_HEADING_3`).
+  Both resolvers read it: `sectionVm` assigns it *after* the count, and `EditPanel`'s
+  first-match chain puts its arm *ahead* of the count. An emptied heading stays empty at every
+  layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES` and `FOOTER_LINKS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.

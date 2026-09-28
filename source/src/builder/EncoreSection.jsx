@@ -8480,12 +8480,18 @@ function Pricing({ s }) {
 
                   {/* The pill hugs its label. Its ink is `sem/tag/2/text`, where
                       the branch defaults to `sem/bg`; the 390 master keeps it at
-                      full size, as Retro's does. */}
-                  <span style={{ alignSelf: 'flex-start' }}>
-                    {ed
-                      ? <BookPill s={s} to={s.tierBookTo} bg={PILL.bg} fg={PILL.type} discBg={PILL.disc} full={s.mob} />
-                      : <BookPill s={s} to={s.tierBookTo} bg={s.pillBg} fg={s.activeFg} full={s.mob} />}
-                  </span>
+                      full size, as Retro's does. The label is `rowCta`: an
+                      emptied one drops the pill, and a long one wraps inside
+                      the card, layout 2's rule (JP-070). */}
+                  {!!s.tierRowCta && (
+                    <span style={{ alignSelf: 'flex-start' }}>
+                      {ed
+                        ? <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={PILL.bg} fg={PILL.type} discBg={PILL.disc} full={s.mob}
+                                   style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+                        : <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={s.pillBg} fg={s.activeFg} full={s.mob}
+                                   style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />}
+                    </span>
+                  )}
                   {/* Editorial's card is dashed 8, 8 on all four sides, inside. */}
                   {ed && <DashRule side="all" dash={8 * z} colour={s.stroke1} />}
                 </div>
@@ -8686,17 +8692,22 @@ function Pricing({ s }) {
                 </div>
 
                 {/* The pill hugs its label — without this the wrapper stretches
-                    to the column and the pill inside fills it. */}
-                <span style={{
-                  // The 390 card hugs its content rather than stretching, so
-                  // marginTop:auto does nothing there and the 30px the frame
-                  // puts between the feats and the pill has to come from the
-                  // padding on top of the card's own 14px gap.
-                  marginTop: 'auto', paddingTop: s.mob ? '16px' : '6px',
-                  position: 'relative', alignSelf: 'flex-start',
-                }}>
-                  <BookPill s={s} to={s.tierBookTo} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob} />
-                </span>
+                    to the column and the pill inside fills it. The label is
+                    `rowCta`: an emptied one drops the pill with its wrapper,
+                    and a long one wraps inside the card (JP-070). */}
+                {!!s.tierRowCta && (
+                  <span style={{
+                    // The 390 card hugs its content rather than stretching, so
+                    // marginTop:auto does nothing there and the 30px the frame
+                    // puts between the feats and the pill has to come from the
+                    // padding on top of the card's own 14px gap.
+                    marginTop: 'auto', paddingTop: s.mob ? '16px' : '6px',
+                    position: 'relative', alignSelf: 'flex-start',
+                  }}>
+                    <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob}
+                              style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+                  </span>
+                )}
               </div>
             )
           })}
@@ -9602,9 +9613,14 @@ function Pricing({ s }) {
               {!!t.blurb && <p style={{ ...ui, margin: 0, width: '100%' }}>{t.blurb}</p>}
               {/* Plain: `BookPill`'s Lime defaults exactly (lime box, ink label
                   and disc, lime arrow). Featured: the pair turned round, a
-                  lime disc round an ink arrow — the frame's two disc SVGs. */}
-              <BookPill s={s} to={s.tierBookTo} full={s.mob}
-                        {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac } : {})} />
+                  lime disc round an ink arrow — the frame's two disc SVGs.
+                  The label is `rowCta`, the frame's "Book": an emptied
+                  one drops the pill, a long one wraps (JP-070). */}
+              {!!s.tierRowCta && (
+                <BookPill s={s} to={s.tierBookTo} full={s.mob} label={s.tierRowCta}
+                          {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac } : {})}
+                          style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+              )}
             </div>
 
             {t.feats.length > 0 && (
@@ -9857,11 +9873,16 @@ function Pricing({ s }) {
                 The arrow inside the disc is the frame's gold on both kinds of
                 row: on a plain one that is the pill's own ground, on the
                 featured one the row's second hue — BookPill's Retro default is
-                a cream, so it has to be said. */}
-            <BookPill s={s} to={s.tierBookTo} glyph="arrow"
-                      full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
-                      bg={feat ? h.cardFg : s.pillBg} fg={feat ? h.card : s.pillFg}
-                      shadow={acc} discFg={feat ? h.acc : s.pillBg} />
+                a cream, so it has to be said. The label is `rowCta`, the
+                frame's "Book": an emptied one drops the pill, and a long one
+                wraps inside the row (JP-070). */}
+            {!!s.tierRowCta && (
+              <BookPill s={s} to={s.tierBookTo} glyph="arrow" label={s.tierRowCta}
+                        full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
+                        bg={feat ? h.cardFg : s.pillBg} fg={feat ? h.card : s.pillFg}
+                        shadow={acc} discFg={feat ? h.acc : s.pillBg}
+                        style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+            )}
           </div>
 
           {/* Dropped whole rather than left as a bare label when a package lists
@@ -10196,8 +10217,12 @@ function Pricing({ s }) {
                 }}>{t.price}</span>
               </span>
             )}
-            <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta}
-                      bg={s.tx} fg={s.bg} discFg={s.ac} full={s.mob} />
+            {/* An emptied `rowCta` drops the pill, as at layouts 1 and 3
+                (JP-070). */}
+            {!!s.tierRowCta && (
+              <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta}
+                        bg={s.tx} fg={s.bg} discFg={s.ac} full={s.mob} />
+            )}
           </div>
         </div>
       )
@@ -10359,15 +10384,18 @@ function Pricing({ s }) {
               alone. The label is `rowCta`, the frame's "Star Enquiry" read as
               CAL_SLOT_CTA reads it, set as the frame sets it — Display/List,
               not cased — under Retro, calendar layout 3's pill override
-              (QA, 2026-09-15; it had been `cta1` in the label face). */}
-          <BookPill s={s} to={s.tierBookTo} glyph="arrow" label={s.tierRowCta}
-                    full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
-                    bg={s.tx} fg={s.bg} discFg={s.ac}
-                    {...(desk ? { shadow: 'transparent' } : null)}
-                    style={s.retro ? {
-                      fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
-                      letterSpacing: s.dls,
-                    } : undefined} />
+              (QA, 2026-09-15; it had been `cta1` in the label face). An
+              emptied one drops the pill, as at layouts 1 and 3 (JP-070). */}
+          {!!s.tierRowCta && (
+            <BookPill s={s} to={s.tierBookTo} glyph="arrow" label={s.tierRowCta}
+                      full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
+                      bg={s.tx} fg={s.bg} discFg={s.ac}
+                      {...(desk ? { shadow: 'transparent' } : null)}
+                      style={s.retro ? {
+                        fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
+                        letterSpacing: s.dls,
+                      } : undefined} />
+          )}
         </div>
       </div>
     )
@@ -19190,10 +19218,11 @@ function EventsMap({ s }) {
         {/* The eyebrow stays the frame's own label, which is layout 1's call in
             this very section ("Shows/coverage"). `base` was tried here first,
             on the gallery's prefer-a-field rule, and read back as a stutter:
-            `TITLES.map` is already "Manchester", so the head printed "Based in
-            Manchester" over "Manchester" — the pricing deck's
+            the head was then `TITLES.map`'s "Manchester", so it printed "Based
+            in Manchester" over "Manchester" — the pricing deck's
             render-the-head-and-read-it rule. It goes along the map's foot
-            instead, where the frame's own line already names a place. */}
+            instead, where the frame's own line already names a place. The
+            head has been the frame's "Where I'm playing." since JP-070. */}
         <span style={body12}>Gigs &amp; travel</span>
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,

@@ -142,7 +142,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | **done** (A; no hour chip at any width, in both halves; the weekday a reply; 24 files as named) |
 | 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | **done** (A; the pair after the month name, the free dot at 24; off-month the head is the month alone; 30 files as named) |
 | 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | **done** (A; `rating` over a literal `/5`, the count its emptied fallback; `stars` widened to layout 3, beside the faces; 30 files as named) |
-| 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | open |
+| 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | **done** (A, keep, A; `HEADING_3`, which took in `CAL_HEADING_3`; `rowCta` at layouts 1, 3 and 4, where an emptied label drops the pill and a long one wraps; 150 files as named) |
 | 14 | JP-070 (form) | The form's head and boxes | **Named fit diffs**: the head names the mock artist; the boxes are layout 2's card frame's too | S–M | **yes** — the head, the boxes | open |
 | 15 | — | End-of-pass sweep | — | S | — | open |
 
@@ -2181,11 +2181,136 @@ inside pricing's 30.
 **Docs.** CLAUDE.md where it names `HEADING_4` / `CAL_HEADING_3` and the repertoire's count
 fallback ("change one, change both"). The `HEADING_4` comment. `rowCta`'s row.
 
-**Decided.** —
+**Decided: A, keep, A** (user, 2026-09-28; three questions, each the recommendation).
+1. **The heads: a `HEADING_3` table** at `d === 2`, `HEADING_4`'s shape, resolved in `sectionVm`
+   and `EditPanel` alike. Its repertoire arm takes precedence over the song count in both. It
+   absorbs `CAL_HEADING_3`. Layouts 1, 2 and 4 keep today's heads.
+2. **The pricing intro stays** "The quote covers the whole booking.". The frame's "Four ways…"
+   is a count claim, false even in the frame, which draws three packages.
+3. **The pill: `rowCta` widens** to layouts 1, 3 and 4, relabelled *Package button*, with a
+   per-layout fallback in `FORM_BTN_4`'s shape: "Book Now" at 1, "Book" at 3, "Start Enquiry"
+   at 4. Its `in` is measured. Layout 2's `cta` stays its own.
+4. The chips are a reply (no question): `All` is layout 1's named diff, and the chips derive from
+   `TIERS`' tags, one list for every layout.
+5. **Decided in session: an emptied *Package button* drops the pill** at all three layouts. That
+   is layout 2's `cta` rule and the footer's. Until now layout 4 printed a wordless pill (`'' ??
+   s.cta1` is `''`). It moves no seed.
+6. **An emptied heading stays empty** at layout 3, as it does today, and the count does not come
+   back (every fallback is guarded on `c.heading === undefined`).
 
-**Settled.** —
+**Settled** (2026-09-28).
+- **Re-checked on HEAD** (`13a88c6`). Every number in the hand-off held. The map's "Gigs &
+  travel" kicker sits twice, both inside layout 3's `if (s.v2)` (`EncoreSection.jsx:18600`):
+  `:18835` is the `s.limeTree` block's `headL` (its `<h2>` at `:18836`), and `:19197` is the
+  Retro / Pop body (its `<h2>` at `:19198`). The pricing pill's unlabelled sites were layout 1's
+  `:8486`–`8487` (the block, both arms of `ed ?`) and `:8698` (Retro / Pop), and layout 3's
+  `:9606` and `:9861`. Layout 4's `:10199` and `:10363` already read `s.tierRowCta`.
+- **The frame's apostrophe is straight**: the Grunge map master's layer (`964:68713`) is named
+  `Where I&#39;m playing.`, which matches `TITLES`' own "Let's" / "that's".
+- **Code.**
+  - `data.js`: `REP_HEADING_3` 'Curated sets', `GALLERY_HEADING_3` 'Gallery',
+    `PRICING_HEADING_3` 'Pricing', `MAP_HEADING_3` "Where I'm playing." and `TESTI_HEADING_3`
+    'Experiences.' beside `CAL_HEADING_3`, under one comment that now covers all six.
+    `PRICING_ROW_CTA_3` 'Book' beside `PRICING_ROW_CTA`. `FIELDS.pricing.rowCta` is relabelled
+    *Package button* with `d: 'Book Now'` (layout 1's word, as the form's `button` holds its
+    own) and `in: [0, 2, 3]`, and its hint names each layout's start. The testimonials
+    heading's hint now says layouts 2, 3 and 4 each start from their own. The `TITLES` comment and
+    the repertoire heading's comment name layout 3.
+  - `EncoreBuilder.jsx`: `HEADING_3` beside `HEADING_4` (`:248`), whose comment now names both.
+    In `sectionVm` one line, `if (d === 2 && c.heading === undefined && HEADING_3[cat])`
+    (`:1036`), replaces the calendar's own and comes **after** the song count (`:1027`), so
+    the last write wins. In `EditPanel`'s chain its arm comes **ahead** of the count (`:3621`),
+    since the first match wins there, and the `CAL_HEADING_3` arm is gone. `vm.tierRowCta` is
+    `cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : 'Book Now')`
+    (`:724`), and `EditPanel`'s chain has two `rowCta` arms for layouts 3 and 4.
+  - `EncoreSection.jsx`: the five sites take `label={s.tierRowCta}`, and all seven (layout 4's
+    two included) are gated on `!!s.tierRowCta`. At layout 1's Retro / Pop site the gate covers
+    the wrapper `<span>` too, since it carries the `marginTop` and `paddingTop`. The map's
+    Retro / Pop comment ("`TITLES.map` is already 'Manchester'") is now in the past tense.
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on :5173,
+  every category × themes `0,1,2,3,4` × three widths, canvas and `live=1`: **0 of 1,320**.
+- **After: 150 files, as named** (`HEADING_3` and `tierRowCta` confirmed in :5173's modules
+  first). They are repertoire, gallery, pricing, map and testimonials × `arch 2` × themes 0–4 ×
+  three widths × both surfaces. Every other category and design is 0, including the calendar
+  (the table carries the same bytes) and pricing's `arch 0` and `arch 3`. The canvas and live
+  diffs have the same shape. Rows added or removed: none.
+  - Repertoire, gallery and testimonials: the head's one row, "12 Songs" → "Curated sets", "See
+    us in action" → "Gallery", "Word of Mouth" → "Experiences.". Pop's 390 gallery moves 34 rows,
+    because its head drops from two lines to one and the tiles rise.
+  - Map: two rows, the `<h2>` and the wrapper that hugs it.
+  - Pricing: 16 rows, the head and the three "Book Now" → "Book" pills. At 390, Editorial moves
+    117 rows and Pop 110: the head's lines fall away and the stack rises.
+- **The composed column does not apply.** None of the five composes (the column holds the bio,
+  the media player and the calendar), and the calendar is 0 in the full digest.
+- **States** (a one-off probe, `live=1`, themes 0–4 × three widths, 345 renders). Each `<h2>`'s
+  `textContent` was read whole, each head and pill was checked against its section's content
+  box, and the page's `scrollWidth` was read.
+  - **The seed**: every head is the frame's words on every template ("CURATED SETS" and so on
+    under Pop's casing, "Where I'm playing." with its apostrophe intact). Nothing overflows,
+    "Experiences." included (Editorial's plan had flagged it at the frame's 306 cap, which the
+    page does not draw). The calendar still reads "Book Me". The pills read "Book Now" / "Book" /
+    "Start Enquiry" at layouts 1 / 3 / 4.
+  - **A heading typed** at layout 3 ("Wedding sets") prints as typed.
+  - **An emptied heading**: pricing and testimonials drop the `<h2>`; repertoire, gallery and
+    map keep an empty `<h2>`, 0 tall. That is HEAD's behaviour, and this fix does not touch it.
+  - **An emptied *Package button*** drops the pill at layouts 1, 3 and 4.
+  - **A long label** ("Enquire about your date and venue today", and the same with hyphens for
+    spaces) **spilled the card at layouts 1 and 3 on the first run**, and at layout 1 it widened
+    the page (desktop and tablet under Retro, Editorial and Pop). Layout 4 did not spill. Now that
+    this label is the artist's, the five sites take layout 2's own pill style (`whiteSpace:
+    'normal', maxWidth: '100%', boxSizing: 'border-box'`, as at `:8995`). On the rerun nothing is
+    flagged in any of the 345 renders. A pricing re-digest (60 renders × both surfaces) matched the
+    first after-digest byte for byte, so the style moves no seed.
+- **Reach** (`reach.mjs`'s new `pricing.rowCta` row, run from a copy filtered to it, themes 0–4,
+  240 renders): layouts 1, 3 and 4 on every template, the `in: [0, 2, 3]` written.
+- **The tester's steps in the real app** (a one-off puppeteer script, deleted). The editor was at
+  1600 × 1000: the template, card 3, *Use this header*, then each section from the page list.
+  - **Grunge card 3.** At layout 3 the panel shows *Heading* as "Curated sets", "Gallery",
+    "Pricing", "Where I'm playing.", "Experiences." and "Book Me", and *Package button* as
+    "Book", with no note on any. The canvas prints them. Published and opened, the tab at 1440,
+    768 and 390 prints the same heads and "Book" pills, with no overflow and no page error.
+  - **Through the layout picker** (layouts 1, 2, 4, then 3 again), the panel reads the old heads
+    at 1, 2 and 4: "12 Songs"; "See us in action" / "Snaps from the night"; "Choose the set…";
+    "Manchester" / "Distances we’ll Travel"; "Word of Mouth" / "Honest feedback…" / "Client
+    success stories"; "Availability" / "Book Us". *Package button* reads "Book Now" / "Book Now"
+    with "Not shown in this layout" / "Book" / "Start Enquiry".
+  - **The repertoire's heading typed over** ("Wedding sets") reaches the canvas at once. Emptied,
+    the box stays empty with no note, the canvas head is empty, and the count does not come back.
+  - ***Package button* typed** ("Book a date") reaches the canvas's three pills. Published, all
+    three read it at 1440, 768 and 390 with no overflow. Emptied, the pills go.
+  - **Lime's, Editorial's and Retro's card 3**: the same panel values, canvas heads and published
+    heads and pills at three widths, with no errors and no overflow.
+- **Docs.** CLAUDE.md: the song-count sentence ("change one, change both") names layout 3's
+  exception and `HEADING_3`, and the pricing pill's sentence names `rowCta`. Also the `HEADING_4`
+  comment, `CAL_HEADING_3`'s, and `rowCta`'s row, label and hint. The pointers are in
+  `./layout-3.md`'s five named diffs, `../editorial/layout-3.md`'s four (and its note on
+  "Experiences." fitting), `../lime/layout-3.md`'s pill line and `../retro/layout-3.md`'s map note.
+  README names none of these heads.
+- **For JP-070 (form).** This entry sits above the form in all three files, so its triage
+  numbers have moved. As they stand now:
+  - `data.js`: `FORM_FIELDS` at `:855`, `FORM_FIELDS_4` at `:871`, `TITLES.form` at `:954`,
+    `FORM_HEADING_4` at `:1086`, `FIELDS.form.heading` at `:1635`, `copyrightOf` at `:1736`.
+  - `EncoreBuilder.jsx`: `vm.titleWordEms` at `:1047`, `vm.formBtn` at `:1610`, `formList` at
+    `:1659`, `formFieldsVal` at `:3559`, `EditPanel`'s `copyrightOf` arm at `:3620`.
+  - `EncoreSection.jsx`: `EnquiryForm` at `:22489`, layout 2 at `:23248` (the block) and
+    `:23614`, layout 3's `if (s.v2)` at `:23996` with its block at `:24132` and the head's fit
+    at `:24149`. Layout 2's boxes are at `:23511` and `:23897`, layout 3's at `:24261` and
+    `:24445`.
 
-Reply: —
+Reply: **JP-070 (heads) — fixed.** Layout 3 now starts from the design's own headings and pill.
+- The Repertoire's heading starts as "Curated sets", the Gallery's as "Gallery", Pricing's as
+  "Pricing", the Events Map's as "Where I'm playing." and the Testimonials' as "Experiences.".
+  Layouts 1, 2 and 4 keep their own. Each is still the *Heading* field, so it can be changed or
+  emptied.
+- The pill on each Pricing package is now a field, *Package button*. It starts as "Book" in
+  layout 3 (as the design has it), "Book Now" in layout 1 and "Start Enquiry" in layout 4.
+  Emptying it removes the pill, and a long label wraps inside the card.
+- On every template.
+- Not changed: the Pricing intro stays "The quote covers the whole booking.". The design's first
+  sentence, "Four ways to book this act.", counts packages, and the design itself shows three.
+  The chips stay "All / Solo / Trio / Band": they are made from the packages' tags (Pricing →
+  Packages → Tags), the same list at every layout, and "All" is how every chip row starts.
+  Tagging packages "Duo", "Trio" and "Band" gives the design's chips after "All".
 
 ---
 

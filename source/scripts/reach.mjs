@@ -71,6 +71,8 @@ const PROBES = [
   // JP-065: layout 3's stat card, its rating and the stars beside its faces.
   { name: 'testimonials.rating', cats: ['testimonials'], param: 'cj', value: { rating: Z } },
   { name: 'testimonials.stars', cats: ['testimonials'], param: 'cj', value: { stars: Z } },
+  // JP-070: every package's pill, layout 4's row pill until then.
+  { name: 'pricing.rowCta', cats: ['pricing'], param: 'cj', value: { rowCta: Z } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

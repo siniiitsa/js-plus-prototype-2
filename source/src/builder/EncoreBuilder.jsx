@@ -44,8 +44,9 @@ import {
   FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, CAL_HEADING_3, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
+  CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, MAP_HEADING_3, TESTI_HEADING_3,
+  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -239,8 +240,15 @@ const flatScheme = ({ palette: [bg, ac, tx], sem: { tagFg, ...sem }, tags }) => 
   chips: tags.map((h, i) => ({ bg: h, fg: tagFg?.[i] ?? contrast(h) })),
 })
 
-// Layout 4's heading fallbacks, per category — the composed page's own heads
-// (QA, 2026-09-15; the form's, JP-054). sectionVm and EditPanel both read this.
+// Layouts 3 and 4's heading fallbacks, per category — each page's own heads
+// (layout 4's QA, 2026-09-15, and the form's, JP-054; layout 3's JP-070,
+// 2026-09-28, which took in the calendar's "Book Me"). sectionVm and EditPanel
+// both read these, and at layout 3 the repertoire's wins over its song count
+// in both.
+const HEADING_3 = {
+  repertoire: REP_HEADING_3, gallery: GALLERY_HEADING_3, pricing: PRICING_HEADING_3,
+  calendar: CAL_HEADING_3, map: MAP_HEADING_3, testimonials: TESTI_HEADING_3,
+}
 const HEADING_4 = {
   calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
   form: FORM_HEADING_4,
@@ -708,10 +716,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // are already reading. Dropping it leaves `undefined`, and BookPill's own rule
   // — no target, no link — keeps the pill the picture it is today.
   vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
-  // Layout 4's row pill label (its frame's "Star Enquiry", read as "Start").
-  // Uncased, the footer's rule: the pill sets it in the display face with no
-  // text transform, and casing it would shout on Pop.
-  vm.tierRowCta = cv('rowCta', PRICING_ROW_CTA)
+  // Every package's pill label, per layout (JP-070): layout 1's "Book Now",
+  // layout 3's "Book", layout 4's frame's "Star Enquiry" read as "Start". An
+  // emptied one drops the pill. Uncased, the footer's rule: the pill sets it
+  // in the display face with no text transform, and casing it would shout on
+  // Pop. Layout 2's plan card reads its own `cta`.
+  vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : 'Book Now')
 
   // chips — TAGS, one per palette tag hue. A template whose Figma mode names
   // each tag's ink (`sem.tagFg`, parallel to `tags`) takes it; contrast()'s
@@ -1019,9 +1029,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // display head; the other layouts keep the shared default. EditPanel mirrors
   // it. The stars sit in its card's corner.
   if (cat === 'testimonials' && d === 1 && c.heading === undefined) vm.title = cased(TESTI_HEADING_2)
-  if (cat === 'calendar' && d === 2 && c.heading === undefined) vm.title = cased(CAL_HEADING_3)
-  // Layout 4's heads, the composed page's own (QA, 2026-09-15). EditPanel
-  // mirrors all four.
+  // Layouts 3 and 4's heads, each page's own (JP-070; QA, 2026-09-15).
+  // EditPanel mirrors both tables. Layout 3's comes after the song count, so
+  // the repertoire's "Curated sets" wins there; EditPanel's chain, which takes
+  // the first match, puts its arm ahead of the count instead.
+  if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
   // The widest word of the heading, in the display face's ems, after every
   // fallback above. Lime's layout-3 form sets Display/LG in a half column its
@@ -3601,19 +3613,25 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // the layout. Each mirrors what sectionVm resolves, so panel
                   // and canvas never disagree. The kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
-                  // layout-3 card's line is a field of its own.
+                  // layout-3 card's line is a field of its own. Layout 3's
+                  // heads come ahead of the song count, which sectionVm's
+                  // later assignment says the other way round (JP-070).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
                     : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
+                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 2
+                      && HEADING_3[sec.cat] ? HEADING_3[sec.cat]
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
-                    : f.k === 'heading' && sec.cat === 'calendar'
-                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'button' && sec.cat === 'form'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? FORM_BTN_4
+                    : f.k === 'rowCta' && sec.cat === 'pricing'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3
+                    : f.k === 'rowCta' && sec.cat === 'pricing'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? PRICING_ROW_CTA
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
