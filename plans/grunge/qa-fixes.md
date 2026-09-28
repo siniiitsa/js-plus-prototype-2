@@ -52,7 +52,7 @@ HEAD. None is a stale-build echo.
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-058 | `From £1,200` prints as a small `F` + `rom £1,200` | **Confirmed, and shared**: `/^[^\d]/` takes the first character of any price that does not start with a digit, in six sites (pricing layouts 1–3, every template) | S | **user: B, everything before the first digit** | **done** |
-| 2 | JP-057 | The seal's two small circles sit on the name's letters | **Confirmed, and shared**: only the name ring spins (`.seal-spin`, 14 s), and the marks stand still, so the name walks through them. At rotation 0 the picture is the frame's | S–M | **yes**: spin the marks with the name, or stop the spin | open |
+| 2 | JP-057 | The seal's two small circles sit on the name's letters | **Confirmed, and shared**: only the name ring spins (`.seal-spin`, 14 s), and the marks stand still, so the name walks through them. At rotation 0 the picture is the frame's | S–M | **user: A, the marks spin with the name** | **done** |
 | 3 | JP-056 | Headings set in Anton, not the distressed Stones Crush | **By design so far**: Anton is the named stand-in (user call, 2026-09-21). The tester's licence question is real and is the PO's to carry | — (reply) / L (own plan) | **yes (PO / design)**: reply, licence, or a distress mask | open |
 | 4 | — | End-of-pass sweep | — | S | — | open |
 
@@ -288,6 +288,9 @@ every designed template's marks.
 - **C. Spin the whole seal**, centre included. The reticle's four ticks and Editorial's sparkle
   would visibly turn, which no frame suggests. Not recommended.
 
+**Decided** (2026-09-28, user call): **A**, the marks spin with the name. The disc, the outer
+ring and the centre stay still.
+
 **A sub-point to record, not to fix: the long-name edge.** At rotation 0, a name whose arc is
 longer than the half-circle minus a mark's width still reaches the marks, whatever spins. The
 tester's control shows that length is not this bug. The session measures the longest name that
@@ -300,6 +303,37 @@ the marks inside it makes their rows **disappear** from every section that carri
 themes 0–3. The diff is **deletions only**, and every deleted row is a mark (`circle`, or Retro's
 `line`s). A row that *changes* instead of vanishing means some geometry moved, and that is a
 failure. List the expected sections per theme (from the call-site table) before running.
+
+**The call-site table, as rendered** (a census of every `.seal-spin` on the HEAD harness, all
+categories × `arch` × three widths × themes 0–4 × canvas and `live=1`, 188 renders with a seal,
+exactly one seal in each). The branch is the one `SealBadge` takes:
+
+| Theme | Sections carrying a marked seal (`arch`) | Branch | Files per surface |
+|---|---|---|---|
+| 0 Retro | header 0, 1, 3, 4, 5; bio 0, 2; footer 0 and `page=2`, at three widths; calendar 0 at 1440 and 768 only (`!s.mob`) | §10.2 | 29 |
+| 1 Lime | header 3; bio 0; footer 0 and `page=2` | Lime / Grunge | 12 |
+| 1 Lime | bio 2 (`classic`) | §10.2 | 3 |
+| 2 Grunge | header 0, 3, 4; bio 0, 2; pricing 0; footer 0 and `page=2` | Lime / Grunge | 24 |
+| 3 Editorial | header 3; bio 0; footer 0 and `page=2` | Editorial | 12 |
+| 4 Pop | bio 0, 2; calendar 0; footer 0 and `page=2` | starburst, no marks | 0 |
+
+Grunge's layout-1 page is the tester's four: header 0, bio 0, pricing 0, footer 0.
+
+**The named after-diff:** **160 files** of the 1,056 (80 of 528 per surface) that themes 0–3
+render, and each
+diff is **deletions only**:
+- the Lime / Grunge and Editorial branches: **2 rows**, the two mark `CIRCLE`s. They have to
+  carry `fill="none"` and the stroke into the spin group with them. The outer ring bounds its
+  group, so the group's row does not move.
+- the §10.2 branch: **10 rows**. That is the marks' `G` and its 8 `LINE`s, plus the
+  `<g stroke={ink} strokeLinecap="round">` wrapper they shared with the centre glyph. With the
+  marks gone, that wrapper's box would shrink to the glyph's, so its row would *change*. So the
+  wrapper goes, and its stroke and linecap move onto the glyph's own group. The digest records
+  no stroke, so the glyph's rows stay byte-identical.
+- The paint order is kept. Lime / Grunge and Editorial draw the marks before the name, so they
+  go first in the spin group. The §10.2 branch draws them after it, so they go after the
+  `<text>`.
+- Pop: zero, and so is every other file.
 
 **Verify (on A).**
 - **Static.** Shots under reduced motion, before and after, of every seal Grunge draws (layout 1
@@ -323,9 +357,83 @@ failure. List the expected sections per theme (from the call-site table) before 
 - CLAUDE.md and README only if they describe the seal's spin (grep `spin`).
 - SPEC is history. Do not edit it.
 
-**Settled.** *(open)*
+**Settled** (2026-09-28). The Evidence held. `SealBadge` has not moved (`:983`, with its branches
+at `:1058`, `:1091` and `:1162`). The call sites below pricing are where the hand-off put them:
+pricing `:8455`, the calendar `:14868`, the footer `:25097` / `:25265`.
+- **Code.** The change is in the three branches with marks, and Pop's starburst is untouched.
+  - **Lime / Grunge and Editorial:** the two mark `<circle>`s move into `seal-spin`, ahead of the
+    name. They sit in their own `<g>`, which carries the `fill="none"`, stroke and stroke width
+    they used to inherit.
+  - **§10.2:** the marks' `<g>` moves in after the `<text>` and takes `strokeLinecap="round"`
+    with it. The shared `<g stroke={ink} strokeLinecap="round">` wrapper is gone, and its stroke
+    and linecap moved onto the globe's and the asterisk's own groups.
+  - The paint order against the name is kept in all three. In §10.2 the marks now paint before
+    the centre glyph, where they used to paint after it. The two never overlap, and the shots
+    below are byte-identical.
+  - The §10.2, Lime / Grunge and Editorial comments now say the marks turn with the name.
+- **Docs.** CONVENTIONS' *Measure anything under `.seal-spin`* row now names the marks. CLAUDE.md
+  and the README do not describe the spin (the README's "honours `prefers-reduced-motion`" still
+  holds), so neither changed. `digest.mjs`' comment is still true.
+- **The harness.** The unedited tree against HEAD came out 0 of 1,056 after two normalisations:
+  the port, and a `?t=` HMR stamp that the long-running :5173 server had put on two Editorial
+  photo URLs (`editorial-hero.jpg`, `editorial-stage.jpg`). **The next session should normalise
+  `\.jpg\?[^|]*` in `src` as well as the port**, or restart :5173.
+- **The digest.** Themes 0–3, three widths, canvas and `live=1`: **160 of 1,056 files differ,
+  exactly the census's 160**, and every one is deletions only.
+  - 2 `circle` rows per Lime / Grunge and Editorial seal (72 + 24 files).
+  - 10 `g` / `line` rows per §10.2 seal (64 files).
+  - No row added or changed anywhere.
+  - Pop, digested as an extra: 0 of 132.
+- **Reduced motion.** There are 160 element shots, one of every marked seal the census found, and
+  HEAD and the tree are **byte-identical**. That stands in for the Evidence's rotation-0 read of
+  `964:58600` / `964:58610`, which was not taken: the rest picture is exactly HEAD's, the
+  frame's name between the marks.
+- **Four phases** (`getAnimations()` paused at 0, 3.5, 7 and 10.5 s). This covered Grunge layout
+  1's four seals at three widths, plus Retro's header 0 and bio 0 and 2, Lime's bio 0 and its
+  `classic` bio 2, Editorial's bio 0 and Grunge's bio 2.
+  - **The metric** is the angular gap between each glyph cell and each mark. The cell corners
+    are mapped through the text's screen CTM, and each mark's half-width is
+    `asin((r + stroke/2) / d)`.
+  - **HEAD:** Grunge clears by +12.2° at 0 and ½ turn, and by **−11.5° at ¼ and ¾**. That is the
+    report.
+  - **The tree:** the gap is **constant at every phase**. Grunge +12.1° to +12.8° at every width,
+    Lime +9.9°, Editorial +21.1°. The contact sheets show the marks between the two names in
+    every frame.
+  - **A metric trap:** the first run read the scale off the rotated disc's
+    `getBoundingClientRect`. That is the box of a rotated *square*, ×1.34 at 26°. Read the scale
+    off `svg.getScreenCTM()` instead.
+- **Concentric.** Each mark's distance from the disc centre is the same at every phase: 37.76 /
+  38.41 viewBox units (the frame's `cx` 12.24 / 88.41) and §10.2's 39 / 39. So
+  `transformOrigin: '50% 50%'` resolves to (50, 50) of the viewBox.
+- **The tester's control.** Grunge card 1 in the real app, with Title = `Static Youth` and then
+  the seeded `Kai Mercer`, then Publish and Open, at 1440 and 390.
+  - The tree: all four seals clear at all four phases, by +5.1° to +5.4° for `Static Youth` and
+    +12.2° to +12.6° for `Kai Mercer`.
+  - HEAD: −11.1° to −11.5° at ¼ and ¾. Its shot reads "STATI◯OUTH", the tester's picture.
+  - The tab title follows the name, and there were no errors.
+- **Named, not fixed.**
+  - **§10.2's rest picture.** Each name starts at `startOffset` 2%, 7.2° past its mark, so the
+    asterisk stands right against the first letter like a bullet. The cell metric reads that as
+    −4°. It is the rest picture HEAD drew, pixel for pixel, and the fix only makes it the
+    picture at every phase.
+  - **The long-name edge**, at rotation 0 with the same cell metric (which errs on the safe side):
 
-Reply: *(open)*
+    | Face | `Kai Mercer` | `Static Youth` | Longest name that clears |
+    |---|---|---|---|
+    | Grunge: Anton at `faced` 14.05, tracked 4.21 | 12.2° | 5.1° | 12 characters (`THE MIDNIGHT`); 9 M, 13 E |
+    | Lime: Bebas at 14.05, tracked 4.21 | 9.9° | 2.4° | 12 (`THE MIDNIGHT`); 9 M, 12 E |
+    | Editorial: Space Mono at 8.46, tracked 2.54 | 21.1° | 12.2° | 15 of anything (monospace) |
+    | §10.2: Anton at 9, tracked 1.4, start-anchored, read at its running end | 77.7° | 61.8° | 19 (`THE MIDNIGHT STATIC`); 12 M, 19 E |
+
+    A longer name still reaches the marks, whatever spins. `textLength` is the later option, not
+    this pass's.
+
+Reply: **fixed.** The seal's name ring turns (a slow 14-second spin), and the two small circles
+did not turn with it, so the name passed through them twice a turn. Your screenshot is one frame
+of that, and the still design was always right. The circles now turn with the name, so they sit
+between the two names at every moment, on all four seals and at every width. Retro's, Lime's and
+Editorial's seals had the same bug and are fixed with it. One separate limit remains: in Grunge's
+face, a name longer than about 12 characters still reaches the circles.
 
 ---
 

@@ -993,8 +993,11 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // BookPill's Lime branch ignores `glyph`. The disc is `sem/bg` and every mark
   // `sem/stroke/2`. Every number below is the frame's over 1.2537 (disc / 100).
   // The equator marks are 14px rings (a stroke of 3 inside, the fill hidden),
-  // the centre is "Group 9" — two rings crossed by four 20px ticks, drawn off
-  // centre by 0.23 in the frame and centred here, as Reticle's is — and the
+  // and they turn with the name inside `seal-spin` (JP-057): the name is set
+  // between them, so marks that stood still had it walk through them twice a
+  // turn. The disc, the ring and the centre stand still. The centre is
+  // "Group 9" — two rings crossed by four 20px ticks, drawn off centre by
+  // 0.23 in the frame and centred here, as Reticle's is — and the
   // name is Bebas Neue at 17.61 tracked 30%, running counter-clockwise with its
   // caps pointing in, so the lower name reads upright and the upper one
   // inverted. The frame's face is Bebas Neue *Bold*, which Google Fonts does
@@ -1038,8 +1041,9 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // with Sienna Vale's own marks, every one a scheme key, so the footer's
   // Scheme 3 reads its own inks through the same arm: a `sem/active/bg` disc,
   // the ring and both equator marks 1px inside strokes of `sem/stroke/1` (Lime's
-  // are 2 and 3), no "Group 9" reticle but the page's sparkle — GrungeStar's
-  // path at 57.78 × 58.32, centred, in `sem/active/text` — and the name in
+  // are 2 and 3; the marks turn with the name, as Lime's do), no "Group 9"
+  // reticle but the page's sparkle — GrungeStar's path at 57.78 × 58.32,
+  // centred, in `sem/active/text` — and the name in
   // Space Mono at 10.61 tracked 30%, in `sem/bg`. The face is named here rather
   // than through `s.mono`: Sienna Vale states no mono token, and giving the
   // theme one would move the pricing, gallery and map readers of `s.mono`,
@@ -1071,12 +1075,14 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           <circle cx="50" cy="50" r="50" fill={s.activeBg} />
           <g fill="none" stroke={s.stroke1} strokeWidth="0.8">
             <circle cx="50" cy="50" r="47.46" />
-            <circle cx="12.26" cy="50.33" r="5.18" />
-            <circle cx="88.41" cy="50.33" r="5.18" />
           </g>
           <path d={GRUNGE_STAR_D} fill={s.activeFg}
                 transform={`translate(${(50 - 72 * k).toFixed(3)} ${(50 - 72.667 * k).toFixed(3)}) scale(${k.toFixed(5)})`} />
           <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+            <g fill="none" stroke={s.stroke1} strokeWidth="0.8">
+              <circle cx="12.26" cy="50.33" r="5.18" />
+              <circle cx="88.41" cy="50.33" r="5.18" />
+            </g>
             <text fill={line ? s.activeFg : s.bg} textAnchor="middle" style={{
               fontSize: '8.46px', letterSpacing: '2.54px', fontFamily: "'Space Mono', monospace",
             }}>
@@ -1105,8 +1111,6 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           <circle cx="50" cy="50" r="50" fill={disc} />
           <g fill="none" stroke={mk}>
             <circle cx="50" cy="50" r="47.06" strokeWidth="1.6" />
-            <circle cx="12.24" cy="50" r="4.39" strokeWidth="2.39" />
-            <circle cx="88.41" cy="50" r="4.39" strokeWidth="2.39" />
             <g strokeWidth="1.72">
               <circle cx="50" cy="50" r="15.76" />
               <circle cx="50" cy="50" r="7.59" />
@@ -1114,6 +1118,10 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
             </g>
           </g>
           <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+            <g fill="none" stroke={mk} strokeWidth="2.39">
+              <circle cx="12.24" cy="50" r="4.39" />
+              <circle cx="88.41" cy="50" r="4.39" />
+            </g>
             <text fill={nameMk} textAnchor="middle" style={{
               fontSize: faced(s, '14.05px'), letterSpacing: '4.21px', fontFamily: s.label,
             }}>
@@ -1161,7 +1169,9 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
 
   // §10.2 — a solid disc, an inset ring, the artist name set twice around the
   // circle, a large centre asterisk and two small ones on the equator. The
-  // whole seal sits a third of a turn off square; only the type ring spins.
+  // whole seal sits a third of a turn off square; only the type ring spins,
+  // and the two small asterisks turn with it (JP-057), since the name runs
+  // between them. The disc, the inset ring and the centre stand still.
   const disc = hue || s.ac
   // `ink` override: the Figma hero sets cream on the pink disc, which the
   // luminance threshold alone would call dark-on-light.
@@ -1186,27 +1196,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
             <textPath href={`#seal-${id}`} startOffset="2%">{name}</textPath>
             <textPath href={`#seal-${id}`} startOffset="52%">{name}</textPath>
           </text>
-        </g>
-        <g stroke={ink} strokeLinecap="round">
-          {glyph === 'globe' ? (
-            // The bio sticker sets the wireframe globe in the centre where the
-            // hero seal carries the fat asterisk.
-            <g fill="none" strokeWidth="2.2">
-              <circle cx="50" cy="50" r="26" />
-              <ellipse cx="50" cy="50" rx="11.5" ry="26" />
-              <line x1="24" y1="50" x2="76" y2="50" />
-              <path d="M28.3 35.5 A33.75 33.75 0 0 0 71.7 35.5" />
-              <path d="M28.3 64.5 A33.75 33.75 0 0 1 71.7 64.5" />
-            </g>
-          ) : (
-            <g strokeWidth="3.6">
-              <line x1="50" y1="25" x2="50" y2="75" />
-              <line x1="25" y1="50" x2="75" y2="50" />
-              <line x1="32.3" y1="32.3" x2="67.7" y2="67.7" />
-              <line x1="67.7" y1="32.3" x2="32.3" y2="67.7" />
-            </g>
-          )}
-          <g strokeWidth="1.1" stroke={mark || ink}>
+          <g strokeWidth="1.1" stroke={mark || ink} strokeLinecap="round">
             <line x1="11" y1="44.5" x2="11" y2="55.5" />
             <line x1="5.5" y1="50" x2="16.5" y2="50" />
             <line x1="7.1" y1="46.1" x2="14.9" y2="53.9" />
@@ -1217,6 +1207,24 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
             <line x1="92.9" y1="46.1" x2="85.1" y2="53.9" />
           </g>
         </g>
+        {glyph === 'globe' ? (
+          // The bio sticker sets the wireframe globe in the centre where the
+          // hero seal carries the fat asterisk.
+          <g fill="none" stroke={ink} strokeWidth="2.2" strokeLinecap="round">
+            <circle cx="50" cy="50" r="26" />
+            <ellipse cx="50" cy="50" rx="11.5" ry="26" />
+            <line x1="24" y1="50" x2="76" y2="50" />
+            <path d="M28.3 35.5 A33.75 33.75 0 0 0 71.7 35.5" />
+            <path d="M28.3 64.5 A33.75 33.75 0 0 1 71.7 64.5" />
+          </g>
+        ) : (
+          <g stroke={ink} strokeWidth="3.6" strokeLinecap="round">
+            <line x1="50" y1="25" x2="50" y2="75" />
+            <line x1="25" y1="50" x2="75" y2="50" />
+            <line x1="32.3" y1="32.3" x2="67.7" y2="67.7" />
+            <line x1="67.7" y1="32.3" x2="32.3" y2="67.7" />
+          </g>
+        )}
       </svg>
     </div>
   )
