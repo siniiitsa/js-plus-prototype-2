@@ -1493,8 +1493,10 @@ export const FIELDS = {
     { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], '*': [1, 2, 3] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
-          + `It reaches ${CAL_SPAN} months from there. On the published page, days `
-          + "before today can't be picked, and a past date opens it on today's month." },
+          + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
+          + "dates count from it until you edit them, and layout 4's date card shows it. "
+          + "On the published page, days before today can't be picked, and a past date "
+          + "opens it on today's month." },
     { k: 'booked',  l: 'Booked dates', type: 'booked',
       hint: 'Click a day to block it. A blocked day cannot be picked on the published page, '
           + "and layout 4's date card refuses it when a visitor types it. "

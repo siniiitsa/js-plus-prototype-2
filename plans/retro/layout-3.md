@@ -633,7 +633,11 @@ Learned on the booking calendar (section 6):
   `reduce` over the whole CAL_SPAN window: `sel` can only ever name a day the visitor clicked
   in the month on screen, so the numeral, the lit dot and the pill agree by construction. A
   window search would have let a republished `open` print a numeral from a month the grid does
-  not draw.
+  not draw. *Reversed by JP-063* ([`../grunge/layout-3-qa-fixes.md`](../grunge/layout-3-qa-fixes.md),
+  2026-09-28, user call): F20 left a late-month visitor three pickable days, so the head now
+  carries month arrows on layout 1's `mi` and the pick is searched through the whole window.
+  The hazard named here is met by the head, which names the pick only while it is in the month
+  on show.
 - **A design that draws no numerals makes its readout load-bearing.** The dots carry no dates,
   so the head is the only place the picked day is named — which is why it is 96px tall, why
   both halves of it are rendered or not rather than printed blank, and why `booked=<the opening

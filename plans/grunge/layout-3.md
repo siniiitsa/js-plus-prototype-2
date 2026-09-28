@@ -1020,6 +1020,10 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   map's), so no run was owed — layout 2's finding, re-checked.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly calendar
   arch 2 at three widths on both surfaces.
+- *Since JP-063* ([`./layout-3-qa-fixes.md`](./layout-3-qa-fixes.md), 2026-09-28, user call):
+  the head carries a pair of month arrows after the month name, the free dot at 24 round the
+  Lime pager's arrow, and they step layout 1's `mi` through the whole window, live only. The
+  head names the pick only while it is in the month on show.
 
 ### Settled in section 6 (the gallery)
 

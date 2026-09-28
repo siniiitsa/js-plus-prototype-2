@@ -726,7 +726,8 @@ mutated through a single `patch()` helper.
   month needing six rows grows one where June needs five, the grid never being padded to 35.
   The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
   none of this.
-  **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**: layout 2 is a
+  **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**, except that its
+  arrows, its `sel` and its blocked cue are layout 3's as well (below). Layout 2 is a
   bold list of named slots — `c.slots`, maintained by `SlotsField` (JP-052) and resolved by
   the `songs` rule onto `vm.calSlots`. Its seed is **not four dates**: `CAL_SLOTS` is four day
   offsets (`slotSeed()` in `data.js`) from `open` on the canvas and in the editor — which
@@ -743,6 +744,15 @@ mutated through a single `patch()` helper.
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
   reach it at all.
+  **Layout 3 pages the same window** (JP-063, user call, 2026-09-28). Its frames draw no month
+  arrows, and the fit's month 0 left a visitor on 28 September three pickable days. So a pair
+  of arrows follows the month name on its own line, on both surfaces. Each is the template's own
+  free dot a size down (24, so the pair does not read as two more days and fits inside the
+  month's line box) round layout 1's arrow glyph. They step layout 1's `mi`: live only, with no
+  cursor on the canvas, wrapping at both ends, and the canvas pinned to month 0. The pick is
+  searched through the whole window, layout 1's `reduce`, so the foot pill names a July pick
+  from June. The head's numeral and weekday are the pick's only while it is in the month on
+  show; otherwise the head reads the month alone, since "15" over "JUNE" names the wrong date.
   **Layout 4's right-hand column is the enquiry wizard's summary** (JP-052, user call,
   2026-09-23; it was fitted as layout 2's slot list stacked, which printed dates and prices no
   field edited — Retro L4 section 10's reading, now reversed). The frame's dark card is step 1's

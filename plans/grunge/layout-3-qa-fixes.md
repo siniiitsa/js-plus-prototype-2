@@ -140,7 +140,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no (one asked mid-session: Lime's pill) | **done** (`footerBand` widened; root, seal disc, pill label and disc; Lime's pill too; 12 files as named) |
 | 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | **done** (the centre is `(pg + 1) % n`; 10 files as named; the seat's colour under Lime, Grunge and Editorial, the set's under Retro and Pop) |
 | 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | **done** (A; no hour chip at any width, in both halves; the weekday a reply; 24 files as named) |
-| 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | open |
+| 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | **done** (A; the pair after the month name, the free dot at 24; off-month the head is the month alone; 30 files as named) |
 | 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | open |
 | 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | open |
 | 14 | JP-070 (form) | The form's head and boxes | **Named fit diffs**: the head names the mock artist; the boxes are layout 2's card frame's too | S–M | **yes** — the head, the boxes | open |
@@ -180,7 +180,12 @@ As [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md), with these differences:
 5. **Harness parameters these entries lean on:** `&today=` (opt-in, for the calendar's `dead`
    days; a `live=1` digest without it never moves with the date), `&page=2` (the footer's seat on
    layout 3's page), `&name=` (the header's name), `&cj=` (contents) and `&who=` (the header's
-   identity as the other sections read it).
+   identity as the other sections read it). Also `&column=right` / `left`, the composed desktop
+   row. It is **the** desktop of layout 3, since card 3 composes the whole page, and the plain
+   desktop render is 1052 wide, so it hides a column fit (JP-063's first cut ran 11px into the
+   card's padding there and nowhere else). `digest.mjs` renders it only when asked
+   (`WIDTHS=desktop EXTRA='&column=right'`), and a digest shows no overflow anyway, so probe the
+   row's `scrollWidth` beside it.
 6. **A new or re-scoped field gets a measured `in`**: add a row to `source/scripts/reach.mjs`'s
    `PROBES` (do not rebuild it) and write the `in` and the hint from what it prints. Under Lime,
    Grunge and Editorial (four header cards each) only arch 4 and 5 fold (onto 0 and 1), so a
@@ -1816,11 +1821,121 @@ both surfaces = **30 files**, the head row gaining two arrows. A′: 15.
 *wrap*' on is layout 1's**" now reaches layout 3 as well). The branch comment at `:15504`, and
 `open`'s hint.
 
-**Decided.** —
+**Decided: A** (user, 2026-09-28).
+- **Month arrows on both surfaces, live only in the published tab.** Layout 1's rule: no handler
+  and no cursor on the canvas, and they wrap at both ends of `CAL_SPAN`. Each template draws them
+  in its own language. The canvas pins the month to 0, as layout 1's `at` does. (The session first
+  meant to borrow layout 1's Lime disc and its `nav` square. In the code, both halves draw layout
+  3's own free dot, a size down, round layout 1's glyph; see **Settled**.)
+- **They sit in the head's month row**, a pair right after the month and year, with the weekday
+  still at the far right. Nothing else in the card moves.
+- **Off-month, the head reads the month alone.** While the pick is in a month other than the one
+  on show, the numeral and the weekday drop (today's nothing-picked look), and the foot pill still
+  names the pick ("Enquiry About July 15"). So there are two lookups: the pick's cell in the month
+  on show, for the head and the dots, and a search of the whole window, as layout 1's `reduce`
+  does, for the pill's line. The plan's own recommendation (the pick's numeral over the month on
+  show) was put as the second option and declined: "15 / JUNE" reads as the wrong date.
+- `open`'s hint says what each layout reaches.
 
-**Settled.** —
+**Settled** (2026-09-28).
+- **Re-checked on HEAD** (`7f2fcab`). Every number in the hand-off held: the "no arrows" comment
+  at `EncoreSection.jsx:15577`, `const month = s.calMonths[0]` at `:15617`, the block at
+  `:15681`, `mi` at `:14514`, layout 1's `reduce` at `:14568`; `calStart(open, …)` at
+  `EncoreBuilder.jsx:1172`; `open`'s hint at `data.js:1494`–`1497`.
+- **Code.** +87 / −24 in `EncoreSection.jsx`, and the hint in `data.js`.
+  - **Above the seam** (`:15617`–`15637`): `month` is `s.calMonths[at(mi)]`, with the canvas
+    pinned to 0 (`:15622`). `pick` searches the whole window with layout 1's `reduce`, and
+    `picked` drops a blocked one. `at` is the pick's index in the month *on show*, so it is -1
+    off-month (`:15634`). `hit` is `picked` only when `at >= 0`, and `line` reads `picked`, so
+    the pill names the pick from any month. `step` is layout 1's (`:15637`). The branch comment
+    at `:15577` is rewritten.
+  - **The `s.limeTree` block** (`:15698`): `arrow(back, dir)` at `:15741` is the block's free dot
+    at 24 (`box/1` in the `stroke/1` ring, raw 2.559, or 1px under Editorial) round `LimeArrow` in
+    `s.tx`. The month name and the pair share one row inside the month/year column (`:15783`).
+  - **Retro's and Pop's body**: `arrow(icon, dir)` at `:15844` is the body's free dot at 24 (a
+    2.559 ring in `ink`, transparent) round lucide's `ArrowLeft` / `ArrowRight` at 12, layout 1's
+    glyph. It sits above `head`, which is built before `dot`. The same row is at `:15875`.
+- **Two calls made in the code, both named in its comments.**
+  - **The discs are 24, a size down from the 30.713 day dot.** The first cut used the dot's own
+    size, and the pair centred on the month-and-year block. In the composed desktop column
+    (`&column=right`), Retro's and Pop's SEPTEMBER plus "Wed" then ran 11px and 7px into the
+    card's padding. At 24, the pair also no longer reads as two more days.
+  - **The pair is centred on the month name's own line box**, not the two-line block, where it
+    hung between the lines. Every line box is at least 24 (Retro's 390 month is 26), so the head
+    keeps its height at every width.
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on :5173.
+  The calendar × themes `0,1,2,3,4` × three widths, canvas and `live=1`: **0 of 120** (port and
+  `?t=` normalised).
+- **After the edit: 30 files**, as named. They are calendar `arch 2` × themes 0–4 × three widths
+  × both surfaces. Before the digest ran, :5173's module carried the window `reduce` and
+  `width: lu(24)`. A rerun after the hint edit diffed 0 against it. In each file:
+  - **one row changes**: the month/year column widens to hold the pair, with x, y and height
+    unchanged;
+  - **rows are added and none removed**: a line row, the pair and two discs with their glyph (9
+    under Lime, Grunge and Editorial, whose `LimeArrow` is one path; 11 under Retro and Pop,
+    whose lucide arrow is two).
+  - Nothing below the head moves at any width.
+- **The fit** (`live=1`, themes 0–4; desktop in the composed column and at full width, 768, 390).
+  Every month of the window was walked with each weekday picked in turn, 84 states per render.
+  The head row never overflows, and its height is one value per render, so a click on an arrow
+  never moves the arrows.
+- **Live** (`live=1&today=2025-06-28`, themes 0–4 × three widths; a one-off script, deleted):
+  - The first paint is June 2025 with days 1–27 at .38. The pill reads *Pick a date to enquire*,
+    since the cued 12th is past, and a click on the 10th picks nothing.
+  - Next walks June → May 2026 and wraps back to June. Prev from June wraps to May 2026.
+  - In July no day is dead. Picking the 15th gives *15 / Tue* and *Enquiry About July 15*.
+  - Back in June the head reads the month alone, no June dot is lit, the pill still reads *July
+    15*, and 27 days are still at .38. Forward to July, and *15 / Tue* is back. A click on the lit
+    dot unpicks it.
+  - Both arrows take `cursor: pointer`.
+  - **The canvas** (themes 0–4): the arrows are `cursor: auto`, a click leaves June, and the head
+    is *12 / Thu* over *Enquiry About June 12*.
+  - **F20** (`&today=2026-09-28`, themes 0 and 2, 390): the first month is September 2026 with
+    27 dead days. Next reaches October, where the 9th picks as *9 / Fri*.
+  - No page errors.
+- **The tester's steps in the real app** (a one-off puppeteer script, deleted). The editor was at
+  1600 × 1000: the template, card 3, *Use this header*, then the Desktop, Tablet and Mobile tabs.
+  Then *Publish* and *Open*, with the tab at 1440, 768 and 390 in turn. Every click in the tab
+  was trusted.
 
-Reply: —
+  | | canvas (Desktop / Tablet / Mobile) | tab (1440 / 768 / 390), today 2026-09-28 |
+  |---|---|---|
+  | Grunge card 3 | JUNE 2025 with the pair, *12 / Thu*, cursors `auto`; a click stays on June | SEPTEMBER 2026, 27 dead days, *Pick a date to enquire*. Next → OCTOBER, none dead; the 16th gives *16 / Fri* and *Enquiry About October 16*. Prev → SEPTEMBER with the head the month alone and the pill still *October 16* |
+  | Retro card 3 | the same | the same |
+
+  At 1440 the calendar is the composed page's sticky right column. No window logged a page
+  error.
+- **Docs.**
+  - CLAUDE.md's calendar paragraph: the "Everything … from 'The arrows *wrap*' on is layout 1's"
+    sentence now names what layout 3 shares, and a *Layout 3 pages the same window* passage
+    stands before layout 4's.
+  - README's calendar paragraph gains one sentence.
+  - `open`'s hint (`data.js:1494`) now reads: "Layouts 1 and 3 page through 12 months from there,
+    layout 2's seeded dates count from it until you edit them, and layout 4's date card shows
+    it." `EditPanel` does not restate it.
+  - Pointers were added in `./layout-3.md`'s calendar Settled, in `../editorial/layout-3.md`'s
+    calendar `live=1` bullet ("no month arrows"), and in `../retro/layout-3.md:631`, the call's
+    origin. That note's hazard, a republished `open` printing a numeral from a month not on show,
+    is met by the off-month head. Lime's `layout-3.md` says neither.
+- **For JP-065 onwards.** This entry's hunks sit in `Calendar`, before `Testimonials`, so every
+  testimonials line moved by **+63** (87 − 24; `function Testimonials` from `:20229` to `:20292`).
+  JP-065's triage numbers predate several entries, so here they are as they stand now:
+  - `EncoreSection.jsx`: the stat-card comment at `:21288`; the shared body's `if (s.v2)` at
+    `:21311`, the numeral `n` at `:21376`, `marked` at `:21377`, the unit at `:21418`; the
+    `s.limeTree` block at `:21566`, its unit at `:21722`.
+  - `data.js` (+2 after `:1497`, the hint): `FIELDS.testimonials.stars` at `:1587`, the form's
+    `bookings` at `:1639`, pricing's `rating` at `:1436` and *Reviewer photos* at `:1432`,
+    `PRICING_RATING` at `:823`, `TESTI_STARS` at `:1082`.
+
+Reply: **JP-063 — fixed.** Booking Calendar layout 3 now has month arrows beside the month name,
+on every template, and a visitor can page through the same 12 months as layout 1.
+- The arrows wrap at both ends. In the editor they are drawn but do nothing, as in layout 1.
+- A day picked in one month stays picked while the visitor pages away. The pill at the foot keeps
+  naming it ("Enquiry About October 16"). The big date at the head shows only while its own month
+  is on screen, so it never sits over the wrong month's name.
+- The *Opens on* hint now says what each layout does with the date.
+- The design draws no arrows. Ours are drawn in each template's own style, as the calendar's
+  round "free day" dot with an arrow in it.
 
 ---
 

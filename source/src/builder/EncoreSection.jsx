@@ -15574,10 +15574,14 @@ function Calendar({ s }) {
   // dot sits in a 144px column where the 708 master gives it 95 and the 405 one
   // 52. Airier than anything Figma drew, and the mechanism is the frame's.
   //
-  // This design has **no arrows**, so `mi` reaches nothing (layout 2's case).
-  // The grid is month 0 — the month the artist cued — and `sel` can only ever
-  // name a day in it, so the head, the grid and the pill agree by construction
-  // rather than by searching the whole CAL_SPAN window the way layout 1 must.
+  // The frames draw **no month arrows**; ours are the section's (JP-063, user
+  // call, 2026-09-28). The fit showed month 0 alone, which F20 turns into
+  // three pickable days on a published page opened late in the month. So a
+  // pair of arrows follows the month name in the head. They are layout
+  // 1's `mi` and `step`: live only, with no cursor on the canvas, and they
+  // wrap at both ends of CAL_SPAN. Each template draws them as its own free
+  // dot with an arrow in it, since a round ring on the card is the only
+  // control this design owns.
   if (s.v2) {
     const desk = !s.narrow
     const z = desk ? 0.82 : 1
@@ -15608,21 +15612,34 @@ function Calendar({ s }) {
     // never be mistaken for the solid picked dot or for the ring.
     const taken = s.retro ? '#E1CAA5' : s.paperLine
 
-    // The month on show, and the day inside it that is lit. `at` is the day's
-    // index in `month.cells`, which carries the lead blanks — so `at % 7` is
-    // the weekday column, and the head reads its "Tue" off the grid rather than
-    // working a weekday out. A **booked** day is never picked: publishing again
-    // re-renders the open tab, so the artist can block the day a visitor had
-    // lit, and the head would otherwise name a day the dots draw as taken.
-    const month = s.calMonths[0]
+    // The month on show, and the day inside it that is lit. The canvas pins
+    // the month to 0, layout 1's rule, so its picture is the cued month.
+    // The pick is searched through the whole window, layout 1's `reduce`, since
+    // a day picked in July must still name itself from June. A **booked** day
+    // is never picked: publishing again re-renders the open tab, so the artist
+    // can block the day a visitor had lit.
+    const nMonths = s.calMonths.length
+    const month = s.calMonths[s.live ? ((mi % nMonths) + nMonths) % nMonths : 0]
     const want = (s.live && sel) || s.calPick
-    const at = want ? month.cells.findIndex((c) => c.iso === want) : -1
-    const hit = at >= 0 && !blocked(month.cells[at]) ? month.cells[at] : null
-    const line = hit ? hit.short : s.calPrompt
+    const pick = want
+      ? s.calMonths.reduce((f, mo) => f || mo.cells.find((c) => c.iso === want), null)
+      : null
+    const picked = pick && !blocked(pick) ? pick : null
+    // `at` is the pick's index in the month *on show*, which carries the lead
+    // blanks, so `at % 7` is the weekday column and the head reads its "Tue"
+    // off the grid. While the pick is in another month, `at` is -1 and the
+    // head reads the month alone, the nothing-picked look: its numeral stands
+    // over the month name, so "15" over "JUNE" would name the wrong date. The
+    // pill still names the pick wherever it is.
+    const at = picked ? month.cells.indexOf(picked) : -1
+    const hit = at >= 0 ? picked : null
+    const line = picked ? picked.short : s.calPrompt
+    const step = (dir) => (s.live ? () => setMi((v) => v + dir) : undefined)
 
     // Lime — the frames 964:68677 / 984:10763 / 984:10794, as a block after
-    // the seam: `month`, `at`, `hit` and `line` are shared whole, so the
-    // published day picking and the foot pill needed nothing new. Every box is
+    // the seam: `month`, `at`, `hit`, `line` and `step` are shared whole, so
+    // the block draws the published day picking, the month arrows and the
+    // foot pill and owns none of their state. Every box is
     // Retro's twin's (the 20 padding, 18 stack gap, 8 grid gap, 30.713 dot,
     // 21 legend gap, the pill's 54 on a 46 disc), and the grid is Retro's
     // one seven-column normalisation of the frame's two mechanisms. What
@@ -15717,6 +15734,22 @@ function Calendar({ s }) {
           }} />
         )
       }
+      // The month arrows (JP-063), which no frame draws: the free dot above,
+      // round the Lime pager's arrow vector in the card's own `sem/text/2`.
+      // A size down from the day dot, so the pair does not read as two more
+      // days, and small enough to sit inside the month name's line box.
+      const arrow = (back, dir) => {
+        const onClick = step(dir)
+        return (
+          <span onClick={onClick} style={{
+            width: lu(24), height: lu(24), flex: 'none', borderRadius: '999px',
+            background: s.box1, color: s.tx,
+            boxShadow: `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            cursor: onClick ? 'pointer' : undefined,
+          }}><LimeArrow back={back} z={lz} /></span>
+        )
+      }
       return (
         <div style={col(lu(30))}>
           {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 (32 /
@@ -15742,10 +15775,13 @@ function Calendar({ s }) {
               )}
               <div style={row(lu(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
                 <div style={col(lu(2.745), { alignItems: 'flex-start' })}>
-                  <span style={{
-                    fontFamily: s.display, fontSize: faced(s, s.dispSm), ...disp(1),
-                    letterSpacing: s.dls, ...lift,
-                  }}>{month.name}</span>
+                  <div style={row(lu(8))}>
+                    <span style={{
+                      fontFamily: s.display, fontSize: faced(s, s.dispSm), ...disp(1),
+                      letterSpacing: s.dls, ...lift,
+                    }}>{month.name}</span>
+                    <div style={row(lu(4))}>{arrow(true, -1)}{arrow(false, 1)}</div>
+                  </div>
                   <span style={body(s.bodyMd, 1.5)}>{month.year}</span>
                 </div>
                 {!!hit && (
@@ -15794,7 +15830,28 @@ function Calendar({ s }) {
     // it are rendered or not rather than printed blank. With nothing picked
     // (the artist blocked their own opening day, or a visitor clicked the lit
     // dot again) the card opens on the month alone and the pill prints
-    // `calPrompt`, the section's own empty cue in both earlier layouts.
+    // `calPrompt`, the section's own empty cue in both earlier layouts. With
+    // the pick in another month, the head is the month alone too, and the pill
+    // still names the pick.
+    //
+    // The month arrows (JP-063), which no frame draws, follow the month name
+    // on its own line: the free dot below, round layout 1's own arrow glyph in
+    // the card's ink. A size down from the day dot, so the pair does not read
+    // as two more days, and small enough to sit inside the month name's line
+    // box, so the head keeps its height. At 24 the pair also leaves Retro's
+    // SEPTEMBER and its weekday room in the composed desktop column, where the
+    // dot's 30.713 ran the weekday 11px into the card's padding.
+    const arrow = (icon, dir) => {
+      const onClick = step(dir)
+      return (
+        <span onClick={onClick} style={{
+          width: u(24), height: u(24), flex: 'none', borderRadius: '999px',
+          border: `${u(2.559)} solid ${ink}`, color: ink,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          cursor: onClick ? 'pointer' : undefined,
+        }}>{icon}</span>
+      )
+    }
     const head = (
       <div style={col('0')}>
         {!!hit && (
@@ -15810,9 +15867,15 @@ function Calendar({ s }) {
             into the weekday on one of the flat four's wider display faces. */}
         <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
           <div style={col(u(2.745), { alignItems: 'flex-start' })}>
-            <span style={{
-              fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1, letterSpacing: s.dls,
-            }}>{month.name}</span>
+            <div style={row(u(8))}>
+              <span style={{
+                fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1, letterSpacing: s.dls,
+              }}>{month.name}</span>
+              <div style={row(u(4))}>
+                {arrow(<ArrowLeft size={Math.round(12 * z)} />, -1)}
+                {arrow(<ArrowRight size={Math.round(12 * z)} />, 1)}
+              </div>
+            </div>
             <span style={{
               fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
             }}>{month.year}</span>

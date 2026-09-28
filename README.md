@@ -362,7 +362,9 @@ That distinction is the whole design, and it buys two things:
   `EncoreSection` looks a line up rather than working a date out, the way it draws the pin
   `sectionVm` paired with a gig. The arrows **wrap** at both ends of that window rather than
   clamping, the media player's rule: a clamped first month would open the published page on a
-  dead-looking arrow, which is a diff from the canvas. `sel` is an ISO date rather than a cell
+  dead-looking arrow, which is a diff from the canvas. Layout 3's frames draw no arrows; its own
+  pair follows the month name and steps the same window (JP-063), and its head names the pick
+  only while the pick is in the month on show. `sel` is an ISO date rather than a cell
   index, because it has to survive the month turning — it names a day, not a square of whatever
   month is on screen — and the empty string is this section's `-1`, so `vm.calPick` renders until
   a visitor picks something and the published first paint is the canvas's picture by construction
