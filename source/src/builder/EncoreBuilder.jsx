@@ -48,7 +48,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -888,13 +888,18 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // orange under Retro — the reference order — and stays in-palette elsewhere.
     const card = T.tags[((3 - i) % T.tags.length + T.tags.length) % T.tags.length]
     const tags = songTags(t?.tags)
+    const price = String(t?.price ?? '').trim()
     return {
       // `n` is the row's place in the WHOLE list, not on the filtered page. The
       // cards animate their background, so the renderer keys on it: a positional
       // key would let a filtered-out card's DOM node become its neighbour's and
       // cross-fade one card hue into another.
       n: i,
-      name: String(t?.name ?? '').trim(), price: String(t?.price ?? '').trim(),
+      name: String(t?.name ?? '').trim(), price,
+      // Layouts 1–3 print the price as a small `lead` beside a display-size
+      // `amount` (JP-058: priceParts()); `price` stays whole for layout 4, the
+      // calendar's package card and its mailto, which print it as typed.
+      ...priceParts(price),
       blurb: String(t?.blurb ?? '').trim(),
       feats: tierFeats(t?.feats),
       // Raw casing, deliberately — the repertoire's rule: a lower-case theme
