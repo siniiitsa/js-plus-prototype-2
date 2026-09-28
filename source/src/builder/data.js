@@ -680,7 +680,7 @@ export const BIO_CTA = 'Book Now'
 // masters type (the straight apostrophe, the middle dot); the bio's masters
 // type "/featured" cased UPPER, which the pill cases anyway. The "●" before
 // the availability is the markup's, not the field's. "Performing since 2021"
-// is the artist's copy, not the bio's `since` (KICKER_3's precedent).
+// is the artist's copy, not the bio's `since` (CARD_LINE_3's precedent).
 export const HERO_AVAIL = 'Available for bookings'
 export const FACE_TITLE = 'The face of the act'
 export const FACE_BODY = "Same person you'll meet on the night. Performing since 2021."
@@ -1049,10 +1049,14 @@ export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
 // The booking calendar's layout-3 heading, the composed page's "Book Me" over
 // the card (964:68644). Layouts 1, 2 and 4 keep TITLES.calendar.
 export const CAL_HEADING_3 = 'Book Me'
-// Lime's and Grunge's layout-3 header kicker, the corner card's second line
-// (964:68654, 964:68686). The other layouts, and Retro's layout 3, keep the
-// field's 'DJ · Live Act'.
-export const KICKER_3 = 'Performing since 2021'
+// The layout-3 header's portrait card, its second line under the name
+// (964:68654, 964:68686, 964:68718): FIELDS.header.cardLine's seed, which
+// Lime's, Grunge's and Editorial's card reads. It was the kicker's layout-3
+// seed until JP-061, which printed one word in the card and another in the
+// bio's Current role; the kicker is now 'DJ · Live Act' at every layout.
+// Retro's polaroid prints the kicker in that seat. The line is the artist's
+// copy, not the bio's `since`.
+export const CARD_LINE_3 = 'Performing since 2021'
 // Layout 4's heads, each its composed page's own wrapper head over the section
 // (QA, 2026-09-15): the Book Us panel (964:72839), the gallery's column
 // (964:72784), the map band (964:72827) and the testimonials sheet. The other
@@ -1248,9 +1252,24 @@ export const FIELDS = {
     // Grunge's and Editorial's calendar layout 1, a block of its own with no
     // polaroid stamp.
     // Change a reader, change the hint.
+    // Lime's, Grunge's and Editorial's layout 3 prints `cardLine` in Retro's
+    // kicker seat (JP-061), so their row is [0, 3] (reach.mjs, 2026-09-28).
+    // The panel then says "Not shown in this layout" there while the bio prints
+    // the kicker, which the hint answers, as at layout 2.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
-      hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3] },
+      hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
+    // The layout-3 portrait card's line under the name (JP-061): the card's
+    // own copy, so the kicker is not seeded apart there and the bio's Current
+    // role always prints what the Kicker field shows. Lime's, Grunge's and
+    // Editorial's card reads it; Retro's polaroid prints the kicker in that
+    // seat. `'*': []` marks every other template, Pop included, as
+    // FIELDS.media.cta does, because only those three read it. Emptied, the
+    // card is the name alone.
+    { k: 'cardLine',  l: 'Portrait card line', d: CARD_LINE_3,
+      in: { Lime: [2], Grunge: [2], Editorial: [2], '*': [] },
+      hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
+          + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1] } },

@@ -2743,9 +2743,11 @@ function HeaderV2({ s }) {
     // the accent) — ring first, as Figma strokes over the effect. Its padding
     // clears the glow, so both sit on the card itself. The portrait's ring is
     // an overlay, since the photograph would paint over a shadow on its box.
-    // Its two lines are `brand` and `kicker`, Retro's reading of this slot;
-    // the brand is Display/Title at the frames' 36 / 28 / 26 (`s.title` is the
-    // heading string). 390 turns the card on its side.
+    // Its two lines are `brand` and `cardLine`, the card's own field (JP-061).
+    // Retro's polaroid reads `kicker` in this slot, but here the bio's Current
+    // role would then print the card's "Performing since 2021". The brand is
+    // Display/Title at the frames' 36 / 28 / 26 (`s.title` is the heading
+    // string). 390 turns the card on its side.
     //
     // Grunge's card is not glass: an opaque `sem/box/1` in the 1px
     // `sem/stroke/2` ring, no effect (the one shadow dropped rather than
@@ -2786,8 +2788,8 @@ function HeaderV2({ s }) {
             lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, color: s.tx,
             textTransform: grunge || ed ? 'uppercase' : undefined,
           }}>{brand()}</span>
-          {s.kicker && (
-            <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac }}>{s.kicker}</span>
+          {s.cardLine && (
+            <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac }}>{s.cardLine}</span>
           )}
         </div>
       </div>

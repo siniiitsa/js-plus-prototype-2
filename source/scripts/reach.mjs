@@ -41,6 +41,8 @@ const PROBES = [
   { name: 'header.faceTitle', cats: ['header'], param: 'cj', value: { faceTitle: Z } },
   { name: 'header.faceBody', cats: ['header'], param: 'cj', value: { faceBody: Z } },
   { name: 'header.placeBody', cats: ['header'], param: 'cj', value: { placeBody: Z } },
+  // JP-061: the layout-3 portrait card's line, which was the kicker's there.
+  { name: 'header.cardLine', cats: ['header'], param: 'cj', value: { cardLine: Z } },
   { name: 'bio.credit', cats: ['bio'], param: 'cj', value: { credit: Z } },
   { name: 'bio.cta', cats: ['bio'], param: 'cj', value: { cta: Z } },
   { name: 'bio.tag', cats: ['bio'], param: 'cj', value: { tag: Z } },

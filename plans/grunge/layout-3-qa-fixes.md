@@ -132,7 +132,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix) |
 | 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | **done** (A, keyed by the follower's category; real app, 7 runs) |
 | 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | **done** (A; the canvas sticks 28px down, and so do the layout-4 rail and the form's layout-2 card) |
-| 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | open |
+| 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | **done** (A, Retro kept; `cardLine` seeded `CARD_LINE_3`; after-diff zero) |
 | 5 | JP-062 | The *Inset Hero* card's name spills | **Confirmed, `s.limeTree`**: the card's column is `nowrap`; Editorial's seeded name already runs into the padding | S–M | **yes** — A (wrap, fit the widest word), B, C | open |
 | 6 | JP-074 | A price range is all display size | **Confirmed, shared**: `priceParts()` has two parts; every layout-3 frame draws three (`£ \| 450 \| — £1,400`) | S–M | no (a named oddity) | open |
 | 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | open |
@@ -661,11 +661,143 @@ Act" and the new field shows the card line.
 field, not the kicker). The `KICKER_3` comment, `FIELDS.header.kicker`'s `in`, the comments at
 `EncoreBuilder.jsx:533` and the EditPanel chain. A pointer in `./layout-3.md`'s header Settled.
 
-**Decided.** —
+**Decided: A, and Retro keeps its kicker** (user, 2026-09-28).
+- **The card's second line is its own header field.** `k: 'cardLine'`, labelled *Portrait card
+  line*, placed after `kicker` in `FIELDS.header`. It is seeded with `CARD_LINE_3` ("Performing
+  since 2021"): `KICKER_3` is renamed, since it no longer seeds the kicker. It is emptiable and
+  uncased, and its `in` is `{ Lime: [2], Grunge: [2], Editorial: [2], '*': [] }`, pending
+  `reach.mjs`. Its hint is JP-059's `faceBody` hint: the bio's *Performing since* is a separate
+  field.
+  - `vm.cardLine = cv('cardLine', CARD_LINE_3)` sits beside JP-059's four keys.
+  - `HeaderV2`'s `s.limeTree` card reads `s.cardLine` where it read `s.kicker`, and drops the
+    line when it is empty.
+  - Both kicker fallbacks (`sectionVm` `:535`–`537`, `EditPanel` `:3585`–`3586`) lose their
+    `KICKER_3` arm. The kicker is then `'DJ · Live Act'` at every layout of every template, so
+    the panel and the bio agree.
+  - The kicker's `in` loses 2 under Lime, Grunge and Editorial, again pending the re-measure.
+    Its hint says the bio prints it at every layout, because at layout 3 the panel will say
+    "Not shown in this layout" while the bio prints the kicker (layout 2's state already).
+- **Retro's polaroid** (`EncoreSection.jsx:3028`–`3031`) stays on the kicker. Retro's two seats
+  already agree.
+- **The `'*'` row reaches Pop as well**: Pop's header prints "Not shown in this template" under
+  this one field, which is true, since only the `s.limeTree` block reads it. The header's other
+  rows leave Pop unmarked. This is `FIELDS.media.cta`'s precedent.
+- **Re-checked on HEAD** (`4a2ad0b`). Every line holds as triaged:
+  - `EncoreBuilder.jsx:535`–`537` and `:3585`–`3586`;
+  - `data.js:1052`–`1055`, `:1251`–`1253` and `:1692`;
+  - `EncoreSection.jsx:2535` (the second line at `:2789`–`2791`), `:4569`, `:4795`, and `:3028`–`3031`
+    inside `HeaderV2` (which runs to `:3133`).
 
-**Settled.** —
+  The rename also reaches three places the triage did not list: `data.js:683` and `CLAUDE.md:191`
+  (JP-059's "`KICKER_3`'s precedent"), and the block's own comment at `EncoreSection.jsx:2746`
+  ("Its two lines are `brand` and `kicker`, Retro's reading of this slot"). Older plans keep the
+  name as history.
 
-Reply: —
+**Expected after-diff (named before the code): zero.** Header `arch 2` and bio `arch 2` × themes
+0–4 × 3 widths × canvas and `live=1`: 0 files. The card prints the field's seed, the same
+"Performing since 2021". The bio prints "DJ · Live Act" as before: with no identity it falls back
+to the kicker's seed, which was never `KICKER_3` outside the header. The change shows only in the
+panel. At layout 3, under Lime, Grunge and Editorial, Kicker reads "DJ · Live Act" and the new
+field reads "Performing since 2021".
+
+**Expected reach.** `header.cardLine` hits layout 3 under themes 1, 2 and 3, and nothing under 0
+or 4. `header.kicker` loses layout 3 under themes 1, 2 and 3; Retro keeps it.
+
+**Settled** (2026-09-28).
+- **The fix, for JP-062 to build on.**
+  - **The field**: key **`cardLine`**, labelled *Portrait card line*. It is `data.js:1269`,
+    right after `kicker`, with `in: { Lime: [2], Grunge: [2], Editorial: [2], '*': [] }`.
+  - **The seed**: **`CARD_LINE_3`** at `data.js:1059` (`KICKER_3`, renamed).
+  - **The vm key**: **`vm.cardLine`** at `EncoreBuilder.jsx:555`, `cv()` and uncased.
+  - **The seat**: `HeaderV2`'s `s.limeTree` card reads `s.cardLine` at
+    **`EncoreSection.jsx:2791`–`2793`**, the text column's second child. It is dropped when empty.
+  - **Untouched**: the column (`:2782`–`2784`) is still `whiteSpace: 'nowrap'`, which is
+    JP-062's. The name span is `:2785`–`2790`. Everything in the file after `:2746` moved +2,
+    where the block's comment grew.
+  - Both kicker fallbacks lost their layout-3 arm. `vm.kicker` (`:537`) is the header's own
+    `c.kicker` or `'DJ · Live Act'`, and `EditPanel`'s chain has no kicker arm. The kicker's
+    `in` is `[0, 3]` under Lime, Grunge and Editorial (`data.js:1259`), and its hint reads "Every
+    bio layout prints it too, and so do the enquiry form’s layouts 1 and 2."
+  - Retro's polaroid (`:3030`–`3033`) still reads `s.kicker`.
+- **The harness proof, before the edit.** A HEAD worktree on :5174 against the tree on :5173
+  (header, all six arches, and bio, all four) × themes 0–4 × three widths gave **0 of 150** files
+  on the canvas and **0 of 150** with `live=1` (port and `?t=` normalised). The baseline shows the
+  bug in the harness itself: under themes 1–3 the header at arch 2 prints "Performing since 2021"
+  and the bio "DJ · Live Act". Pop's layout-3 header prints neither.
+- **After the edit: 0 of 150 and 0 of 150**, as named. The server was serving the edit: the
+  reach run below went through :5173 and found `cardLine`.
+- **Reach.** The scratch copy of `reach.mjs` was filtered to three rows, over themes 0–4 (2,940
+  renders, 6/6 on every hit), and deleted after. Every result is as expected:
+  - `header.cardLine`: layout 3 under themes 1, 2 and 3; nothing under 0 or 4.
+  - `header.kicker`: Retro layouts 1, 3, 4 and 6, unchanged (`[0, 2, 3, 5]`). Lime, Grunge and
+    Editorial layouts 1, 4 and 5, where arch 4 folds onto 0, so `[0, 3]`. Pop reads it at no
+    layout.
+  - `who.kicker`: bio layouts 1–4 and form layouts 1–2 on every theme. That is the new hint's
+    "every bio layout", measured.
+- **States** (the harness, `live=1`, three widths, themes 1–3, with Retro as the control).
+  - **Emptied**: the column is the name alone. At 1440 and 768 the card sheds the line and its gap:
+    | | 1440 | 768 |
+    |---|---|---|
+    | Lime | 205.3 → 186.6 | 241 → 218.8 |
+    | Grunge | 203.9 → 186.6 | 239.6 → 218.8 |
+    | Editorial | 233.9 → 216.6 | 284.3 → 263.5 |
+
+    At 390 the side-on card keeps its height (127, 136 under Editorial), which the portrait sets.
+  - **120 characters**, recorded for JP-062, which decides the wrap: the `nowrap` column holds
+    one line, and it spills out of the card. Each cell is the line's width, the column's width,
+    and how far the line runs past the card's edge:
+    | | 1440 | 768 | 390 |
+    |---|---|---|---|
+    | Lime | 637.4 in 114.8, 228.5 past each side | 753.3 in 140, 266.6 each side | 695.3; column 202; 473.3 past the right |
+    | Grunge | 579.4 in 114.8, 199.5 each side | 695.3 in 140, 237.7 each side | the same as Lime |
+    | Editorial | as Grunge | as Grunge | 695.3; column 193; 482.3 past the right |
+
+    At 1440 and 768 the column centres the line, so it spills both ways. At 390 it is
+    left-aligned beside the portrait.
+  - **Kicker set to a marker** in the header's content: the card still prints the seed line, and
+    the marker appears nowhere in the header. The bio with `&who=` set to the marker prints it,
+    and no seed. Retro's polaroid does print the marker, and ignores `cardLine`, emptied or long.
+- **The tester's steps in the real app.** A one-off puppeteer script (deleted) used trusted clicks
+  through the setup modal's card 3, *Use this header*, *Publish* and *Open*, with the editor at
+  1600 × 1000 and the published tab at 1440. The canvas and the published tab read the same at
+  every step.
+  - **Grunge, Lime and Editorial alike:**
+    1. Kicker reads "DJ · Live Act", under "Not shown in this layout" and the new hint.
+       *Portrait card line* reads "Performing since 2021" with its hint and no note. The header
+       prints the seed line, and the bio's cell reads "Current role: DJ · Live Act".
+    2. Kicker = `DJ & Selector`: the bio reads "Current role: DJ & Selector", and the card is
+       unchanged.
+    3. Card line = `ZZ card line`: the card moves, and the bio is unchanged. The published tab shows
+       the same at 1440, 768 and 390.
+    4. Card line emptied: neither string is in the header, on either surface.
+  - **Retro's card 3, the control**: Kicker has no note. *Portrait card line* reads "Not shown in
+    this template". Kicker = `DJ & Selector` moves the polaroid and the bio together, and the card
+    line moves nothing.
+  - No page or console errors on any template.
+  - Pop's "Not shown in this template" follows from the `'*'` row through `fieldNowhere()`; it
+    was not driven in the app.
+- **Docs**:
+  - CLAUDE.md: the *role and town* paragraph, JP-059's "`KICKER_3`'s precedent" (now `cardLine`'s),
+    and an exception to the FIELDS paragraph's "Pop's undesigned header family carries no note".
+  - The comments over `CARD_LINE_3`, over the kicker's and `cardLine`'s rows and at `data.js:683`.
+  - The comments at `EncoreBuilder.jsx:528`–`535` and over `vm.cardLine`. `EditPanel`'s chain
+    comment, which also said "the two fields" over a chain of eight.
+  - The card block's comment at `EncoreSection.jsx:2746`, and a `reach.mjs` row.
+  - A *Reopened by JP-061* pointer in `./layout-3.md`'s header Settled.
+
+Reply: **JP-061 — fixed.** The line under the name on the *Inset Hero* header card is now its own
+field, *Portrait card line*, pre-filled with "Performing since 2021". Kicker starts as "DJ · Live
+Act" on every layout, and that is what the Bio's *Current role* prints, so the panel and the Bio
+agree. On *Inset Hero* the Kicker field now says "Not shown in this layout", because the header
+card no longer prints it; the Bio still does.
+- Editing Kicker changes the Bio only.
+- Editing *Portrait card line* changes the card only; left empty, the card shows the name alone.
+- The design's state can now be reached: set Kicker to "DJ & Selector".
+- The card line stays separate from the Bio's *Performing since*; its hint says to change both if
+  you name a year.
+
+Lime and Editorial behave the same way. Retro's *Inset Hero* is unchanged: its card prints the
+Kicker, as its Bio does.
 
 ---
 

@@ -44,7 +44,7 @@ import {
   FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
+  TESTI_HEADING_2, CAL_HEADING_3, CARD_LINE_3, TESTI_STARS,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
@@ -529,12 +529,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // card, the enquiry form's credit — reads the header's through `identity`
   // (`headerIdentity()` in data.js), since only the header has the fields.
   // The header reads its own content, so a preview of a layout the page is not
-  // on still shows what that layout would. Lime's, Grunge's and Editorial's
-  // layout-3 card types its own strapline; EditPanel mirrors it.
+  // on still shows what that layout would. The kicker has one seed at every
+  // layout, the one the bio falls back to, so the Kicker field and the bio's
+  // Current role cannot disagree (JP-061). Lime's, Grunge's and Editorial's
+  // layout-3 card line is `vm.cardLine`, below.
   const own = cat === 'header' ? c : identity
-  vm.kicker = own.kicker !== undefined ? own.kicker
-    : cat === 'header' && d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial') ? KICKER_3
-    : 'DJ · Live Act'
+  vm.kicker = own.kicker !== undefined ? own.kicker : 'DJ · Live Act'
   vm.subtitle = cv('subtitle', DEFS.heroSub)
   vm.location = own.location !== undefined ? own.location : 'Manchester, UK'
   // "DJ · Live Act · Manchester, UK", composed here so an emptied half drops
@@ -550,6 +550,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.faceTitle = cv('faceTitle', FACE_TITLE)
   vm.faceBody = cv('faceBody', FACE_BODY)
   vm.placeBody = cv('placeBody', PLACE_BODY)
+  // JP-061 — the layout-3 portrait card's line under the name, the kicker's
+  // seat in Retro's polaroid. Uncased, as the four above.
+  vm.cardLine = cv('cardLine', CARD_LINE_3)
   vm.showBadge = cv('showBadge', 'show')
   vm.badgeText = cv('badgeText', name)
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
@@ -3572,18 +3575,19 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {fields.map((f) => {
-                  // The two fields whose default is computed rather than written
-                  // down: the header's title is the artist's name, and the
-                  // repertoire's heading counts the songs — both mirroring what
-                  // sectionVm resolves, so panel and canvas never disagree.
+                  // The fields whose default is computed rather than written
+                  // down: the header's title is the artist's name, the
+                  // repertoire's heading counts the songs, and a few seeds follow
+                  // the layout. Each mirrors what sectionVm resolves, so panel
+                  // and canvas never disagree. The kicker left the chain with
+                  // JP-061: its `d` is its seed at every layout, and the
+                  // layout-3 card's line is a field of its own.
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
                     : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
-                    : f.k === 'kicker' && sec.cat === 'header'
-                      && (themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial') && design === 2 ? KICKER_3
                     : f.k === 'heading' && sec.cat === 'calendar'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3

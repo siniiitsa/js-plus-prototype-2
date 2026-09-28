@@ -167,7 +167,14 @@ mutated through a single `patch()` helper.
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
-  drops the ID card's column (the `since` rule). **The tag chips are the header's as well**
+  drops the ID card's column (the `since` rule). **The layout-3 card's second line is not the
+  kicker** (JP-061, user call, 2026-09-28). Lime's, Grunge's and Editorial's *Inset Hero*
+  portrait card prints `FIELDS.header.cardLine` (`vm.cardLine`) under the name. It is seeded
+  `CARD_LINE_3`, "Performing since 2021", uncased, and dropped when emptied. Retro's polaroid
+  prints the kicker in that seat. So the kicker has one seed, `'DJ · Live Act'`, at every layout,
+  and the bio's *Current role* always prints what the Kicker field shows. At layout 3 the panel
+  therefore marks Kicker "Not shown in this layout" while the bio prints it, as at layout 2.
+  **The tag chips are the header's as well**
   (JP-037): `FIELDS.header.tags` is a comma list seeded with `TAG_LABELS` (five — the Tags
   component hides its sixth chip), and `identity` carries `tags` and `showTags` to the bio,
   which prints them in layouts 2 and 4 and Lime's, Grunge's and Editorial's 3 (measured, `scripts/reach.mjs`). An emptied
@@ -188,7 +195,7 @@ mutated through a single `patch()` helper.
   seeded with the frames' own bytes and uncased (every site keeps its own casing), and each drops
   when emptied; a card keeps its tile, and both pills wrap rather than widen a 390 page. The face
   card's "Performing since 2021" is the artist's copy inside `faceBody`, **not** the bio's `since`,
-  which it does not read (`KICKER_3`'s precedent); the hint says to change both.
+  which it does not read (`cardLine`'s precedent, above); the hint says to change both.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —
@@ -247,7 +254,9 @@ mutated through a single `patch()` helper.
   cards and one placeholder, 2026-09-25, card 2 losing the placeholder's `showBadge` and
   `badgeText` since its frame draws no seal and card 3 re-measured unchanged, so card 4's pass
   re-measures its card), so
-  Pop's undesigned header family carries no note. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
+  Pop's undesigned header family carries no note. The one exception is `cardLine` (JP-061):
+  its `'*': []` row marks Retro and Pop "Not shown in this template", as `FIELDS.media.cta`'s
+  row does, because only the three `s.limeTree` blocks read it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
   sections still end in one after `v3`, which `arch % designCount` never reaches).
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
