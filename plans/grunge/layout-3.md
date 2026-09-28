@@ -916,6 +916,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   still white. So the card's ring and its row rules are two keys (`ring` / `edge`) where
   Lime's one hairline did both; Lime's seats carry no `ring` and fall back to `edge`.
   Driven live at 390: next, then prev ×2, and the colours stay put while the sets rotate.
+  *Since* (JP-075, 2026-09-28): the carousel opens on the **second** set, as every template's
+  390 master draws it. The centre is `mid = (pg + 1) % n`, so page 0 seats sets 0 / 1 / 2 in
+  order. The seating rule is unchanged, so the red centre card now holds set 1.
 - **The deltas**: padding **24** (Lime 34), radius **15** (50), rows **44.5 / 62.5 / 62.5**
   (39 / 57 / 57.5) — each master's `flex-1` division of its 369 / 439 / 439 card. The head
   is one white tone (`s.tx`, Lime's key), `faced` / `facedLh(0.89)` / uppercase; the row

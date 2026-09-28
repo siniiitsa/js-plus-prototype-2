@@ -138,7 +138,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 6 | JP-074 | A price range is all display size | **Confirmed, shared**: `priceParts()` has two parts; every layout-3 frame draws three (`£ \| 450 \| — £1,400`) | S–M | no (a named oddity) | **done** (a `tail`; layout 3's narrow numeral fills from `auto`; JP-058's 768 overflow closed; after-diff zero) |
 | 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | **done** (A, past wins over booked; the seed's after-diff zero, the States 15 files, all layout 3) |
 | 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no (one asked mid-session: Lime's pill) | **done** (`footerBand` widened; root, seal disc, pill label and disc; Lime's pill too; 12 files as named) |
-| 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | open |
+| 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | **done** (the centre is `(pg + 1) % n`; 10 files as named; the seat's colour under Lime, Grunge and Editorial, the set's under Retro and Pop) |
 | 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | open |
 | 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | open |
 | 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | open |
@@ -1519,9 +1519,92 @@ with it.
 **Docs.** The comment at `:11805`; CLAUDE.md does not describe the 390 carousel (grep, and add
 nothing if so). `./layout-3.md`'s repertoire Settled, a pointer.
 
-**Settled.** —
+**Settled** (2026-09-28).
+- **Re-checked on HEAD** (`d186671`). Every line held at +67, as JP-067's hand-off named it:
+  `seats` at `EncoreSection.jsx:11851`, `page = useState(0)` at `:10606`, the seat comment at
+  `:11872`, the two `pointerEvents` at `:12016` / `:12091`, `limeCard(… at : 1)` at `:12017`.
+  No other line in the layout-3 branch reads `pg` as "the set on show"; the wide grids read it
+  only as a slice offset.
+- **The frame, read.** `get_screenshot` of Retro's 390 master `982:10193`, sampled down each
+  card, reads dark `#252525` | olive `#6D7040` | rust `#DF5B30` from left to right. HEAD drew
+  rust | dark | olive, which is set 2 | set 0 | set 1. The triage's `#6D7040` is the olive family:
+  `#5B5E2E` lifted a ninth towards the cream, as measured in `../retro/layout-4.md`. Ours draws
+  `#5B5E2E`, as the desktop grid's middle column already does. That value diff predates this
+  entry.
+- **Code** (`EncoreSection.jsx:11855`–`11856`, `:12020`, `:12095`).
+  - `mid = sets.length >= 3 ? (pg + 1) % n : pg`, and the seats are `[pg, mid, (pg + 2) % n]`.
+    Page 0 draws sets 0 / 1 / 2 in order, the master's picture.
+  - Both `pointerEvents` tests are `i !== mid`. The `sets.length >= 3` guard folded in: below
+    three sets the row is `[pg]` and `mid` is `pg`.
+  - `limeCard(sets[i], seats.length === 3 ? at : 1)` is untouched, so the colour stays the
+    seat's under Lime, Grunge and Editorial. Retro and Pop's `card()` reads `setHue(i)`, so there
+    the colours move with the sets.
+  - Comments:
+    - the 390 row's comment (`:11842`) says where the centre is and why;
+    - the Lime block's list of hoisted names gains `mid`;
+    - the scheme comment (`:11875`). Its reason, "seated by set, the canvas's centre card would
+      be the olive one", became false with the fix, since set 1 is the mist card under Lime. It
+      now rests on the fan's rule alone: a set seated by its own colour would carry that colour
+      round as the pager turns.
+  - Net +4 lines, all inside `Repertoire`.
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on
+  :5173. The repertoire × themes `0,1,2,3,4` × three widths, canvas and `live=1`: **0 of 120**
+  (port and `?t=` normalised).
+- **After the edit: 10 files**, as named: repertoire `arch 2` × themes 0–4 × 390 × both
+  surfaces. :5173's module carried `const mid` and both `i !== mid` before the digest ran. By
+  column, each moved file keeps its row count and its colour set:
+  - themes 1, 2 and 3 move only text and text widths (`txt` 28 rows, `w` 22, `x` 11);
+  - themes 0 and 4 also move three card fills and two borders.
+- **Live** (`live=1`, 390, themes 0–3, trusted clicks; the seed's sets are Weddings, Pubs and
+  Birthdays):
+  - It opens on `Weddings | Pubs | Birthdays`, with Pubs in the centre. HEAD opened on
+    `Birthdays | Weddings | Pubs`, the report's picture.
+  - Next walks Pubs → Birthdays → Weddings → Pubs, wrapping, and Prev walks it back.
+  - At every stop only the centre seat has pointer events. `elementFromPoint` on either peek's
+    visible edge lands outside the peek. Of the three *View full set* links, only the centre's
+    is on screen and hit.
+  - No page errors.
+- **Edges** (`&cj=` over `songs`, with tags covering every song so no *All* set is appended):
+  - **two sets:** one card, the pager turning it; the digest at 390 × themes 0–4 × both
+    surfaces is **0 of 40** against HEAD;
+  - **one set:** one card, no pager, **0 of 40**;
+  - **four sets:** it opens on `Weddings | Pubs | Birthdays` and walks all four each way,
+    wrapping. It moves `arch 2` at 390 alone (10 files). HEAD opened on
+    `Corporate | Weddings | Pubs`.
+- **The tester's steps in the real app.** A one-off puppeteer script (deleted), with the editor
+  at 1600 × 1000, ran the template, card 3, *Use this header*, the Mobile tab (the canvas 390),
+  *Publish* and *Open*. The tab was set to 390, and its pager was driven three times each way.
 
-Reply: —
+  | | canvas (Mobile) and the tab at 390, opening |
+  |---|---|
+  | Grunge card 3 | Weddings `#1A1A1A` at −260 · **Pubs `#9E1F17`** at 50 · Birthdays `#1A1A1A` at 360: the second set centred and red, the first on the left. The tab's pager walks all three, and the colours stay with the seats |
+  | Retro card 3 | Weddings `#111111` · **Pubs `#5B5E2E`** · Birthdays `#C8461C`: the frame's dark · olive · rust. On the tab the colours travel with the sets |
+
+  No window logged a page error.
+- **Docs.**
+  - CLAUDE.md and README do not describe the 390 carousel (grep: *carousel* finds the
+    testimonials and the media fan alone), so nothing was added.
+  - `./layout-3.md`'s repertoire Settled has a *Since* pointer.
+  - So does `../lime/layout-3.md`'s seating bullet, which said "Retro's carousel puts set 0 in
+    the centre at page 0".
+- **For JP-069 onwards.** `EncoreSection.jsx` grew by 4 inside `Repertoire`, so a triage number
+  past the repertoire and before the footer is now **+82**. Spot-checked for JP-069:
+  - the weekday comment is at `:18512`;
+  - `gigRowL` is at `:18806`;
+  - 390's `city · time` is at `:18814`–`18817`;
+  - the shared body's city alone is at `:19210`–`19219`.
+
+  `EncoreBuilder.jsx` and `data.js` did not change.
+
+Reply: **JP-075 — fixed.** At 390 the Repertoire carousel now opens as the design draws it: the
+second set in the centre, the first peeking on the left and the third on the right.
+- This holds on every template, in the editor at Mobile and on the published page.
+- The arrows still reach every set in both directions and wrap at the ends.
+- On Grunge, Lime and Editorial the centre card keeps its colour (Grunge's red) while the sets
+  move through it.
+- On Retro and Pop each set keeps its own colour, so the olive set now opens in the centre, as in
+  Retro's design.
+- Desktop and 768 are unchanged, and so is a repertoire with one or two sets.
 
 ---
 

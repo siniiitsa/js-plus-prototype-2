@@ -11845,23 +11845,26 @@ function Repertoire({ s }) {
     // translated track (the media player's fan and the gallery's hero, a third
     // time): the centre seat holds the set the visitor is on and the outer two
     // always peek, where a track would bare the left gutter at page 0 and hand
-    // the canvas a different picture from the master's. Below three sets there
-    // is nothing to peek with — two 290 cards do not both fit — so the row is
-    // the current card alone, and the pager still turns it.
-    const seats = sets.length >= 3
-      ? [(pg - 1 + sets.length) % sets.length, pg, (pg + 1) % sets.length]
-      : [pg]
+    // the canvas a different picture from the master's. The centre is one set
+    // on from `pg` (JP-075): every template's 390 master draws the sets in
+    // order with the *second* centred, so page 0 seats sets 0 / 1 / 2 as the
+    // master does, and the pager still walks every set, wrapping. Below three
+    // sets there is nothing to peek with — two 290 cards do not both fit — so
+    // the row is the current card alone, `mid` is `pg`, and the pager still
+    // turns it.
+    const mid = sets.length >= 3 ? (pg + 1) % sets.length : pg
+    const seats = sets.length >= 3 ? [pg, mid, (pg + 2) % sets.length] : [pg]
     // 17.5 draws the master's 10.23 × 8.9 vector: lucide's arrow fills 14/24 of
     // its `size`, the audio player's size-an-icon-off-its-ink rule.
     const arrow = 17.5 * z
 
     // Lime — the same component in Lime's mode (964:68678 at 1440, 984:10760
     // at 768, 984:10791 at 390), placed after the seam as layouts 1's and 2's
-    // blocks are: `sets`, `pg`, `pages` and `seats` are computed above and the
-    // reveal and the pager are the hoisted state, so the published cards need
-    // nothing new. The tree is Retro's twin's; what changes is every leaf's
-    // dress, and three boxes — the card's 34 padding and 50 corner, and the
-    // rows' pinned heights.
+    // blocks are: `sets`, `pg`, `pages`, `mid` and `seats` are computed above
+    // and the reveal and the pager are the hoisted state, so the published
+    // cards need nothing new. The tree is Retro's twin's; what changes is every
+    // leaf's dress, and three boxes — the card's 34 padding and 50 corner, and
+    // the rows' pinned heights.
     //
     // Every size is a ramp token (`get_variable_defs`: display-lg
     // 130 / 81 / 54, body-lg 16 / 15 / 15, chip 13 / 12 / 11, list
@@ -11873,11 +11876,12 @@ function Repertoire({ s }) {
     // Scheme 1 (`s.box1`, pale ink, a lime meta line), Scheme 4 (`mist`) and
     // Scheme 3 (`lime3`), the last two inked and hairlined in the page ground.
     // Seated by rendered place rather than by set — the media fan's rule —
-    // because the 390 master centres the *mist* card between the other two:
-    // seated by set, the canvas's centre card would be the olive one. So the
-    // grid colours its columns and the carousel its left, centre and right,
-    // and a set takes the colour of wherever it stands. A lone card on the
-    // grid is column one's olive; the carousel's lone card is the centre's.
+    // because the 390 master centres the *mist* card between the other two,
+    // and a set seated by its own colour would carry it round the carousel as
+    // the pager turned it, off the centre after one press. So the grid colours
+    // its columns and the carousel its left, centre and right, and a set takes
+    // the colour of wherever it stands. A lone card on the grid is column
+    // one's olive; the carousel's lone card is the centre's.
     //
     // Grunge (964:68710 / 984:13920 / 984:13951) is Lime's tree node for node
     // at all three widths — a paired diff, 57 = 57 / 57 = 57 / 63 = 63 — and
@@ -12013,7 +12017,7 @@ function Repertoire({ s }) {
                 {seats.map((i, at) => (
                   <div key={sets[i].label} style={{
                     width: u(290), flex: 'none', display: 'grid',
-                    pointerEvents: sets.length >= 3 && i !== pg ? 'none' : undefined,
+                    pointerEvents: i !== mid ? 'none' : undefined,
                   }}>{limeCard(sets[i], seats.length === 3 ? at : 1)}</div>
                 ))}
               </div>
@@ -12088,7 +12092,7 @@ function Repertoire({ s }) {
                   // nothing that can be read or aimed at. There is no swipe (no
                   // touch state anywhere in this file), so the arrows are the
                   // only way through and a tap on a peek does nothing.
-                  pointerEvents: sets.length >= 3 && i !== pg ? 'none' : undefined,
+                  pointerEvents: i !== mid ? 'none' : undefined,
                 }}>{card(sets[i])}</div>
               ))}
             </div>
