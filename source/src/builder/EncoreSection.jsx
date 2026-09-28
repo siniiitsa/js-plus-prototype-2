@@ -1027,7 +1027,10 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // — the two reds the mode states, both followed. `line` asks for it; it is
   // additive and the footer's alone (Editorial's arm below reads it too, for
   // its footer's paper name), so every caller written before it, and every
-  // layout this pass has not fitted, keeps the red disc.
+  // layout this pass has not fitted, keeps the red disc. The disc is
+  // `s.footerBand || s.bg`, not `scheme`'s, because `sem/bg` is what the
+  // frame binds: on layout 3's page (964:68716) the footer stands on Scheme
+  // 2, and the disc is that band's `#171716` (JP-067).
   //
   // Grunge's layout-4 header (964:72944's "Frame 247") nests the seal in
   // Scheme 4, which in Static Youth is Scheme 1 byte for byte: a black
@@ -1096,7 +1099,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   }
   if ((s.lime || s.grunge) && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
-    const [disc, mk] = s.grunge ? (line ? [s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
+    const [disc, mk] = s.grunge ? (line ? [s.footerBand || s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
     const nameMk = s.grunge && line ? s.ac : mk
     return (
       <div style={{
@@ -25073,6 +25076,11 @@ function Footer({ s }) {
   // below it — `extLink` / `navHref` per row, the pill on `bookTo` and dropped
   // with its label — is restated verbatim. Scheme 1 throughout, so no literal.
   //
+  // Lime's layout-3 page (964:68684) stands this tree on Scheme 2 instead, and
+  // Grunge's (964:68716) does too, each differing from its layout 1 in
+  // `sem/bg` alone. So the root, the seal's disc and the pill's label and disc
+  // read `s.footerBand` there (JP-067), and nothing else moves.
+  //
   // Grunge's (964:58610 at 1440, 986:44068 at 768, 986:44080 at 390) is Lime's
   // tree node for node, on its own Scheme 1 — the same rules in `sem/stroke/1`,
   // the same dim globe, the same 68 row, `BookPill`'s shared branch exactly —
@@ -25215,7 +25223,10 @@ function Footer({ s }) {
     // `sem/box/3` rather than the label's own ink. Its label binds
     // `sem/tag/1/text`, ink in Scheme 3 (where it is `s.bg`, the default) and
     // in the Scheme 2 of layout 3's page (where `s.bg` is the taupe band), so
-    // it is passed as that binding.
+    // it is passed as that binding. The twins' label and disc bind `sem/bg`,
+    // which is `s.bg` but on layout 3's page, where it is the band under the
+    // footer, `s.footerBand` (JP-067): undefined elsewhere, so the pill falls
+    // back to `s.bg`.
     const linkCol = (colLinks, i) => (
       <nav key={i} style={col(px(ed ? 12 : 23), { alignItems: 'flex-start' })}>
         {colLinks.map((l, j) => {
@@ -25228,7 +25239,7 @@ function Footer({ s }) {
         })}
         {i === 0 && s.footerCta && (
           <BookPill s={s} to={s.bookTo} label={s.footerCta} full={s.mob}
-                    fg={ed ? s.chips[0].fg : undefined} discBg={ed ? s.box3 : undefined} />
+                    fg={ed ? s.chips[0].fg : s.footerBand} discBg={ed ? s.box3 : undefined} />
         )}
       </nav>
     )

@@ -585,7 +585,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   different compositions from Retro's: an upright glass card where Retro tilts a polaroid, and a
   glass nav capsule over an identity panel where Retro stands on a checker floor), so every card
   in the setup modal lays out a whole Lime page and the Lime family is closed. At layouts 2, 3
-  and 4 the footer is layout 1's. **Grunge is designed at all four of its layouts**: its pages are Lime's
+  and 4 the footer is layout 1's, standing at layout 3 on Scheme 2's olive, as Grunge's stands on
+  its `#171716` there. **Grunge is designed at all four of its layouts**: its pages are Lime's
   four pages in a third Figma mode (*Static Youth*), so its treatment — at layout
   1 torn black seams round the three textured bands, grain as a lighten layer and the red seal; at
   layouts 2 and 3 a black page whose every card and photograph is ringed in red or a white hairline where

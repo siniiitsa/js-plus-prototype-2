@@ -1190,7 +1190,10 @@ mutated through a single `patch()` helper.
   backwards at desktop and forwards at 768 and 390, a named product call reversible in one
   line). Its header family is `'lime'`: the first four photographic layouts, all four fitted,
   so every card in the setup modal lays out a whole Lime page and the family is closed
-  (`plans/lime/`). At layouts 2, 3 and 4 the footer is layout 1's (`NVAR.footer` is 1). Two
+  (`plans/lime/`). At layouts 2, 3 and 4 the footer is layout 1's (`NVAR.footer` is 1), and
+  at layout 3 it stands on Scheme 2's olive `box1`. That is `vm.footerBand`, read off the page's
+  design like Editorial's seat, and it paints the root, the seal's disc and the Book pill's label
+  and disc, every node the frame binds to `sem/bg` (JP-067 threaded the pill). Two
   shared helpers grew an additive prop for layout 4: `ArcEdge` takes `TornEdge`'s `bleed`
   (`false` inside a sheet the branch has already bled), and `SealBadge`'s Lime disc takes a
   `scheme` (3 = lime disc with ink marks, 4 = pale disc with ink marks) because the layout-4
@@ -1253,7 +1256,9 @@ mutated through a single `patch()` helper.
   (`HeaderV3`'s Lime block, widened: a black capsule over the red floor, no checker, and the
   desktop photograph **not** mirrored — Grunge's fill is `FILL`), so every
   card in the setup modal lays out a whole Grunge page and the family is closed
-  (`plans/grunge/`). At layouts 2, 3 and 4 the footer is layout 1's. Layout 4 grew two shared
+  (`plans/grunge/`). At layouts 2, 3 and 4 the footer is layout 1's, and at layout 3 it stands
+  on Scheme 2's `#171716`, as Lime's and Editorial's do: `vm.footerBand` takes Grunge as a
+  named literal, the gallery sheet's (JP-067). Layout 4 grew two shared
   helpers additive props — `NavBar` takes `links={{ gap, cap }}` (the capsule's fixed 23 gaps,
   the type clamped to fit) and `mark`, and `Wordmark` takes `gap` — and `SealBadge`'s Lime
   `scheme` a Grunge arm at 4, a black disc with red marks.

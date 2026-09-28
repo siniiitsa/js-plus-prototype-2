@@ -254,7 +254,7 @@ identical at 1440, 768 and 390.**
 | 8 | map | **full-bleed `#F2FFD0` sheet** (Scheme 4, `s.tx`) | the map panel (`lime3` at every width — *corrected in section 8*), rows and chips inked `#15180F` |
 | 9 | form | page | a `#2E3928` card, radius 50 (a full-height `#15180F` child bleeds under it at 768 / 390 — the page colour, a no-op, Retro's reading) |
 | 10 | testimonials | page | the cells above |
-| — | footer | `#2E3928`, layout 1's | — |
+| — | footer | `#2E3928`, layout 1's tree on Scheme 2 (`vm.footerBand`, `7fc68af`) | the seal's disc on the same `#2E3928`; the Book pill's label and disc too, bound to `sem/bg` and drawn in Scheme 1's `#15180F` until *JP-067* ([`../grunge/layout-3-qa-fixes.md`](../grunge/layout-3-qa-fixes.md)) |
 
 **No root flag widens.** The gallery's sheet and the map's sheet are painted **in the branch**
 (Retro layout-3's gallery and map both bleed by the written-out margin), in `s.box1` and `s.tx`;

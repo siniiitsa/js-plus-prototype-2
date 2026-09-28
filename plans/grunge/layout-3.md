@@ -267,7 +267,7 @@ walk; each session re-reads its narrow masters.
 | map | **Scheme 4** ≡ 1 | `radius-map` (634 × 706) **Scheme 3** — ~~✱ (Lime Scheme 2)~~; *corrected in section 8*: **Lime's is Scheme 3 too**, and what moves is the *binding*, `sem/box/1` → **`sem/box/2`** `#F52E34`. Its `Map View Container` stays `box/1`, so under Grunge that is **`#9E1F17`** where Lime's is `lime3` again | root `#000000`: **no pale sheet** — layout 2's form trap in the map (below); the panel is Scheme 3's `box/2`, the layout-2 travel card's red, not `lime3` |
 | form | Scheme 1 | — | root `#000000`; the card and boxes `s.box1` in `stroke1` (read); the submit red |
 | testimonials | page | `rating` 275 **Scheme 3** (`#9E1F17`, black 15% ring); `quote-cell` 511 **Scheme 3** ✱ (`#9E1F17`, unstroked; Lime Scheme 2); `name-cell` 510 **Scheme 4** ✱ (`#1A1A1A`, white 15% ring; Lime Scheme 2); `small-quote` 510 **Scheme 3** ✱ (`#9E1F17`, black 15% ring; Lime Scheme 4); `feat-quote` inherits (`s.box1` by inheritance — read it) | *Section 10:* the row above names five nodes for **six** cells — row 0's `name-cell` has no scheme override and was missed. The stat card is red, and the five **quote** cells run **dark / red / dark / red / dark**, which is **two** registers where Lime has three: write a Grunge `REG` and a Grunge `SEATS`, never remap Lime's |
-| footer | Scheme 2 (layout 1's) | — | `#171716` |
+| footer | Scheme 2 (layout 1's) | — | `#171716` — ~~layout 1's~~: *corrected by JP-067* ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md)): layout 1's footer is Scheme 1's `#000000`. The layout-3 footer (`964:68716` · `984:13929` · `984:13960`) is **Scheme 2**, and so are its seal's disc and its pill's label and disc, each bound to `sem/bg`. `vm.footerBand` now paints them |
 
 Six traps in that table, each a place where Lime's block reads a key that lands on the wrong
 value under Grunge — **and on this page the nested scheme often changes too, not only the value**:
@@ -321,7 +321,7 @@ Sampled off the three renders at the band edges and the middle. **The sequence i
 | 8 | map | **page** (no sheet) | the `#F52E34` panel at radius 15, holding a `#9E1F17` map container; the list on the ground with a red lit row (section 8) |
 | 9 | form | page | a `#1A1A1A` card |
 | 10 | testimonials | page | the five cells above, three of them `#9E1F17` |
-| — | footer | `#171716`, layout 1's | — |
+| — | footer | `#171716` (Scheme 2; ~~layout 1's~~, *corrected by JP-067*: this pass drew it black, layout 1's) | — |
 
 **No root flag widens**, Lime's rule again: `bleed`, `darkMap`, `cream`, `limeBand`, `limeLight`,
 `grungeBand` and `grungeRule` all gate on `s.v0`. Lime's two layout-3 sheets were painted in the

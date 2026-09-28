@@ -432,8 +432,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
-    // ground; its seal's disc follows. `page` is the header's design.
-    footerBand: T.name === 'Lime' && cat === 'footer' && page === 2 ? T.sem?.box1 : undefined,
+    // ground; its seal's disc and the Book pill's label and disc follow, each
+    // bound to the same `sem/bg`. `page` is the header's design. Grunge's
+    // (964:68716 · 984:13929 · 984:13960, JP-067) does too, on `#171716`:
+    // Scheme 2's `sem/bg` has no vm key there (`T.sem.box1` is `#1A1A1A`),
+    // hence the literal, the gallery sheet's and `grungeBand`'s. Editorial's
+    // seat is SCHEMES_OF's page row, which reseats the whole section instead.
+    footerBand: cat === 'footer' && page === 2
+      ? (T.name === 'Lime' ? T.sem?.box1 : T.name === 'Grunge' ? '#171716' : undefined)
+      : undefined,
   }
   // Lime layout 3's column heads — the bio's "KM BIO", the player's and the
   // calendar's "Book Me" — stand 50 below their row in all three frames

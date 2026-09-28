@@ -28,7 +28,8 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 
 **Only one of the fifteen is Grunge's alone.**
 - **Grunge only: JP-067.** Lime's layout-3 footer stands on its Scheme 2 through `footerBand` and
-  Editorial's through `SCHEMES_OF`; Grunge's layout-3 pass took neither.
+  Editorial's through `SCHEMES_OF`; Grunge's layout-3 pass took neither. (Its session found
+  Lime's pill missing the same seat, and fixed it too.)
 - **The `s.limeTree` blocks (Lime, Grunge, Editorial): JP-061 and JP-062**, both in `HeaderV2`.
   Retro's polaroid reads the kicker with the plain seed, and clips a long name rather than
   spilling it.
@@ -136,7 +137,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 5 | JP-062 | The *Inset Hero* card's name spills | **Confirmed, `s.limeTree`**: the card's column is `nowrap`; Editorial's seeded name already runs into the padding | S–M | **yes** — A (wrap, fit the widest word), B, C | **done** (A, at the content box plus half the padding, re-asked mid-session; `overflowWrap` on the line; after-diff zero) |
 | 6 | JP-074 | A price range is all display size | **Confirmed, shared**: `priceParts()` has two parts; every layout-3 frame draws three (`£ \| 450 \| — £1,400`) | S–M | no (a named oddity) | **done** (a `tail`; layout 3's narrow numeral fills from `auto`; JP-058's 768 overflow closed; after-diff zero) |
 | 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | **done** (A, past wins over booked; the seed's after-diff zero, the States 15 files, all layout 3) |
-| 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no | open |
+| 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no (one asked mid-session: Lime's pill) | **done** (`footerBand` widened; root, seal disc, pill label and disc; Lime's pill too; 12 files as named) |
 | 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | open |
 | 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | open |
 | 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | open |
@@ -1392,9 +1393,92 @@ surfaces = **6 files**: the root's background, and the seal's and the pill's row
 footer "is layout 1's" at layouts 2, 3 and 4: at layout 3 it stands on Scheme 2, as Lime's and
 Editorial's do. The `footerBand` comment.
 
-**Settled.** —
+**Decided** (2026-09-28, user call). The pill check found Lime's twin miss. Lime's three
+layout-3 footer frames bind the pill's label and its `Frame 174` disc to `sem/bg` as well
+(`#2E3928`). `7fc68af` moved Lime's root and seal onto Scheme 2 but left the pill in Scheme 1's
+`#15180F`. **Fix both**: the pill's `fg` reads `s.footerBand` ungated, written as the frame's
+binding. The named after-diff becomes **12 files**: Grunge's 6 and Lime's 6, all at `page=2`.
 
-Reply: —
+**Settled** (2026-09-28).
+- **Re-checked on HEAD** (`d5d8e5b`). Every line held as the hand-off named it (triage +75 past
+  the calendar): the footer root's fill at `EncoreSection.jsx:25563`, the footer seal at
+  `:25203`, the Grunge seal's `line` arm at `:1099`; `EncoreBuilder.jsx:436` (`footerBand`) and
+  `:277` (the seat); the Editorial row `2: { …, footer: 2 }` at `data.js:326`.
+- **The frame, read** (`use_figma` over every node of `964:68716` · `984:13929` · `984:13960`;
+  `get_variable_defs` on the 1440). `sem/bg` `#171716` is bound on:
+  - the root's fill;
+  - the seal's `Frame 178` disc;
+  - the pill's "Book Now" label and its `Frame 174` disc (the `←` in it is `sem/active/bg`, the
+    pill's own red, and stays).
+  `Group 6`'s three ellipses bind it too, but as **hidden** paints, so nothing draws it; our
+  `LimeGlobeMark` paints `none` and `stroke1` there. Nothing else in the footer reads `s.bg`.
+  Lime's three frames bind the same four leaves to its `#2E3928`, and its layout-1 and layout-3
+  footers differ in `get_variable_defs` only in `sem/bg`, as Grunge's do (hence **Decided**).
+- **Code.**
+  - `footerBand` (`EncoreBuilder.jsx:436`) takes Grunge at `page === 2` as the literal
+    `'#171716'`. Grunge's `T.sem.box1` is `#1A1A1A`, and Scheme 2 has no vm key there.
+  - The Grunge seal's `line` arm reads `[s.footerBand || s.bg, s.stroke2]`. `scheme` stays
+    ignored there, since `line` wins.
+  - The footer pill's `fg` is `ed ? s.chips[0].fg : s.footerBand`. `BookPill` fills the disc
+    with `fg` too, so one prop moves both leaves. It is undefined off page 2, so the pill falls
+    back to `s.bg`.
+  - The root needed nothing: no earlier flag fires for a Grunge footer, so it reaches
+    `s.footerBand || s.bg`.
+  - Comments at all four sites, and the Footer's head comment, which said Grunge's footer stood
+    "on its own Scheme 1".
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on
+  :5173. The footer × themes `0,1,2,3,4` × three widths, canvas and `live=1`, in four runs: no
+  page (which adds `&page=2`), `&page=1` and `&page=3`. **0 of 180** (port and `?t=` normalised).
+- **After the edit: 12 distinct renders**, as named. They are the footer at `page=2` × Lime and
+  Grunge × three widths × both surfaces. The `&page=1` and `&page=3` runs repeat those page-2
+  renders (the URL's first `page` wins), and their own page-1 and page-3 renders do not move.
+  Retro, Editorial and Pop do not move. The rows that moved are colours only, no geometry:
+  - Grunge: the root `rgb(0,0,0)` → `rgb(23,23,22)`, the pill's `color` and the disc span's
+    background the same.
+  - Lime: the pill's `color` and the disc span's background, `rgb(21,24,15)` → `rgb(46,57,40)`.
+  :5173 served the edit: its `EncoreBuilder.jsx` carries the widened `footerBand`, and its
+  `EncoreSection.jsx` carries both new reads.
+- **The seal, read off the DOM** (the digest records no SVG `fill`). A one-off puppeteer probe
+  read 60 renders a server: the footer × five themes × page none / 1 / 2 / 3 × three widths,
+  `live=1`. Grunge's disc moved `#000000` → `#171716` at page 2 alone. Lime's was already
+  `#2E3928`. Every other leaf held as above, and the arrow stayed `sem/active/bg` on both.
+- **Shots** with `prefers-reduced-motion: reduce`: Grunge's page-2 footer at 1440, 768 and 390
+  on both servers, and the 1440 set beside the frame's render. The band, the seal's disc and
+  the pill's label and disc now read the frame's grey. At HEAD they were the page's black.
+- **The tester's steps in the real app.** A one-off puppeteer script (deleted), with the editor
+  at 1600 × 1000, ran the template, the card, *Use this header*, *Publish* and *Open*, then read
+  the canvas footer and the tab at 1440, 768 and 390.
+
+  | | canvas (desktop) and the tab at 1440 · 768 · 390 |
+  |---|---|
+  | Grunge card 3 | footer `rgb(23,23,22)`, seal `#171716`, pill label and disc `rgb(23,23,22)` on `#DF262C`; the gallery's sheet the same `rgb(23,23,22)` on the black page |
+  | Grunge card 1 | footer, seal, label and disc all `rgb(0,0,0)`: still black |
+  | Lime card 3 | footer and seal `#2E3928`, and now the pill's label and disc too |
+  | Editorial card 3 | unchanged: taupe `rgb(170,149,138)`, label ink, disc `s.box3` |
+
+  No window logged a page error.
+- **Docs.**
+  - CLAUDE.md, at Lime's and Grunge's "the footer is layout 1's": at layout 3 it stands on
+    Scheme 2 (`vm.footerBand`), and the pill follows.
+  - README's Lime sentence says the same for both templates.
+  - `./layout-3.md`'s two *Grounds* rows (the schemes table and the grounds table) carry a
+    correction pointer, and so does `../lime/layout-3.md`'s.
+- **For JP-075 onwards.** `EncoreSection.jsx` grew by 3 at `:1030` (the seal's comment) and by 8
+  inside `Footer`. So JP-075's triage numbers (the repertoire, before the calendar) are now
+  **+67**: `seats` at `:11851`, the seat comment at `:11872`, the two `pointerEvents` at
+  `:12016` / `:12091`, `limeCard(… at : 1)` at `:12017`, `page` at `:10606`. A triage number past
+  the calendar and before the footer is **+78**. `EncoreBuilder.jsx` grew by 7 at `:436`. `data.js`
+  did not change.
+
+Reply: **JP-067 — fixed.** On the *Inset Hero* page, Grunge's footer now stands on the design's
+dark grey (`#171716`), the gallery's tone, at 1440, 768 and 390, in the editor and on the
+published page.
+- The seal's disc and the Book Now pill's label and arrow disc take the same grey, as the design
+  draws them.
+- The other three Grunge headers keep the black footer their designs draw.
+- The same check found one miss on Lime's *Inset Hero* footer: the Book Now pill's label and
+  disc were the page's near-black where the design has the footer's olive. That is fixed as well.
+- Editorial, Retro and Pop are unchanged.
 
 ---
 
