@@ -53,7 +53,7 @@ HEAD. None is a stale-build echo.
 |---|---|---|---|---|---|---|
 | 1 | JP-058 | `From £1,200` prints as a small `F` + `rom £1,200` | **Confirmed, and shared**: `/^[^\d]/` takes the first character of any price that does not start with a digit, in six sites (pricing layouts 1–3, every template) | S | **user: B, everything before the first digit** | **done** |
 | 2 | JP-057 | The seal's two small circles sit on the name's letters | **Confirmed, and shared**: only the name ring spins (`.seal-spin`, 14 s), and the marks stand still, so the name walks through them. At rotation 0 the picture is the frame's | S–M | **user: A, the marks spin with the name** | **done** |
-| 3 | JP-056 | Headings set in Anton, not the distressed Stones Crush | **By design so far**: Anton is the named stand-in (user call, 2026-09-21). The tester's licence question is real and is the PO's to carry | — (reply) / L (own plan) | **yes (PO / design)**: reply, licence, or a distress mask | open |
+| 3 | JP-056 | Headings set in Anton, not the distressed Stones Crush | **By design so far**: Anton is the named stand-in (user call, 2026-09-21). The tester's licence question is real and is the PO's to carry | — (reply) | **user: A, a reply naming the stand-in** | **done** (reply; licence with the PO) |
 | 4 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:** JP-058 is the smallest diff and should prove a zero seeded diff. JP-057
@@ -502,15 +502,37 @@ the stand-in and why. The reply can point there.
   distressed. The Rubik distressed family is wide, so every measured fit would break. Not
   recommended.
 
+**Decided** (2026-09-28, user call): **A**, a reply naming the stand-in. No code. The licence
+question goes to the PO / designer with the facts above.
+
 **Fix.** On A: none. Record the facts in `layout-1.md`'s open question 1, and write the reply. On
 B or C: write `plans/grunge/display-face.md` and stop there. That plan is its own branch, after
 this batch merges.
 
 **Docs.** On A: `layout-1.md` open question 1 only.
 
-**Settled.** *(open)*
+**Settled** (2026-09-28). The Evidence held: `data.js:99`–`114` and `EncoreSection.jsx:104`–`105`
+have not moved, since JP-057's growth is all below them. There are **68** `faced(s, …)` call
+sites. The triage's 69 also counted a `faced(s.dispLg)` inside a comment (`:23894`).
+- **No code**, per A. Nothing under `source/` changed, so there is no digest.
+- **Docs.** `layout-1.md`'s open question 1 now carries the triage facts: the personal-use-only
+  licence, the unverified Creative Fabrica listing and the caps-only face. It also points at
+  option B here as the cost of shipping the real face. Open question 6 (Anton at 0.75) is part
+  of the same conversation with the designer and is unchanged.
+- **With the PO / designer:** whether to buy a licence that covers webfont embedding. If one is
+  bought, `plans/grunge/display-face.md` is written from option B, on its own branch after this
+  batch merges.
 
-Reply: *(open)*
+Reply: **by design; the licence question needs the PO.** Grunge's headings are set in Anton on
+purpose. Stones Crush cannot ship as things stand, because its free download (1001Fonts) is
+licensed for personal use only, and this product and the artists' sites it publishes are not
+personal use. Anton was chosen on
+2026-09-21 as the closest free face: heavy and condensed like Stones Crush, but without the worn
+texture. It is set at 0.75 of the design's size so its capitals match the design's height. The
+code names the stand-in and the reason in the Grunge theme's comment in `data.js`. Shipping the
+real face needs a licence that covers web embedding. A "Stones Crush 2" is sold on Creative
+Fabrica, but it is not yet confirmed to be the same face, or that its licence covers the web. If
+the PO buys one, fitting the face is its own piece of work, not a QA fix.
 
 ---
 

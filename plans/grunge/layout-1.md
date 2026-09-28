@@ -1171,7 +1171,19 @@ the plan it came from. Kept as the pass wrote it, a blank line between sections.
 ## Open questions
 
 1. **Stones Crush** — *settled in session 0:* Anton, by user call. Worth telling the designer
-   that the shipped face is a clean stand-in.
+   that the shipped face is a clean stand-in. *Reached QA as JP-056 (2026-09-28), and answered
+   with a reply* (`qa-fixes.md`, user call A). The facts gathered at triage, for the PO and the
+   designer:
+   - Stones Crush is by **Ryan Creative**. 1001Fonts offers it under the *1001Fonts Free For
+     Personal Use* licence, which excludes commercial use.
+   - A commercial **"Stones Crush 2"** is listed on Creative Fabrica. Its page answered 403, so it
+     is **unverified** whether it is the same face and whether its licence covers webfont
+     embedding. The free-font mirrors that offer webfont downloads are not a licence.
+   - The face is **caps-only**, so session 0's `'title'` casing with per-site `uppercase` would
+     become harmless rather than necessary.
+
+   If a licence is bought, shipping the face is its own plan (`display-face.md`). JP-056's
+   option B lists what it costs.
 2. **Does Grunge desaturate an artist's uploads?** *Closed in session 0:* the greyscale is in the
    assets, so nothing desaturates and uploads stay in colour.
 3. **`gigDark` under Grunge** — *closed in section 6:* not widened; the block reads no `g.hue`.
