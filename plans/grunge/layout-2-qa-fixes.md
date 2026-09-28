@@ -54,7 +54,7 @@ reported site was touched between the two, so it makes no difference which one t
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-060 | *Coverage badge* also prints as *Max travel* | **Confirmed, a fit slip**: Lime's layout-2 fit drew Retro's *pre*-QA chip over Retro's *post*-QA stat row, so `radius` fills both, on the seeded page too. Grunge and Editorial inherited it. Retro and Pop print it once | S | **yes** — A (the chip takes Retro's `g.when`), B (a seeded *Confirmed* field), C | open |
+| 1 | JP-060 | *Coverage badge* also prints as *Max travel* | **Confirmed, a fit slip**: Lime's layout-2 fit drew Retro's *pre*-QA chip over Retro's *post*-QA stat row, so `radius` fills both, on the seeded page too. Grunge and Editorial inherited it. Retro and Pop print it once | S | **yes** — A (the chip takes Retro's `g.when`), B (a seeded *Confirmed* field), C | **done** (A; `radius` is *Coverage*) |
 | 2 | JP-059 | Header and Bio print five texts no field reaches | **Confirmed, and shared**: literals in `HeaderV1`'s two halves (Retro, Lime, Grunge, Editorial) and in both bio layout-2 bodies (every template, Pop included). Lime's fit kept them on purpose | M | **yes** — fields or drop, the *since* sentence, `/Featured` | open |
 | 3 | — | End-of-pass sweep | — | S | — | open |
 
@@ -76,7 +76,9 @@ As [`qa-fixes.md`](./qa-fixes.md), with these differences:
    and Pop too, so it digests **0–4**. JP-059's header half is themes 0–3 (Pop's header family is
    flat and never draws `HeaderV1`; digest it anyway as the control), its bio half 0–4.
 3. Verify at **all three widths** and on **both surfaces** (canvas and `live=1`). Digest against a
-   **HEAD worktree** on :5174 (`node_modules` symlinked). Normalise the port in
+   **HEAD worktree** on :5174 (`node_modules` an APFS clone, `cp -Rc`, with its `.vite`
+   removed: a symlink shares `.vite` with the live server, the Retro sweep's convention; JP-060
+   ran it that way). Normalise the port in
    `background-image` URLs, and `\.jpg\?[^|]*` in `src` if :5173 has been running long enough to
    stamp photo URLs with `?t=` (the Grunge QA sweep met both). **Name the expected after-diff
    before writing code.**
@@ -164,6 +166,12 @@ Retro's), so the question quotes the frames rather than the tester's shot (JP-03
 - **C. A Max travel field of its own**, with the chip keeping `radius`. That leaves two coverages
   on the seeded page ("12 mile radius" in the chip beside Max travel). Not recommended.
 
+**Decided: A** (user, 2026-09-28). The chip in the `s.limeTree` block takes Retro's `g.when`, and
+`radius` prints once, as Max travel. Asked over the frames' own text, read before asking: all four
+desktop masters (Grunge `964:64632`, Lime `964:64594`, Editorial `964:64613`, Retro `964:64651`)
+render "● Confirmed" in the chip (layer `…;731:3435` on Grunge, `…;731:3312` on Lime) and "Max
+travel" over "100 mi" in the stat row. Retro's QA already dropped "Confirmed" as a claim.
+
 **Either way:**
 - The `radius` label and a hint. For example `l: 'Coverage'` and "How far you travel. Layout 1
   prints it beside the heading, layout 2 as the travel card's Max travel, layout 3 in the line
@@ -205,9 +213,71 @@ Retro's), so the question quotes the frames rather than the tester's shot (JP-03
   a pointer to this entry. `./layout-2.md`'s map Settled, if it names the chip.
 - CLAUDE.md's events-map paragraph does not describe the travel card's chip; check, and the README.
 
-**Settled.** *(open)*
+**Settled.**
+- **The fix is the chip alone.** In the `s.limeTree` block it is Retro's `!!g?.when && ● {g.when}`.
+  Its dress (the ring, `bodySm`, `nowrap`, `flex: none`, the padding) is unchanged. Nothing else
+  in the block read `radius` or `when`. `g`, `feat` and `onPick` are the shared hooks above the
+  seam, so the published featuring needed nothing.
+- **`radius` is relabelled *Coverage*, with a hint** ("How far you travel. Layout 1 prints it
+  beside the heading, layout 2 as Max travel on the travel card, layout 3 in the line under the
+  map, and layout 4 on the Coverage card."). The label is also layout 4's card label, which
+  that branch's comment already called "the field's own name". Measured, not read:
+  - `reach.mjs`'s new `map.radius` row reports layouts 1–4 on themes 0–4, 6/6 renders each, so
+    the field takes no `in`.
+  - A one-off count of the sentinel's text nodes found it **exactly once** per design, on every
+    template, width and surface. Before the fix, layout 2 under themes 1–3 printed it twice.
+- **Harness first.** The HEAD worktree on :5174 (`node_modules` an APFS clone, not a symlink,
+  per the Retro sweep's convention) against the tree before the edit: map × themes 0–4 × three
+  widths × both surfaces, 0 of 120.
+- **Digest: 18 of 1,320**, all categories × themes 0–4 × three widths × canvas and `live=1`.
+  They are exactly map arch 1 × themes 1, 2, 3 × three widths × both surfaces. Each has **one
+  row**: the chip's span, its text "● 12 mile radius" → "● Jul 12 · 22:00" (read whole: 15
+  characters, under the column's 40), 1.1 to 1.5px narrower and moved right by the same. The
+  heading column does not move. Themes 0 and 4 and every other category are byte-identical.
+- **Live** (`live=1`, `radius` = `100 mi`, themes 0–3, 1440 and 390): picking *The Deaf
+  Institute* and then *Gorilla* moves the chip Jul 12 · 22:00 → Jul 25 · 21:00 → Aug 30 ·
+  23:00, and Max travel stays `100 mi`.
+- **Edges** (`&cj=` over `gigs`, `live=1`, three widths, themes 0–3):
+  - A long `when` ("September 12 · 23:00–04:00") stays inside the card (right edge 360 in the
+    380 card at 390, 352 in 372 at 768), with no overlap with the heading and `scrollWidth` equal
+    to the width at every size.
+  - A gig with no month, day or time drops the chip, and the heading stands alone.
+  - With no gigs the chip is gone. That is the named diff: under Lime, Grunge and Editorial it
+    printed the radius there before.
+- **The tester's steps**, in the real app, card 2 of Grunge, then Lime, Editorial and Retro.
+  Events Map's panel shows *Coverage* with the hint (no *Coverage badge* anywhere). The field
+  was set to `100 mi`, then Publish and Open, at 1440 and 390.
+  - On the canvas and the published tab alike, the chip reads "● Jul 12 · 22:00" and Max
+    travel "100 mi". The section prints "100 mi" once and "12 mile radius" nowhere.
+  - A pick moves the chip and not Max travel, with `scrollWidth` equal to the width and no page
+    errors.
+  - Retro is unchanged (its chip was already the date).
+- **Named, not fixed.**
+  - The frame's "Confirmed" stays dropped, Retro's 2026-09-15 call, now on every template.
+  - Seen in passing, not this ticket's: resizing the published tab from 1440 to 390 re-features
+    the first gig (`sel` does not survive the device change). Retro, whose code is untouched,
+    does the same.
+- **Docs.**
+  - `EncoreSection`: the shared travel card comment (the chip holds the date, and Max travel
+    is `radius`, printed once in every template's body), a comment on the block's chip, and
+    layout 3's data-line comment ("the coverage badge" → "the coverage").
+  - `data.js`: a comment on `FIELDS.map.radius`, and the stat-row comment moved from among
+    the pricing constants to above `MAP_TRAVEL_TIME`.
+  - Pointers in `../lime/layout-2.md`'s map Settled ("Corrected by JP-060"),
+    `../editorial/layout-2.md`'s "Inherited whole" line and `./layout-2.md`'s map Settled.
+  - CLAUDE.md and the README describe neither the chip nor the label (grep), so both are
+    unchanged.
+  - `../retro/layout-4.md:986` quotes the old label as history, and it stays: the tie it broke
+    is only more exact now.
 
-Reply: *(written once decided)*.
+Reply: **fixed.** The field was called *Coverage badge*, but it holds the artist's travel
+coverage, and every Events Map layout prints it once; on this layout it is *Max travel*. It is now
+called **Coverage**, with a help text that says where each layout prints it. On Grunge, Lime and
+Editorial the travel card's chip printed the same field a second time, which is the bug. The chip
+now shows the date and set time of the gig the panel features, as Retro's always has, and it
+follows the visitor's pick. The design's *Confirmed* is a booking status the page cannot know,
+so it stays out by design (the same call as Retro's layout 2). To get the design's Max travel,
+type `100 mi` into Coverage.
 
 ---
 

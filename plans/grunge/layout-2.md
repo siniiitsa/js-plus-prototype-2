@@ -1218,6 +1218,9 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   at three widths on both surfaces.
 - **Open question 1 paid for the map** in its own commit (`eb4ac06`, after the fit's digest was
   clean): see the question.
+- **The chip's content was Lime's slip, inherited** (JP-060, `./layout-2-qa-fixes.md`,
+  2026-09-28): it printed `radius`, which the stat row prints as Max travel. It now prints the
+  featured gig's `g.when`, as Retro's does. Its dress above is unchanged.
 
 ### Settled in section 9 (the enquiry form)
 

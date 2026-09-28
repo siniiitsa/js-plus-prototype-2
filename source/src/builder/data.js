@@ -805,9 +805,6 @@ export const MAP_STATUS = 'In transit'
 export const MAP_UPDATED = 'Updated 2m ago'
 export const MAP_RINGS = '30mi, 60mi, 120mi'
 export const MAP_EXPAND = 'Expand view'
-// Layout 2's stat row: the frame's Travel time and Booking fee cells, seeded
-// with its own copy. Max travel, the third cell, is MAP_RADIUS rather than a
-// field of its own, so a seeded page cannot claim two different coverages.
 // Pricing layout 2's credit row and the line beside its pill, seeded with the
 // frame's own copy (964:64648).
 export const PRICING_REVIEWS = '32 reviews'
@@ -818,6 +815,9 @@ export const PRICING_NOTE = "3 dates open for Sept '26"
 // (964:68648, and at 768 and 390 too). Dropped in Retro's fit as "a discount no
 // field states"; a field states it now (JP-046), seeded and emptiable.
 export const PRICING_OFFER = 'Save 15% on bundles'
+// Layout 2's stat row: the frame's Travel time and Booking fee cells, seeded
+// with its own copy. Max travel, the third cell, is MAP_RADIUS rather than a
+// field of its own, so a seeded page cannot claim two different coverages.
 export const MAP_TRAVEL_TIME = '~2 hrs'
 export const MAP_FEE = '£1,200'
 
@@ -1469,7 +1469,13 @@ export const FIELDS = {
           + "layout 4's ticker. "
           + 'Layout 3 also turns the cities into its filter chips, and layout 4 counts them.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
-    { k: 'radius',  l: 'Coverage badge', d: MAP_RADIUS },
+    // Every design prints it, once each (reach.mjs's `map.radius`). It was
+    // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
+    // block printed it in the travel card's chip as well as its Max travel, and
+    // that chip now takes Retro's gig date.
+    { k: 'radius',  l: 'Coverage', d: MAP_RADIUS,
+      hint: 'How far you travel. Layout 1 prints it beside the heading, layout 2 as Max travel on '
+          + 'the travel card, layout 3 in the line under the map, and layout 4 on the Coverage card.' },
     { k: 'base',    l: 'Based in',       d: MAP_BASE },
     { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1, 3] },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1] },

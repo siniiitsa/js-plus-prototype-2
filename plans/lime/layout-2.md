@@ -844,6 +844,11 @@ Settled in section 9 (the events map):
   both templates. **The boxes are Retro's twin's** (card insets 18 / 20, rows 10 / 14, panel
   32 / 12 / 12, the 24 gap); only type-driven heights differ. Retro's `T`, `card` … `tabBg`,
   `travel`, `gigRow`, `list`, `pins` and `featured` are not read. Pure additions (305 / 0).
+  **Corrected by JP-060** (`../grunge/layout-2-qa-fixes.md`, user call, 2026-09-28): the
+  allocation was shared in `stats` but not in the chip. The block drew Retro's *pre*-QA chip
+  (`● {s.mapRadius}`) over the *post*-QA row, which prints `radius` as Max travel, so the one
+  field filled both seats and the featured gig's date was printed nowhere. The chip now reads
+  Retro's `g.when`.
 - **Three schemes, by node.** The scheme table's "featured panel (652 × 363)" is the **travel
   card**, not the panel that features the gig — that one is `radius-map`. The travel card is Scheme 3 — `#CCFA61` (local `lime3`), ink `s.bg`, a 15% ink hairline
   (`#15180F26`) on the card, its chip and the stats rules. The **map panel** (`radius-map`) is

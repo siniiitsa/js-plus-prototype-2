@@ -17430,17 +17430,19 @@ function EventsMap({ s }) {
     }
 
     // The travel card. Its head is the section's own heading under the frame's
-    // label, with the coverage badge in the chip — which is where layout 1
-    // prints it too, at the head of the section rather than of a card. Its two
+    // label, with the featured gig's date and set time in the chip, where the
+    // frame's "● Confirmed" is a booking status nothing here knows. Its two
     // locations are the artist's base and the city the featured gig is in, so
     // the card is the route to whatever the panel beside it is showing.
     //
     // The stat row is the frame's own three cells. Travel time and Booking fee
     // are fields seeded with the frame's copy, so the artist types them rather
-    // than the page claiming them; Max travel is the coverage badge, which a
-    // separate field would only contradict. An emptied cell drops, and the row
-    // with all three. The featured gig's date and set time, which this row
-    // printed before, moved up into the chip.
+    // than the page claiming them; Max travel is `radius`, the coverage layouts
+    // 1, 3 and 4 print too, which a separate field would only contradict. It
+    // prints here once, in every template's body (JP-060: the Lime block's chip
+    // read it as well). An emptied cell drops, and the row with all three. The
+    // featured gig's date and set time, which this row printed before, moved
+    // up into the chip.
     const stats = [
       { l: 'Max travel', v: s.mapRadius },
       { l: 'Travel time', v: s.mapTravelTime },
@@ -17572,10 +17574,15 @@ function EventsMap({ s }) {
               <span style={bodySm}>Travel radius</span>
               <h2 style={display(titleSize, 1.1)}>{s.title}</h2>
             </div>
-            <span style={{
-              ...bodySm, flex: 'none', boxShadow: ring(hair), borderRadius: '999px',
-              padding: `${u(5)} ${u(12)}`, whiteSpace: 'nowrap',
-            }}>● {s.mapRadius}</span>
+            {/* The frame's "● Confirmed" again, and Retro's reading of it: when
+                the featured gig is. Until JP-060 the block drew `radius` here,
+                so the one field printed twice, the second time as Max travel. */}
+            {!!g?.when && (
+              <span style={{
+                ...bodySm, flex: 'none', boxShadow: ring(hair), borderRadius: '999px',
+                padding: `${u(5)} ${u(12)}`, whiteSpace: 'nowrap',
+              }}>● {g.when}</span>
+            )}
           </div>
 
           {/* Both names in Display/List, Retro's normalisation of the frame's
@@ -19372,7 +19379,7 @@ function EventsMap({ s }) {
             </div>
           </div>
           {/* The frame's data line, "UK · 8 pins · 120 mi radius", composed from
-              the artist's base, the gig count and the coverage badge, and its
+              the artist's base, the gig count and the coverage, and its
               "EXPAND VIEW →" link (QA, 2026-09-15). 390 stacks the two. */}
           <div style={s.mob
             ? col(u(10), {
