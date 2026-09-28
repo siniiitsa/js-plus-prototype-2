@@ -55,7 +55,7 @@ reported site was touched between the two, so it makes no difference which one t
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-060 | *Coverage badge* also prints as *Max travel* | **Confirmed, a fit slip**: Lime's layout-2 fit drew Retro's *pre*-QA chip over Retro's *post*-QA stat row, so `radius` fills both, on the seeded page too. Grunge and Editorial inherited it. Retro and Pop print it once | S | **yes** — A (the chip takes Retro's `g.when`), B (a seeded *Confirmed* field), C | **done** (A; `radius` is *Coverage*) |
-| 2 | JP-059 | Header and Bio print five texts no field reaches | **Confirmed, and shared**: literals in `HeaderV1`'s two halves (Retro, Lime, Grunge, Editorial) and in both bio layout-2 bodies (every template, Pop included). Lime's fit kept them on purpose | M | **yes** — fields or drop, the *since* sentence, `/Featured` | open |
+| 2 | JP-059 | Header and Bio print five texts no field reaches | **Confirmed, and shared**: literals in `HeaderV1`'s two halves (Retro, Lime, Grunge, Editorial) and in both bio layout-2 bodies (every template, Pop included). Lime's fit kept them on purpose | M | **yes** — fields or drop, the *since* sentence, `/Featured` | **done** (A, (a), A; Retro L5's claims named) |
 | 3 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:** JP-060 is one block plus a label and a hint, with a countable after-diff.
@@ -372,6 +372,50 @@ they are not this ticket). If it finds **claims at other designs**, the question
    shape, or name them for a later batch. Recommend naming them, unless they are few and the same
    shape.
 
+**Decided: A, (a), A, and name the rest** (user, 2026-09-28).
+1. **Four header fields**, each seeded with the frame's text and emptiable.
+2. **The *since* sentence is plain copy** inside `faceBody`, whose hint names the bio's
+   *Performing since* as a separate field.
+3. **A bio field for `/Featured`**, on every template.
+4. **Retro header layout 5's claims are named for a later batch**, not fixed here.
+
+Asked over the frames' own text, read before asking (`use_figma`, every text node of the 24
+masters). All twelve header masters (Retro `964:64637` / `984:34438` / `984:34636`, Lime
+`964:64580` / `986:11848` / `986:11867`, Grunge `964:64618` / `986:13753` / `986:13772`, Editorial
+`964:64599` / `986:15658` / `986:15677`) type the four strings **byte for byte as our literals**:
+`●` U+25CF, a straight apostrophe, `·` U+00B7, `textCase` ORIGINAL. All twelve bio masters type
+`/featured` with `textCase` UPPER. Our literal is `/Featured` under `labelStyle`, which always
+uppercases, so both render `/FEATURED`, and the seed keeps the literal. The bio masters also carry
+"Manchester · Performing since 2021" under the photograph. The fit already prints `vm.roleLine`
+there (the header's kicker and town), so that claim was re-seated before this ticket.
+
+**The census** (`live=1`, all 150 renders, every header and bio text field and the bio's
+identity keys set to markers, the artist's name `&name=` a marker too):
+- **Layout 2 finds the five and nothing else but control labels.** Header arch 1 (and arch 5
+  under Lime, Grunge and Editorial) prints the four header strings on Retro, Lime, Grunge and
+  Editorial. Bio arch 1 prints `/Featured` on all five templates. Besides those it prints:
+  - the Minimal nav's Music / Gigs / About (768 and 1440; JP-033's labels);
+  - the bio's `⏵⏵` glyph;
+  - under Pop, the initials placeholder `Z` (the marker name's initial, so derived, not a
+    literal). Pop's header arch 1 prints none of the five, which confirms Pop never draws
+    `HeaderV1`.
+- **Claims at another design: Retro's header layout 5 alone** (`HeaderV4`, arch 4; the other
+  templates fold arch 4 onto 0). It prints "4.9 ★" over "Experience" and "5 pcs" over
+  "Line-up" (1440 and 768), and a "Tell me your date" pill that is a `<span>` on both surfaces.
+  **Named, not fixed** (item 4): it is not this ticket's shape. The rating sits under an
+  *Experience* label and the pill is a dead control, so both want a call on an undesigned layout.
+- **Labels, not claims** (not this ticket):
+  - the nav links, and Pop's `FlatNav` Music / Shows / Book;
+  - bio layout 1's `[ 001 ] Structure · Bio_01`, `Bio` and `About`;
+  - bio layouts 3 and 4's `Bio`, `Performing since:`, `Current role:`, `Based in:`,
+    `[ About ]` and `Genres`;
+  - the glyphs `↗` and `●` (Retro header layout 6).
+- **One control label no field reaches: bio layout 4's `Listen`.** `ListenLink` prints `s.cta2`,
+  which for the bio is `cv('cta2', 'Listen')` on the bio's *own* content. `FIELDS.bio` has no
+  `cta2`, and the header's *Secondary button* does not reach it. So `FIELDS.header.cta2`'s comment
+  ("Bio layout 4's Listen reads this key too") is wrong. The comment is corrected here, and the
+  label is named for the later batch.
+
 **Fix (on A, (a), A).**
 - `data.js`: five constants beside `HERO_CTA`, **copied byte for byte from the literals** (the
   straight apostrophe in "you'll", the middle dot in the place line). Names such as `HERO_AVAIL`,
@@ -417,9 +461,105 @@ surfaces.
   marks JP-037's reversal.
 - The README, if its field list names the header's or the bio's fields.
 
-**Settled.** *(open)*
+**Settled.**
+- **Five fields, each seeded with the literal it replaces.** The constants sit beside `HERO_CTA`:
+  `HERO_AVAIL` ("Available for bookings"; the `● ` stays in the markup, rendered as one text node
+  with the value), `FACE_TITLE`, `FACE_BODY`, `PLACE_BODY` and `BIO_TAG` ("/Featured").
+  - **Header rows** (after `heroCta`): `availability` *Availability*, `faceTitle` *Face card
+    title*, `faceBody` *Face card text* and `placeBody` *Place card text*. The two bodies are
+    `area`s. Each has `in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] }` and a hint
+    that says where it prints and that it drops when empty.
+  - **`faceBody`'s hint names the bio's *Performing since*** as a separate field ("so change
+    both if you name a year here").
+  - **Bio row** (before `para1`): `tag` *Pill*, `in: [1]`.
+  - **The view-model keys are uncased:** `vm.heroAvail`, `vm.faceTitle`, `vm.faceBody`,
+    `vm.placeBody` and `vm.bioTag`. Every site keeps its own casing (the card title's
+    `textTransform` under Grunge and Editorial, and `labelStyle` for the bio pill, which always
+    uppercases). No key has a per-layout seed, so `EditPanel`'s fallback chain needed nothing:
+    `fieldDefault` reads `d`.
+- **The ten sites** (five per half) read the keys, and each drops when empty:
+  - Both halves' `cardText` now drop an empty title or body, and the whole text column when
+    both are empty. The card keeps its tile.
+  - Side effect, named: **an emptied *Location* no longer spends the place card's gap.** Before,
+    the title span was drawn empty.
+- **Both pills wrap.** Measured before reaching for the fix: a 120-character value in the
+  `nowrap` pills widened the page.
+  - The header pill: 1216 / 1180 and 734 / 390 under Retro, 1214 and 732 under Grunge and
+    Editorial, and at 768 as well under Lime (810).
+  - The bio pill: at 768 and 390 on every template (Pop 1047 / 768).
+  - Both took JP-036's `whiteSpace: 'normal'`, `maxWidth: '100%'` and
+    `boxSizing: 'border-box'`, as `heroCta` has.
+  - The seeded digest after the change is still zero.
+- **Harness first.** The HEAD worktree on :5174 (an APFS clone of `node_modules`, its `.vite`
+  removed) against the tree before the edit: 0 of 1,320. That is every category × themes 0–4
+  × three widths × canvas and `live=1`.
+- **Digest after: 0 of 1,320**, as named.
+- **Text compare** (whole text nodes, which the digest cuts at 40 characters): header arch 1
+  and 5 and bio arch 1, themes 0–4, three widths, both surfaces. **90 of 90 identical**, text
+  nodes and their split alike. The tree prints the five as "● Available for bookings" (24),
+  "The face of the act" (19), the face body (60) and the place body (56 characters; the triage's
+  57 miscounted it), and "/Featured" (9).
+- **Reach** (`reach.mjs`'s five new rows, themes 0–4, 6/6 renders each):
+  - the four header keys: layout 2 under Retro, and layouts 2 and 6 (6 folding onto 2) under
+    Lime, Grunge and Editorial. Nothing under Pop;
+  - `bio.tag`: layout 2 on all five templates.
 
-Reply: *(written once decided)*.
+  The `in` values stand as written.
+- **States** (594 renders; header themes 0–3 at arch 1, plus arch 5 under 1–3; bio themes 0–4;
+  three widths; both surfaces):
+  - Each of the five emptied alone, all four header fields emptied together, an emptied
+    Location with and without the place body, and each field at 120 characters.
+  - `scrollWidth` equals the width in every render, and no long value runs past its own box.
+  - Each emptied field drops exactly its own line. The shots show the emptied cards as a tile
+    alone, and the long pills wrapping inside their column and card.
+- **The census, re-run** at layout 2 with the new keys as markers: header arch 1 and 5, and
+  bio arch 1, on all five templates. It finds no bare text except these, all expected:
+  - the nav's Music / Gigs / About (and Pop's `FlatNav`);
+  - the bio's `⏵⏵` glyph;
+  - Pop's derived initial.
+
+  No bare `●`.
+- **The tester's steps**, in the real app, on card 2 of Grunge, then Retro, Lime and Editorial.
+  Every Header and Bio text field was typed over, the bio's *Performing since* set to `2019`, then
+  Publish and Open.
+  - The panel lists the five with their hints. None carries "Not shown in this layout" at
+    card 2.
+  - The canvas and the published tab at 1440 and 390 print no text but the markers, apart from:
+    - the nav labels;
+    - `⏵⏵`;
+    - "Title", the second word of the marker name "ZQh2 Title", split by the two-tone title.
+  - "2021" appears in neither section. `scrollWidth` equals the width, with no page errors.
+- **Named, not fixed** (item 4 and the census):
+  - Retro header layout 5's "4.9 ★ / Experience", "5 pcs / Line-up" and its dead "Tell me your
+    date" pill.
+  - Bio layout 4's `Listen`, which no field reaches.
+  - The seeded coverage contradiction (the header's "120 mi" against the map's "12 mile radius"
+    and "120 mi standard"): every one of those is now the artist's field.
+- **Docs.**
+  - CLAUDE.md's *role and town* paragraph: the five, uncased, dropping, the wrap, and "since"
+    not the bio's.
+  - `data.js`:
+    - the comment under `HERO_CTA`;
+    - the `FIELDS.header` head comment, naming Retro layout 5's exception;
+    - the new rows' comments;
+    - `cta2`'s comment, corrected: bio layout 4's Listen reads the bio's own `cta2`, not this.
+  - `sectionVm` and `EncoreSection` comments at each site.
+  - "Reversed by JP-059" at `../lime/layout-2.md`'s header Settled.
+  - The README lists neither the header's fields nor the bio's (grep), so it is unchanged.
+
+Reply: **fixed.** On layout 2 (*Feature spread*) the Header's *Available for bookings* pill, the
+face card's title and text, and the place card's text are now Header fields: **Availability**,
+**Face card title**, **Face card text** and **Place card text**. The Bio's */FEATURED* pill is a
+Bio field, **Pill**. Each starts with the design's own words, each can be changed, and each
+disappears when emptied.
+- This is on every template that draws this layout (Retro, Lime, Grunge and Editorial). The Bio's
+  pill is on Pop too.
+- The header's "Performing since 2021" is part of *Face card text*, the artist's own words. It is
+  not linked to the Bio's *Performing since*, and the field's help text says to change both.
+- Two things found while checking, left for a later batch:
+  - Retro's header layout 5 still prints two stats ("4.9 ★ Experience", "5 pcs Line-up") and a
+    "Tell me your date" pill that no field reaches.
+  - Bio layout 4's *Listen* label is not editable.
 
 ---
 

@@ -35,8 +35,15 @@ const PROBES = [
   { name: 'header.tags', cats: ['header'], param: 'cj', value: { tags: Z } },
   { name: 'header.showTags=hide', cats: ['header'], param: 'cj', value: { showTags: 'hide' } },
   { name: 'header.heroCta', cats: ['header'], param: 'cj', value: { heroCta: Z } },
+  // JP-059: the rest of layout 2's copy — the pill over the name, the two
+  // cards under the photograph, and the bio card's pill.
+  { name: 'header.availability', cats: ['header'], param: 'cj', value: { availability: Z } },
+  { name: 'header.faceTitle', cats: ['header'], param: 'cj', value: { faceTitle: Z } },
+  { name: 'header.faceBody', cats: ['header'], param: 'cj', value: { faceBody: Z } },
+  { name: 'header.placeBody', cats: ['header'], param: 'cj', value: { placeBody: Z } },
   { name: 'bio.credit', cats: ['bio'], param: 'cj', value: { credit: Z } },
   { name: 'bio.cta', cats: ['bio'], param: 'cj', value: { cta: Z } },
+  { name: 'bio.tag', cats: ['bio'], param: 'cj', value: { tag: Z } },
   { name: 'map.status', cats: ['map'], param: 'cj', value: { status: Z } },
   { name: 'map.updated', cats: ['map'], param: 'cj', value: { updated: Z } },
   { name: 'map.rings', cats: ['map'], param: 'cj', value: { rings: Z } },

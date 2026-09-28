@@ -519,7 +519,10 @@ Settled in section 1 (the header):
   centred on the cards), and the 390 section is 945 against 890 plus our `padY`. The hero pill is 205
   against 201.7, and the 390 nav pill 82 against 91 (Bebas against the master's Anton). The card copy
   ("The face of the act", "Same person you'll meet…", "Available across the UK…") stays Retro's
-  literals, as in the frame.
+  literals, as in the frame. *(Reversed by JP-059, user call 2026-09-28 —
+  `../grunge/layout-2-qa-fixes.md`: the card copy and the "● Available for bookings" pill are
+  header fields, `faceTitle` / `faceBody` / `placeBody` and `availability`, seeded with the frame's
+  text and emptiable. The bio's "/Featured" is a bio field, `tag`, the same way.)*
 - **Measured against the masters' content edges**: desktop capsule top 32.4 (39.47 × 0.82) and 29.6
   tall, spread at 128 (156 × 0.82), photo 503 × 564.2, chip 25.2, h1 107px at 167.9, nav pill 95.2 ×
   28.6 flush right with Listen 9.9 before it, cards' tiles 87.7 and 72.2 × 73 at 21.3 / 23 in, the

@@ -674,6 +674,18 @@ export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live'
 export const HERO_CTA = 'Enquire about a date'
 export const BIO_CREDIT = 'five years of rooms read & floors moved'
 export const BIO_CTA = 'Book Now'
+// JP-059 — the rest of layout 2's copy, which Lime's fit had kept as literals:
+// the pill over the name, the two cards' copy under the header's photograph,
+// and the bio card's pill. Byte for byte what every template's twelve header
+// masters type (the straight apostrophe, the middle dot); the bio's masters
+// type "/featured" cased UPPER, which the pill cases anyway. The "●" before
+// the availability is the markup's, not the field's. "Performing since 2021"
+// is the artist's copy, not the bio's `since` (KICKER_3's precedent).
+export const HERO_AVAIL = 'Available for bookings'
+export const FACE_TITLE = 'The face of the act'
+export const FACE_BODY = "Same person you'll meet on the night. Performing since 2021."
+export const PLACE_BODY = 'Available across the UK · 120 mi standard travel radius.'
+export const BIO_TAG = '/Featured'
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -1210,6 +1222,9 @@ export const FIELDS = {
   // Every element appearing in any header layout is exposed. A layout that
   // does not consume a key simply ignores it, so swapping layouts never
   // silently discards copy the user typed — and the panel says so, off `in`.
+  // The exception, named and left for a later batch (JP-059's census): Retro's
+  // undesigned layout 5 prints "4.9 ★ / Experience", "5 pcs / Line-up" and a
+  // "Tell me your date" pill that no field reaches.
   //
   // The header's `in` is always an object naming Retro, Lime, Grunge and
   // Editorial alone: they have different header families (six designs against
@@ -1249,7 +1264,28 @@ export const FIELDS = {
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
       hint: 'The button under the subtitle. Left empty, it is not drawn.' },
-    // Bio layout 4's Listen reads this key too; `in` speaks for the header.
+    // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
+    // them literals): the pill over the name and the two cards under the
+    // photograph, the place card titled by Location. Each is seeded with the
+    // frame's text and drops when emptied; a card keeps its tile. The face
+    // card's "Performing since 2021" is the artist's copy — the bio's own
+    // Performing since is another field, which the hint says.
+    { k: 'availability', l: 'Availability',  d: HERO_AVAIL,
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      hint: 'The small pill over your name. Left empty, it is not drawn.' },
+    { k: 'faceTitle', l: 'Face card title',  d: FACE_TITLE,
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
+    { k: 'faceBody',  l: 'Face card text',   type: 'area', d: FACE_BODY,
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      hint: 'The line under the face card’s title. The bio’s Performing since is a separate field, '
+          + 'so change both if you name a year here. Left empty, it is not drawn.' },
+    { k: 'placeBody', l: 'Place card text',  type: 'area', d: PLACE_BODY,
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      hint: 'The line under your Location on the card beside the pin. Left empty, it is not drawn.' },
+    // Named `cta2` on the bio's own content too, which no bio field edits:
+    // bio layout 4's Listen prints that, not this (JP-059's census). `in`
+    // speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
       in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2] } },
     // The chips are the header's the way Kicker and Location are (JP-037,
@@ -1280,6 +1316,10 @@ export const FIELDS = {
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
+    // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
+    // copy and cased as a label; emptied, it is not drawn.
+    { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1],
+      hint: 'The small pill over the first paragraph. Left empty, it is not drawn.' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3] },
     // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
