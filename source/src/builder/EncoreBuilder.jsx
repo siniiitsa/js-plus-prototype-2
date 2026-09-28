@@ -4427,10 +4427,12 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       // The publish success dialog. The tab it opens is held in a ref, not
       // in state: nothing renders from it.
       published: false,
-      // The last deleted section of each category, as `{ arch, c }`, so adding
-      // that category again brings its content back (uploads included, as the
-      // data URIs they are). Keys are only ever categories *not* on the page:
-      // re-adding, Undo and Start fresh all consume the entry.
+      // The last deleted section of each category, as `{ arch, c, at, before }`,
+      // so adding that category again brings its content back (uploads
+      // included, as the data URIs they are) to the seat it left: `before` is
+      // the category it stood before, `at` its index. Keys are only ever
+      // categories *not* on the page: re-adding, Undo and Start fresh all
+      // consume the entry.
       removed: {},
     }
     return ti >= 0
@@ -4598,6 +4600,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // clamped so the footer stays last (canMove's invariant), and leaves the
   // selection alone — it restores the page, it does not open an editor.
   //
+  // The entry keeps the section's seat for the composer (JP-073): `before`
+  // is the category it stood before — there is always one, the footer being
+  // last — and `at` its index, for when that one has gone too. A category and
+  // not an id, because re-adding the follower mints it a new id.
+  //
   // The section and its index are read off the rendered page, not captured
   // from inside the updater: React may run an updater lazily, after this
   // handler has returned, so a flag set in there is not there to read yet.
@@ -4605,9 +4612,10 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const i = st.sections.findIndex((x) => x.id === id)
     const sec = st.sections[i]
     if (!sec || sec.cat === 'header' || sec.cat === 'footer') return
+    const before = st.sections[i + 1].cat
     patch((s) => ({
       sections: s.sections.filter((x) => x.id !== id),
-      removed: { ...s.removed, [sec.cat]: { arch: sec.arch, c: sec.c } },
+      removed: { ...s.removed, [sec.cat]: { arch: sec.arch, c: sec.c, at: i, before } },
       menuFor: null,
       ...(s.selectedId === id ? { selectedId: null, editSheet: false } : {}),
     }))
@@ -4627,6 +4635,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // A category deleted earlier comes back with its content unless the
   // composer's Start fresh is on; either way its `removed` entry is spent.
   // The layout is the composer's pick, which opens on the remembered one.
+  //
+  // It also comes back to its seat, Start fresh or not (JP-073): before the
+  // category it stood before if that is on the page, else at its old index,
+  // clamped so the footer stays last. §9.1's "immediately before the footer"
+  // is left to a category with no entry.
   const addSection = useCallback((cat, arch, fresh) => {
     if (st.sections.some((x) => x.cat === cat)) return
     patch((s) => {
@@ -4634,7 +4647,12 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       const { [cat]: kept, ...removed } = s.removed
       const sec = { id: ++uidRef.current, cat, arch, c: kept && !fresh ? kept.c : {} }
       const next = s.sections.slice()
-      next.splice(next.length - 1, 0, sec)   // immediately before the footer
+      let at = next.length - 1   // immediately before the footer
+      if (kept) {
+        const j = next.findIndex((x) => x.cat === kept.before)
+        at = j >= 0 ? j : Math.min(kept.at, at)
+      }
+      next.splice(at, 0, sec)
       return { sections: next, add: null, removed }
     })
     toast(`${catName(cat)} added`)

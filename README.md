@@ -564,7 +564,11 @@ These are intentional limits, not oversights — see §12 for the full list. The
   opens no editor. The next toast replaces it as any toast does. Separately, `st.removed` keeps
   each category's last deleted `{ arch, c }`, uploads included, so adding that category again
   brings its content back and the add composer opens on its old layout; a *Start fresh* tick
-  in the composer opts out. It lives only as long as the session, like everything else.
+  in the composer opts out. The entry keeps the section's seat as well (`at`, and `before`, the
+  category it stood before), so the re-add goes back where it was — before that category if it
+  is still on the page, else at the old index — *Start fresh* or not; only a category with no
+  entry lands immediately before the footer, as §9.1 says. It lives only as long as the
+  session, like everything else.
 - **Retro, Lime, Grunge and Editorial are designed; Pop is not.** Retro ships six
   photographic header layouts. Pop is fully selectable and functional but
   renders flat-colour sections and a three-layout flat header family — whose nav is still the

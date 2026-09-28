@@ -122,9 +122,15 @@ mutated through a single `patch()` helper.
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
   the desktop composition squeezed beside the sidebar breaks; at most 820 the phone chrome
   forces mobile, as before. Read `device`, never `st.device`, for anything drawn.
-- **`st.removed` is `{ [cat]: { arch, c } }`, the last deleted section of each category**, so
-  re-adding a category restores its content (data-URI uploads and all) and the add composer
-  opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts out. Its keys
+- **`st.removed` is `{ [cat]: { arch, c, at, before } }`, the last deleted section of each
+  category**, so re-adding a category restores its content (data-URI uploads and all) and the
+  add composer opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts
+  out. **It keeps the seat too** (JP-073, user call, 2026-09-28): `before` is the *category* the
+  section stood before — always one, the footer being last — and `at` its index, so `addSection`
+  reinserts before `before` while that is on the page, else at `min(at, sections.length - 1)`,
+  *Start fresh* or not; SPEC §9.1's "immediately before the footer" is left to a category with
+  no entry, which the UI never reaches (a template pick builds every category and `del` always
+  writes one). A category rather than an id, because re-adding the follower mints a new id. Its keys
   are only ever categories **not** on the page — `addSection`, Undo and Start fresh all consume
   the entry, and picking a template resets it. `del` is still one click from all three call
   sites (the list row's menu, `EditPanel`'s Delete, the canvas toolbar's trash) and toasts an

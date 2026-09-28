@@ -130,7 +130,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix) |
-| 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | open |
+| 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | **done** (A, keyed by the follower's category; real app, 7 runs) |
 | 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | open |
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | open |
 | 5 | JP-062 | The *Inset Hero* card's name spills | **Confirmed, `s.limeTree`**: the card's column is `nowrap`; Editorial's seeded name already runs into the padding | S–M | **yes** — A (wrap, fit the widest word), B, C | open |
@@ -360,11 +360,81 @@ restores in place.
 
 **Docs.** CLAUDE.md's `st.removed` bullet ("`{ [cat]: { arch, c } }`"). The comment at `:4637`.
 
-**Decided.** —
+**Decided: A, the follower variant** (user, 2026-09-28). The entry becomes
+`{ arch, c, at, before }`: `before` is the **category** of the section that followed the deleted
+one, `at` its index. `addSection` reinserts before `before` if that category is on the page, else
+at `min(at, len - 1)`; a category with no entry keeps §9.1's "immediately before the footer".
+*Start fresh* discards the content, not the seat. Undo keeps its closure index, unchanged.
+- **Keyed by category, not id**, because categories are unique per page (`addSection` refuses a
+  present one) and an id does not survive the follower's own re-add: `addSection` mints a new one
+  (`++uidRef.current`), so an id-keyed seat would fall to the index in exactly the multi-delete
+  case the variant exists for.
+- **There is always a follower**, the footer being last and undeletable, so deleting the section
+  just before the footer stores `before: 'footer'`: that run is the follower-is-footer case, not
+  the clamp. The index fallback fires only when the follower has since been deleted too, so the
+  Verify list gains that run.
+- Asked over the evidence, re-checked on HEAD (`3a887c0`): `del` at `:4604`–`4626` (the entry at
+  `:4610`, Undo's splice at `:4620`), `addSection` at `:4630`–`4641` (the splice and its comment at
+  `:4637`), *Start fresh* at `:3863`–`3878`, `pageOrder` at `data.js:1147` over `:1139`–`1145`.
+  `{ arch, c }` is also spelled in README.md (`:565`) and the state's own comment (`:4430`), so
+  both take the seat too.
 
-**Settled.** —
+**Expected positions** (Grunge card 3 opens on `pageOrder(2)`: header, bio, media, repertoire,
+calendar, gallery, pricing, map, form, testimonials, footer). Read off the sidebar's list, not the
+canvas, whose desktop layout-3 row stands the calendar in a right column.
+1. Delete Gallery (`before: 'pricing'`, `at: 5`), re-add, *Start fresh* off: back between the
+   calendar and Pricing, with its content. The same with *Start fresh* on, content `{}`.
+2. Delete Gallery, move Pricing above the calendar, re-add: **before Pricing**, so between the
+   repertoire and Pricing. That is the variant's contract; the tester's "after the Booking
+   Calendar" is the unmoved page's reading of the same seat.
+3. Delete Testimonials (`before: 'footer'`), re-add: before the footer, where it was.
+4. The fallback: delete Gallery (`before: 'pricing'`), then Pricing (`before: 'map'`). Re-add
+   Gallery: Pricing is gone, so `min(5, len - 1)` = 5, before the map. Re-add Pricing: before the
+   map, so after Gallery. The page is back as it was.
+5. A category never on the page: before the footer. **Not reachable from the UI**: picking a
+   template builds the whole `EXAMPLE_PAGE` and clears `removed`, and `del` always writes an
+   entry, so every category missing from the page has one. Exercised by clearing `st.removed`
+   through the builder's own state dispatcher.
+6. Undo after a delete: back at its old index.
+7. Grunge card 2 (`pageOrder(1)`: … repertoire, gallery, pricing, calendar …): delete Gallery,
+   re-add: between the repertoire and Pricing.
 
-Reply: —
+**Settled** (2026-09-28).
+- **The fix**: `del` (`EncoreBuilder.jsx:4611`) reads `before = st.sections[i + 1].cat` off the
+  rendered page beside `i` and writes `{ arch, c, at: i, before }`; `addSection` (`:4643`) starts
+  from `next.length - 1` and, when an entry exists, takes the index of `before` or else
+  `min(at, len - 1)`. Six lines of code; Undo, *Start fresh*, the composer's `arch` and the
+  template pick are untouched. No `EncoreSection` or `data.js` line moved, so the after-diff is
+  zero by construction, and no digest was run.
+- **Verified in the real app** with a one-off puppeteer script (trusted clicks through the row's
+  ⋯ menu, the composer's Radix `Select`, *Start fresh* and the arrows; deleted after). Each run
+  read the order twice, off the sidebar's rows and off the builder's `st.sections` through the
+  fiber tree, and the two agreed every time. All seven expected positions above held:
+  1. Gallery back between the calendar and Pricing, its typed heading restored; with *Start
+     fresh* the same seat and `c: {}`. The entry read `{ arch: 2, c: { heading }, at: 5, before:
+     'pricing' }`.
+  2. After Pricing moved above the calendar: `… repertoire, gallery, pricing, calendar …`.
+  3. Testimonials' entry read `at: 9, before: 'footer'`; back before the footer.
+  4. Gallery then Pricing deleted: Gallery back at index 5, before the map (the fallback), then
+     Pricing before the map, and the page is `pageOrder(2)` again.
+  5. With `st.removed` cleared through the state's own dispatcher, Gallery lands between
+     Testimonials and the footer: §9.1's line, and the control showing the script can see the
+     old placement.
+  6. Undo puts Gallery back at index 5.
+  7. Grunge card 2: back between the repertoire and Pricing.
+
+  No console errors on any page.
+- **Docs**: CLAUDE.md's `st.removed` bullet, README's *Delete is one click* paragraph, the state's
+  own comment (`:4430`), and the comments over `del` and `addSection`.
+
+Reply: **JP-073 — fixed.** A section added back through *+ Add section* now returns to where it
+was deleted from: before the section that followed it, or, if that one has been deleted as
+well, at its old position. That holds with *Start fresh* ticked too, which now clears only the
+content. So on *Inset Hero*, Gallery comes back after the Booking Calendar, and on *Feature
+spread* after the Repertoire. If you reorder the page in between, Gallery comes back in front
+of the section that followed it: move Pricing above the calendar and Gallery returns just above
+Pricing. A section that was never on the page still goes in just before the Footer. Undo is
+unchanged.
 
 ---
 
