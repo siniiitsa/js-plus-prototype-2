@@ -131,7 +131,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 |---|---|---|---|---|---|---|
 | 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix) |
 | 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | **done** (A, keyed by the follower's category; real app, 7 runs) |
-| 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | open |
+| 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | **done** (A; the canvas sticks 28px down, and so do the layout-4 rail and the form's layout-2 card) |
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | open |
 | 5 | JP-062 | The *Inset Hero* card's name spills | **Confirmed, `s.limeTree`**: the card's column is `nowrap`; Editorial's seeded name already runs into the padding | S–M | **yes** — A (wrap, fit the widest word), B, C | open |
 | 6 | JP-074 | A price range is all display size | **Confirmed, shared**: `priceParts()` has two parts; every layout-3 frame draws three (`£ \| 450 \| — £1,400`) | S–M | no (a named oddity) | open |
@@ -477,11 +477,112 @@ published. Tablet and Mobile do not compose, so nothing changes there.
 **Docs.** CLAUDE.md's composed-page paragraph ("On the canvas it is inert…"), the comment at
 `:4315`, and a *reopened* pointer on JP-043's Settled in `../lime/retest-qa-fixes.md`.
 
-**Decided.** —
+**Decided: A, `overflow: 'clip'` on the canvas card** (user, 2026-09-28). This reopens JP-043's
+canvas clause: the canvas sticks as the published page does.
+- Asked over the evidence, re-checked on HEAD (`c6915ef`). `arrangeRows` at `:4342`–`4354`, the
+  sticky cell at `:4351`, and its comment at `:4315`–`4318` are as triaged. The canvas chain moved
+  +18 with JP-073: the scroller (`overflowY: 'auto'`, padding 28) is at `:5109`–`5113` and the card
+  (`borderRadius: '10px'`, `overflow: 'hidden'`) at `:5114`–`5117`. Between the card and the cell
+  there is only `arrangeRows`' grid row div (grid, `alignItems: start`, background, padding,
+  columns, gap, a `background-color` transition), which sets no overflow, transform or zoom. The
+  card's other keys are `maxWidth`, `boxShadow` and a `max-width` transition. The canvas's
+  `arrangeRows` call (`:5118`) is the only one inside the card; `PublishedPage`'s (`:4295`) is not.
+- The card is a flex item of the scroller, so it establishes its own formatting context whatever
+  its `overflow` is. Losing `hidden`'s BFC therefore changes no margin collapsing.
 
-**Settled.** —
+**Expected cell positions** (the real app at 1440×900, Desktop; the canvas composes the calendar
+beside the bio and media at card 3). Let `R` be the row's top and `H` its height, the cell's
+height `h`, and the scroller's top `S`, all as client rects.
+1. Before the row reaches the scroller's top (`R ≥ S`), the cell rides its row: `cell.top = R`.
+2. With the row scrolled `f·(H − h)` past `S`, for f = ¼, ½ and ¾: **`cell.top = S`** (±0.5).
+   Before the fix it is `R`, which is `S − f·(H − h)`: the control, taken first, shows that the
+   script can see the failure.
+3. At f ≥ 1 it is released: `cell.bottom = R + H`, so it overlaps nothing below.
+4. That holds only while the scroller is taller than the cell (`S`'s height > `h`). Read both
+   first. A shorter scroller pins the cell with its foot below the fold, as published, and that
+   is not a failed stick.
+5. The card's four corners stay round (computed `overflow: clip`, radius 10, and a picture of a
+   corner). Selecting the bio and the calendar mid-scroll, with the row's hover toolbar and
+   selection ring, rides with the cell.
+6. Tablet and Mobile do not compose: no row grid, nothing sticky.
 
-Reply: —
+**Found after the decision: the cell is not the only sticky box the card was holding inert.**
+Two section designs carry their own `position: sticky; top: 0`, and they stick on the canvas from
+now on too. That follows from A, not from a new decision: gating them inert would recreate the
+canvas/published split the user chose to remove.
+- Repertoire layout 4's A–Z rail at desktop: `EncoreSection.jsx:12282` (`s.limeTree`) and `:12404`
+  (Retro, Pop), the desktop frame's own sticky. Its comment at `:12401` ("Nothing moves on the
+  canvas either way") was stale and is rewritten.
+- The form's layout-2 card at desktop **and 768**: `:23294` (`s.limeTree`) and `:23676` (Retro,
+  Pop), made real by its column's `alignSelf: stretch`. So point 6 above is wrong for the form
+  card at Tablet: Tablet composes nothing, but that card now sticks on the Tablet canvas.
+
+**Settled** (2026-09-28).
+- **The fix**: the canvas card (`EncoreBuilder.jsx:5123`) is `overflow: 'clip'`, with a comment
+  over it naming the four sticky boxes it lets through. The `arrangeRows` comment (`:4310`–`4322`)
+  now says the cell sticks on both surfaces. One property changed; every other line in the two
+  source files is a comment (`EncoreSection.jsx:12401`–`12402` included), so the harness's
+  after-diff is zero by construction. `preview.jsx` renders sections without the card, so no
+  digest was run.
+- **The control** (Grunge card 3, unchanged tree, 1440×900, one-off puppeteer, deleted): the cell
+  computes `sticky` and never leaves its row. `cell.top − R` is 0 at every step, so at f = ½ it is
+  665px above the scroller. The scroller is 844 tall and the cell 650, so a stick was possible.
+- **After**, Grunge, Lime and Editorial card 3. Canvas composed at Desktop (`st.device` desktop, the
+  Desktop tab active, the calendar alone in the cell, bio and media in the left column); the card
+  computes `overflow: clip`, radius 10px; the row has no overflow, transform or zoom.
+  | | Grunge | Lime | Editorial |
+  |---|---|---|---|
+  | scroller / cell / row | 844 / 650.4 / 1979.7 | 844 / 651.8 / 1997.6 | 844 / 633.9 / 2100.4 |
+  | before the row (`R = S + 120`) | `cell = R` | `cell = R` | `cell = R` |
+  | f = 0, ¼, ½, ¾: `cell.top − S` | 28, 28, 28, 28 | 28, 28, 28, 28 | 28, 28, 28, 28 |
+  | f = 1, 1.1: `cell.bottom − row.bottom` | 0, 0 | 0, 0 | 0, 0 |
+- **One miss against the expectation**, recorded here rather than by rewriting point 2: the cell
+  pins at **`S + 28`**, not at `S`. 28 is the scroller's `padding-top`. Chrome stops a sticky box
+  at its scroll container's padding edge, so on the canvas the cell sits where the card's top rests
+  at scroll 0, level with the canvas's own margin. The published tab's scroller is the window,
+  with no padding, and pins at 0, as JP-043 measured. Because of those 28px it also starts
+  releasing 28px before f = 1: `cell.top − S` reads 0.3 / −0.2 / −0.5 there, and the bottom is
+  flush with the row.
+- **Selection mid-scroll**, at f = ¼ on all three templates. `elementFromPoint` at the cell hits the
+  calendar. Hovering it draws the ring and the four-button toolbar (Edit, up, down, delete) exactly
+  over the cell, at `S + 28`; clicking selects it (`st.selectedId` → the calendar, and the panel
+  opens on *Booking Calendar layout 3*). Scrolled on to ¾, the ring is still at `S + 28`. The bio,
+  hovered and clicked beside it, is selected too, with its ring on its own box. No console errors.
+- **Corners**: 60px crops of the top-left and top-right corners at scroll 0 and the bottom-left at
+  the end. All three are round on every template, and pixel-identical to the control's at the
+  top. The bottom crop differs by 17 pixels, which is the seal spinning beside the corner, not the
+  corner. Editorial's top crop shows the clip at work: the header's blue overlay label is cut to
+  the 10px radius.
+- **Tablet and Mobile** at card 3: `st.device` tablet / mobile, no sticky box on the page (the
+  form is layout 3 there, whose sticky is dropped).
+- **The two section stickies** (second one-off, deleted; Grunge and Retro card 3, `arch` set
+  through the builder's state: repertoire 3, form 1). Each box's `top − S` over its parent's travel:
+  | | Grunge | Retro |
+  |---|---|---|
+  | rail, desktop (travel) | 704 | 631 |
+  | f = ¼, ½, ¾ | 28, 28, 28 | 28, 28, 28 |
+  | form card, desktop (travel) | 211 | 207 |
+  | f = ¼, ½, ¾ | 28, 28, 28 | 28, 28, 28 |
+  | form card, 768 (travel) | 320 | 343 |
+  | f = ¼, ½, ¾ | 28, 28, 28 | 28, 28, 28 |
+
+  At f = 1.2 each box's bottom is flush with its parent's content bottom (0 on all six), so each
+  is released. Nothing smears: the rail stands in its own column beside the list, and the card is
+  opaque (`#1A1A1A`, Retro's mustard).
+- **Seen, not touched**: the comment at `EncoreSection.jsx:12110` says the layout-4 rail's
+  `sticky` is "declined", but `:12282` and `:12404` carry it (the later decision, `:12392`). It
+  predates this entry and says nothing about the canvas.
+- **Docs**: CLAUDE.md's composed-page paragraph (which now names all four sticky boxes and the
+  28px), the `arrangeRows` comment, the card's own comment and the rail's, and a *reopened*
+  pointer on JP-043's **Decided** and **Settled** in `../lime/retest-qa-fixes.md`. README says
+  nothing about the composed row's stickiness.
+
+Reply: **JP-072 — fixed.** On the editor's canvas at Desktop, the Booking Calendar beside the Bio
+and Top Tracks now stays in view while that column scrolls, and moves on with the page once the
+column ends, as it does on the published page. On the canvas it stops just under the top of the
+grey canvas area, where the page's top edge rests, not at the very top. The same change means two
+other elements that stick on the published page now stick on the canvas too: Repertoire layout 4's
+A–Z letters at Desktop, and Enquiry Form layout 2's price card at Desktop and Tablet.
 
 ---
 

@@ -4307,16 +4307,19 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
 // frame's 858 : 405, 55 apart × 0.82, on the page ground, inside the page's own
 // gutter. Its sections were built with `column`, so they bring their vertical
 // padding and no horizontal one, and a right column shorter than the left
-// leaves the ground showing under it, as the frame does. In the published tab
-// that cell rides the row instead (JP-043, user call, 2026-09-24): it is
-// sticky at the window's top — the cell div, not the calendar's root, and
+// leaves the ground showing under it, as the frame does. That cell rides the
+// row instead (JP-043, user call, 2026-09-24): it is sticky at the top of
+// whatever scrolls the page — the cell div, not the calendar's root, and
 // `alignSelf: start` so it is only as tall as its section — and the grid
 // area, one row, is what releases it at the row's end. Neither Frame 300
-// declares a sticky; the ground under the cell is still the frame's. On the
-// canvas it is inert, and on purpose: the card's `overflow: hidden` makes the
-// card the cell's scroll container, and the card never scrolls — take that
-// overflow away and the canvas would stick too. Shared by the editor canvas
-// and the published tab, which is what keeps the two one page.
+// declares a sticky; the ground under the cell is still the frame's. In the
+// published tab that is the window, and on the canvas the canvas's scroller
+// (JP-072, user call, 2026-09-28), whose 28px padding is where the cell
+// stops, a sticky box keeping inside its scroller's padding. The card round
+// the page clips with `overflow: clip`, since `hidden` would make the card,
+// which never scrolls, the cell's scroll container and leave it inert. Shared
+// by the editor canvas and the published tab, which is what keeps the two one
+// page.
 // Which column each composed section stands in, by page index — 'left' or
 // 'right' — so `sectionVm({ column })` can say how wide it is.
 function columnSides(rows) {
@@ -5113,7 +5116,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
           }}>
             <div style={{
               maxWidth: Z.canvasW, width: '100%', boxShadow: '0 8px 40px rgba(30,26,18,.16)',
-              borderRadius: '10px', overflow: 'hidden', transition: 'max-width .35s ease',
+              // `clip`, not `hidden`: it rounds the corners without making the card a
+              // scroll container, so every sticky box on the page (the composed
+              // row's cell in `arrangeRows`, repertoire layout 4's rail, the form's
+              // layout-2 card) sticks to this scroller, as it does published (JP-072).
+              borderRadius: '10px', overflow: 'clip', transition: 'max-width .35s ease',
             }}>
               {arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => {
                 const vm = vms[i]

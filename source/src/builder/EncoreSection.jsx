@@ -12398,8 +12398,8 @@ function Repertoire({ s }) {
         // media player's destroys-its-own-content rule, and what it costs is
         // named rather than fixed — at those two widths the rail leaves the
         // viewport on the first jump and the visitor scrolls back for a second.
-        // Nothing moves on the canvas either way: at scroll 0 a sticky box is
-        // exactly where a static one is.
+        // The canvas sticks as the published tab does: its card clips with
+        // `overflow: clip`, so the canvas's scroller is the rail's (JP-072).
         ...(desk
           ? { flex: 'none', width: u(232), paddingTop: u(50), position: 'sticky', top: 0 }
           : { width: '100%' }),

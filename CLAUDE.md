@@ -90,11 +90,16 @@ mutated through a single `patch()` helper.
   sections in it are built with `sectionVm({ column: true })`, which drops their horizontal
   padding. **The right cell is sticky** (JP-043, user call, 2026-09-24; no Frame 300 declares
   it): `position: sticky; top: 0; alignSelf: start` on the cell div, not the calendar's root,
-  so in the published tab the calendar stays in view while the left column scrolls and the
-  one-row grid area releases it at the row's end. On the canvas it is inert, since the card's
-  `overflow: hidden` makes the card, which never scrolls, the cell's scroll container — a
-  named, accepted diff; and a window shorter than the cell (~680 at 1440) pins it with its
-  foot below the fold until the row ends. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
+  so the calendar stays in view while the left column scrolls and the one-row grid area
+  releases it at the row's end. **The canvas sticks too** (JP-072, user call, 2026-09-28,
+  reopening JP-043's "inert on the canvas"): the card round the page clips with
+  `overflow: clip`, not `hidden`, which would make the card, which never scrolls, every sticky
+  box's scroll container. So the canvas's scroller is what they stick to, 28px down, since a
+  sticky box stops at its scroller's padding edge, where the published tab's pins at 0. That
+  holds for every sticky box the page carries, not the cell alone: repertoire layout 4's A–Z
+  rail at desktop and the form's layout-2 card at desktop and 768 stick on the canvas as well.
+  Do not put `hidden` back on the card. A window shorter than the cell (~680 at 1440) pins it
+  with its foot below the fold until the row ends. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
   media, repertoire, calendar — and at desktop `pageRows` looks past that one layout-3
   repertoire, composing the columns and standing the repertoire after them; moving a section
   out of the run undoes it.
