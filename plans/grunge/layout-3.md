@@ -1156,7 +1156,8 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   `vm.pad` arm carries the foot alone); the seeded intro is one line (`DEFS.pricingIntro`)
   where the frame's wraps, and the seeded heading is the artist's copy, not "Pricing"; the
   pill reads *Book Now* (`cta1`) where the frame types *Book*; the unit is `/event`
-  (`tierUnit`) where the frame types "— £1,400"; the capsule carries the extra leading `All`
+  (`tierUnit`) where the frame types "— £1,400" (a range typed into the price now sets its
+  second half small in that seat, `t.tail`, before the unit: JP-074, 2026-09-28); the capsule carries the extra leading `All`
   chip, layout 1's intended diff; "Save 15% on bundles" stays dropped (**reversed** by JP-046, 2026-09-24: it is
   `FIELDS.pricing.offer`, the frame's copy beside the capsule at every width, white `sem/text/2`,
   one widened block with Lime's); the 768 featured row

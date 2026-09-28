@@ -134,7 +134,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | **done** (A; the canvas sticks 28px down, and so do the layout-4 rail and the form's layout-2 card) |
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | **done** (A, Retro kept; `cardLine` seeded `CARD_LINE_3`; after-diff zero) |
 | 5 | JP-062 | The *Inset Hero* card's name spills | **Confirmed, `s.limeTree`**: the card's column is `nowrap`; Editorial's seeded name already runs into the padding | S–M | **yes** — A (wrap, fit the widest word), B, C | **done** (A, at the content box plus half the padding, re-asked mid-session; `overflowWrap` on the line; after-diff zero) |
-| 6 | JP-074 | A price range is all display size | **Confirmed, shared**: `priceParts()` has two parts; every layout-3 frame draws three (`£ \| 450 \| — £1,400`) | S–M | no (a named oddity) | open |
+| 6 | JP-074 | A price range is all display size | **Confirmed, shared**: `priceParts()` has two parts; every layout-3 frame draws three (`£ \| 450 \| — £1,400`) | S–M | no (a named oddity) | **done** (a `tail`; layout 3's narrow numeral fills from `auto`; JP-058's 768 overflow closed; after-diff zero) |
 | 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | open |
 | 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no | open |
 | 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | open |
@@ -1082,9 +1082,130 @@ small `k`. `FIELDS.pricing.tiers`' hint (`data.js:1391`) says a range sets its s
 **Docs.** The `priceParts()` comment, CLAUDE.md if it names the split (grep), and a pointer in
 JP-058's Settled.
 
-**Settled.** —
+**Three calls inside the fix** (no user decision; each is named here and in the reply):
+- **A separator ending the run goes to the tail.** The amount is trimmed of it, and the tail
+  starts after the trimmed amount, so `£450.` prints a small `.`. Nothing the artist typed is
+  dropped.
+- **At 768 and 390 the tail stands at the right with the unit, not against the numeral.** Every
+  narrow master fills the numeral, which pushes whatever follows it to the column's edge. That
+  is where the frames stand their own third node, "— £1,400". At 1440 the row hugs, so the tail
+  sits beside the numeral, as the tester expected.
+- **The tail may wrap at all six seats.** It takes each lead's face, size and colour, but not
+  its `nowrap` or `flex: none`. A price is free text, so a long tail breaks between words
+  instead of passing the card.
 
-Reply: —
+**Settled** (2026-09-28).
+- **Re-checked on HEAD** (`c937508`). Every line holds as the hand-off named it:
+  - `data.js`: `priceParts()` at `:1940`–`1944`, its comment at `:1932`–`1939`; `TIERS` at
+    `:700`–`713` (£450 / £650 / £1,200); the tiers hint at `:1405`–`1411`;
+  - `EncoreBuilder.jsx`: the spread at `:921`, `vm.tierUnit` at `:839`;
+  - `EncoreSection.jsx`: layout 1's block `:8444`–`8453` and body `:8632`–`8646`; layout 2's
+    block `:8860`–`8861` (unit `:8947`) and body `:9129`–`9130` (unit `:9193`); layout 3's block
+    `:9542`–`9560` and body `:9782`–`9797`; the layout-3 comment `:9332`–`9334`.
+- **Code.**
+  - **`priceParts()`** (`data.js:1948`) returns `{ lead, amount, tail }`. The amount is the first
+    match of `/\d[\d,.]*/` with trailing `.` and `,` trimmed; the lead is what comes before it,
+    trimmed; the tail is what comes after it, trimmed. With no digit, the whole price is the
+    amount, and the lead and tail are empty. Its comment names the new oddities: `Up to` + `120` +
+    `guests: £900`, `£1.2k` with a small `k`, and a thousands space (`£1 200` → `1` + `200`).
+  - **`vm.tiers[]`** spreads the three keys (`EncoreBuilder.jsx:922`, comment rewritten).
+  - **The six seats** render `t.tail` (or `tail`) between the numeral and the unit when it is not
+    empty. Each takes its lead's face, size, weight, line height and colour, but not its
+    `nowrap` or `flex: none`.
+- **One change beyond the entry, found by the States.** A long tail at layout 3, 390, shrank the
+  numeral's box to 0 and ran "450" under the tail. Every theme did it, by 22 to 55px. The narrow
+  numeral there was `flex: 1 0 0; minWidth: 0` (the frame's `flex-[1_0_0]` and `min-w-px`). It is
+  now **`flex: 1 0 auto`** at both layout-3 seats (`:9583`, and `:9828` in the body). Only one
+  item grows, so wherever the row fits the numeral fills to the same width as before. The digest
+  below proves the seed does not move. A tail too long to fit now wraps instead.
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on
+  :5173, pricing × every arch × themes `0,1,2,3,4` × three widths: **0 of 60** on the canvas and
+  **0 of 60** with `live=1` (port and `?t=` normalised).
+- **After the edit: 0 of 60 and 0 of 60**, as named. The digest ran twice, once after the tail
+  and again after the layout-3 flex change. Both times :5173 served the edit: its `data.js`
+  carries `tail: s.slice`, and its `EncoreSection.jsx` carries `t.tail` and `'1 0 auto'`.
+- **States** (a one-off puppeteer probe, deleted). It used `&cj=` with three packages at one
+  price, `live=1`, pricing arch 0–2 × themes 0–4 × three widths: 45 renders and 105 price rows a
+  price. It reads the row's spans in order off the DOM, then checks four things: no span passes
+  its card, neighbours on one line do not overlap, the numeral's ink does not run under its
+  neighbour, and the card, the section and the document do not overflow.
+
+  | Price | Every one of 105 rows reads | Clean |
+  |---|---|---|
+  | `£450 — £1,400` | `£` \| `450` \| `— £1,400` \| `/event` | 105 |
+  | `£1,200–£2,000` | `£` \| `1,200` \| `–£2,000` \| `/event` | 105 |
+  | `From £1,200` | `From £` \| `1,200` \| `/event` (JP-058's split, unchanged) | 105 |
+  | `£450 + VAT` | `£` \| `450` \| `+ VAT` \| `/event` | 105 |
+  | `POA` | `POA` \| `/event` | 105 |
+  | `450` | `450` \| `/event` | 105 |
+
+  The one flag in the table's 630 rows is Retro's layout-1 768 card with `£450 + VAT`. Its deck
+  cards are tilted, so the bounding box of the wrapped `/event` grazed the tail's by 1px.
+  Re-measured with every transform removed, Retro and Pop's layout 1 is clean for all nine
+  prices here and below.
+- **Edge probes**, the same 45 renders each, all clean: `£450.` (small `.`), `£1.2k` (small `k`),
+  `Up to 120 guests: £900`, `£450—£1,400/night`, `£450 for up to three hours of music, travel
+  included` and `£1,200 – £2,000 per night, travel extra`. The last two are the long tails that
+  found the layout-3 390 collapse above. An all-spaces price keeps JP-058's state: an empty
+  numeral before the unit at layouts 1 and 2, and no row at layout 3.
+- **JP-058's 768 overflow is gone.** This is the range at layout 1's 768 card under Lime, Grunge
+  and Editorial. This session's probe first re-measured it on HEAD: **22.2 / 2.6 / 30.4px** past
+  the card with `/UNIT`, and **26.6 / 6.9 / 34.8** with `/event`, with Editorial's section 5 over.
+  Those are JP-058's 22 / 3 / 30 and 27 / 7 / 35. On the tree the range ends **20 / 20 / 20px
+  inside** the card with `/UNIT` and **18.3 / 20 / 17.2** with `/event`, and no section overflows.
+  JP-058's other named item closes with it: Retro's and Pop's numeral at that card, which HEAD
+  broke over two lines (66–75px tall), is one line again (33px).
+- **The tester's steps in the real app.** A one-off puppeteer script (deleted) ran with the
+  editor at 1600 × 1000. It clicked the card, *Use this header*, then *Back to page list* and
+  Pricing. It typed package 1's Price as `£450 — £1,400` with trusted keys, then clicked
+  *Publish* and *Open*, and read the tab at 1440, 768 and 390:
+
+  | | canvas | 1440 | 768 | 390 |
+  |---|---|---|---|---|
+  | Grunge card 3 | `£` 13 \| `450` 44.25 \| `— £1,400` 13 \| `/event` 11 | same | `£` 15 \| `450` 37.5 \| `— £1,400` 15 \| 13 | `£` 15 \| `450` 28.5 \| `— £1,400` 15 \| 13 |
+  | Lime card 3 | numeral 59 | 59 | 50 | 40 |
+  | Editorial card 3 | numeral 52 | 52 | 45 | 36 |
+  | Retro card 1 (layout 1, the body) | `£` 15 \| `450` 33 \| `— £1,400` 15 \| `/event` 10 | same | `£` 18 \| `450` 40 \| `— £1,400` 18 \| 12 | same as 768 |
+
+  Every panel held the typed string, and every render read the four spans in order. No card, and
+  no document, overflowed. Neither window logged a page or console error. The screenshots look as
+  the numbers say: at 1440 a big 450 with a small "— £1,400" beside it on all four templates. At
+  768 and 390 the tail stands at the right with `/event` under Grunge, Lime and Editorial. On
+  Retro's 768 card the tail and unit take a second line, JP-058's wrap rule for that card.
+- **Named, not fixed.**
+  - The narrow seat, above. It is the frame's own, but it is not literally "beside" the numeral.
+  - `Up to 120 guests: £900`, `£1.2k`, and a thousands space (`£1 200` sets `1` big and `200`
+    small), as the comment names them.
+  - The all-spaces price, as JP-058 left it.
+- **Docs.**
+  - The `priceParts()` comment.
+  - `FIELDS.pricing.tiers`' hint gained a clause: whatever follows the price's first number,
+    such as a range's second half, prints small too.
+  - The comments at the six seats, layout 2's head comment (`:8744`–`8748`), and the layout-3
+    comment (`:9358`–`9364`), which now names `t.tail`.
+  - A note beside the frame's "— £1,400" named diff in [`layout-3.md`](./layout-3.md).
+  - Two *Closed by JP-074* pointers in [`qa-fixes.md`](./qa-fixes.md): in JP-058's *Named, not
+    fixed* and in the sweep's.
+  - CLAUDE.md and the README name neither the split nor the seat, so neither changed.
+- **For JP-064 onwards.** `EncoreSection.jsx` grew by 42, all inside `Pricing`, so everything
+  after the old `:9798` moved +42. With JP-061's and JP-062's +22, a triage number past the
+  pricing section is now **+64**: `blocked` is at `:14529`, the block's cell fill at `:15702`, and
+  Retro's at `:15847`. `EncoreBuilder.jsx` after `:918` moved +1. `data.js` after `:1411` moved +1,
+  and after `:1934` +8.
+
+Reply: **JP-074 — fixed.** A range typed into a package's price now prints as the design draws
+it: a big "450" with a small "— £1,400" after it.
+- The big numeral is the price's first number alone. Whatever follows it prints small in the
+  same style as the "£" before it, such as a range's second half or "+ VAT".
+- At 1440 the small part sits right beside the numeral. At 768 and 390 it stands at the right
+  edge of the row with the unit, where the design puts its own "— £1,400".
+- This also fixes the tablet overflow of JP-058: a range no longer pushes past the pricing card
+  at 768.
+- Seeded prices ("£450", "£650", "£1,200"), "From £1,200", "POA" and "450" look exactly as
+  before.
+
+It covers every template at pricing layouts 1–3. Layout 4 still prints the price whole, as
+typed.
 
 ---
 

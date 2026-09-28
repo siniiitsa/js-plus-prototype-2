@@ -915,9 +915,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // cross-fade one card hue into another.
       n: i,
       name: String(t?.name ?? '').trim(), price,
-      // Layouts 1–3 print the price as a small `lead` beside a display-size
-      // `amount` (JP-058: priceParts()); `price` stays whole for layout 4, the
-      // calendar's package card and its mailto, which print it as typed.
+      // Layouts 1–3 print the price as a display-size `amount` between a small
+      // `lead` and a small `tail` (JP-058, JP-074: priceParts()); `price` stays
+      // whole for layout 4, the calendar's package card and its mailto, which
+      // print it as typed.
       ...priceParts(price),
       blurb: String(t?.blurb ?? '').trim(),
       feats: tierFeats(t?.feats),

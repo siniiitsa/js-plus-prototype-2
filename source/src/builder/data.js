@@ -1408,7 +1408,8 @@ export const FIELDS = {
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
           + 'filter: it prints the tags and the features on the package itself. In layouts 1, 2 '
           + 'and 3, whatever comes before the price’s first digit — a £, or a word like From — '
-          + 'prints small beside it. Tick Featured '
+          + 'prints small beside it, and so does whatever follows its first number, such as the '
+          + 'second half of a range. Tick Featured '
           + 'to give a package layout 3’s FEATURED badge; with none ticked, it goes to the last '
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
@@ -1931,16 +1932,28 @@ export function tierFeats(str) {
   return String(str ?? '').split('\n').map((t) => t.trim()).filter(Boolean)
 }
 
-// A package's price → the small seat before the big numeral and the numeral
-// itself (JP-058, user call, 2026-09-28). The lead is everything before the
-// first digit, trimmed, so '£650' is '£' + '650' and 'From £1,200' is
-// 'From £' + '1,200'; a price with no digit ('POA') or none before it ('450')
-// has no lead and stands whole. The price is free text, so no currency is
-// assumed. Named and left: 'Up to 120 guests: £900' splits at the 1.
+// A package's price → the small seat before the big numeral, the numeral
+// itself, and the small seat after it (JP-058 and JP-074, 2026-09-28). The
+// lead is everything before the first digit, trimmed, so '£650' is '£' + '650'
+// and 'From £1,200' is 'From £' + '1,200'. The amount is the first numeric run
+// alone, digits and the separators inside it, and the tail is the rest,
+// trimmed — so a range sets its second half small, as every layout-3 frame
+// draws it: '£450 — £1,400' is '£' + '450' + '— £1,400', and '£450 + VAT' is
+// '£' + '450' + '+ VAT'. A separator ending the run goes to the tail rather
+// than being lost ('£450.' → a small '.'). A price with no digit ('POA') has
+// neither seat and stands whole. The price is free text, so no currency is
+// assumed. Named and left: 'Up to 120 guests: £900' is 'Up to' + '120' +
+// 'guests: £900', '£1.2k' sets a small 'k', and a thousands space ('£1 200')
+// sets '1' big and '200' small.
 export function priceParts(str) {
   const s = String(str ?? '').trim()
-  const at = s.search(/\d/)
-  return at > 0 ? { lead: s.slice(0, at).trim(), amount: s.slice(at) } : { lead: '', amount: s }
+  const m = s.match(/\d[\d,.]*/)
+  if (!m) return { lead: '', amount: s, tail: '' }
+  const amount = m[0].replace(/[.,]+$/, '')
+  return {
+    lead: s.slice(0, m.index).trim(), amount,
+    tail: s.slice(m.index + amount.length).trim(),
+  }
 }
 
 // A repeater row the artist added and never filled in: every one of `keys`

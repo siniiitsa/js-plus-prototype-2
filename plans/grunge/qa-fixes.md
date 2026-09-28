@@ -222,6 +222,9 @@ means no split. The `Up to 120 guests: £900` oddity is named and left alone.
   - An empty price still prints an empty numeral before the unit in layouts 1 and 2, on every
     template, as before. Layout 3 drops the row.
   - `Up to 120 guests: £900` splits at the `1`, per the decision.
+  - **Closed by JP-074** ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md), 2026-09-28): the
+    first bullet above. `priceParts()` gained a `tail`, so the numeral is the first number alone
+    and a range's second half sets small beside it. At that card the numeral is one line again.
 
 Reply: **fixed.** The small seat beside a package's big price now takes everything before the
 price's first digit, so `From £1,200` prints a small `From £` and a big `1,200`. A price with no
@@ -598,6 +601,11 @@ user's).
   `/event`, `main` also has at least 10 violations that the tree does not: Retro's `From` and
   range overflows at 768 and its range wrap at 390, all fixed by JP-058. It is a floor, because
   the probe finds the numeral by its text, and `main`'s `rom £1,200` never matches `1,200`.
+  **Closed by JP-074** ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md), 2026-09-28).
+  `priceParts()` gained a third part, `tail`. The display numeral is `1,200`, and `–£2,000` sets
+  small beside it. Re-measured first on HEAD (22.2 / 2.6 / 30.4 and 26.6 / 6.9 / 34.8, and
+  Editorial's section 5 over), the range now ends 20 / 20 / 20 px inside the card with `/UNIT`
+  and 18.3 / 20 / 17.2 with `/event`, and no section overflows.
 - **3. Reach.** Skipped, because no `in` line moved between `8a8d3ed` and HEAD. `data.js`'s diff
   is `priceParts()` and one clause of `FIELDS.pricing.tiers`' hint.
 - **4. The real app** (a one-off puppeteer script, deleted). Card 1 of Grunge, Retro and Lime;

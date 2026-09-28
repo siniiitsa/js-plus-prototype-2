@@ -8437,7 +8437,9 @@ function Pricing({ s }) {
 
                     {/* Bottom-aligned, not baselined, as the frame's row is. The
                         two narrow masters FILL the numeral, which stands the unit
-                        at the card's right edge; desktop hugs it at 4. */}
+                        at the card's right edge; desktop hugs it at 4. A range's
+                        second half (`t.tail`, JP-074) sets small in the lead's
+                        face, so it stands with the unit there, and may wrap. */}
                     <span style={row(u(4), {
                       alignItems: 'flex-end', alignSelf: s.narrow ? 'stretch' : 'flex-start',
                     })}>
@@ -8449,6 +8451,9 @@ function Pricing({ s }) {
                         letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
                         flex: s.narrow ? '1 1 auto' : 'none',
                       }}>{t.amount}</span>
+                      {!!t.tail && (
+                        <span style={body(s.bodyLg, 1.5, { color: ink })}>{t.tail}</span>
+                      )}
                       {!!s.tierUnit && (
                         <span style={ui({ color: ink, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
                       )}
@@ -8628,7 +8633,9 @@ function Pricing({ s }) {
                       33 and the card grows under its own pill. A lead wider than
                       the £ ("From £", JP-058) holds its line and the row wraps
                       instead: the 768 card, three to a row, puts the unit on a
-                      second line rather than the £. */}
+                      second line rather than the £. A range's second half
+                      (`t.tail`, JP-074) takes the £'s face but not its nowrap,
+                      so a long one breaks rather than passing the card. */}
                   {!!t.lead && (
                     <span style={{
                       fontFamily: s.mono, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
@@ -8640,6 +8647,12 @@ function Pricing({ s }) {
                     lineHeight: s.narrow ? 0.825 : 0.85,
                     letterSpacing: s.dls, color: t.acc,
                   }}>{t.amount}</span>
+                  {!!t.tail && (
+                    <span style={{
+                      fontFamily: s.mono, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
+                      lineHeight: s.mob ? 1 : undefined,
+                    }}>{t.tail}</span>
+                  )}
                   <span style={{
                     fontFamily: s.mono, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
                     lineHeight: s.mob ? 1 : undefined,
@@ -8729,8 +8742,10 @@ function Pricing({ s }) {
   // `rating`, `cta`, `note` — so the artist types every one of them and each
   // drops when emptied. Dropped from the frame: only the two chips' glyphs `↻`
   // and `⚡`. The frame's second price (`— £2,200/event`) becomes `s.tierUnit`,
-  // which is the one the section already owns. What is kept as a literal is the
-  // two frame labels, `[ PRICING ]` and `WHAT'S INCLUDED`.
+  // which is the one the section already owns; a range the artist types in the
+  // price itself sets its own second half small as `tail` (JP-074). What is
+  // kept as a literal is the two frame labels, `[ PRICING ]` and `WHAT'S
+  // INCLUDED`.
   //
   // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The section
   // paints its own frame — a 1px ink border at its edges and the frame's own
@@ -8859,6 +8874,7 @@ function Pricing({ s }) {
       })
       const lead = t ? t.lead : ''
       const amount = t ? t.amount : ''
+      const tail = t ? t.tail : ''
 
       const head = (
         <div style={col(u(20), {
@@ -8937,13 +8953,16 @@ function Pricing({ s }) {
             <span style={{ ...disp(s.dispSm), color: s.tx }}>{t.name}</span>
             {!!t.blurb && <p style={body(s.bodyMd, 1.5, { margin: 0, color: s.tx })}>{t.blurb}</p>}
             {/* Bottom-aligned at 6. The narrow masters FILL the numeral, which
-                stands the unit at the card's right edge; 1440 hugs it. */}
+                stands the unit at the card's right edge; 1440 hugs it. A
+                range's second half (`tail`, JP-074) sets small in the lead's
+                face between the two. */}
             <span style={row(u(6), { alignItems: 'flex-end', alignSelf: 'stretch' })}>
               {!!lead && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{lead}</span>}
               <span style={{
                 ...disp(s.dispMd), color: s.ac, whiteSpace: 'nowrap',
                 flex: desk ? 'none' : '1 1 auto',
               }}>{amount}</span>
+              {!!tail && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{tail}</span>}
               {!!s.tierUnit && (
                 <span style={body(s.bodyMd, 1.5, { color: s.tx, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
               )}
@@ -9128,6 +9147,7 @@ function Pricing({ s }) {
 
     const lead = t ? t.lead : ''
     const amount = t ? t.amount : ''
+    const tail = t ? t.tail : ''
 
     const card = (
       <div style={{
@@ -9181,13 +9201,16 @@ function Pricing({ s }) {
                 }}>{t.blurb}</p>
                 {/* The frame sets a second price where the section has a unit,
                     so `— £2,200/event` is `s.tierUnit` — layout 1's own three
-                    spans, in the frame's sizes. */}
+                    spans, in the frame's sizes. A range the artist types has a
+                    second half of its own, `tail` (JP-074), set in the lead's
+                    face between the numeral and the unit. */}
                 <span style={row(u(6), { alignItems: 'baseline', width: '100%' })}>
                   {!!lead && <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{lead}</span>}
                   <span style={{
                     fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                     letterSpacing: s.dls, color: h.acc,
                   }}>{amount}</span>
+                  {!!tail && <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{tail}</span>}
                   <span style={{
                     fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: h.cardMut,
                   }}>{s.tierUnit}</span>
@@ -9334,8 +9357,11 @@ function Pricing({ s }) {
   //    `t.amount`, the split layouts 1 and 2 read too (JP-058: `priceParts()`
   //    in `sectionVm`): everything before the first digit, so "From £1,200"
   //    sets "From £" small, and a price with no digit ("POA") has no lead and
-  //    stands whole. One split for all three, so a page prints a `price` the
-  //    same way whichever layout is picked.
+  //    stands whole. The numeral is the first number alone, and whatever the
+  //    artist types after it is `t.tail` (JP-074), set small between it and
+  //    the unit — so a typed "£450 — £1,400" is the frame's own three nodes,
+  //    and a unit after it a fourth. One split for all three, so a page prints
+  //    a `price` the same way whichever layout is picked.
   //  - "FEATURED" is a literal on a derived seat — see below.
   //
   // Every box number is the desktop component's own at all three widths — the
@@ -9534,7 +9560,11 @@ function Pricing({ s }) {
                 )}
               </div>
               {/* Desktop hugs; both narrow masters FILL the numeral, which
-                  stands the unit at the column's right edge. */}
+                  stands the unit at the column's right edge. It fills from
+                  its own width (`auto`, not the frame's `0` and `min-w-px`),
+                  which lays out the same wherever the row fits, and keeps a
+                  long tail from shrinking the numeral's box to nothing and
+                  running over it at 390 (JP-074). */}
               {!!t.price && (
                 <div style={row(u(6), {
                   alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
@@ -9550,9 +9580,14 @@ function Pricing({ s }) {
                   <span style={{
                     fontFamily: s.display, fontSize: faced(s, s.dispMd), ...disp(1),
                     letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
-                    ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
+                    ...(desk ? {} : { flex: '1 0 auto' }),
                     ...(ed ? { position: 'relative', top: '-0.09em' } : {}),
                   }}>{t.amount}</span>
+                  {/* A range's second half (JP-074): the lead's face, and free
+                      to wrap where the lead holds its line. */}
+                  {!!t.tail && (
+                    <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>{t.tail}</span>
+                  )}
                   {!!s.tierUnit && (
                     <span style={{
                       fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5,
@@ -9774,7 +9809,9 @@ function Pricing({ s }) {
             </div>
             {/* The narrow masters give this row the column's whole width and let
                 the numeral fill it, which pushes the unit to the right edge; the
-                1440 one hugs. Both are the frame's own declarations. */}
+                1440 one hugs. Both are the frame's own declarations, except
+                that the numeral fills from its own width (`auto`, not `0`), so
+                a long tail cannot shrink it to nothing (JP-074). */}
             {!!t.price && (
               <div style={row(u(6), {
                 alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
@@ -9788,8 +9825,13 @@ function Pricing({ s }) {
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                   letterSpacing: s.dls, color: acc,
-                  ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
+                  ...(desk ? {} : { flex: '1 0 auto' }),
                 }}>{t.amount}</span>
+                {/* A range's second half (JP-074): the lead's face, and free
+                    to wrap where the lead holds its line. */}
+                {!!t.tail && (
+                  <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{t.tail}</span>
+                )}
                 {!!s.tierUnit && (
                   <span style={{
                     fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
