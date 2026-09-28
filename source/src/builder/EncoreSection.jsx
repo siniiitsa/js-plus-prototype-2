@@ -2059,12 +2059,17 @@ function HeaderV1({ s }) {
       </div>
     )
 
+    // The pill, the two cards' copy and `heroCta` are the artist's (JP-037,
+    // JP-059): each drops when emptied, and the "●" is the markup's. A long
+    // pill wraps inside the column rather than widening the page, as the
+    // hero's does; the seeded box does not move.
     const identity = (
       <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0 })}>
-        <span style={{
+        {s.heroAvail && <span style={{
           boxShadow: ring(s.stroke2), borderRadius: s.btnR, padding: `${u(6)} ${u(12)}`,
-          fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac, whiteSpace: 'nowrap',
-        }}>● Available for bookings</span>
+          fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac,
+          whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
+        }}>{`● ${s.heroAvail}`}</span>}
         {/* Grunge's title is two-tone — `sem/text/2` then `text/1`, the hero's
             own split — where Lime's is one tone. */}
         <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
@@ -2117,14 +2122,15 @@ function HeaderV1({ s }) {
     // The title is a direct `s.display` site, so under Grunge it is `faced`
     // (identity off Grunge) and uppercase, Stones Crush being all capitals —
     // and uppercase under Editorial, Noto standing in for the caps-only
-    // Fisterra Fora.
-    const cardText = (title, body, ink, bodyInk) => (
+    // Fisterra Fora. Each line drops when emptied, and the column with both;
+    // the card keeps its tile.
+    const cardText = (title, body, ink, bodyInk) => (title || body) && (
       <div style={col(u(8), { alignItems: 'flex-start', ...(nar ? { flex: 1, minWidth: 0 } : { width: '100%' }) })}>
-        <span style={{
+        {title && <span style={{
           fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, color: ink,
           textTransform: grunge || ed ? 'uppercase' : undefined,
-        }}>{title}</span>
-        <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: bodyInk }}>{body}</span>
+        }}>{title}</span>}
+        {body && <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: bodyInk }}>{body}</span>}
       </div>
     )
     const faceCard = (
@@ -2136,7 +2142,7 @@ function HeaderV1({ s }) {
           <Photo s={s} avatar initialsSize={34} />
           <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring(s.stroke2) }} />
         </div>
-        {cardText('The face of the act', "Same person you'll meet on the night. Performing since 2021.", s.tx, s.ac)}
+        {cardText(s.faceTitle, s.faceBody, s.tx, s.ac)}
         {dashed}
       </div>
     )
@@ -2151,7 +2157,7 @@ function HeaderV1({ s }) {
         {ed
           ? <LimePin s={s} width={u(89)} height={u(90.65)} radius={0} fill="transparent" />
           : <LimePin s={s} width={u(88)} height={u(89)} radius={u(20)} />}
-        {cardText(s.location, 'Available across the UK · 120 mi standard travel radius.', s.bg, s.bg)}
+        {cardText(s.location, s.placeBody, s.bg, s.bg)}
         {dashed}
       </div>
     )
@@ -2220,18 +2226,20 @@ function HeaderV1({ s }) {
           border: `2.5px solid ${olive}`, ...col('0', { justifyContent: 'space-between' }),
         }),
   }
-  const cardTitle = (t, colour) => (
+  // The cards' copy is the artist's (JP-059): each line drops when emptied,
+  // and the column with both; the card keeps its tile.
+  const cardTitle = (t, colour) => t && (
     <span style={{
       fontFamily: s.display, fontSize: nar ? '24px' : '20px', lineHeight: 1.1,
       letterSpacing: s.dls, color: colour, maxWidth: nar ? '155px' : '127px',
     }}>{t}</span>
   )
-  const cardBody = (t, colour) => (
+  const cardBody = (t, colour) => t && (
     <span style={{ fontFamily: s.body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4, color: colour }}>{t}</span>
   )
   // The text column is a flex child only in the narrow card, where it shares a
   // row with the photograph; stacked, it is the whole width already.
-  const cardText = (a, b) => (
+  const cardText = (a, b) => (a || b) && (
     <div style={col(nar ? '8px' : '7px', {
       alignItems: 'flex-start', ...(nar ? { flex: 1, minWidth: 0 } : null),
     })}>{a}{b}</div>
@@ -2363,12 +2371,14 @@ function HeaderV1({ s }) {
 
   const identity = (
     <div style={col(nar ? '18px' : '15px', { alignItems: 'flex-start' })}>
-      <span style={{
+      {/* The artist's (JP-059): emptied, no pill, and a long one wraps inside
+          the column, as the hero pill does. The "●" is the markup's. */}
+      {s.heroAvail && <span style={{
         border: `1px solid ${olive}`, borderRadius: '999px',
         padding: nar ? '6px 12px' : '5px 10px',
         fontFamily: s.body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4,
-        color: s.ac, whiteSpace: 'nowrap',
-      }}>● Available for bookings</span>
+        color: s.ac, whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
+      }}>{`● ${s.heroAvail}`}</span>}
       {/* 768 sets the hero at the canvas's own `h1`, which is the frame's 59.5
           to within half a pixel; 390 sets it a register smaller than that, at
           `dispLg`. Measured off both renders' cap bands, not off the emitted
@@ -2401,8 +2411,8 @@ function HeaderV1({ s }) {
         <Photo s={s} avatar initialsSize={34} />
       </div>
       {cardText(
-        cardTitle('The face of the act', mustard),
-        cardBody("Same person you'll meet on the night. Performing since 2021.", s.ac),
+        cardTitle(s.faceTitle, mustard),
+        cardBody(s.faceBody, s.ac),
       )}
     </div>
   )
@@ -2415,7 +2425,7 @@ function HeaderV1({ s }) {
       }}><MapPin size={nar ? 46 : 38} /></div>
       {cardText(
         cardTitle(s.location, s.ac),
-        cardBody('Available across the UK · 120 mi standard travel radius.', ink),
+        cardBody(s.placeBody, ink),
       )}
     </div>
   )
@@ -4150,10 +4160,13 @@ function Bio({ s }) {
       }}>
         {ed && <DashRule side="all" dash={10 * z} gap={11 * z} colour={s.stroke2} />}
         <div style={col(u(25.51), { alignItems: 'flex-start', padding: gpad })}>
-          <span style={labelStyle(s, s.labelSm, {
+          {/* The artist's (JP-059): emptied, no pill, and a long one wraps
+              inside the card rather than widening the page. */}
+          {s.bioTag && <span style={labelStyle(s, s.labelSm, {
             color: s.tx, lineHeight: 1.1, boxShadow: ring(u(1.42), s.stroke2),
             borderRadius: s.btnR, padding: `${u(5.67)} ${u(14.17)}`,
-          })}>/Featured</span>
+            whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
+          })}>{s.bioTag}</span>}
           <p style={{ margin: 0, ...text }}>{s.bioP1}</p>
         </div>
         {ed && foot && (
@@ -4329,10 +4342,13 @@ function Bio({ s }) {
         ...col(nar ? '18px' : '0', { justifyContent: 'space-between' }),
       }}>
         <div style={col(nar ? '25.5px' : '21px', { alignItems: 'flex-start' })}>
-          <span style={labelStyle(s, s.mob ? '12px' : '13px', {
+          {/* The artist's (JP-059): emptied, no pill, and a long one wraps
+              inside the card rather than widening the page. */}
+          {s.bioTag && <span style={labelStyle(s, s.mob ? '12px' : '13px', {
             border: `${nar ? '1.417px' : '1.2px'} solid ${(s.retro && s.chips[3]?.bg) || s.line2}`,
             borderRadius: '999px', padding: nar ? '5.669px 14.174px' : '5px 12px',
-          })}>/Featured</span>
+            whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
+          })}>{s.bioTag}</span>}
           <p style={{ margin: 0, ...body }}>{s.bioP1}</p>
         </div>
         <div style={col(nar ? '10px' : '8px', { padding: s.mob ? '10px 0' : undefined })}>
@@ -17430,17 +17446,19 @@ function EventsMap({ s }) {
     }
 
     // The travel card. Its head is the section's own heading under the frame's
-    // label, with the coverage badge in the chip — which is where layout 1
-    // prints it too, at the head of the section rather than of a card. Its two
+    // label, with the featured gig's date and set time in the chip, where the
+    // frame's "● Confirmed" is a booking status nothing here knows. Its two
     // locations are the artist's base and the city the featured gig is in, so
     // the card is the route to whatever the panel beside it is showing.
     //
     // The stat row is the frame's own three cells. Travel time and Booking fee
     // are fields seeded with the frame's copy, so the artist types them rather
-    // than the page claiming them; Max travel is the coverage badge, which a
-    // separate field would only contradict. An emptied cell drops, and the row
-    // with all three. The featured gig's date and set time, which this row
-    // printed before, moved up into the chip.
+    // than the page claiming them; Max travel is `radius`, the coverage layouts
+    // 1, 3 and 4 print too, which a separate field would only contradict. It
+    // prints here once, in every template's body (JP-060: the Lime block's chip
+    // read it as well). An emptied cell drops, and the row with all three. The
+    // featured gig's date and set time, which this row printed before, moved
+    // up into the chip.
     const stats = [
       { l: 'Max travel', v: s.mapRadius },
       { l: 'Travel time', v: s.mapTravelTime },
@@ -17572,10 +17590,15 @@ function EventsMap({ s }) {
               <span style={bodySm}>Travel radius</span>
               <h2 style={display(titleSize, 1.1)}>{s.title}</h2>
             </div>
-            <span style={{
-              ...bodySm, flex: 'none', boxShadow: ring(hair), borderRadius: '999px',
-              padding: `${u(5)} ${u(12)}`, whiteSpace: 'nowrap',
-            }}>● {s.mapRadius}</span>
+            {/* The frame's "● Confirmed" again, and Retro's reading of it: when
+                the featured gig is. Until JP-060 the block drew `radius` here,
+                so the one field printed twice, the second time as Max travel. */}
+            {!!g?.when && (
+              <span style={{
+                ...bodySm, flex: 'none', boxShadow: ring(hair), borderRadius: '999px',
+                padding: `${u(5)} ${u(12)}`, whiteSpace: 'nowrap',
+              }}>● {g.when}</span>
+            )}
           </div>
 
           {/* Both names in Display/List, Retro's normalisation of the frame's
@@ -19372,7 +19395,7 @@ function EventsMap({ s }) {
             </div>
           </div>
           {/* The frame's data line, "UK · 8 pins · 120 mi radius", composed from
-              the artist's base, the gig count and the coverage badge, and its
+              the artist's base, the gig count and the coverage, and its
               "EXPAND VIEW →" link (QA, 2026-09-15). 390 stacks the two. */}
           <div style={s.mob
             ? col(u(10), {

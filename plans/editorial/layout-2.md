@@ -1583,7 +1583,8 @@ the twins' dark-ground assumptions break (trap 6).
   and panel venues, Get Directions); `faced` is the identity. Every Inter and Chakra Petch string
   is the twins'.
 - **Inherited whole**: Lime's field allocation (the chip prints `mapRadius` where the frame says
-  "● Confirmed"; two lines a column where the frame prints three — Retro's "Based in" call); the
+  "● Confirmed" — reversed by JP-060, `../grunge/layout-2-qa-fixes.md`: the chip now prints
+  the featured gig's `g.when`, Retro's reading, and `radius` prints once, as Max travel; two lines a column where the frame prints three — Retro's "Based in" call); the
   compact `pageWindow` and `grow` (the pager on paper takes `Pager`'s **Editorial default arm** —
   unfilled pills ringed `stroke/1` ink, the current page's ring and numeral terracotta — with no
   `frame.lime`, unlike layout 1's panel; it reads); JP-040's four seats; the zoom; the ring

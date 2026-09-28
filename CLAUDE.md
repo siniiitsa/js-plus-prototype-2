@@ -169,6 +169,15 @@ mutated through a single `patch()` helper.
   `cta` — `vm.bioCredit` is `{ lead, rest }`, the first three words taking the accent, split in
   `sectionVm`; each drops when emptied and the row with both (under Editorial, whose frame
   rules a dashed divider over the foot, the divider goes too once the chips are hidden as well).
+  **So did the rest of layout 2's copy** (JP-059, user call, 2026-09-28, reversing Lime's fit):
+  the header's "● Available for bookings" pill is `availability`, and its two cards' copy under
+  the photograph is `faceTitle` / `faceBody` and `placeBody` (the place card's title was already
+  `location`), `vm.heroAvail` / `vm.faceTitle` / `vm.faceBody` / `vm.placeBody`; the bio card's
+  "/Featured" pill is `FIELDS.bio.tag` (`vm.bioTag`), on every template, Pop included. Each is
+  seeded with the frames' own bytes and uncased (every site keeps its own casing), and each drops
+  when emptied; a card keeps its tile, and both pills wrap rather than widen a 390 page. The face
+  card's "Performing since 2021" is the artist's copy inside `faceBody`, **not** the bio's `since`,
+  which it does not read (`KICKER_3`'s precedent); the hint says to change both.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —

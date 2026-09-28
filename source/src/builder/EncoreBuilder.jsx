@@ -34,7 +34,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import EncoreSection from './EncoreSection.jsx'
 import {
-  THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
+  THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
+  HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -543,6 +544,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.cta2 = cv('cta2', 'Listen')
   // JP-037 — layout 2's hero pill. Uncased, the footer pill's rule.
   vm.heroCta = cv('heroCta', HERO_CTA)
+  // JP-059 — the rest of layout 2's copy: the pill over the name and the two
+  // cards' text. Uncased too: each site keeps the casing its own style applies.
+  vm.heroAvail = cv('availability', HERO_AVAIL)
+  vm.faceTitle = cv('faceTitle', FACE_TITLE)
+  vm.faceBody = cv('faceBody', FACE_BODY)
+  vm.placeBody = cv('placeBody', PLACE_BODY)
   vm.showBadge = cv('showBadge', 'show')
   vm.badgeText = cv('badgeText', name)
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
@@ -733,6 +740,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   const credit = String(cv('credit', BIO_CREDIT) ?? '').trim().split(/\s+/).filter(Boolean)
   vm.bioCredit = { lead: credit.slice(0, 3).join(' '), rest: credit.slice(3).join(' ') }
   vm.bioCta = cv('cta', BIO_CTA)
+  // JP-059 — layout 2's pill over the paragraph; `labelStyle` cases it.
+  vm.bioTag = cv('tag', BIO_TAG)
   vm.bioP2 = cv('para2', DEFS.bioP2)
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
   // string is what tells the ID card not to draw the column.
