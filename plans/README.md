@@ -31,6 +31,7 @@ plans/
     layout-2.md
     layout-3.md
     layout-4.md
+    qa-fixes.md
   editorial/
     layout-1.md
     layout-2.md
@@ -80,6 +81,7 @@ predecessors' bullets, so layout 4's session also reads the Conventions of layou
 | Layout 2 | [`grunge/layout-2.md`](./grunge/layout-2.md) | `grunge-layout-2`, forked from `grunge-layout-1` (merged, PR #28, with the root `index.html` refreshed) | Lime layout 2's ten compositions in Static Youth: each Lime layout-2 block widened to `(s.lime || s.grunge)` with the Grunge deltas inside it, all three widths per session, plus the end-of-pass sweep. Written as deltas against Lime layout 2 and Grunge layout 1. Card 2 of the setup modal is a fitted page; the footer is layout 1's. The sweep folded what the pass leaned on into [`CONVENTIONS.md`](./CONVENTIONS.md) (the *L2* entries and group D2) and taught `page-check.mjs` and `build-digest.mjs` to walk any card. |
 | Layout 3 | [`grunge/layout-3.md`](./grunge/layout-3.md) | `grunge-layout-3`, forked from `main` (merged, PR #29, with the root `index.html` refreshed) | Lime layout 3's ten compositions in Static Youth: each Lime layout-3 block widened to `(s.lime || s.grunge)` with the Grunge deltas inside it — `HeaderV2`'s block at its head, the bio's ahead of its branch, the rest after their seams, the gallery's ternaries — all three widths per session, the composed page inherited (it already composes under Grunge), plus the end-of-pass sweep. Written as deltas against Lime layout 3 and Grunge layouts 1 and 2. The page walk found no effect on any master, one `#171716` sheet (the gallery), no map sheet (Scheme 4 ≡ 1), the bio's seal swapped for layout 1's red one, and five nested sites (eight nodes) on a different scheme from Lime's — so the plan's first rule was to read every nested scheme off the Grunge master. Card 3 of the setup modal is a fitted page; the footer is layout 1's. The sweep folded the pass's three new rules into [`CONVENTIONS.md`](./CONVENTIONS.md) (the *L3* markers and group D3) and hardened `page-check.mjs`'s media probe. |
 | Layout 4 | [`grunge/layout-4.md`](./grunge/layout-4.md) | `grunge-layout-4`, forked from `main` (closed, with the root `index.html` refreshed; push, PR and merge still open) | Lime layout 4's ten compositions in Static Youth: each Lime layout-4 block widened to `(s.lime || s.grunge)` with the Grunge deltas inside it — `HeaderV3`'s at its head, the bio's, the media player's and the form's ahead of their branches, the other six after their seams (the gallery a block this time, not ternaries) — all three widths per session, plus the end-of-pass sweep. Written as deltas against Lime layout 4 and Grunge layouts 1–3. The planning walk found a black page with four red grounds (Scheme 3: the header's floor, the bio, the gallery, the repertoire) and one `#171716` band, **torn seams** (layout 1's vector, not Lime's arcs), the testimonials' Scheme 4 sheet collapsed onto the page, two moved bindings (the repertoire and Book Us panels), two width traps (the bio card 1 / 3 / 3, the seal 4 / 3 / 3), four backdrop blurs and no other effect, and **no desktop form on the page** (the main component `725:2990` stands in). Card 4 of the setup modal is a fitted page, which **closes the Grunge family**: all four of its header cards lay out fitted pages. The footer is layout 1's. The sweep folded the pass into [`CONVENTIONS.md`](./CONVENTIONS.md) (the *L4* markers, group D4, and four rows it leaned on three times: a widened block needing no `G`, Scheme 4 ≡ 1 collapsing a sheet, a seam's binding lying, and the black-run depth method). |
+| QA fixes | [`grunge/qa-fixes.md`](./grunge/qa-fixes.md) | `grunge-qa-fixes`, forked from `main` (`8a8d3ed`, after PR #37; planned) | Not a fit: the tester's first Grunge batch, against layout 1. JP-058: a price's first character is split off as a currency sign. JP-057: the seal's marks sit on the name. JP-056: the heads are Anton, not Stones Crush. One entry per session, plus the end-of-pass sweep. Only JP-056 is Grunge's. JP-058 is a shared `vm.tiers` seam (every template, pricing layouts 1–3). JP-057 is `SealBadge`'s spin, which leaves the marks behind in Retro's, Lime / Grunge's and Editorial's branches alike. JP-056 is a PO / design question about the licensed face, and inside this batch it gets a decision and a reply only. |
 
 **Reading order in a Grunge session:** `CLAUDE.md`, then the plan, then [`CONVENTIONS.md`](./CONVENTIONS.md)
 and the bullets it points at, and Lime layout 1's *Per-session procedure*. The layout-2 pass also reads
@@ -91,7 +93,8 @@ layout 3's *Conventions* and 2026-09-15 Addendum (the branch that block sits in)
 reads all three Grunge *Conventions* (layout 1's for the torn seam this page brings back), Lime
 layout 4's *Conventions*, the section's *Settled* bullet and its entry in the Lime layout-4 QA
 fixes where it has one (the block it widens, as QA left it), and Retro layout 4's *Conventions*
-and 2026-09-15 Addendum.
+and 2026-09-15 Addendum. The QA-fixes pass reads its own *Read first* line, which is Retro's QA
+harness and the two verification memory notes.
 
 ## Editorial
 
