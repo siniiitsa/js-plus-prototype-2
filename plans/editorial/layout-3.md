@@ -1447,7 +1447,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   *Learned on the booking calendar*), so there were none to drive. No page errors. The
   published 1440 tab reads the real clock (F20), so it opens on September 2026 with the days
   before the 25th dead — the named, accepted diff — and the picked, dead and free dots all read
-  on the `#FFF9F2` card.
+  on the `#FFF9F2` card. *Reopened by JP-064* ([`../grunge/layout-3-qa-fixes.md`](../grunge/layout-3-qa-fixes.md),
+  2026-09-28, user call): a dead day no longer takes the booked look, since the legend names that
+  fill *Booked*; it is the free dot at .38, booked or not.
 - **`FIELDS.calendar` moves nothing.** `scripts/reach.mjs 3` (3,312 renders): `heading`
   reaches all four layouts, so the `Editorial: [0, 1, 2, 3]` row written before any layout-3
   card existed holds over the fitted one; `cta` `[0]`, `slots` `[1]`, `image` and `time`
