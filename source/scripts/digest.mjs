@@ -5,7 +5,8 @@
 //   WIDTHS=desktop EXTRA='&live=1' OUT=/tmp/digest node scripts/digest.mjs after 0
 //   EXTRA="&cj=$(node -p 'encodeURIComponent(…)')" node scripts/digest.mjs blank 0,1,2 form
 //
-// Renders every cat × layout × width × theme and writes one file per render,
+// Renders every cat × layout × width × theme (and the footer once more at
+// `&page=2`) and writes one file per render,
 // one row per element under #root (skipping .seal-spin, a running animation),
 // to $OUT/<label>/. Diff two labels with `cmp` per file: a rerun of an unchanged
 // tree diffs to zero, so any differing file is a real change.
@@ -30,7 +31,14 @@ const widths = (process.env.WIDTHS || 'desktop,tablet,mobile').split(',')
 const extra = process.env.EXTRA || ''
 const base = process.env.BASE || 'http://localhost:5173'
 const jobs = []
-for (const t of themes) for (const w of widths) for (const c of cats) for (let a = 0; a < CATS[c]; a++) jobs.push(`cat=${c}&arch=${a}&theme=${t}&w=${w}${extra}`)
+for (const t of themes) for (const w of widths) for (const c of cats) {
+  for (let a = 0; a < CATS[c]; a++) jobs.push(`cat=${c}&arch=${a}&theme=${t}&w=${w}${extra}`)
+  // The footer has one design, but its seat follows the page's (SCHEMES_OF's
+  // page rows; Lime's `footerBand`), which no layout index above can say — so
+  // it is rendered once more on layout 3's page. A label taken before this
+  // render existed simply lacks the file.
+  if (c === 'footer') jobs.push(`cat=footer&arch=0&page=2&theme=${t}&w=${w}${extra}`)
+}
 
 const dir = path.join(process.env.OUT || path.join(os.tmpdir(), 'encore-digest'), label)
 fs.mkdirSync(dir, { recursive: true })

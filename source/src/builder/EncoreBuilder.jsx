@@ -267,8 +267,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // ground's and not the page's. `T` is the theme everywhere else. A seat may
   // be a [desktop, tablet, mobile] triple where the frames move the section
   // between widths; every caller's `Z` names its width, the thumbnails and
-  // modal cards the desktop.
-  const seat = SCHEMES_OF[theme.name]?.[d]?.[cat]
+  // modal cards the desktop. The footer has one design, so its own `d` is
+  // always 0: its seat is read off the page's design (`page`, the header's)
+  // where that page's row names a footer, and off row 0 otherwise — so a
+  // page row's `footer: 1` would stand it on Scheme 1, not fall through.
+  // Callers that pass no `page` (the layout picker, the modal's cards, the
+  // harness without `&page=`) read row 0.
+  const seat = (cat === 'footer' ? SCHEMES_OF[theme.name]?.[page]?.footer : undefined)
+    ?? SCHEMES_OF[theme.name]?.[d]?.[cat]
   const scheme = theme.schemes?.[Array.isArray(seat) ? seat[DEV_SEAT[Z.dev]] : seat]
   const T = scheme ? { ...theme, ...scheme } : theme
   const [bg, ac, tx] = T.palette
@@ -438,25 +444,42 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // doubled up with the player's own top. The player's list ends 122 / 90 / 70
   // above the repertoire's head (100 on the 0.82 canvas); the repertoire's own
   // top inset is its fitted one, so the player's foot takes the difference —
-  // 37 / 47 / 35, measured against the seeded page. Grunge's composed region
+  // first 37 / 47 / 35, measured against the seeded page, and 20 / 34 / 26
+  // since the re-measure below. Grunge's composed region
   // is Lime's to the pixel (plans/grunge/layout-3.md), so each of its three
   // sections joined the arm in its own session — the bio, then media, then the
   // calendar, which closes the row: its `Frame 300` pads 50 / 50 / 40 above
-  // "Book Me" and 56 / 56 / 40 under the card, Lime's own numbers.
-  if (d === 2 && ((T.name === 'Lime' || T.name === 'Grunge')
-    && (cat === 'bio' || cat === 'calendar' || cat === 'media'))) {
+  // "Book Me" and 56 / 56 / 40 under the card, Lime's own numbers. Editorial's
+  // wrappers are Grunge's inset for inset (plans/editorial/layout-3.md, *The
+  // composed page*), and it joins the same way, the bio first, then media —
+  // whose list ends 122 / 90 / 70 above the repertoire's head on all three
+  // templates, the repertoire's root padding the same 56 / 60 / 60, so Lime's
+  // feet carry: every template's repertoire head stands at the shared `padY`.
+  // Re-measured at Editorial's repertoire (plans/editorial/layout-3.md,
+  // section 4), the canvas gave 117 / 103 / 79 box to box under all three
+  // against the frames' 100 / 90 / 70: 37 / 47 / 35 plus the head's `padY`
+  // 80 / 56 / 44. So the feet are the difference again, 20 / 34 / 26 (the
+  // Editorial layout-3 sweep, user call, 2026-09-26), and all three templates'
+  // media list ends the frames' 100 / 90 / 70 above the head's box. The
+  // calendar closes Editorial's row as it closed Grunge's (its `Frame 300`
+  // pads 50 / 56 at 1440 and 768, 40 / 40 at 390), so the three templates are
+  // one condition again.
+  if (d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+    && (cat === 'bio' || cat === 'calendar' || cat === 'media')) {
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)
     const foot = cat === 'bio' ? z(30)
-      : cat === 'media' ? ({ desktop: '37px', tablet: '47px', mobile: '35px' })[Z.dev]
+      : cat === 'media' ? ({ desktop: '20px', tablet: '34px', mobile: '26px' })[Z.dev]
       : vm.padY
     vm.pad = `${top} ${vm.padX} ${foot}`
   }
   // The pricing stack's footnote stands 32 above the section's foot at 1440
   // and 768 (964:68680 · 984:10765). 390 keeps its 44, under the master's 60.
   // Grunge's three masters state the same 32 / 32 / 60 (964:68712 · 984:13925
-  // · 984:13956), so the arm is both templates'.
-  if ((T.name === 'Lime' || T.name === 'Grunge') && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
+  // · 984:13956), and so do Editorial's (964:68745 · 984:16837 · 984:16868),
+  // so the arm is all three templates'.
+  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+    && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
     vm.pad = `${vm.padY} ${vm.padX} ${Z.dev === 'desktop' ? Math.round(32 * 0.82) : 32}px`
   }
   // The form's card ends 90 / 60 above its foot and the testimonials' head
@@ -469,7 +492,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 56 / 56 at 1440 and 30 / 56 at 768, Lime's numbers), so both templates are
   // one condition again; the pair was two halves for one session, the composed
   // row's rule (plans/grunge/layout-3.md).
-  if ((T.name === 'Lime' || T.name === 'Grunge')
+  //
+  // Editorial's form masters (964:68747 · 984:16839 · 984:16870) pad the same
+  // 90 / 56 and 60 / 30 round the taller half — the head column at 1440, where
+  // the twins' is the card — so the form joined on the twins' numbers, and the
+  // testimonials' roots (964:68748 · 984:16840) pad the twins' 56 / 56 and
+  // 30 / 56, so the pair is one condition again (plans/editorial/layout-3.md,
+  // sections 9 and 10).
+  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
     && (cat === 'form' || cat === 'testimonials') && d === 2 && Z.dev !== 'mobile') {
     const desk = Z.dev === 'desktop'
     const px = (v) => `${desk ? Math.round(v * 0.82) : v}px`
@@ -498,11 +528,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // card, the enquiry form's credit — reads the header's through `identity`
   // (`headerIdentity()` in data.js), since only the header has the fields.
   // The header reads its own content, so a preview of a layout the page is not
-  // on still shows what that layout would. Lime's and Grunge's layout-3 card
-  // types its own strapline; EditPanel mirrors it.
+  // on still shows what that layout would. Lime's, Grunge's and Editorial's
+  // layout-3 card types its own strapline; EditPanel mirrors it.
   const own = cat === 'header' ? c : identity
   vm.kicker = own.kicker !== undefined ? own.kicker
-    : cat === 'header' && d === 2 && (T.name === 'Lime' || T.name === 'Grunge') ? KICKER_3 : 'DJ · Live Act'
+    : cat === 'header' && d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial') ? KICKER_3
+    : 'DJ · Live Act'
   vm.subtitle = cv('subtitle', DEFS.heroSub)
   vm.location = own.location !== undefined ? own.location : 'Manchester, UK'
   // "DJ · Live Act · Manchester, UK", composed here so an emptied half drops
@@ -582,11 +613,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // glyph size), but its links are Label/SM 16 where Lime's are Display/List
   // 24, still 23 apart — so its gap is 23/16 of the row's size. Its layout-2
   // capsule (964:64599) is Grunge's instead, a fixed 18 at 16px type and at
-  // 13, so there the sum is the labels alone. Cards 3 and 4 are placeholders
-  // and keep layout 1's until their passes.
+  // 13, so there the sum is the labels alone, and so is its layout-3 one
+  // (964:68718), at the same sizes. Card 4 is a placeholder and keeps layout
+  // 1's until its pass.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? notoEms : null
-  const navGapEm = T.name === 'Editorial' ? (d === 1 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+  const navGapEm = T.name === 'Editorial' ? (d === 1 || d === 2 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -622,15 +654,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Label/SM, and the same fixed 18 gaps. Editorial's layout 2 (986:15658) is
   // Grunge's layout-2 bar box for box — the same 138.32, the same fixed 18
   // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Noto
-  // (`navFace`). Its layout 3 is a placeholder, and keeps the burger.
+  // (`navFace`). Its layout 3 (984:16812) is that bar again against layout
+  // 3's 684: the same 138.32 and fixed 18 gaps, and the links still Label/SM,
+  // where Grunge's layout-3 links are Label/MD.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
     const row = d === 1 ? 708 : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge' || (T.name === 'Editorial' && d === 1)) {
-      vm.navFits = vm.navEms * px(d === 1 ? vm.labelSm : vm.labelMd) + (vm.navLinks.length - 1) * 18
+    } else if (T.name === 'Grunge' || T.name === 'Editorial') {
+      vm.navFits = vm.navEms * px(T.name === 'Grunge' && d === 2 ? vm.labelMd : vm.labelSm) + (vm.navLinks.length - 1) * 18
         + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {
       const [link, name] = d === 1 ? [16, 20] : [13, 16]
@@ -963,9 +997,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // fits rather than break it (the nav's `navEms` rule); in Bebas ems. So does
   // Editorial's layout-1 form statement, a hand-scaled Bold whose frame breaks
   // UNFORGETT / ABLE inside the word in the demo face's measure; in Noto Bold
-  // ems. Undefined off those two.
+  // ems. Editorial's layout-3 form head is Lime's again, Display/LG Regular,
+  // so at design 2 it is Noto's 540 ems — the Bold table would shrink it 4.5%
+  // too far. Undefined off those two templates.
   vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial'
-    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : notoBoldEms)).toFixed(3)
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : d === 2 ? notoEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
@@ -3533,7 +3569,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
                     : f.k === 'kicker' && sec.cat === 'header'
-                      && (themeName === 'Lime' || themeName === 'Grunge') && design === 2 ? KICKER_3
+                      && (themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial') && design === 2 ? KICKER_3
                     : f.k === 'heading' && sec.cat === 'calendar'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3

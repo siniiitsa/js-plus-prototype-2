@@ -207,13 +207,15 @@ export const THEMES = [
       hl: '#141414',                        // sem/box/1/text
       tagFg: ['#141414', '#F6F0E8'],        // sem/tag/1/text, sem/tag/2/text — parallel to `tags`
     },
-    // The other schemes the frames stand a whole section on (SCHEMES_OF), in
-    // Scheme 1's shape: `palette` is [bg, text1, text2]. Scheme 2's accent is
-    // paper, so its heads are paper on taupe; Schemes 2's and 3's inactive
-    // ground is transparent, so an idle chip there is an outline only.
+    // The other schemes the frames stand a whole section on (SCHEMES_OF) or a
+    // nested node on (`s.onScheme[n]`), in Scheme 1's shape: `palette` is [bg,
+    // text1, text2]. Scheme 2's accent is paper, so its heads are paper on
+    // taupe; Schemes 2's and 3's inactive ground is transparent, so an idle
+    // chip there is an outline only.
     schemes: {
-      // Scheme 2, taupe — layout 1's media player and pricing, and layout 2's
-      // media panel and calendar card.
+      // Scheme 2, taupe — layout 1's media player and pricing, layout 2's
+      // media panel and calendar card, and layout 3's gallery and footer (and,
+      // nested, its audio card and middle repertoire set).
       2: {
         palette: ['#AA958A', '#F6F0E8', '#141414'],
         // tag1 blush, tag2 paper, both inked black — read off the file; the
@@ -228,7 +230,10 @@ export const THEMES = [
         },
       },
       // Scheme 3, ink — layout 1's header, repertoire, enquiry form and
-      // footer, and layout 2's pricing at 1440.
+      // footer, layout 2's pricing at 1440, and layout 3's header (its frame's
+      // Scheme 8; SCHEMES_OF) — and, nested at layout 3, the third repertoire
+      // set, pricing's featured row, the map's panel and the testimonials'
+      // ink cells.
       3: {
         palette: ['#141414', '#C86E52', '#F6F0E8'],
         tags: ['#F6F0E8', '#C86E52'],
@@ -241,7 +246,8 @@ export const THEMES = [
         },
       },
       // Scheme 4, terracotta — layout 2's repertoire at 1440 and its enquiry
-      // form. Its accent is paper and its active pair ink under terracotta, so
+      // form, and layout 3's map (and, nested, its first repertoire set and
+      // the testimonials' terracotta cell). Its accent is paper and its active pair ink under terracotta, so
       // `pillBg` is ink here. tag1 ink, tag2 salmon — read off the file; layout
       // 1's plan had the two seats the other way round.
       4: {
@@ -253,6 +259,23 @@ export const THEMES = [
           inactiveBg: 'rgba(200, 110, 82, 0)', inactiveFg: '#F6F0E8', inactiveLine: '#F6F0E8',
           stroke1: 'rgba(246, 240, 232, 0.56)', stroke2: '#141414', hl: '#FFFFFF',
           tagFg: ['#C86E52', '#141414'],
+        },
+      },
+      // Scheme 5, blush — layout 3's header nav capsule, read through
+      // `s.onScheme[5]`; no section is seated on it. The first Sienna Vale
+      // scheme with a pure black (its active ground and second tag seat); its
+      // accent is ink and its stroke1 opaque terracotta. Its tags 3–7 do not
+      // strictly alternate (tag 4 is terracotta again), which the two-seat
+      // system ignores, as in Schemes 2 and 3.
+      5: {
+        palette: ['#E6B6A0', '#141414', '#F6F0E8'],
+        tags: ['#C86E52', '#000000'],
+        sem: {
+          box1: '#F7C7B1', box2: '#FFD9C7', box3: '#D8A994', glow: '#C86E52',
+          activeBg: '#000000', activeFg: '#C86E52',
+          inactiveBg: 'rgba(230, 182, 160, 0)', inactiveFg: '#F6F0E8', inactiveLine: 'rgba(246, 240, 232, 0.56)',
+          stroke1: '#C86E52', stroke2: '#141414', hl: '#FFFFFF',
+          tagFg: ['#141414', '#C86E52'],
         },
       },
     },
@@ -282,18 +305,25 @@ export const THEMES = [
 // the section's ground. A section with no entry stands on Scheme 1, the
 // theme's own `palette` / `sem` / `tags`. An entry is a number at every width,
 // or a [desktop, tablet, mobile] triple where the frames move the section
-// between widths. The footer has one design, so its row is read at every page
-// layout.
+// between widths. The footer has one design, so its seat is read off the
+// page's design (the header's) where that page's row names a footer, and off
+// row 0 otherwise (sectionVm's head).
 export const SCHEMES_OF = {
   // Sienna Vale's layout-1 page (964:58612…22), read off each section's
-  // `explicitVariableModes`, identical at all three widths. Layouts 3 and 4
-  // are later passes' to fill from their own walks.
+  // `explicitVariableModes`, identical at all three widths. Layout 4 is a
+  // later pass's to fill from its own walk.
   Editorial: {
     0: { header: 3, media: 2, repertoire: 3, pricing: 2, form: 3, footer: 3 },
     // Its layout-2 page (964:64598 · 986:15657 · 986:15676). The repertoire
     // and pricing move between widths; media and the calendar are Scheme 2
     // cards on the page's paper, which the root paints round them (`pageBg`).
     1: { media: 2, repertoire: [4, 1, 1], pricing: [3, 1, 1], calendar: 2, form: 4 },
+    // Its layout-3 page (964:68717 · 984:16811 · 984:16842), every seat the
+    // same at all three widths. The header's frame is Scheme 8, which differs
+    // from Scheme 3 only in tags 6 and 7 — seats the two-seat system never
+    // reads — so it is seated on 3. The footer is layout 1's tree on taupe
+    // here, where layouts 1 and 2 stand it on ink (row 0's 3).
+    2: { header: 3, gallery: 2, map: 4, footer: 2 },
   },
 }
 
@@ -392,12 +422,11 @@ export const minimalNav = (navSections) =>
 // burger. Everywhere else it follows the sections. `d` is the design index,
 // `arch % designCount`. A stored value always wins, so a header moved back
 // to layout 1 returns to its sections unless the artist picked Minimal.
-// Editorial's layout 2 draws the three too (964:64599, 986:15658); its card 3
-// is a placeholder, so it follows the sections until its pass fits it
-// (plans/editorial/layout-1.md, open question 4).
+// Editorial's layouts 2 and 3 draw the three too (964:64599, 986:15658;
+// 964:68718, 984:16812), so it joins them.
 export const navModeDefault = (themeName, d) =>
-  ((themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge')
-    && (d === 1 || d === 2)) || (themeName === 'Editorial' && d === 1) ? 'minimal' : 'sections'
+  (themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial')
+    && (d === 1 || d === 2) ? 'minimal' : 'sections'
 
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas
@@ -488,9 +517,10 @@ export const NVAR = {
 // pages confirmed in the Figma file and all four fitted — Stacked last, in
 // HeaderV3's widened Lime block — so its family is closed too. Editorial is
 // the same four in a fourth mode (Sienna Vale), its four pages found in the
-// file (plans/editorial/layout-1.md, *The Figma source*); Hero is fitted, in
-// HeaderV0's Lime block widened, and the other three render Retro's
-// compositions in its tokens until their own passes.
+// file (plans/editorial/layout-1.md, *The Figma source*); Hero, Feature
+// spread and Inset Hero are fitted, in HeaderV0's, HeaderV1's and HeaderV2's
+// Lime blocks widened, and Stacked renders Retro's composition in its tokens
+// until its own pass.
 // Pop offers three flat layouts (§10.3); its designs do not exist yet.
 export const headerFamily = (themeName) =>
   themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
@@ -1184,9 +1214,9 @@ export const FIELDS = {
   // The header's `in` is always an object naming Retro, Lime, Grunge and
   // Editorial alone: they have different header families (six designs against
   // four, four and four — Grunge's row is measured over its four fitted cards,
-  // none a placeholder since its layout-4 pass; Editorial's over two fitted
-  // cards and two placeholders, so each of its layout passes re-measures its
-  // card), and Pop has a family of its own that is not designed, so it is left
+  // none a placeholder since its layout-4 pass; Editorial's over three fitted
+  // cards and one placeholder, so its layout-4 pass re-measures that card),
+  // and Pop has a family of its own that is not designed, so it is left
   // unmarked rather than folded onto any list.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
@@ -1225,11 +1255,12 @@ export const FIELDS = {
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
-    // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's 3.
+    // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's,
+    // Grunge's and Editorial's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
-          + '(in Lime and Grunge, layout 3 as well).' },
+          + '(in Lime, Grunge and Editorial, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
