@@ -54,7 +54,7 @@ HEAD. None is a stale-build echo.
 | 1 | JP-058 | `From £1,200` prints as a small `F` + `rom £1,200` | **Confirmed, and shared**: `/^[^\d]/` takes the first character of any price that does not start with a digit, in six sites (pricing layouts 1–3, every template) | S | **user: B, everything before the first digit** | **done** |
 | 2 | JP-057 | The seal's two small circles sit on the name's letters | **Confirmed, and shared**: only the name ring spins (`.seal-spin`, 14 s), and the marks stand still, so the name walks through them. At rotation 0 the picture is the frame's | S–M | **user: A, the marks spin with the name** | **done** |
 | 3 | JP-056 | Headings set in Anton, not the distressed Stones Crush | **By design so far**: Anton is the named stand-in (user call, 2026-09-21). The tester's licence question is real and is the PO's to carry | — (reply) | **user: A, a reply naming the stand-in** | **done** (reply; licence with the PO) |
-| 4 | — | End-of-pass sweep | — | S | — | open |
+| 4 | — | End-of-pass sweep | — | S | — | **done** |
 
 **Why this order:** JP-058 is the smallest diff and should prove a zero seeded diff. JP-057
 changes a shared helper and has a predictable digest after-diff. JP-056 goes last and inside this
@@ -556,6 +556,102 @@ the PO buys one, fitting the face is its own piece of work, not a QA fix.
    headed by the retest-against-the-stamp line
    (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`).
 
-**Settled.** *(open)*
+**Settled** (2026-09-28, all six steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **The harness.** A `main` worktree (`8a8d3ed`) in the scratchpad, `node_modules` symlinked,
+  served on :5174. The :5173 server had run for five days, so it was left alone and its digest
+  files were normalised instead: the port, and the `?t=` stamps (`\.jpg\?[^|]*`). To prove the
+  harness, the worktree first went to HEAD (`6c8c088`), and both servers came out **0 of 1,320**
+  files (660 + 660, themes 0–4). The worktree then went back to `8a8d3ed` on a fresh server.
+- **1. Full digest against `main`.** All categories × themes 0–4 × three widths × canvas and
+  `live=1`: **160 of 1,320 files differ (80 + 80)**. Each one is in JP-057's census, checked by
+  file name, not only by count.
+  - 64 files lose 10 `g` / `line` rows (§10.2), and 96 lose 2 `circle` rows (Lime / Grunge and
+    Editorial).
+  - Every one is deletions only, with the remaining rows in order.
+  - Themes 0–3 are 160 of 1,056, as named. Pop is 0 of 264.
+  - Pricing moves only in Grunge `arch 0`'s seal, so JP-058's seeded diff is 0. JP-056 moves
+    nothing.
+- **2. The repro set.** JP-058's six prices through `&cj=` (its recipe, `/UNIT`), 60 renders per
+  price per surface on both servers. Canvas and live agree. The counts are JP-058's Settled
+  plus JP-057's seal in Grunge `arch 0`, which is 3 files per price (circle deletions only)
+  wherever the split does not already move that file:
+  - `From £1,200` and `POA`: 45 each (arch 0–2 at every theme and width; arch 3 zero);
+  - `£650`: 3;
+  - `450` and all-spaces: 15 each;
+  - `£1,200–£2,000`: 6.
 
-**Replies to QA, one line per ticket.** *(open)*
+  **Off the DOM** (a one-off puppeteer script, deleted): 720 renders of the tree, themes 0–4 ×
+  arch 0–3 × three widths × both surfaces.
+  - `From £1,200` reads `From £` | `1,200` in all 105 rows per surface.
+  - `450` and `POA` stand whole with no lead, and `£650` reads `£` | `650`.
+  - The all-spaces price draws no lead span. Layouts 1 and 2 print an empty numeral before the
+    unit (named in JP-058), and layout 3 drops the row.
+  - Layout 4 prints every price whole.
+  - No lead or numeral wraps and nothing passes its card, except the range at layout 1's 768
+    card (below, and JP-058's Retro and Pop item).
+- **Named, not fixed (new here): the range at 768 under Lime, Grunge and Editorial.** At layout
+  1's 768 card, the `nowrap` display numeral `1,200–£2,000` passes the card. With `/UNIT` it is
+  22 / 3 / 30 px past; with the seeded `/event` it is 27 / 7 / 35 px, and Editorial's section
+  overflows by 5px. `main` measures the same to the tenth of a pixel, so this predates the
+  batch. JP-058's Settled named only Retro and Pop's two-line numeral at that card. With
+  `/event`, `main` also has at least 10 violations that the tree does not: Retro's `From` and
+  range overflows at 768 and its range wrap at 390, all fixed by JP-058. It is a floor, because
+  the probe finds the numeral by its text, and `main`'s `rom £1,200` never matches `1,200`.
+- **3. Reach.** Skipped, because no `in` line moved between `8a8d3ed` and HEAD. `data.js`'s diff
+  is `priceParts()` and one clause of `FIELDS.pricing.tiers`' hint.
+- **4. The real app** (a one-off puppeteer script, deleted). Card 1 of Grunge, Retro and Lime;
+  the Pricing panel's first three prices typed as `From £1,200`, `450` and `£650`; Publish,
+  Open, and the tab at 1440 / 768 / 390. There were no page errors in either window.
+  - **Pricing.** The panel holds the three strings. On all three templates, the canvas and the
+    published tab read `From £ | 1,200 | /event`, `450 | /event` and `£ | 650 | /event` at
+    every width. No lead or numeral wraps, nothing passes its card, and the page does not
+    overflow.
+  - **Seals.** Every seal's animation was paused at 0 and at 3.5 s (a quarter turn, the phase
+    the report shows). The ring's computed rotation reads 0° then 90°, both marks are inside
+    `.seal-spin`, and the gap from each mark to the nearest glyph cell of the name is the same
+    at both phases:
+    - Grunge's four (header, bio, pricing, footer): +12.1° to +12.6° at all three widths;
+    - Lime's two (bio, footer): +9.7° to +9.9°;
+    - Retro's four §10.2 seals (header, bio, calendar, footer; three at 390): −4.1° / −4.2°,
+      which is JP-057's named rest picture, the asterisk standing against the first letter
+      like a bullet.
+
+    Each mark stays 37.76 / 38.41 viewBox units from the centre (§10.2: 39 / 39), so the marks
+    stay concentric with the ring.
+  - **Shots.** All 24 Grunge seal shots show the marks between the two names, and so do Lime's.
+    Retro's bio seal at 768 and 390 shot the wrong area. That seal bleeds off the page's left
+    edge (x −29 and −11), and an element clip there comes out garbled. A viewport shot shows
+    it in place, and a hit test at its centre lands in its SVG. Its position is `main`'s, since
+    the digest moves only its mark rows.
+- **5. `index.html`** refreshed in `5bed233` (8,748,860 bytes, up from 8,748,639), from
+  `npm run build:standalone`. The two-build digest (`build-digest.mjs`, both files from
+  `127.0.0.1:8931`, reduced motion) was proved first: the old build walked twice diffs to 0 of
+  16. Old against new moves exactly the seals' mark rows, deletions only:
+  - Retro −40 / −40 / −30 at 1440 / 768 / 390;
+  - Lime −4, Grunge −8 and Editorial −4 at each width;
+  - Pop 0, and the setup modal's card counts are unchanged.
+- **6.** `plans/README.md`'s row, and the replies below. At the sweep the deployed build still
+  read `Mon, 28 Sep 2026 08:20:45 GMT`, 8,748,639 bytes, which is the tester's.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified`
+is later than `Mon, 28 Sep 2026 08:20:45 GMT`** (the build these reports were filed against,
+8,748,639 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or
+cached build will still show all three.
+- **JP-058 — fixed.** The small seat beside a package's big price now takes everything before
+  the price's first digit, so `From £1,200` prints a small `From £` and a big `1,200`. A price
+  with no digit (`POA`) or that starts with one (`450`) prints whole in the big seat. This was
+  every template's bug at pricing layouts 1–3, and the fix covers all of them.
+- **JP-057 — fixed.** The seal's name turns slowly (one turn every 14 seconds), and the two
+  small circles did not turn with it, so twice a turn the name passed through them. Your
+  screenshot is one frame of that. The circles now turn with the name and stay between the two
+  names at every moment, on all four seals and at every width. Retro's, Lime's and Editorial's
+  seals had the same bug and are fixed too. One separate limit remains: in Grunge's face, a
+  name longer than about 12 characters still reaches the circles.
+- **JP-056 — by design; the licence question is with the PO.** Grunge's headings use Anton on
+  purpose, as the closest free stand-in for Stones Crush: heavy and condensed, without the worn
+  texture, and set at 0.75 of the design's size so its capitals match. Stones Crush's free
+  download is licensed for personal use only, so it cannot ship on artists' public sites. A web
+  licence is the PO's call. A "Stones Crush 2" is sold on Creative Fabrica, but it is not yet
+  confirmed to be the same face, or that its licence covers the web. Fitting the real face
+  would be its own piece of work.
