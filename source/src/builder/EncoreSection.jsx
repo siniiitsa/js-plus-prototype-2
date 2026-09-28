@@ -21285,19 +21285,21 @@ function Testimonials({ s }) {
   // nothing here — the gallery's whole-seam-gone case, and the first time in
   // this pass that the absence costs the visitor nothing.
   //
-  // **The stat card is where the frame's claims are re-seated.** `4.9 /5`, the
-  // four photographed faces and the `★★★★★` are a rating and a following the
-  // artist never typed (the video section's rule; this section's layout 2 and
-  // the enquiry form's dropped this very row of stars), and `56+ events` is a
-  // fabricated metric inside a real sentence. What comes back in their place is
-  // the section's own arithmetic and its own fields: the big numeral is the
-  // **review count** with its unit beside it, the sentence is `sub` — which drew
-  // in layout 2 alone until now — the small line above the stack is `s.brand`
-  // (the enquiry form's layout-3 call), and the faces are one disc per review
-  // marked with `vm.quotes[].mark`, the same composed initials layout 2's rail
-  // picks from. The `®` goes with the stars: a trademark is a claim too. The
-  // stars' seat is not re-filled, because the count they would have carried is
-  // already the numeral — the events map's allocate-each-field-once rule.
+  // **The stat card is where the frame's claims are re-seated, as fields.**
+  // `4.9 /5` and the `★★★★★` are the artist's to state (JP-065, user call,
+  // 2026-09-28; the fit had dropped both as claims never typed, and this
+  // section's layout 2 and the enquiry form's card have since seated the same
+  // row of stars as fields). So the big numeral is **`rating`** beside the
+  // frame's literal `/5`, and `stars` is printed in its frame seat, 12 right of
+  // the face stack, while it is filled: each is emptiable apart, JP-046's
+  // rule. An emptied rating gives the numeral back to the section's own
+  // arithmetic, the **review count** with its unit, which is what the fit put
+  // there. `56+ events` is a fabricated metric inside a real sentence, so the
+  // sentence is `sub`; the small line above the stack is `s.brand` (the enquiry
+  // form's layout-3 call), and the faces are one disc per named review marked
+  // with `vm.quotes[].mark`, the same composed initials layout 2's rail picks
+  // from: the frame's photographs are a named diff. The `®` stays out: a
+  // trademark is a claim no field states.
   //
   // **A review with no attribution *is* the frame's bare cell.** The quote cells
   // are one template — disc, quote, then name over role — with each part
@@ -21375,6 +21377,7 @@ function Testimonials({ s }) {
 
     const n = s.quotes.length
     const marked = s.quotes.filter((r) => !!r.who)
+    const rated = !!s.testiRating
 
     // One reviewer's disc. The 56 in a quote cell carries Label/LG; the 24 in
     // the stat card's stack has no type in the frame at all — its faces are
@@ -21399,23 +21402,28 @@ function Testimonials({ s }) {
           {/* The numeral hugs at 1440 (76 + 4 + 16 = the frame's 96) and fills at
               both narrow widths (196 + 4 + 15 = 215, 291 + 4 + 15 = 310), which
               is why `/5` sits against the cell's right edge in those two
-              renders. Baseline-aligned at all three. The unit is pluralised —
+              renders. Baseline-aligned at all three. It is the artist's
+              `rating` over the frame's own `/5`, 4 apart; an emptied rating
+              gives the seat to the review count, whose unit is pluralised —
               new copy no other layout prints, so the events map's
-              copy-the-plural-bug rule does not bind — and it takes twice the
-              frame's 4px gap, because that 4 sits under a `/`, which is its own
+              copy-the-plural-bug rule does not bind — and takes twice that
+              gap, because the frame's 4 sits under a `/`, which is its own
               separator, where a word needs a word space (the calendar's rule
               that a frame's squeeze is not transferable once our content
-              differs; at the frame's own 4 this reads "3reviews"). */}
-          <div style={row(u(8), {
+              differs; at the frame's own 4 this reads "3reviews"). The
+              numeral may shrink and wrap, so a long rating stays in the card:
+              for the seed that is the same box `none` drew. */}
+          <div style={row(u(rated ? 4 : 8), {
             alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
           })}>
             <span style={{
               fontFamily: s.display, fontSize: u(T.disp), lineHeight: 1,
-              letterSpacing: s.dls, color: s.pillBg, flex: desk ? 'none' : '1 0 0',
-            }}>{n}</span>
+              letterSpacing: s.dls, color: s.pillBg, flex: desk ? '0 1 auto' : '1 0 0',
+              minWidth: 0, overflowWrap: 'anywhere',
+            }}>{rated ? s.testiRating : n}</span>
             <span style={{
               fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, flex: 'none',
-            }}>{n === 1 ? 'review' : 'reviews'}</span>
+            }}>{rated ? '/5' : n === 1 ? 'review' : 'reviews'}</span>
           </div>
           {!!s.testiSub && (
             <p style={{
@@ -21429,19 +21437,30 @@ function Testimonials({ s }) {
             master's 203 exactly). */}
         <div style={col(u(10), { width: '100%', paddingTop: u(10) })}>
           {!!s.brand && <span style={body12}>{s.brand}</span>}
-          {/* The frame's four photographed faces, as the marks `sectionVm`
-              already composes for layout 2's rail. Named reviewers only — the
-              same `who` the quote card gates its own disc on, so the stack
-              cannot invent a face for a review the wall itself shows
-              unattributed; `mark`'s row-number fallback exists because a rail
-              of blank tiles cannot be picked from, and there is nothing to pick
-              here. The stack is not a count: that is the numeral above it. */}
-          {!!marked.length && (
-            <div style={row('0px')}>
-              {marked.map((r, i) => (
-                disc(r.mark, 24, 11, `2px solid ${s.retro ? '#50532B' : cardLine}`,
-                     i === marked.length - 1 ? null : { marginRight: u(-8) }, i)
-              ))}
+          {/* The frame's `avs` row: the face stack, then `stars` 12 to its
+              right, in the numeral's ink (every template's frame letters them
+              so). It wraps rather than clipping: eight named reviewers and the
+              stars come to ~173 of the 176 the 1440 card leaves. */}
+          {(!!marked.length || !!s.testiStars) && (
+            <div style={row(u(12), { flexWrap: 'wrap' })}>
+              {/* The frame's four photographed faces, as the marks `sectionVm`
+                  already composes for layout 2's rail. Named reviewers only —
+                  the same `who` the quote card gates its own disc on, so the
+                  stack cannot invent a face for a review the wall itself shows
+                  unattributed; `mark`'s row-number fallback exists because a
+                  rail of blank tiles cannot be picked from, and there is
+                  nothing to pick here. The stack is not a count either. */}
+              {!!marked.length && (
+                <div style={row('0px')}>
+                  {marked.map((r, i) => (
+                    disc(r.mark, 24, 11, `2px solid ${s.retro ? '#50532B' : cardLine}`,
+                         i === marked.length - 1 ? null : { marginRight: u(-8) }, i)
+                  ))}
+                </div>
+              )}
+              {!!s.testiStars && (
+                <span style={{ ...body12, color: s.pillBg, minWidth: 0, overflowWrap: 'anywhere' }}>{s.testiStars}</span>
+              )}
             </div>
           )}
         </div>
@@ -21532,7 +21551,7 @@ function Testimonials({ s }) {
     //    `titleSize`); the family is `s.label` either way, both templates
     //    setting display and label to one face.
     //  - **The stat card letters in two inks.** Scheme 3's `text/1` is black
-    //    and its `text/2` white, so the numeral (and the dropped stars) are
+    //    and its `text/2` white, so the numeral and the stars are
     //    `s.bg` while `/5`, `sub` and `brand` are `s.tx` — where Lime letters
     //    the whole card `s.bg`. Sampled off the master's render: `#9E1F17`
     //    ground, (0,0,0) numeral, (255,255,255) prose.
@@ -21684,8 +21703,9 @@ function Testimonials({ s }) {
 
       // Scheme 3: a `lime3` card in a 15% ink hairline, every ink `s.bg` — the
       // numeral included, where Retro's is `pillBg` on its dark card. The
-      // numeral, the unit, `sub`, `brand` and the stack are Retro's
-      // re-seatings of the frame's rating, and the stars stay dropped.
+      // numeral is the artist's `rating` over the frame's `/5` (the review
+      // count once it is emptied), and `sub`, `brand`, the stack and the
+      // stars sit where Retro's body seats them.
       //
       // Grunge's card is the one place the frame letters in two inks: Scheme
       // 3's `sem/text/1` is black and its `sem/text/2` white, so the card's
@@ -21695,7 +21715,10 @@ function Testimonials({ s }) {
       // coincidence for a second time — so `s.bg` is what is written, and a
       // scheme that parted them would want a literal here. Editorial's two
       // inks are Scheme 3's own pair read off `onScheme`: terracotta `text/1`
-      // for the numeral (`G.num`), paper `text/2` for the rest.
+      // for the numeral (`G.num`), paper `text/2` for the rest. On all three
+      // frames the stars take the numeral's ink and `/5` the card's, so
+      // `numInk` letters both the numeral and the stars.
+      const numInk = grunge ? { color: s.bg } : G.num ? { color: G.num } : null
       const statCard = (
         <div key="stat" style={col(u(16), {
           background: G.card, color: G.cardFg, boxShadow: ed ? undefined : ring(G.hair),
@@ -21708,18 +21731,18 @@ function Testimonials({ s }) {
                 0.085 / 0.088 / 0.057em lower in its lh-1 box than the frame's,
                 over the sentence 16 below (plans/editorial/layout-3.md,
                 section 10). */}
-            <div style={row(u(8), {
+            <div style={row(u(rated ? 4 : 8), {
               alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
               ...(ed ? { position: 'relative', top: `calc(-0.08 * ${s.dispMd})` } : null),
             })}>
               <span style={{
                 ...disp(s.display, s.dispMd, 1),
-                letterSpacing: s.dls, ...(grunge ? { color: s.bg } : G.num ? { color: G.num } : null),
-                flex: desk ? 'none' : '1 0 0',
-              }}>{n}</span>
+                letterSpacing: s.dls, ...numInk,
+                flex: desk ? '0 1 auto' : '1 0 0', minWidth: 0, overflowWrap: 'anywhere',
+              }}>{rated ? s.testiRating : n}</span>
               <span style={{
                 fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
-              }}>{n === 1 ? 'review' : 'reviews'}</span>
+              }}>{rated ? '/5' : n === 1 ? 'review' : 'reviews'}</span>
             </div>
             {!!s.testiSub && (
               <p style={{
@@ -21729,9 +21752,16 @@ function Testimonials({ s }) {
           </div>
           <div style={col(u(10), { width: '100%', paddingTop: u(10) })}>
             {!!s.brand && <span style={small}>{s.brand}</span>}
-            {!!marked.length && (
-              <div style={row('0px')}>
-                {marked.map((r, i) => face(r.mark, i === marked.length - 1, i))}
+            {(!!marked.length || !!s.testiStars) && (
+              <div style={row(u(12), { flexWrap: 'wrap' })}>
+                {!!marked.length && (
+                  <div style={row('0px')}>
+                    {marked.map((r, i) => face(r.mark, i === marked.length - 1, i))}
+                  </div>
+                )}
+                {!!s.testiStars && (
+                  <span style={{ ...small, ...numInk, minWidth: 0, overflowWrap: 'anywhere' }}>{s.testiStars}</span>
+                )}
               </div>
             )}
           </div>

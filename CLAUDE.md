@@ -1003,13 +1003,18 @@ mutated through a single `patch()` helper.
   nor `role` collapses to the frame's own quote-only cell and nothing the artist typed is
   discarded; two seats are stated (275 leading the first row, 276 trailing the second when it
   is full) and every other cell is `minmax(0, 1fr)`, with rows past the second three equal
-  fills. Its stat card is where the frame's claims are re-seated: the big numeral is
-  **`s.quotes.length`** with a pluralised unit — arithmetic, not the frame's `4.9 /5` rating —
-  the sentence under it is `sub`, the line above the disc stack is `s.brand`, and the stack is
-  one `vm.quotes[].mark` per **named** review, so it never invents a face for a card the wall
-  itself shows unattributed. The `★★★★★` and the `®` go with the rating. `when` and `cta` have
-  no seat there, which is the only content this section's first three layouts do not between
-  them read. **Layout 4 is a wall that pages**: a display head with a pair of arrow discs at
+  fills. Its stat card is where the frame's claims are re-seated as fields (JP-065, user call,
+  2026-09-28, reversing the fit's review count): the big numeral is **`rating`**
+  (`vm.testiRating`, seeded `TESTI_RATING` '4.9', uncased, `in: [2]`) beside a literal `/5`, 4
+  apart as the frame sets them, and an emptied rating gives the seat back to
+  **`s.quotes.length`** with a pluralised unit, 8 apart. `stars` (layout 2's field, now
+  `in: [1, 2]`) is printed 12 right of the disc stack, in the frame's `avs` row, while it is
+  filled, whatever the rating; each drops alone. The stars take the numeral's ink and `/5` the
+  card's, on every frame. The sentence under it is `sub`, the line above the disc stack is
+  `s.brand`, and the stack is one `vm.quotes[].mark` per **named** review, so it never invents a
+  face for a card the wall itself shows unattributed; the frame's photographs are a named diff,
+  and the `®` stays out, a claim no field states. `when` and `cta` have no seat there, which is
+  the only content this section's first three layouts do not between them read. **Layout 4 is a wall that pages**: a display head with a pair of arrow discs at
   its right over *one row* of cards — four at 1440, three at 768, one and a peek at 390 — so it
   is the third design to share `cur` whole rather than grow a seam, reading it as the review
   **leading the row** where layouts 1 and 2 read it as the single card on show. The row is one

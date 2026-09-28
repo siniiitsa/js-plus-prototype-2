@@ -141,7 +141,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | **done** (the centre is `(pg + 1) % n`; 10 files as named; the seat's colour under Lime, Grunge and Editorial, the set's under Retro and Pop) |
 | 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | **done** (A; no hour chip at any width, in both halves; the weekday a reply; 24 files as named) |
 | 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | **done** (A; the pair after the month name, the free dot at 24; off-month the head is the month alone; 30 files as named) |
-| 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | open |
+| 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | **done** (A; `rating` over a literal `/5`, the count its emptied fallback; `stars` widened to layout 3, beside the faces; 30 files as named) |
 | 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | open |
 | 14 | JP-070 (form) | The form's head and boxes | **Named fit diffs**: the head names the mock artist; the boxes are layout 2's card frame's too | S–M | **yes** — the head, the boxes | open |
 | 15 | — | End-of-pass sweep | — | S | — | open |
@@ -1987,11 +1987,135 @@ both surfaces = **30 files**: the numeral and unit row, and a new stars node.
 testimonials paragraph ("the big numeral is **`s.quotes.length`** … arithmetic, not the frame's
 `4.9 /5` rating"). `./layout-3.md`'s testimonials Settled, a pointer.
 
-**Decided.** —
+**Decided: A** (user, 2026-09-28; four questions, each the recommendation).
+- **A `rating` field**, pricing's shape: seeded `'4.9'`, emptiable, `in: [2]`, printed in the
+  numeral seat. An emptied rating brings back today's review count and its unit. The faces stay
+  initials, a named diff (A+ declined).
+- **"/5" is a literal**, not part of the field. It is printed small in the unit seat, 4px from the
+  numeral as the frame sets it. The field holds the number alone, as pricing's `rating` does.
+- **Under a rating the unit seat reads "/5" alone**, the frame's picture. The count is off the card
+  (the wall itself shows every review); it comes back only as the emptied rating's fallback.
+- **The stars are independent of the rating.** They show while `stars` is filled (JP-046's rule,
+  each field drops what it fills), in the frame's seat: the foot row, 12 right of the face stack.
+  `stars` widens to `in: [1, 2]`.
 
-**Settled.** —
+The frame's card (`964:68715`, read this session): `big` is "4.9" (63 × 72) and "/5" (16 × 24,
+at x 67), 4 apart; then the sentence; then `rfoot`, "kai mercer®" over `avs`, the four-face stack
+(72 × 24) with "★★★★★" (63 × 17) at x 84.
 
-Reply: —
+**Settled** (2026-09-28).
+- **Re-checked on HEAD** (`b970a72`). Every number in the hand-off held: the comment at
+  `EncoreSection.jsx:21288`, `if (s.v2)` at `:21311`, `n` / `marked` at `:21376`–`21377`, the
+  units at `:21418` and `:21722`, the block at `:21566`; `data.js` `stars` at `:1587`, `bookings`
+  at `:1639`, pricing's `rating` / *Reviewer photos* at `:1436` / `:1432`, `PRICING_RATING` at
+  `:823`, `TESTI_STARS` at `:1082`.
+- **The frame's inks, read off the four desktop masters' renders** (the Figma tools take no
+  instance ids, so the stars' node could not be asked for its variables):
+
+  | | numeral | `/5` | stars |
+  |---|---|---|---|
+  | Retro `964:68651` | `#D8A227` | cream, the card's ink | `#D8A227` |
+  | Lime `964:68683` | `#15180F` | `#15180F` | `#15180F` |
+  | Grunge `964:68715` | black | white | black |
+  | Editorial `964:68748` | terracotta | paper | terracotta |
+
+  So on every template the stars take the numeral's ink and `/5` the card's (today's unit ink).
+- **Code.**
+  - `data.js`: `TESTI_RATING` '4.9' at `:1087`, beside `TESTI_STARS`, its own constant though
+    pricing's has the same bytes. `FIELDS.testimonials` gains `rating` (*Rating*, `in: [2]`,
+    `:1592`), and `stars` is relabelled *Stars* and widened to `in: [1, 2]` (`:1594`). Both hints
+    say where.
+  - `EncoreBuilder.jsx`: `vm.testiRating = cv('rating', TESTI_RATING)` at `:1042`, uncased as
+    pricing's is. `EditPanel` needs nothing: `fieldDefault(f)` reads `d`.
+  - `EncoreSection.jsx`, the shared body (Retro, Pop): `rated` at `:21380`. The numeral row
+    prints `rated ? s.testiRating : n` (`:21423`) over `'/5'` or the pluralised unit, the gap
+    `u(rated ? 4 : 8)`, so the frame's 4 comes back under its own `/`. The foot's stack now sits
+    in the frame's `avs` row, `row(u(12), { flexWrap: 'wrap' })` (`:21440`), with the stars
+    after it in `body12` and `s.pillBg`.
+  - The `s.limeTree` block: `numInk` (`:21721`) is the numeral's existing colour expression,
+    now read by the stars as well; the same row, unit and `avs` row (`:21742`, `:21762`) in the
+    block's `small` type.
+  - **A long rating stays in the card.** The numeral's desktop `flex` is `'0 1 auto'` where it
+    was `'none'`, with `minWidth: 0` and `overflowWrap: 'anywhere'` at every width; for the seed
+    that is the box `none` drew (the digest's numeral x holds). The stars span wraps the same
+    way.
+  - Comments: `:21288` rewritten (the two stale precedents gone), the numeral row's gap comment,
+    the Grunge bullet ("the numeral and the stars are `s.bg`"), and the block's stat-card
+    comment.
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on :5173,
+  testimonials × themes `0,1,2,3,4` × three widths, canvas and `live=1`: **0 of 120**.
+- **After the edit: 30 files, as named** (:5173's module carried `testiRating` and `numInk`
+  before the digest ran). They are testimonials `arch 2` × themes 0–4 × three widths × both
+  surfaces. In every file, 2 rows change and 2 are added, and none is removed:
+  - the numeral row's two spans: "5" → "4.9" and "reviews" → "/5", with the unit's x moving in
+    to the 4 gap (3.3 at desktop);
+  - the `avs` wrapper, at the stack's old x / y, as tall as the stack;
+  - the stars span, in the numeral's ink (Retro `#D8A227`, Lime `#15180F`, Grunge black,
+    Editorial `#C86E52`, Pop `pillBg`).
+  The face stack's own row does not move, and nothing below the numeral row changes height.
+- **The control: both fields emptied** (`&cj={"rating":"","stars":""}`, three widths × both
+  surfaces). Every `arch 2` file is HEAD's with **0 rows changed and 1 added**, the wrapper.
+  `arch 1` moves too, only because layout 2 already reads `stars`.
+- **States** (`live=1`, themes 0–4 × three widths, 120 renders; a one-off script, deleted). The
+  numeral row's `textContent` was read whole, and every element of the card was checked against
+  its content box (absolute overlays and SVG aside: Editorial's `DashRule` reaches the padding
+  box by design).
+  - **The seed**: "4.9/5", stars on the stack's line, 5 discs. Nothing overflows.
+  - **`rating: ''`**: "5reviews" (the count's 8 gap), the stars still drawn.
+  - **`stars: ''`**: the stars go; the `avs` row holds the stack alone.
+  - **A long rating**, "4.9 out of 5 from 120 weddings" and the unbroken
+    "4.9/5-from-120-weddings-and-parties": the numeral wraps inside the card (up to 416 tall at
+    390), `/5` beside its last line. Nothing overflows at any width.
+  - **`quotes: []`**: "4.9/5", no stack, the stars alone in the row.
+  - **Eight named reviewers**: eight discs and the stars on one line at every width, Retro's
+    1440 included (~173 of 176).
+  - **A long stars string**: it wraps to its own line under the stack (two lines at 1440 and
+    768, one at 390).
+  - The card's `scrollWidth` never exceeds its `clientWidth`.
+- **Reach** (`reach.mjs`'s two new rows, a copy filtered to them, themes 0–4, 480 renders):
+  `testimonials.rating` reaches layout 3 and `testimonials.stars` layouts 2 and 3, 6/6 on every
+  template. The `in` rows were already those.
+- **The tester's steps in the real app** (a one-off puppeteer script, deleted). The editor was at
+  1600 × 1000: the template, card 3, *Use this header*, *Back to page list*, then *Testimonials*.
+  - **The panel, Grunge card 3**: *Intro line*, *Rating* "4.9" and *Stars* "★★★★★" carry no
+    note; *Button* reads "Not shown in this layout".
+  - **The canvas** (Desktop, Tablet and Mobile tabs): "4.9/5", the stars black, `/5` white,
+    nothing past the card's content box.
+  - **Typing "4.8" into *Rating*** reaches the canvas at once. *Publish*, *Open*: the tab at
+    1440, 768 and 390 reads "4.8/5" with the stars, no overflow and no page error.
+  - **Retro card 3, once**: the same, the stars `#D8A227` and `/5` cream.
+- **Named diffs that remain**: the faces are initials, not the frame's photographs (A+
+  declined); the `®` stays out; Editorial's frame reads "5.9", taken as the typo for "4.9".
+- **Docs.**
+  - CLAUDE.md's testimonials paragraph: the stat-card sentence now names `rating`, the `/5`, the
+    count fallback, the stars' seat and ink, and the `®`.
+  - `FIELDS.testimonials.stars`' label and hint, and `rating`'s row.
+  - Pointers in `./layout-3.md`'s testimonials named diffs, `../lime/layout-3.md`'s stat-card
+    bullet, `../editorial/layout-3.md`'s stat-card bullet, and `../retro/layout-3.md`'s two
+    notes (the "dropped claim … arithmetic" convention and question 19). README names only the
+    bento wall, so it needs no change.
+- **For JP-070 (heads).** This entry sits after `Calendar` and in `data.js` at `:1083` and
+  `:1592`, so JP-070's triage numbers have moved. As they stand now:
+  - `EncoreBuilder.jsx`: `HEADING_4` at `:244`–`247`; `vm.cta1` at `:550`; in `sectionVm` the
+    repertoire count at `:1017`, `CAL_HEADING_3` at `:1022`, `HEADING_4` at `:1025`; in
+    `EditPanel` the count at `:3607`, `CAL_HEADING_3` at `:3612`, `HEADING_4` at `:3614`.
+  - `data.js`: `TIERS` at `:700`; `TITLES` at `:951`–`954` (gallery `:953`, map and
+    testimonials `:954`); `DEFS.pricingIntro` at `:972`; `CAL_HEADING_3` at `:1051`;
+    `PRICING_ROW_CTA` at `:1094`; the `heading` rows: pricing `:1407`, gallery `:1477`, map
+    `:1538`, testimonials `:1571`; pricing's `intro` at `:1423` and `rowCta` at `:1449`.
+  - `EncoreSection.jsx`: `BookPill` at `:747` (`label ?? s.cta1` at `:748`); the map's "Gigs &
+    travel" kicker at `:18835` and `:19197`.
+
+Reply: **JP-065 — fixed.** The Testimonials stat card (layout 3) now shows a rating, as the
+design does.
+- A new *Rating* field, seeded "4.9", is printed large with a small "/5" beside it.
+- The *Stars* field (it was layout 2's alone) now reaches layout 3 too, beside the reviewers'
+  faces. The panel no longer says "Not shown in this layout" for it.
+- Each can be emptied on its own. Emptying *Rating* brings back the number of reviews
+  ("5 reviews"); emptying *Stars* drops the stars.
+- On every template.
+- Not changed: the faces are the reviewers' initials, not photographs, since no field holds
+  them; and the "®" after the artist's name stays out.
 
 ---
 

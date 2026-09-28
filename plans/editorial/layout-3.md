@@ -1979,7 +1979,8 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   Grunge's two inks, here two different values off one scheme. The face stack keeps the
   twins' invented pair, `s.bg` paper lettered `s.ac` terracotta, in Scheme 3's **`box/2`
   `#2A2A2A`** 2px ring (`G.lift`, the frame's binding on its photographs); the stars, the `®`
-  and the rating stay dropped, Retro's re-seating.
+  and the rating stay dropped, Retro's re-seating. (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `../grunge/layout-3-qa-fixes.md`.) The frame's "5.9" is read as the
+  typo for Retro's "4.9", which is the seed.
 - **One lift, measured** (*Conventions*, new bullet). Floors read with flat-bottomed strings
   (`&cj=` "The beat held til late" / "Hal Bett" / heading "The beat held"), DPR 2, against the
   frame's `absoluteRenderBounds` corrected for Figma's whole-pixel line boxes:

@@ -68,6 +68,9 @@ const PROBES = [
   { name: 'tiers', cats: ['calendar'], param: 'tiers', value: [{ name: Z, price: Z }] },
   // JP-046: layout 3's offer line beside the pricing capsule.
   { name: 'pricing.offer', cats: ['pricing'], param: 'cj', value: { offer: Z } },
+  // JP-065: layout 3's stat card, its rating and the stars beside its faces.
+  { name: 'testimonials.rating', cats: ['testimonials'], param: 'cj', value: { rating: Z } },
+  { name: 'testimonials.stars', cats: ['testimonials'], param: 'cj', value: { stars: Z } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

@@ -1080,6 +1080,11 @@ export const FORM_SUB_4 = 'Enquire'
 // booking calendar's layout-4 wizard through pageEmail() below.
 export const FORM_EMAIL = 'bookings@kaimercer.co.uk'
 export const TESTI_STARS = '★★★★★'
+// Testimonials layout 3's stat card reads "4.9 /5" (964:68651 and its three
+// twins; Editorial's "5.9" is a typo). The field holds the number and the card
+// prints the "/5" (JP-065). Its own constant, though pricing's PRICING_RATING
+// has the same bytes: it is another section's content.
+export const TESTI_RATING = '4.9'
 // Booking calendar layout 4's wizard (964:72843): the event types its first
 // step offers, the frame's own four. The calendar's own list rather than the
 // enquiry form's FORM_TYPES, which is another section's content.
@@ -1584,8 +1589,11 @@ export const FIELDS = {
           + "above the quote in layout 1. Layout 2's selector takes the name's "
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
-    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS, in: [1],
-      hint: 'Printed in the corner of the card, beside the reviewer. Empty it to drop them.' },
+    { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
+      hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
+    { k: 'stars',   l: 'Stars', d: TESTI_STARS, in: [1, 2],
+      hint: 'Layout 2 prints them in the corner of the card, beside the reviewer; layout 3 beside '
+          + 'the faces on its stat card. Empty it to drop them.' },
     { k: 'cta',     l: 'Button', d: 'Book Now', in: [1],
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },

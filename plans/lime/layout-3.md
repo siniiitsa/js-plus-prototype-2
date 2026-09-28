@@ -1088,6 +1088,7 @@ Settled in section 10 (the testimonials):
     **invented** pair, an `s.bg` disc lettered `s.ac`, because an accent disc vanishes on `lime3`.
     The `lift` ring is faint there by the frame's own hand.
   - Retro's drops hold: the stars, the `®` and the 306 head cap. The numeral is the review count.
+    (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `../grunge/layout-3-qa-fixes.md`.)
 - **No `T` table.** `get_variable_defs` is the ramp at all three widths: dispMd 72 / 50 / 40 (the
   head *and* the numeral), labelLg 32 / 21 / 14 (quote and initials), list 24 / 19 / 18, bodyLg
   16 / 15 / 15, bodyMd 14 / 13 / 13, bodySm 13 / 13 / 12. The head is `s.tx` on both lines (Retro's

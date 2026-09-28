@@ -44,7 +44,7 @@ import {
   FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, CAL_HEADING_3, CARD_LINE_3, TESTI_STARS,
+  TESTI_HEADING_2, CAL_HEADING_3, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
@@ -1036,6 +1036,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : d === 2 ? notoEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
+  // Layout 3's stat card prints it with a literal "/5" beside it, and an
+  // emptied one gives the seat back to the review count (JP-065). Uncased, as
+  // pricing's rating is.
+  vm.testiRating = cv('rating', TESTI_RATING)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips

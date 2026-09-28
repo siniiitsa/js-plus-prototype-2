@@ -1090,7 +1090,9 @@ Learned on the testimonials (section 12):
   the events map's `{n} pins` promoted to a display numeral, and it makes the stat card
   read at any count including zero. Note what that then forbids: the `★★★★★` beside the
   faces would naturally have taken "3 reviews" too, and does not, because the numeral
-  already has it — allocate-each-field-once reaching a *derivation*.
+  already has it — allocate-each-field-once reaching a *derivation*. (Reversed by JP-065,
+  2026-09-28: the rating and the stars are fields again, and the count is the emptied rating's
+  fallback; see `../grunge/layout-3-qa-fixes.md`.)
 - **`s.pillBg` is legible on `s.deep` by construction, which is the audio player's
   dies-on-paper lesson from the useful end.** The lightest tag on the darkest tag needs no
   literal and no `contrast()` call, and under Retro it resolves to the frame's own
@@ -1314,7 +1316,7 @@ Learned on the testimonials (section 12):
     list, the events map's `{n} pins` promoted from a foot line to 48px of display type. It
     can be wrong about nothing. Named here only because a big mustard numeral *looks* like
     the frame's rating and a later reader might take it for one — it is `s.quotes.length`,
-    and the frame's own `4.9 /5` is gone.
+    and the frame's own `4.9 /5` is gone. (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `../grunge/layout-3-qa-fixes.md`.)
 
 ## Addendum, 2026-09-15 — QA against the frames
 

@@ -1476,7 +1476,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   790, so they run short at 1440 and long at 768 where our quotes wrap further in a 190.5 column;
   the head prints `vm.title`'s "Word of Mouth" where the frame writes "Experiences."; the
   numeral is the review count and the stars, the `®` and the 306 head cap stay dropped, Retro's
-  re-seating. **The 390 section's 1622.5 against 1248 is the seed, not the fit**: all five seeded
+  re-seating. (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `./layout-3-qa-fixes.md`.) **The 390 section's 1622.5 against 1248 is the seed, not the fit**: all five seeded
   reviews carry a name and a role, so all five cells are the frame's 233-tall `name-cell`, where
   the master fills three of its six seats with bare repeated quote cells — the branch's own
   "the frame's five quote cells are the component's default content" reading, measured.
