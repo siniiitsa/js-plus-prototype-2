@@ -133,7 +133,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | **done** (A, keyed by the follower's category; real app, 7 runs) |
 | 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | **done** (A; the canvas sticks 28px down, and so do the layout-4 rail and the form's layout-2 card) |
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | **done** (A, Retro kept; `cardLine` seeded `CARD_LINE_3`; after-diff zero) |
-| 5 | JP-062 | The *Inset Hero* card's name spills | **Confirmed, `s.limeTree`**: the card's column is `nowrap`; Editorial's seeded name already runs into the padding | S–M | **yes** — A (wrap, fit the widest word), B, C | open |
+| 5 | JP-062 | The *Inset Hero* card's name spills | **Confirmed, `s.limeTree`**: the card's column is `nowrap`; Editorial's seeded name already runs into the padding | S–M | **yes** — A (wrap, fit the widest word), B, C | **done** (A, at the content box plus half the padding, re-asked mid-session; `overflowWrap` on the line; after-diff zero) |
 | 6 | JP-074 | A price range is all display size | **Confirmed, shared**: `priceParts()` has two parts; every layout-3 frame draws three (`£ \| 450 \| — £1,400`) | S–M | no (a named oddity) | open |
 | 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | open |
 | 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no | open |
@@ -860,11 +860,178 @@ container, with the name's own box `minWidth: min-content`. The column drops `no
 
 **Docs.** CLAUDE.md, beside `vm.titleWordEms` if the key is new. The block's comment.
 
-**Decided.** —
+**Decided: A, the card's inner width, and the line breaks inside an over-long word** (user,
+2026-09-28).
+- **Re-checked on HEAD** (`462611d`). Every line holds as the hand-off named it:
+  - `EncoreSection.jsx`: the column is `:2782`–`2784` (`nowrap` at `:2783`), the name span
+    `:2785`–`2790`, and the `s.cardLine` line `:2791`–`2793`. Retro's polaroid name span is
+    `:3025`–`3028` (the triage's `:3022`–`3025` was one short).
+  - `EncoreBuilder.jsx`: `vm.cardLine` is at `:555`, `navNameEms` at `:644`, `vm.titleWordEms` at
+    `:1020` and `vm.footerWordEms` at `:1684`.
+  - `data.js`: `bebasEms` `:447`, `antonEms` `:466`, `notoEms` `:486` and `notoBoldEms` `:494`.
+- **The frame read** (`use_figma` on `964:68718`, `984:16812` and `984:16843`, with Lime's
+  `964:68654` beside them):
+  - **Editorial at 1440.** The card is 220 wide with 40 of padding, so its content box is 140. Its
+    name column, `Frame 1`, is **157** wide: "Sienna vALE" at 32, with render bounds 156 wide. It is
+    centred, and runs **8.5 into the padding on each side**, 31.5 clear of the card's edge. The
+    card clips its content rather than wrapping it. So the frame's own picture is one line that
+    uses the padding. A content-box measure would break the frame's own name.
+  - **Editorial at 768 and 390.** The name is 123 in 140, and 113 in the 193 beside the portrait.
+    Both fit.
+  - **Lime at 1440.** The name is 131 in a 138 column inside the 140. It fits.
+- **The plan had missed Lime's line.** On HEAD at 1440, Lime's seeded line "Performing since 2021"
+  is already **116.6** in the **114.8** content box, 0.9 into the padding on each side. A
+  content-box measure would therefore wrap it too.
+- **The name (A).** It wraps between words at the measure below, and never inside a word. Its size
+  is `min(frame size, calc(measure / ems))`, where the ems are the widest word of the name in the
+  template's display face. That is `titleWordEms`' rule, in a new **`vm.cardNameEms`**:
+  - `bebasEms` under Lime;
+  - `antonEms(word, 0)` under Grunge (no tracking in its mode), taken inside the existing
+    `faced()` size rather than faced twice;
+  - `notoEms` under Editorial;
+  - undefined on every other template.
+  Only a word wider than the measure shrinks. The widest word comes off `vm.brand`, since Grunge's
+  two-tone `brand()` is JSX.
+- **The measure: the card's inner width**, the padding included. The card's ring is an inset
+  shadow, so the inner width is the whole card.
+  - Upright, at 1440 and 768, it is `100cqi + 2 × padding`: 180.4 on the desktop canvas and 220
+    at 768.
+  - At 390 the card is a row, so it is the space beside the portrait plus the right padding:
+    `100cqi − portrait − 21 gap + 20`.
+  - The container is the **card** (`containerType: 'inline-size'`). The card has an explicit width
+    at every width (`u(220)` upright, `100%` at 390), so containment moves nothing. The column
+    cannot be the container: it is content-sized at 390.
+  - The column's `nowrap` goes, and its box does not change: no negative margin, so no digest row
+    moves. Instead, each of the two spans takes `width: max-content` and `maxWidth: <measure>`.
+  - The column sets `textAlign` to centre when upright and left at 390, so a wrapped name's lines
+    centre under the portrait, as the column centres a single line.
+  - **The named cost** is that a single word fitted to this measure lands a hair inside the 1px
+    ring. The ems tables run "over, never under", so the word is a little short of the measure,
+    not clear of the ring.
+- **The line** (`cardLine`) wraps at the same measure and takes `overflowWrap: 'anywhere'`. Only a
+  word longer than the measure breaks inside itself. There is no ems table for the body faces, and
+  shrinking 13px body copy would make it unreadable.
+- **Retro's polaroid** (`:3025`–`3028`) is unchanged. It still clips a long name, which is named
+  here and not fixed.
 
-**Settled.** —
+**Expected after-diff (named before the code): zero.** Header, every arch × themes 0–4 × three
+widths × canvas and `live=1`: **0 of 90 and 0 of 90**.
+- The seeded name, 133 at the most (Editorial at 1440), and Lime's line at 116.6 both sit inside
+  the 180.4 inner width, so neither wraps.
+- An unbinding `min()` computes to today's font size, and `max-content` to today's width.
+- Under the content-box measure, 4 files would have moved, all at 1440 on both surfaces: Editorial's
+  "KAI / MERCER" and Lime's "Performing since / 2021".
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on :5173,
+  header × themes `0,1,2,3,4` × three widths, gave **0 of 90** files on the canvas and **0 of 90**
+  with `live=1` (port and `?t=` normalised).
 
-Reply: —
+**The verify criterion moves with the measure.** The name and the line must stay inside the card's
+**inner edge**, not its content box, and the incursion into the padding is recorded. The pass test
+is `card.scrollWidth === card.clientWidth` and the document's width unchanged. The column's own
+`scrollWidth` may exceed its `clientWidth` when a line uses the padding: that is by design.
+
+**Revised mid-session: half the padding stays clear** (user, 2026-09-28, asked again with the
+real app's numbers).
+- **Why it was asked again.** The full inner width was built and passed every check above. But in
+  the real app the tester's own case did not change at 768: Grunge's "FLORENCE AND THE MACHINE" is
+  218 wide, so it still fits the 220 measure on one line, **1px from the ring**. That is exactly
+  the state reported ("at 768 it touches both borders"). Other ordinary names came within 0–8 of
+  the ring too: Lime's "Florence…" at 1440 by 5.7, and the 60-character name by 2. The first
+  question had named this cost only for a single fitted word.
+- **The measure** is now the content box plus **half** the padding on each side:
+  - upright, `100cqi + padding`: 147.6 on the 1440 canvas and 180 at 768;
+  - at 390, `100cqi − portrait − 21 + 10`.
+  Everything else above stands: the card as the container, the two spans' `max-content`, the
+  widest-word fit, `overflowWrap` on the line, and Retro untouched.
+- **Measured before asking** (a trial edit, themes 1–3, `live=1`). Every test name stays at least
+  16.4 from the ring at 1440 (20 at 768) and 10.8 at 390. The tester's 768 case wraps onto two lines,
+  38.5 clear. The cost is that a fitted 20-letter word shrinks further: Editorial's
+  "SUPERCALIFRAGILISTIC" at 1440 goes from 18.6 to 15.2px.
+- **Expected after-diff: still zero.** The widest seed is Editorial's name, 133 against 147.6, and
+  Lime's line is 116.6. So 0 of 90 and 0 of 90.
+
+**Settled** (2026-09-28).
+- **The fix, for JP-074 onwards.** In `EncoreSection.jsx`, lines after `:2762` moved +17: the
+  block's comment grew by 14 lines, `measure` and `nameSize` add two, and `containerType` one.
+  The line span grew by 3, so everything after `:2813` moved +20.
+  - **The vm key** is **`vm.cardNameEms`** at `EncoreBuilder.jsx:651`, beside `navNameEms`. It is
+    the widest word of `vm.brand` in `navFace`: Bebas for Lime, Anton × 0.75 at tracking 0 for
+    Grunge, and Noto for Editorial. It is undefined wherever `navFace` is null. `navFace` measures
+    in nominal ems, so the fit sits inside `faced()`: `faced(s, min(size, calc(measure / ems)))`.
+    That is the Decided `antonEms(word, 0)` without facing twice. `EncoreBuilder.jsx` after
+    `:644` moved +7.
+  - **The measure** is `measure` at `EncoreSection.jsx:2779`: `(100cqi + u(40))` upright, and
+    `(100cqi − pw − 21px + 10px)` at 390. The card is the container (`:2783`).
+  - **The column** (`:2799`–`2801`) lost `whiteSpace: 'nowrap'` and gained
+    `textAlign: centre | left`.
+  - **The name span** is `:2802`–`2807`, and the `s.cardLine` span `:2808`–`2813`. Each takes
+    `width: 'max-content'` and `maxWidth: calc(measure)`. The line also takes
+    `overflowWrap: 'anywhere'`.
+  - **Retro's polaroid name span** is `:3045`–`3048`, untouched.
+- **The harness proof** (before the edit): **0 of 90 and 0 of 90**, as recorded under Decided.
+- **After the edit: 0 of 90 on the canvas and 0 of 90 with `live=1`**, for the full inner width
+  and again for the revised half padding. That is header × every arch × themes `0,1,2,3,4` ×
+  three widths, against the HEAD worktree. Two things show the server served the edit: the
+  :5173 source carries `21px + 10px`, and every probe below wraps where HEAD spills.
+- **States** (the harness, `live=1`, themes 1–3, three widths). The tables give the distance from
+  the name's ink to the card's edge.
+  - **The seeded name is unchanged at every cell.** Under Editorial it is 133 at 1440, 23.7 clear.
+  - **Names**:
+
+    | | 1440 (canvas) | 768 | 390 (right edge) |
+    |---|---|---|---|
+    | Lime, Rolling Stones / Florence / 20-letter / 60-char | 2 lines 34 / 2 lines 25 / 21.6px 16.4 / 6 lines 17.2 | 1 line 22.3 / 2 lines 29.9 / 26.4px 20 / 5 lines 22.4 | 59.1 / 2 lines 73.2 / 44.6 / 3 lines 26.9 |
+    | Grunge | 2 lines 40.3 / 2 lines 31.9 / 18.1px 16.4 / 6 lines 25.5 | 1 line 31.7 / **2 lines 38.5** / 24.6 / 4 lines 26.3 | 76.6 / 1 line 19.5 / 63.4 / 3 lines 44.7 |
+    | Editorial | 2 lines 17.1 / 3 lines 33.2 / 15.2px 16.7 / 20.7px 6 lines 16.9 | 2 lines 40.3 / 2 lines 30.9 / 18.6px 20.3 / 6 lines 21.7 | 2 lines 84.8 / 2 lines 24.9 / 20.9px 10.8 / 6 lines 50.5 |
+
+    A size is named only where the widest-word fit shrank the name. Every render passed:
+    `card.scrollWidth === clientWidth`, and the document stayed at its width.
+  - **With the 120-character line.** It wraps at the measure on every template: 6 lines at 1440
+    under Lime and 4 under Grunge and Editorial; 6 / 4 / 4 at 768; 4 at 390. Its box is the
+    measure itself, 147.6 / 180 / 203–212. All 45 renders pass the same two tests.
+  - **With a 62-character line that has no break opportunity.** It breaks inside the word: 3
+    lines upright and 2 at 390. All 9 renders pass.
+- **The tester's steps in the real app.** A one-off puppeteer script (deleted) ran with the editor
+  at 1600 × 1000. It clicked card 3, *Use this header*, set Title = "Florence and the Machine"
+  with trusted keystrokes, then clicked *Publish* and *Open*. It measured the published tab at
+  1440, 768 and 390 (lines, and ink-to-edge on the left / right):
+
+  | | canvas | 1440 | 768 | 390 |
+  |---|---|---|---|---|
+  | Grunge | 2 lines, 31.9 / 31.9 | 2 lines, 38.9 / 39 | 2 lines, 38.5 / 38.5 | 1 line, 19.5 on the right |
+  | Lime | 2 lines, 25 / 25 | 2 lines, 30.5 / 30.5 | 2 lines, 29.9 / 29.9 | 2 lines, 73.2 on the right |
+  | Editorial | 3 lines, 33.2 / 33.2 | 3 lines, 40.5 / 40.5 | 2 lines, 30.9 / 30.9 | 2 lines, 24.9 on the right |
+
+  The same script on the HEAD worktree reproduces the report: Grunge is 280.4 in a 220 card at
+  1440, and 218 at 768, 1 from each edge; Lime and Editorial spill at every width. The published
+  tab's title is "Florence and the Machine", and neither tab logged a page or console error.
+  Screenshots of the three cards at every width were read and look as the numbers say.
+- **Retro's card 3, the control.** Every probe is identical on the tree and on HEAD. The polaroid
+  name is 13.12px and clips nothing at 24 characters (181.1 wide at 1440 in its 242.4 clip).
+  Its clip on a longer name stays named and not fixed.
+- **Found in passing, not this entry's.** At 390 Retro's published document is **445 wide in a
+  390 window**, identical on HEAD. The overflow is not the header: the repertoire's layout-3 390
+  carousel runs its cards to x 625 ("Pubs · 5 songs", "Valerie", "Amy Winehouse"). Grunge's,
+  Lime's and Editorial's pages hold 390. For JP-075's session, the 390 carousel, to look at.
+- **Docs.**
+  - CLAUDE.md: a *That card's name and line wrap* passage after JP-061's in the header-identity
+    paragraph, and `vm.cardNameEms` beside `vm.titleWordEms` in the form's paragraph.
+  - The card block's comment at `EncoreSection.jsx:2763`–`2776`, and the comment over
+    `vm.cardNameEms`.
+
+Reply: **JP-062 — fixed.** On the *Inset Hero* header card, the name now wraps between words
+instead of running out of the card, and it stays clear of the card's border.
+- "Florence and the Machine" sets on two lines at 1440 and 768 (three under Editorial at 1440),
+  about 30–40px inside the border. At 390 it is one line under Grunge and two under Lime and Editorial.
+- A single word too long for the card, such as a 20-letter name, is shrunk just enough to fit. A
+  name is never broken inside a word.
+- The *Portrait card line* under the name wraps the same way. A word too long for the card breaks
+  inside itself.
+- The seeded page looks exactly as before. The card allows a little of its padding, as the design
+  does: Editorial's own name runs into it.
+
+Lime and Editorial behave the same way. Retro's *Inset Hero* polaroid is unchanged: it fits 24
+characters, and clips a longer name rather than spilling it.
 
 ---
 

@@ -2760,10 +2760,27 @@ function HeaderV2({ s }) {
     // 81 / 0 / 0 on `sem/box/1` in the section's blush `sem/stroke/2`, and
     // taller than the twins' square: 136 × 128, 136 × 135 at 768, 96 × 96 at
     // 390. The name is Display/Title at Sienna Vale's 32 / 25 / 23.
+    //
+    // The name and the line wrap at the content box plus half the padding
+    // each side (JP-062, user call, 2026-09-28): Editorial's 1440 frame sets
+    // its own name 157 wide in the 140 content box, 8.5 into the padding
+    // each side, and Lime's seeded line already runs 0.9 past ours, so the
+    // content box would break both seeds; the whole padding would let a name
+    // run to the ring, the tester's 768 report. Upright that is `100cqi` of
+    // the card plus one padding; on its side at 390, the room beside the
+    // portrait plus half the right padding. The card is the container, since
+    // its width is stated at every width and the column's is not; the column
+    // keeps its box and each span takes `max-content` capped at the measure.
+    // The name wraps between words and shrinks only when its widest word
+    // (`s.cardNameEms`) would outrun the measure; the line breaks inside such
+    // a word instead, body copy having no ems table.
     const pw = ed ? (s.mob ? '96px' : u(136)) : u(87)
     const ph = ed ? (desk ? u(128) : tab ? '135px' : '96px') : u(87)
+    const measure = s.mob ? `(100cqi - ${pw} - 21px + 10px)` : `(100cqi + ${u(40)})`
+    const nameSize = ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'
     const card = (
       <div style={{
+        containerType: 'inline-size',
         background: ed ? s.bg : grunge ? s.box1 : undefined,
         boxShadow: ed ? ring('1px', s.onScheme[1].stroke2)
           : grunge ? ring('1px', s.stroke2) : `${ring('1px', s.ac)}, inset 0 0 ${u(19)} ${s.glow}`,
@@ -2780,16 +2797,19 @@ function HeaderV2({ s }) {
           <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring('1px', grunge || ed ? s.stroke2 : s.ac) }} />
         </div>
         <div style={col(u(4), {
-          alignItems: s.mob ? 'flex-start' : 'center', minWidth: 0, whiteSpace: 'nowrap',
+          alignItems: s.mob ? 'flex-start' : 'center', minWidth: 0, textAlign: s.mob ? 'left' : 'center',
         })}>
           <span style={{
-            fontFamily: s.display,
-            fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
+            width: 'max-content', maxWidth: `calc${measure}`, fontFamily: s.display,
+            fontSize: faced(s, s.cardNameEms ? `min(${nameSize}, calc(${measure} / ${s.cardNameEms}))` : nameSize),
             lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, color: s.tx,
             textTransform: grunge || ed ? 'uppercase' : undefined,
           }}>{brand()}</span>
           {s.cardLine && (
-            <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac }}>{s.cardLine}</span>
+            <span style={{
+              width: 'max-content', maxWidth: `calc${measure}`, overflowWrap: 'anywhere',
+              fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac,
+            }}>{s.cardLine}</span>
           )}
         </div>
       </div>

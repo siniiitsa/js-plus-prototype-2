@@ -174,6 +174,16 @@ mutated through a single `patch()` helper.
   prints the kicker in that seat. So the kicker has one seed, `'DJ · Live Act'`, at every layout,
   and the bio's *Current role* always prints what the Kicker field shows. At layout 3 the panel
   therefore marks Kicker "Not shown in this layout" while the bio prints it, as at layout 2.
+  **That card's name and line wrap** (JP-062, user call, 2026-09-28). They wrap at the content box
+  plus half the padding on each side. That is `100cqi` of the card, which is the container, plus
+  one padding when the card is upright, and the room beside the portrait plus 10 at 390. The
+  measure is not the content box, because Editorial's frame sets its own name 8.5 into the
+  padding and Lime's seeded line already runs past it. It is not the whole padding either,
+  because that let the tester's 768 name run to the ring. The name wraps between words and
+  shrinks only when its widest word would outrun the measure (`vm.cardNameEms`, `titleWordEms`'
+  rule, taken in `navFace`, so `faced()` stays outside the fit). The line breaks inside such a
+  word instead (`overflowWrap: 'anywhere'`), since no body face has an ems table. Retro's
+  `nowrap` polaroid is unchanged.
   **The tag chips are the header's as well**
   (JP-037): `FIELDS.header.tags` is a comma list seeded with `TAG_LABELS` (five — the Tags
   component hides its sixth chip), and `identity` carries `tags` and `showTags` to the bio,
@@ -864,7 +874,8 @@ mutated through a single `patch()` helper.
   6, 6 in terracotta on the paper page — the dash gives way to a solid 2px ring of ink `s.tx`
   (colour, weight and dash at once). Under Lime and Editorial the desktop
   head shrinks to fit its widest word in the half column (`vm.titleWordEms`, beside
-  `navNameEms`) rather than breaking inside it — Grunge's Anton at 0.75 sets the seeded
+  `navNameEms` and the header card's `vm.cardNameEms`, JP-062) rather than breaking inside it —
+  Grunge's Anton at 0.75 sets the seeded
   head at 484 against the 501 column, so the key was measured and left out for Grunge here.
   Editorial's arm is keyed by design: Noto's 540 ems (`notoEms`) for this Regular head at
   design 2, 70px on three lines in the 519.5 column, and Noto Bold's (`notoBoldEms`) for its

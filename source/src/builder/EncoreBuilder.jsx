@@ -642,6 +642,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Editorial's display face is its label face, so `navNameEms` is also the
   // hero title's width in ems: HeaderV0 fits the title to its column with it.
   vm.navNameEms = navFace ? +navFace(vm.brand).toFixed(3) : undefined
+  // The name's widest word in the same ems (JP-062): the layout-3 portrait
+  // card wraps the name between words at its content box plus half its
+  // padding each side, and shrinks it only when one word would not fit
+  // there — `titleWordEms`' rule, never breaking inside a word. `navFace` is
+  // the display face at its nominal size, so HeaderV2 fits the unfaced size
+  // and `faced()` stays outside the fit.
+  vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // Whether the tablet header draws its links (JP-039). The 768 masters of
   // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime

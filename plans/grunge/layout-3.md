@@ -746,6 +746,11 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   (`vm.cardLine`, seeded with **`CARD_LINE_3`**, the constant renamed again), read at
   `EncoreSection.jsx:2791`. Neither kicker fallback carries the layout-3 seed any more, so the
   kicker's row below is now `[0, 3]` under Lime, Grunge and Editorial.
+  **Reopened by JP-062** ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md), 2026-09-28). The
+  card's column was `nowrap`, so a long name ran out of the card. Now the name and the line wrap at
+  the content box plus half the padding on each side, with the card as the container. The name
+  shrinks only when its widest word would not fit (`vm.cardNameEms`). The line breaks inside such
+  a word instead. The seeded digest is unchanged.
 - **Measured against the masters' content edges**: desktop h1 at 520 (634.48 × 0.82 = 520.3),
   card 180.4 × 203.9 at 957 / 491.5 (180.4 × 204.2 at 957.8 / 491.2), pill 85.4 × 28.6 (88.8 ×
   28.6 — Anton narrower), capsule 30.7 tall (31.2); 768 h1 at 824.4 (824.48), card 220 × 239.6
