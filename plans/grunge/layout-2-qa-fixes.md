@@ -56,7 +56,7 @@ reported site was touched between the two, so it makes no difference which one t
 |---|---|---|---|---|---|---|
 | 1 | JP-060 | *Coverage badge* also prints as *Max travel* | **Confirmed, a fit slip**: Lime's layout-2 fit drew Retro's *pre*-QA chip over Retro's *post*-QA stat row, so `radius` fills both, on the seeded page too. Grunge and Editorial inherited it. Retro and Pop print it once | S | **yes** — A (the chip takes Retro's `g.when`), B (a seeded *Confirmed* field), C | **done** (A; `radius` is *Coverage*) |
 | 2 | JP-059 | Header and Bio print five texts no field reaches | **Confirmed, and shared**: literals in `HeaderV1`'s two halves (Retro, Lime, Grunge, Editorial) and in both bio layout-2 bodies (every template, Pop included). Lime's fit kept them on purpose | M | **yes** — fields or drop, the *since* sentence, `/Featured` | **done** (A, (a), A; Retro L5's claims named) |
-| 3 | — | End-of-pass sweep | — | S | — | open |
+| 3 | — | End-of-pass sweep | — | S | — | **done** |
 
 **Why this order:** JP-060 is one block plus a label and a hint, with a countable after-diff.
 JP-059 adds five fields and should prove a zero seeded diff, which wants a base the other entry
@@ -582,4 +582,86 @@ disappears when emptied.
    retest-against-the-stamp line: retest against the Pages build whose `last-modified` is later
    than `Mon, 28 Sep 2026 10:09:10 GMT` (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`).
 
-**Settled.** *(open)*
+**Settled** (2026-09-28, all six steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **The harness.** Two worktrees in the scratchpad, HEAD (`ba7f0e2`) and `main` (`435f7c9`), each
+  with an APFS clone of `node_modules` and its `.vite` removed, served on :5174 one at a time. The
+  tree on :5173 (running since 2026-09-22) against the HEAD worktree: **0 of 1,320** (660 + 660:
+  every category × themes 0–4 × three widths × canvas and `live=1`). Unnormalised, 191 files
+  differed, every one the port in a `background-image` URL; no `?t=` stamps this time.
+- **1. Full digest against `main`: 18 of 1,320 (9 + 9)**, exactly map `arch 1` × themes 1, 2, 3
+  × three widths × canvas and `live=1`, as JP-060 named. Each file is one row, the travel card's
+  chip: "● 12 mile radius" → "● Jul 12 · 22:00", 1.1 to 1.5px narrower and moved right by the
+  same (Lime at 1440: x 523.6 → 524.9, w 100.1 → 98.9). Themes 0 and 4 and every other category
+  are byte-identical, so JP-059 moves nothing.
+- **2. The census** (a one-off `source/scripts/census.mjs`, deleted on the user's call). 150
+  renders at `live=1`: header arch 0–5 and bio arch 0–3 × themes 0–4 × three widths. The markers
+  are single `ZQ` words, so the two-tone title has nothing to split: all 13 header text fields,
+  all 7 bio text fields (the credit as four words, since `vm.bioCredit` splits after the third),
+  the bio's `&who=` kicker, location and tags, and `&name=`. Every marker-less text node is on
+  JP-059's list, and nothing else is left. No placeholder or aria-label is marker-less, and no
+  leftover is undrawn.
+  - The nav labels. *Follow my sections*' nine (About … Reviews) at arch 0, 3 and 4 at 1440, and
+    at 768 too under Retro's arch 4 and 5. Minimal's Music / Gigs / About at arch 1 and 2 (and 5
+    under Lime, Grunge and Editorial, folding onto 1) at 1440 and 768. Pop's `FlatNav` Music /
+    Shows / Book at every arch and width.
+  - The glyphs: `⏵⏵` (bio arch 1), `↗` (bio arch 3), and `●` (Retro header arch 5).
+  - `Z`, the marker name's initial, so derived: Pop's header arch 1 and 4 and bio arch 1, and bio
+    arch 0, 2 and 3 on every template.
+  - Bio layout 1's `[ 001 ] Structure · Bio_01`, `Bio` and `About`. Bio layouts 3 and 4's `Bio`,
+    `Performing since:`, `Current role:`, `Based in:`, `[ About ]`, `Genres` and `Performing
+    since`. Bio layout 4's `Listen`.
+  - Retro header arch 4 (layout 5): `4.9`, `Experience`, `5 pcs` and `Line-up` at 1440 and 768,
+    and `Tell me your date` at every width.
+- **3. Reach.** `reach.mjs` on a scratch copy filtered to the six rows, themes 0–4, 1,920 renders.
+  `map.radius` moves layouts 1–4 on all five templates. The four header keys move layout 2 under
+  Retro, layouts 2 and 6 under Lime, Grunge and Editorial, and nothing under Pop. `bio.tag` moves
+  layout 2 on all five. Each is 6/6, so the `in` values stand.
+- **4. The real app** (a one-off puppeteer script, deleted). Card 2 of Grunge, then Retro, Lime
+  and Editorial. Every Header and Bio text field was typed over with a marker (the name one
+  word), the bio's *Performing since* set to `2019`, and Events Map → Coverage set to `100 mi`
+  (its hint reads as JP-060 wrote it). Then the canvas at Desktop / Tablet / Mobile, Publish,
+  Open, and the tab at 1440 / 768 / 390.
+  - **The panel.** On Grunge, Lime and Editorial, "Not shown in this layout" sits under Kicker,
+    Tags and Badge text, and the bio's Heading, Paragraph 2 and Performing since. Under Retro it
+    is the same less Badge text, which its layout 2 reads. None of the five new fields carries it.
+  - **Both surfaces, every width, all four templates.** The header prints no bare text but
+    Minimal's Music / Gigs / About (nothing at 390, where the burger stands), and the bio prints
+    only `⏵⏵`. "2021" appears in neither. The map prints `100 mi` once and "12 mile radius"
+    nowhere, and the chip reads "● Jul 12 · 22:00".
+  - **The pick.** At 1440 and 768, *The Deaf Institute* moves the chip to "● Jul 25 · 21:00";
+    at 390, *Gorilla* moves it to "● Aug 30 · 23:00". Max travel reads `100 mi` before and after
+    each. `scrollWidth` equals the width, with no page errors in either window.
+  - **Shots.** Grunge's header and bio at the three widths show every marker in its seat, the
+    bio carrying the header's tag chips as identity.
+  - Seen in passing: the 768 pick survived the resize to 390, where JP-060 saw 1440 → 390
+    re-feature the first gig. Not this batch's.
+- **5. `index.html`** refreshed in `7f281a7` (8,750,312 bytes, up from 8,748,860), from
+  `npm run build:standalone`. The two-build digest (`build-digest.mjs`, both files from
+  `127.0.0.1:8931`, reduced motion) was proved first: the old build walked twice diffs to 0 of 16
+  on card 1's page and on card 2's (`CARD=1`). Old against new:
+  - card 1's page: 0 of 16;
+  - card 2's page: 9 of 16, the chip row alone under Lime, Grunge and Editorial at each tab,
+    with the harness digest's deltas. Retro and Pop, and the modal's card counts, are unchanged.
+- **6.** `plans/README.md`'s row, and the replies below. At the sweep the deployed build still
+  read `Mon, 28 Sep 2026 10:09:10 GMT`, 8,748,860 bytes, which is the tester's.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified`
+is later than `Mon, 28 Sep 2026 10:09:10 GMT`** (the build these reports were filed against,
+8,748,860 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or
+cached build will still show both.
+- **JP-060 — fixed.** The field is now called **Coverage** (it was *Coverage badge*), with a help
+  text that says where each Events Map layout prints it; on layout 2 that is *Max travel*. On
+  Grunge, Lime and Editorial the travel card's chip printed the same field a second time. The
+  chip now shows the date and set time of the gig the panel features, as Retro's always has, and
+  it follows the visitor's pick. The design's *Confirmed* is a booking status the page cannot
+  know, so it stays out by design. For the design's Max travel, type `100 mi` into Coverage.
+- **JP-059 — fixed.** On layout 2 (*Feature spread*), the header's *Available for bookings* pill,
+  the face card's title and text, and the place card's text are now Header fields
+  (**Availability**, **Face card title**, **Face card text**, **Place card text**). The bio's
+  */FEATURED* pill is a Bio field, **Pill**. Each starts with the design's words and disappears
+  when emptied, on every template that draws the layout (the Bio's on Pop too). "Performing since
+  2021" is part of *Face card text* and is not linked to the Bio's *Performing since*; the help
+  text says to change both. Left for a later batch: Retro's header layout 5 still prints "4.9 ★
+  Experience", "5 pcs Line-up" and a "Tell me your date" pill that no field reaches, and Bio
+  layout 4's *Listen* label is not editable.
