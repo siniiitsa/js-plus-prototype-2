@@ -2186,12 +2186,16 @@ fallback ("change one, change both"). The `HEADING_4` comment. `rowCta`'s row.
    and `EditPanel` alike. Its repertoire arm takes precedence over the song count in both. It
    absorbs `CAL_HEADING_3`. Layouts 1, 2 and 4 keep today's heads.
 2. **The pricing intro stays** "The quote covers the whole booking.". The frame's "Four ways…"
-   is a count claim, false even in the frame, which draws three packages.
+   is a count claim, false even in the frame, which draws three packages. (**Reversed** by
+   [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest), 2026-09-29, after the tester re-filed it: layout 3 seeds the frame's second sentence,
+   `PRICING_INTRO_3`, and only "Four ways…" stays out.)
 3. **The pill: `rowCta` widens** to layouts 1, 3 and 4, relabelled *Package button*, with a
    per-layout fallback in `FORM_BTN_4`'s shape: "Book Now" at 1, "Book" at 3, "Start Enquiry"
    at 4. Its `in` is measured. Layout 2's `cta` stays its own.
 4. The chips are a reply (no question): `All` is layout 1's named diff, and the chips derive from
-   `TIERS`' tags, one list for every layout.
+   `TIERS`' tags, one list for every layout. (**Reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest), 2026-09-29: layout 3 seeds
+   `TIERS_3`, the same packages tagged Duo where `TIERS` says Solo, while `tiers` is absent. The
+   chips read *All / Duo / Trio / Band*, and `All` stays.)
 5. **Decided in session: an emptied *Package button* drops the pill** at all three layouts. That
    is layout 2's `cta` rule and the footer's. Until now layout 4 printed a wordless pill (`'' ??
    s.cta1` is `''`). It moves no seed.
@@ -2306,7 +2310,7 @@ Reply: **JP-070 (heads) — fixed.** Layout 3 now starts from the design's own h
   layout 3 (as the design has it), "Book Now" in layout 1 and "Start Enquiry" in layout 4.
   Emptying it removes the pill, and a long label wraps inside the card.
 - On every template.
-- Not changed: the Pricing intro stays "The quote covers the whole booking.". The design's first
+- Not changed (both **reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest)): the Pricing intro stays "The quote covers the whole booking.". The design's first
   sentence, "Four ways to book this act.", counts packages, and the design itself shows three.
   The chips stay "All / Solo / Trio / Band": they are made from the packages' tags (Pricing →
   Packages → Tags), the same list at every layout, and "All" is how every chip row starts.
@@ -2667,7 +2671,7 @@ cached build still shows every one of them.
   - The Enquiry Form's layout-3 heading is "Book {your name} for your event", which follows the
     Title until one is typed. Its boxes, and layout 2's, are the design's Event date / Event type
     / Your email.
-  - Not changed: the Pricing intro, because "Four ways…" counts packages and the design shows
+  - Not changed (both **reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest)): the Pricing intro, because "Four ways…" counts packages and the design shows
     three. Also the chips, which are made from the packages' tags; tag them "Duo", "Trio" and
     "Band" for the design's row.
 - **JP-071 — by design.** These are the design's labels, not the artist's content, and each goes
@@ -2708,7 +2712,8 @@ in Editorial layout 1's shape. Each is shipped as described.)*
    Lime's and Grunge's read 4.9. The page seeds 4.9 on every template.
 4. **The pricing intro says "Four ways to book this act."** (JP-070) over a frame that draws three
    packages. The page keeps "The quote covers the whole booking.", since a count would be false
-   for any other number of packages.
+   for any other number of packages. (Since [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest), the page keeps the whole second sentence.
+   Only the count stays out.)
 5. **The form's head names the mock artist** (JP-070). Every layout-3 frame reads "Book Kai for /
    your event", and Editorial's mock artist is Sienna Vale. The page composes the head from the
    artist's own name, "Book {name} for / your event".

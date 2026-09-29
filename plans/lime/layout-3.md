@@ -889,7 +889,7 @@ Settled in section 7 (pricing):
 - **Pills.** A plain row's pill is `BookPill`'s Lime defaults exactly. The featured row's is the pair
   turned round, `bg={s.bg} fg={s.ac}`: a lime disc round an ink arrow, which is what the frame's two
   disc SVGs draw. `full` at 390.
-- **Named diffs.** Two are Retro's, inherited. The seeded intro is one line (`DEFS.pricingIntro`), so the
+- **Named diffs.** Two are Retro's, inherited. The seeded intro is one line (`DEFS.pricingIntro`; **since JP-070 (rest)**, 2026-09-29, the frame's second sentence, `PRICING_INTRO_3`, see `../grunge/retest-qa-fixes.md`), so the
   head is 58.7 / 62.3 / 88.7 against 94 × 0.82 / 83 / 81, and the seeded title wraps to two lines at
   390. The pill reads *Book Now* (`cta1`) where the frame types *Book* (**since JP-070** (2026-09-28) it is `rowCta`, the *Package button*, seeded "Book" at layout 3; see `../grunge/layout-3-qa-fixes.md`), so it is 130.5 / 142.1 / 138.9
   wide against 121 × 0.82 / 113 / 111. The rest are this pass's:

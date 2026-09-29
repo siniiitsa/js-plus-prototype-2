@@ -608,7 +608,12 @@ mutated through a single `patch()` helper.
   constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's
   (`FIELDS.pricing.tiers`, below) and the chip row is **derived from their tags** by the same
   `repChips()` the repertoire uses, `REP_ALL` chip and all — so the seeds' tags are what redraw
-  the frame's three modes, behind an `All`. The row is **not rendered at one chip**: a page whose
+  the frame's three modes, behind an `All`. **Layout 3 seeds its own tags** (JP-070, user call,
+  2026-09-29, reversing the "one tag list for every layout" reply): its frames' capsule reads Duo /
+  Trio / Band where Retro's layout 1 reads Solo / Trio / Band, so with `tiers` absent, `sectionVm`
+  and `tiersVal` both read `TIERS_3` at `d === 2`. That is `TIERS` with *Solo* → *Duo* and nothing
+  else, so `pageTiers()` (name and price alone) keeps `TIERS`. The gate is `FORM_FIELDS_4`'s, the
+  absent key alone: once the artist edits the list it is theirs at every layout, Duo and all. The row is **not rendered at one chip**: a page whose
   packages carry no tags has nothing to filter, which is the pager's rule, and the extra `All`
   chip on the reference picture is the intended diff. `active` is clamped against the row, the
   canvas pins chip 0 and filters nothing, and the card **keys on the package's index in the whole
@@ -668,6 +673,9 @@ mutated through a single `patch()` helper.
   from the frame's own index to the first hue that clears `tierHues`' 0.22 against `bg`, since a tag
   can be the page ground itself (Grunge's fourth was its black, before Static Youth left it two tags). Its selector is the one thing in that branch
   not standing on the page ground, so its outline and idle labels take `paperFg` and not `tx`.
+  Its head's line is **`FIELDS.pricing.intro`**, `in: [2]`, seeded **`PRICING_INTRO_3`**, the
+  frame's paragraph without its first sentence (JP-070, user call, 2026-09-29): "Four ways to book
+  this act." counts packages the artist never typed, and the frame itself draws three.
   Beside it stands the frame's "Save 15% on bundles", **`FIELDS.pricing.offer`** (JP-046, user
   call, 2026-09-24; the fit had dropped it as a discount no field states): seeded with the
   frame's copy, emptiable, `in: [2]`, in every template's block, and the capsule's row stands
@@ -1192,7 +1200,7 @@ mutated through a single `patch()` helper.
   delimited textarea, `FIELDS.form.promises` — the ticked list of the enquiry form's
   layouts 1 and 2. All ten follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()` / `MAP_STATS_4` / `FORM_STEPS`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` (`TIERS_3` at pricing layout 3) / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()` / `MAP_STATS_4` / `FORM_STEPS`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package

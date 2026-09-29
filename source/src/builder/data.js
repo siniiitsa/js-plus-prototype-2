@@ -713,6 +713,17 @@ export const TIERS = [
             'Extended encore', 'Festival-grade PA'].join('\n') },
 ]
 
+// Layout 3's packages (JP-070): TIERS with the frames' Duo / Trio / Band
+// chips where layout 1's Retro frame draws Solo / Trio / Band. The frames
+// print no tags on a row, and their capsule picks Duo over all three rows,
+// so the only claim they make is the chip row. Solo becomes Duo and nothing
+// else moves: the names, prices, blurbs and features are TIERS' own, which is
+// why the calendar's package card (name and price, through pageTiers()) reads
+// the same either way. Chosen by layout only while the key is absent,
+// FORM_FIELDS_4's gate, in sectionVm and tiersVal alike; once the artist
+// edits the list it is theirs at every layout.
+export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Band', 'Trio, Band'][i] }))
+
 // Every key a package row carries — what `blankRow()` asks of it. A row is
 // blank only when all five are, whichever of them a layout prints. The
 // Featured tick (`featured`, JP-048) is left out, as FORM_FIELD_KEYS leaves out
@@ -992,17 +1003,7 @@ export const DEFS = {
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
   since:      'June 2021',
   pricingSub: 'Prices may vary by date, location, and length of set.',
-  // §10.2 layout 3 heads the stack with a line under the title, where neither
-  // earlier layout draws one — the frame's own sentence, kept as the seed so
-  // the reference picture holds. Emptying it drops the line.
-  //
-  // The frame's paragraph is two sentences and this is the tail of the second.
-  // "Four ways to book this act." is a count the artist never typed and goes
-  // the way the video section's numbers did; "Choose by the kind of night
-  // you're throwing" repeats TITLES.pricing's own words almost exactly, so
-  // stacking it under the title stutters where the frame — whose title is the
-  // single word "Pricing" — does not.
-  pricingIntro: 'The quote covers the whole booking.',
+  // Layout 3's intro line is PRICING_INTRO_3 (JP-070), beside its head.
   // §10.2 layout 2 stands a line of praise beside the plan, where layout 1 has
   // nothing of the sort — the frame's own sentence, kept as the seed so the
   // reference picture holds. Emptying it drops the line.
@@ -1091,6 +1092,12 @@ export const CAL_HEADING_3 = 'Book Me'
 export const REP_HEADING_3 = 'Curated sets'
 export const GALLERY_HEADING_3 = 'Gallery'
 export const PRICING_HEADING_3 = 'Pricing'
+// The line under that head (JP-070, 2026-09-29): the frames' paragraph without
+// its first sentence, "Four ways to book this act.", a count of packages the
+// artist never typed and false even in the frame, which draws three. The rest
+// is the frame's verbatim. The intro reaches layout 3 alone, so this is
+// FIELDS.pricing.intro's plain `d`.
+export const PRICING_INTRO_3 = "Choose by the kind of night you're throwing — the quote covers the whole booking."
 export const MAP_HEADING_3 = "Where I'm playing."
 export const TESTI_HEADING_3 = 'Experiences.'
 // The layout-3 header's portrait card, its second line under the name
@@ -1489,7 +1496,9 @@ export const FIELDS = {
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
-          + 'them with commas. Features are one to a line. Layout 2 shows one package at a '
+          + 'them with commas. Layout 3 starts the packages tagged Duo where the other layouts '
+          + 'have Solo; once you edit the list, it is the same at every layout. Features are one '
+          + 'to a line. Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
           + 'filter: it prints the tags and the features on the package itself. In layouts 1, 2 '
           + 'and 3, whatever comes before the price’s first digit — a £, or a word like From — '
@@ -1500,7 +1509,7 @@ export const FIELDS = {
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
-    { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro', in: [2],
+    { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
       hint: 'A line under the heading. Layout 3 only.' },
     { k: 'offer',   l: 'Offer line', d: PRICING_OFFER, in: [2],
       hint: 'A short line beside the filter chips, such as a discount. Layout 3 only. '
@@ -1857,6 +1866,9 @@ export const headerIdentity = (sections) => {
 // exactly as pricing's own sectionVm resolves `tierList` — an absent key is
 // the seeded TIERS, blank rows are dropped — and `[]` with no pricing section
 // on the page, which is the card's not-drawn state. Raw: the calendar cases.
+// At pricing layout 3 an absent key is TIERS_3 instead (JP-070), which differs
+// in tags alone, and the card reads no tags, so TIERS serves here whatever the
+// pricing section's layout.
 export const pageTiers = (sections) => {
   const p = sections.find((s) => s.cat === 'pricing')
   if (!p) return []

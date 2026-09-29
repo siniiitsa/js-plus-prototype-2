@@ -70,7 +70,7 @@ it.
 | Order | ID | Report (short) | Reverses | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|---|
 | 1 | JP-056 · JP-068 | Anton, not Stones Crush · the media kicker's "KM BIO" | `qa-fixes.md` JP-056 (A); `layout-3-qa-fixes.md` the three replies (JP-068 A) | **Both need an answer from outside the code**: a web licence (the PO) and the frame's intent (the designer) | — (decisions) | **user: C on its own branch; A** | **done** (no code; [`display-face.md`](./display-face.md) written; JP-068's reply stands) |
-| 2 | JP-070 (rest) | The pricing intro and chips | `layout-3-qa-fixes.md` JP-070 (heads), "keep" and the chips' reply | **Named fit diffs**: the intro's count claim was dropped; the chips derive from one tag list for every layout | S–M | **yes** | todo |
+| 2 | JP-070 (rest) | The pricing intro and chips | `layout-3-qa-fixes.md` JP-070 (heads), "keep" and the chips' reply | **Named fit diffs**: the intro's count claim was dropped; the chips derive from one tag list for every layout | S–M | **user: B; A** | **done** (30 files, as named) |
 | 3 | JP-069 (weekday) | No weekday in the date disc | `layout-3-qa-fixes.md` JP-069, the weekday half | **A data-model gap**: a gig has no year | S–M | **yes** | todo |
 | 4 | JP-071 | Eight section labels no field reaches | `layout-3-qa-fixes.md` the three replies (JP-071 A) | **The product's label rule**, now reversed for these eight | M | **yes** | todo |
 | 5 | JP-066 | Set cards: no mood, set length or track length | `layout-3-qa-fixes.md` the three replies (JP-066 A) | **A data-model gap**: a set is a tag, and a song has no length | L | **yes** | todo |
@@ -297,9 +297,113 @@ as JP-048 says.
 *reversed* pointer in `layout-3-qa-fixes.md` JP-070 (heads), decisions 2 and 4. `./layout-3.md`'s
 pricing Settled.
 
-**Decided.** —
+**Decided** (user, 2026-09-29; two questions, each the recommendation).
+1. **The intro: B, the frame's second sentence.** Layout 3 seeds "Choose by the kind of night
+   you're throwing — the quote covers the whole booking." as `PRICING_INTRO_3`. "Four ways to
+   book this act." goes to the sweep's designer note, and the reply says why it is missing.
+2. **The chips: A, a layout-3 tag seed.** `TIERS_3` is `TIERS` with *Solo* → *Duo* (The House
+   Party *Duo*, The Wedding Set *Duo, Trio, Band*, The Festival Set *Trio, Band*). It is read only
+   while `c.tiers` is absent at layout 3 (`d === 2`, `FORM_FIELDS_4`'s gate), in `sectionVm` and
+   `tiersVal` alike. `All` stays in front, and the canvas still pins it, so the chips read *All /
+   Duo / Trio / Band* and the seeded picture shows all three rows with FEATURED on the Festival
+   Set.
 
-**Settled.** —
+Asked over the frame read, which held at all three widths (`964:68712`, `984:13925`,
+`984:13956`). **No row carries chips of its own**, and the capsule's `opt-active` is *Duo*, over
+all three rows, with the badge on the Festival Set. So the frame does not say which package
+carries which tag. A+ would have needed the Festival Set tagged *Duo* too, a tag the frame never
+states, to keep the frame's three rows under a picked Duo. The masters also carry a foot line,
+"Prices may vary by date, location, and length of set.". That is already `DEFS.pricingSub`, so it
+is not part of this report.
+
+The evidence, re-checked on HEAD (`921e6cb`): `FIELDS.pricing.intro` at `data.js:1503`,
+`DEFS.pricingIntro` at `:1005`, `vm.pricingIntro` at `EncoreBuilder.jsx:868`, `TIERS` at
+`data.js:702`–`714`, `tiersVal` at `EncoreBuilder.jsx:3792`, `pageTiers()` at `data.js:1860`,
+and `repChips()` at `:2109`. Every line held. `tierList` is at `EncoreBuilder.jsx:920`, and
+`vm.tierChips` at `:1000`.
+
+**The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on :5173,
+every category × themes 0–4 × three widths, canvas and `live=1`, gave **0 of 1,320**.
+
+**The expected after-diff**, named before the code: **30 files**, pricing `arch 2` × themes 0–4 ×
+three widths × both surfaces. In each file the intro's `<p>` text and its height where it wraps
+to more lines, with the capsule, rows and foot moving down under it. Also the second chip's
+label, *Solo* → *Duo*, with its width and everything after it in the capsule (the offer line's
+x). Pricing `arch 0`, `1` and `3`, the calendar, and every other category: **0**.
+
+**Settled** (2026-09-29).
+- **Code.**
+  - `data.js`: `TIERS_3` below `TIERS`, written as `TIERS.map` with the three tag strings
+    swapped in, so names, prices, blurbs and features have one source. `PRICING_INTRO_3` sits
+    beside `PRICING_HEADING_3`, and `FIELDS.pricing.intro` takes it as a plain `d`. The intro
+    reaches layout 3 alone, so a per-layout gate would add nothing. `DEFS.pricingIntro` is gone;
+    it had no other reader. The *Packages* hint now says layout 3 starts as Duo, Trio and Band
+    until the list is edited. `pageTiers()`' comment says why it keeps `TIERS`.
+  - `EncoreBuilder.jsx`: `tierList` reads `d === 2 ? TIERS_3 : TIERS` on the absent key.
+    `tiersVal` reads `design === 2 ? TIERS_3 : TIERS`, which is `formFieldsVal`'s shape.
+    `vm.pricingIntro` is `cv('intro', PRICING_INTRO_3)`.
+  - `EncoreSection.jsx`: the layout-3 branch comment on the intro and the capsule. No render
+    code moved.
+- **After: 30 files, as named** (`TIERS_3` confirmed in :5173's module first). Pricing `arch 2` ×
+  themes 0–4 × three widths × both surfaces. The other 1,290 renders are 0, including pricing
+  `arch 0`, `1` and `3` and the calendar, whose layout-4 package card reads `pageTiers()`. Rows
+  added or removed: none.
+  - At 1440 and 768 each file moves **7 rows**: the intro `<p>` (one line at both widths, 434.2
+    wide at 1440 under Grunge), the *Solo* → *Duo* chip (43.8 → 42.1 wide), and the chips and
+    offer after it.
+  - At 390 every row moves (109–116 per file). The intro wraps to two lines (39 tall), and the
+    capsule and the stack drop under it.
+- **The published filter** (a one-off puppeteer probe over the harness, `live=1`, themes 0–4 ×
+  three widths, deleted). Every render reads *All / Duo / Trio / Band* (*ALL / DUO / TRIO /
+  BAND* under Pop's casing). **All** shows all three rows with FEATURED on the Festival Set.
+  **Duo** shows the House Party and the Wedding Set, and FEATURED moves to the Wedding Set.
+  **Trio** and **Band** show the Wedding Set and the Festival Set, with FEATURED on the Festival
+  Set. That is JP-048's last-row-on-show rule. Nothing overflows, and there are no page errors.
+- **States** (`&cj=`). An edited list at layout 3, tagged *Solo*, is the artist's: the chips
+  read *All / Solo / Trio / Band* and filter. An emptied intro drops the `<p>`, and a typed one
+  prints as typed.
+- **The real app** (a one-off puppeteer script at 1600 × 1000, deleted): Grunge card 3, then
+  Lime's, Editorial's and Retro's. The steps were *Use this header*, the Pricing row, then the
+  layout picker through 1, 2 and 4 and back to 3.
+  - **Layout 3.** *Intro line* reads the frame's sentence with no note. *Packages* reads *Duo* /
+    *Duo, Trio, Band* / *Trio, Band*. The canvas capsule reads *All / Duo / Trio / Band*.
+  - **Layouts 1, 2 and 4.** *Packages* reads *Solo* / *Solo, Trio, Band* / *Trio, Band*, and
+    *Intro line* carries "Not shown in this layout". Layout 1's canvas reads *All / Solo / Trio /
+    Band*.
+  - **Published at layout 3.** At 1440, 768 and 390 the tab prints the intro and *All / Duo /
+    Trio / Band*. Duo filters to two rows with FEATURED on the Wedding Set, and there is no
+    horizontal scroll.
+  - **An edit makes the list the artist's.** Renaming the first package at layout 3 and then
+    switching to layout 1 leaves *Packages* on the Duo tags and the renamed row, and the canvas
+    reads *All / Duo / Trio / Band*. This is the `FORM_FIELDS_4` rule, as decided.
+  - No page errors on any of the four templates.
+- **Reach.** Neither key's `in` moved (`intro` `[2]`; `tiers` has none), so no `reach.mjs` run
+  was owed.
+- **Docs.** CLAUDE.md's pricing paragraph (layout 3's own tags, and the intro beside the offer)
+  and *Ten list-shaped contents*' seed list. *Reversed* pointers in `layout-3-qa-fixes.md`:
+  JP-070 (heads) decisions 2 and 4, its reply's *Not changed*, the sweep's reply line, and
+  designer note 4. The pricing Settled in `./layout-3.md`. One-line pointers in
+  `../lime/layout-3.md`'s named diffs and `../retro/layout-3.md`'s intro lesson.
+- **For the sweep's designer note.** "Four ways to book this act." counts packages over a frame
+  that draws three. The page now keeps the rest of the paragraph. The frame also never says which
+  package carries which tag, so `TIERS_3` puts *Duo* where `TIERS` has *Solo*.
+- **For JP-069 (weekday).** This entry moved its evidence. As it stands now: `GIGS` at
+  `data.js:816`, `GIG_KEYS` at `:824`, `CAL_OPEN` at `:1025`. The weekday comments are at
+  `EncoreSection.jsx:18634` (the `s.limeTree` block) and `:19318` (Retro / Pop). Each month site
+  moved down by 2 as well (about `:18954` and `:19322`).
+
+Reply: **JP-070 (rest) — fixed.** Layout 3's Pricing now starts from the design's intro and
+chips.
+- The intro under "Pricing" starts as "Choose by the kind of night you're throwing — the quote
+  covers the whole booking.". The design's first sentence, "Four ways to book this act.", is
+  left out: it counts the packages, the design itself shows three, and the count would be wrong
+  for any artist with a different number. It is still the *Intro line* field, so it can be
+  changed or emptied.
+- The chips start as "All / Duo / Trio / Band". In layout 3 the three packages start tagged
+  Duo / Duo, Trio, Band / Trio, Band (Pricing → Packages → Tags). The other layouts keep Solo,
+  as Retro's layout-1 design does. "All" stays first, because it is the only way to clear the
+  filter. Once the packages are edited, the list is the artist's at every layout.
+- On every template.
 
 ---
 

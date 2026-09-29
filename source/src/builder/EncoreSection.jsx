@@ -9375,14 +9375,16 @@ function Pricing({ s }) {
   //    in the chip face — so this is the heading seat and not an eyebrow.
   //  - The paragraph under it is `intro`, a field added for this layout, which
   //    no signed-off layout reads (the tags row's discriminator for question 7).
-  //    Its default drops the frame's "Four ways to book this act." — a count of
-  //    the artist's own packages, the video section's rule — and the clause that
-  //    repeats TITLES.pricing almost word for word; see DEFS.pricingIntro.
+  //    Its default, PRICING_INTRO_3, is the frame's paragraph without "Four
+  //    ways to book this act." — a count of the artist's own packages, the
+  //    video section's rule (JP-070 restored the rest, 2026-09-29).
   //  - The Duo / Trio / Band capsule is `s.tierChips`, layout 1's filter row in
   //    a different dress: the same `chip` state, the same `s.live` gate, the
   //    same clamp, the same pinned 0 on the canvas and the same not-drawn-at-one
-  //    (a filter with nothing to filter is the pager's case). The extra `All`
-  //    that leads it is layout 1's intended diff, unchanged.
+  //    (a filter with nothing to filter is the pager's case). Its Duo is
+  //    TIERS_3's, this layout's own tag seed while the packages are unedited
+  //    (JP-070). The extra `All` that leads it is layout 1's intended diff,
+  //    unchanged.
   //  - "Save 15% on bundles" beside the capsule is `s.pricingOffer`, a field
   //    added for it (JP-046, reversing this fit's "a discount no field
   //    states"): seeded with the frame's copy, emptiable, drawn 14 from the

@@ -870,7 +870,9 @@ Learned on the pricing section (section 9):
   throwing", which is `TITLES.pricing`'s "Choose the set that's right for your night" almost
   word for word. The frame gets away with it because *its* title is the single word
   "Pricing"; stacked under ours it stutters. `DEFS.pricingIntro` is the closing clause
-  alone. **Render the head and read it** before taking a frame's sentence whole.
+  alone. (Since JP-070, the head is "Pricing" at layout 3 too, so the stutter is gone: since
+  2026-09-29 the intro is the frame's second sentence whole, `PRICING_INTRO_3`, and only the
+  count stays out. See `../grunge/retest-qa-fixes.md`, JP-070 (rest).) **Render the head and read it** before taking a frame's sentence whole.
 - **Copying a branch's spelling means copying its slips — so describe what the code does,
   not what you assumed it did.** The media player's rule is to copy a branch's spelling and
   not its slips; this is the same rule met from the other side. Both earlier layouts split

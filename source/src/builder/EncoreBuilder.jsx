@@ -35,7 +35,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
-  HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
+  HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG, TIERS, TIERS_3, TIER_KEYS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -45,7 +45,7 @@ import {
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, MAP_HEADING_3, TESTI_HEADING_3,
+  CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, PRICING_INTRO_3, MAP_HEADING_3, TESTI_HEADING_3,
   CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
@@ -865,7 +865,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // §10.2 layout 3 stands a line under the title, where layout 1 heads the chip
   // row with the title alone and layout 2 puts its kicker above it. Layout 3
   // only, so an emptied field drops the line — the Soundcloud rule.
-  vm.pricingIntro = cv('intro', DEFS.pricingIntro)
+  vm.pricingIntro = cv('intro', PRICING_INTRO_3)
   // Layout 3's line beside the filter capsule (JP-046): the frame's own copy,
   // uncased like the intro above it, and an emptied field drops it.
   vm.pricingOffer = cv('offer', PRICING_OFFER)
@@ -916,8 +916,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // dropped here, before the hue walk and `n`, on both surfaces, so the page is
   // exactly the page without it — the cards keep their hues, the chip row its
   // chips, and layout 3's FEATURED seat, with nothing ticked, lands on the last
-  // real package.
-  const tierList = (Array.isArray(c.tiers) ? c.tiers : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
+  // real package. An absent key is TIERS, and at layout 3 TIERS_3, the frames'
+  // Duo / Trio / Band chips (JP-070), FORM_FIELDS_4's gate; tiersVal agrees.
+  const tierList = (Array.isArray(c.tiers) ? c.tiers : d === 2 ? TIERS_3 : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
   vm.tiers = tierList.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
@@ -3788,8 +3789,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   const gigsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : GIGS)
   // And for the pricing packages, whose seed needs none either: TIERS carries
   // its tags as the comma string and its features as the newline one, which is
-  // exactly what TiersField edits and what sectionVm splits.
-  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : TIERS)
+  // exactly what TiersField edits and what sectionVm splits — TIERS_3 at layout
+  // 3 (JP-070), sectionVm's own gate, so the two resolve one list.
+  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : design === 2 ? TIERS_3 : TIERS)
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
   // FormFieldsField edits and sectionVm reads — FORM_FIELDS_4 at layout 4
