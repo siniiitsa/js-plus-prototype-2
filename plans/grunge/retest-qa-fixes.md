@@ -74,7 +74,7 @@ it.
 | 3 | JP-069 (weekday) | No weekday in the date disc | `layout-3-qa-fixes.md` JP-069, the weekday half | **A data-model gap**: a gig has no year | S–M | **user: A** | **done** (a `year` column; 30 files, as named) |
 | 4 | JP-071 | Eight section labels no field reaches | `layout-3-qa-fixes.md` the three replies (JP-071 A) | **The product's label rule**, now reversed for these eight | M | **user: A, A, glyphs in the markup** | **done** (eight seeded fields; 0 of 1,320, as named) |
 | 5 | JP-066 | Set cards: no mood, set length or track length | `layout-3-qa-fixes.md` the three replies (JP-066 A) | **A data-model gap**: a set is a tag, and a song has no length | L | **user: A, A, A, A** | **done** (a `length` column and `SetsField`; 30 files, as named) |
-| 6 | — | End-of-pass sweep | — | — | S | — | todo |
+| 6 | — | End-of-pass sweep | — | — | S | — | **done** (90 of 1,320 against `main`, as named; `index.html` refreshed) |
 
 **Why this order:**
 - **The two outside questions first.** Entry 1 writes no code. Its answers go out to the PO and the
@@ -929,4 +929,185 @@ length.
 6. One reply line per ticket for QA (fixed / by design / needs PO / needs the designer), headed by
    the retest-against-the-stamp line (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`).
 
-**Settled.** —
+**Settled** (2026-09-29, all six steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **The harness.** A scratchpad worktree of `main` (`525dcab`) with an APFS clone of
+  `node_modules` and its `.vite` removed, served on :5174, against the tree (`7db7337`) on :5173.
+  Every category × themes 0–4 × three widths, the footer's `page=2` render included, canvas and
+  `live=1`, compared by `cmp` after `sed` normalised the port and `\.jpg\?[^|]*` on both sides.
+- **1. Full digest against `main`: 45 of 660 per surface (90 of 1,320)**, the same set on both
+  surfaces once `_live_1` is stripped. Every differing file is one a Settled names, and every
+  named file differs:
+
+  | Entry | Named | Differ | Row shape (canvas; `live=1` the same) |
+  |---|---|---|---|
+  | JP-070 (rest) | 30 | 30 | pricing `arch 2`: 7 rows at 1440 and 768 (the intro `<p>`, *Solo* → *Duo*, the chips and offer after it); at 390 every row (109–116 per file), the intro wrapping to two lines |
+  | JP-069 (weekday) | 30 | 30 | map `arch 2`: per disc, the month and day moved up and one weekday row added (5 discs at 1440 and 768, 91 → 96 rows; 1 at 390) |
+  | JP-071 | 0 | 0 | — |
+  | JP-066 | 30 | 30 | repertoire `arch 2`: 15 rows, three meta lines and twelve right-hand seats (the artist → the length) |
+
+  Two of the entries' own wordings are looser than their diffs, and the diffs are what stand:
+  - **JP-069**'s Settled says "two moved rows and three new ones per disc". The digest has **one**
+    new row per disc (the weekday) beside the two moved ones, three differing rows in all, which
+    is what its expected after-diff named.
+  - **JP-066**'s Settled says every differing row "keeps its geometry and changes only its text".
+    Each row keeps its y and height, but a right-aligned seat's x and width follow its text
+    (`Amy Winehouse` 76.9 wide → `3:54` 21.5). And under Pop at 768 one title widens
+    (`Superstition` 62 → 64.8), taking room the upper-cased artist used to squeeze: a 16th row in
+    those two files, a consequence of the shorter seat and not a regression.
+- **2. Reach** (`reach.mjs` in full, themes 0–4, 24,360 renders, then a throwaway script, deleted,
+  that checked every plain `<cat>.<key>` probe against `fieldReach()`). Two probes were added and
+  are committed: `pricing.intro`, and `map.gigs.year` (one gig on both sides, with and without a
+  four-digit year, since the year prints nowhere). **Every probe of this pass moves exactly the
+  designs its `in` names, on every template:**
+  - `pricing.intro`: pricing layout 3. `map.gigs.year`: map layout 3 (the weekday).
+  - `bio.sinceLabel` / `roleLabel` / `baseLabel` / `aboutLabel`: bio layout 3. `bio.tagsLabel`:
+    layout 3 under Lime, Grunge and Editorial, and layout 4 under Retro, Editorial and Pop at 4 of
+    6 (no Genres line at 390), JP-071's reading. `media.listLabel`: layouts 2 and 3. `map.kicker`
+    and `testimonials.kicker`: layout 3.
+  - `repertoire.songs.length` and `repertoire.sets`: repertoire layout 3.
+
+  The rest of the file is unchanged. The only other disagreements with `in` are all known: Pop's
+  header (no `in` row, so no note, as CLAUDE.md says), `calendar.email` at 3 of 6 (JP-076's live
+  pills), and `header.cta2` at 4 of 6 on layouts 2, 3 and 6, which is byte-identical on `main`
+  (re-run over :5174), so it predates this branch.
+- **3. The real app** (a one-off puppeteer script, trusted clicks and typing, the editor at
+  1600 × 1000, deleted after). Card 3 through *Use this header*; each panel read off *Back to page
+  list* and the section's row. **No failed check and no page error on any template, and no
+  published width scrolls sideways.**
+  - **The panels, all four templates.** *Intro line* is the frame's second sentence with no note,
+    and *Packages* reads *Duo* / *Duo, Trio, Band* / *Trio, Band*. Events Map shows five *Year*
+    boxes at 2025, no weekday hint, and *Kicker* "Gigs & travel". Bio's four labels read
+    "Performing since:", "Current role:", "Based in:" and "About" with no note, and *Genres label*
+    "Genres", marked "Not shown in this layout" under Retro alone. *List label* "Popular" and
+    Testimonials *Kicker* "Testimonials", unmarked. Repertoire's twelve *Length* boxes are filled
+    (3:54, 4:26, 4:30, …), and *Sets* lists Weddings Mellow / 45 min, Pubs Easy listening /
+    60 min and Birthdays High energy / 90 min, unmarked.
+  - **The seed, Grunge on the canvas at Desktop, Tablet and Mobile and in the tab at 1440, 768 and
+    390; Lime, Editorial and Retro once, at Desktop and 1440.** The intro prints, and the chips
+    read *All / Duo / Trio / Band* with no *Solo*. The discs read SAT / FRI / SAT / SAT / SAT (SAT
+    alone at 390), under "Gigs & travel". The bio prints its three broken stat labels, *About* and
+    *Genres* (not under Retro). Media prints "Popular" and the testimonials "Testimonials". The
+    set cards read "Mellow · 45 min", "Easy listening · 60 min" and "High energy · 90 min", and the
+    rows print lengths and no artist.
+  - **Typed, Grunge, then republished into the same tab.** *Intro line*, row 1's *Year* "2026",
+    both *Kicker*s, all five bio labels ("Years on the road:" among them), *List label*, song 1's
+    *Length* "9:99" and *Weddings mood* "Zzmood". On the canvas and in the tab at 1440, 768 and
+    390, each word replaced its seed. The first disc reads SUN, the stat label breaks as
+    "Years on the\nroad:", and the Weddings card reads "Zzmood · 45 min", with "9:99" in its
+    rows.
+- **4. `index.html`** refreshed in `aff0f52` from `npm run build:standalone`: **8,769,163
+  bytes**, up from 8,763,002.
+  - **The two-build digest** used `build-digest.mjs`, `CARD=2` (0-based card 3), reduced motion,
+    and both files from `127.0.0.1:8931`, the old one digested before the `cp`. Old against new,
+    **15 of 15** theme × tab files differ, Pop included: its card 3 is its layout-3 page too, and
+    every entry here is shared.
+  - A throwaway copy wrote each root's rows as JSON, keyed by the vm's `anchor`, re-based on the
+    root's own origin, deleted after. Compared at 0.2px, **only pricing, map and repertoire
+    move**, as the harness did: pricing 7 rows wide and 107–114 at Mobile; map 10 changed and 5
+    added wide, 2 and 1 at Mobile; repertoire 15. Under Pop at Tablet the repertoire moves 22:
+    the editor's 768 column is narrower than the harness's, so seven titles, not one, widen into
+    the room the upper-cased artist left, with no height change. The only other rows are the
+    footer seal's 0×0 `<defs>` / `<path>` at Mobile (2 per tab, under the taller pricing), which
+    report the viewport origin. The modal's card counts (4 / 4 / 4 / 4 / 3) do not change.
+- **5.** `plans/README.md`: this pass's row rewritten as swept, and a row and a tree line for
+  [`display-face.md`](./display-face.md) (planned, `grunge-display-face`, after this batch
+  merges). The designer note is below: JP-068 asked again, the pricing intro's "Four ways", which
+  package carries which tag, and JP-056's mask.
+- **6.** At the sweep the deployed build read `Tue, 29 Sep 2026 12:40:40 GMT`, **8,763,002
+  bytes**, which is `main`'s root `index.html` (`9f16854`, the layout-4 QA refresh). The replies
+  are each entry's, lifted unchanged.
+
+**Replies for QA.** Retest against the Pages build whose `last-modified` is later than `Tue, 29
+Sep 2026 12:40:40 GMT` (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`); that build
+carries this batch. On *Inset Hero* (card 3) unless a line says otherwise.
+- **JP-056 — needs the PO (planned for a later build; the licence stays with the PO).** This
+  build is unchanged: the headings are still Anton, and nothing named Stones Crush is loaded. Its
+  only free licence is for personal use, and no licence covering web use has been bought. A later
+  build adds the design's worn texture as a mask cut into Anton's large headings. The letter
+  shapes stay Anton's, and small type (the nav, the buttons, the labels) stays clean, because the
+  texture eats thin strokes at those sizes. If the PO buys a web licence, the real face replaces
+  the mask.
+- **JP-066 — fixed.** The set cards now show a mood and a set length, and each song shows its
+  length.
+  - **Songs**: each song has a new **Length** box beside Artist. In layout 3 the length shows on
+    the song's row, where the artist was, as the design has it. A song with no length shows none.
+  - **Sets**: a new **Sets** field lists one set per tag on your songs, each with a **Mood** and a
+    **Length** box. The card shows them as "MELLOW · 45 MIN". If both are empty, it shows the song
+    count.
+  - It starts from the design: Weddings "Mellow · 45 min", Pubs "Easy listening · 60 min",
+    Birthdays "High energy · 90 min", and the design's lengths for every song. The set names stay
+    your tags. To match the design's "Cocktail hour", tag the songs `Cocktail hour`.
+  - A set's length is typed, not added up: the design's "45 MIN" covers more than its four songs.
+  - On every template, in the editor and on the published page, at every width. The other
+    Repertoire layouts show no lengths in the design, and they are unchanged.
+- **JP-068 — by design; with the designer again.** The Media Player's small heading is its
+  **Kicker** field (Media Player → Kicker), which starts as "Top tracks". The design's "KM BIO" is
+  the Bio's heading (`964:68690`) repeated over the Media Player (`964:68698`), with the mock
+  artist's initials. The question is back with the designer, naming both frames. If they confirm
+  it is intended, the kicker will start from the artist's own initials plus "Bio", never the
+  literal "KM". To match the design now, type `KM BIO` into Kicker.
+- **JP-069 (weekday) — fixed.** The Events Map's date disc in layout 3 now reads "JUL / 12 / SAT",
+  as the design does.
+  - Each gig has a new **Year** box (Events Map → Upcoming gigs), beside the month and the day. The
+    five starting gigs are set to 2025, the year whose weekdays the design shows. The year itself
+    is not printed anywhere.
+  - The weekday is worked out from the date, never typed, so it cannot contradict it. Change the
+    day or the year and the weekday follows.
+  - The month can be written as "Jul", "July" or "Sept". The year needs four digits. If the date is
+    not a real day (for example 31 Jun, or a two-digit year), the disc shows only the month and
+    day, and in layout 3 the gig's editor says why.
+  - On every template, in the editor and on the published page, at every width. The other map
+    layouts show no weekday in the design, and they are unchanged.
+  - With a year on each gig, "Upcoming" / "Past" could now be worked out. It is not part of this
+    fix.
+- **JP-070 (rest) — fixed.** Layout 3's Pricing now starts from the design's intro and chips.
+  - The intro under "Pricing" starts as "Choose by the kind of night you're throwing — the quote
+    covers the whole booking.". The design's first sentence, "Four ways to book this act.", is
+    left out: it counts the packages, the design itself shows three, and the count would be wrong
+    for any artist with a different number. It is still the *Intro line* field, so it can be
+    changed or emptied.
+  - The chips start as "All / Duo / Trio / Band". In layout 3 the three packages start tagged
+    Duo / Duo, Trio, Band / Trio, Band (Pricing → Packages → Tags). The other layouts keep Solo,
+    as Retro's layout-1 design does. "All" stays first, because it is the only way to clear the
+    filter. Once the packages are edited, the list is the artist's at every layout.
+  - On every template.
+- **JP-071 — fixed.** The eight labels are now editable. Each starts as the design's text, and
+  each can be emptied to hide it.
+  - **Bio** (layout 3's card): *Performing since label*, *Current role label*, *Based in label*,
+    *About label* and *Genres label*. A stat label is typed on one line and breaks before its last
+    word, as the design does. *Genres label* also changes the "Genres" line in Bio layout 4.
+  - **Media Player**: *List label*, the "● Popular" over the track list in layouts 2 and 3.
+  - **Events Map** and **Testimonials**: *Kicker*, the small line over the heading in layout 3
+    ("Gigs & travel", "● Testimonials").
+  - The "●" and the brackets of "[ About ]" belong to the design and go when the word is emptied.
+    A stat label still shows only while its value is filled.
+  - On every template, in the editor and on the published page, at every width. Labels nobody
+    reported stay as the design draws them: the Bio's "Bio" eyebrow, the Media Player's
+    "● Featured" (layout 2), the Booking Calendar's legend and the Testimonials' "✎ What clients
+    say" (layout 2).
+
+## Notes for the designer
+
+*(What this batch found worth telling the designer, gathered by the sweep into one note to forward,
+in the layout-3 batch's shape. Each is shipped as described.)*
+
+1. **The media head still reads "KM BIO"** (JP-068, asked again). Every layout-3 Media Player head
+   (`964:68698`, `964:68666`, `964:68731`, and Editorial's) prints "KM BIO" over "Five worth your
+   ear". That is the bio's own head (`964:68690` / `964:68658` / `964:68722`), with the mock
+   artist's initials. The page keeps the media's *Kicker*, "Top tracks". If it is intended, the
+   kicker will start from the artist's own initials plus "Bio" ("SY Bio" for Static Youth), never
+   the literal "KM".
+2. **The pricing intro's "Four ways to book this act."** (JP-070) counts packages over a frame
+   that draws three. The page now seeds the rest of the paragraph, "Choose by the kind of night
+   you're throwing — the quote covers the whole booking.", and leaves the count out, since it
+   would be false for any other number of packages.
+3. **Which package carries which tag?** (JP-070) The layout-3 capsule reads Duo / Trio / Band with
+   Duo picked over all three rows, and no row carries chips of its own (`964:68712`, `984:13925`,
+   `984:13956`). The page seeds layout 3's packages Duo / Duo, Trio, Band / Trio, Band (Retro's
+   layout-1 Solo becoming Duo), so a picked Duo shows two rows, not three.
+4. **The display face is a mask over Anton, not Stones Crush** (JP-056, planned on its own
+   branch, [`display-face.md`](./display-face.md)). No web licence has been bought, so a later
+   build cuts a worn texture into Anton's display sizes only; the nav, the pills and the labels
+   stay clean Anton. Open question 6 in [`layout-1.md`](./layout-1.md) (Anton at 0.75 of the
+   token) is unchanged.

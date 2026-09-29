@@ -15,8 +15,8 @@ option B there replaces this plan.** The real face makes the mask redundant, and
 Branch: **`grunge-display-face`, forked from `main` after `grunge-retest-qa-fixes` merges**. It
 is kept out of that batch because it moves every Grunge digest at all four layouts, and the
 batch's digests have to stay readable. One commit per step. The root `index.html` is refreshed
-once, by the sweep. `plans/README.md` does not list this plan yet. The retest batch's sweep adds
-the row.
+once, by the sweep. `plans/README.md` lists it (the retest batch's sweep added
+the row).
 
 **Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then
 `qa-fixes.md` JP-056 (the facts and options B, C and D), then [`layout-1.md`](./layout-1.md)
