@@ -41,7 +41,7 @@ import {
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
-  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
+  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
@@ -49,7 +49,7 @@ import {
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -1035,6 +1035,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the first match, puts its arm ahead of the count instead.
   if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
+  // The form's layout-3 head is the frame's "Book Kai for / your event" off
+  // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
+  if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
   // The widest word of the heading, in the display face's ems, after every
   // fallback above. Lime's layout-3 form sets Display/LG in a half column its
   // longest word can outrun at desktop, so it shrinks the head until that word
@@ -1654,9 +1657,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // keeps formRows, formMailto and formCheck index-aligned. The exception comes
   // first: the guarded email row — FormFieldsField's `lastEmail`, the same test
   // over the same raw list — never drops, and an emptied label reads Email.
-  // Layout 4 seeds the frame's own five boxes (JP-054), FORM_BTN_4's rule: the
-  // gate is on the absent key alone, and EditPanel's formFieldsVal mirrors it.
-  const formList = Array.isArray(c.fields) ? c.fields : d === 3 ? FORM_FIELDS_4 : FORM_FIELDS
+  // Layout 4 seeds the frame's own five boxes (JP-054), and layouts 2 and 3
+  // their card's three (JP-070), FORM_BTN_4's rule: the gate is on the absent
+  // key alone, and EditPanel's formFieldsVal mirrors it.
+  const formList = Array.isArray(c.fields) ? c.fields
+    : d === 3 ? FORM_FIELDS_4 : d === 1 || d === 2 ? FORM_FIELDS_CARD : FORM_FIELDS
   const formEmails = formList.filter((f) => f?.kind === 'email').length
   const formGuarded = (f) => f?.kind === 'email' && formEmails === 1
   vm.formFields = formList.filter((f) => formGuarded(f) || !blankRow(f, FORM_FIELD_KEYS)).map((f) => ({
@@ -3555,8 +3560,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
   // FormFieldsField edits and sectionVm reads — FORM_FIELDS_4 at layout 4
-  // (JP-054), sectionVm's own `d === 3` gate, so the two resolve one list.
-  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : design === 3 ? FORM_FIELDS_4 : FORM_FIELDS)
+  // (JP-054) and FORM_FIELDS_CARD at layouts 2 and 3 (JP-070), sectionVm's own
+  // gates, so the two resolve one list.
+  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k]
+    : design === 3 ? FORM_FIELDS_4 : design === 1 || design === 2 ? FORM_FIELDS_CARD : FORM_FIELDS)
   // And for the testimonials' reviews: QUOTES is written as the
   // { quote, who, role, when } row QuotesField edits, so this is the gigs' and
   // the packages' one-liner rather than the tracks' dressing.
@@ -3608,8 +3615,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {fields.map((f) => {
                   // The fields whose default is computed rather than written
-                  // down: the header's title is the artist's name, the
-                  // repertoire's heading counts the songs, and a few seeds follow
+                  // down: the header's title is the artist's name, the footer's
+                  // small print and the form's layout-3 head are composed from
+                  // it, the repertoire's heading counts the songs, and a few seeds follow
                   // the layout. Each mirrors what sectionVm resolves, so panel
                   // and canvas never disagree. The kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
@@ -3618,6 +3626,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // later assignment says the other way round (JP-070).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
                     : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
+                    : f.k === 'heading' && sec.cat === 'form' && design === 2 ? formHeading3(artistName)
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 2
                       && HEADING_3[sec.cat] ? HEADING_3[sec.cat]
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`

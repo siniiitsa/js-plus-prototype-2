@@ -24105,8 +24105,9 @@ function EnquiryForm({ s }) {
     // reason — the padding that produced them is the frame's.
     //
     // `vm.titleWordEms` stays Lime's: at `faced(s.dispLg)` = 80.25px the
-    // seed's UNFORGETTABLE. is 6.025 Anton ems = 484, inside the 501 half
-    // column, so this head never has to give way and the key is not widened.
+    // old seed's UNFORGETTABLE. is 6.025 Anton ems = 484, inside the 501 half
+    // column, so the key was not widened; the name-derived seed (JP-070) is
+    // narrower still, and a longer word breaks inside itself, as Retro's does.
     // A refused box keeps Lime's 2px of `s.tx`, which is colour *and* weight
     // here — the idle ring is the 15% hairline, not full ink, so CONVENTIONS'
     // "colour, not weight alone" rule does not bite.
@@ -24193,7 +24194,7 @@ function EnquiryForm({ s }) {
               })}>{s.formAvailable}</span>
             )}
             {/* Display/LG at lh .89 in the accent. At desktop the token's 107
-                is wider than the half column allows for the seed's
+                was wider than the half column allows for the old seed's
                 UNFORGETTABLE. (5.158em against 4.69), which broke the word, so
                 the size gives way to the column only when the widest word
                 (`s.titleWordEms`) would not fit. 768 and 390 never bite.

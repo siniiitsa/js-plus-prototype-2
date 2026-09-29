@@ -1031,7 +1031,10 @@ Settled in section 9 (the enquiry form):
 - **Named diffs.**
   - The frame's copy (Retro's, inherited): three boxes against the seed's four, and a two-line
     "Book Kai for your event" against the seed's three lines at desktop and 390 (two at 768). So the
-    heads are 259 / 144.2 / 144.1 tall against 232 × 0.82 / 144 / 96.
+    heads are 259 / 144.2 / 144.1 tall against 232 × 0.82 / 144 / 96. (**Since JP-070 (form)**
+    (2026-09-29) both are the frame's: the card's three boxes, `FORM_FIELDS_CARD`, and the head
+    off the artist's name, `formHeading3()`, at 107 on the ramp; see
+    `../grunge/layout-3-qa-fixes.md`.)
   - With the taller card the desktop head centres against it, as the frame's does.
   - The seed's typed `\n` folds as whitespace, Retro's reading.
   - The prompt line stays after the boxes are corrected, until the next submit. That is the shared

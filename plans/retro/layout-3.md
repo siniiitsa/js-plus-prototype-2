@@ -1391,7 +1391,9 @@ Reversals and fixes after QA compared the built page with the layout-3 frames. B
   where it had drawn `button` and `vm.formPromiseLine`. The eyebrow is a new emptiable
   `available` field seeded with "Available 2025 / 2026", where it had drawn `s.brand`.
   Those five fields' labels now say "layouts 2 and 3". Not changed (no arrows): the
-  frame's three boxes against the shared four, and its "Book Kai for your event" heading.
+  frame's three boxes against the shared four, and its "Book Kai for your event" heading
+  (**since JP-070 (form)**, 2026-09-29, both are the frame's: `FORM_FIELDS_CARD` at layouts 2
+  and 3, and the head off the artist's name, `formHeading3()`).
 - **Testimonials — the seed is five reviews.** The bento wall's second row was one review
   stretched across the measure, because `QUOTES` carried three. The frame's two named reviews
   (Imran K., Events Manager; Olivia B., Wedding planner) are appended to `QUOTES`, so the wall

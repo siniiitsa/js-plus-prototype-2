@@ -154,12 +154,14 @@ mutated through a single `patch()` helper.
   passes *that* everywhere — the h1 included (`vm.heroTitle` is `vm.brand`; the header resolves
   its own `c.title` the same way, so a header preview or a harness `&cj=` cannot split them),
   nav brand, initials placeholders, bylines, badge,
-  `copyrightOf()`, the published tab's `<title>` (reset on every republish, not only when the tab
+  `copyrightOf()`, the enquiry form's layout-3 head (`formHeading3()`, JP-070), the published
+  tab's `<title>` (reset on every republish, not only when the tab
   is first opened) and the dialog's site address. `NameInput` never commits a Title that trims
   to empty: the box may sit empty (with a "Your name is required" line) while the page keeps the
   last name, and leaving it puts that name back — so no slot ever falls back to the prop once
   the artist has typed one, and Publish never meets an empty name. Header `badgeText` and footer `copyright` have
-  no static default for that reason; `EditPanel` special-cases them beside `title`. **The
+  no static default for that reason; `EditPanel` special-cases them beside `title`, and the
+  form's `heading` at layout 3 beside them. **The
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
   section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
@@ -887,17 +889,23 @@ mutated through a single `patch()` helper.
   head; and the card carries **layout 2's own card fields** — the price row, the
   `★★★★★ 42 bookings` line, the `cta` submit label and the `note` line under the pill —
   because it is the same card component (QA, 2026-09-15). So `promises` skips layout 3
-  alone: layouts 1, 2 and 4 read it. Under Lime and Grunge a refused box takes layout 2's 2px
+  alone: layouts 1, 2 and 4 read it. **Its head is the frame's, off the artist's name**
+  (JP-070, user call, 2026-09-29): every layout-3 frame reads "Book Kai for / your event",
+  naming its mock artist, so with `heading` absent `sectionVm` resolves `formHeading3(name)`,
+  "Book {name} for\nyour event" (the break folds to a space here), and `EditPanel`'s chain
+  carries the same arm, `copyrightOf()`'s rule; a typed head stops following the name and an
+  emptied one stays empty. Under Lime and Grunge a refused box takes layout 2's 2px
   ring of full ink, and under Editorial — whose card and boxes are square, dashed 10, 10 and
   6, 6 in terracotta on the paper page — the dash gives way to a solid 2px ring of ink `s.tx`
   (colour, weight and dash at once). Under Lime and Editorial the desktop
   head shrinks to fit its widest word in the half column (`vm.titleWordEms`, beside
   `navNameEms` and the header card's `vm.cardNameEms`, JP-062) rather than breaking inside it —
-  Grunge's Anton at 0.75 sets the seeded
-  head at 484 against the 501 column, so the key was measured and left out for Grunge here.
+  Grunge's Anton at 0.75 set the old seed's UNFORGETTABLE.
+  at 484 against the 501 column, so the key was measured and left out for Grunge here.
   Editorial's arm is keyed by design: Noto's 540 ems (`notoEms`) for this Regular head at
-  design 2, 70px on three lines in the 519.5 column, and Noto Bold's (`notoBoldEms`) for its
-  layout-1 statement (below).
+  design 2, and Noto Bold's (`notoBoldEms`) for its layout-1 statement (below). The old seed
+  set at 100 under Lime and 70 under Editorial; the name-derived one fits at the ramp's 107 and
+  97, so the fit bites only on a long word the artist types or a long one-word name.
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
   two `minmax(0, 1fr)` grid columns, because a zero flex-basis resolves against the
   *content* box whatever `box-sizing` says and the padded card came out 41 wider than the
@@ -923,10 +931,12 @@ mutated through a single `patch()` helper.
   2026-09-24, reversing the 2026-09-23 "the boxes stay the artist's one list"): with `fields`
   absent, layout 4 seeds `FORM_FIELDS_4`, the frame's five — Your name, Email, Event date,
   Event type, Location over its own placeholders, one `email` row so the guard holds, and the
-  frame's Message being the `message` textarea — where layouts 1–3 seed `FORM_FIELDS`'
-  four; `sectionVm`'s `formList` at `d === 3` and `formFieldsVal` at `design === 3`, the
-  seed-resolver rule. The gate is on the absent key alone, `FORM_BTN_4`'s: once the artist
-  edits the list it is theirs at every layout. The steps stay one line. Three things it does that no other layout here does. It draws
+  frame's Message being the `message` textarea — where layout 1 seeds `FORM_FIELDS`' four and
+  layouts 2 and 3 their card's three, **`FORM_FIELDS_CARD`** (JP-070, user call, 2026-09-29):
+  Event date, Event type, Your email, the email row last for the first time, which is safe
+  because every reader finds it by `kind`. `sectionVm`'s `formList` gates on `d` and
+  `formFieldsVal` on `design`, the seed-resolver rule. The gate is on the absent key alone,
+  `FORM_BTN_4`'s: once the artist edits the list it is theirs at every layout. The steps stay one line. Three things it does that no other layout here does. It draws
   a **label above a box *and* a placeholder inside it**, which is layout 1's pair and
   brings both `message` and the rows' `placeholder` column back after two layouts that
   spend their one slot on the label; a **trailing odd field runs the full measure** where
@@ -1142,7 +1152,7 @@ mutated through a single `patch()` helper.
   delimited textarea, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
   numbers 01 / 02 / 03. All eight follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_4` at form layout 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package

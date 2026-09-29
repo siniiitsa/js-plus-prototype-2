@@ -1884,7 +1884,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
 - **Named diffs**:
   - the twins': the seed's four boxes against the frame's three (NAME, EMAIL, EVENT DATE,
     GUESTS against EVENT DATE, EVENT TYPE, YOUR EMAIL), and its "Let's make your night
-    unforgettable." against "Book Kai for / your event" — so the card is **taller than the
+    unforgettable." against "Book Kai for / your event" (**since JP-070 (form)** (2026-09-29)
+    both are the frame's: `FORM_FIELDS_CARD`, and the head off the artist's name,
+    `formHeading3()`, at the ramp's 97; see `../grunge/layout-3-qa-fixes.md`) — so the card is **taller than the
     head column at 1440** (351.9 against ~246), the frame's reverse, and the head centres on
     the card; three lines at 768 and 390 where the frame's copy sets two; the top inset is
     `padY` 80 / 56 / 44 against the frame's 90 / 60 / 90 (Lime's arm sets only the foot);

@@ -143,7 +143,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | **done** (A; the pair after the month name, the free dot at 24; off-month the head is the month alone; 30 files as named) |
 | 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | **done** (A; `rating` over a literal `/5`, the count its emptied fallback; `stars` widened to layout 3, beside the faces; 30 files as named) |
 | 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | **done** (A, keep, A; `HEADING_3`, which took in `CAL_HEADING_3`; `rowCta` at layouts 1, 3 and 4, where an emptied label drops the pill and a long one wraps; 150 files as named) |
-| 14 | JP-070 (form) | The form's head and boxes | **Named fit diffs**: the head names the mock artist; the boxes are layout 2's card frame's too | S–M | **yes** — the head, the boxes | open |
+| 14 | JP-070 (form) | The form's head and boxes | **Named fit diffs**: the head names the mock artist; the boxes are layout 2's card frame's too | S–M | **yes** — the head, the boxes | **done** (A, A; `formHeading3(name)` at layout 3, `FORM_FIELDS_CARD` at layouts 2 and 3; Lime's and Editorial's desktop head back on the ramp; 60 files as named) |
 | 15 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -2360,11 +2360,113 @@ night unforgettable.".
 **Docs.** CLAUDE.md's form paragraph (the `FORM_FIELDS_4` sentence, "The gate is on the absent key
 alone"). The `FORM_FIELDS` comments. `../lime/retest-qa-fixes.md`'s JP-054, a pointer.
 
-**Decided.** —
+**Decided: A, A** (user, 2026-09-29; two questions, each the recommendation).
+1. **The head is composed from the name at layout 3**: "Book {name} for\nyour event", the
+   artist's name as the header holds it (`nameOf()`, the `artistName` every section gets), a
+   name-derived default on the `copyrightOf()` / `badgeText` precedent. `sectionVm` resolves it
+   at `d === 2` with the key absent, beside `HEADING_3`, and `EditPanel`'s chain carries the
+   same arm beside `copyrightOf`'s, so the panel shows the composed head as the field's value. A
+   typed heading is the artist's and no longer follows the name; an emptied one stays empty.
+   Layouts 1 and 2 keep "Let's make your night unforgettable." and layout 4 "Contact Us".
+2. **The boxes: a `FORM_FIELDS_CARD` seed at layouts 2 and 3** (the one card component), the
+   frame's three — Event date, Event type, Your email — with one `email` row so the guard holds,
+   gated on the absent key alone as `FORM_FIELDS_4` is, in `formList` and `formFieldsVal`. Once
+   the artist edits the list it is theirs at every layout. Layout 1 keeps `FORM_FIELDS`' four.
 
-**Settled.** —
+**Settled** (2026-09-29).
+- **Re-checked on HEAD** (`43b0c2e`). Every number in JP-070 (heads)' "For JP-070 (form)" held.
+  Layout 3's `<h2>` (`EncoreSection.jsx:24208` in the block, `:24372` in Retro / Pop) sets no
+  `pre-wrap`, so a typed break folds to a space there.
+- **The email row is last for the first time.** Every reader finds it by `kind`: `formErrors()`,
+  `formGuarded`, `FormFieldsField`'s `lastEmail` and every box's `type`. None reads it by place,
+  so moving it from index 1 to 2 needed no other change. `FormFieldsField`'s `design` prop only
+  prints "two / one to a row", which names no seed.
+- **Code.**
+  - `data.js`: `FORM_FIELDS_CARD` under `FORM_FIELDS_4` (`:885`). It holds Event date, Event
+    type and Your email over `FORM_FIELDS_4`'s placeholders, which the card does not draw but
+    the panel shows. `formHeading3(name)` beside `copyrightOf` (`:1760`). `FIELDS.form.heading`
+    gains a hint (layout 3 from the name, layout 4 "Contact Us", the break kept in layout 2).
+    `fields`' comment and hint name the card's three.
+  - `EncoreBuilder.jsx`: one line after the `HEADING_3` / `HEADING_4` pair and ahead of
+    `vm.titleWordEms`, which reads the final title (`:1040`). `formList` (`:1663`) and
+    `formFieldsVal` (`:3565`) take the three-way gate. `EditPanel`'s chain has a form arm beside
+    `copyrightOf`'s (`:3629`), and the comment above the chain names both.
+  - `EncoreSection.jsx`: two comments only. Both described "UNFORGETTABLE." as the current
+    seed, and now say "the old seed's".
+- **The harness proof** (before the edit): the HEAD worktree on :5174 against the tree on :5173,
+  every category × themes `0,1,2,3,4` × three widths, canvas and `live=1`: **0 of 1,320**.
+- **After: 60 files, as named.** `FORM_FIELDS_CARD` and `formHeading3` were confirmed in :5173's
+  modules first. The 60 are form `arch 1` and `arch 2` × themes 0–4 × three widths × both
+  surfaces. Every other category and design is 0, form `arch 0` and `arch 3` included.
+  - Every file loses one box, a row each, or four under Editorial, whose box carries a
+    `DashRule`. At `arch 2` the head moves too: "Let's make / your night unforgettable." →
+    "Book Kai Mercer for / your event".
+  - **The desktop size moves back to the ramp** under Lime (100 → 107) and Editorial (70 →
+    97): KAI and MERCER fit the half column where UNFORGETTABLE. did not. Retro (78.7), Grunge
+    (80.25) and Pop (78.7) keep theirs.
+  - A re-digest of the form after the last (comment-only) edit matched byte for byte.
+- **The head, read whole** (a one-off probe, `live=1` and canvas, themes 0–4 × three widths, 270
+  renders, each `<h2>`'s `textContent` read and checked against its column and the section).
+  - **The seed**: "Book Kai Mercer for\nyour event" on every template, upper-cased under Pop.
+  - **`&name=`**: "Mo" and "Florence and the Machine" compose, and nothing overflows. A long
+    one-word name ("Supercalifragilisticexpialidocious") shrinks Lime's desktop head to 44 and
+    Editorial's to 31, the widest-word fit. Elsewhere the word breaks inside itself
+    (`overflowWrap`), as a typed one did before.
+  - **Typed** ("Wedding enquiries") prints as typed. **Emptied**, the `<h2>` is empty, as it is
+    today.
+  - The only flags were Editorial's `arch 0` desktop statement against its container-query
+    wrapper. That design is 0 in the digest, so they come from the probe, not this change.
+- **The boxes.** Layouts 2 and 3 print EVENT DATE / EVENT TYPE / YOUR EMAIL on the canvas. Live
+  they are placeholders on `text`, `text`, `email` inputs. Layouts 1 and 4 are unchanged.
+- **Live** (a one-off puppeteer script on the harness's `live=1`, layouts 2 and 3 × themes 0–4
+  × 1440 and 390, 20 renders, clicks on a `mailto:` defaulted away):
+  - an empty submit marks all three boxes and prints the prompt;
+  - dates and type filled with a bad address marks the email box alone (`errs.f[2]`);
+  - a good address composes `mailto:bookings@kaimercer.co.uk?subject=Enquiry&body=Event date:
+    12/06/2027 / Event type: Wedding / Your email: jo@example.com` (CRLF between lines), and the
+    confirmation prints the address.
+- **The tester's steps in the real app** (a one-off puppeteer script, deleted; editor 1600 ×
+  1000; the template, the card, *Use this header*, then the page list's Enquiry Form).
+  - **Grunge card 3.** The panel's *Heading* reads "Book Kai Mercer for\nyour event" under the
+    new hint. *Form fields* lists Event date / Event type / Your email with their
+    placeholders. Your email's trash is disabled and its select disables Text and Number. The
+    canvas agrees.
+  - **The name.** The header's Title set to "Florence and the Machine" moves the panel's head
+    and the canvas's. Typing "Wedding enquiries" into *Heading* and setting the Title back to
+    "Kai Mercer" leaves "Wedding enquiries". Emptied, the box and the canvas head are empty,
+    and so is the published head.
+  - **Through the layout picker** (1, 2, 4, then 3, the key absent): the panel and canvas list
+    the old four, the card's three, the five, and the three again.
+  - Published and opened at 1440, 768 and 390: the head and three placeholders
+    (`type=email` on the last), no overflow and no page error.
+  - **Grunge card 2** (layout 2): the head is layout 2's own "Let's make / your night
+    unforgettable.", and the boxes, panel, canvas and published tab show the card's three.
+  - **Lime's, Editorial's and Retro's card 3**: the same panel, canvas and published values, at
+    107 / 81 / 54, 97 / 73 / 48 and 78.7 / 60 / 40, with no overflow or errors.
+- **Reach.** Nothing to measure: `heading` and `fields` keep their `in`.
+- **Docs.** CLAUDE.md:
+  - JP-050's list of the name's readers gains the form's layout-3 head, beside `copyrightOf()`,
+    and `EditPanel`'s special cases name it.
+  - Layout 3's form paragraph gains the head. The widest-word fit's numbers are now "the old
+    seed's", with the new ones.
+  - The `FORM_FIELDS_4` sentence names `FORM_FIELDS_CARD`, and so does the repeaters' seed
+    list.
 
-Reply: —
+  Beyond CLAUDE.md: the `FORM_FIELDS_CARD` and `formHeading3` comments, and `fields`' comment
+  and hint. Pointers went in `../lime/retest-qa-fixes.md`'s JP-054 and beside the form's named
+  diffs in `./layout-3.md`, `../lime/layout-3.md`, `../retro/layout-3.md` and
+  `../editorial/layout-3.md`. README names none of this.
+
+Reply: **JP-070 (form) — fixed.** The Enquiry Form's layout 3 now starts from the design's
+heading and boxes.
+- Its heading starts as "Book {your name} for your event", "Book Kai Mercer for your event" on
+  the demo page. It follows the Title field until you type a heading of your own; after that
+  it is yours, and emptying it leaves it empty.
+- Its boxes start as the design's three: Event date, Event type, Your email. Layout 2 (the
+  same card) does too. Layout 1 keeps Name / Email / Event date / Guests, and layout 4 its own
+  five. Once you edit the list, your list is used in every layout. The published form mails
+  what the visitor types under those labels, and still refuses to send without a valid email.
+- On every template.
 
 ---
 

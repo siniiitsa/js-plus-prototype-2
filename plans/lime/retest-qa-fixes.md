@@ -374,6 +374,9 @@ artist edits the list it applies at every layout (the heading and button default
   *Reversed* bullets on JP-054's Settled and reply in `layout-4-qa-fixes.md` and on Lime L4 §9
   in `layout-4.md`. Grunge's "KAI MERCER" head stays a named diff. No `reach.mjs` row (no new
   key).
+- **Extended by JP-070 (form)** (2026-09-29, `../grunge/layout-3-qa-fixes.md`): layouts 2 and 3
+  now seed their card's three boxes, `FORM_FIELDS_CARD`, on this entry's absent-key gate, and
+  the layout-3 head is composed from the artist's name. Layout 1 alone keeps `FORM_FIELDS`.
 
 Reply: **fixed.** Layout 4 now opens with the design's five boxes (Your name, Email, Event
 date, Event type and Location) above the Message box. Once you change the list, your list is

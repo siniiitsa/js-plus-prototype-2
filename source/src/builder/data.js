@@ -875,6 +875,18 @@ export const FORM_FIELDS_4 = [
   { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
   { label: 'Location',   placeholder: 'Town / city',     kind: 'text' },
 ]
+// Layouts 2 and 3's own seed (JP-070, user call, 2026-09-29): the card both
+// frames share (964:64633 and every layout-3 master) stacks these three,
+// labels as FORM_FIELDS_4's are. The card prints the label alone, so the
+// placeholders are FORM_FIELDS_4's, there for the panel and for a list the
+// artist edits here and then takes to layout 1 or 4. The email row is last for
+// the first time, which is safe: every reader finds it by `kind`, never by
+// place. Chosen by layout only while the key is absent, FORM_FIELDS_4's gate.
+export const FORM_FIELDS_CARD = [
+  { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'text' },
+  { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
+  { label: 'Your email', placeholder: 'you@email.com',   kind: 'email' },
+]
 // What `blankRow()` asks of a box (JP-051): the two strings it can print. Not
 // `kind`, which is a select that always holds a value, so asking it too would
 // make no row blank. A box with only a placeholder is still a box; in layouts
@@ -1631,8 +1643,13 @@ export const FIELDS = {
     { k: 'photo',    l: 'Stage photo', type: 'image', in: [1],
       hint: 'The big picture above the heading. Layout 2 only.' },
     // A textarea, because the default breaks after "Let's make" — layout 2
-    // keeps the break, the others read it as a space.
-    { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable." },
+    // keeps the break, the others read it as a space. Layout 3 starts from
+    // formHeading3(name) and layout 4 from FORM_HEADING_4 — special-cased, as
+    // `copyright` is, in sectionVm and EditPanel's fallback chain.
+    { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable.",
+      hint: 'Layout 3 starts from your name (“Book … for your event”) and follows it until you '
+          + 'type your own; layout 4 starts from “Contact Us”. A line break you type is kept in '
+          + 'layout 2.' },
     // Layout 4's small-caps line under the head, which printed the artist's
     // name until JP-054 gave it the frame's own word. Emptiable: it drops.
     { k: 'sub',      l: 'Line under the heading', d: FORM_SUB_4, in: [3],
@@ -1643,16 +1660,17 @@ export const FIELDS = {
       hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
           + 'right-hand column, and with none it draws no column at all.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
-    // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_4 at layout
-    // 4, JP-054), an emptied array means no boxes at all, and there is no null
-    // sentinel.
+    // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_CARD at
+    // layouts 2 and 3, JP-070; FORM_FIELDS_4 at layout 4, JP-054), an emptied
+    // array means no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
           + 'which set the label inside the box and draw no placeholder. An odd last box '
           + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
-          + 'form emails you what the visitor types. Layout 4 starts on its own five boxes '
-          + 'until you edit them; after that your list shows in every layout.' },
+          + 'form emails you what the visitor types. Layouts 2 and 3 start on their card’s three '
+          + 'boxes and layout 4 on its own five until you edit them; after that your list shows '
+          + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
@@ -1734,6 +1752,12 @@ export function caseText(t, casing) {
 
 // The footer's small print, off the artist's name. sectionVm and EditPanel both read it.
 export const copyrightOf = (name) => `C 2026 ${name}`
+// The enquiry form's layout-3 head, off the artist's name for the same reason
+// (JP-070, user call, 2026-09-29): every layout-3 frame reads "Book Kai for /
+// your event", which names its mock artist. Only while the heading key is
+// absent, so a typed head stops following the name. Layout 3 does not set
+// `pre-wrap`, so the break folds to a space there.
+export const formHeading3 = (name) => `Book ${name} for\nyour event`
 
 // F1 — the artist's role and home town, as the header's Kicker and Location
 // hold them: the one place either is typed. Raw, so an absent key still means

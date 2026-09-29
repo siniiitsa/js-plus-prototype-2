@@ -1371,7 +1371,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   402.2 at radius 15, boxes **37**, pill 54.
 - **Named diffs, Lime's and Retro's**: the seed's four boxes against the frame's three and its
   three-line heading against the frame's two ("Let's make / your night unforgettable." against
-  "Book Kai for your event"), so the section runs 509.5 / 771 / 694.1 against 562 × 0.82 = 460.8
+  "Book Kai for your event") (**since JP-070 (form)** (2026-09-29) both are the frame's: the card's three boxes, `FORM_FIELDS_CARD`, and the head off the artist's name, `formHeading3()`; see `./layout-3-qa-fixes.md`), so the section runs 509.5 / 771 / 694.1 against 562 × 0.82 = 460.8
   / 728 / 741 — over at the wide widths on the fourth box and the third head line, under at 390
   where the frame's own 60 + 30 insets are `padY`'s 44 (Lime's "390 is under the frames", the
   same tree on both); the top inset is `padY` 80 / 56 against the frame's 90 / 60, Lime's arm
