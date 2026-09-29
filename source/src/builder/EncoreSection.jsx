@@ -18621,7 +18621,9 @@ function EventsMap({ s }) {
   // **The chip row is the gigs' own cities** (`vm.gigChips`, above). The
   // frame's All / Upcoming · 5 / Past · 3 / Filter ↓ is three claims and a dead
   // control — nothing in this file reads the clock, so "upcoming" and "past"
-  // are unknowable — and the city is what the heading "Where I'm playing." is
+  // are unknowable here (a gig's `year`, JP-069, would let the published tab
+  // derive them from its `today`; named, and out of scope) — and the city is
+  // what the heading "Where I'm playing." is
   // about. It is derived, it carries the frame's own `label · count`, and it is
   // not drawn below two cities. Its cost is named rather than engineered away:
   // `g.pin` pairs a gig with a dot by its index in the **whole** list, so a
@@ -18631,8 +18633,9 @@ function EventsMap({ s }) {
   // page is one gig, every gig would light dot 0 and the map would never move.
   //
   // **Five things the frame draws are dropped**, all of them claims or controls
-  // with nowhere to go: the row's weekday (no year and no clock, so `SAT` is
-  // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (its seat
+  // with nowhere to go: the row's weekday (since restored: a gig carries a
+  // `year` and `sectionVm` derives `gg.weekday` from it, JP-069, user call,
+  // 2026-09-29), the "Upcoming"/"Past" status pill (its seat
   // stays empty: the row's hour sits in the sub line, "Manchester · 22:00",
   // where every master prints it — JP-069, user call, 2026-09-28; it had
   // taken that seat as a chip, layout 2's own words), the 30/60/120mi ring
@@ -18948,11 +18951,18 @@ function EventsMap({ s }) {
             borderRadius: ed ? 0 : '999px', background: mist, boxShadow: ring(hair),
             color: on ? G.litBoxFg : ink,
           })}>
-            {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation. */}
+            {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation.
+                The weekday is the month's style again, the frames' third line
+                (JP-069), and is not drawn when the date names no day. */}
             <span style={{
               fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
             }}>{gg.month}</span>
             <span style={{ fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26 }}>{gg.day}</span>
+            {!!gg.weekday && (
+              <span style={{
+                fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
+              }}>{gg.weekday}</span>
+            )}
           </span>
         )
         const lines = (
@@ -19315,12 +19325,19 @@ function EventsMap({ s }) {
           color: on ? hot : sheetFg,
         })}>
           {/* Label/XXXS, a literal 7 at every width rather than a token. The
-              frame's third line is the weekday, which needs a year and a clock
-              and so is not derivable from "Jul 12". */}
+              frame's third line is the weekday, in the month's style again:
+              `gg.weekday`, derived from the gig's month, day and year in
+              sectionVm (JP-069, user call, 2026-09-29), and not drawn when
+              they name no day. The disc is a fixed 56, so it does not grow. */}
           <span style={{
             fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
           }}>{gg.month}</span>
           <span style={{ fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{gg.day}</span>
+          {!!gg.weekday && (
+            <span style={{
+              fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
+            }}>{gg.weekday}</span>
+          )}
         </span>
       )
       const lines = (

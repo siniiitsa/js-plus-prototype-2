@@ -813,15 +813,20 @@ export const REP_ALL = 'All'
 //
 // One gig pairs with one pin, by index — PINS is five positions over the seeded
 // Manchester raster and sectionVm hands each gig `PINS[i % PINS.length]`.
+//
+// `year` is printed nowhere. It is what layout 3's date disc derives its
+// weekday from (gigWeekday(), JP-069, user call, 2026-09-29), and 2025 is the
+// year whose weekdays the frames print: JUL / 12 / SAT … AUG / 30 / SAT.
 export const GIGS = [
-  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12', link: '' },
-  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25', link: '' },
-  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02', link: '' },
-  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', link: '' },
-  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', link: '' },
+  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12', year: '2025', link: '' },
+  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25', year: '2025', link: '' },
+  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02', year: '2025', link: '' },
+  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', year: '2025', link: '' },
+  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', year: '2025', link: '' },
 ]
-// What `blankRow()` asks of a GigsField row (the JP-051 sweep).
-export const GIG_KEYS = ['venue', 'city', 'time', 'month', 'day', 'link']
+// What `blankRow()` asks of a GigsField row (the JP-051 sweep). `year` is in
+// it, so a row holding only a year is still a row.
+export const GIG_KEYS = ['venue', 'city', 'time', 'month', 'day', 'year', 'link']
 export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
@@ -1627,7 +1632,8 @@ export const FIELDS = {
           + 'an address that isn’t valid, leaves both Send Enquiry buttons a picture.' },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
-  // and `media`: `gigs` is an array of { venue, city, time, month, day, link }
+  // and `media`: `gigs` is an array of { venue, city, time, month, day, year,
+  // link }
   // maintained by GigsField. It follows the `songs` rule rather than the
   // tracks' — one key, one shape — so an absent key means the seeded GIGS, an
   // emptied array means no gigs, and there is no null sentinel.
@@ -1643,7 +1649,8 @@ export const FIELDS = {
           + `a real link on the published page; the list pages ${PINS.length} at a time in `
           + "layouts 1–3 (layout 3 shows one at a time on a phone) and one at a time in "
           + "layout 4's ticker. "
-          + 'Layout 3 also turns the cities into its filter chips.' },
+          + 'Layout 3 also turns the cities into its filter chips, and works out the weekday '
+          + 'its date disc prints from the month, the day and the year (four digits).' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
@@ -2196,6 +2203,23 @@ export function calStart(open, today) {
 
 export function weekdayOf(y, m, d) {
   return new Date(Date.UTC(y, m, d)).getUTCDay()
+}
+
+// A gig's weekday, for layout 3's date disc (JP-069, user call, 2026-09-29):
+// CAL_DAYS' short name, or '' when the three boxes do not name a real day.
+// The month is the artist's free text ("Jul", "july", "Sept"), matched by its
+// first three letters against MONTHS; the year must be four digits, because
+// Date.UTC reads 25 as 1925; and a day the month does not have (31 Jun) gives
+// nothing rather than rolling over, parseDate()'s rule.
+export function gigWeekday(year, month, day) {
+  const y = /^\d{4}$/.exec(String(year ?? '').trim())
+  const d = /^\d{1,2}$/.exec(String(day ?? '').trim())
+  const key = String(month ?? '').trim().slice(0, 3).toLowerCase()
+  const m = key.length === 3 ? MONTHS.findIndex((n) => n.slice(0, 3).toLowerCase() === key) : -1
+  if (!y || !d || m < 0) return ''
+  const n = +d[0]
+  if (n < 1 || n > monthSpan(+y[0], m).length) return ''
+  return CAL_DAYS[weekdayOf(+y[0], m, n)]
 }
 
 export function monthLabel(y, m) {

@@ -313,7 +313,7 @@ That distinction is the whole design, and it buys two things:
   draws it, and the row's 20px gap is the row gap too, so the open tile's offset shadow clears.
 
   **The events map, which pages and pairs.** Its gig list became the artist's
-  (`FIELDS.map.gigs`, a `GigsField` repeater of `{ venue, city, time, month, day, link }`), and a
+  (`FIELDS.map.gigs`, a `GigsField` repeater of `{ venue, city, time, month, day, year, link }`; the year only derives layout 3's weekday), and a
   list the artist owns cannot keep a pager that hardcodes twenty pages over five rows. So the
   pager is derived the way the repertoire's is, `PAGES` is deleted, and — again like the
   repertoire's — it is not drawn at one page: the five seeded gigs are one page, so the reference

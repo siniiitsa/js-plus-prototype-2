@@ -71,7 +71,7 @@ it.
 |---|---|---|---|---|---|---|---|
 | 1 | JP-056 · JP-068 | Anton, not Stones Crush · the media kicker's "KM BIO" | `qa-fixes.md` JP-056 (A); `layout-3-qa-fixes.md` the three replies (JP-068 A) | **Both need an answer from outside the code**: a web licence (the PO) and the frame's intent (the designer) | — (decisions) | **user: C on its own branch; A** | **done** (no code; [`display-face.md`](./display-face.md) written; JP-068's reply stands) |
 | 2 | JP-070 (rest) | The pricing intro and chips | `layout-3-qa-fixes.md` JP-070 (heads), "keep" and the chips' reply | **Named fit diffs**: the intro's count claim was dropped; the chips derive from one tag list for every layout | S–M | **user: B; A** | **done** (30 files, as named) |
-| 3 | JP-069 (weekday) | No weekday in the date disc | `layout-3-qa-fixes.md` JP-069, the weekday half | **A data-model gap**: a gig has no year | S–M | **yes** | todo |
+| 3 | JP-069 (weekday) | No weekday in the date disc | `layout-3-qa-fixes.md` JP-069, the weekday half | **A data-model gap**: a gig has no year | S–M | **user: A** | **done** (a `year` column; 30 files, as named) |
 | 4 | JP-071 | Eight section labels no field reaches | `layout-3-qa-fixes.md` the three replies (JP-071 A) | **The product's label rule**, now reversed for these eight | M | **yes** | todo |
 | 5 | JP-066 | Set cards: no mood, set length or track length | `layout-3-qa-fixes.md` the three replies (JP-066 A) | **A data-model gap**: a set is a tag, and a song has no length | L | **yes** | todo |
 | 6 | — | End-of-pass sweep | — | — | S | — | todo |
@@ -451,9 +451,159 @@ dropped. The city chips, the pager and the lit row still work.
 **Docs.** CLAUDE.md's `c.gigs` shape (*Ten list-shaped contents*) and the `GIG_KEYS` list. The two
 branch comments. A *reversed* pointer in `layout-3-qa-fixes.md` JP-069.
 
-**Decided.** —
+**Decided** (user, 2026-09-29): **A, a `year` column.**
+- `GigsField` gains a *Year* box. `GIGS` seeds `'2025'` on all five gigs, and nothing prints it.
+- `sectionVm` derives `vm.gigs[].weekday` through `Date.UTC` (`gigWeekday()` in `data.js`, beside
+  `weekdayOf()`):
+  - the month is matched by its first three letters, case-folded, against `MONTHS`;
+  - the year must be four digits, because `Date.UTC(25, …)` is 1925;
+  - the day must exist in that month (31 Jun gives nothing);
+  - anything else gives `''`, and the disc draws no third line.
+- `GIG_KEYS` gains `year`, so a row holding only a year is not blank.
+- Upcoming / Past (JP-047) becomes derivable. It stays out of scope, and the reply names it.
 
-**Settled.** —
+Asked over the frame read and the harness proof below.
+
+**The frame read** (`get_design_context`, read-only):
+- **Map layouts 1, 2 and 4 draw no weekday and no year** in any of the nine Grunge frames or the
+  1440 twins:
+  - layout 1: `964:58605`, `986:44063`, `986:44075`; Lime `964:58593`, Retro `964:58581`;
+  - layout 2: `964:64632`, `986:13767`, `986:13786`; the twins `964:64594` and `964:64651`;
+  - layout 4: `964:73019`, `971:8136`, `977:12363`; the twins `964:72924` and `964:72830`.
+
+  Layout 1 prints month over day. Layout 2 prints a day tile and `Manchester · JUL`, and its
+  featured panel prints no date at all. Layout 4's ticker reads `Manchester · JUL 12 · 22:00`.
+  So no other arch joins the after-diff.
+- **Layout 3 draws the third line at all three widths.** Grunge `964:68713` / `984:13926` and the
+  twins `964:68649` / `964:68681` each have six discs, and the 390 master `984:13957` has one:
+  `JUL/12/SAT`, `JUL/25/FRI`, `AUG/02/SAT`, `AUG/16/SAT`, `AUG/30/SAT`, and the frame's past row
+  `JUN/14/SAT`. Those are 2025's weekdays.
+- **The weekday takes the month's style**: `Label/XXXS`, `font/body` at a literal 7, line height
+  1.3, typed in capitals, in the disc's own ink.
+- **The disc is a fixed 56 × 56**, vertical, with 0 gap, centred. The three lines stack to about
+  43, so the disc does not grow.
+
+**The harness proof** (before the edit): the HEAD worktree (`cd3afb6`) on :5174 against the tree
+on :5173, every category × themes 0–4 × three widths, canvas and `live=1`: **0 of 1,320**.
+
+**The expected after-diff**, named before the code: **30 files**, map `arch 2` × themes 0–4 × three
+widths × both surfaces. Each disc gains one 7px row, the weekday, and the month and day rows move
+up by half its height inside the fixed disc. Nothing outside the disc moves. Map `arch 0`, `1` and
+`3` and every other category: **0**. Layout 2's `when` and layout 4's `meta` never read `year`, and
+that is what holds them at 0.
+
+**Settled** (2026-09-29).
+- **The evidence, re-checked on HEAD** (`cd3afb6`). Every line held as entry 2 left it:
+  - `GIGS` at `data.js:816`, `GIG_KEYS` at `:824`, `CAL_OPEN` at `:1025`;
+  - the weekday comments at `EncoreSection.jsx:18634` (the drops list above the `s.limeTree`
+    block) and `:19318` (Retro / Pop);
+  - the month sites at `:18954` and `:19322`.
+
+  Nothing but the layout-3 branch reads `gg.month` / `gg.day` as a disc. Layout 1's chip (about
+  `:17227`) and layout 2's tile (about `:17904` and `:18328`) do not share the disc.
+- **Code.**
+  - `data.js`:
+    - `GIGS` (`:820`) seeds `year: '2025'` on all five rows, under a comment naming why 2025.
+    - `GIG_KEYS` (`:829`) gains `year`.
+    - `gigWeekday()` (`:2214`) sits beside `weekdayOf()`. It uses `MONTHS`, `monthSpan()` and
+      `CAL_DAYS`, so there is no new table.
+    - `FIELDS.map`'s gigs comment and hint now name the year.
+  - `EncoreBuilder.jsx`:
+    - `vm.gigs[].weekday` (`:1499`) is added beside `month` / `day`. `when` and `meta` are
+      untouched.
+    - In `GigsField` (`:2732`), the month / day pair is a row of three with a *Year* box
+      (`inputMode="numeric"`, placeholder "Year"). `add()`'s blank row carries `year: ''`.
+    - At layout 3 alone (`design === 2`), a row that is not blank but names no day prints "No
+      weekday: the date needs a real day and a four-digit year." It appears only once one of the
+      three date boxes is filled, so a new row holding only a venue shows no hint while it is
+      being filled in. No other layout prints the weekday, so no other layout carries the line.
+    - The header comment's "Nothing here parses them" is rewritten.
+  - `EncoreSection.jsx`: a third span in both halves' disc (`:18961` and `:19336`), gated on
+    `!!gg.weekday`. It is in the month's style: body, a literal 7, line height 1.3, uppercase in
+    CSS, as the month is. Two more comments changed:
+    - the drops list's weekday now reads *since restored*;
+    - the chip-row comment says a year would make Upcoming / Past derivable on the published tab,
+      and that it is out of scope.
+  - There is no gate on `d`: the seed is one list for every layout, and only layout 3's branch
+    prints the key. The panel gates its hint on `design`.
+- **After: 30 files, as named** (`gigWeekday` confirmed in :5173's modules first). Map `arch 2`
+  × themes 0–4 × three widths × both surfaces. The other 1,290 renders are 0, including map
+  `arch 0`, `1` and `3`.
+  - Every file is exactly **two moved rows and three new ones per disc**: five discs at 1440 and
+    768, one at 390, checked by count on all 30.
+  - The month and day rise by half the new line inside the fixed disc: 3.7 at 1440, where
+    Grunge's 7 renders at 5.7 under the 0.82 scale, and 4.5–4.6 at 768 and 390. The weekday row
+    lands below them.
+  - The disc keeps its size, and nothing outside it moves.
+- **The seed on both surfaces** (a one-off probe over the harness, deleted). Themes 0–4 × three
+  widths, canvas and `live=1`, read `JUL/12/SAT JUL/25/FRI AUG/02/SAT AUG/16/SAT AUG/30/SAT`. At
+  390 live, the pager walked all five and clamped at the last.
+- **Edges** (`&cj=`, `live=1`, themes 0–4, 1440 and 390):
+  - "july" → `JULY/12/SAT`. The month prints as typed, as before.
+  - "Sept" 6 → `SEPT/6/SAT`.
+  - 31 Jun → `JUN/31`, with no third line.
+  - A two-digit year "25" → `JUL/12`, with none.
+  - A row with no `year` key (a list stored before this entry) → `JUL/12`, with none, and no
+    error.
+  - A row holding only a year is kept, as an empty disc. An all-empty row is dropped.
+  - 29 Feb 2028 → `FEB/29/TUE`.
+- **Live controls**: at 1440 the *Lake District · 1* chip filters to `AUG/02/SAT` alone. A click on
+  Mint Lounge lights its row, black on `#DF262C` under Grunge. No page errors.
+- **The real app** (a one-off puppeteer script at 1600 × 1000, deleted). Each template was opened
+  at card 3 through *Use this header*, then *Back to page list* → Events Map.
+  - **Grunge, Lime, Editorial and Retro alike**:
+    - The panel shows five *Year* boxes reading 2025 and no hint. The canvas reads SAT / FRI /
+      SAT / SAT / SAT.
+    - Typing "26" into row 1 drops its weekday and prints the hint. "2026" gives
+      `JUL/12/SUN`, and the hint goes.
+    - Published and opened, the tab reads `JUL/12/SUN JUL/25/FRI AUG/02/SAT AUG/16/SAT
+      AUG/30/SAT` at 1440 and 768, and `JUL/12/SUN` at 390. No page errors.
+  - **Grunge, at layout 1** (the layout picker's item 0): with row 2's year emptied, the panel
+    keeps the *Year* boxes and prints no hint. At layout 3 it printed one.
+  - Screenshots of Grunge's and Retro's 1440 discs read as the frame's `JUL / 12 / SAT`.
+  - **The panel row** (Grunge, 1600 × 1000): *Jul* / *12* / *2025* sit on one line, three boxes
+    of 61 in the 195-wide column with 6 gaps, with none past its edge. *Add gig* plus "Gorilla"
+    prints no hint, and typing a month then prints one.
+- **Reach.** `FIELDS.map.gigs` has no `in`, and the year prints nowhere, so no `reach.mjs` run was
+  owed.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does
+  that.
+- **Docs.**
+  - CLAUDE.md: the `c.gigs` shape with `year` and `gigWeekday()`, and the map paragraph (the
+    disc's weekday; Upcoming / Past derivable and out of scope). `GIG_KEYS` is named there by
+    name, so its list needed no edit.
+  - README's `GigsField` shape.
+  - *Reversed* pointers in `layout-3-qa-fixes.md`, at five places:
+    - its status row;
+    - the JP-069 Decided;
+    - the reply's weekday half;
+    - the sweep's reply line;
+    - the BA note beside JP-066.
+  - *Since* lines on the Lime retest's JP-047 and on `layout-4-qa-fixes.md`'s ticker option
+    (`:1198`, "a gig has no year").
+- **For JP-071.** This entry's hunks in `EncoreSection.jsx` all sit inside `EventsMap`, so the
+  bio and media labels did not move. Re-grepped on this tree:
+  - the bio's stats at `:4594`–`4596` and `:4820`–`4822`, `[ About ]` at `:4661` / `:4907`, and
+    *Genres* at `:4769` / `:5361`;
+  - media's `● Popular` at `:6611`, `:6927`, `:7330` and `:7458`;
+  - the map's *Gigs & travel* at `:18899` / `:19269`;
+  - the testimonials' `● Testimonials` at `:21925` / `:21977`;
+  - the "● Popular precedent" comments at `:16012`, `:21132` and `:21969`.
+
+Reply: **JP-069 (weekday) — fixed.** The Events Map's date disc in layout 3 now reads "JUL / 12 /
+SAT", as the design does.
+- Each gig has a new **Year** box (Events Map → Upcoming gigs), beside the month and the day. The
+  five starting gigs are set to 2025, the year whose weekdays the design shows. The year itself is
+  not printed anywhere.
+- The weekday is worked out from the date, never typed, so it cannot contradict it. Change the day
+  or the year and the weekday follows.
+- The month can be written as "Jul", "July" or "Sept". The year needs four digits. If the date is
+  not a real day (for example 31 Jun, or a two-digit year), the disc shows only the month and day,
+  and in layout 3 the gig's editor says why.
+- On every template, in the editor and on the published page, at every width. The other map
+  layouts show no weekday in the design, and they are unchanged.
+- With a year on each gig, "Upcoming" / "Past" could now be worked out. It is not part of this
+  fix.
 
 ---
 

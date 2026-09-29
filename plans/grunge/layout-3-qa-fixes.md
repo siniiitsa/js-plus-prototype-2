@@ -139,7 +139,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | **done** (A, past wins over booked; the seed's after-diff zero, the States 15 files, all layout 3) |
 | 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no (one asked mid-session: Lime's pill) | **done** (`footerBand` widened; root, seal disc, pill label and disc; Lime's pill too; 12 files as named) |
 | 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | **done** (the centre is `(pg + 1) % n`; 10 files as named; the seat's colour under Lime, Grunge and Editorial, the set's under Retro and Pop) |
-| 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | **done** (A; no hour chip at any width, in both halves; the weekday a reply; 24 files as named) |
+| 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | **done** (A; no hour chip at any width, in both halves; the weekday a reply; 24 files as named). *Weekday reversed*: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-069 (weekday), a `year` column |
 | 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | **done** (A; the pair after the month name, the free dot at 24; off-month the head is the month alone; 30 files as named) |
 | 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | **done** (A; `rating` over a literal `/5`, the count its emptied fallback; `stars` widened to layout 3, beside the faces; 30 files as named) |
 | 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | **done** (A, keep, A; `HEADING_3`, which took in `CAL_HEADING_3`; `rowCta` at layouts 1, 3 and 4, where an emptied label drops the pill and a long one wraps; 150 files as named) |
@@ -297,7 +297,8 @@ non-empty *Tags*), so each label goes with its value.
 - **JP-068's designer line is already in the sweep** (step 5, "the media head's 'KM BIO'"), so the
   sweep adds nothing for it.
 - **JP-066's BA question** travels in the reply below. JP-069's weekday reply names the other
-  data-model gap (no year on a gig), so the two can go to the BA together.
+  data-model gap (no year on a gig), so the two can go to the BA together. *(That gap is closed
+  since: `retest-qa-fixes.md`, JP-069 (weekday), gave a gig a `year`.)*
 - **The reply lines**, in the sweep's shape so step 6 can lift them as they stand:
   - **JP-066 — by design; a data-model question for the BA.** A set card is not stored anywhere.
     Each card is one of the tags on the Repertoire's songs, so its title is the tag ("Weddings")
@@ -1662,7 +1663,9 @@ and Editorial at 390 do not move.
 - **No hour chip at any width.** The wide rows run the date disc, the lines and Tickets →. At 390
   Retro's and Pop's second row is Tickets → alone, as the block's already is.
 - **The weekday is a reply** (JP-047: a gig has no year). A year on gigs is a data-model question
-  for the BA, and it would also unlock Upcoming / Past.
+  for the BA, and it would also unlock Upcoming / Past. *Reversed* (user, 2026-09-29, after the
+  tester's retest): a gig now carries a `year`, seeded 2025, and the disc derives its weekday
+  from it. See [`retest-qa-fixes.md`](./retest-qa-fixes.md), JP-069 (weekday).
 
 **Settled** (2026-09-28).
 - **Re-checked on HEAD** (`bb52f83`). Every line held at +82, as JP-075's hand-off named it:
@@ -1764,7 +1767,8 @@ Reply: **JP-069 — half fixed, half by design.**
   - The right-hand seat stays empty. In the design it holds "Upcoming", and the builder cannot
     know that status (JP-047).
 - **The weekday: by design.** A gig is saved as a month and a day with no year, so "SAT" cannot be
-  worked out from "Jul 12": the same date falls on a different weekday each year. Adding a year to
+  worked out from "Jul 12": the same date falls on a different weekday each year. *(Reversed since:
+  a gig has a year, and the disc prints the weekday; `retest-qa-fixes.md`, JP-069 (weekday).)* Adding a year to
   gigs is a data-model question for the BA. It would also allow Upcoming / Past.
 
 ---
@@ -2662,7 +2666,7 @@ cached build still shows every one of them.
     every template. The right-hand seat stays empty, since "Upcoming" is a status the builder
     cannot know (JP-047).
   - A gig has no year, so "SAT" cannot be worked out. That is a data-model question for the BA,
-    with JP-066.
+    with JP-066. *(Reversed since: `retest-qa-fixes.md`, JP-069 (weekday).)*
 - **JP-070 — fixed.**
   - Layout 3 starts from the design's headings on every template: "Curated sets", "Gallery",
     "Pricing", "Where I'm playing.", "Experiences.". Each package pill is a *Package button*

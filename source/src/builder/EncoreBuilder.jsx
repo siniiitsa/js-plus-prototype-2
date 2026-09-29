@@ -50,7 +50,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -1492,6 +1492,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     return {
       venue: g?.venue ?? '', city: g?.city ?? '', time: g?.time ?? '',
       month: g?.month ?? '', day: g?.day ?? '',
+      // Layout 3's disc prints it under the day, the frames' JUL / 12 / SAT
+      // (JP-069): derived, never typed, so it cannot contradict the date, and
+      // '' — no third line — for a row with no year or a date that is not one.
+      // `year` itself is printed nowhere, so `when` and `meta` do not read it.
+      weekday: gigWeekday(g?.year, g?.month, g?.day),
       url: extUrl(g?.link ?? ''),
       // Layout 2's Get Directions pill, a route to the venue.
       directions: directionsUrl(g?.venue, g?.city),
@@ -2695,16 +2700,21 @@ function TracksField({ value, max, onChange, onToast }) {
  * §8.6d GigsField — the events map's list of shows.
  *
  * The third structured repeater. Row shape is
- * { venue, city, time, month, day, link }: the first five are what the
- * gig card prints, and `link` is where its tickets go on the published
+ * { venue, city, time, month, day, year, link }: the first five are what
+ * the gig card prints, `year` what layout 3's weekday is worked out from,
+ * and `link` is where its tickets go on the published
  * page — an address rather than anything uploaded, normalised through
  * extUrl() in sectionVm like the media player's Soundcloud button. A row
  * without one stays the picture it has always been.
  *
- * `month` and `day` are two fields rather than one date because the card
- * draws them as two lines of a boxed stamp, and because an artist writing
- * "Jul"/"12" is not committing to a year, a format or a calendar the
- * section does not have. Nothing here parses them.
+ * `month`, `day` and `year` are three fields rather than one date because
+ * the card draws the first two as two lines of a boxed stamp, and the month
+ * is the artist's own word ("Jul", "July", "Sept") rather than a format. The
+ * year is printed nowhere: layout 3's stamp adds the weekday under the day
+ * (JP-069), which gigWeekday() in data.js derives from all three, so a stamp
+ * never says SAT on a Friday. A row that names no real day (no year, a
+ * two-digit one, 31 Jun) keeps its place and draws no weekday, and at
+ * layout 3 the row says so.
  *
  * Same house rules as the two above: whole-array rewrite per keystroke,
  * numbered rows, a round X, a dashed add, an "n of max" footnote, no
@@ -2717,18 +2727,20 @@ function TracksField({ value, max, onChange, onToast }) {
  * ------------------------------------------------------------------- */
 
 const BLANK_GIG_HINT = 'Empty gigs aren’t shown.'
+const NO_WEEKDAY_HINT = 'No weekday: the date needs a real day and a four-digit year.'
 
 function GigsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
-  const add = () => onChange([...list, { venue: '', city: '', time: '', month: '', day: '', link: '' }])
+  const add = () => onChange([...list, { venue: '', city: '', time: '', month: '', day: '', year: '', link: '' }])
 
-  // The two short fields that share a line. Wider than half at this panel's
-  // width would push the pair to wrap, which reads as two rows rather than one.
-  const pair = (a, b) => (
-    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+  // The short fields that share a line: city and time, and month, day and
+  // year. Wider than this panel's width would push them to wrap, which reads
+  // as two rows rather than one.
+  const pair = (...xs) => (
+    <div style={{ display: 'flex', gap: '6px' }}>{xs}</div>
   )
 
   const row = (i, g) => (
@@ -2785,14 +2797,26 @@ function GigsField({ value, max, design, onChange }) {
             onChange={(e) => setAt(i, 'day', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
+          <Input
+            key="year" value={g.year ?? ''} placeholder="Year" inputMode="numeric" onClick={stopE}
+            onChange={(e) => setAt(i, 'year', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
         )}
         <UrlInput
           value={g.link ?? ''} placeholder="Tickets link"
           onChange={(v) => setAt(i, 'link', v)}
           className="h-auto" style={SONG_ROW_INPUT}
         />
-        {blankRow(g, GIG_KEYS) && (
+        {blankRow(g, GIG_KEYS) ? (
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_GIG_HINT}</p>
+        ) : design === 2 && [g.month, g.day, g.year].some((v) => String(v ?? '').trim())
+          && !gigWeekday(g.year, g.month, g.day) && (
+          // Only layout 3 prints the weekday, so only there is a date that
+          // names no day worth a line, and only once a date box is filled, so
+          // a new row holding a venue alone is not scolded mid-edit. The row
+          // still shows, without the weekday.
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{NO_WEEKDAY_HINT}</p>
         )}
       </div>
     </div>

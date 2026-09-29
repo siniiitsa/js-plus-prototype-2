@@ -496,7 +496,9 @@ mutated through a single `patch()` helper.
   gig. It is also the only layout with a **filter**: a chip row derived from the gigs' own
   cities (`vm.gigChips`, one chip per distinct city with its count, behind an All and not built
   below two cities), because the frame's own Upcoming/Past chips are a status nothing here can
-  know. That filter is the one thing in this section that can break the
+  know (a gig's `year`, below, would let the published tab derive it; named and out of scope).
+  Its date disc prints the frames' third line, the weekday (JP-069, user call, 2026-09-29), as
+  `vm.gigs[].weekday`, derived and never typed. That filter is the one thing in this section that can break the
   one-pin-per-gig-on-a-page rule: it punches holes in the indices, so a filtered page of six or
   more can seat two gigs on the same `PINS[i % 5]`. Pairing the dot with the row's place on the
   *page* would close it and pin every gig to dot 0 at 390, where a page is one gig, so the edge
@@ -1151,11 +1153,16 @@ mutated through a single `patch()` helper.
   and `sectionVm` normalises it through `extUrl()` onto `vm.tracks[].src`. `sectionVm` falls back to
   the seeded `TRACKS` (dressed in `TRACK_AUDIO`) when the key is absent. Per-row art and audio are never
   re-seeded by index once the array exists, or a row inserted third would steal track three's
-  photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, link }`,
+  photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, year, link }`,
   maintained by `GigsField` and the plainest of them: one key, one shape, no assets, and
   `link` normalised through `extUrl()` onto `vm.gigs[].url`. Its `city` is read twice —
   as a fact on every row, and, in layout 3, as the **control** `vm.gigChips` derives the
-  filter row from, which is why `vm.gigs[]` also carries a case-folded `cityKey`. `form`'s `c.fields` is an array of
+  filter row from, which is why `vm.gigs[]` also carries a case-folded `cityKey`. Its `year`
+  is printed nowhere (JP-069, user call, 2026-09-29; `GIGS` seeds 2025, the year whose weekdays
+  the frames print): `gigWeekday()` in `data.js` derives `vm.gigs[].weekday` for layout 3's disc
+  through `Date.UTC` from the month's first three letters, case-folded, a four-digit year and a
+  day the month has, and gives `''` otherwise, so the disc draws no third line and, at layout 3,
+  `GigsField` says why under the row. `form`'s `c.fields` is an array of
   `{ label, placeholder, kind }`, maintained by `FormFieldsField` and the only repeater with a
   **per-row `<select>`** (a stock shadcn one, unlike §9.1's layout dropdown — Radix's `ItemText`
   only breaks a row carrying a *thumbnail*): `kind` is `text | email | number`, and it is the whole
