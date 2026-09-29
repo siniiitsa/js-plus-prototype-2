@@ -524,6 +524,96 @@ licence point alone argues for A.
 4. **The sites**, layout by layout (1, 2, 3, 4), one commit each. After-diff per layout: Grunge
    files at that layout's arch, **mask columns only**, no text, geometry, colour or font row
    moving. Themes 0, 1, 3 and 4: 0.
+
+   **Settled, layout 1** (2026-09-29, on `d366866`). Line numbers are this commit's
+   `EncoreSection.jsx`. **A census line past `NavBar` (`:1474`) sits 22 lower than step 1's
+   number**: 13 from step 3's helper and 9 from this commit. So layout 2's `:2133` is `:2155`, the
+   five label-face sites are `:5811` / `:10800` / `:17157` / `:20590` / `:21935`, the four Grain
+   masks are `:1676` / `:3922` / `:5272` / `:5968`, and map 4's ink edge is `:20128`.
+   - **The sites, fifteen spreads.** Each is `distressed(s, …)` wrapped round the setter's whole
+     style object, never round a span inside it:
+     - header 1's `Title` (`:1770`, below) and the Grunge `Wordmark`'s name (`:596`);
+     - bio 1's `h2` (`:3845`), media 1's (`:5743`), pricing 1's `h2` (`:8414`) and amount
+       (`:8508`), repertoire 1's `h2` (`:10843`) and gallery 1's (`:12921`);
+     - calendar 1's month (`:14808`) and `h2` (`:14833`), map 1's `h2` (`:17153`) and base on the
+       tile (`:17209`), testimonials 1's quote `p` (`:20608`), form 1's `h2` (`:22913`) and sent
+       `h3` (`:22957`), and the footer's statement `h2` (`:25414`).
+   - **The section-local helpers stay unmasked.** Calendar 1's `disp` (`:14740`), map 1's (`:17137`)
+     and form 1's (`:22772`) are wrapped at the call site, as `distressed(s, disp(…))`. The helper
+     is not a key. Map 1's venue (`:17259`, `disp(s.list …)` via `G.venue`) and form 1's box
+     labels and submit pill (`:22794`, `:22844`, both `disp(s.list …)`) go through the same
+     helpers, so a spread inside them would have masked three `list` sites and a painted pill.
+   - **Decided: `Title` takes an opt-in `worn`, where `Wordmark` takes an opt-out `clean`.**
+     - `Title` (`:917`) is shared by every header. Its Grunge callers are the calls inside each
+       header's `s.limeTree` block: HeaderV0 (`:1767`), HeaderV1 (`:2100`; its block runs
+       `:1859`–`:2224`), HeaderV2 (`:2737`) and HeaderV3 (`:3267`). The other calls (`:2411`,
+       `:3016`, `:3481`, and HeaderV4 / V5's) are the Retro and Pop arms. A spread inside `Title`
+       would have moved header arch 1, 2, 3 and 5 in this commit.
+     - So the call that chooses the size names the flag, as step 3 settled for the wordmark.
+       Here only HeaderV0's call passes `worn` (`:1770`). `Title` builds its `h1` style once as
+       `face` and spreads the mask when `worn` is set: one tile across both tones, since the
+       mask sits on the `h1`.
+     - **The end state is layout 4's commit, which collapses the prop.** Every `Title` is a
+       display head, and every Grunge caller is in the cut. So once layouts 2–4 have each opted
+       in at their own commit, `worn` has nothing left to tell apart. Layout 4's commit deletes
+       it and spreads unconditionally; the Retro, Pop and Editorial callers are the helper's
+       no-op. Until then, a Grunge `Title` without `worn` is a layout not yet done.
+   - **The wordmark gate, as step 3 decided.**
+     - `NavBar` (`:1474`) takes `clean` and forwards it to `Wordmark` (`:1496`).
+     - `Wordmark`'s Grunge / Editorial arm builds `name` and spreads the mask unless `clean` is
+       set (`:596`).
+     - Header 4's call (`:3358`) passes `clean={s.mob || grunge}`. That is the very expression
+       its `nameSize` uses to pick `s.labelLg`, so the flag and the key cannot drift apart. A bare
+       `clean` would render the same today: the call sits in the `(s.lime || s.grunge)` block,
+       Lime's `Wordmark` arm is `labelStyle` and ignores the flag, and Editorial's card 4 is
+       Retro's `HeaderV3`. The predicate is chosen for the drift, not for any render.
+     - `NavMenu`'s panel wordmark (`:697`) passes no flag and takes the mask.
+   - **Proof, per step 0's recipe.** The baseline was a worktree of `d366866` on :5174, and the
+     tree ran on the long-running :5173. Both went through step 0's `sed` normaliser. Themes 0–4
+     were rendered, 132 files each per surface.
+
+     | Theme | Bare | `&live=1` |
+     |---|---|---|
+     | 0, 1, 3, 4 | 0 of 132 each | 0 of 132 each |
+     | 2 | **39 of 132** | **39 of 132** |
+
+     - **The 39 are exactly step 1's layout-1 list** × 3 widths: header arch 0 and 4, and bio,
+       media, pricing, repertoire, gallery, calendar, map, testimonials and form at arch 0. The
+       footer is there too, at arch 0 and at `page=2`. (The prompt's "39 renders × 3 widths" was
+       loose: 13 renders × 3 widths is 39 files.)
+     - **The column check was scripted, not read by eye**, and the script is committed as
+       `source/scripts/mask-cols.mjs <before> <after>` for layouts 2–4 and the sweep. It exits 1
+       on any failure. Every differing row was compared field by field against its baseline
+       row. Each surface shows the same thing:
+       - 60 rows moved, with the row count unchanged in every file.
+       - Every moved row differs **only in the four mask columns**.
+       - In each of them the baseline read `none|none|auto|0% 0%`. The new `maskImage` is the
+         `url("data:image/svg+xml…` value, and `webkitMaskImage` equals it.
+       - `maskPosition` stays `0% 0%`.
+       - `maskSize` is **4 × `fontSize`** in every row.
+       - Every moved tag is an `H1`, `H2`, `H3`, `P` or `SPAN`.
+       - The existing `linear-gradient` mask rows are 14 per surface on both sides, the 28, and
+         none of them moved.
+     - **The sizes that moved**, as faced px:
+       - `H1` 121.5 / 71.25 (the header's 390 is also 71.25, since `tk.dispXl` is the frame's
+         Tablet-mode 95);
+       - the wordmark `SPAN` at 22.125 / 21;
+       - `dispLg` `H2`s at 80.25 / 60.75 / 34.5, `dispMd` at 44.25 / 37.5 / 28.5, and `dispSm` at
+         30.75 / 30 / 22.5;
+       - map 1's base at 22.125 / 21 / **19.5**, the smallest site in the commit.
+
+       Nothing under 19.5 took the mask.
+   - **By hand, the two sites no digest sees.** Grunge card 0 was published through a puppeteer
+     script (Publish → *Open*, `page.once('popup')`, trusted clicks, `mailto:` clicks
+     `preventDefault`ed), deleted after.
+     - **`NavMenu`'s panel wordmark**, with the burger open at 390 and at 768: "Kai Mercer" at
+       21 px carries the mask, 1,185 characters long, with `maskSize` `84px 84px`. The panel's
+       links (`labelStyle(s, s.dispSm …)`, 22.5 / 30 px) read `none`, a label site staying clean
+       by the cut.
+     - **Form 1's sent `h3`**, "Check your mail app", after a filled submit: 30.75 px with
+       `123px 123px` at 1440, and 22.5 px with `90px 90px` at 390. The mask is the same value.
+     - No page errors. In the shots, the 21 px panel name is scuffed but reads, as step 1 found
+       for the wordmark.
 5. **The sweep.**
    - A full digest against `main` (port normalised), all categories × themes 0–4 × three widths
      × canvas and `live=1`. The only diffs allowed are Grunge mask columns.

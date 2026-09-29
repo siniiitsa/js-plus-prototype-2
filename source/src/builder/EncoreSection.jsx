@@ -562,7 +562,7 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // `size` overrides the name's type — additive, `BookPill`'s `size` precedent,
 // and read under Lime alone: its 390 hero master is set in the Tablet device
 // mode, so the name there is the 768 ramp's 21 where `s.labelLg` is 14.
-function Wordmark({ s, logo = false, color, glyph, size, gap }) {
+function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false }) {
   if (s.lime) {
     // Lime's frame: Label/LG, letterSpacing 0, 13.15 from the globe (× 0.82).
     return (
@@ -583,14 +583,17 @@ function Wordmark({ s, logo = false, color, glyph, size, gap }) {
     // 0.82, and 25 on both narrow masters, the 390 being in the Tablet device
     // mode — in Noto Serif Display for the caps-only Fisterra Fora, the gaps
     // Grunge's to the pixel.
+    // Display/Title takes Grunge's distress (`distressed`); a caller that sets
+    // the name at a label size says so with `clean`, where it picks the size.
+    const name = {
+      fontFamily: s.display, lineHeight: facedLh(s, 1.1),
+      fontSize: faced(s, size ?? (s.editorial ? (s.narrow ? '25px' : '26.2px') : s.narrow ? '28px' : '29.5px')),
+      letterSpacing: s.dls, textTransform: 'uppercase', whiteSpace: 'nowrap', color: color || s.tx,
+    }
     return (
       <span style={row(gap ?? (s.narrow ? '10px' : '11px'))}>
         {logo && <LogoMark s={s} color={color} glyph={glyph} />}
-        <span style={{
-          fontFamily: s.display, lineHeight: facedLh(s, 1.1),
-          fontSize: faced(s, size ?? (s.editorial ? (s.narrow ? '25px' : '26.2px') : s.narrow ? '28px' : '29.5px')),
-          letterSpacing: s.dls, textTransform: 'uppercase', whiteSpace: 'nowrap', color: color || s.tx,
-        }}>{s.brand}</span>
+        <span style={clean ? name : distressed(s, name)}>{s.brand}</span>
       </span>
     )
   }
@@ -908,22 +911,26 @@ function Kicker({ s, color }) {
 // `inline` keeps the two words on one line until the container forces a wrap —
 // the §10.2 hero sets "Kai Mercer" as a single line on desktop and tablet and
 // lets it break naturally on mobile.
-function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, lh, inline = false }) {
+// `worn` takes Grunge's distress mask (`distressed`) on the h1, one tile across
+// both tones — opted into by the header whose call chooses the size, as
+// Wordmark's `clean` opts out (plans/grunge/display-face.md, step 4).
+function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, lh, inline = false, worn = false }) {
   const t = s.heroTitle || ''
   const i = t.indexOf(' ')
   const a = i === -1 ? t : t.slice(0, i)
   const b = i === -1 ? '' : t.slice(i + 1)
   const part = { display: inline ? 'inline' : 'block' }
+  const face = {
+    margin: 0, fontFamily: s.display, fontSize: faced(s, size || s.h1), lineHeight: facedLh(s, lh ?? 0.92),
+    letterSpacing: s.dls, color: color || s.tx, textAlign: align,
+    // Grunge's display face is all capitals (Stones Crush); Anton, standing
+    // in for it, is not, so every header's title takes the transform — and
+    // so does Editorial's, Noto Serif Display standing in for the caps-only
+    // Fisterra Fora.
+    textTransform: s.grunge || s.editorial ? 'uppercase' : undefined,
+  }
   return (
-    <h1 style={{
-      margin: 0, fontFamily: s.display, fontSize: faced(s, size || s.h1), lineHeight: facedLh(s, lh ?? 0.92),
-      letterSpacing: s.dls, color: color || s.tx, textAlign: align,
-      // Grunge's display face is all capitals (Stones Crush); Anton, standing
-      // in for it, is not, so every header's title takes the transform — and
-      // so does Editorial's, Noto Serif Display standing in for the caps-only
-      // Fisterra Fora.
-      textTransform: s.grunge || s.editorial ? 'uppercase' : undefined,
-    }}>
+    <h1 style={worn ? distressed(s, face) : face}>
       <span style={{ ...part, color: twoTone ? (toneA || s.tx) : undefined }}>{a}</span>
       {b && <span style={{ ...part, color: twoTone ? (toneB || s.ac) : undefined }}>
         {inline ? ' ' : ''}{b}
@@ -1451,6 +1458,8 @@ function LimePin({ s, width, height, radius, fill }) {
 // and its links sit a fixed 23 apart at Label/MD rather than 23/24 em at the
 // row's size — so the gaps come off `100cqi` and `s.navEms` counts the labels
 // alone (sectionVm's `navGapEm`). Every earlier caller passes neither.
+// `clean` goes to the Wordmark with the size: a caller whose `nameSize` is a
+// label key keeps the name out of Grunge's distress mask.
 //
 // Editorial's bar (964:58612 "Frame 49") is the capsule a third time, so
 // `lime` is `s.limeTree`. Its own numbers: the fill is `sem/box/3` (#0E0E0E
@@ -1462,7 +1471,7 @@ function LimePin({ s, width, height, radius, fill }) {
 // its links are Label/SM 16 at lh 1.1 — Lime's are Display/List 24 at 1.2 —
 // still 23 apart, so the gap is 23/16 of the row's size and the cap
 // `s.labelSm`.
-function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links }) {
+function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clean }) {
   const c = colour || s.tx
   const bar = rule || c
   const tab = isTablet(s)
@@ -1484,7 +1493,7 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links }) {
       <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
         <Wordmark s={s} logo glyph={mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)}
                   size={lime && s.mob ? (nameSize ?? (s.grunge ? '28px' : ed ? '25px' : '21px')) : mark ? nameSize : undefined}
-                  gap={mark?.gap} color={nameColour || c} />
+                  gap={mark?.gap} color={nameColour || c} clean={clean} />
         {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
             123px on the 1180 canvas. It has to yield rather than push the Book
             Now pill onto a second line: the nav carries the page's own section
@@ -1758,7 +1767,7 @@ function HeaderV0({ s }) {
             <Title s={s} size={ed && !s.mob ? `min(${tk.dispXl}, calc(100cqi / ${s.navNameEms}))` : tk.dispXl}
                    twoTone={!lime || grunge} color={ed ? ink : lime && !grunge ? s.ac : undefined}
                    toneA={grunge ? s.tx : s.paper} toneB={s.ac} inline={!s.mob || grunge || ed}
-                   lh={0.75} align={centred ? 'center' : 'left'} />
+                   lh={0.75} align={centred ? 'center' : 'left'} worn />
           </div>
         </div>
 
@@ -3346,7 +3355,7 @@ function HeaderV3({ s }) {
           {/* Grunge's capsule names itself at Label/LG at every width, keeps
               the 36 globe 13.15 off it narrow, and spaces its Label/MD links
               a fixed 23 (NavBar's `mark` / `links`). */}
-          <NavBar s={s} colour={s.tx} nameSize={s.mob || grunge ? s.labelLg : undefined}
+          <NavBar s={s} colour={s.tx} nameSize={s.mob || grunge ? s.labelLg : undefined} clean={s.mob || grunge}
                   mark={grunge ? { glyph: desk ? 29.5 : 36, gap: desk ? '11px' : '13.15px' } : undefined}
                   links={grunge ? { gap: u(23), cap: s.labelMd } : undefined}
                   pill={s.mob ? {
@@ -3833,11 +3842,11 @@ function Bio({ s }) {
           fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, textTransform: 'uppercase',
           whiteSpace: 'nowrap', ...ink,
         }}>{s.initials} Bio</span>
-        <h2 style={{
+        <h2 style={distressed(s, {
           margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
           letterSpacing: s.dls, color: grunge ? s.tx : s.ac,
           textTransform: grunge || ed ? 'uppercase' : undefined,
-        }}>{grunge
+        })}>{grunge
           ? String(s.title || '').split(' ').map((w, i) => (
             <span key={i} style={i === 1 ? { color: s.ac } : undefined}>{i ? ' ' : ''}{w}</span>
           ))
@@ -5731,10 +5740,10 @@ function Media({ s }) {
             break in one tone, `sem/text/1`, so it takes the same two lines —
             the break without the colour. */}
         {grunge || ed ? (
-          <h2 style={{
+          <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: ink, textTransform: 'uppercase',
-          }}>
+          })}>
             <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
             {titleWords.length > 2 && <span style={{ display: 'block', color: grunge ? s.ac : undefined }}>{titleWords.slice(2).join(' ')}</span>}
           </h2>
@@ -8402,12 +8411,12 @@ function Pricing({ s }) {
             : row(u(24), { justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' })}>
             {/* Display/SM at lh 1, held to the frame's 640 on desktop.
                 Editorial's box is a FIXED 578.4 at 768 as well. */}
-            <h2 style={{
+            <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
               letterSpacing: s.dls, color: s.ac,
               maxWidth: s.mob || (s.narrow && !ed) ? '100%' : G.headW,
               textTransform: grunge || ed ? 'uppercase' : undefined,
-            }}>{grunge
+            })}>{grunge
               ? <><span style={{ color: s.tx }}>{words.slice(0, 4).join(' ')}</span>{words.length > 4 && ` ${words.slice(4).join(' ')}`}</>
               : s.title}</h2>
             {/* Filled pills in Label/XS, mixed case: `sem/active` for the chip
@@ -8496,11 +8505,11 @@ function Pricing({ s }) {
                       {!!t.lead && (
                         <span style={body(s.bodyLg, 1.5, { color: ink })}>{t.lead}</span>
                       )}
-                      <span style={{
+                      <span style={distressed(s, {
                         fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
                         letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
                         flex: s.narrow ? '1 1 auto' : 'none',
-                      }}>{t.amount}</span>
+                      })}>{t.amount}</span>
                       {!!t.tail && (
                         <span style={body(s.bodyLg, 1.5, { color: ink })}>{t.tail}</span>
                       )}
@@ -10831,11 +10840,11 @@ function Repertoire({ s }) {
                   seated off the string rather than the frame's x, so a longer
                   count carries it along; the heading's box keeps its room, so
                   the search yields to both before either can cover it. */}
-              <h2 style={{
+              <h2 style={distressed(s, {
                 margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
                 letterSpacing: s.dls, color: s.ac, textTransform: grunge || ed ? 'uppercase' : undefined,
                 ...(ed && !s.narrow ? { position: 'relative', paddingRight: u(63.07 + 80.67) } : null),
-              }}>{grunge && words.length > 1
+              })}>{grunge && words.length > 1
                 ? <>{words[0]} <span style={{ color: s.tx }}>{words.slice(1).join(' ')}</span></>
                 : s.title}
                 {ed && !s.narrow && (
@@ -12909,10 +12918,10 @@ function Gallery({ s }) {
         <div style={col(s.mob ? '10px' : u(36))}>
           {eyebrow('Media')}
           {grunge || ed ? (
-            <h2 style={{
+            <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
               letterSpacing: s.dls, color: ed ? s.ac : s.tx, textTransform: 'uppercase',
-            }}>
+            })}>
               <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
               {titleWords.length > 2 && <span style={{ display: 'block', color: ed ? undefined : s.ac }}>{titleWords.slice(2).join(' ')}</span>}
             </h2>
@@ -14796,7 +14805,7 @@ function Calendar({ s }) {
         })}>
           <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center' })}>
             {disc(true, -1)}
-            <span style={disp(s.dispSm, { color: s.ac, whiteSpace: 'nowrap' })}>
+            <span style={distressed(s, disp(s.dispSm, { color: s.ac, whiteSpace: 'nowrap' }))}>
               {month.label}
             </span>
             {disc(false, 1)}
@@ -14821,9 +14830,9 @@ function Calendar({ s }) {
           {/* Display/MD at lh 1, held to the frame's 640 on desktop (Editorial's
               FIXED 578.4, at 768 too). The frame types BOOK NOW; the seed's
               heading stays `TITLES.calendar`. */}
-          <h2 style={disp(s.dispMd, {
+          <h2 style={distressed(s, disp(s.dispMd, {
             margin: 0, color: s.ac, maxWidth: G.headW ?? (s.narrow ? '100%' : u(640)),
-          })}>{s.title}</h2>
+          }))}>{s.title}</h2>
           <div style={{
             position: 'relative', background: s.box1, borderRadius: G.panelR, overflow: 'hidden',
           }}>
@@ -17141,7 +17150,7 @@ function EventsMap({ s }) {
           {/* Display/LG over Label/LG, which stands at the row's right on
               desktop and 768 and stacks 10 under the heading at 390. */}
           <div style={s.mob ? col('10px', { alignItems: 'flex-start' }) : row(u(10), { justifyContent: 'space-between' })}>
-            <h2 style={{ margin: 0, ...disp(s.dispLg, 0.89), color: G.head, minWidth: 0 }}>{s.title}</h2>
+            <h2 style={distressed(s, { margin: 0, ...disp(s.dispLg, 0.89), color: G.head, minWidth: 0 })}>{s.title}</h2>
             {/* Label/LG under Lime; Grunge's frame sets it in Display/Title,
                 and Editorial's in `text/2` ink. */}
             <span style={grunge || ed
@@ -17197,7 +17206,7 @@ function EventsMap({ s }) {
           <div style={col(u(4), { padding: s.mob ? '10px' : `${u(38)} ${u(30)}` })}>
             <span style={s.mob ? col('8px', { alignItems: 'flex-start' }) : row(u(8))}>
               <LimeGlobeFill size={35.16 * z} color={G.globe ?? G.onTile} />
-              <span style={{ ...disp(titleSize, 1.1), color: G.onTile }}>{s.mapBase}</span>
+              <span style={distressed(s, { ...disp(titleSize, 1.1), color: G.onTile })}>{s.mapBase}</span>
             </span>
             {/* Label/XS — Chakra Petch, this section's `s.ui` site. */}
             <span style={{
@@ -20596,7 +20605,7 @@ function Testimonials({ s }) {
               }}>{q.when}</span>
             )}
             {!!q.quote && (
-              <p style={{
+              <p style={distressed(s, {
                 margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd),
                 lineHeight: facedLh(s, 1), letterSpacing: s.dls, overflowWrap: 'break-word',
                 color: G.quote, textTransform: grunge || ed ? 'uppercase' : undefined,
@@ -20613,7 +20622,7 @@ function Testimonials({ s }) {
                   ...(s.mob ? null : { fontWeight: 700, lineHeight: 52.42 / 57.84 }),
                   ...(s.narrow ? null : { maxWidth: u(560.33), minWidth: 'min-content' }),
                 } : null),
-              }}>{q.quote}</p>
+              })}>{q.quote}</p>
             )}
           </div>
           {!!q.byline && (
@@ -22901,13 +22910,13 @@ function EnquiryForm({ s }) {
               wider (`min-content`). Any statement then fits: more words take
               more lines, a longer word a smaller size. The line height keeps
               the frame's ratio so it follows the fit. */}
-          <h2 style={ed ? disp(s.titleWordEms ? `min(${u(50.36)}, calc(100cqi / ${s.titleWordEms}))` : u(50.36), 0.849, {
+          <h2 style={distressed(s, ed ? disp(s.titleWordEms ? `min(${u(50.36)}, calc(100cqi / ${s.titleWordEms}))` : u(50.36), 0.849, {
             margin: 0, color: G.ctx, fontWeight: 700, overflowWrap: 'break-word',
             maxWidth: u(262.7), minWidth: 'min-content',
           }) : disp(s.dispSm, 1, {
             margin: `${s.narrow ? '20px' : u(grunge ? 20 : 12)} 0 0`, color: G.ctx, overflowWrap: 'break-word',
             maxWidth: s.mob ? '100%' : G.cap,
-          })}>{(grunge || ed) && titleWords.length > 2 ? (
+          }))}>{(grunge || ed) && titleWords.length > 2 ? (
             // The frame's typed break after "Let's make", kept at every width
             // by position (the media heading's rule, one tone here): the 390
             // master then sets the rest on one line, as ours does.
@@ -22945,7 +22954,7 @@ function EnquiryForm({ s }) {
           // The form half alone; the shell and the context half do not move.
           // `sent` is only ever set under s.live, so the canvas never draws it.
           <div style={col(u(14))}>
-            <h3 style={disp(s.dispSm, 1, { margin: 0, color: G.on, overflowWrap: 'break-word' })}>
+            <h3 style={distressed(s, disp(s.dispSm, 1, { margin: 0, color: G.on, overflowWrap: 'break-word' }))}>
               {s.formSentTitle}
             </h3>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0, color: G.on })}>{s.formSentBody}</p>
@@ -25402,7 +25411,7 @@ function Footer({ s }) {
     // Noto Bold ems — the floor a long word pulls it to, on an `inline-size`
     // column; the box grows to a word that outruns it rather than breaking it.
     const statement = (
-      <h2 style={{
+      <h2 style={distressed(s, {
         margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd), lineHeight: facedLh(s, 1),
         letterSpacing: s.dls, color: s.ac, whiteSpace: 'pre-wrap',
         ...(grunge || ed ? { textTransform: 'uppercase' } : null),
@@ -25412,7 +25421,7 @@ function Footer({ s }) {
           fontWeight: 700, lineHeight: 47.9 / 57.84,
           maxWidth: s.mob ? 'none' : px(397.28), minWidth: 'min-content',
         } : null),
-      }}>{s.footerStatement}</h2>
+      })}>{s.footerStatement}</h2>
     )
 
     // "Frame 203" is the bio's seal (SealBadge's Lime branch) turned 26.06°, its
