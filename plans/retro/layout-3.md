@@ -633,7 +633,11 @@ Learned on the booking calendar (section 6):
   `reduce` over the whole CAL_SPAN window: `sel` can only ever name a day the visitor clicked
   in the month on screen, so the numeral, the lit dot and the pill agree by construction. A
   window search would have let a republished `open` print a numeral from a month the grid does
-  not draw.
+  not draw. *Reversed by JP-063* ([`../grunge/layout-3-qa-fixes.md`](../grunge/layout-3-qa-fixes.md),
+  2026-09-28, user call): F20 left a late-month visitor three pickable days, so the head now
+  carries month arrows on layout 1's `mi` and the pick is searched through the whole window.
+  The hazard named here is met by the head, which names the pick only while it is in the month
+  on show.
 - **A design that draws no numerals makes its readout load-bearing.** The dots carry no dates,
   so the head is the only place the picked day is named — which is why it is 96px tall, why
   both halves of it are rendered or not rather than printed blank, and why `booked=<the opening
@@ -943,7 +947,7 @@ Learned on the events map (section 10):
   in at all three widths.
 - **Render the head and read it — again, and this time it cost a field its first seat.**
   `base` went in the frame's eyebrow on the gallery's prefer-a-field rule and printed
-  "Based in Manchester" over "Manchester", `TITLES.map`'s own default. The eyebrow keeps
+  "Based in Manchester" over "Manchester", `TITLES.map`'s own default (**since JP-070**, 2026-09-28, layout 3's head is the frame's "Where I'm playing.", `HEADING_3`). The eyebrow keeps
   the frame's label (layout 1's call in this very section, "Shows/coverage"), and the frame's
   foot line — "UK · 8 pins · 120 mi radius", a region, a count and a distance — is what
   seats `base` and `radius` instead, split across the bar with the count between them.
@@ -1086,7 +1090,9 @@ Learned on the testimonials (section 12):
   the events map's `{n} pins` promoted to a display numeral, and it makes the stat card
   read at any count including zero. Note what that then forbids: the `★★★★★` beside the
   faces would naturally have taken "3 reviews" too, and does not, because the numeral
-  already has it — allocate-each-field-once reaching a *derivation*.
+  already has it — allocate-each-field-once reaching a *derivation*. (Reversed by JP-065,
+  2026-09-28: the rating and the stars are fields again, and the count is the emptied rating's
+  fallback; see `../grunge/layout-3-qa-fixes.md`.)
 - **`s.pillBg` is legible on `s.deep` by construction, which is the audio player's
   dies-on-paper lesson from the useful end.** The lightest tag on the darkest tag needs no
   literal and no `contrast()` call, and under Retro it resolves to the frame's own
@@ -1310,7 +1316,7 @@ Learned on the testimonials (section 12):
     list, the events map's `{n} pins` promoted from a foot line to 48px of display type. It
     can be wrong about nothing. Named here only because a big mustard numeral *looks* like
     the frame's rating and a later reader might take it for one — it is `s.quotes.length`,
-    and the frame's own `4.9 /5` is gone.
+    and the frame's own `4.9 /5` is gone. (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `../grunge/layout-3-qa-fixes.md`.)
 
 ## Addendum, 2026-09-15 — QA against the frames
 
@@ -1385,7 +1391,9 @@ Reversals and fixes after QA compared the built page with the layout-3 frames. B
   where it had drawn `button` and `vm.formPromiseLine`. The eyebrow is a new emptiable
   `available` field seeded with "Available 2025 / 2026", where it had drawn `s.brand`.
   Those five fields' labels now say "layouts 2 and 3". Not changed (no arrows): the
-  frame's three boxes against the shared four, and its "Book Kai for your event" heading.
+  frame's three boxes against the shared four, and its "Book Kai for your event" heading
+  (**since JP-070 (form)**, 2026-09-29, both are the frame's: `FORM_FIELDS_CARD` at layouts 2
+  and 3, and the head off the artist's name, `formHeading3()`).
 - **Testimonials — the seed is five reviews.** The bento wall's second row was one review
   stretched across the measure, because `QUOTES` carried three. The frame's two named reviews
   (Imran K., Events Manager; Olivia B., Wedding planner) are appended to `QUOTES`, so the wall

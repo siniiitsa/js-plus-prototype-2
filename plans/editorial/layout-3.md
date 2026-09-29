@@ -296,7 +296,7 @@ its session to check before choosing (Noto ems off `notoEms`, which counts the u
   1's Bold statement's ems, 4.5% wide of this Regular head. The form session keys it by design.
 - **The testimonials' "Experiences."** breaks inside the word at 1440 ("EXPERIENC / ES.") in the
   frame's own capped box, the demo face's measure — the twins dropped that 306 cap and print
-  `vm.title` ("Word of Mouth", 7.199 ems, 378 at 52.5 — fits). Nothing to fit; a note for the
+  `vm.title` ("Word of Mouth", 7.199 ems, 378 at 52.5 — fits; since JP-070 the head is the frame's "Experiences.", which fits on one line at all three widths). Nothing to fit; a note for the
   designer.
 
 ## Editorial's layout-3 mode
@@ -1331,7 +1331,7 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   - **390:** h2 at 44 (60), 42.7 tall (43); cards 290 × 438.3 at **−260 / 50 / 360** (the master's
     x); pills **180 × 54** at (10, 573) and (200, 573), square, the master's 590 less the head's
     16; section 671 against 704.
-- **Named diffs, the twins'**: `s.title` ("12 Songs") where the frame writes "Curated sets"; the
+- **Named diffs, the twins'**: `s.title` ("12 Songs") where the frame writes "Curated sets" (**since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `../grunge/layout-3-qa-fixes.md`); the
   meta line is the set's count, not a mood and a running time; the right-hand column is the
   artist, not a duration; the section pads the shared `padY` (80 / 56 / 44), not the frame's 56 /
   60 / 60; the card's 438.3 against 439 (its content).
@@ -1447,7 +1447,11 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   *Learned on the booking calendar*), so there were none to drive. No page errors. The
   published 1440 tab reads the real clock (F20), so it opens on September 2026 with the days
   before the 25th dead — the named, accepted diff — and the picked, dead and free dots all read
-  on the `#FFF9F2` card.
+  on the `#FFF9F2` card. *Reopened by JP-064* ([`../grunge/layout-3-qa-fixes.md`](../grunge/layout-3-qa-fixes.md),
+  2026-09-28, user call): a dead day no longer takes the booked look, since the legend names that
+  fill *Booked*; it is the free dot at .38, booked or not. *Reopened by JP-063* (same plan,
+  2026-09-28, user call): the head now carries month arrows, the free dot at 24 in its 1px
+  hairline ring, stepping layout 1's `mi` through the whole window, live only.
 - **`FIELDS.calendar` moves nothing.** `scripts/reach.mjs 3` (3,312 renders): `heading`
   reaches all four layouts, so the `Editorial: [0, 1, 2, 3]` row written before any layout-3
   card existed holds over the fitted one; `cta` `[0]`, `slots` `[1]`, `image` and `time`
@@ -1513,7 +1517,7 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   head "SEE US IN ACTION" holds one line at every width (1088 / 708 / 350).
 - **Named diffs, the twins'**: the sections are **497.1 / 707 / 483.7** against 647 (789 ×
   0.82) / 877 / 587, the frame's twelve tiles against our seven (`FIELDS.gallery.images` is
-  `max: 7`); the head prints `heading`'s "See us in action" where the frame writes "Gallery";
+  `max: 7`); the head prints `heading`'s "See us in action" where the frame writes "Gallery" (**since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `../grunge/layout-3-qa-fixes.md`);
   the display renders at Noto's 540 where the frame names Fisterra Bold (layout 1's decision 1,
   every Editorial head).
 - **`live=1`** (puppeteer clicks, desktop and 390, DPR 2): a tile click opens the viewer at
@@ -1681,7 +1685,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   binding *name* is Grunge's, so its keys land on the frame: the lit chip and the lit row fill
   `text/1` paper (`lit` = `s.ac`) under `sem/bg` terracotta type (`litFg`); the date box keeps
   `box/1` `#DA7C5E` in its paper-56 ring (`disc`, `hair`) and letters `text/1` on the lit row
-  (`litBoxFg`), whose hour chip fills `sem/bg` (`litBox`); *See all gigs* is `text/1` paper
+  (`litBoxFg`), whose hour chip fills `sem/bg` (`litBox`; *since* JP-069, 2026-09-28, there
+  is no hour chip and no `litBox`: the hour follows the city in the place line at every
+  width); *See all gigs* is `text/1` paper
   lettered and disced `sem/bg` round a paper arrow (`pillBg` / `pillFg`, `BookPill`'s Lime
   branch); the 390 pager's two capsules (radius 60) ring and letter `text/1` (`pagerInk`,
   through `Pager`'s `frame.lime`). The idle type — the eyebrow, the place lines, the hour
@@ -1739,14 +1745,14 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   - **768: the frame's own venues wrap** — Fisterra breaks HIDDEN WAREHO / USE in the 107
     column beside *Upcoming* and *Tickets →*, so its rows run 117 / 94 / 84 / 94 / 84 / 84 and
     the section 858; ours hold one line (the hour chip is narrower, and no seeded gig carries a
-    link), 84 each, 824.6;
+    link), 84 each, 824.6 (*since* JP-069 there is no chip at all, so the column is wider still);
   - **390: the frame's row carries *Tickets →* and an *Upcoming* chip under it** (123); ours is
     84 — the hour after the city (the twins' 390 call) and no *Tickets →* on an unlinked gig
     (JP-045) — so the section is 839.5 against 883;
   - the twins': the chip row is Retro's normalisation (the lit *All* at Body/SM, 22.2 against
     the frame's Body/MD 25.4), so the list stands 3 / 4 / 3 higher; the 768 data bar wraps the
     seeded line (61.6 against 45); the head prints `vm.title`'s "Manchester" where the frame
-    writes "Where I'm playing."; the chips are the gigs' cities, the hour stands in the
+    writes "Where I'm playing." (**since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `../grunge/layout-3-qa-fixes.md`); the chips are the gigs' cities, the hour stands in the
     *Upcoming* chip's seat, and the weekday and the ↗ are dropped (JP-045's *layout 3 drops the
     frame's second ↗*);
   - *SEE ALL GIGS* is 175.3 wide in Noto against 169.7; the display renders at Noto's 540
@@ -1878,7 +1884,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
 - **Named diffs**:
   - the twins': the seed's four boxes against the frame's three (NAME, EMAIL, EVENT DATE,
     GUESTS against EVENT DATE, EVENT TYPE, YOUR EMAIL), and its "Let's make your night
-    unforgettable." against "Book Kai for / your event" — so the card is **taller than the
+    unforgettable." against "Book Kai for / your event" (**since JP-070 (form)** (2026-09-29)
+    both are the frame's: `FORM_FIELDS_CARD`, and the head off the artist's name,
+    `formHeading3()`, at the ramp's 97; see `../grunge/layout-3-qa-fixes.md`) — so the card is **taller than the
     head column at 1440** (351.9 against ~246), the frame's reverse, and the head centres on
     the card; three lines at 768 and 390 where the frame's copy sets two; the top inset is
     `padY` 80 / 56 / 44 against the frame's 90 / 60 / 90 (Lime's arm sets only the foot);
@@ -1973,7 +1981,8 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   Grunge's two inks, here two different values off one scheme. The face stack keeps the
   twins' invented pair, `s.bg` paper lettered `s.ac` terracotta, in Scheme 3's **`box/2`
   `#2A2A2A`** 2px ring (`G.lift`, the frame's binding on its photographs); the stars, the `®`
-  and the rating stay dropped, Retro's re-seating.
+  and the rating stay dropped, Retro's re-seating. (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `../grunge/layout-3-qa-fixes.md`.) The frame's "5.9" is read as the
+  typo for Retro's "4.9", which is the seed.
 - **One lift, measured** (*Conventions*, new bullet). Floors read with flat-bottomed strings
   (`&cj=` "The beat held til late" / "Hal Bett" / heading "The beat held"), DPR 2, against the
   frame's `absoluteRenderBounds` corrected for Figma's whole-pixel line boxes:
@@ -2006,7 +2015,7 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   - the twins': the rows are **content-tall** where the frame's are residues of a stated 790 /
     784 — 200.6 / 215.6 against 202.1 at desktop, 262.8 / 228.4 against 298 at 768 (Editorial's
     16px quote wraps less than Lime's 21, so here they run short); the head prints `vm.title`'s
-    "Word of Mouth" where the frame writes "Experiences." (its 306 cap dropped, open question 7);
+    "Word of Mouth" where the frame writes "Experiences." (its 306 cap dropped, open question 7) (**since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `../grunge/layout-3-qa-fixes.md`);
     the numeral is the review count; the 390 top is `padY` 44 against 30; **the 390 section's
     1457 is the seed** — five named reviews, each a 190-plus `name-cell`, where the master fills
     three of its five quote seats with bare quotes 63–86 tall, and the seeded `sub` wraps to two lines

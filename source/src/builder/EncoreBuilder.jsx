@@ -41,14 +41,15 @@ import {
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
-  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
+  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, CAL_HEADING_3, KICKER_3, TESTI_STARS,
-  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
+  CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, MAP_HEADING_3, TESTI_HEADING_3,
+  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -239,8 +240,15 @@ const flatScheme = ({ palette: [bg, ac, tx], sem: { tagFg, ...sem }, tags }) => 
   chips: tags.map((h, i) => ({ bg: h, fg: tagFg?.[i] ?? contrast(h) })),
 })
 
-// Layout 4's heading fallbacks, per category — the composed page's own heads
-// (QA, 2026-09-15; the form's, JP-054). sectionVm and EditPanel both read this.
+// Layouts 3 and 4's heading fallbacks, per category — each page's own heads
+// (layout 4's QA, 2026-09-15, and the form's, JP-054; layout 3's JP-070,
+// 2026-09-28, which took in the calendar's "Book Me"). sectionVm and EditPanel
+// both read these, and at layout 3 the repertoire's wins over its song count
+// in both.
+const HEADING_3 = {
+  repertoire: REP_HEADING_3, gallery: GALLERY_HEADING_3, pricing: PRICING_HEADING_3,
+  calendar: CAL_HEADING_3, map: MAP_HEADING_3, testimonials: TESTI_HEADING_3,
+}
 const HEADING_4 = {
   calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
   form: FORM_HEADING_4,
@@ -432,8 +440,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
-    // ground; its seal's disc follows. `page` is the header's design.
-    footerBand: T.name === 'Lime' && cat === 'footer' && page === 2 ? T.sem?.box1 : undefined,
+    // ground; its seal's disc and the Book pill's label and disc follow, each
+    // bound to the same `sem/bg`. `page` is the header's design. Grunge's
+    // (964:68716 · 984:13929 · 984:13960, JP-067) does too, on `#171716`:
+    // Scheme 2's `sem/bg` has no vm key there (`T.sem.box1` is `#1A1A1A`),
+    // hence the literal, the gallery sheet's and `grungeBand`'s. Editorial's
+    // seat is SCHEMES_OF's page row, which reseats the whole section instead.
+    footerBand: cat === 'footer' && page === 2
+      ? (T.name === 'Lime' ? T.sem?.box1 : T.name === 'Grunge' ? '#171716' : undefined)
+      : undefined,
   }
   // Lime layout 3's column heads — the bio's "KM BIO", the player's and the
   // calendar's "Book Me" — stand 50 below their row in all three frames
@@ -529,12 +544,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // card, the enquiry form's credit — reads the header's through `identity`
   // (`headerIdentity()` in data.js), since only the header has the fields.
   // The header reads its own content, so a preview of a layout the page is not
-  // on still shows what that layout would. Lime's, Grunge's and Editorial's
-  // layout-3 card types its own strapline; EditPanel mirrors it.
+  // on still shows what that layout would. The kicker has one seed at every
+  // layout, the one the bio falls back to, so the Kicker field and the bio's
+  // Current role cannot disagree (JP-061). Lime's, Grunge's and Editorial's
+  // layout-3 card line is `vm.cardLine`, below.
   const own = cat === 'header' ? c : identity
-  vm.kicker = own.kicker !== undefined ? own.kicker
-    : cat === 'header' && d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial') ? KICKER_3
-    : 'DJ · Live Act'
+  vm.kicker = own.kicker !== undefined ? own.kicker : 'DJ · Live Act'
   vm.subtitle = cv('subtitle', DEFS.heroSub)
   vm.location = own.location !== undefined ? own.location : 'Manchester, UK'
   // "DJ · Live Act · Manchester, UK", composed here so an emptied half drops
@@ -550,6 +565,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.faceTitle = cv('faceTitle', FACE_TITLE)
   vm.faceBody = cv('faceBody', FACE_BODY)
   vm.placeBody = cv('placeBody', PLACE_BODY)
+  // JP-061 — the layout-3 portrait card's line under the name, the kicker's
+  // seat in Retro's polaroid. Uncased, as the four above.
+  vm.cardLine = cv('cardLine', CARD_LINE_3)
   vm.showBadge = cv('showBadge', 'show')
   vm.badgeText = cv('badgeText', name)
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
@@ -639,6 +657,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Editorial's display face is its label face, so `navNameEms` is also the
   // hero title's width in ems: HeaderV0 fits the title to its column with it.
   vm.navNameEms = navFace ? +navFace(vm.brand).toFixed(3) : undefined
+  // The name's widest word in the same ems (JP-062): the layout-3 portrait
+  // card wraps the name between words at its content box plus half its
+  // padding each side, and shrinks it only when one word would not fit
+  // there — `titleWordEms`' rule, never breaking inside a word. `navFace` is
+  // the display face at its nominal size, so HeaderV2 fits the unfaced size
+  // and `faced()` stays outside the fit.
+  vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // Whether the tablet header draws its links (JP-039). The 768 masters of
   // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime
@@ -691,10 +716,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // are already reading. Dropping it leaves `undefined`, and BookPill's own rule
   // — no target, no link — keeps the pill the picture it is today.
   vm.tierBookTo = firstPresent(CTA_TARGETS.book.filter((x) => x !== 'pricing'), navSections)
-  // Layout 4's row pill label (its frame's "Star Enquiry", read as "Start").
-  // Uncased, the footer's rule: the pill sets it in the display face with no
-  // text transform, and casing it would shout on Pop.
-  vm.tierRowCta = cv('rowCta', PRICING_ROW_CTA)
+  // Every package's pill label, per layout (JP-070): layout 1's "Book Now",
+  // layout 3's "Book", layout 4's frame's "Star Enquiry" read as "Start". An
+  // emptied one drops the pill. Uncased, the footer's rule: the pill sets it
+  // in the display face with no text transform, and casing it would shout on
+  // Pop. Layout 2's plan card reads its own `cta`.
+  vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : 'Book Now')
 
   // chips — TAGS, one per palette tag hue. A template whose Figma mode names
   // each tag's ink (`sem.tagFg`, parallel to `tags`) takes it; contrast()'s
@@ -905,9 +932,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // cross-fade one card hue into another.
       n: i,
       name: String(t?.name ?? '').trim(), price,
-      // Layouts 1–3 print the price as a small `lead` beside a display-size
-      // `amount` (JP-058: priceParts()); `price` stays whole for layout 4, the
-      // calendar's package card and its mailto, which print it as typed.
+      // Layouts 1–3 print the price as a display-size `amount` between a small
+      // `lead` and a small `tail` (JP-058, JP-074: priceParts()); `price` stays
+      // whole for layout 4, the calendar's package card and its mailto, which
+      // print it as typed.
       ...priceParts(price),
       blurb: String(t?.blurb ?? '').trim(),
       feats: tierFeats(t?.feats),
@@ -1001,10 +1029,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // display head; the other layouts keep the shared default. EditPanel mirrors
   // it. The stars sit in its card's corner.
   if (cat === 'testimonials' && d === 1 && c.heading === undefined) vm.title = cased(TESTI_HEADING_2)
-  if (cat === 'calendar' && d === 2 && c.heading === undefined) vm.title = cased(CAL_HEADING_3)
-  // Layout 4's heads, the composed page's own (QA, 2026-09-15). EditPanel
-  // mirrors all four.
+  // Layouts 3 and 4's heads, each page's own (JP-070; QA, 2026-09-15).
+  // EditPanel mirrors both tables. Layout 3's comes after the song count, so
+  // the repertoire's "Curated sets" wins there; EditPanel's chain, which takes
+  // the first match, puts its arm ahead of the count instead.
+  if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
+  // The form's layout-3 head is the frame's "Book Kai for / your event" off
+  // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
+  if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
   // The widest word of the heading, in the display face's ems, after every
   // fallback above. Lime's layout-3 form sets Display/LG in a half column its
   // longest word can outrun at desktop, so it shrinks the head until that word
@@ -1018,6 +1051,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : d === 2 ? notoEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
+  // Layout 3's stat card prints it with a literal "/5" beside it, and an
+  // emptied one gives the seat back to the review count (JP-065). Uncased, as
+  // pricing's rating is.
+  vm.testiRating = cv('rating', TESTI_RATING)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips
@@ -1136,7 +1173,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // `live`, so the canvas never reads the clock and stays the reference frame's
   // June. With it, every day before today is **dead** — a flag beside `booked`
   // that the section tests as the same `hit`, drawn as a booked day without the
-  // strike — a cued `open` in the past cues nothing, and a past `open` month
+  // strike (at layout 3, whose legend names the booked fill, as the free dot
+  // dimmed) — a cued `open` in the past cues nothing, and a past `open` month
   // gives way to today's as the first month of the window.
   if (cat === 'calendar') {
     const open = parseDate(cv('open', CAL_OPEN)) ?? parseDate(CAL_OPEN)
@@ -1619,9 +1657,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // keeps formRows, formMailto and formCheck index-aligned. The exception comes
   // first: the guarded email row — FormFieldsField's `lastEmail`, the same test
   // over the same raw list — never drops, and an emptied label reads Email.
-  // Layout 4 seeds the frame's own five boxes (JP-054), FORM_BTN_4's rule: the
-  // gate is on the absent key alone, and EditPanel's formFieldsVal mirrors it.
-  const formList = Array.isArray(c.fields) ? c.fields : d === 3 ? FORM_FIELDS_4 : FORM_FIELDS
+  // Layout 4 seeds the frame's own five boxes (JP-054), and layouts 2 and 3
+  // their card's three (JP-070), FORM_BTN_4's rule: the gate is on the absent
+  // key alone, and EditPanel's formFieldsVal mirrors it.
+  const formList = Array.isArray(c.fields) ? c.fields
+    : d === 3 ? FORM_FIELDS_4 : d === 1 || d === 2 ? FORM_FIELDS_CARD : FORM_FIELDS
   const formEmails = formList.filter((f) => f?.kind === 'email').length
   const formGuarded = (f) => f?.kind === 'email' && formEmails === 1
   vm.formFields = formList.filter((f) => formGuarded(f) || !blankRow(f, FORM_FIELD_KEYS)).map((f) => ({
@@ -3520,8 +3560,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
   // FormFieldsField edits and sectionVm reads — FORM_FIELDS_4 at layout 4
-  // (JP-054), sectionVm's own `d === 3` gate, so the two resolve one list.
-  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : design === 3 ? FORM_FIELDS_4 : FORM_FIELDS)
+  // (JP-054) and FORM_FIELDS_CARD at layouts 2 and 3 (JP-070), sectionVm's own
+  // gates, so the two resolve one list.
+  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k]
+    : design === 3 ? FORM_FIELDS_4 : design === 1 || design === 2 ? FORM_FIELDS_CARD : FORM_FIELDS)
   // And for the testimonials' reviews: QUOTES is written as the
   // { quote, who, role, when } row QuotesField edits, so this is the gigs' and
   // the packages' one-liner rather than the tracks' dressing.
@@ -3572,24 +3614,33 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {fields.map((f) => {
-                  // The two fields whose default is computed rather than written
-                  // down: the header's title is the artist's name, and the
-                  // repertoire's heading counts the songs — both mirroring what
-                  // sectionVm resolves, so panel and canvas never disagree.
+                  // The fields whose default is computed rather than written
+                  // down: the header's title is the artist's name, the footer's
+                  // small print and the form's layout-3 head are composed from
+                  // it, the repertoire's heading counts the songs, and a few seeds follow
+                  // the layout. Each mirrors what sectionVm resolves, so panel
+                  // and canvas never disagree. The kicker left the chain with
+                  // JP-061: its `d` is its seed at every layout, and the
+                  // layout-3 card's line is a field of its own. Layout 3's
+                  // heads come ahead of the song count, which sectionVm's
+                  // later assignment says the other way round (JP-070).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
                     : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
+                    : f.k === 'heading' && sec.cat === 'form' && design === 2 ? formHeading3(artistName)
+                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 2
+                      && HEADING_3[sec.cat] ? HEADING_3[sec.cat]
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
-                    : f.k === 'kicker' && sec.cat === 'header'
-                      && (themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial') && design === 2 ? KICKER_3
-                    : f.k === 'heading' && sec.cat === 'calendar'
-                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? CAL_HEADING_3
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'button' && sec.cat === 'form'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? FORM_BTN_4
+                    : f.k === 'rowCta' && sec.cat === 'pricing'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3
+                    : f.k === 'rowCta' && sec.cat === 'pricing'
+                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? PRICING_ROW_CTA
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
@@ -4307,16 +4358,19 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
 // frame's 858 : 405, 55 apart × 0.82, on the page ground, inside the page's own
 // gutter. Its sections were built with `column`, so they bring their vertical
 // padding and no horizontal one, and a right column shorter than the left
-// leaves the ground showing under it, as the frame does. In the published tab
-// that cell rides the row instead (JP-043, user call, 2026-09-24): it is
-// sticky at the window's top — the cell div, not the calendar's root, and
+// leaves the ground showing under it, as the frame does. That cell rides the
+// row instead (JP-043, user call, 2026-09-24): it is sticky at the top of
+// whatever scrolls the page — the cell div, not the calendar's root, and
 // `alignSelf: start` so it is only as tall as its section — and the grid
 // area, one row, is what releases it at the row's end. Neither Frame 300
-// declares a sticky; the ground under the cell is still the frame's. On the
-// canvas it is inert, and on purpose: the card's `overflow: hidden` makes the
-// card the cell's scroll container, and the card never scrolls — take that
-// overflow away and the canvas would stick too. Shared by the editor canvas
-// and the published tab, which is what keeps the two one page.
+// declares a sticky; the ground under the cell is still the frame's. In the
+// published tab that is the window, and on the canvas the canvas's scroller
+// (JP-072, user call, 2026-09-28), whose 28px padding is where the cell
+// stops, a sticky box keeping inside its scroller's padding. The card round
+// the page clips with `overflow: clip`, since `hidden` would make the card,
+// which never scrolls, the cell's scroll container and leave it inert. Shared
+// by the editor canvas and the published tab, which is what keeps the two one
+// page.
 // Which column each composed section stands in, by page index — 'left' or
 // 'right' — so `sectionVm({ column })` can say how wide it is.
 function columnSides(rows) {
@@ -4427,10 +4481,12 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       // The publish success dialog. The tab it opens is held in a ref, not
       // in state: nothing renders from it.
       published: false,
-      // The last deleted section of each category, as `{ arch, c }`, so adding
-      // that category again brings its content back (uploads included, as the
-      // data URIs they are). Keys are only ever categories *not* on the page:
-      // re-adding, Undo and Start fresh all consume the entry.
+      // The last deleted section of each category, as `{ arch, c, at, before }`,
+      // so adding that category again brings its content back (uploads
+      // included, as the data URIs they are) to the seat it left: `before` is
+      // the category it stood before, `at` its index. Keys are only ever
+      // categories *not* on the page: re-adding, Undo and Start fresh all
+      // consume the entry.
       removed: {},
     }
     return ti >= 0
@@ -4598,6 +4654,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // clamped so the footer stays last (canMove's invariant), and leaves the
   // selection alone — it restores the page, it does not open an editor.
   //
+  // The entry keeps the section's seat for the composer (JP-073): `before`
+  // is the category it stood before — there is always one, the footer being
+  // last — and `at` its index, for when that one has gone too. A category and
+  // not an id, because re-adding the follower mints it a new id.
+  //
   // The section and its index are read off the rendered page, not captured
   // from inside the updater: React may run an updater lazily, after this
   // handler has returned, so a flag set in there is not there to read yet.
@@ -4605,9 +4666,10 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const i = st.sections.findIndex((x) => x.id === id)
     const sec = st.sections[i]
     if (!sec || sec.cat === 'header' || sec.cat === 'footer') return
+    const before = st.sections[i + 1].cat
     patch((s) => ({
       sections: s.sections.filter((x) => x.id !== id),
-      removed: { ...s.removed, [sec.cat]: { arch: sec.arch, c: sec.c } },
+      removed: { ...s.removed, [sec.cat]: { arch: sec.arch, c: sec.c, at: i, before } },
       menuFor: null,
       ...(s.selectedId === id ? { selectedId: null, editSheet: false } : {}),
     }))
@@ -4627,6 +4689,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // A category deleted earlier comes back with its content unless the
   // composer's Start fresh is on; either way its `removed` entry is spent.
   // The layout is the composer's pick, which opens on the remembered one.
+  //
+  // It also comes back to its seat, Start fresh or not (JP-073): before the
+  // category it stood before if that is on the page, else at its old index,
+  // clamped so the footer stays last. §9.1's "immediately before the footer"
+  // is left to a category with no entry.
   const addSection = useCallback((cat, arch, fresh) => {
     if (st.sections.some((x) => x.cat === cat)) return
     patch((s) => {
@@ -4634,7 +4701,12 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       const { [cat]: kept, ...removed } = s.removed
       const sec = { id: ++uidRef.current, cat, arch, c: kept && !fresh ? kept.c : {} }
       const next = s.sections.slice()
-      next.splice(next.length - 1, 0, sec)   // immediately before the footer
+      let at = next.length - 1   // immediately before the footer
+      if (kept) {
+        const j = next.findIndex((x) => x.cat === kept.before)
+        at = j >= 0 ? j : Math.min(kept.at, at)
+      }
+      next.splice(at, 0, sec)
       return { sections: next, add: null, removed }
     })
     toast(`${catName(cat)} added`)
@@ -5095,7 +5167,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
           }}>
             <div style={{
               maxWidth: Z.canvasW, width: '100%', boxShadow: '0 8px 40px rgba(30,26,18,.16)',
-              borderRadius: '10px', overflow: 'hidden', transition: 'max-width .35s ease',
+              // `clip`, not `hidden`: it rounds the corners without making the card a
+              // scroll container, so every sticky box on the page (the composed
+              // row's cell in `arrangeRows`, repertoire layout 4's rail, the form's
+              // layout-2 card) sticks to this scroller, as it does published (JP-072).
+              borderRadius: '10px', overflow: 'clip', transition: 'max-width .35s ease',
             }}>
               {arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => {
                 const vm = vms[i]

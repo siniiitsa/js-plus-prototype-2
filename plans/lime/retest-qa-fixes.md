@@ -374,6 +374,9 @@ artist edits the list it applies at every layout (the heading and button default
   *Reversed* bullets on JP-054's Settled and reply in `layout-4-qa-fixes.md` and on Lime L4 §9
   in `layout-4.md`. Grunge's "KAI MERCER" head stays a named diff. No `reach.mjs` row (no new
   key).
+- **Extended by JP-070 (form)** (2026-09-29, `../grunge/layout-3-qa-fixes.md`): layouts 2 and 3
+  now seed their card's three boxes, `FORM_FIELDS_CARD`, on this entry's absent-key gate, and
+  the layout-3 head is composed from the artist's name. Layout 1 alone keeps `FORM_FIELDS`.
 
 Reply: **fixed.** Layout 4 now opens with the design's five boxes (Your name, Email, Event
 date, Event type and Location) above the Message box. Once you change the list, your list is
@@ -393,6 +396,8 @@ record what it says.
 **Decided** (2026-09-24, user): **sticky in the published tab.** `position: sticky; top: 0;
 alignSelf: start` on the **right cell div**, not the calendar root. The canvas card is
 `overflow: hidden`, so sticky is inert there — named, accepted (the canvas is a picture).
+*Reopened by JP-072 (2026-09-28, user call): the canvas card is `overflow: clip` now and the
+canvas sticks too; see `../grunge/layout-3-qa-fixes.md`.*
 
 **Verify.** In the popup at 1440 and 1600, under the `zoom` wrapper: the calendar stays in view
 while the left column scrolls and stops at the row's end, overlapping nothing. Digest: zero change
@@ -421,7 +426,10 @@ while the left column scrolls and stops at the row's end, overlapping nothing. D
   are 612–707 tall against rows of 2200–2532. `elementFromPoint` at the cell's top edge hits the
   cell.
 - **Canvas.** The cell computes `sticky` but scrolling the editor's canvas leaves it at offset 0 in
-  its row at every step (0 / 400 / 800 / 1200), so it is inert, as decided.
+  its row at every step (0 / 400 / 800 / 1200), so it is inert, as decided. **Reopened by
+  JP-072** (2026-09-28): with the card on `overflow: clip` the cell sticks to the canvas's
+  scroller, 28px down (its padding), at ¼, ½ and ¾ of the row on Grunge, Lime and Editorial
+  card 3 (`../grunge/layout-3-qa-fixes.md`).
 - **Named limit.** In a window shorter than the cell (1440 × 600 against 679), the cell pins with
   its foot, the Enquiry pill, below the fold until the row ends. The user's `top: 0` decision
   stands; a bottom-anchored variant would need a measured height, which is an effect.

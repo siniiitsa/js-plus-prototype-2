@@ -680,7 +680,7 @@ export const BIO_CTA = 'Book Now'
 // masters type (the straight apostrophe, the middle dot); the bio's masters
 // type "/featured" cased UPPER, which the pill cases anyway. The "●" before
 // the availability is the markup's, not the field's. "Performing since 2021"
-// is the artist's copy, not the bio's `since` (KICKER_3's precedent).
+// is the artist's copy, not the bio's `since` (CARD_LINE_3's precedent).
 export const HERO_AVAIL = 'Available for bookings'
 export const FACE_TITLE = 'The face of the act'
 export const FACE_BODY = "Same person you'll meet on the night. Performing since 2021."
@@ -875,6 +875,18 @@ export const FORM_FIELDS_4 = [
   { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
   { label: 'Location',   placeholder: 'Town / city',     kind: 'text' },
 ]
+// Layouts 2 and 3's own seed (JP-070, user call, 2026-09-29): the card both
+// frames share (964:64633 and every layout-3 master) stacks these three,
+// labels as FORM_FIELDS_4's are. The card prints the label alone, so the
+// placeholders are FORM_FIELDS_4's, there for the panel and for a list the
+// artist edits here and then takes to layout 1 or 4. The email row is last for
+// the first time, which is safe: every reader finds it by `kind`, never by
+// place. Chosen by layout only while the key is absent, FORM_FIELDS_4's gate.
+export const FORM_FIELDS_CARD = [
+  { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'text' },
+  { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
+  { label: 'Your email', placeholder: 'you@email.com',   kind: 'email' },
+]
 // What `blankRow()` asks of a box (JP-051): the two strings it can print. Not
 // `kind`, which is a select that always holds a value, so asking it too would
 // make no row blank. A box with only a placeholder is still a box; in layouts
@@ -946,8 +958,8 @@ export const FOOTER_CREDIT = 'A JustPay Product'
 // The frames' own hard break — see sectionVm, which is the other half of it.
 export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
-// No `repertoire` entry: its heading counts the songs (see sectionVm), so a
-// literal here would never be read.
+// No `repertoire` entry: its heading counts the songs (see sectionVm), and at
+// layout 3 starts from REP_HEADING_3, so a literal here would never be read.
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.',
   pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
@@ -1046,13 +1058,28 @@ export function slotSeed(base) {
 // the corner. The shared `heading` default stays TITLES.testimonials for the
 // other layouts; sectionVm and EditPanel both resolve this one for layout 2.
 export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
-// The booking calendar's layout-3 heading, the composed page's "Book Me" over
-// the card (964:68644). Layouts 1, 2 and 4 keep TITLES.calendar.
+// Layout 3's heads, each its page's own (JP-070, user call, 2026-09-28): the
+// booking calendar's "Book Me" over the card (964:68644), and the five its
+// sections print — the repertoire (964:68710), the gallery (964:68711), pricing
+// (964:68712), the map (964:68713) and the testimonials (964:68715). All four
+// templates' masters read the same words, so these are per-layout defaults,
+// not per-theme ones. The other layouts keep the shared TITLES defaults (the
+// repertoire its song count); sectionVm and EditPanel both resolve these at
+// layout 3 alone, the HEADING_4 pattern.
 export const CAL_HEADING_3 = 'Book Me'
-// Lime's and Grunge's layout-3 header kicker, the corner card's second line
-// (964:68654, 964:68686). The other layouts, and Retro's layout 3, keep the
-// field's 'DJ · Live Act'.
-export const KICKER_3 = 'Performing since 2021'
+export const REP_HEADING_3 = 'Curated sets'
+export const GALLERY_HEADING_3 = 'Gallery'
+export const PRICING_HEADING_3 = 'Pricing'
+export const MAP_HEADING_3 = "Where I'm playing."
+export const TESTI_HEADING_3 = 'Experiences.'
+// The layout-3 header's portrait card, its second line under the name
+// (964:68654, 964:68686, 964:68718): FIELDS.header.cardLine's seed, which
+// Lime's, Grunge's and Editorial's card reads. It was the kicker's layout-3
+// seed until JP-061, which printed one word in the card and another in the
+// bio's Current role; the kicker is now 'DJ · Live Act' at every layout.
+// Retro's polaroid prints the kicker in that seat. The line is the artist's
+// copy, not the bio's `since`.
+export const CARD_LINE_3 = 'Performing since 2021'
 // Layout 4's heads, each its composed page's own wrapper head over the section
 // (QA, 2026-09-15): the Book Us panel (964:72839), the gallery's column
 // (964:72784), the map band (964:72827) and the testimonials sheet. The other
@@ -1076,13 +1103,22 @@ export const FORM_SUB_4 = 'Enquire'
 // booking calendar's layout-4 wizard through pageEmail() below.
 export const FORM_EMAIL = 'bookings@kaimercer.co.uk'
 export const TESTI_STARS = '★★★★★'
+// Testimonials layout 3's stat card reads "4.9 /5" (964:68651 and its three
+// twins; Editorial's "5.9" is a typo). The field holds the number and the card
+// prints the "/5" (JP-065). Its own constant, though pricing's PRICING_RATING
+// has the same bytes: it is another section's content.
+export const TESTI_RATING = '4.9'
 // Booking calendar layout 4's wizard (964:72843): the event types its first
 // step offers, the frame's own four. The calendar's own list rather than the
 // enquiry form's FORM_TYPES, which is another section's content.
 export const CAL_TYPES = ['Wedding', 'Birthday', 'Corporate', 'Festival']
-// Pricing layout 4's row pill. Its frame reads "Star Enquiry", the typo
-// CAL_SLOT_CTA already reads as this.
+// The package pill's label, FIELDS.pricing.rowCta, per layout (JP-070, user
+// call, 2026-09-28; FORM_BTN_4's shape): layout 1's frame reads "Book Now",
+// layout 3's "Book" (964:68712), and layout 4's "Star Enquiry", the typo
+// CAL_SLOT_CTA already reads as "Start Enquiry". Layout 2's plan card has its
+// own `cta`.
 export const PRICING_ROW_CTA = 'Start Enquiry'
+export const PRICING_ROW_CTA_3 = 'Book'
 // Events map layout 4's panel note, beside "Travel & reach" (964:72830).
 export const MAP_SPAN = 'Live · last 12 months'
 
@@ -1248,9 +1284,24 @@ export const FIELDS = {
     // Grunge's and Editorial's calendar layout 1, a block of its own with no
     // polaroid stamp.
     // Change a reader, change the hint.
+    // Lime's, Grunge's and Editorial's layout 3 prints `cardLine` in Retro's
+    // kicker seat (JP-061), so their row is [0, 3] (reach.mjs, 2026-09-28).
+    // The panel then says "Not shown in this layout" there while the bio prints
+    // the kicker, which the hint answers, as at layout 2.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
-      hint: 'Your role. The bio prints it too, and the enquiry form in layouts 1 and 2.' },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3] },
+      hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
+    // The layout-3 portrait card's line under the name (JP-061): the card's
+    // own copy, so the kicker is not seeded apart there and the bio's Current
+    // role always prints what the Kicker field shows. Lime's, Grunge's and
+    // Editorial's card reads it; Retro's polaroid prints the kicker in that
+    // seat. `'*': []` marks every other template, Pop included, as
+    // FIELDS.media.cta does, because only those three read it. Emptied, the
+    // card is the name alone.
+    { k: 'cardLine',  l: 'Portrait card line', d: CARD_LINE_3,
+      in: { Lime: [2], Grunge: [2], Editorial: [2], '*': [] },
+      hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
+          + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1] } },
@@ -1389,7 +1440,8 @@ export const FIELDS = {
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
           + 'filter: it prints the tags and the features on the package itself. In layouts 1, 2 '
           + 'and 3, whatever comes before the price’s first digit — a £, or a word like From — '
-          + 'prints small beside it. Tick Featured '
+          + 'prints small beside it, and so does whatever follows its first number, such as the '
+          + 'second half of a range. Tick Featured '
           + 'to give a package layout 3’s FEATURED badge; with none ticked, it goes to the last '
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
@@ -1416,13 +1468,17 @@ export const FIELDS = {
     { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CREDIT,
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
-    // the row button below.
+    // the package button below.
     { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD,
       hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
     { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
       hint: 'Layout 2 only. A phone stacks it under the pill.' },
-    { k: 'rowCta',  l: 'Button (layout 4)', d: PRICING_ROW_CTA, in: [3],
-      hint: 'The pill under the price on every package row.' },
+    // Every package's pill (JP-070): layout 4's row pill until then, and
+    // layouts 1 and 3 printed the section's unfielded "Book Now". `d` is
+    // layout 1's word; sectionVm and EditPanel resolve layouts 3 and 4's.
+    { k: 'rowCta',  l: 'Package button', d: 'Book Now', in: [0, 2, 3],
+      hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
+          + '“Start Enquiry”. Layout 2 has its own plan card button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
   // The other list-shaped content type with a structured editor rather than a
@@ -1432,6 +1488,8 @@ export const FIELDS = {
   repertoire: [
     // No `d`: the heading falls back to the song count, in sectionVm and in
     // the panel alike, so it cannot claim 240 songs over a list of twelve.
+    // Layout 3 starts from its frame's "Curated sets" instead (JP-070), which
+    // counts nothing.
     { k: 'heading', l: 'Heading' },
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead.' },
@@ -1473,8 +1531,10 @@ export const FIELDS = {
     { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], '*': [1, 2, 3] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
-          + `It reaches ${CAL_SPAN} months from there. On the published page, days `
-          + "before today can't be picked, and a past date opens it on today's month." },
+          + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
+          + "dates count from it until you edit them, and layout 4's date card shows it. "
+          + "On the published page, days before today can't be picked, and a past date "
+          + "opens it on today's month." },
     { k: 'booked',  l: 'Booked dates', type: 'booked',
       hint: 'Click a day to block it. A blocked day cannot be picked on the published page, '
           + "and layout 4's date card refuses it when a visitor types it. "
@@ -1542,7 +1602,8 @@ export const FIELDS = {
   testimonials: [
     // A textarea, because layout 2's default breaks onto a second line.
     { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
-      hint: 'Layout 2 starts from its own two-line heading; a line break you type is kept there.' },
+      hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '
+          + 'kept in layout 2.' },
     // Layout 2 was the first design to head this section, so both of the plain
     // strings below reached it alone — FIELDS.media.soundcloud's case the other
     // way up, hence the layout in each hint. Layout 3's bento wall then gave
@@ -1562,8 +1623,11 @@ export const FIELDS = {
           + "above the quote in layout 1. Layout 2's selector takes the name's "
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
-    { k: 'stars',   l: 'Stars (layout 2)', d: TESTI_STARS, in: [1],
-      hint: 'Printed in the corner of the card, beside the reviewer. Empty it to drop them.' },
+    { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
+      hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
+    { k: 'stars',   l: 'Stars', d: TESTI_STARS, in: [1, 2],
+      hint: 'Layout 2 prints them in the corner of the card, beside the reviewer; layout 3 beside '
+          + 'the faces on its stat card. Empty it to drop them.' },
     { k: 'cta',     l: 'Button', d: 'Book Now', in: [1],
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
@@ -1579,8 +1643,13 @@ export const FIELDS = {
     { k: 'photo',    l: 'Stage photo', type: 'image', in: [1],
       hint: 'The big picture above the heading. Layout 2 only.' },
     // A textarea, because the default breaks after "Let's make" — layout 2
-    // keeps the break, the others read it as a space.
-    { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable." },
+    // keeps the break, the others read it as a space. Layout 3 starts from
+    // formHeading3(name) and layout 4 from FORM_HEADING_4 — special-cased, as
+    // `copyright` is, in sectionVm and EditPanel's fallback chain.
+    { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable.",
+      hint: 'Layout 3 starts from your name (“Book … for your event”) and follows it until you '
+          + 'type your own; layout 4 starts from “Contact Us”. A line break you type is kept in '
+          + 'layout 2.' },
     // Layout 4's small-caps line under the head, which printed the artist's
     // name until JP-054 gave it the frame's own word. Emptiable: it drops.
     { k: 'sub',      l: 'Line under the heading', d: FORM_SUB_4, in: [3],
@@ -1591,16 +1660,17 @@ export const FIELDS = {
       hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
           + 'right-hand column, and with none it draws no column at all.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
-    // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_4 at layout
-    // 4, JP-054), an emptied array means no boxes at all, and there is no null
-    // sentinel.
+    // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_CARD at
+    // layouts 2 and 3, JP-070; FORM_FIELDS_4 at layout 4, JP-054), an emptied
+    // array means no boxes at all, and there is no null sentinel.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
           + 'which set the label inside the box and draw no placeholder. An odd last box '
           + 'takes half a row in layout 1 and the whole of one in layout 4. The published '
-          + 'form emails you what the visitor types. Layout 4 starts on its own five boxes '
-          + 'until you edit them; after that your list shows in every layout.' },
+          + 'form emails you what the visitor types. Layouts 2 and 3 start on their card’s three '
+          + 'boxes and layout 4 on its own five until you edit them; after that your list shows '
+          + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
@@ -1682,6 +1752,12 @@ export function caseText(t, casing) {
 
 // The footer's small print, off the artist's name. sectionVm and EditPanel both read it.
 export const copyrightOf = (name) => `C 2026 ${name}`
+// The enquiry form's layout-3 head, off the artist's name for the same reason
+// (JP-070, user call, 2026-09-29): every layout-3 frame reads "Book Kai for /
+// your event", which names its mock artist. Only while the heading key is
+// absent, so a typed head stops following the name. Layout 3 does not set
+// `pre-wrap`, so the break folds to a space there.
+export const formHeading3 = (name) => `Book ${name} for\nyour event`
 
 // F1 — the artist's role and home town, as the header's Kicker and Location
 // hold them: the one place either is typed. Raw, so an absent key still means
@@ -1912,16 +1988,28 @@ export function tierFeats(str) {
   return String(str ?? '').split('\n').map((t) => t.trim()).filter(Boolean)
 }
 
-// A package's price → the small seat before the big numeral and the numeral
-// itself (JP-058, user call, 2026-09-28). The lead is everything before the
-// first digit, trimmed, so '£650' is '£' + '650' and 'From £1,200' is
-// 'From £' + '1,200'; a price with no digit ('POA') or none before it ('450')
-// has no lead and stands whole. The price is free text, so no currency is
-// assumed. Named and left: 'Up to 120 guests: £900' splits at the 1.
+// A package's price → the small seat before the big numeral, the numeral
+// itself, and the small seat after it (JP-058 and JP-074, 2026-09-28). The
+// lead is everything before the first digit, trimmed, so '£650' is '£' + '650'
+// and 'From £1,200' is 'From £' + '1,200'. The amount is the first numeric run
+// alone, digits and the separators inside it, and the tail is the rest,
+// trimmed — so a range sets its second half small, as every layout-3 frame
+// draws it: '£450 — £1,400' is '£' + '450' + '— £1,400', and '£450 + VAT' is
+// '£' + '450' + '+ VAT'. A separator ending the run goes to the tail rather
+// than being lost ('£450.' → a small '.'). A price with no digit ('POA') has
+// neither seat and stands whole. The price is free text, so no currency is
+// assumed. Named and left: 'Up to 120 guests: £900' is 'Up to' + '120' +
+// 'guests: £900', '£1.2k' sets a small 'k', and a thousands space ('£1 200')
+// sets '1' big and '200' small.
 export function priceParts(str) {
   const s = String(str ?? '').trim()
-  const at = s.search(/\d/)
-  return at > 0 ? { lead: s.slice(0, at).trim(), amount: s.slice(at) } : { lead: '', amount: s }
+  const m = s.match(/\d[\d,.]*/)
+  if (!m) return { lead: '', amount: s, tail: '' }
+  const amount = m[0].replace(/[.,]+$/, '')
+  return {
+    lead: s.slice(0, m.index).trim(), amount,
+    tail: s.slice(m.index + amount.length).trim(),
+  }
 }
 
 // A repeater row the artist added and never filled in: every one of `keys`

@@ -90,11 +90,16 @@ mutated through a single `patch()` helper.
   sections in it are built with `sectionVm({ column: true })`, which drops their horizontal
   padding. **The right cell is sticky** (JP-043, user call, 2026-09-24; no Frame 300 declares
   it): `position: sticky; top: 0; alignSelf: start` on the cell div, not the calendar's root,
-  so in the published tab the calendar stays in view while the left column scrolls and the
-  one-row grid area releases it at the row's end. On the canvas it is inert, since the card's
-  `overflow: hidden` makes the card, which never scrolls, the cell's scroll container — a
-  named, accepted diff; and a window shorter than the cell (~680 at 1440) pins it with its
-  foot below the fold until the row ends. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
+  so the calendar stays in view while the left column scrolls and the one-row grid area
+  releases it at the row's end. **The canvas sticks too** (JP-072, user call, 2026-09-28,
+  reopening JP-043's "inert on the canvas"): the card round the page clips with
+  `overflow: clip`, not `hidden`, which would make the card, which never scrolls, every sticky
+  box's scroll container. So the canvas's scroller is what they stick to, 28px down, since a
+  sticky box stops at its scroller's padding edge, where the published tab's pins at 0. That
+  holds for every sticky box the page carries, not the cell alone: repertoire layout 4's A–Z
+  rail at desktop and the form's layout-2 card at desktop and 768 stick on the canvas as well.
+  Do not put `hidden` back on the card. A window shorter than the cell (~680 at 1440) pins it
+  with its foot below the fold until the row ends. Tablet and mobile never compose. `PAGE_ORDERS[2]` is the narrow frames' order —
   media, repertoire, calendar — and at desktop `pageRows` looks past that one layout-3
   repertoire, composing the columns and standing the repertoire after them; moving a section
   out of the run undoes it.
@@ -122,9 +127,15 @@ mutated through a single `patch()` helper.
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
   the desktop composition squeezed beside the sidebar breaks; at most 820 the phone chrome
   forces mobile, as before. Read `device`, never `st.device`, for anything drawn.
-- **`st.removed` is `{ [cat]: { arch, c } }`, the last deleted section of each category**, so
-  re-adding a category restores its content (data-URI uploads and all) and the add composer
-  opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts out. Its keys
+- **`st.removed` is `{ [cat]: { arch, c, at, before } }`, the last deleted section of each
+  category**, so re-adding a category restores its content (data-URI uploads and all) and the
+  add composer opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts
+  out. **It keeps the seat too** (JP-073, user call, 2026-09-28): `before` is the *category* the
+  section stood before — always one, the footer being last — and `at` its index, so `addSection`
+  reinserts before `before` while that is on the page, else at `min(at, sections.length - 1)`,
+  *Start fresh* or not; SPEC §9.1's "immediately before the footer" is left to a category with
+  no entry, which the UI never reaches (a template pick builds every category and `del` always
+  writes one). A category rather than an id, because re-adding the follower mints a new id. Its keys
   are only ever categories **not** on the page — `addSection`, Undo and Start fresh all consume
   the entry, and picking a template resets it. `del` is still one click from all three call
   sites (the list row's menu, `EditPanel`'s Delete, the canvas toolbar's trash) and toasts an
@@ -143,12 +154,14 @@ mutated through a single `patch()` helper.
   passes *that* everywhere — the h1 included (`vm.heroTitle` is `vm.brand`; the header resolves
   its own `c.title` the same way, so a header preview or a harness `&cj=` cannot split them),
   nav brand, initials placeholders, bylines, badge,
-  `copyrightOf()`, the published tab's `<title>` (reset on every republish, not only when the tab
+  `copyrightOf()`, the enquiry form's layout-3 head (`formHeading3()`, JP-070), the published
+  tab's `<title>` (reset on every republish, not only when the tab
   is first opened) and the dialog's site address. `NameInput` never commits a Title that trims
   to empty: the box may sit empty (with a "Your name is required" line) while the page keeps the
   last name, and leaving it puts that name back — so no slot ever falls back to the prop once
   the artist has typed one, and Publish never meets an empty name. Header `badgeText` and footer `copyright` have
-  no static default for that reason; `EditPanel` special-cases them beside `title`. **The
+  no static default for that reason; `EditPanel` special-cases them beside `title`, and the
+  form's `heading` at layout 3 beside them. **The
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
   section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
@@ -156,7 +169,24 @@ mutated through a single `patch()` helper.
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
-  drops the ID card's column (the `since` rule). **The tag chips are the header's as well**
+  drops the ID card's column (the `since` rule). **The layout-3 card's second line is not the
+  kicker** (JP-061, user call, 2026-09-28). Lime's, Grunge's and Editorial's *Inset Hero*
+  portrait card prints `FIELDS.header.cardLine` (`vm.cardLine`) under the name. It is seeded
+  `CARD_LINE_3`, "Performing since 2021", uncased, and dropped when emptied. Retro's polaroid
+  prints the kicker in that seat. So the kicker has one seed, `'DJ · Live Act'`, at every layout,
+  and the bio's *Current role* always prints what the Kicker field shows. At layout 3 the panel
+  therefore marks Kicker "Not shown in this layout" while the bio prints it, as at layout 2.
+  **That card's name and line wrap** (JP-062, user call, 2026-09-28). They wrap at the content box
+  plus half the padding on each side. That is `100cqi` of the card, which is the container, plus
+  one padding when the card is upright, and the room beside the portrait plus 10 at 390. The
+  measure is not the content box, because Editorial's frame sets its own name 8.5 into the
+  padding and Lime's seeded line already runs past it. It is not the whole padding either,
+  because that let the tester's 768 name run to the ring. The name wraps between words and
+  shrinks only when its widest word would outrun the measure (`vm.cardNameEms`, `titleWordEms`'
+  rule, taken in `navFace`, so `faced()` stays outside the fit). The line breaks inside such a
+  word instead (`overflowWrap: 'anywhere'`), since no body face has an ems table. Retro's
+  `nowrap` polaroid is unchanged.
+  **The tag chips are the header's as well**
   (JP-037): `FIELDS.header.tags` is a comma list seeded with `TAG_LABELS` (five — the Tags
   component hides its sixth chip), and `identity` carries `tags` and `showTags` to the bio,
   which prints them in layouts 2 and 4 and Lime's, Grunge's and Editorial's 3 (measured, `scripts/reach.mjs`). An emptied
@@ -177,7 +207,7 @@ mutated through a single `patch()` helper.
   seeded with the frames' own bytes and uncased (every site keeps its own casing), and each drops
   when emptied; a card keeps its tile, and both pills wrap rather than widen a 390 page. The face
   card's "Performing since 2021" is the artist's copy inside `faceBody`, **not** the bio's `since`,
-  which it does not read (`KICKER_3`'s precedent); the hint says to change both.
+  which it does not read (`cardLine`'s precedent, above); the hint says to change both.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —
@@ -236,7 +266,9 @@ mutated through a single `patch()` helper.
   cards and one placeholder, 2026-09-25, card 2 losing the placeholder's `showBadge` and
   `badgeText` since its frame draws no seal and card 3 re-measured unchanged, so card 4's pass
   re-measures its card), so
-  Pop's undesigned header family carries no note. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
+  Pop's undesigned header family carries no note. The one exception is `cardLine` (JP-061):
+  its `'*': []` row marks Retro and Pop "Not shown in this template", as `FIELDS.media.cta`'s
+  row does, because only the three `s.limeTree` blocks read it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
   sections still end in one after `v3`, which `arch % designCount` never reaches).
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
@@ -577,6 +609,12 @@ mutated through a single `patch()` helper.
   pill takes `vm.tierBookTo`, which is `vm.bookTo` **minus `pricing` itself** — `CTA_TARGETS.book`
   ends there, so the pill would otherwise scroll the visitor to the section they are reading; with
   neither a form nor a calendar on the page it resolves to nothing and `BookPill` stays a span.
+  Its label is **`rowCta`**, the *Package button*, at layouts 1, 3 and 4 (JP-070, user call,
+  2026-09-28; it had been layout 4's alone, and the other two printed the unfielded `cta1`). Like
+  `FORM_BTN_4`, it seeds per layout: `vm.tierRowCta` is "Book Now", "Book" or "Start Enquiry"
+  (`PRICING_ROW_CTA_3`, `PRICING_ROW_CTA`), resolved in `sectionVm` and `EditPanel`'s chain. An
+  emptied label drops the pill at all three layouts. A long one wraps rather than widening the
+  page, as layout 2's plan card pill (its own `cta`) does.
   **Everything in this paragraph from "The row is *not* rendered at one chip" on is the deck's**
   — layout 1's and, where it says the same thing, layout 3's: layout 2 is a single big plan, and
   its chip row names the
@@ -670,7 +708,9 @@ mutated through a single `patch()` helper.
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
   strike** (except Lime's layout 2 — and Grunge's and Editorial's, which widen its block — whose past rows keep full ink and only lose the handler —
   user call, 2026-09-17, made while its seeded slots had no editor and were all past; Lime's
-  layout-4 exception went with JP-052) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
+  layout-4 exception went with JP-052; and layout 3 on every template, whose legend names the
+  booked fill *Booked*, so a past day there is the *free* dot at .38, booked or not, lest the
+  month before today read as taken — JP-064, user call, 2026-09-28) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
   past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
   (`max(open, today)`, `calStart()` in `data.js`, which `BookedField` shares so the artist
   can block every day a visitor can pick; it fades the days before today and takes no click on
@@ -694,7 +734,8 @@ mutated through a single `patch()` helper.
   month needing six rows grows one where June needs five, the grid never being padded to 35.
   The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
   none of this.
-  **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**: layout 2 is a
+  **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**, except that its
+  arrows, its `sel` and its blocked cue are layout 3's as well (below). Layout 2 is a
   bold list of named slots — `c.slots`, maintained by `SlotsField` (JP-052) and resolved by
   the `songs` rule onto `vm.calSlots`. Its seed is **not four dates**: `CAL_SLOTS` is four day
   offsets (`slotSeed()` in `data.js`) from `open` on the canvas and in the editor — which
@@ -711,6 +752,15 @@ mutated through a single `patch()` helper.
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
   reach it at all.
+  **Layout 3 pages the same window** (JP-063, user call, 2026-09-28). Its frames draw no month
+  arrows, and the fit's month 0 left a visitor on 28 September three pickable days. So a pair
+  of arrows follows the month name on its own line, on both surfaces. Each is the template's own
+  free dot a size down (24, so the pair does not read as two more days and fits inside the
+  month's line box) round layout 1's arrow glyph. They step layout 1's `mi`: live only, with no
+  cursor on the canvas, wrapping at both ends, and the canvas pinned to month 0. The pick is
+  searched through the whole window, layout 1's `reduce`, so the foot pill names a July pick
+  from June. The head's numeral and weekday are the pick's only while it is in the month on
+  show; otherwise the head reads the month alone, since "15" over "JUNE" names the wrong date.
   **Layout 4's right-hand column is the enquiry wizard's summary** (JP-052, user call,
   2026-09-23; it was fitted as layout 2's slot list stacked, which printed dates and prices no
   field edited — Retro L4 section 10's reading, now reversed). The frame's dark card is step 1's
@@ -839,16 +889,23 @@ mutated through a single `patch()` helper.
   head; and the card carries **layout 2's own card fields** — the price row, the
   `★★★★★ 42 bookings` line, the `cta` submit label and the `note` line under the pill —
   because it is the same card component (QA, 2026-09-15). So `promises` skips layout 3
-  alone: layouts 1, 2 and 4 read it. Under Lime and Grunge a refused box takes layout 2's 2px
+  alone: layouts 1, 2 and 4 read it. **Its head is the frame's, off the artist's name**
+  (JP-070, user call, 2026-09-29): every layout-3 frame reads "Book Kai for / your event",
+  naming its mock artist, so with `heading` absent `sectionVm` resolves `formHeading3(name)`,
+  "Book {name} for\nyour event" (the break folds to a space here), and `EditPanel`'s chain
+  carries the same arm, `copyrightOf()`'s rule; a typed head stops following the name and an
+  emptied one stays empty. Under Lime and Grunge a refused box takes layout 2's 2px
   ring of full ink, and under Editorial — whose card and boxes are square, dashed 10, 10 and
   6, 6 in terracotta on the paper page — the dash gives way to a solid 2px ring of ink `s.tx`
   (colour, weight and dash at once). Under Lime and Editorial the desktop
   head shrinks to fit its widest word in the half column (`vm.titleWordEms`, beside
-  `navNameEms`) rather than breaking inside it — Grunge's Anton at 0.75 sets the seeded
-  head at 484 against the 501 column, so the key was measured and left out for Grunge here.
+  `navNameEms` and the header card's `vm.cardNameEms`, JP-062) rather than breaking inside it —
+  Grunge's Anton at 0.75 set the old seed's UNFORGETTABLE.
+  at 484 against the 501 column, so the key was measured and left out for Grunge here.
   Editorial's arm is keyed by design: Noto's 540 ems (`notoEms`) for this Regular head at
-  design 2, 70px on three lines in the 519.5 column, and Noto Bold's (`notoBoldEms`) for its
-  layout-1 statement (below).
+  design 2, and Noto Bold's (`notoBoldEms`) for its layout-1 statement (below). The old seed
+  set at 100 under Lime and 70 under Editorial; the name-derived one fits at the ramp's 107 and
+  97, so the fit bites only on a long word the artist types or a long one-word name.
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
   two `minmax(0, 1fr)` grid columns, because a zero flex-basis resolves against the
   *content* box whatever `box-sizing` says and the padded card came out 41 wider than the
@@ -874,10 +931,12 @@ mutated through a single `patch()` helper.
   2026-09-24, reversing the 2026-09-23 "the boxes stay the artist's one list"): with `fields`
   absent, layout 4 seeds `FORM_FIELDS_4`, the frame's five — Your name, Email, Event date,
   Event type, Location over its own placeholders, one `email` row so the guard holds, and the
-  frame's Message being the `message` textarea — where layouts 1–3 seed `FORM_FIELDS`'
-  four; `sectionVm`'s `formList` at `d === 3` and `formFieldsVal` at `design === 3`, the
-  seed-resolver rule. The gate is on the absent key alone, `FORM_BTN_4`'s: once the artist
-  edits the list it is theirs at every layout. The steps stay one line. Three things it does that no other layout here does. It draws
+  frame's Message being the `message` textarea — where layout 1 seeds `FORM_FIELDS`' four and
+  layouts 2 and 3 their card's three, **`FORM_FIELDS_CARD`** (JP-070, user call, 2026-09-29):
+  Event date, Event type, Your email, the email row last for the first time, which is safe
+  because every reader finds it by `kind`. `sectionVm`'s `formList` gates on `d` and
+  `formFieldsVal` on `design`, the seed-resolver rule. The gate is on the absent key alone,
+  `FORM_BTN_4`'s: once the artist edits the list it is theirs at every layout. The steps stay one line. Three things it does that no other layout here does. It draws
   a **label above a box *and* a placeholder inside it**, which is layout 1's pair and
   brings both `message` and the rows' `placeholder` column back after two layouts that
   spend their one slot on the label; a **trailing odd field runs the full measure** where
@@ -960,13 +1019,18 @@ mutated through a single `patch()` helper.
   nor `role` collapses to the frame's own quote-only cell and nothing the artist typed is
   discarded; two seats are stated (275 leading the first row, 276 trailing the second when it
   is full) and every other cell is `minmax(0, 1fr)`, with rows past the second three equal
-  fills. Its stat card is where the frame's claims are re-seated: the big numeral is
-  **`s.quotes.length`** with a pluralised unit — arithmetic, not the frame's `4.9 /5` rating —
-  the sentence under it is `sub`, the line above the disc stack is `s.brand`, and the stack is
-  one `vm.quotes[].mark` per **named** review, so it never invents a face for a card the wall
-  itself shows unattributed. The `★★★★★` and the `®` go with the rating. `when` and `cta` have
-  no seat there, which is the only content this section's first three layouts do not between
-  them read. **Layout 4 is a wall that pages**: a display head with a pair of arrow discs at
+  fills. Its stat card is where the frame's claims are re-seated as fields (JP-065, user call,
+  2026-09-28, reversing the fit's review count): the big numeral is **`rating`**
+  (`vm.testiRating`, seeded `TESTI_RATING` '4.9', uncased, `in: [2]`) beside a literal `/5`, 4
+  apart as the frame sets them, and an emptied rating gives the seat back to
+  **`s.quotes.length`** with a pluralised unit, 8 apart. `stars` (layout 2's field, now
+  `in: [1, 2]`) is printed 12 right of the disc stack, in the frame's `avs` row, while it is
+  filled, whatever the rating; each drops alone. The stars take the numeral's ink and `/5` the
+  card's, on every frame. The sentence under it is `sub`, the line above the disc stack is
+  `s.brand`, and the stack is one `vm.quotes[].mark` per **named** review, so it never invents a
+  face for a card the wall itself shows unattributed; the frame's photographs are a named diff,
+  and the `®` stays out, a claim no field states. `when` and `cta` have no seat there, which is
+  the only content this section's first three layouts do not between them read. **Layout 4 is a wall that pages**: a display head with a pair of arrow discs at
   its right over *one row* of cards — four at 1440, three at 768, one and a peek at 390 — so it
   is the third design to share `cur` whole rather than grow a seam, reading it as the review
   **leading the row** where layouts 1 and 2 read it as the single card on show. The row is one
@@ -1088,7 +1152,7 @@ mutated through a single `patch()` helper.
   delimited textarea, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
   numbers 01 / 02 / 03. All eight follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_4` at form layout 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package
@@ -1106,7 +1170,13 @@ mutated through a single `patch()` helper.
   under a blank row, and the repertoire's song-count heading counts the filtered list in both
   places. The one exception is the form's guarded email row, above. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`) has to
+  both. Layout 3 is the exception: there the frame's "Curated sets" wins over the count
+  (JP-070, user call, 2026-09-28). It comes from **`HEADING_3`**, layout 3's table of heads beside
+  `HEADING_4`, which also carries the gallery's "Gallery", pricing's "Pricing", the map's "Where
+  I'm playing.", the testimonials' "Experiences." and the calendar's "Book Me" (`CAL_HEADING_3`).
+  Both resolvers read it: `sectionVm` assigns it *after* the count, and `EditPanel`'s
+  first-match chain puts its arm *ahead* of the count. An emptied heading stays empty at every
+  layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES` and `FOOTER_LINKS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
@@ -1157,7 +1227,10 @@ mutated through a single `patch()` helper.
   backwards at desktop and forwards at 768 and 390, a named product call reversible in one
   line). Its header family is `'lime'`: the first four photographic layouts, all four fitted,
   so every card in the setup modal lays out a whole Lime page and the family is closed
-  (`plans/lime/`). At layouts 2, 3 and 4 the footer is layout 1's (`NVAR.footer` is 1). Two
+  (`plans/lime/`). At layouts 2, 3 and 4 the footer is layout 1's (`NVAR.footer` is 1), and
+  at layout 3 it stands on Scheme 2's olive `box1`. That is `vm.footerBand`, read off the page's
+  design like Editorial's seat, and it paints the root, the seal's disc and the Book pill's label
+  and disc, every node the frame binds to `sem/bg` (JP-067 threaded the pill). Two
   shared helpers grew an additive prop for layout 4: `ArcEdge` takes `TornEdge`'s `bleed`
   (`false` inside a sheet the branch has already bled), and `SealBadge`'s Lime disc takes a
   `scheme` (3 = lime disc with ink marks, 4 = pale disc with ink marks) because the layout-4
@@ -1220,7 +1293,9 @@ mutated through a single `patch()` helper.
   (`HeaderV3`'s Lime block, widened: a black capsule over the red floor, no checker, and the
   desktop photograph **not** mirrored — Grunge's fill is `FILL`), so every
   card in the setup modal lays out a whole Grunge page and the family is closed
-  (`plans/grunge/`). At layouts 2, 3 and 4 the footer is layout 1's. Layout 4 grew two shared
+  (`plans/grunge/`). At layouts 2, 3 and 4 the footer is layout 1's, and at layout 3 it stands
+  on Scheme 2's `#171716`, as Lime's and Editorial's do: `vm.footerBand` takes Grunge as a
+  named literal, the gallery sheet's (JP-067). Layout 4 grew two shared
   helpers additive props — `NavBar` takes `links={{ gap, cap }}` (the capsule's fixed 23 gaps,
   the type clamped to fit) and `mark`, and `Wordmark` takes `gap` — and `SealBadge`'s Lime
   `scheme` a Grunge arm at 4, a black disc with red marks.

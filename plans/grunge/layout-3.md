@@ -267,7 +267,7 @@ walk; each session re-reads its narrow masters.
 | map | **Scheme 4** ≡ 1 | `radius-map` (634 × 706) **Scheme 3** — ~~✱ (Lime Scheme 2)~~; *corrected in section 8*: **Lime's is Scheme 3 too**, and what moves is the *binding*, `sem/box/1` → **`sem/box/2`** `#F52E34`. Its `Map View Container` stays `box/1`, so under Grunge that is **`#9E1F17`** where Lime's is `lime3` again | root `#000000`: **no pale sheet** — layout 2's form trap in the map (below); the panel is Scheme 3's `box/2`, the layout-2 travel card's red, not `lime3` |
 | form | Scheme 1 | — | root `#000000`; the card and boxes `s.box1` in `stroke1` (read); the submit red |
 | testimonials | page | `rating` 275 **Scheme 3** (`#9E1F17`, black 15% ring); `quote-cell` 511 **Scheme 3** ✱ (`#9E1F17`, unstroked; Lime Scheme 2); `name-cell` 510 **Scheme 4** ✱ (`#1A1A1A`, white 15% ring; Lime Scheme 2); `small-quote` 510 **Scheme 3** ✱ (`#9E1F17`, black 15% ring; Lime Scheme 4); `feat-quote` inherits (`s.box1` by inheritance — read it) | *Section 10:* the row above names five nodes for **six** cells — row 0's `name-cell` has no scheme override and was missed. The stat card is red, and the five **quote** cells run **dark / red / dark / red / dark**, which is **two** registers where Lime has three: write a Grunge `REG` and a Grunge `SEATS`, never remap Lime's |
-| footer | Scheme 2 (layout 1's) | — | `#171716` |
+| footer | Scheme 2 (layout 1's) | — | `#171716` — ~~layout 1's~~: *corrected by JP-067* ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md)): layout 1's footer is Scheme 1's `#000000`. The layout-3 footer (`964:68716` · `984:13929` · `984:13960`) is **Scheme 2**, and so are its seal's disc and its pill's label and disc, each bound to `sem/bg`. `vm.footerBand` now paints them |
 
 Six traps in that table, each a place where Lime's block reads a key that lands on the wrong
 value under Grunge — **and on this page the nested scheme often changes too, not only the value**:
@@ -321,7 +321,7 @@ Sampled off the three renders at the band edges and the middle. **The sequence i
 | 8 | map | **page** (no sheet) | the `#F52E34` panel at radius 15, holding a `#9E1F17` map container; the list on the ground with a red lit row (section 8) |
 | 9 | form | page | a `#1A1A1A` card |
 | 10 | testimonials | page | the five cells above, three of them `#9E1F17` |
-| — | footer | `#171716`, layout 1's | — |
+| — | footer | `#171716` (Scheme 2; ~~layout 1's~~, *corrected by JP-067*: this pass drew it black, layout 1's) | — |
 
 **No root flag widens**, Lime's rule again: `bleed`, `darkMap`, `cream`, `limeBand`, `limeLight`,
 `grungeBand` and `grungeRule` all gate on `s.v0`. Lime's two layout-3 sheets were painted in the
@@ -740,6 +740,17 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **`KICKER_3`** (was `LIME_KICKER_3`): "Performing since 2021" is the frame's copy on both
   templates, so the constant is renamed and its gate widened in `sectionVm` and `EditPanel`
   together; Retro's layout 3 keeps "DJ · Live Act".
+  **Reopened by JP-061** ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md), 2026-09-28). The bio's
+  *Current role* read the header's raw kicker and printed "DJ · Live Act", which the panel never
+  showed. So the card's second line is now its own field, `FIELDS.header.cardLine`
+  (`vm.cardLine`, seeded with **`CARD_LINE_3`**, the constant renamed again), read at
+  `EncoreSection.jsx:2791`. Neither kicker fallback carries the layout-3 seed any more, so the
+  kicker's row below is now `[0, 3]` under Lime, Grunge and Editorial.
+  **Reopened by JP-062** ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md), 2026-09-28). The
+  card's column was `nowrap`, so a long name ran out of the card. Now the name and the line wrap at
+  the content box plus half the padding on each side, with the card as the container. The name
+  shrinks only when its widest word would not fit (`vm.cardNameEms`). The line breaks inside such
+  a word instead. The seeded digest is unchanged.
 - **Measured against the masters' content edges**: desktop h1 at 520 (634.48 × 0.82 = 520.3),
   card 180.4 × 203.9 at 957 / 491.5 (180.4 × 204.2 at 957.8 / 491.2), pill 85.4 × 28.6 (88.8 ×
   28.6 — Anton narrower), capsule 30.7 tall (31.2); 768 h1 at 824.4 (824.48), card 220 × 239.6
@@ -905,6 +916,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   still white. So the card's ring and its row rules are two keys (`ring` / `edge`) where
   Lime's one hairline did both; Lime's seats carry no `ring` and fall back to `edge`.
   Driven live at 390: next, then prev ×2, and the colours stay put while the sets rotate.
+  *Since* (JP-075, 2026-09-28): the carousel opens on the **second** set, as every template's
+  390 master draws it. The centre is `mid = (pg + 1) % n`, so page 0 seats sets 0 / 1 / 2 in
+  order. The seating rule is unchanged, so the red centre card now holds set 1.
 - **The deltas**: padding **24** (Lime 34), radius **15** (50), rows **44.5 / 62.5 / 62.5**
   (39 / 57 / 57.5) — each master's `flex-1` division of its 369 / 439 / 439 card. The head
   is one white tone (`s.tx`, Lime's key), `faced` / `facedLh(0.89)` / uppercase; the row
@@ -915,7 +929,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   view block 38.6 (38.5); 768 head 72.1 (72), cards 216 × **438.3** (439), rows 62.5, view 46.8
   (47); 390 head 40.9 (41), cards 290 × 438.3 at −260 / 50 / 360 (the master's x), grid 24
   under the head. **Named diffs, Lime's and Retro's**: the head is `s.title` ("12 Songs")
-  where the frame writes "Curated sets"; the meta line is the set's count where the frame has
+  where the frame writes "Curated sets" (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.); the meta line is the set's count where the frame has
   a mood and a running time; the right-hand column is the artist, not a duration; the 768
   cards are 216 against 222.7 (a 688 column against 708); the section's own 80 / 56 / 44 top
   pad is the shared `padY`, not the frame's 56 / 60 / 60 (the plan's `vm.pad` arms never
@@ -1006,6 +1020,10 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   map's), so no run was owed — layout 2's finding, re-checked.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`; theme 2 exactly calendar
   arch 2 at three widths on both surfaces.
+- *Since JP-063* ([`./layout-3-qa-fixes.md`](./layout-3-qa-fixes.md), 2026-09-28, user call):
+  the head carries a pair of month arrows after the month name, the free dot at 24 round the
+  Lime pager's arrow, and they step layout 1's `mi` through the whole window, live only. The
+  head names the pick only while it is in the month on show.
 
 ### Settled in section 6 (the gallery)
 
@@ -1054,7 +1072,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   1088.96 / 708 / 350.
 - **Named diffs, Lime's and Retro's**: the sections are **500 / 714 / 482** against
   789 / 884 / 585, the frame's twelve tiles against our seven (`FIELDS.gallery.images` is
-  `max: 7`); the head prints `heading`'s "See us in action" where the frame writes "Gallery",
+  `max: 7`); the head prints `heading`'s "See us in action" where the frame writes "Gallery" (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.),
   one line at every width either way, so the copy is the artist's and the word is the
   component's; the seventh tile's well is `sem/active/bg` (`#DF262C`) under its photograph and
   **paints nothing, so it is not drawn** — Lime's identical call on the identical slot of the
@@ -1144,8 +1162,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   shared `padY`, not the frame's 56 × 0.82 / 30 / 60 (section 4's repertoire rule — the
   `vm.pad` arm carries the foot alone); the seeded intro is one line (`DEFS.pricingIntro`)
   where the frame's wraps, and the seeded heading is the artist's copy, not "Pricing"; the
-  pill reads *Book Now* (`cta1`) where the frame types *Book*; the unit is `/event`
-  (`tierUnit`) where the frame types "— £1,400"; the capsule carries the extra leading `All`
+  pill reads *Book Now* (`cta1`) where the frame types *Book* (**since JP-070** (2026-09-28) both are the frame's: the head from `HEADING_3`, the pill from `rowCta`, the *Package button*; see `./layout-3-qa-fixes.md`); the unit is `/event`
+  (`tierUnit`) where the frame types "— £1,400" (a range typed into the price now sets its
+  second half small in that seat, `t.tail`, before the unit: JP-074, 2026-09-28); the capsule carries the extra leading `All`
   chip, layout 1's intended diff; "Save 15% on bundles" stays dropped (**reversed** by JP-046, 2026-09-24: it is
   `FIELDS.pricing.offer`, the frame's copy beside the capsule at every width, white `sem/text/2`,
   one widened block with Lime's); the 768 featured row
@@ -1206,6 +1225,10 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   `s.box1` fill in both states, and the hour chip, which fills `s.bg` there. Under Lime every
   one of those is `ink` or `s.tx`, so the Lime arm collapses to today's two values and theme 1
   digests to zero.
+  *Since* (JP-069, 2026-09-28): there is **no hour chip** at any width, on any template. The
+  hour follows the city in the sub line, "Manchester · 22:00", as every master prints it, and
+  the status pill's seat stays empty. `G.litBox` went with the chip, so the lit row's only
+  lettered box is the date disc.
 - **Two hairlines where Lime has one, and two reds where Lime has one.** `hair` is
   `s.stroke1` (white 15%) on everything standing on the page ground — the chips, the date
   discs, the hour chips, the list's top rule and the rows' bottom rules — and Scheme 3's
@@ -1253,7 +1276,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   0.75 sets a shorter line than Bebas Neue, so the list comes to 178.8 where Lime's measured
   186.8 (row 122.8 + pager 54), with the chip row, the head and the panel making up the other 6
   (26.8 / 51.4 / 357.9 against 30 / 52 / 360); the head prints `vm.title`'s "Manchester" where
-  the frame writes "Where I'm playing."; the panel's "Updated 2m ago" keeps Lime's own
+  the frame writes "Where I'm playing." (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.); the panel's "Updated 2m ago" keeps Lime's own
   `opacity: 0.6` where both frames print it at full strength, a diff inherited rather than
   introduced; Retro's five drops still hold (the weekday, the
   status chip, the `↗`, and the frame's Upcoming/Past chips, which `vm.gigChips` replaces with
@@ -1348,7 +1371,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   402.2 at radius 15, boxes **37**, pill 54.
 - **Named diffs, Lime's and Retro's**: the seed's four boxes against the frame's three and its
   three-line heading against the frame's two ("Let's make / your night unforgettable." against
-  "Book Kai for your event"), so the section runs 509.5 / 771 / 694.1 against 562 × 0.82 = 460.8
+  "Book Kai for your event") (**since JP-070 (form)** (2026-09-29) both are the frame's: the card's three boxes, `FORM_FIELDS_CARD`, and the head off the artist's name, `formHeading3()`; see `./layout-3-qa-fixes.md`), so the section runs 509.5 / 771 / 694.1 against 562 × 0.82 = 460.8
   / 728 / 741 — over at the wide widths on the fourth box and the third head line, under at 390
   where the frame's own 60 + 30 insets are `padY`'s 44 (Lime's "390 is under the frames", the
   same tree on both); the top inset is `padY` 80 / 56 against the frame's 90 / 60, Lime's arm
@@ -1451,9 +1474,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   1328 × 0.82 = 1088.9 and the narrow root paddings are ours, the page gutter — Retro's diff
   through Lime; the rows are **content-tall** where the frame's are `flex-1` residues of a stated
   790, so they run short at 1440 and long at 768 where our quotes wrap further in a 190.5 column;
-  the head prints `vm.title`'s "Word of Mouth" where the frame writes "Experiences."; the
+  the head prints `vm.title`'s "Word of Mouth" where the frame writes "Experiences." (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.); the
   numeral is the review count and the stars, the `®` and the 306 head cap stay dropped, Retro's
-  re-seating. **The 390 section's 1622.5 against 1248 is the seed, not the fit**: all five seeded
+  re-seating. (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `./layout-3-qa-fixes.md`.) **The 390 section's 1622.5 against 1248 is the seed, not the fit**: all five seeded
   reviews carry a name and a role, so all five cells are the frame's 233-tall `name-cell`, where
   the master fills three of its six seats with bare repeated quote cells — the branch's own
   "the frame's five quote cells are the component's default content" reading, measured.

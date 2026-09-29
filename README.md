@@ -362,14 +362,17 @@ That distinction is the whole design, and it buys two things:
   `EncoreSection` looks a line up rather than working a date out, the way it draws the pin
   `sectionVm` paired with a gig. The arrows **wrap** at both ends of that window rather than
   clamping, the media player's rule: a clamped first month would open the published page on a
-  dead-looking arrow, which is a diff from the canvas. `sel` is an ISO date rather than a cell
+  dead-looking arrow, which is a diff from the canvas. Layout 3's frames draw no arrows; its own
+  pair follows the month name and steps the same window (JP-063), and its head names the pick
+  only while the pick is in the month on show. `sel` is an ISO date rather than a cell
   index, because it has to survive the month turning — it names a day, not a square of whatever
   month is on screen — and the empty string is this section's `-1`, so `vm.calPick` renders until
   a visitor picks something and the published first paint is the canvas's picture by construction
   — up to the clock. The canvas never reads it, so it stays the frame's June; the published tab
   reads today once (in UTC) and, from it, kills every day and slot before today exactly as a
-  booked one is killed but without the strike, drops a cued date that has passed, and opens on
-  today's month when `open` is earlier.
+  booked one is killed but without the strike (layout 3, whose legend names the booked fill,
+  draws a past day as the free dot dimmed instead, booked or not), drops a cued date that has
+  passed, and opens on today's month when `open` is earlier.
   Blocking the *cued* day cues nothing rather than sliding the pick to the day after: the artist
   blocked it. Booked days are muted and struck through and take no handler (Lime dims them to .38
   with no strike, its own frames' state, in the layout-2 slot list as in the layout-1 grid; Grunge and Editorial share it in both, Editorial's layout-1 frame dimming them the same way), which is a **content** state rather than a
@@ -564,7 +567,11 @@ These are intentional limits, not oversights — see §12 for the full list. The
   opens no editor. The next toast replaces it as any toast does. Separately, `st.removed` keeps
   each category's last deleted `{ arch, c }`, uploads included, so adding that category again
   brings its content back and the add composer opens on its old layout; a *Start fresh* tick
-  in the composer opts out. It lives only as long as the session, like everything else.
+  in the composer opts out. The entry keeps the section's seat as well (`at`, and `before`, the
+  category it stood before), so the re-add goes back where it was — before that category if it
+  is still on the page, else at the old index — *Start fresh* or not; only a category with no
+  entry lands immediately before the footer, as §9.1 says. It lives only as long as the
+  session, like everything else.
 - **Retro, Lime, Grunge and Editorial are designed; Pop is not.** Retro ships six
   photographic header layouts. Pop is fully selectable and functional but
   renders flat-colour sections and a three-layout flat header family — whose nav is still the
@@ -580,7 +587,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   different compositions from Retro's: an upright glass card where Retro tilts a polaroid, and a
   glass nav capsule over an identity panel where Retro stands on a checker floor), so every card
   in the setup modal lays out a whole Lime page and the Lime family is closed. At layouts 2, 3
-  and 4 the footer is layout 1's. **Grunge is designed at all four of its layouts**: its pages are Lime's
+  and 4 the footer is layout 1's, standing at layout 3 on Scheme 2's olive, as Grunge's stands on
+  its `#171716` there. **Grunge is designed at all four of its layouts**: its pages are Lime's
   four pages in a third Figma mode (*Static Youth*), so its treatment — at layout
   1 torn black seams round the three textured bands, grain as a lighten layer and the red seal; at
   layouts 2 and 3 a black page whose every card and photograph is ringed in red or a white hairline where

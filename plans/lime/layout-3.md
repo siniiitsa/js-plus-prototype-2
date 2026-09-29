@@ -254,7 +254,7 @@ identical at 1440, 768 and 390.**
 | 8 | map | **full-bleed `#F2FFD0` sheet** (Scheme 4, `s.tx`) | the map panel (`lime3` at every width — *corrected in section 8*), rows and chips inked `#15180F` |
 | 9 | form | page | a `#2E3928` card, radius 50 (a full-height `#15180F` child bleeds under it at 768 / 390 — the page colour, a no-op, Retro's reading) |
 | 10 | testimonials | page | the cells above |
-| — | footer | `#2E3928`, layout 1's | — |
+| — | footer | `#2E3928`, layout 1's tree on Scheme 2 (`vm.footerBand`, `7fc68af`) | the seal's disc on the same `#2E3928`; the Book pill's label and disc too, bound to `sem/bg` and drawn in Scheme 1's `#15180F` until *JP-067* ([`../grunge/layout-3-qa-fixes.md`](../grunge/layout-3-qa-fixes.md)) |
 
 **No root flag widens.** The gallery's sheet and the map's sheet are painted **in the branch**
 (Retro layout-3's gallery and map both bleed by the written-out margin), in `s.box1` and `s.tx`;
@@ -770,6 +770,9 @@ Settled in section 4 (the repertoire):
   is column one's olive (the All card on page 2 at `n=20`), and the carousel's lone card takes the
   centre colour. Both literals are block-local, the earlier blocks' idiom. The emitted code shows no
   effect; no `use_figma` read was taken.
+  *Since* (JP-075, 2026-09-28): the carousel centres set **1** at page 0, as every 390 master
+  does, so seating by set would now draw the mist card there too. The rule stands for the fan's
+  reason alone: a set seated by its own colour would carry that colour round as the pager turns.
 - **Diffs carried over from Retro's branch, unchanged:** the meta line is the set's count ("6 SONGS")
   where the frame has a mood and a running time. The right-hand column is the artist, not a
   duration. At 390, page 0 centres set 0 where the master centres its second card. At 768 the
@@ -888,7 +891,7 @@ Settled in section 7 (pricing):
   disc SVGs draw. `full` at 390.
 - **Named diffs.** Two are Retro's, inherited. The seeded intro is one line (`DEFS.pricingIntro`), so the
   head is 58.7 / 62.3 / 88.7 against 94 × 0.82 / 83 / 81, and the seeded title wraps to two lines at
-  390. The pill reads *Book Now* (`cta1`) where the frame types *Book*, so it is 130.5 / 142.1 / 138.9
+  390. The pill reads *Book Now* (`cta1`) where the frame types *Book* (**since JP-070** (2026-09-28) it is `rowCta`, the *Package button*, seeded "Book" at layout 3; see `../grunge/layout-3-qa-fixes.md`), so it is 130.5 / 142.1 / 138.9
   wide against 121 × 0.82 / 113 / 111. The rest are this pass's:
   - The desktop left column is 478.4 against 606 × 0.82, because of our 1052 content width.
   - The 768 pairs are normalised to one grid at 8, where the frame spaces a pair's two items 9 apart.
@@ -937,7 +940,8 @@ Settled in section 8 (the events map):
   the hour chips, the list's top rule and the rows' **1px** bottom rules (Retro draws 2px olive), the
   zoom buttons, the container and the data bar. The discs are `mist` in **both** states; Retro inverts
   the lit one. The lit row is an ink pill with `s.tx` type and no border, and its hour chip fills
-  `s.tx`. `radius-map` is **Scheme 2 at all three widths**, not only at 390 as the plan's table read:
+  `s.tx` (*since* JP-069, 2026-09-28, there is no hour chip: the hour follows the city in the
+  sub line at every width, as at 390). `radius-map` is **Scheme 2 at all three widths**, not only at 390 as the plan's table read:
   `#CCFA61` (`lime3`) for the panel and the container. *(Corrected by Grunge's layout-3 section 8:
   the mode is **Scheme 3**, not Scheme 2 — the fills were read but not the `boundVariables`, and
   `#CCFA61` is Scheme 3's `sem/box/1` under the Lime primitive. The panel and the container share
@@ -1027,7 +1031,10 @@ Settled in section 9 (the enquiry form):
 - **Named diffs.**
   - The frame's copy (Retro's, inherited): three boxes against the seed's four, and a two-line
     "Book Kai for your event" against the seed's three lines at desktop and 390 (two at 768). So the
-    heads are 259 / 144.2 / 144.1 tall against 232 × 0.82 / 144 / 96.
+    heads are 259 / 144.2 / 144.1 tall against 232 × 0.82 / 144 / 96. (**Since JP-070 (form)**
+    (2026-09-29) both are the frame's: the card's three boxes, `FORM_FIELDS_CARD`, and the head
+    off the artist's name, `formHeading3()`, at 107 on the ramp; see
+    `../grunge/layout-3-qa-fixes.md`.)
   - With the taller card the desktop head centres against it, as the frame's does.
   - The seed's typed `\n` folds as whitespace, Retro's reading.
   - The prompt line stays after the boxes are corrected, until the next submit. That is the shared
@@ -1084,6 +1091,7 @@ Settled in section 10 (the testimonials):
     **invented** pair, an `s.bg` disc lettered `s.ac`, because an accent disc vanishes on `lime3`.
     The `lift` ring is faint there by the frame's own hand.
   - Retro's drops hold: the stars, the `®` and the 306 head cap. The numeral is the review count.
+    (**Since JP-065** (2026-09-28) the numeral is the artist's `rating` over a literal `/5`, the review count only its emptied fallback, and `stars` is printed beside the face stack; see `../grunge/layout-3-qa-fixes.md`.)
 - **No `T` table.** `get_variable_defs` is the ramp at all three widths: dispMd 72 / 50 / 40 (the
   head *and* the numeral), labelLg 32 / 21 / 14 (quote and initials), list 24 / 19 / 18, bodyLg
   16 / 15 / 15, bodyMd 14 / 13 / 13, bodySm 13 / 13 / 12. The head is `s.tx` on both lines (Retro's

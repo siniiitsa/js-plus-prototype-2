@@ -41,6 +41,8 @@ const PROBES = [
   { name: 'header.faceTitle', cats: ['header'], param: 'cj', value: { faceTitle: Z } },
   { name: 'header.faceBody', cats: ['header'], param: 'cj', value: { faceBody: Z } },
   { name: 'header.placeBody', cats: ['header'], param: 'cj', value: { placeBody: Z } },
+  // JP-061: the layout-3 portrait card's line, which was the kicker's there.
+  { name: 'header.cardLine', cats: ['header'], param: 'cj', value: { cardLine: Z } },
   { name: 'bio.credit', cats: ['bio'], param: 'cj', value: { credit: Z } },
   { name: 'bio.cta', cats: ['bio'], param: 'cj', value: { cta: Z } },
   { name: 'bio.tag', cats: ['bio'], param: 'cj', value: { tag: Z } },
@@ -66,6 +68,11 @@ const PROBES = [
   { name: 'tiers', cats: ['calendar'], param: 'tiers', value: [{ name: Z, price: Z }] },
   // JP-046: layout 3's offer line beside the pricing capsule.
   { name: 'pricing.offer', cats: ['pricing'], param: 'cj', value: { offer: Z } },
+  // JP-065: layout 3's stat card, its rating and the stars beside its faces.
+  { name: 'testimonials.rating', cats: ['testimonials'], param: 'cj', value: { rating: Z } },
+  { name: 'testimonials.stars', cats: ['testimonials'], param: 'cj', value: { stars: Z } },
+  // JP-070: every package's pill, layout 4's row pill until then.
+  { name: 'pricing.rowCta', cats: ['pricing'], param: 'cj', value: { rowCta: Z } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

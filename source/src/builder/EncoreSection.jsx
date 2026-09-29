@@ -1027,7 +1027,10 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // — the two reds the mode states, both followed. `line` asks for it; it is
   // additive and the footer's alone (Editorial's arm below reads it too, for
   // its footer's paper name), so every caller written before it, and every
-  // layout this pass has not fitted, keeps the red disc.
+  // layout this pass has not fitted, keeps the red disc. The disc is
+  // `s.footerBand || s.bg`, not `scheme`'s, because `sem/bg` is what the
+  // frame binds: on layout 3's page (964:68716) the footer stands on Scheme
+  // 2, and the disc is that band's `#171716` (JP-067).
   //
   // Grunge's layout-4 header (964:72944's "Frame 247") nests the seal in
   // Scheme 4, which in Static Youth is Scheme 1 byte for byte: a black
@@ -1096,7 +1099,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   }
   if ((s.lime || s.grunge) && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
-    const [disc, mk] = s.grunge ? (line ? [s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
+    const [disc, mk] = s.grunge ? (line ? [s.footerBand || s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
     const nameMk = s.grunge && line ? s.ac : mk
     return (
       <div style={{
@@ -2743,9 +2746,11 @@ function HeaderV2({ s }) {
     // the accent) — ring first, as Figma strokes over the effect. Its padding
     // clears the glow, so both sit on the card itself. The portrait's ring is
     // an overlay, since the photograph would paint over a shadow on its box.
-    // Its two lines are `brand` and `kicker`, Retro's reading of this slot;
-    // the brand is Display/Title at the frames' 36 / 28 / 26 (`s.title` is the
-    // heading string). 390 turns the card on its side.
+    // Its two lines are `brand` and `cardLine`, the card's own field (JP-061).
+    // Retro's polaroid reads `kicker` in this slot, but here the bio's Current
+    // role would then print the card's "Performing since 2021". The brand is
+    // Display/Title at the frames' 36 / 28 / 26 (`s.title` is the heading
+    // string). 390 turns the card on its side.
     //
     // Grunge's card is not glass: an opaque `sem/box/1` in the 1px
     // `sem/stroke/2` ring, no effect (the one shadow dropped rather than
@@ -2758,10 +2763,27 @@ function HeaderV2({ s }) {
     // 81 / 0 / 0 on `sem/box/1` in the section's blush `sem/stroke/2`, and
     // taller than the twins' square: 136 × 128, 136 × 135 at 768, 96 × 96 at
     // 390. The name is Display/Title at Sienna Vale's 32 / 25 / 23.
+    //
+    // The name and the line wrap at the content box plus half the padding
+    // each side (JP-062, user call, 2026-09-28): Editorial's 1440 frame sets
+    // its own name 157 wide in the 140 content box, 8.5 into the padding
+    // each side, and Lime's seeded line already runs 0.9 past ours, so the
+    // content box would break both seeds; the whole padding would let a name
+    // run to the ring, the tester's 768 report. Upright that is `100cqi` of
+    // the card plus one padding; on its side at 390, the room beside the
+    // portrait plus half the right padding. The card is the container, since
+    // its width is stated at every width and the column's is not; the column
+    // keeps its box and each span takes `max-content` capped at the measure.
+    // The name wraps between words and shrinks only when its widest word
+    // (`s.cardNameEms`) would outrun the measure; the line breaks inside such
+    // a word instead, body copy having no ems table.
     const pw = ed ? (s.mob ? '96px' : u(136)) : u(87)
     const ph = ed ? (desk ? u(128) : tab ? '135px' : '96px') : u(87)
+    const measure = s.mob ? `(100cqi - ${pw} - 21px + 10px)` : `(100cqi + ${u(40)})`
+    const nameSize = ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'
     const card = (
       <div style={{
+        containerType: 'inline-size',
         background: ed ? s.bg : grunge ? s.box1 : undefined,
         boxShadow: ed ? ring('1px', s.onScheme[1].stroke2)
           : grunge ? ring('1px', s.stroke2) : `${ring('1px', s.ac)}, inset 0 0 ${u(19)} ${s.glow}`,
@@ -2778,16 +2800,19 @@ function HeaderV2({ s }) {
           <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring('1px', grunge || ed ? s.stroke2 : s.ac) }} />
         </div>
         <div style={col(u(4), {
-          alignItems: s.mob ? 'flex-start' : 'center', minWidth: 0, whiteSpace: 'nowrap',
+          alignItems: s.mob ? 'flex-start' : 'center', minWidth: 0, textAlign: s.mob ? 'left' : 'center',
         })}>
           <span style={{
-            fontFamily: s.display,
-            fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
+            width: 'max-content', maxWidth: `calc${measure}`, fontFamily: s.display,
+            fontSize: faced(s, s.cardNameEms ? `min(${nameSize}, calc(${measure} / ${s.cardNameEms}))` : nameSize),
             lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, color: s.tx,
             textTransform: grunge || ed ? 'uppercase' : undefined,
           }}>{brand()}</span>
-          {s.kicker && (
-            <span style={{ fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac }}>{s.kicker}</span>
+          {s.cardLine && (
+            <span style={{
+              width: 'max-content', maxWidth: `calc${measure}`, overflowWrap: 'anywhere',
+              fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac,
+            }}>{s.cardLine}</span>
           )}
         </div>
       </div>
@@ -8415,7 +8440,9 @@ function Pricing({ s }) {
 
                     {/* Bottom-aligned, not baselined, as the frame's row is. The
                         two narrow masters FILL the numeral, which stands the unit
-                        at the card's right edge; desktop hugs it at 4. */}
+                        at the card's right edge; desktop hugs it at 4. A range's
+                        second half (`t.tail`, JP-074) sets small in the lead's
+                        face, so it stands with the unit there, and may wrap. */}
                     <span style={row(u(4), {
                       alignItems: 'flex-end', alignSelf: s.narrow ? 'stretch' : 'flex-start',
                     })}>
@@ -8427,6 +8454,9 @@ function Pricing({ s }) {
                         letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
                         flex: s.narrow ? '1 1 auto' : 'none',
                       }}>{t.amount}</span>
+                      {!!t.tail && (
+                        <span style={body(s.bodyLg, 1.5, { color: ink })}>{t.tail}</span>
+                      )}
                       {!!s.tierUnit && (
                         <span style={ui({ color: ink, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
                       )}
@@ -8450,12 +8480,18 @@ function Pricing({ s }) {
 
                   {/* The pill hugs its label. Its ink is `sem/tag/2/text`, where
                       the branch defaults to `sem/bg`; the 390 master keeps it at
-                      full size, as Retro's does. */}
-                  <span style={{ alignSelf: 'flex-start' }}>
-                    {ed
-                      ? <BookPill s={s} to={s.tierBookTo} bg={PILL.bg} fg={PILL.type} discBg={PILL.disc} full={s.mob} />
-                      : <BookPill s={s} to={s.tierBookTo} bg={s.pillBg} fg={s.activeFg} full={s.mob} />}
-                  </span>
+                      full size, as Retro's does. The label is `rowCta`: an
+                      emptied one drops the pill, and a long one wraps inside
+                      the card, layout 2's rule (JP-070). */}
+                  {!!s.tierRowCta && (
+                    <span style={{ alignSelf: 'flex-start' }}>
+                      {ed
+                        ? <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={PILL.bg} fg={PILL.type} discBg={PILL.disc} full={s.mob}
+                                   style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+                        : <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={s.pillBg} fg={s.activeFg} full={s.mob}
+                                   style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />}
+                    </span>
+                  )}
                   {/* Editorial's card is dashed 8, 8 on all four sides, inside. */}
                   {ed && <DashRule side="all" dash={8 * z} colour={s.stroke1} />}
                 </div>
@@ -8606,7 +8642,9 @@ function Pricing({ s }) {
                       33 and the card grows under its own pill. A lead wider than
                       the £ ("From £", JP-058) holds its line and the row wraps
                       instead: the 768 card, three to a row, puts the unit on a
-                      second line rather than the £. */}
+                      second line rather than the £. A range's second half
+                      (`t.tail`, JP-074) takes the £'s face but not its nowrap,
+                      so a long one breaks rather than passing the card. */}
                   {!!t.lead && (
                     <span style={{
                       fontFamily: s.mono, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
@@ -8618,6 +8656,12 @@ function Pricing({ s }) {
                     lineHeight: s.narrow ? 0.825 : 0.85,
                     letterSpacing: s.dls, color: t.acc,
                   }}>{t.amount}</span>
+                  {!!t.tail && (
+                    <span style={{
+                      fontFamily: s.mono, fontSize: s.narrow ? '18px' : '15px', fontWeight: 700,
+                      lineHeight: s.mob ? 1 : undefined,
+                    }}>{t.tail}</span>
+                  )}
                   <span style={{
                     fontFamily: s.mono, fontSize: s.narrow ? '12px' : '10px', color: t.cardMut,
                     lineHeight: s.mob ? 1 : undefined,
@@ -8648,17 +8692,22 @@ function Pricing({ s }) {
                 </div>
 
                 {/* The pill hugs its label — without this the wrapper stretches
-                    to the column and the pill inside fills it. */}
-                <span style={{
-                  // The 390 card hugs its content rather than stretching, so
-                  // marginTop:auto does nothing there and the 30px the frame
-                  // puts between the feats and the pill has to come from the
-                  // padding on top of the card's own 14px gap.
-                  marginTop: 'auto', paddingTop: s.mob ? '16px' : '6px',
-                  position: 'relative', alignSelf: 'flex-start',
-                }}>
-                  <BookPill s={s} to={s.tierBookTo} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob} />
-                </span>
+                    to the column and the pill inside fills it. The label is
+                    `rowCta`: an emptied one drops the pill with its wrapper,
+                    and a long one wraps inside the card (JP-070). */}
+                {!!s.tierRowCta && (
+                  <span style={{
+                    // The 390 card hugs its content rather than stretching, so
+                    // marginTop:auto does nothing there and the 30px the frame
+                    // puts between the feats and the pill has to come from the
+                    // padding on top of the card's own 14px gap.
+                    marginTop: 'auto', paddingTop: s.mob ? '16px' : '6px',
+                    position: 'relative', alignSelf: 'flex-start',
+                  }}>
+                    <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={t.acc} fg={t.card} shadow={s.paper} full={s.mob}
+                              style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+                  </span>
+                )}
               </div>
             )
           })}
@@ -8707,8 +8756,10 @@ function Pricing({ s }) {
   // `rating`, `cta`, `note` — so the artist types every one of them and each
   // drops when emptied. Dropped from the frame: only the two chips' glyphs `↻`
   // and `⚡`. The frame's second price (`— £2,200/event`) becomes `s.tierUnit`,
-  // which is the one the section already owns. What is kept as a literal is the
-  // two frame labels, `[ PRICING ]` and `WHAT'S INCLUDED`.
+  // which is the one the section already owns; a range the artist types in the
+  // price itself sets its own second half small as `tail` (JP-074). What is
+  // kept as a literal is the two frame labels, `[ PRICING ]` and `WHAT'S
+  // INCLUDED`.
   //
   // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The section
   // paints its own frame — a 1px ink border at its edges and the frame's own
@@ -8837,6 +8888,7 @@ function Pricing({ s }) {
       })
       const lead = t ? t.lead : ''
       const amount = t ? t.amount : ''
+      const tail = t ? t.tail : ''
 
       const head = (
         <div style={col(u(20), {
@@ -8915,13 +8967,16 @@ function Pricing({ s }) {
             <span style={{ ...disp(s.dispSm), color: s.tx }}>{t.name}</span>
             {!!t.blurb && <p style={body(s.bodyMd, 1.5, { margin: 0, color: s.tx })}>{t.blurb}</p>}
             {/* Bottom-aligned at 6. The narrow masters FILL the numeral, which
-                stands the unit at the card's right edge; 1440 hugs it. */}
+                stands the unit at the card's right edge; 1440 hugs it. A
+                range's second half (`tail`, JP-074) sets small in the lead's
+                face between the two. */}
             <span style={row(u(6), { alignItems: 'flex-end', alignSelf: 'stretch' })}>
               {!!lead && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{lead}</span>}
               <span style={{
                 ...disp(s.dispMd), color: s.ac, whiteSpace: 'nowrap',
                 flex: desk ? 'none' : '1 1 auto',
               }}>{amount}</span>
+              {!!tail && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{tail}</span>}
               {!!s.tierUnit && (
                 <span style={body(s.bodyMd, 1.5, { color: s.tx, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
               )}
@@ -9106,6 +9161,7 @@ function Pricing({ s }) {
 
     const lead = t ? t.lead : ''
     const amount = t ? t.amount : ''
+    const tail = t ? t.tail : ''
 
     const card = (
       <div style={{
@@ -9159,13 +9215,16 @@ function Pricing({ s }) {
                 }}>{t.blurb}</p>
                 {/* The frame sets a second price where the section has a unit,
                     so `— £2,200/event` is `s.tierUnit` — layout 1's own three
-                    spans, in the frame's sizes. */}
+                    spans, in the frame's sizes. A range the artist types has a
+                    second half of its own, `tail` (JP-074), set in the lead's
+                    face between the numeral and the unit. */}
                 <span style={row(u(6), { alignItems: 'baseline', width: '100%' })}>
                   {!!lead && <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{lead}</span>}
                   <span style={{
                     fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                     letterSpacing: s.dls, color: h.acc,
                   }}>{amount}</span>
+                  {!!tail && <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{tail}</span>}
                   <span style={{
                     fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: h.cardMut,
                   }}>{s.tierUnit}</span>
@@ -9312,8 +9371,11 @@ function Pricing({ s }) {
   //    `t.amount`, the split layouts 1 and 2 read too (JP-058: `priceParts()`
   //    in `sectionVm`): everything before the first digit, so "From £1,200"
   //    sets "From £" small, and a price with no digit ("POA") has no lead and
-  //    stands whole. One split for all three, so a page prints a `price` the
-  //    same way whichever layout is picked.
+  //    stands whole. The numeral is the first number alone, and whatever the
+  //    artist types after it is `t.tail` (JP-074), set small between it and
+  //    the unit — so a typed "£450 — £1,400" is the frame's own three nodes,
+  //    and a unit after it a fourth. One split for all three, so a page prints
+  //    a `price` the same way whichever layout is picked.
   //  - "FEATURED" is a literal on a derived seat — see below.
   //
   // Every box number is the desktop component's own at all three widths — the
@@ -9512,7 +9574,11 @@ function Pricing({ s }) {
                 )}
               </div>
               {/* Desktop hugs; both narrow masters FILL the numeral, which
-                  stands the unit at the column's right edge. */}
+                  stands the unit at the column's right edge. It fills from
+                  its own width (`auto`, not the frame's `0` and `min-w-px`),
+                  which lays out the same wherever the row fits, and keeps a
+                  long tail from shrinking the numeral's box to nothing and
+                  running over it at 390 (JP-074). */}
               {!!t.price && (
                 <div style={row(u(6), {
                   alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
@@ -9528,9 +9594,14 @@ function Pricing({ s }) {
                   <span style={{
                     fontFamily: s.display, fontSize: faced(s, s.dispMd), ...disp(1),
                     letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
-                    ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
+                    ...(desk ? {} : { flex: '1 0 auto' }),
                     ...(ed ? { position: 'relative', top: '-0.09em' } : {}),
                   }}>{t.amount}</span>
+                  {/* A range's second half (JP-074): the lead's face, and free
+                      to wrap where the lead holds its line. */}
+                  {!!t.tail && (
+                    <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>{t.tail}</span>
+                  )}
                   {!!s.tierUnit && (
                     <span style={{
                       fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5,
@@ -9542,9 +9613,14 @@ function Pricing({ s }) {
               {!!t.blurb && <p style={{ ...ui, margin: 0, width: '100%' }}>{t.blurb}</p>}
               {/* Plain: `BookPill`'s Lime defaults exactly (lime box, ink label
                   and disc, lime arrow). Featured: the pair turned round, a
-                  lime disc round an ink arrow — the frame's two disc SVGs. */}
-              <BookPill s={s} to={s.tierBookTo} full={s.mob}
-                        {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac } : {})} />
+                  lime disc round an ink arrow — the frame's two disc SVGs.
+                  The label is `rowCta`, the frame's "Book": an emptied
+                  one drops the pill, a long one wraps (JP-070). */}
+              {!!s.tierRowCta && (
+                <BookPill s={s} to={s.tierBookTo} full={s.mob} label={s.tierRowCta}
+                          {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac } : {})}
+                          style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+              )}
             </div>
 
             {t.feats.length > 0 && (
@@ -9752,7 +9828,9 @@ function Pricing({ s }) {
             </div>
             {/* The narrow masters give this row the column's whole width and let
                 the numeral fill it, which pushes the unit to the right edge; the
-                1440 one hugs. Both are the frame's own declarations. */}
+                1440 one hugs. Both are the frame's own declarations, except
+                that the numeral fills from its own width (`auto`, not `0`), so
+                a long tail cannot shrink it to nothing (JP-074). */}
             {!!t.price && (
               <div style={row(u(6), {
                 alignItems: 'flex-end', ...(desk ? {} : { width: '100%' }),
@@ -9766,8 +9844,13 @@ function Pricing({ s }) {
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                   letterSpacing: s.dls, color: acc,
-                  ...(desk ? {} : { flex: '1 0 0', minWidth: 0 }),
+                  ...(desk ? {} : { flex: '1 0 auto' }),
                 }}>{t.amount}</span>
+                {/* A range's second half (JP-074): the lead's face, and free
+                    to wrap where the lead holds its line. */}
+                {!!t.tail && (
+                  <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{t.tail}</span>
+                )}
                 {!!s.tierUnit && (
                   <span style={{
                     fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
@@ -9790,11 +9873,16 @@ function Pricing({ s }) {
                 The arrow inside the disc is the frame's gold on both kinds of
                 row: on a plain one that is the pill's own ground, on the
                 featured one the row's second hue — BookPill's Retro default is
-                a cream, so it has to be said. */}
-            <BookPill s={s} to={s.tierBookTo} glyph="arrow"
-                      full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
-                      bg={feat ? h.cardFg : s.pillBg} fg={feat ? h.card : s.pillFg}
-                      shadow={acc} discFg={feat ? h.acc : s.pillBg} />
+                a cream, so it has to be said. The label is `rowCta`, the
+                frame's "Book": an emptied one drops the pill, and a long one
+                wraps inside the row (JP-070). */}
+            {!!s.tierRowCta && (
+              <BookPill s={s} to={s.tierBookTo} glyph="arrow" label={s.tierRowCta}
+                        full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
+                        bg={feat ? h.cardFg : s.pillBg} fg={feat ? h.card : s.pillFg}
+                        shadow={acc} discFg={feat ? h.acc : s.pillBg}
+                        style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+            )}
           </div>
 
           {/* Dropped whole rather than left as a bare label when a package lists
@@ -10129,8 +10217,12 @@ function Pricing({ s }) {
                 }}>{t.price}</span>
               </span>
             )}
-            <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta}
-                      bg={s.tx} fg={s.bg} discFg={s.ac} full={s.mob} />
+            {/* An emptied `rowCta` drops the pill, as at layouts 1 and 3
+                (JP-070). */}
+            {!!s.tierRowCta && (
+              <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta}
+                        bg={s.tx} fg={s.bg} discFg={s.ac} full={s.mob} />
+            )}
           </div>
         </div>
       )
@@ -10292,15 +10384,18 @@ function Pricing({ s }) {
               alone. The label is `rowCta`, the frame's "Star Enquiry" read as
               CAL_SLOT_CTA reads it, set as the frame sets it — Display/List,
               not cased — under Retro, calendar layout 3's pill override
-              (QA, 2026-09-15; it had been `cta1` in the label face). */}
-          <BookPill s={s} to={s.tierBookTo} glyph="arrow" label={s.tierRowCta}
-                    full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
-                    bg={s.tx} fg={s.bg} discFg={s.ac}
-                    {...(desk ? { shadow: 'transparent' } : null)}
-                    style={s.retro ? {
-                      fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
-                      letterSpacing: s.dls,
-                    } : undefined} />
+              (QA, 2026-09-15; it had been `cta1` in the label face). An
+              emptied one drops the pill, as at layouts 1 and 3 (JP-070). */}
+          {!!s.tierRowCta && (
+            <BookPill s={s} to={s.tierBookTo} glyph="arrow" label={s.tierRowCta}
+                      full={!desk} disc={desk ? 36 : 44} size={u(T.list)}
+                      bg={s.tx} fg={s.bg} discFg={s.ac}
+                      {...(desk ? { shadow: 'transparent' } : null)}
+                      style={s.retro ? {
+                        fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
+                        letterSpacing: s.dls,
+                      } : undefined} />
+          )}
         </div>
       </div>
     )
@@ -11778,23 +11873,26 @@ function Repertoire({ s }) {
     // translated track (the media player's fan and the gallery's hero, a third
     // time): the centre seat holds the set the visitor is on and the outer two
     // always peek, where a track would bare the left gutter at page 0 and hand
-    // the canvas a different picture from the master's. Below three sets there
-    // is nothing to peek with — two 290 cards do not both fit — so the row is
-    // the current card alone, and the pager still turns it.
-    const seats = sets.length >= 3
-      ? [(pg - 1 + sets.length) % sets.length, pg, (pg + 1) % sets.length]
-      : [pg]
+    // the canvas a different picture from the master's. The centre is one set
+    // on from `pg` (JP-075): every template's 390 master draws the sets in
+    // order with the *second* centred, so page 0 seats sets 0 / 1 / 2 as the
+    // master does, and the pager still walks every set, wrapping. Below three
+    // sets there is nothing to peek with — two 290 cards do not both fit — so
+    // the row is the current card alone, `mid` is `pg`, and the pager still
+    // turns it.
+    const mid = sets.length >= 3 ? (pg + 1) % sets.length : pg
+    const seats = sets.length >= 3 ? [pg, mid, (pg + 2) % sets.length] : [pg]
     // 17.5 draws the master's 10.23 × 8.9 vector: lucide's arrow fills 14/24 of
     // its `size`, the audio player's size-an-icon-off-its-ink rule.
     const arrow = 17.5 * z
 
     // Lime — the same component in Lime's mode (964:68678 at 1440, 984:10760
     // at 768, 984:10791 at 390), placed after the seam as layouts 1's and 2's
-    // blocks are: `sets`, `pg`, `pages` and `seats` are computed above and the
-    // reveal and the pager are the hoisted state, so the published cards need
-    // nothing new. The tree is Retro's twin's; what changes is every leaf's
-    // dress, and three boxes — the card's 34 padding and 50 corner, and the
-    // rows' pinned heights.
+    // blocks are: `sets`, `pg`, `pages`, `mid` and `seats` are computed above
+    // and the reveal and the pager are the hoisted state, so the published
+    // cards need nothing new. The tree is Retro's twin's; what changes is every
+    // leaf's dress, and three boxes — the card's 34 padding and 50 corner, and
+    // the rows' pinned heights.
     //
     // Every size is a ramp token (`get_variable_defs`: display-lg
     // 130 / 81 / 54, body-lg 16 / 15 / 15, chip 13 / 12 / 11, list
@@ -11806,11 +11904,12 @@ function Repertoire({ s }) {
     // Scheme 1 (`s.box1`, pale ink, a lime meta line), Scheme 4 (`mist`) and
     // Scheme 3 (`lime3`), the last two inked and hairlined in the page ground.
     // Seated by rendered place rather than by set — the media fan's rule —
-    // because the 390 master centres the *mist* card between the other two:
-    // seated by set, the canvas's centre card would be the olive one. So the
-    // grid colours its columns and the carousel its left, centre and right,
-    // and a set takes the colour of wherever it stands. A lone card on the
-    // grid is column one's olive; the carousel's lone card is the centre's.
+    // because the 390 master centres the *mist* card between the other two,
+    // and a set seated by its own colour would carry it round the carousel as
+    // the pager turned it, off the centre after one press. So the grid colours
+    // its columns and the carousel its left, centre and right, and a set takes
+    // the colour of wherever it stands. A lone card on the grid is column
+    // one's olive; the carousel's lone card is the centre's.
     //
     // Grunge (964:68710 / 984:13920 / 984:13951) is Lime's tree node for node
     // at all three widths — a paired diff, 57 = 57 / 57 = 57 / 63 = 63 — and
@@ -11946,7 +12045,7 @@ function Repertoire({ s }) {
                 {seats.map((i, at) => (
                   <div key={sets[i].label} style={{
                     width: u(290), flex: 'none', display: 'grid',
-                    pointerEvents: sets.length >= 3 && i !== pg ? 'none' : undefined,
+                    pointerEvents: i !== mid ? 'none' : undefined,
                   }}>{limeCard(sets[i], seats.length === 3 ? at : 1)}</div>
                 ))}
               </div>
@@ -12021,7 +12120,7 @@ function Repertoire({ s }) {
                   // nothing that can be read or aimed at. There is no swipe (no
                   // touch state anywhere in this file), so the arrows are the
                   // only way through and a tap on a peek does nothing.
-                  pointerEvents: sets.length >= 3 && i !== pg ? 'none' : undefined,
+                  pointerEvents: i !== mid ? 'none' : undefined,
                 }}>{card(sets[i])}</div>
               ))}
             </div>
@@ -12398,8 +12497,8 @@ function Repertoire({ s }) {
         // media player's destroys-its-own-content rule, and what it costs is
         // named rather than fixed — at those two widths the rail leaves the
         // viewport on the first jump and the visitor scrolls back for a second.
-        // Nothing moves on the canvas either way: at scroll 0 a sticky box is
-        // exactly where a static one is.
+        // The canvas sticks as the published tab does: its card clips with
+        // `overflow: clip`, so the canvas's scroller is the rail's (JP-072).
         ...(desk
           ? { flex: 'none', width: u(232), paddingTop: u(50), position: 'sticky', top: 0 }
           : { width: '100%' }),
@@ -14461,7 +14560,9 @@ function Calendar({ s }) {
   // Whether a day or a slot is shut to the visitor: blocked by the artist, or
   // — live only — already past. One test, so the two behave identically
   // everywhere a pick is resolved or a handler given; only `booked` is struck
-  // through, since a past day is not one the artist took.
+  // through, since a past day is not one the artist took. Layout 3 parts them
+  // further: its legend names the booked fill, so a past day there is the free
+  // dot dimmed, booked or not (JP-064).
   const blocked = (x) => x.booked || x.dead
 
   if (s.v0) {
@@ -15501,10 +15602,14 @@ function Calendar({ s }) {
   // dot sits in a 144px column where the 708 master gives it 95 and the 405 one
   // 52. Airier than anything Figma drew, and the mechanism is the frame's.
   //
-  // This design has **no arrows**, so `mi` reaches nothing (layout 2's case).
-  // The grid is month 0 — the month the artist cued — and `sel` can only ever
-  // name a day in it, so the head, the grid and the pill agree by construction
-  // rather than by searching the whole CAL_SPAN window the way layout 1 must.
+  // The frames draw **no month arrows**; ours are the section's (JP-063, user
+  // call, 2026-09-28). The fit showed month 0 alone, which F20 turns into
+  // three pickable days on a published page opened late in the month. So a
+  // pair of arrows follows the month name in the head. They are layout
+  // 1's `mi` and `step`: live only, with no cursor on the canvas, and they
+  // wrap at both ends of CAL_SPAN. Each template draws them as its own free
+  // dot with an arrow in it, since a round ring on the card is the only
+  // control this design owns.
   if (s.v2) {
     const desk = !s.narrow
     const z = desk ? 0.82 : 1
@@ -15535,21 +15640,34 @@ function Calendar({ s }) {
     // never be mistaken for the solid picked dot or for the ring.
     const taken = s.retro ? '#E1CAA5' : s.paperLine
 
-    // The month on show, and the day inside it that is lit. `at` is the day's
-    // index in `month.cells`, which carries the lead blanks — so `at % 7` is
-    // the weekday column, and the head reads its "Tue" off the grid rather than
-    // working a weekday out. A **booked** day is never picked: publishing again
-    // re-renders the open tab, so the artist can block the day a visitor had
-    // lit, and the head would otherwise name a day the dots draw as taken.
-    const month = s.calMonths[0]
+    // The month on show, and the day inside it that is lit. The canvas pins
+    // the month to 0, layout 1's rule, so its picture is the cued month.
+    // The pick is searched through the whole window, layout 1's `reduce`, since
+    // a day picked in July must still name itself from June. A **booked** day
+    // is never picked: publishing again re-renders the open tab, so the artist
+    // can block the day a visitor had lit.
+    const nMonths = s.calMonths.length
+    const month = s.calMonths[s.live ? ((mi % nMonths) + nMonths) % nMonths : 0]
     const want = (s.live && sel) || s.calPick
-    const at = want ? month.cells.findIndex((c) => c.iso === want) : -1
-    const hit = at >= 0 && !blocked(month.cells[at]) ? month.cells[at] : null
-    const line = hit ? hit.short : s.calPrompt
+    const pick = want
+      ? s.calMonths.reduce((f, mo) => f || mo.cells.find((c) => c.iso === want), null)
+      : null
+    const picked = pick && !blocked(pick) ? pick : null
+    // `at` is the pick's index in the month *on show*, which carries the lead
+    // blanks, so `at % 7` is the weekday column and the head reads its "Tue"
+    // off the grid. While the pick is in another month, `at` is -1 and the
+    // head reads the month alone, the nothing-picked look: its numeral stands
+    // over the month name, so "15" over "JUNE" would name the wrong date. The
+    // pill still names the pick wherever it is.
+    const at = picked ? month.cells.indexOf(picked) : -1
+    const hit = at >= 0 ? picked : null
+    const line = picked ? picked.short : s.calPrompt
+    const step = (dir) => (s.live ? () => setMi((v) => v + dir) : undefined)
 
     // Lime — the frames 964:68677 / 984:10763 / 984:10794, as a block after
-    // the seam: `month`, `at`, `hit` and `line` are shared whole, so the
-    // published day picking and the foot pill needed nothing new. Every box is
+    // the seam: `month`, `at`, `hit`, `line` and `step` are shared whole, so
+    // the block draws the published day picking, the month arrows and the
+    // foot pill and owns none of their state. Every box is
     // Retro's twin's (the 20 padding, 18 stack gap, 8 grid gap, 30.713 dot,
     // 21 legend gap, the pill's 54 on a 46 disc), and the grid is Retro's
     // one seven-column normalisation of the frame's two mechanisms. What
@@ -15631,14 +15749,33 @@ function Calendar({ s }) {
           : undefined
         // The free dot's ring is the frame's raw 2.559, stroked inside, so it
         // is an inset shadow and the 30.713 stands. Editorial's is
-        // `border/hairline`, 1px unscaled.
+        // `border/hairline`, 1px unscaled. A past day is the free dot at .38
+        // (JP-064), booked or not, since the legend names `box/2` Booked.
+        const took = c.booked && !c.dead
         return (
           <span key={i} onClick={onClick} style={{
             width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
-            background: on ? s.ac : blocked(c) ? s.box2 : s.box1,
-            boxShadow: on || blocked(c) ? undefined : `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            background: on ? s.ac : took ? s.box2 : s.box1,
+            boxShadow: on || took ? undefined : `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            opacity: c.dead ? 0.38 : undefined,
             cursor: onClick ? 'pointer' : undefined,
           }} />
+        )
+      }
+      // The month arrows (JP-063), which no frame draws: the free dot above,
+      // round the Lime pager's arrow vector in the card's own `sem/text/2`.
+      // A size down from the day dot, so the pair does not read as two more
+      // days, and small enough to sit inside the month name's line box.
+      const arrow = (back, dir) => {
+        const onClick = step(dir)
+        return (
+          <span onClick={onClick} style={{
+            width: lu(24), height: lu(24), flex: 'none', borderRadius: '999px',
+            background: s.box1, color: s.tx,
+            boxShadow: `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            cursor: onClick ? 'pointer' : undefined,
+          }}><LimeArrow back={back} z={lz} /></span>
         )
       }
       return (
@@ -15666,10 +15803,13 @@ function Calendar({ s }) {
               )}
               <div style={row(lu(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
                 <div style={col(lu(2.745), { alignItems: 'flex-start' })}>
-                  <span style={{
-                    fontFamily: s.display, fontSize: faced(s, s.dispSm), ...disp(1),
-                    letterSpacing: s.dls, ...lift,
-                  }}>{month.name}</span>
+                  <div style={row(lu(8))}>
+                    <span style={{
+                      fontFamily: s.display, fontSize: faced(s, s.dispSm), ...disp(1),
+                      letterSpacing: s.dls, ...lift,
+                    }}>{month.name}</span>
+                    <div style={row(lu(4))}>{arrow(true, -1)}{arrow(false, 1)}</div>
+                  </div>
                   <span style={body(s.bodyMd, 1.5)}>{month.year}</span>
                 </div>
                 {!!hit && (
@@ -15718,7 +15858,28 @@ function Calendar({ s }) {
     // it are rendered or not rather than printed blank. With nothing picked
     // (the artist blocked their own opening day, or a visitor clicked the lit
     // dot again) the card opens on the month alone and the pill prints
-    // `calPrompt`, the section's own empty cue in both earlier layouts.
+    // `calPrompt`, the section's own empty cue in both earlier layouts. With
+    // the pick in another month, the head is the month alone too, and the pill
+    // still names the pick.
+    //
+    // The month arrows (JP-063), which no frame draws, follow the month name
+    // on its own line: the free dot below, round layout 1's own arrow glyph in
+    // the card's ink. A size down from the day dot, so the pair does not read
+    // as two more days, and small enough to sit inside the month name's line
+    // box, so the head keeps its height. At 24 the pair also leaves Retro's
+    // SEPTEMBER and its weekday room in the composed desktop column, where the
+    // dot's 30.713 ran the weekday 11px into the card's padding.
+    const arrow = (icon, dir) => {
+      const onClick = step(dir)
+      return (
+        <span onClick={onClick} style={{
+          width: u(24), height: u(24), flex: 'none', borderRadius: '999px',
+          border: `${u(2.559)} solid ${ink}`, color: ink,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          cursor: onClick ? 'pointer' : undefined,
+        }}>{icon}</span>
+      )
+    }
     const head = (
       <div style={col('0')}>
         {!!hit && (
@@ -15734,9 +15895,15 @@ function Calendar({ s }) {
             into the weekday on one of the flat four's wider display faces. */}
         <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
           <div style={col(u(2.745), { alignItems: 'flex-start' })}>
-            <span style={{
-              fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1, letterSpacing: s.dls,
-            }}>{month.name}</span>
+            <div style={row(u(8))}>
+              <span style={{
+                fontFamily: s.display, fontSize: u(T.dispSm), lineHeight: 1, letterSpacing: s.dls,
+              }}>{month.name}</span>
+              <div style={row(u(4))}>
+                {arrow(<ArrowLeft size={Math.round(12 * z)} />, -1)}
+                {arrow(<ArrowRight size={Math.round(12 * z)} />, 1)}
+              </div>
+            </div>
             <span style={{
               fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
             }}>{month.year}</span>
@@ -15771,17 +15938,23 @@ function Calendar({ s }) {
     // frame's 2.559 rather than `border/thin`'s 2 — it is a raw value on the
     // ellipse, not a token, and at 30px it is the whole of the dot's form.
     // Clicking the lit dot unlights it, layout 1's cell and the map's pin.
+    // A past day (live only) is none of the three, so it is the free ring at
+    // Lime's layout-1 .38, booked or not (JP-064, user call, 2026-09-28): drawn in
+    // `taken` it read as the legend's Booked, the whole month before today
+    // claimed as gigs.
     const dot = (c, i) => {
       if (c.iso === undefined) return <span key={i} />
       const on = hit ? c.iso === hit.iso : false
       const onClick = s.live && !blocked(c)
         ? () => setSel((v) => (v === c.iso ? '' : c.iso))
         : undefined
+      const took = c.booked && !c.dead
       return (
         <span key={i} onClick={onClick} style={{
           width: u(30.713), height: u(30.713), borderRadius: '999px', justifySelf: 'center',
-          background: on ? hue : blocked(c) ? taken : 'transparent',
-          border: on || blocked(c) ? 'none' : `${u(2.559)} solid ${ink}`,
+          background: on ? hue : took ? taken : 'transparent',
+          border: on || took ? 'none' : `${u(2.559)} solid ${ink}`,
+          opacity: c.dead ? 0.38 : undefined,
           cursor: onClick ? 'pointer' : undefined,
         }} />
       )
@@ -18426,8 +18599,10 @@ function EventsMap({ s }) {
   //
   // **Five things the frame draws are dropped**, all of them claims or controls
   // with nowhere to go: the row's weekday (no year and no clock, so `SAT` is
-  // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (the row's
-  // own hour takes that seat, layout 2's own words), the 30/60/120mi ring
+  // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (its seat
+  // stays empty: the row's hour sits in the sub line, "Manchester · 22:00",
+  // where every master prints it — JP-069, user call, 2026-09-28; it had
+  // taken that seat as a chip, layout 2's own words), the 30/60/120mi ring
   // labels and the zoom controls (numbers the artist never typed, and a control
   // this file has nothing to do), and
   // "Updated 2m ago", a timestamp nothing here can produce — the labels, the
@@ -18632,7 +18807,7 @@ function EventsMap({ s }) {
       // Lime's arm is this block's own literals, so theme 1 digests to zero.
       const G = grunge
         ? {
-          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBox: s.bg, litBoxFg: s.ac,
+          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBoxFg: s.ac,
           disc: s.box1, hair: s.stroke1, hairP: '#00000026',
           panel: '#F52E34', mapBox: '#9E1F17', zoom: '#F52E34',
           pinRing: s.tx, pillBg: s.ac, pillFg: s.bg, pagerInk: s.ac,
@@ -18640,7 +18815,7 @@ function EventsMap({ s }) {
           ratio: desk ? '570 / 472' : tab ? '315 / 514' : '350 / 157',
         }
         : ed ? {
-          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBox: s.bg, litBoxFg: s.ac,
+          sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBoxFg: s.ac,
           // The zoom buttons' ring is Scheme 4's `stroke/1`, the container's
           // Scheme 3's: one value, paper at 56%, so `hairP` serves both.
           disc: s.box1, hair: s.stroke1, hairP: S3.stroke1,
@@ -18655,7 +18830,7 @@ function EventsMap({ s }) {
           acc: s.bg, dot: s.ac, dotOp: 0.6,
         }
         : {
-          sheet: s.tx, ink: s.bg, lit: s.bg, litFg: s.tx, litBox: s.tx, litBoxFg: s.bg,
+          sheet: s.tx, ink: s.bg, lit: s.bg, litFg: s.tx, litBoxFg: s.bg,
           disc: '#D5E3B2', hair: '#15180F26', hairP: '#15180F26',
           panel: '#CCFA61', mapBox: '#CCFA61', zoom: '#D9FF7F',
           pinRing: s.bg, pillBg: s.bg, pillFg: s.tx, pagerInk: s.bg,
@@ -18714,13 +18889,12 @@ function EventsMap({ s }) {
       )
 
       // The lit row is an ink pill with pale type; its disc stays `mist` with
-      // ink type, and its hour chip fills with the sheet. The rule under each
-      // row is the hairline, dropped on the lit pill and the row above it.
-      // Under Grunge the pill is the accent under black type, and the two boxes
-      // standing on it — the date disc, still `box/1`, and the hour chip, now
-      // black — letter the accent back, which is the frame's own reading.
-      // Under Editorial the pill is a square paper row, dashed all round, the
-      // date disc a square box, and the rules dashed ink.
+      // ink type. The rule under each row is the hairline, dropped on the lit
+      // pill and the row above it. Under Grunge the pill is the accent under
+      // black type, and the box standing on it — the date disc, still `box/1` —
+      // letters the accent back, which is the frame's own reading. Under
+      // Editorial the pill is a square paper row, dashed all round, the date
+      // disc a square box, and the rules dashed ink.
       const gigRowL = ({ g: gg, i }, k) => {
         const on = litRow(i)
         const next = shown[k + 1]
@@ -18729,10 +18903,12 @@ function EventsMap({ s }) {
         const tix = extLink(s, gg.url)
         const Tix = tix ? 'a' : 'span'
         const showTix = !!gg.url
-        // The 390 master sets the hour after the city — "Manchester · 22:00" —
-        // with no hour chip, and stands Tickets → alone under the row (user
-        // call, 2026-09-18). The wide rows keep the chip.
-        const place = s.mob ? [gg.city, gg.time].filter(Boolean).join(' · ') : gg.city
+        // Every master sets the hour after the city — "Manchester · 22:00" —
+        // so there is no hour chip at any width (390, user call, 2026-09-18;
+        // the wide rows, JP-069, 2026-09-28, where the chip had taken the
+        // dropped status pill's seat). An emptied half drops with its `·`. The
+        // 390 row stands Tickets → alone under the rest.
+        const place = [gg.city, gg.time].filter(Boolean).join(' · ')
         const mark = (
           <span style={col(0, {
             width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
@@ -18759,13 +18935,6 @@ function EventsMap({ s }) {
             )}
           </div>
         )
-        const when = !!gg.time && (
-          <span style={{
-            ...bodySm, flex: 'none', whiteSpace: 'nowrap', color: on ? G.litBoxFg : ink,
-            boxShadow: ring(hair), borderRadius: '999px', padding: `${u(4)} ${u(10)}`,
-            background: on ? G.litBox : undefined,
-          }}>{gg.time}</span>
-        )
         const tickets = showTix && (
           <Tix {...tix} style={{
             ...bodySm, flex: 'none', whiteSpace: 'nowrap',
@@ -18790,7 +18959,7 @@ function EventsMap({ s }) {
                 <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
                 {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
               </>
-            ) : <>{mark}{lines}{when}{tickets}</>}
+            ) : <>{mark}{lines}{tickets}</>}
             {ed && (on
               ? <DashRule side="all" dash={10 * z} colour={hair} />
               : !aboveLit && <DashRule dash={10 * z} colour={G.rule} />)}
@@ -19049,10 +19218,11 @@ function EventsMap({ s }) {
         {/* The eyebrow stays the frame's own label, which is layout 1's call in
             this very section ("Shows/coverage"). `base` was tried here first,
             on the gallery's prefer-a-field rule, and read back as a stutter:
-            `TITLES.map` is already "Manchester", so the head printed "Based in
-            Manchester" over "Manchester" — the pricing deck's
+            the head was then `TITLES.map`'s "Manchester", so it printed "Based
+            in Manchester" over "Manchester" — the pricing deck's
             render-the-head-and-read-it rule. It goes along the map's foot
-            instead, where the frame's own line already names a place. */}
+            instead, where the frame's own line already names a place. The
+            head has been the frame's "Where I'm playing." since JP-070. */}
         <span style={body12}>Gigs &amp; travel</span>
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
@@ -19103,6 +19273,7 @@ function EventsMap({ s }) {
       const tix = extLink(s, gg.url)
       const Tix = tix ? 'a' : 'span'
       const showTix = !!gg.url
+      const place = [gg.city, gg.time].filter(Boolean).join(' · ')
       const mark = (
         <span style={col(0, {
           width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
@@ -19125,29 +19296,22 @@ function EventsMap({ s }) {
             fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
             color: on ? sheet : hot, overflowWrap: 'anywhere',
           }}>{gg.venue}</span>
-          {/* The city alone, where the frame prints "Manchester · 22:00": the
-              hour has its own chip below, and putting it in both is what makes
-              the 768 master clip its own sub line at 107px of column. The lit
-              row sets it in Body/Eyebrow, which is the frame's own mark of the
+          {/* The frame's own "Manchester · 22:00" at every width (JP-069, user
+              call, 2026-09-28): the hour had a chip of its own in the seat of
+              the frame's "Upcoming"/"Past", a status the section cannot know,
+              and that seat now stays empty. An emptied half drops with its
+              `·`. The line wraps between words rather than clipping, where the
+              768 master clips its own in a 107px column beside that status and
+              Tickets →. With no chip, ours at 768 is 160–270 wide (lit or not,
+              linked or not) and holds every seeded line on one. The lit row
+              sets it in Body/Eyebrow, which is the frame's own mark of the
               featured show and the only place that token is used. */}
-          {!!gg.city && (
+          {!!place && (
             <span style={on
               ? { fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3 }
-              : body12}>{gg.city}</span>
+              : body12}>{place}</span>
           )}
         </div>
-      )
-      // The frame's "Upcoming"/"Past" is a status the section cannot know, and
-      // the row's own hour is what belongs in that chip — layout 2's words, and
-      // its rule that an emptied `time` drops the chip rather than printing an
-      // empty pill.
-      const when = !!gg.time && (
-        <span style={{
-          ...body12, flex: 'none', whiteSpace: 'nowrap',
-          border: `1px solid ${on ? hot : ink}`, borderRadius: '999px',
-          padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`,
-          background: on ? ink : undefined, color: on ? hot : undefined,
-        }}>{gg.time}</span>
       )
       const tickets = showTix && (
         <Tix {...tix} style={{
@@ -19182,18 +19346,14 @@ function EventsMap({ s }) {
           ...(s.mob ? col(u(14), { alignItems: 'flex-start' }) : row(u(14))),
         }}>
           {/* 390 stacks the row: the circle and the lines on one line at the
-              master's own 20 gap, then the tickets link and the hour chip on a
-              second. The two wide masters run all four across. */}
+              master's own 20 gap, then the tickets link alone on a second. The
+              two wide masters run all three across. */}
           {s.mob ? (
             <>
               <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
-              {(showTix || !!gg.time) && (
-                <div style={row(u(10), {
-                  width: '100%', justifyContent: showTix ? 'space-between' : 'flex-end',
-                })}>{tickets}{when}</div>
-              )}
+              {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
             </>
-          ) : <>{mark}{lines}{when}{tickets}</>}
+          ) : <>{mark}{lines}{tickets}</>}
         </div>
       )
     }
@@ -21154,19 +21314,21 @@ function Testimonials({ s }) {
   // nothing here — the gallery's whole-seam-gone case, and the first time in
   // this pass that the absence costs the visitor nothing.
   //
-  // **The stat card is where the frame's claims are re-seated.** `4.9 /5`, the
-  // four photographed faces and the `★★★★★` are a rating and a following the
-  // artist never typed (the video section's rule; this section's layout 2 and
-  // the enquiry form's dropped this very row of stars), and `56+ events` is a
-  // fabricated metric inside a real sentence. What comes back in their place is
-  // the section's own arithmetic and its own fields: the big numeral is the
-  // **review count** with its unit beside it, the sentence is `sub` — which drew
-  // in layout 2 alone until now — the small line above the stack is `s.brand`
-  // (the enquiry form's layout-3 call), and the faces are one disc per review
-  // marked with `vm.quotes[].mark`, the same composed initials layout 2's rail
-  // picks from. The `®` goes with the stars: a trademark is a claim too. The
-  // stars' seat is not re-filled, because the count they would have carried is
-  // already the numeral — the events map's allocate-each-field-once rule.
+  // **The stat card is where the frame's claims are re-seated, as fields.**
+  // `4.9 /5` and the `★★★★★` are the artist's to state (JP-065, user call,
+  // 2026-09-28; the fit had dropped both as claims never typed, and this
+  // section's layout 2 and the enquiry form's card have since seated the same
+  // row of stars as fields). So the big numeral is **`rating`** beside the
+  // frame's literal `/5`, and `stars` is printed in its frame seat, 12 right of
+  // the face stack, while it is filled: each is emptiable apart, JP-046's
+  // rule. An emptied rating gives the numeral back to the section's own
+  // arithmetic, the **review count** with its unit, which is what the fit put
+  // there. `56+ events` is a fabricated metric inside a real sentence, so the
+  // sentence is `sub`; the small line above the stack is `s.brand` (the enquiry
+  // form's layout-3 call), and the faces are one disc per named review marked
+  // with `vm.quotes[].mark`, the same composed initials layout 2's rail picks
+  // from: the frame's photographs are a named diff. The `®` stays out: a
+  // trademark is a claim no field states.
   //
   // **A review with no attribution *is* the frame's bare cell.** The quote cells
   // are one template — disc, quote, then name over role — with each part
@@ -21244,6 +21406,7 @@ function Testimonials({ s }) {
 
     const n = s.quotes.length
     const marked = s.quotes.filter((r) => !!r.who)
+    const rated = !!s.testiRating
 
     // One reviewer's disc. The 56 in a quote cell carries Label/LG; the 24 in
     // the stat card's stack has no type in the frame at all — its faces are
@@ -21268,23 +21431,28 @@ function Testimonials({ s }) {
           {/* The numeral hugs at 1440 (76 + 4 + 16 = the frame's 96) and fills at
               both narrow widths (196 + 4 + 15 = 215, 291 + 4 + 15 = 310), which
               is why `/5` sits against the cell's right edge in those two
-              renders. Baseline-aligned at all three. The unit is pluralised —
+              renders. Baseline-aligned at all three. It is the artist's
+              `rating` over the frame's own `/5`, 4 apart; an emptied rating
+              gives the seat to the review count, whose unit is pluralised —
               new copy no other layout prints, so the events map's
-              copy-the-plural-bug rule does not bind — and it takes twice the
-              frame's 4px gap, because that 4 sits under a `/`, which is its own
+              copy-the-plural-bug rule does not bind — and takes twice that
+              gap, because the frame's 4 sits under a `/`, which is its own
               separator, where a word needs a word space (the calendar's rule
               that a frame's squeeze is not transferable once our content
-              differs; at the frame's own 4 this reads "3reviews"). */}
-          <div style={row(u(8), {
+              differs; at the frame's own 4 this reads "3reviews"). The
+              numeral may shrink and wrap, so a long rating stays in the card:
+              for the seed that is the same box `none` drew. */}
+          <div style={row(u(rated ? 4 : 8), {
             alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
           })}>
             <span style={{
               fontFamily: s.display, fontSize: u(T.disp), lineHeight: 1,
-              letterSpacing: s.dls, color: s.pillBg, flex: desk ? 'none' : '1 0 0',
-            }}>{n}</span>
+              letterSpacing: s.dls, color: s.pillBg, flex: desk ? '0 1 auto' : '1 0 0',
+              minWidth: 0, overflowWrap: 'anywhere',
+            }}>{rated ? s.testiRating : n}</span>
             <span style={{
               fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, flex: 'none',
-            }}>{n === 1 ? 'review' : 'reviews'}</span>
+            }}>{rated ? '/5' : n === 1 ? 'review' : 'reviews'}</span>
           </div>
           {!!s.testiSub && (
             <p style={{
@@ -21298,19 +21466,30 @@ function Testimonials({ s }) {
             master's 203 exactly). */}
         <div style={col(u(10), { width: '100%', paddingTop: u(10) })}>
           {!!s.brand && <span style={body12}>{s.brand}</span>}
-          {/* The frame's four photographed faces, as the marks `sectionVm`
-              already composes for layout 2's rail. Named reviewers only — the
-              same `who` the quote card gates its own disc on, so the stack
-              cannot invent a face for a review the wall itself shows
-              unattributed; `mark`'s row-number fallback exists because a rail
-              of blank tiles cannot be picked from, and there is nothing to pick
-              here. The stack is not a count: that is the numeral above it. */}
-          {!!marked.length && (
-            <div style={row('0px')}>
-              {marked.map((r, i) => (
-                disc(r.mark, 24, 11, `2px solid ${s.retro ? '#50532B' : cardLine}`,
-                     i === marked.length - 1 ? null : { marginRight: u(-8) }, i)
-              ))}
+          {/* The frame's `avs` row: the face stack, then `stars` 12 to its
+              right, in the numeral's ink (every template's frame letters them
+              so). It wraps rather than clipping: eight named reviewers and the
+              stars come to ~173 of the 176 the 1440 card leaves. */}
+          {(!!marked.length || !!s.testiStars) && (
+            <div style={row(u(12), { flexWrap: 'wrap' })}>
+              {/* The frame's four photographed faces, as the marks `sectionVm`
+                  already composes for layout 2's rail. Named reviewers only —
+                  the same `who` the quote card gates its own disc on, so the
+                  stack cannot invent a face for a review the wall itself shows
+                  unattributed; `mark`'s row-number fallback exists because a
+                  rail of blank tiles cannot be picked from, and there is
+                  nothing to pick here. The stack is not a count either. */}
+              {!!marked.length && (
+                <div style={row('0px')}>
+                  {marked.map((r, i) => (
+                    disc(r.mark, 24, 11, `2px solid ${s.retro ? '#50532B' : cardLine}`,
+                         i === marked.length - 1 ? null : { marginRight: u(-8) }, i)
+                  ))}
+                </div>
+              )}
+              {!!s.testiStars && (
+                <span style={{ ...body12, color: s.pillBg, minWidth: 0, overflowWrap: 'anywhere' }}>{s.testiStars}</span>
+              )}
             </div>
           )}
         </div>
@@ -21401,7 +21580,7 @@ function Testimonials({ s }) {
     //    `titleSize`); the family is `s.label` either way, both templates
     //    setting display and label to one face.
     //  - **The stat card letters in two inks.** Scheme 3's `text/1` is black
-    //    and its `text/2` white, so the numeral (and the dropped stars) are
+    //    and its `text/2` white, so the numeral and the stars are
     //    `s.bg` while `/5`, `sub` and `brand` are `s.tx` — where Lime letters
     //    the whole card `s.bg`. Sampled off the master's render: `#9E1F17`
     //    ground, (0,0,0) numeral, (255,255,255) prose.
@@ -21553,8 +21732,9 @@ function Testimonials({ s }) {
 
       // Scheme 3: a `lime3` card in a 15% ink hairline, every ink `s.bg` — the
       // numeral included, where Retro's is `pillBg` on its dark card. The
-      // numeral, the unit, `sub`, `brand` and the stack are Retro's
-      // re-seatings of the frame's rating, and the stars stay dropped.
+      // numeral is the artist's `rating` over the frame's `/5` (the review
+      // count once it is emptied), and `sub`, `brand`, the stack and the
+      // stars sit where Retro's body seats them.
       //
       // Grunge's card is the one place the frame letters in two inks: Scheme
       // 3's `sem/text/1` is black and its `sem/text/2` white, so the card's
@@ -21564,7 +21744,10 @@ function Testimonials({ s }) {
       // coincidence for a second time — so `s.bg` is what is written, and a
       // scheme that parted them would want a literal here. Editorial's two
       // inks are Scheme 3's own pair read off `onScheme`: terracotta `text/1`
-      // for the numeral (`G.num`), paper `text/2` for the rest.
+      // for the numeral (`G.num`), paper `text/2` for the rest. On all three
+      // frames the stars take the numeral's ink and `/5` the card's, so
+      // `numInk` letters both the numeral and the stars.
+      const numInk = grunge ? { color: s.bg } : G.num ? { color: G.num } : null
       const statCard = (
         <div key="stat" style={col(u(16), {
           background: G.card, color: G.cardFg, boxShadow: ed ? undefined : ring(G.hair),
@@ -21577,18 +21760,18 @@ function Testimonials({ s }) {
                 0.085 / 0.088 / 0.057em lower in its lh-1 box than the frame's,
                 over the sentence 16 below (plans/editorial/layout-3.md,
                 section 10). */}
-            <div style={row(u(8), {
+            <div style={row(u(rated ? 4 : 8), {
               alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
               ...(ed ? { position: 'relative', top: `calc(-0.08 * ${s.dispMd})` } : null),
             })}>
               <span style={{
                 ...disp(s.display, s.dispMd, 1),
-                letterSpacing: s.dls, ...(grunge ? { color: s.bg } : G.num ? { color: G.num } : null),
-                flex: desk ? 'none' : '1 0 0',
-              }}>{n}</span>
+                letterSpacing: s.dls, ...numInk,
+                flex: desk ? '0 1 auto' : '1 0 0', minWidth: 0, overflowWrap: 'anywhere',
+              }}>{rated ? s.testiRating : n}</span>
               <span style={{
                 fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
-              }}>{n === 1 ? 'review' : 'reviews'}</span>
+              }}>{rated ? '/5' : n === 1 ? 'review' : 'reviews'}</span>
             </div>
             {!!s.testiSub && (
               <p style={{
@@ -21598,9 +21781,16 @@ function Testimonials({ s }) {
           </div>
           <div style={col(u(10), { width: '100%', paddingTop: u(10) })}>
             {!!s.brand && <span style={small}>{s.brand}</span>}
-            {!!marked.length && (
-              <div style={row('0px')}>
-                {marked.map((r, i) => face(r.mark, i === marked.length - 1, i))}
+            {(!!marked.length || !!s.testiStars) && (
+              <div style={row(u(12), { flexWrap: 'wrap' })}>
+                {!!marked.length && (
+                  <div style={row('0px')}>
+                    {marked.map((r, i) => face(r.mark, i === marked.length - 1, i))}
+                  </div>
+                )}
+                {!!s.testiStars && (
+                  <span style={{ ...small, ...numInk, minWidth: 0, overflowWrap: 'anywhere' }}>{s.testiStars}</span>
+                )}
               </div>
             )}
           </div>
@@ -23915,8 +24105,9 @@ function EnquiryForm({ s }) {
     // reason — the padding that produced them is the frame's.
     //
     // `vm.titleWordEms` stays Lime's: at `faced(s.dispLg)` = 80.25px the
-    // seed's UNFORGETTABLE. is 6.025 Anton ems = 484, inside the 501 half
-    // column, so this head never has to give way and the key is not widened.
+    // old seed's UNFORGETTABLE. is 6.025 Anton ems = 484, inside the 501 half
+    // column, so the key was not widened; the name-derived seed (JP-070) is
+    // narrower still, and a longer word breaks inside itself, as Retro's does.
     // A refused box keeps Lime's 2px of `s.tx`, which is colour *and* weight
     // here — the idle ring is the 15% hairline, not full ink, so CONVENTIONS'
     // "colour, not weight alone" rule does not bite.
@@ -24003,7 +24194,7 @@ function EnquiryForm({ s }) {
               })}>{s.formAvailable}</span>
             )}
             {/* Display/LG at lh .89 in the accent. At desktop the token's 107
-                is wider than the half column allows for the seed's
+                was wider than the half column allows for the old seed's
                 UNFORGETTABLE. (5.158em against 4.69), which broke the word, so
                 the size gives way to the column only when the widest word
                 (`s.titleWordEms`) would not fit. 768 and 390 never bite.
@@ -24998,6 +25189,11 @@ function Footer({ s }) {
   // below it — `extLink` / `navHref` per row, the pill on `bookTo` and dropped
   // with its label — is restated verbatim. Scheme 1 throughout, so no literal.
   //
+  // Lime's layout-3 page (964:68684) stands this tree on Scheme 2 instead, and
+  // Grunge's (964:68716) does too, each differing from its layout 1 in
+  // `sem/bg` alone. So the root, the seal's disc and the pill's label and disc
+  // read `s.footerBand` there (JP-067), and nothing else moves.
+  //
   // Grunge's (964:58610 at 1440, 986:44068 at 768, 986:44080 at 390) is Lime's
   // tree node for node, on its own Scheme 1 — the same rules in `sem/stroke/1`,
   // the same dim globe, the same 68 row, `BookPill`'s shared branch exactly —
@@ -25140,7 +25336,10 @@ function Footer({ s }) {
     // `sem/box/3` rather than the label's own ink. Its label binds
     // `sem/tag/1/text`, ink in Scheme 3 (where it is `s.bg`, the default) and
     // in the Scheme 2 of layout 3's page (where `s.bg` is the taupe band), so
-    // it is passed as that binding.
+    // it is passed as that binding. The twins' label and disc bind `sem/bg`,
+    // which is `s.bg` but on layout 3's page, where it is the band under the
+    // footer, `s.footerBand` (JP-067): undefined elsewhere, so the pill falls
+    // back to `s.bg`.
     const linkCol = (colLinks, i) => (
       <nav key={i} style={col(px(ed ? 12 : 23), { alignItems: 'flex-start' })}>
         {colLinks.map((l, j) => {
@@ -25153,7 +25352,7 @@ function Footer({ s }) {
         })}
         {i === 0 && s.footerCta && (
           <BookPill s={s} to={s.bookTo} label={s.footerCta} full={s.mob}
-                    fg={ed ? s.chips[0].fg : undefined} discBg={ed ? s.box3 : undefined} />
+                    fg={ed ? s.chips[0].fg : s.footerBand} discBg={ed ? s.box3 : undefined} />
         )}
       </nav>
     )
