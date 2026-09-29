@@ -5,6 +5,25 @@
  * §4.1 THEMES — 5 templates
  * ------------------------------------------------------------------ */
 
+// Grunge's distress (plans/grunge/display-face.md, candidate A): a 240 × 240
+// noise tile masked over Anton's display type, standing in for the wear
+// Stones Crush carries in its outlines. A fine speck (0.5, seed 7) is lifted
+// or lowered by a coarse field (0.03, seed 3), so the cuts cluster into
+// scuffed patches and clean runs, then thresholded hard at R ≈ 0.25 into a
+// binary alpha — 6.7% of the tile cut. Both seeds are pinned, so every render
+// is the same, and `stitchTiles` makes the tile seamless. Declared above
+// THEMES, which reads it.
+const DISTRESS_SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'>"
+  + "<filter id='n' x='0' y='0' width='100%' height='100%'>"
+  + "<feTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' seed='7' stitchTiles='stitch'/>"
+  + "<feColorMatrix values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 1' result='f'/>"
+  + "<feTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='1' seed='3' stitchTiles='stitch'/>"
+  + "<feColorMatrix values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 1' result='c'/>"
+  + "<feComposite in='f' in2='c' operator='arithmetic' k1='0' k2='1' k3='1.2' k4='-0.6'/>"
+  + "<feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  20 0 0 0 -4.5'/>"
+  + "<feComponentTransfer><feFuncA type='discrete' tableValues='0 1'/></feComponentTransfer>"
+  + "</filter><rect width='100%' height='100%' filter='url(#n)'/></svg>"
+
 export const THEMES = [
   {
     name: 'Retro',
@@ -112,6 +131,11 @@ export const THEMES = [
     // height divided back out (`faced` / `facedLh` in EncoreSection). A theme
     // with no key sets its face at the token (1).
     faceK: 0.75,
+    // …and the distress Anton lacks, as a mask over the display type
+    // (`distressed` in EncoreSection): the tile above, one per 4 em, so a
+    // 121px head and a 39px one wear the same texture. A theme with no key
+    // gains no style.
+    distress: { image: `url("data:image/svg+xml,${encodeURIComponent(DISTRESS_SVG)}")`, size: '4em 4em' },
     ui: "'Chakra Petch', sans-serif",
     body: "'Inter', sans-serif",
     casing: 'title',

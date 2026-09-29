@@ -103,6 +103,19 @@ const isTablet = (s) => !!s.narrow && !s.mob
 // the identity there — a string size gains no `calc(… * 1)`.
 const faced = (s, size) => (s.faceK === 1 ? size : typeof size === 'number' ? size * s.faceK : `calc(${size} * ${s.faceK})`)
 const facedLh = (s, lh) => (s.faceK !== 1 && typeof lh === 'number' ? +(lh / s.faceK).toFixed(4) : lh)
+// The wear the stand-in lacks: under Grunge (`s.distress`, THEMES[].distress)
+// a noise tile masked over the display type, returned as the same style
+// object untouched everywhere else. The call site gates it by ramp key — the
+// display keys and `title` take it, `list` and every label never do — and
+// spreads it onto the element that sets the face, never onto its spans too,
+// since a nested mask multiplies, nor onto a node that paints a box, which the
+// mask would speckle (plans/grunge/display-face.md, step 1). Repeat and
+// position are the defaults.
+const distressed = (s, style) => (s.distress ? {
+  ...style,
+  maskImage: s.distress.image, WebkitMaskImage: s.distress.image,
+  maskSize: s.distress.size, WebkitMaskSize: s.distress.size,
+} : style)
 const labelStyle = (s, size, extra) => {
   const st = {
     fontFamily: s.label, fontSize: size || s.labelMd, lineHeight: 1.1,

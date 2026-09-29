@@ -339,6 +339,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // A stand-in display face's glyphs against the frame's (`faced` in
     // EncoreSection); 1, the identity, wherever the theme states none.
     faceK: T.faceK ?? 1,
+    // Its distress mask, `{ image, size }` (`distressed` in EncoreSection);
+    // undefined wherever the theme states none, so the helper is the identity.
+    distress: T.distress,
     // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
     // carry one; Pop falls back to its body face.
     ui: T.ui ?? T.body,

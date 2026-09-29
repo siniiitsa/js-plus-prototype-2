@@ -461,6 +461,66 @@ licence point alone argues for A.
    step 1's wordmark trap into the helper's shape: `NavBar` (`:1473`) passes an explicit `'28px'`
    at 390, so "was `size` passed" cannot tell header 1's Display/Title wordmark from header 4's
    `labelLg` one. The key, or a flag, has to travel through `NavBar`.
+
+   **Settled** (2026-09-29, on `3d12ca2`). Line numbers are this commit's. **Every
+   `EncoreSection.jsx` line past `:105` sits 13 lower than in step 1's census**, since the helper
+   added 13 lines. So `:1473` → `:1486`, `:3336` → `:3349`, `:20106` → `:20119`, and the four Grain
+   masks are now `:1667` / `:3913` / `:5263` / `:5959`.
+   - **The constant.** `DISTRESS_SVG`, `data.js:16`. It is not exported, and it sits *above*
+     `THEMES`, because `THEMES` reads it (a `const` below would hit the TDZ at module eval). It holds
+     step 2's bytes, readable and single-quoted. `THEMES[2]` builds the CSS value once, with
+     `` `url("data:image/svg+xml,${encodeURIComponent(DISTRESS_SVG)}")` ``. That is **1,185**
+     characters. Step 2's 1,187 was its harness's `k4='-0.600'`: the same value, two bytes longer.
+     `encodeURIComponent` also turns the `#` in `url(#n)` into `%23`, so it cannot be read as a
+     fragment. `photos.js` is untouched.
+   - **The key: one object, image and tile size together.** It is `THEMES[2].distress =
+     { image, size: '4em 4em' }` at `data.js:138`. `sectionVm` copies it as `distress: T.distress`
+     beside `faceK`, at `EncoreBuilder.jsx:344`, so it is undefined on every other theme. The size
+     rides with the image because it was tuned with A's density. If B is ever reopened, it has a
+     3 em tile and only `data.js` would change. `EncoreSection` never knows which tile it has.
+     Editorial's per-section `schemes` spread cannot reach it, because no scheme carries the key.
+   - **The helper.** `distressed(s, style)` is at `EncoreSection.jsx:114`, beside `faced` /
+     `facedLh`. With the key set, it returns `{ ...style }` plus `maskImage`, `WebkitMaskImage`,
+     `maskSize` and `WebkitMaskSize`. Otherwise it returns **the same object**, not a copy, so no
+     other theme's render can move. It sets no repeat or position, because both are the defaults.
+     - The prefixed keys are **capital-W** `WebkitMask*`. React warns "Unsupported
+       vendor-prefixed style property" for a lowercase `webkit…` in a style object.
+       `webkitMaskImage` is the CSSOM name, which is what the digest reads, and Chrome mirrors the
+       unprefixed value into it anyway.
+     - The mask keys spread *after* the style, so a caller cannot shadow them by accident.
+     - It has no call sites.
+   - **Positive control.** On a Grunge header `h1` on :5173 (desktop), `THEMES[2].distress` was set
+     by hand. `maskImage` and `webkitMaskImage` both computed to the `url("data:image/svg+xml,%3Csvg…`
+     value, 1,185 long, and `maskSize` computed to `486px 486px` (4 × 121.5). Drawn to a 480 px
+     canvas, the tile cuts **6.70%** at alpha < 0.5, which is step 2's 6.7%. The bytes are A's.
+   - **Decided: the wordmark's gate is an opt-out flag on `Wordmark`, which `NavBar` forwards.**
+     - `Wordmark`'s Grunge arm (`:589`) is Display/Title by its own default, so by key it is *in*.
+       `NavBar`'s 390 `'28px'` (`:1486`) is the same Display/Title.
+     - The one Grunge caller that overrides it with a label key is header 4's `NavBar` at `:3349`,
+       with `nameSize={… s.labelLg}`. That call site says so by passing **`clean`** beside the size
+       it chose. `NavBar` takes `clean` and hands it to `Wordmark`, and `Wordmark` spreads
+       `distressed` on its name `span` unless `clean` is set.
+     - Deriving the flag inside `NavBar` from `nameSize == null` was rejected, because it is step
+       1's trap one level up: a future caller passing a title-size `nameSize` would silently come
+       out clean. The flag has to be named where the key is chosen, which is the rule every other
+       site follows.
+     - The plumbing is **step 4's layout-1 commit**, not this one. A `Wordmark` that reads the flag
+       is a call site.
+     - The other `Wordmark` / `NavBar` callers: `:3531` is `HeaderV3`'s Retro / Pop / Editorial
+       path (Grunge returns at `:3302`, inside its `(s.lime || s.grunge)` block), and `:3590` /
+       `:3650` are `HeaderV4` / `HeaderV5`, the photographic family. None reaches Grunge.
+   - **A census miss, found here for step 4.** `NavMenu`'s open panel, `:694`, renders
+     `<Wordmark s={s} logo glyph={27} …/>` with no `size`, so under Grunge it is the Display/Title
+     default (28 px narrow) and *in* by key. It needs no flag. The panel draws only live, with the
+     burger open, so no digest sees it: step 4 checks it by hand, with the sent titles. Its links are
+     `labelStyle(s, s.dispSm, …)`, a label site, so they stay clean by the cut.
+   - **Proof: 0 of 660 per surface, on every theme, Grunge included.** This used step 0's recipe:
+     a worktree of `739f060` on :5174 (its source equals `95d109a`'s, since steps 0–2 touched only
+     `plans/` and `scripts/`), this branch's `digest.mjs`, themes 0–4. The tree ran on the
+     long-running :5173, normalised by step 0's `sed` on both sides.
+     - Bare: **0 of 660**.
+     - `EXTRA='&live=1'`: **0 of 660**.
+     - That is 132 files per theme per surface, and no row in either label carries `svg+xml`.
 4. **The sites**, layout by layout (1, 2, 3, 4), one commit each. After-diff per layout: Grunge
    files at that layout's arch, **mask columns only**, no text, geometry, colour or font row
    moving. Themes 0, 1, 3 and 4: 0.
