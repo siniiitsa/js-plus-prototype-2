@@ -911,10 +911,10 @@ function Kicker({ s, color }) {
 // `inline` keeps the two words on one line until the container forces a wrap —
 // the §10.2 hero sets "Kai Mercer" as a single line on desktop and tablet and
 // lets it break naturally on mobile.
-// `worn` takes Grunge's distress mask (`distressed`) on the h1, one tile across
-// both tones — opted into by the header whose call chooses the size, as
-// Wordmark's `clean` opts out (plans/grunge/display-face.md, step 4).
-function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, lh, inline = false, worn = false }) {
+// Every title is a display head, so it always takes Grunge's distress mask
+// (`distressed`, a no-op elsewhere) on the h1: one tile across both tones
+// (plans/grunge/display-face.md, step 4).
+function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, lh, inline = false }) {
   const t = s.heroTitle || ''
   const i = t.indexOf(' ')
   const a = i === -1 ? t : t.slice(0, i)
@@ -930,7 +930,7 @@ function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, 
     textTransform: s.grunge || s.editorial ? 'uppercase' : undefined,
   }
   return (
-    <h1 style={worn ? distressed(s, face) : face}>
+    <h1 style={distressed(s, face)}>
       <span style={{ ...part, color: twoTone ? (toneA || s.tx) : undefined }}>{a}</span>
       {b && <span style={{ ...part, color: twoTone ? (toneB || s.ac) : undefined }}>
         {inline ? ' ' : ''}{b}
@@ -1767,7 +1767,7 @@ function HeaderV0({ s }) {
             <Title s={s} size={ed && !s.mob ? `min(${tk.dispXl}, calc(100cqi / ${s.navNameEms}))` : tk.dispXl}
                    twoTone={!lime || grunge} color={ed ? ink : lime && !grunge ? s.ac : undefined}
                    toneA={grunge ? s.tx : s.paper} toneB={s.ac} inline={!s.mob || grunge || ed}
-                   lh={0.75} align={centred ? 'center' : 'left'} worn />
+                   lh={0.75} align={centred ? 'center' : 'left'} />
           </div>
         </div>
 
@@ -2098,7 +2098,7 @@ function HeaderV1({ s }) {
         {/* Grunge's title is two-tone — `sem/text/2` then `text/1`, the hero's
             own split — where Lime's is one tone. */}
         <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
-               twoTone={grunge} toneA={s.tx} toneB={s.ac} worn />
+               twoTone={grunge} toneA={s.tx} toneB={s.ac} />
         <p style={{
           margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac, width: '100%',
         }}>{s.subtitle}</p>
@@ -2735,7 +2735,7 @@ function HeaderV2({ s }) {
     const identity = (
       <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
         <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
-               twoTone={grunge} toneA={s.tx} toneB={s.ac} worn />
+               twoTone={grunge} toneA={s.tx} toneB={s.ac} />
         <span style={row(u(8))}>
           {/* Editorial's dot is `sem/text/2`, the location's own paper, where
               the twins' is the accent. */}
@@ -3255,10 +3255,10 @@ function HeaderV3({ s }) {
       })}>
         {/* Display/Title in `scheme/1/text2`, pale — the frame types
             "DJ · LIVE ACT", so the caps are the CSS's (Retro's reading). */}
-        <span style={{
+        <span style={distressed(s, {
           fontFamily: s.display, fontSize: faced(s, kicker), lineHeight: facedLh(s, 1.1),
           letterSpacing: s.dls, color: grunge ? s.bg : s.tx, textTransform: 'uppercase',
-        }}>{s.kicker}</span>
+        })}>{s.kicker}</span>
         {/* The 1440 master hand-breaks the name after its first word; both
             narrow masters set it `w-[min-content] min-w-full`, one line at
             their own sizes. `inline` at narrow only, Retro's reading. The .75
@@ -5189,11 +5189,11 @@ function Bio({ s }) {
         {/* The 572.9 measure is on the text node at 1440 and 768 and is what
             breaks the head — three lines at 1440, two at 768; the 390 master
             states the full 370. */}
-        <h2 style={{
+        <h2 style={distressed(s, {
           margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispXl), lineHeight: facedLh(s, 0.75),
           letterSpacing: s.dls, color: s.bg, ...upper,
           maxWidth: s.mob ? undefined : u(572.9), wordBreak: 'break-word',
-        }}>{s.title}</h2>
+        })}>{s.title}</h2>
         {/* The Tags instance's own 457 at 1440 and 768 (six chips wrap to two
             rows in it, as the frames show), the full measure at 390. */}
         {s.showTags === 'show' && (
@@ -5283,10 +5283,10 @@ function Bio({ s }) {
             <div style={col(u(16), { alignItems: 'flex-start' })}>
               {/* Wraps, the layout-3 card's call: at leading 1 a clip would cut
                   the descenders off at the baseline. */}
-              <p style={{
+              <p style={distressed(s, {
                 margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
                 letterSpacing: s.dls, color: grunge ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
-              }}>{brand()}</p>
+              })}>{brand()}</p>
               {meta}
             </div>
             <div style={{
@@ -7735,10 +7735,10 @@ function Media({ s }) {
     const nowPlaying = (
       <div style={row(u(14), { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
         <span style={col(u(4), { flex: '1 1 auto', minWidth: 0 })}>
-          <span style={{
+          <span style={distressed(s, {
             fontFamily: s.display, fontSize: u(faced(s, tk.title)), lineHeight: facedLh(s, 1.1),
             letterSpacing: s.dls, color: s.ac, ...clamp2, ...disp,
-          }}>{now.track}</span>
+          })}>{now.track}</span>
           <span style={{
             fontFamily: s.body, fontSize: u(tk.body), lineHeight: 1.4,
             letterSpacing: s.dls, color: s.tx, ...clip,
@@ -7841,10 +7841,10 @@ function Media({ s }) {
             : `${u(desk ? 156 : 100)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 156 : tab ? 106 : 110)}`,
           ...col(u(s.mob ? 20 : grunge && tab ? 66 : 56)),
         }}>
-          <h2 style={{
+          <h2 style={distressed(s, {
             margin: grunge && tab ? `0 0 0 ${u(-26)}` : 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
             lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...disp,
-          }}>{s.title}</h2>
+          })}>{s.title}</h2>
           <div style={{
             ...(s.mob ? col(u(20)) : row(u(desk ? 112 : 56), { alignItems: 'stretch' })),
             width: '100%',
@@ -10214,11 +10214,11 @@ function Pricing({ s }) {
       const limeServiceRow = (t, i) => (
         <div key={t.n} style={limeRow(i === s.tiers.length - 1)}>
           {!!t.name && (
-            <span style={{
+            <span style={distressed(s, {
               fontFamily: s.display, ...disp,
               letterSpacing: s.dls, overflowWrap: 'break-word', textTransform: 'uppercase',
               ...(desk ? { width: u(409), flex: 'none' } : { width: '100%' }),
-            }}>{t.name}</span>
+            })}>{t.name}</span>
           )}
 
           <div style={col(u(14), {
@@ -10269,10 +10269,10 @@ function Pricing({ s }) {
                 <span style={{
                   fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
                 }}>from</span>
-                <span style={{
+                <span style={distressed(s, {
                   fontFamily: s.display, ...disp,
                   letterSpacing: s.dls, overflowWrap: 'break-word', minWidth: 0,
-                }}>{t.price}</span>
+                })}>{t.price}</span>
               </span>
             )}
             {/* An emptied `rowCta` drops the pill, as at layouts 1 and 3
@@ -12474,12 +12474,12 @@ function Repertoire({ s }) {
                   justifyContent: 'space-between', alignItems: 'baseline',
                   overflow: 'hidden',
                 })}>
-                  <span style={{
+                  <span style={distressed(s, {
                     fontFamily: s.display, fontSize: titleSize, lineHeight: facedLh(s, 1.1),
                     letterSpacing: s.dls, color: ink, minWidth: 0,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     ...upper,
-                  }}>{sg.title}</span>
+                  })}>{sg.title}</span>
                   {sg.artist && (
                     <span style={{
                       fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
@@ -12509,11 +12509,11 @@ function Repertoire({ s }) {
             background: lime3, borderRadius: u(60),
             padding: s.mob ? `${u(40)} ${u(30)}` : u(tab ? 50 : 60),
           })}>
-            <h2 style={{
+            <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
               lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: ink,
               ...upper,
-            }}>{s.title}</h2>
+            })}>{s.title}</h2>
             <div style={col(u(24), grunge && desk ? { padding: u(32) } : undefined)}>
               <span style={bodyLg}>All songs · A–Z</span>
               {desk ? (
@@ -14414,10 +14414,10 @@ function Gallery({ s }) {
                 fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
                 letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow,
               }}>Media</span>
-              <h2 style={{
+              <h2 style={distressed(s, {
                 margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
                 lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.bg, ...disp,
-              }}>{s.title}</h2>
+              })}>{s.title}</h2>
             </div>
             {s.mob
               ? <div style={col(u(50))}>{card}{rail}</div>
@@ -16635,7 +16635,7 @@ function Calendar({ s }) {
                   alignItems: right ? 'flex-end' : 'flex-start',
                   textAlign: right ? 'right' : 'left', minWidth: 0,
                 })}>
-                  <span style={st.big ? disp(titleSize, 1.1, { color: s.bg, textTransform: 'uppercase' }) : smallCaps}>{st.label}</span>
+                  <span style={st.big ? distressed(s, disp(titleSize, 1.1, { color: s.bg, textTransform: 'uppercase' })) : smallCaps}>{st.label}</span>
                   <span style={body(s.bodyLg, 1.5, {
                     opacity: st.ph ? 0.45 : undefined, overflowWrap: 'anywhere',
                   })}>{st.value}</span>
@@ -16654,7 +16654,7 @@ function Calendar({ s }) {
           cursor: onClick ? 'pointer' : undefined,
         })}>
           <span style={col(u(2), { minWidth: 0 })}>
-            {big && <span style={disp(titleSize, 1.1, dim ? { opacity: 0.38 } : null)}>{big}</span>}
+            {big && <span style={distressed(s, disp(titleSize, 1.1, dim ? { opacity: 0.38 } : null))}>{big}</span>}
             {sub && <span style={body(s.bodySm, 1.4)}>{sub}</span>}
           </span>
           {end && (
@@ -16800,7 +16800,7 @@ function Calendar({ s }) {
         })}>
           {wSent ? (
             <>
-              <p style={{ margin: 0, ...disp(titleSize, 1.1) }}>{W.sentTitle}</p>
+              <p style={distressed(s, { margin: 0, ...disp(titleSize, 1.1) })}>{W.sentTitle}</p>
               <p style={{ margin: 0, ...body(s.bodyMd, 1.5) }}>{W.sentBody}</p>
               <span style={body(s.bodyLg, 1.5, { fontWeight: 700, overflowWrap: 'anywhere' })}>{s.calEmail}</span>
               <span onClick={onAgain} style={{
@@ -16813,7 +16813,7 @@ function Calendar({ s }) {
           ) : (
             <>
               {stepper}
-              <p style={{ margin: 0, textAlign: 'center', ...disp(titleSize, 1.1) }}>{wCur.title}</p>
+              <p style={distressed(s, { margin: 0, textAlign: 'center', ...disp(titleSize, 1.1) })}>{wCur.title}</p>
               <p style={{ margin: 0, textAlign: 'center', ...body(s.bodySm, 1.4) }}>{wCur.line}</p>
               {stepBody}
               {buttons}
@@ -16830,7 +16830,7 @@ function Calendar({ s }) {
           background: grunge ? s.box3 : s.box2,
           borderRadius: u(grunge && desk ? 15 : s.mob ? 30 : 60), padding: panelPad,
         })}>
-          <h2 style={{ margin: 0, ...disp(s.dispLg, 0.89, { color: s.ac }) }}>{s.title}</h2>
+          <h2 style={distressed(s, { margin: 0, ...disp(s.dispLg, 0.89, { color: s.ac }) })}>{s.title}</h2>
           <div style={desk
             ? {
               display: 'grid', gridTemplateColumns: 'minmax(0, 680fr) minmax(0, 478fr)',
@@ -20124,10 +20124,10 @@ function EventsMap({ s }) {
                     head row's chip stays on one line: a 390 cell is 159 wide. */}
                 {!!st.label && <span style={{ ...chipL, whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{st.label}</span>}
                 {!!st.value && (
-                  <span style={{
+                  <span style={distressed(s, {
                     fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
                     color: G.num, ...upper,
-                  }}>{st.value}</span>
+                  })}>{st.value}</span>
                 )}
                 {!!st.sub && <span style={bodySmL}>{st.sub}</span>}
               </div>
@@ -20146,10 +20146,10 @@ function EventsMap({ s }) {
 
       return (
         <div style={col(desk ? u(56) : '30px')}>
-          <h2 style={{
+          <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
             lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...upper,
-          }}>{s.title}</h2>
+          })}>{s.title}</h2>
 
           <div style={col(u(16))}>
             <div style={{
@@ -22398,12 +22398,12 @@ function Testimonials({ s }) {
               taken at desktop too, where SPACE_BETWEEN states none. */}
           <div style={row(u(s.mob ? 30 : 32), { alignItems: 'flex-end' })}>
             {!!s.title && (
-              <h2 style={{
+              <h2 style={distressed(s, {
                 margin: 0, flex: '1 1 0', minWidth: 0,
                 fontFamily: s.display, ...disp(s.dispLg, 0.89),
                 letterSpacing: s.dls, color: G.ink,
                 overflowWrap: 'break-word',
-              }}>{s.title}</h2>
+              })}>{s.title}</h2>
             )}
             {paging && (
               <div style={row(u(5), { flex: 'none', marginLeft: 'auto' })}>
@@ -24777,9 +24777,9 @@ function EnquiryForm({ s }) {
           // s.live. No frame draws this state: the title is Display/Title in
           // the accent and the address Body/LG, Retro's inventions.
           <>
-            <h3 style={disp(title, 1.1, {
+            <h3 style={distressed(s, disp(title, 1.1, {
               margin: 0, color: s.ac, overflowWrap: 'break-word',
-            })}>{s.formSentTitle}</h3>
+            }))}>{s.formSentTitle}</h3>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formSentBody}</p>
             {/* Plain text, not a second mailto: the fallback for a browser
                 that opened nothing. */}
@@ -24855,12 +24855,12 @@ function EnquiryForm({ s }) {
         <div style={{
           boxShadow: grunge ? `inset 0 -1px 0 ${ring}` : hairline, paddingBottom: u(12), width: '100%',
         }}>
-          <h2 style={disp(s.dispLg, 0.89, {
+          <h2 style={distressed(s, disp(s.dispLg, 0.89, {
             margin: 0, color: s.ac, overflowWrap: 'break-word',
-          })}>{s.title}</h2>
+          }))}>{s.title}</h2>
         </div>
         {s.formSub && (
-          <span style={disp(title, 1.1, { textTransform: 'uppercase' })}>{s.formSub}</span>
+          <span style={distressed(s, disp(title, 1.1, { textTransform: 'uppercase' }))}>{s.formSub}</span>
         )}
         <div style={{
           display: 'grid', width: '100%', gap: u(desk ? 40 : 32),

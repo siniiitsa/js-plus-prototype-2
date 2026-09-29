@@ -255,7 +255,9 @@ licence point alone argues for A.
      (`:20106`, 5 px and 2 px). Anton's text box is 46 px in their 41 px line box, and the mask
      clips to the border box. `mask-clip: no-clip` changed nothing in this Chrome (151). Padding
      plus a negative margin would move a geometry row, which step 4's after-diff forbids, so step
-     4 names the fix before making it.
+     4 names the fix before making it. *Superseded by step 4's "Settled, layout 4":* the line
+     box was not what clipped. A glyph's side bearing overhangs the box horizontally, and that
+     is true of the whole face.
    - **The four existing masks** (`:1654`, `:3900`, `:5250`, `:5946`) are all `Grain` layers.
      No text element sat under any mask in the 264 renders, and no display site is one of them.
    - **Named for the user at step 2, not decided here: label-face sites at `title` size.** Five
@@ -730,6 +732,100 @@ licence point alone argues for A.
      eyebrow, the paragraph, the price unit, the bookings line, the address and *Write another*
      read `none`. The sent state did not survive the resize to 390, so the submit was repeated
      there. No page errors. In the 390 shot the head is scuffed but reads.
+
+   **Settled, layout 4** (2026-09-30, on `a6c7d7e`). Step 4 is finished. This commit also adds
+   and removes no line (44 lines changed in place, the `worn` collapse included), so **the +22
+   offset from step 1's census still holds for the sweep**.
+   - **The sites, twenty-one spreads.** Each is `distressed(s, …)` round the setter's whole
+     style:
+     - header 4's kicker `span` (`:3258`). Its `Title` (`:3267`) passes nothing and takes the
+       mask through the collapse (below). The location (`:3275`) is `list` and stays clean, as
+       does the `NavBar` wordmark (`:3358`, `clean`, layout 1's plumbing);
+     - bio 4's `h2` (`:5192`, `dispXl`) and name `p` (`:5286`). `brand()`'s inner span is left
+       alone, because the `p` is the setter;
+     - media 4's now-playing `span` (`:7738`, `tk.title`) and `h2` (`:7844`). The tile names
+       (`:7810`, `tk.list`) stay clean;
+     - pricing 4's name (`:10217`) and price (`:10272`). Its `disp` (`:10200`) is an object
+       spread inside each literal, so each literal is wrapped whole;
+     - repertoire 4's song titles (`:12477`, `titleSize`) and `h2` (`:12512`). The artist
+       (`:12484`) is `list`;
+     - gallery 4's `h2` (`:14417`);
+     - calendar 4's card head (`:16638`, the `st.big` arm alone, so `smallCaps` stays clean),
+       big value (`:16657`), sent title (`:16803`), step title (`:16816`) and `h2` (`:16833`),
+       each `distressed(s, …)` round `disp(…)` or round the `{ margin: 0, ...disp(…) }` literal.
+       The Back / Next Step pills (`:16765`, `pill` → `disp(s.list …)`) stay clean;
+     - map 4's stat values (`:20127`, the ink edge below) and `h2` (`:20149`);
+     - testimonials 4's `h2` (`:22401`);
+     - form 4's sent `h3` (`:24780`), `h2` (`:24858`) and `sub` (`:24863`), each
+       `distressed(s, disp(…))`. The `caps` box labels (`:24707`) and the submit `pill`
+       (`:24724`) stay clean.
+   - **`worn` is gone.** `Title` (`:917`) lost the prop and spreads `distressed(s, face)`
+     unconditionally (`:933`). The comment above it (`:914`–`:916`) was rewritten in its three
+     lines, and the three callers that passed it (`:1770`, `:2101`, `:2738`) no longer do. Every
+     `Title` call site is now the same shape. On Retro, Pop and Editorial (card 4's Retro
+     `HeaderV3` included), the helper returns the style object itself. Header arch 0, 1, 2, 4
+     and 5 digest 0, which proves the collapse moved no header that `worn` had already masked.
+   - **Decided (user call, 2026-09-30): map 4's ink edge is accepted as a named diff.** The
+     stat values take the mask like every other site, and nothing moves geometry.
+     - **The mechanism, corrected.** Step 1 put it down to Anton's 46 px text box in a 41 px line
+       box. That is wrong: the vertical overflow clips nothing. A glyph's side bearing overhangs
+       its box **horizontally**, and the mask clips to the border box.
+     - **Measured** with a solid mask (`linear-gradient(#000,#000)`) diffed against none on map
+       arch 3, in a one-off puppeteer probe that was deleted after. At desktop, "48" loses one
+       column at x −1 (−0.5 at DPR 2) over rows 24–28 of 41, where the 4's crossbar tip runs
+       past the left edge. "Manchester, UK" loses one column at x 193 of 193 over rows 31–32,
+       from the K's leg. That comes to 5 and 2 px at DPR 1, and 8 and 4 at DPR 2. Tablet and
+       mobile lose nothing.
+     - **It is face-wide.** The seeded copy hits it only here, but map 4's own `h2`, set to
+       "4 BLOCK" / "48 TRACK", clips 1–2 px at its right edge at desktop and 768. So any masked
+       head whose last glyph overhangs clips the same way.
+     - **Why accept.** The sliver is at most 1 CSS px, one column, and it sits inside the
+       texture's own noise, since the tile already cuts 6.7% of every glyph. Neither the digest
+       nor mask-cols can see it.
+     - **The options not taken.** A local `paddingInline` / `marginInline` bleed at `:20127` would
+       move x and w on four rows and patch one seeded instance of a face-wide edge. The same
+       bleed in `distressed()` would move every masked row in layouts 1–3 and break "a mask
+       moves no geometry". Leaving the values clean by key would put clean numerals under a
+       distressed `h2`.
+   - **Proof, per step 0's recipe, with layout 3's port.** Both :5173 and :5174 served this tree,
+     so the baseline, a worktree of `a6c7d7e`, ran on **:5175**, through the `517[345]`
+     normaliser. The tree ran on :5173. Themes 0–4, 132 files each per surface.
+
+     | Theme | Bare | `&live=1` |
+     |---|---|---|
+     | 0, 1, 3, 4 | 0 of 132 each | 0 of 132 each |
+     | 2 | **30 of 132** | **30 of 132** |
+
+     - **The 30 are exactly step 1's layout-4 list** × 3 widths: header arch 3 and the nine
+       sections at arch 3. It is the same 30 files on both surfaces.
+     - **`mask-cols.mjs`: 0 failures on both surfaces.** 117 rows moved per surface, all 117 new
+       masks, each differing only in the four mask columns with `maskSize` 4 × `fontSize`, and
+       all text tags. The two surfaces moved the same `TAG@size` sets. The `linear-gradient` rows
+       are 14 per surface on both sides.
+     - **The sizes that moved**, as faced px:
+       - the `H1` at 121.5 / 71.25 / 39 (`dispXl`) and the kicker at 22.14 / 21 / 19.5;
+       - bio's `h2` at 121.5 / 71.25 / 39 (`dispXl`) and its name at 30.75 / 30 / 22.5;
+       - `dispLg` `H2`s at 80.25 / 60.75 / 34.5;
+       - `dispSm` (pricing's name and price, map's stat values at desktop and 768) at 30.75 / 30
+         / 22.5;
+       - the title-size sites (repertoire's song titles, calendar's card head, big value and
+         step title, map's 390 stat values, form's `sub`) at 22.1 / 21 / **19.5**. Media's
+         now-playing is 22.1 / 21 / 21, because `tk.title` is 21 at 390.
+
+       Nothing under 19.5 took the mask.
+   - **By hand, the titles no digest sees.** Grunge card 3 was published fresh at each width
+     through a one-off puppeteer script, deleted after: Publish → *Open*, `page.once('popup')`,
+     trusted clicks, and `mailto:` clicks `preventDefault`ed.
+     - **Calendar 4's wizard.** It was walked through step 1 → 3 with trusted clicks on Next
+       Step, with step 3's boxes filled and Send Enquiry clicked. All three step titles ("What's
+       the occasion?", "Tell us the details", "How do we reach you?") and the sent title
+       (`W.sentTitle`, "Check your mail app") carry the mask, 1,185 characters, at 22.125 px with
+       `88.5px 88.5px` at 1440, 21 / `84px` at 768 and 19.5 / `78px` at 390.
+     - **Form 4.** After a filled submit, the sent `h3` carries the same at the same sizes.
+     - **Beside them.** Calendar 4's `h2` and form 4's `h2` and `sub` carry the mask as well.
+       *Start again*, Send Enquiry, *Write another* and "What happens next" (15 / 14.25 / 13.5 px)
+       read `none`.
+     - No page errors. In the 390 shots both sent heads are scuffed but read.
 5. **The sweep.**
    - A full digest against `main` (port normalised), all categories × themes 0–4 × three widths
      × canvas and `live=1`. The only diffs allowed are Grunge mask columns.
