@@ -1,0 +1,1287 @@
+# Grunge layout 4 QA fixes — bug-by-bug plan
+
+Working checklist for the tester's batch against the **Grunge template, layout 4** (card 4 of the
+setup modal, *Stacked*): JP-076 … JP-084. It works like
+[`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md): **one entry per session, with context cleared
+between sessions**, and each session writes what it settled back into this file.
+
+**Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then *How each
+session runs* and *Verification harness* in `../retro/qa-fixes.md` (the `&cj=` / `&who=` harness),
+then the memory notes `verifying-the-published-tab` and `browser-tool-choice`.
+[`layout-4.md`](./layout-4.md) holds the Figma node ids of every Grunge layout-4 frame (its
+*Sections* table, with Lime's and Retro's twins beside them, and *Grunge's layout-4 mode*). The
+desktop form is the main component `725:2990`, since the 1440 page carries no form instance.
+Editorial has no fitted layout 4. The shapes the entries copy:
+- JP-052, JP-053 and JP-054 in [`../lime/layout-4-qa-fixes.md`](../lime/layout-4-qa-fixes.md):
+  the wizard's summary, the wizard's mailto and `pageEmail()`, and a per-layout seed for the
+  form's copy;
+- JP-054's retest in [`../lime/retest-qa-fixes.md`](../lime/retest-qa-fixes.md): `FORM_FIELDS_4`,
+  a layout-4 seed gated on the absent key;
+- JP-065 and JP-070 in [`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md): a frame claim re-seated
+  as a field over its derived fallback; `HEADING_3`, a per-layout button seed (`rowCta`) and a
+  name-derived head (`formHeading3()`);
+- JP-071 there, and JP-059's census in [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md): labels
+  are vocabulary, and a control is not a label;
+- JP-051 and JP-052 for the repeater shape: `SlotsField`, a `*_KEYS` beside the seed, `blankRow`
+  (CLAUDE.md's repeaters paragraph);
+- `../retro/layout-4.md`: open question 6 (the map's stat wall), open question 8 (the
+  repertoire's head) and the `#` rule at `:913`–`915` (the A–Z rail). These are the fit calls that
+  four of these tickets reopen.
+
+Branch: **`grunge-layout-4-qa-fixes`, forked from `main`** (`65dd1bc`, after PR #40). One commit
+per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
+
+**Every report reproduces on HEAD.** At triage (2026-09-29) the Pages build's `last-modified` was
+`Tue, 29 Sep 2026 08:18:02 GMT`, 8,754,810 bytes, which is byte-identical in size to `main`'s root
+`index.html` (`99ebc8a`, the Grunge layout-3 QA refresh). None is a stale-build echo.
+
+**Almost nothing here is Grunge's alone.**
+- **Editorial has no fitted layout 4.** Its card 4 is a placeholder that renders Retro's
+  `HeaderV3`, and every other section at `arch 3` renders **Retro's shared body** in Editorial's
+  Scheme 1 tokens, flat, as Pop does. So each layout-4 seam has two halves: the
+  `(s.lime || s.grunge)` block (Lime and Grunge) and Retro's `if (s.v3)` body (Retro, Editorial
+  and Pop).
+- **Grunge only: JP-080's idle dots.** Grunge's frame draws them white at .6, which reads grey;
+  the block inherited Lime's full-strength redraw (Lime's own dots are ink, and vanish).
+- **Every template: JP-076, JP-077 · JP-078, JP-079, JP-080 (the month and "Next:"), JP-082's
+  three controls, JP-083, JP-084 and JP-081's repertoire head.** Each is resolved in `sectionVm`
+  or drawn in both halves.
+- **JP-081's tags** reopen a user call (JP-037). Option A reaches every chip row on every
+  template; option B reaches Lime and Grunge.
+- **By design, a reply each: JP-081's media head, track names, bio prose and form head, JP-082's
+  labels, and JP-080's ×.** Each is a call already made and named in an earlier plan. The form head
+  is JP-054's, and Grunge's layout-4 pass left it as its open question 2.
+- **JP-082 has four halves**: the map, the Book Us wizard, the form and the bio. Its **labels** get
+  one question, JP-071's rule, in the replies entry. Its **three controls** (Send Enquiry, the
+  bio's Listen, the form's *Message* label) get entry 3. The map's **card names** go with the stat
+  wall (entry 7), whose shape decides them.
+
+## The report (translated)
+
+> **JP-076 — severity proposed, the call is ours — With the Enquiry Form deleted, both SEND
+> ENQUIRY pills in Book Us stop working.** Grunge → *Stacked* → the Enquiry Form's ⋯ menu →
+> Delete → Publish → Open → in Book Us walk steps 1–3, fill in the name and email → SEND ENQUIRY
+> (step 3's pill, or the right column's). Expected: a mail opens with the enquiry, as before the
+> section was deleted, or a clear message. Actual: nothing happens. The page does not change, no
+> mail opens and no message shows, though the pill looks live, so the visitor's enquiry is simply
+> lost. Cause (a hypothesis for the developer to confirm): the address comes from the Enquiry
+> Form's *Email address*, so with the section gone the pills have none. Control: with the form on
+> the page, both pills open a mail to bookings@kaimercer.co.uk carrying every answer. The Booking
+> Calendar's hints do not mention the limit. Not checked: a real mouse click, other templates.
+>
+> **JP-077 — The Events Map's stat cards are not the design's.** All three widths. Design:
+> RADIUS 120 / miles · standard; CITIES 21 / played in; GIGS YTD 48 / played this year; BASE /
+> MANCHESTER, UK / further on request. Build: COVERAGE / 12 MILE RADIUS (the badge's text) / 120 mi
+> standard · further on request; CITIES 2 / playing in; GIGS 5 / upcoming; and the fourth card
+> (BASED IN MANCHESTER) with no label and no caption. The card names are in the code; no field
+> holds them.
+>
+> **JP-078 — Emptying *Coverage* or *Based in* leaves empty cards.** The first card shows only
+> its name, COVERAGE, and the fourth becomes an empty frame. The section's other fields hide when
+> emptied, and the hints say nothing of this case.
+>
+> **JP-079 — The form's *What happens next* prints each step on one line.** In the design
+> (tablet and mobile) each step has a title and a second line: "Send your details / Date, type &
+> location". *Promises* takes one line per step; the separators —, | and : give no second line.
+>
+> **JP-080 — The map's gig row and pins differ from the design.** No "Next:" prefix; a › on the
+> right where the design has ×; the month reads "Jul" where the design reads "JUL". The map
+> draws a red pin and white dots; the design only grey dots.
+>
+> **JP-081 — Default texts differ from the design:** "Five worth your ear." for "Six worth your
+> ears"; "12 Songs" for "Repertoire"; "Contact Us" for "Kai Mercer"; five tags for six (no "All
+> Access"); and the track names, the Bio text and the steps' texts.
+>
+> **JP-082 — Labels the editor cannot edit:** the Events Map's stat card names and "Travel &
+> reach"; every text of the Book Us wizard (What's the occasion?, Step x of 3, Type of event,
+> Guests, Next Step, Pick a date to enquire, Package › and the rest); the Enquiry Form's
+> *Message* label (every other box label is editable) and its "What happens next" head; the
+> Bio's "Listen ↗" link.
+>
+> **JP-083 — A song starting with a digit ("99 Problems") lands in a group "9", and the A–Z index
+> has no button for it.**
+>
+> **JP-084 — A long track title in the Media Player ends in an ellipsis that runs into the
+> previous-track button with no gap.**
+
+## Status
+
+| Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
+|---|---|---|---|---|---|---|
+| 1 | JP-081 · JP-082 (replies) | Media head, track names, bio prose, form head; the labels no field reaches | **By design, all of them**: "Six" counts the frame's filler tile; the tracks are layout 1's frame's; the prose's lead names the mock artist; "Contact Us" is JP-054's call; the labels are JP-071's | — (replies) | **yes** — the labels A / B, the form head A / B / C, the media head A / B, the prose and tracks A / B | open |
+| 2 | JP-076 | With the form deleted, both Send Enquiry pills do nothing | **Confirmed, shared.** A known state (JP-053) with no face and no fix path but the form; `BookPill`'s span keeps its pointer. **Proposed: Medium** | S–M | **yes** — 1 A (a calendar address that follows the form's) / B (one address); 2 (a) a panel note / (b) inert pills / (c) a visitor line | open |
+| 3 | JP-082 (controls) | Send Enquiry, the bio's Listen and the form's *Message* label have no field | **Confirmed, shared**: a submit, a link and a box label are not vocabulary. The census named Listen for this batch; *Message* is the one box label left a literal | S | **yes** — each: A (a field) / reply | open |
+| 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | open |
+| 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | open |
+| 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | open |
+| 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | open |
+| 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | open |
+| 9 | JP-081 (repertoire head) | "12 Songs" for "Repertoire" | **Named fit call** (Retro L4 open question 8), the precedent JP-070 reversed at layout 3; all three frames agree | S | **yes** — A (a `HEADING_4` arm) / B (reply) | open |
+| 10 | JP-081 (tags) | Five chips for the frame's six | **By design (JP-037, a user call)**, on a premise only two frames bear out | S (A) / M (B) | **yes** — A (six everywhere, reopens JP-037) / B (a Lime and Grunge layout-4 seed) / C (reply) | open |
+| 11 | — | End-of-pass sweep | — | S | — | open |
+
+**Why this order:**
+- The replies first, so a reply the user turns into a fix can be appended before the digests
+  start. JP-082's label rule is asked there once, since its labels sit in four sections.
+- Then the three entries whose seeded after-diff is zero. JP-076 goes before JP-082 (controls),
+  since both add calendar fields to `FIELDS.calendar` and `EditPanel`'s chain. JP-083 goes before
+  the repertoire head (entry 9), which is in the same branch.
+- Then the named diffs, 30 files each, smallest first. JP-084 (widths only), then JP-080, then the
+  stat wall, which moves the same map `arch 3` files as JP-080 and so digests against it landed.
+  Then JP-079, then the repertoire head.
+- The tags last: they reopen a user call, and option A moves every chip row on the header and the
+  bio (≈ 180 files).
+
+**"Decision needed"** means the entry lists options with a recommendation. The session starts by
+asking the user (one `AskUserQuestion`, up to four questions) and records the answer under
+**Decided** before writing code.
+
+## How each session runs
+
+As [`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md), with these differences:
+
+1. Re-check the *Evidence* line numbers. They are from the triage (2026-09-29, `65dd1bc`), and
+   every entry that lands moves them.
+2. **Themes per entry, always explicit.** `digest.mjs`'s default list is `0,2,3,4`, which
+   **skips Lime**. Every entry here digests **0–4**: the block entries move Lime and Grunge, and the
+   rest are the controls, or move too.
+3. Verify at **all three widths** and on **both surfaces** (canvas and `live=1`). Digest against a
+   **HEAD worktree** on :5174 (`node_modules` an APFS clone, `cp -Rc`, with its `.vite`
+   removed). Normalise the port in `background-image` URLs, and `\.jpg\?[^|]*` in `src` if :5173
+   has been running long enough to stamp photo URLs with `?t=`. **Prove the harness first** (the
+   worktree against the tree before the edit diffs to 0), and **name the expected after-diff
+   before writing code.**
+4. **The digest's text column is short** (40 characters). A longer string, or a one-glyph change
+   at the same width, needs a `textContent` read beside the digest. That covers the ticker's month,
+   the steps' second lines and the stat cards' subs.
+5. **Harness parameters these entries lean on:** `&cj=` (contents), `&email=` (the page's
+   enquiry address as the calendar reads it: an address, empty, or `none` for no form section),
+   `&tiers=`, `&who=` (the header's identity, as the bio and the map would read it), `&name=`
+   (the header's name), `&n=` (a list of that many generated rows for the section's repeater) and
+   `&today=` (opt-in; a `live=1` digest without it never moves with the date). Layout 4 composes
+   nothing, so `&column=` and `&page=2` have no work here.
+6. **A new or re-scoped field gets a measured `in`**: add a row to `source/scripts/reach.mjs`'s
+   `PROBES` (do not rebuild it) and write the `in` and the hint from what it prints. `in` is
+   0-based designs, so a layout-4 hit is design 3.
+7. **The real app is Grunge card 4** (*Stacked*), then Lime's card 4, then Retro's card 4 where the
+   entry reaches Retro's body, and Editorial's card 4 once where it does (Retro's body in Scheme 1
+   tokens). `node scripts/page-check.mjs Grunge 3,0,1,2` walks card 4 in full. Drive anything
+   live-only in the popup from the opener, per `verifying-the-published-tab`, with trusted
+   clicks: the tester did not check a real mouse click.
+8. Update the docs the entry names. Commit, fill in **Settled** and the status row, then print
+   the hand-off prompt for the next entry and stop.
+
+**Do not refresh the root `index.html` per bug.** The sweep does it once.
+
+**Two entries may add a repeater** (entry 7's `stats`, entry 8's `steps`). Whichever lands first is
+the **ninth** structured editor and updates CLAUDE.md's count and lists ("Eight list-shaped contents
+…", the `*_KEYS` list, the seed list); the second makes it ten.
+
+---
+
+## JP-081 · JP-082 — the replies
+
+One session, no code: one `AskUserQuestion` with four questions, then the reply lines written here.
+A reply the user turns into a fix becomes its own entry, appended before the sweep with its own
+Evidence, after-diff and Verify.
+
+### JP-082 (labels) — the labels no field reaches
+
+**Verdict: by design, JP-071's rule** (user call, 2026-09-28: the design's labels stay literals;
+a field per label is a product-wide label sweep and its own plan). Three things in the same report
+are not labels, so they get entry 3: Send Enquiry (the wizard's submit), the bio's Listen (a link
+the census named for this batch) and the form's *Message* label (the one box label still a
+literal). The map's four card names go with the stat wall (entry 7), whose shape decides them.
+
+**Evidence** (triage 2026-09-29, `65dd1bc`). Every wizard string is resolved in `sectionVm` onto
+`vm.calWizard`, shared by every template (`EncoreBuilder.jsx`):
+
+| Literal | Line | Kind |
+|---|---|---|
+| Event / Details / Contact (the step names) | `:1258`, `:1259`, `:1263` | label |
+| "What's the occasion?" (the frame's) · "Tell us the details" · "How do we reach you?" (ours) | the same | a step's heading, the wizard's own question |
+| "Step n of 3" | `:1283` | a counter over the steps |
+| Guests · Set length · Budget · Sound · Name · Email, their `ph`, and the summary's `eg` | `:1260`–`1264` | box labels over fixed boxes (JP-052), their hints, and the canvas's picture of a filled-in wizard |
+| "Type of event" · "Approx. date" · `dd / mm / yyyy` | `:1286`–`1287` | label |
+| Back · Next Step | `:1288` | navigation |
+| "Package ›" | `:1291` | a control's label |
+| "Pick a date to enquire" (`vm.calPrompt`, also the foot of layouts 1 and 3) | `:1236` | prompt |
+| "Not available. Pick another date" · "Type the date as dd / mm / yyyy" | `:1279`–`1280` | system message |
+| the sent title and body, *Start again*, the refusal prompt | `:1318`–`1323` | system message (the form's are literals too, `:1689`–`1692`) |
+| the mailto body's "Approx. date" / "Package" | `:1341`, `:1343` | label, raw |
+
+- The event types are already a field (`types`, `data.js:1550`, `in: [3]`). The summary's head is
+  the picked type (or `s.brand`) over the header's `location` (`EncoreSection.jsx:16142`,
+  `:16208`).
+- Step 1's copy is the frame's on every master: Grunge's `Frame 324` `964:73023` / `971:8139` /
+  `977:12366`, Lime's `964:72938` and Retro's `964:72843`. No frame draws steps 2 or 3.
+- The map's eyebrow "Travel & reach": `EncoreSection.jsx:20005` (the block) and `:20230` (Retro's
+  body), beside the `span` field ("Live · last 12 months").
+- The form's column head "What happens next": `vm.formStepsLabel`, `EncoreBuilder.jsx:1640`.
+
+**Decision.**
+- **A (recommended). Reply: by design**, JP-071's rule.
+- **B. A field each for the few that head a block**: the three step headings as one `area` field
+  (one per line); a *Panel title (layout 4)* for "Travel & reach", with the head row dropping when
+  both it and `span` are empty; a *Steps heading* for "What happens next" (only with entry 8's A,
+  where the column becomes the artist's list). Not recommended: it opens the sweep JP-071 deferred,
+  and the step headings ask for boxes the product fixes.
+
+### JP-081 (form head) — "Contact Us" where Grunge's frames print "KAI MERCER"
+
+**Verdict: a recorded user call, and an open question the user has not been asked.**
+- JP-054 (2026-09-23) seeded layout 4's head "Contact Us" on every template. Retro's and Lime's
+  1440 instances are retyped to it (their layer is still named "KAI MERCER"), and that retyping was
+  read as the authored copy, over the narrow masters' untouched default.
+- Grunge's page has **no desktop instance**. Its 1440 master is the main component `725:2990`, and
+  the component and both narrow instances print the component's default, "KAI MERCER".
+- Grunge's layout-4 pass named the diff and left it as open question 2 (`./layout-4.md:520`–`525`,
+  `:1360`–`1363`, `:1613`–`1619`): a head that is the artist's name on one template would be the
+  first theme-gated copy default.
+- Across the nine frames, **seven print "KAI MERCER"** (every narrow master, and Grunge's
+  component) and **two print "Contact Us"** (Retro's and Lime's desktop instances).
+- JP-070 (form) has since set the precedent for a head that names the mock artist
+  (`formHeading3()`, layout 3).
+
+**Evidence.**
+- `data.js:1098`: `FORM_HEADING_4`. `EncoreBuilder.jsx:252`–`255`: `HEADING_4.form`, resolved in
+  `sectionVm` at `:1037` and in `EditPanel`'s chain at `:3636`–`3637`. The layout-3 name arms:
+  `:1040` and `:3629`; `formHeading3` at `data.js:1760`.
+- The `heading` row's hint names layout 4's "Contact Us" (`data.js:1649`–`1654`).
+- The comments naming the diff: `EncoreSection.jsx:24550`–`24557` and `:24572`–`24574` (the
+  block), `:24785`–`24791` (the body).
+- Frames: the text "Contact Us" on a layer named `<KAI MERCER>` in `964:72940` and `964:72845`;
+  "KAI MERCER" in the other seven (Grunge `725:2990` / `971:8151` / `977:12378`, Lime `971:5627` /
+  `977:9201`, Retro `964:79477` / `977:8663`).
+
+**Decision.**
+- **A (recommended). Reply.** JP-054's call stands, and the *Heading* field edits the head. Open
+  question 2 closes on its default, with a line in the designer note.
+- **B. Grunge's layout-4 head from the name.** With `heading` absent, `T.name === 'Grunge' &&
+  d === 3` resolves `artistName`; the block upper-cases it. `EditPanel`'s chain carries the same
+  arm ahead of `HEADING_4` (the `formHeading3` pair). A typed head stops following the name, and
+  an emptied one stays empty. The first theme-gated copy default. Form `arch 3` × theme 2 × 3
+  widths × both surfaces = **6 files** (the `<h2>`'s text); confirm the head block's height holds.
+- **C. The name at layout 4 on every template**, the seven-of-nine reading. It reverses JP-054's
+  head for Retro and Lime, whose authored desktop says "Contact Us". 30 files. Not recommended.
+
+### JP-081 (media head) — "Five worth your ear." for "Six Worth Your Ears"
+
+**Verdict: by design, named three times.** The frame's sixth tile is a filler, a second "Roomtone /
+Hidden Sessions Vol. 2", so "Six" counts it over the seed's five tracks; the fit's reading is one
+tile per track.
+- Named at `../retro/layout-4.md:141`, `:380`–`382` and `:1571`, at `../lime/layout-4.md:410`–`412`,
+  and at `../lime/layout-4-qa-fixes.md:110`–`112`. The comment is at `EncoreSection.jsx:8130`–`8132`.
+- Layouts 1–3's frames read the seed's words (Grunge `964:58602` "Five worth \nyour ear.",
+  `964:64620` "Five Worth your ear", `964:68698` "Five worth your ear"). Layout 4's read "Six Worth
+  Your Ears" under Grunge (`964:72954` / `971:10395` / `977:12177`), Lime (`964:72858`) and Retro
+  (`964:72523` / `971:14889`).
+
+**Decision.**
+- **A (recommended). Reply**: a count in a head is the frame's claim, and an artist with six
+  tracks edits it.
+- **B. A count-derived layout-4 head**, "{n} worth your ears", spelled one to eight (`max: 8`), in
+  `sectionVm` and `EditPanel`. The seed then reads "Five worth your ears". Every template, 30 files;
+  every such head measured on one line at 1440.
+- **C. A `HEADING_4` arm "Six worth your ears".** Not recommended: false over five tracks.
+
+### JP-081 (bio prose and track names) — the product's own copy
+
+**Verdict: by design, both.**
+- **The bio.** Every layout-4 bio frame (Grunge `964:72945` / `971:7824` / `977:12045`, Lime
+  `964:72857` / `971:5307` / `977:8875`, Retro `964:72519` / `964:76446` / `971:14479`) differs from
+  ours in four seats:
+
+  | Seat | Frame | Ours |
+  |---|---|---|
+  | Prose | **one** paragraph: "Kai Mercer — the act you'll be working with on the night. DJ and selector based in Manchester. Five years of reading rooms…" | `para1` ("DJ and selector based in Manchester. Five years…") and `para2` ("Residencies at Roomtone and The Warehouse Project…"), two paragraphs |
+  | Meta row | "DJ & selector" | "DJ · Live Act" |
+  | Meta row | "Performing since 2021" | "Performing since June 2021" |
+  | Card name | "Staticyouth" | the artist's name |
+
+  The prose is `para1` behind a lead clause naming the mock artist. The kicker is the header's, one
+  seed at every layout (JP-061, user call, 2026-09-28). `since` has one seed, taken from layout 3's
+  frame. The name is JP-050's rule. Evidence: `data.js:967`–`970` (`DEFS.bioP1` / `bioP2`), `:1375`
+  (`para2`, `in: [2, 3]`), `:1388` (`since`); the block's prose at `EncoreSection.jsx:5263`–`5266`
+  and Retro's body at `:5469`–`5477`, whose comment ("the seeded `para1` verbatim") is not quite
+  right, since the masters lead with the name clause.
+- **The tracks.** `TRACKS` (`data.js:626`–`632`) is **layout 1's frame's** list (`964:58602`: LATE
+  LIGHTS / MANCHESTER AT 3AM / SLOW BURN / ECHO & THE FLOOR / ROOMTONE). The frames of layouts 2–4
+  suffix two of them ("Late Lights (Original Mix)", "Slow Burn (Edit)"), named at
+  `../editorial/layout-2.md:1100` and `../editorial/layout-3.md:1274`. Layout 4's grid adds the filler
+  sixth tile, and its sleeve names "Night Rain / Kai Mercer": F10's rule (`../retro/qa-fixes.md:148`),
+  the now-playing block names the cued track, and `FIELDS.media` has no now-playing field.
+
+**Decision.**
+- **A (recommended). Reply to both.** Correct the comment at `EncoreSection.jsx:5469`.
+- **B (the bio). A layout-4 seed, gated on the absent key**: `para1` at `d === 3` becomes
+  `${name} — the act you'll be working with on the night. ${DEFS.bioP1}`, derived like
+  `formHeading3()`, with `EditPanel`'s chain arm; `para2` unseeded at layout 4. Bio `arch 3` × themes
+  0–4 × 3 × 2 = **30 files**, and the first per-layout seed for a *paragraph*.
+- **B (the tracks). Suffix the seeds everywhere.** Layout 1's frame then differs, and at layout 4
+  "Late Lights (Original Mix)" truncates at 1440 on every template (−63 Retro, −85 Lime, −61 Grunge,
+  −122 Pop; −20 / −37 / −14 / −77 at 768), so it leans on JP-084's B. Per-layout track seeds are not
+  offered: a row carries art and audio, which are never re-seeded by index. Not recommended.
+
+**Decided.**
+- JP-082 (labels): —
+- JP-081 (form head): —
+- JP-081 (media head): —
+- JP-081 (bio prose and track names): —
+
+**Settled.** —
+
+Reply (JP-082, the labels): —
+
+Reply (JP-081, the form head, the media head, the bio prose and the track names): —
+
+---
+
+## JP-076 — with the Enquiry Form deleted, Book Us' Send Enquiry does nothing
+
+**Proposed severity: Medium.** The loss is silent, and sending enquiries is what the page is for.
+But reaching it takes a step the artist has to choose, deleting the Enquiry Form, and the seeded
+page works. The same state was already reachable, and accepted, by emptying the form's own address:
+the form's submit goes silent then too.
+
+**Verdict: confirmed, and a known state that has no face and no fix path.**
+- CLAUDE.md names it: with no form section, or an address `emailProblem()` refuses, both pills stay
+  spans, "the form's no-address state". JP-053 took the address from the form on purpose, and
+  turned down its option C, a calendar field of its own, as "a second copy of the one address the
+  whole page points at".
+- The ticket shows two gaps:
+  - **(a) Both pills still look live, and a click does nothing at all.** No check runs, nothing
+    walks to step 3, and no line appears.
+  - **(b) A page cannot have a working Book Us without an Enquiry Form.** The only fix path is to
+    add the form back.
+- **Every template.** The send seam is resolved above the layout-4 block and shared whole.
+
+**Evidence** (triage 2026-09-29, `65dd1bc`).
+- `data.js:1785`–`1796`: `pageEmail()` is `''` when no form section is on the page. `:1103`:
+  `FORM_EMAIL`. `:1882`–`1896`: `emailProblem()` and `emailAddr()`.
+- `pageEmail()` feeds five call sites: the published page (`EncoreBuilder.jsx:4340`), the canvas
+  (`:4557`, which passes `email` on to `EditPanel`, `LayoutPicker` and `AddComposer`) and the harness
+  (`preview.jsx:246`–`248`).
+- `EncoreBuilder.jsx:1311`–`1317`: `vm.calEmail = email`, `sectionVm`'s argument. `:1338`:
+  `vm.calMailto` composes on that `email`. `:1350`: `vm.calCheck`.
+- `EncoreSection.jsx`:
+  - `:16173`–`16178`: `sendHref` is `''` with no address, so `onSend` is `undefined`. Nothing checks
+    step 3 and nothing walks to it.
+  - `:16437`–`16439`: `sendLink` is null and `onNextTag = onSend`, so the last step's pill is a span
+    with no handler.
+  - Where the two pills are drawn:
+
+    | Pill | Lime / Grunge block | Retro's body |
+    |---|---|---|
+    | Step 3's Send | `:16703`–`16708` | `:16789`–`16795` |
+    | The foot pill (`BookPill ext={sendHref} onClick={onSend}`) | `:16769` | `:16890` |
+
+  - **Why it "looks active":** `BookPill`'s span keeps `cursor: 'pointer'` whether or not it has a
+    link or a handler (`:775`). The step-3 pill drops the pointer (`cursor: onNextTag ? 'pointer' :
+    undefined`) but is otherwise drawn live.
+- The form's own no-address state is the same rule, the Soundcloud rule: `EncoreSection.jsx:22549`–
+  `22555` (`href` `''` means no `onSubmit`, and a span).
+- **The panel says nothing about it.** `FIELDS.calendar` (`data.js:1527`–`1552`) has no address
+  field and no hint names the dependency. `FIELDS.form.email`'s hint (`:1678`–`1679`) names the
+  wizard, but that panel is gone once the form is deleted. `EditPanel` already receives `email`
+  (`EncoreBuilder.jsx:3527`) and only passes it to `LayoutPicker`.
+- A precedent for a panel note about a section that is not on the page: `LINK_GONE_HINT` and
+  `navGoneHint` (`EncoreBuilder.jsx:3417`–`3421`), and the Minimal nav's note above its select
+  (`:3662`).
+- Frames: no master draws Send Enquiry in a disabled state (Grunge `964:73034` / `971:8150` /
+  `977:12377`, Lime `964:72939`, Retro `964:72844`).
+
+**Decision** (one `AskUserQuestion`, two questions).
+1. **Where the address comes from.**
+   - **A (recommended). A calendar address that follows the form's until one is typed.**
+     - A `FIELDS.calendar` row `{ k: 'email', l: 'Email address', in: [3] }` with no static `d`,
+       resolved in `sectionVm` as `c.email !== undefined ? emailAddr(c.email) : email` (the page's
+       `pageEmail()`).
+     - `EditPanel` gets a chain arm (`f.k === 'email' && sec.cat === 'calendar' ? email`), so the box
+       shows the form's address while the key is absent: the `copyrightOf()` / `formHeading3()`
+       shape. The box is a `UrlInput` with `check={emailProblem}`.
+     - It reverses JP-053's C in part, and the chain answers JP-053's objection: by default there is
+       still one address, and a second exists only once the artist types it. The hint says so.
+     - It closes (b): with the form deleted, the box stands empty in the calendar's own panel, and
+       the artist can type an address there.
+     - Cost: once typed, the calendar's address stops following the form's. That is `copyright`'s
+       accepted behaviour.
+   - **B. Keep one address (JP-053).** The fix path is to add the Enquiry Form back; JP-073 returns
+     it to its seat, address and all. (b) is then a named limitation: Book Us cannot stand without an
+     Enquiry Form.
+   - **Not offered: keeping the deleted form's address alive** (`pageEmail()` falling back to
+     `st.removed.form`). It would make the tester's steps work unchanged, but the address would be
+     hidden state no panel shows or edits, and it stretches what `st.removed` is for.
+2. **How the no-address state shows.** Needed under A or B, since an emptied or refused address
+   still reaches it.
+   - **(a) (recommended). The panel says so.** At layout 4, while the resolved address is `''`, the
+     calendar's panel prints a line under the field (the `navGoneHint` precedent): "Send Enquiry needs
+     an email address. There's no Enquiry Form on the page — type one here." or its form-address
+     variant. The `types` / `email` hints and `FIELDS.form.email`'s hint name the dependency. The
+     published pills keep the Soundcloud rule, as the form's own submit does.
+   - **(b) Also draw both Send pills inert** while there is no address: no pointer, and the wizard's
+     refused .38, on both surfaces, since `vm.calEmail` is known on both. The form's submit then owes
+     the same state, which widens the entry to every form layout. Name it rather than take it quietly.
+   - **(c) A line for the visitor after a click.** Not recommended: the page would tell visitors it is
+     misconfigured.
+
+**Fix (A, (a)).**
+- `data.js`: the new row after `types`, with a hint. Correct `pageEmail()`'s comment and
+  `FIELDS.form.email`'s hint ("…and the Booking Calendar's layout-4 Send Enquiry, until the calendar
+  has an address of its own").
+- `sectionVm`: resolve the calendar's `email` ahead of `vm.calEmail` and `vm.calMailto` (`:1317`,
+  `:1338`).
+- `EditPanel`: the chain arm (`:3627`), and the no-address line under the field at design 3.
+- `preview.jsx`: nothing. `&cj={"email":…}` reaches the calendar's key, and `&email=` stays the
+  page's.
+- `BookPill`'s span pointer (`:775`) is left alone under (a): it is shared by every pill that lacks a
+  target, and the fix is (b)'s question.
+
+**Expected after-diff (named before the code): zero.** The seeded page carries the form and the
+calendar's key is absent, so it follows the form: calendar × every `arch` × themes 0–4 × 3 widths ×
+both surfaces = **0 files**. `&email=none` is also 0 under (a), since the pills were spans already;
+under (b) it is calendar `arch 3` × themes 0–4 × 3 × 2 = **30 files**, under `&email=none` only.
+
+**Verify.**
+- **Before the edit**, reproduce at `live=1&email=none`: both pills are spans with no handler, and
+  a click on the foot pill neither checks nor walks to step 3.
+- **The seed.** Digest calendar × themes 0–4 × 3 × 2: 0 files.
+- **Reach.** A `calendar.email` row in `PROBES` (`{ email: 'zq@example.test' }`, `live=1`, read off
+  the pills' `href`): layout 4 on all five templates.
+- **States** (`live=1`, three widths, themes 0–4):
+  - `&email=none&cj={"email":"me@band.co"}`: both pills are `mailto:me@band.co`, carrying JP-053's
+    whole body;
+  - `&cj={"email":""}` and `&cj={"email":"not-an-email"}`: spans;
+  - the key absent: the page's `&email=` still reaches the pills;
+  - the confirmation prints the calendar's own address.
+- **The tester's steps**, in the real app on Grunge card 4, with trusted clicks:
+  1. Enquiry Form ⋯ → Delete. The calendar's panel shows an empty *Email address* and the note.
+  2. Type `me@band.co`, Publish → Open (press *Start again* first if the popup is already open:
+     JP-053's trap).
+  3. Walk steps 1–3. Both pills open `mailto:me@band.co` with every answer.
+  4. Add the Enquiry Form back. With the calendar's key never typed, its box shows the form's
+     address again; once typed, it keeps its own. Undo after the delete restores the form, and the
+     pills follow it.
+  5. Then Lime's card 4, Retro's card 4 once, and Editorial's card 4 (Retro's body).
+
+**Docs.** CLAUDE.md's layout-4 wizard passage ("The address is the **enquiry form section's
+`email`** … with no form section … both pills stay spans"). The comments at `EncoreBuilder.jsx:1311`–
+`1316` and `EncoreSection.jsx:16038`–`16042` and `:16163`–`16171`. `pageEmail()`'s comment. A pointer
+on JP-053's Decided in `../lime/layout-4-qa-fixes.md` ("C taken in part by JP-076, as a
+follow-the-form chain").
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## JP-082 (controls) — Send Enquiry, the bio's Listen and the form's *Message* label
+
+**Verdict: confirmed, three controls, every template.** JP-071's rule is that a label names what
+stands beside it. These three are not that: a submit, a link, and a box label among box labels that
+are all the artist's. The entry is one session with three small questions, all with a zero seeded
+after-diff.
+
+### Send Enquiry — the wizard's submit
+
+- Every other calendar layout's pill is a field: `cta` at layout 1 (`FIELDS.calendar.cta`,
+  `{ l: 'Button (layout 1)', d: 'Check a date', in: [0] }`, `data.js:1546`; `vm.calCta`,
+  `EncoreBuilder.jsx:1239`) and `slotCta` at layout 2. Layout 4's foot pill held `cta`'s "Check a
+  date" until JP-052 refitted the column (the comment at `EncoreSection.jsx:16868`–`16873`).
+- "Send Enquiry" is `vm.calWizard.send`, a literal at `EncoreBuilder.jsx:1288`, printed by step 3's
+  pill and the foot pill (the table in JP-076).
+- The widening precedent is JP-070's `rowCta`: one field across layouts 1, 3 and 4, a per-layout seed
+  (`PRICING_ROW_CTA_3`, `PRICING_ROW_CTA`), resolved in `sectionVm` and `EditPanel`'s chain
+  (`:3627`–`3640`).
+
+**Decision.**
+- **A (recommended). Widen `cta` to `in: [0, 3]`** with a per-layout seed: "Check a date" at layout
+  1, a `CAL_SEND_4` "Send Enquiry" at layout 4 (`FORM_BTN_4`'s shape), in `sectionVm` and the chain.
+  Relabel it *Button*, with a hint naming both seats at layout 4. **An emptied label at layout 4 falls
+  back to the seed** rather than dropping, since it is the only submit (the form card's `cta` rule).
+  The same field reaches every template's wizard.
+- **B. Reply**, with the labels.
+
+### The bio's "Listen ↗"
+
+- The bio's layout-4 meta row prints `ListenLink`, which prints `s.cta2`. For the bio that is
+  `cv('cta2', 'Listen')` on the bio's **own** content (`EncoreBuilder.jsx:559`), and `FIELDS.bio`
+  (`data.js:1367`–`1390`) has no `cta2`.
+- JP-059's census (`./layout-2-qa-fixes.md:413`–`417`) classed it as "one control label no field
+  reaches", not a label, corrected `FIELDS.header.cta2`'s comment (`data.js:1337`–`1341`) and left it
+  for a later batch. This is that batch.
+- The header's *Secondary button* cannot reach it, and on *Stacked* it reads "Not shown in this
+  layout" anyway (`in`: Retro `[1, 2, 4]`, Lime / Grunge / Editorial `[1, 2]`).
+- `ListenLink` (`EncoreSection.jsx:868`–`877`) prints `{s.cta2}{after}`, so an empty label would print
+  a bare " ↗". The bio's two sites: `:5189`–`5190` (the block) and `:5393`–`5394` (Retro's body),
+  both `textTransform: 'none'`, `after=" ↗"`.
+- Frames: every layout-4 bio reads "Listen ↗" at all three widths (the ids in the replies entry).
+
+**Decision.**
+- **A (recommended). A bio field on the key it already reads**: `{ k: 'cta2', l: 'Listen link',
+  d: 'Listen', in: [3], hint: 'The link beside Performing since, to your Media Player on the
+  published page. Leave it empty to hide it.' }`. `sectionVm` needs nothing; both sites drop the link
+  when the label is empty. Uncased, as today; the `↗` stays in the markup.
+- **B. The header's *Secondary button*, read through `identity`**: one Listen word per page. Not
+  recommended: on *Stacked* the header's own field would read "Not shown in this layout" while the bio
+  prints it, JP-061's trap.
+- **C. Reply.** Not recommended: the census said it is not a label.
+
+### The form's *Message* label
+
+- Every box on the form is a row of `FIELDS.form.fields` and carries its own label. The message box's
+  is the one literal: `vm.formMsgLabel = 'Message'` (`EncoreBuilder.jsx:1688`, beside
+  `formTypeLabel` at `:1687`, under the comment at `:1682`–`1686`). Its placeholder is already a field
+  (`message`, *Message placeholder*, `data.js:1676`, `in: [0, 3]`).
+- The same string heads the visitor's message in the mailto body: `formMailto` passes it as
+  `msgLabel` (`:1701`–`1706`), and `enquiryMailto()` writes `${msgLabel}:` over the message
+  (`data.js:1936`–`1944`). An empty label would send a bare ":".
+- Layouts 1 and 4 draw the box: `EncoreSection.jsx:22882` (the block) and `:23163` (Retro's and Pop's
+  body) at layout 1; `:24680` and `:24998` at layout 4. The comment that lists it as a literal:
+  `:24804`–`24807`.
+- Frames: "MESSAGE" over the box on all nine layout-4 frames (Grunge `725:2990` / `971:8151` /
+  `977:12378`, Lime `964:72940` / `971:5627` / `977:9201`, Retro `964:72845` / `964:79477` /
+  `977:8663`), in Display/List, the box labels' own style.
+- The unreported sibling is layout 1's chip-row label, `vm.formTypeLabel` "Event type" (`:1687`), over
+  the `types` field: the same shape, at layout 1 alone.
+
+**Decision.**
+- **A (recommended). A `messageLabel` field** beside `message`: `l: 'Message label'`,
+  `d: FORM_MSG_LABEL` ('Message'), `in: [0, 3]`, raw (the render upper-cases it, as today).
+  **Emptied, it reads "Message" on the box and in the mailto alike**: the guarded email row's rule
+  (`FORM_EMAIL_LABEL`, JP-051), since the box always stands. Hint: "Layouts 1 and 4. Also heads the
+  message in the email you receive. Left empty, it shows Message."
+- **A+. Also a `typesLabel` for layout 1's "Event type".** Not recommended in this batch: nobody
+  reported it, and it is layout 1's.
+- **B. Reply**, by JP-071's rule. Weaker here than for its labels.
+
+**Fix (A, A, A).**
+- `data.js`: `CAL_SEND_4` beside the calendar constants and `cta`'s row widened; the bio's `cta2`
+  row; `FORM_MSG_LABEL` beside `FORM_MESSAGE` (`:908`) and the `messageLabel` row after `message`.
+- `EncoreBuilder.jsx`: `vm.calWizard.send` (`:1288`, today `cased('Send Enquiry')`) from `cta` at
+  design 3, through the same `cased()`, with the seed as its fallback;
+  `vm.formMsgLabel = String(cv('messageLabel', FORM_MSG_LABEL)).trim() || FORM_MSG_LABEL` (`cv` does
+  not trim, `:292`); and **`EditPanel`'s chain arm** (`f.k === 'cta' && sec.cat === 'calendar' &&
+  design === 3 ? CAL_SEND_4`, beside the form's `button` arm at `:3638`), or the panel shows "Check a
+  date" over a canvas printing "Send Enquiry". The bio and the form need no arm: their `d` is the seed
+  at every layout.
+- `EncoreSection.jsx`: the bio's two `ListenLink` sites drop the link on an empty label. Nothing else;
+  the other sites already read the keys.
+
+**Expected after-diff (named before the code): zero.** Every seed is today's words. Calendar, bio and
+form × themes 0–4 × 3 widths × both surfaces = **0 files**.
+
+**Verify.**
+- **The seed.** Digest calendar, bio and form × themes 0–4 × 3 × 2: 0 files.
+- **Reach.** Re-measure `calendar.cta` (layouts 1 and 4, all five templates); new rows `bio.cta2`
+  (layout 4) and `form.messageLabel` (layouts 1 and 4).
+- **The panel.** The calendar's *Button* reads "Send Enquiry" at layout 4 and "Check a date" at layout
+  1, and never "Not shown in this layout" at either. Without the chain arm the panel would show "Check
+  a date" over a canvas printing "Send Enquiry" (entry 9's trap, and JP-070's `rowCta`).
+- **States** (`&cj=`, `live=1`, three widths, themes 0–4):
+  - `{"cta":"Enquire now"}` changes step 3's pill and the foot pill at `arch 3`, and layout 1's pill
+    at `arch 0`; `{"cta":""}` at `arch 3` prints "Send Enquiry"; the mailto is unchanged;
+  - `{"cta2":"Hear the set"}` prints "Hear the set ↗"; `{"cta2":""}` drops the link with no bare
+    arrow; live, the link still scrolls to `#media`, and with no media section it is a span;
+  - a marker `messageLabel` prints over the box at `arch 0` and `arch 3`; emptied, it prints "Message";
+    live, fill the boxes and a message and read `getAttribute('href')`: the body ends
+    `%0D%0A%0D%0A<label>%3A%0D%0A<message>`, and an emptied label sends `Message%3A`.
+- **The tester's steps**, in the real app on Grunge card 4: the panels list *Button* (Booking
+  Calendar), *Listen link* (Bio) and *Message label* (Enquiry Form), none marked "Not shown in this
+  layout"; type a marker into each, then Publish → Open at 1440 / 768 / 390. Then Lime's card 4, and
+  Retro's card 1 and card 4 once (layout 1's and layout 4's shared body).
+
+**Docs.** CLAUDE.md's layout-4 wizard passage ("`cta` not at all" becomes its reach) and its `s.live`
+list, where it names "the bio's own Listen". The comments at `EncoreSection.jsx:16868`–`16873`,
+`data.js:1337` (the bio's `cta2` is now a bio field), `EncoreBuilder.jsx:1682`–`1686` and
+`EncoreSection.jsx:24804`–`24807`. The hints of `cta`, `message` and `FIELDS.form.email`.
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## JP-083 — "99 Problems" files under "9", and the A–Z rail has no cell for it
+
+**Verdict: confirmed, and shared. The fit's own `#` rule was written down and never coded.**
+- Retro's layout-4 pass states the rule twice: `../retro/layout-4.md:913`–`915` ("A title starting
+  with a digit or a symbol heads its own `#` group in the list and lights nothing — the rail is a
+  fixed A–Z that no content can extend"), and the comment at `EncoreBuilder.jsx:1118`–`1121`.
+- The code at `:1128` is `(sg.title.normalize('NFD').charAt(0) || '#').toUpperCase()`. Only an
+  **empty** title reaches `#`; everything else files under its own first character.
+- **A second symptom follows.** `at` falls back to `groups[0].letter` (`EncoreSection.jsx:12270`), so
+  whenever the list opens on a non-letter group the rail lights **no cell**. The tester's shot shows
+  exactly this.
+- **Every template.** The grouping is in `sectionVm`, and the rail is drawn twice from the same
+  literal: in the Lime / Grunge block and in Retro's body (Retro, Editorial and Pop).
+
+**Evidence** (triage 2026-09-29, `65dd1bc`).
+- `EncoreBuilder.jsx:1008`–`1015`: `vm.songs`, titles trimmed. `:1114`–`1133`: `byLetter`, sorted
+  by `localeCompare(…, { sensitivity: 'base' })` and grouped at `:1128`. `vm.repGroups` is read by
+  repertoire `s.v3` alone.
+- `EncoreSection.jsx`: `alpha` / `anchors` at `:10650`–`10651`; `letters` / `at` / `jump` at
+  `:12266`–`12274`. The block at `:12342`: `railCell` at `:12352`, the literal
+  `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` at `:12384`, the group ref at `:12393`. Retro's body: `railCell` at
+  `:12457`, the literal at `:12506`, the ref at `:12527`.
+- **Probed** (`&cj=` songs `99 Problems`, `'Til Tuesday`, `(I Can't Get No) Satisfaction`,
+  `Éclair`, `eleanor rigby`, `Valerie`, `Щедрик` and one untitled row; themes 2, 0 and 3; canvas and
+  `live=1`): the groups come out `#` (the untitled row), `'`, `(`, `9`, `E`, `V`, `Щ`. The rail has 26
+  cells, handlers on E and V alone, and no cell lit on the canvas. The accent fold already works:
+  `Éclair` and lower-case `eleanor` share E.
+- Frames: every layout-4 rail is a fixed 26 cells, 32 × 32 at gap 8 (Grunge `964:73011` / `971:8128`
+  / `977:12355`, Lime `964:72916` / `971:5604` / `977:9178`, Retro `964:72822` / `964:78509` /
+  `977:8166`).
+- **No seeded song starts with anything but a Latin capital** (`SONGS`, `data.js:773`–`786`).
+
+**Decision.**
+1. **What files under `#`.**
+   - **(a) (recommended).** A title whose first letter or digit, after NFD, is not A–Z: digits,
+     non-Latin scripts, and an empty title. **Leading punctuation is skipped**, so `'Til Tuesday`
+     files under T and `(I Can't Get No) Satisfaction` under I. The sort takes
+     `ignorePunctuation: true`, so that the list agrees with the grouping (the accent fold's own
+     argument). On the seed it reorders nothing: `Dancing Queen` still sorts before `Don't Stop Me
+     Now`.
+   - **(b)** The fit's rule verbatim: any non-A–Z first character, punctuation included, files under
+     `#`.
+2. **The rail.**
+   - **A (recommended). A `#` cell ahead of A, drawn only while a `#` group exists**, with the other
+     cells' handler rule; it is the lit seat when the `#` group leads the list. The cell list is built
+     in `sectionVm` as `vm.repRail`, so `EncoreSection` composes nothing and both rails read it. At 27
+     cells no width gains a row: desktop's six a row goes 6·6·6·6·2 → 6·6·6·6·3, 768's fifteen a row
+     15 + 11 → 15 + 12, 390's seven a row 7·7·7·5 → 7·7·7·6. Every letter shifts one seat right.
+   - **B. The `#` group alone, no cell** (the fit's "lights nothing"). `at` must then skip `#` to the
+     first letter group, or the mark still vanishes.
+   - **C. Always 27 cells.** It moves the seed (30 files) and draws a cell no frame does. Not
+     recommended.
+- **Named either way:** the frames' rail is Latin, so a Cyrillic repertoire files entirely under `#`.
+  A question for the PO or the designer, not this ticket.
+
+**Fix (A, (a)).** In `sectionVm`, the letter is the first `\p{L}|\p{N}` character of the NFD'd title
+when it is A–Z, and `#` otherwise; the sort adds `ignorePunctuation: true`; `vm.repRail =
+[...(has('#') ? ['#'] : []), ...'A…Z']`. Both rails map `s.repRail` in place of the literal. The `at`
+fallback is unchanged, since `#` is now a cell.
+
+**Expected after-diff (named before the code): zero.** No seeded title reaches `#`, and none carries
+punctuation that `ignorePunctuation` could reorder.
+
+**Verify.**
+- **The seed.** Digest repertoire × themes 0–4 × 3 widths × both surfaces: 0 files.
+- **States** (`&cj=` over the probe list above, canvas and `live=1`, themes 0–4, three widths): the
+  groups are `#`, E, I, T, V, with Щ inside `#`; the rail has 27 cells with `#` first; on the canvas
+  `#` is lit; live, `#` scrolls to its group; the rows per width are unchanged (5 / 2 / 4). With the
+  digit and Cyrillic songs deleted the rail is 26 again; with the untitled row alone, `#` still stands.
+- **The tester's steps**, in the real app on Grunge card 4: add `99 Problems`, Publish → Open at
+  1440 / 768 / 390. `#` leads the list and the rail, and the `#` cell jumps. Then Lime's card 4, then
+  Retro's.
+
+**Docs.** The comment at `EncoreBuilder.jsx:1114`–`1124` (now true, plus the punctuation clause). The
+rail comments ("all twenty-six" at `EncoreSection.jsx:12166` and `:12200`–`12203`, the wrap note at
+`:12485`–`12489`). CLAUDE.md's A–Z rail sentences (`:299`–`301`). A pointer at `../retro/layout-4.md:913`.
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## JP-084 — a long track title's ellipsis runs into the previous-track button
+
+**Verdict: confirmed, and in both halves.** The now-playing row is `row('0', …)`: a **zero gap**
+between the text column (`flex: 1 1 auto; minWidth: 0`) and the transport (`flex: none`), so a
+truncating title's ellipsis ends exactly at the prev glyph's box.
+- **The seed shows it live.** A visitor who plays track 2, "Manchester at 3am", at 1440 sees it
+  truncate against the button on every template: short by 5 px under Retro, 26 Lime, 12 Grunge and
+  54 Pop (Pop also by 12 at 768). The canvas and the published first paint cue "Late Lights", which
+  fits.
+- **Every template:** the Lime / Grunge block (`EncoreSection.jsx:7686`) and Retro's body (`:7996`,
+  Retro, Editorial and Pop).
+
+**Evidence** (triage 2026-09-29, `65dd1bc`).
+- The block `if (s.v3 && (s.lime || s.grunge))` at `:7631`: `nowPlaying` at `:7685`–`7712`. `skip()`
+  at `:7659`–`7664` pads its hit target 11 / 7 and takes the padding back in its margin, so the target
+  overlaps the title's last 5.7 px at desktop and 7 narrow (measured): live, a click on the ellipsis
+  steps back a track.
+- Retro's body at `:7916`: `nowPlaying` at `:7995`–`8031`, lucide `SkipBack` at `:8014`, and the
+  comment on the truncation at `:7997`–`8000`.
+- **Measured** with the title `Late Lights (Extended Club Mix) feat. Somebody`, canvas px, the same on
+  both surfaces, and the same under Editorial as under Retro:
+
+  | | 1440 | 768 | 390 |
+  |---|---|---|---|
+  | title box right → prev glyph box left | 0 | 0 | 0 |
+  | → the prev glyph's *ink*, Lime / Grunge (`LimeSkip`) | 1.7 | 2.1 | 2.1 |
+  | → the prev glyph's *ink*, Retro / Editorial / Pop (lucide's viewBox margin) | 3.1 | 3.8 | 3.8 |
+
+- **Seeded titles cued first** (px to spare after the ink):
+
+  | | Retro 1440 | Lime 1440 | Grunge 1440 | Pop 1440 | Pop 768 |
+  |---|---|---|---|---|---|
+  | Late Lights | 64 | 55 | 67 | 34 | — |
+  | Echo & The Floor | 7 | **1** | 17 | **−36** | 6 |
+  | Manchester at 3am | **−5** | **−26** | **−12** | **−54** | **−12** |
+
+  Every seeded title fits at 768 and 390 but Pop's "Manchester at 3am" at 768.
+- **Frames.** `Frame 24` (`I964:72959;692:4062` / `I971:7955;868:9787` / `I977:12182;888:10507`;
+  Lime's `I964:72864;692:4011` … and Retro's `I964:72526;1:7146` … are identical) is `SPACE_BETWEEN`
+  with `itemSpacing` 0; the text column HUGs (119 for "Night Rain" at 1440, 93 at 768 and 390); the
+  transport HUGs at 108.1 (16 · 14 · 48 · 14 · 16). So **the frame states no minimum gap**, and its own
+  title leaves 81 of 308 and 158 of 370. Its text is `textAutoResize: HEIGHT`, `textTruncation:
+  DISABLED`: the frame never truncates, and the ellipsis is the fit's own reading.
+
+**Decision** (a real call: the two options trade a truncation for a reflow).
+- **A (recommended). A gap equal to the transport's own 14, and the title wraps to two lines, then
+  clamps** (`-webkit-line-clamp: 2`): the frame's `HEIGHT` reading. The gap is `u(14)` (11.5 at
+  desktop, 14 narrow), in both halves, and the Lime / Grunge hit padding then no longer overlaps the
+  title. Every seeded title shows whole at every width, including the "Manchester at 3am" that
+  truncates live today. Cost: the block grows a line when a title wraps. At 1440 and 768 the sleeve
+  (`flex: 1 0 0`) gives the line back; **at 390 the column grows, so the page below moves when a
+  visitor changes to a track whose title wraps.** Measure that shift in the session and name it.
+- **B. The gap alone, one line and its ellipsis.** It fixes the touch and nothing else, and it worsens
+  the truncation the frame does not have: two seeded titles that fit today truncate live at desktop,
+  "Echo & The Floor" under Retro (7 → −4.5) and Lime (1 → −10.5); Grunge keeps 5.5.
+- **C. Reply.** Not recommended: the seed reproduces it live.
+
+**Fix (A).** `row(u(14), …)` in place of `row('0', …)` at `:7686` and `:7996`. The title span trades
+its one-line clip (`whiteSpace: 'nowrap'` and the ellipsis) for a two-line clamp (`display:
+'-webkit-box'`, `WebkitBoxOrient: 'vertical'`, `WebkitLineClamp: 2`, `overflow: 'hidden'`,
+`overflowWrap: 'anywhere'` for a single long word), in both halves; the row centres the transport
+against the column as it does today. The sub line keeps its one-line clip.
+
+**Expected after-diff (named before the code).** **A: 30 files**, media `arch 3` × themes 0–4 × 3
+widths × both surfaces: the text column and its two spans narrow by 11.5 at desktop and 14 at 768 and
+390, and the title's style changes. No seeded first track wraps (34 − 11.5 px spare at worst), so no
+height moves on the seed; no glyph, disc or bar moves. **B: the same 30, widths only.**
+
+**Verify.**
+- **The seed.** Digest media × themes 0–4 × 3 × 2: exactly the 30, widths only. Read the column's
+  `getBoundingClientRect().right` plus the gap against the prev glyph's left.
+- **States** (`&cj=` tracks, the long title and each seeded title cued first, themes 0–4, three widths,
+  both surfaces): the gap is 11.5 / 14 everywhere; under Lime and Grunge the skip's padded box no longer
+  meets the title's; `scrollWidth` equals the width at 390. Under A: a two-line title stays centred
+  against the transport, three lines clamp to two with the ellipsis clear of the gap, and the 390
+  shift on changing to a wrapping track is measured (`live=1`, the section's height before and after
+  `›`).
+- **The tester's steps**, in the real app on Grunge card 4: track 1's title = `Late Lights (Extended
+  Club Mix)`, Publish → Open at 1440 / 768 / 390; then play the seeded track 2 at 1440 in the tab.
+  Then Lime's card 4, then Retro's.
+
+**Docs.** The comment at `EncoreSection.jsx:7997`–`8000` (a gap now separates the title from the
+transport) and the block's matching line. CLAUDE.md names nothing here (checked). Layouts 1–3's
+transports were not measured; a line in the sweep if one shows the same.
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## JP-080 — the ticker's "Next:", ×, "Jul", and the pins
+
+**Verdict: four parts. Two confirmed, two named fit calls.**
+- **"JUL" is confirmed, and shared.** The frame's line is typed "Manchester · JUL 12 · 22:00"
+  (`textCase` ORIGINAL on all nine masters). Every other map layout upper-cases the month: layout 1's
+  disc, layout 2's meta line (an uppercase span) and layout 3's disc. Layout 4 composes `meta` as one
+  string with the month as typed, and its comment ("the frame's own 'JUL 12' is its styling")
+  misreads the frame.
+- **The dots are confirmed, for Grunge alone.** Grunge's five dots are `#FFFFFF` at .6, which reads
+  grey on the dark plate, as the tester's design shot shows. Lime's are `#15180F` at .6 and truly
+  vanish (checked on Lime's desktop render), which is why Lime's fit redrew them at full strength.
+  Retro's are `#FBF6EA` at .6, and Retro's body already draws them at .6. Grunge inherited Lime's
+  redraw, and Grunge's pass named rather than fitted it.
+- **"Next:" and × are named fit calls.** Retro layout 4 dropped "Next:" because "on page 3 the gig on
+  show is not the next one", and made × the `›` that pairs the frame's `‹`, since "a dismiss with no
+  state to dismiss".
+- **The red lit pin is the product's pin / row pairing** (CLAUDE.md's map paragraph: "the gig on show
+  lights the one it was paired with, by identity"). The canvas lights gig 0's pin by construction.
+
+**Evidence** (triage 2026-09-29, `65dd1bc`).
+- **Frames.** All nine masters (Grunge `964:73019` / `971:8136` / `977:12363`, Lime `964:72924` /
+  `971:5612` / `977:9186`, Retro `964:72830` / `964:78599` / `977:8322`) read "‹" | "Next: Hidden
+  Warehouse" / "Manchester · JUL 12 · 22:00" | "×". Every viewport carries five 8px ellipses at
+  opacity .6, their fills bound to the viewport scheme's `sem/text/2` (Grunge `#FFFFFF`, Lime
+  `#15180F`, Retro `#FBF6EA`), and no lit dot. The dots are absolute pixels leaked to every width: at
+  390 two sit off the 370 viewport, the fit's reason for `vm.pins`.
+- **`meta`**: `EncoreBuilder.jsx:1474`–`1483`, the month as typed, the comment at `:1480`. The seeded
+  months are "Jul" / "Aug" (`data.js:803`–`809`).
+- **The other layouts' months**: `EncoreSection.jsx:17455` (layout 1's disc, `textTransform:
+  'uppercase'`), `:17890` and `:18310` (layout 2's meta line), `:18921` and `:19289` (layout 3's disc).
+- **The ticker**: the block at `:20069`–`20085` (venue `:20080`, `meta` `:20081`, `›` `:20083`);
+  Retro's body at `:20290`–`20306` (venue `:20302`, `›` `:20305`). The fit's calls at `:19697`–`19699`
+  (×) and `:19712`–`19716` ("Next:"). `pg` is 0 on the canvas (`:19801`).
+- **The pins**: the block at `:19950`–`19961` (idle `s.tx` at full strength, 8 × 0.82; lit `s.ac` at
+  14 in a 2px `G.vpInk` ring); Retro's body at `:20157`–`20168` (`plateFg` at .6, already the
+  frame's). The redraw was Lime's (`../lime/layout-4.md:1127`–`1131`, and the block's comment at
+  `EncoreSection.jsx:19853`–`19856`) and named for Grunge at `./layout-4.md:1122`–`1124`.
+- **Found, not reported**: CLAUDE.md says the ticker "is **not drawn at one gig**", but the code
+  (`:20069`, `!!gig`) draws it at one gig without arrows, as Lime's Settled records ("`n=1` draws the
+  ticker with no arrows"). The doc is wrong, not the code.
+
+**Decision** (one `AskUserQuestion`).
+1. **"Next:"**
+   - **A (recommended). On the ticker's first gig alone** (`pg === 0`), a literal (a label, JP-071's
+     rule). The canvas and the published first paint then read the frame's "Next: Hidden Warehouse",
+     and paging on drops it. It assumes the list runs in date order, the assumption the "upcoming"
+     wording and layout 1's list already make; a gig has no year (JP-047).
+   - **B. Reply**: the fit's call.
+2. **The lit pin.**
+   - **A (recommended). Keep it, and reply.** It is the product's pairing at every map layout,
+     documented, and the only thing on the map that follows the ticker.
+   - **B. Unlit on the canvas, lit live.** The canvas becomes the frame's picture, but the published
+     first paint stops matching the canvas: a named canvas / live diff (JP-063 A′'s shape).
+   - **C. No lit pin at layout 4.** It drops the pairing; CLAUDE.md's paragraph is rewritten.
+3. **×** is a reply, with no question: the fit's call, with its reason.
+
+**Fix (no decision, either way).**
+- `meta` upper-cases the month where it is composed (`String(g?.month ?? '').trim().toUpperCase()`),
+  the other layouts' CSS rule applied to one string. The `:1480` comment is corrected.
+- Grunge's idle dots take the frame's .6 through a `G` key (`dotOp: 0.6` under Grunge, `1` under
+  Lime), still `s.tx`. Lime's redraw stands.
+
+**Fix (1A).** Both halves print ``pg === 0 ? `Next: ${gig.venue}` : gig.venue`` in the venue span,
+which already clips.
+
+**Expected after-diff (named before the code; 1A, 2A): 30 files.** Map `arch 3` × themes 0–4 × 3
+widths × both surfaces. In every file the meta line ("Jul 12" → "JUL 12") and the venue line ("Next: "
+prefixed); in Grunge's six, also the four idle dots' opacity. 2B and 2C add no files (2B's 15 canvas
+files lose the lit pin inside the same 30).
+
+**Verify.**
+- **The seed.** Digest map × themes 0–4 × 3 × 2: exactly the 30, and the ticker's two lines read with
+  `textContent`.
+- **Live** (`live=1&n=8`, three widths, themes 0–4; `&n=`'s generated gigs drop the time on every
+  fourth row and always carry a month, so the month cases go through `&cj=`): `›` drops "Next:" and
+  moves the lit pin; `‹` wraps to gig 0 and "Next:" returns; the fourth gig reads "Manchester · JUL 10"
+  with no stray separator; `&cj=` gigs with no month ("city · day · time") and a month typed "july"
+  ("JULY"); a long venue still ellipsises at 390 with the prefix;
+  Grunge's idle dots compute to opacity .6, and Lime's to 1.
+- **The tester's steps**, in the real app on Grunge card 4: Publish → Open at 1440 / 768 / 390. The
+  ticker reads "Next: Hidden Warehouse" / "Manchester · JUL 12 · 22:00" and the dots read grey. Then
+  Lime's card 4, and Retro's card 4 once.
+
+**Docs.** The comments at `EncoreSection.jsx:19697`–`19716`, `:19853`–`19856` and
+`EncoreBuilder.jsx:1474`–`1480`. A pointer at `./layout-4.md:1122`–`1124` (the dots). CLAUDE.md's
+"not drawn at one gig", corrected whatever is decided; its map paragraph only on 2B or 2C.
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## JP-077 · JP-078 · JP-082 (map) — the stat wall: its copy, its empty cards, its names
+
+**Verdict: all three confirmed. The wall is a named fit call whose reasoning has since been reversed
+once (JP-065).** Retro layout 4 made the four frame cards two derivations and two fields (open
+question 6, settled on `0cbf413`), and Lime and Grunge took that whole:
+- *CITIES* is a count of the gig list's distinct cities.
+- *GIGS YTD* is `s.gigs.length`; "YTD" and "played this year" were dropped as claims about the clock.
+- *RADIUS* over `s.mapRadius` became **COVERAGE**, because "Radius / 12 mile radius" stutters.
+- *BASE* over `s.mapBase` ("Based in Manchester") lost its label outright, and its sub with it.
+
+So **JP-077** is the named diff; **JP-078** is a real gap — each leaf drops when empty but the card
+never does, and card 1's label is a literal, so an emptied `radius` leaves "COVERAGE" over the sub and
+an emptied `base` an empty ringed box; and **JP-082 (map)** is the four card names, all literals. (The
+eyebrow "Travel & reach" is the replies entry's.) **Every template**: the `stats` array sits above
+the seam and both halves render it — Lime and Grunge in the block, Retro in the body with its own
+seats, Editorial and Pop in the body's flat seats.
+
+**Evidence** (triage 2026-09-29, `65dd1bc`).
+- **Frames: all nine agree, word for word** (the ids in JP-080). Every visible text node,
+  `textCase` ORIGINAL: "TRAVEL & REACH" | "LIVE · LAST 12 MONTHS"; "RADIUS" "120" "miles ·
+  standard"; "CITIES" "21" "played in"; "GIGS YTD" "48" "played this year"; "BASE" "Manchester, UK"
+  "further on request". No theme gate is needed.
+- **The fit's reasoning**: the branch header at `EncoreSection.jsx:19672`–`19686` ("Do not 'fix' one
+  to match the other"); `../retro/layout-4.md:1420`–`1438`, open question 6 ("*RADIUS 120* itself was
+  never a candidate: our field is a phrase, not a numeral with a unit under it"); named again in
+  `../lime/layout-4.md:1085`–`1174` and `./layout-4.md:1130`.
+- **The array**: `EncoreSection.jsx:19805`–`19813`.
+- **The renders**, each leaf gated alone and the card box never: the block at `:20012`–`20029` (the
+  gates at `:20020`–`20027`, the eyebrow at `:20005`); Retro's body at `:20237`–`20257`, reading
+  `seats[i]` (four fixed hues, `:19778`–`19786`), the eyebrow at `:20230`.
+- **The view-model**: `EncoreBuilder.jsx:1525` (`vm.gigCityCount`, read at `:19810` alone) and
+  `:1530`–`1532` (`mapRadius` / `mapBase` / `mapTerms`); `data.js:812`–`814` (`MAP_RADIUS` '12 mile
+  radius', `MAP_BASE` 'Based in Manchester', `MAP_TERMS` '120 mi standard · further on request').
+- **The fields** (`data.js`): `radius` at `:1576` (*Coverage*, no `in`; its hint names "the Coverage
+  card"), `base` at `:1579` (no `in`), `terms` at `:1580` (`in: [0, 1, 3]`), `gigs` at `:1559`–`1570`
+  (its hint: "layout 4 counts them"). `base` is read at every layout (`:17130`, `:17377`, `:17783`,
+  `:18174`, `:19159`, `:19570`).
+- **BASE's value already exists page-wide.** The header's `location` seed is "Manchester, UK"
+  (`data.js:1308`), the frame's BASE value byte for byte, and it reaches every section as
+  `vm.location` through `identity` (`EncoreBuilder.jsx:551`–`553`, F1). The map does not read it.
+- **A trap any card-dropping fix meets:** the desktop viewport has no height of its own; it stretches
+  to the wall (`:19919`, `desk ? null : { aspectRatio … }`; `:20102` in the body). A wall that loses a
+  row halves the desktop map. The frame's card is 555 tall; the seeded wall is 455.2 (555 × 0.82).
+- **Found, not reported**: the seeds disagree at layouts 1–3. `MAP_RADIUS` says "12 mile radius"
+  where `MAP_TERMS` says "120 mi standard" and the rings run to 120mi. Under A, layout 4 stops
+  printing it; the seed is the sweep's question.
+- **The precedent that reverses the fit's reasoning**: JP-065 (`./layout-3-qa-fixes.md`, Decided A,
+  2026-09-28), a frame claim re-seated as a typed field with the derivation kept only as its emptied
+  fallback. JP-040 and JP-046 are the same shape for this section's layouts 2 and 3.
+
+**Decision** (one `AskUserQuestion`).
+- **A (recommended). The wall is the artist's: a `stats` repeater**, `{ label, value, sub }`, layout
+  4 alone, seeded with the frame's four cards verbatim (`MAP_STATS_4`: Radius / 120 / miles ·
+  standard; Cities / 21 / played in; Gigs YTD / 48 / played this year; Base / Manchester, UK / further
+  on request).
+  - One mechanism closes all three tickets: the copy is the frame's, each leaf drops when emptied, a
+    blank row is dropped by `blankRow(row, STAT_KEYS)` (JP-051's rule: every key, never the printed
+    ones), and the card names are the artist's words.
+  - `max` 4, the frame's 2 × 2. An odd count trails one half-width cell, the pricing deck's rule.
+  - The two derivations go, JP-065's reversal taken whole: a stat is a claim the artist types.
+    `vm.gigCityCount` is deleted, since nothing else reads it.
+  - `radius`, `base` and `terms` leave layout 4: `in` becomes `[0, 1, 2]` for `radius` and `base` and
+    `[0, 1]` for `terms`, and `radius`' hint loses "the Coverage card".
+  - A new repeater (the ninth or tenth, with entry 8's), the `QuotesField` shape (no assets, no
+    delimiters): `STAT_KEYS`, `statsVal` in `EditPanel` resolving exactly what `sectionVm` does, and
+    "Empty stats aren't shown."
+- **B. JP-065's shape per card, no repeater.**
+  - *Cities* is a field seeded '21'; filled, its sub is "played in"; emptied, it falls back to
+    `gigCityCount` / "playing in".
+  - *Gigs YTD* is a field seeded '48'; filled, it prints "GIGS YTD / played this year"; emptied, the
+    count under GIGS / "upcoming".
+  - *BASE* reads `vm.location` under the frame's BASE label, with no stutter; the map's own `base`
+    then reaches layouts 1–3 alone, and `location`'s hint gains the map.
+  - *COVERAGE* stays: a phrase under a numeral's label still stutters. The labels stay literals, so
+    JP-082 (map) is a reply. Two new flat keys; RADIUS and two subs stay named diffs.
+- **C. JP-078 alone, and replies to JP-077 and JP-082 (map).** A card with no value is not drawn,
+  since its literal label and sub describe the value. Zero seeded files.
+
+**Fix (A).**
+- `data.js`: `MAP_STATS_4` and `STAT_KEYS` beside `MAP_SPAN`; `FIELDS.map.stats` (*Stats*,
+  `type: 'stats'`, `max: 4`, `in: [3]`); the `in` rows and hints of `radius`, `base`, `terms` and
+  `gigs`.
+- `sectionVm`: `vm.mapStats`, the list filtered by `blankRow` before anything indexes it, values
+  uncased as today; `vm.gigCityCount` deleted.
+- `EncoreSection`: both halves map `s.mapStats` in place of `stats`; the body reads `seats[i %
+  seats.length]`. **The desktop viewport takes the frame's 555 as a floor** (`minHeight: u(555)`) in
+  both halves: the seed's 455.2 already clears it, so it moves no seeded file, and it holds the map's
+  size when a row goes.
+- `EditPanel`: `StatsField` beside `QuotesField`, `statsVal`, and a `type === 'stats'` branch beside
+  `'slots'` (`EncoreBuilder.jsx:3682`).
+
+**Fix (C)**, for comparison: filter `stats` on `value`, and the same floor.
+
+**Expected after-diff (named before the code).**
+- **A: 30 files**, map `arch 3` × themes 0–4 × 3 widths × both surfaces. In every file the four cards'
+  label, value and sub rows change text. At 390, where the cells hug, the card's height and the
+  ticker's y move with the shorter copy (the seeded COVERAGE sub wraps at 390 today). At 1440 and 768
+  the cells' minimums hold the heights. The floor is inert on the seed.
+- **B: the same 30** (label, value and sub in cards 2–4; card 1 does not move).
+- **C: 0.**
+- On top of JP-080's landing: the same files, so the digest base is the tree with JP-080 in.
+
+**Verify.**
+- **The seed.** Digest map × themes 0–4 × 3 × 2 against a HEAD worktree carrying JP-080: exactly the
+  named files; each card's `textContent` read whole, since the 390 heights are the point.
+- **Reach**: `map.stats` → `[3]` on every template; `map.radius` re-measured → `[0, 1, 2]`; a new
+  `map.base` probe → `[0, 1, 2]`; `map.terms` → `[0, 1]`. (B instead: the two new keys → `[3]`, and
+  `who.location` gains map `[3]`.)
+- **States** (`live=1`, three widths, themes 0–4): `&cj={"stats":[]}` (the head row alone, and the
+  desktop map keeps the frame's height); three stats (the third trails half-width); a row with only a
+  value; a row with its value emptied (label and sub stand, each dropping alone); an all-blank row
+  (dropped); a 60-character value (wraps inside its cell, `scrollWidth` equal to the width). Under B
+  or C: the tester's pair emptied — two cards in one row, and the map holds its desktop height.
+- **The tester's steps**, in the real app on Grunge card 4: Events Map → *Stats* lists the frame's
+  four; empty RADIUS's value and blank the BASE row, Publish → Open at 1440 / 768 / 390: no empty card
+  is drawn. Then Lime's card 4, and Retro's card 4 once (the body's seats).
+
+**Docs.** The branch header at `EncoreSection.jsx:19672`–`19686`, rewritten. CLAUDE.md's repeater
+paragraph ("Eight list-shaped contents …", with `STAT_KEYS`, `statsVal` and `MAP_STATS_4` in its
+lists) and its "Layout 4 is the pager alone" paragraph (a sentence on the wall). The four hints.
+Pointers at `../retro/layout-4.md`'s open question 6 and the layout-4 map Settled of
+`../lime/layout-4.md` and `./layout-4.md`.
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## JP-079 · JP-081 (steps) — *What happens next* prints one line per step
+
+**Verdict: a named fit call the user has kept once, and the frames do not bear it out.**
+- **How the build prints it.** Layout 4's column prints `vm.formSteps`, which is `promises` numbered.
+  A promise is one string, so each row is one line.
+- **How the call was made.** Retro's fit chose it on purpose (`../retro/layout-4.md:1167`–`1178`): it
+  read row 02's sub, "Reply within 24 hrs", as `FORM_PROMISES[0]` "almost verbatim" ("the *frame*
+  quoted the seed"), and ruled a per-row second line "a gloss". Lime's and Grunge's fits widened that
+  reading. JP-054 put exactly this to the user as option B, not recommended, and the user took A,
+  "the steps stay one line" (`../lime/layout-4-qa-fixes.md:188`–`194`, reply `:251`). So this is
+  JP-054's steps half coming back, as its boxes half came back on the retest (`FORM_FIELDS_4`,
+  `../lime/retest-qa-fixes.md:332`).
+- **What the full read shows.** All **nine** frames draw the same three **process steps**, each a
+  title over a second line — *Send your details / Date, type & location*, *I check availability /
+  Reply within 24 hrs*, *Quote & confirm / Tailored package + price* — at 1440 too, not only at 768
+  and 390. One sub-line echoes a promise; the titles are steps. So the seed prints three **promises**
+  ("Replies within 24 hrs / Free, no-obligation quote / Covers 120 mi from Manchester") under a head
+  that asks a different question.
+- **Every template.** The list resolves in `sectionVm` and both halves draw it. JP-081's "step texts"
+  are this entry's seed. The column's head, "What happens next", is the replies entry's.
+
+**Evidence** (triage 2026-09-29, `65dd1bc`).
+- `data.js:852`: `FORM_PROMISES`. `:1659`–`1661`: `FIELDS.form.promises`, `in: [0, 1, 3]`, hint "One
+  per line … Layout 4 numbers them down its right-hand column". `tierFeats()` (`:1987`) splits on
+  newlines only, so none of the tester's `—`, `|` and `:` can make a second line.
+- `EncoreBuilder.jsx:1627`: `vm.formPromises`. `:1628`–`1637`: `vm.formSteps` (`{ n, label }`), whose
+  comment says "The frame's second line per row has no seat — a promise is one string, and a gloss for
+  it would be a claim the artist never typed". `:1640`: `formStepsLabel`.
+- Who reads `promises`: layout 1 (`EncoreSection.jsx:22815`–`22817` block, `:23085` body), layout 2
+  (`:23444`–`23447`, `:23823`), layout 4 (the block's column at `:24704`–`24726`, one `st.label` span at
+  `:24719`; the body's at `:25029`–`25064`, `:25053`–`25056`). Layout 3 reads none of it, so "the same
+  list layout 3 runs together as one line" is **stale** where it appears: CLAUDE.md `:946`–`947` and
+  `EncoreSection.jsx:24799`–`24801`.
+- The fit's comments: `:24552`–`24554` (block), `:24797`–`24803` (body).
+- Frames, every text node read: Grunge `725:2990` / `971:8151` / `977:12378`, Lime `964:72940` /
+  `971:5627` / `977:9201`, Retro `964:72845` / `964:79477` / `977:8663`. Every step row is a 56px
+  numeral square, a vertical auto-layout box (**gap 2**, FILL) and ↘; the title Inter Body/MD (14 / 13
+  / 13 at 1.5), the sub Inter Body/SM at 1.4 (each theme's own `s.bodySm`), both `sem/text/2`. **The
+  row is 88 = 16 + 56 + 16 at every width**, and the text box (39–41) sits inside the square's 56, so a
+  second line does not grow the row.
+
+**Decision** (one `AskUserQuestion`).
+- **A (recommended). A `steps` list of its own for layout 4**, a new repeater (the ninth or tenth,
+  with entry 7's).
+  - `FIELDS.form.steps` (`l: 'Steps'`, `type: 'steps'`, `max: 6`, `in: [3]`), rows `{ title, sub }`;
+    a `StepsField` about `SlotsField`'s size (`EncoreBuilder.jsx:2798`–`~2870`), "Empty steps aren't
+    shown." under a blank row; `STEP_KEYS = ['title', 'sub']` beside the seed; `stepsVal` mirroring
+    `sectionVm`.
+  - The `songs` rule: an absent key is the seed `FORM_STEPS`, the frames' three byte for byte, and an
+    emptied array is none. **All nine frames agree, so no theme gate.**
+  - Blank rows drop before the numbering (JP-048's order). Each line renders or not (the
+    testimonials' rule), so a row holding one of the two is one line in that line's own style.
+  - `promises` goes back to layouts 1 and 2 (`in: [0, 1]`), and its hint loses layout 4.
+- **B. A delimiter inside `promises`, and a layout-4 seed.** `FORM_STEPS_4` in the delimited form,
+  gated on the absent key (`FORM_FIELDS_4`'s shape), split at the first ` | ` in `sectionVm` (of the
+  tester's three, the one prose rarely holds; `—` and `:` both occur in a promise); layouts 1 and 2
+  print the first half. Costs: a syntax the hint has to teach, and once the artist edits the list at
+  any layout it is theirs at every layout, so layout 1's ticked list would read "Send your details" —
+  steps under ticks. JP-054 named this the not-recommended option.
+- **C. Reply**: JP-054's call stands.
+
+**Fix (A).**
+- `data.js`: `FORM_STEPS` and `STEP_KEYS` beside `FORM_PROMISES`; the `steps` row after `promises`;
+  `promises`' `in` and hint.
+- `EncoreBuilder.jsx`: `vm.formSteps` from `c.steps` as `{ n, title, sub }`; `stepsVal`, `StepsField`,
+  and a `type === 'steps'` branch beside `'slots'` (`:3682`).
+- `EncoreSection.jsx`, at both step sites (`:24719`, `:25053`): the span becomes a column at the
+  frame's gap of 2 (× 0.82 at desktop), the title body-md / 1.5, the sub body-sm / 1.4 (`s.bodySm` in
+  the block, `u(T.bodySm)` in the body); the square and the ↘ unchanged; with no steps, still no
+  column.
+- The comments at `EncoreBuilder.jsx:1628`–`1634` and `EncoreSection.jsx:24552`–`24554`,
+  `:24716`–`24718`, `:24797`–`24803`, `:25049`–`25052`.
+
+**Expected after-diff (named before the code).**
+- **A: 30 files**, form `arch 3` × themes 0–4 × 3 widths × both surfaces: each row's text changes from
+  a promise to a title, and each row gains a sub span. The rows should hold at 88 (72.2 at desktop),
+  since the text box fits inside the square — **unless a promise wraps today at 390 and its title
+  does not**, when the column shortens and, at 768 and 390 where the steps lead, the form under it
+  rides up. **Measure today's row heights before the code and name what you find.**
+- Form `arch 0`–`2`: 0 files. B: the same 30.
+
+**Verify.**
+- **The seed.** Digest form × themes 0–4 × 3 × 2: exactly the 30; each row's two lines read whole with
+  `textContent`.
+- **Reach**: a `form.steps` row (layout 4 on every template); `form.promises` re-measured ([0, 1]).
+- **States** (`&cj=` over `steps`, `live=1`, three widths, themes 0, 1 and 2): a title alone; a sub
+  alone; a blank row (dropped, numbered 01 / 02 with no gap); an emptied list (no column; the form
+  takes the measure at 1440 and leads at 768 / 390); a 60-character title at 390 (wraps, the square
+  stays centred, nothing overflows); six steps.
+- **The panel**: at layout 4, *Steps* lists the frames' three; at layouts 1–3 it reads "Not shown in
+  this layout", and *Promises* no longer names layout 4.
+- **The tester's steps**, in the real app on Grunge card 4: Publish → Open at 1440 / 768 / 390; the
+  rows read the frames' three steps, two lines each. Then Lime's card 4 and Retro's card 4, and
+  Editorial's card 4 once (Retro's body).
+
+**Docs.** CLAUDE.md: the form's layout-4 sentences ("The steps stay one line.", `:939`; "Its promises
+are `vm.formSteps`, the same list layout 3 runs together as one line", `:946`–`947`, stale either way);
+the repeaters paragraph (the list, `STEP_KEYS` among the `*_KEYS`, the seed list, and "The one other
+repeated field is a delimited textarea, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
+numbers 01 / 02 / 03", `:1151`–`1153`). *Reversed* pointers at `../retro/layout-4.md:1167`–`1178`,
+JP-054's Decided and Reply in `../lime/layout-4-qa-fixes.md` (`:190`, `:251`, `:815`),
+`../lime/layout-4.md:1400`, `:1430`, `:1434`, and `./layout-4.md:1357` ("one-line steps against two").
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## JP-081 (repertoire head) — "12 Songs" for "Repertoire"
+
+**Verdict: a named fit call whose precedent has since been reversed.** All three layout-4 frames print
+"Repertoire" over "All songs · A–Z" (Grunge's panels `964:73007` / `971:8124` / `977:12351`, Lime's
+`964:72916` Section, Retro's `964:72817`). Retro's fit settled its open question 8
+(`../retro/layout-4.md:1468`–`1476`, `104530e`) as `s.title` with the count fallback, "the literal
+would leave `heading` editing nothing". JP-070 (user call, 2026-09-28) reversed exactly that at layout
+3: `HEADING_3`'s "Curated sets" wins over the count, and the field still edits it. **Every template.**
+
+**Evidence** (triage 2026-09-29, `65dd1bc`).
+- `EncoreBuilder.jsx:252`–`255`: `HEADING_4` has no `repertoire` key. `:1027`: the count. `:1037`:
+  `HEADING_4` is assigned *after* the count, so a repertoire arm already wins in `sectionVm`.
+- **`EditPanel`'s chain is the trap**: the count arm at `:3632` sits **ahead of** the `HEADING_4` arm at
+  `:3636`–`3637`. The key alone would leave the panel reading "12 Songs" over a canvas reading
+  "Repertoire", so the arm moves up beside the `HEADING_3` arm (`:3630`–`3631`).
+- `data.js:1082`–`1098`: the `*_HEADING_4` constants. `:1489`–`1493`: `FIELDS.repertoire.heading`'s
+  comment names only layout 3's exception.
+- **Measured** with `&cj={"heading":"Repertoire"}`: one line at every width and theme; the least room
+  is Pop's caps at 390, with 77px to spare.
+
+**Decision.**
+- **A (recommended). `REP_HEADING_4 = 'Repertoire'` joins `HEADING_4`** (JP-070's shape), and
+  `EditPanel`'s `HEADING_4` arm moves ahead of the count; nothing else in the chain moves. An emptied
+  heading stays empty at every layout; the count does not come back.
+- **B. Reply**: the count stands at layout 4, and Retro's open question 8 holds.
+
+**Expected after-diff (named before the code; A): 30 files**, repertoire `arch 3` × themes 0–4 × 3 ×
+2: the head's text and box width. It digests against a tree with JP-083 landed (the same branch).
+
+**Verify.**
+- **The seed.** Digest repertoire × themes 0–4 × 3 × 2: exactly the 30, and `arch 0`–`2` unchanged.
+- **The panel**: at layout 4, *Heading* shows "Repertoire" as its value; typed over it holds; emptied it
+  stays empty and the count does not return. At layouts 1 and 2, the count; at 3, "Curated sets".
+- **The tester's steps**, in the real app on Grunge card 4, then Lime's and Retro's.
+
+**Docs.** CLAUDE.md's "Layout 3 is the exception" sentence (`:1172`–`1178`, now layouts 3 and 4). The
+`HEADING_4` comment (`data.js:1082`–`1086`). `FIELDS.repertoire.heading`'s comment.
+`EncoreSection.jsx:12189`–`12198` (the head is no longer "12 Songs"). A pointer at
+`../retro/layout-4.md`'s open question 8.
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## JP-081 (tags) — five chips for the frame's six
+
+**Verdict: by design (JP-037, a user call, 2026-09-21), on a premise only two frames bear out.** The
+call was "the Tags component hides its sixth chip", read off Lime's **layout-2 bio**, where
+`964:64581` shows five. JP-037's own recommendation (`../lime/layout-2-qa-fixes.md:288`–`291`) was "if
+any frame draws six, seed six and let the artist trim"; the user chose five. The visible chip labels,
+read now:
+- **six** in the header at layout 1 (Grunge `964:58600`, Lime `964:58588`, Retro `964:58576`);
+- **six** in the header at layout 3 (Grunge `964:68686` and its 390 `984:13931`, Lime `964:68654`,
+  Retro `964:68622`, Editorial `964:68718`);
+- **six** in the header at layout 4 (Grunge `964:72944` / `971:7823` / `977:12044`, Lime `964:72849` /
+  `971:5299` / `977:8867`);
+- **six** in Grunge's layout-4 bio Genres row (Section `964:72945` at 1440 and 390; the 768 re-read was
+  inconsistent, so the session re-reads it): "Default · Sold Out · New Release · Archive · Live · All
+  Access";
+- **five** in Retro's layout-4 header (`964:72511` / `964:77544` / `971:14040`), which has no sixth
+  node, and in Lime's layout-2 bio;
+- layout 2's header draws no chips; Lime's layout-4 bio twin was not read.
+
+**Evidence.** `data.js:660`–`668`: `TAGS` (six palette seats) and `TAG_LABELS` (five). `:1347`–`1350`:
+`FIELDS.header.tags`' `in`. `EncoreBuilder.jsx:741`: `tagList` seeds `TAG_LABELS` for the header, and
+for the bio through `identity`. CLAUDE.md `:190`–`191`.
+
+**Decision** (ask it plainly, with the census above: it reopens a user call).
+- **A (recommended, reopens JP-037). Seed six everywhere**: `TAG_LABELS` gains "All Access". One
+  constant, and the majority of the frames. Named cost: Lime's layout-2 bio and Retro's layout-4 header
+  then draw a chip their frame lacks. **Before recommending it in the session, measure that six fit
+  Retro's layout-4 header row at 390 and every bio row that wraps.**
+- **B. A layout-4 seed under Lime and Grunge**, `TAG_LABELS_4` gated on the absent key
+  (`FORM_FIELDS_4`'s shape). The header seeds it at its own design 3. The bio reads the header's tags
+  through `identity`, and `headerIdentity(sections)` (`data.js:1768`) returns the header's raw
+  `c.tags` with no design or theme, so the bio's fallback cannot see the seed there without a new
+  argument — JP-061's trap, where the header seeds one thing and the bio prints another. The bio
+  keys it instead on **`sectionVm`'s `page` argument**, the header's design, which the published page
+  and the canvas already pass to every section for the footer's seat (`pageDesignOf()`,
+  `EncoreBuilder.jsx:262`, already folded; passed at `:4350` and `:4741`): `own.tags` absent (the
+  resolution at `:741`), Lime or Grunge, and `page === 3` seed `TAG_LABELS_4`. `EditPanel`'s `tags` fallback mirrors the header's arm. The
+  layout picker's previews carry no page, so they show five; Editorial's card 4 (Retro's `HeaderV3`)
+  and Retro keep five. Named cost: a second place that knows a seed depends on the header's design.
+- **C. Reply**: JP-037 stands, and the artist types a sixth.
+
+**Expected after-diff (named before the code).**
+- **A: ≈ 180 files**, every chip row reading `tagChips`: the header at Retro `arch` 0 / 2 / 3 / 4 / 5
+  and Lime, Grunge and Editorial `arch` 0 / 2 / 3 / 4 (17 × 3 × 2 = 102), and the bio at `arch` 1 and 3
+  on every template plus `arch` 2 on Lime, Grunge and Editorial (13 × 3 × 2 = 78). The session
+  re-measures the set with `reach.mjs`'s `header.tags` row, and checks whether Pop's header prints
+  chips at all.
+- **B**: header `arch 3` × Lime and Grunge × 3 × 2 = **12** in the default digest, and the bio **0**
+  there, since the harness passes no `page` unless asked. A second render, `EXTRA='&page=3'` over the
+  bio, moves every bio design that prints chips — `arch 1`, `2` and `3` under Lime and Grunge — × 2 ×
+  3 × 2 = **36**. The picker's thumbnails do not move.
+- **C**: 0.
+
+**Verify.**
+- **The seed.** Digest header and bio × themes 0–4 × 3 × 2: exactly the named files; each chip row's
+  labels read whole.
+- **States** (`live=1`, three widths): the list emptied (the row hidden, `vm.showTags`); seven tags
+  (the row wraps; `scrollWidth` equal to the width at 390).
+- **The panel**: *Tags* lists six (A) or six at Lime's and Grunge's layout 4 (B).
+- **The tester's steps**, in the real app on Grunge card 4, then Lime's, then Retro's card 4 and card 1.
+
+**Docs.** CLAUDE.md `:190`–`191` ("five — the Tags component hides its sixth chip"). The `TAGS`
+comment. A *reopened* pointer on JP-037's Settled in `../lime/layout-2-qa-fixes.md`.
+
+**Decided.** —
+
+**Settled.** —
+
+Reply: —
+
+---
+
+## End-of-pass sweep
+
+1. Full digest against a `main` worktree on :5174 (port and `?t=` stamps normalised), all categories ×
+   themes 0–4 × three widths × canvas and `live=1`, plus the footer at `page=2`. Prove the harness
+   first: the worktree at HEAD against the tree diffs to 0. Reconcile by file: every differing file
+   is one a Settled names, and every named file differs.
+2. `reach.mjs` for every new or re-scoped key: `calendar.email`, `calendar.cta`, `bio.cta2`,
+   `form.messageLabel`, `form.steps` and `form.promises`, `map.stats` (or entry 7's per-card keys) and
+   `map.radius` / `map.base` / `map.terms`, `header.tags` if it moved.
+3. Walk Grunge card 4 in the real app and the published tab at 1440 / 768 / 390: first
+   `page-check.mjs Grunge 3,0,1,2`, then every entry's tester steps with trusted clicks, JP-076's
+   delete → Publish → Send path included. Then Lime's, Retro's and Editorial's card 4 once each.
+4. `npm run build:standalone`, then `cp source/dist-standalone/index.html index.html`, in its own
+   commit. Then a two-build digest (`build-digest.mjs`, reduced motion, `CARD=3`: the card is
+   0-based), whose diff should be only the named rows.
+5. **A note for the designer**, at this plan's foot, gathered from the entries as they settled. The
+   triage found these candidates:
+   - Grunge's layout-4 page has no desktop form instance, and seven of the nine form frames print the
+     component's default "KAI MERCER" where Retro's and Lime's desktop instances print "Contact Us":
+     which is meant (JP-081)?
+   - The map's five dots are absolute pixels leaked to all three masters, two off the 390 viewport;
+     Lime's are ink on a dark plate and cannot be seen; the ticker's "‹ … ×" has no forward control
+     (JP-080).
+   - The now-playing title has no truncation rule: HUG and `HEIGHT`, so a longer title pushes the
+     transport off the 308 column (JP-084).
+   - "Six Worth Your Ears" counts a filler sixth tile (JP-081).
+   - The layout-4 bio prose leads with the mock artist's name, in one paragraph where the section
+     carries two; its "since 2021" is layout 3's "June 2021" (JP-081).
+   - Lime's layout-2 bio and Retro's layout-4 header draw five tags where every other page draws six
+     (JP-081).
+   - The A–Z rail has no cell for digits or non-Latin titles (JP-083).
+   - No master draws Send Enquiry without an address (JP-076).
+   - The form's steps are steps where the seed held promises, if entry 8 takes A.
+6. `plans/README.md`'s row, and one reply line per ticket for QA, headed by the
+   retest-against-the-stamp line: retest against the Pages build whose `last-modified` is later than
+   `Tue, 29 Sep 2026 08:18:02 GMT` (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`).
+   Also the two seed and doc slips the triage found outside any ticket: `MAP_RADIUS`' "12 mile radius"
+   against the 120mi terms and rings (a question for the user), and CLAUDE.md's ticker "not drawn at
+   one gig" (JP-080's Docs, if not already done).
+
+**Settled.** —
+
+**Replies to QA, one line per ticket.** —
