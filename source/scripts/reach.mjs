@@ -46,6 +46,8 @@ const PROBES = [
   { name: 'bio.credit', cats: ['bio'], param: 'cj', value: { credit: Z } },
   { name: 'bio.cta', cats: ['bio'], param: 'cj', value: { cta: Z } },
   { name: 'bio.tag', cats: ['bio'], param: 'cj', value: { tag: Z } },
+  // JP-082: layout 4's Listen link, on the key the bio already read.
+  { name: 'bio.cta2', cats: ['bio'], param: 'cj', value: { cta2: Z } },
   { name: 'map.status', cats: ['map'], param: 'cj', value: { status: Z } },
   { name: 'map.updated', cats: ['map'], param: 'cj', value: { updated: Z } },
   { name: 'map.rings', cats: ['map'], param: 'cj', value: { rings: Z } },
@@ -55,8 +57,11 @@ const PROBES = [
   // JP-054: layout 4's small-caps line, and the button whose default moved there.
   { name: 'form.sub', cats: ['form'], param: 'cj', value: { sub: Z } },
   { name: 'form.button', cats: ['form'], param: 'cj', value: { button: Z } },
+  // JP-082: the message box's label, the one box label that was a literal.
+  { name: 'form.messageLabel', cats: ['form'], param: 'cj', value: { messageLabel: Z } },
   // JP-052: the calendar keys whose seats moved when layout 4's column became
   // the wizard's summary, and the Pricing packages it reads across sections.
+  // `cta` is layout 4's Send Enquiry again since JP-082.
   { name: 'calendar.cta', cats: ['calendar'], param: 'cj', value: { cta: Z } },
   // Editorial layout 1, section 8: the scheduler's head, under each template.
   { name: 'calendar.heading', cats: ['calendar'], param: 'cj', value: { heading: Z } },

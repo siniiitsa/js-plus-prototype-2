@@ -5186,8 +5186,11 @@ function Bio({ s }) {
       }}>
         <span>{s.kicker}</span>
         {s.since && <span>Performing since {s.since}</span>}
-        <ListenLink s={s} to={s.listenTo} color={s.tx} after=" ↗"
-                    style={{ ...body, fontWeight: 400, letterSpacing: s.dls, textTransform: 'none' }} />
+        {/* `FIELDS.bio.cta2` (JP-082): emptied, the link goes with its arrow. */}
+        {s.cta2 && (
+          <ListenLink s={s} to={s.listenTo} color={s.tx} after=" ↗"
+                      style={{ ...body, fontWeight: 400, letterSpacing: s.dls, textTransform: 'none' }} />
+        )}
       </div>
     )
 
@@ -5369,6 +5372,8 @@ function Bio({ s }) {
     // "Listen ↗" is a real link on the published page: `ListenLink` is the
     // header's own seam and `vm.listenTo` is resolved for every section, so
     // the bio's is the fifteenth thing that reads `s.live` (CLAUDE.md's list).
+    // Its word is `FIELDS.bio.cta2` (JP-082), and an emptied one drops the
+    // link with its arrow rather than leaving a bare " ↗".
     const meta = (
       <div style={{
         ...row(u(18), {
@@ -5390,8 +5395,10 @@ function Bio({ s }) {
       }}>
         <span>{s.kicker}</span>
         {s.since && <span>Performing since {s.since}</span>}
-        <ListenLink s={s} to={s.listenTo} color={cream} after=" ↗"
-                    style={{ ...body, fontWeight: 400, letterSpacing: 0, textTransform: 'none' }} />
+        {s.cta2 && (
+          <ListenLink s={s} to={s.listenTo} color={cream} after=" ↗"
+                      style={{ ...body, fontWeight: 400, letterSpacing: 0, textTransform: 'none' }} />
+        )}
       </div>
     )
 
@@ -5466,7 +5473,8 @@ function Bio({ s }) {
               ...col(u(12), { alignItems: 'stretch' }),
             }}>
               <div aria-hidden style={{ position: 'absolute', inset: 0, background: cream, opacity: 0.11 }} />
-              {/* The masters set one paragraph — the seeded `para1` verbatim.
+              {/* The masters set one paragraph — the seeded `para1` behind a
+                  lead clause naming the mock artist (JP-081, a reply).
                   The section has two, and an emptied `para2` is not rendered
                   rather than printed blank (the testimonials' rule). Their gap
                   is the layout-3 card's own 12: no master states one, and a
@@ -16881,7 +16889,8 @@ function Calendar({ s }) {
               label and a cream disc carrying a rust arrow, and no offset block.
               What differs is the label: the frame's own Send Enquiry, the
               wizard's last-step label (JP-052 — this was `cta`'s "Check a
-              date" while the column read as a slot list), and its link is the
+              date" while the column read as a slot list; since JP-082 it is
+              `cta` again, seeded "Send Enquiry" at this layout), and its link is the
               wizard's own mailto (JP-053 — it was `calBookTo`, a scroll that
               lost every answer): with no form section on the page, or an
               address the form refuses, the pill goes back to being a span.
@@ -24805,8 +24814,9 @@ function EnquiryForm({ s }) {
   //    for it would be the video section's fabricated-metric rule.
   //  - **"WHAT HAPPENS NEXT" is a literal**, `vm.formStepsLabel` — the frame's
   //    own word for the column, and this section keeps its literals on the view
-  //    model (`formTypeLabel`, `formMsgLabel`, `formPrompt`) rather than in the
-  //    renderer.
+  //    model (`formTypeLabel`, `formPrompt`) rather than in the renderer. The
+  //    MESSAGE label over the last box is the artist's since JP-082,
+  //    `vm.formMsgLabel` off `FIELDS.form.messageLabel`.
   //
   // Two intended diffs from the frame. It draws five boxes and a message where
   // `FIELDS.form.fields` seeds four, so the reference picture is two rows of two

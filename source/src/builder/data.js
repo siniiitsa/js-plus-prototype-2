@@ -906,6 +906,11 @@ export const FORM_KINDS = [
 ]
 export const FORM_TYPES = ['Wedding', 'Event', 'Pub', 'Party', 'Other']
 export const FORM_MESSAGE = 'Tell me about your event…'
+// The label over the message box, and the head over the visitor's message in
+// the email (JP-082, user call, 2026-09-29). Every frame's reads "MESSAGE",
+// upper-cased by the render. The box always stands, so an emptied field reads
+// this again rather than dropping: the guarded email row's rule, JP-051.
+export const FORM_MSG_LABEL = 'Message'
 
 // Footer — the sitemap either side of the rule, and the small print under it.
 //
@@ -1135,6 +1140,11 @@ export const FORM_AVAILABLE = 'Available 2025 / 2026'
 // Booking calendar layout 2's pill. Its frame reads "Star Enquiry", taken as a
 // typo for this.
 export const CAL_SLOT_CTA = 'Start Enquiry'
+// Booking calendar layout 4's submit, the wizard's last step and the foot
+// pill (964:72844 and its twins). FIELDS.calendar.cta seeds it at layout 4
+// (JP-082, user call, 2026-09-29; FORM_BTN_4's shape), and an emptied label
+// falls back to it there, since it is the wizard's only way to send.
+export const CAL_SEND_4 = 'Send Enquiry'
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
@@ -1334,9 +1344,9 @@ export const FIELDS = {
     { k: 'placeBody', l: 'Place card text',  type: 'area', d: PLACE_BODY,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
       hint: 'The line under your Location on the card beside the pin. Left empty, it is not drawn.' },
-    // Named `cta2` on the bio's own content too, which no bio field edits:
-    // bio layout 4's Listen prints that, not this (JP-059's census). `in`
-    // speaks for the header.
+    // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
+    // (JP-082): bio layout 4's Listen prints that, not this (JP-059's census).
+    // `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
       in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2] } },
     // The chips are the header's the way Kicker and Location are (JP-037,
@@ -1387,6 +1397,12 @@ export const FIELDS = {
     // is not drawn.
     { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
+    // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
+    // already read, `vm.cta2` off its own content, which no field reached
+    // (JP-059's census named it a control). Uncased; the ↗ is the markup's.
+    { k: 'cta2',      l: 'Listen link', d: 'Listen', in: [3],
+      hint: 'The link beside Performing since, to your Media Player on the published page. '
+          + 'Leave it empty to hide it.' },
   ],
   // The second list-shaped content type with a structured editor (see
   // `repertoire` below): `tracks` here is an array of { title, sub, image,
@@ -1544,7 +1560,12 @@ export const FIELDS = {
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
-    { k: 'cta',     l: 'Button (layout 1)', d: 'Check a date', in: [0] },
+    // Layout 1's pill and layout 4's Send Enquiry (JP-082). `d` is layout
+    // 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and EditPanel's chain.
+    { k: 'cta',     l: 'Button', d: 'Check a date', in: [0, 3],
+      hint: 'Layout 1’s button, and layout 4’s Send Enquiry on the last step of the enquiry '
+          + 'wizard and at the foot of the summary. Layout 4 starts from “Send Enquiry”, '
+          + 'and shows it again if you empty this there.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
       hint: 'The dates layout 2 lists, each with what you play and what it starts from.' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
@@ -1682,6 +1703,9 @@ export const FIELDS = {
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
+    // The message box's label (JP-082): the one box label that was a literal.
+    { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
+      hint: 'Layouts 1 and 4. Also heads the message in the email you receive. Left empty, it shows Message.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },

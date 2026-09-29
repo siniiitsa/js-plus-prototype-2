@@ -301,7 +301,8 @@ mutated through a single `patch()` helper.
   starts with, where the header's nav needs the published tab's own delegated listener — the
   **header's
   navigation**, the **bio's own Listen** (layout 4 alone, in the overlay card's meta row: the
-  header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section),
+  header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section, worded
+  by the bio's own `cta2`, *Listen link* — JP-082 — and not drawn when that is emptied),
   the **media player** (below), the **gallery's arrows
   and thumbnail strip, and layout 3's fullscreen viewer** (below), the **events map's pager, its pin/row pairing, its map zoom
   (layouts 3 and 4, and Lime's, Grunge's and Editorial's layout 2) and — in layout 3 alone — its city chip row and its See all gigs reveal**
@@ -780,7 +781,11 @@ mutated through a single `patch()` helper.
   *Package ›* (`wPkg`, appended after `wVals`) steps and wraps, live only; at one package the
   chevron and the handler go, and with no pricing section the card is not drawn. `sel` and
   `mi` reach nothing in this design, `booked` reaches it only through a typed date, and `cta`
-  not at all. Its foot is `BookPill` at layout 3's own numbers labelled `vm.calWizard.send`, on
+  only as the submit's label: `vm.calWizard.send` is `cta`, seeded `CAL_SEND_4` "Send Enquiry"
+  at this layout where `d` is layout 1's "Check a date" (JP-082, user call, 2026-09-29,
+  `FORM_BTN_4`'s shape, in `sectionVm` and `EditPanel`'s chain), and an emptied label reads the
+  seed again, since the wizard has no other way to send. Its foot is `BookPill` at layout 3's
+  own numbers labelled `vm.calWizard.send`, on
   the same mailto as the wizard's last step (below); and it is
   the one calendar layout that paints a **sheet** — the Figma wrapper's tan panel, which
   carries the page's own "Book Us" head (`CAL_HEADING_4`) and would otherwise leave that head on
@@ -1134,7 +1139,9 @@ mutated through a single `patch()` helper.
   email row, since the seed carries one and a new row is `text`. The guard reaches `sectionVm`
   too (JP-051): that row is never dropped as blank, and an emptied label reads
   `FORM_EMAIL_LABEL` ("Email") on the box and in the mailto body alike, under the hint "Shown as
-  Email.". Nothing else is guarded: an
+  Email.". The message box, which is no row, follows the same rule: its label is
+  `FIELDS.form.messageLabel` (JP-082), and emptied it reads `FORM_MSG_LABEL` ("Message") on
+  the box and over the message in the mailto. Nothing else is guarded: an
   emptied list renders in all four layouts, the published form still sending the bare body.
   `pricing`'s `c.tiers` is an array of
   `{ name, price, tags, blurb, feats }`, maintained by `TiersField`, and it replaced a **flattened

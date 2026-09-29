@@ -398,8 +398,9 @@ That distinction is the whole design, and it buys two things:
   page the visitor's answers or a faint "e.g." placeholder), a date card that shows the typed
   date and refuses a booked or past one, a package card naming the **Pricing section's**
   packages (read across sections, the header identity's way; *Package ›* steps through them),
-  and Send Enquiry. No date or price on it is one the artist did not type. Send Enquiry, there
-  and on the wizard's last step, **mails the answers like the enquiry form does** (JP-053): a
+  and Send Enquiry. No date or price on it is one the artist did not type. Send Enquiry's label
+  is the calendar's *Button*, layout 1's "Check a date" seeded "Send Enquiry" here (JP-082). The pill,
+  there and on the wizard's last step, **mails the answers like the enquiry form does** (JP-053): a
   `mailto:` to the calendar's own address, which follows the form section's (read across sections
   the same way) until the artist types one (JP-076), refused until the name and email pass the
   form's checks, then a confirmation in the wizard card with *Start again*. With no address — no

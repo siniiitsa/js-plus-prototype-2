@@ -110,7 +110,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 |---|---|---|---|---|---|---|
 | 1 | JP-081 · JP-082 (replies) | Media head, track names, bio prose, form head; the labels no field reaches | **By design, all of them**: "Six" counts the frame's filler tile; the tracks are layout 1's frame's; the prose's lead names the mock artist; "Contact Us" is JP-054's call; the labels are JP-071's | — (replies) | **yes** — the labels A / B, the form head A / B / C, the media head A / B, the prose and tracks A / B | **done** (A, A, A, A; four replies, no fix) |
 | 2 | JP-076 | With the form deleted, both Send Enquiry pills do nothing | **Confirmed, shared.** A known state (JP-053) with no face and no fix path but the form; `BookPill`'s span keeps its pointer. **Proposed: Medium** | S–M | **yes** — 1 A (a calendar address that follows the form's) / B (one address); 2 (a) a panel note / (b) inert pills / (c) a visitor line | **done** (1 A, 2 (a); the calendar's own `email` follows the form's, and a panel note) |
-| 3 | JP-082 (controls) | Send Enquiry, the bio's Listen and the form's *Message* label have no field | **Confirmed, shared**: a submit, a link and a box label are not vocabulary. The census named Listen for this batch; *Message* is the one box label left a literal | S | **yes** — each: A (a field) / reply | open |
+| 3 | JP-082 (controls) | Send Enquiry, the bio's Listen and the form's *Message* label have no field | **Confirmed, shared**: a submit, a link and a box label are not vocabulary. The census named Listen for this batch; *Message* is the one box label left a literal | S | **yes** — each: A (a field) / reply | **done** (A, A, A; `cta` reaches layout 4 seeded "Send Enquiry", a bio *Listen link*, a form *Message label*) |
 | 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | open |
 | 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | open |
 | 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | open |
@@ -740,11 +740,95 @@ list, where it names "the bio's own Listen". The comments at `EncoreSection.jsx:
 ("The masters set one paragraph — the seeded `para1` verbatim") becomes "`para1` behind a lead clause
 naming the mock artist" (JP-081, a reply).
 
-**Decided.** —
+**Decided** (2026-09-29, user call): **A, A, A.** The calendar's `cta` widens to layouts 1 and 4
+as *Button*, seeded "Check a date" at layout 1 and `CAL_SEND_4` "Send Enquiry" at layout 4, an
+emptied label at layout 4 falling back to the seed. The bio gets a *Listen link* field on the
+`cta2` key it already reads, and an emptied one drops the link. The form gets a *Message label*
+field, and an emptied one reads "Message" on the box and in the mailto. No `typesLabel`.
 
-**Settled.** —
+**Settled** (2026-09-29). Every line in JP-076's drift table held at the start.
+- **The fix.**
+  - `data.js`: `FORM_MSG_LABEL` beside `FORM_MESSAGE` (`:913`) and `CAL_SEND_4` beside
+    `CAL_SLOT_CTA` (`:1147`). The calendar's `cta` row (`:1565`) is now *Button*,
+    `in: [0, 3]`, with a hint naming both seats and the layout-4 seed. The bio's `cta2` row
+    (`:1403`) is *Listen link*, `d: 'Listen'`, `in: [3]`. The form's `messageLabel` row
+    (`:1707`) sits after `message`. The header `cta2` comment now points at the bio's field.
+  - `sectionVm`: `vm.calWizard.send` is `cased(String(cv('cta', CAL_SEND_4)).trim() ||
+    CAL_SEND_4)` (`EncoreBuilder.jsx:1293`). No `d` gate is needed, because only design 3
+    reads the wizard. `vm.calCta` is untouched, so layout 1's emptied label behaves as before.
+    `vm.formMsgLabel = String(cv('messageLabel', FORM_MSG_LABEL)).trim() || FORM_MSG_LABEL`
+    (`:1701`), and `formMailto` already read it. The bio needed nothing, since `vm.cta2` was
+    already `cv('cta2', 'Listen')` on its own content.
+  - `EditPanel`: one chain arm, `f.k === 'cta' && sec.cat === 'calendar' && design === 3 ?
+    CAL_SEND_4` (`:3663`), beside the form's `button` arm.
+  - `EncoreSection`: the bio's two `ListenLink` sites sit behind `s.cta2 &&` (`:5190` block,
+    `:5398` Retro's body), the `s.since` test beside them. The rest is comments: the foot pill's
+    (`~:16880`), the form's literal list (`~:24812`), Retro's bio meta row and its prose comment,
+    which now reads "`para1` behind a lead clause naming the mock artist" (JP-081's reply).
+  - `reach.mjs`: `bio.cta2` and `form.messageLabel` rows, and a note on `calendar.cta`.
+- **A consequence, FORM_BTN_4's rule.** Only the absent key seeds per layout. A label typed at
+  layout 1 follows the artist to layout 4's Send Enquiry, and the reverse.
+- **Left as they are.** `calNoMailHint` and both `email` hints still say "Send Enquiry". They name
+  the seed, as `FIELDS.form.button`'s hint names "Check Availability". The header's five
+  `ListenLink` sites are untouched. `message`'s hint ("Layouts 1 and 4.") still holds, so it
+  was not touched. The bio's `s.cta2 &&` drops `''` but not a whitespace-only label, which
+  would still print a bare `↗`. That is every other drop-when-emptied field's test (`since`,
+  `heroCta`, `credit`, the bio's `cta`). Only the two fields that fall back to a seed trim.
+- **The harness was proved first.** A HEAD worktree on :5174 against the tree on :5173:
+  calendar, bio and form × themes 0–4 × 4 layouts × 3 widths gave **0 of 180 per surface**.
+  **After-diff, named before the code: zero.** Measured: **0 of 180 per surface.**
+- **Reach** (a filtered throwaway copy, themes 0–4): `calendar.cta` reaches layouts 1 and 4,
+  `bio.cta2` layout 4, and `form.messageLabel` layouts 1 and 4. That holds on all five templates,
+  6 of 6 renders each. The canvas moves at layout 4 too: the foot pill prints `W.send` as a span.
+  So each `in` stands as written.
+- **States** (a throwaway harness probe, `live=1` unless noted, themes 0–4 × 3 widths): **315 of
+  315 pass.**
+  - `{"cta":"Enquire now"}` at `arch 3`: the foot pill reads it, and so do both pills after
+    two trusted *Next Step* clicks. The href is byte-identical to the seed's. At `arch 0`,
+    layout 1's pill reads it.
+  - `{"cta":""}` live and `{"cta":"  "}` on the canvas both print "Send Enquiry".
+  - `{"cta2":"Hear the set"}`: one `<a href="#media">` reading `Hear the set ↗`. With
+    `&nav=1`, a page with no media section, it is a `<span>`. `{"cta2":""}` leaves no `↗` in
+    the section on either surface.
+  - `messageLabel`: a marker prints over the box at `arch 0` and `arch 3`, and `""` or `"  "`
+    prints "Message". With a message typed, the submit's href ends
+    `%0D%0A<label>%3A%0D%0AHi%20there`, and an emptied label sends `Message%3A`.
+    - The plan's `%0D%0A%0D%0A` assumed filled boxes. With none filled, the body opens on
+      one `%0D%0A`, and HEAD does the same.
+- **The tester's steps, in the real app** (a one-off puppeteer script, trusted clicks and keys,
+  deleted after), on Grunge's, Lime's and Retro's card 4 and Retro's card 1:
+  - At card 4 the panels read *Button* "Send Enquiry", *Listen link* "Listen" and *Message
+    label* "Message", none marked "Not shown in this layout".
+  - At card 1, *Button* reads "Check a date" and *Message label* "Message", both unmarked.
+    *Listen link* is marked "Not shown in this layout", which is right: layout 1's bio has no
+    Listen.
+  - Typed "Enquire now", "Hear the set" and "Your note", then Publish → Open. At 1440, 768 and
+    390 the calendar's pill, the bio's `Hear the set ↗` and the form's `Your note` all printed.
+  - A trusted click on Listen scrolled to `media`.
+  - The form's mailto ended `Your%20note%3A%0D%0AHi%20there`.
+  - At card 4, two trusted *Next Step* clicks showed both pills reading "Enquire now" on
+    `mailto:bookings@kaimercer.co.uk`.
+  - Card 1's layout-1 pill printed "Enquire now".
+  - No page errors on any run. The wizard was walked once per popup, so JP-076's *Start again*
+    trap did not arise.
+- **Docs**: CLAUDE.md's `s.live` list (the bio's Listen is worded by its own `cta2`), its wizard
+  passage (`cta` is the submit's label now, not "not at all") and its guarded-row passage (the
+  message label's rule), README's wizard passage, and the comments above.
 
-Reply: —
+Reply: **JP-082 (controls) — fixed, all three.**
+- **Send Enquiry.** The Booking Calendar's *Button* now reaches layout 4. On *Stacked* it shows
+  "Send Enquiry" and edits both Send Enquiry pills, on the wizard's last step and at the foot of
+  the summary. Empty it there and the pills read "Send Enquiry" again, since the wizard has no
+  other way to send. Layout 1 still starts from "Check a date". A label you type is yours at
+  every layout.
+- **Listen ↗.** The Bio has a *Listen link* field (layout 4). It changes the word, and emptying
+  it hides the link, arrow and all. On the published page it still scrolls to the Media Player,
+  and with no Media Player on the page it is plain text.
+- **Message.** The Enquiry Form has a *Message label* field (layouts 1 and 4). It changes the
+  label over the message box and the heading over the message in the email you receive. Emptied,
+  both read "Message", since the box always stands.
+- The seeded page is unchanged. Checked on *Stacked* under Grunge, Lime and Retro, and on Retro's
+  layout 1, at 1440, 768 and 390.
 
 ---
 

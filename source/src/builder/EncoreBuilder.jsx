@@ -41,9 +41,9 @@ import {
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
-  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
+  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, MAP_HEADING_3, TESTI_HEADING_3,
   CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
@@ -1234,8 +1234,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // passed cues nothing either, and the foot prints the prompt.
     vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
-    // Layout 1's pill. Layout 4's foot is the wizard's own Send Enquiry since
-    // JP-052, so this reaches one layout.
+    // Layout 1's pill. The same field is layout 4's Send Enquiry (JP-082),
+    // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
@@ -1285,7 +1285,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       })),
       typesLabel: cased('Type of event'),
       date: { key: 'date', label: cased('Approx. date'), ph: 'dd / mm / yyyy' },
-      back: cased('Back'), next: cased('Next Step'), send: cased('Send Enquiry'),
+      back: cased('Back'), next: cased('Next Step'),
+      // The submit is `cta` (JP-082), FORM_BTN_4's shape: the absent key seeds
+      // the layout's own label, and a label typed at layout 1 follows the
+      // artist here. Emptied, it is the seed again, since the wizard has no
+      // other way to send (`cv` does not trim).
+      send: cased(String(cv('cta', CAL_SEND_4)).trim() || CAL_SEND_4),
       // The package card's control, the frame's "Package ›" — the chevron is
       // the frame's glyph, not a composed separator.
       pkg: `${cased('Package')} ›`,
@@ -1685,12 +1690,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formTypes = songTags(cv('types', FORM_TYPES.join(', '))).map((l) => cased(l))
   vm.formMessage = cv('message', FORM_MESSAGE)
   // The two labels the frame prints over its controls, and the four lines the
-  // live form needs. Literals the view-model owns, vm.calPrompt's rule, so the
-  // section looks them up rather than writing copy of its own. The two control
-  // labels stay raw — the render uppercases them in CSS, and the mailto body
-  // wants them as written.
+  // live form needs. The chip row's label and the four lines are literals the
+  // view-model owns, vm.calPrompt's rule, so the section looks them up rather
+  // than writing copy of its own; the message box's is the artist's
+  // `messageLabel` (JP-082), which reads FORM_MSG_LABEL again when emptied,
+  // since the box always stands (FORM_EMAIL_LABEL's rule; `cv` does not trim).
+  // The two control labels stay raw — the render uppercases them in CSS, and
+  // the mailto body wants them as written.
   vm.formTypeLabel = 'Event type'
-  vm.formMsgLabel = 'Message'
+  vm.formMsgLabel = String(cv('messageLabel', FORM_MSG_LABEL)).trim() || FORM_MSG_LABEL
   vm.formPrompt = 'Add the missing details and try again.'
   vm.formSentTitle = cased('Check your mail app')
   vm.formSentBody = 'Your enquiry should be open in it, ready to send. If nothing happened, write to:'
@@ -3652,6 +3660,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'button' && sec.cat === 'form'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? FORM_BTN_4
+                    : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3
                     : f.k === 'rowCta' && sec.cat === 'pricing'
