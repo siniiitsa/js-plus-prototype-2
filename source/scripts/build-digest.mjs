@@ -38,7 +38,10 @@ function probe() {
     const txt = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.nodeValue).join('').slice(0, 40)
     rows.push([el.tagName, r1(r.x - o.x), r1(r.y - o.y), r1(r.width), r1(r.height), cs.backgroundColor, cs.backgroundImage.slice(0, 50),
       cs.color, cs.borderTopWidth, cs.borderTopColor, cs.borderRadius, cs.fontSize, cs.fontFamily, cs.fontWeight, cs.lineHeight,
-      cs.letterSpacing, cs.textTransform, cs.transform, cs.boxShadow, cs.opacity, el.getAttribute('src')?.slice(0, 40) ?? '', txt].join('|'))
+      cs.letterSpacing, cs.textTransform, cs.transform, cs.boxShadow, cs.opacity,
+      // digest.mjs's mask columns (plans/grunge/display-face.md, step 0).
+      cs.maskImage.slice(0, 50), cs.webkitMaskImage.slice(0, 50), cs.maskSize, cs.maskPosition,
+      el.getAttribute('src')?.slice(0, 40) ?? '', txt].join('|'))
     for (const ch of el.children) walk(ch)
   }
   roots.forEach(walk)
