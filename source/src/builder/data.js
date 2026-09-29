@@ -688,6 +688,20 @@ export const FACE_TITLE = 'The face of the act'
 export const FACE_BODY = "Same person you'll meet on the night. Performing since 2021."
 export const PLACE_BODY = 'Available across the UK · 120 mi standard travel radius.'
 export const BIO_TAG = '/Featured'
+// JP-071 — eight section labels the frames draw and no field reached, the
+// literals they replace: bio layout 3's three stat labels (one line each;
+// sectionVm breaks them before the last word, as the frames do), its
+// "[ About ]" and "Genres" (bio layout 4's too), media layouts 2 and 3's
+// "● Popular" over the list, and layout 3's eyebrows on the map and the
+// testimonials. The "●" and the brackets are the markup's.
+export const BIO_SINCE_LABEL = 'Performing since:'
+export const BIO_ROLE_LABEL = 'Current role:'
+export const BIO_BASE_LABEL = 'Based in:'
+export const BIO_ABOUT_LABEL = 'About'
+export const BIO_TAGS_LABEL = 'Genres'
+export const MEDIA_LIST_LABEL = 'Popular'
+export const MAP_KICKER = 'Gigs & travel'
+export const TESTI_KICKER = 'Testimonials'
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -1446,6 +1460,24 @@ export const FIELDS = {
     // is not drawn.
     { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
+    // JP-071 (user call, 2026-09-29, reversing the fit's "a frame label stays
+    // a literal" for these): the ID card's labels, each seeded with the
+    // frame's word, uncased (the card cases them), and not drawn when emptied.
+    // A stat's label goes with its value as well: Current role and Based in
+    // print the header's Kicker and Location. The line break before the last
+    // word is sectionVm's, so each is one line here.
+    { k: 'sinceLabel', l: 'Performing since label', d: BIO_SINCE_LABEL, in: [2],
+      hint: 'The label over the date on the ID card. It breaks before its last word. '
+          + 'Left empty, the date stands alone.' },
+    { k: 'roleLabel',  l: 'Current role label', d: BIO_ROLE_LABEL, in: [2],
+      hint: 'The label over the Header’s Kicker on the ID card. Left empty, the kicker stands alone.' },
+    { k: 'baseLabel',  l: 'Based in label', d: BIO_BASE_LABEL, in: [2],
+      hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
+    { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
+      hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
+    { k: 'tagsLabel',  l: 'Genres label', d: BIO_TAGS_LABEL,
+      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], '*': [3] },
+      hint: 'The line over the Header’s tag chips, drawn while they are shown. Left empty, the chips stand alone.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached
     // (JP-059's census named it a control). Uncased; the ↗ is the markup's.
@@ -1472,6 +1504,9 @@ export const FIELDS = {
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
+    // JP-071: the "● Popular" over the track list, the frame's word, uncased.
+    { k: 'listLabel', l: 'List label', d: MEDIA_LIST_LABEL, in: [1, 2],
+      hint: 'The label over the track list, after a dot. Left empty, it is not drawn.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
     // Editorial's (964:58614), so there and on Pop an empty address leaves it a
     // picture — the rule the rest of the file calls the Soundcloud rule. Lime's
@@ -1651,6 +1686,9 @@ export const FIELDS = {
           + "layout 4's ticker. "
           + 'Layout 3 also turns the cities into its filter chips, and works out the weekday '
           + 'its date disc prints from the month, the day and the year (four digits).' },
+    // JP-071: layout 3's eyebrow over the heading, the frame's words, uncased.
+    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [2],
+      hint: 'The small line over the heading. Left empty, it is not drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
@@ -1689,6 +1727,9 @@ export const FIELDS = {
       hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
   testimonials: [
+    // JP-071: layout 3's eyebrow over the heading, the frame's word, uncased.
+    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [2],
+      hint: 'The small line over the heading, after a dot. Left empty, it is not drawn.' },
     // A textarea, because layout 2's default breaks onto a second line.
     { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
       hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '

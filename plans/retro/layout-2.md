@@ -350,7 +350,10 @@ Learned on the video section (section 4):
   gallery's hide-the-empty-TikTok rule read one step on. A frame **label**
   ("Top music video", "View All ›", "Follow") stays a literal, the media
   player's "● Popular" precedent. Say in the commit which strings went, verbatim,
-  so the call can be reversed.
+  so the call can be reversed. *(Narrowed since by the Grunge retest's JP-071,
+  2026-09-29: "● Popular" and seven other labels the tester reported are now seeded,
+  emptiable fields — [`../grunge/retest-qa-fixes.md`](../grunge/retest-qa-fixes.md).
+  The rule still holds for every label nobody has reported.)*
 - **A field the frame needs and no layout has is cheap; a repeater is not.**
   `FIELDS.video` gained `image` and `avatar` — two `type: 'image'` entries, which
   `EditPanel`'s `imgVal`/`ImageField` already handle generically, so the diff is

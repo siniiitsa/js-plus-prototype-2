@@ -4576,11 +4576,13 @@ function Bio({ s }) {
       </div>
     ) : <div style={{ height: '1px', background: `${s.tx}52`, flex: 'none' }} />
 
-    const stat = (label, value) => (
-      <div key={label} style={col(u(15), {
+    // The labels are the artist's (JP-071), broken before the last word in
+    // `sectionVm`; an emptied one leaves the value alone in its column.
+    const stat = (key, label, value) => (
+      <div key={key} style={col(u(15), {
         flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
       })}>
-        <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
+        {label && <span style={{ ...chipType, whiteSpace: 'pre-line', overflowWrap: 'break-word' }}>{label}</span>}
         {/* Two lines reserved either way: 2 × 1.1 in the label face, 2 × 1.26
             in Chakra Petch (Grunge's 50 box is 2 × 20 × 1.26; Editorial's
             values are the same Label/XS in `font/ui`). */}
@@ -4591,9 +4593,9 @@ function Bio({ s }) {
       </div>
     )
     const stats = [
-      s.since ? stat('Performing\nsince:', s.since) : null,
-      s.kicker ? stat('Current\nrole:', s.kicker) : null,
-      s.location ? stat('Based\nin:', s.location) : null,
+      s.since ? stat('since', s.sinceLabel, s.since) : null,
+      s.kicker ? stat('role', s.roleLabel, s.kicker) : null,
+      s.location ? stat('base', s.baseLabel, s.location) : null,
     ].filter(Boolean)
 
     const head = (
@@ -4658,7 +4660,7 @@ function Bio({ s }) {
       }}>
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
-          <span style={chipType}>[ About ]</span>
+          {s.aboutLabel && <span style={chipType}>[ {s.aboutLabel} ]</span>}
           <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP1}</p>
           {s.bioP2 && (
             <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP2}</p>
@@ -4763,10 +4765,13 @@ function Bio({ s }) {
             instance draws it. Editorial's 768 instance (984:16821) is the
             `Theme=Lime` variant, olive and lime, a leak; its row is drawn
             from Editorial's own chips, as the 1440 and 390 instances draw
-            it. */}
+            it. The line is `tagsLabel` (JP-071), and an emptied one leaves
+            the chips alone. */}
         {s.showTags === 'show' && (
           <div style={col(u(16), { alignItems: 'stretch' })}>
-            <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>Genres</span>
+            {s.tagsLabel && (
+              <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>{s.tagsLabel}</span>
+            )}
             <TagChips s={s} radius={s.radiusChip} />
           </div>
         )}
@@ -4798,18 +4803,20 @@ function Bio({ s }) {
     }
 
     // The frame hand-breaks each stat label onto two lines, which is what sets
-    // its column's width; the labels are ours to write, so the break is kept
-    // as a literal newline rather than left to a measure nothing states.
-    const stat = (label, value) => (
+    // its column's width. The labels are the artist's since JP-071, and the
+    // break before the last word is composed in `sectionVm` as a newline
+    // rather than left to a measure nothing states. An emptied label leaves
+    // the value alone in its column.
+    const stat = (key, label, value) => (
       // Every master states 96 on the *column*; it is carried on the row below
       // instead, as a floor. Unwrapped the two are the same picture — the
       // values sit on the 96 box's floor, which is what keeps the head band at
       // the frame's 144 — and wrapped they are not: a second line of 96-tall
       // columns holding our one-line values opens a 58px hole between the rows.
-      <div key={label} style={col(u(15), {
+      <div key={key} style={col(u(15), {
         flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
       })}>
-        <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
+        {label && <span style={{ ...chipType, whiteSpace: 'pre-line', overflowWrap: 'break-word' }}>{label}</span>}
         {/* Two lines reserved (labelStyle's 1.1 leading), because every master's
             value is two lines: a one-line value then keeps its column the height
             of its neighbours, so the labels still share a top. */}
@@ -4817,9 +4824,9 @@ function Bio({ s }) {
       </div>
     )
     const stats = [
-      s.since ? stat('Performing\nsince:', s.since) : null,
-      s.kicker ? stat('Current\nrole:', s.kicker) : null,
-      s.location ? stat('Based\nin:', s.location) : null,
+      s.since ? stat('since', s.sinceLabel, s.since) : null,
+      s.kicker ? stat('role', s.roleLabel, s.kicker) : null,
+      s.location ? stat('base', s.baseLabel, s.location) : null,
     ].filter(Boolean)
 
     // 390 draws this as a column — the name over the stats, at the same 10 the
@@ -4904,7 +4911,7 @@ function Bio({ s }) {
             moves to the photograph. */}
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: ink })}>
-          <span style={chipType}>[ About ]</span>
+          {s.aboutLabel && <span style={chipType}>[ {s.aboutLabel} ]</span>}
           <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5 }}>{s.bioP1}</p>
           {/* The masters set one long paragraph here; the section has two, and
               `para2` had until now drawn in no layout at all. Emptied, it is
@@ -5355,10 +5362,11 @@ function Bio({ s }) {
         }}>{s.title}</h2>
         {s.showTags === 'show' && (
           <div style={col(u(16), { alignSelf: 'stretch', maxWidth: desk ? u(457) : undefined })}>
-            {!s.mob && (
+            {/* `tagsLabel` (JP-071), layout 3's Genres line's key. */}
+            {!s.mob && s.tagsLabel && (
               <span style={{
                 fontFamily: s.body, fontSize: u(T.genre), lineHeight: 1.5, color: s.ac,
-              }}>Genres</span>
+              }}>{s.tagsLabel}</span>
             )}
             <TagChips s={s} radius={u(8)} size={u(T.chip)} />
           </div>
@@ -6603,12 +6611,12 @@ function Media({ s }) {
           minWidth: 0, alignItems: 'stretch',
           minHeight: desk || !s.tracks.length ? undefined : '596px',
         })}>
-          <div style={row('0', {
-            flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`,
+          <div style={row(u(12), {
+            flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`,
             color: s.tx, textTransform: 'uppercase',
             ...(ed ? { position: 'relative' } : null),
           })}>
-            <span style={chipType}>● Popular</span>
+            {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
             <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
             {ed && dash('bottom')}
           </div>
@@ -6921,10 +6929,13 @@ function Media({ s }) {
         // column against the fan's, not a number this branch states.
         minHeight: desk || !s.tracks.length ? undefined : '596px',
       })}>
-        <div style={row('0', {
-          flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: ink,
+        {/* The label is `listLabel` (JP-071). A long one wraps inside the row
+            rather than widening the page, 12 clear of the counter; emptied, the
+            counter keeps the right-hand end. */}
+        <div style={row(u(12), {
+          flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: ink,
         })}>
-          <span style={chip({ textTransform: 'uppercase' })}>● Popular</span>
+          {s.listLabel && <span style={chip({ textTransform: 'uppercase', whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>● {s.listLabel}</span>}
           {/* Layout 1 derives its counter from the track count the same way. */}
           <span style={chip({ textTransform: 'uppercase' })}>
             {s.tracks.length} Featured / {s.tracks.length} Max
@@ -7323,11 +7334,11 @@ function Media({ s }) {
           {limeHead}
           {limeCard}
           <div style={col('0', { alignItems: 'stretch' })}>
-            <div style={row('0', {
-              flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: s.tx,
+            <div style={row(u(12), {
+              flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: s.tx,
               position: ed ? 'relative' : undefined,
             })}>
-              <span style={chipType}>● Popular</span>
+              {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
               <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
               {footDash}
             </div>
@@ -7450,12 +7461,13 @@ function Media({ s }) {
             two labels are separated by an unfilled `flex-[1_0_0]` spacer — a
             gap, not a rule, and the render draws nothing there — so this is a
             space-between row, which is what layout 2's counter row already is.
-            The count is derived, as it is in layouts 1 and 2. */}
-        <div style={row('0', {
-          flex: 'none', justifyContent: 'space-between',
+            The count is derived, as it is in layouts 1 and 2, and the label
+            is `listLabel` (JP-071), layout 2's key. */}
+        <div style={row(u(12), {
+          flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end',
           padding: `${u(16)} 0`, color: s.tx,
         })}>
-          <span style={chip}>● Popular</span>
+          {s.listLabel && <span style={{ ...chip, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
           <span style={chip}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
         </div>
 
@@ -16009,8 +16021,10 @@ function Calendar({ s }) {
             {s.calDays.map(dayName)}
             {month.cells.map(dot)}
           </div>
-          {/* The three labels are the frame's own, the media player's "● Popular"
-              precedent, and the row is drawn whole whatever the month holds: a
+          {/* The three labels are the frame's own literals, Retro layout 2's
+              label rule (JP-071 made the eight reported labels fields, the
+              media player's "● Popular" among them, and named these three as
+              unreported siblings that stay), and the row is drawn whole whatever the month holds: a
               key is the vocabulary of the design, not a summary of the page, so
               it does not hide the line for a state this month happens not to be
               in (the gallery's hide-the-empty-row rule is about a tile that
@@ -18896,7 +18910,7 @@ function EventsMap({ s }) {
 
       const headL = (
         <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
-          <span style={bodySm}>Gigs &amp; travel</span>
+          {s.mapKicker && <span style={bodySm}>{s.mapKicker}</span>}
           <h2 style={{ margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null) }}>{s.title}</h2>
         </div>
       )
@@ -19258,15 +19272,17 @@ function EventsMap({ s }) {
 
     const head = (
       <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%' })}>
-        {/* The eyebrow stays the frame's own label, which is layout 1's call in
-            this very section ("Shows/coverage"). `base` was tried here first,
-            on the gallery's prefer-a-field rule, and read back as a stutter:
-            the head was then `TITLES.map`'s "Manchester", so it printed "Based
-            in Manchester" over "Manchester" — the pricing deck's
-            render-the-head-and-read-it rule. It goes along the map's foot
-            instead, where the frame's own line already names a place. The
-            head has been the frame's "Where I'm playing." since JP-070. */}
-        <span style={body12}>Gigs &amp; travel</span>
+        {/* The eyebrow is the frame's own words, seeded into its own field,
+            `kicker` (JP-071, user call, 2026-09-29; it was a literal, layout
+            1's call in this very section, "Shows/coverage"), and not drawn
+            when emptied. `base` was tried here first, on the gallery's
+            prefer-a-field rule, and read back as a stutter: the head was then
+            `TITLES.map`'s "Manchester", so it printed "Based in Manchester"
+            over "Manchester" — the pricing deck's render-the-head-and-read-it
+            rule. It goes along the map's foot instead, where the frame's own
+            line already names a place. The head has been the frame's "Where
+            I'm playing." since JP-070. */}
+        {s.mapKicker && <span style={body12}>{s.mapKicker}</span>}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
           letterSpacing: s.dls, color: hot,
@@ -21128,8 +21144,10 @@ function Testimonials({ s }) {
 
     const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
 
-    // The head. Its eyebrow is the frame's own label, a literal the way the
-    // media player's "● Popular" is; the display line is the section's
+    // The head. Its eyebrow is the frame's own label, a literal by Retro layout
+    // 2's label rule — an unreported sibling JP-071 named and kept, where
+    // layout 3's "● Testimonials" and the media player's "● Popular" became
+    // fields; the display line is the section's
     // `heading`, which layout 1 draws nowhere; and the sentence under it is the
     // new `sub`. Each of the two fields is rendered or not rather than printed
     // blank, since a `col` gap is spent on an empty span the same as a full one.
@@ -21922,7 +21940,7 @@ function Testimonials({ s }) {
       return (
         <div style={col(u(24))}>
           <div style={col('0px', { width: '100%', color: s.tx })}>
-            <span style={small}>&#9679; Testimonials</span>
+            {s.testiKicker && <span style={small}>&#9679; {s.testiKicker}</span>}
             {!!s.title && (
               <h2 style={{
                 margin: 0, ...disp(s.display, s.dispMd, 1),
@@ -21966,15 +21984,17 @@ function Testimonials({ s }) {
 
     return (
       <div style={col(u(24))}>
-        {/* The eyebrow is the frame's own label, the media player's "● Popular"
-            precedent; the display line is `heading`, which layout 2 was the
-            first design to draw. The 1440 master pins this column at 306 and
+        {/* The eyebrow is the frame's own word seeded into `kicker` (JP-071,
+            user call, 2026-09-29; it was a literal on the media player's
+            "● Popular" precedent, which went the same way), and an emptied
+            one drops it, dot and all; the display line is `heading`, which
+            layout 2 was the first design to draw. The 1440 master pins this column at 306 and
             breaks "Experienc / es." mid-word inside an `overflow-clip` header —
             both narrow masters give it the full measure and set it on one line,
             so the cap is a leak that destroys its own content and is dropped
             (the bio's rule). */}
         <div style={col('0px', { width: '100%' })}>
-          <span style={body12}>&#9679; Testimonials</span>
+          {s.testiKicker && <span style={body12}>&#9679; {s.testiKicker}</span>}
           {!!s.title && (
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: u(T.disp), lineHeight: 1,

@@ -130,7 +130,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix) |
+| 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix). *JP-071 reversed*: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071, eight seeded fields |
 | 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | **done** (A, keyed by the follower's category; real app, 7 runs) |
 | 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | **done** (A; the canvas sticks 28px down, and so do the layout-4 rail and the form's layout-2 card) |
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | **done** (A, Retro kept; `cardLine` seeded `CARD_LINE_3`; after-diff zero) |
@@ -281,7 +281,8 @@ is appended.
 2. **JP-068: the frame's copy is a slip.** The reply points at Media Player → *Kicker*; the seed
    stays "Top tracks".
 3. **JP-071: by design**, the product's rule for labels. A field per label (B) is a whole-product
-   label sweep and its own plan.
+   label sweep and its own plan. (**Reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071, 2026-09-29: the eight
+   reported labels are seeded, emptiable fields; the siblings stay literals.)
 
 Asked over the evidence, re-checked on HEAD (`485526b`; no source has changed since `109c293`):
 `FIELDS.media.kicker` at `data.js:1357` (`d: 'Top tracks'`, `in: [0, 2]`), `SONG_KEYS` at `:788`,
@@ -314,6 +315,7 @@ non-empty *Tags*), so each label goes with its value.
     there is the Bio's own heading copied onto the Media Player (and "KM" is the mock artist's
     initials, so it would be wrong for any real name). We keep "Top tracks" and have passed the
     slip to the designer. To match the design anyway, type `KM BIO` into Kicker.
+  - *(Reversed since: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071 made all eight fields.)*
   - **JP-071 — by design.** These are the design's labels, not the artist's content: the Bio's
     *Performing since:*, *Current role:*, *Based in:*, *[ About ]* and *Genres*, the Events Map's
     *Gigs & travel*, the Testimonials' *● Testimonials* and the Media Player's *● Popular* name
@@ -2678,7 +2680,7 @@ cached build still shows every one of them.
   - Not changed (both **reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest)): the Pricing intro, because "Four ways…" counts packages and the design shows
     three. Also the chips, which are made from the packages' tags; tag them "Duo", "Trio" and
     "Band" for the design's row.
-- **JP-071 — by design.** These are the design's labels, not the artist's content, and each goes
+- **JP-071 — by design** (**reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071: all eight are fields now). These are the design's labels, not the artist's content, and each goes
   with its value (*Current role:* only while Kicker is filled, and so on). Editable labels would
   be a product-wide change, which we can plan separately.
 - **JP-072 — fixed.** At Desktop the canvas's Booking Calendar stays in view beside the Bio and

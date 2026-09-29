@@ -35,7 +35,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
-  HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG, TIERS, TIERS_3, TIER_KEYS, PRICE_UNIT, QUOTES,
+  HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
+  BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
+  MAP_KICKER, TESTI_KICKER, TIERS, TIERS_3, TIER_KEYS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -773,9 +775,22 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
   // string is what tells the ID card not to draw the column.
   vm.since = cv('since', DEFS.since)
+  // JP-071 — layout 3's ID card labels and the Genres line, the frames' words
+  // as seeds, uncased (the card's chip face cases them). Every frame breaks a
+  // stat label before its last word, so that break is composed here, the
+  // one-composed-line rule, and a one-word label stays one line. Emptied, a
+  // label is '' and the card draws its value alone.
+  const breakLast = (v) => String(v ?? '').trim().replace(/\s+(\S+)$/, '\n$1')
+  vm.sinceLabel = breakLast(cv('sinceLabel', BIO_SINCE_LABEL))
+  vm.roleLabel = breakLast(cv('roleLabel', BIO_ROLE_LABEL))
+  vm.baseLabel = breakLast(cv('baseLabel', BIO_BASE_LABEL))
+  vm.aboutLabel = cv('aboutLabel', BIO_ABOUT_LABEL)
+  vm.tagsLabel = cv('tagsLabel', BIO_TAGS_LABEL)
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
+  // JP-071 — layouts 2 and 3's "● Popular" over the list; the dot is the markup's.
+  vm.listLabel = cv('listLabel', MEDIA_LIST_LABEL)
   // vm.nowPlaying is resolved under `tracks` below, because it reads them.
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
@@ -1057,6 +1072,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // emptied one gives the seat back to the review count (JP-065). Uncased, as
   // pricing's rating is.
   vm.testiRating = cv('rating', TESTI_RATING)
+  // JP-071 — layout 3's "● Testimonials" eyebrow; the dot is the markup's.
+  vm.testiKicker = cv('kicker', TESTI_KICKER)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips
@@ -1568,6 +1585,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
   vm.gigPage = PINS.length
+  // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased.
+  vm.mapKicker = cv('kicker', MAP_KICKER)
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)

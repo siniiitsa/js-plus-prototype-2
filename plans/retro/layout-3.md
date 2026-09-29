@@ -655,7 +655,8 @@ Learned on the booking calendar (section 6):
   whatever the month holds — the gallery's hide-the-empty-row rule is about a tile promising
   somewhere to go, and a key that dropped "Booked" on a month with no bookings would leave the
   visitor unable to read the tan dot when one appears. Its three labels are the frame's own
-  literals, the media player's "● Popular" precedent.
+  literals, the media player's "● Popular" precedent. *(They stay literals, named as an
+  unreported sibling by the Grunge retest's JP-071, which made "● Popular" itself a field.)*
 - **`BookPill` now takes `style`, spread last in both branches** — ListenLink's precedent, and
   the first prop added to it that is not a scale or a glyph. Two things needed it: `width: 100%`
   + `justifyContent: space-between`, which a hug-width inline-flex cannot be told from outside,

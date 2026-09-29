@@ -210,6 +210,15 @@ mutated through a single `patch()` helper.
   when emptied; a card keeps its tile, and both pills wrap rather than widen a 390 page. The face
   card's "Performing since 2021" is the artist's copy inside `faceBody`, **not** the bio's `since`,
   which it does not read (`cardLine`'s precedent, above); the hint says to change both.
+  **And eight frame labels went the same way** (JP-071, user call, 2026-09-29, reversing Retro
+  layout 2's "a frame label stays a literal" for the eight the tester reported): the bio's ID-card
+  labels `sinceLabel` / `roleLabel` / `baseLabel` (one line each; `sectionVm` breaks them before
+  the last word, as the frames do) and `aboutLabel`, its Genres line `tagsLabel` (bio layout 4's
+  too), media's `listLabel` ("● Popular", layouts 2 and 3) and layout 3's `kicker` on the map and
+  the testimonials. JP-059's shape: seeded with the literal, uncased, dropped when emptied. The
+  `●` and `[ ]` are the markup's and go with an emptied word; a stat's label also goes with its
+  value, as before. The unreported siblings stay literals: the bio's `Bio` eyebrow, media layout
+  2's `● Featured`, the calendar legend and testimonials layout 2's `✎ What clients say`.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —

@@ -72,7 +72,7 @@ it.
 | 1 | JP-056 · JP-068 | Anton, not Stones Crush · the media kicker's "KM BIO" | `qa-fixes.md` JP-056 (A); `layout-3-qa-fixes.md` the three replies (JP-068 A) | **Both need an answer from outside the code**: a web licence (the PO) and the frame's intent (the designer) | — (decisions) | **user: C on its own branch; A** | **done** (no code; [`display-face.md`](./display-face.md) written; JP-068's reply stands) |
 | 2 | JP-070 (rest) | The pricing intro and chips | `layout-3-qa-fixes.md` JP-070 (heads), "keep" and the chips' reply | **Named fit diffs**: the intro's count claim was dropped; the chips derive from one tag list for every layout | S–M | **user: B; A** | **done** (30 files, as named) |
 | 3 | JP-069 (weekday) | No weekday in the date disc | `layout-3-qa-fixes.md` JP-069, the weekday half | **A data-model gap**: a gig has no year | S–M | **user: A** | **done** (a `year` column; 30 files, as named) |
-| 4 | JP-071 | Eight section labels no field reaches | `layout-3-qa-fixes.md` the three replies (JP-071 A) | **The product's label rule**, now reversed for these eight | M | **yes** | todo |
+| 4 | JP-071 | Eight section labels no field reaches | `layout-3-qa-fixes.md` the three replies (JP-071 A) | **The product's label rule**, now reversed for these eight | M | **user: A, A, glyphs in the markup** | **done** (eight seeded fields; 0 of 1,320, as named) |
 | 5 | JP-066 | Set cards: no mood, set length or track length | `layout-3-qa-fixes.md` the three replies (JP-066 A) | **A data-model gap**: a set is a tag, and a song has no length | L | **yes** | todo |
 | 6 | — | End-of-pass sweep | — | — | S | — | todo |
 
@@ -659,9 +659,96 @@ paragraphs, and the testimonials eyebrow comment at `:21950`). The branch commen
 `:21113` and `:21950`. A *reversed* pointer in `layout-3-qa-fixes.md`'s JP-071, and a line in
 `../retro/layout-2.md` beside the rule it narrows.
 
-**Decided.** —
+**Decided: A, A, glyphs in the markup** (user, 2026-09-29).
+1. **The eight reported**, one key each, reaching every layout that prints the same word through
+   the same key. Bio layout 4's prose "Performing since {date}" (`:5189` / `:5398`) is a sentence
+   prefix before the value, not the stat label, so it stays a literal and is named with the four
+   siblings.
+2. **Single-line stat labels**; `sectionVm` breaks each before its last word (no break in a
+   one-word label), so the seeds render as today and a typed label keeps the frame's shape.
+3. **The field is the word**: `●` and `[ ]` stay the markup's, and an emptied field drops the
+   whole label, glyph included.
 
-**Settled.** —
+Asked over the entry's evidence, re-grepped on `da5e77b`: every site at the line the Evidence
+names. The harness was proved first: a HEAD worktree on :5174 against the tree, themes 0–4, three
+widths, canvas and `live=1`, **0 of 1,320**. **Expected after-diff: zero.**
+
+**Settled** (2026-09-29).
+- **Eight fields, each seeded with the literal it replaces.** The constants sit beside `BIO_TAG`
+  in `data.js`: `BIO_SINCE_LABEL` "Performing since:", `BIO_ROLE_LABEL` "Current role:",
+  `BIO_BASE_LABEL` "Based in:", `BIO_ABOUT_LABEL` "About", `BIO_TAGS_LABEL` "Genres",
+  `MEDIA_LIST_LABEL` "Popular", `MAP_KICKER` "Gigs & travel" and `TESTI_KICKER` "Testimonials".
+  - **Bio rows** (after `since`): `sinceLabel` *Performing since label*, `roleLabel` *Current role
+    label*, `baseLabel` *Based in label*, `aboutLabel` *About label*, all `in: [2]`, and
+    `tagsLabel` *Genres label*, `in: { Lime: [2], Grunge: [2], Editorial: [2, 3], '*': [3] }`.
+  - **Media**: `listLabel` *List label*, `in: [1, 2]`, after `heading`.
+  - **Map and testimonials**: `kicker` *Kicker*, `in: [2]`, ahead of `heading`. The key is free in
+    both sections, and the header's `kicker` is read off the header alone (`own`).
+  - Each has a hint that says where it prints and what emptying it does.
+- **`sectionVm`**: `vm.sinceLabel` / `roleLabel` / `baseLabel` go through one `breakLast()`, which
+  trims and puts a `\n` before the last word, so the seeds are the old literals byte for byte and
+  a one-word label stays one line. `vm.aboutLabel`, `vm.tagsLabel`, `vm.listLabel`, `vm.mapKicker`
+  and `vm.testiKicker` are plain `cv()` reads. All uncased. None has a per-layout seed, so
+  `EditPanel`'s fallback chain needed nothing.
+- **`EncoreSection`**, both halves wherever a label has two:
+  - `stat(key, label, value)` keys on the slot (`since` / `role` / `base`), no longer on the
+    label text, which two emptied labels would now share. An emptied label leaves the value
+    alone in its column. The label takes `overflowWrap: 'break-word'` as the value beside it does.
+  - `[ {aboutLabel} ]`, `● {listLabel}` and `● {testiKicker}` keep the glyph in the markup, and
+    each is not rendered when empty.
+  - **Media's counter row**: with the label emptied the row is `flex-end`, so the "5 Featured /
+    5 Max" counter keeps its right-hand seat (measured: its right edge does not move). The label
+    wraps (`whiteSpace: 'normal'`, `minWidth: 0`, `overflowWrap: 'anywhere'`) with the row's gap
+    at 12. That was the one failure the states run found: an 85-character label ran Lime's layout
+    2 13px past the page at 1440, since its chip style is `nowrap`. The seeded row has free
+    space, so neither change moves it.
+  - The comments that cited the "● Popular precedent" are rewritten: the map's and testimonials'
+    eyebrows (now fields), and the calendar legend and testimonials layout 2's `✎ What clients
+    say` (unreported siblings, literals by Retro layout 2's rule).
+- **Digest.** Themes 0–4, three widths, every category, canvas and `live=1`, against the HEAD
+  worktree: **0 of 1,320**, before and after the wrap fix. As named.
+- **Reach** (`reach.mjs`, eight new rows, themes 0–4): each key moves exactly the designs its
+  `in` names. `tagsLabel` moves bio layout 3 under Lime, Grunge and Editorial, and bio layout 4
+  under Retro, Pop and Editorial at 4 of 6 (1440 and 768; layout 4 draws no Genres line at 390).
+- **States** (a scratch puppeteer run, `textContent` beside the digest): 300 drawn states, each
+  label at its layouts × themes 0–4 × three widths × both surfaces, typed, at 85 characters, as
+  one 53-character word, and emptied.
+  - A typed stat label breaks before its last word ("Years on the\nroad:"), and a one-word one
+    ("Since:") does not.
+  - Emptied: the word and its glyph are gone, no bare `● ` or `[  ]` is left, and the stat's
+    value is still printed.
+  - No state widens the page after the wrap fix.
+- **The real app** (1600 × 1000, card 3): Grunge, then Lime, Editorial and Retro.
+  - Each of the eight fields, typed, moves the canvas and reaches the published tab.
+  - Emptied and republished, no seed word, typed word or bare glyph is left on either surface.
+  - Under Retro, *Genres label* prints "Not shown in this layout": Retro's bio layout 3 draws no
+    Genres row, as reach says. No page errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does
+  that.
+- **Docs.**
+  - CLAUDE.md: a JP-071 sentence after JP-059's in the *artist's name* bullet (the eight keys, the
+    break, the glyphs, the siblings). CLAUDE.md never cited the "● Popular precedent" itself; the
+    citations the entry named were the code comments, rewritten above.
+  - *Reversed* pointers in `layout-3-qa-fixes.md`'s JP-071: its status row, the Decided, the reply
+    and the sweep's reply line.
+  - `../retro/layout-2.md`: a *narrowed since* line beside the rule. `../retro/layout-3.md:658`
+    (the calendar legend, "the ● Popular precedent"): a line that the legend stays a literal.
+  - `reach.mjs`: the eight probes.
+
+Reply: **JP-071 — fixed.** The eight labels are now editable. Each starts as the design's text,
+and each can be emptied to hide it.
+- **Bio** (layout 3's card): *Performing since label*, *Current role label*, *Based in label*,
+  *About label* and *Genres label*. A stat label is typed on one line and breaks before its last
+  word, as the design does. *Genres label* also changes the "Genres" line in Bio layout 4.
+- **Media Player**: *List label*, the "● Popular" over the track list in layouts 2 and 3.
+- **Events Map** and **Testimonials**: *Kicker*, the small line over the heading in layout 3
+  ("Gigs & travel", "● Testimonials").
+- The "●" and the brackets of "[ About ]" belong to the design and go when the word is emptied.
+  A stat label still shows only while its value is filled.
+- On every template, in the editor and on the published page, at every width. Labels nobody
+  reported stay as the design draws them: the Bio's "Bio" eyebrow, the Media Player's
+  "● Featured" (layout 2), the Booking Calendar's legend and the Testimonials' "✎ What clients
+  say" (layout 2).
 
 ---
 

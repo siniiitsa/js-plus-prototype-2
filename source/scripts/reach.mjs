@@ -87,6 +87,16 @@ const PROBES = [
   { name: 'testimonials.stars', cats: ['testimonials'], param: 'cj', value: { stars: Z } },
   // JP-070: every package's pill, layout 4's row pill until then.
   { name: 'pricing.rowCta', cats: ['pricing'], param: 'cj', value: { rowCta: Z } },
+  // JP-071: eight frame labels made fields — the bio's ID-card labels and its
+  // Genres line, media's "● Popular", and layout 3's map and testimonials eyebrows.
+  { name: 'bio.sinceLabel', cats: ['bio'], param: 'cj', value: { sinceLabel: Z } },
+  { name: 'bio.roleLabel', cats: ['bio'], param: 'cj', value: { roleLabel: Z } },
+  { name: 'bio.baseLabel', cats: ['bio'], param: 'cj', value: { baseLabel: Z } },
+  { name: 'bio.aboutLabel', cats: ['bio'], param: 'cj', value: { aboutLabel: Z } },
+  { name: 'bio.tagsLabel', cats: ['bio'], param: 'cj', value: { tagsLabel: Z } },
+  { name: 'media.listLabel', cats: ['media'], param: 'cj', value: { listLabel: Z } },
+  { name: 'map.kicker', cats: ['map'], param: 'cj', value: { kicker: Z } },
+  { name: 'testimonials.kicker', cats: ['testimonials'], param: 'cj', value: { kicker: Z } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })
