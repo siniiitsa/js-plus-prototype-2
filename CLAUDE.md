@@ -914,8 +914,8 @@ mutated through a single `patch()` helper.
   the frame's "Available 2025 / 2026" and emptiable; `para` takes the paragraph under the
   head; and the card carries **layout 2's own card fields** — the price row, the
   `★★★★★ 42 bookings` line, the `cta` submit label and the `note` line under the pill —
-  because it is the same card component (QA, 2026-09-15). So `promises` skips layout 3
-  alone: layouts 1, 2 and 4 read it. **Its head is the frame's, off the artist's name**
+  because it is the same card component (QA, 2026-09-15). So `promises` skips layout 3:
+  layouts 1 and 2 read it (layout 4 numbers `steps` instead, JP-079). **Its head is the frame's, off the artist's name**
   (JP-070, user call, 2026-09-29): every layout-3 frame reads "Book Kai for / your event",
   naming its mock artist, so with `heading` absent `sectionVm` resolves `formHeading3(name)`,
   "Book {name} for\nyour event" (the break folds to a space here), and `EditPanel`'s chain
@@ -945,7 +945,7 @@ mutated through a single `patch()` helper.
   `s.stroke2` under Grunge), a small-caps
   line under it (`FIELDS.form.sub`, layout 4 alone, emptiable),
   and then two columns: the boxes over a mustard submit pill (pale `s.tx` under Lime, white
-  under Grunge), and the promises numbered
+  under Grunge), and the artist's steps numbered
   01 / 02 / 03 beside them. **Its head, that line and its pill seed the frame's own copy**
   (JP-054, user call, 2026-09-23; Retro's frame and Lime's agree, so no theme gate — Grunge's
   masters print the component's unoverridden "KAI MERCER" and keep the shared seed, a named
@@ -962,15 +962,21 @@ mutated through a single `patch()` helper.
   Event date, Event type, Your email, the email row last for the first time, which is safe
   because every reader finds it by `kind`. `sectionVm`'s `formList` gates on `d` and
   `formFieldsVal` on `design`, the seed-resolver rule. The gate is on the absent key alone,
-  `FORM_BTN_4`'s: once the artist edits the list it is theirs at every layout. The steps stay one line. Three things it does that no other layout here does. It draws
+  `FORM_BTN_4`'s: once the artist edits the list it is theirs at every layout. **Its steps
+  are the frames' too** (JP-079 · JP-081, user call, 2026-09-29, reversing JP-054's "the steps
+  stay one line"): `FIELDS.form.steps`, a repeater of `{ title, sub }` at layout 4 alone,
+  seeded `FORM_STEPS` with all nine frames' three — Send your details / Date, type &
+  location; I check availability / Reply within 24 hrs; Quote & confirm / Tailored package +
+  price — each a title over a second line at the frame's gap of 2, each line drawn only when
+  filled. The column numbered the one-line promises until then. Three things it does that no other layout here does. It draws
   a **label above a box *and* a placeholder inside it**, which is layout 1's pair and
   brings both `message` and the rows' `placeholder` column back after two layouts that
   spend their one slot on the label; a **trailing odd field runs the full measure** where
   layout 1 trails a half-width cell, the frame's own fifth box (the seed's Location) at all three widths
   (`vm.formRows` is unchanged — the pairing is the vm's and what a row of one does is the
   branch's); and it **reorders its two columns**, the form leading at 1440 and the
-  promises leading at 768 and 390. Its promises are `vm.formSteps`, the same list layout
-  3 runs together as one line, numbered in `sectionVm` because this file pads nothing —
+  steps leading at 768 and 390. Its steps are `vm.formSteps`, a blank row dropped before
+  they are numbered in `sectionVm`, because this file pads nothing —
   and with none, the column is not drawn at all and the form takes the measure (the
   footer's empty-second-column rule). It draws no chip row, so `showTypes` stays
   `!!s.v0` and the mailto sends the bare `Enquiry` for the third time; `image`, `photo`
@@ -1115,14 +1121,16 @@ mutated through a single `patch()` helper.
   would upper-case the footer's pill on Pop (Grunge cases `'title'` since its session 0). The footer keeps **no local state**:
   every link is an `<a>` whose href is `navHref()` or `extLink()`, so nothing here needs the
   `useState` the eight sections above it take.
-- **Nine list-shaped contents have a structured editor: the repertoire's songs, the media
+- **Ten list-shaped contents have a structured editor: the repertoire's songs, the media
   player's tracks, the events map's gigs, the pricing section's packages, the enquiry form's
   boxes, the testimonials' reviews, the footer's links, the booking calendar's layout-2
   slots** (`SlotsField`, JP-052: `{ date, kind, price }`, `SLOT_KEYS`, `slotsVal`, the gigs'
-  plain shape but for a seed dated from `open` — above) **and the events map's layout-4 stat
+  plain shape but for a seed dated from `open` — above), **the events map's layout-4 stat
   wall** (`StatsField`, JP-077: `{ label, value, sub }`, `STAT_KEYS`, `statsVal`, seeded
-  `MAP_STATS_4`, the gigs' plain shape — above). The booking calendar's `booked` dates are a
-  **tenth structured field that is not a list**: `BookedField`
+  `MAP_STATS_4`, the gigs' plain shape — above) **and the enquiry form's layout-4 steps**
+  (`StepsField`, JP-079: `{ title, sub }`, `STEP_KEYS`, `stepsVal`, seeded `FORM_STEPS`, the
+  stats' shape — above). The booking calendar's `booked` dates are an
+  **eleventh structured field that is not a list**: `BookedField`
   is a month to click, not a repeater, because one row per blocked date is the wrong shape for a
   June with eight of them, and it obeys the same seed-resolver rule as the repeaters below. `c.songs` is an array of `{ title, artist, tags }`
   (tags a raw comma string),
@@ -1179,23 +1187,23 @@ mutated through a single `patch()` helper.
   item blanks the trigger; `sectionVm` is what resolves it against the page. Its order is
   load-bearing the way `FIELDS.form.fields`' is: `sectionVm` halves the list into the two
   columns. The one other repeated field is a
-  delimited textarea, `FIELDS.form.promises` — whose rows the enquiry form's layout 4
-  numbers 01 / 02 / 03. All nine follow
+  delimited textarea, `FIELDS.form.promises` — the ticked list of the enquiry form's
+  layouts 1 and 2. All ten follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()` / `MAP_STATS_4`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()` / `MAP_STATS_4` / `FORM_STEPS`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package
   (over `TIER_KEYS`, all five) before the hue walk and `n`, so on both surfaces the page is the
   page without it — the canvas included, JP-045's rule. `TiersField` keeps the row, the artist
   being mid-edit, and says "Empty packages aren't shown." under it. The test is every key and
-  never the ones a layout prints, so it cannot discard a word the artist typed. **All nine
-  repeaters take it** (JP-051 and its sweep, `SlotsField` since JP-052 and `StatsField` since JP-077), each over a `*_KEYS` beside its seed — `SONG_KEYS`,
-  `TRACK_KEYS` (art and sound included), `GIG_KEYS`, `TIER_KEYS`, `QUOTE_KEYS`, `SLOT_KEYS`, `STAT_KEYS`, and two that
+  never the ones a layout prints, so it cannot discard a word the artist typed. **All ten
+  repeaters take it** (JP-051 and its sweep, `SlotsField` since JP-052, `StatsField` since JP-077 and `StepsField` since JP-079), each over a `*_KEYS` beside its seed — `SONG_KEYS`,
+  `TRACK_KEYS` (art and sound included), `GIG_KEYS`, `TIER_KEYS`, `QUOTE_KEYS`, `SLOT_KEYS`, `STAT_KEYS`, `STEP_KEYS`, and two that
   leave a select out because a select always holds a value: `FORM_FIELD_KEYS` (label and
   placeholder, not `kind`) and `LINK_KEYS` (label and url, not `to`) — and `TIER_KEYS` leaves
   out a tick the same way, `featured` (JP-048), so a ticked empty package is still blank. Each list is filtered
-  *before* anything indexes it (pins, hues, fan seats, marks, the stat wall's seats, the footer's halving,
+  *before* anything indexes it (pins, hues, fan seats, marks, the stat wall's seats, the steps' numerals, the footer's halving,
   `formRows` / `formMailto` / `formCheck`), each repeater prints its own "Empty … aren't shown."
   under a blank row, and the repertoire's song-count heading counts the filtered list in both
   places. The one exception is the form's guarded email row, above. The chips are derived from the tags, so nothing sets them directly, and the
@@ -1206,9 +1214,9 @@ mutated through a single `patch()` helper.
   I'm playing.", the testimonials' "Experiences." and the calendar's "Book Me" (`CAL_HEADING_3`).
   Both resolvers read it: `sectionVm` assigns it *after* the count, and `EditPanel`'s
   first-match chain puts its arm *ahead* of the count. An emptied heading stays empty at every
-  layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`, `statsVal`) has to
+  layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`, `statsVal`, `stepsVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
-  of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES`, `FOOTER_LINKS` and `MAP_STATS_4` are written in the row shape their repeater edits, tags and
+  of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES`, `FOOTER_LINKS`, `MAP_STATS_4` and `FORM_STEPS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
 - **Retro, Lime, Grunge and Editorial seed photography; Pop does not.** `defaultImage()` /
   `defaultImages()` / `defaultTrackArt()` in `photos.js` resolve through `SEEDS`, keyed by

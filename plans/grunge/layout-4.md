@@ -1357,7 +1357,8 @@ them.
   The sections come to 607.5 / 934.1 / 877.9 against the frames' 651.9 / 1024 / 964.
 - **Named diffs, Lime's**:
   - the seed's four boxes (Name / Email / Event date / Guests) against the frame's five;
-  - one-line steps against two;
+  - one-line steps against two *(reversed 2026-09-29, JP-079: the steps are the frames' three,
+    two lines each — `./layout-4-qa-fixes.md`)*;
   - the foot is `padY`, against the instance's 56 / 56 / 40;
   - Anton at 0.75 against Stones Crush;
   - **the head prints JP-054's "Contact Us" where every Grunge master prints "KAI MERCER"**.

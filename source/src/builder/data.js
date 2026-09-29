@@ -850,6 +850,19 @@ export const GALLERY_SOURCES = [
 // the *seeds* of FIELDS.form's promises, fields, types and message now, and
 // nothing renders them directly.
 export const FORM_PROMISES = ['Replies within 24 hrs', 'Free, no-obligation quote', 'Covers 120 mi from Manchester']
+// Enquiry form layout 4's *What happens next* column, the frames' three steps
+// verbatim (JP-079 · JP-081, user call, 2026-09-29): all nine masters (Retro
+// 964:72845 / 964:79477 / 977:8663, Lime's and Grunge's twins) draw the same
+// title over the same second line. They are process steps, not promises, which
+// is why the column stopped numbering FORM_PROMISES. Written in the
+// { title, sub } shape StepsField edits, so they need no dressing.
+export const FORM_STEPS = [
+  { title: 'Send your details',    sub: 'Date, type & location' },
+  { title: 'I check availability', sub: 'Reply within 24 hrs' },
+  { title: 'Quote & confirm',      sub: 'Tailored package + price' },
+]
+// What `blankRow()` asks of a StepsField row (the JP-051 sweep's rule).
+export const STEP_KEYS = ['title', 'sub']
 // Written in the row shape FormFieldsField edits and sectionVm reads — the
 // GIGS/TIERS rule, so the panel's seed resolver needs no dressing.
 export const FORM_FIELDS = [
@@ -1707,9 +1720,14 @@ export const FIELDS = {
       hint: 'Layout 4 only. Leave it empty to hide it.' },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2],
       hint: 'The line under the heading. Layout 3 only.' },
-    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1, 3],
-      hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
-          + 'right-hand column, and with none it draws no column at all.' },
+    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1],
+      hint: 'One per line — the ticked list beside the form.' },
+    // Layout 4's *What happens next* column (JP-079 · JP-081, user call,
+    // 2026-09-29): the tenth repeater, { title, sub } per step, seeded with the
+    // frames' three. It numbered the promises until then, one line a row.
+    { k: 'steps',    l: 'Steps', type: 'steps', max: 6, in: [3],
+      hint: 'Numbered down the column beside the form, a title over a second line. A step prints '
+          + 'only the lines you fill in; an empty row isn’t shown, and with none the column goes.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
     // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_CARD at
     // layouts 2 and 3, JP-070; FORM_FIELDS_4 at layout 4, JP-054), an emptied

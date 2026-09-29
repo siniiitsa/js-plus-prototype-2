@@ -63,6 +63,9 @@ const PROBES = [
   { name: 'form.button', cats: ['form'], param: 'cj', value: { button: Z } },
   // JP-082: the message box's label, the one box label that was a literal.
   { name: 'form.messageLabel', cats: ['form'], param: 'cj', value: { messageLabel: Z } },
+  // JP-079: layout 4's steps, and the promises they took the column from.
+  { name: 'form.steps', cats: ['form'], param: 'cj', value: { steps: [{ title: Z, sub: Z }] } },
+  { name: 'form.promises', cats: ['form'], param: 'cj', value: { promises: Z } },
   // JP-052: the calendar keys whose seats moved when layout 4's column became
   // the wizard's summary, and the Pricing packages it reads across sections.
   // `cta` is layout 4's Send Enquiry again since JP-082.

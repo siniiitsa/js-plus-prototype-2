@@ -115,7 +115,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | **done** (A; `u(14)` in both halves, the title clamped at two lines; the seed moves widths only) |
 | 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | **done** (1 A, 2 A; "Next:" on the first gig, the month upper-cased, Grunge's dots at .6; the pin and × replies) |
 | 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | **done** (A; `stats` seeded with the frame's four, the ninth repeater; the desktop floor on the grid, not the viewport) |
-| 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | open |
+| 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | **done** (A; `steps` seeded with the frames' three, the tenth repeater; `promises` back to layouts 1–2; the rows hold at 88) |
 | 9 | JP-081 (repertoire head) | "12 Songs" for "Repertoire" | **Named fit call** (Retro L4 open question 8), the precedent JP-070 reversed at layout 3; all three frames agree | S | **yes** — A (a `HEADING_4` arm) / B (reply) | open |
 | 10 | JP-081 (tags) | Five chips for the frame's six | **By design (JP-037, a user call)**, on a premise only two frames bear out | S (A) / M (B) | **yes** — A (six everywhere, reopens JP-037) / B (a Lime and Grunge layout-4 seed) / C (reply) | open |
 | 11 | — | End-of-pass sweep | — | S | — | open |
@@ -1626,11 +1626,82 @@ numbers 01 / 02 / 03", `:1151`–`1153`). *Reversed* pointers at `../retro/layou
 JP-054's Decided and Reply in `../lime/layout-4-qa-fixes.md` (`:190`, `:251`, `:815`),
 `../lime/layout-4.md:1400`, `:1430`, `:1434`, and `./layout-4.md:1357` ("one-line steps against two").
 
-**Decided.** —
+**Decided** (2026-09-29, user call): **A.** Layout 4's column is the artist's steps: a `steps`
+repeater `{ title, sub }` (`FIELDS.form.steps`, `max` 6, layout 4 alone), seeded `FORM_STEPS` with
+the nine frames' three steps byte for byte, a blank row dropped by `blankRow(row, STEP_KEYS)`
+before the numbering, and each line rendering or not. `promises` goes back to layouts 1 and 2. No
+theme gate. It is the **tenth** structured editor. JP-054's "the steps stay one line" is reversed.
 
-**Settled.** —
+**Settled** (2026-09-29). The drift the hand-off named held (`FORM_PROMISES` `data.js:852`,
+`FIELDS.form.promises` `:1710`; `vm.formSteps` `EncoreBuilder.jsx:1669`; the block's step span
+`EncoreSection.jsx:24764`, the body's `:25101`).
+- **Today's rows, measured before the code.** No seeded promise wrapped at any width: every row
+  was 88 (89 in Retro's body, whose rule is a 1px border where the block's is an inset shadow),
+  72.1 / 73.1 at desktop, one text line of 16.5–19.5 inside the 56 square (45.9 at desktop). So
+  the entry's trap (a promise that wraps at 390 where its title does not) could not arise, and
+  the rows were expected to hold.
+- **The fix.** `data.js`: `FORM_STEPS` (the frames' six strings) and `STEP_KEYS` beside
+  `FORM_PROMISES`; `FIELDS.form.steps` (*Steps*, `type: 'steps'`, `max: 6`, `in: [3]`) after
+  `promises`, whose `in` is `[0, 1]` and whose hint loses layout 4. `sectionVm`: `vm.formSteps`
+  off `c.steps` (the songs rule), filtered by `blankRow(r, STEP_KEYS)` before the numbering,
+  `{ n, title, sub }`, each trimmed and uncased; the "a gloss … a claim the artist never typed"
+  comment is replaced. `EditPanel`: `StepsField` after `StatsField` (its shape: the title on the
+  header line, the sub under it, the frames' first step as placeholders, "Empty steps aren't
+  shown."), `stepsVal`, and a `'steps'` rung beside `'stats'`; StatsField's and SlotsField's
+  headers count on to the tenth. `EncoreSection`, both halves: the step span is a column at `u(2)`,
+  the title Body/MD at 1.5 and the sub Body/SM at 1.4 (`s.bodySm` in the block, `u(T.bodySm)` in
+  the body, the frame's 16.8 line), each drawn only when filled, with `overflowWrap:
+  'break-word'`; the square, the ↘ and the no-steps-no-column rule unchanged. The block header,
+  the body header and both step comments are rewritten. `preview.jsx`'s `&promises=` comment
+  names `&cj={"steps":[]}` as layout 4's emptied state. In passing, JP-077's leftover: the map's
+  Lime block header reads `s.mapStats`.
+- **The harness was proved first.** A HEAD worktree at `c6a0997` on :5174 against the tree: all
+  eleven categories × themes 0–4 × every layout × 3 widths gave **0 of 660 per surface**.
+- **After-diff, named before the code: 30 files. Measured: exactly those 30** (form `arch 3` ×
+  themes 0–4 × 3 widths, 15 per surface). **The rows hold at every width**: 72.1 / 73.1 at
+  desktop and 88 / 89 narrow, the roots' heights unchanged (668.3 / 686.3 desktop, 985.2 / 1022.9
+  at 768, 948.4 / 972.6 / 965.5 at 390). The text box is 32.1–33.5 at desktop and 38.3–39.7
+  narrow, centred on the square. What moves is text and one new column with its sub span per
+  row. Every row, read whole on both surfaces, every theme and width: "01 | Send your details |
+  Date, type & location", "02 | I check availability | Reply within 24 hrs", "03 | Quote &
+  confirm | Tailored package + price". The subs are the theme's own Body/SM: 12 at 768 and 390
+  (13 under Lime at 768), 9.8 desktop in Retro's body, 11 under Lime and 10 under Grunge.
+- **Reach** (`reach.mjs`, the form probes, themes 0–4): `form.steps` → layout 4, `form.promises`
+  → layouts 1–2, on every template, so both `in` rows are plain arrays.
+- **States** (`live=1`, themes 0–4 × 3 widths, a throwaway probe). Every case read the same on
+  all five themes.
+  - A title alone and a sub alone each print one line in their own style; a blank row between
+    them is dropped and the numerals run 01 / 02 / 03 with no gap.
+  - `steps: []`: no column. The form takes the whole measure at 1440 (1088) and stands alone at
+    768 and 390.
+  - A 60-character title wraps to two lines at 390 (the row 89.8 / 90.8, the square centred),
+    one line at 768 and 1440; no overflow in the box and no page scroll.
+  - Six steps: six rows at 88 / 89, 01–06.
+- **The real app** (a one-off puppeteer script, trusted clicks, deleted after): *Stacked* under
+  Grunge, Lime, Retro and Editorial, Publish → Open at 1440, 768 and 390. The rows read the
+  frames' three steps, two lines each, at 88 (89 under Retro and Editorial). No horizontal
+  scroll and no page errors. The Grunge 1440 and 390 shots read right. In the panel at layout 4,
+  *Steps* lists the frames' three and *Promises* reads "Not shown in this layout". Switched to
+  layout 1 under Grunge, *Steps* reads "Not shown in this layout" and *Promises* has no note.
+- **Docs**: CLAUDE.md's layout-4 form sentences ("The steps stay one line." replaced by the
+  steps' own sentence, "Its promises are `vm.formSteps` …" rewritten, and layout 3's `promises`
+  line), and its repeaters paragraph (ten, `StepsField`, `STEP_KEYS`, `stepsVal`, `FORM_STEPS`,
+  `booked` the eleventh structured field, `promises` the ticked list of layouts 1 and 2).
+  *Reversed* pointers at `../retro/layout-4.md`'s "A frame's per-row second line is a gloss",
+  JP-054's Decided, Reply and batch reply in `../lime/layout-4-qa-fixes.md`,
+  `../lime/layout-4.md`'s form Settled, and `./layout-4.md`'s named diffs.
 
-Reply: —
+Reply: **JP-079 and JP-081 (the step texts) — fixed.**
+- *What happens next* now shows the design's three steps, each with its second line: "Send your
+  details / Date, type & location", "I check availability / Reply within 24 hrs" and "Quote &
+  confirm / Tailored package + price".
+- The Enquiry Form has a new *Steps* list, up to six, each with a title and a second line, both
+  editable. A step shows only the lines you fill in. An empty step is not shown, and the
+  numbering runs on without a gap. With no steps, the column goes and the form takes the width.
+- *Steps* only appears in layout 4. *Promises* is now the ticked list of layouts 1 and 2 alone,
+  so in layout 4 it says "Not shown in this layout".
+- The column's heading, "What happens next", stays a fixed label, as decided in the replies.
+- Checked on *Stacked* under Grunge, Lime, Retro and Editorial at 1440, 768 and 390.
 
 ---
 

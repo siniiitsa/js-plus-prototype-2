@@ -187,7 +187,7 @@ their own `*_HEADING_4` in `sectionVm` **and** `EditPanel` (`data.js:831`, `Enco
   so it becomes a new `sub` key (or reuses one; read `FIELDS.form` first) whose layout-4 default
   is *Enquire*, measured into `in`. The boxes stay the artist's one list, since layout 4 is not
   the only layout that reads them and the tester agrees Location is one *Add field* away. The
-  steps stay one line.
+  steps stay one line. *(Reversed 2026-09-29, JP-079 · JP-081, user call: layout 4 now numbers a `steps` repeater seeded with the frames' three steps, title over second line — see `../grunge/layout-4-qa-fixes.md`.)*
 - **B. A, plus two-line steps.** `promises` gains a second line per row (`Title — sub`, split in
   `sectionVm`) and layouts 1–3 print only the first half. It is a new delimiter in a shared field,
   so it needs its own hint and a reach row. Not recommended in a QA pass.
@@ -249,6 +249,7 @@ block at `:22122`.
 Reply: **fixed.** Layout 4 now opens on the frame's *Contact Us / ENQUIRE / Check Availability*
 under every template. The small-caps line is a new field ("Line under the heading"). The boxes
 stay the artist's one list (Location is one *Add field* away), and the steps stay one line.
+*(Reversed 2026-09-29, JP-079 · JP-081, user call: layout 4 now numbers a `steps` repeater seeded with the frames' three steps, title over second line — see `../grunge/layout-4-qa-fixes.md`.)*
 
 ---
 
@@ -818,7 +819,8 @@ still show every one of these.
   *ENQUIRE* / *Check Availability*, under every template. The small-caps line is a new field,
   "Line under the heading". **By design:** the boxes stay the artist's one list (Location is one
   *Add field* away), and the steps stay one line. *(Boxes reversed 2026-09-24: layout 4 now
-  seeds the frame's five — see the retest plan.)*
+  seeds the frame's five — see the retest plan. Steps reversed 2026-09-29, JP-079: layout 4
+  numbers the frames' three two-line steps — see `../grunge/layout-4-qa-fixes.md`.)*
 - **JP-038 (layout 4) — fixed, and it is not the gutter ticket.**
   - **The page gutter** (JP-038 as first filed, reopened 2026-09-23) was decided and shipped
     earlier: the published desktop page zooms to the 1440 frame. The report's 189 / 171 are

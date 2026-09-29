@@ -19852,7 +19852,7 @@ function EventsMap({ s }) {
     // (0), the 32 / 28 panel inset (20 at 390), its 20 gap, the 12 grid gap,
     // the 18 / 20 cells at gap 8, the 24 marker, the 480 / 300 / 140 rings, the
     // 30 × 40 zoom buttons 16 in, the 12 / 16 ticker at gap 14 — so the block
-    // reads the ticker's page, the stats, the ring shares and the zoom above
+    // reads the ticker's page, `s.mapStats`, the ring shares and the zoom above
     // and changes the dress, which reaches every leaf. Retro's `T`, `bw`,
     // `hair`, `cardBg` … `tickLine`, `seats`, `chip12` and `body12` are not
     // read: under Lime `paper` is pale lime, `deep` is the page and `pillBg`
@@ -24594,11 +24594,12 @@ function EnquiryForm({ s }) {
   // — and the stated height does not grow. Retro's readings hold: `heading`
   // heads the design (the narrow masters' "KAI MERCER" is the component's
   // default and the 1440 master types "Contact Us"), `s.formSub` is the
-  // ENQUIRE line, the steps are `vm.formSteps` with the frame's second line
-  // per row dropped, the frame's five boxes are the seed's four, a lone
-  // trailing box runs the full measure, and the head's `whitespace-nowrap` is
-  // dropped for an artist's sentence at 130. The head, the ENQUIRE line and
-  // the pill seed the frame's own copy at this layout (JP-054).
+  // ENQUIRE line, a lone trailing box runs the full measure, and the head's
+  // `whitespace-nowrap` is dropped for an artist's sentence at 130. The head,
+  // the ENQUIRE line, the pill and the boxes seed the frame's own copy at this
+  // layout (JP-054), and so do the steps, `vm.formSteps`, each a title over
+  // the frame's second line (JP-079 · JP-081, user call, 2026-09-29; the
+  // column numbered the one-line promises until then).
   //
   // ── Grunge: the same block, widened (Grunge layout 4, section 9) ───────
   // The desktop master is the main component `725:2990` (the 1440 page
@@ -24743,7 +24744,7 @@ function EnquiryForm({ s }) {
       </div>
     )
 
-    // Not drawn at no promises, and the grid then gives the form the whole
+    // Not drawn at no steps, and the grid then gives the form the whole
     // measure — Retro's reading (the footer's empty-second-column rule).
     const stepsCol = s.formSteps.length ? (
       <div key="steps" style={col('0px', { minWidth: 0 })}>
@@ -24757,12 +24758,15 @@ function EnquiryForm({ s }) {
               background: s.ac, color: s.bg,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             })}>{st.n}</span>
-            {/* A promise is prose and wraps; the row grows past its 88 and
-                the disc stays centred in it (Retro's reading of the frame's
-                `whitespace-nowrap`). */}
-            <span style={type(s.body, s.bodyMd, 1.5, { flex: '1 1 auto', minWidth: 0 })}>
-              {st.label}
-            </span>
+            {/* The frame's text box: the title over its second line at a
+                gap of 2, each line drawn only when filled (JP-079). Both wrap,
+                the row growing past its 88 with the square centred in it
+                (Retro's reading of the frame's `whitespace-nowrap`); the
+                seeded pair is 40 tall inside the square's 56, so it holds. */}
+            <div style={col(u(2), { flex: '1 1 auto', minWidth: 0, overflowWrap: 'break-word' })}>
+              {!!st.title && <span style={type(s.body, s.bodyMd, 1.5)}>{st.title}</span>}
+              {!!st.sub && <span style={type(s.body, s.bodySm, 1.4)}>{st.sub}</span>}
+            </div>
             <span style={type(s.body, s.bodyLg, 1.5, { flex: 'none', color: s.ac })}>↘</span>
           </div>
         ))}
@@ -24838,13 +24842,13 @@ function EnquiryForm({ s }) {
   //    2026-09-23; it printed `s.brand`, layout 3's allocation, until then).
   //    Emptied, the line drops. The head and the pill seed the frame's copy
   //    too, "Contact Us" and "Check Availability", resolved in sectionVm.
-  //  - **The 01 / 02 / 03 column is `vm.formPromises`**, numbered in sectionVm
-  //    as `vm.formSteps`. The frame's own row 02 sets "Reply within 24 hrs",
-  //    which is FORM_PROMISES[0] almost verbatim, so the column is already in
-  //    the promises' register — layout 3 read the same register the other way,
-  //    running them together as one line. The frame's second line per row (the
-  //    16.8px sub) is dropped: a promise is one string, and inventing a gloss
-  //    for it would be the video section's fabricated-metric rule.
+  //  - **The 01 / 02 / 03 column is the artist's steps**, `vm.formSteps`
+  //    off `FIELDS.form.steps`, numbered in sectionVm: a title over the
+  //    frame's 16.8px second line, seeded with the frames' three (FORM_STEPS;
+  //    JP-079 · JP-081, user call, 2026-09-29). The fit numbered the promises
+  //    here and dropped the second line, reading row 02's "Reply within 24
+  //    hrs" as FORM_PROMISES[0]; all nine frames draw three process steps, so
+  //    the promises went back to layouts 1 and 2.
   //  - **"WHAT HAPPENS NEXT" is a literal**, `vm.formStepsLabel` — the frame's
   //    own word for the column, and this section keeps its literals on the view
   //    model (`formTypeLabel`, `formPrompt`) rather than in the renderer. The
@@ -25068,7 +25072,7 @@ function EnquiryForm({ s }) {
       </div>
     )
 
-    // Not drawn at no promises, and the grid then gives the form the whole
+    // Not drawn at no steps, and the grid then gives the form the whole
     // measure: a lone column head over nothing is the footer's empty second
     // column, which spends a 40px gap and half the page on an empty child.
     const stepsCol = s.formSteps.length ? (
@@ -25091,14 +25095,21 @@ function EnquiryForm({ s }) {
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5,
             }}>{st.n}</span>
-            {/* The frame sets this `whitespace-nowrap` inside an `overflow-clip`
-                row, which is the media player's destroys-its-own-content rule on
-                a string the artist typed — a promise is prose and wraps. The row
-                then grows past its 88 and the disc stays centred in it. */}
-            <span style={{
-              flex: '1 1 auto', minWidth: 0,
-              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
-            }}>{st.label}</span>
+            {/* The frame's text box, a title over its 16.8px second line at a
+                gap of 2, each line drawn only when filled (JP-079). The frame
+                sets both `whitespace-nowrap` inside an `overflow-clip` row,
+                which is the media player's destroys-its-own-content rule on
+                strings the artist typed — they wrap. The row then grows past
+                its 88 and the disc stays centred in it; the seeded pair is 40
+                tall inside the disc's 56, so it holds. */}
+            <div style={col(u(2), { flex: '1 1 auto', minWidth: 0, overflowWrap: 'break-word' })}>
+              {!!st.title && <span style={{
+                fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+              }}>{st.title}</span>}
+              {!!st.sub && <span style={{
+                fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
+              }}>{st.sub}</span>}
+            </div>
             <span style={{
               flex: 'none', fontFamily: s.body, fontSize: u(T.bodyLg),
               lineHeight: 1.5, color: s.ac,

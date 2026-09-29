@@ -1437,6 +1437,9 @@ Settled in section 9 (the enquiry form):
   boxes no longer stand: with `fields` absent, layout 4 seeds the frame's five (`FORM_FIELDS_4`:
   Your name, Email, Event date, Event type, Location), so the fifth box that runs the full
   measure is the frame's Location. The one-line steps still stand.
+- **Reversed 2026-09-29 (JP-079 · JP-081, user call, `plans/grunge/layout-4-qa-fixes.md`).** The
+  one-line steps no longer stand: layout 4 numbers `FIELDS.form.steps`, a `{ title, sub }`
+  repeater seeded `FORM_STEPS` with the frames' three steps, each a title over its second line.
 
 Settled in section 10 (the testimonials — the last body section):
 

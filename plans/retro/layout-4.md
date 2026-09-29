@@ -1178,7 +1178,7 @@ Learned on the enquiry form (section 11):
   for it.** The step rows are title + sub; a promise is one string, so the sub is
   dropped rather than filled — the video section's fabricated-metric rule reaching a
   *line* rather than a number. What that leaves is a row whose 88 is still its disc plus
-  its padding, so nothing in the geometry had to move.
+  its padding, so nothing in the geometry had to move. *(Reversed 2026-09-29, JP-079 · JP-081, user call: layout 4 now numbers a `steps` repeater seeded with the frames' three steps, title over second line — see `../grunge/layout-4-qa-fixes.md`.)*
 - **An outline that has to read against the page has one derivation in this file and it
   is not in this section.** `vm.formRule` is `vm.tierRow.card` — the pricing stack's own
   guarded walk — aliased in the form block rather than read across sections or written

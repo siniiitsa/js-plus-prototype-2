@@ -41,7 +41,7 @@ import {
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
-  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
+  FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
@@ -1659,16 +1659,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Layout 3's eyebrow, the frame's own copy, seeded and emptiable (QA, 2026-09-15).
   vm.formAvailable = cv('available', FORM_AVAILABLE)
   vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
-  // The same promises again, numbered, which is §10.2 layout 4's right-hand
-  // column: its frame draws 01 / 02 / 03 discs beside three lines whose second
-  // row reads "Reply within 24 hrs" — FORM_PROMISES[0] almost verbatim, so the
-  // column is already in the promises' own register. The numeral is composed
-  // here for `vm.tracks[].n`'s reason: the renderer prints strings and pads
-  // nothing. The frame's second line per row has no seat — a promise is one
-  // string, and a gloss for it would be a claim the artist never typed.
-  vm.formSteps = vm.formPromises.map((p, i) => ({
-    n: String(i + 1).padStart(2, '0'), label: p,
-  }))
+  // §10.2 layout 4's right-hand column: 01 / 02 / 03 squares beside the
+  // artist's steps, each a title over a second line, as all nine frames draw
+  // them (JP-079 · JP-081, user call, 2026-09-29, reversing JP-054's "the
+  // steps stay one line"; the column numbered the promises until then). The
+  // songs rule: an absent key means the frames' three (FORM_STEPS), an emptied
+  // array means none, and no null sentinel. A blank row is dropped before the
+  // numbering (`blankRow()`, every key, JP-051's rule), so the numerals run on
+  // with no gap; each line is trimmed, uncased, and dropped alone when empty.
+  // The numeral is composed here for `vm.tracks[].n`'s reason: the renderer
+  // prints strings and pads nothing.
+  vm.formSteps = (Array.isArray(c.steps) ? c.steps : FORM_STEPS)
+    .filter((r) => !blankRow(r, STEP_KEYS))
+    .map((r, i) => ({
+      n: String(i + 1).padStart(2, '0'),
+      title: String(r?.title ?? '').trim(),
+      sub: String(r?.sub ?? '').trim(),
+    }))
   // That column's own head. A literal the view-model owns, `formTypeLabel`'s
   // rule, upper-cased by the renderer's display face rather than here.
   vm.formStepsLabel = 'What happens next'
@@ -2817,7 +2824,8 @@ function GigsField({ value, max, design, onChange }) {
 /* ------------------------------------------------------------------ *
  * SlotsField — the booking calendar's named slots (JP-052).
  *
- * The eighth repeater (StatsField below is the ninth): layout
+ * The eighth repeater (StatsField and StepsField below are the ninth and the
+ * tenth): layout
  * 2 tables these rows, and until JP-052 they were a seed no field edited,
  * dated 2025 and so dead on every published page. Row shape is
  * { date, kind, price }, CAL_SLOTS' own comment: a date, what the artist
@@ -2911,8 +2919,8 @@ function SlotsField({ value, max, onChange }) {
 /* ------------------------------------------------------------------ *
  * StatsField — the events map's layout-4 stat wall (JP-077).
  *
- * The ninth repeater, and the tenth structured editor counting
- * BookedField. Row shape is { label, value, sub }: the card's small-caps
+ * The ninth repeater (StepsField below is the tenth), and the tenth
+ * structured editor counting BookedField. Row shape is { label, value, sub }: the card's small-caps
  * name, its numeral, and the line under it. Until JP-077 the wall was two
  * derivations and two flat keys under four literal names, so an emptied
  * key left an empty card and no field named a card.
@@ -2994,6 +3002,92 @@ function StatsField({ value, max, onChange }) {
         >
           <Plus size={13} style={{ color: '#B9B6AA' }} />
           <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add stat</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>{list.length} of {max}</p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * StepsField — the enquiry form's layout-4 steps (JP-079 · JP-081).
+ *
+ * The tenth repeater, and the eleventh structured editor counting
+ * BookedField. Row shape is { title, sub }: the step's line and the line
+ * under it, as all nine layout-4 frames draw them. Until JP-079 the column
+ * numbered the promises, one string a row, so the frames' second line had
+ * no field and the seed printed promises under "What happens next".
+ *
+ * StatsField's house rules: whole-array rewrite per keystroke, numbered
+ * rows, a round X, a dashed add, an "n of max" footnote, no reordering —
+ * order is entry order, and it is the order the column numbers them. The
+ * placeholders are the frames' first step.
+ * ------------------------------------------------------------------- */
+
+const BLANK_STEP_HINT = 'Empty steps aren’t shown.'
+
+function StepsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { title: '', sub: '' }])
+
+  const row = (i, r) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          value={r.title ?? ''} placeholder="Send your details" onClick={stopE}
+          onChange={(e) => setAt(i, 'title', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove step ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <Input
+          value={r.sub ?? ''} placeholder="Date, type & location" onClick={stopE}
+          onChange={(e) => setAt(i, 'sub', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+        {blankRow(r, STEP_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_STEP_HINT}</p>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((r, i) => row(i, r || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add step</span>
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>{list.length} of {max}</p>
@@ -3724,6 +3818,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // And the events map's layout-4 stat wall (JP-077): MAP_STATS_4 is written as
   // the { label, value, sub } row StatsField edits, the gigs' one-liner again.
   const statsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : MAP_STATS_4)
+  // And the enquiry form's layout-4 steps (JP-079): FORM_STEPS is written as
+  // the { title, sub } row StepsField edits, the stats' one-liner again.
+  const stepsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FORM_STEPS)
 
   // Minimal's labels that resolve to nothing on this page (§4.3a), for the hint
   // above the header's navigation select. Only a header reads it.
@@ -3834,6 +3931,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         <SlotsField value={slotsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'stats' ? (
                         <StatsField value={statsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'steps' ? (
+                        <StepsField value={stepsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month

@@ -195,8 +195,9 @@ if (q.get('since')) c.since = q.get('since')
 // list-shaped content — a newline-delimited *string*, like `&tags=`' commas, so
 // `&n=` (which fills `c.fields`) can never reach it. The pipes are the URL's:
 // a raw newline in a query string is not worth the escaping. `&promises=` with
-// nothing after it is the emptied state, which layout 3 renders as a card that
-// ends on its pill and layout 4 as a form with no right-hand column at all.
+// nothing after it is the emptied state, which layout 1 renders as a panel
+// with no ticks. Layout 4's column is `steps` since JP-079: its emptied state,
+// a form with no right-hand column at all, is `&cj={"steps":[]}`.
 if (q.get('promises') !== null) c.promises = q.get('promises').split('|').join('\n')
 
 // &noimage=1 writes `null` to FIELDS.*.image, which is what Remove writes, so a
