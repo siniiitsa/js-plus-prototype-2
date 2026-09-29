@@ -838,15 +838,119 @@ licence point alone argues for A.
      comment, `layout-1.md` open question 1, and `plans/README.md`'s row.
    - A reply line for JP-056 and a note for the designer, below.
 
+   **Settled** (2026-09-30, on `a0b0408`; the root `index.html` is `a3789d7`, the docs the
+   commit after it). Step 5 is finished, and with it the plan.
+   - **1. The full digest against `main`, per step 0's recipe.** The baseline was a worktree of
+     `739f060` on **:5175** (:5173 and :5174 both served this tree), through the `517[345]`
+     normaliser. The tree ran on the long-running :5173. Themes 0–4, 132 files each per surface.
+     One wrinkle: this session's `data.js` comment edits (item 4) landed while the `live=1` run
+     was about 260 of 660 in, so the harness took an HMR reload mid-run. The edits are comments
+     only (`git diff` showed no other line in `source/`), and the result is the expected one to
+     the row, so it was not rerun.
+
+     | Theme | Bare | `&live=1` |
+     |---|---|---|
+     | 0, 1, 3, 4 | 0 of 132 each | 0 of 132 each |
+     | 2 | **126 of 132** | **126 of 132** |
+
+     - The six unmoved Grunge files are bio and gallery at arch 1, × 3 widths, on both surfaces.
+     - **`mask-cols.mjs`: 0 failures on both surfaces.** 336 rows moved per surface, which is
+       step 4's 60 + 84 + 75 + 117, and all 336 are new masks. Each moved row differs only in the
+       four mask columns, with `maskSize` 4 × `fontSize`, and every tag is a text tag. The
+       `linear-gradient` rows are 14 per surface on both sides. The two surfaces moved the same
+       `TAG@size` set in every render.
+     - **The sizes that moved**, over the whole page, as faced px: 19.5, 21, 22.1–22.14, 22.5,
+       28.5, 30, 30.75, 34.5, 37.5, 39, 44.25, 60.75, 71.25, 80.25 and 121.5. Nothing under 19.5
+       took the mask.
+   - **2. The four cards, walked** in the real app and the published tab by a one-off puppeteer
+     script, deleted after: Publish → *Open*, `page.once('popup')`, trusted clicks, and `mailto:`
+     clicks `preventDefault`ed. Each masked node was checked for a 1,185-character image equal in
+     both columns, `maskSize` 4 × `fontSize`, a size of 19 px or more, and no masked ancestor.
+     **No failure anywhere, and no page error on any card.**
+
+     | Card | Canvas, each of D / T / M | Published, each of 1440 / 768 / 390 | Largest clean Anton text |
+     |---|---|---|---|
+     | 1 (Hero spread) | 17 | 17 | 22.125 / 21 / 19.5, media 1's track title |
+     | 2 (Feature spread) | 28 | 28 | 15 / 14.25 / 13.5 |
+     | 3 (Inset Hero) | 26 | 25 | 22.125 / 21 / 19.5, testimonials 3's quote |
+     | 4 (Stacked) | 40 | 39 | 15 / 14.3 / 14.3 |
+
+     - The clean ones at title size are two of step 2's five label-face sites, clean by key, as
+       decided. Card 4's 15 at 1440 is header 4's `clean` wordmark.
+     - **The canvas-only node is the calendar's, and it is F20's diff, not a mask.** The
+       published tab knows today is 30 September, so the seeded June `open` is past. On card 3,
+       calendar 3's head drops the numeral "12" and reads SEPTEMBER, not JUNE: one span fewer,
+       both months masked. On card 4, calendar 4's date card shows the prompt in place of "Thu,
+       June 12". CLAUDE.md names this ("the published first paint is the canvas's picture only
+       while `open` is today or later").
+     - **Republish.** The header's title was set to "Static Youth" through `st`, then *Publish* →
+       *Open* again. The same tab took it, since no new page opened. The `h1` read "Static Youth"
+       with the mask, and the census equalled the first publish's on all four cards.
+     - **The sent heads.** After a filled submit, the form's "Check your mail app" carries the
+       mask on every card: 30.75 px with `123px` at card 1, and 22.125 px with `88.5px` at cards
+       2–4.
+     - **The setup modal's four cards** carry 2 / 1 / 2 / 2 masked nodes: the `Title`, plus card 1's
+       wordmark, card 3's card name and card 4's kicker. **The template stage's Grunge card**
+       carries 2, the `h1` at 121.5 and the wordmark at 22.125, and the shot shows the speckle.
+     - **The layout picker's thumbnails** (`browser-tool-choice`'s recipe) carry the mask in
+       every item except bio's and gallery's layout 2 and bio's layout 6, which folds onto 2.
+       Those have no display type. By item: bio 1 0 2 2 1 0, media 1 7 6 2 1 7 6, pricing 4 3 4 6
+       4 3 4 6, repertoire 1 1 1 13 1 1 1, gallery 1 0 1 1, calendar 2 5 3 5 2, map 2 6 2 5,
+       testimonials 1 2 2 1 1 2 2 1, form 1 2 2 2 1 2. The script did not match the header's
+       sidebar row, so the header's own picker was not walked. The modal's four cards stand in
+       for it: they are the same header previews through `sectionVm`, and all four carry the
+       mask. The footer has one layout.
+   - **3. The build.** `npm run build:standalone` gives **8,771,039 bytes**. That is **+1,876** on
+     `main`'s committed `index.html` (8,769,163, from the retest sweep's `aff0f52`). The
+     8,763,002 this plan quoted was the build before that refresh, and is +8,037 from here. It was
+     refreshed in `a3789d7`, alone.
+     - **The two-build digest** was `build-digest.mjs`'s first real run, with reduced motion on
+       and `.seal-spin` skipped. It walked `…:8931/index.html` before the `cp` and
+       `…/source/dist-standalone/index.html` after.
+     - The committed build against a second walk of itself: 0 of 16 files, so the script is
+       quiet.
+     - New against old: `modal.txt` and themes 0, 1, 3 and 4 are identical. Only `theme_2_*`
+       moved, three files and 51 rows, 17 per width, which is the walk's card-1 canvas count.
+     - `mask-cols.mjs` runs unchanged on the two directories once the `N roots` line is dropped:
+       0 failures, every row a new mask in the four columns, and the gradient rows 8 / 8.
+     - **Paint was not re-measured.** The headless shell rasterises in software and cannot show a
+       hitch, and the walk found none to chase. Step 2's numbers stand: the rAF p95 does not
+       move, and the raster cost is ×2.2 at a zoomed 1440 and ×1.5 at 390.
+   - **4. Docs.**
+     - CLAUDE.md's Grunge paragraph now says the display sizes carry the mask. It names
+       `THEMES[2].distress` → `vm.distress` → `distressed()`, the cut by key, the `clean`
+       wordmark, and the ≤1 px side-bearing clip as a named diff.
+     - `THEMES[2]`'s comment in `data.js` says the distress is put back at display sizes, and
+       which keys take it.
+     - `layout-1.md` open question 1 gained a *Shipped* paragraph.
+     - `plans/README.md`'s row says what shipped.
+   - **5. The reply and the note**, below. They are written as final.
+
 ## For the reply and the designer
 
-- **JP-056 (reply, once shipped):** the headings now carry a worn texture like the design's.
-  The letters are still Anton, standing in for Stones Crush, because Stones Crush's only free
-  licence is for personal use. Small type (the nav, the buttons, the labels) stays clean, because
-  the texture eats thin strokes at those sizes. The real face needs a web licence from the PO.
-- **For the designer:** the texture is a mask over Anton, not the face, and it covers display
-  sizes only. Open question 6 in `layout-1.md` (Anton at 0.75 of the token) is unchanged.
+- **JP-056 (reply):** The letters are still Anton, standing in for Stones Crush, so Dev Mode will
+  still show `Anton`. Stones Crush's only free licence is for personal use. The headings, names,
+  prices and other large type now carry a worn, speckled texture like the design's. It is cut into
+  Anton by a mask, so the letters keep Anton's shapes. Small type (the nav, the buttons, the chips
+  and the labels) stays clean, because the texture eats thin strokes at those sizes. Using the real
+  face needs a web licence from the PO, and would replace the texture.
+- **For the designer:** The texture is a mask over Anton, not the face. It is a noise pattern with
+  a fixed seed, one tile per 4 em, so a 121 px head and a 19.5 px title wear the same speckle. It
+  cuts about 7% of each glyph, where the frame's face cuts about 4% inside the letters plus its
+  worn edges, which no tile can copy. It covers the display sizes and Display/Title (19.5 px and
+  up). Five label-face sites set at title size stay clean beside distressed text of the same
+  size: media 1's track titles, repertoire 1's song titles, map 1's kicker, testimonials 1's name
+  and role, and testimonials 3's quote. A mask clips to the element's box, so where a glyph's side
+  bearing overhangs the box it loses up to 1 px at that edge. Map layout 4's stat values at
+  desktop are the seeded case ("48", "Manchester, UK"), and any head ending in an overhanging
+  glyph does the same. Open question 6 in `layout-1.md` (Anton at 0.75 of the token) is
+  unchanged.
 
-**Decided.** —
+**Decided.** A, the inline-SVG noise mask (step 2, user call). The cut is by ramp key, with the
+five label-face sites clean (step 2). `Wordmark` opts out through `clean` (step 3), and `Title`
+spreads unconditionally since `worn` collapsed (step 4). Map 4's ≤1 px edge is a named diff
+(step 4, user call).
 
-**Settled.** —
+**Settled.** Steps 0–5. Swept against `main`, with every Grunge render moving in exactly the
+named files, mask columns only, and every other theme at zero. The root `index.html` is refreshed.
+Push, PR, merge and the deployed build stamp are still open.

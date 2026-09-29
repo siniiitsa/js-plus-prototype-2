@@ -119,9 +119,10 @@ export const THEMES = [
     // → Static Youth, "2 · Scheme" → Scheme 1), so every value below is that
     // mode's. The exception is the display and label face: the mode names
     // Stones Crush, a commercial distressed caps grotesque that cannot ship, so
-    // it is set in Anton — the nearest free silhouette, heavy and condensed,
-    // without the distress (user call, 2026-09-21; Retro's Soulway → Fraunces
-    // precedent). Anton has a lowercase where Stones Crush is all capitals, so
+    // it is set in Anton — the nearest free silhouette, heavy and condensed
+    // (user call, 2026-09-21; Retro's Soulway → Fraunces precedent) — with the
+    // distress put back at display sizes by `distress` below (JP-056, option
+    // C, user call, 2026-09-29). Anton has a lowercase where Stones Crush is all capitals, so
     // a Grunge block sets its display and label strings `textTransform:
     // 'uppercase'` per site; Chakra Petch and Inter set mixed case ("Sold Out",
     // "Full name"), which is why casing is 'title' and not 'upper'.
@@ -133,8 +134,9 @@ export const THEMES = [
     faceK: 0.75,
     // …and the distress Anton lacks, as a mask over the display type
     // (`distressed` in EncoreSection): the tile above, one per 4 em, so a
-    // 121px head and a 39px one wear the same texture. A theme with no key
-    // gains no style.
+    // 121px head and a 39px one wear the same texture. The display keys and
+    // `title` take it; `list` and the label keys stay clean, since it eats thin
+    // strokes. A theme with no key gains no style.
     distress: { image: `url("data:image/svg+xml,${encodeURIComponent(DISTRESS_SVG)}")`, size: '4em 4em' },
     ui: "'Chakra Petch', sans-serif",
     body: "'Inter', sans-serif",
