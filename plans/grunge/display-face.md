@@ -365,7 +365,7 @@ licence point alone argues for A.
    A, B, or stop here.
 
    **Decided** (2026-09-29, user call, over the renders below):
-   - **A, the inline-SVG noise mask**, at the bytes below. B is not built.
+   - **A, the inline-SVG noise mask**, at the bytes below. B was cut as a scratch tile and is not taken forward.
    - **The five label-face sites at `title` px stay clean, by key.** These are `:5789`, `:10778`,
      `:17135`, `:20568` and `:21913`. Step 1's cut stands unchanged: no `labelStyle` or `s.label`
      site takes the mask at any size. The known cost is a clean 19.5 px name or track title under a
@@ -403,7 +403,7 @@ licence point alone argues for A.
        threshold set the weight. Rejected on the way: 0.2 / 0.3 with the trial's table (15%);
        0.4 / 0.5 at 0.30–0.34 (6.6–12%, even snow); 0.5 at 0.27–0.29 with k 0.9–1.2 (8–8.7%,
        heavier than the frame inside the patches).
-   - **B, as it was cut (for the record, not built).** From `964:58600` exported at 4×
+   - **B, as it was cut (for the record; not taken forward).** From `964:58600` exported at 4×
      (`download_assets` at scale 4; `get_screenshot` will not go past 1×):
      - Ink is `max(R,G,B) > 128`. The histogram is bimodal, with the photo below 64 and the glyphs
        above 208.
