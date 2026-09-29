@@ -111,7 +111,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | 1 | JP-081 · JP-082 (replies) | Media head, track names, bio prose, form head; the labels no field reaches | **By design, all of them**: "Six" counts the frame's filler tile; the tracks are layout 1's frame's; the prose's lead names the mock artist; "Contact Us" is JP-054's call; the labels are JP-071's | — (replies) | **yes** — the labels A / B, the form head A / B / C, the media head A / B, the prose and tracks A / B | **done** (A, A, A, A; four replies, no fix) |
 | 2 | JP-076 | With the form deleted, both Send Enquiry pills do nothing | **Confirmed, shared.** A known state (JP-053) with no face and no fix path but the form; `BookPill`'s span keeps its pointer. **Proposed: Medium** | S–M | **yes** — 1 A (a calendar address that follows the form's) / B (one address); 2 (a) a panel note / (b) inert pills / (c) a visitor line | **done** (1 A, 2 (a); the calendar's own `email` follows the form's, and a panel note) |
 | 3 | JP-082 (controls) | Send Enquiry, the bio's Listen and the form's *Message* label have no field | **Confirmed, shared**: a submit, a link and a box label are not vocabulary. The census named Listen for this batch; *Message* is the one box label left a literal | S | **yes** — each: A (a field) / reply | **done** (A, A, A; `cta` reaches layout 4 seeded "Send Enquiry", a bio *Listen link*, a form *Message label*) |
-| 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | open |
+| 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | **done** ((a), A; punctuation skipped, a `#` cell ahead of A while a `#` group exists) |
 | 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | open |
 | 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | open |
 | 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | open |
@@ -909,11 +909,72 @@ punctuation that `ignorePunctuation` could reorder.
 rail comments ("all twenty-six" at `EncoreSection.jsx:12166` and `:12200`–`12203`, the wrap note at
 `:12485`–`12489`). CLAUDE.md's A–Z rail sentences (`:299`–`301`). A pointer at `../retro/layout-4.md:913`.
 
-**Decided.** —
+**Decided** (2026-09-29, user call): **(a), A.** A title files under the first letter or digit
+of its NFD form when that is A–Z, and under `#` otherwise (digits, non-Latin scripts, an empty
+title); leading punctuation is skipped, and the sort takes `ignorePunctuation: true`. The rail
+draws a `#` cell ahead of A only while a `#` group exists, built in `sectionVm` as `vm.repRail`
+and mapped by both rails.
 
-**Settled.** —
+**Settled** (2026-09-29). The drift the hand-off named held at the start (`vm.songs` `:1008`,
+`byLetter` `:1125`, the two literals `:12392` and `:12514`).
+- **The fix.**
+  - `sectionVm` (`EncoreBuilder.jsx:1114`–`1147`): the letter is the first `[\p{L}\p{N}]` of the
+    NFD'd title, upper-cased, kept when it is A–Z and `#` otherwise. The sort adds
+    `ignorePunctuation: true`. `vm.repRail` is `['#']` while a `#` group exists, then A–Z.
+  - **One thing the entry did not spell out: the groups take the rail's order**, `#` first and
+    then A–Z, and not the order the sorted songs first reach them. Two titles broke the old
+    order. A Cyrillic title collates after Z, so a `#` holding only `Щедрик` would have been
+    listed last while its cell led the rail, and the `at` fallback would have lit another
+    letter. And `ignorePunctuation` does not skip a *symbol*: `★Star` and `$ale` sort ahead of
+    `Apple` while they file under S and A. Inside a group the songs keep the sort's order, so
+    `★Star` still sorts ahead of `Sale` in S. On a Latin, unpunctuated list both orders agree,
+    which is why the seed does not move.
+  - `EncoreSection`: both rails map `s.repRail` in place of the literal (`:12397` the Lime /
+    Grunge block, `:12520` Retro's body). `letters`, `at`, `jump` and the anchors needed nothing:
+    `#` is a group letter like any other. Comments: the design's head, the rail-jumps paragraph,
+    the mark paragraph, and the wrap note (27 cells gain no row).
+- **The harness was proved first.** A HEAD worktree on :5174 against the tree on :5173:
+  repertoire × themes 0–4 × 4 layouts × 3 widths gave **0 of 60 per surface**.
+  **After-diff, named before the code: zero.** Measured: **0 of 60 per surface**, and again after
+  the group order. A node check
+  of the seed titles under both sort options gave the same order.
+- **States** (a throwaway harness probe, themes 0–4 × 3 widths × canvas and `live=1`; every
+  line identical across the five themes):
+  - The probe list (the untitled row given an artist, or `blankRow` drops it): groups
+    `#` (the untitled row, `99 Problems`, `Щедрик`), E (`Éclair`, `eleanor rigby`), I, T, V.
+    27 cells, `#` first and lit on both surfaces. Rows 6·6·6·6·3 / 15·12 / 7·7·7·6. Live, the
+    handlers are `#EITV`, and none on the canvas.
+  - Digit, Cyrillic and untitled rows deleted: 26 cells, E lit, rows 6·6·6·6·2 / 15·11 /
+    7·7·7·5, as before.
+  - The untitled row and `Valerie` alone: `#` stands and is lit.
+  - `Valerie`, `Щедрик`, `Dancing Queen`: `#` (`Щедрик`) leads the list, then D and V, and `#` is
+    lit. `$ale`, `Apple`, `Sale`, `★Star`, `Zed` (themes 0–2, desktop): A (`$ale`, `Apple`),
+    S (`★Star`, `Sale`), Z, with A lit. Both are the rail order above.
+  - The jump, at a 200px viewport so it can be seen: a trusted click on `#` from lower on the
+    page brings the `#` group to top 0 at all 15 renders. V, the control, does the same at
+    desktop and 768; at 390 it stops at 29–33 because the page ends.
+- **The tester's steps, in the real app** (a one-off puppeteer script, trusted clicks and keys,
+  deleted after), on Grunge's, Lime's and Retro's card 4: *Back to page list* → Repertoire →
+  *Add song* → typed `99 Problems`. The canvas rail read `#ABC…Z` with `#` lit. Publish → Open.
+  At 1440, 768 and 390 the list opened `#: 99 Problems`, then C and D, the rail had 27 cells
+  with `#` lit, and the rows were 6·6·6·6·3 / 15·12 / 7·7·7·6. A trusted click on `#` from the
+  foot of the page brought its group to top 0. No page errors.
+- **Named, not fixed** (as the entry said): the frames' rail is Latin, so a Cyrillic repertoire
+  files entirely under `#`.
+- **Docs**: the `sectionVm` comment (the fit's rule, now coded, with the punctuation clause and
+  the pin), the rail comments above, CLAUDE.md's A–Z rail sentence (the `#` clause), and a
+  pointer at `../retro/layout-4.md:913`.
 
-Reply: —
+Reply: **JP-083 — fixed.**
+- A song whose title starts with a digit, like "99 Problems", now files under **#** instead of
+  "9". So does a title in a non-Latin script, and a song with no title yet.
+- Leading punctuation is skipped. "'Til Tuesday" files under T, and "(I Can't Get No)
+  Satisfaction" under I. The list sorts the same way.
+- The A–Z index gets a **#** button ahead of A whenever a # group exists. It is lit when the # group
+  leads the list, and on the published page it jumps to that group. With no such song, the index
+  is the design's 26 letters, as before.
+- The seeded page is unchanged. Checked on *Stacked* under Grunge, Lime and Retro at 1440, 768 and
+  390.
 
 ---
 

@@ -912,7 +912,10 @@ Learned on the repertoire (section 7):
   frame draws all twenty-six alike, so nothing is dimmed; the cursor is read off the handler (the
   calendar's rule), which is what keeps an index rail from stranding a visitor on an empty group.
   A title starting with a digit or a symbol heads its own `#` group in the list and lights
-  nothing — the rail is a fixed A–Z that no content can extend. An **accent is decomposed**
+  nothing — the rail is a fixed A–Z that no content can extend. *(Never coded, and superseded
+  by JP-083, 2026-09-29: leading punctuation is skipped, a digit, a non-Latin letter or an
+  empty title files under `#`, and the rail grows a `#` cell ahead of A while that group
+  exists — `../grunge/layout-4-qa-fixes.md`.)* An **accent is decomposed**
   before the initial is taken, so "Édith Piaf" files under E: `'É'.toUpperCase()` is `'É'`, and
   the grouping has to agree with the sort, which folds the two at `sensitivity: 'base'`.
 - **`s.title` again, and for layout 2's reason.** Open question 8 is settled the way layout 2

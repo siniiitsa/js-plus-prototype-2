@@ -12171,7 +12171,8 @@ function Repertoire({ s }) {
 
   // v3 — Repertoire layout 4 · "A–Z index rail" (Figma 964:72822, 1208 × 452;
   // 964:78509, 608 × 522; 977:8166, 310 × 596): the whole list on one page,
-  // grouped under its own initial letters, beside a rail of all twenty-six.
+  // grouped under its own initial letters, beside a rail of all twenty-six
+  // (and a `#` cell ahead of A while some title files under `#`, JP-083).
   //
   // **The section is three grounds deep, and only the innermost is the
   // instance.** Walking `inst.parent` up: the instance sits in a Frame
@@ -12211,7 +12212,10 @@ function Repertoire({ s }) {
   // that has three. So a lit letter scrolls the page to that group's heading —
   // `scrollIntoView` off a callback ref, live-gated, with the handler (and
   // therefore the cursor, the calendar's rule) only on a letter some song
-  // actually starts with. `behavior` is left at its instant default: the
+  // actually starts with. The cells are `s.repRail`, not a literal: a title
+  // whose first letter or digit is not A–Z files under `#` (`sectionVm`), and
+  // the rail then carries a `#` cell ahead of A that jumps like the others
+  // (JP-083). The frames draw none, so the seeded page's rail is theirs. `behavior` is left at its instant default: the
   // header's nav reads `prefers-reduced-motion` off the popup's own `win`,
   // which this file has no handle on, and an instant jump needs no such read.
   // The `sticky` itself is **declined** — the frame's own `overflow-clip`
@@ -12222,7 +12226,8 @@ function Repertoire({ s }) {
   // The mark is a **seat, not a state**: `alpha` starts empty and the lit
   // letter falls back to the first group's, which on the seeded page is the D
   // the frame lights, so the canvas and the published first paint are one
-  // picture. It is clamped against the groups for pricing's reason — the artist
+  // picture. A `#` group leads the list whenever it exists and its cell leads
+  // the rail, so the first group always has a cell to light. It is clamped against the groups for pricing's reason — the artist
   // can delete the last song a letter had while the published tab is open.
   //
   // Nothing else here is a control. There is no chip row (`repChips` reaches
@@ -12389,7 +12394,7 @@ function Repertoire({ s }) {
             ? { flex: 'none', width: u(232), paddingTop: u(50), position: 'sticky', top: 0 }
             : { width: '100%' }),
         }}>
-          {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(railCell)}
+          {s.repRail.map(railCell)}
         </div>
       )
 
@@ -12493,7 +12498,8 @@ function Repertoire({ s }) {
         // 232 is six cells and their five gaps exactly, which is why the wrap
         // falls out of the masters' own widths rather than being counted: six
         // to a row beside the list at 1440, fifteen across 608 and seven across
-        // 310. The 50 above it is the frame's own indent, and the two narrow
+        // 310. A `#` cell (JP-083) makes 27, which lands in the last row at all
+        // three widths, so no width gains a row. The 50 above it is the frame's own indent, and the two narrow
         // rails, which stand above the list rather than beside it, carry none.
         //
         // `sticky` is the desktop frame's own, and it is what makes the jump
@@ -12511,7 +12517,7 @@ function Repertoire({ s }) {
           ? { flex: 'none', width: u(232), paddingTop: u(50), position: 'sticky', top: 0 }
           : { width: '100%' }),
       }}>
-        {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(railCell)}
+        {s.repRail.map(railCell)}
       </div>
     )
 

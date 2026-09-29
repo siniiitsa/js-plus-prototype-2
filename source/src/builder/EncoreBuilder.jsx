@@ -1115,22 +1115,39 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // a grouping: one group per distinct first letter of a title, the songs sorted
   // inside it and the groups in the order those sorted songs first appear — so
   // the section looks a list up rather than sorting one, the calendar's
-  // one-composed-line-per-cell rule. The letter is upper-cased because the rail
-  // it lights is; a title starting with a digit or a symbol takes `#`, which
-  // heads its own group in the list and lights nothing, the frames' rail being a
-  // fixed A–Z that no content can extend. An accent is decomposed first so that
-  // "Édith Piaf" files under E rather than heading a group of its own beside it
-  // — the sort already folds the two at `sensitivity: 'base'`, and the grouping
-  // has to agree with the sort or the list reads as two Es.
+  // one-composed-line-per-cell rule. The letter is the title's first letter or
+  // digit, upper-cased because the rail it lights is. Leading punctuation is
+  // skipped, so "'Til Tuesday" files under T, and a digit, a letter outside
+  // A–Z (a Cyrillic title) or an empty title takes `#` (JP-083, user call,
+  // 2026-09-29; plans/retro/layout-4.md's rule, which the fit wrote down and
+  // never coded). An accent is decomposed first so that "Édith Piaf" files
+  // under E rather than heading a group of its own beside it — the sort
+  // already folds the two at `sensitivity: 'base'`, and the grouping has to
+  // agree with the sort or the list reads as two Es; `ignorePunctuation` is
+  // the same argument for the skipped punctuation. The groups then take the
+  // rail's own order, `#` first and A–Z after it, rather than the order the
+  // sorted songs first reach them: a Cyrillic title collates after Z, and a
+  // leading symbol (`$`, `★`) is not punctuation to the collator, so "$ale"
+  // sorts ahead of "Apple" while it files under S. Inside a group the songs
+  // keep the sort's order.
+  //
+  // The rail is the frames' fixed A–Z with a `#` cell ahead of A, drawn only
+  // while a `#` group exists, so the seeded page keeps the frames' twenty-six
+  // and the first group always has a cell to light. Built here so both rails
+  // map one list and EncoreSection composes nothing.
   const byLetter = new Map()
   ;[...vm.songs]
-    .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }))
+    .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base', ignorePunctuation: true }))
     .forEach((sg) => {
-      const l = (sg.title.normalize('NFD').charAt(0) || '#').toUpperCase()
+      const ch = (sg.title.normalize('NFD').match(/[\p{L}\p{N}]/u) || [''])[0].toUpperCase()
+      const l = /^[A-Z]$/.test(ch) ? ch : '#'
       if (!byLetter.has(l)) byLetter.set(l, [])
       byLetter.get(l).push(sg)
     })
-  vm.repGroups = [...byLetter].map(([letter, songs]) => ({ letter, songs }))
+  vm.repGroups = [...byLetter]
+    .map(([letter, songs]) => ({ letter, songs }))
+    .sort((a, b) => (a.letter === '#' ? -1 : b.letter === '#' ? 1 : a.letter.localeCompare(b.letter)))
+  vm.repRail = [...(byLetter.has('#') ? ['#'] : []), ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
   // The rounded panel layout 4 stands its list on — the olive band lifted a
   // register, which is exactly `mapBg`'s own relationship to `deep` and lands
   // within a point of Retro's own #6D7040-on-#5B5E2E (contrast 1.31 against

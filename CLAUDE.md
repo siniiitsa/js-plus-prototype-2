@@ -298,7 +298,9 @@ mutated through a single `patch()` helper.
   link, so the link is what reaches the fifth song and there is no way back, and in layout 4
   the **A–Z index rail**, which is the one control in the file that **scrolls from inside
   `EncoreSection`** — a `scrollIntoView` off a callback ref, on a letter some song actually
-  starts with, where the header's nav needs the published tab's own delegated listener — the
+  starts with (a title whose first letter or digit is not A–Z files under `#`, and
+  `vm.repRail` then leads the rail with a `#` cell, JP-083), where the header's nav needs the
+  published tab's own delegated listener — the
   **header's
   navigation**, the **bio's own Listen** (layout 4 alone, in the overlay card's meta row: the
   header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section, worded
