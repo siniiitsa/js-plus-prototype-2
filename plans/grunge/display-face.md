@@ -363,8 +363,104 @@ licence point alone argues for A.
    (1–4) at 1440 / 768 / 390, with each candidate and with Anton plain, beside the Figma frame's
    own render (`get_screenshot`). Measure paint on a published scroll. Then one `AskUserQuestion`:
    A, B, or stop here.
+
+   **Decided** (2026-09-29, user call, over the renders below):
+   - **A, the inline-SVG noise mask**, at the bytes below. B is not built.
+   - **The five label-face sites at `title` px stay clean, by key.** These are `:5789`, `:10778`,
+     `:17135`, `:20568` and `:21913`. Step 1's cut stands unchanged: no `labelStyle` or `s.label`
+     site takes the mask at any size. The known cost is a clean 19.5 px name or track title under a
+     distressed head. Each list stays consistent within its section.
+
+   **Settled** (2026-09-29, HEAD `4edb088`; no source change, with every render and measurement
+   taken in a scratch harness on :5173, masks injected by `page.evaluate`).
+   - **A's bytes (step 3 copies these).** It is a 240 × 240 SVG, set as `mask-image` and
+     `-webkit-mask-image` with `mask-size: 4em 4em`, `repeat`:
+     `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n' x='0' y='0'
+     width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.5'
+     numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='1 0 0 0 0  0 1 0 0 0  0 0
+     1 0 0  0 0 0 0 1' result='f'/><feTurbulence type='fractalNoise' baseFrequency='0.03'
+     numOctaves='1' seed='3' stitchTiles='stitch'/><feColorMatrix values='1 0 0 0 0  0 1 0 0 0  0 0
+     1 0 0  0 0 0 0 1' result='c'/><feComposite in='f' in2='c' operator='arithmetic' k1='0' k2='1'
+     k3='1.2' k4='-0.6'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  20 0 0 0
+     -4.5'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 1'/></feComponentTransfer>
+     </filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`. URI-encoded it is **1,187
+     bytes**. (The harness wrote `k4='-0.600'`, which is the same value.)
+     - The first turbulence is the speck (0.5, two octaves, seed 7). The second (0.03, seed 3)
+       lifts or lowers it by `1.2 × (c − 0.5)`, so the cuts cluster into scuffed patches and clean
+       runs, as the frame's do.
+     - The matrix `20 … −4.5` puts a hard threshold at R ≈ 0.25, and `discrete '0 1'` makes it
+       binary.
+     - Both seeds are pinned, and `stitchTiles` makes the tile seamless.
+   - **Density, and the cut.** Measured as the fraction of the tile drawn at 480 px with alpha
+     below 0.5:
+     - **A: 6.7%.** The light trial cuts **14.7%** and the heavy one **31.0%**, so A is well under
+       half the light setting's density. **Step 1's cut holds**, since it held for anything no
+       denser than light.
+     - B (below): 2.9%.
+     - The frame: 4.3% of the glyph *interior*, plus the worn edges no tile can reproduce.
+     - Tuning path: the trial's blobs were round and three to five times the frame's weight.
+       Raising the frequency made them finer, the coarse field clustered them, and the explicit
+       threshold set the weight. Rejected on the way: 0.2 / 0.3 with the trial's table (15%);
+       0.4 / 0.5 at 0.30–0.34 (6.6–12%, even snow); 0.5 at 0.27–0.29 with k 0.9–1.2 (8–8.7%,
+       heavier than the frame inside the patches).
+   - **B, as it was cut (for the record, not built).** From `964:58600` exported at 4×
+     (`download_assets` at scale 4; `get_screenshot` will not go past 1×):
+     - Ink is `max(R,G,B) > 128`. The histogram is bimodal, with the photo below 64 and the glyphs
+       above 208.
+     - That was closed 14 px, then eroded 6 px to give the interior.
+     - The holes were taken as 8-way components. Kept: those under 0.25% of an em², not boxy, and
+       not touching the interior's edge. Truncated edge scuffs came out as flat-topped squares, so
+       239 were dropped. That left 876 whole chips.
+     - These were scattered with wraparound onto a 3 em tile (60% clustered, σ 0.18 em) at the
+       frame's 4.3% interior density, then Lanczos'd to 512 px with 4 alpha levels.
+     - Size: 22,830 bytes PNG (30,440 inlined), and a 2-colour palette PNG would be about 10 KB.
+     - Its chips have the frame's own shape, but it reads lighter than the frame and all but
+       vanishes at 390. It also carries the licence point (a texture taken from renders of a
+       personal-use-only face).
+     - **Recorded because this is the only tile route if A is ever reopened**:
+       `get_screenshot` caps at 1×, and a frame export is what gives the chip detail.
+   - **The renders.** Header `h1` (the setter) at arch 0–3 × 1440 / 768 / 390, plain / A / B, at
+     DPR 1 and 3. The harness ran `&cj={"title":"Static Youth"}`, so its words match the frame's.
+     Each frame was cropped to the `h1`'s rect scaled by `frameW / rootW`. The frames are `964:58600` /
+     `986:44057` / `986:44070`, `964:64618` / `986:13753` / `986:13772`, `964:68686` /
+     `984:13900` / `984:13931` and `964:72944` / `971:7823` / `977:12044`. The sheets were
+     scratchpad-only; the recipe is this paragraph.
+     - **`title` at 390 / DPR 1** was checked by rendered size, with every outermost Anton setter
+       at 19 px or more masked. The renders were calendar 3, repertoire 4, map 2, media 1,
+       testimonials 1, repertoire 1, map 1 and testimonials 3. **A survives:** "BOOK ME", "CRAZY IN
+       LOVE", "DON'T STOP ME NOW" and "HIDDEN WAREHOUSE" are scuffed but legible, and "JUNE" at
+       22.5 reads like the frame. B survives by being almost clean.
+     - **A two-line head needs nothing.** A mask on a block setter is one box, so the tile runs on
+       across the line break. Step 0's `maskPosition` column stays a guard.
+   - **The label edge's new fact, and why clean-by-key avoids it.** Testimonials 1's name and
+     role spans (`:20568`) **paint their own pill**. Masked by size, A speckles the pill. So
+     step 1's "every setter at 19 px or more paints only glyphs" was true of the `s.display`
+     setters it probed, not of the label-face ones. Clean-by-key never reaches them.
+   - **Paint** was measured on the published Grunge page (card 0), with a fresh browser per run
+     and the median of 3. Masks went on every outermost Anton setter at 19 px or more that paints
+     no box (35 nodes at 1440, 29 at 390). The engine is chrome-headless-shell, which rasterises
+     in software, so **the ratios are the result and the ms are pessimistic**. Chrome for Testing
+     (`headless: true`) stalled before the builder had even built the page, and was not chased.
+
+     | | scroll raster 1440 (zoomed) | scroll raster 390 | masks' first paint, 1440 | republish raster, 1440 |
+     |---|---|---|---|---|
+     | plain | 372 ms | 167 | 3 | 116 |
+     | A | 825 (×2.2) | 245 (×1.5) | 158 | 163 |
+     | B | 441 (×1.2) | 208 (×1.25) | 21 | 118 |
+
+     - The rAF frame time does not move under either candidate (p95 21 ms at 1440, 9 ms at 390,
+       over 150 and 169 frames of a 60 px-a-frame scroll). The cost is on the raster threads,
+       and A's grows with the rendered size, which the 1440 zoom inflates.
+     - "A Publish" is measured as a proxy, two ways: the masks' first paint at the page top,
+       and a *Publish* → *Open* into the open tab. The latter keeps every mask (35 / 35),
+       because React leaves style properties it never set alone.
+     - Step 5 re-measures on the built single file if the sweep finds a scroll that hitches.
 3. **The key and the helper.** `vm.distress` in `sectionVm`, the constant (A) or the resolver
    (B), and the helper beside `faced`, with no call sites yet. After-diff: **0 of every theme**.
+   Step 2 chose A, so this is a string constant in `data.js` and nothing in `photos.js`. Carry
+   step 1's wordmark trap into the helper's shape: `NavBar` (`:1473`) passes an explicit `'28px'`
+   at 390, so "was `size` passed" cannot tell header 1's Display/Title wordmark from header 4's
+   `labelLg` one. The key, or a flag, has to travel through `NavBar`.
 4. **The sites**, layout by layout (1, 2, 3, 4), one commit each. After-diff per layout: Grunge
    files at that layout's arch, **mask columns only**, no text, geometry, colour or font row
    moving. Themes 0, 1, 3 and 4: 0.
