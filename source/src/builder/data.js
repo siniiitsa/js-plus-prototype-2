@@ -797,22 +797,59 @@ export const PINS = [{ x: '20%', y: '26%' }, { x: '40%', y: '54%' }, { x: '62%',
 // The order is column-down, not the Figma frame's reading order: the desktop
 // layout splits the page in half and runs each half down its own column, so
 // songs 1–6 are the left column and 7–12 the right.
+//
+// `length` is the track's running time as the artist types it, free text and
+// printed as typed: only layout 3's set cards read it, in the seat the other
+// layouts give the artist (JP-066, user call, 2026-09-29). The seeds are the
+// lengths every layout-3 frame prints (Grunge's 390 master, 984:13951, lists
+// all of them); the twelfth row is a second Valerie where the frame has Get
+// Lucky, so it takes Valerie's.
 export const SONGS = [
-  { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Weddings, Pubs' },
-  { title: 'Superstition',      artist: 'Stevie Wonder',     tags: 'Weddings' },
-  { title: 'Uptown Funk',       artist: 'Bruno Mars',        tags: 'Weddings, Birthdays' },
-  { title: 'Dancing Queen',     artist: 'ABBA',              tags: 'Weddings, Birthdays' },
-  { title: 'Sex on Fire',       artist: 'Kings of Leon',     tags: 'Pubs' },
-  { title: 'Crazy in Love',     artist: 'Beyoncé',           tags: 'Birthdays' },
-  { title: 'Mr. Brightside',    artist: 'The Killers',       tags: 'Pubs, Birthdays' },
-  { title: 'I Wanna Dance',     artist: 'Whitney Houston',   tags: 'Birthdays' },
-  { title: 'September',         artist: 'Earth, Wind & Fire', tags: 'Weddings, Birthdays' },
-  { title: "Don't Stop Me Now", artist: 'Queen',             tags: 'Pubs, Birthdays' },
-  { title: 'Rather Be',         artist: 'Clean Bandit',      tags: 'Weddings' },
-  { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Pubs' },
+  { title: 'Valerie',           artist: 'Amy Winehouse',      tags: 'Weddings, Pubs',      length: '3:54' },
+  { title: 'Superstition',      artist: 'Stevie Wonder',      tags: 'Weddings',            length: '4:26' },
+  { title: 'Uptown Funk',       artist: 'Bruno Mars',         tags: 'Weddings, Birthdays', length: '4:30' },
+  { title: 'Dancing Queen',     artist: 'ABBA',               tags: 'Weddings, Birthdays', length: '3:51' },
+  { title: 'Sex on Fire',       artist: 'Kings of Leon',      tags: 'Pubs',                length: '3:23' },
+  { title: 'Crazy in Love',     artist: 'Beyoncé',            tags: 'Birthdays',           length: '3:56' },
+  { title: 'Mr. Brightside',    artist: 'The Killers',        tags: 'Pubs, Birthdays',     length: '3:42' },
+  { title: 'I Wanna Dance',     artist: 'Whitney Houston',    tags: 'Birthdays',           length: '4:52' },
+  { title: 'September',         artist: 'Earth, Wind & Fire', tags: 'Weddings, Birthdays', length: '3:35' },
+  { title: "Don't Stop Me Now", artist: 'Queen',              tags: 'Pubs, Birthdays',     length: '3:29' },
+  { title: 'Rather Be',         artist: 'Clean Bandit',       tags: 'Weddings',            length: '3:48' },
+  { title: 'Valerie',           artist: 'Amy Winehouse',      tags: 'Pubs',                length: '3:54' },
 ]
-// What `blankRow()` asks of a SongsField row (the JP-051 sweep).
-export const SONG_KEYS = ['title', 'artist', 'tags']
+// What `blankRow()` asks of a SongsField row (the JP-051 sweep). A row holding
+// only a length is a song the artist has started, so it is not blank.
+export const SONG_KEYS = ['title', 'artist', 'tags', 'length']
+
+// Repertoire layout 3's set details (JP-066, user call, 2026-09-29): a set is
+// one of the songs' tags, so its mood and its running time cannot live on the
+// songs. They are keyed here by the tag, case-folded, so they follow the tag
+// rather than a position and survive a song list reordered or rewritten. A
+// set's length is the artist's claim, not a sum: the frame's "45 MIN" heads
+// four tracks of about four minutes. The seed is the frame's three moods and
+// lengths laid on the seed's three tags in order; the frame's own card titles
+// (Cocktail hour / Dinner / Party peak) stay ours, since retagging the songs
+// would move the chip rows of layouts 1, 2 and 4.
+export const REP_SETS = {
+  weddings:  { mood: 'Mellow',         length: '45 min' },
+  pubs:      { mood: 'Easy listening', length: '60 min' },
+  birthdays: { mood: 'High energy',    length: '90 min' },
+}
+// The section's `sets`, else the seed — only an absent key (or anything that
+// is not a plain object) falls back, so an artist who empties every box keeps
+// the song counts rather than getting the seed back. SetsField writes the whole
+// object on its first keystroke, so the canvas never loses a seeded set's line
+// the moment another is edited. sectionVm and EditPanel both resolve it here.
+export function repSetsOf(c) {
+  const v = c && c.sets
+  return v && typeof v === 'object' && !Array.isArray(v) ? v : REP_SETS
+}
+// One set's line: its mood and length joined, each dropped when empty. `''`
+// when both are, which the card reads as "print the song count instead".
+export function repSetLine(d) {
+  return [d && d.mood, d && d.length].map((v) => String(v ?? '').trim()).filter(Boolean).join(' · ')
+}
 
 // The chip that clears the filter. It is index 0 of the row and carries a null
 // tag; repChips() skips a tag of the same name so an artist who writes "All" on
@@ -1584,9 +1621,12 @@ export const FIELDS = {
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
   // The other list-shaped content type with a structured editor rather than a
-  // textarea (see `media` above): `songs` is an array of { title, artist, tags },
-  // and SongsField in EncoreBuilder is the repeater that maintains it. An absent
-  // key means the seeded SONGS; an emptied array means no songs listed.
+  // textarea (see `media` above): `songs` is an array of
+  // { title, artist, tags, length }, and SongsField in EncoreBuilder is the
+  // repeater that maintains it. An absent key means the seeded SONGS; an
+  // emptied array means no songs listed. `sets` is layout 3's set details,
+  // { [case-folded tag]: { mood, length } }, maintained by SetsField, which
+  // lists the sets the songs' tags make (REP_SETS, repSetsOf()).
   repertoire: [
     // No `d`: the heading falls back to the song count, in sectionVm and in
     // the panel alike, so it cannot claim 240 songs over a list of twelve.
@@ -1595,7 +1635,10 @@ export const FIELDS = {
     // stays empty at every layout.
     { k: 'heading', l: 'Heading' },
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
-      hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead.' },
+      hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
+          + 'Layout 3 groups the songs into one set per tag and shows each song’s length.' },
+    { k: 'sets',    l: 'Sets', type: 'sets', in: [2],
+      hint: 'One per tag on your songs. The mood and length show under the set’s name in layout 3; with both empty, it shows the song count.' },
   ],
   // The three social addresses follow the photos, and follow `media.soundcloud`
   // in shape: an empty default, normalised through extUrl() in sectionVm, and a

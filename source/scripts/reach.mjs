@@ -97,6 +97,13 @@ const PROBES = [
   { name: 'media.listLabel', cats: ['media'], param: 'cj', value: { listLabel: Z } },
   { name: 'map.kicker', cats: ['map'], param: 'cj', value: { kicker: Z } },
   { name: 'testimonials.kicker', cats: ['testimonials'], param: 'cj', value: { kicker: Z } },
+  // JP-066: a song's length and layout 3's set details. The length is a column
+  // of `songs`, so both sides carry the same one-song list and only the length
+  // differs; the sets key a live tag, or nothing could move.
+  { name: 'repertoire.songs.length', cats: ['repertoire'], param: 'cj',
+    base: { songs: [{ title: 'Song', artist: 'Artist', tags: 'Weddings', length: '' }] },
+    value: { songs: [{ title: 'Song', artist: 'Artist', tags: 'Weddings', length: Z }] } },
+  { name: 'repertoire.sets', cats: ['repertoire'], param: 'cj', value: { sets: { weddings: { mood: Z, length: Z } } } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

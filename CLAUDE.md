@@ -1153,8 +1153,23 @@ mutated through a single `patch()` helper.
   stats' shape — above). The booking calendar's `booked` dates are an
   **eleventh structured field that is not a list**: `BookedField`
   is a month to click, not a repeater, because one row per blocked date is the wrong shape for a
-  June with eight of them, and it obeys the same seed-resolver rule as the repeaters below. `c.songs` is an array of `{ title, artist, tags }`
-  (tags a raw comma string),
+  June with eight of them, and it obeys the same seed-resolver rule as the repeaters below.
+  Repertoire layout 3's set details are a **twelfth, `SetsField`** (JP-066, user call,
+  2026-09-29, reversing Retro layout 3's "the mood is the card's title"): a set is one of the
+  songs' tags, so it lists the sets `repChips()` derives from the resolved songs less their blank
+  rows — the very list `sectionVm` groups the cards by — each with a Mood and a Length box, and
+  adds and removes nothing. `c.sets` is `{ [case-folded tag]: { mood, length } }`, resolved by
+  `repSetsOf()` (absent → `REP_SETS`, the frame's Mellow · 45 min / Easy listening · 60 min /
+  High energy · 90 min on Weddings / Pubs / Birthdays in order), and each keystroke writes the
+  whole resolved object, so the first edit keeps the other seeded lines. A card's meta is
+  `repSetLine()`, the two joined on ` · ` with each dropped when empty, and the song count while
+  both are (always on the `All` fallback card); an own key only, so a tag named "constructor"
+  counts. Details for a tag no song carries stay stored and come back with the tag. A set's
+  length is the artist's claim, not a sum: the frame's "45 MIN" heads four four-minute tracks.
+  `c.songs` is an array of `{ title, artist, tags, length }`
+  (tags a raw comma string; `length` free text, printed as typed by layout 3 alone, in the seat
+  the artist held — no other repertoire frame draws a length, and a song with none leaves the
+  seat empty, the artist not being drawn there; at 768 it stands under the title, JP-044's stack),
   maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
   (`RowThumb`, the 46px cousin of `ImageField`) and a sound file. `audio` is an address, not an
@@ -1242,7 +1257,7 @@ mutated through a single `patch()` helper.
   gallery's, the map's, the testimonials' and the form's (`REP_HEADING_4` beside them). Both
   resolvers read both: `sectionVm` assigns them *after* the count, and `EditPanel`'s first-match
   chain puts both arms *ahead* of the count. An emptied heading stays empty at every
-  layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`, `statsVal`, `stepsVal`) has to
+  layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `setsVal` through `repSetsOf()`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`, `statsVal`, `stepsVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES`, `FOOTER_LINKS`, `MAP_STATS_4` and `FORM_STEPS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.

@@ -1334,7 +1334,7 @@ sections are where the twins' dark-ground assumptions break (trap 6).
     16; section 671 against 704.
 - **Named diffs, the twins'**: `s.title` ("12 Songs") where the frame writes "Curated sets" (**since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `../grunge/layout-3-qa-fixes.md`); the
   meta line is the set's count, not a mood and a running time; the right-hand column is the
-  artist, not a duration; the section pads the shared `padY` (80 / 56 / 44), not the frame's 56 /
+  artist, not a duration *(Since JP-066, 2026-09-29: the meta line is the set's mood and running time from `SetsField`, and the right-hand column the song's `length`; see `../grunge/retest-qa-fixes.md`.)*; the section pads the shared `padY` (80 / 56 / 44), not the frame's 56 /
   60 / 60; the card's 438.3 against 439 (its content).
 - **JP-044 holds**: `stack = tab` is the shared block's, so at 768 the artist stands under the
   title. No seeded title's ellipsis span overflows at any width (`scrollWidth > clientWidth` on

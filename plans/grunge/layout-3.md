@@ -930,7 +930,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   (47); 390 head 40.9 (41), cards 290 × 438.3 at −260 / 50 / 360 (the master's x), grid 24
   under the head. **Named diffs, Lime's and Retro's**: the head is `s.title` ("12 Songs")
   where the frame writes "Curated sets" (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.); the meta line is the set's count where the frame has
-  a mood and a running time; the right-hand column is the artist, not a duration; the 768
+  a mood and a running time; the right-hand column is the artist, not a duration *(Since JP-066, 2026-09-29: the meta line is the set's mood and running time from `SetsField`, and the right-hand column the song's `length`; see `./retest-qa-fixes.md`.)*; the 768
   cards are 216 against 222.7 (a 688 column against 708); the section's own 80 / 56 / 44 top
   pad is the shared `padY`, not the frame's 56 / 60 / 60 (the plan's `vm.pad` arms never
   carried a repertoire row, under Lime either).

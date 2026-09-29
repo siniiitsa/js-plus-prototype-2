@@ -685,7 +685,11 @@ Learned on the repertoire (section 7):
   every alternative: a `SETS` constant in the repeater row shape (the video section's
   `VIDEOS` rule) would have left `c.songs` unread, which the calendar's note says is worse
   than any unread field. **Look for the derivation before reaching for the seeded constant;
-  the constant is for content that genuinely does not exist yet.**
+  the constant is for content that genuinely does not exist yet.** *(Reversed in part since:
+  `../grunge/retest-qa-fixes.md`, JP-066, 2026-09-29. The grouping stands, and the cards are
+  still the tags. But a mood and a card title turned out not to be the same slot. The meta line
+  is now the set's own mood and running time, kept per tag by `SetsField` (`c.sets`, seeded
+  `REP_SETS`), and each row prints a song `length` where this pass put the artist.)*
 - **A grouping can strand what a filter cannot, and this section has already written down
   what to do about it.** `vm.repFlat`'s own comment — *"it takes the artist's songs, so
   swapping layouts never silently discards what they typed"* — is the constraint, and it is

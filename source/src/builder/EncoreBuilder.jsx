@@ -52,7 +52,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -1028,6 +1028,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Raw casing, deliberately: a lower-case theme must not stop a chip from
     // matching the tag it was derived from.
     tags: songTags(t && t.tags),
+    // Layout 3's right-hand seat (JP-066), as typed: a running time is not
+    // prose to case, and an empty one leaves the seat empty.
+    length: String((t && t.length) ?? '').trim(),
   }))
   // `label` is cased for the chip, `tag` is what the filter compares.
   vm.repChips = repChips(songList).map((ch) => ({ ...ch, label: cased(ch.label) }))
@@ -1097,20 +1100,27 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const pool = dark.length ? dark : T.tags
     return pool[((pool.length - 1 - i) % pool.length + pool.length) % pool.length]
   }
+  // The set details SetsField keeps, keyed by the case-folded tag (JP-066).
+  const setDetails = repSetsOf(c)
   const repSet = (tag, songs, i) => {
     // `tierHues` is the pricing deck's, and it is exactly this card's pairing:
     // `cardFg` is the cream the frame sets on all three, and `acc` is the
     // mustard of the meta line, already guarded for a palette where the two
     // hues do not separate.
     const hues = tierHues(setHue(i))
+    // The frame's "MELLOW · 45 MIN": the set's own mood and running time as
+    // the artist typed them in SetsField (JP-066, user call, 2026-09-29,
+    // reversing the fit's "6 SONGS"), each dropped when empty, and the song
+    // count while both are. The All card is no tag, so it always counts.
+    // Composed here because EncoreSection composes nothing; uncased, since the
+    // caps are a style.
+    // An own key only: a tag named "constructor" is not the Object's.
+    const key = tag.toLowerCase()
+    const line = tag === REP_ALL || !Object.hasOwn(setDetails, key) ? '' : repSetLine(setDetails[key])
     return {
       label: cased(tag),
       songs,
-      // "6 SONGS", where the frame's meta reads "MELLOW · 45 MIN": the mood IS
-      // the card's own title here, and a running time is a number the artist
-      // never typed (the video section's rule). Composed here because
-      // EncoreSection composes nothing; the caps are a style, not casing.
-      meta: `${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`,
+      meta: line || `${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`,
       // The card's outline and the rule under every row. The frame draws #111
       // on the olive and rust cards and the cream on the near-black one, which
       // is `tierHues`' own accHue shape: the palette's darkest tag, unless the
@@ -2426,13 +2436,14 @@ function NameInput({ value, onChange, style }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §8.6b SongsField — the repertoire's song list. The first of the five
+ * §8.6b SongsField — the repertoire's song list. The first of the ten
  * list-shaped fields with a structured editor rather than a delimited
- * textarea (TracksField, GigsField, TiersField and FormFieldsField below
- * are the others, and BookedField after them is a structured editor of a
- * sixth shape that is not a list at all): the artist
- * types a title, an artist and any tags, and the tags are what the
- * section's filter chips are built from.
+ * textarea (TracksField, GigsField, TiersField, FormFieldsField and the rest
+ * below are the others; BookedField and SetsField are structured editors of
+ * a shape that is not a list at all): the artist types a title, an artist,
+ * a length and any tags, and the tags are what the section's filter chips —
+ * and layout 3's sets — are built from. The length is read by layout 3
+ * alone (JP-066).
  *
  * Modelled on ImagesField above — numbered rows, a round X per row, an
  * add affordance, an "n of max" footnote — and, like it, deliberately
@@ -2450,7 +2461,7 @@ function SongsField({ value, max, onChange }) {
   // the sparse `c.songs` a plain value rather than something patched in place.
   const setAt = (i, k, v) => onChange(list.map((sg, j) => (j === i ? { ...sg, [k]: v } : sg)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
-  const add = () => onChange([...list, { title: '', artist: '', tags: '' }])
+  const add = () => onChange([...list, { title: '', artist: '', tags: '', length: '' }])
 
   const row = (i, sg) => (
     <div key={i} style={{
@@ -2484,13 +2495,22 @@ function SongsField({ value, max, onChange }) {
       </div>
       {/* Stacked, not three across: this panel is also the mobile edit sheet
           and three inputs do not fit side by side at its width. The 25px
-          gutter keeps both lower fields aligned under the title. */}
+          gutter keeps both lower fields aligned under the title. The length
+          (JP-066) is four glyphs, so it rides beside the artist in a narrow
+          box rather than taking a line of its own. */}
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <Input
-          value={sg.artist ?? ''} placeholder="Artist" onClick={stopE}
-          onChange={(e) => setAt(i, 'artist', e.target.value)}
-          className="h-auto" style={SONG_ROW_INPUT}
-        />
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <Input
+            value={sg.artist ?? ''} placeholder="Artist" onClick={stopE}
+            onChange={(e) => setAt(i, 'artist', e.target.value)}
+            className="h-auto" style={{ ...SONG_ROW_INPUT, flex: 1, minWidth: 0 }}
+          />
+          <Input
+            value={sg.length ?? ''} placeholder="3:54" aria-label="Length" onClick={stopE}
+            onChange={(e) => setAt(i, 'length', e.target.value)}
+            className="h-auto" style={{ ...SONG_ROW_INPUT, width: '64px', flex: 'none' }}
+          />
+        </div>
         <Input
           value={sg.tags ?? ''} placeholder="Tags — weddings, pubs" onClick={stopE}
           onChange={(e) => setAt(i, 'tags', e.target.value)}
@@ -2523,6 +2543,69 @@ function SongsField({ value, max, onChange }) {
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
         {list.length} of {max}
       </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6b′ SetsField — repertoire layout 3's set details (JP-066, user call,
+ * 2026-09-29).
+ *
+ * A set is one of the songs' tags, so it is derived, and its mood and
+ * running time have nowhere to live on a song. This is the second structured
+ * editor that is not a list, after BookedField: one row per set the songs'
+ * tags make — the very list sectionVm groups the cards by, `repChips()` over
+ * the resolved songs less their blank rows — each with a Mood and a Length
+ * box. It adds and removes nothing: a set comes and goes with its tag.
+ *
+ * `value` is `{ [case-folded tag]: { mood, length } }`, keyed by the tag
+ * rather than a position so a set's details follow it through a reordered or
+ * rewritten song list. Every keystroke writes the whole object — the resolved
+ * one, seed included — so the first edit materialises REP_SETS and the other
+ * sets' lines do not vanish from the canvas (tracksVal's rule). Details for a
+ * tag no song carries any more stay stored and come back with the tag; the
+ * field shows only the live sets.
+ * ------------------------------------------------------------------- */
+
+function SetsField({ value, songs, onChange }) {
+  const map = value && typeof value === 'object' && !Array.isArray(value) ? value : {}
+  const sets = repChips((songs || []).filter((t) => !blankRow(t, SONG_KEYS))).slice(1)
+  const setAt = (key, k, v) => onChange({ ...map, [key]: { ...(map[key] || {}), [k]: v } })
+
+  if (sets.length === 0) {
+    return (
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+        Tag your songs to make sets.
+      </p>
+    )
+  }
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {sets.map((ch) => {
+        const key = ch.tag.toLowerCase()
+        const d = Object.hasOwn(map, key) ? map[key] || {} : {}
+        return (
+          <div key={key} style={{
+            border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+            display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+          }}>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#1B1A17', overflowWrap: 'anywhere' }}>{ch.label}</span>
+            {/* shadcn Input for its focus ring — see SongsField above. */}
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <Input
+                value={d.mood ?? ''} placeholder="Mood" aria-label={`${ch.label} mood`} onClick={stopE}
+                onChange={(e) => setAt(key, 'mood', e.target.value)}
+                className="h-auto" style={{ ...SONG_ROW_INPUT, flex: 1, minWidth: 0 }}
+              />
+              <Input
+                value={d.length ?? ''} placeholder="45 min" aria-label={`${ch.label} length`} onClick={stopE}
+                onChange={(e) => setAt(key, 'length', e.target.value)}
+                className="h-auto" style={{ ...SONG_ROW_INPUT, width: '76px', flex: 'none' }}
+              />
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -3427,8 +3510,8 @@ function FormFieldsField({ value, max, design, onChange }) {
 /* ------------------------------------------------------------------ *
  * §8.6g BookedField — the booking calendar's blocked dates.
  *
- * The sixth structured editor, and the only one that is not a repeater: a
- * month of the artist's own to click. One row per blocked date is the
+ * The sixth structured editor, and the first that is not a repeater (SetsField
+ * above is the other, JP-066): a month of the artist's own to click. One row per blocked date is the
  * wrong shape for a June with eight of them, and a date typed into a row
  * cannot be read against the month it falls in — which is the whole
  * question being asked here.
@@ -3815,6 +3898,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // exactly as sectionVm does, or the canvas would list twelve songs while the
   // repeater showed none.
   const songsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : SONGS)
+  // Layout 3's set details (JP-066), through sectionVm's own resolver.
+  const setsVal = () => repSetsOf(sec.c)
   // And the same again for the media player's tracks, whose seed is TRACKS
   // dressed in the Retro artwork and the demo audio. The first keystroke
   // materialises this whole array into `c.tracks`, photographs and sound files
@@ -3961,6 +4046,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         <ImagesField value={imgsVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'songs' ? (
                         <SongsField value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'sets' ? (
+                        // Takes the songs as a second value, BookedField's
+                        // `open` rule: the sets are the songs' tags.
+                        <SetsField value={setsVal()} songs={songsVal('songs')} onChange={(v) => set(v)} />
                       ) : f.type === 'tracks' ? (
                         <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'gigs' ? (
@@ -3980,9 +4069,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       ) : f.type === 'steps' ? (
                         <StepsField value={stepsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
-                        // The one rung that takes a second value, the way
-                        // TracksField is the one that takes a toast: the month
-                        // it opens on is the calendar's own opening date.
+                        // A rung that takes a second value, as SetsField's
+                        // does and the way TracksField is the one that takes a
+                        // toast: the month it opens on is the calendar's own
+                        // opening date.
                         <BookedField value={bookedVal(f.k)} open={openVal('open')} onChange={(v) => set(v)} />
                       ) : f.type === 'date' ? (
                         // The platform picker, and its value is already the ISO

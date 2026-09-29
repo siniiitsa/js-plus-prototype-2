@@ -11770,12 +11770,13 @@ function Repertoire({ s }) {
   //
   //  - **The sets are the tags.** `sectionVm`'s `repSets` groups the songs by
   //    the same vocabulary the chip row is derived from, so the frame's three
-  //    cards are the seed's three tags and nothing was invented; the meta line
-  //    is the set's own count where the frame's is a mood and a running time,
-  //    the mood being the card's title here and the time a number the artist
-  //    never typed. An untagged song would belong to no set, so `repSets`
-  //    appends an `All` card holding the whole list exactly when the tag cards
-  //    do not already reach every song — see the note there.
+  //    cards are the seed's three tags and nothing was invented. The meta line
+  //    is the set's mood and running time, which SetsField keeps per tag
+  //    (JP-066, user call, 2026-09-29, reversing the fit's song count), and
+  //    the count again while both are empty. An untagged song would belong to
+  //    no set, so `repSets` appends an `All` card holding the whole list
+  //    exactly when the tag cards do not already reach every song — see the
+  //    note there.
   //  - **The card shows four songs and the link reveals the rest.** The frame
   //    draws four rows *and* a *View full set →*, which is the design saying the
   //    card is a subset; wiring that link to the reveal is the pricing deck's
@@ -11784,11 +11785,13 @@ function Repertoire({ s }) {
   //    second label had to be invented, and the link is not drawn at all on a
   //    set of four or fewer (the pager's not-drawn-at-one rule). On the canvas
   //    there is no handler, so every card is the master's picture.
-  //  - **The row's right-hand column is the artist, not a duration** — the
-  //    section has no duration and every other layout pairs the two. The frame
-  //    holds both sides `shrink-0` under an `overflow-clip`; ours cannot, since
-  //    "Whitney Houston" beside "Don't Stop Me Now" would push off the 242px
-  //    mobile row, so the title takes the ellipsis and the artist holds its
+  //  - **The row's right-hand column is the song's length**, the frame's
+  //    reading (JP-066): a `length` column in SongsField that no other layout
+  //    reads, since none of their frames draws one. It was the artist until
+  //    then, and the artist is not drawn here at all, as the frame draws none;
+  //    a song with no length leaves the seat empty. The frame holds both sides
+  //    `shrink-0` under an `overflow-clip`; ours cannot, since the length is
+  //    free text, so the title takes the ellipsis and the length holds its
   //    width (the media player's destroys-its-own-content rule).
   //
   // The pager is derived, and it is the reason the three widths agree: `perPage`
@@ -11814,7 +11817,7 @@ function Repertoire({ s }) {
       title: u(desk ? 16 : 15),               // body-lg — the set's name
       meta: u(desk ? 12 : 11),                // chip — the count line
       song: u(desk ? 16 : tab ? 12 : 13),     // list — non-monotonic at 390
-      small: u(12),                           // body-sm — the artist, the link
+      small: u(12),                           // body-sm — the length, the link
     }
     // Every master divides a stated card height between rows that are
     // `flex: 1 0 0` — 239 over four at 1440, 280 over four at both narrow
@@ -11871,10 +11874,12 @@ function Repertoire({ s }) {
                 letterSpacing: s.dls, minWidth: 0,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{sg.title}</span>
-              <span style={{
-                fontFamily: s.body, fontSize: T.small, lineHeight: 1.4,
-                flex: 'none', whiteSpace: 'nowrap',
-              }}>{sg.artist}</span>
+              {sg.length && (
+                <span style={{
+                  fontFamily: s.body, fontSize: T.small, lineHeight: 1.4,
+                  flex: 'none', whiteSpace: 'nowrap',
+                }}>{sg.length}</span>
+              )}
             </div>
           ))}
           {/* `marginTop: auto` is what keeps the link on the card's floor once
@@ -12004,11 +12009,14 @@ function Repertoire({ s }) {
       // `py-6` is therefore inert.
       const limeRowH = u(G.rowH)
       // JP-044 (2026-09-24): the frame's row is a title beside a four-glyph
-      // duration, and ours puts the artist in that seat — beside a 19px title
+      // duration, and ours put the artist in that seat — beside a 19px title
       // in the 768 card's 148 (Grunge 168) that cut most seeded titles to an
-      // ellipsis. So at 768 the artist stands under the title, a named diff
+      // ellipsis. So at 768 the seat stands under the title, a named diff
       // from the frame's one row; the pinned 57 / 62.5 holds both lines. The
-      // desktop and 390 rows fit and keep the frame's.
+      // desktop and 390 rows fit and keep the frame's. The seat has held the
+      // length since JP-066, and the stack stays: on one row it fits beside
+      // every seeded title under Lime and Grunge, but Editorial's Noto
+      // "DON'T STOP ME NOW" is 160 of its 175.
       const stack = tab
       const disp = (lh) => grunge || ed ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
       const body = (size, lh, extra) => ({
@@ -12044,9 +12052,11 @@ function Repertoire({ s }) {
                   letterSpacing: s.dls, minWidth: 0, maxWidth: '100%',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{sg.title}</span>
-                <span style={body(s.bodySm, 1.4, stack ? {
-                  maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                } : { flex: 'none', whiteSpace: 'nowrap' })}>{sg.artist}</span>
+                {sg.length && (
+                  <span style={body(s.bodySm, 1.4, stack ? {
+                    maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  } : { flex: 'none', whiteSpace: 'nowrap' })}>{sg.length}</span>
+                )}
               </div>
             ))}
             {more && (

@@ -130,7 +130,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix). *JP-071 reversed*: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071, eight seeded fields |
+| 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix). *JP-071 reversed*: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071, eight seeded fields. *JP-066 reversed*: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-066, a song `length` column and `SetsField` |
 | 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | **done** (A, keyed by the follower's category; real app, 7 runs) |
 | 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | **done** (A; the canvas sticks 28px down, and so do the layout-4 rail and the form's layout-2 card) |
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | **done** (A, Retro kept; `cardLine` seeded `CARD_LINE_3`; after-diff zero) |
@@ -277,7 +277,9 @@ exactly these as "Labels, not claims (not this ticket)" (`./layout-2-qa-fixes.md
 **Decided: A, A, A** (user, 2026-09-28). All three are replies, and none becomes a fix, so no entry
 is appended.
 1. **JP-066: by design**, and named for the BA as a data-model question. A per-song length (B) is
-   offered as separate work, not taken here.
+   offered as separate work, not taken here. (**Reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-066, 2026-09-29:
+   a song carries a `length`, printed in layout 3's row, and a set's mood and length live in
+   `SetsField`, keyed by the tag — C's shape, not B's sum.)
 2. **JP-068: the frame's copy is a slip.** The reply points at Media Player → *Kicker*; the seed
    stays "Top tracks".
 3. **JP-071: by design**, the product's rule for labels. A field per label (B) is a whole-product
@@ -309,7 +311,9 @@ non-empty *Tags*), so each label goes with its value.
     Printing the design's "MELLOW · 45 MIN" or "3:54" would put numbers on the page that the
     artist never typed. This holds on every template. For a card like the design's, tag songs
     `Cocktail hour`. Lengths would need a change to the song editor (a length per song, the
-    set's total added up from them), which we can offer separately.
+    set's total added up from them), which we can offer separately. *(Reversed since:
+    `retest-qa-fixes.md`, JP-066 — a length per song and a Sets field, the set's length typed
+    rather than summed.)*
   - **JP-068 — by design; the design's text is a slip.** The Media Player's small heading is the
     **Kicker** field (Media Player → Kicker), which starts as "Top tracks". The design's "KM BIO"
     there is the Bio's own heading copied onto the Media Player (and "KM" is the mock artist's
@@ -2653,7 +2657,7 @@ cached build still shows every one of them.
   so its title is the tag and its line counts the songs. A song has no length, and a set has no
   mood or running time, so there is nothing true to print there. Tag songs `Cocktail hour` for
   the design's card. Lengths would need a change to the song editor, which we can offer
-  separately.
+  separately. *(Reversed since: `retest-qa-fixes.md`, JP-066.)*
 - **JP-067 — fixed.** On *Inset Hero*, Grunge's footer stands on the design's `#171716` at every
   width, in the editor and published.
   - The seal's disc and the Book Now pill's label and disc take the same grey.

@@ -73,7 +73,7 @@ it.
 | 2 | JP-070 (rest) | The pricing intro and chips | `layout-3-qa-fixes.md` JP-070 (heads), "keep" and the chips' reply | **Named fit diffs**: the intro's count claim was dropped; the chips derive from one tag list for every layout | S–M | **user: B; A** | **done** (30 files, as named) |
 | 3 | JP-069 (weekday) | No weekday in the date disc | `layout-3-qa-fixes.md` JP-069, the weekday half | **A data-model gap**: a gig has no year | S–M | **user: A** | **done** (a `year` column; 30 files, as named) |
 | 4 | JP-071 | Eight section labels no field reaches | `layout-3-qa-fixes.md` the three replies (JP-071 A) | **The product's label rule**, now reversed for these eight | M | **user: A, A, glyphs in the markup** | **done** (eight seeded fields; 0 of 1,320, as named) |
-| 5 | JP-066 | Set cards: no mood, set length or track length | `layout-3-qa-fixes.md` the three replies (JP-066 A) | **A data-model gap**: a set is a tag, and a song has no length | L | **yes** | todo |
+| 5 | JP-066 | Set cards: no mood, set length or track length | `layout-3-qa-fixes.md` the three replies (JP-066 A) | **A data-model gap**: a set is a tag, and a song has no length | L | **user: A, A, A, A** | **done** (a `length` column and `SetsField`; 30 files, as named) |
 | 6 | — | End-of-pass sweep | — | — | S | — | todo |
 
 **Why this order:**
@@ -805,9 +805,112 @@ and `SetsField` in the real app: typing reaches the canvas, and Publish reaches 
 A *reversed* pointer in `layout-3-qa-fixes.md`'s JP-066 and `../retro/layout-3.md:674`–`683`.
 README's section on structured editors, if it counts them.
 
-**Decided.** —
+**Decided: A, A, A, A** (user, 2026-09-29).
+1. **A `length` column** in `SongsField`, and `SONG_KEYS` gains it. A row holding only a length
+   is therefore not blank. It is seeded with the frame's lengths. Our seed's twelfth row is a
+   second Valerie, where the frame lists Get Lucky (4:08), so that row takes Valerie's 3:54 too.
+   Layout 3's row prints the length in the artist's seat. **At 768 the length stands under the
+   title**, so JP-044's stack stays. The reason was measured at triage: on one row, a length at
+   body-sm fits beside every seeded title under Lime and Grunge, but Editorial's Noto "DON'T STOP
+   ME NOW" (160 of a 175 row) would be cut.
+2. **A song with no length leaves the seat empty.** Layout 3 prints no artist, as the frame
+   draws none.
+3. **`SetsField`**, a structured field that is not a list (`BookedField`'s precedent), stored as
+   `c.sets = { [case-folded tag]: { mood, length } }`. The meta line is `[mood, length]` joined
+   on ` · `, and the song count while both are empty.
+4. **The seed in order**: Weddings → Mellow · 45 min, Pubs → Easy listening · 60 min, Birthdays →
+   High energy · 90 min. The tags are not renamed.
 
-**Settled.** —
+**Frame first**: repertoire layouts 1, 2 and 4 draw no length. The Grunge masters at all three
+widths and Retro's desktop masters were checked (`964:58604`, `964:64627` / `986:13762` /
+`986:13781` / `964:64646`, `964:73011` / `971:8128` / `977:12355` / `964:72822`). Every row is a
+title and an artist, and no text node reads `d:dd` or "min". So the length reaches layout 3 alone.
+The harness was proved first: **0 of 1,320**. **Expected after-diff: 30 files**, repertoire
+`arch 2` × themes 0–4 × three widths × both surfaces (each card's meta line and every row's right
+column), and nothing else.
+
+**Settled** (2026-09-29).
+- **`data.js`.**
+  - `SONGS` rows gain `length`, the frame's twelve, and `SONG_KEYS` gains `'length'`.
+  - `REP_SETS` is the seed: `weddings` / `pubs` / `birthdays` → Mellow · 45 min / Easy listening ·
+    60 min / High energy · 90 min.
+  - `repSetsOf(c)` is the one resolver. It returns `c.sets` when that is a plain object, else the
+    seed. `sectionVm` and `EditPanel` both call it.
+  - `repSetLine(d)` joins the mood and the length on ` · `, dropping each when empty. It gives `''`
+    when both are.
+  - `FIELDS.repertoire` gains `sets` (*Sets*, `type: 'sets'`, `in: [2]`). The `songs` hint now says
+    that layout 3 groups the songs into sets and shows each length.
+- **`sectionVm`.**
+  - `vm.songs[].length` is trimmed and uncased.
+  - `repSet`'s meta is `repSetLine()` of the tag's own entry (an own key only, so a tag named
+    "constructor" still counts), else the count. The `All` fallback card always counts.
+  - The meta is uncased, since the caps are a style.
+- **`EncoreSection`**, both halves of repertoire layout 3 (the `s.limeTree` block and the Retro /
+  Pop body):
+  - The right-hand seat prints `sg.length` where it printed `sg.artist`, and nothing when the
+    length is empty.
+  - The 768 stack stays, for the reason under Decided.
+  - The fit's "Three readings" comment, JP-044's stack comment and the type ramp's note are
+    rewritten.
+- **`EncoreBuilder`.**
+  - `SongsField` has a 64px *Length* box beside *Artist*, placeholder "3:54". A new row carries
+    `length: ''`.
+  - `SetsField` is new. It lists `repChips()` over the resolved songs less their blank rows: one
+    card per set, the tag as typed, with *Mood* and *Length* boxes (placeholder "45 min"). With no
+    tags it prints "Tag your songs to make sets.".
+  - Every keystroke writes the whole resolved object, so the first edit keeps the other two
+    seeded lines. That was measured in the real app: the Pubs card kept its line after the
+    Weddings mood was typed.
+  - `EditPanel` has a `sets` rung that passes the songs as a second value, BookedField's `open`
+    rule. The two comments that called BookedField the only such editor are rewritten.
+- **Digest.** Themes 0–4, three widths, every category, canvas and `live=1`, against the HEAD
+  worktree: **30 of 1,320**, exactly `cat_repertoire_arch_2_theme_{0–4}_w_{desktop,tablet,mobile}`
+  on both surfaces. As named, and nothing else. Inside each file every differing row keeps its
+  geometry and changes only its text.
+- **Reach** (`reach.mjs`, two probes, themes 0–4): `repertoire.songs.length` (a one-song list
+  with the length empty against filled) and `repertoire.sets` (the `weddings` entry) each move
+  repertoire layout 3 alone, 6 of 6, on every template.
+- **States** (`&cj=`, at 1440 / 768 / 390, both surfaces). No state widens the page, and there are
+  no page errors.
+  - Songs with no lengths: every seat is empty and the title stands alone.
+  - Mood alone reads "MELLOW", length alone "60 MIN", and a blank entry the count, "7 SONGS".
+  - Weddings renamed Ceremonies falls back to "6 SONGS". Renamed back as "WEDDINGS", the line
+    comes back through the case fold.
+  - A blank song row is dropped. A row holding only a length is kept, untagged, so the `All`
+    fallback card is appended: at 390, live, one press of next shows it, "13 SONGS". A tag
+    "constructor" prints "1 SONG". `sets: {}` prints the three counts.
+  - *View full set* on the live Weddings card still reaches its fifth and sixth songs.
+  - The 390 geometry is unchanged, so JP-075's centred second set holds.
+- **The real app** (1600 × 1000, card 3): Grunge, then Lime, Editorial and Retro.
+  - *Sets* shows at layout 3 with no "Not shown" note.
+  - Song 1's *Length* typed "9:99" and *Weddings mood* typed "Zzmood" reach the canvas
+    ("ZZMOOD · 45 MIN", "9:99" in both Valerie rows) and, after Publish → Open, the tab.
+  - No page errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does
+  that.
+- **Docs.**
+  - CLAUDE.md, *Ten list-shaped contents*: `SetsField` is the twelfth structured field, with the
+    `c.songs` shape and `length`.
+  - README's Repertoire paragraph.
+  - *Reversed* pointers in `layout-3-qa-fixes.md`'s JP-066 (the status row, Decided, the reply
+    and the sweep's reply line) and `../retro/layout-3.md` ("Look for the derivation…").
+  - *Since* lines where the diff was restated: `../lime/layout-3.md`, `./layout-3.md` and
+    `../editorial/layout-3.md`.
+  - `reach.mjs`: the two probes.
+
+Reply: **JP-066 — fixed.** The set cards now show a mood and a set length, and each song shows its
+length.
+- **Songs**: each song has a new **Length** box beside Artist. In layout 3 the length shows on the
+  song's row, where the artist was, as the design has it. A song with no length shows none.
+- **Sets**: a new **Sets** field lists one set per tag on your songs, each with a **Mood** and a
+  **Length** box. The card shows them as "MELLOW · 45 MIN". If both are empty, it shows the
+  song count.
+- It starts from the design: Weddings "Mellow · 45 min", Pubs "Easy listening · 60 min",
+  Birthdays "High energy · 90 min", and the design's lengths for every song. The set names stay
+  your tags. To match the design's "Cocktail hour", tag the songs `Cocktail hour`.
+- A set's length is typed, not added up: the design's "45 MIN" covers more than its four songs.
+- On every template, in the editor and on the published page, at every width. The other
+  Repertoire layouts show no lengths in the design, and they are unchanged.
 
 ---
 

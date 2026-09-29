@@ -243,7 +243,11 @@ That distinction is the whole design, and it buys two things:
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
   the artist typed, and its pager is derived from the result — all three inert on the canvas,
   which still draws the picture the Figma frames show. What unblocked it was putting the songs in
-  the content model (`FIELDS.repertoire.songs`).
+  the content model (`FIELDS.repertoire.songs`). Layout 3 groups the songs into one set card per
+  tag, and since JP-066 each card's line is the set's own mood and running time, which a
+  structured field that is not a list keeps per tag (`SetsField`, `c.sets`, the twelfth
+  structured editor after `BookedField`), while each row prints the song's `length`, a column no
+  other layout reads.
 
   **The header's navigation.** Every section is given a DOM id — its category, which is unique per
   page — so the nav links, *Book Now* and *Listen* all scroll to the section they name, and the
