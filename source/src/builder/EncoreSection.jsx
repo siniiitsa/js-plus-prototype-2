@@ -19740,10 +19740,14 @@ function EventsMap({ s }) {
   // control — and they are **not drawn at one gig**, the pager's rule, which is
   // derived from the list and so holds on the canvas too. The whole ticker goes
   // when there are no gigs: it is a block of its own, and a wordless block is
-  // not one of this design's states (the footer's rule). The frame's "Next:"
-  // prefix goes with it — on page 3 the gig on show is not the next one — and
-  // the dots carry no handler, because with five seats over any number of gigs
-  // a dot does not name one.
+  // not one of this design's states (the footer's rule); at one gig it stands
+  // without its arrows. The frame's "Next:" prefix is a label on the **first
+  // gig alone** (JP-080, user call, 2026-09-29), so the canvas and the
+  // published first paint read the frame's "Next: Hidden Warehouse" and paging
+  // on drops it — on page 3 the gig on show is not the next one. It assumes the
+  // list runs in date order, as the "upcoming" wording does. The dots carry no
+  // handler, because with five seats over any number of gigs a dot does not
+  // name one.
   if (s.v3) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -19831,6 +19835,9 @@ function EventsMap({ s }) {
     const pg = s.live && nGigs ? ((page % nGigs) + nGigs) % nGigs : 0
     const gig = s.gigs[pg]
     const step = (dir) => (s.live && nGigs > 1 ? () => setPage((v) => v + dir) : undefined)
+    // The frame's "Next:", on the first gig alone (see the branch header); it
+    // drops with an emptied venue rather than standing alone.
+    const venue = gig && (pg === 0 && gig.venue ? `Next: ${gig.venue}` : gig.venue)
 
     // RADIUS / CITIES / GIGS YTD / BASE, re-seated. See the branch header for
     // why two labels survive and two do not, and why the label that survives is
@@ -19883,7 +19890,9 @@ function EventsMap({ s }) {
     // the viewBox, which a CSS border cannot draw. The pins are layout 2's and
     // 3's pair — `s.tx` at 8, the lit one `s.ac` at 14 in a 2px ink ring —
     // because the frame's five dots are ink at 60% and vanish on the raster,
-    // at every width (named diff). No handler on them, Retro's reason.
+    // at every width (named diff). Grunge's are white at 60%, which reads grey
+    // and does not vanish, so they keep the frame's .6 (`G.dotOp`, JP-080).
+    // No handler on them, Retro's reason.
     //
     // **The type is the ramp**, `get_variable_defs` at all three widths: Body/Chip
     // 13 / 12 / 11 (`s.chip`, tracked -0.06em), Display/SM 50 / 40 (`s.dispSm`,
@@ -19918,15 +19927,17 @@ function EventsMap({ s }) {
     //   where Lime inks them `s.bg`; the zoom squares are `sem/box/2`
     //   `#F52E34` in Scheme 3's black 15% hairline. Rings, labels and the
     //   marker's head stay `s.ac`, which is `#DF262C` here. The lit pin's ring
-    //   follows the marker's, white — layout 3's Grunge call.
+    //   follows the marker's, white — layout 3's Grunge call — and the idle
+    //   dots are that white at the frame's own .6 (`dotOp`, JP-080), where
+    //   Lime redraws its vanishing ink ones at full strength.
     // The 1440 `Vector 2` is Lime's no-op leftover again and is not drawn.
     if (s.lime || s.grunge) {
       const grunge = s.grunge
       const G = grunge
         ? { r: 15, cellR: 15, cellRing: s.stroke2, tickRing: s.stroke2, num: s.ac, vpInk: s.tx,
-            lift: '#F52E34', inkHair: '#00000026', cellMin: desk ? 227.5 : 140 }
+            dotOp: 0.6, lift: '#F52E34', inkHair: '#00000026', cellMin: desk ? 227.5 : 140 }
         : { r: 50, cellR: 25, cellRing: s.ac, tickRing: s.stroke1, num: s.tx, vpInk: s.bg,
-            lift: '#D9FF7F', inkHair: '#15180F26', cellMin: desk ? 226.5 : 139.5 }
+            dotOp: 1, lift: '#D9FF7F', inkHair: '#15180F26', cellMin: desk ? 226.5 : 139.5 }
       const upper = grunge ? { textTransform: 'uppercase' } : null
       const ink = s.tx // sem/text/2 on the card, the cells and the ticker
       const lift = G.lift // Scheme 3 sem/box/2 — the zoom buttons
@@ -19983,7 +19994,7 @@ function EventsMap({ s }) {
                 <span key={i} aria-hidden style={{
                   position: 'absolute', left: p.x, top: p.y,
                   width: on ? u(14) : u(8), height: on ? u(14) : u(8),
-                  borderRadius: '999px', background: on ? s.ac : s.tx,
+                  borderRadius: '999px', background: on ? s.ac : s.tx, opacity: on ? 1 : G.dotOp,
                   boxShadow: on ? `0 0 0 2px ${G.vpInk}` : undefined,
                   transform: 'translate(-50%, -50%)',
                 }} />
@@ -20107,7 +20118,7 @@ function EventsMap({ s }) {
                 })}>
                   <span style={{
                     fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, ...clipL,
-                  }}>{gig.venue}</span>
+                  }}>{venue}</span>
                   {!!gig.meta && <span style={{ ...bodySmL, ...clipL }}>{gig.meta}</span>}
                 </GigTagL>
                 {nGigs > 1 && <span onClick={step(1)} style={arrowL}>›</span>}
@@ -20329,7 +20340,7 @@ function EventsMap({ s }) {
               })}>
                 <span style={{
                   fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, ...clipLine,
-                }}>{gig.venue}</span>
+                }}>{venue}</span>
                 {!!gig.meta && <span style={{ ...body12, ...clipLine }}>{gig.meta}</span>}
               </GigTag>
               {nGigs > 1 && <span onClick={step(1)} style={arrow}>›</span>}

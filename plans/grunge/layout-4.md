@@ -1121,7 +1121,8 @@ them.
   The card and every panel text are `s.box1` / `s.tx` on both templates and needed no key.
 - **The lit pin's ring is white**, `G.vpInk`, following the marker's ring as layout 3's Grunge
   session did; under Lime it stays `s.bg`. The idle dots stay `s.tx` at full strength where the
-  frame's are white at 60% (Lime's redraw, inherited, named). The 1440 `Vector 2` (Scheme 5,
+  frame's are white at 60% (Lime's redraw, inherited, named). *Closed by JP-080
+  (`./layout-4-qa-fixes.md`): Grunge's idle dots take the frame's .6 (`G.dotOp`), Lime's stay 1.* The 1440 `Vector 2` (Scheme 5,
   1437.8 × 44.24) is Lime's no-op leftover and is not drawn.
 - **Measured** (content edges): desktop h2 95.2 tall at 80.25px, card 1088.2 × 455.2 at 221.1
   (555 × 0.82 = 455.1) at radius 12.3, ticker 51.7 (64 × 0.82 = 52.5); 768 h2 72.1 at 60.75px,

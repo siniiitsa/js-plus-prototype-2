@@ -530,7 +530,8 @@ mutated through a single `patch()` helper.
   the one-pin-per-gig rule holds by construction and the filter's edge above cannot arise. The
   dots carry no handler — five seats over any number of gigs means a dot does not name one — the
   ticker's own text block is the gig's `link` where it has one (layout 1's empty-link rule
-  again), and the ticker is **not drawn at one gig** and gone at none. Its section stands on the
+  again), and at one gig the ticker stands **without its arrows** and is gone at none (JP-080).
+  Its section stands on the
   page ground, so the root's `darkMap` flag stays layout 1's.
 - **The header's nav scrolls, and the scroll lives outside `EncoreSection` — because it is an
   `href`.** The repertoire's layout-4 A–Z rail scrolls from *inside* the file, and the two do not

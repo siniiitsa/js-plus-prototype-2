@@ -1498,15 +1498,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       when: [`${g?.month ?? ''} ${g?.day ?? ''}`.trim(), String(g?.time ?? '').trim()]
         .filter(Boolean).join(' · '),
       pin: PINS[i % PINS.length],
-      // Layout 4's ticker prints the gig on one line — "Manchester · Jul 12 ·
+      // Layout 4's ticker prints the gig on one line — "Manchester · JUL 12 ·
       // 22:00", the frame's own second line — and every one of those three is
       // emptiable, so it is composed here rather than joined in the section:
       // the testimonials' `byline` rule, or an artist who leaves the time off
       // (which `LIST.map` does every fourth row) would publish a trailing
-      // separator. The month and day stay as they were typed, like the venue
-      // and the city above them; the frame's own "JUL 12" is its styling.
+      // separator. The month is upper-cased here (JP-080): the frame types
+      // "JUL", and every other map layout upper-cases it in CSS, which one
+      // composed string cannot take for its month alone. The city and day stay
+      // as they were typed.
       meta: [String(g?.city ?? '').trim(),
-             `${g?.month ?? ''} ${g?.day ?? ''}`.trim(),
+             `${String(g?.month ?? '').trim().toUpperCase()} ${g?.day ?? ''}`.trim(),
              String(g?.time ?? '').trim()].filter(Boolean).join(' · '),
       // What layout 3's chip row matches a row against. Case-folded here rather
       // than in EncoreSection, and beside the label it was folded from, so a

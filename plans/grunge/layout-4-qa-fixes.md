@@ -113,7 +113,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | 3 | JP-082 (controls) | Send Enquiry, the bio's Listen and the form's *Message* label have no field | **Confirmed, shared**: a submit, a link and a box label are not vocabulary. The census named Listen for this batch; *Message* is the one box label left a literal | S | **yes** — each: A (a field) / reply | **done** (A, A, A; `cta` reaches layout 4 seeded "Send Enquiry", a bio *Listen link*, a form *Message label*) |
 | 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | **done** ((a), A; punctuation skipped, a `#` cell ahead of A while a `#` group exists) |
 | 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | **done** (A; `u(14)` in both halves, the title clamped at two lines; the seed moves widths only) |
-| 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | open |
+| 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | **done** (1 A, 2 A; "Next:" on the first gig, the month upper-cased, Grunge's dots at .6; the pin and × replies) |
 | 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | open |
 | 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | open |
 | 9 | JP-081 (repertoire head) | "12 Songs" for "Repertoire" | **Named fit call** (Retro L4 open question 8), the precedent JP-070 reversed at layout 3; all three frames agree | S | **yes** — A (a `HEADING_4` arm) / B (reply) | open |
@@ -1236,11 +1236,68 @@ files lose the lit pin inside the same 30).
 `EncoreBuilder.jsx:1474`–`1480`. A pointer at `./layout-4.md:1122`–`1124` (the dots). CLAUDE.md's
 "not drawn at one gig", corrected whatever is decided; its map paragraph only on 2B or 2C.
 
-**Decided.** —
+**Decided** (2026-09-29, user call): **1 A, 2 A.** "Next: " is a literal label on the ticker's
+first gig alone (`pg === 0`), in both halves, so the canvas and the published first paint read the
+frame's "Next: Hidden Warehouse" and paging on drops it; it assumes the list runs in date order. The
+lit pin stays, the product's pin / row pairing, and is a reply. × is a reply with no question. The
+no-decision fixes land with it: `meta` upper-cases the month, and Grunge's idle dots take the
+frame's .6 through a `G` key, Lime's redraw standing.
 
-**Settled.** —
+**Settled** (2026-09-29). The drift the hand-off named held (`meta` `EncoreBuilder.jsx:1508`; the
+map's `if (s.v3)` `EncoreSection.jsx:19747`, `pg` `:19831`, the block's pins `:19980`, its ticker
+`:20099`, Retro's pins `:20187` and ticker `:20320`).
+- **The fix.** `meta` composes `String(g?.month ?? '').trim().toUpperCase()`, and its comment now
+  says why the month is cased there (the frame types "JUL"; one composed string cannot take the
+  other layouts' CSS for its month alone). The branch computes `venue` once beside `pg`: ``pg === 0
+  && gig.venue ? `Next: ${gig.venue}` : gig.venue``, read by both halves' venue spans, which already
+  clip. An emptied venue on gig 0 prints nothing rather than a bare "Next:" (not in the entry). The
+  block's `G` gains `dotOp` (0.6 under Grunge, 1 under Lime) on the idle dots' `opacity`, the lit
+  pin at 1. Comments: the branch header (the "Next:" rule and its date-order assumption, and that
+  the ticker stands without arrows at one gig), the block's pin paragraph and its Grunge list.
+- **The harness was proved first.** A HEAD worktree on :5174 against the tree: map × themes 0–4
+  × 4 layouts × 3 widths gave **0 of 60 per surface**.
+- **After-diff, named before the code: 30 files. Measured: exactly those 30** (map `arch 3` ×
+  themes 0–4 × 3 widths, 15 per surface). Each moves **two rows**, the ticker's two lines' text
+  ("Hidden Warehouse" → "Next: Hidden Warehouse", "Manchester · Jul 12 · 22:00" → "Manchester ·
+  JUL 12 · 22:00"), with no geometry. Grunge's six also move **four rows**, the idle dots' opacity
+  1 → 0.6. Only layout 4 reads `gigs[].meta`, so no other layout or category can move.
+- **States** (a throwaway harness probe, themes 0–4 × 3 widths; the `&cj=` cases on both
+  surfaces). Every case read the same on all five themes.
+  - `live=1&n=8`: the first paint reads "Next: Venue number 1" and lights pin 0. `›` reads "Venue
+    number 2" and lights pin 1. `‹` returns to "Next: …" and pin 0. `‹` from gig 0 wraps to "Venue
+    number 8" ("Leeds · AUG 18", no stray separator) and pin 2. `›` from there wraps back to
+    "Next:". The fourth gig reads "Venue number 4" / "Manchester · JUL 10".
+  - A gig with no month reads "Manchester · 14 · 20:00", and a month typed "july" reads "JULY".
+  - A 51-character venue carries the prefix and ellipsises at 390 (`scrollWidth` 396 / 376 against
+    278–298, `text-overflow: ellipsis`). It fits at 1440 and 768.
+  - At one gig the ticker stands with no arrows, which confirms CLAUDE.md's correction.
+  - The idle dots compute to opacity .6 under Grunge, Retro, Editorial and Pop, and 1 under Lime.
+- **The tester's steps, in the real app** (a one-off puppeteer script, trusted clicks, deleted
+  after), on Grunge's, Lime's and Retro's card 4.
+  - The canvas and the published tab read "Next: Hidden Warehouse" / "Manchester · JUL 12 · 22:00"
+    at 1440, 768 and 390.
+  - A trusted `›` read "The Deaf Institute" / "Manchester · JUL 25 · 21:00" and lit pin 1, and `‹`
+    brought "Next:" and pin 0 back.
+  - Grunge's idle dots are `rgb(255, 255, 255)` at .6 and read grey on the 1440 shot. Lime's are
+    `rgb(242, 255, 208)` at 1, and Retro's `rgb(251, 246, 234)` at .6.
+  - No horizontal scroll and no page errors.
+- **Docs**: the comments above; a closed pointer at `./layout-4.md`'s idle-dots line; CLAUDE.md's
+  "not drawn at one gig" corrected (it stands without its arrows). The map paragraph is otherwise
+  unchanged, since the pin stays.
 
-Reply: —
+Reply: **JP-080 — fixed in part; the rest by design.**
+- **"JUL"**: fixed. The ticker's month is now upper-case, as in the design and as every other map
+  layout prints it. A month typed "july" prints "JULY".
+- **"Next:"**: fixed. The ticker's first gig reads "Next: Hidden Warehouse", as in the design. It
+  assumes the gigs are listed in date order. Paging to a later gig drops the word, since that gig
+  is not the next one.
+- **The grey dots**: fixed on Grunge. The map's dots are now the design's white at 60%, which reads
+  grey. Lime keeps its full-strength dots, because its design's dots are dark and vanish on the map.
+- **The red pin**: by design. It marks the gig the ticker is showing and moves with the arrows. It
+  is the same pin / gig pairing every Events Map layout has.
+- **× on the right**: by design. There is nothing for the ticker to close, so that seat holds the
+  › that pairs with the design's own ‹ and steps to the next gig.
+- Checked on *Stacked* under Grunge, Lime and Retro at 1440, 768 and 390, paging with the arrows.
 
 ---
 
