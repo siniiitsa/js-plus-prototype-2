@@ -144,7 +144,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | **done** (A; `rating` over a literal `/5`, the count its emptied fallback; `stars` widened to layout 3, beside the faces; 30 files as named) |
 | 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | **done** (A, keep, A; `HEADING_3`, which took in `CAL_HEADING_3`; `rowCta` at layouts 1, 3 and 4, where an emptied label drops the pill and a long one wraps; 150 files as named) |
 | 14 | JP-070 (form) | The form's head and boxes | **Named fit diffs**: the head names the mock artist; the boxes are layout 2's card frame's too | S–M | **yes** — the head, the boxes | **done** (A, A; `formHeading3(name)` at layout 3, `FORM_FIELDS_CARD` at layouts 2 and 3; Lime's and Editorial's desktop head back on the ramp; 60 files as named) |
-| 15 | — | End-of-pass sweep | — | S | — | open |
+| 15 | — | End-of-pass sweep | — | S | — | **done** (252 of 1,320 against `main`, every file named; reach as written; the real app clean on five cards; `index.html` refreshed in `99ebc8a`; the designer note and the replies) |
 
 **Why this order:**
 - The replies first, so a reply the user turns into a fix can be appended before the digests
@@ -2491,6 +2491,229 @@ heading and boxes.
    retest-against-the-stamp line: retest against the Pages build whose `last-modified` is later
    than `Mon, 28 Sep 2026 11:47:52 GMT` (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`).
 
-**Settled.** —
+**Settled** (2026-09-29, all six steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **The harness.** One scratchpad worktree with an APFS clone of `node_modules` and its `.vite`
+  removed, served on :5174: first at HEAD (`c403831`), then switched to `main` (`109c293`). The tree
+  on :5173 against the HEAD worktree: **0 of 1,320** (660 + 660: every category × themes `0,1,2,3,4`
+  × three widths × canvas and `live=1`, the footer's `page=2` render included), with the port and
+  `\.jpg\?[^|]*` normalised.
+- **1. Full digest against `main`: 252 of 1,320 (126 + 126)**, and the reconciliation is by file.
+  Every differing file is one a Settled names, and every named file differs:
 
-**Replies to QA, one line per ticket.** —
+  | Entry | Named | Differ | Row shape, as its Settled gives it |
+  |---|---|---|---|
+  | JP-067 | 12 | 12 | footer `page=2`: Grunge 3 rows (root, pill label, disc), Lime 2 (label, disc); colours only |
+  | JP-075 | 10 | 10 | repertoire `arch 2` at 390: 29 rows (32 under Retro and Pop), inside JP-070's 30 |
+  | JP-069 | 24 | 24 | map `arch 2`: −22 +17 wide (JP-069's five chips, plus JP-070's head); at 390 themes 0 and 4 alone, since Lime's, Grunge's and Editorial's 390 files are JP-070's 2 rows |
+  | JP-063 | 30 | 30 | calendar `arch 2`: 1 row changed, 9 added (11 under Retro and Pop) |
+  | JP-065 | 30 | 30 | testimonials `arch 2`: 3 changed (the head, "5" → "4.9", "reviews" → "/5"), 2 added |
+  | JP-070 heads | 150 | 150 | the head's row; pricing 16 rows (117 Editorial, 110 Pop at 390); Pop's 390 gallery 34 |
+  | JP-070 form | 60 | 60 | form `arch 1` and `arch 2`: one box fewer (four rows under Editorial); `arch 2` its head too |
+
+  The union is 12 + 30 + 150 + 60 = 252, since JP-075, JP-069 and JP-065 sit inside JP-070's
+  heads. **JP-061, JP-062, JP-074 and JP-064's seed are 0**: the header, the bio, pricing
+  `arch 0` / `1` / `3` and calendar `arch 0` / `1` / `3` are byte-identical. **JP-072, JP-073 and the
+  three replies are 0** by construction. The canvas and `live=1` diffs have the same shape, but
+  the form: live, its boxes are `<input>`s with a placeholder and no text node, so each file has
+  three fewer changed rows.
+- **2. Reach** (a scratch copy of `reach.mjs` filtered to five rows, themes 0–4, 1,440 renders,
+  deleted after). Each hit is 6/6, and each matches its `in`:
+  - `header.cardLine`: layout 3 under Lime, Grunge and Editorial; nothing under Retro or Pop.
+  - `header.kicker` (re-measured, since JP-061 narrowed it): Retro layouts 1, 3, 4 and 6; Lime,
+    Grunge and Editorial layouts 1, 4 and 5, which fold to `[0, 3]`.
+  - `testimonials.rating`: layout 3. `testimonials.stars`: layouts 2 and 3.
+  - `pricing.rowCta`: layouts 1, 3 and 4 on every template.
+- **3. The real app.** First the committed `page-check.mjs` on Grunge (card 3 walked in full,
+  card 2 rendered). Then a one-off puppeteer script, deleted after, with the editor at
+  1600 × 1000, the published tab at 1440, 768 and 390, and trusted clicks throughout. Neither
+  window logged a page or console error on any card, and no published width overflowed.
+  - **`page-check.mjs`, Grunge card 3.** Every nav link, Book Now and fragment link scrolls to
+    its section. The audio plays. The form refuses an empty submit on all three boxes, then
+    composes `mailto:bookings@kaimercer.co.uk?subject=Enquiry&body=Event date: … / Event type: …
+    / Your email: …`. The 390 burger opens. `overflow390` is 0.
+  - **Grunge card 3, the panel.** Kicker reads "DJ · Live Act" under "Not shown in this
+    layout". *Portrait card line* reads "Performing since 2021" with no note. The heads read
+    "Curated sets", "Gallery", "Pricing", "Where I'm playing.", "Experiences.", "Book Me" and
+    "Book Kai Mercer for\nyour event". *Package button* reads "Book", *Rating* "4.9" and
+    *Stars* "★★★★★", none with a note.
+  - **JP-072.** At Desktop the canvas cell computes `sticky`, and the card computes
+    `overflow: clip`. The scroller is 944, the cell 650 and the row 1,980. `cell.top − S` reads
+    **28** at f = ¼, ½ and ¾.
+  - **The seed, published** (the same at 1440, 768 and 390):
+    - the five heads and three "Book" pills;
+    - the header card's "Performing since 2021", with the kicker nowhere in the header;
+    - the bio's *Current role* "DJ · Live Act";
+    - the stat card's "4.9/5" with its stars, and no review count;
+    - the footer at `rgb(23, 23, 22)`;
+    - the map's rows "Manchester · 22:00" and so on (five wide, one at 390), with no bare hour;
+    - the form's three placeholders, EVENT DATE / EVENT TYPE / YOUR EMAIL.
+  - **JP-063 / JP-064.** SEPTEMBER 2026 with the two arrows. **28 of 30 dots are dimmed (days
+    1–28)**, all in the free fill `#1A1A1A`, and only the 29th and 30th take a pointer. Every
+    earlier Settled says 27 because it ran on 2026-09-28; this sweep ran on 09-29. Next reads
+    OCTOBER. The 16th gives "16 / Fri" and "Enquiry About October 16". Prev reads SEPTEMBER
+    with the month alone in the head, and the pill still names October 16.
+  - **JP-075, the tab at 390.** Weddings at x −260, **Pubs at 50 on `#9E1F17`**, Birthdays at 360.
+  - **Typed, then republished.** Kicker = `DJ & Selector`, *Portrait card line* = `ZZ card line`,
+    Title = "Florence and the Machine", and package 1's price `£450 — £1,400`. The canvas and all
+    three widths agree:
+    - the kicker reaches the bio alone and the card line the header alone (JP-061);
+    - the form's head reads "Book Florence and the Machine for your event", and so does the tab's
+      title (JP-070);
+    - the card's name is 2 lines at 1440 (38.9 / 39 from the card's edges) and at 768 (38.5 /
+      38.5), and 1 line at 390 (19.5 on the right), with the card's `scrollWidth` equal to its
+      `clientWidth`. These are JP-062's own numbers;
+    - the price is `£` 13 | `450` 44.25 | `— £1,400` 13 | `/event` 11 at 1440, with 37.5 and 28.5
+      numerals at 768 and 390 (JP-074).
+  - **JP-073.** Gallery deleted through its ⋯ menu, then re-added through *+ Add section*, with
+    *Start fresh* off and then on. Each time it came back between the Booking Calendar and Pricing,
+    and the page read as before.
+  - **Lime's, Editorial's and Retro's card 3, once each.** They show the same panel values,
+    heads, pills, stat card, form boxes, map line, arrows and 28 dimmed days as Grunge.
+    - JP-072 on Lime: cell 652, row 1,998, 28 / 28 / 28.
+    - JP-072 on Editorial: cell 634, row 2,100, 28 / 28 / 28.
+    - The 390 carousel: Lime `#2E3928` | **`#D5E3B2`** | `#CCFA61`; Editorial terracotta |
+      **taupe** | ink; Retro `#111111` | **`#5B5E2E`** | `#C8461C`, the frame's dark · olive · rust.
+    - The footer: Lime `#2E3928`, Editorial taupe `rgb(170, 149, 138)`, and Retro unchanged.
+    - Retro's panel: Kicker has no note, and *Portrait card line* reads "Not shown in this
+      template". Its polaroid prints the kicker, as JP-061 kept it.
+  - **Grunge card 2, JP-073.** The page is `pageOrder(1)`, … Repertoire, Gallery, Pricing, Booking
+    Calendar …. Gallery deleted and re-added, with *Start fresh* off and then on, came back between
+    the Repertoire and Pricing both times.
+- **4. `index.html`** refreshed in `99ebc8a` from `npm run build:standalone`: 8,754,810 bytes, up
+  from 8,750,312.
+  - **The two-build digest** used `build-digest.mjs`, `CARD=2`, reduced motion, and both files from
+    `127.0.0.1:8931`. Old against new, 15 of 15 theme × tab files differ, since card 3's page is
+    layout 3 in every section.
+  - A throwaway copy tagged each row with its section's root, to attribute the rows. Re-based
+    on each section's own origin and compared at 0.2px, **every section moves as the harness
+    did**:
+    - header, bio and media: 0 at every theme and tab;
+    - the calendar's arrows (1 changed, 9 or 11 added);
+    - the repertoire's head, plus the carousel at Mobile;
+    - the gallery's head (Pop's Mobile 32);
+    - pricing's 16 rows (Editorial 115 and Pop 108 at Mobile);
+    - the map's chips and head;
+    - the form's box and head;
+    - the testimonials' 3 changed and 2 added;
+    - the footer's JP-067 rows under Grunge and Lime.
+  - The only other rows are the footer seal's 0×0 `<defs>` / `<path>` (2 per tab, Pop's footer
+    having none). They report the viewport origin, so re-basing them on a footer that moved down
+    moves them too. The modal's card counts (4 / 4 / 4 / 4 / 3) do not change.
+- **5.** The designer note is below, with the six items step 5 lists.
+- **6.** `plans/README.md`'s row and the replies below. At the sweep the deployed build still
+  read `Mon, 28 Sep 2026 11:47:52 GMT`, 8,750,312 bytes, which is the tester's (and `main`'s root
+  `index.html`).
+- **Torn down**: :5174 first, then `git worktree remove --force`. The one-off scripts in
+  `source/scripts/` were deleted. :5173 is the user's and still runs.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified`
+is later than `Mon, 28 Sep 2026 11:47:52 GMT`** (the build these reports were filed against,
+8,750,312 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or
+cached build still shows every one of them.
+- **JP-061 — fixed.** The line under the name on the *Inset Hero* header card is now its own
+  field, *Portrait card line* ("Performing since 2021"). Kicker starts as "DJ · Live Act" on
+  every layout, and that is what the Bio's *Current role* prints.
+  - Kicker changes the Bio only, and the card line changes the card only. Set Kicker to "DJ &
+    Selector" for the design's state.
+  - On *Inset Hero* the Kicker field says "Not shown in this layout", because the card no longer
+    prints it.
+  - Lime and Editorial behave the same. Retro's card still prints the Kicker, as its Bio does.
+- **JP-062 — fixed.** The *Inset Hero* card's name wraps between words and stays clear of the
+  card's border. "Florence and the Machine" sets on two lines at 1440 and 768.
+  - A single word too long for the card is shrunk to fit, never broken.
+  - The card line wraps too. The seeded page looks as before.
+  - Lime and Editorial behave the same. Retro's polaroid is unchanged.
+- **JP-063 — fixed.** Booking Calendar layout 3 has month arrows beside the month name, on every
+  template, and pages the same 12 months as layout 1, wrapping at both ends.
+  - A picked day stays picked while the visitor pages away, and the pill keeps naming it.
+  - The big date shows only while its own month is on screen.
+  - The *Opens on* hint now says what each layout does with the date.
+- **JP-064 — fixed.** On the published page, calendar layout 3 draws a past day as a dimmed *Free*
+  dot, not in the *Booked* colour. Past days still cannot be picked.
+  - *Booked* appears only on blocked days still ahead.
+  - The canvas is unchanged, and so are layouts 1, 2 and 4.
+  - On every template.
+- **JP-065 — fixed.** The Testimonials stat card shows "4.9 /5" from a new *Rating* field, and the
+  *Stars* field now reaches layout 3 beside the faces.
+  - Each can be emptied: an empty *Rating* brings back the review count.
+  - The faces stay initials, since no field holds photographs, and the "®" stays out.
+  - On every template.
+- **JP-066 — by design; a data-model question for the BA.** A set card is one of the songs' tags,
+  so its title is the tag and its line counts the songs. A song has no length, and a set has no
+  mood or running time, so there is nothing true to print there. Tag songs `Cocktail hour` for
+  the design's card. Lengths would need a change to the song editor, which we can offer
+  separately.
+- **JP-067 — fixed.** On *Inset Hero*, Grunge's footer stands on the design's `#171716` at every
+  width, in the editor and published.
+  - The seal's disc and the Book Now pill's label and disc take the same grey.
+  - The other three Grunge headers keep their black footer.
+  - Lime's *Inset Hero* pill had the same miss and is fixed too.
+- **JP-068 — by design; the design's text is a slip.** The Media Player's small heading is its
+  **Kicker** field ("Top tracks"). The design's "KM BIO" is the Bio's heading copied there, with
+  the mock artist's initials. It is passed to the designer; type `KM BIO` into Kicker to match
+  it anyway.
+- **JP-069 — the hour fixed, the weekday by design.**
+  - Under the venue the row reads "Manchester · 22:00" at every width, with no hour pill, on
+    every template. The right-hand seat stays empty, since "Upcoming" is a status the builder
+    cannot know (JP-047).
+  - A gig has no year, so "SAT" cannot be worked out. That is a data-model question for the BA,
+    with JP-066.
+- **JP-070 — fixed.**
+  - Layout 3 starts from the design's headings on every template: "Curated sets", "Gallery",
+    "Pricing", "Where I'm playing.", "Experiences.". Each package pill is a *Package button*
+    field: "Book" at layout 3, "Book Now" at 1, "Start Enquiry" at 4, and emptying it drops the
+    pill.
+  - The Enquiry Form's layout-3 heading is "Book {your name} for your event", which follows the
+    Title until one is typed. Its boxes, and layout 2's, are the design's Event date / Event type
+    / Your email.
+  - Not changed: the Pricing intro, because "Four ways…" counts packages and the design shows
+    three. Also the chips, which are made from the packages' tags; tag them "Duo", "Trio" and
+    "Band" for the design's row.
+- **JP-071 — by design.** These are the design's labels, not the artist's content, and each goes
+  with its value (*Current role:* only while Kicker is filled, and so on). Editable labels would
+  be a product-wide change, which we can plan separately.
+- **JP-072 — fixed.** At Desktop the canvas's Booking Calendar stays in view beside the Bio and
+  Top Tracks until that column ends, as published. It stops just under the grey canvas's top.
+  Repertoire layout 4's A–Z letters and Enquiry Form layout 2's card now stick on the canvas too.
+- **JP-073 — fixed.** A section added back through *+ Add section* returns to where it was
+  deleted from: before the section that followed it, or at its old position if that one is gone
+  too, *Start fresh* or not.
+  - On *Inset Hero*, Gallery comes back after the Booking Calendar.
+  - A section never on the page still goes before the Footer.
+- **JP-074 — fixed.** A price range prints as the design draws it: a big "450" and a small
+  "— £1,400". Whatever follows the first number prints small.
+  - This also ends JP-058's tablet overflow.
+  - Seeded prices look as before. On every template at pricing layouts 1–3.
+- **JP-075 — fixed.** At 390 the Repertoire carousel opens with the second set in the centre and
+  the first peeking on the left, as every 390 design draws it. That is the design's opening
+  state, not a mid-scroll capture.
+  - The arrows still wrap.
+  - On Grunge, Lime and Editorial the centre card keeps its colour; on Retro and Pop each set
+    keeps its own.
+
+## Notes for the designer
+
+*(What this batch found worth telling the designer, gathered by the sweep into one note to forward,
+in Editorial layout 1's shape. Each is shipped as described.)*
+
+1. **The media head reads "KM BIO"** (JP-068). Every layout-3 Media Player head (`964:68698`,
+   `964:68666`, `964:68731`) prints "KM BIO" over "Five worth your ear". That is the bio's own head
+   (`964:68690` / `964:68658` / `964:68722`), with the mock artist's initials. The page keeps the
+   media's *Kicker*, "Top tracks".
+2. **The bio prints *Current role* twice** (JP-061). All four layout-3 bios (`964:68695` /
+   `964:68663` / `964:68728` / `964:68631`) print "CURRENT ROLE: DJ & SELECTOR" in two cells. The
+   page reads the second as *Based in*, the header's location.
+3. **Editorial's stat card reads "5.9"** (JP-065) on a `/5` scale (`964:68748`), where Retro's,
+   Lime's and Grunge's read 4.9. The page seeds 4.9 on every template.
+4. **The pricing intro says "Four ways to book this act."** (JP-070) over a frame that draws three
+   packages. The page keeps "The quote covers the whole booking.", since a count would be false
+   for any other number of packages.
+5. **The form's head names the mock artist** (JP-070). Every layout-3 frame reads "Book Kai for /
+   your event", and Editorial's mock artist is Sienna Vale. The page composes the head from the
+   artist's own name, "Book {name} for / your event".
+6. **The 390 repertoire is read as the carousel's opening state** (JP-075), not a mid-scroll
+   capture. Every 390 master (Retro `982:10193`, Lime `984:10791`, Grunge `984:13951`, Editorial
+   `984:16863`) centres the second set, with Cocktail hour at x −260, Dinner at 50 and Party peak at
+   360. The page now opens the same way on every template. If the design means the first set
+   centred, that is a one-line change.
