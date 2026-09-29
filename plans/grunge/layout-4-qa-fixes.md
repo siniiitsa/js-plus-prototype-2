@@ -112,7 +112,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | 2 | JP-076 | With the form deleted, both Send Enquiry pills do nothing | **Confirmed, shared.** A known state (JP-053) with no face and no fix path but the form; `BookPill`'s span keeps its pointer. **Proposed: Medium** | S–M | **yes** — 1 A (a calendar address that follows the form's) / B (one address); 2 (a) a panel note / (b) inert pills / (c) a visitor line | **done** (1 A, 2 (a); the calendar's own `email` follows the form's, and a panel note) |
 | 3 | JP-082 (controls) | Send Enquiry, the bio's Listen and the form's *Message* label have no field | **Confirmed, shared**: a submit, a link and a box label are not vocabulary. The census named Listen for this batch; *Message* is the one box label left a literal | S | **yes** — each: A (a field) / reply | **done** (A, A, A; `cta` reaches layout 4 seeded "Send Enquiry", a bio *Listen link*, a form *Message label*) |
 | 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | **done** ((a), A; punctuation skipped, a `#` cell ahead of A while a `#` group exists) |
-| 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | open |
+| 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | **done** (A; `u(14)` in both halves, the title clamped at two lines; the seed moves widths only) |
 | 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | open |
 | 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | open |
 | 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | open |
@@ -1063,11 +1063,89 @@ height moves on the seed; no glyph, disc or bar moves. **B: the same 30, widths 
 transport) and the block's matching line. CLAUDE.md names nothing here (checked). Layouts 1–3's
 transports were not measured; a line in the sweep if one shows the same.
 
-**Decided.** —
+**Decided** (2026-09-29, user call): **A.** A gap of the transport's own 14 (`u(14)`: 11.5 at
+desktop, 14 narrow) between the text column and the transport, in both halves, and the title wraps
+to two lines and then clamps (`-webkit-line-clamp: 2`, `overflowWrap: 'anywhere'`), the frame's
+`textAutoResize: HEIGHT` reading. The sub line keeps its one-line clip. At 390 the column grows when
+a visitor changes to a wrapping track; the shift is measured and named below.
 
-**Settled.** —
+**Settled** (2026-09-29). The drift the hand-off named held (the block `:7639`, `skip()` `:7667`,
+its `nowPlaying` `:7693`; Retro's body `:7924`, `nowPlaying` `:8003`).
+- **The fix.** Both rows are `row(u(14), …)` (11.5 at desktop, 14 narrow). In the Lime / Grunge
+  block the title spreads a new `clamp2` (`display: '-webkit-box'`, `WebkitBoxOrient: 'vertical'`,
+  `WebkitLineClamp: 2`, `overflow: 'hidden'`, `overflowWrap: 'anywhere'`) in place of `clip`, which
+  the sub line keeps; Retro's body writes the same five inline in place of its one-line clip. The
+  computed `-webkit-line-clamp` reads `2`. Comments: Retro's truncation comment is rewritten (the
+  gap, the wrap, the clamp, and where the page grows), and the block's `nowPlaying` gains a line
+  pointing at it.
+- **The harness was proved first.** A HEAD worktree on :5174 against the tree: media × themes 0–4
+  × 4 layouts × 3 widths gave **0 of 60 per surface**.
+- **After-diff, named before the code: 30 files. Measured: exactly those 30** (media `arch 3` ×
+  themes 0–4 × 3 widths, 15 per surface), each **three rows**: the text column and its two spans,
+  and only their width, −11.5 at desktop and −14 at 768 and 390. No height, glyph, disc or bar
+  moved. The digest records no `display`, `white-space` or line clamp, so the clamp is proved by the
+  states below, not by the digest.
+- **States** (a throwaway harness probe, themes 0–4 × 3 widths × canvas and `live=1`; the two
+  surfaces measured identically). The titles cued first were the long `Late Lights (Extended Club
+  Mix) feat. Somebody`, `Manchester at 3am (Extended)`, a 40-letter single word, and each seeded
+  title.
+  - **Gap** (the column's right to the transport's left) is 11.5 / 14 / 14 in every case. The prev
+    glyph's box is the same distance away on every template, since `LimeSkip` and lucide both start
+    their box at the transport's edge.
+  - **The skip's padded hit box, Lime and Grunge**, now starts **5.8 / 7 / 7 clear** of the title,
+    where it overlapped by 5.7 / 7. A click on the title's last glyphs no longer steps back.
+  - **The clamp.** The long title and the single word take exactly two lines everywhere, clamped at
+    1440 and 768 on every template. At 390 they are whole under Retro, Lime and Grunge, and
+    clamped under Editorial and Pop. The title's box
+    ends at the column's right edge in every case, so the ellipsis stays clear of the gap. The
+    transport's centre sits on the column's centre (Δ 0) at one line and at two.
+  - **The seed.** `Echo & The Floor` wraps to two lines at 1440 under Retro, Lime and Pop (Pop at
+    768 too), and `Manchester at 3am` at 1440 on every template but Editorial (Pop at 768 too). Both
+    now **show whole**, where they truncated. Every seeded title is one line at 390.
+  - **`scrollWidth`** equals the width in every case.
+  - Editorial's and Lime's one-line titles read `scrollHeight > clientHeight` at some widths. That
+    is the display face's ink running past its 1.1 line box (Noto under Editorial, Bebas under
+    Lime), under the
+    same `overflow: hidden` the old one-line clip had, so nothing new is clipped.
+- **Where the page grows.** This is measured `live=1`, as the section's height before and after
+  `›`. The rule the entry predicted holds wherever the tile grid is at least as tall as the column.
+  - **The seed: 0 at every width, on every template**, `›` to `Manchester at 3am` included. At
+    1440 and 768 the sleeve's `flex: 1 0 0` gives the second line back, and no seeded title wraps
+    at 390.
+  - **At 390, a wrapping title grows the section.** It grows by 14.6 under Retro, Editorial and
+    Pop, and by 30.8 under Lime and Grunge. It is one title line less the slack the 48 disc
+    leaves beside a one-line column, since the row was the disc's height. The page below moves by
+    that much when a visitor changes to such a track, and back when they leave it.
+  - **Named, not in the entry: a short list moves the wide widths too.** With three tracks the
+    grid is shorter than the column, so the sleeve sits at its floor and cannot give the line
+    back. There, `›` to a wrapping title grows the section by 21 (Retro, Editorial, Pop) or 32.4
+    (Lime, Grunge) at 1440, and by 14.6 or 30.8 at 768. With the seeded five it is 0.
+- **Layouts 1–3 were measured** with the long title (themes 0–4 × 3 widths, `live=1`). Layout 1's
+  title ends 25–32 before its nearest glyph, and layout 3's 24.6 / 30 / 30. Layout 2 has no
+  transport glyph on the title's line. None shows the same, so there is no sweep line.
+- **The tester's steps, in the real app** (a one-off puppeteer script, trusted clicks and typing,
+  deleted after), on Grunge's, Lime's and Retro's card 4. The steps: *Back to page list* → Media
+  Player → track 1's title typed as `Late Lights (Extended Club Mix)`.
+  - The canvas read gap 11.5, two lines, and the hit box 5.8 clear under Grunge and Lime.
+  - Publish → Open. At 1440, 768 and 390 the title took two whole lines 14 from the transport, and
+    `scrollWidth` equalled the width. At 1440 the 14 is 11.5 under the tab's 1440 / 1180 zoom.
+  - At 1440 in the tab, a trusted click on track 2's tile played `Manchester at 3am` (the audio
+    unpaused and advanced) and printed it whole on two lines, 14 clear.
+  - No page errors.
+- **Docs**: the two comments above. CLAUDE.md names nothing here. The designer note in the sweep
+  is kept, with our reading beside it.
 
-Reply: —
+Reply: **JP-084 — fixed.**
+- The Media Player's now-playing title now keeps a gap from the previous-track button. The gap is
+  the same as the one between the player's own buttons.
+- A long title now wraps onto a second line instead of cutting off early, as the design's text
+  does. Only a title longer than two lines ends in "…", and the "…" stays clear of the button.
+- So the seeded "Manchester at 3am" and "Echo & The Floor" now show in full at 1440, where they
+  were cut off.
+- On a phone, changing to a track whose title needs two lines makes the player one line taller. The
+  seeded titles all fit on one line there.
+- Clicking the end of a long title no longer skips back a track.
+- Checked on *Stacked* under Grunge, Lime and Retro at 1440, 768 and 390, and by playing track 2.
 
 ---
 
@@ -1553,7 +1631,8 @@ Reply: —
      Lime's are ink on a dark plate and cannot be seen; the ticker's "‹ … ×" has no forward control
      (JP-080).
    - The now-playing title has no truncation rule: HUG and `HEIGHT`, so a longer title pushes the
-     transport off the 308 column (JP-084).
+     transport off the 308 column (JP-084). Ours gaps it by the transport's 14 and wraps it to two
+     lines before an ellipsis.
    - "Six Worth Your Ears" counts a filler sixth tile (JP-081).
    - The layout-4 bio prose leads with the mock artist's name, in one paragraph where the section
      carries two; its "since 2021" is layout 3's "June 2021" (JP-081).

@@ -7655,6 +7655,10 @@ function Media({ s }) {
     const glow = grunge ? `inset 0 0 0 1px ${s.stroke2}` : `inset 0 0 ${u(34)} ${s.ac}`
     const mark = grunge ? `inset 0 0 0 1px ${s.ac}` : glow
     const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+    const clamp2 = {
+      display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+      overflow: 'hidden', overflowWrap: 'anywhere',
+    }
 
     // Body/Chip: Inter Bold at lh 1, tracked −6% of its own size.
     const clockType = {
@@ -7690,12 +7694,15 @@ function Media({ s }) {
       </div>
     )
 
+    // The title is Retro's body's (below): the transport's own 14 apart, and
+    // two lines before it clamps, which also keeps the skip's padded target
+    // off the title's last glyphs.
     const nowPlaying = (
-      <div style={row('0', { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
+      <div style={row(u(14), { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
         <span style={col(u(4), { flex: '1 1 auto', minWidth: 0 })}>
           <span style={{
             fontFamily: s.display, fontSize: u(faced(s, tk.title)), lineHeight: facedLh(s, 1.1),
-            letterSpacing: s.dls, color: s.ac, ...clip, ...disp,
+            letterSpacing: s.dls, color: s.ac, ...clamp2, ...disp,
           }}>{now.track}</span>
           <span style={{
             fontFamily: s.body, fontSize: u(tk.body), lineHeight: 1.4,
@@ -8001,16 +8008,22 @@ function Media({ s }) {
     )
 
     const nowPlaying = (
-      <div style={row('0', { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
+      <div style={row(u(14), { width: '100%', flex: 'none', justifyContent: 'space-between' })}>
         {/* The frame hugs this block and lets it `break-word`, which at a
             longer title would push the transport off the 308 column and into
-            the Left frame's `overflow-clip`. It shrinks and truncates instead,
-            which is what both of this section's other list layouts do. */}
+            the Left frame's `overflow-clip`. So it shrinks instead, the
+            transport's own 14 apart from it (the frame states no gap, and at
+            0 an ellipsis ran into the prev glyph, JP-084), and the title
+            wraps as the frame's `HEIGHT` text does, clamped at two lines. A
+            two-line title grows the column, which the sleeve's `flex: 1 0 0`
+            gives back at the wide widths while the tile grid is the taller
+            (the seeded five are; three are not), and 390 never does. */}
         <span style={col(u(4), { flex: '1 1 auto', minWidth: 0 })}>
           <span style={{
             fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
             letterSpacing: s.dls, color: rust,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+            overflow: 'hidden', overflowWrap: 'anywhere',
           }}>{now.track}</span>
           <span style={{
             fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.4,
