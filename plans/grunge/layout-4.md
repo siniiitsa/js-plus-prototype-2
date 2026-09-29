@@ -1130,7 +1130,9 @@ them.
   ticker 62.3 (63). `scrollWidth` holds.
 - **Named diffs, all Lime's**: the seeded stats (COVERAGE "12 mile radius", CITIES 2, GIGS 5,
   "Based in Manchester" with no label) against the frame's RADIUS 120 / 21 / GIGS YTD 48 / BASE,
-  so the 390 cells hug to 567.6 against the frame's 581; the viewport follows our 1052 column, so
+  so the 390 cells hug to 567.6 against the frame's 581 (*closed by JP-077 · JP-078 · JP-082
+  (map), [`./layout-4-qa-fixes.md`](./layout-4-qa-fixes.md): the wall is the artist's `stats`,
+  seeded with the frame's four, and the 390 card is 579.4*); the viewport follows our 1052 column, so
   the rings cover less of it; the ticker drops "Next:" and takes `›` in the `×`'s seat; the
   canvas lights gig 0's pin; Anton at 0.75 against Stones Crush. The head is `s.title`'s
   "Distances we'll Travel" fallback, as the frame writes it; the 390 root's 44 top padding

@@ -1126,6 +1126,22 @@ export const PRICING_ROW_CTA = 'Start Enquiry'
 export const PRICING_ROW_CTA_3 = 'Book'
 // Events map layout 4's panel note, beside "Travel & reach" (964:72830).
 export const MAP_SPAN = 'Live · last 12 months'
+// Events map layout 4's stat wall, the frame's four cards verbatim (JP-077,
+// user call, 2026-09-29): all nine masters (Retro 964:72830 / 964:78599 /
+// 977:8322, Lime's and Grunge's twins) print the same twelve strings. A stat
+// is a claim the artist types, JP-065's reversal taken whole — the fit's two
+// derivations (a city count and the gig count) are gone — so the rows are
+// written in the { label, value, sub } shape StatsField edits and need no
+// dressing. The labels are upper-cased by the card's CSS; value and sub print
+// as typed.
+export const MAP_STATS_4 = [
+  { label: 'Radius',   value: '120',            sub: 'miles · standard' },
+  { label: 'Cities',   value: '21',             sub: 'played in' },
+  { label: 'Gigs YTD', value: '48',             sub: 'played this year' },
+  { label: 'Base',     value: 'Manchester, UK', sub: 'further on request' },
+]
+// What `blankRow()` asks of a StatsField row (the JP-051 sweep's rule).
+export const STAT_KEYS = ['label', 'value', 'sub']
 
 // Enquiry form layout 2's card, seeded with its frame's own copy (964:64652):
 // the price row, the bookings line, the submit's label and the line under it.
@@ -1590,23 +1606,24 @@ export const FIELDS = {
       // in layout 4, whose whole list is a one-gig ticker. The cities are read
       // a second time in layout 3, where they derive the split list's filter
       // chips (vm.gigChips) the way the songs' tags derive the repertoire's —
-      // so a row's city is a control there as well as a fact — and a third
-      // time in layout 4, which counts them (vm.gigCityCount).
+      // so a row's city is a control there as well as a fact. Layout 4 no
+      // longer counts them: its stat wall is `stats` (JP-077).
       hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
           + `a real link on the published page; the list pages ${PINS.length} at a time in `
           + "layouts 1–3 (layout 3 shows one at a time on a phone) and one at a time in "
           + "layout 4's ticker. "
-          + 'Layout 3 also turns the cities into its filter chips, and layout 4 counts them.' },
+          + 'Layout 3 also turns the cities into its filter chips.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
-    // Every design prints it, once each (reach.mjs's `map.radius`). It was
+    // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
     // block printed it in the travel card's chip as well as its Max travel, and
-    // that chip now takes Retro's gig date.
-    { k: 'radius',  l: 'Coverage', d: MAP_RADIUS,
+    // that chip now takes Retro's gig date. Layout 4's Coverage card went with
+    // JP-077: its wall is `stats`.
+    { k: 'radius',  l: 'Coverage', d: MAP_RADIUS, in: [0, 1, 2],
       hint: 'How far you travel. Layout 1 prints it beside the heading, layout 2 as Max travel on '
-          + 'the travel card, layout 3 in the line under the map, and layout 4 on the Coverage card.' },
-    { k: 'base',    l: 'Based in',       d: MAP_BASE },
-    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1, 3] },
+          + 'the travel card, and layout 3 in the line under the map.' },
+    { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 1, 2] },
+    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1] },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1] },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1] },
     // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
@@ -1626,7 +1643,12 @@ export const FIELDS = {
     { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
-      hint: 'Beside "Travel & reach" above the four stat cards. Leave empty to hide it.' },
+      hint: 'Beside "Travel & reach" above the stat cards. Leave empty to hide it.' },
+    // Layout 4's stat wall (JP-077 · JP-078 · JP-082, user call, 2026-09-29):
+    // the ninth structured editor, { label, value, sub } per card, seeded with
+    // the frame's four. Two to a row, so a third trails half-width.
+    { k: 'stats',   l: 'Stats', type: 'stats', max: 4, in: [3],
+      hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
   testimonials: [
     // A textarea, because layout 2's default breaks onto a second line.

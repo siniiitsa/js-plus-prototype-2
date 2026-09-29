@@ -1084,6 +1084,11 @@ Settled in section 5 (the repertoire):
 
 Settled in section 6 (the events map):
 
+*The stat wall below is superseded by JP-077 · JP-078 · JP-082 (map)
+([`../grunge/layout-4-qa-fixes.md`](../grunge/layout-4-qa-fixes.md), 2026-09-29): the block maps
+`s.mapStats`, the artist's `stats` seeded with the frame's four cards, and `stats` is no longer the
+branch's. The seeded 390 rows now hug at 108.4 / 137, the master's own 109 / 138.*
+
 - **The sixth layout-4 block, inside its branch after the seam: `if (s.lime)` within
   `EventsMap`'s `if (s.v3)`, after `zoomScale`** — the gallery's and the repertoire's
   layout-4 seat. `page` / `setPage` and `zoom` / `setZoom` are hoisted, but `nGigs`, `pg`,

@@ -46,7 +46,7 @@ import {
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, MAP_HEADING_3, TESTI_HEADING_3,
-  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -1543,15 +1543,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     ? [{ label: cased(REP_ALL), city: null, n: vm.gigs.length },
        ...[...gigCities.values()].map((ch) => ({ ...ch, label: cased(ch.label) }))]
     : []
-  // Layout 4's CITIES stat: the same distinct cities the chip row above is
-  // built from, counted rather than listed, and read straight off the map that
-  // already deduped them case-insensitively. It is here and not in the section
-  // because a Set is maths — `s.gigs.length` beside it is not, which is why
-  // only one of the dashboard's two derived numerals needed a key. Unlike
-  // `gigChips` it is *not* suppressed below two cities: a stat that reads "1 /
-  // CITIES" is a fact, where a filter row of All plus one chip is a
-  // distinction that distinguishes nothing.
-  vm.gigCityCount = gigCities.size
+  // Layout 4's stat wall (JP-077 · JP-078 · JP-082, user call, 2026-09-29): the
+  // artist's cards, the songs rule — an absent key means the frame's four
+  // (MAP_STATS_4), an emptied array means none, and no null sentinel. A row
+  // with nothing in it is dropped before anything indexes it (`blankRow()`,
+  // every key, JP-051's rule), so a blank row neither draws an empty card nor
+  // takes a seat's hue. Each part is trimmed and left as typed: the card's CSS
+  // upper-cases the label, and the frame's value and sub are its own casing.
+  vm.mapStats = (Array.isArray(c.stats) ? c.stats : MAP_STATS_4)
+    .filter((r) => !blankRow(r, STAT_KEYS))
+    .map((r) => ({
+      label: String(r?.label ?? '').trim(),
+      value: String(r?.value ?? '').trim(),
+      sub: String(r?.sub ?? '').trim(),
+    }))
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
@@ -2812,7 +2817,7 @@ function GigsField({ value, max, design, onChange }) {
 /* ------------------------------------------------------------------ *
  * SlotsField — the booking calendar's named slots (JP-052).
  *
- * The eighth repeater, and the last list-shaped content to get one: layout
+ * The eighth repeater (StatsField below is the ninth): layout
  * 2 tables these rows, and until JP-052 they were a seed no field edited,
  * dated 2025 and so dead on every published page. Row shape is
  * { date, kind, price }, CAL_SLOTS' own comment: a date, what the artist
@@ -2896,6 +2901,99 @@ function SlotsField({ value, max, onChange }) {
         >
           <Plus size={13} style={{ color: '#B9B6AA' }} />
           <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add slot</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>{list.length} of {max}</p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * StatsField — the events map's layout-4 stat wall (JP-077).
+ *
+ * The ninth repeater, and the tenth structured editor counting
+ * BookedField. Row shape is { label, value, sub }: the card's small-caps
+ * name, its numeral, and the line under it. Until JP-077 the wall was two
+ * derivations and two flat keys under four literal names, so an emptied
+ * key left an empty card and no field named a card.
+ *
+ * SlotsField's house rules: whole-array rewrite per keystroke, numbered
+ * rows, a round X, a dashed add, an "n of max" footnote, no reordering —
+ * order is entry order, and it is the order the wall fills, two to a row.
+ * The placeholders are the frame's first card.
+ * ------------------------------------------------------------------- */
+
+const BLANK_STAT_HINT = 'Empty stats aren’t shown.'
+
+function StatsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { label: '', value: '', sub: '' }])
+
+  const row = (i, r) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          value={r.label ?? ''} placeholder="Radius" onClick={stopE}
+          onChange={(e) => setAt(i, 'label', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove stat ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <Input
+            value={r.value ?? ''} placeholder="120" onClick={stopE}
+            onChange={(e) => setAt(i, 'value', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+          <Input
+            value={r.sub ?? ''} placeholder="miles · standard" onClick={stopE}
+            onChange={(e) => setAt(i, 'sub', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+        </div>
+        {blankRow(r, STAT_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_STAT_HINT}</p>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((r, i) => row(i, r || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add stat</span>
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>{list.length} of {max}</p>
@@ -3623,6 +3721,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // is exactly what sectionVm resolves off the clock, so the first edit writes
   // out the dates the canvas shows.
   const slotsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : slotSeed(openVal('open')))
+  // And the events map's layout-4 stat wall (JP-077): MAP_STATS_4 is written as
+  // the { label, value, sub } row StatsField edits, the gigs' one-liner again.
+  const statsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : MAP_STATS_4)
 
   // Minimal's labels that resolve to nothing on this page (§4.3a), for the hint
   // above the header's navigation select. Only a header reads it.
@@ -3731,6 +3832,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         <LinksField value={linksVal(f.k)} max={f.max} navSections={navSections} onChange={(v) => set(v)} />
                       ) : f.type === 'slots' ? (
                         <SlotsField value={slotsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'stats' ? (
+                        <StatsField value={statsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month

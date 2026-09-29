@@ -19688,32 +19688,33 @@ function EventsMap({ s }) {
   // what states one.** The frame's heights are all residues of the instance's
   // stated 747 / 870 / 680 — the card is `flex-[1_0_0]` of it, the grid
   // `flex-[1_0_0]` of the panel, the cells `1fr` rows of the grid — and the one
-  // number worth transcribing is the cell's, because the cells are four fixed
-  // stats rather than a list and the mobile master proves the row *hugs*: its
-  // two rows are 100 and 120, the second grown by BASE's value wrapping to two
-  // lines. So each cell takes a `minHeight` of its master's own 227.5 / 140 /
-  // 100 and grows with what it holds, and the desktop sum checks out as
-  // transcription rather than invention: 23 + 9.8 + 16.4 + (2 × 186.6 + 9.8) +
-  // 23 = 455.2, which is the frame's 555 × 0.82 to the tenth. The map viewport
-  // then stretches to that at desktop, and at narrow — where it is `FILL` in a
-  // column and its 320 / 278 is the same kind of residue — it takes each
-  // master's own aspect, the events map's layout-2 rule for a derived viewport.
+  // number worth transcribing is the cell's, because the mobile master proves
+  // the row *hugs*: its two rows are 100 and 120, the second grown by BASE's
+  // value wrapping to two lines. So each cell takes a `minHeight` of its
+  // master's own 227.5 / 140 / 100 and grows with what it holds, and the
+  // desktop sum checks out as transcription rather than invention: 23 + 9.8 +
+  // 16.4 + (2 × 186.6 + 9.8) + 23 = 455.2, which is the frame's 555 × 0.82 to
+  // the tenth. The map viewport then stretches to that at desktop, and at
+  // narrow — where it is `FILL` in a column and its 320 / 278 is the same kind
+  // of residue — it takes each master's own aspect, the events map's layout-2
+  // rule for a derived viewport. **At desktop the wall holds two rows whatever
+  // it lists** (JP-078): the list is the artist's now, and a wall of two cards
+  // — or none — would otherwise halve the map. The floor is the grid's, two
+  // explicit rows at the cell's own minimum, and not a `minHeight` on the
+  // viewport: the seeded wall renders at 455.0 (Lime's 454.6), under the
+  // frame's 555 × 0.82 = 455.1, so a viewport floor lifted every seeded page.
+  // Two rows the seed's cells already fill are the seed by construction.
   //
-  // **The four stats are two derivations and two fields, and two frame labels
-  // had to move.** *CITIES 21* is `vm.gigCityCount`, the distinct cities the
-  // layout-3 chip row is already built from; *GIGS YTD 48* is `s.gigs.length`
-  // with the YTD dropped, because "this year" is a claim about the clock
-  // (the booking calendar's rule) and "upcoming" is this section's own word for
-  // the same list in layout 1. The other two are fields, and both of their
-  // labels stutter with their own defaults — the events map's own
-  // drop-the-label-not-the-field rule, met twice more. They are resolved
-  // **differently on purpose**: *RADIUS* over `s.mapRadius` ("12 mile radius")
-  // becomes **COVERAGE**, which is the field's own name in `FIELDS.map.radius`
-  // and layout 1's eyebrow in this very section, so the label survives; *BASE*
-  // over `s.mapBase` ("Based in Manchester") has no such synonym, so the label
-  // goes and the card is the value alone. Do not "fix" one to match the other.
-  // `s.mapTerms` takes the COVERAGE card's sub, which is where the frame's own
-  // "miles · standard" and "further on request" both come from.
+  // **The stat wall is the artist's** (JP-077 · JP-078 · JP-082, user call,
+  // 2026-09-29, reversing the fit's "claims, not fields" the way JP-065 did at
+  // layout 3). It is `s.mapStats`, `{ label, value, sub }` per card, seeded with
+  // the frame's four verbatim — RADIUS 120, CITIES 21, GIGS YTD 48, BASE
+  // Manchester, UK — at most four, two to a row, so a third trails half-width
+  // (the pricing deck's rule). A blank row is dropped in `sectionVm`, and every
+  // part of a card drops alone when emptied, so no card is ever an empty box.
+  // The fit's two derivations (a city count and the gig count) and its
+  // COVERAGE / unlabelled-BASE reading of `radius` and `base` are gone; those
+  // two fields and `terms` reach layouts 1–3 alone.
   //
   // **The viewport is layout 3's again (QA, 2026-09-15).** The frame's plate is
   // the radial street raster layout 3 draws — the two assets differ by 3.5 in
@@ -19838,16 +19839,6 @@ function EventsMap({ s }) {
     // The frame's "Next:", on the first gig alone (see the branch header); it
     // drops with an emptied venue rather than standing alone.
     const venue = gig && (pg === 0 && gig.venue ? `Next: ${gig.venue}` : gig.venue)
-
-    // RADIUS / CITIES / GIGS YTD / BASE, re-seated. See the branch header for
-    // why two labels survive and two do not, and why the label that survives is
-    // the field's own name rather than the frame's.
-    const stats = [
-      { label: 'Coverage', value: s.mapRadius, sub: s.mapTerms },
-      { label: 'Cities', value: String(s.gigCityCount), sub: 'playing in' },
-      { label: 'Gigs', value: String(nGigs), sub: 'upcoming' },
-      { label: '', value: s.mapBase, sub: '' },
-    ]
 
     // The three coverage rings as a share of each master's viewport width (480 /
     // 300 / 140 at every width), outer first; live, the zoom steps the layer
@@ -20049,8 +20040,11 @@ function EventsMap({ s }) {
           <div style={{
             display: 'grid', width: '100%', gap: u(12),
             gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+            // The desktop floor (JP-078): two rows at the cells' own minimum
+            // whatever the list holds, so a shorter wall cannot halve the map.
+            ...(desk ? { gridTemplateRows: `repeat(2, minmax(${u(G.cellMin)}, auto))` } : null),
           }}>
-            {stats.map((st, i) => (
+            {s.mapStats.map((st, i) => (
               <div key={i} style={col(u(8), {
                 background: s.box1, boxShadow: ring(G.cellRing), borderRadius: u(G.cellR),
                 padding: `${u(18)} ${u(20)}`, alignItems: 'flex-start', minWidth: 0,
@@ -20058,7 +20052,9 @@ function EventsMap({ s }) {
                   ? { justifyContent: 'space-between' }
                   : { justifyContent: 'flex-end', minHeight: u(G.cellMin) }),
               })}>
-                {!!st.label && <span style={chipL}>{st.label}</span>}
+                {/* The label is the artist's now (JP-082), so it wraps where the
+                    head row's chip stays on one line: a 390 cell is 159 wide. */}
+                {!!st.label && <span style={{ ...chipL, whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{st.label}</span>}
                 {!!st.value && (
                   <span style={{
                     fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
@@ -20136,10 +20132,10 @@ function EventsMap({ s }) {
         // 480px ring in a 320-tall band would otherwise draw straight over the
         // stat wall below it, which is layout 3's own lesson one level out.
         overflow: 'hidden',
-        // Desktop stretches to the stat wall's height as a grid item; both
-        // narrow masters state a height that is itself a residue of the
-        // instance's, so the aspect is how it travels to a canvas 20 and 24
-        // narrower than the frame.
+        // Desktop stretches to the stat wall's height as a grid item (which
+        // holds two rows whatever the list, JP-078); both narrow masters state
+        // a height that is itself a residue of the instance's, so the aspect
+        // is how it travels to a canvas 20 and 24 narrower than the frame.
         ...(desk ? null : { aspectRatio: tab ? '708 / 320' : '370 / 278' }),
       }}>
         {/* The zoom layer: the raster, the rings, their labels, the seats and
@@ -20274,28 +20270,35 @@ function EventsMap({ s }) {
         <div style={{
           display: 'grid', width: '100%', gap: u(12),
           gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+          // The desktop floor (JP-078): two rows at the cells' own minimum
+          // whatever the list holds, so a shorter wall cannot halve the map.
+          ...(desk ? { gridTemplateRows: `repeat(2, minmax(${u(227.5)}, auto))` } : null),
         }}>
-          {stats.map((st, i) => (
-            <div key={i} style={col(u(8), {
-              background: seats[i].bg, color: seats[i].fg,
-              border: `${bw} solid ${seats[i].line}`, borderRadius: u(10),
-              padding: `calc(${u(18)} - ${bw}) calc(${u(20)} - ${bw})`,
-              // The frame's own `justify-end`: the block sits on the card's
-              // floor and the air collects above it, which is what makes a
-              // two-line card and a three-line one read as one wall.
-              justifyContent: 'flex-end', alignItems: 'flex-start', minWidth: 0,
-              minHeight: u(desk ? 227.5 : tab ? 140 : 100),
-            })}>
-              {!!st.label && <span style={chip12}>{st.label}</span>}
-              {!!st.value && (
-                <span style={{
-                  fontFamily: s.display, fontSize: u(T.disp), lineHeight: T.dispLh,
-                  letterSpacing: s.dls, color: seats[i].hot, overflowWrap: 'anywhere',
-                }}>{st.value}</span>
-              )}
-              {!!st.sub && <span style={body12}>{st.sub}</span>}
-            </div>
-          ))}
+          {s.mapStats.map((st, i) => {
+            const seat = seats[i % seats.length]
+            return (
+              <div key={i} style={col(u(8), {
+                background: seat.bg, color: seat.fg,
+                border: `${bw} solid ${seat.line}`, borderRadius: u(10),
+                padding: `calc(${u(18)} - ${bw}) calc(${u(20)} - ${bw})`,
+                // The frame's own `justify-end`: the block sits on the card's
+                // floor and the air collects above it, which is what makes a
+                // two-line card and a three-line one read as one wall.
+                justifyContent: 'flex-end', alignItems: 'flex-start', minWidth: 0,
+                minHeight: u(desk ? 227.5 : tab ? 140 : 100),
+              })}>
+                {/* The artist's label wraps (JP-082); the head row's stays on one line. */}
+                {!!st.label && <span style={{ ...chip12, whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{st.label}</span>}
+                {!!st.value && (
+                  <span style={{
+                    fontFamily: s.display, fontSize: u(T.disp), lineHeight: T.dispLh,
+                    letterSpacing: s.dls, color: seat.hot, overflowWrap: 'anywhere',
+                  }}>{st.value}</span>
+                )}
+                {!!st.sub && <span style={body12}>{st.sub}</span>}
+              </div>
+            )
+          })}
         </div>
       </div>
     )

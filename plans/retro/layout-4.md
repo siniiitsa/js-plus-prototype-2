@@ -1440,7 +1440,12 @@ Learned on the end-of-pass sweep (`80c557c` and `9e0f726`):
    default "12 dates · 8 cities · this season" does not merely repeat the two stat cards, it
    contradicts them on the seeded page (5 gigs, 2 cities). The ticker took the question's own
    reading: `page` over a `perPage` of 1, with the arrows wrapping and the `×` becoming the `›`
-   that makes the frame's `‹` a pair.* The original text follows.
+   that makes the frame's `‹` a pair.* **Reversed for the four stats by JP-077 · JP-078 · JP-082
+   (map)** ([`../grunge/layout-4-qa-fixes.md`](../grunge/layout-4-qa-fixes.md), user call,
+   2026-09-29), JP-065's reading taken whole: the wall is the artist's `stats` repeater
+   (`{ label, value, sub }`, at most four), seeded with the frame's four cards verbatim
+   (`MAP_STATS_4`). `vm.gigCityCount`, the gig count, COVERAGE and the unlabelled BASE are gone,
+   and `radius`, `base` and `terms` reach layouts 1–3 alone. The original text follows.
 
    *CITIES 21* is the distinct
    cities of `c.gigs` (`vm.gigChips` already computes exactly that, for layout 3's filter);

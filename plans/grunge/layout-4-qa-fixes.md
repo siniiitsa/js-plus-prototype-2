@@ -114,7 +114,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | **done** ((a), A; punctuation skipped, a `#` cell ahead of A while a `#` group exists) |
 | 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | **done** (A; `u(14)` in both halves, the title clamped at two lines; the seed moves widths only) |
 | 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | **done** (1 A, 2 A; "Next:" on the first gig, the month upper-cased, Grunge's dots at .6; the pin and × replies) |
-| 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | open |
+| 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | **done** (A; `stats` seeded with the frame's four, the ninth repeater; the desktop floor on the grid, not the viewport) |
 | 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | open |
 | 9 | JP-081 (repertoire head) | "12 Songs" for "Repertoire" | **Named fit call** (Retro L4 open question 8), the precedent JP-070 reversed at layout 3; all three frames agree | S | **yes** — A (a `HEADING_4` arm) / B (reply) | open |
 | 10 | JP-081 (tags) | Five chips for the frame's six | **By design (JP-037, a user call)**, on a premise only two frames bear out | S (A) / M (B) | **yes** — A (six everywhere, reopens JP-037) / B (a Lime and Grunge layout-4 seed) / C (reply) | open |
@@ -1424,11 +1424,101 @@ lists) and its "Layout 4 is the pager alone" paragraph (a sentence on the wall).
 Pointers at `../retro/layout-4.md`'s open question 6 and the layout-4 map Settled of
 `../lime/layout-4.md` and `./layout-4.md`.
 
-**Decided.** —
+**Decided** (2026-09-29, user call): **A.** The wall is the artist's: a `stats` repeater
+`{ label, value, sub }`, layout 4 alone, seeded with the frame's four cards verbatim
+(`MAP_STATS_4`), `max` 4, a blank row dropped by `blankRow(row, STAT_KEYS)` before anything
+indexes it, and each leaf dropping alone when emptied. Both derivations go (`vm.gigCityCount` is
+deleted), and `radius`, `base` and `terms` leave layout 4. The desktop viewport takes the frame's
+555 as a floor in both halves (moved to the stat grid in the fix; see Settled). It is the **ninth**
+structured editor.
 
-**Settled.** —
+**Settled** (2026-09-29). The drift the hand-off named held (the branch header's stat paragraph
+`EncoreSection.jsx:19702`, the `stats` array `:19845`, the block's renders `:20053`, Retro's
+`:20278`; `vm.gigCityCount` `EncoreBuilder.jsx:1554`; `FIELDS.map` `data.js:1587`).
+- **The fix.** `data.js`: `MAP_STATS_4` (the frame's twelve strings) and `STAT_KEYS` beside
+  `MAP_SPAN`; `FIELDS.map.stats` (*Stats*, `type: 'stats'`, `max: 4`, `in: [3]`, last in the
+  panel); `radius` and `base` take `in: [0, 1, 2]` and `terms` `[0, 1]`, and the hints of
+  `radius`, `gigs` and `span` lose their layout-4 clauses. `sectionVm`: `vm.mapStats`, the list
+  filtered by `blankRow(r, STAT_KEYS)` and each part trimmed, uncased (`cv` is raw, the card's CSS
+  upper-cases the label, and the frame's value and sub are its own casing). `vm.gigCityCount` is
+  deleted with its comment. `EditPanel`: `StatsField` after `SlotsField` (SlotsField's shape:
+  the label on the header line, value and sub paired under it, the frame's first card as
+  placeholders, "Empty stats aren't shown."), `statsVal`, and a `'stats'` rung beside `'slots'`.
+  SlotsField's header no longer calls itself "the last list-shaped content to get one".
+  `EncoreSection`: both halves map `s.mapStats`; the body reads `seats[i % seats.length]`.
+- **The floor moved from the viewport to the wall** (not in the entry). `minHeight: u(555)` on the
+  desktop viewport was **not** inert: the seeded wall renders at **455.0** under Retro's body
+  (Retro, Editorial, Pop) and **454.6** under Lime, not the 455.2 the branch header sums, and
+  `u(555)` is 455.1. It moved the desktop by 0.1 on three themes and 0.6 on Lime. So the desktop
+  stat grid takes `gridTemplateRows: repeat(2, minmax(cellMin, auto))` instead, the cell's own
+  minimum (the block's `G.cellMin`, the body's 227.5). The seed's two rows already fill both, so
+  it is the seed by construction. A shorter list keeps the empty second row, and the viewport
+  keeps its stretch. The picture is the one the viewport floor gave, with the cards under the
+  head and the air below. The branch header says why.
+- **The labels wrap** (not in the entry; the advisor's catch). The cell's label took the head
+  row's `nowrap` chip style, harmless while it was a literal. A 34-character label overran its
+  159 cell at 390 on all five themes. The cell's label now spreads `whiteSpace: 'normal'` and
+  `overflowWrap: 'anywhere'`, and the head row's chips keep `nowrap`. No seeded label wraps, and
+  the digest confirmed it: a re-digest after the change matched the one before it, 0 of 660 per
+  surface.
+- **The harness was proved first.** A HEAD worktree at `3f7d265` on :5174 against the tree: all
+  eleven categories × themes 0–4 × every layout × 3 widths gave **0 of 660 per surface**.
+- **After-diff, named before the code: 30 files. Measured: exactly those 30** (map `arch 3` ×
+  themes 0–4 × 3 widths, 15 per surface). At **1440** only the eleven text spans move: three
+  labels (BASE gains one), four values and four subs (BASE gains a sub). No container moves.
+  **768** is the same. At **390** the cells hug, so the rows and the ticker's y move. Retro's
+  body rows are 116.4 / 100 → 100 / 119.4 (card 577.9 → 580.9). Lime's are 108.4 / 137 against
+  its master's 109 / 138 (card 596.2 → 579.4). Grunge's card is 567.6 → 579.4. The style
+  columns change only by the two new BASE rows, which take the existing label and sub styles.
+  Every seeded card's `textContent`, read whole on both surfaces and every theme and width: "Radius |
+  120 | miles · standard", "Cities | 21 | played in", "Gigs YTD | 48 | played this year", "Base |
+  Manchester, UK | further on request".
+- **Reach** (`reach.mjs`, map probes, themes 0–4): `map.stats` → layout 4; `map.radius` and a new
+  `map.base` → layouts 1–3; a new `map.terms` → layouts 1–2. Every template agrees, so the `in`
+  rows are plain arrays.
+- **States** (`live=1`, themes 0–4 × 3 widths, a throwaway probe). Every case read the same on
+  all five themes.
+  - `stats: []`: no cells, and the desktop card keeps the seed's height (455.0 / 454.6 / 455.2).
+  - Three stats: the third trails half-width under the first.
+  - A value-only row prints the numeral alone.
+  - A row with its value emptied prints its label and sub.
+  - An all-blank row (a label of one space) is dropped, and the next row takes its seat.
+  - The tester's case (RADIUS's value emptied, BASE blank) leaves three cards, none empty.
+  - A 60-character value wraps inside its cell with no overflow and no page scroll. It grows the
+    desktop card to 584, which is content, not a regression.
+  - A 34-character label wraps inside its 390 cell.
+- **The tester's steps, in the real app** (a one-off puppeteer script, trusted clicks, deleted
+  after), on Grunge's, Lime's and Retro's card 4.
+  - Events Map → *Stats* lists the frame's four. Coverage, Based in and Travel terms read "Not
+    shown in this layout".
+  - Emptying RADIUS's value and blanking the BASE row shows the blank row's hint.
+  - The canvas and the published tab at 1440, 768 and 390 draw three cards: "Radius | miles ·
+    standard", then CITIES and GIGS YTD whole. No card is empty. The published desktop map
+    holds 555 (554.7 on Lime).
+  - No horizontal scroll and no page errors. The 1440 and 390 shots read right.
+- **Docs**: the branch header's two paragraphs, rewritten; CLAUDE.md's repeaters paragraph
+  (nine, `StatsField`, `STAT_KEYS`, `statsVal`, `MAP_STATS_4`, and `booked` a tenth structured
+  field) and a sentence on the wall in its "Layout 4 is the pager alone" paragraph; pointers at
+  `../retro/layout-4.md`'s open question 6, the head of `../lime/layout-4.md`'s section 6
+  Settled, and `./layout-4.md`'s named diffs.
+- **Found, not reported, left for the sweep**: `MAP_RADIUS` "12 mile radius" still disagrees with
+  `MAP_TERMS` "120 mi standard" at layouts 1–3.
 
-Reply: —
+Reply: **JP-077, JP-078 and JP-082 (the map's card names) — fixed.**
+- **JP-077**: the Events Map's stat cards now start from the design's four: RADIUS 120 / miles ·
+  standard, CITIES 21 / played in, GIGS YTD 48 / played this year, and BASE Manchester, UK /
+  further on request.
+- **JP-082 (card names)**: the cards are the artist's. The Events Map has a new *Stats* list, up
+  to four cards, each with a name, a value and a line under it, all editable. The cards are no
+  longer counted from the gig list, since "21 cities played in" is something only the artist
+  knows. *Coverage*, *Based in* and *Travel terms* now say "Not shown in this layout" on layout
+  4, as they only appear in layouts 1–3.
+- **JP-078**: a card never shows as an empty box. Each part of a card hides when emptied. A card
+  with nothing in it is not shown, and the editor says so under that row. The map keeps its full
+  height at desktop however many cards are left.
+- "Travel & reach" stays a fixed label, as decided in the labels reply.
+- Checked on *Stacked* under Grunge, Lime and Retro at 1440, 768 and 390, with RADIUS's value
+  emptied and the BASE row blanked.
 
 ---
 

@@ -52,8 +52,12 @@ const PROBES = [
   { name: 'map.updated', cats: ['map'], param: 'cj', value: { updated: Z } },
   { name: 'map.rings', cats: ['map'], param: 'cj', value: { rings: Z } },
   { name: 'map.expand', cats: ['map'], param: 'cj', value: { expand: Z } },
-  // JP-060: the coverage every design prints, once each.
+  // JP-060: the coverage every design prints, once each — layouts 1–3 since
+  // JP-077 took layout 4's wall to `stats`, which took `base` and `terms` too.
   { name: 'map.radius', cats: ['map'], param: 'cj', value: { radius: Z } },
+  { name: 'map.base', cats: ['map'], param: 'cj', value: { base: Z } },
+  { name: 'map.terms', cats: ['map'], param: 'cj', value: { terms: Z } },
+  { name: 'map.stats', cats: ['map'], param: 'cj', value: { stats: [{ label: Z, value: Z, sub: Z }] } },
   // JP-054: layout 4's small-caps line, and the button whose default moved there.
   { name: 'form.sub', cats: ['form'], param: 'cj', value: { sub: Z } },
   { name: 'form.button', cats: ['form'], param: 'cj', value: { button: Z } },
