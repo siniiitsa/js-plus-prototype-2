@@ -116,7 +116,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | 6 | JP-080 | The ticker lacks "Next:", has ›, prints "Jul"; a red pin and white dots | **"JUL" confirmed, shared. Grunge's dots confirmed.** "Next:" and × are named fit calls (Retro L4); the lit pin is the product's pairing | S | **yes** — "Next:" A / B; the pin A / B / C; × a reply | **done** (1 A, 2 A; "Next:" on the first gig, the month upper-cased, Grunge's dots at .6; the pin and × replies) |
 | 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | **done** (A; `stats` seeded with the frame's four, the ninth repeater; the desktop floor on the grid, not the viewport) |
 | 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | **done** (A; `steps` seeded with the frames' three, the tenth repeater; `promises` back to layouts 1–2; the rows hold at 88) |
-| 9 | JP-081 (repertoire head) | "12 Songs" for "Repertoire" | **Named fit call** (Retro L4 open question 8), the precedent JP-070 reversed at layout 3; all three frames agree | S | **yes** — A (a `HEADING_4` arm) / B (reply) | open |
+| 9 | JP-081 (repertoire head) | "12 Songs" for "Repertoire" | **Named fit call** (Retro L4 open question 8), the precedent JP-070 reversed at layout 3; all three frames agree | S | **yes** — A (a `HEADING_4` arm) / B (reply) | **done** (A; `REP_HEADING_4` "Repertoire" wins over the count; EditPanel's `HEADING_4` arm moved above it) |
 | 10 | JP-081 (tags) | Five chips for the frame's six | **By design (JP-037, a user call)**, on a premise only two frames bear out | S (A) / M (B) | **yes** — A (six everywhere, reopens JP-037) / B (a Lime and Grunge layout-4 seed) / C (reply) | open |
 | 11 | — | End-of-pass sweep | — | S | — | open |
 
@@ -1745,11 +1745,57 @@ would leave `heading` editing nothing". JP-070 (user call, 2026-09-28) reversed 
 `EncoreSection.jsx:12189`–`12198` (the head is no longer "12 Songs"). A pointer at
 `../retro/layout-4.md`'s open question 8.
 
-**Decided.** —
+**Decided** (2026-09-29, user call): **A.** `REP_HEADING_4 = 'Repertoire'` joins `HEADING_4`
+(JP-070's shape), and `EditPanel`'s `HEADING_4` arm moves ahead of the count. The field still edits
+it; an emptied heading stays empty at every layout and the count does not come back. No theme gate:
+all three frames agree. Retro layout 4's open question 8 is reversed.
 
-**Settled.** —
+**Settled** (2026-09-29). The drift the hand-off named held (`HEADING_3` `EncoreBuilder.jsx:248`,
+`HEADING_4` `:252`–`255`, the count `:1027`, the `HEADING_4` assignment `:1037`; EditPanel's count
+arm `:3872` between the `HEADING_3` arm `:3870`–`3871` and the `HEADING_4` arm `:3876`–`3877`).
+- **The fix.** `data.js`: `REP_HEADING_4 = 'Repertoire'` in the `*_HEADING_4` block, whose comment
+  names the three frames (`964:72817`, `964:72916`, `964:73007`) and JP-081; the `*_HEADING_3`
+  comment ("the repertoire its song count at layouts 1 and 2"), the `TITLES` comment and
+  `FIELDS.repertoire.heading`'s comment follow. `EncoreBuilder.jsx`: `HEADING_4` gains
+  `repertoire`; `sectionVm` needed no new line (its `HEADING_4` assignment already follows the
+  count), only its comment; **`EditPanel`'s `HEADING_4` arm moved up beside the `HEADING_3` arm,
+  ahead of the count**, and nothing else in the chain moved (the arms it jumped — the count, the
+  testimonials' design 1, `navMode` — share no key-and-design with it). `EncoreSection`'s
+  layout-4 head comment is rewritten; layout 2's (`:11168`–`11172`) stays.
+- **The harness was proved first.** A HEAD worktree at `98e890e` on :5174 against the tree: all
+  eleven categories × themes 0–4 × every layout × 3 widths gave **0 of 660 per surface**.
+- **After-diff, named before the code: 30 files. Measured: exactly those 30 of 1320** (repertoire
+  `arch 3` × themes 0–4 × 3 widths, 15 per surface), and in each **one row moves, the `H2`'s text**.
+  The head's box is the block's width (989.8 / 608 / 310) and its height held at every width and
+  theme, so no row below it moves. The text reads "Repertoire" under Retro, Lime and Editorial,
+  and under Grunge through its own `textTransform: uppercase`; Pop prints "REPERTOIRE" through
+  `cased()`, as its other heads do.
+- **Room** (a `Range` over the text, both surfaces alike): one line everywhere. **The least is
+  Pop at 390, 47.4px** (262.6 of 310), not the triage's 77: the triage typed "Repertoire" through
+  `&cj=`, which is not cased, where the seed is. Then Editorial 105.1, Lime 113.8, Retro 117.1 and
+  Grunge 163.5 at 390; no root scrolls sideways.
+- **Emptied** (`&cj={"heading":""}`, every theme and width): the `H2` is empty at 0 height, the sub
+  rides up by the head's line (70.3 desktop under Retro), and the count does not come back.
+- **Reach**: `repertoire.heading` has no `in` (every layout reads it) and still has none; nothing
+  new to probe.
+- **The real app** (a one-off puppeteer script, trusted clicks, deleted after): *Stacked* under
+  Grunge, Lime and Retro, Publish → Open at 1440, 768 and 390: the head reads "Repertoire" in one
+  line, no horizontal scroll, no page errors. The Grunge 1440 and 390 shots read right. **The
+  panel**, on each: at layout 4 *Heading* shows "Repertoire" over a canvas reading the same; at
+  layouts 1 and 2 "12 Songs"; at 3 "Curated sets"; back at 4 "Repertoire". Typed "My Setlist" at
+  layout 4, panel and canvas hold it. Emptied, the box stays empty and no canvas head reads a
+  count or "Repertoire" at layouts 4, 1 or 3.
+- **Docs**: CLAUDE.md's "Layout 3 is the exception" sentence (now layouts 3 and 4, `HEADING_4`
+  and `REP_HEADING_4` named). *Reversed* pointers at `../retro/layout-4.md`'s open question 8,
+  its section-7 Settled ("`s.title` again") and its token-table row.
 
-Reply: —
+Reply: **JP-081 (the repertoire head) — fixed.**
+- In layout 4 the Repertoire section's heading now reads "Repertoire", as in the design, instead
+  of the song count ("12 Songs").
+- It is still the section's *Heading* field, so it can be changed. Emptied, it stays empty; the
+  song count does not come back.
+- Layouts 1 and 2 keep the song count, and layout 3 keeps "Curated sets".
+- Checked on *Stacked* under Grunge, Lime and Retro at 1440, 768 and 390.
 
 ---
 

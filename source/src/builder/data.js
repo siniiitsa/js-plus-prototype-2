@@ -977,7 +977,8 @@ export const FOOTER_CREDIT = 'A JustPay Product'
 export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
 // No `repertoire` entry: its heading counts the songs (see sectionVm), and at
-// layout 3 starts from REP_HEADING_3, so a literal here would never be read.
+// layouts 3 and 4 starts from REP_HEADING_3 / REP_HEADING_4, so a literal here
+// would never be read.
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.',
   pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
@@ -1082,8 +1083,8 @@ export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
 // (964:68712), the map (964:68713) and the testimonials (964:68715). All four
 // templates' masters read the same words, so these are per-layout defaults,
 // not per-theme ones. The other layouts keep the shared TITLES defaults (the
-// repertoire its song count); sectionVm and EditPanel both resolve these at
-// layout 3 alone, the HEADING_4 pattern.
+// repertoire its song count at layouts 1 and 2); sectionVm and EditPanel both
+// resolve these at layout 3 alone, the HEADING_4 pattern.
 export const CAL_HEADING_3 = 'Book Me'
 export const REP_HEADING_3 = 'Curated sets'
 export const GALLERY_HEADING_3 = 'Gallery'
@@ -1100,10 +1101,15 @@ export const TESTI_HEADING_3 = 'Experiences.'
 export const CARD_LINE_3 = 'Performing since 2021'
 // Layout 4's heads, each its composed page's own wrapper head over the section
 // (QA, 2026-09-15): the Book Us panel (964:72839), the gallery's column
-// (964:72784), the map band (964:72827) and the testimonials sheet. The other
-// layouts keep the shared TITLES defaults; sectionVm and EditPanel both resolve
-// these at layout 4 alone, the TESTI_HEADING_2 pattern.
+// (964:72784), the map band (964:72827) and the testimonials sheet — and the
+// repertoire's panel (JP-081, user call, 2026-09-29, reversing Retro layout
+// 4's open question 8): "Repertoire" over "All songs · A–Z" in all three
+// templates' frames (964:72817, 964:72916, 964:73007), which wins over the
+// song count as layout 3's "Curated sets" does. The other layouts keep the
+// shared TITLES defaults; sectionVm and EditPanel both resolve these at layout
+// 4 alone, the TESTI_HEADING_2 pattern.
 export const CAL_HEADING_4 = 'Book Us'
+export const REP_HEADING_4 = 'Repertoire'
 export const GALLERY_HEADING_4 = 'Snaps from the night'
 export const MAP_HEADING_4 = 'Distances we’ll Travel'
 export const TESTI_HEADING_4 = 'Client success stories'
@@ -1533,8 +1539,9 @@ export const FIELDS = {
   repertoire: [
     // No `d`: the heading falls back to the song count, in sectionVm and in
     // the panel alike, so it cannot claim 240 songs over a list of twelve.
-    // Layout 3 starts from its frame's "Curated sets" instead (JP-070), which
-    // counts nothing.
+    // Layouts 3 and 4 start from their frames' "Curated sets" (JP-070) and
+    // "Repertoire" (JP-081) instead, which count nothing. An emptied heading
+    // stays empty at every layout.
     { k: 'heading', l: 'Heading' },
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead.' },

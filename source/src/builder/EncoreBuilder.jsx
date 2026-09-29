@@ -46,7 +46,7 @@ import {
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, MAP_HEADING_3, TESTI_HEADING_3,
-  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -241,17 +241,17 @@ const flatScheme = ({ palette: [bg, ac, tx], sem: { tagFg, ...sem }, tags }) => 
 })
 
 // Layouts 3 and 4's heading fallbacks, per category — each page's own heads
-// (layout 4's QA, 2026-09-15, and the form's, JP-054; layout 3's JP-070,
-// 2026-09-28, which took in the calendar's "Book Me"). sectionVm and EditPanel
-// both read these, and at layout 3 the repertoire's wins over its song count
-// in both.
+// (layout 4's QA, 2026-09-15, the form's, JP-054, and the repertoire's, JP-081;
+// layout 3's JP-070, 2026-09-28, which took in the calendar's "Book Me").
+// sectionVm and EditPanel both read these, and at layouts 3 and 4 the
+// repertoire's wins over its song count in both.
 const HEADING_3 = {
   repertoire: REP_HEADING_3, gallery: GALLERY_HEADING_3, pricing: PRICING_HEADING_3,
   calendar: CAL_HEADING_3, map: MAP_HEADING_3, testimonials: TESTI_HEADING_3,
 }
 const HEADING_4 = {
-  calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
-  form: FORM_HEADING_4,
+  repertoire: REP_HEADING_4, calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4,
+  testimonials: TESTI_HEADING_4, form: FORM_HEADING_4,
 }
 
 // The page's layout, for the one section that cannot say it itself: the footer
@@ -1030,9 +1030,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // it. The stars sit in its card's corner.
   if (cat === 'testimonials' && d === 1 && c.heading === undefined) vm.title = cased(TESTI_HEADING_2)
   // Layouts 3 and 4's heads, each page's own (JP-070; QA, 2026-09-15).
-  // EditPanel mirrors both tables. Layout 3's comes after the song count, so
-  // the repertoire's "Curated sets" wins there; EditPanel's chain, which takes
-  // the first match, puts its arm ahead of the count instead.
+  // EditPanel mirrors both tables. Both come after the song count, so the
+  // repertoire's "Curated sets" and "Repertoire" win there (JP-070, JP-081);
+  // EditPanel's chain, which takes the first match, puts both arms ahead of
+  // the count instead.
   if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
@@ -3860,21 +3861,21 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // and canvas never disagree. The calendar's address is the
                   // form's until one is typed (JP-076). The kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
-                  // layout-3 card's line is a field of its own. Layout 3's
-                  // heads come ahead of the song count, which sectionVm's
-                  // later assignment says the other way round (JP-070).
+                  // layout-3 card's line is a field of its own. Layouts 3 and
+                  // 4's heads come ahead of the song count, which sectionVm's
+                  // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
                     : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
                     : f.k === 'email' && sec.cat === 'calendar' ? email
                     : f.k === 'heading' && sec.cat === 'form' && design === 2 ? formHeading3(artistName)
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 2
                       && HEADING_3[sec.cat] ? HEADING_3[sec.cat]
+                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
+                      && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
-                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
-                      && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'button' && sec.cat === 'form'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? FORM_BTN_4
                     : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4

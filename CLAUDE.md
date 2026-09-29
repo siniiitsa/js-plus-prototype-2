@@ -1208,12 +1208,14 @@ mutated through a single `patch()` helper.
   under a blank row, and the repertoire's song-count heading counts the filtered list in both
   places. The one exception is the form's guarded email row, above. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Layout 3 is the exception: there the frame's "Curated sets" wins over the count
-  (JP-070, user call, 2026-09-28). It comes from **`HEADING_3`**, layout 3's table of heads beside
-  `HEADING_4`, which also carries the gallery's "Gallery", pricing's "Pricing", the map's "Where
-  I'm playing.", the testimonials' "Experiences." and the calendar's "Book Me" (`CAL_HEADING_3`).
-  Both resolvers read it: `sectionVm` assigns it *after* the count, and `EditPanel`'s
-  first-match chain puts its arm *ahead* of the count. An emptied heading stays empty at every
+  both. Layouts 3 and 4 are the exceptions: there the frames' "Curated sets" (JP-070, user call,
+  2026-09-28) and "Repertoire" (JP-081, user call, 2026-09-29) win over the count. They come from
+  **`HEADING_3`** and **`HEADING_4`**, the two layouts' tables of heads. `HEADING_3` also carries
+  the gallery's "Gallery", pricing's "Pricing", the map's "Where I'm playing.", the testimonials'
+  "Experiences." and the calendar's "Book Me" (`CAL_HEADING_3`); `HEADING_4` the calendar's, the
+  gallery's, the map's, the testimonials' and the form's (`REP_HEADING_4` beside them). Both
+  resolvers read both: `sectionVm` assigns them *after* the count, and `EditPanel`'s first-match
+  chain puts both arms *ahead* of the count. An emptied heading stays empty at every
   layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`, `statsVal`, `stepsVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES`, `FOOTER_LINKS`, `MAP_STATS_4` and `FORM_STEPS` are written in the row shape their repeater edits, tags and

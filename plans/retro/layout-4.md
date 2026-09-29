@@ -141,7 +141,7 @@ head belongs to a section rather than to the wrapper:
 | *"Six Worth Your Ears"* | — | `media` | keep the "Five worth your ear." default; the count is the frame's claim |
 | *"See me in action"* | — | `video` | **not** the gallery — see the trap below |
 | *"Snaps from the night"* | MEDIA | `gallery` | `TITLES.gallery` is "See us in action" |
-| *"Repertoire"* | — | `repertoire` | `vm.title` here is `"{n} Songs"`, not a word — open question 8 |
+| *"Repertoire"* | — | `repertoire` | `vm.title` here is `"{n} Songs"`, not a word — open question 8 (reversed by JP-081: `REP_HEADING_4`) |
 | *"Distances we'll Travel"* | — | `map` | `TITLES.map` is "Manchester" |
 | *"Book Us"* | — | `calendar` | the layout-3 "Book Me" precedent; re-read if question 1 goes the other way |
 
@@ -922,7 +922,8 @@ Learned on the repertoire (section 7):
   settled it: the display line is the heading field, the frame's "Repertoire" would leave that
   field editing nothing, and "12 Songs" on the seed is a diff this section already carries. The
   sub is the literal. **Three of four layouts now honour `heading` as the display line**, which
-  is the discriminator the question asked for.
+  is the discriminator the question asked for. *(Its seed is reversed by JP-081, 2026-09-29:
+  "Repertoire", the frame's word, where "12 Songs" stood; the field still edits it.)*
 
 Learned on the events map (section 8):
 
@@ -1473,7 +1474,11 @@ Learned on the end-of-pass sweep (`80c557c` and `9e0f726`):
    `repChips()` in `data.js` rather than in `sectionVm`. The rail itself is honest — the letters
    are the first characters of `c.songs`' titles, the way the set cards were the tags — and the
    frame lights one letter, which is a `s.live` seam of the map's `sel` shape.
-8. ~~**The repertoire's head is a word where `vm.title` is a count.**~~ *Settled on section 7
+8. ~~**The repertoire's head is a word where `vm.title` is a count.**~~ *Reversed by JP-081
+   (repertoire head; user call, 2026-09-29, `../grunge/layout-4-qa-fixes.md`): the display line
+   is still `s.title`, but its seed is the frame's "Repertoire" (`REP_HEADING_4` in `HEADING_4`),
+   which wins over the song count as layout 3's "Curated sets" does (JP-070). `heading` edits
+   it; emptied, it stays empty.* *Settled on section 7
    (`104530e`): the display line is **`s.title`** and the frame's "Repertoire" is not drawn at
    all, which is layout 2's own call on this section — giving the display line to the literal
    would leave `heading` editing nothing here, and three of the four layouts now honour it as

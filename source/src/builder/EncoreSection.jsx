@@ -12208,14 +12208,14 @@ function Repertoire({ s }) {
   // content therefore comes to 1208 / 608 / 310 — the instance's width exactly
   // at all three.
   //
-  // **The head is `s.title`, not the frame's word.** The frame heads the panel
-  // "Repertoire" in the display face over a "All songs · A–Z" sub, where layout
-  // 1 sets that same word as an *eyebrow* over `s.title`. Giving the display
-  // line to the literal would leave `heading` editing nothing here, which is
-  // layout 2's call on this very section (plans/retro/layout-4.md, open
-  // question 8): three signed-off layouts already honour the field, so a fourth
-  // that did not would be the odd one. On the seed it reads "12 Songs", the
-  // intended diff layout 2 already carries. The **sub is the literal**, because
+  // **The head is `s.title`, seeded with the frame's word.** The frame heads
+  // the panel "Repertoire" in the display face over a "All songs · A–Z" sub,
+  // where layout 1 sets that same word as an *eyebrow* over `s.title`. The
+  // display line stays `heading`, so the field edits it, but its seed is the
+  // frame's "Repertoire" (`REP_HEADING_4`, JP-081, user call, 2026-09-29),
+  // which wins over the song count as layout 3's "Curated sets" does —
+  // reversing plans/retro/layout-4.md's open question 8, which read "12 Songs"
+  // here. An emptied heading stays empty. The **sub is the literal**, because
   // it describes the design rather than the artist — and it stays true at every
   // state, which is half the reason the rail jumps rather than filters.
   //
