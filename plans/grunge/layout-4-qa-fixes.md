@@ -108,7 +108,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-081 · JP-082 (replies) | Media head, track names, bio prose, form head; the labels no field reaches | **By design, all of them**: "Six" counts the frame's filler tile; the tracks are layout 1's frame's; the prose's lead names the mock artist; "Contact Us" is JP-054's call; the labels are JP-071's | — (replies) | **yes** — the labels A / B, the form head A / B / C, the media head A / B, the prose and tracks A / B | open |
+| 1 | JP-081 · JP-082 (replies) | Media head, track names, bio prose, form head; the labels no field reaches | **By design, all of them**: "Six" counts the frame's filler tile; the tracks are layout 1's frame's; the prose's lead names the mock artist; "Contact Us" is JP-054's call; the labels are JP-071's | — (replies) | **yes** — the labels A / B, the form head A / B / C, the media head A / B, the prose and tracks A / B | **done** (A, A, A, A; four replies, no fix) |
 | 2 | JP-076 | With the form deleted, both Send Enquiry pills do nothing | **Confirmed, shared.** A known state (JP-053) with no face and no fix path but the form; `BookPill`'s span keeps its pointer. **Proposed: Medium** | S–M | **yes** — 1 A (a calendar address that follows the form's) / B (one address); 2 (a) a panel note / (b) inert pills / (c) a visitor line | open |
 | 3 | JP-082 (controls) | Send Enquiry, the bio's Listen and the form's *Message* label have no field | **Confirmed, shared**: a submit, a link and a box label are not vocabulary. The census named Listen for this batch; *Message* is the one box label left a literal | S | **yes** — each: A (a field) / reply | open |
 | 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | open |
@@ -323,17 +323,82 @@ tile per track.
   −122 Pop; −20 / −37 / −14 / −77 at 768), so it leans on JP-084's B. Per-layout track seeds are not
   offered: a row carries art and audio, which are never re-seeded by index. Not recommended.
 
-**Decided.**
-- JP-082 (labels): —
-- JP-081 (form head): —
-- JP-081 (media head): —
-- JP-081 (bio prose and track names): —
+**Decided: A, A, A, A** (user, 2026-09-29; four questions, each the recommendation). All four are
+replies. None becomes a fix, so no entry is appended.
+- **JP-082 (labels): A, a reply.** JP-071's rule: the design's labels stay literals, and a field
+  per label is a product-wide label sweep and its own plan. This decides **"Travel & reach"** (the
+  map's eyebrow, entry 7) and **"What happens next"** (the form's column head, entry 8) here. Both
+  stay literals whatever those entries decide. Under entry 8's A the list under the head becomes
+  the artist's `steps`, but the head still names what stands beside it. Send Enquiry, the bio's
+  Listen and the form's *Message* label are still entry 3's, and the map's four card names are
+  still entry 7's.
+- **JP-081 (form head): A, a reply.** JP-054's call stands: "Contact Us" on every template, and
+  the *Heading* field edits it. **Grunge layout 4's open question 2 closes on its default**
+  (`./layout-4.md:1613`–`1619`), and the diff goes into the sweep's designer note.
+- **JP-081 (media head): A, a reply.** The frame's "Six" counts its own filler tile. An artist with
+  six tracks edits *Heading*.
+- **JP-081 (bio prose and track names): A, a reply to both.** The prose's lead names the mock
+  artist, and the tracks are layout 1's frame's list. **The comment correction A names**
+  (`EncoreSection.jsx:5469`–`5474`: "the seeded `para1` verbatim", where the masters lead with a
+  clause naming the artist) is code. This session writes none, so it moves to **entry 3's Docs**,
+  which edits the same body's `ListenLink` site.
 
-**Settled.** —
+Asked over the evidence, re-checked on HEAD (`ff5fcd0`). No source has changed since the triage's
+`65dd1bc` (`git diff --stat` touches only `plans/`), so every Evidence line above stands. Spot
+reads: `FORM_HEADING_4` at `data.js:1098` and `formHeading3` at `:1760`; the media head's comment at
+`EncoreSection.jsx:8130`–`8132`; the bio block's prose at `:5263`–`5266`; Retro's body prose and its
+comment at `:5469`–`5477`; `FIELDS.map.span` at `data.js:1599` (*Panel note (layout 4)*).
 
-Reply (JP-082, the labels): —
+**Settled** (2026-09-29, no code).
+- **No entry appended**: every answer is a reply.
+- **Entries 7 and 8 do not ask about their heads.** Each points back here. Entry 7's A does not
+  touch "Travel & reach", and entry 8's A does not touch "What happens next".
+- **Carried to entry 3's Docs:** the `EncoreSection.jsx:5469` comment (above).
+- **Carried to the sweep:** a *closed* pointer on `./layout-4.md`'s open question 2 (step 6). The
+  designer note's three lines for the form head, "Six Worth Your Ears" and the bio prose are
+  already in step 5.
+- **The reply lines**, in the sweep's shape so step 6 can lift them as they stand, are below.
 
-Reply (JP-081, the form head, the media head, the bio prose and the track names): —
+Reply (JP-082, the labels): **JP-082 (labels) — by design.** These are the design's labels, not the
+artist's content, and they name what stands beside them, so they stay as the design draws them
+(the rule we gave for JP-071). That covers every text of the Book Us wizard: the step names,
+*What's the occasion?*, *Step 1 of 3*, *Type of event*, *Approx. date*, the boxes' names (*Guests*,
+*Set length*, *Budget*, *Sound*, *Name*, *Email*), *Back* / *Next Step*, *Package ›*, *Pick a date
+to enquire* and its messages. It also covers the Events Map's *Travel & reach* and the Enquiry
+Form's *What happens next*. What they label is editable:
+- the wizard's event types are the Booking Calendar's *Event types*;
+- its date starts from *Opens on*;
+- its package card lists the Pricing section's packages;
+- the note beside *Travel & reach* is the Events Map's *Panel note (layout 4)*;
+- the list under *What happens next* is the Enquiry Form's (see JP-079).
+
+Making labels editable would be a product-wide change, which we can plan as its own piece of work.
+Three things in the report are not labels and are fixed separately: *Send Enquiry*, the Bio's
+*Listen ↗* and the form's *Message* label (JP-082, controls). The Events Map's four stat card names
+are handled with JP-077.
+
+Reply (JP-081, the form head, the media head, the bio prose and the track names):
+- **JP-081 (form head) — by design.** Layout 4's form opens on *Contact Us* on every template. That
+  was a product call (JP-054), taken from the Retro and Lime desktop designs, which set that
+  heading. Grunge's design shows *KAI MERCER* there because its form was never given a heading of
+  its own: that is the design component's placeholder, the mock artist's name. We keep *Contact Us*
+  and have asked the designer which is meant. To show the artist's name instead, type it into
+  Enquiry Form → *Heading*.
+- **JP-081 (media head) — by design.** "Six Worth Your Ears" counts the design's six tiles, and its
+  sixth tile is a filler, a second copy of *Roomtone*. The page seeds five tracks and draws one tile
+  per track, so its heading says five. An artist with six tracks changes Media Player → *Heading*.
+- **JP-081 (bio prose and track names) — by design.**
+  - The design's bio paragraph opens with "Kai Mercer — the act you'll be working with on the
+    night.", a sentence about the mock artist. The rest is our *Paragraph 1* word for word.
+    *Paragraph 2* is the artist's second paragraph, and emptying it leaves one paragraph as the
+    design draws.
+  - The bio card's other differences are fields too. Its "DJ · Live Act" is the Header's
+    *Kicker*, which has one seed at every layout (JP-061), where this design has "DJ & selector".
+    Its "Performing since June 2021" is the Bio's *Performing since*, seeded from the Layout 3
+    design. Its name is the artist's name, where the design prints its mock name, "Staticyouth".
+  - The track names are the Layout 1 design's own list. Layouts 2–4 add "(Original Mix)" and
+    "(Edit)" to two of them. The tracks are one list for the whole page, so it cannot follow every
+    design at once. Media Player → *Tracks* edits them.
 
 ---
 
@@ -598,6 +663,9 @@ form × themes 0–4 × 3 widths × both surfaces = **0 files**.
 list, where it names "the bio's own Listen". The comments at `EncoreSection.jsx:16868`–`16873`,
 `data.js:1337` (the bio's `cta2` is now a bio field), `EncoreBuilder.jsx:1682`–`1686` and
 `EncoreSection.jsx:24804`–`24807`. The hints of `cta`, `message` and `FIELDS.form.email`.
+**Carried from the replies entry:** Retro's body's bio prose comment at `EncoreSection.jsx:5469`–`5474`
+("The masters set one paragraph — the seeded `para1` verbatim") becomes "`para1` behind a lead clause
+naming the mock artist" (JP-081, a reply).
 
 **Decided.** —
 
@@ -893,7 +961,7 @@ question 6, settled on `0cbf413`), and Lime and Grunge took that whole:
 So **JP-077** is the named diff; **JP-078** is a real gap — each leaf drops when empty but the card
 never does, and card 1's label is a literal, so an emptied `radius` leaves "COVERAGE" over the sub and
 an emptied `base` an empty ringed box; and **JP-082 (map)** is the four card names, all literals. (The
-eyebrow "Travel & reach" is the replies entry's.) **Every template**: the `stats` array sits above
+eyebrow "Travel & reach" is the replies entry's: it stays a literal, decided there.) **Every template**: the `stats` array sits above
 the seam and both halves render it — Lime and Grunge in the block, Retro in the body with its own
 seats, Editorial and Pop in the body's flat seats.
 
@@ -1030,7 +1098,8 @@ Reply: —
   ("Replies within 24 hrs / Free, no-obligation quote / Covers 120 mi from Manchester") under a head
   that asks a different question.
 - **Every template.** The list resolves in `sectionVm` and both halves draw it. JP-081's "step texts"
-  are this entry's seed. The column's head, "What happens next", is the replies entry's.
+  are this entry's seed. The column's head, "What happens next", is the replies entry's: it stays a literal under A, B
+  or C, decided there.
 
 **Evidence** (triage 2026-09-29, `65dd1bc`).
 - `data.js:852`: `FORM_PROMISES`. `:1659`–`1661`: `FIELDS.form.promises`, `in: [0, 1, 3]`, hint "One
@@ -1280,7 +1349,9 @@ Reply: —
    `Tue, 29 Sep 2026 08:18:02 GMT` (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`).
    Also the two seed and doc slips the triage found outside any ticket: `MAP_RADIUS`' "12 mile radius"
    against the 120mi terms and rings (a question for the user), and CLAUDE.md's ticker "not drawn at
-   one gig" (JP-080's Docs, if not already done).
+   one gig" (JP-080's Docs, if not already done). And a *closed* pointer on `./layout-4.md`'s open
+   question 2 (`:1613`–`1619`): "Closed on its default by JP-081's reply (user, 2026-09-29):
+   'Contact Us' stays on every template."
 
 **Settled.** —
 
