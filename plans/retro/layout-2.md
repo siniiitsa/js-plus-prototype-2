@@ -283,7 +283,9 @@ Learned on the bio (section 2):
   the text card, the caption card) and `#FBF6EA` (the portrait card's mount, and cream type).
 - *(Reversed by JP-037, user call 2026-09-21 — `../lime/layout-2-qa-fixes.md`: the Tags instance
   carries its sixth chip as a `hidden` frame, so the rows now print the header's **Tags** field,
-  seeded with five. `vm.chips` keeps six colour seats; the labels are `vm.tagChips`.)*
+  seeded with five. `vm.chips` keeps six colour seats; the labels are `vm.tagChips`. The seed's
+  count was reopened by JP-081 (tags), user call 2026-09-29 — `../grunge/layout-4-qa-fixes.md`:
+  six again, as most frames draw.)*
   **A frame that drops in the Tags component shows five chips; render all of `s.chips`.** The five
   are that component's *default*, not a statement that the row holds five — our `TAGS` has six, so
   the row wraps one line further than the frame does. Do not slice.

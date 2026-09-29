@@ -41,12 +41,12 @@ import {
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
-  FORM_PROMISES, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE,
+  FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, MAP_HEADING_3, TESTI_HEADING_3,
-  CAL_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -241,17 +241,17 @@ const flatScheme = ({ palette: [bg, ac, tx], sem: { tagFg, ...sem }, tags }) => 
 })
 
 // Layouts 3 and 4's heading fallbacks, per category — each page's own heads
-// (layout 4's QA, 2026-09-15, and the form's, JP-054; layout 3's JP-070,
-// 2026-09-28, which took in the calendar's "Book Me"). sectionVm and EditPanel
-// both read these, and at layout 3 the repertoire's wins over its song count
-// in both.
+// (layout 4's QA, 2026-09-15, the form's, JP-054, and the repertoire's, JP-081;
+// layout 3's JP-070, 2026-09-28, which took in the calendar's "Book Me").
+// sectionVm and EditPanel both read these, and at layouts 3 and 4 the
+// repertoire's wins over its song count in both.
 const HEADING_3 = {
   repertoire: REP_HEADING_3, gallery: GALLERY_HEADING_3, pricing: PRICING_HEADING_3,
   calendar: CAL_HEADING_3, map: MAP_HEADING_3, testimonials: TESTI_HEADING_3,
 }
 const HEADING_4 = {
-  calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4, testimonials: TESTI_HEADING_4,
-  form: FORM_HEADING_4,
+  repertoire: REP_HEADING_4, calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4,
+  testimonials: TESTI_HEADING_4, form: FORM_HEADING_4,
 }
 
 // The page's layout, for the one section that cannot say it itself: the footer
@@ -1030,9 +1030,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // it. The stars sit in its card's corner.
   if (cat === 'testimonials' && d === 1 && c.heading === undefined) vm.title = cased(TESTI_HEADING_2)
   // Layouts 3 and 4's heads, each page's own (JP-070; QA, 2026-09-15).
-  // EditPanel mirrors both tables. Layout 3's comes after the song count, so
-  // the repertoire's "Curated sets" wins there; EditPanel's chain, which takes
-  // the first match, puts its arm ahead of the count instead.
+  // EditPanel mirrors both tables. Both come after the song count, so the
+  // repertoire's "Curated sets" and "Repertoire" win there (JP-070, JP-081);
+  // EditPanel's chain, which takes the first match, puts both arms ahead of
+  // the count instead.
   if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
@@ -1115,22 +1116,39 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // a grouping: one group per distinct first letter of a title, the songs sorted
   // inside it and the groups in the order those sorted songs first appear — so
   // the section looks a list up rather than sorting one, the calendar's
-  // one-composed-line-per-cell rule. The letter is upper-cased because the rail
-  // it lights is; a title starting with a digit or a symbol takes `#`, which
-  // heads its own group in the list and lights nothing, the frames' rail being a
-  // fixed A–Z that no content can extend. An accent is decomposed first so that
-  // "Édith Piaf" files under E rather than heading a group of its own beside it
-  // — the sort already folds the two at `sensitivity: 'base'`, and the grouping
-  // has to agree with the sort or the list reads as two Es.
+  // one-composed-line-per-cell rule. The letter is the title's first letter or
+  // digit, upper-cased because the rail it lights is. Leading punctuation is
+  // skipped, so "'Til Tuesday" files under T, and a digit, a letter outside
+  // A–Z (a Cyrillic title) or an empty title takes `#` (JP-083, user call,
+  // 2026-09-29; plans/retro/layout-4.md's rule, which the fit wrote down and
+  // never coded). An accent is decomposed first so that "Édith Piaf" files
+  // under E rather than heading a group of its own beside it — the sort
+  // already folds the two at `sensitivity: 'base'`, and the grouping has to
+  // agree with the sort or the list reads as two Es; `ignorePunctuation` is
+  // the same argument for the skipped punctuation. The groups then take the
+  // rail's own order, `#` first and A–Z after it, rather than the order the
+  // sorted songs first reach them: a Cyrillic title collates after Z, and a
+  // leading symbol (`$`, `★`) is not punctuation to the collator, so "$ale"
+  // sorts ahead of "Apple" while it files under S. Inside a group the songs
+  // keep the sort's order.
+  //
+  // The rail is the frames' fixed A–Z with a `#` cell ahead of A, drawn only
+  // while a `#` group exists, so the seeded page keeps the frames' twenty-six
+  // and the first group always has a cell to light. Built here so both rails
+  // map one list and EncoreSection composes nothing.
   const byLetter = new Map()
   ;[...vm.songs]
-    .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }))
+    .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base', ignorePunctuation: true }))
     .forEach((sg) => {
-      const l = (sg.title.normalize('NFD').charAt(0) || '#').toUpperCase()
+      const ch = (sg.title.normalize('NFD').match(/[\p{L}\p{N}]/u) || [''])[0].toUpperCase()
+      const l = /^[A-Z]$/.test(ch) ? ch : '#'
       if (!byLetter.has(l)) byLetter.set(l, [])
       byLetter.get(l).push(sg)
     })
-  vm.repGroups = [...byLetter].map(([letter, songs]) => ({ letter, songs }))
+  vm.repGroups = [...byLetter]
+    .map(([letter, songs]) => ({ letter, songs }))
+    .sort((a, b) => (a.letter === '#' ? -1 : b.letter === '#' ? 1 : a.letter.localeCompare(b.letter)))
+  vm.repRail = [...(byLetter.has('#') ? ['#'] : []), ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
   // The rounded panel layout 4 stands its list on — the olive band lifted a
   // register, which is exactly `mapBg`'s own relationship to `deep` and lands
   // within a point of Retro's own #6D7040-on-#5B5E2E (contrast 1.31 against
@@ -1234,8 +1252,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // passed cues nothing either, and the foot prints the prompt.
     vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
-    // Layout 1's pill. Layout 4's foot is the wizard's own Send Enquiry since
-    // JP-052, so this reaches one layout.
+    // Layout 1's pill. The same field is layout 4's Send Enquiry (JP-082),
+    // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
@@ -1285,7 +1303,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       })),
       typesLabel: cased('Type of event'),
       date: { key: 'date', label: cased('Approx. date'), ph: 'dd / mm / yyyy' },
-      back: cased('Back'), next: cased('Next Step'), send: cased('Send Enquiry'),
+      back: cased('Back'), next: cased('Next Step'),
+      // The submit is `cta` (JP-082), FORM_BTN_4's shape: the absent key seeds
+      // the layout's own label, and a label typed at layout 1 follows the
+      // artist here. Emptied, it is the seed again, since the wizard has no
+      // other way to send (`cv` does not trim).
+      send: cased(String(cv('cta', CAL_SEND_4)).trim() || CAL_SEND_4),
       // The package card's control, the frame's "Package ›" — the chevron is
       // the frame's glyph, not a composed separator.
       pkg: `${cased('Package')} ›`,
@@ -1309,12 +1332,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       name: cased(String(t?.name ?? '').trim()), price: String(t?.price ?? '').trim(),
     }))
     // JP-053 — Send Enquiry mails the wizard's answers, as the enquiry form's
-    // submit does, to the form's own address: read across sections through
-    // sectionVm's `email` argument (pageEmail(), `tiers`' precedent), '' with
-    // no form section or an address emailAddr() refuses, which leaves both
-    // Send pills spans — the form's no-address state. The confirmation that
-    // replaces the wizard card prints it in plain text, the form's rule.
-    vm.calEmail = email
+    // submit does. JP-076 — to the calendar's own `email` once the artist has
+    // typed one, and until then to the form's, read across sections through
+    // sectionVm's `email` argument (pageEmail(), `tiers`' precedent): a
+    // follow-the-form chain, copyrightOf()'s shape, so a page with no form can
+    // still send and a page that never types one keeps one address. '' with
+    // neither, or an address emailAddr() refuses, which leaves both Send pills
+    // spans — the form's no-address state. The mailto and the confirmation
+    // that replaces the wizard card (plain text, the form's rule) both read
+    // this one resolved address, so the two cannot name different ones.
+    const sendTo = emailAddr(cv('email', email))
+    vm.calEmail = sendTo
     Object.assign(vm.calWizard, {
       sentTitle: cased('Check your mail app'),
       sentBody: 'Your enquiry should be open in it, ready to send. If nothing happened, write to:',
@@ -1335,7 +1363,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       const t = tiers.length ? tiers[((pi % tiers.length) + tiers.length) % tiers.length] : null
       return t ? [t.name, t.price].map((x) => String(x ?? '').trim()).filter(Boolean).join(' · ') : ''
     }
-    vm.calMailto = ({ ti, vals, pi }) => enquiryMailto(email, {
+    vm.calMailto = ({ ti, vals, pi }) => enquiryMailto(sendTo, {
       type: vm.calTypes[ti] ?? '',
       fields: [
         { label: 'Approx. date', value: (vals || {}).date },
@@ -1471,15 +1499,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       when: [`${g?.month ?? ''} ${g?.day ?? ''}`.trim(), String(g?.time ?? '').trim()]
         .filter(Boolean).join(' · '),
       pin: PINS[i % PINS.length],
-      // Layout 4's ticker prints the gig on one line — "Manchester · Jul 12 ·
+      // Layout 4's ticker prints the gig on one line — "Manchester · JUL 12 ·
       // 22:00", the frame's own second line — and every one of those three is
       // emptiable, so it is composed here rather than joined in the section:
       // the testimonials' `byline` rule, or an artist who leaves the time off
       // (which `LIST.map` does every fourth row) would publish a trailing
-      // separator. The month and day stay as they were typed, like the venue
-      // and the city above them; the frame's own "JUL 12" is its styling.
+      // separator. The month is upper-cased here (JP-080): the frame types
+      // "JUL", and every other map layout upper-cases it in CSS, which one
+      // composed string cannot take for its month alone. The city and day stay
+      // as they were typed.
       meta: [String(g?.city ?? '').trim(),
-             `${g?.month ?? ''} ${g?.day ?? ''}`.trim(),
+             `${String(g?.month ?? '').trim().toUpperCase()} ${g?.day ?? ''}`.trim(),
              String(g?.time ?? '').trim()].filter(Boolean).join(' · '),
       // What layout 3's chip row matches a row against. Case-folded here rather
       // than in EncoreSection, and beside the label it was folded from, so a
@@ -1514,15 +1544,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     ? [{ label: cased(REP_ALL), city: null, n: vm.gigs.length },
        ...[...gigCities.values()].map((ch) => ({ ...ch, label: cased(ch.label) }))]
     : []
-  // Layout 4's CITIES stat: the same distinct cities the chip row above is
-  // built from, counted rather than listed, and read straight off the map that
-  // already deduped them case-insensitively. It is here and not in the section
-  // because a Set is maths — `s.gigs.length` beside it is not, which is why
-  // only one of the dashboard's two derived numerals needed a key. Unlike
-  // `gigChips` it is *not* suppressed below two cities: a stat that reads "1 /
-  // CITIES" is a fact, where a filter row of All plus one chip is a
-  // distinction that distinguishes nothing.
-  vm.gigCityCount = gigCities.size
+  // Layout 4's stat wall (JP-077 · JP-078 · JP-082, user call, 2026-09-29): the
+  // artist's cards, the songs rule — an absent key means the frame's four
+  // (MAP_STATS_4), an emptied array means none, and no null sentinel. A row
+  // with nothing in it is dropped before anything indexes it (`blankRow()`,
+  // every key, JP-051's rule), so a blank row neither draws an empty card nor
+  // takes a seat's hue. Each part is trimmed and left as typed: the card's CSS
+  // upper-cases the label, and the frame's value and sub are its own casing.
+  vm.mapStats = (Array.isArray(c.stats) ? c.stats : MAP_STATS_4)
+    .filter((r) => !blankRow(r, STAT_KEYS))
+    .map((r) => ({
+      label: String(r?.label ?? '').trim(),
+      value: String(r?.value ?? '').trim(),
+      sub: String(r?.sub ?? '').trim(),
+    }))
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
@@ -1625,16 +1660,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Layout 3's eyebrow, the frame's own copy, seeded and emptiable (QA, 2026-09-15).
   vm.formAvailable = cv('available', FORM_AVAILABLE)
   vm.formPromises = tierFeats(cv('promises', FORM_PROMISES.join('\n')))
-  // The same promises again, numbered, which is §10.2 layout 4's right-hand
-  // column: its frame draws 01 / 02 / 03 discs beside three lines whose second
-  // row reads "Reply within 24 hrs" — FORM_PROMISES[0] almost verbatim, so the
-  // column is already in the promises' own register. The numeral is composed
-  // here for `vm.tracks[].n`'s reason: the renderer prints strings and pads
-  // nothing. The frame's second line per row has no seat — a promise is one
-  // string, and a gloss for it would be a claim the artist never typed.
-  vm.formSteps = vm.formPromises.map((p, i) => ({
-    n: String(i + 1).padStart(2, '0'), label: p,
-  }))
+  // §10.2 layout 4's right-hand column: 01 / 02 / 03 squares beside the
+  // artist's steps, each a title over a second line, as all nine frames draw
+  // them (JP-079 · JP-081, user call, 2026-09-29, reversing JP-054's "the
+  // steps stay one line"; the column numbered the promises until then). The
+  // songs rule: an absent key means the frames' three (FORM_STEPS), an emptied
+  // array means none, and no null sentinel. A blank row is dropped before the
+  // numbering (`blankRow()`, every key, JP-051's rule), so the numerals run on
+  // with no gap; each line is trimmed, uncased, and dropped alone when empty.
+  // The numeral is composed here for `vm.tracks[].n`'s reason: the renderer
+  // prints strings and pads nothing.
+  vm.formSteps = (Array.isArray(c.steps) ? c.steps : FORM_STEPS)
+    .filter((r) => !blankRow(r, STEP_KEYS))
+    .map((r, i) => ({
+      n: String(i + 1).padStart(2, '0'),
+      title: String(r?.title ?? '').trim(),
+      sub: String(r?.sub ?? '').trim(),
+    }))
   // That column's own head. A literal the view-model owns, `formTypeLabel`'s
   // rule, upper-cased by the renderer's display face rather than here.
   vm.formStepsLabel = 'What happens next'
@@ -1680,12 +1722,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formTypes = songTags(cv('types', FORM_TYPES.join(', '))).map((l) => cased(l))
   vm.formMessage = cv('message', FORM_MESSAGE)
   // The two labels the frame prints over its controls, and the four lines the
-  // live form needs. Literals the view-model owns, vm.calPrompt's rule, so the
-  // section looks them up rather than writing copy of its own. The two control
-  // labels stay raw — the render uppercases them in CSS, and the mailto body
-  // wants them as written.
+  // live form needs. The chip row's label and the four lines are literals the
+  // view-model owns, vm.calPrompt's rule, so the section looks them up rather
+  // than writing copy of its own; the message box's is the artist's
+  // `messageLabel` (JP-082), which reads FORM_MSG_LABEL again when emptied,
+  // since the box always stands (FORM_EMAIL_LABEL's rule; `cv` does not trim).
+  // The two control labels stay raw — the render uppercases them in CSS, and
+  // the mailto body wants them as written.
   vm.formTypeLabel = 'Event type'
-  vm.formMsgLabel = 'Message'
+  vm.formMsgLabel = String(cv('messageLabel', FORM_MSG_LABEL)).trim() || FORM_MSG_LABEL
   vm.formPrompt = 'Add the missing details and try again.'
   vm.formSentTitle = cased('Check your mail app')
   vm.formSentBody = 'Your enquiry should be open in it, ready to send. If nothing happened, write to:'
@@ -2780,7 +2825,8 @@ function GigsField({ value, max, design, onChange }) {
 /* ------------------------------------------------------------------ *
  * SlotsField — the booking calendar's named slots (JP-052).
  *
- * The eighth repeater, and the last list-shaped content to get one: layout
+ * The eighth repeater (StatsField and StepsField below are the ninth and the
+ * tenth): layout
  * 2 tables these rows, and until JP-052 they were a seed no field edited,
  * dated 2025 and so dead on every published page. Row shape is
  * { date, kind, price }, CAL_SLOTS' own comment: a date, what the artist
@@ -2864,6 +2910,185 @@ function SlotsField({ value, max, onChange }) {
         >
           <Plus size={13} style={{ color: '#B9B6AA' }} />
           <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add slot</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>{list.length} of {max}</p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * StatsField — the events map's layout-4 stat wall (JP-077).
+ *
+ * The ninth repeater (StepsField below is the tenth), and the tenth
+ * structured editor counting BookedField. Row shape is { label, value, sub }: the card's small-caps
+ * name, its numeral, and the line under it. Until JP-077 the wall was two
+ * derivations and two flat keys under four literal names, so an emptied
+ * key left an empty card and no field named a card.
+ *
+ * SlotsField's house rules: whole-array rewrite per keystroke, numbered
+ * rows, a round X, a dashed add, an "n of max" footnote, no reordering —
+ * order is entry order, and it is the order the wall fills, two to a row.
+ * The placeholders are the frame's first card.
+ * ------------------------------------------------------------------- */
+
+const BLANK_STAT_HINT = 'Empty stats aren’t shown.'
+
+function StatsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { label: '', value: '', sub: '' }])
+
+  const row = (i, r) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          value={r.label ?? ''} placeholder="Radius" onClick={stopE}
+          onChange={(e) => setAt(i, 'label', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove stat ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <Input
+            value={r.value ?? ''} placeholder="120" onClick={stopE}
+            onChange={(e) => setAt(i, 'value', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+          <Input
+            value={r.sub ?? ''} placeholder="miles · standard" onClick={stopE}
+            onChange={(e) => setAt(i, 'sub', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+        </div>
+        {blankRow(r, STAT_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_STAT_HINT}</p>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((r, i) => row(i, r || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add stat</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>{list.length} of {max}</p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * StepsField — the enquiry form's layout-4 steps (JP-079 · JP-081).
+ *
+ * The tenth repeater, and the eleventh structured editor counting
+ * BookedField. Row shape is { title, sub }: the step's line and the line
+ * under it, as all nine layout-4 frames draw them. Until JP-079 the column
+ * numbered the promises, one string a row, so the frames' second line had
+ * no field and the seed printed promises under "What happens next".
+ *
+ * StatsField's house rules: whole-array rewrite per keystroke, numbered
+ * rows, a round X, a dashed add, an "n of max" footnote, no reordering —
+ * order is entry order, and it is the order the column numbers them. The
+ * placeholders are the frames' first step.
+ * ------------------------------------------------------------------- */
+
+const BLANK_STEP_HINT = 'Empty steps aren’t shown.'
+
+function StepsField({ value, max, onChange }) {
+  const list = Array.isArray(value) ? value : []
+
+  const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
+  const add = () => onChange([...list, { title: '', sub: '' }])
+
+  const row = (i, r) => (
+    <div key={i} style={{
+      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <span style={{
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          color: '#98958A', textAlign: 'center',
+        }}>{i + 1}</span>
+        <Input
+          value={r.title ?? ''} placeholder="Send your details" onClick={stopE}
+          onChange={(e) => setAt(i, 'title', e.target.value)}
+          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+        />
+        <button
+          type="button" aria-label={`Remove step ${i + 1}`}
+          onClick={(e) => { stopE(e); removeAt(i) }}
+          className="hover:bg-destructive/10"
+          style={{
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+            justifyContent: 'center', padding: 0,
+          }}
+        ><X size={11} /></button>
+      </div>
+      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <Input
+          value={r.sub ?? ''} placeholder="Date, type & location" onClick={stopE}
+          onChange={(e) => setAt(i, 'sub', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+        {blankRow(r, STEP_KEYS) && (
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_STEP_HINT}</p>
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {list.map((r, i) => row(i, r || {}))}
+      {list.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); add() }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>Add step</span>
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>{list.length} of {max}</p>
@@ -3419,6 +3644,14 @@ function QuotesField({ value, max, onChange }) {
 const LINK_GONE_HINT = 'Section not on the page — left off the published footer.'
 const navGoneHint = (labels) =>
   `${labels.join(', ')}: section not on the page — left off the published nav.`
+// JP-076 — above the calendar's Email address at layout 4, while Send Enquiry
+// has no address to mail: the box still follows a form that is gone or holds
+// none, or the artist emptied it. A typed address that isn't valid is left to
+// UrlInput's own line.
+const calNoMailHint = (following, hasForm) => `Send Enquiry needs an email address. ${
+  !following ? 'Type one here.'
+    : hasForm ? 'The Enquiry Form’s is empty or not valid — fix it there, or type one here.'
+    : 'There’s no Enquiry Form on the page — type one here.'}`
 
 const BLANK_LINK_HINT = 'Empty links aren’t shown.'
 
@@ -3583,6 +3816,12 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // is exactly what sectionVm resolves off the clock, so the first edit writes
   // out the dates the canvas shows.
   const slotsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : slotSeed(openVal('open')))
+  // And the events map's layout-4 stat wall (JP-077): MAP_STATS_4 is written as
+  // the { label, value, sub } row StatsField edits, the gigs' one-liner again.
+  const statsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : MAP_STATS_4)
+  // And the enquiry form's layout-4 steps (JP-079): FORM_STEPS is written as
+  // the { title, sub } row StepsField edits, the stats' one-liner again.
+  const stepsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FORM_STEPS)
 
   // Minimal's labels that resolve to nothing on this page (§4.3a), for the hint
   // above the header's navigation select. Only a header reads it.
@@ -3619,24 +3858,27 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // small print and the form's layout-3 head are composed from
                   // it, the repertoire's heading counts the songs, and a few seeds follow
                   // the layout. Each mirrors what sectionVm resolves, so panel
-                  // and canvas never disagree. The kicker left the chain with
+                  // and canvas never disagree. The calendar's address is the
+                  // form's until one is typed (JP-076). The kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
-                  // layout-3 card's line is a field of its own. Layout 3's
-                  // heads come ahead of the song count, which sectionVm's
-                  // later assignment says the other way round (JP-070).
+                  // layout-3 card's line is a field of its own. Layouts 3 and
+                  // 4's heads come ahead of the song count, which sectionVm's
+                  // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
                     : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
+                    : f.k === 'email' && sec.cat === 'calendar' ? email
                     : f.k === 'heading' && sec.cat === 'form' && design === 2 ? formHeading3(artistName)
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 2
                       && HEADING_3[sec.cat] ? HEADING_3[sec.cat]
+                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
+                      && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
-                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
-                      && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'button' && sec.cat === 'form'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? FORM_BTN_4
+                    : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3
                     : f.k === 'rowCta' && sec.cat === 'pricing'
@@ -3649,6 +3891,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // "template" where no layout of this one reads it.
                   const unread = !fieldReach(f, themeName, design)
                   const nowhere = unread && fieldNowhere(f, themeName)
+                  const noMail = f.k === 'email' && sec.cat === 'calendar' && !unread
+                    && !emailAddr(val) && !(String(val).trim() && emailProblem(val))
                   return (
                     <div key={f.k}>
                       <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
@@ -3660,6 +3904,11 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       )}
                       {deadNav.length > 0 && f.k === 'navMode' && val === 'minimal' && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{navGoneHint(deadNav)}</p>
+                      )}
+                      {noMail && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+                          {calNoMailHint(sec.c.email === undefined, navSections.some((n) => n.cat === 'form'))}
+                        </p>
                       )}
                       {f.type === 'image' ? (
                         <ImageField value={imgVal(f.k)} onChange={(v) => set(v)} onToast={api.toast} />
@@ -3681,6 +3930,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         <LinksField value={linksVal(f.k)} max={f.max} navSections={navSections} onChange={(v) => set(v)} />
                       ) : f.type === 'slots' ? (
                         <SlotsField value={slotsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'stats' ? (
+                        <StatsField value={statsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'steps' ? (
+                        <StepsField value={stepsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // The one rung that takes a second value, the way
                         // TracksField is the one that takes a toast: the month

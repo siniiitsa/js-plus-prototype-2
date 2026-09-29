@@ -809,7 +809,8 @@ them.
 - **Named diffs**:
   - Anton is narrower than Stones Crush, so the links and the pill run a few px short.
   - Ours has a ninth link, Availability.
-  - Five chips where the frame draws six (`TAG_LABELS`).
+  - Five chips where the frame draws six (`TAG_LABELS`). *Closed by JP-081 (tags), user call,
+    2026-09-29: the seed is six.*
   - The frame letters its second and third red chips white (`scheme/4/tag1/text`,
     `sem/tag/6/text`), a component override the seats do not model, where ours letter all three
     `#0D1F03`. This is layout 3's header reading again.
@@ -883,6 +884,8 @@ them.
 - **Named diffs, all Lime's**:
   - No Genres label; five chips on one row, so the 768 and 390 heads are shorter and the card
     stands higher. The red chips are lettered `#0D1F03`, where the frame letters them white.
+    *The chip count closed by JP-081 (tags), 2026-09-29: six, on the frame's two rows at all
+    three widths, so the 768 and 390 heads are the frame's height less the Genres label.*
   - The seeded two paragraphs make the panel content-tall: 282.8 / 305.5 / 383.
   - The 390 photo stage is 400 tall (Lime's user call), so the sheet is 942 against the frame's
     778.
@@ -1121,7 +1124,8 @@ them.
   The card and every panel text are `s.box1` / `s.tx` on both templates and needed no key.
 - **The lit pin's ring is white**, `G.vpInk`, following the marker's ring as layout 3's Grunge
   session did; under Lime it stays `s.bg`. The idle dots stay `s.tx` at full strength where the
-  frame's are white at 60% (Lime's redraw, inherited, named). The 1440 `Vector 2` (Scheme 5,
+  frame's are white at 60% (Lime's redraw, inherited, named). *Closed by JP-080
+  (`./layout-4-qa-fixes.md`): Grunge's idle dots take the frame's .6 (`G.dotOp`), Lime's stay 1.* The 1440 `Vector 2` (Scheme 5,
   1437.8 × 44.24) is Lime's no-op leftover and is not drawn.
 - **Measured** (content edges): desktop h2 95.2 tall at 80.25px, card 1088.2 × 455.2 at 221.1
   (555 × 0.82 = 455.1) at radius 12.3, ticker 51.7 (64 × 0.82 = 52.5); 768 h2 72.1 at 60.75px,
@@ -1129,7 +1133,9 @@ them.
   ticker 62.3 (63). `scrollWidth` holds.
 - **Named diffs, all Lime's**: the seeded stats (COVERAGE "12 mile radius", CITIES 2, GIGS 5,
   "Based in Manchester" with no label) against the frame's RADIUS 120 / 21 / GIGS YTD 48 / BASE,
-  so the 390 cells hug to 567.6 against the frame's 581; the viewport follows our 1052 column, so
+  so the 390 cells hug to 567.6 against the frame's 581 (*closed by JP-077 · JP-078 · JP-082
+  (map), [`./layout-4-qa-fixes.md`](./layout-4-qa-fixes.md): the wall is the artist's `stats`,
+  seeded with the frame's four, and the 390 card is 579.4*); the viewport follows our 1052 column, so
   the rings cover less of it; the ticker drops "Next:" and takes `›` in the `×`'s seat; the
   canvas lights gig 0's pin; Anton at 0.75 against Stones Crush. The head is `s.title`'s
   "Distances we'll Travel" fallback, as the frame writes it; the 390 root's 44 top padding
@@ -1354,7 +1360,8 @@ them.
   The sections come to 607.5 / 934.1 / 877.9 against the frames' 651.9 / 1024 / 964.
 - **Named diffs, Lime's**:
   - the seed's four boxes (Name / Email / Event date / Guests) against the frame's five;
-  - one-line steps against two;
+  - one-line steps against two *(reversed 2026-09-29, JP-079: the steps are the frames' three,
+    two lines each — `./layout-4-qa-fixes.md`)*;
   - the foot is `padY`, against the instance's 56 / 56 / 40;
   - Anton at 0.75 against Stones Crush;
   - **the head prints JP-054's "Contact Us" where every Grunge master prints "KAI MERCER"**.
@@ -1615,7 +1622,9 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
    JP-054 (user call, 2026-09-23) seeded as `FORM_HEADING_4` for every theme. Default: keep the
    shared seed, name the diff, and tell the designer the instances were not overridden. The
    alternative — `vm.brand` as the Grunge layout-4 head — would be the first theme-gated copy
-   default, and is the user's call, not a session's.
+   default, and is the user's call, not a session's. **Closed** on its default by JP-081's reply
+   (user, 2026-09-29): "Contact Us" stays on every template, and the designer is asked
+   (`./layout-4-qa-fixes.md`, *Notes for the designer*, note 1).
 3. **Who owns the tear between the bio and the media band at 390.** The 1440 and 768 masters give
    it to the media (a red head); the 390 master gives it to the bio (a `#1A1A1A` foot) and draws
    none on the media. Default: follow each master and colour the 390 foot in the band's

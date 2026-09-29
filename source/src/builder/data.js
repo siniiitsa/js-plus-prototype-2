@@ -661,11 +661,13 @@ export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 // the header, media, map and pricing. Its length and order must not change.
 // The words the chip rows print are the artist's (JP-037): FIELDS.header.tags,
 // seeded with TAG_LABELS and zipped onto these seats by index, wrapping
-// (`vm.tagChips`). Five, not six: the Tags component draws five and carries
-// its sixth chip as a hidden frame (read off the Lime layout-2 bio's
-// instance; user call, 2026-09-21).
+// (`vm.tagChips`). Six, as the frames draw them: the header at layouts 1, 3
+// and 4 and the Genres rows of Lime's and Grunge's layout-3 and layout-4 bios
+// and Editorial's layout-3 one (JP-081, user call, 2026-09-29, reopening
+// JP-037's five, which had been read off the Lime layout-2 bio). Retro's
+// layout-4 header and Lime's layout-2 bio draw five, and seed the sixth anyway.
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
-export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live'
+export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live, All Access'
 
 // JP-037 — layout 2's copy that was a literal in EncoreSection: the hero's
 // pill, and the bio card's credit line and the pill beside it. Each is the
@@ -850,6 +852,19 @@ export const GALLERY_SOURCES = [
 // the *seeds* of FIELDS.form's promises, fields, types and message now, and
 // nothing renders them directly.
 export const FORM_PROMISES = ['Replies within 24 hrs', 'Free, no-obligation quote', 'Covers 120 mi from Manchester']
+// Enquiry form layout 4's *What happens next* column, the frames' three steps
+// verbatim (JP-079 · JP-081, user call, 2026-09-29): all nine masters (Retro
+// 964:72845 / 964:79477 / 977:8663, Lime's and Grunge's twins) draw the same
+// title over the same second line. They are process steps, not promises, which
+// is why the column stopped numbering FORM_PROMISES. Written in the
+// { title, sub } shape StepsField edits, so they need no dressing.
+export const FORM_STEPS = [
+  { title: 'Send your details',    sub: 'Date, type & location' },
+  { title: 'I check availability', sub: 'Reply within 24 hrs' },
+  { title: 'Quote & confirm',      sub: 'Tailored package + price' },
+]
+// What `blankRow()` asks of a StepsField row (the JP-051 sweep's rule).
+export const STEP_KEYS = ['title', 'sub']
 // Written in the row shape FormFieldsField edits and sectionVm reads — the
 // GIGS/TIERS rule, so the panel's seed resolver needs no dressing.
 export const FORM_FIELDS = [
@@ -906,6 +921,11 @@ export const FORM_KINDS = [
 ]
 export const FORM_TYPES = ['Wedding', 'Event', 'Pub', 'Party', 'Other']
 export const FORM_MESSAGE = 'Tell me about your event…'
+// The label over the message box, and the head over the visitor's message in
+// the email (JP-082, user call, 2026-09-29). Every frame's reads "MESSAGE",
+// upper-cased by the render. The box always stands, so an emptied field reads
+// this again rather than dropping: the guarded email row's rule, JP-051.
+export const FORM_MSG_LABEL = 'Message'
 
 // Footer — the sitemap either side of the rule, and the small print under it.
 //
@@ -959,7 +979,8 @@ export const FOOTER_CREDIT = 'A JustPay Product'
 export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 
 // No `repertoire` entry: its heading counts the songs (see sectionVm), and at
-// layout 3 starts from REP_HEADING_3, so a literal here would never be read.
+// layouts 3 and 4 starts from REP_HEADING_3 / REP_HEADING_4, so a literal here
+// would never be read.
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.',
   pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
@@ -1064,8 +1085,8 @@ export const TESTI_HEADING_2 = 'Honest feedback\nfrom people who booked'
 // (964:68712), the map (964:68713) and the testimonials (964:68715). All four
 // templates' masters read the same words, so these are per-layout defaults,
 // not per-theme ones. The other layouts keep the shared TITLES defaults (the
-// repertoire its song count); sectionVm and EditPanel both resolve these at
-// layout 3 alone, the HEADING_4 pattern.
+// repertoire its song count at layouts 1 and 2); sectionVm and EditPanel both
+// resolve these at layout 3 alone, the HEADING_4 pattern.
 export const CAL_HEADING_3 = 'Book Me'
 export const REP_HEADING_3 = 'Curated sets'
 export const GALLERY_HEADING_3 = 'Gallery'
@@ -1082,10 +1103,15 @@ export const TESTI_HEADING_3 = 'Experiences.'
 export const CARD_LINE_3 = 'Performing since 2021'
 // Layout 4's heads, each its composed page's own wrapper head over the section
 // (QA, 2026-09-15): the Book Us panel (964:72839), the gallery's column
-// (964:72784), the map band (964:72827) and the testimonials sheet. The other
-// layouts keep the shared TITLES defaults; sectionVm and EditPanel both resolve
-// these at layout 4 alone, the TESTI_HEADING_2 pattern.
+// (964:72784), the map band (964:72827) and the testimonials sheet — and the
+// repertoire's panel (JP-081, user call, 2026-09-29, reversing Retro layout
+// 4's open question 8): "Repertoire" over "All songs · A–Z" in all three
+// templates' frames (964:72817, 964:72916, 964:73007), which wins over the
+// song count as layout 3's "Curated sets" does. The other layouts keep the
+// shared TITLES defaults; sectionVm and EditPanel both resolve these at layout
+// 4 alone, the TESTI_HEADING_2 pattern.
 export const CAL_HEADING_4 = 'Book Us'
+export const REP_HEADING_4 = 'Repertoire'
 export const GALLERY_HEADING_4 = 'Snaps from the night'
 export const MAP_HEADING_4 = 'Distances we’ll Travel'
 export const TESTI_HEADING_4 = 'Client success stories'
@@ -1121,6 +1147,22 @@ export const PRICING_ROW_CTA = 'Start Enquiry'
 export const PRICING_ROW_CTA_3 = 'Book'
 // Events map layout 4's panel note, beside "Travel & reach" (964:72830).
 export const MAP_SPAN = 'Live · last 12 months'
+// Events map layout 4's stat wall, the frame's four cards verbatim (JP-077,
+// user call, 2026-09-29): all nine masters (Retro 964:72830 / 964:78599 /
+// 977:8322, Lime's and Grunge's twins) print the same twelve strings. A stat
+// is a claim the artist types, JP-065's reversal taken whole — the fit's two
+// derivations (a city count and the gig count) are gone — so the rows are
+// written in the { label, value, sub } shape StatsField edits and need no
+// dressing. The labels are upper-cased by the card's CSS; value and sub print
+// as typed.
+export const MAP_STATS_4 = [
+  { label: 'Radius',   value: '120',            sub: 'miles · standard' },
+  { label: 'Cities',   value: '21',             sub: 'played in' },
+  { label: 'Gigs YTD', value: '48',             sub: 'played this year' },
+  { label: 'Base',     value: 'Manchester, UK', sub: 'further on request' },
+]
+// What `blankRow()` asks of a StatsField row (the JP-051 sweep's rule).
+export const STAT_KEYS = ['label', 'value', 'sub']
 
 // Enquiry form layout 2's card, seeded with its frame's own copy (964:64652):
 // the price row, the bookings line, the submit's label and the line under it.
@@ -1135,6 +1177,11 @@ export const FORM_AVAILABLE = 'Available 2025 / 2026'
 // Booking calendar layout 2's pill. Its frame reads "Star Enquiry", taken as a
 // typo for this.
 export const CAL_SLOT_CTA = 'Start Enquiry'
+// Booking calendar layout 4's submit, the wizard's last step and the foot
+// pill (964:72844 and its twins). FIELDS.calendar.cta seeds it at layout 4
+// (JP-082, user call, 2026-09-29; FORM_BTN_4's shape), and an emptied label
+// falls back to it there, since it is the wizard's only way to send.
+export const CAL_SEND_4 = 'Send Enquiry'
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
@@ -1334,9 +1381,9 @@ export const FIELDS = {
     { k: 'placeBody', l: 'Place card text',  type: 'area', d: PLACE_BODY,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
       hint: 'The line under your Location on the card beside the pin. Left empty, it is not drawn.' },
-    // Named `cta2` on the bio's own content too, which no bio field edits:
-    // bio layout 4's Listen prints that, not this (JP-059's census). `in`
-    // speaks for the header.
+    // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
+    // (JP-082): bio layout 4's Listen prints that, not this (JP-059's census).
+    // `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
       in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2] } },
     // The chips are the header's the way Kicker and Location are (JP-037,
@@ -1387,6 +1434,12 @@ export const FIELDS = {
     // is not drawn.
     { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
+    // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
+    // already read, `vm.cta2` off its own content, which no field reached
+    // (JP-059's census named it a control). Uncased; the ↗ is the markup's.
+    { k: 'cta2',      l: 'Listen link', d: 'Listen', in: [3],
+      hint: 'The link beside Performing since, to your Media Player on the published page. '
+          + 'Leave it empty to hide it.' },
   ],
   // The second list-shaped content type with a structured editor (see
   // `repertoire` below): `tracks` here is an array of { title, sub, image,
@@ -1488,8 +1541,9 @@ export const FIELDS = {
   repertoire: [
     // No `d`: the heading falls back to the song count, in sectionVm and in
     // the panel alike, so it cannot claim 240 songs over a list of twelve.
-    // Layout 3 starts from its frame's "Curated sets" instead (JP-070), which
-    // counts nothing.
+    // Layouts 3 and 4 start from their frames' "Curated sets" (JP-070) and
+    // "Repertoire" (JP-081) instead, which count nothing. An emptied heading
+    // stays empty at every layout.
     { k: 'heading', l: 'Heading' },
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead.' },
@@ -1522,8 +1576,9 @@ export const FIELDS = {
   // before the visitor types one), `booked` the days it will not take (in
   // layout 2 the slots it strikes through, in layout 4 a typed date the date
   // card refuses), `time` the hour the foot line names and layout 4's date
-  // card, `cta` the label on layout 1's pill, and `slots` layout 2's list
-  // (JP-052). `in` records each key's reach.
+  // card, `cta` the label on layout 1's pill, `slots` layout 2's list
+  // (JP-052), and `email` the address layout 4's Send Enquiry mails (JP-076).
+  // `in` records each key's reach.
   calendar: [
     { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
@@ -1543,12 +1598,24 @@ export const FIELDS = {
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
-    { k: 'cta',     l: 'Button (layout 1)', d: 'Check a date', in: [0] },
+    // Layout 1's pill and layout 4's Send Enquiry (JP-082). `d` is layout
+    // 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and EditPanel's chain.
+    { k: 'cta',     l: 'Button', d: 'Check a date', in: [0, 3],
+      hint: 'Layout 1’s button, and layout 4’s Send Enquiry on the last step of the enquiry '
+          + 'wizard and at the foot of the summary. Layout 4 starts from “Send Enquiry”, '
+          + 'and shows it again if you empty this there.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
       hint: 'The dates layout 2 lists, each with what you play and what it starts from.' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
     { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3],
       hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
+    // JP-076 — no `d`: while the key is absent it follows the Enquiry Form's
+    // address (sectionVm's `email` argument, and EditPanel's chain shows it),
+    // so the page has one address until the artist types a second here.
+    { k: 'email',   l: 'Email address', type: 'email', in: [3],
+      hint: "Where layout 4's Send Enquiry mails the visitor's answers. It follows the Enquiry "
+          + 'Form’s address until you type one here; after that it keeps its own. Empty, or '
+          + 'an address that isn’t valid, leaves both Send Enquiry buttons a picture.' },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
   // and `media`: `gigs` is an array of { venue, city, time, month, day, link }
@@ -1561,23 +1628,24 @@ export const FIELDS = {
       // in layout 4, whose whole list is a one-gig ticker. The cities are read
       // a second time in layout 3, where they derive the split list's filter
       // chips (vm.gigChips) the way the songs' tags derive the repertoire's —
-      // so a row's city is a control there as well as a fact — and a third
-      // time in layout 4, which counts them (vm.gigCityCount).
+      // so a row's city is a control there as well as a fact. Layout 4 no
+      // longer counts them: its stat wall is `stats` (JP-077).
       hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
           + `a real link on the published page; the list pages ${PINS.length} at a time in `
           + "layouts 1–3 (layout 3 shows one at a time on a phone) and one at a time in "
           + "layout 4's ticker. "
-          + 'Layout 3 also turns the cities into its filter chips, and layout 4 counts them.' },
+          + 'Layout 3 also turns the cities into its filter chips.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
-    // Every design prints it, once each (reach.mjs's `map.radius`). It was
+    // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
     // block printed it in the travel card's chip as well as its Max travel, and
-    // that chip now takes Retro's gig date.
-    { k: 'radius',  l: 'Coverage', d: MAP_RADIUS,
+    // that chip now takes Retro's gig date. Layout 4's Coverage card went with
+    // JP-077: its wall is `stats`.
+    { k: 'radius',  l: 'Coverage', d: MAP_RADIUS, in: [0, 1, 2],
       hint: 'How far you travel. Layout 1 prints it beside the heading, layout 2 as Max travel on '
-          + 'the travel card, layout 3 in the line under the map, and layout 4 on the Coverage card.' },
-    { k: 'base',    l: 'Based in',       d: MAP_BASE },
-    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1, 3] },
+          + 'the travel card, and layout 3 in the line under the map.' },
+    { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 1, 2] },
+    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1] },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1] },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1] },
     // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
@@ -1597,7 +1665,12 @@ export const FIELDS = {
     { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
-      hint: 'Beside "Travel & reach" above the four stat cards. Leave empty to hide it.' },
+      hint: 'Beside "Travel & reach" above the stat cards. Leave empty to hide it.' },
+    // Layout 4's stat wall (JP-077 · JP-078 · JP-082, user call, 2026-09-29):
+    // the ninth structured editor, { label, value, sub } per card, seeded with
+    // the frame's four. Two to a row, so a third trails half-width.
+    { k: 'stats',   l: 'Stats', type: 'stats', max: 4, in: [3],
+      hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
   testimonials: [
     // A textarea, because layout 2's default breaks onto a second line.
@@ -1656,9 +1729,14 @@ export const FIELDS = {
       hint: 'Layout 4 only. Leave it empty to hide it.' },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2],
       hint: 'The line under the heading. Layout 3 only.' },
-    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1, 3],
-      hint: 'One per line — the ticked list beside the form. Layout 4 numbers them down its '
-          + 'right-hand column, and with none it draws no column at all.' },
+    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1],
+      hint: 'One per line — the ticked list beside the form.' },
+    // Layout 4's *What happens next* column (JP-079 · JP-081, user call,
+    // 2026-09-29): the tenth repeater, { title, sub } per step, seeded with the
+    // frames' three. It numbered the promises until then, one line a row.
+    { k: 'steps',    l: 'Steps', type: 'steps', max: 6, in: [3],
+      hint: 'Numbered down the column beside the form, a title over a second line. A step prints '
+          + 'only the lines you fill in; an empty row isn’t shown, and with none the column goes.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
     // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_CARD at
     // layouts 2 and 3, JP-070; FORM_FIELDS_4 at layout 4, JP-054), an emptied
@@ -1674,9 +1752,12 @@ export const FIELDS = {
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
+    // The message box's label (JP-082): the one box label that was a literal.
+    { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
+      hint: 'Layouts 1 and 4. Also heads the message in the email you receive. Left empty, it shows Message.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
-      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
+      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
@@ -1787,8 +1868,11 @@ export const pageTiers = (sections) => {
 // visitor's answers there: pageTiers()' cross-section read again. Resolved
 // exactly as the form's own sectionVm resolves `vm.formEmail` — an absent key
 // is the seed, and emailAddr() folds an empty or refused address to '' — and
-// '' with no form section on the page, so the wizard's pills stay spans in
-// both cases, the form's own no-address state.
+// '' with no form section on the page. It is the wizard's address only while
+// the calendar's own `email` key is absent (JP-076, a follow-the-form chain,
+// copyrightOf()'s shape): sectionVm resolves a typed one ahead of this, so a
+// page with no form can still send. With neither, the pills stay spans, the
+// form's own no-address state.
 export const pageEmail = (sections) => {
   const f = sections.find((s) => s.cat === 'form')
   if (!f) return ''

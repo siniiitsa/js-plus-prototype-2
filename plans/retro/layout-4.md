@@ -141,7 +141,7 @@ head belongs to a section rather than to the wrapper:
 | *"Six Worth Your Ears"* | — | `media` | keep the "Five worth your ear." default; the count is the frame's claim |
 | *"See me in action"* | — | `video` | **not** the gallery — see the trap below |
 | *"Snaps from the night"* | MEDIA | `gallery` | `TITLES.gallery` is "See us in action" |
-| *"Repertoire"* | — | `repertoire` | `vm.title` here is `"{n} Songs"`, not a word — open question 8 |
+| *"Repertoire"* | — | `repertoire` | `vm.title` here is `"{n} Songs"`, not a word — open question 8 (reversed by JP-081: `REP_HEADING_4`) |
 | *"Distances we'll Travel"* | — | `map` | `TITLES.map` is "Manchester" |
 | *"Book Us"* | — | `calendar` | the layout-3 "Book Me" precedent; re-read if question 1 goes the other way |
 
@@ -912,14 +912,18 @@ Learned on the repertoire (section 7):
   frame draws all twenty-six alike, so nothing is dimmed; the cursor is read off the handler (the
   calendar's rule), which is what keeps an index rail from stranding a visitor on an empty group.
   A title starting with a digit or a symbol heads its own `#` group in the list and lights
-  nothing — the rail is a fixed A–Z that no content can extend. An **accent is decomposed**
+  nothing — the rail is a fixed A–Z that no content can extend. *(Never coded, and superseded
+  by JP-083, 2026-09-29: leading punctuation is skipped, a digit, a non-Latin letter or an
+  empty title files under `#`, and the rail grows a `#` cell ahead of A while that group
+  exists — `../grunge/layout-4-qa-fixes.md`.)* An **accent is decomposed**
   before the initial is taken, so "Édith Piaf" files under E: `'É'.toUpperCase()` is `'É'`, and
   the grouping has to agree with the sort, which folds the two at `sensitivity: 'base'`.
 - **`s.title` again, and for layout 2's reason.** Open question 8 is settled the way layout 2
   settled it: the display line is the heading field, the frame's "Repertoire" would leave that
   field editing nothing, and "12 Songs" on the seed is a diff this section already carries. The
   sub is the literal. **Three of four layouts now honour `heading` as the display line**, which
-  is the discriminator the question asked for.
+  is the discriminator the question asked for. *(Its seed is reversed by JP-081, 2026-09-29:
+  "Repertoire", the frame's word, where "12 Songs" stood; the field still edits it.)*
 
 Learned on the events map (section 8):
 
@@ -1175,7 +1179,7 @@ Learned on the enquiry form (section 11):
   for it.** The step rows are title + sub; a promise is one string, so the sub is
   dropped rather than filled — the video section's fabricated-metric rule reaching a
   *line* rather than a number. What that leaves is a row whose 88 is still its disc plus
-  its padding, so nothing in the geometry had to move.
+  its padding, so nothing in the geometry had to move. *(Reversed 2026-09-29, JP-079 · JP-081, user call: layout 4 now numbers a `steps` repeater seeded with the frames' three steps, title over second line — see `../grunge/layout-4-qa-fixes.md`.)*
 - **An outline that has to read against the page has one derivation in this file and it
   is not in this section.** `vm.formRule` is `vm.tierRow.card` — the pricing stack's own
   guarded walk — aliased in the form block rather than read across sections or written
@@ -1437,7 +1441,12 @@ Learned on the end-of-pass sweep (`80c557c` and `9e0f726`):
    default "12 dates · 8 cities · this season" does not merely repeat the two stat cards, it
    contradicts them on the seeded page (5 gigs, 2 cities). The ticker took the question's own
    reading: `page` over a `perPage` of 1, with the arrows wrapping and the `×` becoming the `›`
-   that makes the frame's `‹` a pair.* The original text follows.
+   that makes the frame's `‹` a pair.* **Reversed for the four stats by JP-077 · JP-078 · JP-082
+   (map)** ([`../grunge/layout-4-qa-fixes.md`](../grunge/layout-4-qa-fixes.md), user call,
+   2026-09-29), JP-065's reading taken whole: the wall is the artist's `stats` repeater
+   (`{ label, value, sub }`, at most four), seeded with the frame's four cards verbatim
+   (`MAP_STATS_4`). `vm.gigCityCount`, the gig count, COVERAGE and the unlabelled BASE are gone,
+   and `radius`, `base` and `terms` reach layouts 1–3 alone. The original text follows.
 
    *CITIES 21* is the distinct
    cities of `c.gigs` (`vm.gigChips` already computes exactly that, for layout 3's filter);
@@ -1465,7 +1474,11 @@ Learned on the end-of-pass sweep (`80c557c` and `9e0f726`):
    `repChips()` in `data.js` rather than in `sectionVm`. The rail itself is honest — the letters
    are the first characters of `c.songs`' titles, the way the set cards were the tags — and the
    frame lights one letter, which is a `s.live` seam of the map's `sel` shape.
-8. ~~**The repertoire's head is a word where `vm.title` is a count.**~~ *Settled on section 7
+8. ~~**The repertoire's head is a word where `vm.title` is a count.**~~ *Reversed by JP-081
+   (repertoire head; user call, 2026-09-29, `../grunge/layout-4-qa-fixes.md`): the display line
+   is still `s.title`, but its seed is the frame's "Repertoire" (`REP_HEADING_4` in `HEADING_4`),
+   which wins over the song count as layout 3's "Curated sets" does (JP-070). `heading` edits
+   it; emptied, it stays empty.* *Settled on section 7
    (`104530e`): the display line is **`s.title`** and the frame's "Repertoire" is not drawn at
    all, which is layout 2's own call on this section — giving the display line to the literal
    would leave `heading` editing nothing here, and three of the four layouts now honour it as

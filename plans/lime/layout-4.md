@@ -794,7 +794,9 @@ Settled in section 2 (the bio):
   row's "one chip draws its box invisible", which `TagChips` over `vm.chips` reproduces
   as it is (box1 / lime seats, lime / `#0D1F03` inks, 5 / 11 × 0.82). The cost is the 768
   head at 322 against the frame's 361 (the frame spends 24 + 16 on the invisible line; 1440
-  is `space-between` over the card, so nothing moves there). Inking the label `s.bg` is the
+  is `space-between` over the card, so nothing moves there). *Since JP-081 (tags), 2026-09-29,
+  the seed's six wrap onto the frame's second chip row at 768 and 390, and the section is 36
+  taller at 768 (33 at 390), so the head is about 358 against 361.* Inking the label `s.bg` is the
   one-line reversal if a legible label is wanted. This is the opposite call from the
   header's chips, whose light seat the render showed **pale** on the photograph.
 - **Open question 3's answer: `SEEDS.Lime.layouts[3].bio = limeBioStage`, no new file.**
@@ -1083,6 +1085,11 @@ Settled in section 5 (the repertoire):
   widths (repertoire stops at arch 6, so no fold partner).
 
 Settled in section 6 (the events map):
+
+*The stat wall below is superseded by JP-077 · JP-078 · JP-082 (map)
+([`../grunge/layout-4-qa-fixes.md`](../grunge/layout-4-qa-fixes.md), 2026-09-29): the block maps
+`s.mapStats`, the artist's `stats` seeded with the frame's four cards, and `stats` is no longer the
+branch's. The seeded 390 rows now hug at 108.4 / 137, the master's own 109 / 138.*
 
 - **The sixth layout-4 block, inside its branch after the seam: `if (s.lime)` within
   `EventsMap`'s `if (s.v3)`, after `zoomScale`** — the gallery's and the repertoire's
@@ -1432,6 +1439,9 @@ Settled in section 9 (the enquiry form):
   boxes no longer stand: with `fields` absent, layout 4 seeds the frame's five (`FORM_FIELDS_4`:
   Your name, Email, Event date, Event type, Location), so the fifth box that runs the full
   measure is the frame's Location. The one-line steps still stand.
+- **Reversed 2026-09-29 (JP-079 · JP-081, user call, `plans/grunge/layout-4-qa-fixes.md`).** The
+  one-line steps no longer stand: layout 4 numbers `FIELDS.form.steps`, a `{ title, sub }`
+  repeater seeded `FORM_STEPS` with the frames' three steps, each a title over its second line.
 
 Settled in section 10 (the testimonials — the last body section):
 

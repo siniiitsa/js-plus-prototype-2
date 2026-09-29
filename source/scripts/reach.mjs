@@ -46,17 +46,29 @@ const PROBES = [
   { name: 'bio.credit', cats: ['bio'], param: 'cj', value: { credit: Z } },
   { name: 'bio.cta', cats: ['bio'], param: 'cj', value: { cta: Z } },
   { name: 'bio.tag', cats: ['bio'], param: 'cj', value: { tag: Z } },
+  // JP-082: layout 4's Listen link, on the key the bio already read.
+  { name: 'bio.cta2', cats: ['bio'], param: 'cj', value: { cta2: Z } },
   { name: 'map.status', cats: ['map'], param: 'cj', value: { status: Z } },
   { name: 'map.updated', cats: ['map'], param: 'cj', value: { updated: Z } },
   { name: 'map.rings', cats: ['map'], param: 'cj', value: { rings: Z } },
   { name: 'map.expand', cats: ['map'], param: 'cj', value: { expand: Z } },
-  // JP-060: the coverage every design prints, once each.
+  // JP-060: the coverage every design prints, once each — layouts 1–3 since
+  // JP-077 took layout 4's wall to `stats`, which took `base` and `terms` too.
   { name: 'map.radius', cats: ['map'], param: 'cj', value: { radius: Z } },
+  { name: 'map.base', cats: ['map'], param: 'cj', value: { base: Z } },
+  { name: 'map.terms', cats: ['map'], param: 'cj', value: { terms: Z } },
+  { name: 'map.stats', cats: ['map'], param: 'cj', value: { stats: [{ label: Z, value: Z, sub: Z }] } },
   // JP-054: layout 4's small-caps line, and the button whose default moved there.
   { name: 'form.sub', cats: ['form'], param: 'cj', value: { sub: Z } },
   { name: 'form.button', cats: ['form'], param: 'cj', value: { button: Z } },
+  // JP-082: the message box's label, the one box label that was a literal.
+  { name: 'form.messageLabel', cats: ['form'], param: 'cj', value: { messageLabel: Z } },
+  // JP-079: layout 4's steps, and the promises they took the column from.
+  { name: 'form.steps', cats: ['form'], param: 'cj', value: { steps: [{ title: Z, sub: Z }] } },
+  { name: 'form.promises', cats: ['form'], param: 'cj', value: { promises: Z } },
   // JP-052: the calendar keys whose seats moved when layout 4's column became
   // the wizard's summary, and the Pricing packages it reads across sections.
+  // `cta` is layout 4's Send Enquiry again since JP-082.
   { name: 'calendar.cta', cats: ['calendar'], param: 'cj', value: { cta: Z } },
   // Editorial layout 1, section 8: the scheduler's head, under each template.
   { name: 'calendar.heading', cats: ['calendar'], param: 'cj', value: { heading: Z } },
@@ -66,6 +78,8 @@ const PROBES = [
   { name: 'calendar.types', cats: ['calendar'], param: 'cj', value: { types: Z } },
   { name: 'calendar.slots', cats: ['calendar'], param: 'cj', value: { slots: [{ date: '2025-06-12', kind: Z, price: Z }] } },
   { name: 'tiers', cats: ['calendar'], param: 'tiers', value: [{ name: Z, price: Z }] },
+  // JP-076: the address layout 4's Send Enquiry mails, read off the pills' href.
+  { name: 'calendar.email', cats: ['calendar'], param: 'cj', value: { email: 'zq@example.test' } },
   // JP-046: layout 3's offer line beside the pricing capsule.
   { name: 'pricing.offer', cats: ['pricing'], param: 'cj', value: { offer: Z } },
   // JP-065: layout 3's stat card, its rating and the stars beside its faces.
