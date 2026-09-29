@@ -1182,8 +1182,10 @@ the plan it came from. Kept as the pass wrote it, a blank line between sections.
    - The face is **caps-only**, so session 0's `'title'` casing with per-site `uppercase` would
      become harmless rather than necessary.
 
-   If a licence is bought, shipping the face is its own plan (`display-face.md`). JP-056's
-   option B lists what it costs.
+   *Retested (2026-09-29, `retest-qa-fixes.md` JP-056 · JP-068):* still no licence, so the user
+   took JP-056's option C. [`display-face.md`](./display-face.md) is a distress mask cut into
+   Anton at display sizes. The glyph shapes stay Anton's, and it runs on its own branch after the
+   retest batch. If a web licence is bought, option B (the real face) replaces it.
 2. **Does Grunge desaturate an artist's uploads?** *Closed in session 0:* the greyscale is in the
    assets, so nothing desaturates and uploads stay in colour.
 3. **`gigDark` under Grunge** — *closed in section 6:* not widened; the block reads no `g.hue`.

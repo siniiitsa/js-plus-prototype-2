@@ -69,7 +69,7 @@ it.
 
 | Order | ID | Report (short) | Reverses | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|---|
-| 1 | JP-056 · JP-068 | Anton, not Stones Crush · the media kicker's "KM BIO" | `qa-fixes.md` JP-056 (A); `layout-3-qa-fixes.md` the three replies (JP-068 A) | **Both need an answer from outside the code**: a web licence (the PO) and the frame's intent (the designer) | — (decisions) | **yes** | todo |
+| 1 | JP-056 · JP-068 | Anton, not Stones Crush · the media kicker's "KM BIO" | `qa-fixes.md` JP-056 (A); `layout-3-qa-fixes.md` the three replies (JP-068 A) | **Both need an answer from outside the code**: a web licence (the PO) and the frame's intent (the designer) | — (decisions) | **user: C on its own branch; A** | **done** (no code; [`display-face.md`](./display-face.md) written; JP-068's reply stands) |
 | 2 | JP-070 (rest) | The pricing intro and chips | `layout-3-qa-fixes.md` JP-070 (heads), "keep" and the chips' reply | **Named fit diffs**: the intro's count claim was dropped; the chips derive from one tag list for every layout | S–M | **yes** | todo |
 | 3 | JP-069 (weekday) | No weekday in the date disc | `layout-3-qa-fixes.md` JP-069, the weekday half | **A data-model gap**: a gig has no year | S–M | **yes** | todo |
 | 4 | JP-071 | Eight section labels no field reaches | `layout-3-qa-fixes.md` the three replies (JP-071 A) | **The product's label rule**, now reversed for these eight | M | **yes** | todo |
@@ -183,9 +183,54 @@ spells its "KM" from `vm.initials` (`EncoreBuilder.jsx:535`; the comment at
 - The literal "KM BIO" is not an option: "KM" is the mock artist's initials, and it would be wrong
   for every real name.
 
-**Decided.** —
+**Decided** (user, 2026-09-29).
+1. **JP-056: C, a distress mask over Anton.** No web licence has been bought or agreed.
+   [`display-face.md`](./display-face.md) is written from option C.
+2. **C runs on its own branch** (`grunge-display-face`) after this batch merges, not as entries
+   appended here. So this batch's digests carry no Grunge style rows, and no entry is appended
+   for it.
+3. **JP-068: A, the reply stands.** The designer has not answered. The seed stays "Top tracks",
+   and the user relays the question again by name, with both node ids. No entry is appended.
 
-**Settled.** —
+Asked over the evidence, re-checked on HEAD (`1d93e07`; no source has changed since `525dcab`).
+Every line above held: `data.js:97`–`114` (the stand-in comment at `:99`, `faceK: 0.75` at
+`:114`), `faced` / `facedLh` at `EncoreSection.jsx:104`–`105`, **68** `faced(s, …)` sites,
+`antonEms` × 0.75 in `navFace` (`EncoreBuilder.jsx:644`), Anton the only face `index.html` and
+`preview.html` load, and no `@font-face` or "Stones" anywhere in `source/`. Also
+`FIELDS.media.kicker` at `data.js:1461`, `vm.mediaKicker` at `EncoreBuilder.jsx:778`,
+`vm.initials` at `:535`, and the "KM BIO" comments at `EncoreSection.jsx:4450` and `:7021`.
+
+**Settled** (2026-09-29, no code).
+- **Nothing under `source/` changed**, so there is no digest.
+- **`display-face.md`** takes option C with the three additions this entry named: the inline-SVG
+  `feTurbulence` candidate against a raster cut from the frame's glyphs, display sizes only, and
+  the mask on the element that paints only its text, which is per span on a two-tone title. Writing
+  it found four more things, and the plan carries them:
+  - `digest.mjs` and `build-digest.mjs` do not read `mask-image`, so teaching them is its step 0.
+  - The raster candidate carries its own licence question, since it is derived from renders of a
+    personal-use-only face.
+  - `feTurbulence` needs a pinned `seed`, or the renders are not deterministic.
+  - The mask reaches `EncoreSection` as a vm key (`vm.distress`), undefined off Grunge, so themes
+    0, 1, 3 and 4 digest zero.
+- **Docs.** A *reversed* pointer on `qa-fixes.md` JP-056's Decided, and `layout-1.md` open
+  question 1 now points at `display-face.md` as written from C. Open question 6 (Anton at 0.75) is
+  unchanged, since the mask keeps the scale. `plans/README.md`'s row is the sweep's (step 5).
+- **JP-068's designer line is already in the sweep** (step 5, "JP-068 (if still open)"), so this
+  entry adds nothing there.
+- **The reply lines**, in the sweep's shape so step 6 can use them unchanged:
+  - **JP-056 — planned for a later build; the licence stays with the PO.** This build is
+    unchanged: the headings are still Anton, and nothing named Stones Crush is loaded. Its only
+    free licence is for personal use, and no licence covering web use has been bought. A later
+    build adds the design's worn texture as a mask cut into Anton's large headings. The letter
+    shapes stay Anton's, and small type (the nav, the buttons, the labels) stays clean, because
+    the texture eats thin strokes at those sizes. If the PO buys a web licence, the real face
+    replaces the mask.
+  - **JP-068 — by design; with the designer again.** The Media Player's small heading is its
+    **Kicker** field (Media Player → Kicker), which starts as "Top tracks". The design's "KM BIO"
+    is the Bio's heading (`964:68690`) repeated over the Media Player (`964:68698`), with the
+    mock artist's initials. The question is back with the designer, naming both frames. If they
+    confirm it is intended, the kicker will start from the artist's own initials plus "Bio",
+    never the literal "KM". To match the design now, type `KM BIO` into Kicker.
 
 ---
 
@@ -434,7 +479,8 @@ README's section on structured editors, if it counts them.
    Editorial's and Retro's card 3 once, over every entry's panel and page.
 4. `npm run build:standalone`, then `cp source/dist-standalone/index.html index.html`, in its own
    commit. Then a two-build digest (`build-digest.mjs`) whose diff is only the named rows.
-5. `plans/README.md`'s row. A note for the designer: JP-068 (if still open), the pricing intro's
+5. `plans/README.md`'s row, plus a row and a tree line for `display-face.md` (planned, its own
+   branch). A note for the designer: JP-068 (if still open), the pricing intro's
    "Four ways" (if B), and whatever JP-056's answer leaves for them.
 6. One reply line per ticket for QA (fixed / by design / needs PO / needs the designer), headed by
    the retest-against-the-stamp line (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`).

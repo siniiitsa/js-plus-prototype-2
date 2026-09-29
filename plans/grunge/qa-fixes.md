@@ -508,6 +508,11 @@ the stand-in and why. The reply can point there.
 **Decided** (2026-09-28, user call): **A**, a reply naming the stand-in. No code. The licence
 question goes to the PO / designer with the facts above.
 
+*Reversed* (2026-09-29, `retest-qa-fixes.md` JP-056 · JP-068): the tester re-filed it, and no web
+licence has been bought, so the user took **C**, a distress mask over Anton, on its own branch
+after the retest batch merges. [`display-face.md`](./display-face.md) is written from option C
+above. B still replaces it if a licence arrives.
+
 **Fix.** On A: none. Record the facts in `layout-1.md`'s open question 1, and write the reply. On
 B or C: write `plans/grunge/display-face.md` and stop there. That plan is its own branch, after
 this batch merges.
