@@ -572,7 +572,9 @@ with free-text month and day and **no year**, so nothing can place it before or 
 (which the published tab does read since F20, for the calendar). Retro L3
 (`plans/retro/layout-3.md:892`–`901`) chose cities for that reason and for the section's own head,
 "Where I'm playing". Reply: a dated gig (a real date per row) is what Upcoming / Past needs; it is a
-repeater change, offered separately.
+repeater change, offered separately. *Since* the Grunge retest (JP-069 (weekday), user call,
+2026-09-29, `../grunge/retest-qa-fixes.md`) a gig carries a `year`, which derives layout 3's
+weekday. Upcoming / Past is derivable from it now, and it is still not built.
 
 ---
 

@@ -688,6 +688,20 @@ export const FACE_TITLE = 'The face of the act'
 export const FACE_BODY = "Same person you'll meet on the night. Performing since 2021."
 export const PLACE_BODY = 'Available across the UK · 120 mi standard travel radius.'
 export const BIO_TAG = '/Featured'
+// JP-071 — eight section labels the frames draw and no field reached, the
+// literals they replace: bio layout 3's three stat labels (one line each;
+// sectionVm breaks them before the last word, as the frames do), its
+// "[ About ]" and "Genres" (bio layout 4's too), media layouts 2 and 3's
+// "● Popular" over the list, and layout 3's eyebrows on the map and the
+// testimonials. The "●" and the brackets are the markup's.
+export const BIO_SINCE_LABEL = 'Performing since:'
+export const BIO_ROLE_LABEL = 'Current role:'
+export const BIO_BASE_LABEL = 'Based in:'
+export const BIO_ABOUT_LABEL = 'About'
+export const BIO_TAGS_LABEL = 'Genres'
+export const MEDIA_LIST_LABEL = 'Popular'
+export const MAP_KICKER = 'Gigs & travel'
+export const TESTI_KICKER = 'Testimonials'
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -712,6 +726,17 @@ export const TIERS = [
     feats: ['Tech rider provided', 'CDJ + vinyl combo', 'Visual sync available',
             'Extended encore', 'Festival-grade PA'].join('\n') },
 ]
+
+// Layout 3's packages (JP-070): TIERS with the frames' Duo / Trio / Band
+// chips where layout 1's Retro frame draws Solo / Trio / Band. The frames
+// print no tags on a row, and their capsule picks Duo over all three rows,
+// so the only claim they make is the chip row. Solo becomes Duo and nothing
+// else moves: the names, prices, blurbs and features are TIERS' own, which is
+// why the calendar's package card (name and price, through pageTiers()) reads
+// the same either way. Chosen by layout only while the key is absent,
+// FORM_FIELDS_4's gate, in sectionVm and tiersVal alike; once the artist
+// edits the list it is theirs at every layout.
+export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Band', 'Trio, Band'][i] }))
 
 // Every key a package row carries — what `blankRow()` asks of it. A row is
 // blank only when all five are, whichever of them a layout prints. The
@@ -772,22 +797,59 @@ export const PINS = [{ x: '20%', y: '26%' }, { x: '40%', y: '54%' }, { x: '62%',
 // The order is column-down, not the Figma frame's reading order: the desktop
 // layout splits the page in half and runs each half down its own column, so
 // songs 1–6 are the left column and 7–12 the right.
+//
+// `length` is the track's running time as the artist types it, free text and
+// printed as typed: only layout 3's set cards read it, in the seat the other
+// layouts give the artist (JP-066, user call, 2026-09-29). The seeds are the
+// lengths every layout-3 frame prints (Grunge's 390 master, 984:13951, lists
+// all of them); the twelfth row is a second Valerie where the frame has Get
+// Lucky, so it takes Valerie's.
 export const SONGS = [
-  { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Weddings, Pubs' },
-  { title: 'Superstition',      artist: 'Stevie Wonder',     tags: 'Weddings' },
-  { title: 'Uptown Funk',       artist: 'Bruno Mars',        tags: 'Weddings, Birthdays' },
-  { title: 'Dancing Queen',     artist: 'ABBA',              tags: 'Weddings, Birthdays' },
-  { title: 'Sex on Fire',       artist: 'Kings of Leon',     tags: 'Pubs' },
-  { title: 'Crazy in Love',     artist: 'Beyoncé',           tags: 'Birthdays' },
-  { title: 'Mr. Brightside',    artist: 'The Killers',       tags: 'Pubs, Birthdays' },
-  { title: 'I Wanna Dance',     artist: 'Whitney Houston',   tags: 'Birthdays' },
-  { title: 'September',         artist: 'Earth, Wind & Fire', tags: 'Weddings, Birthdays' },
-  { title: "Don't Stop Me Now", artist: 'Queen',             tags: 'Pubs, Birthdays' },
-  { title: 'Rather Be',         artist: 'Clean Bandit',      tags: 'Weddings' },
-  { title: 'Valerie',           artist: 'Amy Winehouse',     tags: 'Pubs' },
+  { title: 'Valerie',           artist: 'Amy Winehouse',      tags: 'Weddings, Pubs',      length: '3:54' },
+  { title: 'Superstition',      artist: 'Stevie Wonder',      tags: 'Weddings',            length: '4:26' },
+  { title: 'Uptown Funk',       artist: 'Bruno Mars',         tags: 'Weddings, Birthdays', length: '4:30' },
+  { title: 'Dancing Queen',     artist: 'ABBA',               tags: 'Weddings, Birthdays', length: '3:51' },
+  { title: 'Sex on Fire',       artist: 'Kings of Leon',      tags: 'Pubs',                length: '3:23' },
+  { title: 'Crazy in Love',     artist: 'Beyoncé',            tags: 'Birthdays',           length: '3:56' },
+  { title: 'Mr. Brightside',    artist: 'The Killers',        tags: 'Pubs, Birthdays',     length: '3:42' },
+  { title: 'I Wanna Dance',     artist: 'Whitney Houston',    tags: 'Birthdays',           length: '4:52' },
+  { title: 'September',         artist: 'Earth, Wind & Fire', tags: 'Weddings, Birthdays', length: '3:35' },
+  { title: "Don't Stop Me Now", artist: 'Queen',              tags: 'Pubs, Birthdays',     length: '3:29' },
+  { title: 'Rather Be',         artist: 'Clean Bandit',       tags: 'Weddings',            length: '3:48' },
+  { title: 'Valerie',           artist: 'Amy Winehouse',      tags: 'Pubs',                length: '3:54' },
 ]
-// What `blankRow()` asks of a SongsField row (the JP-051 sweep).
-export const SONG_KEYS = ['title', 'artist', 'tags']
+// What `blankRow()` asks of a SongsField row (the JP-051 sweep). A row holding
+// only a length is a song the artist has started, so it is not blank.
+export const SONG_KEYS = ['title', 'artist', 'tags', 'length']
+
+// Repertoire layout 3's set details (JP-066, user call, 2026-09-29): a set is
+// one of the songs' tags, so its mood and its running time cannot live on the
+// songs. They are keyed here by the tag, case-folded, so they follow the tag
+// rather than a position and survive a song list reordered or rewritten. A
+// set's length is the artist's claim, not a sum: the frame's "45 MIN" heads
+// four tracks of about four minutes. The seed is the frame's three moods and
+// lengths laid on the seed's three tags in order; the frame's own card titles
+// (Cocktail hour / Dinner / Party peak) stay ours, since retagging the songs
+// would move the chip rows of layouts 1, 2 and 4.
+export const REP_SETS = {
+  weddings:  { mood: 'Mellow',         length: '45 min' },
+  pubs:      { mood: 'Easy listening', length: '60 min' },
+  birthdays: { mood: 'High energy',    length: '90 min' },
+}
+// The section's `sets`, else the seed — only an absent key (or anything that
+// is not a plain object) falls back, so an artist who empties every box keeps
+// the song counts rather than getting the seed back. SetsField writes the whole
+// object on its first keystroke, so the canvas never loses a seeded set's line
+// the moment another is edited. sectionVm and EditPanel both resolve it here.
+export function repSetsOf(c) {
+  const v = c && c.sets
+  return v && typeof v === 'object' && !Array.isArray(v) ? v : REP_SETS
+}
+// One set's line: its mood and length joined, each dropped when empty. `''`
+// when both are, which the card reads as "print the song count instead".
+export function repSetLine(d) {
+  return [d && d.mood, d && d.length].map((v) => String(v ?? '').trim()).filter(Boolean).join(' · ')
+}
 
 // The chip that clears the filter. It is index 0 of the row and carries a null
 // tag; repChips() skips a tag of the same name so an artist who writes "All" on
@@ -802,15 +864,20 @@ export const REP_ALL = 'All'
 //
 // One gig pairs with one pin, by index — PINS is five positions over the seeded
 // Manchester raster and sectionVm hands each gig `PINS[i % PINS.length]`.
+//
+// `year` is printed nowhere. It is what layout 3's date disc derives its
+// weekday from (gigWeekday(), JP-069, user call, 2026-09-29), and 2025 is the
+// year whose weekdays the frames print: JUL / 12 / SAT … AUG / 30 / SAT.
 export const GIGS = [
-  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12', link: '' },
-  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25', link: '' },
-  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02', link: '' },
-  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', link: '' },
-  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', link: '' },
+  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12', year: '2025', link: '' },
+  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25', year: '2025', link: '' },
+  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02', year: '2025', link: '' },
+  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', year: '2025', link: '' },
+  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', year: '2025', link: '' },
 ]
-// What `blankRow()` asks of a GigsField row (the JP-051 sweep).
-export const GIG_KEYS = ['venue', 'city', 'time', 'month', 'day', 'link']
+// What `blankRow()` asks of a GigsField row (the JP-051 sweep). `year` is in
+// it, so a row holding only a year is still a row.
+export const GIG_KEYS = ['venue', 'city', 'time', 'month', 'day', 'year', 'link']
 export const MAP_RADIUS = '12 mile radius'
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
@@ -992,17 +1059,7 @@ export const DEFS = {
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
   since:      'June 2021',
   pricingSub: 'Prices may vary by date, location, and length of set.',
-  // §10.2 layout 3 heads the stack with a line under the title, where neither
-  // earlier layout draws one — the frame's own sentence, kept as the seed so
-  // the reference picture holds. Emptying it drops the line.
-  //
-  // The frame's paragraph is two sentences and this is the tail of the second.
-  // "Four ways to book this act." is a count the artist never typed and goes
-  // the way the video section's numbers did; "Choose by the kind of night
-  // you're throwing" repeats TITLES.pricing's own words almost exactly, so
-  // stacking it under the title stutters where the frame — whose title is the
-  // single word "Pricing" — does not.
-  pricingIntro: 'The quote covers the whole booking.',
+  // Layout 3's intro line is PRICING_INTRO_3 (JP-070), beside its head.
   // §10.2 layout 2 stands a line of praise beside the plan, where layout 1 has
   // nothing of the sort — the frame's own sentence, kept as the seed so the
   // reference picture holds. Emptying it drops the line.
@@ -1091,6 +1148,12 @@ export const CAL_HEADING_3 = 'Book Me'
 export const REP_HEADING_3 = 'Curated sets'
 export const GALLERY_HEADING_3 = 'Gallery'
 export const PRICING_HEADING_3 = 'Pricing'
+// The line under that head (JP-070, 2026-09-29): the frames' paragraph without
+// its first sentence, "Four ways to book this act.", a count of packages the
+// artist never typed and false even in the frame, which draws three. The rest
+// is the frame's verbatim. The intro reaches layout 3 alone, so this is
+// FIELDS.pricing.intro's plain `d`.
+export const PRICING_INTRO_3 = "Choose by the kind of night you're throwing — the quote covers the whole booking."
 export const MAP_HEADING_3 = "Where I'm playing."
 export const TESTI_HEADING_3 = 'Experiences.'
 // The layout-3 header's portrait card, its second line under the name
@@ -1434,6 +1497,24 @@ export const FIELDS = {
     // is not drawn.
     { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
+    // JP-071 (user call, 2026-09-29, reversing the fit's "a frame label stays
+    // a literal" for these): the ID card's labels, each seeded with the
+    // frame's word, uncased (the card cases them), and not drawn when emptied.
+    // A stat's label goes with its value as well: Current role and Based in
+    // print the header's Kicker and Location. The line break before the last
+    // word is sectionVm's, so each is one line here.
+    { k: 'sinceLabel', l: 'Performing since label', d: BIO_SINCE_LABEL, in: [2],
+      hint: 'The label over the date on the ID card. It breaks before its last word. '
+          + 'Left empty, the date stands alone.' },
+    { k: 'roleLabel',  l: 'Current role label', d: BIO_ROLE_LABEL, in: [2],
+      hint: 'The label over the Header’s Kicker on the ID card. Left empty, the kicker stands alone.' },
+    { k: 'baseLabel',  l: 'Based in label', d: BIO_BASE_LABEL, in: [2],
+      hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
+    { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
+      hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
+    { k: 'tagsLabel',  l: 'Genres label', d: BIO_TAGS_LABEL,
+      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], '*': [3] },
+      hint: 'The line over the Header’s tag chips, drawn while they are shown. Left empty, the chips stand alone.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached
     // (JP-059's census named it a control). Uncased; the ↗ is the markup's.
@@ -1460,6 +1541,9 @@ export const FIELDS = {
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
     { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
+    // JP-071: the "● Popular" over the track list, the frame's word, uncased.
+    { k: 'listLabel', l: 'List label', d: MEDIA_LIST_LABEL, in: [1, 2],
+      hint: 'The label over the track list, after a dot. Left empty, it is not drawn.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
     // Editorial's (964:58614), so there and on Pop an empty address leaves it a
     // picture — the rule the rest of the file calls the Soundcloud rule. Lime's
@@ -1489,7 +1573,9 @@ export const FIELDS = {
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
-          + 'them with commas. Features are one to a line. Layout 2 shows one package at a '
+          + 'them with commas. Layout 3 starts the packages tagged Duo where the other layouts '
+          + 'have Solo; once you edit the list, it is the same at every layout. Features are one '
+          + 'to a line. Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
           + 'filter: it prints the tags and the features on the package itself. In layouts 1, 2 '
           + 'and 3, whatever comes before the price’s first digit — a £, or a word like From — '
@@ -1500,7 +1586,7 @@ export const FIELDS = {
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
-    { k: 'intro',   l: 'Intro line', type: 'area', def: 'pricingIntro', in: [2],
+    { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
       hint: 'A line under the heading. Layout 3 only.' },
     { k: 'offer',   l: 'Offer line', d: PRICING_OFFER, in: [2],
       hint: 'A short line beside the filter chips, such as a discount. Layout 3 only. '
@@ -1535,9 +1621,12 @@ export const FIELDS = {
     { k: 'sub',     l: 'Small print', def: 'pricingSub' },
   ],
   // The other list-shaped content type with a structured editor rather than a
-  // textarea (see `media` above): `songs` is an array of { title, artist, tags },
-  // and SongsField in EncoreBuilder is the repeater that maintains it. An absent
-  // key means the seeded SONGS; an emptied array means no songs listed.
+  // textarea (see `media` above): `songs` is an array of
+  // { title, artist, tags, length }, and SongsField in EncoreBuilder is the
+  // repeater that maintains it. An absent key means the seeded SONGS; an
+  // emptied array means no songs listed. `sets` is layout 3's set details,
+  // { [case-folded tag]: { mood, length } }, maintained by SetsField, which
+  // lists the sets the songs' tags make (REP_SETS, repSetsOf()).
   repertoire: [
     // No `d`: the heading falls back to the song count, in sectionVm and in
     // the panel alike, so it cannot claim 240 songs over a list of twelve.
@@ -1546,7 +1635,10 @@ export const FIELDS = {
     // stays empty at every layout.
     { k: 'heading', l: 'Heading' },
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
-      hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead.' },
+      hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
+          + 'Layout 3 groups the songs into one set per tag and shows each song’s length.' },
+    { k: 'sets',    l: 'Sets', type: 'sets', in: [2],
+      hint: 'One per tag on your songs. The mood and length show under the set’s name in layout 3; with both empty, it shows the song count.' },
   ],
   // The three social addresses follow the photos, and follow `media.soundcloud`
   // in shape: an empty default, normalised through extUrl() in sectionVm, and a
@@ -1618,7 +1710,8 @@ export const FIELDS = {
           + 'an address that isn’t valid, leaves both Send Enquiry buttons a picture.' },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
-  // and `media`: `gigs` is an array of { venue, city, time, month, day, link }
+  // and `media`: `gigs` is an array of { venue, city, time, month, day, year,
+  // link }
   // maintained by GigsField. It follows the `songs` rule rather than the
   // tracks' — one key, one shape — so an absent key means the seeded GIGS, an
   // emptied array means no gigs, and there is no null sentinel.
@@ -1634,7 +1727,11 @@ export const FIELDS = {
           + `a real link on the published page; the list pages ${PINS.length} at a time in `
           + "layouts 1–3 (layout 3 shows one at a time on a phone) and one at a time in "
           + "layout 4's ticker. "
-          + 'Layout 3 also turns the cities into its filter chips.' },
+          + 'Layout 3 also turns the cities into its filter chips, and works out the weekday '
+          + 'its date disc prints from the month, the day and the year (four digits).' },
+    // JP-071: layout 3's eyebrow over the heading, the frame's words, uncased.
+    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [2],
+      hint: 'The small line over the heading. Left empty, it is not drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
@@ -1673,6 +1770,9 @@ export const FIELDS = {
       hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
   testimonials: [
+    // JP-071: layout 3's eyebrow over the heading, the frame's word, uncased.
+    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [2],
+      hint: 'The small line over the heading, after a dot. Left empty, it is not drawn.' },
     // A textarea, because layout 2's default breaks onto a second line.
     { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
       hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '
@@ -1857,6 +1957,9 @@ export const headerIdentity = (sections) => {
 // exactly as pricing's own sectionVm resolves `tierList` — an absent key is
 // the seeded TIERS, blank rows are dropped — and `[]` with no pricing section
 // on the page, which is the card's not-drawn state. Raw: the calendar cases.
+// At pricing layout 3 an absent key is TIERS_3 instead (JP-070), which differs
+// in tags alone, and the card reads no tags, so TIERS serves here whatever the
+// pricing section's layout.
 export const pageTiers = (sections) => {
   const p = sections.find((s) => s.cat === 'pricing')
   if (!p) return []
@@ -2184,6 +2287,23 @@ export function calStart(open, today) {
 
 export function weekdayOf(y, m, d) {
   return new Date(Date.UTC(y, m, d)).getUTCDay()
+}
+
+// A gig's weekday, for layout 3's date disc (JP-069, user call, 2026-09-29):
+// CAL_DAYS' short name, or '' when the three boxes do not name a real day.
+// The month is the artist's free text ("Jul", "july", "Sept"), matched by its
+// first three letters against MONTHS; the year must be four digits, because
+// Date.UTC reads 25 as 1925; and a day the month does not have (31 Jun) gives
+// nothing rather than rolling over, parseDate()'s rule.
+export function gigWeekday(year, month, day) {
+  const y = /^\d{4}$/.exec(String(year ?? '').trim())
+  const d = /^\d{1,2}$/.exec(String(day ?? '').trim())
+  const key = String(month ?? '').trim().slice(0, 3).toLowerCase()
+  const m = key.length === 3 ? MONTHS.findIndex((n) => n.slice(0, 3).toLowerCase() === key) : -1
+  if (!y || !d || m < 0) return ''
+  const n = +d[0]
+  if (n < 1 || n > monthSpan(+y[0], m).length) return ''
+  return CAL_DAYS[weekdayOf(+y[0], m, n)]
 }
 
 export function monthLabel(y, m) {

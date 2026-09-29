@@ -408,7 +408,8 @@ identity keys set to markers, the artist's name `&name=` a marker too):
   - the nav links, and Pop's `FlatNav` Music / Shows / Book;
   - bio layout 1's `[ 001 ] Structure · Bio_01`, `Bio` and `About`;
   - bio layouts 3 and 4's `Bio`, `Performing since:`, `Current role:`, `Based in:`,
-    `[ About ]` and `Genres`;
+    `[ About ]` and `Genres` *(fields since: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071,
+    all but `Bio`)*;
   - the glyphs `↗` and `●` (Retro header layout 6).
 - **One control label no field reaches: bio layout 4's `Listen`.** `ListenLink` prints `s.cta2`,
   which for the bio is `cv('cta2', 'Listen')` on the bio's *own* content. `FIELDS.bio` has no

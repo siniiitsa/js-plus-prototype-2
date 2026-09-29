@@ -243,7 +243,11 @@ That distinction is the whole design, and it buys two things:
   **Repertoire.** Its search box filters on title and artist, its filter chips filter on the tags
   the artist typed, and its pager is derived from the result — all three inert on the canvas,
   which still draws the picture the Figma frames show. What unblocked it was putting the songs in
-  the content model (`FIELDS.repertoire.songs`).
+  the content model (`FIELDS.repertoire.songs`). Layout 3 groups the songs into one set card per
+  tag, and since JP-066 each card's line is the set's own mood and running time, which a
+  structured field that is not a list keeps per tag (`SetsField`, `c.sets`, the twelfth
+  structured editor after `BookedField`), while each row prints the song's `length`, a column no
+  other layout reads.
 
   **The header's navigation.** Every section is given a DOM id — its category, which is unique per
   page — so the nav links, *Book Now* and *Listen* all scroll to the section they name, and the
@@ -313,7 +317,7 @@ That distinction is the whole design, and it buys two things:
   draws it, and the row's 20px gap is the row gap too, so the open tile's offset shadow clears.
 
   **The events map, which pages and pairs.** Its gig list became the artist's
-  (`FIELDS.map.gigs`, a `GigsField` repeater of `{ venue, city, time, month, day, link }`), and a
+  (`FIELDS.map.gigs`, a `GigsField` repeater of `{ venue, city, time, month, day, year, link }`; the year only derives layout 3's weekday), and a
   list the artist owns cannot keep a pager that hardcodes twenty pages over five rows. So the
   pager is derived the way the repertoire's is, `PAGES` is deleted, and — again like the
   repertoire's — it is not drawn at one page: the five seeded gigs are one page, so the reference

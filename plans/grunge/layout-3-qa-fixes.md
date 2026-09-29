@@ -130,7 +130,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix) |
+| 1 | JP-066 · JP-068 · JP-071 | Set cards lack mood and lengths · media kicker · labels no field reaches | **By design, all three**: sets *are* tags (Retro L3's call); the frame's "KM BIO" is the bio's head duplicated (Retro L3 named it); the labels are JP-059's census's "labels, not claims" | — (replies) | **yes** — reply, or the fix each lists | **done** (A, A, A; three replies, no fix). *JP-071 reversed*: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071, eight seeded fields. *JP-066 reversed*: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-066, a song `length` column and `SetsField` |
 | 2 | JP-073 | A re-added section lands before the footer | **By spec** (SPEC §9.1, "immediately before the footer"); `st.removed` keeps no position | S | **yes** — A (the old seat), B (page order), C (reply) | **done** (A, keyed by the follower's category; real app, 7 runs) |
 | 3 | JP-072 | The canvas's calendar column does not stick | **A named, accepted diff** (JP-043): the canvas card's `overflow: hidden` is the cell's scroll container | S | **yes** — A (`overflow: clip`), B (reply) | **done** (A; the canvas sticks 28px down, and so do the layout-4 rail and the form's layout-2 card) |
 | 4 | JP-061 | *Current role* prints a kicker no field shows | **Confirmed, `s.limeTree`**: `KICKER_3` seeds the header's own kicker at layout 3, but the bio reads the raw key | S | **yes** — A (a card-line field), B, C | **done** (A, Retro kept; `cardLine` seeded `CARD_LINE_3`; after-diff zero) |
@@ -139,7 +139,7 @@ per entry (`Fix JP-061: …`); the replies entry commits the plan alone.
 | 7 | JP-064 | Past days drawn as *Booked* | **Confirmed, shared, Retro too**: `blocked()` paints `dead` in the legend's *Booked* fill | S | **yes** — A (a dimmed free dot), B, C | **done** (A, past wins over booked; the seed's after-diff zero, the States 15 files, all layout 3) |
 | 8 | JP-067 | The footer is black, not `#171716` | **Confirmed, Grunge only**: every layout-3 footer frame stands on Scheme 2; `footerBand` is Lime's alone | S | no (one asked mid-session: Lime's pill) | **done** (`footerBand` widened; root, seal disc, pill label and disc; Lime's pill too; 12 files as named) |
 | 9 | JP-075 | The 390 carousel opens on set 1 | **Confirmed, shared**: every 390 master centres the *second* set; ours centres `page` 0 | S | no | **done** (the centre is `(pg + 1) % n`; 10 files as named; the seat's colour under Lime, Grunge and Editorial, the set's under Retro and Pop) |
-| 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | **done** (A; no hour chip at any width, in both halves; the weekday a reply; 24 files as named) |
+| 10 | JP-069 | No weekday; the hour in its own pill | **Weekday by design** (JP-047: no year). **The hour is a fit choice**: it took the dropped status pill's seat; 390 already prints `city · time` | S | **yes** — A (`city · time` at every width), B (reply) | **done** (A; no hour chip at any width, in both halves; the weekday a reply; 24 files as named). *Weekday reversed*: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-069 (weekday), a `year` column |
 | 11 | JP-063 | Calendar layout 3 shows one month | **Confirmed, the fit's reading**: month 0 only, no arrows; with F20 a late-month visit leaves 2–3 pickable days; `open`'s hint promises 12 months | S–M | **yes** — A (arrows, both surfaces), A′ (published only), B (reply and hint) | **done** (A; the pair after the month name, the free dot at 24; off-month the head is the month alone; 30 files as named) |
 | 12 | JP-065 | Stat card counts reviews, not a rating | **By design so far** (the fit's call), but its reasoning leans on two precedents since reversed | S | **yes** — A (a rating field), A+, B | **done** (A; `rating` over a literal `/5`, the count its emptied fallback; `stars` widened to layout 3, beside the faces; 30 files as named) |
 | 13 | JP-070 (heads) | Layout-3 heads and the pricing pill | **Named fit diffs**: all four templates' layout-3 frames agree, so a shared `HEADING_3` table; the chips are by design | M | **yes** — the heads, the pricing intro, the pill label | **done** (A, keep, A; `HEADING_3`, which took in `CAL_HEADING_3`; `rowCta` at layouts 1, 3 and 4, where an emptied label drops the pill and a long one wraps; 150 files as named) |
@@ -277,11 +277,14 @@ exactly these as "Labels, not claims (not this ticket)" (`./layout-2-qa-fixes.md
 **Decided: A, A, A** (user, 2026-09-28). All three are replies, and none becomes a fix, so no entry
 is appended.
 1. **JP-066: by design**, and named for the BA as a data-model question. A per-song length (B) is
-   offered as separate work, not taken here.
+   offered as separate work, not taken here. (**Reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-066, 2026-09-29:
+   a song carries a `length`, printed in layout 3's row, and a set's mood and length live in
+   `SetsField`, keyed by the tag — C's shape, not B's sum.)
 2. **JP-068: the frame's copy is a slip.** The reply points at Media Player → *Kicker*; the seed
    stays "Top tracks".
 3. **JP-071: by design**, the product's rule for labels. A field per label (B) is a whole-product
-   label sweep and its own plan.
+   label sweep and its own plan. (**Reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071, 2026-09-29: the eight
+   reported labels are seeded, emptiable fields; the siblings stay literals.)
 
 Asked over the evidence, re-checked on HEAD (`485526b`; no source has changed since `109c293`):
 `FIELDS.media.kicker` at `data.js:1357` (`d: 'Top tracks'`, `in: [0, 2]`), `SONG_KEYS` at `:788`,
@@ -297,7 +300,8 @@ non-empty *Tags*), so each label goes with its value.
 - **JP-068's designer line is already in the sweep** (step 5, "the media head's 'KM BIO'"), so the
   sweep adds nothing for it.
 - **JP-066's BA question** travels in the reply below. JP-069's weekday reply names the other
-  data-model gap (no year on a gig), so the two can go to the BA together.
+  data-model gap (no year on a gig), so the two can go to the BA together. *(That gap is closed
+  since: `retest-qa-fixes.md`, JP-069 (weekday), gave a gig a `year`.)*
 - **The reply lines**, in the sweep's shape so step 6 can lift them as they stand:
   - **JP-066 — by design; a data-model question for the BA.** A set card is not stored anywhere.
     Each card is one of the tags on the Repertoire's songs, so its title is the tag ("Weddings")
@@ -307,12 +311,15 @@ non-empty *Tags*), so each label goes with its value.
     Printing the design's "MELLOW · 45 MIN" or "3:54" would put numbers on the page that the
     artist never typed. This holds on every template. For a card like the design's, tag songs
     `Cocktail hour`. Lengths would need a change to the song editor (a length per song, the
-    set's total added up from them), which we can offer separately.
+    set's total added up from them), which we can offer separately. *(Reversed since:
+    `retest-qa-fixes.md`, JP-066 — a length per song and a Sets field, the set's length typed
+    rather than summed.)*
   - **JP-068 — by design; the design's text is a slip.** The Media Player's small heading is the
     **Kicker** field (Media Player → Kicker), which starts as "Top tracks". The design's "KM BIO"
     there is the Bio's own heading copied onto the Media Player (and "KM" is the mock artist's
     initials, so it would be wrong for any real name). We keep "Top tracks" and have passed the
     slip to the designer. To match the design anyway, type `KM BIO` into Kicker.
+  - *(Reversed since: [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071 made all eight fields.)*
   - **JP-071 — by design.** These are the design's labels, not the artist's content: the Bio's
     *Performing since:*, *Current role:*, *Based in:*, *[ About ]* and *Genres*, the Events Map's
     *Gigs & travel*, the Testimonials' *● Testimonials* and the Media Player's *● Popular* name
@@ -1662,7 +1669,9 @@ and Editorial at 390 do not move.
 - **No hour chip at any width.** The wide rows run the date disc, the lines and Tickets →. At 390
   Retro's and Pop's second row is Tickets → alone, as the block's already is.
 - **The weekday is a reply** (JP-047: a gig has no year). A year on gigs is a data-model question
-  for the BA, and it would also unlock Upcoming / Past.
+  for the BA, and it would also unlock Upcoming / Past. *Reversed* (user, 2026-09-29, after the
+  tester's retest): a gig now carries a `year`, seeded 2025, and the disc derives its weekday
+  from it. See [`retest-qa-fixes.md`](./retest-qa-fixes.md), JP-069 (weekday).
 
 **Settled** (2026-09-28).
 - **Re-checked on HEAD** (`bb52f83`). Every line held at +82, as JP-075's hand-off named it:
@@ -1764,7 +1773,8 @@ Reply: **JP-069 — half fixed, half by design.**
   - The right-hand seat stays empty. In the design it holds "Upcoming", and the builder cannot
     know that status (JP-047).
 - **The weekday: by design.** A gig is saved as a month and a day with no year, so "SAT" cannot be
-  worked out from "Jul 12": the same date falls on a different weekday each year. Adding a year to
+  worked out from "Jul 12": the same date falls on a different weekday each year. *(Reversed since:
+  a gig has a year, and the disc prints the weekday; `retest-qa-fixes.md`, JP-069 (weekday).)* Adding a year to
   gigs is a data-model question for the BA. It would also allow Upcoming / Past.
 
 ---
@@ -2186,12 +2196,16 @@ fallback ("change one, change both"). The `HEADING_4` comment. `rowCta`'s row.
    and `EditPanel` alike. Its repertoire arm takes precedence over the song count in both. It
    absorbs `CAL_HEADING_3`. Layouts 1, 2 and 4 keep today's heads.
 2. **The pricing intro stays** "The quote covers the whole booking.". The frame's "Four ways…"
-   is a count claim, false even in the frame, which draws three packages.
+   is a count claim, false even in the frame, which draws three packages. (**Reversed** by
+   [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest), 2026-09-29, after the tester re-filed it: layout 3 seeds the frame's second sentence,
+   `PRICING_INTRO_3`, and only "Four ways…" stays out.)
 3. **The pill: `rowCta` widens** to layouts 1, 3 and 4, relabelled *Package button*, with a
    per-layout fallback in `FORM_BTN_4`'s shape: "Book Now" at 1, "Book" at 3, "Start Enquiry"
    at 4. Its `in` is measured. Layout 2's `cta` stays its own.
 4. The chips are a reply (no question): `All` is layout 1's named diff, and the chips derive from
-   `TIERS`' tags, one list for every layout.
+   `TIERS`' tags, one list for every layout. (**Reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest), 2026-09-29: layout 3 seeds
+   `TIERS_3`, the same packages tagged Duo where `TIERS` says Solo, while `tiers` is absent. The
+   chips read *All / Duo / Trio / Band*, and `All` stays.)
 5. **Decided in session: an emptied *Package button* drops the pill** at all three layouts. That
    is layout 2's `cta` rule and the footer's. Until now layout 4 printed a wordless pill (`'' ??
    s.cta1` is `''`). It moves no seed.
@@ -2306,7 +2320,7 @@ Reply: **JP-070 (heads) — fixed.** Layout 3 now starts from the design's own h
   layout 3 (as the design has it), "Book Now" in layout 1 and "Start Enquiry" in layout 4.
   Emptying it removes the pill, and a long label wraps inside the card.
 - On every template.
-- Not changed: the Pricing intro stays "The quote covers the whole booking.". The design's first
+- Not changed (both **reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest)): the Pricing intro stays "The quote covers the whole booking.". The design's first
   sentence, "Four ways to book this act.", counts packages, and the design itself shows three.
   The chips stay "All / Solo / Trio / Band": they are made from the packages' tags (Pricing →
   Packages → Tags), the same list at every layout, and "All" is how every chip row starts.
@@ -2643,7 +2657,7 @@ cached build still shows every one of them.
   so its title is the tag and its line counts the songs. A song has no length, and a set has no
   mood or running time, so there is nothing true to print there. Tag songs `Cocktail hour` for
   the design's card. Lengths would need a change to the song editor, which we can offer
-  separately.
+  separately. *(Reversed since: `retest-qa-fixes.md`, JP-066.)*
 - **JP-067 — fixed.** On *Inset Hero*, Grunge's footer stands on the design's `#171716` at every
   width, in the editor and published.
   - The seal's disc and the Book Now pill's label and disc take the same grey.
@@ -2658,7 +2672,7 @@ cached build still shows every one of them.
     every template. The right-hand seat stays empty, since "Upcoming" is a status the builder
     cannot know (JP-047).
   - A gig has no year, so "SAT" cannot be worked out. That is a data-model question for the BA,
-    with JP-066.
+    with JP-066. *(Reversed since: `retest-qa-fixes.md`, JP-069 (weekday).)*
 - **JP-070 — fixed.**
   - Layout 3 starts from the design's headings on every template: "Curated sets", "Gallery",
     "Pricing", "Where I'm playing.", "Experiences.". Each package pill is a *Package button*
@@ -2667,10 +2681,10 @@ cached build still shows every one of them.
   - The Enquiry Form's layout-3 heading is "Book {your name} for your event", which follows the
     Title until one is typed. Its boxes, and layout 2's, are the design's Event date / Event type
     / Your email.
-  - Not changed: the Pricing intro, because "Four ways…" counts packages and the design shows
+  - Not changed (both **reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest)): the Pricing intro, because "Four ways…" counts packages and the design shows
     three. Also the chips, which are made from the packages' tags; tag them "Duo", "Trio" and
     "Band" for the design's row.
-- **JP-071 — by design.** These are the design's labels, not the artist's content, and each goes
+- **JP-071 — by design** (**reversed** by [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-071: all eight are fields now). These are the design's labels, not the artist's content, and each goes
   with its value (*Current role:* only while Kicker is filled, and so on). Editable labels would
   be a product-wide change, which we can plan separately.
 - **JP-072 — fixed.** At Desktop the canvas's Booking Calendar stays in view beside the Bio and
@@ -2708,7 +2722,8 @@ in Editorial layout 1's shape. Each is shipped as described.)*
    Lime's and Grunge's read 4.9. The page seeds 4.9 on every template.
 4. **The pricing intro says "Four ways to book this act."** (JP-070) over a frame that draws three
    packages. The page keeps "The quote covers the whole booking.", since a count would be false
-   for any other number of packages.
+   for any other number of packages. (Since [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-070 (rest), the page keeps the whole second sentence.
+   Only the count stays out.)
 5. **The form's head names the mock artist** (JP-070). Every layout-3 frame reads "Book Kai for /
    your event", and Editorial's mock artist is Sienna Vale. The page composes the head from the
    artist's own name, "Book {name} for / your event".

@@ -210,6 +210,15 @@ mutated through a single `patch()` helper.
   when emptied; a card keeps its tile, and both pills wrap rather than widen a 390 page. The face
   card's "Performing since 2021" is the artist's copy inside `faceBody`, **not** the bio's `since`,
   which it does not read (`cardLine`'s precedent, above); the hint says to change both.
+  **And eight frame labels went the same way** (JP-071, user call, 2026-09-29, reversing Retro
+  layout 2's "a frame label stays a literal" for the eight the tester reported): the bio's ID-card
+  labels `sinceLabel` / `roleLabel` / `baseLabel` (one line each; `sectionVm` breaks them before
+  the last word, as the frames do) and `aboutLabel`, its Genres line `tagsLabel` (bio layout 4's
+  too), media's `listLabel` ("● Popular", layouts 2 and 3) and layout 3's `kicker` on the map and
+  the testimonials. JP-059's shape: seeded with the literal, uncased, dropped when emptied. The
+  `●` and `[ ]` are the markup's and go with an emptied word; a stat's label also goes with its
+  value, as before. The unreported siblings stay literals: the bio's `Bio` eyebrow, media layout
+  2's `● Featured`, the calendar legend and testimonials layout 2's `✎ What clients say`.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —
@@ -496,7 +505,9 @@ mutated through a single `patch()` helper.
   gig. It is also the only layout with a **filter**: a chip row derived from the gigs' own
   cities (`vm.gigChips`, one chip per distinct city with its count, behind an All and not built
   below two cities), because the frame's own Upcoming/Past chips are a status nothing here can
-  know. That filter is the one thing in this section that can break the
+  know (a gig's `year`, below, would let the published tab derive it; named and out of scope).
+  Its date disc prints the frames' third line, the weekday (JP-069, user call, 2026-09-29), as
+  `vm.gigs[].weekday`, derived and never typed. That filter is the one thing in this section that can break the
   one-pin-per-gig-on-a-page rule: it punches holes in the indices, so a filtered page of six or
   more can seat two gigs on the same `PINS[i % 5]`. Pairing the dot with the row's place on the
   *page* would close it and pin every gig to dot 0 at 390, where a page is one gig, so the edge
@@ -608,7 +619,12 @@ mutated through a single `patch()` helper.
   constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's
   (`FIELDS.pricing.tiers`, below) and the chip row is **derived from their tags** by the same
   `repChips()` the repertoire uses, `REP_ALL` chip and all — so the seeds' tags are what redraw
-  the frame's three modes, behind an `All`. The row is **not rendered at one chip**: a page whose
+  the frame's three modes, behind an `All`. **Layout 3 seeds its own tags** (JP-070, user call,
+  2026-09-29, reversing the "one tag list for every layout" reply): its frames' capsule reads Duo /
+  Trio / Band where Retro's layout 1 reads Solo / Trio / Band, so with `tiers` absent, `sectionVm`
+  and `tiersVal` both read `TIERS_3` at `d === 2`. That is `TIERS` with *Solo* → *Duo* and nothing
+  else, so `pageTiers()` (name and price alone) keeps `TIERS`. The gate is `FORM_FIELDS_4`'s, the
+  absent key alone: once the artist edits the list it is theirs at every layout, Duo and all. The row is **not rendered at one chip**: a page whose
   packages carry no tags has nothing to filter, which is the pager's rule, and the extra `All`
   chip on the reference picture is the intended diff. `active` is clamped against the row, the
   canvas pins chip 0 and filters nothing, and the card **keys on the package's index in the whole
@@ -668,6 +684,9 @@ mutated through a single `patch()` helper.
   from the frame's own index to the first hue that clears `tierHues`' 0.22 against `bg`, since a tag
   can be the page ground itself (Grunge's fourth was its black, before Static Youth left it two tags). Its selector is the one thing in that branch
   not standing on the page ground, so its outline and idle labels take `paperFg` and not `tx`.
+  Its head's line is **`FIELDS.pricing.intro`**, `in: [2]`, seeded **`PRICING_INTRO_3`**, the
+  frame's paragraph without its first sentence (JP-070, user call, 2026-09-29): "Four ways to book
+  this act." counts packages the artist never typed, and the frame itself draws three.
   Beside it stands the frame's "Save 15% on bundles", **`FIELDS.pricing.offer`** (JP-046, user
   call, 2026-09-24; the fit had dropped it as a discount no field states): seeded with the
   frame's copy, emptiable, `in: [2]`, in every template's block, and the capsule's row stands
@@ -1134,8 +1153,23 @@ mutated through a single `patch()` helper.
   stats' shape — above). The booking calendar's `booked` dates are an
   **eleventh structured field that is not a list**: `BookedField`
   is a month to click, not a repeater, because one row per blocked date is the wrong shape for a
-  June with eight of them, and it obeys the same seed-resolver rule as the repeaters below. `c.songs` is an array of `{ title, artist, tags }`
-  (tags a raw comma string),
+  June with eight of them, and it obeys the same seed-resolver rule as the repeaters below.
+  Repertoire layout 3's set details are a **twelfth, `SetsField`** (JP-066, user call,
+  2026-09-29, reversing Retro layout 3's "the mood is the card's title"): a set is one of the
+  songs' tags, so it lists the sets `repChips()` derives from the resolved songs less their blank
+  rows — the very list `sectionVm` groups the cards by — each with a Mood and a Length box, and
+  adds and removes nothing. `c.sets` is `{ [case-folded tag]: { mood, length } }`, resolved by
+  `repSetsOf()` (absent → `REP_SETS`, the frame's Mellow · 45 min / Easy listening · 60 min /
+  High energy · 90 min on Weddings / Pubs / Birthdays in order), and each keystroke writes the
+  whole resolved object, so the first edit keeps the other seeded lines. A card's meta is
+  `repSetLine()`, the two joined on ` · ` with each dropped when empty, and the song count while
+  both are (always on the `All` fallback card); an own key only, so a tag named "constructor"
+  counts. Details for a tag no song carries stay stored and come back with the tag. A set's
+  length is the artist's claim, not a sum: the frame's "45 MIN" heads four four-minute tracks.
+  `c.songs` is an array of `{ title, artist, tags, length }`
+  (tags a raw comma string; `length` free text, printed as typed by layout 3 alone, in the seat
+  the artist held — no other repertoire frame draws a length, and a song with none leaves the
+  seat empty, the artist not being drawn there; at 768 it stands under the title, JP-044's stack),
   maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
   (`RowThumb`, the 46px cousin of `ImageField`) and a sound file. `audio` is an address, not an
@@ -1143,11 +1177,16 @@ mutated through a single `patch()` helper.
   and `sectionVm` normalises it through `extUrl()` onto `vm.tracks[].src`. `sectionVm` falls back to
   the seeded `TRACKS` (dressed in `TRACK_AUDIO`) when the key is absent. Per-row art and audio are never
   re-seeded by index once the array exists, or a row inserted third would steal track three's
-  photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, link }`,
+  photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, year, link }`,
   maintained by `GigsField` and the plainest of them: one key, one shape, no assets, and
   `link` normalised through `extUrl()` onto `vm.gigs[].url`. Its `city` is read twice —
   as a fact on every row, and, in layout 3, as the **control** `vm.gigChips` derives the
-  filter row from, which is why `vm.gigs[]` also carries a case-folded `cityKey`. `form`'s `c.fields` is an array of
+  filter row from, which is why `vm.gigs[]` also carries a case-folded `cityKey`. Its `year`
+  is printed nowhere (JP-069, user call, 2026-09-29; `GIGS` seeds 2025, the year whose weekdays
+  the frames print): `gigWeekday()` in `data.js` derives `vm.gigs[].weekday` for layout 3's disc
+  through `Date.UTC` from the month's first three letters, case-folded, a four-digit year and a
+  day the month has, and gives `''` otherwise, so the disc draws no third line and, at layout 3,
+  `GigsField` says why under the row. `form`'s `c.fields` is an array of
   `{ label, placeholder, kind }`, maintained by `FormFieldsField` and the only repeater with a
   **per-row `<select>`** (a stock shadcn one, unlike §9.1's layout dropdown — Radix's `ItemText`
   only breaks a row carrying a *thumbnail*): `kind` is `text | email | number`, and it is the whole
@@ -1192,7 +1231,7 @@ mutated through a single `patch()` helper.
   delimited textarea, `FIELDS.form.promises` — the ticked list of the enquiry form's
   layouts 1 and 2. All ten follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()` / `MAP_STATS_4` / `FORM_STEPS`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` (`TIERS_3` at pricing layout 3) / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()` / `MAP_STATS_4` / `FORM_STEPS`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package
@@ -1218,7 +1257,7 @@ mutated through a single `patch()` helper.
   gallery's, the map's, the testimonials' and the form's (`REP_HEADING_4` beside them). Both
   resolvers read both: `sectionVm` assigns them *after* the count, and `EditPanel`'s first-match
   chain puts both arms *ahead* of the count. An emptied heading stays empty at every
-  layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`, `statsVal`, `stepsVal`) has to
+  layout; the count does not come back. Each seed resolver in `EditPanel` (`songsVal`, `setsVal` through `repSetsOf()`, `tracksVal`, `gigsVal`, `tiersVal`, `formFieldsVal`, `quotesVal`, `linksVal`, `slotsVal`, `statsVal`, `stepsVal`) has to
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES`, `FOOTER_LINKS`, `MAP_STATS_4` and `FORM_STEPS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.

@@ -775,7 +775,7 @@ Settled in section 4 (the repertoire):
   reason alone: a set seated by its own colour would carry that colour round as the pager turns.
 - **Diffs carried over from Retro's branch, unchanged:** the meta line is the set's count ("6 SONGS")
   where the frame has a mood and a running time. The right-hand column is the artist, not a
-  duration. At 390, page 0 centres set 0 where the master centres its second card. At 768 the
+  duration. *(Since JP-066, 2026-09-29: the meta line is the set's mood and running time from `SetsField`, and the right-hand column the song's `length`; see `../grunge/retest-qa-fixes.md`.)* At 390, page 0 centres set 0 where the master centres its second card. At 768 the
   cards are 216 wide against the frame's 222.7, because our column is 688 and the frame's is 708.
   *Reversed in part* (JP-044, 2026-09-24, `plans/lime/retest-qa-fixes.md`): that substitution
   left the 768 title ~40–100px beside a `flex: none` artist in the card's 148, and nine of the
@@ -889,7 +889,7 @@ Settled in section 7 (pricing):
 - **Pills.** A plain row's pill is `BookPill`'s Lime defaults exactly. The featured row's is the pair
   turned round, `bg={s.bg} fg={s.ac}`: a lime disc round an ink arrow, which is what the frame's two
   disc SVGs draw. `full` at 390.
-- **Named diffs.** Two are Retro's, inherited. The seeded intro is one line (`DEFS.pricingIntro`), so the
+- **Named diffs.** Two are Retro's, inherited. The seeded intro is one line (`DEFS.pricingIntro`; **since JP-070 (rest)**, 2026-09-29, the frame's second sentence, `PRICING_INTRO_3`, see `../grunge/retest-qa-fixes.md`), so the
   head is 58.7 / 62.3 / 88.7 against 94 × 0.82 / 83 / 81, and the seeded title wraps to two lines at
   390. The pill reads *Book Now* (`cta1`) where the frame types *Book* (**since JP-070** (2026-09-28) it is `rowCta`, the *Package button*, seeded "Book" at layout 3; see `../grunge/layout-3-qa-fixes.md`), so it is 130.5 / 142.1 / 138.9
   wide against 121 × 0.82 / 113 / 111. The rest are this pass's:

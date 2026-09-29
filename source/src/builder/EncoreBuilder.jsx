@@ -35,7 +35,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import EncoreSection from './EncoreSection.jsx'
 import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
-  HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG, TIERS, TIER_KEYS, PRICE_UNIT, QUOTES,
+  HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
+  BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
+  MAP_KICKER, TESTI_KICKER, TIERS, TIERS_3, TIER_KEYS, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -45,12 +47,12 @@ import {
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, MAP_HEADING_3, TESTI_HEADING_3,
+  CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, PRICING_INTRO_3, MAP_HEADING_3, TESTI_HEADING_3,
   CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, blankRow, SONG_KEYS, TRACK_KEYS, GIG_KEYS, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -773,9 +775,22 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
   // string is what tells the ID card not to draw the column.
   vm.since = cv('since', DEFS.since)
+  // JP-071 — layout 3's ID card labels and the Genres line, the frames' words
+  // as seeds, uncased (the card's chip face cases them). Every frame breaks a
+  // stat label before its last word, so that break is composed here, the
+  // one-composed-line rule, and a one-word label stays one line. Emptied, a
+  // label is '' and the card draws its value alone.
+  const breakLast = (v) => String(v ?? '').trim().replace(/\s+(\S+)$/, '\n$1')
+  vm.sinceLabel = breakLast(cv('sinceLabel', BIO_SINCE_LABEL))
+  vm.roleLabel = breakLast(cv('roleLabel', BIO_ROLE_LABEL))
+  vm.baseLabel = breakLast(cv('baseLabel', BIO_BASE_LABEL))
+  vm.aboutLabel = cv('aboutLabel', BIO_ABOUT_LABEL)
+  vm.tagsLabel = cv('tagsLabel', BIO_TAGS_LABEL)
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
+  // JP-071 — layouts 2 and 3's "● Popular" over the list; the dot is the markup's.
+  vm.listLabel = cv('listLabel', MEDIA_LIST_LABEL)
   // vm.nowPlaying is resolved under `tracks` below, because it reads them.
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
@@ -865,7 +880,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // §10.2 layout 3 stands a line under the title, where layout 1 heads the chip
   // row with the title alone and layout 2 puts its kicker above it. Layout 3
   // only, so an emptied field drops the line — the Soundcloud rule.
-  vm.pricingIntro = cv('intro', DEFS.pricingIntro)
+  vm.pricingIntro = cv('intro', PRICING_INTRO_3)
   // Layout 3's line beside the filter capsule (JP-046): the frame's own copy,
   // uncased like the intro above it, and an emptied field drops it.
   vm.pricingOffer = cv('offer', PRICING_OFFER)
@@ -916,8 +931,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // dropped here, before the hue walk and `n`, on both surfaces, so the page is
   // exactly the page without it — the cards keep their hues, the chip row its
   // chips, and layout 3's FEATURED seat, with nothing ticked, lands on the last
-  // real package.
-  const tierList = (Array.isArray(c.tiers) ? c.tiers : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
+  // real package. An absent key is TIERS, and at layout 3 TIERS_3, the frames'
+  // Duo / Trio / Band chips (JP-070), FORM_FIELDS_4's gate; tiersVal agrees.
+  const tierList = (Array.isArray(c.tiers) ? c.tiers : d === 2 ? TIERS_3 : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
   vm.tiers = tierList.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
@@ -1012,6 +1028,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Raw casing, deliberately: a lower-case theme must not stop a chip from
     // matching the tag it was derived from.
     tags: songTags(t && t.tags),
+    // Layout 3's right-hand seat (JP-066), as typed: a running time is not
+    // prose to case, and an empty one leaves the seat empty.
+    length: String((t && t.length) ?? '').trim(),
   }))
   // `label` is cased for the chip, `tag` is what the filter compares.
   vm.repChips = repChips(songList).map((ch) => ({ ...ch, label: cased(ch.label) }))
@@ -1056,6 +1075,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // emptied one gives the seat back to the review count (JP-065). Uncased, as
   // pricing's rating is.
   vm.testiRating = cv('rating', TESTI_RATING)
+  // JP-071 — layout 3's "● Testimonials" eyebrow; the dot is the markup's.
+  vm.testiKicker = cv('kicker', TESTI_KICKER)
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips
@@ -1079,20 +1100,27 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const pool = dark.length ? dark : T.tags
     return pool[((pool.length - 1 - i) % pool.length + pool.length) % pool.length]
   }
+  // The set details SetsField keeps, keyed by the case-folded tag (JP-066).
+  const setDetails = repSetsOf(c)
   const repSet = (tag, songs, i) => {
     // `tierHues` is the pricing deck's, and it is exactly this card's pairing:
     // `cardFg` is the cream the frame sets on all three, and `acc` is the
     // mustard of the meta line, already guarded for a palette where the two
     // hues do not separate.
     const hues = tierHues(setHue(i))
+    // The frame's "MELLOW · 45 MIN": the set's own mood and running time as
+    // the artist typed them in SetsField (JP-066, user call, 2026-09-29,
+    // reversing the fit's "6 SONGS"), each dropped when empty, and the song
+    // count while both are. The All card is no tag, so it always counts.
+    // Composed here because EncoreSection composes nothing; uncased, since the
+    // caps are a style.
+    // An own key only: a tag named "constructor" is not the Object's.
+    const key = tag.toLowerCase()
+    const line = tag === REP_ALL || !Object.hasOwn(setDetails, key) ? '' : repSetLine(setDetails[key])
     return {
       label: cased(tag),
       songs,
-      // "6 SONGS", where the frame's meta reads "MELLOW · 45 MIN": the mood IS
-      // the card's own title here, and a running time is a number the artist
-      // never typed (the video section's rule). Composed here because
-      // EncoreSection composes nothing; the caps are a style, not casing.
-      meta: `${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`,
+      meta: line || `${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`,
       // The card's outline and the rule under every row. The frame draws #111
       // on the olive and rust cards and the cream on the near-black one, which
       // is `tierHues`' own accHue shape: the palette's darkest tag, unless the
@@ -1491,6 +1519,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     return {
       venue: g?.venue ?? '', city: g?.city ?? '', time: g?.time ?? '',
       month: g?.month ?? '', day: g?.day ?? '',
+      // Layout 3's disc prints it under the day, the frames' JUL / 12 / SAT
+      // (JP-069): derived, never typed, so it cannot contradict the date, and
+      // '' — no third line — for a row with no year or a date that is not one.
+      // `year` itself is printed nowhere, so `when` and `meta` do not read it.
+      weekday: gigWeekday(g?.year, g?.month, g?.day),
       url: extUrl(g?.link ?? ''),
       // Layout 2's Get Directions pill, a route to the venue.
       directions: directionsUrl(g?.venue, g?.city),
@@ -1562,6 +1595,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
   vm.gigPage = PINS.length
+  // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased.
+  vm.mapKicker = cv('kicker', MAP_KICKER)
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
@@ -2401,13 +2436,14 @@ function NameInput({ value, onChange, style }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §8.6b SongsField — the repertoire's song list. The first of the five
+ * §8.6b SongsField — the repertoire's song list. The first of the ten
  * list-shaped fields with a structured editor rather than a delimited
- * textarea (TracksField, GigsField, TiersField and FormFieldsField below
- * are the others, and BookedField after them is a structured editor of a
- * sixth shape that is not a list at all): the artist
- * types a title, an artist and any tags, and the tags are what the
- * section's filter chips are built from.
+ * textarea (TracksField, GigsField, TiersField, FormFieldsField and the rest
+ * below are the others; BookedField and SetsField are structured editors of
+ * a shape that is not a list at all): the artist types a title, an artist,
+ * a length and any tags, and the tags are what the section's filter chips —
+ * and layout 3's sets — are built from. The length is read by layout 3
+ * alone (JP-066).
  *
  * Modelled on ImagesField above — numbered rows, a round X per row, an
  * add affordance, an "n of max" footnote — and, like it, deliberately
@@ -2425,7 +2461,7 @@ function SongsField({ value, max, onChange }) {
   // the sparse `c.songs` a plain value rather than something patched in place.
   const setAt = (i, k, v) => onChange(list.map((sg, j) => (j === i ? { ...sg, [k]: v } : sg)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
-  const add = () => onChange([...list, { title: '', artist: '', tags: '' }])
+  const add = () => onChange([...list, { title: '', artist: '', tags: '', length: '' }])
 
   const row = (i, sg) => (
     <div key={i} style={{
@@ -2459,13 +2495,22 @@ function SongsField({ value, max, onChange }) {
       </div>
       {/* Stacked, not three across: this panel is also the mobile edit sheet
           and three inputs do not fit side by side at its width. The 25px
-          gutter keeps both lower fields aligned under the title. */}
+          gutter keeps both lower fields aligned under the title. The length
+          (JP-066) is four glyphs, so it rides beside the artist in a narrow
+          box rather than taking a line of its own. */}
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <Input
-          value={sg.artist ?? ''} placeholder="Artist" onClick={stopE}
-          onChange={(e) => setAt(i, 'artist', e.target.value)}
-          className="h-auto" style={SONG_ROW_INPUT}
-        />
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <Input
+            value={sg.artist ?? ''} placeholder="Artist" onClick={stopE}
+            onChange={(e) => setAt(i, 'artist', e.target.value)}
+            className="h-auto" style={{ ...SONG_ROW_INPUT, flex: 1, minWidth: 0 }}
+          />
+          <Input
+            value={sg.length ?? ''} placeholder="3:54" aria-label="Length" onClick={stopE}
+            onChange={(e) => setAt(i, 'length', e.target.value)}
+            className="h-auto" style={{ ...SONG_ROW_INPUT, width: '64px', flex: 'none' }}
+          />
+        </div>
         <Input
           value={sg.tags ?? ''} placeholder="Tags — weddings, pubs" onClick={stopE}
           onChange={(e) => setAt(i, 'tags', e.target.value)}
@@ -2498,6 +2543,69 @@ function SongsField({ value, max, onChange }) {
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
         {list.length} of {max}
       </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
+ * §8.6b′ SetsField — repertoire layout 3's set details (JP-066, user call,
+ * 2026-09-29).
+ *
+ * A set is one of the songs' tags, so it is derived, and its mood and
+ * running time have nowhere to live on a song. This is the second structured
+ * editor that is not a list, after BookedField: one row per set the songs'
+ * tags make — the very list sectionVm groups the cards by, `repChips()` over
+ * the resolved songs less their blank rows — each with a Mood and a Length
+ * box. It adds and removes nothing: a set comes and goes with its tag.
+ *
+ * `value` is `{ [case-folded tag]: { mood, length } }`, keyed by the tag
+ * rather than a position so a set's details follow it through a reordered or
+ * rewritten song list. Every keystroke writes the whole object — the resolved
+ * one, seed included — so the first edit materialises REP_SETS and the other
+ * sets' lines do not vanish from the canvas (tracksVal's rule). Details for a
+ * tag no song carries any more stay stored and come back with the tag; the
+ * field shows only the live sets.
+ * ------------------------------------------------------------------- */
+
+function SetsField({ value, songs, onChange }) {
+  const map = value && typeof value === 'object' && !Array.isArray(value) ? value : {}
+  const sets = repChips((songs || []).filter((t) => !blankRow(t, SONG_KEYS))).slice(1)
+  const setAt = (key, k, v) => onChange({ ...map, [key]: { ...(map[key] || {}), [k]: v } })
+
+  if (sets.length === 0) {
+    return (
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+        Tag your songs to make sets.
+      </p>
+    )
+  }
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {sets.map((ch) => {
+        const key = ch.tag.toLowerCase()
+        const d = Object.hasOwn(map, key) ? map[key] || {} : {}
+        return (
+          <div key={key} style={{
+            border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+            display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+          }}>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#1B1A17', overflowWrap: 'anywhere' }}>{ch.label}</span>
+            {/* shadcn Input for its focus ring — see SongsField above. */}
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <Input
+                value={d.mood ?? ''} placeholder="Mood" aria-label={`${ch.label} mood`} onClick={stopE}
+                onChange={(e) => setAt(key, 'mood', e.target.value)}
+                className="h-auto" style={{ ...SONG_ROW_INPUT, flex: 1, minWidth: 0 }}
+              />
+              <Input
+                value={d.length ?? ''} placeholder="45 min" aria-label={`${ch.label} length`} onClick={stopE}
+                onChange={(e) => setAt(key, 'length', e.target.value)}
+                className="h-auto" style={{ ...SONG_ROW_INPUT, width: '76px', flex: 'none' }}
+              />
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -2694,16 +2802,21 @@ function TracksField({ value, max, onChange, onToast }) {
  * §8.6d GigsField — the events map's list of shows.
  *
  * The third structured repeater. Row shape is
- * { venue, city, time, month, day, link }: the first five are what the
- * gig card prints, and `link` is where its tickets go on the published
+ * { venue, city, time, month, day, year, link }: the first five are what
+ * the gig card prints, `year` what layout 3's weekday is worked out from,
+ * and `link` is where its tickets go on the published
  * page — an address rather than anything uploaded, normalised through
  * extUrl() in sectionVm like the media player's Soundcloud button. A row
  * without one stays the picture it has always been.
  *
- * `month` and `day` are two fields rather than one date because the card
- * draws them as two lines of a boxed stamp, and because an artist writing
- * "Jul"/"12" is not committing to a year, a format or a calendar the
- * section does not have. Nothing here parses them.
+ * `month`, `day` and `year` are three fields rather than one date because
+ * the card draws the first two as two lines of a boxed stamp, and the month
+ * is the artist's own word ("Jul", "July", "Sept") rather than a format. The
+ * year is printed nowhere: layout 3's stamp adds the weekday under the day
+ * (JP-069), which gigWeekday() in data.js derives from all three, so a stamp
+ * never says SAT on a Friday. A row that names no real day (no year, a
+ * two-digit one, 31 Jun) keeps its place and draws no weekday, and at
+ * layout 3 the row says so.
  *
  * Same house rules as the two above: whole-array rewrite per keystroke,
  * numbered rows, a round X, a dashed add, an "n of max" footnote, no
@@ -2716,18 +2829,20 @@ function TracksField({ value, max, onChange, onToast }) {
  * ------------------------------------------------------------------- */
 
 const BLANK_GIG_HINT = 'Empty gigs aren’t shown.'
+const NO_WEEKDAY_HINT = 'No weekday: the date needs a real day and a four-digit year.'
 
 function GigsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
-  const add = () => onChange([...list, { venue: '', city: '', time: '', month: '', day: '', link: '' }])
+  const add = () => onChange([...list, { venue: '', city: '', time: '', month: '', day: '', year: '', link: '' }])
 
-  // The two short fields that share a line. Wider than half at this panel's
-  // width would push the pair to wrap, which reads as two rows rather than one.
-  const pair = (a, b) => (
-    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+  // The short fields that share a line: city and time, and month, day and
+  // year. Wider than this panel's width would push them to wrap, which reads
+  // as two rows rather than one.
+  const pair = (...xs) => (
+    <div style={{ display: 'flex', gap: '6px' }}>{xs}</div>
   )
 
   const row = (i, g) => (
@@ -2784,14 +2899,26 @@ function GigsField({ value, max, design, onChange }) {
             onChange={(e) => setAt(i, 'day', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
+          <Input
+            key="year" value={g.year ?? ''} placeholder="Year" inputMode="numeric" onClick={stopE}
+            onChange={(e) => setAt(i, 'year', e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />,
         )}
         <UrlInput
           value={g.link ?? ''} placeholder="Tickets link"
           onChange={(v) => setAt(i, 'link', v)}
           className="h-auto" style={SONG_ROW_INPUT}
         />
-        {blankRow(g, GIG_KEYS) && (
+        {blankRow(g, GIG_KEYS) ? (
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_GIG_HINT}</p>
+        ) : design === 2 && [g.month, g.day, g.year].some((v) => String(v ?? '').trim())
+          && !gigWeekday(g.year, g.month, g.day) && (
+          // Only layout 3 prints the weekday, so only there is a date that
+          // names no day worth a line, and only once a date box is filled, so
+          // a new row holding a venue alone is not scolded mid-edit. The row
+          // still shows, without the weekday.
+          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{NO_WEEKDAY_HINT}</p>
         )}
       </div>
     </div>
@@ -3383,8 +3510,8 @@ function FormFieldsField({ value, max, design, onChange }) {
 /* ------------------------------------------------------------------ *
  * §8.6g BookedField — the booking calendar's blocked dates.
  *
- * The sixth structured editor, and the only one that is not a repeater: a
- * month of the artist's own to click. One row per blocked date is the
+ * The sixth structured editor, and the first that is not a repeater (SetsField
+ * above is the other, JP-066): a month of the artist's own to click. One row per blocked date is the
  * wrong shape for a June with eight of them, and a date typed into a row
  * cannot be read against the month it falls in — which is the whole
  * question being asked here.
@@ -3771,6 +3898,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // exactly as sectionVm does, or the canvas would list twelve songs while the
   // repeater showed none.
   const songsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : SONGS)
+  // Layout 3's set details (JP-066), through sectionVm's own resolver.
+  const setsVal = () => repSetsOf(sec.c)
   // And the same again for the media player's tracks, whose seed is TRACKS
   // dressed in the Retro artwork and the demo audio. The first keystroke
   // materialises this whole array into `c.tracks`, photographs and sound files
@@ -3788,8 +3917,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   const gigsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : GIGS)
   // And for the pricing packages, whose seed needs none either: TIERS carries
   // its tags as the comma string and its features as the newline one, which is
-  // exactly what TiersField edits and what sectionVm splits.
-  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : TIERS)
+  // exactly what TiersField edits and what sectionVm splits — TIERS_3 at layout
+  // 3 (JP-070), sectionVm's own gate, so the two resolve one list.
+  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : design === 2 ? TIERS_3 : TIERS)
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
   // FormFieldsField edits and sectionVm reads — FORM_FIELDS_4 at layout 4
@@ -3916,6 +4046,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         <ImagesField value={imgsVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'songs' ? (
                         <SongsField value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                      ) : f.type === 'sets' ? (
+                        // Takes the songs as a second value, BookedField's
+                        // `open` rule: the sets are the songs' tags.
+                        <SetsField value={setsVal()} songs={songsVal('songs')} onChange={(v) => set(v)} />
                       ) : f.type === 'tracks' ? (
                         <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'gigs' ? (
@@ -3935,9 +4069,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       ) : f.type === 'steps' ? (
                         <StepsField value={stepsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
-                        // The one rung that takes a second value, the way
-                        // TracksField is the one that takes a toast: the month
-                        // it opens on is the calendar's own opening date.
+                        // A rung that takes a second value, as SetsField's
+                        // does and the way TracksField is the one that takes a
+                        // toast: the month it opens on is the calendar's own
+                        // opening date.
                         <BookedField value={bookedVal(f.k)} open={openVal('open')} onChange={(v) => set(v)} />
                       ) : f.type === 'date' ? (
                         // The platform picker, and its value is already the ISO

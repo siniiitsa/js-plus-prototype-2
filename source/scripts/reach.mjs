@@ -87,6 +87,30 @@ const PROBES = [
   { name: 'testimonials.stars', cats: ['testimonials'], param: 'cj', value: { stars: Z } },
   // JP-070: every package's pill, layout 4's row pill until then.
   { name: 'pricing.rowCta', cats: ['pricing'], param: 'cj', value: { rowCta: Z } },
+  // JP-071: eight frame labels made fields — the bio's ID-card labels and its
+  // Genres line, media's "● Popular", and layout 3's map and testimonials eyebrows.
+  { name: 'bio.sinceLabel', cats: ['bio'], param: 'cj', value: { sinceLabel: Z } },
+  { name: 'bio.roleLabel', cats: ['bio'], param: 'cj', value: { roleLabel: Z } },
+  { name: 'bio.baseLabel', cats: ['bio'], param: 'cj', value: { baseLabel: Z } },
+  { name: 'bio.aboutLabel', cats: ['bio'], param: 'cj', value: { aboutLabel: Z } },
+  { name: 'bio.tagsLabel', cats: ['bio'], param: 'cj', value: { tagsLabel: Z } },
+  { name: 'media.listLabel', cats: ['media'], param: 'cj', value: { listLabel: Z } },
+  { name: 'map.kicker', cats: ['map'], param: 'cj', value: { kicker: Z } },
+  { name: 'testimonials.kicker', cats: ['testimonials'], param: 'cj', value: { kicker: Z } },
+  // JP-066: a song's length and layout 3's set details. The length is a column
+  // of `songs`, so both sides carry the same one-song list and only the length
+  // differs; the sets key a live tag, or nothing could move.
+  { name: 'repertoire.songs.length', cats: ['repertoire'], param: 'cj',
+    base: { songs: [{ title: 'Song', artist: 'Artist', tags: 'Weddings', length: '' }] },
+    value: { songs: [{ title: 'Song', artist: 'Artist', tags: 'Weddings', length: Z }] } },
+  { name: 'repertoire.sets', cats: ['repertoire'], param: 'cj', value: { sets: { weddings: { mood: Z, length: Z } } } },
+  // JP-070 (rest): layout 3's intro line, seeded with the frame's second sentence.
+  { name: 'pricing.intro', cats: ['pricing'], param: 'cj', value: { intro: Z } },
+  // JP-069: a gig's year, printed nowhere and read only as layout 3's weekday,
+  // so both sides carry one gig and only a real year against none differs.
+  { name: 'map.gigs.year', cats: ['map'], param: 'cj',
+    base: { gigs: [{ venue: 'Venue', city: 'City', time: '22:00', month: 'Jul', day: '12', year: '', link: '' }] },
+    value: { gigs: [{ venue: 'Venue', city: 'City', time: '22:00', month: 'Jul', day: '12', year: '2025', link: '' }] } },
 ]
 const base = process.env.BASE || 'http://localhost:5173'
 const browser = await puppeteer.launch({ executablePath: headlessShell(), headless: 'shell' })

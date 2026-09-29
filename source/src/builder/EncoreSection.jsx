@@ -4576,11 +4576,13 @@ function Bio({ s }) {
       </div>
     ) : <div style={{ height: '1px', background: `${s.tx}52`, flex: 'none' }} />
 
-    const stat = (label, value) => (
-      <div key={label} style={col(u(15), {
+    // The labels are the artist's (JP-071), broken before the last word in
+    // `sectionVm`; an emptied one leaves the value alone in its column.
+    const stat = (key, label, value) => (
+      <div key={key} style={col(u(15), {
         flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
       })}>
-        <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
+        {label && <span style={{ ...chipType, whiteSpace: 'pre-line', overflowWrap: 'break-word' }}>{label}</span>}
         {/* Two lines reserved either way: 2 × 1.1 in the label face, 2 × 1.26
             in Chakra Petch (Grunge's 50 box is 2 × 20 × 1.26; Editorial's
             values are the same Label/XS in `font/ui`). */}
@@ -4591,9 +4593,9 @@ function Bio({ s }) {
       </div>
     )
     const stats = [
-      s.since ? stat('Performing\nsince:', s.since) : null,
-      s.kicker ? stat('Current\nrole:', s.kicker) : null,
-      s.location ? stat('Based\nin:', s.location) : null,
+      s.since ? stat('since', s.sinceLabel, s.since) : null,
+      s.kicker ? stat('role', s.roleLabel, s.kicker) : null,
+      s.location ? stat('base', s.baseLabel, s.location) : null,
     ].filter(Boolean)
 
     const head = (
@@ -4658,7 +4660,7 @@ function Bio({ s }) {
       }}>
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
-          <span style={chipType}>[ About ]</span>
+          {s.aboutLabel && <span style={chipType}>[ {s.aboutLabel} ]</span>}
           <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP1}</p>
           {s.bioP2 && (
             <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP2}</p>
@@ -4763,10 +4765,13 @@ function Bio({ s }) {
             instance draws it. Editorial's 768 instance (984:16821) is the
             `Theme=Lime` variant, olive and lime, a leak; its row is drawn
             from Editorial's own chips, as the 1440 and 390 instances draw
-            it. */}
+            it. The line is `tagsLabel` (JP-071), and an emptied one leaves
+            the chips alone. */}
         {s.showTags === 'show' && (
           <div style={col(u(16), { alignItems: 'stretch' })}>
-            <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>Genres</span>
+            {s.tagsLabel && (
+              <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>{s.tagsLabel}</span>
+            )}
             <TagChips s={s} radius={s.radiusChip} />
           </div>
         )}
@@ -4798,18 +4803,20 @@ function Bio({ s }) {
     }
 
     // The frame hand-breaks each stat label onto two lines, which is what sets
-    // its column's width; the labels are ours to write, so the break is kept
-    // as a literal newline rather than left to a measure nothing states.
-    const stat = (label, value) => (
+    // its column's width. The labels are the artist's since JP-071, and the
+    // break before the last word is composed in `sectionVm` as a newline
+    // rather than left to a measure nothing states. An emptied label leaves
+    // the value alone in its column.
+    const stat = (key, label, value) => (
       // Every master states 96 on the *column*; it is carried on the row below
       // instead, as a floor. Unwrapped the two are the same picture — the
       // values sit on the 96 box's floor, which is what keeps the head band at
       // the frame's 144 — and wrapped they are not: a second line of 96-tall
       // columns holding our one-line values opens a 58px hole between the rows.
-      <div key={label} style={col(u(15), {
+      <div key={key} style={col(u(15), {
         flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
       })}>
-        <span style={{ ...chipType, whiteSpace: 'pre-line' }}>{label}</span>
+        {label && <span style={{ ...chipType, whiteSpace: 'pre-line', overflowWrap: 'break-word' }}>{label}</span>}
         {/* Two lines reserved (labelStyle's 1.1 leading), because every master's
             value is two lines: a one-line value then keeps its column the height
             of its neighbours, so the labels still share a top. */}
@@ -4817,9 +4824,9 @@ function Bio({ s }) {
       </div>
     )
     const stats = [
-      s.since ? stat('Performing\nsince:', s.since) : null,
-      s.kicker ? stat('Current\nrole:', s.kicker) : null,
-      s.location ? stat('Based\nin:', s.location) : null,
+      s.since ? stat('since', s.sinceLabel, s.since) : null,
+      s.kicker ? stat('role', s.roleLabel, s.kicker) : null,
+      s.location ? stat('base', s.baseLabel, s.location) : null,
     ].filter(Boolean)
 
     // 390 draws this as a column — the name over the stats, at the same 10 the
@@ -4904,7 +4911,7 @@ function Bio({ s }) {
             moves to the photograph. */}
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: ink })}>
-          <span style={chipType}>[ About ]</span>
+          {s.aboutLabel && <span style={chipType}>[ {s.aboutLabel} ]</span>}
           <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5 }}>{s.bioP1}</p>
           {/* The masters set one long paragraph here; the section has two, and
               `para2` had until now drawn in no layout at all. Emptied, it is
@@ -5355,10 +5362,11 @@ function Bio({ s }) {
         }}>{s.title}</h2>
         {s.showTags === 'show' && (
           <div style={col(u(16), { alignSelf: 'stretch', maxWidth: desk ? u(457) : undefined })}>
-            {!s.mob && (
+            {/* `tagsLabel` (JP-071), layout 3's Genres line's key. */}
+            {!s.mob && s.tagsLabel && (
               <span style={{
                 fontFamily: s.body, fontSize: u(T.genre), lineHeight: 1.5, color: s.ac,
-              }}>Genres</span>
+              }}>{s.tagsLabel}</span>
             )}
             <TagChips s={s} radius={u(8)} size={u(T.chip)} />
           </div>
@@ -6603,12 +6611,12 @@ function Media({ s }) {
           minWidth: 0, alignItems: 'stretch',
           minHeight: desk || !s.tracks.length ? undefined : '596px',
         })}>
-          <div style={row('0', {
-            flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`,
+          <div style={row(u(12), {
+            flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`,
             color: s.tx, textTransform: 'uppercase',
             ...(ed ? { position: 'relative' } : null),
           })}>
-            <span style={chipType}>● Popular</span>
+            {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
             <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
             {ed && dash('bottom')}
           </div>
@@ -6921,10 +6929,13 @@ function Media({ s }) {
         // column against the fan's, not a number this branch states.
         minHeight: desk || !s.tracks.length ? undefined : '596px',
       })}>
-        <div style={row('0', {
-          flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: ink,
+        {/* The label is `listLabel` (JP-071). A long one wraps inside the row
+            rather than widening the page, 12 clear of the counter; emptied, the
+            counter keeps the right-hand end. */}
+        <div style={row(u(12), {
+          flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: ink,
         })}>
-          <span style={chip({ textTransform: 'uppercase' })}>● Popular</span>
+          {s.listLabel && <span style={chip({ textTransform: 'uppercase', whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>● {s.listLabel}</span>}
           {/* Layout 1 derives its counter from the track count the same way. */}
           <span style={chip({ textTransform: 'uppercase' })}>
             {s.tracks.length} Featured / {s.tracks.length} Max
@@ -7323,11 +7334,11 @@ function Media({ s }) {
           {limeHead}
           {limeCard}
           <div style={col('0', { alignItems: 'stretch' })}>
-            <div style={row('0', {
-              flex: 'none', justifyContent: 'space-between', padding: `${u(16)} 0`, color: s.tx,
+            <div style={row(u(12), {
+              flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: s.tx,
               position: ed ? 'relative' : undefined,
             })}>
-              <span style={chipType}>● Popular</span>
+              {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
               <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
               {footDash}
             </div>
@@ -7450,12 +7461,13 @@ function Media({ s }) {
             two labels are separated by an unfilled `flex-[1_0_0]` spacer — a
             gap, not a rule, and the render draws nothing there — so this is a
             space-between row, which is what layout 2's counter row already is.
-            The count is derived, as it is in layouts 1 and 2. */}
-        <div style={row('0', {
-          flex: 'none', justifyContent: 'space-between',
+            The count is derived, as it is in layouts 1 and 2, and the label
+            is `listLabel` (JP-071), layout 2's key. */}
+        <div style={row(u(12), {
+          flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end',
           padding: `${u(16)} 0`, color: s.tx,
         })}>
-          <span style={chip}>● Popular</span>
+          {s.listLabel && <span style={{ ...chip, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
           <span style={chip}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
         </div>
 
@@ -9375,14 +9387,16 @@ function Pricing({ s }) {
   //    in the chip face — so this is the heading seat and not an eyebrow.
   //  - The paragraph under it is `intro`, a field added for this layout, which
   //    no signed-off layout reads (the tags row's discriminator for question 7).
-  //    Its default drops the frame's "Four ways to book this act." — a count of
-  //    the artist's own packages, the video section's rule — and the clause that
-  //    repeats TITLES.pricing almost word for word; see DEFS.pricingIntro.
+  //    Its default, PRICING_INTRO_3, is the frame's paragraph without "Four
+  //    ways to book this act." — a count of the artist's own packages, the
+  //    video section's rule (JP-070 restored the rest, 2026-09-29).
   //  - The Duo / Trio / Band capsule is `s.tierChips`, layout 1's filter row in
   //    a different dress: the same `chip` state, the same `s.live` gate, the
   //    same clamp, the same pinned 0 on the canvas and the same not-drawn-at-one
-  //    (a filter with nothing to filter is the pager's case). The extra `All`
-  //    that leads it is layout 1's intended diff, unchanged.
+  //    (a filter with nothing to filter is the pager's case). Its Duo is
+  //    TIERS_3's, this layout's own tag seed while the packages are unedited
+  //    (JP-070). The extra `All` that leads it is layout 1's intended diff,
+  //    unchanged.
   //  - "Save 15% on bundles" beside the capsule is `s.pricingOffer`, a field
   //    added for it (JP-046, reversing this fit's "a discount no field
   //    states"): seeded with the frame's copy, emptiable, drawn 14 from the
@@ -11756,12 +11770,13 @@ function Repertoire({ s }) {
   //
   //  - **The sets are the tags.** `sectionVm`'s `repSets` groups the songs by
   //    the same vocabulary the chip row is derived from, so the frame's three
-  //    cards are the seed's three tags and nothing was invented; the meta line
-  //    is the set's own count where the frame's is a mood and a running time,
-  //    the mood being the card's title here and the time a number the artist
-  //    never typed. An untagged song would belong to no set, so `repSets`
-  //    appends an `All` card holding the whole list exactly when the tag cards
-  //    do not already reach every song — see the note there.
+  //    cards are the seed's three tags and nothing was invented. The meta line
+  //    is the set's mood and running time, which SetsField keeps per tag
+  //    (JP-066, user call, 2026-09-29, reversing the fit's song count), and
+  //    the count again while both are empty. An untagged song would belong to
+  //    no set, so `repSets` appends an `All` card holding the whole list
+  //    exactly when the tag cards do not already reach every song — see the
+  //    note there.
   //  - **The card shows four songs and the link reveals the rest.** The frame
   //    draws four rows *and* a *View full set →*, which is the design saying the
   //    card is a subset; wiring that link to the reveal is the pricing deck's
@@ -11770,11 +11785,13 @@ function Repertoire({ s }) {
   //    second label had to be invented, and the link is not drawn at all on a
   //    set of four or fewer (the pager's not-drawn-at-one rule). On the canvas
   //    there is no handler, so every card is the master's picture.
-  //  - **The row's right-hand column is the artist, not a duration** — the
-  //    section has no duration and every other layout pairs the two. The frame
-  //    holds both sides `shrink-0` under an `overflow-clip`; ours cannot, since
-  //    "Whitney Houston" beside "Don't Stop Me Now" would push off the 242px
-  //    mobile row, so the title takes the ellipsis and the artist holds its
+  //  - **The row's right-hand column is the song's length**, the frame's
+  //    reading (JP-066): a `length` column in SongsField that no other layout
+  //    reads, since none of their frames draws one. It was the artist until
+  //    then, and the artist is not drawn here at all, as the frame draws none;
+  //    a song with no length leaves the seat empty. The frame holds both sides
+  //    `shrink-0` under an `overflow-clip`; ours cannot, since the length is
+  //    free text, so the title takes the ellipsis and the length holds its
   //    width (the media player's destroys-its-own-content rule).
   //
   // The pager is derived, and it is the reason the three widths agree: `perPage`
@@ -11800,7 +11817,7 @@ function Repertoire({ s }) {
       title: u(desk ? 16 : 15),               // body-lg — the set's name
       meta: u(desk ? 12 : 11),                // chip — the count line
       song: u(desk ? 16 : tab ? 12 : 13),     // list — non-monotonic at 390
-      small: u(12),                           // body-sm — the artist, the link
+      small: u(12),                           // body-sm — the length, the link
     }
     // Every master divides a stated card height between rows that are
     // `flex: 1 0 0` — 239 over four at 1440, 280 over four at both narrow
@@ -11857,10 +11874,12 @@ function Repertoire({ s }) {
                 letterSpacing: s.dls, minWidth: 0,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{sg.title}</span>
-              <span style={{
-                fontFamily: s.body, fontSize: T.small, lineHeight: 1.4,
-                flex: 'none', whiteSpace: 'nowrap',
-              }}>{sg.artist}</span>
+              {sg.length && (
+                <span style={{
+                  fontFamily: s.body, fontSize: T.small, lineHeight: 1.4,
+                  flex: 'none', whiteSpace: 'nowrap',
+                }}>{sg.length}</span>
+              )}
             </div>
           ))}
           {/* `marginTop: auto` is what keeps the link on the card's floor once
@@ -11990,11 +12009,14 @@ function Repertoire({ s }) {
       // `py-6` is therefore inert.
       const limeRowH = u(G.rowH)
       // JP-044 (2026-09-24): the frame's row is a title beside a four-glyph
-      // duration, and ours puts the artist in that seat — beside a 19px title
+      // duration, and ours put the artist in that seat — beside a 19px title
       // in the 768 card's 148 (Grunge 168) that cut most seeded titles to an
-      // ellipsis. So at 768 the artist stands under the title, a named diff
+      // ellipsis. So at 768 the seat stands under the title, a named diff
       // from the frame's one row; the pinned 57 / 62.5 holds both lines. The
-      // desktop and 390 rows fit and keep the frame's.
+      // desktop and 390 rows fit and keep the frame's. The seat has held the
+      // length since JP-066, and the stack stays: on one row it fits beside
+      // every seeded title under Lime and Grunge, but Editorial's Noto
+      // "DON'T STOP ME NOW" is 160 of its 175.
       const stack = tab
       const disp = (lh) => grunge || ed ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
       const body = (size, lh, extra) => ({
@@ -12030,9 +12052,11 @@ function Repertoire({ s }) {
                   letterSpacing: s.dls, minWidth: 0, maxWidth: '100%',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{sg.title}</span>
-                <span style={body(s.bodySm, 1.4, stack ? {
-                  maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                } : { flex: 'none', whiteSpace: 'nowrap' })}>{sg.artist}</span>
+                {sg.length && (
+                  <span style={body(s.bodySm, 1.4, stack ? {
+                    maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  } : { flex: 'none', whiteSpace: 'nowrap' })}>{sg.length}</span>
+                )}
               </div>
             ))}
             {more && (
@@ -16007,8 +16031,10 @@ function Calendar({ s }) {
             {s.calDays.map(dayName)}
             {month.cells.map(dot)}
           </div>
-          {/* The three labels are the frame's own, the media player's "● Popular"
-              precedent, and the row is drawn whole whatever the month holds: a
+          {/* The three labels are the frame's own literals, Retro layout 2's
+              label rule (JP-071 made the eight reported labels fields, the
+              media player's "● Popular" among them, and named these three as
+              unreported siblings that stay), and the row is drawn whole whatever the month holds: a
               key is the vocabulary of the design, not a summary of the page, so
               it does not hide the line for a state this month happens not to be
               in (the gallery's hide-the-empty-row rule is about a tile that
@@ -18619,7 +18645,9 @@ function EventsMap({ s }) {
   // **The chip row is the gigs' own cities** (`vm.gigChips`, above). The
   // frame's All / Upcoming · 5 / Past · 3 / Filter ↓ is three claims and a dead
   // control — nothing in this file reads the clock, so "upcoming" and "past"
-  // are unknowable — and the city is what the heading "Where I'm playing." is
+  // are unknowable here (a gig's `year`, JP-069, would let the published tab
+  // derive them from its `today`; named, and out of scope) — and the city is
+  // what the heading "Where I'm playing." is
   // about. It is derived, it carries the frame's own `label · count`, and it is
   // not drawn below two cities. Its cost is named rather than engineered away:
   // `g.pin` pairs a gig with a dot by its index in the **whole** list, so a
@@ -18629,8 +18657,9 @@ function EventsMap({ s }) {
   // page is one gig, every gig would light dot 0 and the map would never move.
   //
   // **Five things the frame draws are dropped**, all of them claims or controls
-  // with nowhere to go: the row's weekday (no year and no clock, so `SAT` is
-  // not derivable from `Jul 12`), the "Upcoming"/"Past" status pill (its seat
+  // with nowhere to go: the row's weekday (since restored: a gig carries a
+  // `year` and `sectionVm` derives `gg.weekday` from it, JP-069, user call,
+  // 2026-09-29), the "Upcoming"/"Past" status pill (its seat
   // stays empty: the row's hour sits in the sub line, "Manchester · 22:00",
   // where every master prints it — JP-069, user call, 2026-09-28; it had
   // taken that seat as a chip, layout 2's own words), the 30/60/120mi ring
@@ -18891,7 +18920,7 @@ function EventsMap({ s }) {
 
       const headL = (
         <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
-          <span style={bodySm}>Gigs &amp; travel</span>
+          {s.mapKicker && <span style={bodySm}>{s.mapKicker}</span>}
           <h2 style={{ margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null) }}>{s.title}</h2>
         </div>
       )
@@ -18946,11 +18975,18 @@ function EventsMap({ s }) {
             borderRadius: ed ? 0 : '999px', background: mist, boxShadow: ring(hair),
             color: on ? G.litBoxFg : ink,
           })}>
-            {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation. */}
+            {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation.
+                The weekday is the month's style again, the frames' third line
+                (JP-069), and is not drawn when the date names no day. */}
             <span style={{
               fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
             }}>{gg.month}</span>
             <span style={{ fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26 }}>{gg.day}</span>
+            {!!gg.weekday && (
+              <span style={{
+                fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
+              }}>{gg.weekday}</span>
+            )}
           </span>
         )
         const lines = (
@@ -19246,15 +19282,17 @@ function EventsMap({ s }) {
 
     const head = (
       <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%' })}>
-        {/* The eyebrow stays the frame's own label, which is layout 1's call in
-            this very section ("Shows/coverage"). `base` was tried here first,
-            on the gallery's prefer-a-field rule, and read back as a stutter:
-            the head was then `TITLES.map`'s "Manchester", so it printed "Based
-            in Manchester" over "Manchester" — the pricing deck's
-            render-the-head-and-read-it rule. It goes along the map's foot
-            instead, where the frame's own line already names a place. The
-            head has been the frame's "Where I'm playing." since JP-070. */}
-        <span style={body12}>Gigs &amp; travel</span>
+        {/* The eyebrow is the frame's own words, seeded into its own field,
+            `kicker` (JP-071, user call, 2026-09-29; it was a literal, layout
+            1's call in this very section, "Shows/coverage"), and not drawn
+            when emptied. `base` was tried here first, on the gallery's
+            prefer-a-field rule, and read back as a stutter: the head was then
+            `TITLES.map`'s "Manchester", so it printed "Based in Manchester"
+            over "Manchester" — the pricing deck's render-the-head-and-read-it
+            rule. It goes along the map's foot instead, where the frame's own
+            line already names a place. The head has been the frame's "Where
+            I'm playing." since JP-070. */}
+        {s.mapKicker && <span style={body12}>{s.mapKicker}</span>}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
           letterSpacing: s.dls, color: hot,
@@ -19313,12 +19351,19 @@ function EventsMap({ s }) {
           color: on ? hot : sheetFg,
         })}>
           {/* Label/XXXS, a literal 7 at every width rather than a token. The
-              frame's third line is the weekday, which needs a year and a clock
-              and so is not derivable from "Jul 12". */}
+              frame's third line is the weekday, in the month's style again:
+              `gg.weekday`, derived from the gig's month, day and year in
+              sectionVm (JP-069, user call, 2026-09-29), and not drawn when
+              they name no day. The disc is a fixed 56, so it does not grow. */}
           <span style={{
             fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
           }}>{gg.month}</span>
           <span style={{ fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{gg.day}</span>
+          {!!gg.weekday && (
+            <span style={{
+              fontFamily: s.body, fontSize: u(7), lineHeight: 1.3, textTransform: 'uppercase',
+            }}>{gg.weekday}</span>
+          )}
         </span>
       )
       const lines = (
@@ -21109,8 +21154,10 @@ function Testimonials({ s }) {
 
     const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
 
-    // The head. Its eyebrow is the frame's own label, a literal the way the
-    // media player's "● Popular" is; the display line is the section's
+    // The head. Its eyebrow is the frame's own label, a literal by Retro layout
+    // 2's label rule — an unreported sibling JP-071 named and kept, where
+    // layout 3's "● Testimonials" and the media player's "● Popular" became
+    // fields; the display line is the section's
     // `heading`, which layout 1 draws nowhere; and the sentence under it is the
     // new `sub`. Each of the two fields is rendered or not rather than printed
     // blank, since a `col` gap is spent on an empty span the same as a full one.
@@ -21903,7 +21950,7 @@ function Testimonials({ s }) {
       return (
         <div style={col(u(24))}>
           <div style={col('0px', { width: '100%', color: s.tx })}>
-            <span style={small}>&#9679; Testimonials</span>
+            {s.testiKicker && <span style={small}>&#9679; {s.testiKicker}</span>}
             {!!s.title && (
               <h2 style={{
                 margin: 0, ...disp(s.display, s.dispMd, 1),
@@ -21947,15 +21994,17 @@ function Testimonials({ s }) {
 
     return (
       <div style={col(u(24))}>
-        {/* The eyebrow is the frame's own label, the media player's "● Popular"
-            precedent; the display line is `heading`, which layout 2 was the
-            first design to draw. The 1440 master pins this column at 306 and
+        {/* The eyebrow is the frame's own word seeded into `kicker` (JP-071,
+            user call, 2026-09-29; it was a literal on the media player's
+            "● Popular" precedent, which went the same way), and an emptied
+            one drops it, dot and all; the display line is `heading`, which
+            layout 2 was the first design to draw. The 1440 master pins this column at 306 and
             breaks "Experienc / es." mid-word inside an `overflow-clip` header —
             both narrow masters give it the full measure and set it on one line,
             so the cap is a leak that destroys its own content and is dropped
             (the bio's rule). */}
         <div style={col('0px', { width: '100%' })}>
-          <span style={body12}>&#9679; Testimonials</span>
+          {s.testiKicker && <span style={body12}>&#9679; {s.testiKicker}</span>}
           {!!s.title && (
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: u(T.disp), lineHeight: 1,

@@ -930,7 +930,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   (47); 390 head 40.9 (41), cards 290 × 438.3 at −260 / 50 / 360 (the master's x), grid 24
   under the head. **Named diffs, Lime's and Retro's**: the head is `s.title` ("12 Songs")
   where the frame writes "Curated sets" (**Since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `./layout-3-qa-fixes.md`.); the meta line is the set's count where the frame has
-  a mood and a running time; the right-hand column is the artist, not a duration; the 768
+  a mood and a running time; the right-hand column is the artist, not a duration *(Since JP-066, 2026-09-29: the meta line is the set's mood and running time from `SetsField`, and the right-hand column the song's `length`; see `./retest-qa-fixes.md`.)*; the 768
   cards are 216 against 222.7 (a 688 column against 708); the section's own 80 / 56 / 44 top
   pad is the shared `padY`, not the frame's 56 / 60 / 60 (the plan's `vm.pad` arms never
   carried a repertoire row, under Lime either).
@@ -1161,11 +1161,14 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Named diffs, Lime's and Retro's**: the section's own 80 / 56 / 44 **top** pad is the
   shared `padY`, not the frame's 56 × 0.82 / 30 / 60 (section 4's repertoire rule — the
   `vm.pad` arm carries the foot alone); the seeded intro is one line (`DEFS.pricingIntro`)
-  where the frame's wraps, and the seeded heading is the artist's copy, not "Pricing"; the
+  where the frame's wraps (**since JP-070 (rest)** (2026-09-29) it is the frame's second sentence,
+  `PRICING_INTRO_3`, one line at 1440 and 768 and two at 390, with only "Four ways to book this
+  act." left out; see `./retest-qa-fixes.md`), and the seeded heading is the artist's copy, not "Pricing"; the
   pill reads *Book Now* (`cta1`) where the frame types *Book* (**since JP-070** (2026-09-28) both are the frame's: the head from `HEADING_3`, the pill from `rowCta`, the *Package button*; see `./layout-3-qa-fixes.md`); the unit is `/event`
   (`tierUnit`) where the frame types "— £1,400" (a range typed into the price now sets its
   second half small in that seat, `t.tail`, before the unit: JP-074, 2026-09-28); the capsule carries the extra leading `All`
-  chip, layout 1's intended diff; "Save 15% on bundles" stays dropped (**reversed** by JP-046, 2026-09-24: it is
+  chip, layout 1's intended diff (and read *Solo* where the frame reads *Duo*, **until JP-070
+  (rest)**, 2026-09-29: layout 3 now seeds `TIERS_3`, so the chips are *All / Duo / Trio / Band*); "Save 15% on bundles" stays dropped (**reversed** by JP-046, 2026-09-24: it is
   `FIELDS.pricing.offer`, the frame's copy beside the capsule at every width, white `sem/text/2`,
   one widened block with Lime's); the 768 featured row
   runs 248 against the plain rows' 230.4 because the seeded festival blurb wraps to two lines

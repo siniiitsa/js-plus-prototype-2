@@ -1195,7 +1195,7 @@ Reply: **JP-084 — fixed.**
    - **A (recommended). On the ticker's first gig alone** (`pg === 0`), a literal (a label, JP-071's
      rule). The canvas and the published first paint then read the frame's "Next: Hidden Warehouse",
      and paging on drops it. It assumes the list runs in date order, the assumption the "upcoming"
-     wording and layout 1's list already make; a gig has no year (JP-047).
+     wording and layout 1's list already make; a gig has no year (JP-047; *since* JP-069 (weekday) in `retest-qa-fixes.md`, 2026-09-29, it has one).
    - **B. Reply**: the fit's call.
 2. **The lit pin.**
    - **A (recommended). Keep it, and reply.** It is the product's pairing at every map layout,

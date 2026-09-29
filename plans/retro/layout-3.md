@@ -655,7 +655,8 @@ Learned on the booking calendar (section 6):
   whatever the month holds — the gallery's hide-the-empty-row rule is about a tile promising
   somewhere to go, and a key that dropped "Booked" on a month with no bookings would leave the
   visitor unable to read the tan dot when one appears. Its three labels are the frame's own
-  literals, the media player's "● Popular" precedent.
+  literals, the media player's "● Popular" precedent. *(They stay literals, named as an
+  unreported sibling by the Grunge retest's JP-071, which made "● Popular" itself a field.)*
 - **`BookPill` now takes `style`, spread last in both branches** — ListenLink's precedent, and
   the first prop added to it that is not a scale or a glyph. Two things needed it: `width: 100%`
   + `justifyContent: space-between`, which a hug-width inline-flex cannot be told from outside,
@@ -684,7 +685,11 @@ Learned on the repertoire (section 7):
   every alternative: a `SETS` constant in the repeater row shape (the video section's
   `VIDEOS` rule) would have left `c.songs` unread, which the calendar's note says is worse
   than any unread field. **Look for the derivation before reaching for the seeded constant;
-  the constant is for content that genuinely does not exist yet.**
+  the constant is for content that genuinely does not exist yet.** *(Reversed in part since:
+  `../grunge/retest-qa-fixes.md`, JP-066, 2026-09-29. The grouping stands, and the cards are
+  still the tags. But a mood and a card title turned out not to be the same slot. The meta line
+  is now the set's own mood and running time, kept per tag by `SetsField` (`c.sets`, seeded
+  `REP_SETS`), and each row prints a song `length` where this pass put the artist.)*
 - **A grouping can strand what a filter cannot, and this section has already written down
   what to do about it.** `vm.repFlat`'s own comment — *"it takes the artist's songs, so
   swapping layouts never silently discards what they typed"* — is the constraint, and it is
@@ -870,7 +875,9 @@ Learned on the pricing section (section 9):
   throwing", which is `TITLES.pricing`'s "Choose the set that's right for your night" almost
   word for word. The frame gets away with it because *its* title is the single word
   "Pricing"; stacked under ours it stutters. `DEFS.pricingIntro` is the closing clause
-  alone. **Render the head and read it** before taking a frame's sentence whole.
+  alone. (Since JP-070, the head is "Pricing" at layout 3 too, so the stutter is gone: since
+  2026-09-29 the intro is the frame's second sentence whole, `PRICING_INTRO_3`, and only the
+  count stays out. See `../grunge/retest-qa-fixes.md`, JP-070 (rest).) **Render the head and read it** before taking a frame's sentence whole.
 - **Copying a branch's spelling means copying its slips — so describe what the code does,
   not what you assumed it did.** The media player's rule is to copy a branch's spelling and
   not its slips; this is the same rule met from the other side. Both earlier layouts split
