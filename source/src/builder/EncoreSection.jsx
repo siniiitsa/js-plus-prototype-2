@@ -2098,7 +2098,7 @@ function HeaderV1({ s }) {
         {/* Grunge's title is two-tone — `sem/text/2` then `text/1`, the hero's
             own split — where Lime's is one tone. */}
         <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
-               twoTone={grunge} toneA={s.tx} toneB={s.ac} />
+               twoTone={grunge} toneA={s.tx} toneB={s.ac} worn />
         <p style={{
           margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac, width: '100%',
         }}>{s.subtitle}</p>
@@ -6474,11 +6474,11 @@ function Media({ s }) {
       // 250 of 330 at 48) and after "your" at 768 (561 of 648 at 73), the
       // three frames' own breaks.
       const heading = (
-        <h2 style={{
+        <h2 style={distressed(s, {
           margin: 0, flex: 'none', fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
           letterSpacing: s.dls, color: desk && !ed ? s.tx : s.ac, ...disp,
           maxWidth: tab || ed ? undefined : grunge && s.mob ? '251px' : '4.6em',
-        }}>{s.title}</h2>
+        })}>{s.title}</h2>
       )
 
       const fan = (
@@ -6576,7 +6576,7 @@ function Media({ s }) {
           })}>
             {art(nowArt, u(60), '999px', 16)}
             <span style={col(u(2), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
-              <span style={titleType}>{nowTitle}</span>
+              <span style={distressed(s, titleType)}>{nowTitle}</span>
               <span style={{ ...bodySm, ...clip }}>{now.by}</span>
             </span>
             {!s.mob && <span style={{ ...bodySm, flex: 'none', whiteSpace: 'nowrap' }}>{now.at} / {now.of}</span>}
@@ -6664,7 +6664,7 @@ function Media({ s }) {
                 {art(t.img, u(64), u(4), 16)}
                 {/* Display/Title over Body/SM. */}
                 <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
-                  <span style={titleType}>{t.name}</span>
+                  <span style={distressed(s, titleType)}>{t.name}</span>
                   <span style={{ ...bodySm, ...clip }}>{t.rel}</span>
                 </span>
                 {dur && (
@@ -8955,7 +8955,7 @@ function Pricing({ s }) {
           {/* Display/MD at lh 1. The frame's break after "Personalised" is a
               typed one; the heading is the artist's, so it wraps on the
               column. */}
-          <h2 style={{ margin: 0, ...disp(s.dispMd), color: s.ac }}>{s.title}</h2>
+          <h2 style={distressed(s, { margin: 0, ...disp(s.dispMd), color: s.ac })}>{s.title}</h2>
           {/* The quote over its credit row, Retro's block and its drop rules.
               All three masters draw the row at the same 28px faces, 12 gap
               and Body/SM. Each face is a 2px `border/thin` ring in
@@ -9020,7 +9020,7 @@ function Pricing({ s }) {
                 ))}
               </div>
             )}
-            <span style={{ ...disp(s.dispSm), color: s.tx }}>{t.name}</span>
+            <span style={distressed(s, { ...disp(s.dispSm), color: s.tx })}>{t.name}</span>
             {!!t.blurb && <p style={body(s.bodyMd, 1.5, { margin: 0, color: s.tx })}>{t.blurb}</p>}
             {/* Bottom-aligned at 6. The narrow masters FILL the numeral, which
                 stands the unit at the card's right edge; 1440 hugs it. A
@@ -9028,10 +9028,10 @@ function Pricing({ s }) {
                 face between the two. */}
             <span style={row(u(6), { alignItems: 'flex-end', alignSelf: 'stretch' })}>
               {!!lead && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{lead}</span>}
-              <span style={{
+              <span style={distressed(s, {
                 ...disp(s.dispMd), color: s.ac, whiteSpace: 'nowrap',
                 flex: desk ? 'none' : '1 1 auto',
-              }}>{amount}</span>
+              })}>{amount}</span>
               {!!tail && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{tail}</span>}
               {!!s.tierUnit && (
                 <span style={body(s.bodyMd, 1.5, { color: s.tx, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
@@ -11416,10 +11416,10 @@ function Repertoire({ s }) {
           })}>
             {ed && dash('all')}
             {/* Display/SM in `sem/text/2`, line height 1. */}
-            <h2 style={{
+            <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
               letterSpacing: s.dls, color: s.tx, textTransform: grunge || ed ? 'uppercase' : undefined,
-            }}>{s.title}</h2>
+            })}>{s.title}</h2>
             <div style={row(u(16), {
               justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(s.mob ? 10 : 12),
               flexDirection: s.mob ? 'column' : 'row',
@@ -15338,10 +15338,10 @@ function Calendar({ s }) {
         // capitals, so the stack keeps the same 0.09em under the mark (the
         // rows 94 against the master's 90).
         const mark = (
-          <span style={disp(s.dispLg, 0.89, {
+          <span style={distressed(s, disp(s.dispLg, 0.89, {
             whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(sl.booked),
             ...(ed ? { position: 'relative', top: '-0.09em', marginBottom: s.mob ? '0.09em' : undefined } : null),
-          })}>{sl.mark}</span>
+          }))}>{sl.mark}</span>
         )
         const day = (
           <span style={type(s.ui, s.labelXs, 1.26, {
@@ -15393,9 +15393,9 @@ function Calendar({ s }) {
                 the 20 (inset, so the stated 164 / 120 / 96 hold), and so does
                 Editorial, in its band's scheme. */}
             <div style={{ paddingBottom: u(20), boxShadow: G.headRule }}>
-              <h2 style={disp(s.dispMd, 1, {
+              <h2 style={distressed(s, disp(s.dispMd, 1, {
                 margin: 0, maxWidth: s.mob ? undefined : u(571),
-              })}>{s.title}</h2>
+              }))}>{s.title}</h2>
             </div>
           </div>
           <div style={row(gap, type(s.ui, s.labelXs, 1.26, {
@@ -17840,7 +17840,7 @@ function EventsMap({ s }) {
           <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
             <div style={col(u(4), { minWidth: 0 })}>
               <span style={bodySm}>Travel radius</span>
-              <h2 style={display(titleSize, 1.1)}>{s.title}</h2>
+              <h2 style={distressed(s, display(titleSize, 1.1))}>{s.title}</h2>
             </div>
             {/* The frame's "● Confirmed" again, and Retro's reading of it: when
                 the featured gig is. Until JP-060 the block drew `radius` here,
@@ -17950,14 +17950,14 @@ function EventsMap({ s }) {
             }}>{gg.day}</span>
             <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
               <div style={row(u(5), { minWidth: 0 })}>
-                <span style={{
+                <span style={distressed(s, {
                   ...display(titleSize, 1.1),
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   // Noto's J descends 0.24em, 0.05em past this 1.1 box's foot,
                   // so under Editorial the clip reaches 0.1em lower and the
                   // margin gives it back: no box moves.
                   ...(ed ? { paddingBottom: '0.1em', marginBottom: '-0.1em' } : null),
-                }}>{gg.venue}</span>
+                })}>{gg.venue}</span>
                 {!!gg.url && (
                   <Tix {...tix} style={{
                     ...bodySm, flex: 'none', color: 'inherit', textDecoration: 'none',
@@ -18069,7 +18069,7 @@ function EventsMap({ s }) {
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {g ? (
                 <>
-                  <h3 style={{ ...display(titleSize, 1.1), overflowWrap: 'anywhere', color: G.feat }}>{g.venue}</h3>
+                  <h3 style={distressed(s, { ...display(titleSize, 1.1), overflowWrap: 'anywhere', color: G.feat })}>{g.venue}</h3>
                   <span style={{
                     fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7, overflowWrap: 'anywhere',
                   }}>{g.city}</span>
@@ -21020,10 +21020,10 @@ function Testimonials({ s }) {
         <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
           <span style={bodyType(s.bodySm, 1.4)}>&#9998; What clients say</span>
           {!!s.title && (
-            <h2 style={{
+            <h2 style={distressed(s, {
               margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%',
               ...(grunge || ed ? { whiteSpace: 'pre-wrap' } : null),
-            }}>
+            })}>
               {s.title}
             </h2>
           )}
@@ -21099,9 +21099,9 @@ function Testimonials({ s }) {
               {/* Display/XL at 0.75. The 1440 master hand-sets the box to 55.9
                   under a 150 line (the glyph has no descender); the narrow two
                   let the line be the box, 90 and 54. Retro's reading. */}
-              <span aria-hidden style={{
+              <span aria-hidden style={distressed(s, {
                 ...dispType(s.dispXl, 0.75), flex: 'none', ...(desk ? { height: u(56) } : null),
-              }}>&rdquo;</span>
+              })}>&rdquo;</span>
               {!!q.quote && (
                 <p style={{ margin: 0, width: '100%', ...bodyType(s.bodyLg, 1.5), overflowWrap: 'break-word' }}>
                   {q.quote}
@@ -23476,7 +23476,7 @@ function EnquiryForm({ s }) {
     const title = G.title ?? (desk ? u(36) : s.mob ? '26px' : '28px')
     const priceRow = (!!s.formPrice || !!s.formPriceUnit) && (
       <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
-        {!!s.formPrice && <span style={disp(s.display, title, 1.1, { color: G.head })}>{s.formPrice}</span>}
+        {!!s.formPrice && <span style={distressed(s, disp(s.display, title, 1.1, { color: G.head }))}>{s.formPrice}</span>}
         {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
       </div>
     )
@@ -23536,10 +23536,10 @@ function EnquiryForm({ s }) {
               against the frames' 332 / 334 / 370 boxes.
               Editorial's frames type the same break at every width and let
               768 wrap the rest, so Grunge's rule again, in paper. */}
-          <h2 style={disp(s.display, s.dispSm, 1, {
+          <h2 style={distressed(s, disp(s.display, s.dispSm, 1, {
             margin: 0, color: G.head, overflowWrap: 'break-word',
             maxWidth: grunge || ed ? undefined : desk ? '9em' : tab ? '5.2em' : undefined,
-          })}>{(grunge || ed) && titleWords.length > 2 ? (
+          }))}>{(grunge || ed) && titleWords.length > 2 ? (
             <>
               <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
               <span style={{ display: 'block' }}>{titleWords.slice(2).join(' ')}</span>
@@ -23610,9 +23610,9 @@ function EnquiryForm({ s }) {
               // since `s.title` is the heading string), and the address is
               // Body/MD — both invented, Retro's same two.
               <>
-                <h3 style={disp(s.display, title, 1.1, {
+                <h3 style={distressed(s, disp(s.display, title, 1.1, {
                   margin: 0, overflowWrap: 'break-word',
-                })}>{s.formSentTitle}</h3>
+                }))}>{s.formSentTitle}</h3>
                 <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
                 {/* Plain text, Retro's reason: the fallback for a browser that
                     opened nothing. */}

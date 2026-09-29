@@ -614,6 +614,61 @@ licence point alone argues for A.
        `123px 123px` at 1440, and 22.5 px with `90px 90px` at 390. The mask is the same value.
      - No page errors. In the shots, the 21 px panel name is scuffed but reads, as step 1 found
        for the wordmark.
+
+   **Settled, layout 2** (2026-09-29, on `7dea933`). This commit adds and removes no line (28
+   lines changed in place), so **the +22 offset from step 1's census still holds for layout 3**:
+   `:2133` → `:2155`, and so on, exactly as layout 1's Settled lists them.
+   - **The sites, twenty spreads.** Each is `distressed(s, …)` round the setter's whole style:
+     - header 2's `Title` passes `worn` (`:2101`, HeaderV1's `s.limeTree` call). The Retro arm's
+       call (`:2411`) is untouched, as are HeaderV2's and HeaderV3's Grunge calls (`:2737`,
+       `:3267`), layouts 3 and 4's;
+     - media 2's two `titleType` spans (`:6579`, the now-playing title, and `:6667`, the list's
+       track titles) and its `h2` (`:6477`). `titleType` is a const, not a function, so each span
+       wraps it as `distressed(s, titleType)`. The fan card names (`:6516`) are `list` and stay
+       clean;
+     - pricing 2's `h2` (`:8958`), plan name (`:9023`) and price (`:9031`). Its `disp` (`:8935`)
+       has exactly those three callers;
+     - repertoire 2's `h2` (`:11419`);
+     - calendar 2's slot mark (`:15341`) and `h2` (`:15396`), both `distressed(s, disp(…))`. The
+       mark's `dim()` opacity on a booked row sits beside the mask and moves no column;
+     - map 2's `h2` (`:17843`), row venue (`:17953`) and panel `h3` (`:18072`). Its `display`
+       (`:17822`) also feeds the base, the line and the Get Directions pill (`:17862`, `:17876`,
+       `:17924`), all `s.list`, so it is wrapped at these three call sites alone;
+     - testimonials 2's `h2` (`:21023`) and the `”` glyph (`:21102`). The rail mark and reviewer
+       (`:21077`, `:21116`) are `dispType(s.list …)` and stay clean;
+     - form 2's price (`:23479`), `h2` (`:23539`) and sent `h3` (`:23613`). The submit pill
+       (`:23457`) and the brand (`:23581`) are `disp(s.display, s.list …)` and stay clean.
+   - **The `”` glyph's box.** At desktop the span is hand-set to a 56 px box under a 91 px line,
+     so a mask clipping to the border box could have cut the glyph, map 4's ink-edge case. Step
+     1's solid-mask probe covered this node (every setter at 19 px or more on the canvas) and
+     found pixels move only at map 4, so the glyph sits inside its box. Nothing was done.
+   - **Proof, per step 0's recipe.** The baseline was a worktree of `7dea933` on :5174, and the
+     tree ran on the long-running :5173, both through step 0's `sed`. Themes 0–4, 132 files each
+     per surface.
+
+     | Theme | Bare | `&live=1` |
+     |---|---|---|
+     | 0, 1, 3, 4 | 0 of 132 each | 0 of 132 each |
+     | 2 | **27 of 132** | **27 of 132** |
+
+     - **The 27 are exactly step 1's layout-2 list** × 3 widths: header arch 1 and 5, and media,
+       pricing, repertoire, calendar, map, testimonials and form at arch 1. Bio and gallery at
+       arch 1 stay 0.
+     - **`mask-cols.mjs`: 0 failures on both surfaces.** 84 rows moved per surface, all 84 new
+       masks, each differing only in the four mask columns with `maskSize` 4 × `fontSize`, and
+       all text tags. The `linear-gradient` rows are 14 per surface on both sides.
+     - **The sizes that moved**, as faced px: the `H1` at 80.25 / 60.75 / 34.5 (`dispLg`, header
+       arch 1 and 5 alike); `dispLg` `H2`s and calendar's `SPAN` marks at 80.25 / 60.75 / 34.5;
+       `dispMd` at 44.25 / 37.5 / 28.5; `dispSm` at 30.75 / 30 / 22.5; the `”` at 121.5 / 71.25
+       / 39 (`dispXl`); and the title-size sites (media's track spans, map's three, form's price)
+       at 22.125 / 21 / **19.5**. Nothing under 19.5 took the mask.
+   - **By hand, form 2's sent `h3`.** Grunge card 1 was published through a one-off puppeteer
+     script (Publish → *Open*, `page.once('popup')`, trusted clicks, `mailto:` clicks
+     `preventDefault`ed), deleted after. After a filled submit, "Check your mail app" carries the
+     mask, 1,185 characters, at 22.125 px with `88.5px 88.5px` at 1440 and 19.5 px with `78px
+     78px` at 390. The card's price carries the same. The brand ("Kai Mercer", 15 / 13.5 px)
+     and *Write another* (a `list`-size span) read `none`. No page errors. In the 390 shot the head is scuffed
+     but reads.
 5. **The sweep.**
    - A full digest against `main` (port normalised), all categories × themes 0–4 × three widths
      × canvas and `live=1`. The only diffs allowed are Grunge mask columns.
