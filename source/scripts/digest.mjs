@@ -52,7 +52,13 @@ function probe() {
     const txt = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.nodeValue).join('').slice(0, 40)
     rows.push([el.tagName, r1(r.x - rr.x), r1(r.y - rr.y), r1(r.width), r1(r.height), cs.backgroundColor, cs.backgroundImage.slice(0, 50),
       cs.color, cs.borderTopWidth, cs.borderTopColor, cs.borderRadius, cs.fontSize, cs.fontFamily, cs.fontWeight, cs.lineHeight,
-      cs.letterSpacing, cs.textTransform, cs.transform, cs.boxShadow, cs.opacity, el.getAttribute('src')?.slice(0, 40) ?? '', txt].join('|'))
+      cs.letterSpacing, cs.textTransform, cs.transform, cs.boxShadow, cs.opacity,
+      // A mask moves no geometry, so without these a mask-only change digests as
+      // zero (plans/grunge/display-face.md, step 0). A data URI sliced to 50 reads
+      // the same at every site, so the size is what tells the sites apart; the
+      // position is the tile's phase.
+      cs.maskImage.slice(0, 50), cs.webkitMaskImage.slice(0, 50), cs.maskSize, cs.maskPosition,
+      el.getAttribute('src')?.slice(0, 40) ?? '', txt].join('|'))
     for (const ch of el.children) walk(ch)
   }
   walk(root)

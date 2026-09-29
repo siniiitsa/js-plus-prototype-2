@@ -5,6 +5,25 @@
  * §4.1 THEMES — 5 templates
  * ------------------------------------------------------------------ */
 
+// Grunge's distress (plans/grunge/display-face.md, candidate A): a 240 × 240
+// noise tile masked over Anton's display type, standing in for the wear
+// Stones Crush carries in its outlines. A fine speck (0.5, seed 7) is lifted
+// or lowered by a coarse field (0.03, seed 3), so the cuts cluster into
+// scuffed patches and clean runs, then thresholded hard at R ≈ 0.25 into a
+// binary alpha — 6.7% of the tile cut. Both seeds are pinned, so every render
+// is the same, and `stitchTiles` makes the tile seamless. Declared above
+// THEMES, which reads it.
+const DISTRESS_SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'>"
+  + "<filter id='n' x='0' y='0' width='100%' height='100%'>"
+  + "<feTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' seed='7' stitchTiles='stitch'/>"
+  + "<feColorMatrix values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 1' result='f'/>"
+  + "<feTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='1' seed='3' stitchTiles='stitch'/>"
+  + "<feColorMatrix values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 1' result='c'/>"
+  + "<feComposite in='f' in2='c' operator='arithmetic' k1='0' k2='1' k3='1.2' k4='-0.6'/>"
+  + "<feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  20 0 0 0 -4.5'/>"
+  + "<feComponentTransfer><feFuncA type='discrete' tableValues='0 1'/></feComponentTransfer>"
+  + "</filter><rect width='100%' height='100%' filter='url(#n)'/></svg>"
+
 export const THEMES = [
   {
     name: 'Retro',
@@ -100,9 +119,10 @@ export const THEMES = [
     // → Static Youth, "2 · Scheme" → Scheme 1), so every value below is that
     // mode's. The exception is the display and label face: the mode names
     // Stones Crush, a commercial distressed caps grotesque that cannot ship, so
-    // it is set in Anton — the nearest free silhouette, heavy and condensed,
-    // without the distress (user call, 2026-09-21; Retro's Soulway → Fraunces
-    // precedent). Anton has a lowercase where Stones Crush is all capitals, so
+    // it is set in Anton — the nearest free silhouette, heavy and condensed
+    // (user call, 2026-09-21; Retro's Soulway → Fraunces precedent) — with the
+    // distress put back at display sizes by `distress` below (JP-056, option
+    // C, user call, 2026-09-29). Anton has a lowercase where Stones Crush is all capitals, so
     // a Grunge block sets its display and label strings `textTransform:
     // 'uppercase'` per site; Chakra Petch and Inter set mixed case ("Sold Out",
     // "Full name"), which is why casing is 'title' and not 'upper'.
@@ -112,6 +132,12 @@ export const THEMES = [
     // height divided back out (`faced` / `facedLh` in EncoreSection). A theme
     // with no key sets its face at the token (1).
     faceK: 0.75,
+    // …and the distress Anton lacks, as a mask over the display type
+    // (`distressed` in EncoreSection): the tile above, one per 4 em, so a
+    // 121px head and a 39px one wear the same texture. The display keys and
+    // `title` take it; `list` and the label keys stay clean, since it eats thin
+    // strokes. A theme with no key gains no style.
+    distress: { image: `url("data:image/svg+xml,${encodeURIComponent(DISTRESS_SVG)}")`, size: '4em 4em' },
     ui: "'Chakra Petch', sans-serif",
     body: "'Inter', sans-serif",
     casing: 'title',

@@ -1334,6 +1334,18 @@ mutated through a single `patch()` helper.
   the theme's `faceK` (1 wherever it states none), with an identity branch so no other theme's
   size gains a `calc`; casing stays
   `'title'` and each display or label string takes `textTransform: 'uppercase'` in its own arm.
+  **The display sizes carry a distress mask** (JP-056's option C, user call, 2026-09-29,
+  `plans/grunge/display-face.md`), since Stones Crush has no web licence: the glyphs stay
+  Anton's, and `THEMES[2].distress` — a pinned-seed `feTurbulence` tile inlined as an SVG data
+  URI, with its `4em 4em` size — reaches the section as `vm.distress`, which **`distressed(s,
+  style)`** beside `faced()` spreads as `mask-image` / `-webkit-mask-image` on the element that
+  sets the face, never on a span inside it. The cut is by ramp key at the call site:
+  `dispXl` … `dispSm` and `title` (and `Title`, and the `Wordmark` at its Display/Title size —
+  header 4's label-size one passes `clean` through `NavBar`) take it; `list`, every label key
+  and every `labelStyle` site stay clean, since the texture eats thin strokes. A theme with no
+  key gets its style object back untouched, so no other template moves. A mask moves no
+  geometry; a glyph whose side bearing overhangs its box loses up to 1px at that edge (map
+  layout 4's stat values at desktop), a named diff.
   At layout 1 its decoration is torn black seams owned by the three Scheme-2 bands (media, map, form —
   `TornEdge`'s `grunge` prop), the grain raster as a `lighten` layer (`Grain`'s `grunge` /
   `exact`), a red seal in four sections (`SealBadge`'s `line` is the footer's) and the media

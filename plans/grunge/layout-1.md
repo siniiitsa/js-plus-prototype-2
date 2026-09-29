@@ -1186,6 +1186,12 @@ the plan it came from. Kept as the pass wrote it, a blank line between sections.
    took JP-056's option C. [`display-face.md`](./display-face.md) is a distress mask cut into
    Anton at display sizes. The glyph shapes stay Anton's, and it runs on its own branch after the
    retest batch. If a web licence is bought, option B (the real face) replaces it.
+
+   *Shipped (2026-09-30, `display-face.md` step 5, branch `grunge-display-face`):* the display
+   sizes (`dispXl` … `dispSm` and `title`, the header's `Title` and the Display/Title wordmark)
+   carry a pinned-seed noise mask, `THEMES[2].distress` → `vm.distress` → `distressed()`. Every
+   label key, `list` and each `labelStyle` site stay clean Anton. The computed `font-family` is
+   still Anton, and open question 6 (0.75 of the token) is unchanged.
 2. **Does Grunge desaturate an artist's uploads?** *Closed in session 0:* the greyscale is in the
    assets, so nothing desaturates and uploads stay in colour.
 3. **`gigDark` under Grunge** — *closed in section 6:* not widened; the block reads no `g.hue`.
