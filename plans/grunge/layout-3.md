@@ -756,9 +756,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   28.6 — Anton narrower), capsule 30.7 tall (31.2); 768 h1 at 824.4 (824.48), card 220 × 239.6
   at 506 / 742.4 (220 × 240 at 506 / 742), pill 95.9 × 34.9 (99.3); 390 h1 at 312 (311.93), card
   350 × 127 at 20 / 459.4 (exact), pill 93 × 34.9 (96.3), section 606.4 (606.45). Named diffs:
-  five chips where the frame draws six (`TAG_LABELS`), and the frame's fourth chip lettered
-  white on red where `vm.chips` letters it `#0D1F03` (a component override the seats do not
-  model).
+  five chips where the frame draws six (`TAG_LABELS`; closed by JP-081 (tags), 2026-09-29: six),
+  and the frame's fourth chip lettered white on red where `vm.chips` letters it `#0D1F03` (a
+  component override the seats do not model).
 - **`FIELDS.header` needed no change**: `scripts/reach.mjs 2` over the fitted card gives kicker /
   tags / showTags `[0, 2, 3]`, location all four, cta2 `[1, 2]`, showBadge / badgeText `[0, 3]`,
   subtitle / heroCta `[1]`, align `[0]` — the rows layout 2's sweep measured over the placeholder.

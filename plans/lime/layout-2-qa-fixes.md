@@ -323,6 +323,11 @@ labels), README's field list if it has one.
    row on every template loses a chip. `TAGS` / `vm.chips` keep six seats.
 
 **Settled** (2026-09-21).
+- **Reopened by JP-081 (tags), user call, 2026-09-29** (`../grunge/layout-4-qa-fixes.md`):
+  `TAG_LABELS` seeds six again, "All Access" included. The five were read off this bio's
+  instance. The header frames at layouts 1, 3 and 4 and Lime's and Grunge's layout-3 and
+  layout-4 Genres rows draw six, so this bio and Retro's layout-4 header now print a chip their
+  frames lack. The rest of this Settled stands.
 - **The frames were read before the questions were asked** (JP-036's lesson). All three strings
   are the frames' own, Lime's and Retro's (`964:64638`) alike — so unlike JP-036 no seed moved a
   pill — with one exception: **both frames type the credit line lowercase**, "five years of…",

@@ -809,7 +809,8 @@ them.
 - **Named diffs**:
   - Anton is narrower than Stones Crush, so the links and the pill run a few px short.
   - Ours has a ninth link, Availability.
-  - Five chips where the frame draws six (`TAG_LABELS`).
+  - Five chips where the frame draws six (`TAG_LABELS`). *Closed by JP-081 (tags), user call,
+    2026-09-29: the seed is six.*
   - The frame letters its second and third red chips white (`scheme/4/tag1/text`,
     `sem/tag/6/text`), a component override the seats do not model, where ours letter all three
     `#0D1F03`. This is layout 3's header reading again.
@@ -883,6 +884,8 @@ them.
 - **Named diffs, all Lime's**:
   - No Genres label; five chips on one row, so the 768 and 390 heads are shorter and the card
     stands higher. The red chips are lettered `#0D1F03`, where the frame letters them white.
+    *The chip count closed by JP-081 (tags), 2026-09-29: six, on the frame's two rows at all
+    three widths, so the 768 and 390 heads are the frame's height less the Genres label.*
   - The seeded two paragraphs make the panel content-tall: 282.8 / 305.5 / 383.
   - The 390 photo stage is 400 tall (Lime's user call), so the sheet is 942 against the frame's
     778.

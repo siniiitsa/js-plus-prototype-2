@@ -2271,10 +2271,10 @@ function HeaderV1({ s }) {
       width: '100%', marginTop: `calc(${s.mob ? '18px' : '38px'} - ${s.padY})`,
     })}>
       {/* The 768 master fills the capsule with links and the 390 one with the
-          burger — but its three links are the *component's* default, the bio's
-          five-chip rule, and `navLinks` is the artist's page: the seeded eleven
-          sections give nine, which at the master's own 16px comes to 576px of
-          type — 720 with the capsule's eight 18px gaps — inside a 688px canvas
+          burger — but its three links are the *component's* default, and
+          `navLinks` is the artist's page: the seeded eleven sections give
+          nine, which at the master's own 16px comes to 576px of type — 720
+          with the capsule's eight 18px gaps — inside a 688px canvas
           that also seats the wordmark, Listen and the pill (measured on the
           visitor's words, JP-033; the sidebar's names it used to print came to
           651). So at 768 the links draw only when the bar's one row holds
@@ -4378,10 +4378,11 @@ function Bio({ s }) {
         </div>
         <div style={col(nar ? '10px' : '8px', { padding: s.mob ? '10px 0' : undefined })}>
           {/* The frame drops the Tags section's own chip row in here, at its
-              own width — which is what wraps five chips onto two lines. The
-              264.4 is the one number the narrow masters leave unchanged; only
-              the chips inside it shrink, which is why 768 wraps 3 + 2 where
-              390 fits 4 + 1 in the same measure. */}
+              own width — which is what wraps the frame's five chips onto two
+              lines. The 264.4 is the one number the narrow masters leave
+              unchanged; only the chips inside it shrink, which is why 768
+              wraps 3 + 2 where 390 fits 4 + 1 in the same measure. The seed's
+              six (JP-081) wrap 3 + 3 and 4 + 2, and 2 + 3 + 1 at desktop. */}
           {s.showTags === 'show' && <div style={{
             display: 'flex', flexWrap: 'wrap',
             gap: nar ? '6.149px' : '5px',
@@ -13737,10 +13738,10 @@ function Gallery({ s }) {
   // of the intended diff. `FIELDS.gallery.images` is `max: 7` and both fitted
   // layouts already walk a fixed seven, so twelve is the Figma component's own
   // count filled with duplicated photographs (its rows repeat images 1, 2 and
-  // 4) — the bio's five-chip rule, and here with the section's field stating
-  // the number outright. Seven into four columns is 4 + 3 and into three is
-  // 3 + 3 + 1, so the last row trails empty cells rather than stretching:
-  // that is the pricing deck's odd-count rule and the repertoire's lone card
+  // 4), and the section's field states the number outright. Seven into four
+  // columns is 4 + 3 and into three is 3 + 3 + 1, so the last row trails
+  // empty cells rather than stretching: that is the pricing deck's odd-count
+  // rule and the repertoire's lone card
   // in `repeat(3, 1fr)`. The desktop master's own mechanism — a `flex-wrap`
   // row of `flex-[1_0_0] min-w-[298px]` children — would instead widen the
   // three tiles of a short second row to a third of the measure each, and with

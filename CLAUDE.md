@@ -187,8 +187,10 @@ mutated through a single `patch()` helper.
   word instead (`overflowWrap: 'anywhere'`), since no body face has an ems table. Retro's
   `nowrap` polaroid is unchanged.
   **The tag chips are the header's as well**
-  (JP-037): `FIELDS.header.tags` is a comma list seeded with `TAG_LABELS` (five — the Tags
-  component hides its sixth chip), and `identity` carries `tags` and `showTags` to the bio,
+  (JP-037): `FIELDS.header.tags` is a comma list seeded with `TAG_LABELS` (six, as the header
+  frames at layouts 1, 3 and 4 and Lime's, Grunge's and Editorial's Genres rows draw them — JP-081, user
+  call, 2026-09-29, reopening JP-037's five; Retro's layout-4 header and Lime's layout-2 bio draw
+  five and seed the sixth anyway), and `identity` carries `tags` and `showTags` to the bio,
   which prints them in layouts 2 and 4 and Lime's, Grunge's and Editorial's 3 (measured, `scripts/reach.mjs`). An emptied
   list folds into `vm.showTags = 'hide'`, since every reader of that key is a chip-row gate.
   **`vm.chips` is a palette, not the chip row**: six colour seats off `TAGS`, read as

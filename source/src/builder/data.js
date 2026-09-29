@@ -661,11 +661,13 @@ export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 // the header, media, map and pricing. Its length and order must not change.
 // The words the chip rows print are the artist's (JP-037): FIELDS.header.tags,
 // seeded with TAG_LABELS and zipped onto these seats by index, wrapping
-// (`vm.tagChips`). Five, not six: the Tags component draws five and carries
-// its sixth chip as a hidden frame (read off the Lime layout-2 bio's
-// instance; user call, 2026-09-21).
+// (`vm.tagChips`). Six, as the frames draw them: the header at layouts 1, 3
+// and 4 and the Genres rows of Lime's and Grunge's layout-3 and layout-4 bios
+// and Editorial's layout-3 one (JP-081, user call, 2026-09-29, reopening
+// JP-037's five, which had been read off the Lime layout-2 bio). Retro's
+// layout-4 header and Lime's layout-2 bio draw five, and seed the sixth anyway.
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
-export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live'
+export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live, All Access'
 
 // JP-037 — layout 2's copy that was a literal in EncoreSection: the hero's
 // pill, and the bio card's credit line and the pill beside it. Each is the

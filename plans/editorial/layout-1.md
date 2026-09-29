@@ -909,7 +909,7 @@ four ink ones are its own register.
   — where Scheme 3's seats are paper under ink and terracotta under paper, so both halves move.
   `TagChips` gained **`inks`** beside `hues` (additive, by seat); the header passes
   `hues={[s.activeBg, SIENNA_MEDIA]}` and `inks={[s.activeFg, s.bg]}`. Five chips, not the frame's
-  six: `TAG_LABELS`, as under Lime and Grunge.
+  six: `TAG_LABELS`, as under Lime and Grunge. *Closed by JP-081 (tags), 2026-09-29: six.*
 - **The sparkle is `GrungeStar`'s silhouette**: the corner star is that path × 0.75 point for point
   (61.56 → 82.07, 108 → 144), the mark the same at 44.93 / 144. `GrungeStar` takes an additive
   `fill` (the media heading passes none); `LogoMark`'s arm draws it in flow through `style`. The

@@ -117,7 +117,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | 7 | JP-077 · JP-078 · JP-082 (map) | The stat wall: frame copy, empty cards, fixed names | **Named fit call** (Retro L4 open question 6), whose "claims, not fields" JP-065 reversed. **JP-078 confirmed**: the card box is never dropped | M | **yes** — A (a `stats` repeater) / B (JP-065 per card) / C (JP-078 alone) | **done** (A; `stats` seeded with the frame's four, the ninth repeater; the desktop floor on the grid, not the viewport) |
 | 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | **done** (A; `steps` seeded with the frames' three, the tenth repeater; `promises` back to layouts 1–2; the rows hold at 88) |
 | 9 | JP-081 (repertoire head) | "12 Songs" for "Repertoire" | **Named fit call** (Retro L4 open question 8), the precedent JP-070 reversed at layout 3; all three frames agree | S | **yes** — A (a `HEADING_4` arm) / B (reply) | **done** (A; `REP_HEADING_4` "Repertoire" wins over the count; EditPanel's `HEADING_4` arm moved above it) |
-| 10 | JP-081 (tags) | Five chips for the frame's six | **By design (JP-037, a user call)**, on a premise only two frames bear out | S (A) / M (B) | **yes** — A (six everywhere, reopens JP-037) / B (a Lime and Grunge layout-4 seed) / C (reply) | open |
+| 10 | JP-081 (tags) | Five chips for the frame's six | **By design (JP-037, a user call)**, on a premise only two frames bear out | S (A) / M (B) | **yes** — A (six everywhere, reopens JP-037) / B (a Lime and Grunge layout-4 seed) / C (reply) | **done** (A; `TAG_LABELS` gains "All Access"; six fit every chip row, and a section grows only where its frame draws a second row) |
 | 11 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -1863,11 +1863,91 @@ for the bio through `identity`. CLAUDE.md `:190`–`191`.
 **Docs.** CLAUDE.md `:190`–`191` ("five — the Tags component hides its sixth chip"). The `TAGS`
 comment. A *reopened* pointer on JP-037's Settled in `../lime/layout-2-qa-fixes.md`.
 
-**Decided.** —
+**Decided** (2026-09-29, user call, **reopening JP-037**): **A.** `TAG_LABELS` gains "All Access", so
+every chip row seeds six. No theme or layout gate. Two frames draw five and now get a chip they
+don't have: Retro's layout-4 header and Lime's layout-2 bio. Asked with the measurements below.
 
-**Settled.** —
+**Measured before asking** (`&cj=` on the header, `&who=` on the bio, six labels, Pop typed
+upper-case to stand in for `cased()`; every header arch 0–5 and bio arch 0–3 × themes 0–4 × three
+widths × canvas and `live=1`, against the seeded five):
+- **Nothing overflows.** No chip passes its row's right edge, no row's `scrollWidth` exceeds its
+  `clientWidth`, and no document scrolls sideways. `live=1` matched the canvas row for row.
+- **The section grows only where its frame draws a second row too.** Layout-3 bio (arch 2): +33 at
+  390 under Lime, Grunge and Editorial. Layout-4 bio (arch 3): +33 at 390 and +35/+36 at 768 under
+  Lime and Grunge, and +33 at 390 under Editorial. Every other row keeps its height; some wrap
+  inside room they already had. Retro's layout-4 header goes from two chip lines to three at
+  desktop, still Δ0. Lime's layout-2 bio stays on two lines.
+- **The Figma re-reads.** Grunge's layout-4 bio Genres row (`964:72949` / `971:7828` /
+  `977:12049`) is six at all three widths, on two rows each; the triage's inconsistent 768 read
+  is closed. Lime's layout-4 twin (`964:72854` / `971:5304` / `977:8872`) is the same six on two
+  rows (1440 and 390 read chip by chip; 768 has Grunge's identical 457 × 103 box). Lime's
+  layout-3 Genres row (`964:68664` / `984:10749` / `984:10780`) is six: one row at 1440 and 768,
+  two at 390. Our six-label render matches the frame's row count in all nine.
+- **Pop's header prints chips** (the `flat` family's design 0: arch 0 and its fold 3), with no `in`
+  row, as before.
 
-Reply: —
+**Expected after-diff (named before the code): 192 files.** That is the whole probe set, 96 per
+surface. Header: Retro `arch` 0 / 2 / 3 / 4 / 5, Lime, Grunge and Editorial `arch` 0 / 2 / 3 / 4,
+and Pop `arch` 0 / 3 (19 × 3 widths = 57). Bio: `arch` 1 and 3 on all five templates plus `arch`
+2 on Lime, Grunge and Editorial (13 × 3 = 39). The triage's ≈ 180 left out Pop's two header
+arches. Every other category, and every other header and bio arch, shows 0.
+
+**Settled** (2026-09-29). The drift the hand-off named held (`TAGS` `data.js:667`, `TAG_LABELS`
+`:668`, `FIELDS.header.tags` `:1392`, `headerIdentity` `:1849`; `tagList`
+`EncoreBuilder.jsx:741`; CLAUDE.md `:190`–`191`).
+- **The fix is one constant.** `TAG_LABELS` gains "All Access". The `TAGS` comment now says six
+  and names the two frames that draw five. `vm.tagChips`, `vm.showTags`, `identity` and
+  `EditPanel` needed nothing, since they all read the constant. Two `EncoreSection` comments
+  cited "the bio's five-chip rule" as a precedent (`HeaderV1`'s 768 links and the layout-4
+  gallery's twelve tiles). They now state their own case without it. Retro's layout-2 bio
+  comment adds the six's wrap: 3 + 3 at 768, 4 + 2 at 390 and 2 + 3 + 1 at desktop, where the
+  frame's five went 3 + 2 and 4 + 1.
+- **The harness was proved first.** A HEAD worktree at `20b825f` on :5174 against the tree: all
+  eleven categories × themes 0–4 × every layout × 3 widths gave **0 of 660 per surface**.
+- **After-diff, named before the code: 192 files. Measured: exactly those 192 of 1320**, 96 per
+  surface, with the same set on both. Each chip row's labels, read whole with `innerText` on the
+  seeded render, are the six in order in all 96, and Pop's read "ALL ACCESS" through `cased()`.
+  No other category or arch moved.
+- **Room.** No sideways scroll anywhere, before or after. Six rows gained a line at an
+  unchanged section height (Retro header `arch` 2 at 768, 3 and 5 at desktop, 5 at 390;
+  Editorial header `arch` 3 at desktop; Retro bio `arch` 1 at desktop). None of them collides:
+  - Every chip was tested against every text node and image outside its row, and HEAD's
+    intersections were subtracted. The only new ones are the sixth chip over the header's
+    full-bleed hero photograph, where all five designed-header chips already stand.
+  - Retro's `arch` 5 row is bottom-anchored. Its extra line grows upward, and the 4.0 gap to the
+    checker ribbon holds at 390.
+  - Shots read clear: Retro layout 4 at desktop (the third line about 50 over the ribbon),
+    Editorial's card 4, Retro's layout-3 header at 768 and the layout-2 bio.
+  - Retro's layout-3 header at 768 puts its sixth seat, the near-black chip, on the dark hero.
+    Its box is faint and its label reads. That is the frame's own sixth seat on the frame's own
+    photograph.
+- **States** (`live=1`, three widths, every chip-printing arch × themes 0–4). Seven tags: all
+  seven print, and the section's `scrollWidth` equals its width at 390, 768 and desktop. Emptied
+  (`&cj=` / `&who=` `{"tags":""}`): no chip anywhere, the row hidden through `vm.showTags`.
+- **Reach**: `reach.mjs`'s four tag rows re-run over themes 0–4 give the probe set exactly, header
+  and bio alike. `FIELDS.header.tags`' `in` and hint are unchanged, since reach doesn't depend
+  on the count.
+- **The real app** (a one-off puppeteer script, trusted clicks, deleted after): *Stacked* under
+  Grunge, Lime and Retro, and Retro's *Hero*. On each, the panel's *Tags* reads the six. The
+  canvas and the published tab (Publish → Open at 1440, 768 and 390) print the six whole in the
+  header and, where it draws chips, the bio. No sideways scroll, no page errors. Grunge's bio in
+  the published tab at 768 and 390 is the frame's picture: five on the first row, All Access
+  alone on the second, a tag-2 seat whose box is lost on the red and whose ink reads (the case
+  `./layout-4.md`'s "red-on-red Genres row" names).
+- **Docs**: CLAUDE.md's `TAG_LABELS` sentence (six, JP-081, the two five-chip frames named). A
+  *reopened* bullet at the head of JP-037's Settled in `../lime/layout-2-qa-fixes.md`, and one
+  at `../retro/layout-2.md`'s JP-037 reversal. *Closed* pointers on the named "five chips" diffs
+  in `./layout-4.md` (header and bio), `./layout-3.md`, `../editorial/layout-1.md` and
+  `../editorial/layout-3.md` (two). `../lime/layout-4.md`'s bio-head cost now reads about 358
+  against 361 at 768.
+
+Reply: **JP-081 (the tags) — fixed.**
+- The chip rows now start with six tags, "All Access" included, as in the design. That covers
+  the header and the bio's Genres row, on every template.
+- They are still the header's *Tags* field, so they can be removed, reworded or added to. An
+  emptied list hides the row.
+- In layout 4 the bio's six wrap to a second row at 768 and 390, as the design's do.
+- Checked on *Stacked* under Grunge, Lime and Retro, and Retro's *Hero*, at 1440, 768 and 390.
 
 ---
 

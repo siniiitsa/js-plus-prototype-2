@@ -1065,7 +1065,7 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   507.4) 350 × 136 (exact), portrait 96 × 96. **Named diffs**: Noto's labels are narrower than
   Fisterra's, so the capsule is 155.8 / 168.8 against 162.4 / 175 and the pill 107.7 / 118.2 /
   113.6 against 114.2 / 124.32 / 119.32, flush right — layout 2's numbers; five chips where the
-  frame draws six (`TAG_LABELS`).
+  frame draws six (`TAG_LABELS`; closed by JP-081 (tags), 2026-09-29: six).
 - **Verified in the builder** (`page-check.mjs Editorial 2,0,1,3`): four modal cards; card 3
   opens every section at arch 2 in `PAGE_ORDERS[2]`, the calendar composed beside the bio (both
   at top 901 in the published 1440 tab); Music → `#media`, Gigs → `#map`, About → `#bio`,
@@ -1162,7 +1162,8 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   ink, terracotta lettered paper, radius 6, Chakra Petch. The frame's chips 3–6 name other
   schemes' inks that happen to be those two. The 768 instance is the `Theme=Lime` leak (olive
   and lime), not followed; the row is drawn as 1440's. Five chips to the frame's six
-  (`TAG_LABELS`), the named diff every template carries.
+  (`TAG_LABELS`), the named diff every template carries. *Closed by JP-081 (tags), 2026-09-29:
+  six.*
 - **`vm.pad`'s layout-3 arm takes the bio under Editorial**: top 50 / 50 / `padY`, foot 30,
   joined as `|| (T.name === 'Editorial' && cat === 'bio')`. Editorial's `left column` pads
   50 / 10 with gap 80 at 1440 and 768, Grunge's inset for inset. Media and the calendar join

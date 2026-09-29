@@ -794,7 +794,9 @@ Settled in section 2 (the bio):
   row's "one chip draws its box invisible", which `TagChips` over `vm.chips` reproduces
   as it is (box1 / lime seats, lime / `#0D1F03` inks, 5 / 11 × 0.82). The cost is the 768
   head at 322 against the frame's 361 (the frame spends 24 + 16 on the invisible line; 1440
-  is `space-between` over the card, so nothing moves there). Inking the label `s.bg` is the
+  is `space-between` over the card, so nothing moves there). *Since JP-081 (tags), 2026-09-29,
+  the seed's six wrap onto the frame's second chip row at 768 and 390, and the section is 36
+  taller at 768 (33 at 390), so the head is about 358 against 361.* Inking the label `s.bg` is the
   one-line reversal if a legible label is wanted. This is the opposite call from the
   header's chips, whose light seat the render showed **pale** on the photograph.
 - **Open question 3's answer: `SEEDS.Lime.layouts[3].bio = limeBioStage`, no new file.**
