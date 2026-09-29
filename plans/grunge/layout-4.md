@@ -1622,7 +1622,9 @@ Conventions, or Lime's, with the plan it came from — the running list for the 
    JP-054 (user call, 2026-09-23) seeded as `FORM_HEADING_4` for every theme. Default: keep the
    shared seed, name the diff, and tell the designer the instances were not overridden. The
    alternative — `vm.brand` as the Grunge layout-4 head — would be the first theme-gated copy
-   default, and is the user's call, not a session's.
+   default, and is the user's call, not a session's. **Closed** on its default by JP-081's reply
+   (user, 2026-09-29): "Contact Us" stays on every template, and the designer is asked
+   (`./layout-4-qa-fixes.md`, *Notes for the designer*, note 1).
 3. **Who owns the tear between the bio and the media band at 390.** The 1440 and 768 masters give
    it to the media (a red head); the 390 master gives it to the bio (a `#1A1A1A` foot) and draws
    none on the media. Default: follow each master and colour the 390 foot in the band's

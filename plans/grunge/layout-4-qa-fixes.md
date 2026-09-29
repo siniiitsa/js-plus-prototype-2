@@ -118,7 +118,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | 8 | JP-079 · JP-081 (steps) | *What happens next* prints one line per step, and not the design's steps | **A named fit call the user kept once** (JP-054: "the steps stay one line"). All nine frames draw the same three two-line *steps*; the seed prints three *promises* | M | **yes** — A (a `steps` repeater) / B (a delimiter) / C (reply) | **done** (A; `steps` seeded with the frames' three, the tenth repeater; `promises` back to layouts 1–2; the rows hold at 88) |
 | 9 | JP-081 (repertoire head) | "12 Songs" for "Repertoire" | **Named fit call** (Retro L4 open question 8), the precedent JP-070 reversed at layout 3; all three frames agree | S | **yes** — A (a `HEADING_4` arm) / B (reply) | **done** (A; `REP_HEADING_4` "Repertoire" wins over the count; EditPanel's `HEADING_4` arm moved above it) |
 | 10 | JP-081 (tags) | Five chips for the frame's six | **By design (JP-037, a user call)**, on a premise only two frames bear out | S (A) / M (B) | **yes** — A (six everywhere, reopens JP-037) / B (a Lime and Grunge layout-4 seed) / C (reply) | **done** (A; `TAG_LABELS` gains "All Access"; six fit every chip row, and a section grows only where its frame draws a second row) |
-| 11 | — | End-of-pass sweep | — | S | — | open |
+| 11 | — | End-of-pass sweep | — | S | — | **done** (156 + 156 of 660 + 660, every file named; `index.html` refreshed in `9f16854`; `MAP_RADIUS` a follow-up, user call) |
 
 **Why this order:**
 - The replies first, so a reply the user turns into a fix can be appended before the digests
@@ -1994,6 +1994,234 @@ Reply: **JP-081 (the tags) — fixed.**
    question 2 (`:1613`–`1619`): "Closed on its default by JP-081's reply (user, 2026-09-29):
    'Contact Us' stays on every template."
 
-**Settled.** —
+**Settled** (2026-09-29, all six steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **The harness.** One scratchpad worktree with an APFS clone of `node_modules` and its `.vite`
+  removed, served on :5174: first at HEAD (`f6c89ff`), then switched to `main` (`65dd1bc`) with
+  `.vite` removed again. The tree on :5173 against the HEAD worktree: **0 of 660 per surface**
+  (every category × themes `0,1,2,3,4` passed explicitly × three widths, canvas and `live=1`,
+  the footer's `page=2` render included), with the port and `\.jpg\?[^|]*` normalised by `sed`
+  on both sides of a `cmp` loop.
+- **1. Full digest against `main`: 156 of 660 per surface (312 files)**, the same set on both
+  surfaces once `_live_1` is stripped. The reconciliation is by file: **every differing file is
+  one a Settled names, and every named file differs** (0 extra, 0 missing against a list built
+  from the Settleds).
 
-**Replies to QA, one line per ticket.** —
+  | Entry | Named | Differ | Row shape, as its Settled gives it (canvas; `live=1` the same) |
+  |---|---|---|---|
+  | JP-084 | 30 | 30 | media `arch 3`: 3 rows, the text column and its two spans, width only |
+  | JP-080 · JP-077 | 30 | 30 | map `arch 3`: JP-080's 2 ticker rows, and the wall's 9 changed and 2 added (BASE's label and sub); Grunge's six also the 4 idle dots' opacity. At 390 the cards hug, so the rows below move too (28 changed and 2 added, 32 under Grunge) |
+  | JP-079 | 30 | 30 | form `arch 3`: per step, the span becomes a column holding two spans (3 changed, 6 added) |
+  | JP-081 repertoire head | 30 | 30 | repertoire `arch 3`: 1 row, the `H2`'s text |
+  | JP-081 tags | 192 | 192 | header (Retro `arch` 0 / 2 / 3 / 4 / 5, Lime, Grunge and Editorial 0 / 2 / 3 / 4, Pop 0 / 3) and bio (`arch` 1 and 3 on all five, 2 on Lime, Grunge and Editorial): one chip added per row |
+
+  The union is 30 × 4 + 192 = 312, since the map's two entries share their files. Under the tags,
+  a file moves more than one chip only where its row reflows. **Pop's header** `arch 0` at desktop
+  and 768, and `arch 3` at desktop and 768, is a centred row: it re-centres as it widens, so all
+  six chips' x move (−57.8 at `arch 0` desktop). Retro's header `arch` 2 at 768, 3 and 5 at desktop
+  and 5 at 390, Editorial's `arch 3` at desktop and Retro's bio `arch 1` at desktop gain a line,
+  JP-081's own list. Lime's, Grunge's and Editorial's layout-4 bio at 768 and 390 wrap All Access
+  to a second row, as their frames do, and the rows under it move. **JP-076, JP-082 (controls)
+  and JP-083 move no seeded file**, and neither do the replies. Three are visible only off the
+  seed: JP-076 under `live=1&email=none` (with or without `&cj={"email":…}`), JP-082's Listen
+  under `&cj={"cta2":…}` (its seed "Listen" is today's word), and JP-083's `#` cell under a
+  `&cj=` whose songs include a digit or non-Latin title. Send Enquiry's seeded label is today's
+  word, so it moves nothing.
+- **2. Reach** (a scratch copy of `reach.mjs` filtered to the ten rows, themes 0–4, 2,400
+  renders, deleted after). Each matches its `in`, and every template agrees:
+  - `calendar.email`: layout 4, **3 of 6** each, the three live renders (the canvas's pills are
+    spans), JP-076's reading. `calendar.cta`: layouts 1 and 4.
+  - `bio.cta2`: layout 4. `form.messageLabel`: layouts 1 and 4.
+  - `form.steps`: layout 4. `form.promises`: layouts 1 and 2.
+  - `map.stats`: layout 4. `map.radius` and `map.base`: layouts 1–3. `map.terms`: layouts 1 and 2.
+  - `header.tags` did not move (entry 10 re-ran its four rows over themes 0–4), so it was not
+    re-probed.
+- **3. The real app.** Neither window logged a page or console error on any run, and no
+  published width overflowed.
+  - **`page-check.mjs Grunge 3,0,1,2`.** Card 4 walked in full, cards 1–3 rendered and published
+    with every section id. Every nav link and Book Now scrolls to its section, the bio's `Listen ↗`
+    to `media`, the three *Start Enquiry* pills to `form`, and the footer's nine links to theirs.
+    The audio plays. The form refuses an empty submit (its five boxes ringed 2px white, the
+    textarea left), then composes `mailto:bookings@kaimercer.co.uk?subject=Enquiry&body=Your
+    name: … / Email: … / Event date: … / Event type: … / Location:`, and the confirmation stands
+    over the steps column. `overflow390` is 0, and the 390 burger opens 1 → 11 links.
+  - **Every entry's tester steps, Grunge card 4** (a one-off puppeteer script, trusted clicks and
+    typing, the editor at 1600 × 1000 and the tab at 1440, 768 and 390, deleted after).
+    - **The panel.** *Tags* reads the six. Bio *Listen link* "Listen", Repertoire *Heading*
+      "Repertoire". Events Map *Stats* lists the frame's twelve strings, and *Coverage*, *Based
+      in* and *Travel terms* read "Not shown in this layout". Booking Calendar *Button* "Send
+      Enquiry" and *Email address* `bookings@kaimercer.co.uk` (following the form). Enquiry Form
+      *Steps* lists the frames' six strings, *Promises* reads "Not shown in this layout", and
+      *Message label* reads "Message". None of those four is marked.
+    - **The seed, published** (the same at 1440, 768 and 390). The header and the bio print the
+      six with All Access, and the bio's six take two rows at every width. The repertoire heads
+      "Repertoire". The ticker reads "Next: Hidden Warehouse" / "Manchester · JUL 12 · 22:00",
+      with four idle dots at opacity .6. The wall's four cards all print. The steps are three
+      title-over-sub rows, the sub 22 below its title. The calendar's foot pill is
+      `mailto:bookings@kaimercer.co.uk`, and the bio's `Listen ↗` goes to `#media`.
+    - **JP-080.** A trusted `›` reads "The Deaf Institute" / "Manchester · JUL 25 · 21:00", and
+      `‹` brings "Next: Hidden Warehouse" back.
+    - **JP-082.** A trusted click on `Listen ↗` scrolls to `media`.
+    - **Typed, then republished into the same tab.** *Add song* `99 Problems`, track 1's title
+      `Late Lights (Extended Club Mix)`, and in *Stats* RADIUS's value emptied and the BASE row
+      blanked, which shows "Empty stats aren't shown." under it.
+      - JP-083: the canvas rail reads `#ABC…Z`. At all three widths the tab's rail has 27 cells
+        with `#` lit, and the `#` group leads with `99 Problems`. A trusted click on `#` from the
+        foot of the page brings the group ("#99 Problems") to top 0.
+      - JP-084: the title takes two whole lines, 14 from the transport at every width (the 1440
+        tab's zoom turns the section's 11.5 back into 14), with `scrollWidth` equal to its width.
+      - JP-077 · JP-078: three cards print (RADIUS, CITIES, GIGS YTD), and BASE is gone. The map
+        holds 1002 at 1440 and 1023 at 768, the seed's heights. At 390 it is 817 → 788, where the
+        cells hug.
+    - **JP-076, last in the tab.** The Enquiry Form deleted through its ⋯ menu. The calendar's
+      *Email address* box is empty under "Send Enquiry needs an email address. There's no
+      Enquiry Form on the page — type one here." Typed `me@band.co`, the note goes. Publish →
+      Open: the tab has no `#form`. The wizard walked with trusted clicks (Festival, 14/11/2026,
+      300 / 5 hrs / £3,000 / Needed, Sam Visitor / sam@example.com). Both pills read "Send
+      Enquiry" on `mailto:me@band.co?subject=Festival enquiry`, carrying every answer and
+      `Package: The House Party · £450`. Send shows "Check your mail app … me@band.co" with
+      *Start again*.
+  - **Lime's, Retro's and Editorial's card 4, once each** (the same script, seed only). They show
+    the same panel values, and the same published seed at 1440, 768 and 390: the six tags in
+    header and bio, "Repertoire", the ticker's "Next:" / "JUL" and its `›` / `‹`, the wall's four,
+    the steps' three, the foot pill on `bookings@kaimercer.co.uk`, and `Listen ↗` scrolling to
+    `media`.
+    - The idle dots are opacity .6 under Retro and Editorial and 1 under Lime, JP-080's split.
+    - Retro's and Editorial's header puts its six on three lines at 1440 (JP-081's named Retro
+      layout-4 cost; Editorial's card 4 is Retro's `HeaderV3`). Their bio's six are one row at 768,
+      where Lime's and Grunge's wrap.
+    - Retro's and Editorial's steps sit 23 below their titles at 1440, against 22 on the others:
+      the body's own Body/SM line.
+- **4. `index.html`** refreshed in `9f16854` from `npm run build:standalone`: **8,763,002 bytes**,
+  up from 8,754,810.
+  - **The two-build digest** used `build-digest.mjs`, `CARD=3`, reduced motion, and both files
+    from `127.0.0.1:8931`, the old one digested before the `cp`. Old against new, 12 of 15 theme ×
+    tab files differ. Pop's three are 0: its modal offers three cards, so `CARD=3` clamps to its
+    card 3, a layout-3 page, where no entry moves Pop.
+  - A throwaway copy wrote each root's rows as JSON, re-based on the root's own origin, deleted
+    after. Compared at 0.2px, **every section moves as the harness did**, and header, bio, media,
+    repertoire, map and form are the only ones:
+    - media: 3 rows everywhere;
+    - repertoire: 1 row;
+    - form: 3 changed and 6 added;
+    - map: 11 changed and 2 added wide (15 under Grunge, the dots), 26 at 390 (30 Grunge);
+    - header: one chip added, and 7 rows re-flowed under Retro and Editorial at desktop (the
+      third line);
+    - bio: one chip added, and 18–22 rows moving under the wrap where it takes a second row
+      (Lime 768 and 390, Grunge 768 and 390, Editorial 390).
+  - The only other rows are the footer seal's 0×0 `<defs>` / `<path>` (2 per tab, where a section
+    above it grew). They report the viewport origin, so re-basing moves them with the page. The
+    modal's card counts (4 / 4 / 4 / 4 / 3) do not change.
+- **5.** The designer note is below, with the nine items step 5 lists and `MAP_RADIUS` as a
+  tenth.
+- **6.** `plans/README.md`'s row and the replies below. At the sweep the deployed build still
+  read `Tue, 29 Sep 2026 08:18:02 GMT`, 8,754,810 bytes, which is the tester's and `main`'s root
+  `index.html`.
+  - **`MAP_RADIUS`** (user call, 2026-09-29: **a follow-up**). "12 mile radius" is left as
+    it is. It has been the seed since Retro's layout-1 rebuild (`8fa8ff4`), and no ticket reports
+    it. It disagrees with the page's own "120 mi standard" terms and 120mi rings at layouts 1–3.
+    It goes to the designer (note 10). If they confirm 120, changing it moves map `arch 0`–`2`.
+  - **CLAUDE.md's ticker sentence** was already corrected by JP-080 ("stands **without its
+    arrows** and is gone at none", `:535`), so nothing was edited.
+  - A *closed* pointer on `./layout-4.md`'s open question 2 (`:1620`, where the triage's
+    `:1613`–`1619` had drifted).
+- **Torn down**: :5174 and :8931 were stopped and the worktree removed with
+  `git worktree remove --force` before either commit. The one-off scripts in `source/scripts/`
+  were deleted. :5173 is the user's and still runs.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified`
+is later than `Tue, 29 Sep 2026 08:18:02 GMT`** (the build these reports were filed against,
+8,754,810 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or
+cached build still shows every one of them.
+- **JP-076 — fixed.** The Booking Calendar has its own *Email address* (layout 4).
+  - Until you type in it, it shows and uses the Enquiry Form's address.
+  - With the form deleted, the box is empty and the panel says "Send Enquiry needs an email
+    address. There's no Enquiry Form on the page — type one here." Type one and both Send
+    Enquiry pills mail it every answer, and the confirmation names it.
+  - The panel also says when the form's own address is empty or not valid. With no address the
+    published pills stay pictures, as the form's own submit does.
+- **JP-077 — fixed.** The Events Map's stat cards now start from the design's four: RADIUS 120 /
+  miles · standard, CITIES 21 / played in, GIGS YTD 48 / played this year, BASE Manchester, UK /
+  further on request. They are a new *Stats* list, up to four cards, all editable.
+- **JP-078 — fixed.** A card is never an empty box. Each part hides when emptied, an empty card
+  is not shown (the editor says so under the row), and the desktop map keeps its full height.
+- **JP-079 — fixed.** *What happens next* shows the design's three steps, each a title over a
+  second line, from a new *Steps* list (layout 4, up to six). An empty step is not shown and the
+  numbering runs on. *Promises* is now layouts 1 and 2 alone.
+- **JP-080 — "JUL", "Next:" and Grunge's dots fixed; the red pin and × by design.**
+  - The ticker's month is upper-case.
+  - The first gig reads "Next: Hidden Warehouse". It assumes the gigs are listed in date order.
+  - Grunge's dots are the design's white at 60%. Lime keeps full-strength dots, since its
+    design's dark dots vanish on the map.
+  - The red pin marks the gig on show and moves with the arrows. The × seat holds the ›, since
+    the ticker has nothing to close.
+- **JP-081 — the repertoire head, the tags and the steps fixed; the rest by design.**
+  - Layout 4's Repertoire heads "Repertoire", still the *Heading* field, and emptied it stays
+    empty.
+  - The header and bio chip rows start with six tags, All Access included, on every template.
+    Lime's layout-2 bio and Retro's layout-4 header, whose designs draw five, get the sixth too.
+  - The steps' texts are the design's (JP-079).
+  - The form head: layout 4 opens on *Contact Us* on every template (JP-054). Grunge's design
+    shows the component's placeholder, the mock artist's name, and we have asked the designer.
+    Type the artist's name into Enquiry Form → *Heading* to show it.
+  - "Six Worth Your Ears" counts the design's filler sixth tile. The page seeds five tracks, and
+    Media Player → *Heading* changes it.
+  - The bio prose's first sentence names the mock artist, and the rest is *Paragraph 1* word for
+    word. Its role and dates are the Header's *Kicker* and the Bio's *Performing since*.
+  - The track names are layout 1's list, one list for the whole page.
+- **JP-082 — the three controls and the map's card names fixed; the labels by design.**
+  - The Booking Calendar's *Button* now reaches layout 4 and edits both Send Enquiry pills.
+  - The Bio has a *Listen link* field (layout 4). Emptying it hides the link.
+  - The Enquiry Form has a *Message label* field (layouts 1 and 4). It changes the label and
+    the email's heading.
+  - The map's four card names are the *Stats* list's (JP-077).
+  - The wizard's texts, *Travel & reach* and *What happens next* are the design's labels and stay
+    fixed (the JP-071 rule). What they label is editable.
+- **JP-083 — fixed.** A title starting with a digit or a non-Latin letter, or an untitled song,
+  files under **#**, and leading punctuation is skipped. The A–Z index gains a **#** cell ahead
+  of A while such a song exists, and on the published page it jumps to that group.
+- **JP-084 — fixed.** The now-playing title keeps the player's own 14px gap from the
+  previous-track button and wraps to two lines before any "…".
+  - The seeded "Manchester at 3am" and "Echo & The Floor" now show whole at 1440.
+  - On a phone, a track whose title needs two lines makes the player one line taller.
+- Checked on *Stacked* under Grunge, Lime, Retro and Editorial at 1440, 768 and 390.
+
+## Notes for the designer
+
+*(What this batch found worth telling the designer, gathered by the sweep into one note to forward,
+in the layout-3 batch's shape. Each is shipped as described.)*
+
+1. **The form's head: "KAI MERCER" or "Contact Us"?** (JP-081) Grunge's layout-4 page has no
+   desktop form instance, so its 1440 master is the main component `725:2990`. Seven of the nine
+   layout-4 form frames print that component's default "KAI MERCER": every narrow master, and
+   Grunge's component. Retro's and Lime's desktop instances were retyped "Contact Us". The page
+   heads the form "Contact Us" on every template. Which is meant, and could Grunge's page get a
+   desktop instance?
+2. **The map's ticker and dots** (JP-080). The five dots are absolute pixels leaked unadapted to
+   all three masters, so at 390 two sit off the 370 viewport. Lime's are ink (`#15180F`) on a dark
+   plate and cannot be seen. The ticker's "‹ … ×" offers no forward control. The page lights the
+   gig on show and puts › in the × seat.
+3. **The now-playing title has no truncation rule** (JP-084). `Frame 24` is `SPACE_BETWEEN` with
+   no gap, and the title HUGs with `textAutoResize: HEIGHT`, so a longer title runs into the
+   transport and can push it off the 308 column. The page gaps it by the transport's own 14 and
+   wraps it to two lines before an ellipsis.
+4. **"Six Worth Your Ears" counts a filler tile** (JP-081). The sixth tile repeats *Roomtone /
+   Hidden Sessions Vol. 2* (Grunge `964:72954` / `971:10395` / `977:12177`, Lime `964:72858`,
+   Retro `964:72523` / `971:14889`). Layouts 1–3 read "Five worth your ear", which the page keeps.
+5. **The layout-4 bio's prose leads with the mock artist** (JP-081): "Kai Mercer — the act you'll
+   be working with on the night." It is one paragraph where the section carries two. Its
+   "Performing since 2021" is layout 3's "June 2021" (Grunge `964:72945` / `971:7824` /
+   `977:12045`).
+6. **Five tags where every other page draws six** (JP-081): Lime's layout-2 bio (`964:64581`) and
+   Retro's layout-4 header (`964:72511` / `964:77544` / `971:14040`). The page seeds six
+   everywhere, so those two draw a sixth their frames do not.
+7. **The A–Z rail has no cell for digits or non-Latin titles** (JP-083). The page files them under
+   a `#` cell ahead of A, drawn only while such a song exists. A Cyrillic repertoire files
+   entirely under `#`.
+8. **No master draws Send Enquiry without an address** (JP-076). With no address, the page's
+   pills stay pictures, and the editor asks the artist for one.
+9. **The form's steps are now the frames' steps** (JP-079). All nine masters draw three two-line
+   steps. The page used to print three one-line promises there, and now seeds the frames' three.
+10. **Coverage: 12 miles or 120?** (sweep, user call: a follow-up). The map's seeded coverage at
+    layouts 1–3 reads "12 mile radius", seeded since the page's layout-1 rebuild. The same page's
+    terms read "120 mi standard" and its rings run to 120mi. Which is meant?
