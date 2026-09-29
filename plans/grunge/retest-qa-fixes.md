@@ -1008,7 +1008,7 @@ user's).
     added wide, 2 and 1 at Mobile; repertoire 15. Under Pop at Tablet the repertoire moves 22:
     the editor's 768 column is narrower than the harness's, so seven titles, not one, widen into
     the room the upper-cased artist left, with no height change. The only other rows are the
-    footer seal's 0×0 `<defs>` / `<path>` at Mobile (2 per tab, under the taller pricing), which
+    footer seal's 0×0 `<defs>` / `<path>` at Mobile (2 per tab under themes 0–3, under the taller pricing; Pop draws no seal), which
     report the viewport origin. The modal's card counts (4 / 4 / 4 / 4 / 3) do not change.
 - **5.** `plans/README.md`: this pass's row rewritten as swept, and a row and a tree line for
   [`display-face.md`](./display-face.md) (planned, `grunge-display-face`, after this batch
