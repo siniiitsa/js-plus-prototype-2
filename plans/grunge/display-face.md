@@ -669,6 +669,67 @@ licence point alone argues for A.
      78px` at 390. The card's price carries the same. The brand ("Kai Mercer", 15 / 13.5 px)
      and *Write another* (a `list`-size span) read `none`. No page errors. In the 390 shot the head is scuffed
      but reads.
+
+   **Settled, layout 3** (2026-09-30, on `9190ebb`). This commit adds and removes no line either
+   (37 lines changed in place), so **the +22 offset from step 1's census still holds for layout
+   4**. Layout 4's commit also collapses `Title`'s `worn` (layout 1's Settled). A line it adds or
+   removes at `Title` (`:914`–`:933`) shifts every census number below it, so the offset holds
+   only until that edit.
+   - **The sites, twenty spreads.** Each is `distressed(s, …)` round the setter's whole style:
+     - header 3's `Title` passes `worn` (`:2738`, HeaderV2's `s.limeTree` call). Its Retro / Pop
+       arm (`:3016`) is untouched, as is HeaderV3's Grunge call (`:3267`), layout 4's. The card
+       name (`:2827`, `nameSize`) wraps its whole style, the `cardNameEms` fit included. The
+       location (`:2746`) is `list` and stays clean;
+     - bio 3's name `p` (`:4636`) and `h2` (`:4765`);
+     - media 3's `h2` (`:7300`) and both spans that read `titleType` (`:7286`): `:7397` and
+       `:7544`, each `distressed(s, titleType)`. `:7544` is the same design's Retro arm, where
+       the helper is a no-op. `listName` (`:7280`) stays clean;
+     - pricing 3's numeral (`:9652`) and `h2` (`:9716`). The row name (`:9624`) is `list`;
+     - repertoire 3's `h2` (`:12103`) and gallery 3's (`:14014`). Repertoire's song titles
+       (`:12073`) are `list`;
+     - calendar 3's `h2` (`:15860`), numeral (`:15873`) and month (`:15881`);
+     - map 3's `h2` (`:18946`) and panel `h3` (`:19143`), wrapped at the call site round
+       `disp(titleSize …)`. Its `disp` (`:18934`) also feeds the venue lines (`:19017`,
+       `s.list`), which stay clean;
+     - testimonials 3's rating numeral (`:21881`) and `h2` (`:21977`). The reviewer (`:21943`)
+       and the quote (`:21935`, `disp(s.label …)`, a label-face site) stay clean;
+     - form 3's `h2` (`:24322`), price (`:24351`) and sent `h3` (`:24364`), each
+       `distressed(s, disp(…))`. The submit pill (`:24286`, `pill` → `disp(s.list …)`) stays
+       clean.
+   - **Proof, per step 0's recipe, with one port moved.** A vite this session did not start was
+     already on :5174, serving this tree. So the baseline, a worktree of `9190ebb`, ran on
+     **:5175**, and the normaliser's port class widened to `517[345]`. The tree ran on the
+     long-running :5173. Themes 0–4, 132 files each per surface.
+
+     | Theme | Bare | `&live=1` |
+     |---|---|---|
+     | 0, 1, 3, 4 | 0 of 132 each | 0 of 132 each |
+     | 2 | **30 of 132** | **30 of 132** |
+
+     - **The 30 are exactly step 1's layout-3 list** × 3 widths: header arch 2 and the nine
+       sections at arch 2. It is the same 30 files on both surfaces.
+     - **`mask-cols.mjs`: 0 failures on both surfaces.** 75 rows moved per surface, all 75 new
+       masks, each differing only in the four mask columns with `maskSize` 4 × `fontSize`, and
+       all text tags. The `linear-gradient` rows are 14 per surface on both sides.
+     - **The sizes that moved**, as faced px: the `H1` at 80.25 / 60.75 / 34.5 (`dispLg`) and the
+       card name at 22.14 / 21 / 19.5; `dispLg` `H2`s and calendar's numeral at 80.25 / 60.75 /
+       34.5; `dispMd` (pricing's numeral, testimonials' numeral and `h2`) at 44.25 / 37.5 / 28.5;
+       `dispSm` (bio's name, calendar's month) at 30.75 / 30 / 22.5; and the title-size sites
+       (media's track spans, pricing's, calendar's, map's and form's heads, the map panel's `h3`,
+       form's price) at 22.125 / 21 / **19.5**. Nothing under 19.5 took the mask.
+   - **The composed column, by digest.** Bio 3 and media 3 at `&column=left` and calendar 3 at
+     `&column=right` (desktop, theme 2) were digested on both servers. Only arch 2 moved: bio's
+     `h2` and name, media's `h2` and track spans, calendar's `h2`, numeral and month, 11 rows,
+     every one mask columns only, 0 failures. A mask moves no geometry, so the column's fit is
+     untouched.
+   - **By hand, form 3's sent `h3`.** Grunge card 2 was published through a one-off puppeteer
+     script (Publish → *Open*, `page.once('popup')`, trusted clicks, `mailto:` clicks
+     `preventDefault`ed), deleted after. After a filled submit, "Check your mail app" carries the
+     mask, 1,185 characters, at 22.125 px with `88.5px 88.5px` at 1440 and 19.5 px with `78px
+     78px` at 390. The price carries the same, and the `h2` carries it at 80.25 / 34.5. The
+     eyebrow, the paragraph, the price unit, the bookings line, the address and *Write another*
+     read `none`. The sent state did not survive the resize to 390, so the submit was repeated
+     there. No page errors. In the 390 shot the head is scuffed but reads.
 5. **The sweep.**
    - A full digest against `main` (port normalised), all categories × themes 0–4 × three widths
      × canvas and `live=1`. The only diffs allowed are Grunge mask columns.

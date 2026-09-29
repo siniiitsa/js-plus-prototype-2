@@ -2735,7 +2735,7 @@ function HeaderV2({ s }) {
     const identity = (
       <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
         <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
-               twoTone={grunge} toneA={s.tx} toneB={s.ac} />
+               twoTone={grunge} toneA={s.tx} toneB={s.ac} worn />
         <span style={row(u(8))}>
           {/* Editorial's dot is `sem/text/2`, the location's own paper, where
               the twins' is the accent. */}
@@ -2824,12 +2824,12 @@ function HeaderV2({ s }) {
         <div style={col(u(4), {
           alignItems: s.mob ? 'flex-start' : 'center', minWidth: 0, textAlign: s.mob ? 'left' : 'center',
         })}>
-          <span style={{
+          <span style={distressed(s, {
             width: 'max-content', maxWidth: `calc${measure}`, fontFamily: s.display,
             fontSize: faced(s, s.cardNameEms ? `min(${nameSize}, calc(${measure} / ${s.cardNameEms}))` : nameSize),
             lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, color: s.tx,
             textTransform: grunge || ed ? 'uppercase' : undefined,
-          }}>{brand()}</span>
+          })}>{brand()}</span>
           {s.cardLine && (
             <span style={{
               width: 'max-content', maxWidth: `calc${measure}`, overflowWrap: 'anywhere',
@@ -4633,10 +4633,10 @@ function Bio({ s }) {
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
           minWidth: 0, maxWidth: u(179),
         }}>
-          <p style={{
+          <p style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
             letterSpacing: s.dls, color: grunge || ed ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
-          }}>{brand()}</p>
+          })}>{brand()}</p>
         </div>
         <div style={row(u(s.mob ? 52 : 100), {
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
@@ -4762,10 +4762,10 @@ function Bio({ s }) {
           }}>{s.initials} Bio</span>
           {/* Grunge's head is one tone, `sem/text/1` throughout: layout 1's
               word-two accent was that frame's, not the template's. */}
-          <h2 style={{
+          <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: s.ac, ...upper,
-          }}>{s.title}</h2>
+          })}>{s.title}</h2>
         </div>
         {ed ? (
           <div style={{ position: 'relative', ...(s.mob ? null : { marginTop: u(50) }) }}>
@@ -7297,11 +7297,11 @@ function Media({ s }) {
             fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
             letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
           }}>{s.mediaKicker}</span>
-          <h2 style={{
+          <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: s.ac, ...disp,
             maxWidth: ed ? u(632.156) : desk ? (grunge ? '4.6em' : u(632.156)) : undefined,
-          }}>{s.title}</h2>
+          })}>{s.title}</h2>
         </div>
       )
 
@@ -7394,7 +7394,7 @@ function Media({ s }) {
                   }}><Photo s={s} initialsSize={16} src={t.img} ink={s.tx} /></span>
                   {/* Display/Title over Body/SM. */}
                   <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
-                    <span style={titleType}>{t.name}</span>
+                    <span style={distressed(s, titleType)}>{t.name}</span>
                     {t.rel && <span style={bodySm}>{t.rel}</span>}
                   </span>
                   {dur && (
@@ -7541,7 +7541,7 @@ function Media({ s }) {
                 borderRadius: u(4), overflow: 'hidden', position: 'relative',
               }}><Photo s={s} initialsSize={16} src={t.img} /></span>
               <span style={col(u(4), { flex: 1, minWidth: 0 })}>
-                <span style={titleType}>{t.name}</span>
+                <span style={distressed(s, titleType)}>{t.name}</span>
                 {/* Rendered or not, rather than printed blank: a typed
                     textarea row has no release line at all, and an empty span
                     spends the column's gap and its own line box either way —
@@ -9649,12 +9649,12 @@ function Pricing({ s }) {
                   {/* Noto sits 0.09em lower than the frame's face (the
                       calendar's lift): the frame stands the numeral's foot 7
                       above the `£`'s at 1440, and unlifted the two were level. */}
-                  <span style={{
+                  <span style={distressed(s, {
                     fontFamily: s.display, fontSize: faced(s, s.dispMd), ...disp(1),
                     letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
                     ...(desk ? {} : { flex: '1 0 auto' }),
                     ...(ed ? { position: 'relative', top: '-0.09em' } : {}),
-                  }}>{t.amount}</span>
+                  })}>{t.amount}</span>
                   {/* A range's second half (JP-074): the lead's face, and free
                       to wrap where the lead holds its line. */}
                   {!!t.tail && (
@@ -9713,11 +9713,11 @@ function Pricing({ s }) {
         <div style={col(u(24), { alignItems: 'flex-start' })}>
           <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
             {!!s.title && (
-              <h2 style={{
+              <h2 style={distressed(s, {
                 margin: 0, fontFamily: s.display,
                 fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
                 ...disp(1.1), letterSpacing: s.dls, color: s.tx,
-              }}>{s.title}</h2>
+              })}>{s.title}</h2>
             )}
             {!!s.pricingIntro && (
               <p style={{
@@ -12100,10 +12100,10 @@ function Repertoire({ s }) {
         <div style={col(u(24))}>
           {/* Display/LG in `sem/text/2`: pale (Editorial's ink), where Retro's
               head is the accent. */}
-          <h2 style={{
+          <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), ...disp(0.89),
             letterSpacing: s.dls, color: s.tx,
-          }}>{s.title}</h2>
+          })}>{s.title}</h2>
 
           {sets.length === 0 ? (
             <span style={body(s.bodySm, 1.4, { color: s.muted })}>No songs yet.</span>
@@ -14011,11 +14011,11 @@ function Gallery({ s }) {
             sets the heading `whitespace-nowrap`; both narrow ones let it wrap,
             and nothing in any master's layout depends on the leak, so it wraps
             here (the testimonials' rule). */}
-        <h2 style={{
+        <h2 style={distressed(s, {
           margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !s.limeTree ? s.h1 : s.dispLg),
           lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac,
           ...(grunge || ed ? { textTransform: 'uppercase' } : null),
-        }}>{s.title}</h2>
+        })}>{s.title}</h2>
         <div style={{
           display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`,
           columnGap: u(8), rowGap: u(desk ? 8 : 20),
@@ -15857,11 +15857,11 @@ function Calendar({ s }) {
           {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 (32 /
               25 / 23 under Editorial) — `s.title` is the heading string, not
               the ramp's size. */}
-          <h2 style={{
+          <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display,
             fontSize: faced(s, lu(ed ? (desk ? 32 : s.mob ? 23 : 25) : desk ? 36 : s.mob ? 26 : 28)), ...disp(1.1),
             letterSpacing: s.dls, color: s.tx,
-          }}>{s.title}</h2>
+          })}>{s.title}</h2>
           <div style={col(lu(18), ed ? {
             position: 'relative', background: s.box1, color: s.tx, padding: lu(20), overflow: 'hidden',
           } : {
@@ -15870,18 +15870,18 @@ function Calendar({ s }) {
           })}>
             <div style={col('0')}>
               {!!hit && (
-                <span style={{
+                <span style={distressed(s, {
                   fontFamily: s.display, fontSize: faced(s, s.dispLg), ...disp(0.89),
                   letterSpacing: s.dls, ...lift,
-                }}>{hit.d}</span>
+                })}>{hit.d}</span>
               )}
               <div style={row(lu(12), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
                 <div style={col(lu(2.745), { alignItems: 'flex-start' })}>
                   <div style={row(lu(8))}>
-                    <span style={{
+                    <span style={distressed(s, {
                       fontFamily: s.display, fontSize: faced(s, s.dispSm), ...disp(1),
                       letterSpacing: s.dls, ...lift,
-                    }}>{month.name}</span>
+                    })}>{month.name}</span>
                     <div style={row(lu(4))}>{arrow(true, -1)}{arrow(false, 1)}</div>
                   </div>
                   <span style={body(s.bodyMd, 1.5)}>{month.year}</span>
@@ -18943,7 +18943,7 @@ function EventsMap({ s }) {
       const headL = (
         <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
           {s.mapKicker && <span style={bodySm}>{s.mapKicker}</span>}
-          <h2 style={{ margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null) }}>{s.title}</h2>
+          <h2 style={distressed(s, { margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null) })}>{s.title}</h2>
         </div>
       )
 
@@ -19140,10 +19140,10 @@ function EventsMap({ s }) {
                     frame's face at lh 1.1, 3.3–4 over the city line, so under
                     Editorial they are lifted by that much; the row venues, at
                     lh 1.2, sit level with the frame's and are not. */}
-                <h3 style={{
+                <h3 style={distressed(s, {
                   margin: 0, ...disp(titleSize, 1.1), overflowWrap: 'anywhere',
                   ...(ed ? { position: 'relative', top: '-0.07em' } : null),
-                }}>{feature.venue}</h3>
+                })}>{feature.venue}</h3>
                 {!!feature.city && (
                   <span style={{
                     fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, opacity: 0.7,
@@ -21878,11 +21878,11 @@ function Testimonials({ s }) {
               alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
               ...(ed ? { position: 'relative', top: `calc(-0.08 * ${s.dispMd})` } : null),
             })}>
-              <span style={{
+              <span style={distressed(s, {
                 ...disp(s.display, s.dispMd, 1),
                 letterSpacing: s.dls, ...numInk,
                 flex: desk ? '0 1 auto' : '1 0 0', minWidth: 0, overflowWrap: 'anywhere',
-              }}>{rated ? s.testiRating : n}</span>
+              })}>{rated ? s.testiRating : n}</span>
               <span style={{
                 fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
               }}>{rated ? '/5' : n === 1 ? 'review' : 'reviews'}</span>
@@ -21974,10 +21974,10 @@ function Testimonials({ s }) {
           <div style={col('0px', { width: '100%', color: s.tx })}>
             {s.testiKicker && <span style={small}>&#9679; {s.testiKicker}</span>}
             {!!s.title && (
-              <h2 style={{
+              <h2 style={distressed(s, {
                 margin: 0, ...disp(s.display, s.dispMd, 1),
                 letterSpacing: s.dls,
-              }}>{s.title}</h2>
+              })}>{s.title}</h2>
             )}
           </div>
           <div style={col(u(16), { width: '100%' })}>
@@ -24319,10 +24319,10 @@ function EnquiryForm({ s }) {
                 frames' stands 0.132 / 0.138 / 0.133, and it stands over a
                 line of type — where a J (0.24em of descender in Noto) all but
                 met the paragraph. */}
-            <h2 style={disp(headSize, 0.89, {
+            <h2 style={distressed(s, disp(headSize, 0.89, {
               margin: 0, color: s.ac, overflowWrap: 'break-word',
               ...(ed && { position: 'relative', top: '-0.08em' }),
-            })}>{s.title}</h2>
+            }))}>{s.title}</h2>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formPara}</p>
           </div>
 
@@ -24348,7 +24348,7 @@ function EnquiryForm({ s }) {
                 alignItems: 'baseline', flexWrap: 'wrap',
                 ...(ed && !!s.formPrice && { position: 'relative', top: `calc(-0.09 * ${title})` }),
               })}>
-                {!!s.formPrice && <span style={disp(title, 1.1, { color: s.ac })}>{s.formPrice}</span>}
+                {!!s.formPrice && <span style={distressed(s, disp(title, 1.1, { color: s.ac }))}>{s.formPrice}</span>}
                 {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
               </div>
             )}
@@ -24361,9 +24361,9 @@ function EnquiryForm({ s }) {
               // The card alone changes. No frame draws this state: the title is
               // Display/Title and the address Body/MD, layout 2's inventions.
               <>
-                <h3 style={disp(title, 1.1, {
+                <h3 style={distressed(s, disp(title, 1.1, {
                   margin: 0, color: s.ac, overflowWrap: 'break-word',
-                })}>{s.formSentTitle}</h3>
+                }))}>{s.formSentTitle}</h3>
                 <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
                 {/* Plain text, Retro's reason: the fallback for a browser that
                     opened nothing. */}
