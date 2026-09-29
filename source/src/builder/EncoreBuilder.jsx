@@ -1309,12 +1309,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       name: cased(String(t?.name ?? '').trim()), price: String(t?.price ?? '').trim(),
     }))
     // JP-053 — Send Enquiry mails the wizard's answers, as the enquiry form's
-    // submit does, to the form's own address: read across sections through
-    // sectionVm's `email` argument (pageEmail(), `tiers`' precedent), '' with
-    // no form section or an address emailAddr() refuses, which leaves both
-    // Send pills spans — the form's no-address state. The confirmation that
-    // replaces the wizard card prints it in plain text, the form's rule.
-    vm.calEmail = email
+    // submit does. JP-076 — to the calendar's own `email` once the artist has
+    // typed one, and until then to the form's, read across sections through
+    // sectionVm's `email` argument (pageEmail(), `tiers`' precedent): a
+    // follow-the-form chain, copyrightOf()'s shape, so a page with no form can
+    // still send and a page that never types one keeps one address. '' with
+    // neither, or an address emailAddr() refuses, which leaves both Send pills
+    // spans — the form's no-address state. The mailto and the confirmation
+    // that replaces the wizard card (plain text, the form's rule) both read
+    // this one resolved address, so the two cannot name different ones.
+    const sendTo = emailAddr(cv('email', email))
+    vm.calEmail = sendTo
     Object.assign(vm.calWizard, {
       sentTitle: cased('Check your mail app'),
       sentBody: 'Your enquiry should be open in it, ready to send. If nothing happened, write to:',
@@ -1335,7 +1340,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       const t = tiers.length ? tiers[((pi % tiers.length) + tiers.length) % tiers.length] : null
       return t ? [t.name, t.price].map((x) => String(x ?? '').trim()).filter(Boolean).join(' · ') : ''
     }
-    vm.calMailto = ({ ti, vals, pi }) => enquiryMailto(email, {
+    vm.calMailto = ({ ti, vals, pi }) => enquiryMailto(sendTo, {
       type: vm.calTypes[ti] ?? '',
       fields: [
         { label: 'Approx. date', value: (vals || {}).date },
@@ -3419,6 +3424,14 @@ function QuotesField({ value, max, onChange }) {
 const LINK_GONE_HINT = 'Section not on the page — left off the published footer.'
 const navGoneHint = (labels) =>
   `${labels.join(', ')}: section not on the page — left off the published nav.`
+// JP-076 — above the calendar's Email address at layout 4, while Send Enquiry
+// has no address to mail: the box still follows a form that is gone or holds
+// none, or the artist emptied it. A typed address that isn't valid is left to
+// UrlInput's own line.
+const calNoMailHint = (following, hasForm) => `Send Enquiry needs an email address. ${
+  !following ? 'Type one here.'
+    : hasForm ? 'The Enquiry Form’s is empty or not valid — fix it there, or type one here.'
+    : 'There’s no Enquiry Form on the page — type one here.'}`
 
 const BLANK_LINK_HINT = 'Empty links aren’t shown.'
 
@@ -3619,13 +3632,15 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // small print and the form's layout-3 head are composed from
                   // it, the repertoire's heading counts the songs, and a few seeds follow
                   // the layout. Each mirrors what sectionVm resolves, so panel
-                  // and canvas never disagree. The kicker left the chain with
+                  // and canvas never disagree. The calendar's address is the
+                  // form's until one is typed (JP-076). The kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
                   // layout-3 card's line is a field of its own. Layout 3's
                   // heads come ahead of the song count, which sectionVm's
                   // later assignment says the other way round (JP-070).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
                     : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
+                    : f.k === 'email' && sec.cat === 'calendar' ? email
                     : f.k === 'heading' && sec.cat === 'form' && design === 2 ? formHeading3(artistName)
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 2
                       && HEADING_3[sec.cat] ? HEADING_3[sec.cat]
@@ -3649,6 +3664,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // "template" where no layout of this one reads it.
                   const unread = !fieldReach(f, themeName, design)
                   const nowhere = unread && fieldNowhere(f, themeName)
+                  const noMail = f.k === 'email' && sec.cat === 'calendar' && !unread
+                    && !emailAddr(val) && !(String(val).trim() && emailProblem(val))
                   return (
                     <div key={f.k}>
                       <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
@@ -3660,6 +3677,11 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       )}
                       {deadNav.length > 0 && f.k === 'navMode' && val === 'minimal' && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{navGoneHint(deadNav)}</p>
+                      )}
+                      {noMail && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+                          {calNoMailHint(sec.c.email === undefined, navSections.some((n) => n.cat === 'form'))}
+                        </p>
                       )}
                       {f.type === 'image' ? (
                         <ImageField value={imgVal(f.k)} onChange={(v) => set(v)} onToast={api.toast} />

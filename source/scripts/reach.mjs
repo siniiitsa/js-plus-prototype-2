@@ -66,6 +66,8 @@ const PROBES = [
   { name: 'calendar.types', cats: ['calendar'], param: 'cj', value: { types: Z } },
   { name: 'calendar.slots', cats: ['calendar'], param: 'cj', value: { slots: [{ date: '2025-06-12', kind: Z, price: Z }] } },
   { name: 'tiers', cats: ['calendar'], param: 'tiers', value: [{ name: Z, price: Z }] },
+  // JP-076: the address layout 4's Send Enquiry mails, read off the pills' href.
+  { name: 'calendar.email', cats: ['calendar'], param: 'cj', value: { email: 'zq@example.test' } },
   // JP-046: layout 3's offer line beside the pricing capsule.
   { name: 'pricing.offer', cats: ['pricing'], param: 'cj', value: { offer: Z } },
   // JP-065: layout 3's stat card, its rating and the stars beside its faces.

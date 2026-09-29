@@ -109,7 +109,7 @@ per entry (`Fix JP-083: …`); the replies entry commits the plan alone.
 | Order | ID | Report (short) | Verdict | Size | Decision needed? | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-081 · JP-082 (replies) | Media head, track names, bio prose, form head; the labels no field reaches | **By design, all of them**: "Six" counts the frame's filler tile; the tracks are layout 1's frame's; the prose's lead names the mock artist; "Contact Us" is JP-054's call; the labels are JP-071's | — (replies) | **yes** — the labels A / B, the form head A / B / C, the media head A / B, the prose and tracks A / B | **done** (A, A, A, A; four replies, no fix) |
-| 2 | JP-076 | With the form deleted, both Send Enquiry pills do nothing | **Confirmed, shared.** A known state (JP-053) with no face and no fix path but the form; `BookPill`'s span keeps its pointer. **Proposed: Medium** | S–M | **yes** — 1 A (a calendar address that follows the form's) / B (one address); 2 (a) a panel note / (b) inert pills / (c) a visitor line | open |
+| 2 | JP-076 | With the form deleted, both Send Enquiry pills do nothing | **Confirmed, shared.** A known state (JP-053) with no face and no fix path but the form; `BookPill`'s span keeps its pointer. **Proposed: Medium** | S–M | **yes** — 1 A (a calendar address that follows the form's) / B (one address); 2 (a) a panel note / (b) inert pills / (c) a visitor line | **done** (1 A, 2 (a); the calendar's own `email` follows the form's, and a panel note) |
 | 3 | JP-082 (controls) | Send Enquiry, the bio's Listen and the form's *Message* label have no field | **Confirmed, shared**: a submit, a link and a box label are not vocabulary. The census named Listen for this batch; *Message* is the one box label left a literal | S | **yes** — each: A (a field) / reply | open |
 | 4 | JP-083 | "99 Problems" files under "9"; no rail cell | **Confirmed, shared.** The fit's `#` rule was written down and never coded; a leading non-letter group also leaves the rail unlit | S | **yes** — A (a `#` group and a `#` cell while needed) / B / C; (a) / (b) for punctuation | open |
 | 5 | JP-084 | A long title's ellipsis touches the prev button | **Confirmed, both halves**: the now-playing row has gap 0. The seeded "Manchester at 3am" already hits it live at 1440 on every template | S | **yes** — A (the transport's 14 and a two-line wrap, as the frame's text wraps) / B (the gap alone) / C | open |
@@ -535,11 +535,84 @@ under (b) it is calendar `arch 3` × themes 0–4 × 3 × 2 = **30 files**, unde
 on JP-053's Decided in `../lime/layout-4-qa-fixes.md` ("C taken in part by JP-076, as a
 follow-the-form chain").
 
-**Decided.** —
+**Decided** (2026-09-29, user call): **1 A, 2 (a).** The Booking Calendar gets an *Email address*
+of its own, which follows the Enquiry Form's until one is typed (the `copyrightOf()` /
+`formHeading3()` chain shape). This takes JP-053's option C in part. The no-address state is a note
+in the calendar's panel at layout 4. The published pills keep the Soundcloud rule, and
+`BookPill`'s span pointer is left alone.
 
-**Settled.** —
+**Settled** (2026-09-29). Every Evidence line held at the start, since source had not changed
+since the triage.
+- **The fix.**
+  - `data.js`: `FIELDS.calendar`'s `email` row after `types` (`:1556`, no `d`, `in: [3]`, a hint
+    saying it follows the form until typed). `FIELDS.form.email`'s hint gains "…until the calendar
+    has an address of its own". `pageEmail()`'s comment (`:1793`–`1802`) says it is the wizard's
+    address only while the calendar's key is absent.
+  - `sectionVm`: `const sendTo = emailAddr(cv('email', email))` (`EncoreBuilder.jsx:1321`) is
+    resolved once, and **both** `vm.calEmail` and `vm.calMailto` (`:1343`) read it, so the
+    confirmation and the mail cannot name different addresses.
+  - `EditPanel`: the chain arm `f.k === 'email' && sec.cat === 'calendar' ? email` (`:3643`), and
+    `calNoMailHint` (`:3431`, beside `navGoneHint`) printed above the box by `noMail` (`:3667`).
+    `noMail` holds at layout 4 while the resolved address is `''` and no typed address is refused
+    (`UrlInput` already prints that one). It has three variants: no form on the page, the form's
+    address empty or refused, and the calendar's own box emptied. The form's presence is read off
+    `navSections`, which carries `form`, so no prop was threaded.
+  - `EncoreSection`: comments only (`:16038`–`16044`, `:16164`–`16173`). `BookPill`'s span
+    pointer (`:775`) is untouched, as decided.
+  - `preview.jsx`: nothing.
+  - `reach.mjs`: a `calendar.email` row.
+- **The harness was proved first.** A HEAD worktree on :5174 against the tree on :5173 gave
+  0 of 60 per surface at the seed and at `&email=none`. **After-diff, named before the code:
+  zero.** Calendar × themes 0–4 × 3 widths × both surfaces: **0 of 60 per surface**, at the seed
+  and at `&email=none`. The form, whose hint alone changed: **0 of 60 per surface**.
+- **Reach** (`calendar.email`, `live=1` included): **layout 4 on all five templates**, 3 of 6
+  renders each, all three of them live. The canvas's `sendHref` is `''`, so `in: [3]` and the
+  hint stand as written.
+- **Before the edit** (HEAD, `live=1&email=none`): both pills were spans, the foot pill kept
+  `cursor: pointer`, and a click on it left the wizard on step 1 with no prompt. That reproduces
+  the ticket.
+- **States** (`live=1`, themes 0–4 × 3 widths, a one-off probe clicking with puppeteer's
+  trusted clicks):
+  - `&email=none&cj={"email":"me@band.co"}`: both pills are `mailto:me@band.co`, the foot pill at
+    step 1 walks to step 3 with the prompt, a filled send reaches the confirmation, and the
+    confirmation prints `me@band.co`: **15 of 15**.
+  - `{"email":""}` and `{"email":"not-an-email"}`: spans, 15 of 15 each.
+  - The key absent with `&email=other@x.test`: `other@x.test`, 15 of 15.
+  - Typed `me@band.co` beside `&email=other@x.test`: the calendar's own wins.
+- **The tester's steps, in the real app** (a one-off puppeteer script, trusted clicks, deleted
+  after), on Grunge's, Lime's, Retro's and Editorial's card 4:
+  - Delete the form. The panel's box is empty under "Send Enquiry needs an email address.
+    There's no Enquiry Form on the page — type one here."
+  - Undo. The box shows `bookings@kaimercer.co.uk` again, with no note.
+  - Delete again and type `me@band.co`. Publish → Open, walk steps 1–3 (Festival, 14/11/2026, 300 /
+    5 hrs / £3,000 / Needed, a name and an email). **Both pills are `mailto:me@band.co` carrying
+    every answer and the package.** Send shows the confirmation with `me@band.co`.
+  - *+ Add section* brings the form back, and the calendar's box keeps `me@band.co`.
+  - Lime also published straight after the Undo: both pills were `mailto:bookings@kaimercer.co.uk`,
+    so the pills follow the restored form. Its republish then went through *Start again*.
+  - No page errors on any run.
+  - The other two variants, on Grunge: with the form's address emptied or refused, the note reads
+    "The Enquiry Form's is empty or not valid — fix it there, or type one here." With the
+    calendar's box typed and then emptied, it reads "Type one here." With the box holding
+    `not-an-email`, there is no note, only `UrlInput`'s "That email address looks incomplete."
+- **Docs**: CLAUDE.md's layout-4 wizard passage, README's matching passage, the comments above,
+  and the pointer on JP-053's Decided in `../lime/layout-4-qa-fixes.md`.
+- **Lines for entry 3** (after this commit): `FIELDS.calendar.cta` `data.js:1547`,
+  `vm.calWizard.send` `EncoreBuilder.jsx:1288`, the chain's form `button` arm `:3653`,
+  `vm.formTypeLabel` / `vm.formMsgLabel` `:1692` / `:1693`, `msgLabel` `:1710`, the bio's
+  `vm.cta2` `:559`, the pills `EncoreSection.jsx:16705` / `:16771` (block) and `:16791` /
+  `:16892` (Retro's body), and the bio-prose comment `:5469`.
 
-Reply: —
+Reply: **JP-076 — fixed.** The Booking Calendar now has its own *Email address* (layout 4). Until
+you type in it, it shows and uses the Enquiry Form's address, so a page that never touches it
+still has one address. With the Enquiry Form deleted, the box is empty and the panel says "Send
+Enquiry needs an email address. There's no Enquiry Form on the page — type one here." Type an
+address there and both Send Enquiry pills mail it every answer, with the confirmation naming it,
+whether or not the form is on the page. The panel also says when the form's own address is empty
+or not valid. The published pills stay pictures while there is no address, as the form's own
+submit does. Undo after the delete, or adding the form back, restores its address to the pills,
+as long as the calendar's box was never typed in. Checked on Stacked under Grunge, Lime, Retro
+and Editorial, at 1440, 768 and 390.
 
 ---
 

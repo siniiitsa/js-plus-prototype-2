@@ -793,11 +793,20 @@ mutated through a single `patch()` helper.
   Enquiry mails, like the form** (JP-053, user call, 2026-09-23 — it was a fragment link to
   `calBookTo`, which lost every answer): both pills are an `<a href="mailto:">` composed by
   `vm.calMailto` over the type, the date as typed, step 2's four answers, the package and the
-  contact boxes, with the body's labels raw. The address is the **enquiry form section's
-  `email`**, read across sections through `sectionVm({ email })` (`pageEmail(sections)` in
-  `data.js`, `tiers`' precedent, threaded through the same five call sites; the harness takes
-  `&email=<address>`, `&email=` or `&email=none`), and with no form section or an address
-  `emailProblem()` refuses both pills stay spans, the form's no-address state. The click asks
+  contact boxes, with the body's labels raw. The address is the **calendar's own `email`, which
+  follows the enquiry form section's until the artist types one** (JP-076, user call,
+  2026-09-29, taking JP-053's option C in part; `copyrightOf()`'s chain shape):
+  `FIELDS.calendar.email` has no `d`, `sectionVm` resolves `emailAddr(cv('email', email))` once
+  for `vm.calEmail`, which `calMailto` and the confirmation both read, and `EditPanel`'s chain
+  shows the form's address in the box while the key is absent. So a page that never types one
+  keeps one address, and a page with no form can still send. The form's is read across sections
+  through `sectionVm({ email })` (`pageEmail(sections)` in `data.js`, `tiers`' precedent,
+  threaded through the same five call sites; the harness takes `&email=<address>`, `&email=` or
+  `&email=none`, and `&cj={"email":…}` the calendar's own). With neither — no form section and
+  nothing typed, an emptied box, or an address `emailProblem()` refuses — both pills stay spans,
+  the form's no-address state, and at layout 4 the calendar's panel says so above the box
+  (`calNoMailHint`, the `navGoneHint` precedent), naming whether the form is gone or holds no
+  address; a typed address that is refused is left to `UrlInput`'s own line. The click asks
   `vm.calCheck` — step 3's name and email by `formErrors()`' rules — and a refusal marks the boxes
   (`wErrs`, appended, cleared per box: Retro's hairline doubled inside, Lime's 2px of `s.tx`),
   prints `vm.calWizard.prompt` and, from the foot pill, walks to step 3. A valid send (`wSent`)

@@ -607,6 +607,11 @@ entry changes one link. `vm.calWizard.dateOf` already made the calendar the seco
 with a function-valued vm key, and CLAUDE.md's sentence already names it, so this entry adds
 `calMailto` / `calCheck` to it.
 
+**C taken in part by JP-076** (2026-09-29, user call, `../grunge/layout-4-qa-fixes.md`), as a
+follow-the-form chain: the calendar has an `email` of its own, which follows this entry's
+`pageEmail()` until the artist types one, so a page with no Enquiry Form can still send. C's
+objection holds by default: a page that never types one keeps one address.
+
 **Fix (on A).** `<a href>`, never a `<form>` (CLAUDE.md's load-bearing rule: Enter in a box would
 post to `<base href>`). Errors are `useState`, cleared per box. There is no effect, as in the rest
 of the file. The confirmation is a state of the wizard card only; the summary column does not

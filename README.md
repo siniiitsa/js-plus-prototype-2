@@ -400,9 +400,11 @@ That distinction is the whole design, and it buys two things:
   packages (read across sections, the header identity's way; *Package ›* steps through them),
   and Send Enquiry. No date or price on it is one the artist did not type. Send Enquiry, there
   and on the wizard's last step, **mails the answers like the enquiry form does** (JP-053): a
-  `mailto:` to the form section's own address, read across sections the same way, refused until
-  the name and email pass the form's checks, then a confirmation in the wizard card with *Start
-  again*. With no form section, or an address the form refuses, both pills stay pictures.
+  `mailto:` to the calendar's own address, which follows the form section's (read across sections
+  the same way) until the artist types one (JP-076), refused until the name and email pass the
+  form's checks, then a confirmation in the wizard card with *Start again*. With no address — no
+  form section and none typed, an emptied box, or one the form's check refuses — both pills stay
+  pictures, and the calendar's panel says so at layout 4.
 
   **The enquiry form, which fills in and sends.** It was the last §10.2 section whose every
   control was a picture — and the one the rest of the page points at, since `CTA_TARGETS.book`

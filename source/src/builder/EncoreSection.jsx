@@ -16037,7 +16037,8 @@ function Calendar({ s }) {
   // Enquiry" pill's label, and it and the column's foot pill under the same
   // label **mail the answers** (JP-053, user call, 2026-09-23 — they scrolled
   // to `calBookTo` until then, and everything typed was lost): a `mailto:`
-  // composed by the vm's `calMailto` to the enquiry form's own address, which
+  // composed by the vm's `calMailto` to the calendar's own address, which
+  // follows the enquiry form's until the artist types one (JP-076), and which
   // `calCheck` lets through once step 3's name and email pass, the form's
   // submit seam whole. A valid send swaps the wizard card for a confirmation.
   // No `<form>`, the enquiry form's rule: Enter in a box must post nowhere.
@@ -16165,10 +16166,11 @@ function Calendar({ s }) {
     // render by the vm's closure over the type and package indexes and the raw
     // boxes, so it always carries what is typed, and the click only decides
     // whether to let it through. '' — so both pills are spans — on the canvas,
-    // after a send, and with no address to mail (no form section on the page,
-    // or one emailProblem() refuses): the Soundcloud rule. Both pills share
-    // it, so the foot pill can send from any step; a refusal then walks the
-    // visitor to step 3, where the boxes it marks are.
+    // after a send, and with no address to mail (the calendar's own emptied,
+    // or following a form that is not on the page or holds none, or one
+    // emailProblem() refuses; the panel says which, JP-076): the Soundcloud
+    // rule. Both pills share it, so the foot pill can send from any step; a
+    // refusal then walks the visitor to step 3, where the boxes it marks are.
     const lastStep = W.steps.length - 1
     const sendHref = s.live && !wSent
       ? s.calMailto({ ti: nTypes ? typeAt : -1, vals: wVals, pi: pkgAt }) : ''

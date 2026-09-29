@@ -1522,8 +1522,9 @@ export const FIELDS = {
   // before the visitor types one), `booked` the days it will not take (in
   // layout 2 the slots it strikes through, in layout 4 a typed date the date
   // card refuses), `time` the hour the foot line names and layout 4's date
-  // card, `cta` the label on layout 1's pill, and `slots` layout 2's list
-  // (JP-052). `in` records each key's reach.
+  // card, `cta` the label on layout 1's pill, `slots` layout 2's list
+  // (JP-052), and `email` the address layout 4's Send Enquiry mails (JP-076).
+  // `in` records each key's reach.
   calendar: [
     { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
@@ -1549,6 +1550,13 @@ export const FIELDS = {
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
     { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3],
       hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
+    // JP-076 — no `d`: while the key is absent it follows the Enquiry Form's
+    // address (sectionVm's `email` argument, and EditPanel's chain shows it),
+    // so the page has one address until the artist types a second here.
+    { k: 'email',   l: 'Email address', type: 'email', in: [3],
+      hint: "Where layout 4's Send Enquiry mails the visitor's answers. It follows the Enquiry "
+          + 'Form’s address until you type one here; after that it keeps its own. Empty, or '
+          + 'an address that isn’t valid, leaves both Send Enquiry buttons a picture.' },
   ],
   // The third list-shaped content with a structured editor, after `repertoire`
   // and `media`: `gigs` is an array of { venue, city, time, month, day, link }
@@ -1676,7 +1684,7 @@ export const FIELDS = {
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
-      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
+      hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
@@ -1787,8 +1795,11 @@ export const pageTiers = (sections) => {
 // visitor's answers there: pageTiers()' cross-section read again. Resolved
 // exactly as the form's own sectionVm resolves `vm.formEmail` — an absent key
 // is the seed, and emailAddr() folds an empty or refused address to '' — and
-// '' with no form section on the page, so the wizard's pills stay spans in
-// both cases, the form's own no-address state.
+// '' with no form section on the page. It is the wizard's address only while
+// the calendar's own `email` key is absent (JP-076, a follow-the-form chain,
+// copyrightOf()'s shape): sectionVm resolves a typed one ahead of this, so a
+// page with no form can still send. With neither, the pills stay spans, the
+// form's own no-address state.
 export const pageEmail = (sections) => {
   const f = sections.find((s) => s.cat === 'form')
   if (!f) return ''
