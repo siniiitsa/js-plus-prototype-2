@@ -28,9 +28,10 @@ the row).
 - **The letters are Anton's.** Anton's outlines, proportions and 0.75 scale do not change, and
   the speckle is cut into them. A tester comparing against Dev Mode will still find `Anton` in the
   computed `font-family` and no "Stones" in the build. The reply has to say so up front.
-- **Display sizes only.** The nav, the pills, the label-face chips and every `labelStyle` site
-  stay clean Anton, because a mask eats thin strokes at 14–18px. Where exactly the cut falls is
-  step 1's measurement (below).
+- **Display sizes only.** The nav links, the pills, the label-face chips and every `labelStyle`
+  site stay clean Anton, because a mask eats thin strokes at 14–18px. Step 1 set the cut: the
+  display keys and `title` take it, and so does the wordmark at its own Display/Title size. `list`
+  and every label key do not.
 - **Grunge only.** Themes 0, 1, 3 and 4 must digest **zero rows** at every step. That is the
   proof, as `faceK`'s identity branch was: a theme with no mask key gains no style.
 
@@ -117,6 +118,8 @@ licence point alone argues for A.
   not the `h1`, and the two spans must read as one texture. Check that the tile's phase does not
   visibly restart at the word break, and fix it with `mask-position` if it does. A head standing
   on its own pill, band or box takes the mask on its text span, never the box.
+  *Superseded by step 1's Settled:* every setter in the cut paints only glyphs, so the mask goes
+  on the `h1` / `h2` itself, one tile across both tones, and no site in the cut stands on a box.
 - **Casing and fits are untouched.** `textTransform`, `faced`, `facedLh`, `antonEms` × 0.75,
   `vm.navFits` and every head fit keep their values. A mask moves no geometry.
 
@@ -189,6 +192,173 @@ licence point alone argues for A.
    - Then render the frame's 390 `dispSm` and `title` heads with and without a trial mask, and
      set the cut. The wordmark is measured here too.
    - Write the list into this file, as the census `qa-fixes.md`'s JP-057 kept.
+
+   **Settled** (2026-09-29, HEAD `95d109a`; every line number below is that tree's
+   `EncoreSection.jsx`).
+   - **The recipe (reusable).** A scratch worktree of HEAD had every non-comment `s.display` and
+     `s.label` rewritten by `perl` to `(s.display + ", 'D<line>'")` / `'L<line>'`. That is a
+     font-family nobody has, appended to the list, so it renders nothing and rides the cascade.
+     It was served on :5175 and walked by a puppeteer probe (theme 2, all 44 renders, three widths,
+     canvas and `live=1`, 264 renders): every element with its own text whose computed family is
+     Anton, read off the tag at the end of its family. **Positive control: 0 untagged rows**, so no
+     Grunge display text reaches Anton any other way (`sectionVm`'s `display: T.display` at
+     `EncoreBuilder.jsx:338` is the only route). **71 of the 191 `s.display` lines reach Grunge.**
+     Shared helpers (`disp`, `display`, `dispType`, `type`, `face`) tag their definition, so their
+     call sites were read by hand.
+   - **The cut: by key.** `dispXl`, `dispLg`, `dispMd`, `dispSm` and **`title`** take the mask, at
+     every width. `list` and every label key do not, and neither does any `labelStyle` site. The
+     title key includes the frames' literal Display/Title, `u(36)` / `28px` / `26px` (the
+     `titleSize`, `title`, `nameSize`, `kicker` and `tk.title` consts). The rendered sizes split
+     cleanly: every site in the cut renders at **19.5 px or more** and every site out of it at **15
+     or less**, with **nothing between 15 and 19** in 2,273 rows. **The cut holds only for a mask
+     no denser than the trial's light setting** (below). Under the heavy one, `title` at 390 broke
+     up ("BOOK ME", "CRAZY IN LOVE"), so step 2 re-checks `title` at 390 / DPR 1 for whichever
+     candidate wins, and B's raster especially.
+   - **The trial (step 2 starts from these bytes).** A 240 × 240 SVG:
+     `<filter id='n' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise'
+     baseFrequency='0.09' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0
+     0 0 1  0 0 0 0 1  0 0 0 0 1  3 0 0 0 -1'/><feComponentTransfer><feFuncA type='discrete'
+     tableValues='…'/></feComponentTransfer></filter><rect width='100%' height='100%'
+     filter='url(#n)'/>`, URI-encoded, set as `mask-image` and `-webkit-mask-image` with
+     `mask-size: 4em 4em`. **Light** is `tableValues='0 1 1 1 1 1 1 1'`, which cuts about the
+     lowest eighth. **Heavy** is `'0 0 1 1 1 1'`.
+     - The shots are at 390, DPR 3 (a phone) and DPR 1 (the worst case), against Figma's
+       `986:44076`. The frame's Stones Crush speckles its 30 px head and, faintly, its label-size
+       "THE HOUSE PARTY".
+     - **Light:** `dispSm` reads like the frame at both DPRs. `title` at 19.5 is scuffed but
+       legible at DPR 1. The wordmark at 21 holds. `list` at 13.5 is blotchy, and a 9 px label
+       breaks up.
+     - **Heavy:** the display keys read as stamped, and `title` does not survive.
+   - **The wordmark takes it at its own size, not at a label size.** The Grunge `Wordmark`
+     (`:562`–`:580`) is Display/Title: it renders at 22.1 / 21 / 21 in header 1 (arch 0 and its fold, 4).
+     Header 4's `NavBar` (`:3336`) passes `nameSize = s.labelLg`, which renders at 15 /
+     12 / 10.5 and stays clean. **Trap for step 3:** at 390, `NavBar` (`:1473`) *also* passes an
+     explicit `size`, `'28px'` (the `lime && s.mob` arm), so the gate cannot be "was `size`
+     passed". Either `NavBar` passes the key (or a flag) through, or the helper cannot tell header
+     1's 390 wordmark from header 4's label. The nav *links* stay clean.
+   - **Decided: the mask goes on the element that sets the face, never on its spans.** This
+     reverses *How the mask reaches the page*'s "on a two-tone title that is each span".
+     - Every font-setting element at 19 px or more, 333 of them over theme 2's 132 canvas renders,
+       was probed. None paints a background, border or shadow, and none holds an `svg`, an `img`
+       or text in another face. So the `h1` / `h2` / `p` that carries the style paints only
+       glyphs.
+     - One mask there gives the two-tone and two-line heads **one continuous tile**, so the
+       word-break phase seam never arises. Step 0's `maskPosition` column becomes a guard, not
+       the fix.
+     - Every display site that *does* paint a box is a `list`-size pill or a footer row (the
+       form's four submit pills, calendar 4's Back / Next Step, map 2's Get Directions ring, the
+       footer's `face` rows). All of them are out of the cut, so no site in the cut needs a
+       text-span split.
+     - The helper must not be spread onto both a setter and its child: a nested mask multiplies.
+   - **One ink edge, step 4's.** A solid mask (`linear-gradient(#000,#000)`) on each of those 333
+     was diffed against none. It changed pixels on **two**: map layout 4's stat values at desktop
+     (`:20106`, 5 px and 2 px). Anton's text box is 46 px in their 41 px line box, and the mask
+     clips to the border box. `mask-clip: no-clip` changed nothing in this Chrome (151). Padding
+     plus a negative margin would move a geometry row, which step 4's after-diff forbids, so step
+     4 names the fix before making it.
+   - **The four existing masks** (`:1654`, `:3900`, `:5250`, `:5946`) are all `Grain` layers.
+     No text element sat under any mask in the 264 renders, and no display site is one of them.
+   - **Named for the user at step 2, not decided here: label-face sites at `title` size.** Five
+     sites set Anton at exactly the cut's `title` sizes (22.1 / 21 / 19.5) through `labelStyle` or
+     `s.label`, so by key they stay clean beside a distressed venue or track title of the same size:
+     - `:5789`, media 1's track titles (`rowTitle`, "Label/LG");
+     - `:10778`, repertoire 1's song titles (`bebas`);
+     - `:17135`, map 1's kicker ("12 mile radius");
+     - `:20568`, testimonials 1's name and role;
+     - `:21913`, testimonials 3's quote, `disp(s.label, G.quote)`, the cell's main text.
+
+     The frame's face distresses all of them, so key versus rendered size is a real choice.
+   - **The census.** "In" means the mask goes on this line's element. The element is the one that
+     sets the face unless the row says otherwise. Sizes are the 390 render, the faced px.
+
+     | Line | Section · layout | Node | Key (390 px) | In |
+     |---|---|---|---|---|
+     | `:906` (`Title`) | header, every layout | `h1` (two spans) | the header's `size` / `s.h1` (34.5–71.25) | yes |
+     | `:577` (`Wordmark`) | header 1 (arch 0, 4) | `span` | Display/Title literal (21) | yes |
+     | `:577` via `:3336` | header 4 | `span` | `labelLg` (10.5) | no |
+     | `:2133` | header 2 (arch 1, 5) | card title `span` | `list` (13.5) | no |
+     | `:2724` | header 3 | location `span` | `list` | no |
+     | `:2806` | header 3 | card name `span` (+ span) | `nameSize` title (19.5) | yes |
+     | `:3237` | header 4 | kicker `span` | `kicker` title (19.5) | yes |
+     | `:3254` | header 4 | location `span` | `list` | no |
+     | `:3824` | bio 1 | `h2` (two spans) | `dispLg` (34.5) | yes |
+     | `:4615` | bio 3 | name `p` (+ span) | `dispSm` (22.5) | yes |
+     | `:4744` | bio 3 | `h2` | `dispLg` | yes |
+     | `:5171` | bio 4 | `h2` | `dispXl` (39) | yes |
+     | `:5265` | bio 4 | name `p` (+ span) | `dispSm` | yes |
+     | `:5722` | media 1 | `h2` (two spans) | `dispLg` | yes |
+     | `:6429` | media 2 | track `span`s (`titleType`) | `tk.title` (19.5) | yes |
+     | `:6456` | media 2 | `h2` | `dispLg` | yes |
+     | `:6494` | media 2 | list names | `list` | no |
+     | `:7258` | media 3 | list names (`listName`) | `list` | no |
+     | `:7265` | media 3 | track `span`s (`titleType`) | title literal | yes |
+     | `:7279` | media 3 | `h2` | `dispLg` | yes |
+     | `:7717` | media 4 | now-playing `span` | `tk.title` (21) | yes |
+     | `:7788` | media 4 | tile names | `tk.list` (14.3) | no |
+     | `:7823` | media 4 | `h2` | `dispLg` | yes |
+     | `:8393` | pricing 1 | `h2` (text + span) | `dispSm` | yes |
+     | `:8487` | pricing 1 | amount `span` | `dispSm` | yes |
+     | `:8936` / `:9001` / `:9010` (`disp`, `:8913`) | pricing 2 | `h2` · plan name · price | `dispMd` · `dispSm` · `dispMd` | yes |
+     | `:9602` | pricing 3 | row name | `list` | no |
+     | `:9631` | pricing 3 | numeral | `dispMd` (28.5) | yes |
+     | `:9695` | pricing 3 | `h2` | title literal | yes |
+     | `:10196` / `:10251` (`disp`, `:10178`) | pricing 4 | name · price | `dispSm` | yes |
+     | `:10822` | repertoire 1 | `h2` (text + span) | `dispLg` | yes |
+     | `:11398` | repertoire 2 | `h2` | `dispSm` | yes |
+     | `:11489` | repertoire 2 | song titles | `list` | no |
+     | `:12051` | repertoire 3 | song titles | `list` | no |
+     | `:12082` | repertoire 3 | `h2` | `dispLg` | yes |
+     | `:12456` | repertoire 4 | song titles | `titleSize` (`:12400`) | yes |
+     | `:12463` | repertoire 4 | artist | `list` | no |
+     | `:12491` | repertoire 4 | `h2` | `dispLg` | yes |
+     | `:12900` | gallery 1 | `h2` (two spans) | `dispLg` | yes |
+     | `:12961` | gallery 1 | source rows (desktop only) | `list` | no |
+     | `:13993` | gallery 3 | `h2` | `dispLg` | yes |
+     | `:14396` | gallery 4 | `h2` | `dispLg` | yes |
+     | `:14786` / `:14811` (`disp`, `:14718`) | calendar 1 | month · `h2` | `dispSm` · `dispMd` | yes |
+     | `:15319` / `:15374` (`disp`, `:15282`) | calendar 2 | slot mark · `h2` | `dispLg` · `dispMd` | yes |
+     | `:15839` · `:15852` · `:15860` | calendar 3 | `h2` · numeral · month | title literal · `dispLg` · `dispSm` | yes |
+     | `:16616` · `:16635` · `:16781` · `:16794` · `:16811` (`disp`, `:16578`) | calendar 4 | card head · big value · sent title · step title · `h2` | `titleSize` ×4 · `dispLg` | yes |
+     | `:16743` | calendar 4 | Back / Next Step pills (paint) | `list` | no |
+     | `:17131` · `:17187` (`disp`, `:17115`) | map 1 | `h2` · base on the tile | `dispLg` · `titleSize` | yes |
+     | `:17237` | map 1 | venue | `list` | no |
+     | `:17821` · `:17932` · `:18050` (`display`, `:17800`) | map 2 | `h2` · row venue · panel `h3` | `titleSize` | yes |
+     | `:17840` · `:17854` · `:17902` | map 2 | base · line · Get Directions pill (ring) | `list` | no |
+     | `:18924` · `:19122` (`disp`, `:18912`) | map 3 | `h2` · panel `h3` | `titleSize` | yes |
+     | `:18995` | map 3 | venue lines | `list` | no |
+     | `:20106` | map 4 | stat values | `dispSm`, 26 px literal at 390 (19.5) | yes (ink edge) |
+     | `:20128` | map 4 | `h2` | `dispLg` | yes |
+     | `:20587` | testimonials 1 | quote `p` | `dispMd` | yes |
+     | `:21002` · `:21081` (`dispType`, `:20982`) | testimonials 2 | `h2` · the `”` glyph | `dispLg` · `dispXl` | yes |
+     | `:21055` · `:21094` | testimonials 2 | rail mark · reviewer | `list` | no |
+     | `:21860` · `:21956` | testimonials 3 | rating numeral · `h2` | `dispMd` | yes |
+     | `:21921` | testimonials 3 | reviewer | `list` | no |
+     | `:22381` | testimonials 4 | `h2` | `dispLg` | yes |
+     | `:22894` · `:22935` (`disp`, `:22750`) | form 1 | `h2` (two spans) · sent `h3` | `dispSm` | yes |
+     | `:22772` · `:22822` | form 1 | box labels · submit pill (paint) | `list` | no |
+     | `:23457` · `:23517` · `:23591` (`disp`, `:23401`) | form 2 | price · `h2` (two spans) · sent `h3` | title literal · `dispSm` · title | yes |
+     | `:23435` · `:23559` | form 2 | submit pill (paint) · brand | `list` | no |
+     | `:24300` · `:24329` · `:24342` (`disp`, `:24237`) | form 3 | `h2` · price · sent `h3` | `headSize` (`dispLg`) · title ×2 | yes |
+     | `:24264` | form 3 | submit pill (paint) | `list` | no |
+     | `:24758` · `:24836` · `:24841` (`disp`, `:24679`) | form 4 | sent `h3` · `h2` · `sub` | title · `dispLg` · title | yes |
+     | `:24685` · `:24702` | form 4 | box labels (`caps`) · submit pill (paint) | `list` | no |
+     | `:25393` | footer | statement `h2` | `dispMd` | yes |
+     | `:25368` · `:25485` (`face`, `:25337`) | footer | brand · rows (border on the parent) | `list` | no |
+
+     The sent titles (`formSentTitle`, calendar 4's `W.sentTitle`) render only after a live
+     submit, so no digest sees them. Step 4 checks them by hand.
+   - **Step 4's expected after-diff, named now.** On theme 2, **126 of 132 renders per surface**
+     hold a site in the cut. They move, per surface, in each layout's commit:
+     - **layout 1 (39):** header arch 0 and 4, bio, media, pricing, repertoire, gallery, calendar,
+       map, testimonials, form, footer and footer `page=2`;
+     - **layout 2 (27):** header arch 1 and 5, media, pricing, repertoire, calendar, map,
+       testimonials, form;
+     - **layout 3 (30):** header arch 2 and the nine sections;
+     - **layout 4 (30):** header arch 3 and the nine sections.
+
+     That is × 3 widths each. Bio and gallery at layout 2 (arch 1) carry **no** display type, so
+     their 6 files per surface stay zero. The footer is one design, so it moves in layout 1's
+     commit. Header arch 4 and 5 fold onto layouts 1 and 2 and move with them.
 2. **The comparison.** Build candidate A and a B tile. Render one Grunge head per layout
    (1–4) at 1440 / 768 / 390, with each candidate and with Anton plain, beside the Figma frame's
    own render (`get_screenshot`). Measure paint on a published scroll. Then one `AskUserQuestion`:
