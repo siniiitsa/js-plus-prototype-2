@@ -2384,6 +2384,89 @@ and what this section did with it.)*
 - Testimonials: *The whole-page published check is one puppeteer script* (lime/layout-1,
   *Learned on the end-of-pass sweep*) — `page-check.mjs Editorial 3`, both discs and two seams.
 
+### Learned on the end-of-pass sweep (`b408e27`, `f08434a`, `ff87b29`, `ab598a7`)
+
+- **The notes split landed first.** CLAUDE.md was mid-move into `notes/` in the working tree; on
+  the user's call it went in as its own commit (`a966a19`), and the sweep's doc edits sit on top.
+- **Item 1, the docs.** `notes/templates.md`'s Editorial paragraph is all four layouts: every Lime
+  block widened, the one pair gate left (layout 2's gallery caption), layout 1's three helpers
+  `s.limeTree` now, a *Layout 4 is ink, taupe, paper and terracotta on straight edges* passage
+  (the seats and the trap-1 grounds, no seam, the two prints and the tape, every card square but
+  the map's two, `DashRule` on five sections, the blurs and one shadow, the `onScheme` readers,
+  every head fitted, the lifts, the live states, the missing desktop form), and the header
+  family closed with Stacked's description. The media, gallery, map, pricing, calendar, form and
+  testimonials notes took each section's "for the sweep" clause. CLAUDE.md's scheme bullet took
+  the layout-4 seats and `onScheme` readers, its seam aside (no Editorial page draws one) and the
+  header-`in` sentence. README took its passage and the refused box. Comments: `headerFamily`'s,
+  `limeTree`'s, the header-`in` note, `THEMES[3].schemes`' three seat lists, `TAGS`' count,
+  `photos.js`' head, the calendar's stack, and two stale flat-template counts (bio layout 4's
+  ".89 — the flat two", map layout 2's zoom "under Retro and the flat two"), each Pop alone now.
+  `Photo`'s backdrop comment and `sectionVm`'s `editorial` flag were already true.
+- **The tidy**: the testimonials' layout-4 head is a `const` before the return, not an IIFE; a
+  five-theme testimonials digest, canvas and live, is 120 files at zero.
+- **Item 2: the published page passed first time.** `page-check.mjs Editorial 3,0,1,2`: four
+  cards, no console error or warning on any card or across the resize walk. Card 4's walk: ten
+  header anchors (nine nav, Book Now → `#form`), the bio's Listen → `#media`, the three pricing
+  pills → `#form`, the player plays (`SoundHelix-Song-5`, `paused: false`), the map's `+ − ‹ ›`,
+  five refused boxes at `inset 0 -2px 0` ink (the message box untouched) and the filled mailto
+  swapping to *Check your mail app*, nine footer links, the 390 burger 1 → 11, `overflow390` 0.
+  Cards 1–3 publish eleven sections in their own orders.
+  - **The controls page-check does not reach** (one throwaway script, deleted), in card 4's
+    published tab: each of the five tiles loads its own track, the disc pauses and resumes, Next
+    and Prev wrap 5 → 1 → 5; all seven thumbs and both discs move the spotlight and the 6.6px
+    ring (3.3 idle); at 390 the three-tile window slides 1–3 → 2–4 → 3–5 → 4–6 and wraps to 0–2
+    on slot 0; I and S light terracotta lettered ink, call `scrollIntoView` on their groups, and
+    the rail is sticky at viewport top 0 at 1440; `+ − › › ‹` each move the map; the wizard reads
+    1 / 4 / 2 inputs, Festival turns terracotta lettered paper, `14/11/2026`, four answers and
+    *Package ›* give *SAT, NOVEMBER 14 2026 9:00pm* and *THE WEDDING SET £650*, an empty Send
+    Enquiry rings both boxes in 2px terracotta and prints the prompt, a filled one composes
+    JP-053's body (*Festival enquiry*) and swaps in the confirmation, and *Start again* returns
+    to step 1 with Festival kept; → → ← ← ← steps the testimonials 1 → 2 → 3 → 2 → 1 → 5; the
+    burger at 820 (a fresh tab) opens a `#0E0E0E` panel lettered paper, 1 → 11, a panel link
+    scrolls `#pricing`, overflow 0. No page error in any of it.
+  - **Seams, viewport shots with each join at mid-height**, 1440 and 390: every section's bottom
+    is the next one's top to the pixel, and every edge is straight — the header's ink floor into
+    the ink bio as one ground, ink into taupe, **taupe into ink at media → gallery**, the gallery
+    and repertoire one ink ground, ink onto the paper map, paper through pricing, calendar and
+    form, paper into the terracotta sheet, and the sheet onto the ink footer. Nothing to fix.
+- **Item 3: the thumbnails.** On card 4, each row's picker reads *<Section> layout 4* (the
+  header's *Header layout 4 · Stacked*, the footer's *Footer layout 1*); the fourth
+  `[role=menuitem]` of every picker is ticked current and renders one live root on its seat's
+  ground — ink for the header, bio, gallery and repertoire, taupe for the media, paper for the
+  map, pricing, calendar and form, terracotta for the testimonials; the footer's one row is ink.
+- **Item 4: no Editorial card draws the checker.** No `conic` gradient on any of the four cards —
+  the modal's buttons, the canvas after *Use this header*, and the published tab.
+- **Item 5: `reach.mjs 3`** (4,872 renders, the first Editorial run with no placeholder card):
+  every plain probe matches its stored `in` row folded onto designs, checked in Node against
+  `fieldReach` — the header's kicker `[0, 3]`, location all four, tags / showTags `[0, 2, 3]`,
+  showBadge `[0, 3]`, badgeText `[3]`, cta2 `[1, 2]` (4/6), cardLine `[2]`; the bio's `cta2` and
+  `tagsLabel`; the calendar's rows (`email` 3/6); the form's `steps` / `sub`; the map's `stats`
+  and `rings`. The two sub-key probes (`gigs[].year`, `songs.length`) are not field rows. Nothing
+  in `FIELDS` moved.
+- **Item 6: no `(s.lime || s.grunge)` is left in layout-4 code.** Every `s.v3` block and
+  `HeaderV3`'s head is `s.limeTree`. Editorial shares no seam, and the seams are the twins' own
+  arms rather than a pair gate: `grunge ? <TornEdge …> : !ed && <ArcEdge …>` at the media's head,
+  the repertoire's foot and the gallery's head, and the bio's 390 foot tear under `s.grunge`. The
+  pair's other lines in `EncoreSection` are layout 2's gallery caption (its other arm Editorial's
+  binding), layout 3's two gallery ternaries behind an `ed` arm, `HeaderV0`'s local `lime` (a
+  false match) and one comment.
+- **Item 7**: `CONVENTIONS.md` took a fourth *Leaned on in Editorial* column on A, B and C, an
+  Editorial column on D4, and one row this pass leaned on five times that it did not name — *a
+  Lime block paints its ground from Scheme 1 keys; under a seat those keys are the seat's* (C).
+  The dashed rule, leaned on as often, stays here with the decorative language.
+  `plans/README.md` closes the pass and the Editorial family.
+- **Item 9: the two-build digest** (`a3789d7`'s committed build against this branch's, one
+  origin, reduced motion on, the old build digested before the `cp`). Since that refresh only the
+  four section files moved in `source/`. The seeded page is byte-identical under all five themes
+  at all three widths, and `modal.txt` is identical (four Editorial cards in both). With `CARD=3`,
+  card 4 is identical under Retro, Lime, Grunge and Pop, and rebuilt under Editorial (632 → 735,
+  619 → 722, 601 → 698 rows): the checker's three `conic` rows old-only, and the arch avatar's
+  `63.1px 63.1px 0px 0px`, the sleeve's −2.33° and the print's −1° matrices and sixteen SVG
+  `rect` rows new-only. The modal's card 4, read and looked at in both builds: the old one's checker
+  floor, dark capsule and Retro seal; the new one's paper capsule, arch avatar and terracotta
+  disc, no checker. The standalone file is 8,776,960 bytes (was 8,771,039); no photograph was
+  added.
+
 ## Open questions
 
 1. **The desktop form master is missing from the page again.** The 1440 page frame has no form
