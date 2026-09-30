@@ -827,6 +827,9 @@ Settled in section 4 (the gallery):
   down it, thumbs 62.3 at 8.1 below; 768 rows 168.3 × 92, card 527, arrows 217.7 down; 390 rows at 140.4,
   TikTok wrapped to a second row at 269.4, card 346, arrows centred. The section's content height is
   582.2 against the frame's (822 − 112) × 0.82 on desktop, and 1057.9 against 1059 at 768.
+  *(Reversed 2026-10-01, JP-087, user call: the 390 source row is the frame's one line now, TikTok
+  running off the page. It scrolls sideways on the published page and clips on the canvas, on every
+  template. See `../editorial/qa-fixes.md`.)*
 - **No harness parameter fills a social address**, so the `a` branch of a row (`extLink` with a URL)
   was not driven. It is the same `{...link}` spread as Retro's rows over the same `srcRows`. The
   `live=1` digest at `theme=0,2,3,4` proves Retro's rows did not move.

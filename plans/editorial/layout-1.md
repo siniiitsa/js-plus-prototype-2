@@ -114,7 +114,9 @@ found by the `Primitives` mode of its sections, not by name):
   sets **Scheme 2** itself.
 - The testimonials master is **730 tall at every width**. Read its render before trusting it.
 - The mobile page renders **412** wide, not 390: something runs 22px past its right edge — the
-  390 gallery's source row, which the section already wraps (CLAUDE.md, the gallery).
+  390 gallery's source row, which the section already wraps (CLAUDE.md, the gallery). *Reversed
+  2026-10-01, JP-087: the row is the frame's one line now, scrolling on the published page and
+  clipped on the canvas — see `qa-fixes.md`.*
 
 **The desktop page frame is set to `Primitives → Lime`** (the narrow page frames are Sienna
 Vale). Every instance overrides, so read a *section* node, never the page.
@@ -729,7 +731,8 @@ four ink ones are its own register.
 4. **gallery** — the tree all three share: source rows on `box1` paper in dashed black 5, 5, the
    open row filled terracotta; the viewer a white polaroid under the tape, terracotta arrow discs;
    the strip's fourth thumb ringed terracotta. The 390 source row runs off the page (the 412
-   render), which the section wraps.
+   render), which the section wraps. *(Reversed 2026-10-01, JP-087: it runs off here too now,
+   scrolling on the published page.)*
 5. **repertoire** — Scheme 3: "250 SONGS" in terracotta with the sparkle beside it; the search a
    dashed underline with a terracotta-ringed glyph tile; chips: All filled terracotta, the rest
    paper pills; the artists in terracotta. **The pager marks its current page** (a terracotta ring

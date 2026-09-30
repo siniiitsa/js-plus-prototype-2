@@ -13027,15 +13027,31 @@ function Gallery({ s }) {
     // The Figma tablet and mobile frames fold the source list into a row of
     // icon-only tiles: no labels, and only the open tile carries a dismiss
     // glyph. Tablet spreads four equal tiles across the page; mobile keeps them
-    // content-sized, and **wraps** rather than clipping.
+    // content-sized on **one line that runs off the right edge**, as the frames
+    // draw it.
     //
-    // The frame itself lets the row run off the right edge, which cost nothing
-    // while the tiles were decoration — but three of them now carry an address
-    // the artist typed, and the fourth, TikTok, was the one off the page. Four
-    // content-sized tiles come to ~430px against a 390 frame, so nothing short
-    // of shrinking them fits on one line; wrapping keeps every Figma dimension
-    // exactly as drawn and spends a second row instead. The 20px gap is the
-    // row gap too, which clears the open tile's offset shadow.
+    // *Reversed* (JP-087, user call, 2026-10-01): this row used to wrap,
+    // spending a second row on TikTok so no tile with an address sat off the
+    // page. The four come to 380–432px against the 370 column (Grunge's to
+    // Retro's), so TikTok stood alone under the other three, which QA read as
+    // a bug. Now the row stays one line, every Figma dimension as drawn. On the
+    // published page it scrolls sideways, its scrollbar hidden, so the tile
+    // off the edge is a swipe away. On the canvas it clips, the frame's
+    // picture, since a scrollable region there would be interaction (`s.live`).
+    // It is the only scroll container in this file. The A–Z rail scrolls the
+    // *page*.
+    //
+    // The scroller clips at its padding box, so it takes 10 above and below
+    // (Lime's 7 / 9 offset shadows, Retro's tilted open tile) and the page's
+    // own gutter at the sides, each cancelled by a negative margin. The tiles
+    // keep their places, and the run-off reaches the page's edge, not the
+    // column's.
+    const srcScroll = s.mob ? {
+      flexWrap: 'nowrap',
+      ...(s.live ? { overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' } : { overflow: 'clip' }),
+      padding: `10px ${s.padX}`, margin: `-10px calc(-1 * ${s.padX})`,
+    } : null
+
     // A row with an address the artist typed is an outbound link on the
     // published page, the same seam BookPill takes: `extLink` returns the props
     // or null, the tag follows, and the style object is the same either way so
@@ -13076,8 +13092,9 @@ function Gallery({ s }) {
     // Named departures. The frame's heading breaks after "See us" with a typed
     // newline, and no measure can: "in action" (2.95em) is wider than "See us in"
     // (2.81em). The 4em cap gives "See us in / action" at all three widths, which
-    // keeps the frame's two lines and its height. The 390 source row wraps where
-    // the frame runs TikTok off the page — the rule this section already has.
+    // keeps the frame's two lines and its height. The 390 source row used to
+    // wrap where the frame runs TikTok off the page; *reversed* by JP-087, it is
+    // the frame's one line now, scrolling on the published page (`srcScroll`).
     // And the arrow discs' 24 background blur is dropped: their fill is opaque,
     // the header's capsule precedent.
     //
@@ -13181,12 +13198,13 @@ function Gallery({ s }) {
 
       // Desktop stacks four full capsules, disc and label and a glyph; 768
       // spreads four equal tiles of disc alone, the open one keeping its cross;
-      // 390 keeps them content-sized and wraps. The open row is `sem/active`,
-      // the closed ones `sem/box/1` under the frame's hard 7 / 9 shadow.
+      // 390 keeps them content-sized on one line (`srcScroll`). The open row is
+      // `sem/active`, the closed ones `sem/box/1` under the frame's hard 7 / 9
+      // shadow.
       const rows = (
         <div style={desk
           ? col(u(G.rowGap), { alignItems: 'stretch' })
-          : row(`${G.rowGap}px`, { alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}) })}>
+          : row(`${G.rowGap}px`, { alignItems: 'stretch', ...srcScroll })}>
           {srcRows.map(({ g, i }) => {
             const link = extLink(s, g.url)
             const Tag = link ? 'a' : 'div'
@@ -13433,9 +13451,7 @@ function Gallery({ s }) {
     }
 
     const sources = !desk ? (
-      <div style={row('20px', {
-        alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}),
-      })}>
+      <div style={row('20px', { alignItems: 'stretch', ...srcScroll })}>
         {srcRows.map(({ g, i }) => {
           const link = extLink(s, g.url)
           const Tag = link ? 'a' : 'div'

@@ -712,7 +712,8 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - **Measured**: desktop rows 75.4 at 3.3, head 190.4 (232 × 0.82), card 456.7 (557 × 0.82), thumbs
   62.3, rows' and strip's feet level at 659.7; 768 rows 92, card 524, heading lines 72.1; 390 card
   344, lines 40.9, TikTok wrapped to a second row (the section's own rule — the frame runs it 10 past
-  its page). The bright spot in the 390 card's top-right corner is a ceiling light in the seeded
+  its page). *(Reversed 2026-10-01, JP-087: the row is the frame's one line now, scrolling on the
+  published page and clipped on the canvas — see `../editorial/qa-fixes.md`.)* The bright spot in the 390 card's top-right corner is a ceiling light in the seeded
   photograph, not the grain.
 
 ### Settled in section 5 (the repertoire)

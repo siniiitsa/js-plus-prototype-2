@@ -97,7 +97,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | 3 | JP-090 | Four literals no field reaches; the map's Kicker says "Not shown" | **Confirmed**: JP-071's rule, four more sites, every template (the map's two in both bodies too) | S–M | **user: 1A, the whole bio line, 2A** | **done** |
 | 4 | JP-088 | Calendar layout 1's *Check a date* pill | **Confirmed, and recorded**: Retro's deliberate addition, kept by Lime's fit | S | **user: A, the line links only on a picked day** | **done** |
 | 5 | JP-086 | 390 hero name clipped | **Confirmed**: Editorial's 390 title is a flat 107px, the only width it is not fitted | S | no | **done** |
-| 6 | JP-087 | 390 gallery: TikTok wraps to a second row | **Confirmed, and recorded**: wrapping is the shared rule, chosen over the frame's run-off | S–M | **yes** | open |
+| 6 | JP-087 | 390 gallery: TikTok wraps to a second row | **Confirmed, and recorded**: wrapping is the shared rule, chosen over the frame's run-off | S–M | **user: A, one line that scrolls on the published page** | **done** |
 | 7 | JP-091 | 1440 nav wraps with a long name | **Confirmed in the code, size unmeasured**: below the links' 12px floor the row wraps, a recorded "least bad" | M | **yes, after measuring** | open |
 | 8 | — | End-of-pass sweep | — | S | — | open |
 
@@ -865,7 +865,120 @@ its width; the canvas row does not scroll. Retro, Lime, Grunge and Editorial car
 repeat it (`:13059`–`13062`), `notes/gallery.md` (the strip and its mobile window), and a *reversed*
 pointer on Lime layout 1's gallery *Settled* bullet.
 
-**Settled.** —
+**Decided** (2026-10-01, user call): **A, one row that scrolls sideways on the published page and is
+clipped on the canvas**, at 390, on every template, in both bodies. The scroller takes padding
+that negative margins cancel, so no offset shadow and no tilted tile is clipped by it. Asked over
+what the session found first, on HEAD (`f0953c2`):
+- **Every *Evidence* line held, +18**: the wrapping comment at `EncoreSection.jsx:13026`, the
+  `s.limeTree` block comment repeating it at `:13079`, `srcRows` at `:13057`, and the two
+  `flexWrap: 'wrap'` rows at `:13189` (the `s.limeTree` block) and `:13437` (Retro's and Pop's).
+- **The seed carries no address**: `FIELDS.gallery`'s `youtube`, `instagram` and `tiktok` are all
+  `d: ''`. So a `live=1` render without `&cj=` draws the open tile alone, and only the canvas
+  draws four.
+- **Reproduced on HEAD** (a scratch puppeteer script). Card 1 was published with all three
+  addresses and opened at 390, then the canvas was measured at Mobile. Every template draws three
+  tiles, then TikTok alone on a second row, on both surfaces. The page's `scrollWidth` is 390.
+  One row would need:
+
+  | Template | Tiles (open + three closed) and gaps | One row | Over the 370 column | Row height now |
+  |---|---|---|---|---|
+  | Editorial | 127.8 + 3 × 80, gaps 11 | 400.8 | 30.8 | 171 |
+  | Lime | 127.8 + 3 × 80, gaps 5 | 382.8 | 12.8 | 165 |
+  | Grunge | 127.8 + 3 × 80, gaps 4 | 379.8 | 9.8 | 164 |
+  | Retro | 120.4 + 3 × 84, gaps 20 | 432.4 | 62.4 | 188 |
+
+  - With one or two addresses, the published row holds two or three tiles and fits.
+  - Lime's closed tiles cast a 7 / 9 offset shadow. Retro's open tile casts one too and is tilted
+    −1°. Grunge's and Editorial's shadows are inset.
+- **The harness was proven first.** The HEAD worktree on :5174 against the tree diffed to 0 of 660
+  on the canvas and 0 of 660 on `live=1` (every category, themes 0–4, three widths, port and photo
+  stamps normalised).
+- **Expected after-diff (named before the code).**
+  - **Canvas:** gallery `arch 0` at mobile, themes 0–4: 5 files. The fourth tile moves up onto the
+    first row, past the right edge. The row loses a row, and everything below it in the section
+    moves up. The row itself reads its padding box: 10 wider each side, and 10 taller top and
+    bottom.
+  - **`live=1` without addresses:** the same 5 files. The row holds the open tile alone and does not
+    move, but the scroller's own box grows by its padding.
+  - **1440 and 768, every other section: 0.**
+
+**Settled** (2026-10-01).
+- **Code.** In `EncoreSection`'s layout-1 gallery, one style object, `srcScroll`, sits beside
+  `srcRows` above the `s.limeTree` block. Both rows spread it, the `s.limeTree` block's and Retro's
+  and Pop's, so they share one scroller.
+  - At 390 it is `flexWrap: 'nowrap'`. On the published page it adds
+    `overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none'`. On the canvas it is
+    `overflow: 'clip'`, which is not a scroll container at all, where `hidden` still scrolls from
+    script.
+  - It pads `10px s.padX` and cancels that with `margin: -10px calc(-1 * s.padX)`, so no tile moves.
+    The scroller spans the page edge to edge, and the clip falls at the page's edge.
+  - At 1440 and 768 it is `null`.
+  - It is the only scroll container in the file. The comments say so, beside the *reversed*
+    pointers.
+- **Digest.** The tree against the HEAD worktree on :5174, every category, themes 0–4, three
+  widths, port and photo stamps normalised.
+  - **Canvas: exactly the 5 named files of 660.** The fourth tile joins the first row past the
+    section's right edge. The row's own box is 390 × 100 (Retro and Pop 104 and 102) at x −10,
+    y −10. The section shortens by 104 (Retro), 85 (Lime), 84 (Grunge), 91 (Editorial) and 102
+    (Pop), and everything below the row moves up by that.
+  - **`live=1` without addresses: exactly the 5 named files.** In each, one row differs: the
+    scroller's own box, 20 wider and 20 taller at −10 / −10. The open tile does not move.
+  - **`live=1` with the three addresses** (`&cj=`, gallery only): the same 5 mobile files of 60,
+    row for row the canvas's geometry, the three social tiles an `A` where the canvas has a `DIV`.
+    The row is 100 tall, so the cached shell draws no scrollbar (and in the published tab
+    `clientHeight` equals `offsetHeight`).
+- **The published tab** (a scratch puppeteer script, deleted). Card 1 of each template, published
+  with all three addresses, then with TikTok alone, and opened at 390:
+
+  | Template | Tiles per line | Row's run past the page (scroll range) | Page `scrollWidth` |
+  |---|---|---|---|
+  | Editorial | 4 | 31 | 390 |
+  | Lime | 4 | 13 | 390 |
+  | Grunge | 4 | 10 | 390 |
+  | Retro | 4 | 61 | 390 |
+
+  - **Touch** (CDP `Emulation.setTouchEmulationEnabled`, then a leftward drag): the row scrolls to
+    the end of its range on every template, and the page's `scrollX` stays 0.
+  - **The wheel**: a horizontal wheel (`deltaX`) over the row scrolls it to the end of its range
+    on every template.
+  - **Shift-wheel could not be tested here.** CDP's wheel event carries the Shift modifier, but
+    Chrome turns Shift+wheel into a horizontal scroll at the OS / UI layer, which CDP input skips,
+    so over the live row, which does scroll by `deltaX`, it reads 0. The horizontal wheel is what
+    Shift+wheel becomes. Check it by hand on a desktop browser in the sweep.
+  - **Harness trap:** once touch emulation is on, the popup ignores the mouse wheel, so take the
+    wheel reading first. And `setViewport({ hasTouch })` reloads the page, which empties the
+    about:blank popup, so use the CDP call instead.
+  - **Each tile's link still opens**: a trusted click on YouTube, Instagram and TikTok (TikTok
+    scrolled into view first) opens a new tab on its address.
+  - **With TikTok alone** the row holds two tiles and has no range to scroll.
+  - **No shadow is clipped.** At scroll 0, every tile's outward shadow, and Retro's tilted open tile
+    (9.3 from the page's edge), sits inside the scroller's padding box. At the end of the range, so
+    does the last tile's. Lime's 7 / 9 ends 3.2 inside the right edge and 1.0 above the foot.
+    Retro's tilted open tile ends level with the foot, so the 10 is what it needs. The pictures
+    agree.
+  - No page errors.
+- **The canvas at Mobile** (the same script and the harness): one line on every template,
+  `overflow: clip`. A shift-wheel and a horizontal wheel over it leave `scrollLeft` 0 and the first
+  tile in place. TikTok ends past the section's edge by 20.8 (Editorial), 2.8 (Lime) and 51
+  (Retro). Grunge's four end 0.2 inside it, in the gutter, so nothing is cut there.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Docs.**
+  - **Reversed pointers**: Lime `layout-1.md`'s gallery *Measured* bullet, the repeat in Grunge's
+    `layout-1.md`, and Editorial `layout-1.md`'s two mentions (the 412 render, section 4's row).
+  - **Rewritten**:
+    - `notes/gallery.md`'s mobile-row sentence (now the one line, the scroller and its padding).
+    - README's "one layout consequence".
+    - CLAUDE.md's `s.live` list, which now names the 390 source row as the file's one scroll
+      container.
+  - The code comment at the row, and the two `s.limeTree` block comments.
+
+Reply: **JP-087 — fixed.** At 390 the gallery's four tiles now sit on one line, as the design draws
+them, with TikTok running off the right edge. On the published page the line scrolls sideways, by
+swipe or trackpad, so TikTok is one swipe away, and every tile still opens its link.
+- The editor's Mobile preview shows the design's picture: the line cut at the edge, not
+  scrollable.
+- With only one or two links filled, the tiles fit and nothing scrolls.
+- The same on Retro, Lime and Grunge.
 
 ---
 
@@ -924,7 +1037,10 @@ the desktop wrap.
 1. Full digest against a `main` worktree on :5174 (port and `?t=` normalised), all categories ×
    themes 0–4 × three widths × canvas and `live=1`. Every diff must be one a Settled above names.
 2. The repro sets re-run on the final tree: JP-086's names at 390, JP-090's markers, JP-091's names
-   at 1440, read off the DOM.
+   at 1440, and JP-087's three addresses at 390 (one line, the scroll range 31 / 13 / 10 / 61 on
+   Editorial / Lime / Grunge / Retro, and the page 390 wide), read off the DOM.
+   - **JP-087 by hand, once:** Shift+wheel over the published 390 row in a real desktop browser
+     (a devtools phone frame is enough). CDP input cannot test it (JP-087's *Settled*).
 3. `reach.mjs` for every `in` that moved (JP-088's `cta`, JP-090's four keys).
 4. Walk Editorial card 1 in the real app and the published tab at 1440 / 768 / 390 — the tester's
    steps for each ticket — then Lime's and Grunge's card 1 once, and Retro's card 1 for the gallery

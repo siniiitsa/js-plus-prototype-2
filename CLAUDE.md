@@ -321,7 +321,9 @@ mutated through a single `patch()` helper.
   header's `ListenLink` on the same `vm.listenTo`, which is resolved for every section, worded
   by the bio's own `cta2`, *Listen link* — JP-082 — and not drawn when that is emptied),
   the **media player** (below), the **gallery's arrows
-  and thumbnail strip, and layout 3's fullscreen viewer** (below), the **events map's pager, its pin/row pairing, its map zoom
+  and thumbnail strip, layout 3's fullscreen viewer, and layout 1's 390 source row, which
+  scrolls sideways only when live and clips on the canvas** (below — the file's one scroll
+  container, JP-087), the **events map's pager, its pin/row pairing, its map zoom
   (layouts 3 and 4, and Lime's, Grunge's and Editorial's layout 2) and — in layout 3 alone — its city chip row and its See all gigs reveal**
   (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,

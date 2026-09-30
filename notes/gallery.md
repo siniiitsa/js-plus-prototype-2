@@ -23,10 +23,18 @@ another `notes/` file.
   player's paragraph above). The **canvas keeps all four regardless**: it is the reference
   design, the three fields start empty, and a fresh page would otherwise open on a single tile with
   no clue the others are a field away. The filter carries the index, because `srcIcons` and the
-  per-source colours are positional. And the mobile source row **wraps** rather than clipping: the
-  Figma frame lets it run off the right edge, which put TikTok — now a link — off the page. Four
-  content-sized tiles come to ~430px against a 390 frame, so wrapping is what keeps every tile at
-  its drawn size. **Everything in this paragraph from "Mobile draws four" on is layout 1's**:
+  per-source colours are positional. And the mobile source row is **one line that runs off the
+  right edge**, as every template's 390 frame draws it (JP-087, user call, 2026-10-01, reversing
+  "wraps rather than clipping"). Four content-sized tiles come to 380–432px against the 370
+  column (Grunge's to Retro's), and TikTok, the one off the edge, carries an address. So when
+  `s.live` the row scrolls sideways (`overflowX: auto`, scrollbar hidden) and the visitor swipes
+  to it. On the canvas it is `overflow: clip`, the frame's picture: `clip` is not a scroll
+  container at all, where `hidden` still is one to script. It is the only scroll container in
+  `EncoreSection`. The scroller (`srcScroll`, shared by both bodies) clips at its padding box, so
+  it takes 10 above and below for Lime's 7 / 9 offset shadows and Retro's tilted open tile, and
+  `s.padX` at the sides. Negative margins cancel that padding, so no tile moves and the run-off
+  reaches the page's edge. With one or two addresses the published row fits and does not scroll.
+  **Everything in this paragraph from "Mobile draws four" on is layout 1's**:
   layout 2 browses through the same `pick`, but it is a hero photograph beside a masonry of six
   and it draws **no source rows at all**, so the hide-the-empty-row rule and the four-tile mobile
   window are that layout's and not the section's. Its **tiles are fixed** (user call, 2026-09-15;
