@@ -189,6 +189,8 @@ repertoire, map, pricing, calendar, form, testimonials, footer. **Expect no chan
   draws all eight section labels.
 - **`vm.titleWordEms` is not read by the form at layout 4** (its head is one line at 118). *The
   bio reads it (section 2), which moved its Editorial arm to Noto's 540 table at design 3.*
+  *And the form does read it (section 9): the seed holds one line, but a 17-letter word broke at
+  390, so the head fits its widest word as the calendar's does.*
 
 ## The Figma source
 
@@ -255,7 +257,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 6 | `map` | `964:73110` *(Frame 319 `964:73104`, head `964:73105`)* | 1440 × 747 | `971:9608` *(Frame 319 `971:9602`, head `971:9603`)* | 768 × 870 | `977:13475` *(Frame 319 `977:13469`, head `977:13470`)* | 390 × 680 | 1 (viewport **3**) | `964:72924` / `971:5612` / `977:9186` | `964:73019` / `971:8136` / `977:12363` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | **done** (`2b37973`) |
 | 7 | `pricing` | `964:73111` | 1440 × **532** | `971:9609` | 768 × **790** | `977:13476` | 390 × 829 | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73021` / `971:8137` / `977:12364` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | **done** (`b649843`) |
 | 8 | `calendar` | `964:73124` + wizard `964:73123` *(Section `964:73112`, Frame 324 `964:73113`)* | 478 × 518 + 680 × 518 | `971:9622` + `971:9621` *(Section `971:9610`, Frame 324 `971:9611`)* | 608 × 493 + 608 × 473 | `977:13489` + `977:13488` *(Section `977:13477`, Frame 324 `977:13478`)* | 350 × 484 + 350 × 470 | 1 (Back pill **3**) | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:73034` + `964:73033` / `971:8150` + `971:8149` / `977:12377` + `977:12376` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | **done** (`2393dc9`) |
-| 9 | `form` | **`725:3049`** *(the main component — no page instance at 1440)* | 1440 × 809 | `971:9623` | 768 × 1044 | `977:13490` | 390 × 992 | 1 | `964:72940` / `971:5627` / `977:9201` | `725:2990` / `971:8151` / `977:12378` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v3)` | open |
+| 9 | `form` | **`725:3049`** *(the main component — no page instance at 1440)* | 1440 × 809 | `971:9623` | 768 × 1044 | `977:13490` | 390 × 992 | 1 | `964:72940` / `971:5627` / `977:9201` | `725:2990` / `971:8151` / `977:12378` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v3)` | **done** (`ffc9139`) |
 | 10 | `testimonials` | `964:73125` | 1440 × 716 | `971:9624` | 768 × **628.4** | `977:13491` | 390 × 609.4 | **4** — a real sheet (cell 2 **1**) | `964:72941` / `971:5628` / `977:9202` | `964:73035` / `971:8152` / `977:12379` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v3)`, after `padBot` | open |
 | — | `footer` | `964:73126` | 1440 × 479.5 | `971:9625` | 768 × 692.3 | `977:13492` | 390 × 736.3 | 3 (row 0's) | — | — | — | **out of scope**: layout 1's Editorial footer on its own ink seat; `NVAR.footer` is 1 |
 | — | `video` | `964:73054` | 1440 × 1175 | `971:9551` | 768 × 647 | `977:13295` | 390 × 362 | 1 (paper) | — | — | — | **not in the project** (`d734992`); Retro's, Lime's and Grunge's layout-4 passes declined restoring it, and this pass does the same |
@@ -878,7 +880,17 @@ bullets; name them.
   their narrower faces; in Noto, at the frame's own pill widths, it pushed Next Step 4px past the
   card. Read a `SPACE_BETWEEN` row's children against its width before carrying its gap into CSS:
   where they fit with less, the CSS gap is 0. The form's step rows and the testimonials' head
-  row are the next `SPACE_BETWEEN` rows.
+  row are the next `SPACE_BETWEEN` rows. *The form's step rows are not* (section 9): they are
+  `MIN` at 16 round a `FILL` text box, so the twins' gap is Figma's own. The testimonials' head
+  row is the next.
+- **A frame's floor is unreadable where the demo face's glyph descends; take the token's clean
+  reading off another master** (section 9). Fisterra's R legs and ENQUIRE's Q hang below the
+  text box, so the form's `absoluteRenderBounds` floors came out −0.18 and −0.07em. The same
+  token at the same line height reads 0.133 (lh .89) and ~0.24 (lh 1.1) on layout 3's form and
+  section 8's calendar, and those stood in. **And Noto at lh 1.2 is not level**: the form's
+  Display/List labels sat 0.05–0.10em (1–1.7px) under the frames', where layout 3's *level at
+  lh 1.2* was the map's Inter venues. Measure a Noto label at 1.2 before calling it level; the
+  testimonials' bylines and names are the next.
 
 ### Seen at planning time, per section
 
@@ -1893,6 +1905,137 @@ From the walks and the renders — impressions to confirm, not measurements.
     and its `#FFF9F2` / ink / `#EDE6DC` stack join them.
   - CONVENTIONS C's *refused box* row gains an L4 Editorial cell.
 
+### Settled in section 9 (the enquiry form)
+
+- **No Editorial block: Lime's `if (s.v3 && (s.lime || s.grunge))` ahead of `EnquiryForm`'s
+  `if (s.v3)` is `if (s.v3 && s.limeTree)`**, with `const ed = s.editorial` and no `G`. Every
+  Lime and Grunge arm is byte-identical. The live seam is hoisted above the block, so the boxes,
+  the refusal, the mailto, the sent card and *Write another* needed nothing new.
+  - The desktop master is the **main component `725:3049`** at its defaults (open question 1).
+  - The paired diff against Lime's (`964:72940` / `971:5627` / `977:9201`), by traversal order,
+    with bindings and collections, was the whole read. It found **59 = 59 nodes at every width**,
+    on Sienna Vale's Scheme 1, with the submit an explicit Scheme 1. There is no Device override,
+    no effect and no image. Editorial's 768 and 390 masters differ from each other only in the
+    root's padding (30 / 30 / 56 / 30 and 24 / 10 / 40 / 10, Lime's).
+- **Every fill binds the key Lime's block reads**, so the mode swaps the values. The head,
+  placeholders, step squares and ↘ are terracotta. ENQUIRE, the labels, the steps' head and
+  lines are ink. The boxes are paper, and the numerals paper on terracotta.
+  - **The pill needed nothing.** It is `sem/text/2` ink, lettered and disced `sem/bg` paper,
+    round a `sem/text/2` ink arrow, which is exactly `BookPill`'s Lime branch with
+    `bg={s.tx} fg={s.bg}`: 5 / 5 / 5 / 21 round a 46 × 44 disc, radius 67. The block's inline pill
+    is those numbers already (it has to be the seam's `Pill` on a mailto), so there is no `G`.
+    Only its casing moves, through `disp`.
+- **What moves is the frame's own dress**, the same at all three widths:
+  - **the head's rule** is 1px dashed **10, 10** in `sem/stroke/2` terracotta (Lime's is solid
+    `stroke/1`), and the head frame pads **42** under the text, where Lime pads 12. So the head
+    block is 147 / 107 / 85 (Lime 128 / 105 / 78). `DashRule` on the head's div, `paddingBottom:
+    u(42)`.
+  - **every box is an underline**: `sem/bg` paper, **square** (Lime 214, the message 24),
+    padded **12 / 0**, so the placeholder stands on the label's left edge. Its only stroke is a
+    bottom 1px dashed 10, 10 terracotta, `DashRule` on the field's column (layout 1's rule, the
+    box being the column's last child). The message box is the same at its 90.
+  - **a row's two boxes stand 44 apart** (Lime 14): 300 / 44 / 300 in 644 at 1440, 332 / 44 /
+    332 at 768 and 163 / 44 / 163 at 390.
+  - **each step row's rule** is 1px dashed **2, 2** in `sem/stroke/1`, ink here (Lime's is the
+    15% pale hairline), a `DashRule` on the row. **The step squares are square** (Lime 8).
+- **Type is the ramp but one literal.** Display/LG 118 / 73 / 48 at .89 (`s.dispLg`), Display/List
+  24 / 19 / 18 at 1.2 (`s.list`), Body/MD 14 / 13 / 13, Body/SM 12 at every width (Lime 13 / 13 /
+  12), Body/LG 16 / 15 / 15. Display/Title is **32 / 25 / 23**, the literal (`vm.title` shadows
+  the ramp). `disp` uppercases under `grunge || ed`: the head, ENQUIRE, the pill, the sent card's
+  title and *Write another*.
+- **The refused box is a 2px solid ink underline, the dash gone.** That is layout 1's Editorial
+  shape (`inset 0 -2px 0`, `foot(bad)` drawing nothing) in layout 3's ink. The idle mark is a
+  bottom-only dash, so a ring would draw three edges the frame never had. The idle dash is
+  terracotta, so the refusal changes colour, weight and dash at once (CONVENTIONS C). It is this
+  session's call; open question 6's form item. The message box is never refused (`formCheck`
+  reads `fields` alone).
+- **The head is fitted to its widest word.** The block's `overflowWrap: 'break-word'` split
+  "Featherstonehaugh" onto two lines at 390. Under `ed` the head's div is an `inline-size`
+  container, and the size is `min(s.dispLg, calc(100cqi / s.titleWordEms))`, the calendar's.
+  - The seed "Contact Us" keeps 97 / 73 / 48 on one line.
+  - "Featherstonehaugh" now sets at 38.5px on one line at 390, and at the full size at 768 and
+    1440.
+  - "Christopher Featherstonehaugh live" sets on three lines at 1440 and 768, and at 38.5 on
+    three at 390. No word breaks.
+  - So the plan's *"`vm.titleWordEms` is not read by the form at layout 4"* was wrong. It
+    assumed the seed; the fit is for a word the artist types.
+- **Three lifts, measured** (CONVENTIONS B, *a stand-in face's glyph floor is measured per
+  site*). Every display line here stands in a `VERTICAL MIN` column over another line. The head's
+  row is `SPACE_BETWEEN CENTER` with one hugging child, so it has no row to lift. The glyphs lift
+  alone.
+  - **The frame's floors for the head and ENQUIRE could not be read.** Their
+    `absoluteRenderBounds` hang **below** the text box (−0.18em, −0.07em), because Fisterra's R
+    legs and ENQUIRE's Q descend (the 390 master's render shows both). So the same token's clean
+    readings stand in: **0.133em at lh .89** (layout 3's form, section 8's Book Us) and **0.241 /
+    0.218 / 0.256 at lh 1.1** (section 8's Display/Title, whole-pixel corrected).
+  - **Noto's floors** (`measureText` in the page, "EMAIL", section 6's formula) are **0.053 /
+    0.055 / 0.060** at .89, **0.168 / 0.150 / 0.159** at 1.1 and **0.225 / 0.232 / 0.211** at
+    1.2.
+  - So **the head and ENQUIRE lift 0.08em** (`lift`, 0.080 / 0.078 / 0.073 and 0.073 / 0.068 /
+    0.097). The head's gap to its rule is the design.
+  - **The labels and WHAT HAPPENS NEXT lift 0.07em** (`caps`). The frame's floors at lh 1.2 are
+    0.277 / 0.301 / 0.318 (0.273 / 0.297 / 0.307 corrected), so Noto sat 0.048 / 0.065 / 0.096em
+    low: 1.0 / 1.2 / 1.7px nearer the box. Layout 3's *level at lh 1.2* was the map's Inter
+    venues, not Noto (*Conventions*).
+  - The pill's label is centred in its pill and is not lifted (pricing's section 7 call).
+  - ENQUIRE's Q, whose tail Noto descends where Fisterra's curls on the line, clears WHAT
+    HAPPENS NEXT at 390 in the refused shot.
+- **The step rows are not `SPACE_BETWEEN`** (the calendar's *Conventions* named them the next
+  site). They are `H MIN CENTER` at 16, with the text box `FILL` at 540 / 605 / 267 and the ↘
+  hugging. So the twins' `gap: 16` is Figma's own.
+- **Measured** (harness, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: head block 120.7 (120.5), h2 97px, 86.3 tall (86.1); ENQUIRE at 173.2 before the
+    lift (173); boxes 246 × 36.9 (246 × 36.9), 36 apart; Location 528 (528). The rules are
+    `#C86E52` dashed `8.2 8.2` and `#141414` dashed `1.64 1.64`.
+  - 768: head block 107 (107); ENQUIRE at 161 (161); EMAIL at 406 · 531.3 (406 · 532); boxes
+    332 × 44 at 560.1 (561).
+  - 390: head block 84.7 (85); ENQUIRE at 132.7 (133); EMAIL at 217 · 499.6 (217 · 500); boxes
+    163 × 44.
+  - Sections 698.4 / 1042.5 / 994 against the frames' 663.4 / 1044 / 992. The desktop's 35 and
+    the 390's 2 are the foot's `padY`, 80 / 44 against the instance's 56 / 40 (Lime's named
+    *vertical inset is the root's*). No sideways scroll at any width.
+- **`live=1`** at desktop and 390 (puppeteer, trusted clicks and typing, a capture-phase
+  `preventDefault` on the mailto; probe deleted):
+  - **Idle**: five boxes with no shadow and a dash each, ten dashed lines in the section, five
+    pointers.
+  - **An empty submit** gives all five `inset 0 -2px 0 rgb(20, 20, 20)` with the dashes gone
+    (five lines left: the head's, the message's and the three steps'). The heights hold, 36.9 /
+    44, and the prompt prints.
+  - **Typing** into the first box clears its underline and brings its dash back alone.
+  - **Filled**, the href is `mailto:bookings@kaimercer.co.uk?subject=Enquiry` with the five
+    values and `Message:` over the message.
+  - The click swaps in the sent card (*CHECK YOUR MAIL APP*), and *Write another* restores all
+    five values.
+  - `n=0`: no box; the message box and the pill stand, the steps intact. `n=5`: the lone fifth box runs the
+    measure (528 / 370). `steps: []`: no column, the boxes 526 wide at 1440.
+  - No page errors.
+- **`FIELDS.form` has no template-keyed `in` row**, and the block reads no key the twins do not.
+  So no `reach.mjs` run was owed (the twins' finding, re-checked).
+- **Builder** (`page-check.mjs Editorial 3`): four cards, no errors or warnings.
+  - Enquiries, Book Now and the three Start Enquiry pills scroll to `#form`. Overflow at 390 is 0
+    and the burger goes 1 → 11.
+  - The published form is 852 tall at 1440 and 994 at 390. Its refused boxes read `inset 0 -2px
+    0` ink at 45, and the filled submit composes the mailto and swaps in the sent card.
+  - The seam clips show the calendar's paper onto the form's paper, and the form's paper onto the
+    testimonials on a straight edge. The testimonials are still the flat arm's ink, which section
+    10 replaces with the terracotta sheet.
+- **Named diffs**:
+  - "Contact Us" against every master's "KAI MERCER" (decision 3, JP-081's reply);
+  - the foot's `padY` (above, the twins');
+  - Noto against Fisterra: the head and the pill wider, the R legs and Q tail gone;
+  - the published placeholders at `::placeholder`'s .45 (the Repertoire's accepted diff).
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `form_arch_3` at three widths on both surfaces, six files. The digest cannot see an SVG
+  `stroke`, so the dashes were read off the DOM (above).
+- **For the sweep**:
+  - `notes/form.md`'s layout-4 paragraph names the rule and pill under Lime and Grunge only. It
+    owes Editorial's dashed 10, 10 terracotta head rule under a 42 pad, the underline boxes 44
+    apart, the 2, 2 ink step rules, the square step squares, the ink pill, and the refusal as a
+    2px ink underline. Its layout-3 sentence *under Lime and Editorial the desktop head shrinks*
+    gains a layout-4 twin: Editorial's layout-4 head fits too, at every width.
+  - CONVENTIONS C's *refused box* row gains an L4 Editorial form cell, and *a head that must fit
+    its measure* a form cell.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -2078,6 +2221,29 @@ and what this section did with it.)*
 - Calendar: *Field reach is measured* (CLAUDE.md) — the calendar's `reach.mjs` probes, no change.
 - Calendar: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on
   the end-of-pass sweep*) — `page-check.mjs Editorial 3`, the two seams.
+- Form: *A section whose live seam is hoisted above its branches can always take a block*
+  (lime/layout-1, *Settled in section 3*) — the block ahead of `if (s.v3)`, widened in place.
+- Form: *A widened block can need no `G` at all* (grunge/layout-3, *Settled in section 9*) — a
+  dozen `ed` arms, the pill `BookPill`'s Lime pair already.
+- Form: *The paired diff walk* (grunge/layout-2, *Settled in section 8*) — 59 = 59 against
+  Lime's, by traversal order, at all three widths; the whole read.
+- Form: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — the head's rule,
+  each box's underline and the step rules, three patterns.
+- Form: *A dashed rule under an `<input>` goes on the field's column* (editorial/layout-1,
+  *Conventions*) — the underline, and the refusal as a solid inset one.
+- Form: *A refused box changes colour, not weight alone* (CLAUDE.md, the enquiry form) — 2px
+  solid ink against the idle terracotta dash.
+- Form: *A stand-in face's glyph floor is measured per site* (editorial/layout-3, *Conventions*;
+  this plan, sections 6–8) — 0.08em on the head and ENQUIRE, 0.07em on the labels.
+- Form: *A head that must fit its measure is fitted to its widest word* (lime/layout-3, section
+  9; editorial/layout-1, *Conventions*) — the head, in its own div's `100cqi`.
+- Form: *A twin's width-bound call is re-measured in the new face* (editorial/layout-2,
+  *Conventions*) — the twins' `break-word` head, which split a 17-letter word at 390.
+- Form: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, *Settled in section 6*) —
+  Display/Title 32 / 25 / 23, a literal.
+- Form: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
+  end-of-pass sweep*) — `page-check.mjs Editorial 3`, the refusal and the mailto published, two
+  seams.
 
 ## Open questions
 
@@ -2108,6 +2274,9 @@ and what this section did with it.)*
    `#FFF9F2` card) and the form (on paper). Each session samples its own at `theme=3&live=1`.
    *Settled in section 8 (the wizard)*: the refused box is 2px of solid terracotta on the
    `#EDE6DC` box, the ink dash gone, and it reads beside the terracotta pills and the prompt.
+   *Settled in section 9 (the form)*: the refused box is a 2px solid ink underline on paper, the
+   terracotta dash gone, keeping the idle mark's bottom-only shape; it reads beside the
+   terracotta placeholders and the prompt at 390.
 
 ## Notes for the designer
 
