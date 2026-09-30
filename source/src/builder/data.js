@@ -336,8 +336,7 @@ export const THEMES = [
 // row 0 otherwise (sectionVm's head).
 export const SCHEMES_OF = {
   // Sienna Vale's layout-1 page (964:58612…22), read off each section's
-  // `explicitVariableModes`, identical at all three widths. Layout 4 is a
-  // later pass's to fill from its own walk.
+  // `explicitVariableModes`, identical at all three widths.
   Editorial: {
     0: { header: 3, media: 2, repertoire: 3, pricing: 2, form: 3, footer: 3 },
     // Its layout-2 page (964:64598 · 986:15657 · 986:15676). The repertoire
@@ -350,6 +349,10 @@ export const SCHEMES_OF = {
     // reads — so it is seated on 3. The footer is layout 1's tree on taupe
     // here, where layouts 1 and 2 stand it on ink (row 0's 3).
     2: { header: 3, gallery: 2, map: 4, footer: 2 },
+    // Its layout-4 page (964:73037 · 971:9537 · 977:13155), every seat the
+    // same at all three widths. The footer is layout 1's on ink, row 0's 3,
+    // so it has no entry.
+    3: { header: 3, bio: 3, media: 2, gallery: 3, repertoire: 3, testimonials: 4 },
   },
 }
 
