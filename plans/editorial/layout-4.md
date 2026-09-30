@@ -888,9 +888,10 @@ bullets; name them.
   text box, so the form's `absoluteRenderBounds` floors came out −0.18 and −0.07em. The same
   token at the same line height reads 0.133 (lh .89) and ~0.24 (lh 1.1) on layout 3's form and
   section 8's calendar, and those stood in. **And Noto at lh 1.2 is not level**: the form's
-  Display/List labels sat 0.05–0.10em (1–1.7px) under the frames', where layout 3's *level at
-  lh 1.2* was the map's Inter venues. Measure a Noto label at 1.2 before calling it level; the
-  testimonials' bylines and names are the next.
+  Display/List labels sat 0.05–0.10em (1–1.7px) under the frames', where layout 3 read Noto
+  level at lh 1.2 on the map's venues. The two sites disagree, so measure a Noto line at 1.2
+  before calling it level. The testimonials' next Noto sites are the head (Display/LG) and the
+  Fisterra marks.
 
 ### Seen at planning time, per section
 
@@ -1975,8 +1976,8 @@ From the walks and the renders — impressions to confirm, not measurements.
     0.097). The head's gap to its rule is the design.
   - **The labels and WHAT HAPPENS NEXT lift 0.07em** (`caps`). The frame's floors at lh 1.2 are
     0.277 / 0.301 / 0.318 (0.273 / 0.297 / 0.307 corrected), so Noto sat 0.048 / 0.065 / 0.096em
-    low: 1.0 / 1.2 / 1.7px nearer the box. Layout 3's *level at lh 1.2* was the map's Inter
-    venues, not Noto (*Conventions*).
+    low: 1.0 / 1.2 / 1.7px nearer the box. Layout 3 read Noto level at lh 1.2 on the map's
+    venues; these labels are not, so the per-site rule stands (*Conventions*).
   - The pill's label is centred in its pill and is not lifted (pricing's section 7 call).
   - ENQUIRE's Q, whose tail Noto descends where Fisterra's curls on the line, clears WHAT
     HAPPENS NEXT at 390 in the refused shot.
