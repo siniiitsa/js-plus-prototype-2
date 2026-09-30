@@ -20249,15 +20249,62 @@ function EventsMap({ s }) {
     //   dots are that white at the frame's own .6 (`dotOp`, JP-080), where
     //   Lime redraws its vanishing ink ones at full strength.
     // The 1440 `Vector 2` is Lime's no-op leftover again and is not drawn.
-    if (s.lime || s.grunge) {
+    //
+    // ── Editorial ──────────────────────────────────────────────────────────
+    // Editorial layout 4 (964:73110 · 971:9608 · 977:13475, in the `Frame 319`s
+    // 964:73104 / 971:9602 / 977:13469) is this tree again, node for node — 61
+    // / 61 / 61 in a paired diff against Lime's, less its `Vector 2` — on the
+    // page's Scheme 1, so `s.*` is paper and the leaves read the twins' keys
+    // wherever the binding is theirs. What moves:
+    //  · the card, the four cells and the ticker are `box/1` #FFF9F2, each
+    //    **dashed 7, 7** in `stroke/2` terracotta (`DashRule`, last child, so
+    //    the raster cannot paint over the card's), at radius **6 / 0 / 10**;
+    //    the cells' minimums are Grunge's 227.5 / 140. The panel's 1px left
+    //    rule is `stroke/1`, **solid ink** here, at every width: the narrow
+    //    masters' shows through the card's dash gaps beside the panel;
+    //  · the numerals are `text/1` terracotta (Grunge's moved binding), at
+    //    Display/SM 37 / 36 and **Display/Title 23** at lh 1.1 at 390, upper,
+    //    lifted 0.09em (Noto's floor 0.11 / 0.16em up the box against the
+    //    frame's 0.20 / 0.26, font metrics against `absoluteRenderBounds`);
+    //  · the viewport is **Scheme 3**, so every leaf reads `s.onScheme[3]`:
+    //    the rings, the ring labels, the marker's head and tail `sem/bg` ink,
+    //    the labels' type and the marker's ring and glyph `text/2` paper, the
+    //    zoom squares `box/2` #2A2A2A in a paper-56 hairline under paper
+    //    glyphs, the dots paper at the frame's .6 (they read grey). The 390
+    //    viewport is 370 × **263** (Lime's 251);
+    //  · **the 120 mi ring is redrawn** (open question 3): ink at .3 on the
+    //    dark plate sampled Δ −2 of 255 against its surround on the 1440
+    //    master, gone, where the 60 and 30 mi rings read (Δ −17, −41) and are
+    //    followed. So it takes Scheme 3's `text/1` terracotta at the frame's
+    //    .3, the ring's colour on the pages where it reads — layout 3's *a
+    //    frame's own state can vanish by the scheme*. Layout 2's Editorial map
+    //    stands the same ink rings on the same viewport and follows all three;
+    //  · the lit pin, which no frame draws, is the marker's own pair — an ink
+    //    disc in a 2px paper ring — layout 2's reading of this viewport;
+    //  · the head's 1440 measure is its own fixed 1019.18 text box, which is
+    //    what sets it on two lines; narrow, its frame's. It shrinks only where
+    //    its widest word would outrun that (`s.titleWordEms`, Noto's ems).
+    if (s.limeTree) {
       const grunge = s.grunge
-      const G = grunge
+      const ed = s.editorial
+      const S3 = ed ? s.onScheme[3] : null
+      const G = ed
+        ? { r: 6, cellR: 0, tickR: 10, dash: s.stroke2, num: s.ac, vpInk: S3.tx, acc: S3.bg, ring0: S3.ac,
+            dot: S3.tx, dotOp: 0.6, lit: S3.bg, plate: S3.box1, lift: S3.box2, inkHair: S3.stroke1,
+            cellMin: desk ? 227.5 : 140 }
+        : grunge
         ? { r: 15, cellR: 15, cellRing: s.stroke2, tickRing: s.stroke2, num: s.ac, vpInk: s.tx,
             dotOp: 0.6, lift: '#F52E34', inkHair: '#00000026', cellMin: desk ? 227.5 : 140 }
         : { r: 50, cellR: 25, cellRing: s.ac, tickRing: s.stroke1, num: s.tx, vpInk: s.bg,
             dotOp: 1, lift: '#D9FF7F', inkHair: '#15180F26', cellMin: desk ? 226.5 : 139.5 }
-      const upper = grunge ? { textTransform: 'uppercase' } : null
+      const upper = grunge || ed ? { textTransform: 'uppercase' } : null
       const ink = s.tx // sem/text/2 on the card, the cells and the ticker
+      // Editorial's viewport keys, falling back to the twins' own.
+      const acc = G.acc ?? s.ac // the rings, labels and the marker's head and tail
+      const plate = G.plate ?? s.box1
+      // Editorial's dashed card, cells and ticker: an overlay in place of the
+      // twins' inset ring, so the parent is `position: relative`.
+      const dashAll = (r) => <DashRule side="all" dash={7 * z} colour={G.dash} radius={r * z} />
       const lift = G.lift // Scheme 3 sem/box/2 — the zoom buttons
       const inkHair = G.inkHair // Scheme 3 sem/stroke/1, 15% — the zoom buttons' ring
       const ring = (c) => `inset 0 0 0 1px ${c}`
@@ -20267,22 +20314,22 @@ function EventsMap({ s }) {
       }
       const bodySmL = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
       const numeral = s.mob
-        ? { fontSize: faced(s, '26px'), lineHeight: facedLh(s, 1.1) }
+        ? { fontSize: faced(s, ed ? '23px' : '26px'), lineHeight: facedLh(s, 1.1) }
         : { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1) }
       // Outer first: diameter, inside stroke, opacity.
       const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
 
       const viewportL = (
         <div style={{
-          position: 'relative', background: s.box1, minWidth: 0, overflow: 'hidden',
-          ...(desk ? null : { aspectRatio: tab ? '708 / 320' : '370 / 251' }),
+          position: 'relative', background: plate, minWidth: 0, overflow: 'hidden',
+          ...(desk ? null : { aspectRatio: tab ? '708 / 320' : ed ? '370 / 263' : '370 / 251' }),
         }}>
           <div style={{
             position: 'absolute', inset: 0, transform: `scale(${zoomScale})`,
             transformOrigin: '50% 50%', transition: 'transform .25s ease',
           }}>
             <span aria-hidden style={{
-              position: 'absolute', inset: 0, background: s.box1,
+              position: 'absolute', inset: 0, background: plate,
               ...(s.mapRadialSrc
                 ? { backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                 : null),
@@ -20294,7 +20341,8 @@ function EventsMap({ s }) {
                   position: 'absolute', left: '50%', top: '50%', width: `${w}%`, height: 'auto',
                   opacity: op, transform: 'translate(-50%, -50%)', overflow: 'visible',
                 }}>
-                  <circle cx={d / 2} cy={d / 2} r={(d - wt) / 2} fill="none" stroke={s.ac}
+                  <circle cx={d / 2} cy={d / 2} r={(d - wt) / 2} fill="none"
+                          stroke={i === 0 ? G.ring0 ?? acc : acc}
                           strokeWidth={wt} strokeDasharray={i === 0 ? '4 4' : undefined} />
                 </svg>
               )
@@ -20302,7 +20350,7 @@ function EventsMap({ s }) {
             {s.mapRings.slice(0, ringW.length).map((label, k) => (
               <span key={k} aria-hidden style={{
                 position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
-                transform: 'translate(-50%, -50%)', background: s.ac, color: G.vpInk,
+                transform: 'translate(-50%, -50%)', background: acc, color: G.vpInk,
                 borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
               }}>{label}</span>
             ))}
@@ -20312,7 +20360,7 @@ function EventsMap({ s }) {
                 <span key={i} aria-hidden style={{
                   position: 'absolute', left: p.x, top: p.y,
                   width: on ? u(14) : u(8), height: on ? u(14) : u(8),
-                  borderRadius: '999px', background: on ? s.ac : s.tx, opacity: on ? 1 : G.dotOp,
+                  borderRadius: '999px', background: on ? G.lit ?? s.ac : G.dot ?? s.tx, opacity: on ? 1 : G.dotOp,
                   boxShadow: on ? `0 0 0 2px ${G.vpInk}` : undefined,
                   transform: 'translate(-50%, -50%)',
                 }} />
@@ -20326,14 +20374,14 @@ function EventsMap({ s }) {
               alignItems: 'center', transform: 'translate(-50%, -50%)',
             })}>
               <span style={row(0, {
-                background: s.ac, color: G.vpInk, padding: u(4),
+                background: acc, color: G.vpInk, padding: u(4),
                 boxShadow: `inset 0 0 0 2px ${G.vpInk}`, borderRadius: '999px',
               })}>
                 <User size={Math.round(16 * z)} />
               </span>
               <span style={{
                 width: 0, height: 0, borderLeft: `${u(5)} solid transparent`,
-                borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${s.ac}`,
+                borderRight: `${u(5)} solid transparent`, borderTop: `${u(8)} solid ${acc}`,
               }} />
             </span>
           </div>
@@ -20358,7 +20406,7 @@ function EventsMap({ s }) {
         <div style={col(u(20), {
           minWidth: 0, alignItems: 'flex-start', color: ink,
           padding: `${u(s.mob ? 20 : 28)} ${u(s.mob ? 20 : 32)}`,
-          ...(desk ? { boxShadow: `inset 1px 0 0 ${s.stroke1}` } : null),
+          ...(desk || ed ? { boxShadow: `inset 1px 0 0 ${s.stroke1}` } : null),
         })}>
           <div style={row(u(12), { width: '100%', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(6) })}>
             <span style={chipL}>Travel &amp; reach</span>
@@ -20373,12 +20421,14 @@ function EventsMap({ s }) {
           }}>
             {s.mapStats.map((st, i) => (
               <div key={i} style={col(u(8), {
-                background: s.box1, boxShadow: ring(G.cellRing), borderRadius: u(G.cellR),
+                background: s.box1, borderRadius: u(G.cellR),
+                ...(ed ? { position: 'relative' } : { boxShadow: ring(G.cellRing) }),
                 padding: `${u(18)} ${u(20)}`, alignItems: 'flex-start', minWidth: 0,
                 ...(s.mob
                   ? { justifyContent: 'space-between' }
                   : { justifyContent: 'flex-end', minHeight: u(G.cellMin) }),
               })}>
+                {ed && dashAll(G.cellR)}
                 {/* The label is the artist's now (JP-082), so it wraps where the
                     head row's chip stays on one line: a 390 cell is 159 wide. */}
                 {!!st.label && <span style={{ ...chipL, whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{st.label}</span>}
@@ -20386,6 +20436,9 @@ function EventsMap({ s }) {
                   <span style={distressed(s, {
                     fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
                     color: G.num, ...upper,
+                    // Noto sits 0.09–0.10em under the frame's face at lh 1 and
+                    // 1.1, over the sub 8 below: layout 3's lift, glyphs only.
+                    ...(ed ? { position: 'relative', top: '-0.09em' } : null),
                   })}>{st.value}</span>
                 )}
                 {!!st.sub && <span style={bodySmL}>{st.sub}</span>}
@@ -20404,10 +20457,16 @@ function EventsMap({ s }) {
       const clipL = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
 
       return (
-        <div style={col(desk ? u(56) : '30px')}>
+        <div style={col(desk ? u(56) : '30px', ed ? { containerType: 'inline-size' } : undefined)}>
+          {/* Editorial's head: the frame's fixed 1019.18 box at 1440, and a
+              size that shrinks only when its widest word would outrun that. */}
           <h2 style={distressed(s, {
-            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+            margin: 0, fontFamily: s.display,
+            fontSize: faced(s, ed && s.titleWordEms
+              ? `min(${s.dispLg}, calc(${desk ? `min(100cqi, ${u(1019.18)})` : '100cqi'} / ${s.titleWordEms}))`
+              : s.dispLg),
             lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...upper,
+            ...(ed && desk ? { maxWidth: u(1019.18) } : null),
           })}>{s.title}</h2>
 
           <div style={col(u(16))}>
@@ -20423,18 +20482,23 @@ function EventsMap({ s }) {
                   stacked) at `inset: 0` and would paint over a shadow the card
                   drew on its own background — layout 1's calendar panel and
                   layout 3's map container, the third time the rule bites. It
-                  takes no grid cell and passes clicks through to the zoom. */}
-              <span aria-hidden style={{
-                position: 'absolute', inset: 0, borderRadius: 'inherit',
-                boxShadow: ring(s.stroke1), pointerEvents: 'none',
-              }} />
+                  takes no grid cell and passes clicks through to the zoom.
+                  Editorial's dash is the same overlay. */}
+              {ed ? dashAll(G.r) : (
+                <span aria-hidden style={{
+                  position: 'absolute', inset: 0, borderRadius: 'inherit',
+                  boxShadow: ring(s.stroke1), pointerEvents: 'none',
+                }} />
+              )}
             </div>
 
             {!!gig && (
               <div style={row(u(14), {
-                background: s.box1, color: ink, boxShadow: ring(G.tickRing),
-                borderRadius: u(G.r), overflow: 'hidden', padding: `${u(12)} ${u(16)}`,
+                background: s.box1, color: ink,
+                ...(ed ? { position: 'relative' } : { boxShadow: ring(G.tickRing) }),
+                borderRadius: u(G.tickR ?? G.r), overflow: 'hidden', padding: `${u(12)} ${u(16)}`,
               })}>
+                {ed && dashAll(G.tickR)}
                 {nGigs > 1 && <span onClick={step(-1)} style={arrowL}>‹</span>}
                 <GigTagL {...gigLinkL} style={col(u(2), {
                   flex: '1 1 0', minWidth: 0, textDecoration: 'none', color: 'inherit',
