@@ -14428,10 +14428,45 @@ function Gallery({ s }) {
     // frame's black (`sem/bg`), not the media band's #171716: the media owns a
     // black foot tear at 1440 and 768, so the two meet as one black tear
     // where the frame's video band stood (named, plans/grunge/layout-4.md).
-    if (s.lime || s.grunge) {
+    //
+    // ── Editorial ──────────────────────────────────────────────────────────
+    // Editorial layout 4 (964:73096 · 971:9593 · 977:13460, in the 964:73061 /
+    // 971:9558 / 977:13425 wrappers) is this block in Sienna Vale's mode, on
+    // the Scheme 3 seat, so `s.*` is the ink band's: the sheet is `s.bg`, not
+    // Lime's `s.ac` (a Lime block paints its ground from Scheme 1 keys), the
+    // MEDIA eyebrow `s.tx` paper and the head `s.ac` terracotta, uppercase,
+    // fitted to its widest word (`s.titleWordEms`, Noto's ems) in its column.
+    // Every box is Lime's but three: the 768 wrapper pads **0** over its head
+    // frame (Lime's 100), so the sheet pads 30 there; the 390 pads Grunge's
+    // 60; and the 390 print is **329.79** tall. What changes is the card:
+    //  · **a tilted print**, `Frame 183` at Figma +1° (CSS −1°) under its one
+    //    DROP_SHADOW 5 / 4 blur 4 at .25 — an `s.box1` #1D1D1D mount padded 20
+    //    round the photograph on `s.bg`, square, no brackets. At 1440 and 768
+    //    it is centred on its unrotated slot (x −4.61 / −4.62, y 5.2 / 4.73,
+    //    the centre-turned origins), and the row round it **clips**, so its
+    //    corners and the shadow's foot are cut at the 534 box as the frame
+    //    cuts them; at 390 the column spaces it by its rotated box (the rail
+    //    at 329.79 cos 1° + 370 sin 1° + 50), so it takes W·sin 1° / 2 a side,
+    //    `0.873% 0`, and nothing clips it. The photograph is `90514a32`, our
+    //    slot 3, at `FILL`: a centred cover, not the twins' top anchor;
+    //  · the thumbs are square on `sem/tag/1/bg` (`s.chips[0]`, paper) in a
+    //    `sem/text/1` terracotta ring: **4px, 8px on `active`** at 1440 and
+    //    768, 4px on every 390 tile — Lime's mechanism at other weights;
+    //  · the discs and the 390 pills are square Scheme 4 nodes: `box/3`
+    //    #BE6346 in a 0.754 `sem/bg` terracotta ring, the arrow `stroke/2` ink
+    //    on the discs and `text/2` ink on the pills; no hard shadow, and the
+    //    discs' blur 18.1 stands behind an opaque fill.
+    // No seam: the wrapper's `Vector 1` is `sem/box/3` ink on the ink band,
+    // Lime's leftover, and is not drawn. The 768 and 390 masters drop it.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const un = (v) => Math.round(v * z * 10) / 10
-      const G = grunge
+      const G = ed
+        ? { well3: s.bg, well1: s.chips[0].bg, mist: s.onScheme[4].box3, ring: s.onScheme[4].bg,
+            arrow: s.mob ? s.onScheme[4].tx : s.onScheme[4].stroke2, eyebrow: s.tx, photoR: 0,
+            pillR: 0, initials: s.tx, discR: 0, thumbR: 0, thumbInk: s.bg, head: s.ac }
+        : grunge
         ? { well3: '#82211B', well1: '#9E1F17', mist: s.box3, ring: s.bg,
             arrow: s.mob ? s.ac : s.stroke2, eyebrow: s.tx, photoR: desk ? 15 : 4,
             pillR: 5, initials: s.tx }
@@ -14440,8 +14475,13 @@ function Gallery({ s }) {
             pillR: 60, initials: s.bg }
       const well3 = G.well3
       const mist = G.mist
-      const disp = grunge ? { textTransform: 'uppercase' } : null
+      const disp = grunge || ed ? { textTransform: 'uppercase' } : null
       const ringW = (i) => (s.mob ? 4 : i === active ? 3 : 1)
+      // Editorial's ring is terracotta, 4 / 8 / 4 through `u()` (this page's
+      // rings scale); the twins' stays unscaled in their `s.bg`.
+      const ring = (i) => ed
+        ? `inset 0 0 0 ${u(s.mob || i !== active ? 4 : 8)} ${s.ac}`
+        : `inset 0 0 0 ${ringW(i)}px ${s.bg}`
 
       const glyph = (turn) => (
         <svg viewBox="0 0 16.02 13.94" width={un(16.02)} height={un(13.94)} aria-hidden
@@ -14453,7 +14493,7 @@ function Gallery({ s }) {
       const thumb = (i) => (
         <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
           position: 'relative', overflow: 'hidden', minWidth: 0, minHeight: 0,
-          borderRadius: u(s.mob ? 25 : 10), background: G.well1,
+          borderRadius: u(G.thumbR ?? (s.mob ? 25 : 10)), background: G.well1,
           cursor: s.live ? 'pointer' : undefined,
         }}>
           <span style={{ position: 'absolute', inset: 0 }}>
@@ -14461,7 +14501,7 @@ function Gallery({ s }) {
                 own tiles are `FILL` centred, but its sources are landscape
                 crops where ours are the tall strip photographs, and a centred
                 cover of those into a 121 × 68 pill is a torso with no head. */}
-            <Photo s={s} src={s.images[i]} initialsSize={un(26)} ink={s.tx}
+            <Photo s={s} src={s.images[i]} initialsSize={un(26)} ink={G.thumbInk ?? s.tx}
                    style={{ background: G.well1, objectPosition: '50% 0%' }} />
           </span>
           {/* The ring, over the photograph as Figma strokes it: 1px, the
@@ -14469,15 +14509,15 @@ function Gallery({ s }) {
               Unscaled at desktop, every Lime ring's rule. */}
           <span aria-hidden style={{
             position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-            boxShadow: `inset 0 0 0 ${ringW(i)}px ${s.bg}`,
+            boxShadow: ring(i),
           }} />
         </span>
       )
 
       const arrowBtn = (key, turn, step) => (
         <span key={key} onClick={s.live ? () => go(active + step) : undefined} style={{
-          height: u(55.514), borderRadius: u(s.mob ? G.pillR : 10), background: mist,
-          boxShadow: `inset 0 0 0 ${u(0.754)} ${G.ring}${s.mob && !grunge ? `, 5px 5px 0 ${s.bg}` : ''}`,
+          height: u(55.514), borderRadius: u(s.mob ? G.pillR : G.discR ?? 10), background: mist,
+          boxShadow: `inset 0 0 0 ${u(0.754)} ${G.ring}${s.mob && !grunge && !ed ? `, 5px 5px 0 ${s.bg}` : ''}`,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: s.live ? 'pointer' : undefined,
           ...(s.mob ? { flex: '1 1 0', minWidth: 0 } : { width: u(55.514), flex: 'none' }),
@@ -14519,7 +14559,23 @@ function Gallery({ s }) {
       const bracket = (key, at) => (
         <span key={key} aria-hidden style={{ position: 'absolute', width: u(18), height: u(18), ...at }} />
       )
-      const card = (
+      // Editorial's print: the mount is the turned box (the frame's `Frame`
+      // inside `Frame 183`, one box here), padded 20 on `s.box1` round the
+      // clipped photograph, the shadow on the turned box as Figma draws it.
+      const card = ed ? (
+        <div style={{
+          ...(s.mob
+            ? { width: '100%', height: u(329.79), margin: '0.873% 0' }
+            : { flex: '1 1 0', minWidth: 0, height: '100%' }),
+          padding: u(20), background: s.box1, transform: 'rotate(-1deg)',
+          boxShadow: `${u(5)} ${u(4)} ${u(4)} rgba(0, 0, 0, 0.25)`,
+        }}>
+          <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: well3 }}>
+            <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={G.initials}
+                   style={{ background: well3 }} />
+          </div>
+        </div>
+      ) : (
         <div style={{
           ...(s.mob
             ? { width: '100%', height: u(337) }
@@ -14554,32 +14610,39 @@ function Gallery({ s }) {
           // the root's padding, in Scheme 3's `sem/bg`. `position: relative`
           // seats the arc.
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-          background: s.ac, color: s.bg, position: 'relative',
-          padding: `${u(desk ? 156 : tab ? 130 : grunge ? 60 : 100)} `
+          background: ed ? s.bg : s.ac, color: ed ? s.tx : s.bg, position: 'relative',
+          padding: `${u(desk ? 156 : tab ? (ed ? 30 : 130) : grunge || ed ? 60 : 100)} `
                  + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
                  + `${u(desk ? 56 : tab ? 30 : 40)}`,
           ...col(u(desk ? 112 : tab ? 60 : 24)),
         }}>
           {grunge
             ? <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 67.8 * z : tab ? 66.3 : 36.3} colour={s.bg} />
-            : <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />}
+            : !ed && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />}
           <div style={desk ? row(u(112), { alignItems: 'center' }) : col(u(tab ? 60 : 24))}>
             <div style={col(u(s.mob ? 10 : 36), {
               alignItems: 'flex-start', ...(desk ? { width: u(454), flex: 'none' } : null),
+              ...(ed ? { containerType: 'inline-size' } : null),
             })}>
               <span style={{
                 fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
                 letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow,
               }}>Media</span>
+              {/* Editorial's head shrinks only when its widest word would
+                  outrun the column (Noto's capitals are wider than the
+                  frame's face); the twins' never meets a long enough word. */}
               <h2 style={distressed(s, {
-                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
-                lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.bg, ...disp,
+                margin: 0, fontFamily: s.display,
+                fontSize: faced(s, ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
+                lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: G.head ?? s.bg, ...disp,
               })}>{s.title}</h2>
             </div>
             {s.mob
               ? <div style={col(u(50))}>{card}{rail}</div>
               : <div style={row(u(50), {
                 alignItems: 'stretch', height: u(534), ...(desk ? { flex: '1 1 0', minWidth: 0 } : null),
+                // Editorial's row clips, and so cuts its tilted print's corners.
+                ...(ed ? { overflow: 'hidden' } : null),
               })}>{card}{rail}</div>}
           </div>
         </div>
