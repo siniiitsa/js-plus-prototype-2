@@ -251,7 +251,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 2 | `bio` | `964:73046` *(Section `964:73039`, head `964:73040`)* | 664 × 720 | `971:9546` *(Section `971:9539`, head `971:9540`)* | 708 × 720 | `977:13164` *(Section `977:13157`, head `977:13158`)* | 370 × 536 | **3** (Section *and* instance; Tags **1**) | `964:72857` / `971:5307` / `977:8875` | `964:72952` / `971:7831` / `977:12052` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v3)` | **done** (`b589827`) |
 | 3 | `media` | `964:73053` *(band `964:73047`, head `964:73048`)* | 1440 × 671 | `971:9548` *(band `971:9547`, head `971:10389`)* | 768 × 569 | `977:13294` *(band `977:13288`, head `977:13289`)* | 390 × 845.9 | **2** (head **1**; 768 / 390 `Device: Tablet`) | `964:72864` / `971:5431` / `977:9005` | `964:72959` / `971:7955` / `977:12182` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Media`'s `if (s.v3)` | **done** (`1a7af2a`) |
 | 4 | `gallery` | `964:73096` *(wrapper `964:73061`, head `964:73062`)* | 874 × 646 | `971:9593` *(wrapper `971:9558`, head `971:9559`)* | 768 × 594 | `977:13460` *(wrapper `977:13425`, head `977:13426`)* | 390 × 585.5 | **3** (discs **4**) | `964:72909` / `971:5597` / `977:9171` | `964:73004` / `971:8121` / `977:12348` | `if (s.lime \|\| s.grunge)` inside `Gallery`'s `if (s.v3)`, after `from` | **done** (`5066e4f`) |
-| 5 | `repertoire` | `964:73103` *(Section `964:73098`, panel `964:73099`)* | 1208 × **506** | `971:9600` *(Section `971:9595`, panel `971:9596`)* | 608 × **564** | `977:13467` *(Section `977:13462`, panel `977:13463`)* | 310 × **626** | **3** | `964:72916` / `971:5604` / `977:9178` | `964:73011` / `971:8128` / `977:12355` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v3)`, after `jump` | open |
+| 5 | `repertoire` | `964:73103` *(Section `964:73098`, panel `964:73099`)* | 1208 × **506** | `971:9600` *(Section `971:9595`, panel `971:9596`)* | 608 × **564** | `977:13467` *(Section `977:13462`, panel `977:13463`)* | 310 × **626** | **3** | `964:72916` / `971:5604` / `977:9178` | `964:73011` / `971:8128` / `977:12355` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v3)`, after `jump` | **done** (`8d94074`) |
 | 6 | `map` | `964:73110` *(Frame 319 `964:73104`, head `964:73105`)* | 1440 × 747 | `971:9608` *(Frame 319 `971:9602`, head `971:9603`)* | 768 × 870 | `977:13475` *(Frame 319 `977:13469`, head `977:13470`)* | 390 × 680 | 1 (viewport **3**) | `964:72924` / `971:5612` / `977:9186` | `964:73019` / `971:8136` / `977:12363` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | open |
 | 7 | `pricing` | `964:73111` | 1440 × **532** | `971:9609` | 768 × **790** | `977:13476` | 390 × 829 | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73021` / `971:8137` / `977:12364` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | open |
 | 8 | `calendar` | `964:73124` + wizard `964:73123` *(Section `964:73112`, Frame 324 `964:73113`)* | 478 × 518 + 680 × 518 | `971:9622` + `971:9621` *(Section `971:9610`, Frame 324 `971:9611`)* | 608 × 493 + 608 × 473 | `977:13489` + `977:13488` *(Section `977:13477`, Frame 324 `977:13478`)* | 350 × 484 + 350 × 470 | 1 (Back pill **3**) | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:73034` + `964:73033` / `971:8150` + `971:8149` / `977:12377` + `977:12376` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | open |
@@ -843,6 +843,12 @@ bullets; name them.
   gallery's 768 head is one such case, 64.5 over. To measure it, type a one-word head (`&cj=`) and
   confirm that the section then lands on the master, which proves the wrap is the whole
   difference. The map's two-line head at 1440 is the next to check this way.
+- **A twin's `flex: none` beside an ellipsis is a width-bound call too** (section 5). The twins'
+  repertoire rows keep the artist whole and ellipsize the title. In Noto, a 29-letter artist left
+  the 390 title 18 wide where Bebas and Anton keep 111–123. Probe a long string on the side that
+  does **not** ellipsize, under the twins as well as ours, before calling a collapse the twins'.
+  Cap it at a share of the row that the seed's widest string clears. The map's ticker, the
+  wizard's summary rows and the form's step rows are the next rows of this shape.
 
 ### Seen at planning time, per section
 
@@ -1356,6 +1362,98 @@ From the walks and the renders — impressions to confirm, not measurements.
     them.
   - `notes/gallery.md` names no Editorial layout-4 rule yet, so nothing it states was reversed.
 
+### Settled in section 5 (the repertoire)
+
+- **No Editorial block: Lime's `if (s.lime || s.grunge)` inside `Repertoire`'s `if (s.v3)`, after
+  `jump`, is `s.limeTree`**, with `const ed = s.editorial` and no `G`. Every leaf resolves
+  through the twins' keys with an `ed` arm: `lime3`, `ink`, `ink2`, `upper`, `titleSize`, the lit
+  letter, the band, the radius, the 390 foot and the arc. The read was one walker call over the
+  three Sections (bindings with their collections, per-side weights, `dashPattern`s, radii and
+  text segments), with rail cells and groups past the first elided at 768 and 390, plus
+  `get_variable_defs` on the three instances. It was not a fresh paired diff: the plan's LCS (93 /
+  93 / 93 against Lime, less the foot arc `Vector 2`) was taken as read, and the walk agreed node
+  for node with the block's tree. The rail's seam is shared whole, so the published jump, the
+  clamp, JP-083's `#` cell and the sticky needed nothing new. Every Lime and Grunge arm is
+  byte-identical.
+- **The grounds are the seat's (trap 1).** The band paints `ed ? s.bg : s.ac`, ink `rgb(20, 20,
+  20)`. The panel is `sem/box/1`, `s.box1` `#1D1D1D`, at radius **0**. It pads 60 / 50 / 40 · 30
+  with gap 40, Lime's.
+  - `sem/text/1` is terracotta, so `ink` is `s.ac` under `ed`. It inks the head, the titles, the
+    rail's 1px rings and letters, and the lit cell's fill.
+  - `sem/text/2` is paper, so `ink2` is `s.tx`, Grunge's arm. It inks the sub, the group letters,
+    the artists and *No songs yet.*
+  - The lit cell is lettered `sem/bg`, so `s.bg` ink under `ed`, where the twins letter it `s.ac`.
+    Sampled live: `rgb(200, 110, 82)` filled, lettered `rgb(20, 20, 20)`, on the `#1D1D1D` panel.
+    It reads (open question 6's repertoire item).
+- **The rules are `DashRule`**: 7, 7 (× 0.82 at desktop) in `s.stroke1`, paper 56% under the seat,
+  at the foot. The group letter's is `weight={2}` and each row's is 1, on `position: relative`
+  boxes in place of the twins' inset shadows. Each svg is absolutely positioned, so the row's flex
+  gap and the letter's 24 / 23 box do not move.
+- **Type, off `get_variable_defs` on the three instances**: Display/Title is **32 / 25 / 23** at
+  1.1, where Lime's literal is 36 / 28 / 26. It stays a literal, since `vm.title` shadows the
+  ramp. Display/List is `s.list` 24 / 19 / 18 at 1.2, Body/LG `s.bodyLg` 16 / 15 / 15, Body/SM
+  `s.bodySm` 12, and `radius/chip` 6 is `s.radiusChip`. The head is Display/LG 118 / 73 / 48 at
+  .89, `s.dispLg`. No Device override.
+- **The boxes are Lime's but one**: the 390 Section pads **40** below (859 = 30 + 789 + 40), where
+  Lime pads 100 and Grunge 60. The 100 / 100 / 30 top, the 56 / 30 / 10 sides, the 150 wide foot,
+  the gaps (40 · 24 · 40 / 32 · 28), the 10 / 0 row pads and the 232 rail with its 50 indent are
+  the twin's. No seam: `ArcEdge` is `!ed && …` in the ternary's Lime arm.
+- **The head is fitted to its widest word** under `ed`. The panel is an `inline-size` container,
+  and the size is `min(s.dispLg, calc(100cqi / s.titleWordEms))`. "Unforgettable" ran 341.4 of
+  ink in the 390's 310 column (Lime 266, Grunge 200 hold). Fitted, it sets 43.3px, 307.7 wide. The
+  seed keeps 97 / 73 / 48, and "Atmosphere nights tonight" sets two lines at full size at every
+  width.
+- **The artist stops at 60% of the row** under `ed`, with an ellipsis. This is *a twin's
+  width-bound call re-measured in the new face*. With "Christopher Featherstonehaugh" at 390,
+  Lime's title keeps 123 and Grunge's 111, where Noto left ours **18.2**, beside a 285.8 artist.
+  Capped, the title keeps 118 and the artist 186. The seed's widest artist, "EARTH, WIND & FIRE"
+  at 390, is 158.8 (51%) and does not ellipsize. **Named, the twins' own**: a 56-letter artist
+  still takes the whole row under Lime and Grunge, their title at 0, and ours ellipsizes both.
+- **The ellipsis clips clear Noto's J**: `paddingBottom: '0.1em'` and `marginBottom: '-0.1em'`
+  under `ed` on the title and on the capped artist (layout 2's *a clipping box cuts it instead*).
+  A DPR-3 shot of "Jump Jive · Joe Jackson" showed the flattened hook before and the full hook
+  after.
+- **Measured** (harness, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: panel 1088.2 at 45.9 · 82 (1089 at 45.9 · 82); h2 97px at 131.2, 86.3 tall (131.2 ·
+    86.1); sub at 250.3 (250.1); first letter at 289.5 (289.5); rows 45.4 (45.1); first rail cell
+    26.2 at 894.7 · 330.5 (895.4 · 330.5).
+  - 768: h2 73px at 150, 65 tall (150 · 65); sub at 255 (255); rail at 301.5 (302), 608 × 72;
+    first letter at 405.5 (406); rows 47.8 (48).
+  - 390: h2 48px at 70, 42.7 (70 · 43); sub at 152.7 (153); rail at 199.2 (200), 310 × 152;
+    first letter at 383.2 (384); rows 45.6 (45); the section 30 + 1316.3 + 40.
+  - The rows are Noto's 1.1 line boxes against Figma's whole-pixel 35 / 28 / 25.
+  - No sideways scroll at any width.
+- **Named diffs, the twins'**: twelve seeded songs in eight groups, where the frame has six in
+  three, so the panel is content-tall (1118.2 against 771 × 0.82 at desktop). The seed lights C,
+  its first group, where the frame lights D. The 390 title "I WANNA DANCE" ellipsizes beside
+  "WHITNEY HOUSTON", Lime's behaviour in a wider face.
+- **`live=1`** at desktop and 390 (puppeteer, probe deleted):
+  - Only the eight lit letters carry a pointer (`CDIMRSUV`), and the canvas has none.
+  - S lights S and calls `scrollIntoView` on the S group. Q changes nothing.
+  - The harness rail pins at top 0 at desktop, so the container does not unstick it. At 390 it
+    leaves the viewport, Retro's named cost.
+  - `n=0` prints *No songs yet.* in paper beside a full, unlit rail, and `n=1` lights S alone.
+  - With `99 Problems` in the list there are 27 cells, `#` first and lit in the same 1px
+    terracotta ring at radius 6. The handlers are `#V`.
+  - No page errors.
+- **Builder**:
+  - `page-check.mjs Editorial 3`: four cards, no errors or warnings. Repertoire → `#repertoire`
+    scrolls, the rail letters change the section, overflow at 390 is 0, and the burger goes 1 →
+    11. The seam clips show gallery → repertoire as one ink ground and repertoire → the paper map
+    on a straight edge.
+  - **In the editor** (one script, deleted), card 4 with the device tabs: the gallery root's
+    bottom is the repertoire root's top to the hundredth at 1180, 768 and 390, both `rgb(20, 20,
+    20)`.
+  - **In the published tab at 1440** the rail pins at viewport top 0 after trusted clicks on I and
+    S. After V, the last group, the row's own foot carries it to −108, sticky's containing-block
+    rule (Grunge's −99).
+- **`FIELDS.repertoire` needed nothing.** Its one `in` row is `sets` at `[2]`, which the layout-4
+  block does not read, so no `reach.mjs` run was owed.
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `repertoire_arch_3` at three widths on both surfaces, six files.
+- **For the sweep**: the artist's 60% cap is Editorial's alone, and the twins still collapse the
+  title under a very long artist. It is a cross-template candidate for the designer's notes.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -1446,6 +1544,27 @@ and what this section did with it.)*
 - Gallery: *Field reach is measured* (CLAUDE.md) — the social rows, live, `[0]`.
 - Gallery: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
   end-of-pass sweep*) — `page-check.mjs Editorial 3`, plus the editor's joins.
+- Repertoire: *Where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1, *Settled in section 4*) — widened in place after `jump`, the rail's seam shared
+  whole.
+- Repertoire: *A widened block can need no `G` at all* (grunge/layout-3, *Settled in section 9*) —
+  ten `ed` arms.
+- Repertoire: *A Lime block paints its ground from Scheme 1 keys* (this plan, trap 1) — the band
+  `s.bg`, the panel `s.box1`, `ink` `s.ac`.
+- Repertoire: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — both rules,
+  `weight={2}` on the letter's.
+- Repertoire: *A head that must fit its measure is fitted to its widest word* (lime/layout-3,
+  section 9; editorial/layout-1, *Conventions*) — the head, on `titleWordEms`, in the panel's
+  `100cqi`.
+- Repertoire: *A twin's width-bound call is re-measured in the new face before it is inherited*
+  (editorial/layout-2, *Conventions*) — the artist's `flex: none`, capped at 60%.
+- Repertoire: *Noto's J descends 0.24em; a clipping box cuts it instead* (editorial/layout-2,
+  *Conventions*) — the title's and the artist's ellipsis clips.
+- Repertoire: *`get_variable_defs` resolves a node's mode* (memory: `figma-frame-reading`) —
+  Display/Title 32 / 25 / 23, not Lime's 36 / 28 / 26.
+- Repertoire: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on
+  the end-of-pass sweep*) — `page-check.mjs Editorial 3`, plus the editor's join and the popup's
+  sticky.
 
 ## Open questions
 
