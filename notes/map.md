@@ -68,7 +68,8 @@ another `notes/` file.
   Lime block (Grunge's and Editorial's too, widened) reads layout 3's `zoom`; Retro's layout 2 draws no zoom controls. **Layout 4 is the
   pager alone**: its whole gig list is one ticker (mustard under Retro, an olive `s.box1`
   capsule in a `s.stroke1` hairline under Lime, `#1A1A1A` in a 1px `#FF0000` ring with red
-  numerals under Grunge) at a `perPage` of **1**, so `page` is
+  numerals under Grunge, `#FFF9F2` dashed 7, 7 in terracotta at radius 10 under Editorial, whose
+  card and stat cells are dashed too and whose numerals are terracotta) at a `perPage` of **1**, so `page` is
   the only list state it reads — `sel` reaches nothing there, the way the testimonials' `cur`
   reaches nothing in their wall; its other state is layout 3's `zoom`, on the same radial
   raster, ring labels and zoom controls (QA, 2026-09-15) — and the arrows **wrap** at both ends

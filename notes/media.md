@@ -56,9 +56,12 @@ another `notes/` file.
   Lime the mark on both the sleeve and the tile is the frame's inset **glow** (a 34px `s.ac`
   inner shadow) rather than a ring, still a shadow on the scrim for the same reason; under
   Grunge it is a ring again, two reds on the same overlays — 1px of `s.ac` on the tile and 1px
-  of `s.stroke2` on the sleeve. It is also
+  of `s.stroke2` on the sleeve; and under Editorial it is a paper ring, 3px on the tile and 5px
+  round the sleeve, which is a **tilted print** there (Figma +2.33°) carrying layout 1's blush
+  tape. It is also
   the one layout whose section paints the page's whole band — Retro's cream with a
   checkerboard strip at each end, Lime's olive `s.box1` with a lime arc seam at its head and a square foot (the
   frame's dark foot arc met the gallery's head arc as a lens; user call, 2026-09-18), Grunge's
-  `#171716` with a red torn head and a black torn foot at 1440 and 768 and neither at 390 — and
-  the only one to draw those strips, arcs or tears.
+  `#171716` with a red torn head and a black torn foot at 1440 and 768 and neither at 390,
+  Editorial's taupe — its seat's `s.bg`, Scheme 2 — with no seam at all — and the only one to
+  draw those strips, arcs or tears.

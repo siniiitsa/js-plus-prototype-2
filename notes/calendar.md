@@ -130,7 +130,8 @@ another `notes/` file.
   (`calNoMailHint`, the `navGoneHint` precedent), naming whether the form is gone or holds no
   address; a typed address that is refused is left to `UrlInput`'s own line. The click asks
   `vm.calCheck` — step 3's name and email by `formErrors()`' rules — and a refusal marks the boxes
-  (`wErrs`, appended, cleared per box: Retro's hairline doubled inside, Lime's 2px of `s.tx`),
+  (`wErrs`, appended, cleared per box: Retro's hairline doubled inside, Lime's 2px of `s.tx`,
+  Editorial's 2px of solid `s.stroke2` terracotta with the idle ink dash gone),
   prints `vm.calWizard.prompt` and, from the foot pill, walks to step 3. A valid send (`wSent`)
   swaps the wizard card's parts for a confirmation printing the address in plain text, with
   *Start again*, which keeps every answer and opens step 1; the pills are spans until then. The
@@ -145,3 +146,5 @@ another `notes/` file.
   the three-level stack — `s.box1` rows under the `s.tx` card on a `s.box2` panel — and
   Grunge's, which widens that block, is the same stack one binding over: `#1A1A1A` `s.box1`
   rows under the white card (ringed 1px in `s.stroke2`) on a `#0E0E0E` `s.box3` panel.
+  Editorial's is Lime's stack on Lime's keys: `#FFF9F2` `s.box1` rows dashed in terracotta under
+  the ink card on the `#EDE6DC` `s.box2` panel, every one square.

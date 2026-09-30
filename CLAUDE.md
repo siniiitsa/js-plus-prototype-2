@@ -222,8 +222,9 @@ mutated through a single `patch()` helper.
   pricing on 2 and header, repertoire, form and footer on 3; at layout 2 media and the calendar on
   2 and the form on 4; at layout 3 the gallery on 2, the map on 4 and the header on 3, its frame's
   Scheme 8 differing from 3 only in tag seats the two-seat system never reads
-  (plans/editorial/layout-3.md, decision 1, user call, 2026-09-25) — so a design with no row
-  stands on Scheme 1. **The footer's seat is read off the page**, since it has one design: at
+  (plans/editorial/layout-3.md, decision 1, user call, 2026-09-25); at layout 4 the header,
+  bio, gallery and repertoire on 3, the media on 2 and the testimonials on 4 — so a design with
+  no row stands on Scheme 1. **The footer's seat is read off the page**, since it has one design: at
   `sectionVm`'s head a footer takes `SCHEMES_OF[theme][page].footer` ahead of its own design's
   row, `page` being the header's design, so layout 3's page stands it on 2 (taupe) where layouts
   1 and 2 keep row 0's 3; a caller that passes no `page` — the layout picker's thumbnail, the
@@ -237,8 +238,8 @@ mutated through a single `patch()` helper.
   `Z.dev` through `DEV_SEAT` (a 1 needs no entry in `schemes`; it falls through to the theme),
   and every caller's `Z` names its width, so the published desktop, the picker's thumbnails and
   the modal's cards take the desktop seat. Two consequences: under Editorial `s.bg` is the
-  section's own ground, not the page behind it (inert on layouts 1, 2 and 3, which have no seams;
-  the layout-4 tears read it as a neighbour's colour, a later pass's trap), and the reads outside
+  section's own ground, not the page behind it (inert, since no Editorial page draws a seam — a
+  Lime or Grunge seam reads `s.bg` as a neighbour's colour, which a seat would change), and the reads outside
   `sectionVm` — the page gutter, the published `documentElement`, the picker's dots — stay the
   theme's, Scheme 1. **A card on another scheme seats its section on the card's**: layout 2's
   media panel and calendar card are Scheme 2 cards on the page's paper, so `s.bg` there is the
@@ -255,7 +256,10 @@ mutated through a single `patch()` helper.
   Scheme 3 seat, so a binding's *collection* is read as well as its token — and so do the
   gallery's tile rings under the taupe seat; the audio card reads `[2]`, the repertoire's three
   sets `[4]` / `[2]` / `[3]`, pricing's featured row and the map's panel `[3]`, and the
-  testimonials' three registers `[1]` / `[3]` / `[4]`. Layout 1's one such site (pricing's Book
+  testimonials' three registers `[1]` / `[3]` / `[4]`. Layout 4's header reads `[1]` for its
+  paper capsule, links, pill and chips and `[4]` for its seal, the bio's and pricing's chips
+  `[1]`, the gallery's arrow discs `[4]`, the map's viewport and the calendar's Back pill `[3]`,
+  and the testimonials' second cell `[1]`. Layout 1's one such site (pricing's Book
   pills, Scheme 1 inside Scheme 2) predates the key and stays named literals.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
@@ -266,10 +270,9 @@ mutated through a single `patch()` helper.
   never discards copy. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
   `in` names Retro, Lime, Grunge and Editorial only (Grunge's row measured over its four fitted
-  cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over three fitted
-  cards and one placeholder, 2026-09-25, card 2 losing the placeholder's `showBadge` and
-  `badgeText` since its frame draws no seal and card 3 re-measured unchanged, so card 4's pass
-  re-measures its card), so
+  cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over its four
+  fitted cards, 2026-09-30, card 2 having lost the placeholder's `showBadge` and `badgeText`
+  since its frame draws no seal, and cards 3 and 4 re-measured unchanged), so
   Pop's undesigned header family carries no note. The one exception is `cardLine` (JP-061):
   its `'*': []` row marks Retro and Pop "Not shown in this template", as `FIELDS.media.cta`'s
   row does, because only the three `s.limeTree` blocks read it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and

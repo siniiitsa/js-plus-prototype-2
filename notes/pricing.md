@@ -94,7 +94,9 @@ another `notes/` file.
   3's own seat, reused because a rule has that outline's job of reading against the page (under
   Lime the rule is `s.ac` read directly, layout 3's `tierRow`-not-read rule, and under Grunge
   `s.stroke2`, `#FF0000`, in the same widened block; an inset shadow
-  rather than a border so the frame's row height holds) — and
+  rather than a border so the frame's row height holds; under Editorial it is 1px of
+  `s.stroke2` terracotta dashed 10, 10, a `DashRule` on the row, and the tag chips' leaked
+  hairline is dropped, invisible on paper) — and
   that rule is the one thing in the branch that **bleeds**: the row cancels the root's padding and
   puts the identical value straight back, so the border reaches the page edges and the content
   keeps the section's column, which is the frame's 56 / 30 / 10 inset because `padX` is now that
@@ -106,6 +108,7 @@ another `notes/` file.
   stays raw for the filter matching, and the features as its coloured ones, one per feature over
   **`vm.tierFeatSeats`** (`vm.chips`' construction, a seat per index rather than a hue per
   feature; under Lime the seats are the layout-4 header's own chip pair, `s.box1` / `s.ac` by
-  parity, inlined in the block). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
+  parity, inlined in the block, and under Editorial `s.onScheme[1].chips` by parity, blush and
+  terracotta, the pair the frame names outright). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
   — the unit with its leading slash dropped — stands above the numeral where the frame writes
   SET / PROJECT, which is one section-wide word against the frame's different one per row.

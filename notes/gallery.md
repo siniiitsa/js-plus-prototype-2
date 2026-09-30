@@ -59,7 +59,13 @@ another `notes/` file.
   overlay, not a border, so no photograph is inset) and is 4px on every 390 tile, not live-gated
   because the canvas draws the frame's own ringed fourth thumb. Grunge widens that block whole:
   its ring is black (Lime's own `s.bg`, so the 1 / 3 / 4 mechanism is unchanged), its discs are
-  `#0E0E0E`, and its 390 pills are radius 5 with no shadow. Its
+  `#0E0E0E`, and its 390 pills are radius 5 with no shadow. Editorial widens it as well: its
+  thumbs are square in a terracotta `s.ac` ring, 4px and 8 on `active` at 1440 and 768 and 4 on
+  every 390 tile (Lime's mechanism at its own weights, scaled through `u()`); its discs and 390
+  pills are square `s.onScheme[4]` buttons, `#BE6346` round ink arrows with no shadow; and its
+  spotlight is a tilted print in a `#1D1D1D` mount under a drop shadow, a centred cover where
+  the twins anchor it at the top, since the frame's node holds our own seed (the thumbs keep the
+  top anchor, the frame's strip being Retro's placeholders). Its
   **390 master runs its strip off its own page** (six fixed 121px tiles in a 370 frame, so three
   and a sliver show and the one its spotlight is on does not), so there the three visible tiles are
   a **sliding window** on layout 1's formula, `from = clamp(active - 2, 0, 4)` — not live-gated, so

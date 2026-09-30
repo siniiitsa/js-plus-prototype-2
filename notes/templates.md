@@ -106,21 +106,23 @@ another `notes/` file.
   helpers additive props — `NavBar` takes `links={{ gap, cap }}` (the capsule's fixed 23 gaps,
   the type clamped to fit) and `mark`, and `Wordmark` takes `gap` — and `SealBadge`'s Lime
   `scheme` a Grunge arm at 4, a black disc with red marks.
-  **Editorial is designed at layouts 1, 2 and 3** (`plans/editorial/layout-1.md` … `layout-3.md`;
-  the Figma mode is called *Sienna Vale*, which is also its frames' mock artist). Its pages are
-  the fourth variant of the same eleven component sets — Lime's layout-1 tree in every section
-  at layout 1, its layout-2 tree at layout 2, its layout-3 tree at layout 3 — so it has **no
-  blocks of its own** either: each Lime layout-1, layout-2 and layout-3 block is widened to
+  **Editorial is designed at all four of its layouts** (`plans/editorial/layout-1.md` …
+  `layout-4.md`; the Figma mode is called *Sienna Vale*, which is also its frames' mock artist).
+  Its pages are the fourth variant of the same eleven component sets — Lime's layout-1 tree in
+  every section at layout 1, its layout-2 tree at layout 2, its layout-3 tree at layout 3 and its
+  layout-4 tree at layout 4 — so it has **no blocks of its own** either: every Lime block, at
+  all four layouts, is widened to
   **`s.limeTree`** — Lime, Grunge and
   Editorial, one group flag so no block spells a third name — and Editorial's deltas sit behind
   **`s.editorial`**, as a `const ed = s.editorial` and arms or a third arm at the head of the
   block's `G`, the twins' arms byte-identical. A site Editorial does not share keeps
-  `(s.lime || s.grunge)`: at layout 1 `LogoMark`'s globe and `SealBadge`'s Lime disc, each with
-  an `s.editorial` arm ahead of it, and `Photo`'s backdrop, which takes Editorial's fitted cards
-  1 and 3 alone (card 2's photograph is no backdrop, card 4 a placeholder); at layout 2 the
-  gallery caption's fill alone, whose other arm (`s.chips[0].bg`) is Editorial's own binding;
-  at layout 3 none — the gallery's two layout-3 ternaries still spelling the pair stand behind
-  an `ed` arm; the layout-4 blocks keep their pair, being a later pass's. It is **the first light page**
+  `(s.lime || s.grunge)`, and one is left: layout 2's gallery caption fill, whose other arm
+  (`s.chips[0].bg`) is Editorial's own binding. The gallery's two layout-3 ternaries still
+  spelling the pair stand behind an `ed` arm; layout 1's three shared helpers are `s.limeTree`
+  now — `LogoMark`'s globe behind an `s.editorial && !s.v3` sparkle arm, `SealBadge`'s Lime disc
+  behind an Editorial arm that steps aside at `scheme` 4, and `Photo`'s backdrop outright — and
+  every layout-4 block is `s.limeTree`, its seams the twins' own arms (`ArcEdge` `!ed && …` in
+  Lime's, `TornEdge` Grunge's). It is **the first light page**
   — paper, taupe and ink bands meeting on straight edges, no seams, arcs, tears or band grain —
   and six of its layout-1 sections stand on another scheme, resolved in `sectionVm` (the
   per-section scheme rule above).
@@ -152,7 +154,8 @@ another `notes/` file.
   the refused box above; and where they draw one it is followed — the repertoire's pager marks
   its page in a terracotta ring (`Pager`'s Editorial arm; Grunge's frames mark none) and the
   map's by its ink numeral alone. That decoration — tape, prints, sparkles, the seal — is layout
-  1's (layout 3's bio borrows the tape and a sparkle). **Layout 2 is a paper page with the dashed rule alone**: no tape, leant print, sparkle or
+  1's (layout 3's bio borrows the tape and a sparkle, and layout 4's media and gallery the tape
+  and the prints). **Layout 2 is a paper page with the dashed rule alone**: no tape, leant print, sparkle or
   seal but the footer's; `DashRule` on nine sections (all but the gallery), 10, 10 on cards and
   rows, 5, 5 on the repertoire and the testimonials' tiles, 6, 6 on the form's boxes and 10, 11
   round the bio's card; square cards where the twins round theirs; and a terracotta-ringed arch
@@ -183,8 +186,44 @@ another `notes/` file.
   measured per site against the frame's `absoluteRenderBounds` and lifted only where it shows —
   0.09em on the calendar's numeral and month (the J of JUNE) and pricing's numeral, 0.07em on
   the map panel's title, 0.08em on the form's head and, as baseline-aligned rows lifted whole,
-  the form's price row (0.09em) and the testimonials' numeral row. Its header family is
-  `'editorial'`: four cards, **Hero, Feature spread and Inset Hero fitted** — Hero is `HeaderV0`'s Lime block, widened (an ink capsule on
+  the form's price row (0.09em) and the testimonials' numeral row. **Layout 4 is ink, taupe,
+  paper and terracotta on straight edges**: the header's photograph fades to ink over the ink bio
+  (Scheme 3), then the taupe media band (2), the gallery and the repertoire on one ink ground
+  (3), the map, pricing, calendar and form on the paper page, and a terracotta testimonials
+  sheet (4). The root paints every seat, so the Lime blocks' own grounds read the seat's `s.bg`
+  where Lime's read Scheme 1 keys (the bio's band is `s.ac` under Lime), and the testimonials
+  block paints no sheet, Grunge's route for the opposite reason. No seam anywhere — `ArcEdge`
+  stays Lime's and `TornEdge` Grunge's — so the media meets the gallery taupe into ink, straight,
+  where the frames stand the video between. Layout 1's language comes back on two sections: the
+  media sleeve and the gallery spotlight are **tilted prints** (Figma +2.33° and +1°, so CSS
+  `rotate(-2.33deg)` and `rotate(-1deg)`, spaced by the unrotated slot at 1440 and 768 and by the
+  rotated box at 390), the sleeve bordered 5px paper under layout 1's blush **tape** and clipped
+  at 390 by its column, the spotlight in a `#1D1D1D` mount under the drop shadow and clipped by
+  its row at 1440 and 768; and the header's avatar is an **arch** in a 3px blush ring. **Every
+  card is square** but the map card (6) and its ticker (10). `DashRule` on five sections: the
+  repertoire's rows 7, 7 in paper 56% (the letter heads 2px); the map's card, stat cells and
+  ticker 7, 7 in terracotta; pricing's row rule, the form's head rule and its underline boxes
+  10, 10 in terracotta; the calendar's panel 5, 5 in ink (none at 390), its wizard card, idle
+  chips and boxes 10, 10 in ink and its date and package cards 10, 10 in terracotta; and the
+  form's step rules 2, 2 in ink. Effects are four backdrop blurs, of which only the bio's glass
+  reads, and the print's shadow; every Lime glow is a ring (the sleeve's 5px paper border, tile
+  `at`'s 3px paper ring, the gallery thumbs' 4px terracotta ring, 8 on `active` at 1440 and 768).
+  Nested nodes read `s.onScheme`: the header's capsule, links, pill and chips `[1]` and its seal
+  `[4]`, the bio's and pricing's chips `[1]`, the gallery's square arrow discs `[4]`, the map's
+  viewport `[3]`, the calendar's Back pill `[3]` and the testimonials' second cell `[1]`; the
+  media head is `SIENNA_MEDIA`. Every display head is fitted to its widest word (`vm.titleWordEms`,
+  Noto's 540 ems at designs 2 and 3; the header's name on `vm.cardNameEms`) where the twins'
+  `break-word` heads split a long word in Noto, and the repertoire's artist stops at 60% of its
+  row where the twins let it take the title's room. Noto's floor is lifted 0.09em on the map's
+  numerals and the calendar's stacked display lines, 0.08em on the form's head and ENQUIRE and
+  the testimonials' head, and 0.07em on pricing's numeral and the form's labels. Its live
+  states: the repertoire's lit rail cell terracotta lettered ink, the map's lit pin the marker's
+  ink disc in a paper ring, its 120 mi ring redrawn terracotta at .3 where the frame's ink
+  vanishes on the raster, and the refused boxes, which drop their dash — the wizard's for 2px of
+  solid terracotta, the form's for a 2px ink underline. As on Grunge's page, the desktop form
+  has no instance (the main component `725:3049` is the master), and every form master prints
+  "KAI MERCER" where ours keeps the shared "Contact Us". Its header family is
+  `'editorial'`: four cards, **all four fitted** — Hero is `HeaderV0`'s Lime block, widened (an ink capsule on
   `s.box3` with the sparkle mark, an arch portrait card, a one-tone title fitted to its column
   in `notoEms`, chips in terracotta and blush), and Feature spread `HeaderV1`'s (an outlined
   terracotta capsule on paper with Grunge's fixed 18 gaps, the arch photograph — its 1440 `CROP`
@@ -193,7 +232,11 @@ another `notes/` file.
   tile), and Inset Hero `HeaderV2`'s (a square well with one floor fade, ringed in Scheme 1's
   ink; a blush Scheme 5 capsule ringed ink round ink links at Grunge's fixed 18 gaps; a blush
   Book pill on an ink disc; a one-tone paper title over Scheme 1's blush and terracotta chips;
-  and an ink arch card in a terracotta ring round an arch portrait) — and **card 4 is a
-  placeholder** that renders and publishes Retro's `HeaderV3` in its Scheme 1 tokens, checker
-  ribbon and all, so its family is not closed. The footer is layout 1's on every page, on ink
-  but for layout 3's, which stands on taupe.
+  and an ink arch card in a terracotta ring round an arch portrait), and Stacked `HeaderV3`'s (a
+  paper capsule over the ink floor — `NavBar`'s additive `fill`, `s.onScheme[1].bg` — with
+  Lime's globe, since `LogoMark`'s sparkle stops at layout 3, and the links at Grunge's fixed 23
+  gaps, `navGapEm` 0 at `d >= 1`; the arch avatar; a one-tone paper name fitted to its column;
+  the photograph **not** mirrored, Editorial's fill being `FILL`; and Lime's disc seal on
+  `s.onScheme[4]`, a terracotta disc with ink marks) — so every card in the setup modal lays out
+  a whole Editorial page and the family is closed (`plans/editorial/`). The footer is layout 1's
+  on every page, on ink but for layout 3's, which stands on taupe.

@@ -106,14 +106,14 @@ another `notes/` file.
   the same `vals`, `errs`, `sent`, `<a href="mailto:">` and *Write another*, so its whole
   live surface is four handlers and the only line outside the branch is one comment. It
   is a display head over a 4px mustard rule (1px of `s.stroke1` under Lime, 1px of
-  `s.stroke2` under Grunge), a small-caps
+  `s.stroke2` under Grunge, 1px of `s.stroke2` dashed 10, 10 under Editorial), a small-caps
   line under it (`FIELDS.form.sub`, layout 4 alone, emptiable),
   and then two columns: the boxes over a mustard submit pill (pale `s.tx` under Lime, white
-  under Grunge), and the artist's steps numbered
+  under Grunge, ink under Editorial), and the artist's steps numbered
   01 / 02 / 03 beside them. **Its head, that line and its pill seed the frame's own copy**
   (JP-054, user call, 2026-09-23; Retro's frame and Lime's agree, so no theme gate — Grunge's
-  masters print the component's unoverridden "KAI MERCER" and keep the shared seed, a named
-  diff and the user's call):
+  and Editorial's masters print the component's unoverridden "KAI MERCER" and keep the shared
+  seed, a named diff and the user's call, JP-081's reply):
   `FORM_HEADING_4` "Contact Us" joins `HEADING_4`, `sub` defaults to `FORM_SUB_4` "Enquire"
   (the line printed `s.brand` until then), and `button` falls back to `FORM_BTN_4` "Check
   Availability" at this layout and "Book Now" at the others — each resolved in `sectionVm`
@@ -152,4 +152,13 @@ another `notes/` file.
   colour rather than weight alone — 2px of `s.tx`, since the idle ring is already lime. Grunge
   widens that block: the head rule and the box ring are 1px of `s.stroke2` (`#FF0000`, the
   box ring's binding on both templates, Lime's `stroke2` being its accent), and Lime's 2px of
-  `s.tx` is white against the idle red, so the refusal needed no arm.
+  `s.tx` is white against the idle red, so the refusal needed no arm. Editorial widens it
+  again with the frame's own dress: the head's rule is 1px of `s.stroke2` terracotta dashed
+  10, 10 under a 42 pad; every box is an **underline** — paper, square, padded 12 / 0 so the
+  placeholder stands on the label's edge, with a bottom-only 10, 10 terracotta dash (a
+  `DashRule` on the field's column) — and a row's two boxes stand 44 apart; the step rules are
+  1px of ink dashed 2, 2 and the step squares square; the submit is the ink `s.tx` pill with a
+  paper label and disc. A refused box drops its dash for a solid 2px **ink underline** (`inset 0
+  -2px 0`, layout 1's shape in layout 3's ink), colour, weight and dash at once, and never a
+  ring, since the idle mark has one edge. Its head fits its widest word at every width, in its
+  own div's `100cqi` — layout 3's desktop fit, and every layout-4 head's under Editorial.
