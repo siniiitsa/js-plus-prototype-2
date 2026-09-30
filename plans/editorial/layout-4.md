@@ -2403,7 +2403,7 @@ and what this section did with it.)*
    3's terracotta at .3.
 4. **The header's location dot is `box/2` `#2A2A2A` on the ink floor** — all but invisible, as the
    frame draws it. Default: follow the binding and name it; the alternative is the twins' visible
-   dot in another key.
+   dot in another key. *Settled in section 1: followed, `s.box2`, and named.*
 5. **The pricing tag chips' hairline** is Lime's unbound `#F2FFD0` at 15%, invisible on paper.
    Default: drop it where it does not show (CONVENTIONS A); the alternative, an ink `s.stroke1`
    ring, draws a line the frame does not. *Settled in section 7*: dropped, the default.
@@ -2423,7 +2423,53 @@ and what this section did with it.)*
 
 ## Notes for the designer
 
-*(Gathered in the sweep from the open questions, layout 1's shape. Candidates so far: the missing
-desktop form instance; the unoverridden "Kai Mercer" copy; the `Theme=Lime` names on the 768 and
-390 Tags instances; the chips' lettering through other schemes' tag inks; the gallery's leftover
-`Vector 1` arc; the leaked `#F2FFD0` hairline and `#2E3928` glass; the bio's 1px `#000000` ring.)*
+*(The open questions above that are worth telling the designer, and what the sections flagged for
+this note, gathered by the sweep into one note to forward, in layout 1's shape. Each is shipped as
+described; where it says "one line", the other answer is a one-line change. Layouts 1's, 2's and
+3's notes still stand — the stand-in face first.)*
+
+1. **The desktop enquiry form is missing from the layout-4 page again.** The 1440 page runs
+   pricing → Book Us → testimonials with no form between, as Grunge's does, so the page is fitted
+   to the main component (`725:3049`) at its own defaults. If an instance is placed later, the
+   form's desktop numbers are re-read against it. *(1)*
+2. **The frames print the component's mock artist.** The header, the bio card, the media player's
+   byline and the form's head say "Kai Mercer" / "KAI MERCER", the defaults unoverridden. The page
+   prints the artist's own name everywhere but the form, whose head keeps the shared "Contact Us"
+   seed on every template (JP-081's reply). *(2)*
+3. **Three bindings read in one scheme and not in the next** — layout 3's note 1 again.
+   - The map viewport's outer 120 mi ring binds `sem/bg` at 30%, which Scheme 3 resolves to ink on
+     the dark map raster: it measures 2 levels in 255 off its surround on the frame's own render,
+     gone, where the 60 and 30 mi rings (the same ink at 50% and 80%) still read. The page redraws
+     that one ring in terracotta at the frame's 30% and 4, 4 dash; the other two are followed.
+     Layout 2's Editorial map stands the same ink rings on the same viewport and the page follows
+     all three there. One line to follow it here too. *(3)*
+   - The header's location dot binds `box/2`, `#2A2A2A` on the `#141414` floor, and all but
+     vanishes. Followed. One line to take the twins' visible dot instead. *(4)*
+   - Chips inked through another scheme's tag: the header's fourth and sixth chips, the bio's
+     fourth at 768 and 390 and pricing's fourth feature pill are lettered ink through
+     `scheme/4/tag1/text` or `sem/tag/6/text` where their seat's own ink is paper. The page
+     letters every chip in its own seat's ink.
+4. **Lime's leaks ride the Editorial variant, all invisible.** The pricing tag chips' hairline is
+   Lime's unbound `#F2FFD0` at 15% (on paper, so dropped); the bio card's 1px `#000000` ring (on
+   ink) and its glass's `#2E3928` at 1% are drawn and paint nothing; the gallery keeps Lime's
+   `Vector 1` arc at 1440, ink on the ink band (not drawn); the seal's name is set in Lime's unbound
+   Bebas Neue Bold (the page sets it in its own face); and the 768 and 390 `Tags` instances are named
+   `Theme=Lime` though their colours are Sienna Vale's. *(5)*
+5. **The gallery strip is Retro's placeholders a fourth time.** The spotlight holds Editorial's own
+   photograph, but the six thumbnails are Retro's shared set; the page's strip is the seven
+   pictures of Editorial's shoot (layouts 1–3's note).
+6. **The demo face drops a digit again, and the pill still says "Star Enquiry".** Pricing's "£450"
+   renders "£ ✱50" and the map's "48" "✱8", the digit drawn as Fontspring's DEMO mark; the page
+   prints both in Noto. The pricing pill reads "Star Enquiry", where the page says "Start
+   Enquiry". The 390 header's Book Now label is Fisterra **Bold** where 1440 and 768 set Regular,
+   a hand-scaled slip; the page sets Regular.
+7. **Two heads fill their 768 measure in the demo face and wrap in Noto.** "Snaps from the night"
+   (the gallery) and "Distances we'll Travel" (the map) set one line each in the 708 column at
+   73; Noto needs two, so the 768 gallery stands at 835 against 771 and the map at 1081 against
+   1055. The page keeps the ramp's size and names the extra line rather than shrinking the head
+   to force one. Every head on the page is fitted to its widest word instead, so an artist's long
+   word shrinks the head and never breaks inside it.
+8. **A long artist name in the repertoire.** The frames keep the artist whole and ellipsize the
+   title, which in Noto left a 390 title 18 wide beside "Christopher Featherstonehaugh". The page
+   stops the artist at 60% of the row under Editorial; Lime's and Grunge's rows still give a very
+   long artist the whole row. Worth a call on whether every template should cap it.
