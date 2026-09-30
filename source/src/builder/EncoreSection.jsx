@@ -12569,14 +12569,34 @@ function Repertoire({ s }) {
     //  · Stones Crush stands in as Anton: the head, the titles and the artists
     //    are `faced` / `facedLh` and uppercase. The rail's radius (4) and its
     //    Inter 12 are `s.radiusChip` and `s.bodySm` already.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:73103 · 971:9600 · 977:13467, in the 964:73098 /
+    // 971:9595 / 977:13462 Sections) widens it again — Lime's tree node for
+    // node less its foot arc — on the Scheme 3 seat, so `s.*` is the ink
+    // band's and the block's Scheme 1 grounds become the seat's:
+    //  · **the band is `s.bg` ink and the panel `sem/box/1` `s.box1` #1D1D1D,
+    //    square** (Lime's `s.ac` band and `lime3` at radius 60 would paint it
+    //    terracotta and lime);
+    //  · **`sem/text/1` is terracotta** (`s.ac`: the head, the titles, the
+    //    rail's rings and letters, the lit cell's fill) and **`sem/text/2`
+    //    paper** (`s.tx`: the sub, the group letters, the artists), so the lit
+    //    cell is lettered `sem/bg`, the band's ink — Lime's cut-out rule in
+    //    Sienna Vale's inks;
+    //  · **every rule is a `DashRule`**, 7, 7 in `sem/stroke/1` paper 56% at
+    //    the foot, 2px under a group letter and 1px under a row;
+    //  · the titles are **Display/Title 32 / 25 / 23** at 1.1 (Lime's 36 / 28
+    //    / 26), which is the 55 / 48 / 45 row and the 506 / 564 / 626 instance;
+    //  · the 390 Section pads **40** below (859 = 30 + 789 + 40), and no
+    //    seam: Lime's foot arc is not drawn.
+    if (s.limeTree) {
       const grunge = s.grunge
-      const lime3 = grunge ? '#F52E34' : '#CCFA61' // Scheme 3 `sem/box/2` / `sem/box/1` — the panel
-      const ink = s.bg        // Scheme 3 `sem/text/1` (= `sem/text/2` under Lime)
-      const ink2 = grunge ? s.tx : ink // Scheme 3 `sem/text/2`
+      const ed = s.editorial
+      const lime3 = ed ? s.box1 : grunge ? '#F52E34' : '#CCFA61' // Scheme 3 `sem/box/1` / `sem/box/2` / `sem/box/1` — the panel
+      const ink = ed ? s.ac : s.bg // Scheme 3 `sem/text/1` (= `sem/text/2` under Lime)
+      const ink2 = grunge || ed ? s.tx : ink // Scheme 3 `sem/text/2`
       const rule = `${ink}26` // `sem/stroke/1` — the ink at .15
-      const upper = grunge ? { textTransform: 'uppercase' } : null
-      const titleSize = faced(s, desk ? u(36) : tab ? '28px' : '26px') // Display/Title
+      const upper = grunge || ed ? { textTransform: 'uppercase' } : null
+      const titleSize = faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px') // Display/Title
       const bodyLg = { fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls, color: ink2 }
 
       const railCell = (l) => {
@@ -12592,7 +12612,7 @@ function Repertoire({ s }) {
               borderRadius: s.radiusChip,
               boxShadow: `inset 0 0 0 ${u(1)} ${ink}`,
               background: l === at ? ink : 'transparent',
-              color: l === at ? s.ac : ink,
+              color: l === at ? (ed ? s.bg : s.ac) : ink,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls,
               cursor: s.live && on ? 'pointer' : undefined,
@@ -12624,24 +12644,38 @@ function Repertoire({ s }) {
               {/* The type on the box itself: a bare div round a span carries
                   the root font's strut and comes out 24 at every width where
                   the frame's `lh` is the letter's own line, 24 / 23 / 23. */}
-              <div style={{ ...bodyLg, boxShadow: `inset 0 -${u(2)} 0 ${rule}` }}>{g.letter}</div>
+              <div style={{ ...bodyLg, ...(ed ? { position: 'relative' } : { boxShadow: `inset 0 -${u(2)} 0 ${rule}` }) }}>
+                {g.letter}
+                {ed && <DashRule dash={7 * z} weight={2} colour={s.stroke1} />}
+              </div>
               {g.songs.map((sg) => (
                 <div key={sg.n} style={row(u(6), {
-                  padding: `${u(10)} 0`, boxShadow: `inset 0 -${u(1)} 0 ${rule}`,
+                  padding: `${u(10)} 0`,
+                  ...(ed ? { position: 'relative' } : { boxShadow: `inset 0 -${u(1)} 0 ${rule}` }),
                   justifyContent: 'space-between', alignItems: 'baseline',
                   overflow: 'hidden',
                 })}>
+                  {ed && <DashRule dash={7 * z} colour={s.stroke1} />}
                   <span style={distressed(s, {
                     fontFamily: s.display, fontSize: titleSize, lineHeight: facedLh(s, 1.1),
                     letterSpacing: s.dls, color: ink, minWidth: 0,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     ...upper,
+                    // Noto's J descends 0.24em, and the ellipsis clip flattens
+                    // its hook: the pad moves the clip and no box.
+                    ...(ed ? { paddingBottom: '0.1em', marginBottom: '-0.1em' } : null),
                   })}>{sg.title}</span>
                   {sg.artist && (
                     <span style={{
                       fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
                       letterSpacing: s.dls, color: ink2, flex: 'none', whiteSpace: 'nowrap',
                       ...upper,
+                      // Noto's capitals are wider than the twins' faces: a
+                      // 29-letter artist left the 390 title 18 wide where
+                      // Lime's and Grunge's keep 111–123, so Editorial's artist
+                      // stops at 60% of the row (the seed's widest, EARTH, WIND
+                      // & FIRE at 390, is 51%) and ellipsizes past it.
+                      ...(ed ? { maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis', paddingBottom: '0.1em', marginBottom: '-0.1em' } : null),
                     }}>· {sg.artist}</span>
                   )}
                 </div>
@@ -12654,20 +12688,25 @@ function Repertoire({ s }) {
       return (
         <div style={{
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-          background: s.ac, color: ink, position: 'relative',
+          background: ed ? s.bg : s.ac, color: ink, position: 'relative',
           padding: `${u(s.mob ? 30 : 100)} `
                  + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
-                 + `${u(s.mob ? (grunge ? 60 : 100) : 150)}`,
+                 + `${u(s.mob ? (grunge ? 60 : ed ? 40 : 100) : 150)}`,
         }}>
           {grunge
             ? <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 52.8 * z : tab ? 44 : 43} colour={s.bg} />
-            : <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />}
+            : !ed && <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />}
           <div style={col(u(40), {
-            background: lime3, borderRadius: u(60),
+            background: lime3, borderRadius: u(ed ? 0 : 60),
             padding: s.mob ? `${u(40)} ${u(30)}` : u(tab ? 50 : 60),
+            ...(ed ? { containerType: 'inline-size' } : null),
           })}>
+            {/* Editorial's head shrinks only when its widest word would outrun
+                the panel: Noto's capitals are wider than the frame's face, and
+                a 13-letter word ran 31 past the 390 column. */}
             <h2 style={distressed(s, {
-              margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+              margin: 0, fontFamily: s.display,
+              fontSize: faced(s, ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
               lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: ink,
               ...upper,
             })}>{s.title}</h2>
