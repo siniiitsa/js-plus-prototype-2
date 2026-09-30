@@ -201,7 +201,8 @@ and its mailto (JP-052, JP-053), the form's copy (JP-054) and the page-ground se
 [`grunge/layout-4.md`](./grunge/layout-4.md); this is the first page where every section has a
 block, the gallery included. The footer is layout 1's (`NVAR.footer` is 1). Grunge's seams are
 `TornEdge`'s path, not the arcs, so Lime's arc bullets (media's open questions 1 and 2, the
-gallery's open question 5) name what Grunge declined rather than inherited.
+gallery's open question 5) name what Grunge declined rather than inherited. Editorial's page
+draws no seam at all, so both twins' seam bullets name what it declined.
 
 | Section | Bullets | Leaned on in Editorial (layout 4) |
 |---|---|---|

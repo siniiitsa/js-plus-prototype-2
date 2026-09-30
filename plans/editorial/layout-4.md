@@ -1,5 +1,8 @@
 # Editorial layout 4 — section-by-section plan
 
+*Closed 2026-09-30: all ten sections fitted and the end-of-pass sweep run — see* Learned on the
+end-of-pass sweep *under* Conventions. *The prose below is the plan as written, in its tense.*
+
 This is the working checklist for bringing **layout 4** of the Editorial template up to its Figma
 designs, the way [`../lime/layout-4.md`](../lime/layout-4.md) did for Lime and
 [`../grunge/layout-4.md`](../grunge/layout-4.md) for Grunge. It runs one unit per session, all three
