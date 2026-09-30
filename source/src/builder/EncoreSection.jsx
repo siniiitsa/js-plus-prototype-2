@@ -7772,24 +7772,69 @@ function Media({ s }) {
   // #000000, and the render is black: it is the page below, `s.bg`. At 390
   // the band draws none; the bio owns the tear between them, in this band's
   // #171716 (its section 2).
-  if (s.v3 && (s.lime || s.grunge)) {
+  //
+  // ── Editorial (964:73053 · 971:9548 at 768 · 977:13294 at 390, in the band
+  // 964:73047 · 971:9547 · 977:13288) ───────────────────────────────────────
+  // Lime's tree again (the paired diff: 57 / 57 / 57 nodes, 55 / 54 / 55 in
+  // common) in Sienna Vale's Scheme 2, the band seated on taupe
+  // (SCHEMES_OF.Editorial[3]), so under `ed` the band, the tiles' well and
+  // the play glyph are the seat's `s.bg` (plans/editorial/layout-4.md, trap
+  // 1), and the track is `sem/box/2` #D0BCB2, `s.box2`. Every other ink is
+  // Lime's key: `s.ac` is the seat's paper, `s.tx` its ink. The head's
+  // Section is Scheme 1 and binds `sem/media`, the blush with no vm key
+  // (trap 3). It draws neither arc and takes two nodes Lime's lacks:
+  // - The sleeve is a tilted print, 308 × 411 / 317 / 370 × 302.09 at Figma
+  //   +2.33° (CSS −2.33) round its centre, square, in a 5px paper
+  //   `sem/text/1` inside ring and no effect. It carries layout 1's tape
+  //   (`Frame 210`, `Tape`'s `active/bg` default, blush under the seat) at
+  //   (60.59, −43.47) and Figma −5.33° in the sleeve's own frame, so its
+  //   centre is (160.54, −6.02) there, turned CSS +5.33 inside the sleeve
+  //   (layout 1's *a tape inside a leant print*). The sleeve does not clip,
+  //   so the tape rides over its top edge. At 1440 and 768 the column spaces
+  //   the sleeve by its unrotated slot (x 47.76 / 49.67, y 62.44 / 62.4 are
+  //   the centre-turned origins of a 56 · 56 slot). At 390 it spaces it by
+  //   the rotated box, 316.88 for 302.09, which is the 9.91 the instance
+  //   gains on Lime's 836, less a shorter now-playing block. So the 390
+  //   sleeve gives it back as a block margin of W·sin θ / 2 less the
+  //   H·(1 − cos θ) / 2 term, 2% of the column a side.
+  // - Tile `at` is marked by a 3px paper `sem/text/1` inside ring, not a
+  //   glow. Every tile is square, padded 20.
+  // Type: the head is Display/LG (`s.dispLg`, 97 / 73 / 48). The instance's
+  // 768 and 390 masters carry `Device: Tablet`, so its sizes there are the
+  // 768 ramp's: Display/Title 32 / 25 / 25, Body/SM 12, Body/Chip 12 / 11 /
+  // 11. The tile titles are Label/SM 16 / 13 / 13 at lh 1.1, upper, in the
+  // label face, where Lime's are Display/List. The boxes move narrow. The
+  // 768 band pads 100 / 100 with a 10 gap and the instance keeps its 56, so
+  // the foot is 156 and head-to-player 66. Its head frame pads 30, so the
+  // head stands 26 out from the player on both sides, a 708 measure: the
+  // seeded head needs it to hold one line in Noto (at the player's 682 it
+  // wrapped, 65 taller than the master's 844). The 390 band pads
+  // 40 / 40, so it is 40 over the head and 50 under the player. The 1440
+  // boxes are Lime's.
+  if (s.v3 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     const un = (v) => Math.round(v * z * 10) / 10
-    const G = grunge
+    const G = ed
+      ? { band: s.bg, track: s.box2, radius: 0, pad: 20, body: 12, chip: desk ? 12 : 11 }
+      : grunge
       ? { band: '#171716', track: '#222222', radius: 15, pad: 20, body: 12, chip: desk ? 12 : 11 }
       : { band: s.box1, track: s.box2, radius: 50, pad: 30, body: 13, chip: desk ? 13 : 12 }
-    const tk = desk
+    const tk = ed
+      ? { title: desk ? 32 : 25, list: desk ? 16 : 13, body: G.body, chip: G.chip }
+      : desk
       ? { title: 36, list: 24, body: G.body, chip: G.chip }
       : { title: 28, list: 19, body: G.body, chip: G.chip }
-    const disp = grunge ? { textTransform: 'uppercase' } : null
+    const disp = grunge || ed ? { textTransform: 'uppercase' } : null
     // The tiles' foot fade, the twin's own gradient (0 → black at 88.942%).
     const scrim = 'linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 88.942%)'
-    const glow = grunge ? `inset 0 0 0 1px ${s.stroke2}` : `inset 0 0 ${u(34)} ${s.ac}`
-    const mark = grunge ? `inset 0 0 0 1px ${s.ac}` : glow
+    const glow = ed ? `inset 0 0 0 ${u(5)} ${s.ac}`
+      : grunge ? `inset 0 0 0 1px ${s.stroke2}` : `inset 0 0 ${u(34)} ${s.ac}`
+    const mark = ed ? `inset 0 0 0 ${u(3)} ${s.ac}` : grunge ? `inset 0 0 0 1px ${s.ac}` : glow
     const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
     const clamp2 = {
       display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
@@ -7816,17 +7861,21 @@ function Media({ s }) {
     // outright at 390), on a pale `sem/text/3` well under the lime glow.
     const sleeveBox = (
       <div style={{
-        borderRadius: u(G.radius), overflow: 'hidden', position: 'relative', background: s.tx,
+        borderRadius: u(G.radius), overflow: ed ? undefined : 'hidden', position: 'relative', background: s.tx,
         ...(s.mob
           ? { aspectRatio: '370 / 302', flex: 'none', width: '100%' }
           : { flex: '1 0 0', minHeight: u(308 * 302 / 370), width: '100%' }),
+        ...(ed && { transform: 'rotate(-2.33deg)', margin: s.mob ? '2% 0' : undefined }),
       }}>
-        <span style={{ position: 'absolute', inset: 0 }}>
+        <span style={{ position: 'absolute', inset: 0, overflow: ed ? 'hidden' : undefined }}>
           <Photo s={s} initialsSize={un(56)} src={sleeve} ink={s.bg} style={{ background: s.tx }} />
         </span>
         <span aria-hidden style={{
           position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none', boxShadow: glow,
         }} />
+        {ed && <Tape s={s} z={z} style={{
+          left: u(160.54), top: u(-6.02), transform: 'translate(-50%, -50%) rotate(5.33deg)',
+        }} />}
       </div>
     )
 
@@ -7908,8 +7957,8 @@ function Media({ s }) {
               boxShadow: i === at ? mark : undefined,
             }} />
             <span style={{
-              position: 'relative', width: '100%', fontFamily: s.display,
-              fontSize: u(faced(s, tk.list)), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, color: '#FFFFFF',
+              position: 'relative', width: '100%', fontFamily: ed ? s.label : s.display,
+              fontSize: u(faced(s, tk.list)), lineHeight: facedLh(s, ed ? 1.1 : 1.2), letterSpacing: s.dls, color: '#FFFFFF',
               ...clip, ...disp,
             }}>{t.name}</span>
             {t.rel && (
@@ -7935,23 +7984,30 @@ function Media({ s }) {
               <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 70 * z : 62} colour={s.ac} />
               <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 83 * z : 52} colour={s.bg} />
             </>)
-          : <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />}
+          : !ed && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />}
         <div style={{
-          padding: grunge && !desk
+          padding: ed && !desk
+            ? `${u(tab ? 100 : 40)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(tab ? 156 : 50)}`
+            : grunge && !desk
             ? `${u(tab ? 100 : 60)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(tab ? 100 : 70)}`
             : `${u(desk ? 156 : 100)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 156 : tab ? 106 : 110)}`,
-          ...col(u(s.mob ? 20 : grunge && tab ? 66 : 56)),
+          ...col(u(s.mob ? 20 : (grunge || ed) && tab ? 66 : 56)),
         }}>
           <h2 style={distressed(s, {
-            margin: grunge && tab ? `0 0 0 ${u(-26)}` : 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
-            lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...disp,
+            margin: ed && tab ? `0 ${u(-26)}` : grunge && tab ? `0 0 0 ${u(-26)}` : 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
+            lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: ed ? SIENNA_MEDIA : s.ac, ...disp,
           })}>{s.title}</h2>
           <div style={{
             ...(s.mob ? col(u(20)) : row(u(desk ? 112 : 56), { alignItems: 'stretch' })),
             width: '100%',
           }}>
+            {/* Editorial's `Left` clips at its padding box, 56 / 56 / 10 out
+                from this column. Only the 390 tape reaches it: its box rises
+                21 past the instance's top, into the head, and the frame cuts
+                it flat there, 10 under the head. */}
             <div style={col(u(s.mob ? 20 : 40), {
               flex: 'none', width: s.mob ? '100%' : u(308), minWidth: 0,
+              clipPath: ed ? `inset(-${u(s.mob ? 10 : 56)})` : undefined,
             })}>
               {sleeveBox}
               {nowPlaying}
