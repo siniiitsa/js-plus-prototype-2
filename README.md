@@ -455,7 +455,7 @@ That distinction is the whole design, and it buys two things:
   visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
   out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
   box does not grow — under one prompt line. (Lime's boxes are pills, and a rule under a pill
-  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four. Editorial's layout-1 box is a 56% dashed rule on the terracotta half, so a refusal drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once; its layout-2 box is square and dashed all round in full ink on the terracotta band, and a refusal there is the same solid 2px of paper, as a ring; its layout-3 box is square and dashed in terracotta on a paper card, so a refusal there is a solid 2px ring of ink.) Errors are `useState`, set on a refused submit and
+  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four. Editorial's layout-1 box is a 56% dashed rule on the terracotta half, so a refusal drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once; its layout-2 box is square and dashed all round in full ink on the terracotta band, and a refusal there is the same solid 2px of paper, as a ring; its layout-3 box is square and dashed in terracotta on a paper card, so a refusal there is a solid 2px ring of ink; its layout-4 box is an underline dashed in terracotta on the paper page, so a refusal there is a solid 2px ink underline.) Errors are `useState`, set on a refused submit and
   cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
   valid submit swaps the mustard half alone for a confirmation that prints the address in plain
   text, since a browser that opened no mail app must still show one, and *Write another* comes
@@ -607,7 +607,7 @@ These are intentional limits, not oversights — see §12 for the full list. The
   Lime's blocks, widened to `(s.lime || s.grunge)`. Its header family is the same first four, all
   four fitted (its Stacked header is Lime's glass capsule, black over a red floor), so every card
   in the setup modal lays out a whole Grunge page and the Grunge family is closed. **Editorial is
-  designed at layouts 1, 2 and 3**: its pages are the fourth variant of the same component sets, in
+  designed at all four of its layouts**: its pages are the fourth variant of the same component sets, in
   the mode *Sienna Vale* — the first **light** pages, paper, taupe, ink and terracotta grounds
   meeting on straight edges, with Noto Serif Display at width 62.5 standing in for the frames'
   Fontspring demo face. Layout 1 draws dashed rules, blush tape strips, tilted prints under real
@@ -623,10 +623,14 @@ These are intentional limits, not oversights — see §12 for the full list. The
   gallery, a terracotta map and a taupe footer; that footer is the same component layouts 1 and
   2 stand on ink, so the footer's scheme is read off the page's layout rather than its own, and
   more than a dozen nested nodes — three repertoire sets, the featured price row, the map's
-  panel, the wall's cells — take their own scheme's colours. Its treatment is `s.editorial` arms
-  inside Lime's layout-1, layout-2 and layout-3 blocks, widened to `s.limeTree` (Lime, Grunge and
-  Editorial). Its header family is the same first four; Hero, Feature spread and Inset Hero are
-  fitted, and Stacked renders Retro's composition in its tokens until its own pass.
+  panel, the wall's cells — take their own scheme's colours. Layout 4 runs ink, taupe, ink,
+  paper and terracotta from the header down, every edge straight where Lime and Grunge draw
+  arcs and tears, with layout 1's tilted prints and tape back on the media sleeve and the gallery
+  spotlight and every card square. Its treatment is `s.editorial` arms inside Lime's blocks at
+  all four layouts, widened to `s.limeTree` (Lime, Grunge and Editorial). Its header family is
+  the same first four, all four fitted (its Stacked header is Lime's capsule in paper over an
+  ink floor, with an arch avatar and a terracotta seal), so every card in the setup modal lays
+  out a whole Editorial page and the Editorial family is closed.
   One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
