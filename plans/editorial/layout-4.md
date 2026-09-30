@@ -246,7 +246,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme (every width) | Lime twin (1440 / 768 / 390) | Grunge twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:73037` *(page)* | — | `971:9537` | — | `977:13155` | — | — | — | — | `SCHEMES_OF.Editorial[3]` (decision 1) | **done** (`4018742`) |
-| 1 | `header` | `964:73038` | 1440 × 900 | `971:9538` | 768 × 1024 | `977:13156` | 390 × 844 | **3** (nav **1**, seal **4**, chips name Scheme 1) | `964:72849` / `971:5299` / `977:8867` | `964:72944` / `971:7823` / `977:12044` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV3` | open |
+| 1 | `header` | `964:73038` | 1440 × 900 | `971:9538` | 768 × 1024 | `977:13156` | 390 × 844 | **3** (nav **1**, seal **4**, chips name Scheme 1) | `964:72849` / `971:5299` / `977:8867` | `964:72944` / `971:7823` / `977:12044` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV3` | **done** (`8d2340e`) |
 | 2 | `bio` | `964:73046` *(Section `964:73039`, head `964:73040`)* | 664 × 720 | `971:9546` *(Section `971:9539`, head `971:9540`)* | 708 × 720 | `977:13164` *(Section `977:13157`, head `977:13158`)* | 370 × 536 | **3** (Section *and* instance; Tags **1**) | `964:72857` / `971:5307` / `977:8875` | `964:72952` / `971:7831` / `977:12052` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v3)` | open |
 | 3 | `media` | `964:73053` *(band `964:73047`, head `964:73048`)* | 1440 × 671 | `971:9548` *(band `971:9547`, head `971:10389`)* | 768 × 569 | `977:13294` *(band `977:13288`, head `977:13289`)* | 390 × 845.9 | **2** (head **1**; 768 / 390 `Device: Tablet`) | `964:72864` / `971:5431` / `977:9005` | `964:72959` / `971:7955` / `977:12182` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Media`'s `if (s.v3)` | open |
 | 4 | `gallery` | `964:73096` *(wrapper `964:73061`, head `964:73062`)* | 874 × 646 | `971:9593` *(wrapper `971:9558`, head `971:9559`)* | 768 × 594 | `977:13460` *(wrapper `977:13425`, head `977:13426`)* | 390 × 585.5 | **3** (discs **4**) | `964:72909` / `971:5597` / `977:9171` | `964:73004` / `971:8121` / `977:12348` | `if (s.lime \|\| s.grunge)` inside `Gallery`'s `if (s.v3)`, after `from` | open |
@@ -805,6 +805,14 @@ bullets; name them.
   `rotation`, write its negative, confirm on the render.
 - **Every card on this page is square.** Read a radius before inheriting the twins' 50 / 55 / 60
   or 15; the map card's 6 and the ticker's 10 are the exceptions.
+- **Probe a display string with a long word before trusting the twins' measure** (section 1). Noto
+  at wdth 62.5 sets about 83px a capital at the header's 147, against Bebas's 65 at 164, so a block
+  the twins never fitted can overrun here. `&name=` (or `&cj=`) with a ten-letter word, at all three
+  widths, is one run of the harness. The bio's and gallery's heads and the testimonials' two lines
+  are the next display strings on this page.
+- **A shared helper's Editorial arm is scoped to its layouts, not widened by grep** (section 1).
+  `LogoMark`'s sparkle stops at `!s.v3`, and `SealBadge`'s layout-1 seal steps aside at `scheme`
+  4. Each gate names the one caller that moves, and the five-theme digest proves the rest.
 
 ### Seen at planning time, per section
 
@@ -926,6 +934,106 @@ From the walks and the renders — impressions to confirm, not measurements.
   layout 4's row — the header, bio, gallery and repertoire on 3, the media on 2, the testimonials
   on 4 — and `THEMES[3].schemes`' comments owe the same sites.
 
+### Settled in section 1 (the header)
+
+- **No Editorial block: Lime's `if (s.lime || s.grunge) { … return }` at the head of `HeaderV3`
+  is `s.limeTree`**, with `const ed = s.editorial` naming the deltas and no `G`. The paired diff
+  against the Lime twin by traversal order was the whole read: 61 / 57 / 57 nodes, node for node at
+  all three widths. Every difference is a binding, a box or a face. Retro's half is now unreachable
+  under Editorial. Its pill arm is `size: T.pill` again and the "Layout 4's pass fits the bar"
+  comment is gone; theme 0 digests to zero. `lime3` / `lift` take Editorial arms that read the
+  seat's `s.box1` / `s.box2`, Scheme 3's `#1D1D1D` / `#2A2A2A`.
+- **What the frame draws, and what reads it:**
+  - **The photograph** is `ae069c14` at `FILL`, so the mirror guard is `desk && s.lime`.
+  - **The fade** runs from Scheme 3's `sem/bg` at the floor (`#141414`, the seat's own `s.bg`) to
+    Lime's transparent `#15180F00`, on the twin's transform.
+  - **The avatar is an arch**: 113 × 145 at 1440 (Lime's 112.6 × 118.68), 113 × 119 and 116 × 119
+    narrow, radius `76.95 76.95 0 0`. It is an `s.box1` well under a 3.04 blush `s.stroke2` inside
+    ring, drawn as Grunge's inset overlay, since Lime's CSS border would inset the photograph. The
+    initials are `s.tx` paper.
+  - **The kicker** is Display/Title 32 / 25 / 23 in `s.ac` terracotta, a literal because `vm.title`
+    shadows the ramp. **The name** is `s.dispXl` at .75, `s.tx` paper, one tone. **The location** is
+    `s.list` in `s.ac`, uppercase. Its square is `s.box2`, followed (open question 4's default).
+  - **The chips** read `s.onScheme[1].chips[i % 2]`, HeaderV2's idiom: blush lettered ink, then
+    terracotta lettered paper. A crop of the 1440 render confirms the frame letters its fourth and
+    sixth chips ink (`scheme/4/tag1/text`, `sem/tag/6/text`). That is trap 7, a named diff.
+- **The capsule.** `NavBar` takes an additive **`fill`**, the capsule's ground (every other caller
+  passes none), here `onScheme[1].bg` paper. `colour` is `onScheme[1].tx` ink, which reaches the
+  name, the globe, the links and the burger. `nameSize` is `s.labelLg` (20 / 16 / 14) at every
+  width. `mark` and `links` are Grunge's: a 29.5 / 36 globe at 11 / 13.15, and `u(23)` gaps under
+  an `s.labelMd` cap. The pill takes `onScheme[1]`'s `pillBg` and `bg`, so it is terracotta lettered
+  paper round a paper disc with a terracotta arrow, beside Lime's 390 × 0.712 recipe. It comes out
+  159.4 × 44.3 / 169.6 × 54 / 110.9 × 38.4 against 158.3 × 44.3 / 170 × 54 / 111.4 × 38.4. The 390
+  master sets its label Fisterra **Bold** 11.39 where 1440 and 768 set Regular. That is the
+  hand-scaled instance's slip (layout 2's Anton 12.07), so it is not followed.
+- **`navGapEm` is 0 at `d >= 1` under Editorial**, measured before writing. The frame's links sit
+  at x 0 / 84 / 210 / 288 / 413 / 598 / 690 / 801, widths 61 / 103 / 55 / 102 / 162 / 69 / 88 /
+  72: every gap is 23 at 20px. Our nine links (the frame's eight plus Availability) set at 13.7px
+  against the 16 cap, in a 718.7-wide row.
+- **`LogoMark`'s sparkle stops at layout 3** (`s.editorial && !s.v3`), and its globe arm widens to
+  `s.limeTree`. The frame draws Lime's `Group 7` globe in `sem/text/2` ink. Under Editorial the
+  only design-3 readers are NavBar and NavMenu's panel, whose wordmark now carries the globe in
+  paper.
+- **The seal.** `SealBadge`'s Editorial arm steps aside at `scheme` 4, and the Lime disc arm
+  widens to `s.limeTree`, reading `[s.onScheme[4].bg, s.onScheme[4].tx]` ahead of Grunge's pair: a
+  terracotta disc with ink rings, ticks, equator marks and name. `Frame 248` at 390 nests Scheme 4
+  too (Lime's 390 is Scheme 3), so HeaderV3 passes 4 at every width. The diff found no box
+  difference in either seal frame, so Lime's pixel-scanned placements stand. **The name's face is
+  a named diff**: the frame sets it in Lime's unbound Bebas Neue Bold 17.61 at 30%. Grunge's frame
+  (964:72944) carries the same, and its pass set it in its own `s.label`. This one keeps `s.label`,
+  which is Noto here.
+- **`Photo`'s backdrop gate is `s.limeTree`.** Under Editorial the only `backdrop` callers are
+  HeaderV0, V2 and V3 (V1's photograph is an arch). `&noimage=1` draws `#1D1D1D → #141414 →
+  #0E0E0E` (sampled 24 / 20 / 18) under the paper capsule at all three widths.
+- **The name is fitted to its widest word, under Editorial alone.** This goes past the plan's
+  "read whether MERCER-width names hold". The seeded name holds, as two lines at 1440 (500.9 in the
+  806 column) and one line narrow. But Noto at wdth 62.5 sets about 83px a capital at 147, where
+  Bebas at 164 sets about 65. So "MONTGOMERY" came to 888.7 at 1440, into the chips, and 386.9 at
+  390, off the page. The id block is now an `inline-size` container, and the name is
+  `min(s.dispXl, calc(100cqi / s.cardNameEms))`: HeaderV2's JP-062 rule, on `notoEms`, which runs
+  0.1–1% over the render. "Christopher Montgomery" then sets 132.5 / 107 / 57.5, and "Kai
+  Featherstonehaugh" 84 / 73.7 / 36.5, each on two lines inside its column. The seeded name keeps
+  147 / 107 / 64, so the digest does not see the fit.
+- **Measured against the masters** (× 0.82 at desktop; the frame's number in brackets):
+
+  | Width | Avatar (y · h) | Kicker | h1 (y × h) | Location | Chips | Capsule | Pill |
+  |---|---|---|---|---|---|---|---|
+  | 1440 | 242.5 · 118.9 (243.5 · 118.9) | 394.2 (395.2) | 437.8 × 220.5 (438.7 × 219.8) | 673 (673.2) | 852 · 633.8 (852.8 · 633) | 1088.2 × 60.6 | 159.4 × 44.3 |
+  | 768 | 580.8 · 119 (580) | 739.8 (739) | 785.3 × 80.3 (785 × 80) | 883.6 (883) | 936.4 (936) | 708 × 74 | 169.6 × 54 |
+  | 390 | 425.9 · 119 (426) | 584.9 (585) | 628.2 × 48 (628 × 48) | 694.2 (694) | 745.8 (746) | 370 × 58.4 | 110.9 × 38.4 |
+
+  Noto runs a little wider than the demo face at 768, where the name is 542 against the frame's
+  519-wide "KAI MERCER". The seal boxes are Lime's: 137.5 at 1010.6 / 120.8, 167.7 at 570.3 / 692,
+  and 113.7 at 270 / 120 (bounding boxes of the turned disc).
+- **Named diffs**: the ninth link, Availability; chips 4 and 6 lettered paper; the seal's name in
+  Noto; the 390 pill label Regular; the location's `#2A2A2A` square all but lost on the ink floor
+  (the binding, followed).
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `header_arch_3` at three widths on both surfaces: six files, and no Editorial `arch_0`, `arch_1`
+  or `arch_2` file. So the shared-helper changes (`LogoMark`, `SealBadge`, `NavBar`'s `fill`,
+  `Photo`, `navGapEm`) move nothing else. The digest cannot see an SVG `fill`, so the seal disc was
+  read off the DOM: `#C86E52` on card 4. The name's fit went in after the first after-digest and
+  left all six header files byte-identical to it. **One canvas run was noise**: after the fit, a
+  full five-theme canvas digest moved about 75 theme-3 files across every category by 0.1px of
+  Inter and Noto text width, in sections the edit cannot reach. Its `live=1` twin was clean, and a
+  rerun of theme 3 moved the three header files alone. Rerun a scattered theme-3 diff before
+  reading it.
+- **Verified in the builder** (`page-check.mjs Editorial 3,0,1,2`, plus one one-off script,
+  deleted):
+  - The modal offers four Editorial cards, none with a `conic` gradient. Card 4 draws the
+    terracotta disc, the paper capsule (`rgb(246, 240, 232)`) and the arch.
+  - After *Use this header* the page list reads ten rows at "layout 4" and the footer at "layout
+    1". Published, the page stacks in the seeded order with no composed row, the header 901 tall at
+    1440.
+  - All nine nav links and Book Now scroll, Book Now to `#form`. The 390 burger goes 1 → 11 links
+    with 0 overflow. At 820 in a fresh tab the burger opens a `#0E0E0E` panel lettered paper, and a
+    panel link scrolls `#pricing`.
+  - No errors on any of the four cards.
+- **`FIELDS.header` needed no change.** `reach.mjs 3` over the fitted card folds to the stored
+  rows: kicker `[0, 3]` (layout 3's card line is `cardLine`, JP-061), location all four, tags /
+  showTags `[0, 2, 3]`, showBadge `[0, 3]`, badgeText `[3]`, cta2 `[1, 2]`, subtitle / heroCta and
+  layout 2's copy `[1]`, align `[0]`, cardLine `[2]`. `showBadge` stays, as the plan expected.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -937,6 +1045,23 @@ and what this section did with it.)*
   *Settled in session 0*) — `onScheme[1]` / `[3]` / `[4]` probed in the page, unchanged.
 - Session 0: *The digest is committed* (lime/layout-1, *Settled in session 0*) — five themes,
   canvas and live, 1320 renders a label; 36 files, colour columns only.
+- Header: *The paired diff walk* (grunge/layout-2, *Settled in section 8*) — against the Lime twin,
+  by traversal order, at all three widths; the whole read.
+- Header: *A node can name another scheme's variable outright* (editorial/layout-3, *Conventions*)
+  — the capsule, its pill and the chips on `s.onScheme[1]`, the seal on `s.onScheme[4]`.
+- Header: *A frame's inside stroke is an inset `boxShadow`, on an overlay where an image paints
+  over it* (lime/layout-2, *Settled in section 1*) — the arch's blush ring.
+- Header: *One five-theme digest is the whole proof for a shared-helper change* (lime/layout-1,
+  *Learned on the end-of-pass sweep*) — `LogoMark`, `SealBadge`, `NavBar`, `Photo`, `navGapEm`.
+- Header: *A head that must fit its measure is fitted to its widest word* (lime/layout-3, section
+  9; editorial/layout-1, *Conventions*) — the name, on `s.cardNameEms`, where Noto outran the
+  column.
+- Header: *A twin's width-bound call is re-measured in the new face before it is inherited*
+  (editorial/layout-2, *Conventions*) — the twins' unfitted name, which Bebas holds and Noto did
+  not.
+- Header: *Field reach is measured* (CLAUDE.md, the `FIELDS` bullet) — `reach.mjs 3`, no change.
+- Header: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
+  end-of-pass sweep*) — `page-check.mjs Editorial 3,0,1,2`.
 
 ## Open questions
 
