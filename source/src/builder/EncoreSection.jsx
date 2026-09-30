@@ -1621,7 +1621,8 @@ function HeaderV0({ s }) {
   // the Tablet device mode, so its type is the 768 ramp's — a two-line 120px
   // title where `s.dispXl` is 72. Every other key reads the page's own ramp.
   // Grunge's 390 master (986:44070) is in the same mode: a one-line 95.
-  // Editorial's (986:48251) too: a 107 title, which its column wraps to two.
+  // Editorial's (986:48251) too: a 107 title, which its column wraps to two
+  // (and the Title below fits to a long word).
   const tk = !s.mob ? s
     : grunge ? { list: '19px', dispXl: '95px', labelXs: '14px' }
     : ed ? { list: '19px', dispXl: '107px', labelXs: '14px' }
@@ -1734,11 +1735,13 @@ function HeaderV0({ s }) {
           {/* Editorial's column is the title's measure (below), so it takes
               the row's remaining width rather than its content's: a
               max-content column in this wrapping row would drop under the
-              card whole the moment the name outran it. */}
+              card whole the moment the name outran it. At 390 it is already
+              the full width, under the card, so it takes the container
+              alone (JP-086). */}
           <div style={col(s.mob || tab ? '36px' : lime ? '5px' : '30px', {
             alignItems: centred ? 'center' : 'flex-start', minWidth: 0,
             width: s.mob ? '100%' : undefined,
-            ...(ed && !s.mob ? { flex: '1 1 0', containerType: 'inline-size' } : null),
+            ...(ed ? { containerType: 'inline-size', ...(!s.mob && { flex: '1 1 0' }) } : null),
           })}>
             {lime ? (
               // Lime: Display/List in `sem/text/2` and `sem/text/1`, after a
@@ -1778,9 +1781,13 @@ function HeaderV0({ s }) {
                 column's 540. So there the title is fitted to the column
                 (`100cqi` over the name's width in ems — `s.navNameEms`, the
                 display face being the label face), capped at the ramp: the
-                nav's recipe. 1440 has room to spare and keeps its 147; 390
-                wraps to two lines, as its frame does. */}
-            <Title s={s} size={ed && !s.mob ? `min(${tk.dispXl}, calc(100cqi / ${s.navNameEms}))` : tk.dispXl}
+                nav's recipe. 1440 has room to spare and keeps its 147. 390
+                wraps between words, as its frame does, so there the title is
+                fitted to the name's widest word instead (`s.cardNameEms`,
+                HeaderV2's JP-062 rule), capped at the frame's 107: a long
+                word shrinks the name rather than run off the page, and the
+                seeded MERCER keeps the 107 in the 370 column (JP-086). */}
+            <Title s={s} size={ed ? `min(${tk.dispXl}, calc(100cqi / ${s.mob ? s.cardNameEms : s.navNameEms}))` : tk.dispXl}
                    twoTone={!lime || grunge} color={ed ? ink : lime && !grunge ? s.ac : undefined}
                    toneA={grunge ? s.tx : s.paper} toneB={s.ac} inline={!s.mob || grunge || ed}
                    lh={0.75} align={centred ? 'center' : 'left'} />

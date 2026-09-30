@@ -669,7 +669,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // padding each side, and shrinks it only when one word would not fit
   // there — `titleWordEms`' rule, never breaking inside a word. `navFace` is
   // the display face at its nominal size, so HeaderV2 fits the unfaced size
-  // and `faced()` stays outside the fit.
+  // and `faced()` stays outside the fit. Editorial's other titles that wrap
+  // between words read it too: HeaderV3's, and HeaderV0's at 390 (JP-086).
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // Whether the tablet header draws its links (JP-039). The 768 masters of

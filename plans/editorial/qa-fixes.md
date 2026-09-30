@@ -96,7 +96,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | 2 | JP-089 | Three layout-1 seeds differ from the frame | **Confirmed, and recorded**: Lime layout 1 named all three as diffs; Grunge and Editorial inherited them | S | **user: 1A, 2A** | **done** |
 | 3 | JP-090 | Four literals no field reaches; the map's Kicker says "Not shown" | **Confirmed**: JP-071's rule, four more sites, every template (the map's two in both bodies too) | S–M | **user: 1A, the whole bio line, 2A** | **done** |
 | 4 | JP-088 | Calendar layout 1's *Check a date* pill | **Confirmed, and recorded**: Retro's deliberate addition, kept by Lime's fit | S | **user: A, the line links only on a picked day** | **done** |
-| 5 | JP-086 | 390 hero name clipped | **Confirmed**: Editorial's 390 title is a flat 107px, the only width it is not fitted | S | no | open |
+| 5 | JP-086 | 390 hero name clipped | **Confirmed**: Editorial's 390 title is a flat 107px, the only width it is not fitted | S | no | **done** |
 | 6 | JP-087 | 390 gallery: TikTok wraps to a second row | **Confirmed, and recorded**: wrapping is the shared rule, chosen over the frame's run-off | S–M | **yes** | open |
 | 7 | JP-091 | 1440 nav wraps with a long name | **Confirmed in the code, size unmeasured**: below the links' 12px floor the row wraps, a recorded "least bad" | M | **yes, after measuring** | open |
 | 8 | — | End-of-pass sweep | — | S | — | open |
@@ -729,7 +729,101 @@ arms), and **name** any clip found there rather than fix it in this entry.
 **Docs.** The `Title` comment at `:1769`–`1780` (390 is fitted too). `notes/templates.md` if it
 describes the hero's 390 title.
 
-**Settled.** —
+**Reproduced** (2026-10-01, on HEAD `d85b2bc`). Every *Evidence* line held at `d85b2bc`:
+`dispXl: '107px'` at `EncoreSection.jsx:1627`, the column's container at `:1741`, the fit at `:1783`
+and `vm.cardNameEms` at `EncoreBuilder.jsx:673`.
+- **The tester's steps.** A scratch puppeteer script published Editorial card 1, set the Title
+  through `st` and opened the tab with `pop.setViewport`. At 390 the title is 107px in a 370
+  column, and it clips as reported:
+  - FLORENCE ends 84.6 past the page, AND THE 11.7 and MACHINE 41.7.
+  - CHEMICAL and BROTHERS end 87.8 and 87.5 past.
+  - *Supercalifragilistic* ends 654 past.
+  - KAI MERCER and SIENNA VALE fit, with MERCER 5.4 inside the column.
+- **The report's check does not catch it.** The title's and the section's `scrollWidth` equal
+  their `clientWidth` throughout: the h1 box grows to 465, and the section clips. What does catch
+  it is each word's `Range` against the section's right edge, and the h1's width against the
+  column's.
+- **Two widths the report did not check.**
+  - At **360** the column is 340, so the *seeded* MERCER already ran 14.6 past the page.
+  - At **414** the column stays 370 (the 24 extra go to the gutter), so 414 reads as 390.
+- **Lime card 1 at 390** (120px Bebas): the four real names stay inside the page. BROTHERS ends
+  5.0 past its column, but inside the 10px gutter. *Supercalifragilistic* clips, 439 past the page.
+- **Grunge card 1 at 390** (95 × 0.75 = 71.25px): the four real names fit, as the tester found.
+  *Supercalifragilistic* clips, 200 past the page.
+- **The harness was proven first.** Diffing the HEAD worktree on :5174 against the tree gave 0 of
+  660 on each surface (every category, themes 0–4, three widths, port and photo stamps
+  normalised).
+- **Expected after-diff (named before the code): zero.** That is every category, both surfaces.
+  - At 390 the seed's widest word is MERCER, 3.412 em. 370 / 3.412 = 108.4 > 107, so the `min()`
+    computes to 107.
+  - The container goes on a column that is already `width: 100%`, so no geometry moves.
+
+**Settled** (2026-10-01).
+- **Code.** In `HeaderV0`, under Editorial:
+  - The column takes `containerType: 'inline-size'` at every width. `flex: '1 1 0'` still comes
+    only above 390.
+  - The `Title` is `min(107px, calc(100cqi / s.cardNameEms))` at 390, where it was a flat 107.
+    Above 390 it keeps `s.navNameEms`.
+  - `faced()` stays outside the fit (it is 1 under Editorial anyway).
+  - Lime's and Grunge's arms are untouched.
+- **Digest.** The tree against the HEAD worktree came to **0 of 660 on the canvas and 0 of 660 on
+  `live=1`**, as named.
+- **The published tab** (the same scratch script, Editorial card 1). The fitted sizes are the ems'
+  own, so `100cqi` resolved against the column, not against the viewport:
+
+  | Name | 360 | 390 | 414 |
+  |---|---|---|---|
+  | FLORENCE AND THE MACHINE | 78.32 | 85.23 | 85.23 |
+  | THE CHEMICAL BROTHERS | 77.38 | 84.21 | 84.21 |
+  | KAI MERCER | 99.65 | **107** | **107** |
+  | SIENNA VALE | **107** | **107** | **107** |
+  | SUPERCALIFRAGILISTIC | 35.06 | 38.16 | 38.16 |
+
+  - No word breaks inside itself: every word's `Range` has one rect.
+  - Every word ends inside the section: the widest ends 9.9 short of its right edge at 360 and
+    390, and 21.9 short at 414.
+  - The h1's width is at most the column's, except FLORENCE, whose Range is 370.1 against the
+    370 column. That 0.1 lands in the 10px gutter and is not a clip.
+  - The title's and the section's `scrollWidth` equal their `clientWidth`.
+  - The seeded KAI MERCER keeps 107 at 390 and 414. At 360 it shrinks to 99.65, which is the fix
+    working, since HEAD clipped it there.
+- **The harness** (`&cj=` on `title`, Editorial arch 0 at `w=mobile`, canvas and `live=1`). It
+  matches the published tab at 390, name for name. HEAD reads 107 throughout, with FLORENCE 84.6
+  past the page.
+- **Lime and Grunge card 1 at 390**: byte-for-byte the HEAD readings above, the same four names
+  plus *Supercalifragilistic*.
+- **Named, not fixed here** (probed at 390 unless a width is given):
+  - *Supercalifragilistic* clips on **Lime's** card 1 (439 past the page) and on **Grunge's**
+    (200 past).
+  - It also clips on **Editorial's layout-2** header, 84 past; there the section's `scrollWidth`
+    reads 474, so the *page* scrolls sideways. And on Editorial's **layout-3** header, 94 past.
+  - Editorial's **layout-4** header fits it, at 36.09px. Layouts 2–4 fit all four real names.
+  - **The 390 nav wordmark** (`Wordmark`'s `nowrap` name in NavBar's `minWidth: 0` row): with
+    *Florence and the Machine* it runs under the Book pill and the burger, and ends at 392.3 at
+    360 and at 390. The header clips it, so 2.3 of the last E is lost at 390 and 32 at 360. At
+    414 it fits. HEAD is the same.
+  - **The footer at 360** overflows with the two long names (`scrollWidth` 390 and 370 against
+    360), so the page scrolls sideways there. HEAD is the same. The footer fits at 390 and 414.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - The `Title` comment (390 is fitted to the widest word).
+  - The `tk` comment on the 107.
+  - The column's comment (a container at 390, without `flex`).
+  - The `vm.cardNameEms` comment, which now names HeaderV3 and HeaderV0 at 390 as readers.
+  - `notes/templates.md` does not describe the hero's 390 title, so it is untouched.
+
+Reply: **JP-086 — fixed.** On Editorial's Hero at 390, a long name now shrinks until its widest
+word fits the page, and it still wraps between words, never inside one. *Florence and the Machine*
+sets at about 85px and *The Chemical Brothers* at about 84px, with nothing clipped. At 360 it goes
+a little smaller: 78px and 77px. Names whose words already fit, *Kai Mercer* and *Sienna Vale*,
+keep the design's 107px.
+- One thing the report did not check: at 360 even the default *Kai Mercer* was clipped. It now
+  shrinks to 100px.
+- Not changed, and logged separately:
+  - At 390 the menu bar's name runs under the Book button with a name this long.
+  - At 360 the footer scrolls sideways with it.
+  - A single 20-letter word still clips on Lime's and Grunge's Hero, and on Editorial's layouts 2
+    and 3.
 
 ---
 
