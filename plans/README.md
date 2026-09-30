@@ -139,7 +139,7 @@ layout 4's *Conventions* and 2026-09-15 Addendum, and Lime layout 4's *Per-sessi
 
 ## Other templates
 
-Pop works, but it renders flat (see CLAUDE.md, *Retro, Lime, Grunge and Editorial are designed*). When it gets
+Pop works, but it renders flat (see `notes/templates.md`, *Retro, Lime, Grunge and Editorial are designed*). When it gets
 its first plan:
 
 - Start its folder here, and add a table to this file.
