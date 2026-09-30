@@ -22653,24 +22653,43 @@ function Testimonials({ s }) {
     // from Lime's (below), and the marks are a stated Stones Crush 24 / 16 / 14
     // — `s.labelLg` to the token — so here `faced` applies, the reverse of
     // layout 3's face-stack disc, whose seat held photographs and no glyph.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:73125 · 971:9624 · 977:13491) widens it again: 41 = 41 /
+    // 33 = 33 / 41 = 41 nodes against Lime's, by traversal order, every
+    // narrow box Lime's. **The section is seated on Scheme 4, terracotta**, so
+    // the root paints the sheet and the block takes Grunge's `G` — `s.bg` /
+    // `s.ac` are the seat's terracotta and paper — for the opposite reason:
+    // Lime's `s.tx` would lay an ink sheet over it. What is Editorial's own:
+    // the desktop master pads **48** all round (Lime 56) round a two-line head
+    // and **324 × 382** cells; every cell is **square**; the register is read
+    // off the cells (below); and the head fits its widest word, since the
+    // twins' `break-word` splits a long one in Noto.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
       const mist = '#D5E3B2'   // Scheme 4 `sem/box/1` — the two light cells
       const hair = '#15180F26' // `sem/stroke/1` on a light scheme, 15% ink
       const ring = (c) => `inset 0 0 0 1px ${c}`
       // Scheme 4's `sem/bg` and `sem/text/1`, which Lime's block wrote as the
       // resolved `s.tx` / `s.bg`: pale and ink under Lime, the page's black and
-      // red under Grunge.
-      const G = grunge
+      // red under Grunge, and the seat's own terracotta and paper under
+      // Editorial — the root's ground, painted again.
+      const G = grunge || ed
         ? { sheet: s.bg, ink: s.ac }
         : { sheet: s.tx, ink: s.bg }
       // The display face, Grunge's three moves behind one flag (a no-op under
       // Lime): Anton scaled to Stones Crush's glyph, its leading divided back
-      // out, uppercase.
+      // out, uppercase. Editorial uppercases too (`faced` is its identity).
       const disp = (size, lh) => ({
         fontSize: faced(s, size), lineHeight: facedLh(s, lh),
-        ...(grunge ? { textTransform: 'uppercase' } : {}),
+        ...(grunge || ed ? { textTransform: 'uppercase' } : {}),
       })
+      // Editorial's desktop inset and cell, and its square corners.
+      const radius = ed ? 0 : u(30)
+      const cellH = u(desk ? (ed ? 382 : 344) : 392.4)
+      const pad = ed && desk
+        ? `${u(48)} calc(${s.surplus} + ${u(48)}) ${u(48)}`
+        : `${padTop} ${padH} ${padBot}`
       // The frame's four cells by scheme, read off the nodes' fills: Scheme 4's
       // mist in a 15% ink hairline with an ink disc lettered pale; Scheme 1's
       // `box/3` in `stroke1` with a lime disc lettered ink; mist again; and
@@ -22689,7 +22708,22 @@ function Testimonials({ s }) {
       // the frame draws it: Lime's normalising ring was all but invisible on
       // ink, and white at 15% on `#DF262C` is a visible pink hairline the
       // frame does not have.
-      const REG = grunge ? [
+      //
+      // Editorial's wall is terracotta / ink / terracotta / paper, read off
+      // each cell's fill and binding at all three widths: Scheme 4's `box/1`
+      // `#DA7C5E` in `stroke/1` paper 56%, lettered `text/2` ink, with a paper
+      // `text/1` disc lettered `sem/bg` terracotta; a cell that names **Scheme
+      // 1** — `box/3` ink in a `stroke/2` terracotta ring, lettered `text/1`
+      // terracotta round a terracotta disc lettered paper in the same ring; and
+      // Scheme 4's `text/1` paper, **unstroked** — left bare, as Grunge left
+      // its red one — lettered terracotta round a terracotta disc in a paper-56
+      // ring. The frame's order is the twins' `SEATS`.
+      const S1 = ed && s.onScheme[1]
+      const REG = ed ? [
+        { bg: s.box1, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
+        { bg: S1.box3, fg: S1.ac, edge: S1.stroke2, av: S1.ac, avFg: S1.bg, avEdge: S1.stroke2 },
+        { bg: s.ac, fg: s.bg, edge: 'transparent', av: s.bg, avFg: s.ac, avEdge: s.stroke1 },
+      ] : grunge ? [
         { bg: s.box1, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
         { bg: s.box3, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
         { bg: s.ac, fg: s.bg, edge: 'transparent', av: s.bg, avFg: s.ac, avEdge: s.stroke1 },
@@ -22739,11 +22773,12 @@ function Testimonials({ s }) {
         const r = REG[SEATS[k % SEATS.length]]
         return (
           <div key={k} style={col(u(16), {
-            background: r.bg, color: r.fg, boxShadow: ring(r.edge), borderRadius: u(30),
+            background: r.bg, color: r.fg, boxShadow: ring(r.edge), borderRadius: radius,
             padding: u(24), overflow: 'hidden',
             // The stated box, Retro's `minHeight` reading: 344 at desktop (the
-            // 716 less its two-line head), 392.4 on both narrow masters.
-            minHeight: u(desk ? 344 : 392.4),
+            // 716 less its two-line head; Editorial's 382, 716 less its 48s),
+            // 392.4 on both narrow masters.
+            minHeight: cellH,
           })}>
             {!!q.who && (
               <span style={{
@@ -22785,8 +22820,8 @@ function Testimonials({ s }) {
         : [(
           <div key="empty" style={col('0px', {
             background: REG[0].bg, color: REG[0].fg, boxShadow: ring(REG[0].edge),
-            borderRadius: u(30), padding: u(24), justifyContent: 'center',
-            minHeight: u(desk ? 344 : 392.4),
+            borderRadius: radius, padding: u(24), justifyContent: 'center',
+            minHeight: cellH,
           })}>
             <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>
               No reviews yet.
@@ -22798,26 +22833,41 @@ function Testimonials({ s }) {
         <div style={{
           // The sheet: Scheme 4's pale `sem/bg`, out to the section's own
           // edges past the root's padding, with the frames' own insets back.
-          // Under Grunge `sem/bg` is the page itself, so it paints nothing new.
+          // Under Grunge `sem/bg` is the page itself, so it paints nothing new,
+          // and under Editorial it is the seat the root already paints.
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
           background: G.sheet, color: G.ink,
-          padding: `${padTop} ${padH} ${padBot}`,
+          padding: pad,
           ...col(u(28)),
         }}>
           {/* The head fills at every width, Retro's call: the 1440 master hugs
               a two-line authored break this heading does not carry, so ours
               may hold one line there and the section run shorter than 716 ×
               0.82 — named, not fixed. The gap is the narrow masters' 32 / 30,
-              taken at desktop too, where SPACE_BETWEEN states none. */}
+              taken at desktop too, where SPACE_BETWEEN states none. Under
+              Editorial the head stands in an `inline-size` container and fits
+              its widest word (`s.titleWordEms`, Noto's 540 ems), where the
+              twins' `break-word` would split it. */}
           <div style={row(u(s.mob ? 30 : 32), { alignItems: 'flex-end' })}>
-            {!!s.title && (
-              <h2 style={distressed(s, {
-                margin: 0, flex: '1 1 0', minWidth: 0,
-                fontFamily: s.display, ...disp(s.dispLg, 0.89),
-                letterSpacing: s.dls, color: G.ink,
-                overflowWrap: 'break-word',
-              })}>{s.title}</h2>
-            )}
+            {!!s.title && (() => {
+              const h2 = (
+                <h2 style={distressed(s, {
+                  margin: 0, ...(ed ? {} : { flex: '1 1 0', minWidth: 0 }),
+                  fontFamily: s.display,
+                  ...disp(ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89),
+                  letterSpacing: s.dls, color: G.ink,
+                  overflowWrap: 'break-word',
+                  // The row is bottom-aligned with the discs (MAX at every
+                  // width), so Noto's floor shows against theirs: 0.055em up
+                  // the line box at .89 against the frame's 0.132 / 0.139 /
+                  // 0.134, and the glyphs lift alone (section 7's rule).
+                  ...(ed ? { position: 'relative', top: '-0.08em' } : {}),
+                })}>{s.title}</h2>
+              )
+              return ed
+                ? <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size' }}>{h2}</div>
+                : h2
+            })()}
             {paging && (
               <div style={row(u(5), { flex: 'none', marginLeft: 'auto' })}>
                 {disc(true, step(-1), 'p')}
