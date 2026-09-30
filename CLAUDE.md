@@ -210,8 +210,16 @@ mutated through a single `patch()` helper.
   too), media's `listLabel` ("● Popular", layouts 2 and 3) and layout 3's `kicker` on the map and
   the testimonials. JP-059's shape: seeded with the literal, uncased, dropped when emptied. The
   `●` and `[ ]` are the markup's and go with an emptied word; a stat's label also goes with its
-  value, as before. The unreported siblings stay literals: the bio's `Bio` eyebrow, media layout
-  2's `● Featured`, the calendar legend and testimonials layout 2's `✎ What clients say`.
+  value, as before. **Four more at layout 1, every template** (JP-090, user call, 2026-09-30):
+  the bio's `refLabel` (the whole `[ 001 ] Structure · Bio_01` line, since the `001` is no
+  count), the map's `listLabel` over the gig list (its `· N` the markup's), the form's
+  `typeLabel` over the chip row, which reads its seed again when emptied (`messageLabel`'s
+  rule; it never reaches the mailto, whose subject carries the chip), and the map's
+  "Shows/coverage", which is `kicker`'s layout-1 seed — `mapKickerSeed(d)`, called by
+  `sectionVm` and `EditPanel`'s chain alike, so `kicker` now reaches layouts 1 and 3. A typed
+  label wraps rather than outrun a 390 page. The unreported siblings stay literals: the bio's
+  `Bio` eyebrow, media layout 2's `● Featured`, the calendar legend and testimonials layout 2's
+  `✎ What clients say`.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —

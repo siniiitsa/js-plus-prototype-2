@@ -733,6 +733,19 @@ export const BIO_TAGS_LABEL = 'Genres'
 export const MEDIA_LIST_LABEL = 'Popular'
 export const MAP_KICKER = 'Gigs & travel'
 export const TESTI_KICKER = 'Testimonials'
+// JP-090 (user call, 2026-09-30): four more, on every template at layout 1 —
+// the bio's reference line under the heading (the whole line, index and
+// brackets included, since the 001 is not a count), the map's eyebrow and the
+// label over its gig list (the "· N" is the markup's), and the form's label
+// over its chip row. The map's eyebrow is `kicker`'s layout-1 seed.
+export const BIO_REF_LABEL = '[ 001 ] Structure · Bio_01'
+export const MAP_KICKER_1 = 'Shows/coverage'
+export const MAP_LIST_LABEL = 'Upcoming gigs'
+export const FORM_TYPE_LABEL = 'Event type'
+// The eyebrow an absent map `kicker` stands for, by design (`d`): layout 1's
+// frames' words, and layout 3's elsewhere. The one expression sectionVm and
+// EditPanel's chain both call, formBtnSeed()'s shape.
+export const mapKickerSeed = (d) => (d === 0 ? MAP_KICKER_1 : MAP_KICKER)
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -1538,6 +1551,10 @@ export const FIELDS = {
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
+    // JP-090: layout 1's line under the heading, the frames' own, uncased
+    // (every site upper-cases it). The whole line is the field.
+    { k: 'refLabel',  l: 'Reference line', d: BIO_REF_LABEL, in: [0],
+      hint: 'The small line at the foot of the heading. Left empty, it is not drawn.' },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1],
@@ -1792,8 +1809,13 @@ export const FIELDS = {
           + 'Layout 3 also turns the cities into its filter chips, and works out the weekday '
           + 'its date disc prints from the month, the day and the year (four digits).' },
     // JP-071: layout 3's eyebrow over the heading, the frame's words, uncased.
-    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [2],
-      hint: 'The small line over the heading. Left empty, it is not drawn.' },
+    // JP-090 took it to layout 1's "Shows/coverage", its seed there
+    // (mapKickerSeed(), in sectionVm and EditPanel's chain alike).
+    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [0, 2],
+      hint: 'The small line over the heading. Layout 1 starts from “Shows/coverage”. Left empty, it is not drawn.' },
+    // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
+    { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0],
+      hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
@@ -1913,6 +1935,10 @@ export const FIELDS = {
           + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
+    // The chip row's label (JP-090), messageLabel's rule: the row it heads
+    // stands whatever it says, so an emptied label reads the seed again.
+    { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
+      hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // The message box's label (JP-082): the one box label that was a literal.
     { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],

@@ -166,3 +166,11 @@ another `notes/` file.
   -2px 0`, layout 1's shape in layout 3's ink), colour, weight and dash at once, and never a
   ring, since the idle mark has one edge. Its head fits its widest word at every width, in its
   own div's `100cqi` — layout 3's desktop fit, and every layout-4 head's under Editorial.
+- **The chip row's label is the artist's** (JP-090, user call, 2026-09-30): `FIELDS.form.typeLabel`,
+  *Event type label*, `in: [0]`, seeded `FORM_TYPE_LABEL` "Event type" beside `messageLabel`,
+  and on its rule. The row it heads always stands, so `vm.formTypeLabel` reads the seed again
+  when the field is emptied (trimmed, `FORM_EMAIL_LABEL`'s rule). It stays raw, and both bodies
+  upper-case it in CSS. **It never reaches the mailto**: `enquiryMailto()` puts the picked chip
+  in the subject (`Wedding enquiry`) and the body carries no row for it, so an edited or emptied
+  label sends the same mail. The four live lines (`formPrompt`, `formSentTitle`, `formSentBody`,
+  `formAgain`) and layout 4's `formStepsLabel` are still literals the view-model owns.

@@ -37,7 +37,7 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  MAP_KICKER, TESTI_KICKER, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
+  BIO_REF_LABEL, MAP_LIST_LABEL, FORM_TYPE_LABEL, mapKickerSeed, TESTI_KICKER, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -791,6 +791,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.baseLabel = breakLast(cv('baseLabel', BIO_BASE_LABEL))
   vm.aboutLabel = cv('aboutLabel', BIO_ABOUT_LABEL)
   vm.tagsLabel = cv('tagsLabel', BIO_TAGS_LABEL)
+  // JP-090 — layout 1's line under the heading, the same shape: the frames'
+  // whole line as the seed, uncased, and '' when emptied.
+  vm.bioRef = cv('refLabel', BIO_REF_LABEL)
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
@@ -1607,8 +1610,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
   vm.gigPage = PINS.length
-  // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased.
-  vm.mapKicker = cv('kicker', MAP_KICKER)
+  // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased;
+  // JP-090 — layout 1's "Shows/coverage" in the same seat, off the same key
+  // with its own seed, and the label over layout 1's gig list.
+  vm.mapKicker = cv('kicker', mapKickerSeed(d))
+  vm.mapListLabel = cv('listLabel', MAP_LIST_LABEL)
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
@@ -1726,7 +1732,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       title: String(r?.title ?? '').trim(),
       sub: String(r?.sub ?? '').trim(),
     }))
-  // That column's own head. A literal the view-model owns, `formTypeLabel`'s
+  // That column's own head. A literal the view-model owns, `formPrompt`'s
   // rule, upper-cased by the renderer's display face rather than here.
   vm.formStepsLabel = 'What happens next'
   // §10.2 layout 4 outlines every box and rules every step row in one hue, and
@@ -1771,14 +1777,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formTypes = songTags(cv('types', FORM_TYPES.join(', '))).map((l) => cased(l))
   vm.formMessage = cv('message', FORM_MESSAGE)
   // The two labels the frame prints over its controls, and the four lines the
-  // live form needs. The chip row's label and the four lines are literals the
-  // view-model owns, vm.calPrompt's rule, so the section looks them up rather
-  // than writing copy of its own; the message box's is the artist's
-  // `messageLabel` (JP-082), which reads FORM_MSG_LABEL again when emptied,
-  // since the box always stands (FORM_EMAIL_LABEL's rule; `cv` does not trim).
-  // The two control labels stay raw — the render uppercases them in CSS, and
-  // the mailto body wants them as written.
-  vm.formTypeLabel = 'Event type'
+  // live form needs. The four lines are literals the view-model owns,
+  // vm.calPrompt's rule, so the section looks them up rather than writing copy
+  // of its own. Both labels are the artist's: the message box's `messageLabel`
+  // (JP-082) and the chip row's `typeLabel` (JP-090, user call, 2026-09-30).
+  // Each reads its seed again when emptied, since the control it heads always
+  // stands (FORM_EMAIL_LABEL's rule; `cv` does not trim). Both stay raw — the
+  // render uppercases them in CSS, and the mailto body wants the message's as
+  // written. The type's label never reaches the mailto: the picked chip goes
+  // in the subject.
+  vm.formTypeLabel = String(cv('typeLabel', FORM_TYPE_LABEL)).trim() || FORM_TYPE_LABEL
   vm.formMsgLabel = String(cv('messageLabel', FORM_MSG_LABEL)).trim() || FORM_MSG_LABEL
   vm.formPrompt = 'Add the missing details and try again.'
   vm.formSentTitle = cased('Check your mail app')
@@ -4004,9 +4012,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // it, the repertoire's heading counts the songs, and a few seeds follow
                   // the layout. Each mirrors what sectionVm resolves, so panel
                   // and canvas never disagree. The calendar's address is the
-                  // form's until one is typed (JP-076). The kicker left the chain with
+                  // form's until one is typed (JP-076). The header's kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
-                  // layout-3 card's line is a field of its own. Layouts 3 and
+                  // layout-3 card's line is a field of its own. The map's
+                  // kicker joined it with JP-090 (mapKickerSeed). Layouts 3 and
                   // 4's heads come ahead of the song count, which sectionVm's
                   // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
@@ -4024,6 +4033,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
                     : f.k === 'button' && sec.cat === 'form' ? formBtnSeed(themeName, design)
+                    : f.k === 'kicker' && sec.cat === 'map' ? mapKickerSeed(design)
                     : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3

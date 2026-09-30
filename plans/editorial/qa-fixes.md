@@ -42,7 +42,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | JP-087 | gallery layout 1's 390 source row, **both** bodies | every template | 0–4 |
 | JP-088 | calendar layout 1's foot pill, `s.limeTree` block | Lime, Grunge, Editorial | 0–3 |
 | JP-089 | three layout-1 seeds; Lime's fit recorded all three as named diffs | Lime, Grunge, Editorial | 0–4 |
-| JP-090 | four literals; two in **both** bodies, two in the `s.limeTree` map block | every template | 0–4 |
+| JP-090 | four literals, each in **both** bodies (the triage read the map's two as `s.limeTree`-only) | every template | 0–4 |
 | JP-091 | `NavBar`'s `s.limeTree` arm (HeaderV0) | Lime, Grunge, Editorial (probe Retro) | 0–3 |
 
 ## The report (translated)
@@ -94,7 +94,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 |---|---|---|---|---|---|---|
 | 1 | JP-085 | Heads in Noto Serif Display, not Fisterra Fora | **By design so far**: the named stand-in (layout-1.md decision 1, user call, 2026-09-24). The licence question is the PO's | — (decision) | **user: A, a reply; the licence with the PO** | **done** (no code; the facts in `layout-1.md` open question 1) |
 | 2 | JP-089 | Three layout-1 seeds differ from the frame | **Confirmed, and recorded**: Lime layout 1 named all three as diffs; Grunge and Editorial inherited them | S | **user: 1A, 2A** | **done** |
-| 3 | JP-090 | Four literals no field reaches; the map's Kicker says "Not shown" | **Confirmed**: JP-071's rule, four more sites | S–M | **yes** (small) | open |
+| 3 | JP-090 | Four literals no field reaches; the map's Kicker says "Not shown" | **Confirmed**: JP-071's rule, four more sites, every template (the map's two in both bodies too) | S–M | **user: 1A, the whole bio line, 2A** | **done** |
 | 4 | JP-088 | Calendar layout 1's *Check a date* pill | **Confirmed, and recorded**: Retro's deliberate addition, kept by Lime's fit | S | **yes** | open |
 | 5 | JP-086 | 390 hero name clipped | **Confirmed**: Editorial's 390 title is a flat 107px, the only width it is not fitted | S | no | open |
 | 6 | JP-087 | 390 gallery: TikTok wraps to a second row | **Confirmed, and recorded**: wrapping is the shared rule, chosen over the frame's run-off | S–M | **yes** | open |
@@ -447,7 +447,117 @@ published tab with an edited and with an emptied label.
 the kicker's new reach; its list of unreported siblings is unchanged. `notes/form.md`,
 `notes/map.md` and the bio's notes (`notes/templates.md` if it has none) for each key.
 
-**Settled.** —
+**Decided** (2026-09-30, user call): **1A, the whole bio line, 2A.**
+1. JP-071's shape: seeded with the literal, uncased, not drawn when emptied. The keys are
+   `bio.refLabel` *Reference line*, `map.listLabel` *List label* (media's name for the label over a
+   list; `· N` stays the markup's) and `form.typeLabel` *Event type label* (beside *Message label*).
+   `map.kicker` reaches layout 1 through `mapKickerSeed(d)`.
+2. **The bio's field is the whole line**, `[ 001 ] Structure · Bio_01`, brackets and index
+   included. The entry's glyph rule did not settle it: the `001` is an index, not a count.
+3. **An emptied *Event type label* reads the seed again**, `messageLabel`'s rule, since both head
+   a control that always stands.
+
+Asked over what the session found first, on HEAD (`f6e5f0e`):
+- **Every *Evidence* line** was re-grepped. The bio's three sites and the form's two render sites
+  held (`:3913`, `:3918`, `:4071`; `:23439`, `:23718`); `vm.formTypeLabel` is at
+  `EncoreBuilder.jsx:1781`, `FIELDS.map.kicker` at `data.js:1795` and `MAP_KICKER` at `:734`.
+- **The table's map row was wrong.** `:17498` / `:17668` are the `s.limeTree` block, but `:17831` /
+  `:17922` are **Retro's and Pop's** layout-1 body. Retro's frame (`964:58581`) prints both
+  *Shows/coverage* and *UPCOMING GIGS · 5*, as Editorial's (`964:58617`) does. So the map's two
+  literals reach every template, like the other two, and the kicker's `in` is measured, not the
+  per-template object the entry proposed.
+- **Question 2's premise did not hold.** The label never reaches the mailto: `enquiryMailto()` puts
+  the picked chip in the subject (`Wedding enquiry`), and the body has no label row. So the choice
+  was the page's alone, and the recommendation rested on the sibling rule instead.
+- **Figma.** Editorial's bio (`964:58613`) and Retro's (`964:58577`) both type `[ 001 ] STRUCTURE ·
+  BIO_01`. The forms (`964:58620`, `964:58584`) both type `EVENT TYPE` beside `MESSAGE`. Every
+  seed stays the build's mixed-case literal, which each site already upper-cases in CSS.
+- **Reproduced on HEAD.** A marker in every bio, map and form text field through `&cj=` left all
+  four literals at map / bio / form layout 1, on themes 0–4, three widths, canvas and `live=1`. In
+  the real app, Editorial card 1 with every field marked, published and opened, printed all four at
+  1440, 768 and 390, and the panel marked the map's *Kicker* "Not shown in this layout".
+- **The harness was proven first.** The HEAD worktree on :5174 against the tree diffed to 0 of 180
+  on each surface (bio, map, form × themes 0–4 × three widths).
+- **Expected after-diff: zero** on the seed, every category, themes 0–4, both surfaces.
+
+**Settled** (2026-09-30).
+- **Code.**
+  - `data.js` adds `BIO_REF_LABEL` "[ 001 ] Structure · Bio_01", `MAP_KICKER_1` "Shows/coverage",
+    `MAP_LIST_LABEL` "Upcoming gigs" and `FORM_TYPE_LABEL` "Event type" beside `MAP_KICKER`. It also
+    adds `mapKickerSeed(d)`, which `sectionVm`'s `vm.mapKicker` and `EditPanel`'s chain (an arm
+    gated on `map`, since the testimonials carry a `kicker` too) both call.
+  - **The fields.**
+    - `bio.refLabel` *Reference line* and `map.listLabel` *List label* are `in: [0]`, dropped when
+      emptied.
+    - `form.typeLabel` *Event type label* is `in: [0]`. Emptied, it reads the seed again
+      (`vm.formTypeLabel`, trimmed).
+    - `map.kicker` is `in: [0, 2]`, a plain array, as measured. The hints say so.
+  - **`EncoreSection`, both bodies at each site.**
+    - An emptied bio line leaves an empty `<span>` seat at desktop (and Retro's 768), where
+      the column is `space-between` with no gap. So the heading does not slide to the column's
+      foot; it moves 8px, half the line's height. At the gapped narrow columns the line simply
+      goes: the first cut kept the seat there too and left a dead 29 (Lime-tree) or 16 (Retro,
+      390) under the heading, measured and fixed before the amend.
+    - An emptied gig label takes its count and wrapper with it, and under Grunge its rule too.
+    - The label prints as two text nodes, `"<label> · "` and the count, as the literal did. The
+      first cut split off the ` · `, and that moved the label's width by 0.1px under Lime and
+      Grunge (4 files a surface), so it was put back.
+  - **Typed labels wrap.** The states run found every `nowrap` site overflowing with a long typed
+    label: the bio line up to +201px at 390, the kicker +285, and the gig label +328 at 390 and
+    +61 in the Lime-tree panel at desktop. So each takes `whiteSpace: 'normal'`,
+    `overflowWrap: 'anywhere'` and `minWidth: 0`, JP-071's fix. The seeds fit on one line, so
+    nothing seeded moves.
+  - **Stale comments rewritten.** `formStepsLabel`'s ("`formTypeLabel`'s rule") and layout 4's
+    form comment no longer cite `formTypeLabel` as a literal. The map's layout-3 eyebrow comment
+    no longer names "Shows/coverage" as a literal precedent. The chain's "the kicker left the
+    chain" now says it is the header's.
+- **Digest.** The tree against the HEAD worktree on :5174, every category, themes 0–4, three
+  widths, port and photo stamps normalised: **0 of 660 on each surface**, before and after the
+  wrap fix. As named.
+- **Reach** (`reach.mjs`, three new probes plus `map.kicker`'s, themes 0–4, 6/6 each):
+  `bio.refLabel` moves bio layout 1, `map.kicker` map layouts 1 and 3, `map.listLabel` map
+  layout 1 and `form.typeLabel` form layout 1, on all five templates.
+- **States** (a scratch puppeteer run, deleted): each key at its layouts × themes 0–4 × three
+  widths × both surfaces, as a marker, emptied, 85 characters and one 53-character word.
+  - A marker moves exactly its own row. Under Grunge the gig label also moves the rule beside
+    it, by width.
+  - An emptied value removes exactly its node. The gig label takes its wrapper too, and under
+    Grunge the rule. The bio line leaves its empty seat at desktop. An emptied *Event type label* moves
+    nothing, because the seed reads again.
+  - After the wrap fix, no label's text runs past its section (measured on the text's own Range,
+    since a stretched `nowrap` span keeps its container's width) and no page scrolls sideways.
+- **The tester's marker set.** On the harness, with a marker in every bio, map and form text
+  field, none of the four literals is left on themes 0–4, three widths, canvas and `live=1`.
+- **The real app.** Card 1 of Editorial, Lime, Grunge and Retro, with every field marked through
+  `st`, then published and opened:
+  - The published tab prints no literal at 1440, 768 or 390.
+  - The panel seeds the four fields with the literals, and *Kicker* no longer says "Not shown in
+    this layout".
+  - **The mailto.** It is `subject=<chip> enquiry` with no type row in the body, whether the
+    label is edited or emptied. Emptied, the page prints *Event type* again.
+  - No page errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does
+  that.
+- **Docs.**
+  - CLAUDE.md's JP-071 paragraph: the four keys, the kicker's reach, the mailto and the wrap. The
+    unreported siblings are unchanged.
+  - `notes/form.md` and `notes/map.md` each get a bullet.
+  - `notes/templates.md` gets one for the bio's line, since the bio has no notes file.
+  - `reach.mjs` gets the three probes.
+
+Reply: **JP-090 — fixed.** The four labels are now editable on every template, in the editor and
+on the published page. Each starts as the design's text.
+- **Bio** (layout 1): *Reference line*, the "[ 001 ] STRUCTURE · BIO_01" line. Left empty, it is
+  not drawn.
+- **Events Map** (layout 1): *Kicker* now changes "Shows/coverage" and no longer says "Not shown in
+  this layout". Layout 3 still starts from "Gigs & travel". *List label* changes "Upcoming gigs"
+  (the count after it is the page's). Left empty, each is not drawn, and the list label takes its
+  count with it.
+- **Enquiry Form** (layout 1): *Event type label*. Left empty, it shows "Event type" again, as
+  *Message label* does, because the chips always need a heading. The enquiry email never carried
+  it: the chosen type goes in the subject.
+- A long label wraps rather than running off a phone screen. Labels nobody reported stay as the
+  design draws them.
 
 ---
 

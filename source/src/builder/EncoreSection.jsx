@@ -3908,14 +3908,21 @@ function Bio({ s }) {
           ))
           : s.title}</h2>
         {/* Body/SM — Inter regular, not the eyebrow; Grunge's and Editorial's
-            are the eyebrow. */}
-        {grunge || ed
-          ? eyebrow('[ 001 ] Structure · Bio_01', { textTransform: 'uppercase', whiteSpace: 'nowrap' })
+            are the eyebrow. The line is the artist's `refLabel` (JP-090),
+            seeded with the frames' own; emptied, an empty seat keeps the
+            desktop column's three rows, so the heading does not slide to its
+            foot. The narrow column is gapped, not spaced, so there the seat
+            would be a dead 29 and the line simply goes.
+            It wraps, and inside a word, since a typed line can outrun a 390
+            column where the seed never does (JP-071's `listLabel` rule). */}
+        {!s.bioRef ? (s.narrow ? null : <span />)
+          : grunge || ed
+          ? eyebrow(s.bioRef, { textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
           : (
             <span style={{
               fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, textTransform: 'uppercase',
-              whiteSpace: 'nowrap', ...ink,
-            }}>[ 001 ] Structure · Bio_01</span>
+              whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, ...ink,
+            }}>{s.bioRef}</span>
           )}
       </div>
     )
@@ -4068,7 +4075,11 @@ function Bio({ s }) {
           margin: s.narrow ? '14px 0' : 0, fontFamily: s.display, fontSize: s.dispLg,
           lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>
-        {label('[ 001 ] Structure · Bio_01')}
+        {/* `refLabel` (JP-090); emptied, an empty seat keeps the heading off
+            the foot of the column's space-between, except at 390, whose 16
+            gap would leave the seat a dead band. A typed line wraps. */}
+        {s.bioRef ? label(s.bioRef, { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
+          : s.mob ? null : <span />}
       </div>
     )
 
@@ -17495,7 +17506,9 @@ function EventsMap({ s }) {
 
       const head = (
         <div style={col(u(16))}>
-          <span style={eyebrow({ color: G.kicker ?? G.head })}>Shows/coverage</span>
+          {/* The artist's `kicker`, seeded "Shows/coverage" here (JP-090,
+              mapKickerSeed); emptied, it is not drawn. Typed longer, it wraps. */}
+          {s.mapKicker && <span style={eyebrow({ color: G.kicker ?? G.head, whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>{s.mapKicker}</span>}
           {/* Display/LG over Label/LG, which stands at the row's right on
               desktop and 768 and stacks 10 under the heading at 390. */}
           <div style={s.mob ? col('10px', { alignItems: 'flex-start' }) : row(u(10), { justifyContent: 'space-between' })}>
@@ -17663,12 +17676,17 @@ function EventsMap({ s }) {
           {/* Grunge's head is flush with the rows and its 1px rule is filled
               (`box/1`), 30 from the count, where Lime's carries no fill;
               Editorial's is flush and unfilled. */}
-          <span style={row(grunge ? u(30) : '0px', { padding: grunge || ed ? 0 : `0 ${u(20)}` })}>
-            <span style={eyebrow({ color: G.onPanel, textTransform: 'uppercase' })}>
-              Upcoming gigs · {s.gigs.length}
+          {/* The label is the artist's `listLabel` (JP-090) and the count the
+              page's; emptied, the row goes, Grunge's rule with it. A typed
+              label wraps, inside a word too, rather than run off the panel. */}
+          {s.mapListLabel && (
+            <span style={row(grunge ? u(30) : '0px', { padding: grunge || ed ? 0 : `0 ${u(20)}` })}>
+              <span style={eyebrow({ color: G.onPanel, textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>
+                {`${s.mapListLabel} · `}{s.gigs.length}
+              </span>
+              {grunge && <span aria-hidden style={{ flex: 1, height: '1px', background: s.bg }} />}
             </span>
-            {grunge && <span aria-hidden style={{ flex: 1, height: '1px', background: s.bg }} />}
-          </span>
+          )}
           {rowsL.length > 0 && <div style={col(u(12))}>{rowsL}</div>}
           {win.labels.length > 0 && (
             <Pager s={s} frame={{
@@ -17822,14 +17840,18 @@ function EventsMap({ s }) {
         <Grain s={s} opacity={0.18} radius={s.radiusSm} />
         {/* All three masters set the label, the rows' sub-lines and the date
             chips in Space Mono: 11 tracked 1.5, 11, and a 42 square of 9 over
-            bold 14. Desktop is the frame × 0.82. */}
-        <span style={{
-          fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
-          letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
-          color: onDark ? s.pillBg : s.muted, position: 'relative',
-        }}>
-          Upcoming gigs · {s.gigs.length}
-        </span>
+            bold 14. Desktop is the frame × 0.82. The label is the artist's
+            `listLabel` (JP-090), the count the page's; emptied, neither. It
+            and the kicker wrap, inside a word too, once typed longer. */}
+        {s.mapListLabel && (
+          <span style={{
+            fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
+            letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase',
+            whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, color: onDark ? s.pillBg : s.muted, position: 'relative',
+          }}>
+            {`${s.mapListLabel} · `}{s.gigs.length}
+          </span>
+        )}
         {shown.map((g, i) => {
           // A row with a tickets address becomes an anchor, the gallery's seam:
           // `target="_blank"`, so the click both opens the tab and lights the
@@ -17913,13 +17935,16 @@ function EventsMap({ s }) {
         {/* All three masters (964:58581, 986:38401, 986:38721) set the kicker
             in Inter Bold 11 tracked 1.5 and the badge in Anton 32.3 on a 37
             line, on the heading's own row and centred against it. Desktop is
-            the frame × 0.82. */}
+            the frame × 0.82. The kicker is the artist's, seeded
+            "Shows/coverage" here (JP-090, mapKickerSeed), and not drawn when
+            emptied. */}
         <div style={col(s.narrow ? '16px' : '13px')}>
-          <span style={{
+          {s.mapKicker && <span style={{
             fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
-            letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
+            letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase',
+            whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
             color: s.retro ? s.mapFg : s.tx,
-          }}>Shows/coverage</span>
+          }}>{s.mapKicker}</span>}
           <div style={row('20px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
@@ -19654,9 +19679,9 @@ function EventsMap({ s }) {
     const head = (
       <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%' })}>
         {/* The eyebrow is the frame's own words, seeded into its own field,
-            `kicker` (JP-071, user call, 2026-09-29; it was a literal, layout
-            1's call in this very section, "Shows/coverage"), and not drawn
-            when emptied. `base` was tried here first, on the gallery's
+            `kicker` (JP-071, user call, 2026-09-29; it was a literal, as
+            layout 1's "Shows/coverage" was until JP-090 seated that in the
+            same key), and not drawn when emptied. `base` was tried here first, on the gallery's
             prefer-a-field rule, and read back as a stutter: the head was then
             `TITLES.map`'s "Manchester", so it printed "Based in Manchester"
             over "Manchester" — the pricing deck's render-the-head-and-read-it
@@ -25453,9 +25478,10 @@ function EnquiryForm({ s }) {
   //    the promises went back to layouts 1 and 2.
   //  - **"WHAT HAPPENS NEXT" is a literal**, `vm.formStepsLabel` — the frame's
   //    own word for the column, and this section keeps its literals on the view
-  //    model (`formTypeLabel`, `formPrompt`) rather than in the renderer. The
+  //    model (`formPrompt`, `formAgain`) rather than in the renderer. The
   //    MESSAGE label over the last box is the artist's since JP-082,
-  //    `vm.formMsgLabel` off `FIELDS.form.messageLabel`.
+  //    `vm.formMsgLabel` off `FIELDS.form.messageLabel`, as layout 1's EVENT
+  //    TYPE is since JP-090 (`typeLabel`).
   //
   // Two intended diffs from the frame. It draws five boxes and a message where
   // `FIELDS.form.fields` seeds four, so the reference picture is two rows of two
