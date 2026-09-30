@@ -10351,11 +10351,34 @@ function Pricing({ s }) {
     // The pill is the same turned-round pair: white under a black label, a
     // black disc round a red arrow — BookPill's shared branch draws exactly
     // that from `bg={s.tx} fg={s.bg} discFg={s.ac}`.
-    if (s.lime || s.grunge) {
+    //
+    // Editorial (964:73111 at 1440 × 532; 971:9609 at 768 × 790; 977:13476 at
+    // 390 × 829) is this tree node for node at all three widths (61 = 61 by
+    // traversal order; the 768 master stacks its dividers in row order, as
+    // Grunge's does), on Sienna Vale's Scheme 1 with no Device override and no
+    // effect. Every size is `THEME_RAMP.Editorial`'s `s.*` to the token and
+    // every text `sem/text/1` terracotta, `s.ac`, so what moves is:
+    //   · the rule, `sem/stroke/2` terracotta at **1px dashed 10, 10** INSIDE
+    //     the foot (`DashRule`, the row `position: relative`), where the twins'
+    //     is a 4px solid inset; still every row but the last;
+    //   · the feature pills, `scheme/1/tag1–4` by parity: blush lettered ink,
+    //     terracotta lettered paper — `s.onScheme[1].chips`, the header's
+    //     pair. The frame letters its fourth seat ink through `scheme/4/tag1/
+    //     text` (the header's and the bio's leak, trap 7), named;
+    //   · the tag chips' hairline, Lime's unbound #F2FFD0 at 15%, invisible on
+    //     paper — dropped (under Scheme 1 `s.stroke1` is opaque ink, a line
+    //     the frame does not draw);
+    //   · the price column hugs at **218**: Fisterra's wider "Star Enquiry";
+    //   · the numeral is lifted (below), and every display string is upper.
+    // The pill is the twins' turned-round pair, and under Scheme 1 it is the
+    // frame's: ink, lettered and disced paper round a terracotta arrow.
+    if (s.limeTree) {
       const grunge = s.grunge
-      const featSeats = grunge ? s.chips : [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
+      const ed = s.editorial
+      const featSeats = ed ? s.onScheme[1].chips : grunge ? s.chips : [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
       const disp = grunge
         ? { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1), textTransform: 'uppercase' }
+        : ed ? { fontSize: s.dispSm, lineHeight: 1, textTransform: 'uppercase' }
         : { fontSize: s.dispSm, lineHeight: 1 }
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -10364,12 +10387,14 @@ function Pricing({ s }) {
       const limeRow = (last) => ({
         ...(desk ? row(u(40), { alignItems: 'flex-start' }) : col('32px', { alignItems: 'flex-start' })),
         ...bleedX, paddingTop: pad, paddingBottom: pad,
-        boxShadow: last ? undefined : `inset 0 ${u(-4)} 0 0 ${grunge ? s.stroke2 : s.ac}`,
+        boxShadow: last || ed ? undefined : `inset 0 ${u(-4)} 0 0 ${grunge ? s.stroke2 : s.ac}`,
         color: s.ac,
+        ...(ed ? { position: 'relative' } : {}),
       })
 
       const limeServiceRow = (t, i) => (
         <div key={t.n} style={limeRow(i === s.tiers.length - 1)}>
+          {ed && i !== s.tiers.length - 1 && <DashRule dash={10 * z} colour={s.stroke2} />}
           {!!t.name && (
             <span style={distressed(s, {
               fontFamily: s.display, ...disp,
@@ -10386,7 +10411,7 @@ function Pricing({ s }) {
               <div style={row(u(8), { flexWrap: 'wrap' })}>
                 {t.tagLabels.map((g, j) => (
                   <span key={j} style={{
-                    ...chip, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, borderRadius: s.btnR,
+                    ...chip, boxShadow: ed ? undefined : `inset 0 0 0 1px ${s.stroke1}`, borderRadius: s.btnR,
                     padding: `${u(5)} ${u(10)}`,
                   }}>{g}</span>
                 ))}
@@ -10418,7 +10443,7 @@ function Pricing({ s }) {
 
           <div style={col(u(12), {
             alignItems: 'flex-start',
-            ...(desk ? { flex: 'none', minWidth: u(grunge ? 177 : 184) } : { width: '100%' }),
+            ...(desk ? { flex: 'none', minWidth: u(ed ? 218 : grunge ? 177 : 184) } : { width: '100%' }),
           })}>
             {!!s.tierKind && <span style={labelStyle(s, s.labelSm)}>{s.tierKind}</span>}
             {!!t.price && (
@@ -10426,9 +10451,15 @@ function Pricing({ s }) {
                 <span style={{
                   fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, flex: 'none',
                 }}>from</span>
+                {/* The frame's row is bottom-aligned (`MAX`), not on a
+                    baseline, and Inter's "from" sits level with the frame's;
+                    Noto's numeral floor sits 0.061–0.084em under Fisterra's
+                    0.18 (off the font's metrics against
+                    `absoluteRenderBounds`), so the numeral alone is lifted. */}
                 <span style={distressed(s, {
                   fontFamily: s.display, ...disp,
                   letterSpacing: s.dls, overflowWrap: 'break-word', minWidth: 0,
+                  ...(ed ? { position: 'relative', top: '-0.07em' } : {}),
                 })}>{t.price}</span>
               </span>
             )}
