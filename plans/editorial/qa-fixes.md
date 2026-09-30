@@ -92,7 +92,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-085 | Heads in Noto Serif Display, not Fisterra Fora | **By design so far**: the named stand-in (layout-1.md decision 1, user call, 2026-09-24). The licence question is the PO's | — (decision) | **yes** | open |
+| 1 | JP-085 | Heads in Noto Serif Display, not Fisterra Fora | **By design so far**: the named stand-in (layout-1.md decision 1, user call, 2026-09-24). The licence question is the PO's | — (decision) | **user: A, a reply; the licence with the PO** | **done** (no code; the facts in `layout-1.md` open question 1) |
 | 2 | JP-089 | Three layout-1 seeds differ from the frame | **Confirmed, and recorded**: Lime layout 1 named all three as diffs; Grunge and Editorial inherited them | S | **yes** (scope, pricing tags) | open |
 | 3 | JP-090 | Four literals no field reaches; the map's Kicker says "Not shown" | **Confirmed**: JP-071's rule, four more sites | S–M | **yes** (small) | open |
 | 4 | JP-088 | Calendar layout 1's *Check a date* pill | **Confirmed, and recorded**: Retro's deliberate addition, kept by Lime's fit | S | **yes** | open |
@@ -201,7 +201,49 @@ or C: write `display-face.md` and stop there.
 
 **Docs.** On A: `layout-1.md` open question 1 only.
 
-**Settled.** —
+**Decided** (2026-09-30, user call): **A**, a reply naming the stand-in, with the licence question
+handed to the PO. No code. B replaces it if a licence is bought. It would then be
+`display-face.md` on its own branch, and the licence could be TipoType's self-hosted file or
+Adobe Fonts' hosted link, which the facts now name as a second route.
+
+Asked over the facts, gathered in-session and re-checked on HEAD (`50b165c`). Every *Evidence*
+line held: the stand-in comment at `data.js:186`, `display` / `label` at `:200`–`201`, `NOTO_EM`
+at `:508`, `notoEms` at `:518` and `notoBoldEms` at `:526`. `index.html:11` and `preview.html:10`
+each hold one pinned Noto Serif Display entry. There is no `@font-face` in `source/`.
+
+**Settled** (2026-09-30, no code).
+- **Nothing under `source/` changed**, so there is no digest.
+- **The facts are in `layout-1.md`'s open question 1**, with their URLs and what could not be
+  verified. In short:
+  - TipoType sells a self-hosted web licence direct, one-time, from **$69 (10k page views a month)
+    to $5,037 (20M)**.
+  - Its EULA is non-sublicensable. So whether one licence covers every artist site the builder
+    publishes, or needs the Corporate & Enterprise licence (price on request), is the question for
+    TipoType.
+  - Fontspring's pages refused every fetch.
+  - Adobe Fonts lists the family, and whether it covers Fora and customers' sites is unverified.
+  - The face is caps-only by the foundry's own description.
+  - `get_variable_defs` finds it on every display and label node — the hero, the wordmark, the
+    section heads, the nav links and the *Book Now* pill. The chips are Chakra Petch.
+- **The tester's "thin" stays a judgement against a measurement.** The stem was matched at 540
+  (session 0). What Noto lacks is Fisterra's swash serifs and ligatures, which the reply names
+  rather than argues.
+- **The reply line.** It is in the sweep's shape so step 6 can use it unchanged. It opens on who
+  holds the next step, because Grunge's JP-056 reply was refused for reading as closed:
+  - **JP-085 — needs the PO: a web licence. Nothing changes in this build.** Editorial's heads —
+    the hero, the section heads, the nav and the buttons — are set in Noto Serif Display on
+    purpose. The design's Fisterra Fora is a Fontspring *demo*, and the demo licence cannot ship
+    on artists' public sites. Noto is the closest free stand-in: the same cap height within 1.4%
+    and the same stroke weight, measured. What it lacks is Fisterra's swash serifs and ligatures,
+    and no free condensed serif has those. Fisterra is sold by its foundry, TipoType, as a web
+    licence from $69 (10k page views a month) to $5,037 (20M). Its terms do not let one licence be
+    passed on, so before buying, the PO has to ask TipoType whether one licence covers every
+    artist's site the builder publishes or whether that needs their Corporate licence (price on
+    request). It is also on Adobe Fonts, whose terms for a builder are not yet confirmed. **The
+    next step is the PO's.** Once a licence covering the published sites is in hand, the real face
+    replaces Noto in its own piece of work, re-fitting every Editorial heading.
+- **Docs.** `layout-1.md`'s open question 1 only, as the entry named. *Notes for the designer* 1
+  already says the face is a stand-in. `plans/README.md`'s row is the sweep's (step 6).
 
 ---
 
