@@ -254,7 +254,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 5 | `repertoire` | `964:73103` *(Section `964:73098`, panel `964:73099`)* | 1208 × **506** | `971:9600` *(Section `971:9595`, panel `971:9596`)* | 608 × **564** | `977:13467` *(Section `977:13462`, panel `977:13463`)* | 310 × **626** | **3** | `964:72916` / `971:5604` / `977:9178` | `964:73011` / `971:8128` / `977:12355` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v3)`, after `jump` | **done** (`8d94074`) |
 | 6 | `map` | `964:73110` *(Frame 319 `964:73104`, head `964:73105`)* | 1440 × 747 | `971:9608` *(Frame 319 `971:9602`, head `971:9603`)* | 768 × 870 | `977:13475` *(Frame 319 `977:13469`, head `977:13470`)* | 390 × 680 | 1 (viewport **3**) | `964:72924` / `971:5612` / `977:9186` | `964:73019` / `971:8136` / `977:12363` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | **done** (`2b37973`) |
 | 7 | `pricing` | `964:73111` | 1440 × **532** | `971:9609` | 768 × **790** | `977:13476` | 390 × 829 | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73021` / `971:8137` / `977:12364` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | **done** (`b649843`) |
-| 8 | `calendar` | `964:73124` + wizard `964:73123` *(Section `964:73112`, Frame 324 `964:73113`)* | 478 × 518 + 680 × 518 | `971:9622` + `971:9621` *(Section `971:9610`, Frame 324 `971:9611`)* | 608 × 493 + 608 × 473 | `977:13489` + `977:13488` *(Section `977:13477`, Frame 324 `977:13478`)* | 350 × 484 + 350 × 470 | 1 (Back pill **3**) | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:73034` + `964:73033` / `971:8150` + `971:8149` / `977:12377` + `977:12376` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | open |
+| 8 | `calendar` | `964:73124` + wizard `964:73123` *(Section `964:73112`, Frame 324 `964:73113`)* | 478 × 518 + 680 × 518 | `971:9622` + `971:9621` *(Section `971:9610`, Frame 324 `971:9611`)* | 608 × 493 + 608 × 473 | `977:13489` + `977:13488` *(Section `977:13477`, Frame 324 `977:13478`)* | 350 × 484 + 350 × 470 | 1 (Back pill **3**) | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:73034` + `964:73033` / `971:8150` + `971:8149` / `977:12377` + `977:12376` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | **done** (`2393dc9`) |
 | 9 | `form` | **`725:3049`** *(the main component — no page instance at 1440)* | 1440 × 809 | `971:9623` | 768 × 1044 | `977:13490` | 390 × 992 | 1 | `964:72940` / `971:5627` / `977:9201` | `725:2990` / `971:8151` / `977:12378` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v3)` | open |
 | 10 | `testimonials` | `964:73125` | 1440 × 716 | `971:9624` | 768 × **628.4** | `977:13491` | 390 × 609.4 | **4** — a real sheet (cell 2 **1**) | `964:72941` / `971:5628` / `977:9202` | `964:73035` / `971:8152` / `977:12379` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v3)`, after `padBot` | open |
 | — | `footer` | `964:73126` | 1440 × 479.5 | `971:9625` | 768 × 692.3 | `977:13492` | 390 × 736.3 | 3 (row 0's) | — | — | — | **out of scope**: layout 1's Editorial footer on its own ink seat; `NVAR.footer` is 1 |
@@ -870,6 +870,15 @@ bullets; name them.
   level with the frame's. So only the Noto numeral takes `top`. Read the row's
   `counterAxisAlignItems` before choosing, and measure the numeral's floor against the Inter
   neighbour's, frame and ours. The calendar's and the form's price rows are the next sites.
+  *The calendar's are stacked* (section 8): every display line on the wizard and the summary
+  column is `VERTICAL MIN` over a line of type, so the glyph lifts alone, 0.09em.
+- **Figma's `SPACE_BETWEEN` ignores `itemSpacing`; CSS's `gap` does not** (section 8). The
+  wizard's pill row states a 12 gap under `SPACE_BETWEEN`, and the 390 frame stands Back 121 and
+  Next Step 161 in its 290, 8 apart. The twins' `gap: 12` made that a 12 minimum, harmless in
+  their narrower faces; in Noto, at the frame's own pill widths, it pushed Next Step 4px past the
+  card. Read a `SPACE_BETWEEN` row's children against its width before carrying its gap into CSS:
+  where they fit with less, the CSS gap is 0. The form's step rows and the testimonials' head
+  row are the next `SPACE_BETWEEN` rows.
 
 ### Seen at planning time, per section
 
@@ -1726,6 +1735,164 @@ From the walks and the renders — impressions to confirm, not measurements.
   It owes Editorial's 1px dashed `s.stroke2` `DashRule` and its `s.onScheme[1].chips` seats.
   CLAUDE.md carries no pricing layout-4 sentence now (the notes split).
 
+### Settled in section 8 (the booking calendar)
+
+- **No Editorial block: Lime's `if (s.lime || s.grunge)` inside `Calendar`'s `if (s.v3)`, after
+  `onNextTag`, is `s.limeTree`**, with `const ed = s.editorial`, `S3 = s.onScheme[3]` and no `G`.
+  Every Lime and Grunge arm is byte-identical: each new leaf is `ed ? … : <the twin's
+  expression>`, and `r15()`, `padSide` and `titleSize` gained an `ed` head. The seam is shared
+  whole, so these needed nothing new: the steps, chips and boxes, *Package ›*, the summary column,
+  JP-053's mailto and its refusal, and JP-076's own address. The whole read was a paired diff of
+  the three `Frame 324`s (`964:73113` / `971:9611` / `977:13478`) against Lime's (`964:72928` /
+  `971:5615` / `977:9189`), by traversal order, with bindings and their collections. It found
+  **98 = 98 nodes at every width**, on Sienna Vale's Scheme 1, with no Device override and no
+  effect.
+- **Every fill is on the key Lime's binds**, so `s.*` was already right:
+  - the panel is `sem/box/2` `#EDE6DC`;
+  - the wizard card and the rows are `sem/box/1` `#FFF9F2`;
+  - the summary card is `sem/text/2` ink, lettered `sem/box/2`, with GUESTS in `sem/bg` paper;
+  - the lit step and chip are `sem/text/1` terracotta;
+  - the idle numerals and labels are `sem/text/2` ink;
+  - the step rules are `box/2`.
+
+  So the three-level stack holds on a third template. For the sweep: `notes/calendar.md`'s stack
+  sentence names only Lime and Grunge. The card's `stroke/1` is ink on the ink card and is not
+  drawn, which is the twins' reading.
+- **What moves is the corners and the rings.** Every card is square at every width:
+  - the panel (Lime 60 / 60 / 30);
+  - the wizard card (50 / 16 / 16);
+  - the chips and the boxes (999);
+  - the summary card and the rows (50).
+
+  Every ring is a `DashRule side="all"` on a `position: relative` box, × 0.82 on the canvas:
+  - the panel is **5, 5** in `sem/stroke/1` ink at 1440 and 768, and has **none at 390**, where
+    the master draws no stroke;
+  - the wizard card, the three idle chips and every box (APPROX. DATE, step 2's four, step 3's
+    two) are **10, 10** in ink;
+  - the date and package cards are **10, 10** in `sem/stroke/2` terracotta.
+
+  The summary card and the rows pad **24** at the sides (Grunge's; Lime pads 34).
+- **Type.** `get_variable_defs` on the Section (`964:73112`) matches the ramp token for token:
+  display-lg 118, title 32, list 24, body-lg 16, body-md 14, body-sm 12, chip 12, `radius/chip` 6.
+  The walk's narrow sizes are 73 / 25 / 19 / 12 / 11 at 768 and 48 / 23 / 18 at 390. So every
+  `s.*` the block reads was right. Display/Title is a literal, **32 / 25 / 23** (Lime's 36 / 28 /
+  26), because `vm.title` shadows the ramp. `disp` uppercases under `grunge || ed`, so the head,
+  the wizard's title, GUESTS, the date and package lines and Back / Next Step are uppercased at
+  their sites.
+- **Three pills, read off `explicitVariableModes`** (trap 5):
+  - **Back** is **Scheme 3**, as on both twins, and so is *Start again*, which is the Back pill.
+    Its fill is `text/1`, and its label and disc are `sem/bg`, round a `text/1` arrow. Under Lime
+    those are `s.bg` / `s.ac`; under Sienna Vale they are terracotta / ink, `S3.ac` / `S3.bg`. So
+    `backBg` and `backFg` take an `ed` arm, and the disc is `disc(backFg, backBg)`, the twins'
+    pattern. Sampled `rgb(200, 110, 82)` lettered `rgb(20, 20, 20)`.
+  - **Next Step** is Scheme 1: terracotta lettered paper round a paper disc. Those are Lime's keys
+    exactly, so it needed nothing.
+  - **Send Enquiry** is **Scheme 1**, where both twins' pills are Scheme 2. So it takes
+    `BookPill`'s defaults, with `fg` undefined under `ed`: `pillBg` terracotta, lettered and
+    disced in `s.bg` paper, round a terracotta arrow.
+- **The refused box is 2px of solid `s.stroke2` terracotta, with the dash gone.** This is open
+  question 6's wizard item and CONVENTIONS C's *a refused box changes colour, not weight alone*.
+  The idle box is already dashed in full ink, so the twins' `inset 0 0 0 2px s.tx` would change
+  weight and dash but not colour. Terracotta is the other text token, the same move as layout 3's
+  form, which turned to ink from its terracotta dash. A shot at 390 on step 3, beside the
+  terracotta Send pill and under the prompt, shows the two boxes as marked, not picked (a picked
+  chip is a filled terracotta block, never a ring). Named as this session's call.
+- **The stacked display lines lift 0.09em** (CONVENTIONS B, *a stand-in face's glyph floor is
+  measured per site*). Every display line in the block is `VERTICAL MIN` over a line of type:
+  - the wizard's title over *Step n of 3* (gap 20);
+  - GUESTS over its value (6);
+  - the date and package lines over their subs (2);
+  - the confirmation's title.
+
+  None sits on a `MAX` or `BASELINE` row, so the glyph lifts alone, with `position: relative; top:
+  -0.09em` (`lift`).
+  - **The frame's floors** are **0.238 / 0.228 / 0.249em** at lh 1.1 (`absoluteRenderBounds`
+    against the text box). The flat-bottomed "Live band — full", "What's the occasion?" and GUESTS
+    agree. Figma rounds the line box to a whole pixel (35 / 28 / 25 for 35.2 / 27.5 / 25.3), and
+    corrected for that the floors are 0.241 / 0.218 / 0.256.
+  - **Noto's floors** are **0.158 / 0.140 / 0.149em**, off the font's metrics in the page
+    (`measureText`, floor = `(lh − (A + D)) / 2 + D − actualDescent`). So Noto sat 0.083 / 0.078 /
+    0.107em low, a mean of 0.09, which is section 6's figure.
+  - **The Book Us head is not lifted** (lh .89, floors 0.132 / 0.139 / 0.134 in the frame). It
+    stands over the wizard card, not prose, like this pass's other heads.
+  - **Noto's J.** The seed's cue already reads *THU, JUNE 12*. A DPR-3 shot of the date card at
+    1440 and 390 shows the J's hook whole (no clipping ancestor) and clear of the year line 2px
+    under it. Lifted, its 0.24em descent ends at the box's foot.
+- **The head is fitted to its widest word.** Under `ed` the panel is an `inline-size` container,
+  and the size is `min(s.dispLg, calc(100cqi / s.titleWordEms))`.
+  - The seed keeps 97 / 73 / 48 on one line.
+  - "Unforgettable" also sets at 97 / 73 / 48 on one line, 351.4 wide in the 390's 360 measure.
+  - "Christopher Featherstonehaugh live" sets at 97 / 63.3 / 36.5 on three lines, its ink inside
+    the measure at every width.
+- **The pill row's gap is Figma's, not CSS's** (*Conventions*).
+  - The masters' row is `SPACE_BETWEEN`, with an `itemSpacing` of 12 that Figma ignores. The 390
+    frame stands Back 121 and Next Step 161 in its 290, 8 apart.
+  - Our pills are the frame's widths (121.8 / 160.4), but the twins' `gap: 12` pushed Next Step
+    4px past the card at 390. Under `ed` the column gap is 0, so on step 1 they stand 7.8 apart
+    (the frame's 8).
+  - The row wraps only where Noto cannot fit at all. Step 3's Send Enquiry is 191.5, so at 390
+    it takes its own line, kept at the right by `marginLeft: 'auto'` (inert while both fit). At
+    768 and 1440 every step holds one line.
+  - **Named**: the 390 step 3 wizard is 66 taller than step 1 (a state no frame draws), so the
+    summary column below it rides down. That is JP-053's named ride, in the other direction.
+- **Measured** (harness, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: panel 1088.2 × 649.8 (1089 × 650.3), square, dashed `4.1 4.1`; h2 97px, 86.3 tall
+    (86.1); wizard 557.2 × 424.1 (424.8); card 391.7 × 192.5 (193.5); rows 74 (73.8); pill 44.3.
+    The section root is 809.8.
+  - 768: panel 1245.9 (1251); wizard 470.8 (473); card 223.5 (225); rows 82.3 (83); pill 54.
+  - 390: panel 1094.8 (1097), no dash; h2 42.7; wizard 468.6 (470); card 221.3 (222); rows 80.1
+    (80); pill 54.
+  - Each narrow shortfall comes from Noto's 1.1 line boxes (27.5 / 25.3) against Figma's
+    whole-pixel 28 / 25, as under both twins. There is no sideways scroll at any width.
+  - The DOM reads eight dashed rects at 1440 and 768 (`#141414` ×6, `#C86E52` ×2) and seven at
+    390.
+- **`live=1`** at desktop and 390 (puppeteer, with trusted clicks and typing and a capture-phase
+  `preventDefault` on mailto; probe deleted):
+  - **The first paint**: Back is a terracotta span lettered ink, with no pointer. Next Step and the
+    foot pill are live, and the foot pill is already a `mailto:`.
+  - **The run**: Festival turns terracotta lettered paper and loses its dash, and Wedding goes back
+    to `#EDE6DC` dashed ink. Then `14/11/2026`, Next, 300 / 5 hrs / £3,000 / Needed, *Package ›*
+    (*THE WEDDING SET £650*), and Next.
+  - **The send**: an empty Send refuses both boxes (2px terracotta, no dash) and prints the
+    prompt. Ana Lopes / `ana@example.com` then composes exactly JP-053's body to
+    `bookings@kaimercer.co.uk` and shows the confirmation. *Start again* is the Scheme 3 pill, and
+    it returns to step 1 with Festival kept.
+  - The foot pill on a fresh step 1 walks to step 3 with both boxes marked.
+  - **Flags**, at desktop:
+    - `&email=none` leaves both pills spans;
+    - `&tiers=none` drops the package card;
+    - `&booked=2026-11-14&today=2026-09-30` refuses a typed 14/11/2026 with *Not available. Pick
+      another date*, the date at .38;
+    - `&open=2026-11-05` gives *Thu, November 5*.
+  - No page errors.
+- **`reach.mjs 3`**, over the calendar's probes alone (a throwaway filter, deleted):
+  - `cta`, `image` and `time` reach layouts 1 and 4;
+  - `heading` and `open` reach all four;
+  - `slots` reaches layout 2;
+  - `types` and `&tiers` reach layout 4;
+  - `email` reaches layout 4 (3 of 6 renders, the live ones).
+
+  Those are the stored rows, so `FIELDS.calendar` did not move.
+- **Builder** (`page-check.mjs Editorial 3`): four cards, no errors or warnings. Overflow at 390 is
+  0, the burger goes 1 → 11, and Availability scrolls to `#calendar`. The published calendar is 974
+  tall at 1440 and 1156 at 390. The seam clips show pricing's foot onto the calendar's paper and
+  the calendar's panel onto the form's paper, both straight.
+- **Named diffs** (the twins' and JP-052's, unless marked):
+  - *Package ›* at body-lg, where the frame's is 12;
+  - the date card's year line, where the frame reads *Arrival 6pm*;
+  - the package card's price, where the frame has a line-up;
+  - the canvas's seeded Manchester location and The House Party;
+  - the 390 step-3 pill row on two lines (above, this session's);
+  - the refusal's terracotta (this session's call).
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `calendar_arch_3` at three widths on both surfaces, six files. The digest cannot see an SVG
+  `stroke`, so the dashes were read off the DOM (above).
+- **For the sweep**:
+  - `notes/calendar.md` describes the refused box as "Retro's hairline doubled inside, Lime's 2px
+    of `s.tx`", and the three-level stack for Lime and Grunge only. Editorial's 2px terracotta
+    and its `#FFF9F2` / ink / `#EDE6DC` stack join them.
+  - CONVENTIONS C's *refused box* row gains an L4 Editorial cell.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -1883,6 +2050,34 @@ and what this section did with it.)*
   named.
 - Pricing: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on
   the end-of-pass sweep*) — `page-check.mjs Editorial 3`, the three pills and two seams.
+- Calendar: *Where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1, *Settled in section 4*) — widened in place after `onNextTag`, the wizard's seam
+  shared whole.
+- Calendar: *A widened block can need no `G` at all* (grunge/layout-3, *Settled in section 9*) —
+  a dozen `ed` arms and an `S3`.
+- Calendar: *The paired diff walk* (grunge/layout-2, *Settled in section 8*) — the three
+  `Frame 324`s against Lime's, 98 = 98, with bindings and collections; the whole read.
+- Calendar: *A nested node or a card on another scheme reads that scheme's keys*
+  (editorial/layout-2, *Settled in session 0*) — Back and *Start again* on `s.onScheme[3]`.
+- Calendar: *Read every nested node's scheme off the master, never off the twin's row*
+  (grunge/layout-3, *Conventions*) — Send Enquiry is Scheme 1 here, Scheme 2 on both twins.
+- Calendar: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — three patterns,
+  eight rects, the panel's dropped at 390.
+- Calendar: *A refused box changes colour, not weight alone* (CLAUDE.md, the enquiry form) — 2px
+  solid terracotta against the idle ink dash.
+- Calendar: *A stand-in face's glyph floor is measured per site* (editorial/layout-3,
+  *Conventions*; this plan, sections 6 and 7) — 0.09em on the stacked display lines alone.
+- Calendar: *Noto's J descends 0.24em* (editorial/layout-2, *Conventions*) — the date card's
+  JUNE, whole and clear of the year at DPR 3.
+- Calendar: *A head that must fit its measure is fitted to its widest word* (lime/layout-3,
+  section 9; editorial/layout-1, *Conventions*) — the Book Us head in the panel's `100cqi`.
+- Calendar: *A twin's width-bound call is re-measured in the new face* (editorial/layout-2,
+  *Conventions*) — the pill row's 12 gap, which Figma's `SPACE_BETWEEN` never had.
+- Calendar: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, *Settled in section 6*) —
+  Display/Title 32 / 25 / 23, a literal.
+- Calendar: *Field reach is measured* (CLAUDE.md) — the calendar's `reach.mjs` probes, no change.
+- Calendar: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on
+  the end-of-pass sweep*) — `page-check.mjs Editorial 3`, the two seams.
 
 ## Open questions
 
@@ -1911,6 +2106,8 @@ and what this section did with it.)*
    terracotta cell on the ink panel, the gallery's 8px active ring on the ink band, the
    testimonials' paper discs on the terracotta sheet, and the refused boxes of the wizard (on its
    `#FFF9F2` card) and the form (on paper). Each session samples its own at `theme=3&live=1`.
+   *Settled in section 8 (the wizard)*: the refused box is 2px of solid terracotta on the
+   `#EDE6DC` box, the ink dash gone, and it reads beside the terracotta pills and the prompt.
 
 ## Notes for the designer
 
