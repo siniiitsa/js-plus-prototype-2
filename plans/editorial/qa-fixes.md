@@ -267,13 +267,15 @@ frame before choosing that seed's gate.
 `arch 0` under themes 1–3, three widths, both surfaces: the head's text (and any wrap it causes),
 the submit's label, and the chip row and each card's tag row. Retro and Pop: 0. Pricing `arch 0`'s
 calendar package card reads `vm.tiers` too — check whether the calendar at layout 1 prints the tag.
-The form's submit is also `vm.formCta`'s fallback (`EncoreBuilder.jsx:1700`), so any layout-1 site
-reading `formCta` moves with it; list them.
+`vm.formCta` falls back to `vm.formBtn` (`EncoreBuilder.jsx:1700`) only when the artist empties its
+own `cta` (seeded `FORM_CTA`), so it is not in the seeded after-diff; the emptied-`cta` case goes
+under *Verify*.
 
 **Verify.** The seed digest as named; the chip row filters on the published tab under each of the
 three templates (All, then each tag shows its one package); an emptied heading and an emptied
 button behave as before; an edited tag list is the artist's at every layout (the absent-key gate);
-`EditPanel` shows the seeded values on card 1 and the old ones on Retro's card 1.
+`EditPanel` shows the seeded values on card 1 and the old ones on Retro's card 1. With the form's `cta` emptied,
+whatever reads `vm.formCta` prints *Enquire* under the three templates.
 
 **Docs.** `notes/pricing.md` (the per-layout tag seeds), `notes/calendar.md` and `notes/form.md` if
 they name the seeds; a *reversed* pointer on the three named diffs in `../lime/layout-1.md`.
